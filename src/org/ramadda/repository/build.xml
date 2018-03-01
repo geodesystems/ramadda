@@ -231,7 +231,7 @@
     </target>
 
     <target name="ramadda.jar" depends="init,compile">
-        <copy overwrite="true" file="ramadda_license.txt" tofile="${ramadda_dir}/resources/ramadda_license.txt"/>
+        <copy overwrite="true" file="LICENSE" tofile="${ramadda_dir}/resources/ramadda_license.txt"/>
         <copy overwrite="true" file="${ramadda_dir}/resources/version.properties" tofile="${ramadda_dir}/resources/build.properties">
             <filterset>
                 <filter token="DATE" value="${date}"/>
