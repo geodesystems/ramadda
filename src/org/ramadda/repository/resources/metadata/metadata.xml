@@ -209,6 +209,7 @@
     </type>
 
     <type
+       searchable="true" browsable="true"
        name="Alias"
        id="content.alias"
        displaycategory="AKA"
