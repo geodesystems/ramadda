@@ -97,7 +97,7 @@ function BasePointData(name, properties) {
                 var recordFields = this.getRecordFields();
                 var numericFields = [];
                 var skip = /(TIME|HOUR|MINUTE|SECOND|YEAR|MONTH|DAY|LATITUDE|LONGITUDE|^ELEVATION$)/g;
-                var skip = /xxxnoskip)/g;
+                var skip = /(xxxnoskip)/g;
                 for(var i=0;i<recordFields.length;i++) {
                     var field = recordFields[i];
                     if(!field.isNumeric || !field.isChartable()) {
