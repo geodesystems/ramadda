@@ -1,0 +1,147 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<wfs:WFS_Capabilities
+   version="1.1.0"
+   xmlns:BAID_ResearchSites_AK_Albers="http://irpsrvgis27/ArcGIS27/services/BAID_ResearchSites_AK_Albers/MapServer/WFSServer"
+   xmlns:gml="http://www.opengis.net/gml"
+   xmlns:ogc="http://www.opengis.net/ogc"
+   xmlns:ows="http://www.opengis.net/ows"
+   xmlns:wfs="http://www.opengis.net/wfs"
+   xmlns:xlink="http://www.w3.org/1999/xlink"
+   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+   xsi:schemaLocation="http://www.opengis.net/gml http://schemas.opengis.net/gml/3.1.1/base/gml.xsd http://www.opengis.net/ogc http://schemas.opengis.net/filter/1.1.0/filter.xsd http://www.opengis.net/ows http://schemas.opengis.net/ows/1.0.0/owsAll.xsd http://www.opengis.net/wfs http://schemas.opengis.net/wfs/1.1.0/wfs.xsd">
+  <ows:ServiceIdentification>
+    <ows:Title>BAID_ResearchSites_AK_Albers</ows:Title>
+    <ows:Abstract/>
+    <ows:Keywords>
+      <ows:Keyword/>
+    </ows:Keywords>
+    <ows:ServiceType>WFS</ows:ServiceType>
+    <ows:ServiceTypeVersion>1.1.0</ows:ServiceTypeVersion>
+    <ows:Fees/>
+    <ows:AccessConstraints/>
+  </ows:ServiceIdentification>
+  <ows:ServiceProvider>
+    <ows:ProviderName/>
+    <ows:ServiceContact>
+      <ows:IndividualName/>
+      <ows:PositionName/>
+      <ows:ContactInfo>
+        <ows:Phone>
+          <ows:Voice/>
+          <ows:Facsimile/>
+        </ows:Phone>
+        <ows:Address>
+          <ows:DeliveryPoint/>
+          <ows:City/>
+          <ows:AdministrativeArea/>
+          <ows:PostalCode/>
+          <ows:Country/>
+          <ows:ElectronicMailAddress/>
+        </ows:Address>
+        <ows:HoursOfService/>
+        <ows:ContactInstructions/>
+      </ows:ContactInfo>
+    </ows:ServiceContact>
+  </ows:ServiceProvider>
+  <ows:OperationsMetadata>
+    <ows:Operation name="GetCapabilities">
+      <ows:DCP>
+        <ows:HTTP>
+          <ows:Get xlink:href="http://arctic.utep.edu/arcgis/services/BAID_ResearchSites_AK_Albers/MapServer/WFSServer?"/>
+          <ows:Post xlink:href="http://arctic.utep.edu/arcgis/services/BAID_ResearchSites_AK_Albers/MapServer/WFSServer"/>
+        </ows:HTTP>
+      </ows:DCP>
+      <ows:Parameter name="AcceptVersions">
+        <ows:Value>1.1.0</ows:Value>
+        <ows:Value>1.0.0</ows:Value>
+      </ows:Parameter>
+      <ows:Parameter name="AcceptFormats">
+        <ows:Value>text/xml</ows:Value>
+      </ows:Parameter>
+    </ows:Operation>
+    <ows:Operation name="DescribeFeatureType">
+      <ows:DCP>
+        <ows:HTTP>
+          <ows:Get xlink:href="http://arctic.utep.edu/arcgis/services/BAID_ResearchSites_AK_Albers/MapServer/WFSServer?"/>
+          <ows:Post xlink:href="http://arctic.utep.edu/arcgis/services/BAID_ResearchSites_AK_Albers/MapServer/WFSServer"/>
+        </ows:HTTP>
+      </ows:DCP>
+      <ows:Parameter name="outputFormat">
+        <ows:Value>text/xml; subType=gml/3.1.1/profiles/gmlsf/1.0.0/0</ows:Value>
+      </ows:Parameter>
+    </ows:Operation>
+    <ows:Operation name="GetFeature">
+      <ows:DCP>
+        <ows:HTTP>
+          <ows:Get xlink:href="http://arctic.utep.edu/arcgis/services/BAID_ResearchSites_AK_Albers/MapServer/WFSServer?"/>
+          <ows:Post xlink:href="http://arctic.utep.edu/arcgis/services/BAID_ResearchSites_AK_Albers/MapServer/WFSServer"/>
+        </ows:HTTP>
+      </ows:DCP>
+      <ows:Parameter name="resultType">
+        <ows:Value>results</ows:Value>
+        <ows:Value>hits</ows:Value>
+      </ows:Parameter>
+      <ows:Parameter name="outputFormat">
+        <ows:Value>text/xml; subType=gml/3.1.1/profiles/gmlsf/1.0.0/0</ows:Value>
+      </ows:Parameter>
+    </ows:Operation>
+    <ows:ExtendedCapabilities>
+      <ows:Constraint name="serviceAxisOrderForSwappableSRS">
+        <ows:Value>latitude,longitude</ows:Value>
+      </ows:Constraint>
+    </ows:ExtendedCapabilities>
+  </ows:OperationsMetadata>
+  <wfs:FeatureTypeList>
+    <wfs:FeatureType>
+      <wfs:Name>BAID_ResearchSites_AK_Albers:BAID_Research_Sites</wfs:Name>
+      <wfs:Title>BAID_Research_Sites</wfs:Title>
+      <wfs:DefaultSRS>urn:ogc:def:crs:EPSG:6.9:4326</wfs:DefaultSRS>
+      <wfs:OutputFormats>
+        <wfs:Format>text/xml; subType=gml/3.1.1/profiles/gmlsf/1.0.0/0</wfs:Format>
+      </wfs:OutputFormats>
+      <ows:WGS84BoundingBox>
+        <ows:LowerCorner>-164.00999999999999 64.579999999999998</ows:LowerCorner>
+        <ows:UpperCorner>-141.19610800000001 72.280000000000001</ows:UpperCorner>
+      </ows:WGS84BoundingBox>
+    </wfs:FeatureType>
+  </wfs:FeatureTypeList>
+  <ogc:Filter_Capabilities>
+    <ogc:Spatial_Capabilities>
+      <ogc:GeometryOperands>
+        <ogc:GeometryOperand>gml:Envelope</ogc:GeometryOperand>
+        <ogc:GeometryOperand>gml:Point</ogc:GeometryOperand>
+        <ogc:GeometryOperand>gml:Polygon</ogc:GeometryOperand>
+        <ogc:GeometryOperand>gml:LineString</ogc:GeometryOperand>
+      </ogc:GeometryOperands>
+      <ogc:SpatialOperators>
+        <ogc:SpatialOperator name="BBOX"/>
+        <ogc:SpatialOperator name="Equals"/>
+        <ogc:SpatialOperator name="Disjoint"/>
+        <ogc:SpatialOperator name="Intersects"/>
+        <ogc:SpatialOperator name="Crosses"/>
+        <ogc:SpatialOperator name="Touches"/>
+        <ogc:SpatialOperator name="Within"/>
+        <ogc:SpatialOperator name="Contains"/>
+        <ogc:SpatialOperator name="Overlaps"/>
+      </ogc:SpatialOperators>
+    </ogc:Spatial_Capabilities>
+    <ogc:Scalar_Capabilities>
+      <ogc:LogicalOperators/>
+      <ogc:ComparisonOperators>
+        <ogc:ComparisonOperator>EqualTo</ogc:ComparisonOperator>
+        <ogc:ComparisonOperator>NotEqualTo</ogc:ComparisonOperator>
+        <ogc:ComparisonOperator>LessThan</ogc:ComparisonOperator>
+        <ogc:ComparisonOperator>GreaterThan</ogc:ComparisonOperator>
+        <ogc:ComparisonOperator>LessThanEqualTo</ogc:ComparisonOperator>
+        <ogc:ComparisonOperator>GreaterThanEqualTo</ogc:ComparisonOperator>
+        <ogc:ComparisonOperator>Like</ogc:ComparisonOperator>
+        <ogc:ComparisonOperator>Between</ogc:ComparisonOperator>
+        <ogc:ComparisonOperator>NullCheck</ogc:ComparisonOperator>
+      </ogc:ComparisonOperators>
+    </ogc:Scalar_Capabilities>
+    <ogc:Id_Capabilities>
+      <ogc:EID/>
+      <ogc:FID/>
+    </ogc:Id_Capabilities>
+  </ogc:Filter_Capabilities>
+</wfs:WFS_Capabilities>

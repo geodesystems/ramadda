@@ -1,0 +1,54 @@
+<types  supercategory="Geoscience" >
+
+  <type name="type_wms_capabilities"  description="WMS Capabilities" category="GIS Data" handler="org.ramadda.geodata.ogc.WmsCapabilitiesTypeHandler" pattern=".*service=WMS.*request=GetCapabilities.*">  
+     <property name="icon" value="/icons/globe.jpg"/>
+     <property name="form.date.show" value="false"/>
+     <property name="form.file.show" value="false"/>
+     <property name="form.datatype.show" value="false"/>
+     <wiki><![CDATA[
+{{noheading}}
++section title="WMS Capabilities: {{name}}"
++row
++col-md-6
+<div style="max-height: 400px; overflow-y: auto;">
+{{description wikify="true"}}
+</div>
+
+<table class="formtable">
+{{resource row.label="URL:"  message=""}}
+</table>
+
+{{properties xmetadata.types="!project_pi" message="" }}
+
+{{tree  details="false" xshowtoggle="false" message="" prefix="==Layers=="}}
+
+-col
++col-md-6
+
+
+{{map width="400" message="" listentries="false" prefix=""}}
+
+-col
+-row
+
+
+]]>
+</wiki>
+
+   </type>
+
+
+  <type name="type_wms_layer"  description="WMS Layer" category="GIS Data" handler="org.ramadda.geodata.ogc.WmsLayerTypeHandler" foruser="true">  
+     <property name="icon" value="/ogc/layer.png"/>
+     <property name="form.date.show" value="false"/>
+     <property name="form.file.show" value="false"/>
+     <property name="form.datatype.show" value="false"/>
+     <column name="base_url"  type="string" label="Base URL"/>
+     <column name="layer_name"  type="string" label="Layer Name"/>
+     <column name="version"  type="string" label="Version"/>
+     <column name="epsg"  type="string" label="EPSG"/>
+     <column name="format"  type="string" label="Format"/>
+
+   </type>
+
+</types>

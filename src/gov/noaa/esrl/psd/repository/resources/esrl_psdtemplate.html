@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html>
+<head><title>${repository_name} - ${title} ${entry.breadcrumbs}</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+
+
+<properties>
+name=NOAA/ESRL/PSD Template
+id=esrl_psd
+
+ramadda.template.link.wrapper =<a class="link" href="${url}">${label}</a>
+ramadda.template.link.separator=&nbsp;|&nbsp;
+
+ramadda.template.userlink.popup=true
+ramadda.template.userlink.wrapper =<a class="link" href="${url}">${label}</a>
+ramadda.template.userlink.separator=&nbsp;|&nbsp;
+
+ramadda.template.sublink.wrapper=<div class="navlinks">${sublinks}</div>
+ramadda.template.sublink.on=<span class="subnavoncomp">${label}</span>
+ramadda.template.sublink.off=<span class="subnavoffcomp"><a href="${url}">${label}</a></span>
+
+ramadda.template.favorites = <b>Favorites:</b><div class="favorites">${entries}</div>
+ramadda.template.cart = <b>Cart:</b><div class="favorites">${entries}</div>
+
+</properties>
+
+<!-- site-wide style sheets -->
+<!--  The relevant pieces of these are now in esrl_psd.css
+<link rel="stylesheet" type="text/css" href="http://www.esrl.noaa.gov/css/esrl.css" media="all">
+<link rel="stylesheet" type="text/css" href="http://www.esrl.noaa.gov/css/division.css" media="all">
+<link rel="stylesheet" type="text/css" href="http://www.esrl.noaa.gov/psd/css/psd.css" media="all">
+-->
+
+${imports}
+
+<link rel="stylesheet" type="text/css" href="${root}/noleft.css" media="all">
+<link rel="stylesheet" type="text/css" href="${root}/print.css" media="print">
+<link rel="stylesheet" type="text/css" href="${root}/psd.css" media="all">
+<link rel="stylesheet" type="text/css" href="${root}/psd_home.css" media="all">
+<link rel="stylesheet" type="text/css" href="${root}/ramadda_psd.css" media="all">
+<link rel="stylesheet" type="text/css" href="${root}/font-awesome/css/font-awesome.css" media="all">
+
+<!--
+<link rel="stylesheet" type="text/css" href="${root}/esrl_psd.css" media="all">
+<link rel="stylesheet" type="text/css" href="${root}/esrl_print.css" media="print">
+-->
+<link href="${root}/images/noaa3.gif " rel="SHORTCUT ICON">
+
+${headfinal}
+</head>
+
+<body>
+<div id="container">
+
+  <div id="banner">
+    <div id="minor_header">
+                <a href="http://www.doc.gov/">U.S. Department of Commerce</a> 
+                | <a href="http://www.noaa.gov/">National Oceanic &amp; Atmospheric Administration</a> 
+                | <a href="http://www.research.noaa.gov/">NOAA Research</a>
+    </div>  <!-- minor_header -->
+
+    <div id="major_header">
+      <img lang="en" src="${root}/images/banner_psd.png" width="540" height="80" alt="NOAA Earth System Research Laboratory" usemap="#bannermap"></a>
+
+      <map name="banner" id="bannermap">
+        <area shape="circle" coords="40,40,26" href="http://www.noaa.gov/" alt="NOAA Logo links to NOAA website" title="Link to NOAA Website" target="_top">
+        <area shape="rect" coords="80,5,540,70" href="http://www.esrl.noaa.gov/psd" alt="ESRL links to ESRL/PSD homepage." title="Return to ESRL/PSD homepage." target="_top">
+        <area shape="default" nohref>
+      </map>
+      <div id="search">
+         <form method="get" action="http://search.usa.gov/search">
+           <p>
+           <em>Search PSD:</em>
+           <br>
+           <input type="hidden" name="affiliate" value="etl.noaa.gov" />
+           <input type="hidden" name="v:project" value="firstgov" />
+           <input type="text" name="query" id="query-field" />
+           <input type="submit" value="Search" />
+           </p>
+         </form>
+         <a style="font-size:80%;" href="http://www.esrl.noaa.gov/calendar/">Calendar</a>&nbsp;|&nbsp;<a style="font-size:80%;" href="http://nsd.rdc.noaa.gov/nsd/pubsearch">People</a>&nbsp;|&nbsp;<a style="font-size:80%;" href="http://www.esrl.noaa.gov/search/pubs/">Publications</a>
+      </div>   <!-- search -->
+
+      <!-- force major_header height to include search div -->
+      <div class="clear">
+      </div>
+
+      <p class="textvers"><a href="#content_link">Skip navigation</a></p>
+    </div> <!-- end major_header -->
+
+  <div id="major_nav">
+    <table width="100%">
+    <tr valign="bottom">
+    <td align="left" width="50%"><div class="title"><a href="${root}">${repository_name}</a></div></td>
+    <td align="right">${links}</td>
+    </tr>
+    </table>
+  </div> <!--major_nav-->
+  </div> <!-- banner -->
+  <div class="outercontents">
+    <div class="content">
+       ${header}
+       <div class="innercontent">
+         ${content}
+       </div> <!-- innercontent -->
+    </div> <!-- content -->
+  </div> <!-- outercontents -->
+
+  <div id="footer">
+    <div id="orgs">
+      <a href="http://www.doc.gov/">U.S. Department of Commerce</a> | <a href="http://www.noaa.gov/">National Oceanic and Atmospheric Administration</a>
+      <br>
+      <a hreflang="en" href="http://www.esrl.noaa.gov">Earth System Research Laboratory</a>
+      | <a href="http://www.esrl.noaa.gov/psd/">Physical Sciences Division</a>
+      <br>
+      <span class="url"><a href="${root}">${repository_name}</a></span>
+    </div> <!-- orgs -->
+
+    <div id="media_icons">
+        <a href="https://www.facebook.com/NOAAESRL" title="ESRL Facebook"><i class="fa fa-2x fa-facebook"></i></a>&nbsp;
+        <a href="https://twitter.com/NOAA_ESRL" title="ESRL Twitter"> <i class="fa fa-2x fa-twitter"></i></a>&nbsp;
+        <a href="https://www.youtube.com/user/NOAAESRL" title="ESRL Youtube Channel"> <i class="fa fa-2x fa-youtube"></i></a>&nbsp;
+        <a href="https://www.flickr.com/photos/noaa_esrl" title="ESRL Flickr"> <i class="fa fa-2x fa-flickr"></i></a>
+    </div> <!-- media_icons -->
+
+    <div id="policies">
+      <a href="http://www.noaa.gov/privacy.html">Privacy Policy</a> | 
+      <a hreflang="en" href="http://www.esrl.noaa.gov/about/accessibility.html">Accessibility</a> | 
+      <a href="http://www.esrl.noaa.gov/psd/disclaimer/ ">Disclaimer</a> |
+    
+      <a href="http://www.usa.gov/">USA.gov</a>
+  
+          <br />
+      <a href="http://www.esrl.noaa.gov/psd/about/contacts.html">Contact Us</a> 
+      | <a href="mailto:webmaster.psd&#64;noaa.gov">Webmaster</a>
+
+          <br />
+      <a href="http://www.esrl.noaa.gov/psd/site_index.html">Site Index</a>
+
+    </div> <!-- policies -->
+
+  </div> <!-- end footer -->
+
+</div> <!-- container -->
+
+${bottom}
+${register}
+</body>
+</html>

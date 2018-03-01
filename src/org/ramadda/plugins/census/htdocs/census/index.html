@@ -1,0 +1,42 @@
+<html>
+<title>Census Data</title>
+<category:Integration>
+<body>
+<div class="ramadda-section">
+<h2>Census Data</h2>
+
+<h3>Indicators</h3>
+There are 45000 indicators that can be selected. A <a href="${urlroot}/census/variables">top-level search form</a> is provided. 
+In the edit form for a Census entry you can select which indicators to use.  The indicators are categorized and you can restrict your search for a particular category of indicators, e.g. to search for indicators in the group "Median Income by Place of Birth in the United States" enter:<br>
+<i>category:b05006 your search term</i>.
+
+You can specify that the value shown for a particular indicator is a percentage of another indicator. Say for example you have population data by gender (B01001_002E, B01001_026E). You can specify that the indicators are a percentage of another column by appending ":%&lt;column&gt;" to the indicator id. For the below indicators we append ":%1" (zero based numbering) to use the second column (population).
+
+<pre>
+NAME           //geography
+B01001_001E    //population
+B01001_002E:%1 //male population
+B01001_026E:%1 //female population
+</pre>
+
+<h3>Headers</h3>
+The Headers field allows you to specify an alternative set of indicator names, one per line, to use in place of the names from the Census Bureau.
+
+
+<h3>Geographies</h3>
+
+
+
+The data is selected based on a geography specification - e.g., state, county, tract, etc. More information here - 
+<ul>
+<li> <a href="http://www.census.gov/data/developers/data-sets/acs-survey-5-year-data.html">Census.gov API help</a>
+<li> <a href="${urlroot}/census/states">RAMADDA state and county list</a>
+<li> <a href="https://www.census.gov/geo/reference/ansi_statetables.html">Census.gov State FIPS listings</a>
+<li> <a href="https://www.census.gov/geo/reference/codes/cou.html">Census.gov County FIPS listings</a>
+</ul>
+
+
+
+</body>
+</html>
+

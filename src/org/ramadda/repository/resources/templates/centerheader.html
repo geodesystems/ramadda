@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html>
+<head><title>${title}</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+
+<properties>
+name=Centered Header
+id=centerheader
+
+ramadda.template.link.wrapper =<a href="${url}">${label}</a>
+ramadda.template.link.separator=&nbsp;|&nbsp;
+
+ramadda.template.userlink.popup=true
+
+ramadda.template.favorites = <b>Favorites:</b><div class="favorites">${entries}</div>
+ramadda.template.cart = <b>Cart:</b><div class="favorites">${entries}</div>
+
+</properties>
+
+${imports}
+<style type="text/css">
+.ramadda-footer {
+   margin:0px;
+   padding:20px;
+   align:center;
+   text-align:center;
+   background-repeat: repeat; 
+   background-image:url(${root}/images/background.png);
+   border-top: 1px #000 solid;
+}
+.ramadda-innercontent {
+   padding-top: 0px;
+}
+.navlinks {
+  margin-top:10px;
+  border-bottom: 1px #444 solid;
+}
+</style>
+${headfinal}
+</head>
+
+<body>
+${entry.breadcrumbs}
+<div class="ramadda-header">
+<table border="0" width="100%" cellspacing="0" cellpadding="0"><tr valign="bottom">
+<td width=33%><span class="ramadda-header-label">${header.title}</span></td><td width=33% align=center><a href="${logo.url}" ><img  valign="bottom" style="max-height:80px;" src="${logo.image}" ></a> </td>
+<td width=33% align="right">${links}</td></tr></table>
+</div>
+<div class="ramadda-outercontents">
+<div class="ramadda-content">
+${header}
+<div class="ramadda-innercontent">${content}</div>
+</div>
+</div>
+<div class="ramadda-footer">${footer}</div>
+<div class="ramadda-acknowledgement">Powered by <a href="http://geodesystems.com">Geode Systems and RAMADDA</a></div>
+${bottom}
+
+
+
+</body>
+</html>

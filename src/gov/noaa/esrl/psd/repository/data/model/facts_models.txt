@@ -1,0 +1,24 @@
+# Climate Models
+echam5:ECHAM5
+cam4:CAM4
+ccm4:CCM4
+geos-5:GEOS-5
+AM3:GFDL AM3
+am3:GFDL AM3
+LBNL-CAM5-1-1degree:LBNL CAM5.1 (1deg)
+ESRL-CAM5:ESRL CAM5
+ESRL-CAM5L46:ESRL CAM5 (46-level)
+ESRL-GFSv2:ESRL GFS
+CESM1-CAM5:CESM1-CAM5
+
+# Reanalyses
+20thC_ReanV2:20th Century Reanalysis V2
+20thC_ReanV2c:20th Century Reanalysis V2c
+cfsr:CFSR
+erainterim:ERA-Interim
+merra:MERRA
+merra2:MERRA-2
+ncep.reanalysis:NCEP/NCAR R1
+ncep.reanalysis2:NCEP/DOE R2
+GPCP:Global Precip Clim Project (GPCP)
+jra55:JRA-55

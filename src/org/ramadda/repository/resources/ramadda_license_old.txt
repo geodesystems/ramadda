@@ -1,0 +1,19 @@
+
+End User License Agreement (EULA) for RAMADDA SOFTWARE
+September 1, 2016
+Copyright (c) 2008-2016 Geode Systems LLC
+
+
+This End User License Agreement (EULA) for RAMADDA SOFTWARE provided by Geode Systems LLC (including documentation) expresses the terms for use subject to the following conditions. Geode Systems LLC is the owner of RAMADDA SOFTWARE (including documentation) (called the Software), and all copyrights and all other rights, title and interest in the Software. 
+
+You may use the shareware version of the Software without charge as long as it displays the "Powered by Geode Systems RAMADDA" banner. You may also choose to register with Geode Systems, LLC and pay the appropriate fees. You agree to incorporate this entire notice and EULA with the copyright notice (Notice File) in all copies and in all substantial portions of the Software.
+
+You may not make any claims of ownership in copyright, patent, trademark or any other theory or claim of ownership. This License does not grant permission to use the trade names, trademarks, service marks, or product names of the Licensor, except as required for reasonable and customary use in describing the origin of the Work and reproducing the content of the Notice file.
+
+EXCEPT AS EXPRESSLY SET FORTH IN THIS AGREEMENT, THE PROGRAM IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, EITHER EXPRESS OR IMPLIED INCLUDING, WITHOUT LIMITATION, ANY WARRANTIES OR CONDITIONS OF TITLE, NON-INFRINGEMENT, MERCHANTABILITY OR FITNESS FOR A PARTICULAR PURPOSE.
+
+EXCEPT AS EXPRESSLY SET FORTH IN THIS AGREEMENT, NEITHER RECIPIENT NOR ANY CONTRIBUTORS SHALL HAVE ANY LIABILITY FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING WITHOUT LIMITATION LOST PROFITS), HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OR DISTRIBUTION OF THE PROGRAM OR THE EXERCISE OF ANY RIGHTS GRANTED HEREUNDER, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGES. 
+
+INDEMNITY. You agree to indemnify and hold Geode Systems LLC,  and its subsidiaries, affiliates, officers, agents, employees, partners and licensors harmless from any claim or demand, including but not limited to reasonable attorneys' fees, made by any third party due to or arising out of any content you submit, post, transmit or otherwise make available through use of the Software, your use of the the Software, your connection to the Geode Systems LLC, or your violation of the EULA, or your violation of any rights of any another.
+
+This Agreement is the entire agreement and incorporates all previous agreements. This Agreement is governed by the laws of the State of Colorado and the intellectual property laws of the United States of America. No party to this Agreement will bring a legal action under this Agreement more than one year after the cause of action arose. Each party waives its rights to a jury trial in any resulting litigation. Venue for any action, if any may arise, is Boulder, Colorado.

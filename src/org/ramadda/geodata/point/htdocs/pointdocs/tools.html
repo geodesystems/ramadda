@@ -1,0 +1,116 @@
+<html>
+<head>
+<title>Point Data Command Line Tools</title>
+  <link rel="stylesheet" type="text/css" href="./default.css" title="Style">
+
+</head>
+
+<body>
+<div class="ramadda-documentation">
+<table width=100% cellpadding=0 cellspacing=0><tr><td width=30%>
+<a href="page_miscellaneous.html"><img src="images/PreviousArrow.gif" border="0"   alt="Previous: Miscellaneous" title="Previous: Miscellaneous"></a> <a href="datamodel.html"><img src="images/NextArrow.gif" border="0"   alt="Next: Data Model" title="Next: Data Model"></a>  <a href="toc.html#tools.html"><img src="images/TOCIcon.gif" border="0"   alt="Table of contents" title="Table of contents"></a>
+</td>
+<td width=40% align=center>
+<div class="pagetitle">Point Data Documentation</div>
+</td>
+<td width=30%>&nbsp;</td>
+</tr></table>
+<div class="pagetitle">4.0 Point Data Command Line Tools</div>
+
+<style type="text/css">
+pre {
+    margin-left:15px;
+}
+</style>
+
+
+
+
+
+The point data tools package is a suite of tools for accessing and converting 
+various point data formats.   They are implemented in Java so can run on any platform. 
+
+First of all, download and unzip the 
+<a href="http://sourceforge.net/projects/ramadda/files/ramadda1.6b/">pointtools.zip</a> release.
+There is a README that describes the tools and how to add new point readers.
+
+<p>
+All of the point tools run as shell scripts that call Java programs. 
+You need to have JAVA JDK 1.6 or higher installed.
+<p>
+To make the scripts executable do:
+<pre>
+    source install.sh
+</pre>
+
+
+If you are trying to read CSV or other text formats then you need to 
+<a href="textpoint.html">specify the metadata</a> for the file.
+If you are trying to read some other format then you need to specify
+the point reader class to use (I've given up guessing with data).
+
+The scripts take the form:
+<pre>
+  script -class &lt;file reader class&gt;
+e.g.:
+  point2csv.sh -class org.ramadda.data.point.amrc.AmrcFinalQCPointFile ...
+</pre>
+
+
+<a name="tools"></a><div class="ramadda-page-heading">4.0.0 Tools </div> 
+
+<ul>
+
+<li>  <i>point2csv.sh </i><br>
+Convert a point file to csv.
+For help do:
+<pre>
+    point2csv.sh -help
+</pre>
+
+<a name="tiler"></a>
+<li>  <i>pointtiler.sh</i><br>
+This takes one or more point files and a specification of a spatial grid (bounds and grid size) and tiles 
+the points in the input point files into separate files corresponding to the grid squares.
+For help do:
+<pre>
+    pointtiler.sh -help
+</pre>
+
+
+
+
+<li> <i>pointbounds.sh</i><br>
+This takes one or more point files as arguments and prints to the stdout the spatial bounds in the form:
+<pre> 
+     north west south east
+</pre>
+
+<li>  <i>pointchecker.sh</i><br>
+Reads in a file and prints out the number of points, etc.
+
+</ul>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<p>
+
+<p>&nbsp;<p>
+<a href="page_miscellaneous.html"><img src="images/PreviousArrow.gif" border="0"   alt="Previous: Miscellaneous" title="Previous: Miscellaneous"></a> <a href="datamodel.html"><img src="images/NextArrow.gif" border="0"   alt="Next: Data Model" title="Next: Data Model"></a>  <a href="toc.html#tools.html"><img src="images/TOCIcon.gif" border="0"   alt="Table of contents" title="Table of contents"></a>
+<p>
+</div>
+</body>
+</html>
+

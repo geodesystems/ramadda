@@ -1,0 +1,13 @@
+us=United States
+region=Region
+division=Division
+state=State
+place=Place
+county=County
+county subdivision=County Subdivision
+tract=Tract
+block group=Block+Group
+american indian area=American Indian Area
+congressional district=Congressional District
+urban area=Urban Area
+zip code tabulation area=Zip Code Tabulation Area

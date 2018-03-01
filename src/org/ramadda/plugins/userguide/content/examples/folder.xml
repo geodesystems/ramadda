@@ -1,0 +1,58 @@
+<entries>
+<!-- 
+This example creates a Folder (entry type group) with some descriptive information and metadata 
+It also creates a sub folder as a child of the main folder
+-->
+
+<!-- 
+Specify a group (or folder) entry type. Optionally a from and to date and a spatial bounds.
+The description is in a contained tag.
+There are also a number of metadata elements defined. Note, the metadata attributes correspond to
+the order (1 based) of the metadata you see when you do an Add Property on an entry
+-->
+  <entry  type="group"  fromdate="2014-03-01 00:00:00 UTC" todate="2014-05-31 00:00:00 UTC" id="someid"  name="Example Folder" east="-99.844" north="39.621" south="24.186"  west="-118.125">
+    <description encoded="false"><![CDATA[Some description]]></description>
+
+<!--
+You can include any kind of metadata
+A simple way is to use attr1, attr2, etc attributes:
+--> 
+    <metadata type="project_person" attr1="john doe" attr2="some place" />
+
+<!--
+Or for more complex attributes use the attribute tag. 
+If encoded=true then the text in the CDATA block is assumed to be base64 encoded. 
+The format that the export produces will base64 encode the values
+-->
+    <metadata inherited="false" type="project_pi">
+      <attr index="1" encoded="false"><![CDATA[name]]></attr>
+      <attr index="2" encoded="false"><![CDATA[institution]]></attr>
+      <attr index="3" encoded="false"><![CDATA[email]]></attr>
+      <attr index="4" encoded="false"><![CDATA[url]]></attr>
+    </metadata>
+    <metadata inherited="false" type="project_person">
+      <attr index="1" encoded="false"><![CDATA[name]]></attr>
+      <attr index="2" encoded="false"><![CDATA[position]]></attr>
+      <attr index="3" encoded="false"><![CDATA[institution]]></attr>
+      <attr index="4" encoded="false"><![CDATA[email]]></attr>
+    </metadata>
+    <metadata inherited="false" type="content.keyword">
+      <attr index="1" encoded="false"><![CDATA[test]]></attr>
+    </metadata>
+    <metadata inherited="false" type="dif.iso_topic_category">
+      <attr index="1" encoded="false"><![CDATA[farming]]></attr>
+    </metadata>
+    <metadata inherited="false" type="enum_tag">
+      <attr index="1" encoded="false"><![CDATA[some tag]]></attr>
+    </metadata>
+  </entry>
+
+
+<!--
+The parent attribute can be the ID of an existing entry or it can be an id of an entry defined in this xml file
+-->
+  <entry  type="group" id="somechildid" parent="someid"  name="Example Sub Folder">
+  </entry>
+
+
+</entries>

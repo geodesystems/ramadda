@@ -1,0 +1,63 @@
+<html>
+<title>Phone and SMS Integration</title>
+<body>
+<div class="ramadda-documentation">
+
+The phone services in RAMADDA uses <a href="https://www.twilio.com/">Twilio</a>.
+
+
+<h2>Configuring Twilio</h2>
+
+You need to create an account at <a href="https://www.twilio.com/">Twilio</a>. 
+Once you have an account set up you should also have a new phone number. Twilio requires 2 URLs on your RAMADDA server
+to be associated with the phone number:
+<pre>
+http://&lt;your ramadda&gt;/phone/twilio/sms
+http://&lt;your ramadda&gt;/phone/twilio/voice
+e.g.:
+http://ramadda.org/repository/phone/twilio/sms
+http://ramadda.org/repository/phone/twilio/voice
+</pre>
+
+
+
+You then need to define the following properties on your RAMADDA server
+(e.g., in a phone.properties file in your RAMADDA home directory) 
+
+<pre>
+#Twilio Application SID
+twilio.appid=
+
+#Twili authorization token (for reading the transcription)
+twilio.authtoken=
+
+#If you have a paid twilio account set this to true to transcribe voice
+#twilio.transcribe=true or false
+</pre>
+
+This is the application SID and the authorization token you can get from your Twilio account dashboard.
+
+
+<h2>Configuring Phone Harvesters</h2>
+The real work in handling a call is done with one or more Phone Harvesters. These are RAMADDA harvesters that define
+the RAMADDA folder to look at and access information. Go to Admin-Harvesters and create a new Phone Harvester:
+
+<p>
+<img src="harvester.png"  class="image-outer">
+<p>
+
+
+<p>
+The   <i>From Phone</i> and  <i>To Phone</i> are optional. 
+If defined, this harvester will only access calls from/to these numbers.
+<p>
+There are 3 access levels specified by (potentially) different passwords - View, Add and Edit.
+If you enter "any"  for these passwords then no password is required for that action.
+
+<p>
+To enable receiving voice messages specify a <i>Voice Message</i> response.
+
+</div>
+</body>
+</html>
+

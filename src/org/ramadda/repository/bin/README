@@ -1,0 +1,45 @@
+
+################# Making ramaddatds.jar ################################
+
+ramaddatds.jar holds the classes that we use from the thredds.war.
+We unjar the war and then unjar the jar files contained in it. There
+are some jars that we skip. To create this jar file get the latest
+thredds.war (from ftp://ftp.unidata.ucar.edu/pub/thredds) and copy
+it to the ramadda/lib directory.  Then from the lib directory execute
+the tcl script: 
+
+   tclsh ../org/ramadda/repository/release/makethredds.tcl
+
+
+################# Making a release ################################
+
+You first need to build the help documentation. See below.
+
+To make the full release do:
+ant release
+
+This creates the following files in trunk/lib. The *'ed files are
+those that get released
+
+ramadda<version>.jar
+ramaddalib.jar
+
+
+
+################# Building the help  ################################
+
+The integrated user documentation is in:
+
+  docs/userguide/content
+
+This requires tclsh in your path and uses the tcl generate.tcl script. 
+
+To build the docs do:
+cd docs/userguide/content
+source make.sh
+
+This generates the documentation and places it in:
+docs/userguide/processed
+
+When the RAMADDA release is built the processed html docs are included in the result.
+

@@ -1,0 +1,59 @@
+<types  supercategory="Geoscience" >
+
+  <type name="type_esri_restserver"  description="ESRI Web Server" category="GIS Data" handler="org.ramadda.repository.type.ExtensibleGroupTypeHandler">  
+     <property name="icon" value="/ogc/maps-stack.png"/>
+  </type>
+
+
+  <type name="type_esri_restfolder"  description="ESRI Services Folder" category="GIS Data" handler="org.ramadda.repository.type.ExtensibleGroupTypeHandler">  
+     <property name="icon" value="/ogc/folder_picture.png"/>
+     <property name="form.date.show" value="false"/>
+     <property name="form.file.show" value="false"/>
+     <property name="form.datatype.show" value="false"/>
+   </type>
+
+  <type name="type_esri_restservice"  description="ESRI Rest Service" category="GIS Data" handler="org.ramadda.repository.type.ExtensibleGroupTypeHandler">  
+     <property name="icon" value="/ogc/esri.png"/>
+     <property name="form.date.show" value="false"/>
+     <property name="form.file.show" value="false"/>
+     <property name="form.datatype.show" value="false"/>
+     <column name="layer_id"  type="string" label="Layer ID"/>
+     <column name="copyright_text"  type="string" size="1000" label="Copyright Text" changetype="true"/>
+     <column name="wkid"  type="string" label="Projection ID"/>
+   </type>
+
+   <type name="type_esri_featureserver"  description="ESRI Feature Server" super="type_esri_restservice" >  
+   </type>
+
+   <type name="type_esri_mapserver"  description="ESRI Map Server" super="type_esri_restservice" >  
+   </type>
+
+   <type name="type_esri_imageserver"  description="ESRI Image Server" super="type_esri_restservice" >  
+   </type>
+
+   <type name="type_esri_gpserver"  description="ESRI GP Server" super="type_esri_restservice" >  
+   </type>
+
+   <type name="type_esri_geometryserver"  description="ESRI Geometry Server" super="type_esri_restservice" >  
+   </type>
+
+   <type name="type_esri_resource"  description="ESRI Resource" category="GIS Data">  
+     <property name="icon" value="/ogc/esri.png"/>
+     <column name="resource_type"  type="string" label="Resource Type"/>
+   </type>
+
+
+ <type name="type_esri_layer"  description="ESRI Layer" category="GIS Data">  
+     <property name="icon" value="/ogc/esri.png"/>
+     <property name="form.date.show" value="false"/>
+     <property name="form.file.show" value="false"/>
+     <property name="form.datatype.show" value="false"/>
+     <column name="layer_id"  type="string" label="Layer ID"/>
+     <column name="layer_type"  type="enumerationplus" label="Layer Type" cansearch="true"/>
+     <column name="copyright_text"  type="string" size="1000" label="Copyright Text" />
+     <column name="fields"  type="list" size="5000" label="Fields"/>
+   </type>
+
+
+
+</types>

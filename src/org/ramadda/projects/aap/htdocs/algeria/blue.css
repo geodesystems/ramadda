@@ -1,0 +1,149 @@
+@charset "utf-8";
+/*Code by Fio
+author url: http//www.vonfio.de
+copyright: Creative Commons Attribution-Share Alike 3.0 Unported License
+*/
+#content {
+	border-top: 2px solid #CCDCEC;
+}
+#left_out a.sublevel, 
+#left_out ul.menu li#current li a,
+#left_out ul.menu li li a,
+#left_out ul.menu li li#current li a,
+#left_out ul.menu li li li a,
+#right_out a.sublevel, 
+#right_out ul.menu li#current li a,
+#right_out ul.menu li li a,
+#right_out ul.menu li li#current li a,
+#right_out ul.menu li li li a {
+	color: #7EA4C9;
+}
+#left_out a.sublevel, 
+#left_out ul.menu li#current li a,
+#left_out ul.menu li li a,
+#left_out ul.menu li li#current a, 
+#left_out ul.menu li li#current li a,
+#left_out ul.menu li li li a,
+#right_out a.sublevel, 
+#right_out ul.menu li#current li a,
+#right_out ul.menu li li a,
+#right_out ul.menu li li#current a, 
+#right_out ul.menu li li#current li a,
+#right_out ul.menu li li li a,
+#left_out ul.menu li li a:hover,
+#right_out ul.menu li li a:hover {
+	background-image: url(blue/sublevel.gif);
+}
+#left_out ul.menu li a, 
+#left_out ul.menu li#current a, 
+#left_out a.mainlevel,
+#right_out ul.menu li a, 
+#right_out ul.menu li#current a, 
+#right_out a.mainlevel {
+	border-bottom: 1px solid #CCDCEC;
+}
+#left_out ul.menu li a,
+#left_out a.mainlevel,
+#right_out ul.menu li a,  
+#right_out a.mainlevel {
+	color: #396C9F;
+	background-image: url(blue/mainlevel_bg.gif);
+}
+#left_border {
+	background-image: url(blue/left_border.jpg);
+}  
+#right_border {
+	background-image: url(blue/right_border.jpg);
+}
+#bottom {
+	background-image: url(blue/bottom.gif);
+}
+#bottom_right {
+	background-image: url(blue/bottom_right.jpg);
+}
+#bottom_left {
+	background-image: url(blue/bottom_left.jpg);
+}
+#banner_out {
+	background-image: url(blue/banner_out_bg2.jpg);
+}
+#banner_in {
+	background-image: url(blue/banner_out_bg.jpg);
+}
+#topmenu_out {
+	background-image: url(blue/topmenu_bg.jpg);
+}
+#topmenu_left {
+	background-image: url(blue/topmenu_left.jpg);
+}
+#topmenu_right {
+	background-image: url(blue/topmenu_right.jpg);
+}
+#left_out a.sublevel#active_menu, #right_out #active_menu {
+	background-image: url(blue/sublevel.gif);
+}
+#left_out .module, 
+#right_out .module, 
+#left_out .moduletable, 
+#right_out .moduletable,
+#left_out .module_menu, 
+#right_out .module_menu, 
+#left_out .module_text,
+#right_out .module_text {
+	background-image: url(blue/moduletable_bg.gif);
+}
+#left_out .module div, 
+#right_out .module div, 
+#left_out .moduletable div, 
+#right_out .moduletable div,
+#left_out .module_menu div, 
+#right_out .module_menu div,
+#left_out .module_text div,
+#right_out .module_text div {
+	background-image: url(blue/moduletable_bottom.png);
+}
+#left_out .module div div, 
+#right_out .module div div, 
+#left_out .moduletable div div, 
+#right_out .moduletable div div,
+#left_out .module_menu div div, 
+#right_out .module_menu div div,
+#left_out .module_text div div,
+#right_out .module_text div div {
+	background-image: url(blue/moduletable_top.gif);
+}
+#left_out h3, 
+#right_out h3 {
+	background-image: url(blue/moduletable_h3.png);
+}
+#content {
+	background-image: url(blue/content_bottom_bg.jpg);
+}
+#content_border_left {
+	background-image: url(blue/border.gif);
+}
+#content_border_right {
+	background-image: url(blue/border.gif);
+}
+#content_bottom_right {
+	background-image: url(blue/content_bottom_right.jpg);
+}
+#content_bottom_left {
+	background-image: url(blue/content_bottom_left.jpg);
+}
+.user_bg {
+	background-image: url(blue/user_top_bg.jpg);
+}
+.user_left {
+	background-image: url(blue/user_top_left.jpg);
+}
+.user_right {
+	background-image: url(blue/user_top_right.jpg);
+}
+.separator {
+	background-image: url(blue/separator.jpg);
+}
+.sectiontableentry1, 
+.sectiontableentry2 {
+	background-image: url(blue/sectiontableentry.jpg);
+}

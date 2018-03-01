@@ -1,0 +1,34 @@
+[ht::head {Building RAMADDA and NLAS}]
+<%nochildlist%>
+
+
+It is easy to build and run RAMADDA and the NLAS plugin and tools.
+
+This assumes you have SVN, ANT and a Java compiler installed on your machine.
+
+
+<ul>
+
+<li>  Now, check out and build the NLAS package
+<pre>
+svn co https://nlas.svn.sourceforge.net/svnroot/nlas
+cd nlas/trunk
+ant
+</pre>
+
+
+<li> This builds the nlasplugin.jar and installs it in the ramadda home directory
+
+<li> You can restart ramadda now and it will load the plugin
+
+
+# Configure the nlastools:
+cd dist/nlastools
+sh install.sh
+
+# To run the tiler
+
+
+</ul>
+
+[ht::foot]

@@ -1,0 +1,268 @@
+<html>
+<head>
+<title>Service Integration Framework</title>
+  <link rel="stylesheet" type="text/css" href="./default.css" title="Style">
+
+</head>
+
+<body>
+<div class="ramadda-documentation">
+<table width=100% cellspacing=0 cellpadding=0 ><tr><td width=30%>
+<a href="plugins.html"><img src="images/PreviousArrow.gif" border="0"   alt="Previous: Plugins" title="Previous: Plugins"></a> <a href="templates.html"><img src="images/NextArrow.gif" border="0"   alt="Next: HTML Page Templates" title="Next: HTML Page Templates"></a>  <a href="toc.html#services.html"><img src="images/TOCIcon.gif" border="0"   alt="Table of contents" title="Table of contents"></a>
+</td>
+<td width=40% align=center>
+<div class="ramadda-page-title">RAMADDA User Guide</div>
+</td>
+<td width=30%>&nbsp;</td>
+</tr></table>
+<div class="ramadda-page-heading">14.5 Service Integration Framework</div>
+
+<style type="text/css">
+pre {
+    margin-left:15px;
+}
+</style>
+
+<div style="margin-left:20px;">
+
+
+
+
+The Service Integration Framework makes it easy to integrate command line  tools that are installed  on 
+the server as services that operate on  data and content within  RAMADDA. 
+
+There are a number of examples at  <a href="http://ramadda.org/alias/services">ramadda.org</a>.
+All RAMADDA repositories (running the latest release) have their list of enabled services at
+<a href="http://ramadda.org/repository/services/list">http://ramadda.org/repository/services/list</a>.
+
+
+<a name="configuration"></a><div class="ramadda-page-heading">14.5.0 Configuration</div> 
+To enable an installed service you need to specify one or more properties 
+in a .properties file in your RAMADDA home directory that specify the 
+location of the installed software.
+
+Below is the full set of properties that ramadda.org is using for the various plugins that are available.
+The <i>/usr/local/bin</i> and <i>/opt/local/bin</i>  are just where different packages happened
+to be installed.
+
+<pre style="max-height:300px; overflow-y: auto;margin-left:10px;border:1px #ccc solid;" >
+#################################
+#General media
+#################################
+
+#<a href="http://www.imagemagick.org/">ImageMagick</a>
+#Where convert, etc., are installed
+service.imagemagick=/opt/local/bin
+
+#<a href="https://pdfbox.apache.org/">PDFBox</a>
+#See <a href="examples/pdfbox.sh">pdfbox.sh</a>
+service.pdfbox=&lt;path&gt;/pdfbox/pdfbox.sh
+
+
+#<a href="http://www.omino.com/sw/qt_tools/">Quicktime tools</a>  
+#Where qt_info, qt_export, etc. are 
+service.qttools=/usr/local/bin
+
+
+#################################
+# Geo data
+#################################
+
+#<a href="http://nco.sourceforge.net/">NetCDF Operators - NCO </a>
+service.nco.ncwa=/opt/local/bin/ncwa
+
+#<a href="https://code.zmaw.de/projects/cdo">Climate data operators - CDO </a>
+service.cdo=/opt/local/bin/cdo
+
+#GDAL
+service.gdal.gdal_translate=/usr/local/bin/gdal_translate
+service.gdal.gdalinfo=/usr/local/bin/gdalinfo
+
+#<a href="http://www.hdfgroup.org/products/hdf5_tools/">HDF5 tools</a> 
+service.hdf5.h5ls=/opt/local/bin/h5ls
+
+
+#<a href="http://www.ldeo.columbia.edu/res/pi/MB-System/">MB System Bathymetry  data</a> 
+service.mb.mbinfo=/usr/local/bin/mbinfo
+service.mb.mblist=/usr/local/bin/mblist
+
+
+#################################
+#Bioinformatics
+#################################
+
+#Dicom image tools <a href="http://sourceforge.net/projects/dcm4che/">dcm4che</a>
+service.dicom.dcm4che=&lt;path&gt;/dcm4che-2.0.28/bin
+
+#OME Bio-Formats                                                                
+#http://www.openmicroscopy.org/site/support/bio-formats5/users/comlinetools/    
+service.bfconvert = &lt;path&gt;/bftools/bfconvert
+
+#SRATools - 
+service.sratools=&lt;path&gt;/sratoolkit.2.3.5-2/bin
+
+#HMMER Tools - 
+service.hmmertools=&lt;path&gt;/hmmer-3.1b1-macosx-intel/binaries
+
+#Picard - 
+service.picard=&lt;path&gt;/picard-tools-1.119/picard.sh
+
+</pre>
+
+
+<a name="run"></a><div class="ramadda-page-heading">14.5.1 Service XML</div> 
+A service is specified as either an outputhandler XML file or a services XML plugin.
+There are numerous examples under the SVN source tree  at 
+<a href="http://sourceforge.net/p/ramadda/code/HEAD/tree/src/org/ramadda/">http://sourceforge.net/p/ramadda/code/HEAD/tree/src/org/ramadda/</a>
+
+Below is an example of two output services, one defined inline and the other referencing a service defined in the below services.xml file.
+
+There are enabled by setting the properties in a .properties file:<pre>
+service.test1=/path/to/program
+service.test2=/path/to/program</pre>
+
+Note: To install as a plugin remove the "_ex1" so you have an outputhandlers.xml plugin file.
+<blockquote><pre>&lt;outputhandlers <span class="xmlattr">class</span>="org.ramadda.repository.output.ServiceOutputHandler&quot;&gt;
+<span class="xmlcomment">&lt;!-- You can specify attributes that are inherited by all services, e.g., <span class="xmlattr">class</span>="ServiceOutputHandler&quot; 
+This xml can either contain the service xml directly
+or it can refer to a service that was defined in a separate services.xml file --&gt;</span>
+
+  &lt;outputhandler  <span class="xmlattr">category</span>="Test Output&quot;&gt;
+<span class="xmlcomment">&lt;!-- Set a property service.test1=/path/to/executable.sh in a .properties file in your RAMADDA home dir --&gt;</span>
+    &lt;service <span class="xmlattr">id</span>="test_service1&quot;  <span class="xmlattr">command</span>="${service.test1}&quot; <span class="xmlattr">label</span>="Run example service 1&quot; <span class="xmlattr">icon</span>="/icons/pdf.png&quot; &gt;
+
+<span class="xmlcomment">&lt;!-- Specify an entry of a particular type (type_document_pdf) --&gt;</span>
+       &lt;arg <span class="xmlattr">value</span>="${entry.file}&quot; <span class="xmlattr">type</span>="entry&quot; <span class="xmlattr">entryType</span>="type_document_pdf&quot; <span class="xmlattr">primary</span>="true&quot; <span class="xmlattr">label</span>="Input PDF File&quot; &gt;&lt;/arg&gt;
+
+<span class="xmlcomment">&lt;!-- ... There would be other service attributes here. See services.xml ... --&gt;</span>
+
+    &lt;/service&gt;
+  &lt;/outputhandler&gt;
+
+<span class="xmlcomment">&lt;!-- Or you can have the output handler reference the service id from a services.xml file --&gt;</span>
+  &lt;outputhandler  <span class="xmlattr">category</span>="Test Output&quot; <span class="xmlattr">serviceId</span>="test_service2&quot;/&gt;
+
+
+&lt;/outputhandlers&gt;
+<a href="examples/outputhandlers_ex1.xml">examples/outputhandlers_ex1.xml</a>
+</pre></blockquote>
+
+
+Services can be defined in a separate services.xml file.
+<blockquote><pre>&lt;services&gt;
+<span class="xmlcomment">&lt;!-- Set a property service.test2=/path/to/executable.sh in a .properties file in your RAMADDA home dir --&gt;</span>
+    &lt;service 
+       <span class="xmlattr">id</span>="test_service1&quot;  
+       <span class="xmlattr">command</span>="${service.test2}&quot; 
+       <span class="xmlattr">label</span>="Run example service 1&quot; 
+       <span class="xmlattr">icon</span>="/icons/pdf.png&quot; &gt;
+    &lt;description&gt;<span class="xmlcdata">&lt;![CDATA[Runs an example service]]&gt;</span>&lt;/description&gt;
+<span class="xmlcomment">&lt;!-- Define the command line arguments --&gt;</span>
+
+<span class="xmlcomment">&lt;!--
+Each arg tag has the following attributes:
+type (string, flag, enumeration, value,int, entry, etc)
+name - the url argument id 
+value - a value to use - may contain ${...} macros
+label
+help - shown in the form
+values - list of comma separated enum values
+prefix - added to the arg list if the value is defined
+--&gt;</span>
+
+
+<span class="xmlcomment">&lt;!-- Always have 'any value' as an arg --&gt;</span>
+       &lt;arg <span class="xmlattr">value</span>="any value&quot;/&gt;
+
+<span class="xmlcomment">&lt;!-- specify type='enumeration' for a pull down list. Add the &quot;none&quot; item --&gt;</span>
+       &lt;arg <span class="xmlattr">name</span>="fruit1&quot; <span class="xmlattr">type</span>="enumeration&quot; <span class="xmlattr">values</span>="apple,banana,orange&quot; <span class="xmlattr">addNone</span>="true&quot;/&gt;
+
+<span class="xmlcomment">&lt;!-- specify value:label pairs --&gt;</span>
+       &lt;arg <span class="xmlattr">name</span>="fruit2&quot; <span class="xmlattr">type</span>="enumeration&quot; <span class="xmlattr">values</span>="apple:Apple label,banana:Banana label,orange:Orange label&quot;/&gt;
+
+<span class="xmlcomment">&lt;!-- Specify a value attribute where the macro '${value}' is replaced with the selected value --&gt;</span>
+       &lt;arg <span class="xmlattr">name</span>="fruit3&quot; <span class="xmlattr">type</span>="enumeration&quot; <span class="xmlattr">values</span>="apple,banana,orange&quot; <span class="xmlattr">value</span>="fruit=${value}&quot;/&gt;
+
+<span class="xmlcomment">&lt;!-- Input field --&gt;</span>
+       &lt;arg <span class="xmlattr">name</span>="string1&quot; <span class="xmlattr">type</span>="string&quot; <span class="xmlattr">size</span>="50&quot;  <span class="xmlattr">label</span>="Some string&quot; <span class="xmlattr">help</span>="Help text goes after the field&quot;/&gt;
+
+<span class="xmlcomment">&lt;!-- If the string is defined then also add the prefix as an argument --&gt;</span>
+       &lt;arg <span class="xmlattr">name</span>="string2&quot; <span class="xmlattr">type</span>="string&quot; <span class="xmlattr">size</span>="50&quot;  <span class="xmlattr">label</span>="Some string&quot; <span class="xmlattr">prefix</span>="-string&quot;/&gt;
+
+<span class="xmlcomment">&lt;!-- use an int type--&gt;</span>
+       &lt;arg <span class="xmlattr">name</span>="length&quot; <span class="xmlattr">type</span>="int&quot; <span class="xmlattr">default</span>="5&quot;  <span class="xmlattr">label</span>="Length&quot;/&gt;
+
+
+<span class="xmlcomment">&lt;!-- If checkbox is selected then add the value as an arg--&gt;</span>
+       &lt;arg <span class="xmlattr">name</span>="flag1&quot; <span class="xmlattr">type</span>="flag&quot;   <span class="xmlattr">label</span>="Some flag&quot; <span class="xmlattr">value</span>="flag1 selected&quot;/&gt;
+
+<span class="xmlcomment">&lt;!-- If checkbox is selected then add the &quot;-someflag&quot; &quot;flag1&quot; --&gt;</span>
+       &lt;arg <span class="xmlattr">name</span>="flag2&quot; <span class="xmlattr">type</span>="flag&quot;   <span class="xmlattr">label</span>="Some flag&quot; <span class="xmlattr">prefix</span>="-someflag&quot; <span class="xmlattr">value</span>="flag1&quot;/&gt;
+
+<span class="xmlcomment">&lt;!-- Args of type entry match up with specific entry types in ramadda --&gt;</span>
+       &lt;arg <span class="xmlattr">value</span>="${entry.file}&quot; <span class="xmlattr">type</span>="entry&quot; <span class="xmlattr">entryType</span>="type_document_pdf&quot; <span class="xmlattr">primary</span>="true&quot; <span class="xmlattr">label</span>="Input PDF File&quot; &gt;&lt;/arg&gt;
+
+<span class="xmlcomment">&lt;!-- This uses the macro ${entry.file.base} to get the base name (minus the suffix) of the selected entry's file
+So, if we having incoming.pdf the output file is incoming.txt --&gt;</span>
+       &lt;arg <span class="xmlattr">value</span>="${file}&quot; <span class="xmlattr">file</span>="${entry.file.base}.txt&quot;&gt;&lt;/arg&gt;
+
+<span class="xmlcomment">&lt;!--
+Now define the outputs. Each output has a regexp pattern that matches on any generated file
+You can specify an entry type for the entries that get created for each file
+--&gt;</span>
+       &lt;output <span class="xmlattr">type</span>="file&quot; <span class="xmlattr">pattern</span>=".*\.txt&quot;/&gt;
+       &lt;output <span class="xmlattr">type</span>="type_image&quot; <span class="xmlattr">pattern</span>=".*\.png&quot;/&gt;
+
+<span class="xmlcomment">&lt;!-- If the service produces text to the stdout then this specifies to write to a file --&gt;</span>
+      &lt;output <span class="xmlattr">showResults</span>="true&quot; <span class="xmlattr">stdout</span>="true&quot; <span class="xmlattr">filename</span>="test.txt&quot;/&gt;
+   
+ &lt;/service&gt;
+&lt;/services&gt;
+<a href="examples/services_ex1.xml">examples/services_ex1.xml</a>
+</pre></blockquote>
+
+
+<a name="faq"></a><div class="ramadda-page-heading">14.5.2 Common Argument Constructs</div> 
+
+<h3>One command line argument made up of multiple  user choices.</h3>
+Use the <i>include</i> attribute to provide a user interface element (e.g., date select) but not directly add the value to the 
+command line arguments. Rather you can embed the value in a later argument with the "${name}" macro syntax. 
+
+e.g. org/ramadda/geodata/cdmdata/resources/cdoservices.xml
+
+<pre>
+//specify 2 date arguments
+   &lt;arg type="date" name="cdo.fromdate" label="Start Date" include="false" valuesProperty="dateList"/&gt;
+   &lt;arg type="date" name="cdo.todate" label="End Date" include="false" valuesProperty="dateList"/&gt;
+//specify a simple value argument that includes the values of the two date args
+   &lt;arg value="-seldate,${cdo.fromdate},${cdo.todate}"/&gt;
+</pre>
+
+
+Here we have an image format enumeration value with include=false. It is used 
+From  org/ramadda/bio/image/services.xml
+
+<pre>
+&lt;arg type="enumeration" name="imageformat" label="Image type" values="png,gif,jpg,tiff" include="false" default="png"/&gt;
+
+//Specify an entry
+&lt;arg value="${entry.file}" type="entry"  label="Input image file" primary="true" entryType="bio_dicom,bio_ome_tiff"&gt;&lt;/arg&gt;
+
+//Provide the output image
+&lt;arg value="${file}" file="${entry.file.base}${suffix}.${imageformat}"/&gt;
+
+</pre>
+
+
+
+
+</div>
+<p>
+
+<p>&nbsp;<p>
+<a href="plugins.html"><img src="images/PreviousArrow.gif" border="0"   alt="Previous: Plugins" title="Previous: Plugins"></a> <a href="templates.html"><img src="images/NextArrow.gif" border="0"   alt="Next: HTML Page Templates" title="Next: HTML Page Templates"></a>  <a href="toc.html#services.html"><img src="images/TOCIcon.gif" border="0"   alt="Table of contents" title="Table of contents"></a>
+<p>
+</div>
+</body>
+</html>
+

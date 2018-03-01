@@ -1,0 +1,15 @@
+# the second line is the name of the group for each of these map regions values are: Name,ID,North,West,South,East
+Default regions
+World,GBL,90,0,-87.5,360
+South Pacific,SP,0,95,-87.5,275
+South Atlantic,SA,0,275,-87.5,455
+Continental U.S.,US,50,235,25,300
+Western U.S.,WUS,50,230,30,260
+Eastern U.S.,EUS,50,260,22,310
+Europe,EU,70,345,30,420
+North Pacific,NP,90,95,0,275
+North Atlantic,NA,90,260,0,390
+Tropical Pacific,TPAC,25,100,-25,290
+Africa,AF,40,340,-40,475
+Asia-Pacific,AP,80,30,-40,210
+Australia,AUS,0,110,-55,180

@@ -1,0 +1,343 @@
+<html>
+<head>
+<title>Point Data Access API</title>
+  <link rel="stylesheet" type="text/css" href="./default.css" title="Style">
+
+</head>
+
+<body>
+<div class="ramadda-documentation">
+<table width=100% cellpadding=0 cellspacing=0><tr><td width=30%>
+<a href="pointreaders.html"><img src="images/PreviousArrow.gif" border="0"   alt="Previous: Developing point data readers for RAMADDA" title="Previous: Developing point data readers for RAMADDA"></a> <a href="json.html"><img src="images/NextArrow.gif" border="0"   alt="Next: Time Series JSON Format" title="Next: Time Series JSON Format"></a>  <a href="toc.html#api.html"><img src="images/TOCIcon.gif" border="0"   alt="Table of contents" title="Table of contents"></a>
+</td>
+<td width=40% align=center>
+<div class="pagetitle">Point Data Documentation</div>
+</td>
+<td width=30%>&nbsp;</td>
+</tr></table>
+<div class="pagetitle">4.4 Point Data Access API</div>
+
+<style type="text/css">
+pre {
+    margin-left:15px;
+}
+</style>
+
+
+
+
+
+The same <a href="access.html">point data access</a> functionality that is available to an end user through the 
+web forms is also available to external clients (e.g., <a href="http://www.opentopography.org/">Open Topography</a>
+via the Point Data Access API.
+<p>
+
+There are 3 major service areas provided by the API:
+<a href="#collection">Collection query</a>, 
+<a href="#service">Data access service</a> and
+<a href="#status">Job status</a>.
+
+
+<a name="collection"></a><div class="ramadda-page-heading">4.4.0 Point Collection Queries</div> 
+RAMADDA supports querying on the point collections it holds and returning the
+results as  an <a href="http://en.wikipedia.org/wiki/Atom_%28standard%29">ATOM</a> xml
+document.
+
+
+The URL to the ATOM feed is:<pre>
+http//&lt;hostname&gt;/repository/search/type/point_collection?output=atom
+or
+http//&lt;hostname&gt;/repository/search/type/lidar_collection?output=atom
+</pre>
+
+<a href="http://ramadda.org/repository/search/type/lidar_collection?max=50&type=lidar_collection&output=atom">e.g.</a>
+
+<p>
+
+The URL above returns the results as an Atom xml document that lists each of the matched LiDAR Collection
+entries in RAMADDA. For each collection it includes spatial, temporal and descriptive metadata
+as well as link elements that point to the different data access requests.
+<p>
+
+Search criteria can be added to the above URL to allow for spatial and metadata search.
+
+<ul>
+<li> To search within spatial bounds use <i>area_west</i>, <i>area_south</i>, <i>area_east</i> and <i>area_north</i> arguments:<br>
+<a href="https://nlas.unavco.org/repository/nlas/capability.xml?area_north=40&area_west=-120&area_east=-100&area_south=20">https://nlas.unavco.org/repository/nlas/capability.xml?area_north=40&area_west=-120&area_east=-100&area_south=20</a>
+<p>
+
+These are the longitude and latitude bounds (in degrees) of the collections.
+
+<li> To search for collections that hold waveform  data use the <i>metadata.attr1.nlas_haswaveform</i> URL argument:<br>
+<a href="https://nlas.unavco.org/repository/nlas/capability.xml?metadata.attr1.nlas_haswaveform=true">
+https://nlas.unavco.org/repository/nlas/capability.xml?metadata.attr1.nlas_haswaveform=true
+</a>
+<p>
+
+<li> To search based on LiDAR platform use the <i>metadata.attr1.nlas_platform</i> URL argument:<br>
+<a href="https://nlas.unavco.org/repository/nlas/capability.xml?metadata.attr1.nlas_platform=High+Altitude+LiDAR">
+https://nlas.unavco.org/repository/nlas/capability.xml?metadata.attr1.nlas_platform=High+Altitude+LiDAR
+</a>
+
+<p>
+
+<li> To search based on text use the <i>text</i> URL argument:<br>
+<a href="https://nlas.unavco.org/repository/nlas/capability.xml?text=lvis">
+https://nlas.unavco.org/repository/nlas/capability.xml?text=lvis
+</a>
+</ul>
+
+<p>
+An easy way to explore this is to go main NLAS search form, e.g.:
+<a href="https://nlas.unavco.org/repository/nlas/search">https://nlas.unavco.org/repository/nlas/search</a> and
+do the search interactively. The search URL will be shown in the location bar.
+
+
+<a name="metadata"></a><div class="ramadda-page-heading">4.4.1 NLAS Metadata</div> 
+The Atom response contains various metadata elements for each collection.
+<p>
+The metadata includes geospatial tags using <a href="http://georss.org">GEORSS</a> tags:
+<pre>
+&ltgeorss:polygon&gt;lat1 lon1 lat2 lon2 ... latN lonN&lt/georss:polygon&gt;
+</pre>
+
+<pre>
+&ltgeorss:box&gt;44.0489574999292 -71.31482662748971 44.084895027353014 -71.2647717415648&lt/georss:box&gt;
+</pre>
+
+Descriptive metadata is embedded in a <i>metadata</i> tag. 
+The contained elements are  <a href="TODO">DIF metadata</a> and some custom NLAS specific elements:
+<pre class="xml">
+&lt;metadata&gt;
+  &lt;Temporal_Coverage&gt;
+    &lt;Start_Date&gt;2011-08-10T15:04:56 +0000&lt;/Start_Date&gt;
+    &lt;Stop_Date&gt;2011-08-10T15:04:56 +0000&lt;/Stop_Date&gt;
+  &lt;/Temporal_Coverage&gt;
+  &lt;HasWaveform&gt;true&lt;/HasWaveform&gt;
+  &lt;Source_Name&gt;
+    &lt;Short_Name&gt;High Altitude LiDAR&lt;/Short_Name&gt;
+    &lt;Long_Name&gt;LVIS Airborne LiDAR System&lt;/Long_Name&gt;
+  &lt;/Source_Name&gt;
+&lt;/metadata&gt;
+</pre>
+
+
+
+<a name="service"></a><div class="ramadda-page-heading">4.4.2 Data Access Service</div> 
+The <i>link</i> elements in the Atom response allow you to invoke different data access requests.
+The <i>type</i> attribute defines what type of product is to be generated.
+<br>
+
+<div class="note">
+Note: each of the link hrefs result in the generation of one data file or product.
+</div>
+
+
+<pre class="xml">
+&lt;link  type="text/html"  
+       href="https://nlas.unavco.org/repository/entry/show?entryid=e85ebe95-65c8-4590-b933-dfd1453e7ce5"  
+       title="Web page" /&gt;
+&lt;link  type="points.latlonaltcsv"  
+       href="https://nlas.unavco.org/repository/entry/show/LVIS Costa Rica.csv?entryid=e85ebe95-65c8-4590-b933-dfd1453e7ce5&amp;output=points.product&amp;product=points.latlonaltcsv&amp;asynch=true"  
+       title="Lat/Lon/Alt CSV" /&gt;
+&lt;link  type="points.las"  
+       href="https://nlas.unavco.org/repository/entry/show/LVIS Costa Rica.las?entryid=e85ebe95-65c8-4590-b933-dfd1453e7ce5&amp;output=points.product&amp;product=points.las&amp;asynch=true"  
+       title="LAS" /&gt;
+&lt;link  type="points.asc"  
+       href="https://nlas.unavco.org/repository/entry/show/LVIS Costa Rica.asc?entryid=e85ebe95-65c8-4590-b933-dfd1453e7ce5&amp;output=points.product&amp;product=points.asc&amp;asynch=true"  
+       title="ARC Ascii Grid" /&gt;
+&lt;link  type="points.kmz"  
+       href="https://nlas.unavco.org/repository/entry/show/LVIS Costa Rica.kmz?entryid=e85ebe95-65c8-4590-b933-dfd1453e7ce5&amp;output=points.product&amp;product=points.kmz&amp;asynch=true"  
+       title="Google Earth KMZ" /&gt;
+&lt;link  type="points.count"  
+       href="https://nlas.unavco.org/repository/entry/show/LVIS Costa Rica.xml?entryid=e85ebe95-65c8-4590-b933-dfd1453e7ce5&amp;output=points.product&amp;product=points.count&amp;asynch=true"  
+       title="Point Count" /&gt;
+&lt;link  type="thumbnail"  
+       href="https://nlas.unavco.org/repository/metadata/view/hillshade.png?element=1&amp;entryid=e85ebe95-65c8-4590-b933-dfd1453e7ce5&amp;metadata.id=d9d5200b-e6b1-449b-8ca1-e57e0a76e135"  
+      title="Thumbnail" /&gt;
+</pre>
+
+
+To break the URL down we have:
+<p>
+The entry path:
+<pre>
+    /repository/entry/show
+</pre>
+
+The name used is not needed but is there for browser and wget saves:
+<pre>
+    LVIS Costa Rica.las
+</pre>
+
+This is the RAMADDA entryid for the LiDAR Collection entry:
+<pre>
+    entryid=e85ebe95-65c8-4590-b933-dfd1453e7ce5
+</pre>
+
+This just says to make a product:
+<pre>
+    output=points.product
+</pre>
+
+This is the product to make:
+<pre>
+    product=points.las
+</pre>
+
+However, one can specify any number of <i>product</i> url arguments, e.g.:<pre>
+     ...product=points.asc&amp;product=points.las...  
+</pre>
+will generate both an ASCII ARC Grid  and a LAS file.
+<p>
+This says to have the request be asynchronous. This results in a job status xml being returned.  If
+asynch=false then, if there is just one product specified, the return of the URL fetch will be the
+actual product file.
+<pre>
+    asynch=true 
+</pre>
+
+You can also have any of the above URLS return a point count of how many points (approximately)
+will be returned:
+<pre>
+   pointcount=true|false
+</pre>
+If you also specify:<pre>
+      response=xml
+</pre>
+you will get the number of points wrapped in xml.
+
+<p>
+
+There are a number of other URL arguments that can be specified to do spatial subsetting and decimation.
+<p>
+To spatially subset use the same URL arguments used for the LiDAR Collection search:
+
+<pre>
+<i>area_west</i>, <i>area_south</i>, <i>area_east</i> and <i>area_north</i> 
+</pre>
+
+
+To decimate:
+<pre>
+    lidar.skip=&lt;skip factoro&gt;
+</pre>
+
+To specify a fixed number of points:
+<pre>
+   numpoints=&lt;approximate number of points&gt;
+</pre>
+
+
+To probabilistically sample points:
+<pre>
+   probability=&lt;probablity a point will be included 0.0-1.0&gt;
+</pre>
+
+
+
+
+
+<a name="xml"></a><div class="ramadda-page-heading">4.4.3 XML Responses</div> 
+If the job submission request has a<pre>
+    <i>response=xml</i>
+</pre>
+argument then the return from
+the job request and the job status urls will be in this xml format.
+<p>
+The xml is wrapped with &lt;response&gt;...&lt;response&gt; tags. The response tag
+has a code attribute for specifying whether an error took place or if the call was ok.
+<p>
+We have this outer response tag so it is easy to determine if there was an error and if so to
+retrieve the error message.
+<p>
+If there is some error then the response will be:
+<pre class="xml">
+&lt;response code="error"&gt;
+    error message here
+&lt;/response&gt;
+</pre>
+
+
+
+
+Else if there was no error then the response will be of the form:
+<pre class="xml">
+&lt;response code="ok"&gt;
+... some xml response here ...
+&lt;/response&gt;
+</pre>
+
+
+
+When submitting a job request the xml response will return 2 urls. One to show the job status and one to cancel the job.
+We use the type attribute to distinguish between the 2 urls:
+<pre class="xml">
+&lt;response  code="ok" &gt;
+&lt;url  type="status" &gt;
+    &lt;![CDATA[http://localhost:8080/repository/entry/show/The+Mac/NLAS/Data/LVIS+Costa+Rica?entryid=3f9e9a07-fc6e-4aa0-b2d7-7eefef03b027&output=points.results&job.id=8dfb5456-ec52-429b-a75d-0c74c43b6c56&response=xml]]&gt;
+&lt;/url&gt;
+&lt;url  type="cancel" &gt;
+    &lt;![CDATA[http://localhost:8080/repository/entry/show/The+Mac/NLAS/Data/LVIS+Costa+Rica?entryid=3f9e9a07-fc6e-4aa0-b2d7-7eefef03b027&output=points.results&job.id=8dfb5456-ec52-429b-a75d-0c74c43b6c56&response=xml&cancel=true]]&gt;
+&lt;/url&gt;
+&lt;/response&gt;
+</pre>
+
+
+
+<a name="status"></a><div class="ramadda-page-heading">4.4.4 Job Status</div> 
+The jop status URL returns the status of the job in an xml format.
+Hitting the job status url for a job that is still running gives the following xml:
+
+<pre class="xml">
+&lt;response code="ok"&gt;
+    &lt;job status="running"/&gt;
+&lt;/response&gt;
+</pre>
+
+If the job was cancelled then the status xml is:
+<pre class="xml">
+&lt;response code="ok"&gt;
+    &lt;job status="cancelled"/&gt;
+&lt;/response&gt;
+</pre>
+
+If the processing job has completed then we get:
+<pre class="xml">
+&lt;response code="ok"&gt;
+    &lt;job status="complete"&gt;
+        &lt;products&gt;
+            &lt;url&gt;url to retrieve product #1&lt;/url&gt;
+            &lt;url&gt;url to retrieve product #2&lt;/url&gt;
+            &lt;url&gt;...&lt;/url&gt;
+        &lt;/products&gt;
+    &lt;/job&gt;
+&lt;/response&gt;
+</pre>
+
+<a name="all"></a><div class="ramadda-page-heading">4.4.5 Putting it all together</div> 
+To put this all together then to access data you:
+<ol>
+<li> Query the LiDAR Collection to identify the desired collection.
+<li> From the Atom Link elements invoke the data processing request adding a <i>response=xml</i> url argument.
+<li> Get back the job invocation response xml. Extract out the job status URL.
+<li> Poll the job status URL until the job is complete.
+<li> Fetch the generated data and products via the given URLs.
+</ol>
+
+
+
+
+
+
+
+
+<p>
+
+<p>&nbsp;<p>
+<a href="pointreaders.html"><img src="images/PreviousArrow.gif" border="0"   alt="Previous: Developing point data readers for RAMADDA" title="Previous: Developing point data readers for RAMADDA"></a> <a href="json.html"><img src="images/NextArrow.gif" border="0"   alt="Next: Time Series JSON Format" title="Next: Time Series JSON Format"></a>  <a href="toc.html#api.html"><img src="images/TOCIcon.gif" border="0"   alt="Table of contents" title="Table of contents"></a>
+<p>
+</div>
+</body>
+</html>
+

@@ -1,0 +1,29 @@
+
+<api handler="org.ramadda.repository.search.SpecialSearch" id="above_sites">
+
+<!--The search form label -->
+      <property name="label" value="ABoVE Sites"/>
+      <property name="searchopen" value="true"/>
+
+<!--What tabs to display results in -->
+      <property name="tabs" value="map,list"/>
+
+<!--Add these metadata search elements to the search form -->
+<!--
+    <property name="metadatatypes" value="above_organization_sponsor"/>
+-->
+<!--The entry point. This corresponds to the below API entry -->
+      <property name="searchurl" value="/above/sites/search"/>
+      <property name="initsearch" value="false"/>
+      <property name="form.date.show" value="false"/>
+
+<!--The entry type to search for -->
+      <property name="type" value="above_site"/>
+
+
+<!-- None of the API entry points defined below require admin privileges -->
+      <property name="admin" value="false"/>
+
+      <api request="/above/sites/search"    method="processSearchRequest" toplevel="false" name="Search Sites"/>
+
+</api>

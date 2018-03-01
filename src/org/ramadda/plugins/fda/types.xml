@@ -1,0 +1,41 @@
+<types supercategory="Miscellaneous" category="Integration">
+
+  <type name="type_fda_series"  description="FDA Series" super="type_point"  foruser="true" handler="org.ramadda.plugins.fda.FdaSeriesTypeHandler">
+     <property name="icon" value="/fda/fda.png"/>
+     <property name="record.file.class" value="org.ramadda.plugins.fda.FdaFile"/>
+     <property name="form.file.show" value="false"/>
+     <property name="form.properties.show" value="false"/>
+     <property name="html.date.show" value="false"/>
+     <property name="html.type.show" value="false"/>
+     <property name="html.owner.show" value="false"/>
+     <property name="html.numberofpoints.show" value="false"/>
+     <property name="point.initialize" value="false"/>
+     <wiki_inner><![CDATA[
++section # title="FDA Data: {{name}}"
+<br>
+{{group showMenu="true"}}
+{{display type="linechart" title=""  height="400" xwidth="800" column="0" layoutHere="false" showMenu="true"}}
+
+
+<div style="margin:20px;max-height:300px;overflow-y:auto;">
+{{description wikify="true"}}
+</div>
++row
++col-md-8
+-col
++col-md-4
+<div style="text-align:right;">
+<a class="btn btn-primary" role="button" href="{{root}}/entry/show?entryid={{entryid}}&output=points.product&product=points.csv&asynch=false">Download CSV</a>
+</div>
+-col
+-row
+
+-section
+
+]]>
+
+</wiki_inner>
+
+  </type>
+
+</types>

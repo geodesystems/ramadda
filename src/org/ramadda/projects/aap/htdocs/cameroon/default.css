@@ -1,0 +1,40 @@
+@charset "UTF-8";
+
+@media all {
+
+.tx-msfootermenu-pi1 {
+	font-size: 10pt;
+	color: gray;
+	margin: 0.5em auto;
+	display: table;
+}
+
+.tx-msfootermenu-pi1 div.footergroup {
+	display: inline-block;
+	float: left;
+	vertical-align: top;
+	margin: 0 0.75em;
+	text-align: left;
+}
+
+.tx-msfootermenu-pi1 ul {
+	margin: 0;
+	list-style-image: none;
+	list-style-type: none;
+	list-style-position: outside;
+}
+
+.tx-msfootermenu-pi1 .footerlink {
+	margin: 0.35em;
+}
+
+.tx-msfootermenu-pi1 a.footerlink {
+	color: gray;
+}
+
+.tx-msfootermenu-pi1 .footerparent {
+	font-weight: bold;
+	margin-bottom: 0.25em;
+}
+
+}

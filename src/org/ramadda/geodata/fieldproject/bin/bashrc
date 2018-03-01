@@ -1,0 +1,7 @@
+
+alias files="sudo tclsh /archive/dev/bin/filecleanup.tcl"
+alias checkpoints="sudo tclsh /archive/dev/bin/checkpoints.tcl"
+alias addgpsxml="sudo tclsh /archive/dev/bin/addgpsxml.tcl"
+alias addsitexml="sudo tclsh /archive/dev/bin/addramaddaxml.tcl"
+alias changepermissions="sudo sh  /archive/dev/bin/changepermissions.sh"
+

@@ -1,0 +1,435 @@
+<!DOCTYPE html>
+<html  xmlns="http://www.w3.org/1999/xhtml">
+<head><title>${title}</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+
+<properties>
+name=AODN Style
+id=aodnStyle
+	
+ramadda.template.link.wrapper =<div class="navlink"><a href="${url}">${label}</a></div>
+ramadda.template.link.separator=
+	
+ramadda.template.userlink.wrapper =<div class="navlink"><a href="${url}">${label}</a></div>
+ramadda.template.userlink.separator=
+	
+ramadda.template.favorites = <span class="linkslabel"><a href="${root}/user/home" ><img border="0"  src="${root}/icons/star.png" align="center" /> Favorites</a></spam><div class="favorites">${entries}</div>
+ramadda.template.cart = <span class="linkslabel"><a href="${root}/user/cart"><img border="0"  src="${root}/icons/cart.png" align="center" /> Cart</a></spam><div class="favorites">${entries}</div>
+</properties>
+
+${imports}
+
+<style type="text/css">
+
+/* General styles  */
+body {
+	background-color: #a2bdcf;
+	font-size: 11pt;
+}
+
+/* Top menu bar */
+
+.ramadda-menubar {
+//	background-color: #3c668d;
+//        border:0px;
+   border-bottom: 1px #000 solid; 
+        margin-top: 0px;
+	padding-right: 10px;
+	padding-bottom: 1px;
+	padding-left: 10px;
+
+	/* Overwrite previous styles*/
+	background-image: none;
+	background-repeat: none;  
+}
+
+
+.entryheader {
+   font-family: Arial;
+   font-size: smaller;
+   margin-top: 0px;
+   padding-bottom:3px;
+   border-bottom:0px solid #aaa;
+}
+
+.entryFooter {
+   font-family: Arial;
+   font-size: smaller;
+   padding:5px;
+   padding-left:20px;
+   border-top:1px solid #dddddd;
+   margin-top:200px;
+}
+
+
+
+
+.ramadda-menubutton, .ramadda-menubutton:hover {
+//  color: white;
+color: #3c668d;
+  font-weight: bold;
+}
+
+.ramadda-menubutton-separator {
+	margin-left: 2px;
+	margin-right: 2px;
+	padding-bottom: 2px;
+	color: white;
+}
+
+.ramadda-popup {
+  padding:1px;
+  text-decoration: none;
+   border : 1px #3c668d solid;
+   background-color : #FFFFFF;
+   position: absolute; 
+   visibility: hidden; 
+// z-index: 1;
+//Shadow effect
+  /* offset left, top, thickness, color with alpha */
+  -webkit-box-shadow: 5px 5px 5px rgba(0, 0, 0, 0.5);
+  -moz-box-shadow: 5px 5px 5px rgba(0, 0, 0, 0.5);
+  box-shadow: 5px 5px 5px rgba(0, 0, 0, 0.5);
+  /* IE */
+  filter:progid:DXImageTransform.Microsoft.dropshadow(OffX=5, OffY=5, Color='gray');
+  /* slightly different syntax for IE8 */
+  -ms-filter:"progid:DXImageTransform.Microsoft.dropshadow(OffX=5, OffY=5, Color='gray')";
+}
+
+
+
+
+.wikicontent {
+	font-family: Verdana,Tahoma,Arial,Helvetica,sans-serif;
+	font-weight: normal;
+	text-decoration: none;
+	padding:0px;
+}
+
+.wiki-h1 {
+	font-family: Verdana,Tahoma,Arial,Helvetica,sans-serif;
+	font-size: 18px;
+	font-weight: bold;
+	text-decoration: none;
+	border-bottom-width: 1px;
+	border-bottom-style: solid;
+	border-bottom-color: #aaaaaa;
+	color : #3c668d;
+} 
+.wiki-h2{
+font-family: Verdana,Tahoma,Arial,Helvetica,sans-serif;
+	font-size: 16px;
+	font-weight: bold;
+	text-decoration: none;
+	color : #3c668d;
+} 
+.wiki-h3{
+	font-family: Verdana,Tahoma,Arial,Helvetica,sans-serif;
+	font-size: 14x;
+	font-weight: bold;
+	text-decoration: none;
+	color : #3c668d;
+} 
+
+.wiki-h4, .wiki-h5, .wiki-h6, .wiki-h7 {
+	font-family: Verdana,Tahoma,Arial,Helvetica,sans-serif;
+	font-weight: bold;
+	text-decoration: none;
+	color : #3c668d;
+} 
+.formlabel, .formlabeltop{
+	font-weight: bold;
+}
+
+/* Main content*/
+
+.ramadda-content {
+  border-top: 0px #aaa solid;
+  margin:5px;
+  padding:0px;
+  color: #435e78;
+  height:auto;
+  width:auto;
+  //Shadow effect
+  /* offset left, top, thickness, color with alpha */
+  -webkit-box-shadow: 5px 5px 5px rgba(0, 0, 0, 0.5);
+  -moz-box-shadow: 5px 5px 5px rgba(0, 0, 0, 0.5);
+  box-shadow: 5px 5px 5px rgba(0, 0, 0, 0.5);
+  /* IE */
+  filter:progid:DXImageTransform.Microsoft.dropshadow(OffX=5, OffY=5, Color='gray');
+  /* slightly different syntax for IE8 */
+  -ms-filter:"progid:DXImageTransform.Microsoft.dropshadow(OffX=5, OffY=5, Color='gray')";
+}
+
+.ramadda-content a, .ramadda-content a:hover, .ramadda-content a:visited, .ramadda-content a:link ,.ramadda-content td {
+	font-family: Verdana,Tahoma,Arial,Helvetica,sans-serif;
+	font-weight: normal;
+	text-decoration: none;
+	color: #435e78;
+}
+
+
+
+.ramadda-innercontent a, .ramadda-innercontent a:hover, .ramadda-innercontent a:visited, .ramadda-innercontent a:link {
+    color: #435ecc;
+    color: #105ECC;
+//    text-decoration: underline;
+}
+
+
+.block a, .block a:hover, .block a:visited, .block a:link {
+     color: #435e78;
+}
+
+.ramadda-content a:hover { 
+	text-decoration: underline;
+}
+
+.entryrow:hover {
+	border-bottom-width: 1px;
+	border-bottom-style: dotted;
+	border-bottom-color: #cccccc;
+}
+
+.breadcrumbs {
+   margin-left:5px;
+}
+
+.subnavoncomp  {
+   padding-bottom:0px; 
+}
+
+.subnavoffcomp  {
+   padding-bottom:0px; 
+}
+
+.topbox {
+   padding:0px;
+   margin-top: 5px;
+}
+
+.ramadda-innercontent {
+  margin-left:30px;
+  margin-right:5px;
+}
+
+
+
+
+/* Left Column  */
+.ramadda-header-leftcolumn {
+  border-bottom : 2px #888888 solid;
+  color: #000000;
+  padding-top:10px;
+  padding-right:5px;
+}
+a.ramadda-header-leftcolumn  {
+    color:black;
+}
+.ramadda-header-leftcolumn a:hover  {
+    color:red;
+}
+
+.ramadda-header-leftcolumn-title {
+  font-size: 24px;
+  color: black;
+  margin-top:5px;
+}
+
+.ramadda-header-leftcolumn a {
+	color:black;
+}
+
+.nav-leftcolumn {
+   font-weight: bold;
+   color: black;
+}
+
+.leftside {
+   margin:5px;
+   margin-right:3px;
+   padding:5px;
+   background-color:#ffffff;
+   border-top:  1px #999 solid;
+
+   //Shadow effect
+  /* offset left, top, thickness, color with alpha */
+  -webkit-box-shadow: 5px 5px 5px rgba(0, 0, 0, 0.5);
+  -moz-box-shadow: 5px 5px 5px rgba(0, 0, 0, 0.5);
+  box-shadow: 5px 5px 5px rgba(0, 0, 0, 0.5);
+  /* IE */
+  filter:progid:DXImageTransform.Microsoft.dropshadow(OffX=5, OffY=5, Color='gray');
+  /* slightly different syntax for IE8 */
+  -ms-filter:"progid:DXImageTransform.Microsoft.dropshadow(OffX=5, OffY=5, Color='gray')";
+}
+
+.leftcolumn {
+   padding-top:10px;
+   margin-left:10px;
+   margin-right:10px;
+   background-color:#ffffff;
+   padding-bottom:20px;
+}
+
+.leftcolumn{
+	vertical-align: middle
+}
+
+.leftbox {
+   padding: 5px;
+   padding-top: 2px;
+   padding-bottom:2px;
+   background-color: #efefef;
+   height:auto;
+   width:auto;
+   
+}
+
+.navlink , .navlink a ,.navlink a:hover ,.navlink a:visited, .navlink a:link {
+  border-bottom : 1px #cccccc dotted;
+  color: #435e78;
+  font-family: Verdana,Tahoma,Arial,Helvetica,sans-serif;
+//  font-size: 12px;
+  font-weight: normal;
+  padding-bottom:5px;
+  height:auto;
+  width:auto;
+}
+
+.linkslabel, .linkslabel a, .linkslabel a:hover {
+    color: #0079c2;
+	font-size: 14px;
+	font-weight: bold;
+	padding-bottom: 5px;
+	padding-top: 5px;
+	margin-top:5px;
+	margin-bottom:10px;
+	width:150px;
+}
+
+.linkslabel img {
+	vertical-align:text-top;
+}
+.favorites {
+   max-width: 525px; 
+   overflow-x: auto;
+   padding: 5px;
+   padding-top: 2px;
+   padding-bottom:2px;
+   background-color: #efefef;
+   width: 150px;
+   overflow:scroll;
+}
+
+.favorites , .favorites a ,.favorites a:hover ,.favorites a:visited {
+  border-bottom : 1px #cccccc dotted;
+  color: #435e78;
+  font-family: Verdana,Tahoma,Arial,Helvetica,sans-serif;
+//  font-size: 12px;
+  font-weight: normal;
+  
+}
+
+
+/* Header for the subpages*/
+.subheader-container {
+	background-color: #3c668d;
+	//opacity: 0.9;
+	padding-top: 5px;
+	//padding-right: 20px;
+	padding-bottom: 6px;
+//	padding-left: 20px;
+        margin:0px;
+        margin-left:-30px;
+        margin-right:-4px;
+	//margin-top:-5px;
+	background-image: none;
+	background-repeat: none;
+        color: #fff;
+}
+
+.subheader-container a , subheader-container a:hover, .subheader-container a:link, .subheader-container a:visited, .subheader-container a:active, a  {
+        color: #fff;
+//	color:black;
+}
+
+.ramadda-footer {
+	margin:10px;
+	padding:10px;
+	margin-right: 10px;
+	margin-bottom: 0px;
+	margin-left: 0px;
+	overflow-x: auto;
+	font-family: Arial,Helvetica,sans-serif;
+	font-size: 10px;
+	color: #435e78;
+}
+
+.ramadda-footer a, .ramadda-footer a:hover, .ramadda-footer td{
+	font-size: 10px;
+	color: #435e78;
+}
+
+.ui-tabs, .block.ui-widget-content, 
+.ui-tabs .ui-tabs-nav li.ui-tabs-selected,
+.ui-tabs ul.ui-tabs-nav li.ui-state-default
+{
+//this results in an extra line under the tabs
+//  position:static;
+}
+
+hr {
+	color: #435e78;
+}
+
+
+
+
+</style>
+
+${headfinal}
+</head>
+
+
+<body>
+<table style="" border="0"  width="100%" cellspacing="0" cellpadding="0" border="0" >
+	<tr valign="top">
+		<td width="100">
+			<div class="leftside">
+				<div class="ramadda-logo">
+					<a href="${logo.url}" ><img border="0" width="150px" src="${logo.image}" alt="${logo.url}" /></a>
+				</div>
+				<div class="leftcolumn">
+					<span class="linkslabel"><a href="${root}" ><img border="0"  src="${root}/icons/folderclosed.png" alt="Home"  /> Home </a></span>
+					<br />
+
+					<span class="linkslabel"><a href="${root}/user/login" ><img border="0"  src="${root}/icons/user.png" alt="User Home" /> User </a> </span>
+					<div class="leftbox">${links}</div>
+					<br />
+					${favorites}
+				</div>
+			</div>
+		</td>
+		<td>	
+			<div class="ramadda-content">
+				${entry.header}
+				<div class="ramadda-innercontent">${content}</div> 
+				<div class="entryFooter">${entry.footer}</div>
+			</div>
+			<div class="ramadda-footer">${footer}</div>
+		</td>
+	</tr>
+</table>
+
+
+${bottom}
+
+<div class="ramadda-acknowledgement">
+Page design courtesy of <a href="http://ramadda.aodn.org.au/repository">AODN</a>
+&nbsp;&nbsp;&nbsp;&nbsp;
+Powered by <a href="http://geodesystems.com">Geode Systems and RAMADDA</a>
+</div>
+
+</body>
+
+</html>

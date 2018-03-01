@@ -1,0 +1,14 @@
+<types supercategory="Miscellaneous" category="Integration">
+
+  <type name="type_s3_root"  description="AWS S3"   handler="org.ramadda.plugins.aws.S3RootTypeHandler">
+     <property name="icon" value="/aws/aws.png"/>
+     <property name="form.resource.show" value="false"/>
+     <column name="root_id" type="string"  label="Main S3 Bucket ID"/>
+  </type>
+
+  <type name="type_s3_bucket"  description="AWS S3 Bucket"   handler="org.ramadda.repository.type.ExtensibleGroupTypeHandler" foruser="false">
+     <property name="icon" value="/aws/aws.png"/>
+  </type>
+
+
+</types>

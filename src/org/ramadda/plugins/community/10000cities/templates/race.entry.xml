@@ -1,0 +1,10 @@
+<entries>
+  <entry name="{entry.name} Census Snapshot - Race" type="type_census_race"  lat="{lat}" lon="{lon}" >
+    <for_type encoded="false"><![CDATA[{for_type}]]></for_type>
+    <for_value encoded="false"><![CDATA[{for_value}]]></for_value>
+    <in_type1 encoded="false"><![CDATA[{type1}]]></in_type1>
+    <in_value1 encoded="false"><![CDATA[{value1}]]></in_value1>
+    <in_type2 encoded="false"><![CDATA[{type2}]]></in_type2>
+    <in_value2 encoded="false"><![CDATA[{value2}]]></in_value2>
+  </entry>
+</entries>

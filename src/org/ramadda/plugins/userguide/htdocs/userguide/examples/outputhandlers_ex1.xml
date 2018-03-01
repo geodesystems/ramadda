@@ -1,0 +1,22 @@
+<outputhandlers class="org.ramadda.repository.output.ServiceOutputHandler">
+<!-- You can specify attributes that are inherited by all services, e.g., class="ServiceOutputHandler" 
+This xml can either contain the service xml directly
+or it can refer to a service that was defined in a separate services.xml file -->
+
+  <outputhandler  category="Test Output">
+<!-- Set a property service.test1=/path/to/executable.sh in a .properties file in your RAMADDA home dir -->
+    <service id="test_service1"  command="${service.test1}" label="Run example service 1" icon="/icons/pdf.png" >
+
+<!-- Specify an entry of a particular type (type_document_pdf) -->
+       <arg value="${entry.file}" type="entry" entryType="type_document_pdf" primary="true" label="Input PDF File" ></arg>
+
+<!-- ... There would be other service attributes here. See services.xml ... -->
+
+    </service>
+  </outputhandler>
+
+<!-- Or you can have the output handler reference the service id from a services.xml file -->
+  <outputhandler  category="Test Output" serviceId="test_service2"/>
+
+
+</outputhandlers>

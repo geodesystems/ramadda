@@ -1,0 +1,113 @@
+<!--header starts here -->
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"><head>
+<meta http-equiv="content-type" content="text/html; charset=ISO-8859-1">
+
+
+<!--
+<properties>
+name=Tanzania Template
+id=tanzania
+
+ramadda.template.link.wrapper =<span class="navlink"><a  href="${url}">${label}</a></span>
+ramadda.template.link.separator=&nbsp;|&nbsp;
+
+ramadda.template.userlink.wrapper =<span class="navlink"><a  href="${url}">${label}</a></span>
+ramadda.template.userlink.separator=&nbsp;|&nbsp;
+
+ramadda.template.favorites = <b>Favorites:</b><div class="favorites">${entries}</div>
+ramadda.template.cart = <b>Cart:</b><div class="favorites">${entries}</div>
+
+</properties>
+-->
+
+${imports}
+
+<title>${header.title} - ${title}</title>
+
+	<!-- include style sheet -->
+	<link rel="STYLESHEET" type="text/css" href="${root}/tanzania/general.css">
+
+
+<style type="text/css">
+.topNav a {
+font-size: 11px;
+}
+<!--
+.style1 {color: #FF0000}
+.style3 {color: #00FF33}
+.style6 {color: #00FF00; font-weight: bold; }
+-->
+.contents {
+min-height:600px;
+}
+</style>
+
+${headfinal}
+
+</head>
+
+<body  leftmargin="0" topmargin="0" marginheight="0" marginwidth="0">
+<table id="main" class="bodyTable" align="center" border="0" cellpadding="0" cellspacing="0" width="770">
+<tbody>
+<tr>
+<td align="left" valign="top"><table id="banner" class="bannerTable" border="0" cellpadding="0" cellspacing="0" width="770">
+      <tbody><tr>
+        <td align="left" valign="top" width="10"><img src="${root}/tanzania/10_10.gif" height="10" width="10"></td>
+        <td align="left" valign="top" width="110"><a href="http://www.meteo.go.tz/"><img src="${root}/tanzania/meteo_logo.jpg" border="0" height="110" width="110"></td>
+        <td align="left" valign="top" width="530">
+<img src="${root}/tanzania/header.png">
+        </td>
+        <td align="left" valign="top" width="110"><img src="${root}/tanzania/nation_emblem.jpg" height="110" width="110"></td>
+        <td align="left" valign="top" width="10"><img src="${root}/tanzania/10_10.gif" height="10" width="10"></td>
+      </tr>
+    </tbody></table></td>
+  </tr>
+  <tr>
+    <td align="left" valign="top">
+<table class="topNavTable" border="0" cellpadding="0" cellspacing="0" width="100%">
+      <tbody><tr valign=bottom>
+        <td align="left"  width="200">&nbsp;</td>
+        <td class="topNav" align="center" xwidth="370"><a href="http://www.meteo.go.tz/wfo/satellite.php">Satellite Pictures</a>
+ | <a href="http://www.meteo.go.tz/news_events/indexlookfeel.php">Marine Services</a> | <a href="http://www.meteo.go.tz/pd/index.php">Forecast Products</a> | <a href="http://www.meteo.go.tz/contact_us/index.php">Contacts</a></td>
+        <td align="right" valign="bottom" xwidth="220"><form id="search" name="search" class="formFormat" method="get" action="http://www.meteo.go.tz/modules/search/search.php">
+          Search:
+          <label>
+      <input name="q" id="q" size="15" class="searchBox" type="text">
+      </label>
+      <label>
+      <input name="button" id="button" value="Go" class="searchGo" type="submit">
+      </label>
+      </form></td>
+<td width="10"><img src="${root}/tanzania/10_10.gif" height="10" width="10"></td>
+      </tr>
+    </tbody></table></td>
+  </tr>
+<tr><td>
+<div class="contents">
+<table id="header_links" width=100%><tr><td></td><td align=right>${links}</td></tr></table>
+<div>${entry.header}<div class="innercontent">${content}</div></div>
+
+</div>
+</td></tr>
+
+		
+
+		
+  <tr>
+    <td align="left" valign="top"><table id="footer" class="footerTable" border="0" cellpadding="0" cellspacing="0" width="770">
+      <tbody><tr>
+        <td align="left" valign="top" width="10"><img src="${root}/tanzania/10_10.gif" alt="" height="10" width="10"></td>
+        <td align="left" valign="top" width="180">&nbsp;</td>
+        <td class="footerCellBackground" align="left" valign="top" width="10"><img src="${root}/tanzania/10_10.gif" alt="" height="10" width="10"></td>
+        <td class="footerCellBackground" align="left" valign="top" width="560"><p class="copyRight">Copyright &copy; 2011 Tanzania Meteorological Agency</p></td>
+        <td class="footerCellBackground" align="left" valign="top" width="10"><img src="${root}/tanzania/10_10.gif" alt="" height="10" width="10"></td>
+      </tr>
+    </tbody></table></td>
+  </tr>
+</tbody></table>
+
+
+
+</body></html>
+

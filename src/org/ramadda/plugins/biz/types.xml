@@ -1,0 +1,248 @@
+<types supercategory="Miscellaneous" category="Business Data">
+
+
+  <type name="type_fred_category"  description="FRED Category"   foruser="true" handler="org.ramadda.plugins.biz.FredCategoryTypeHandler">
+     <property name="icon" value="/biz/fred.png"/>
+     <property name="form.resource.show" value="false"/>
+     <column name="category_id" type="string"  label="Category ID"  showinform="true" />
+     <wiki><![CDATA[
++section # titlel="FRED Category: {{name}}"
+<br>
+
+{{description wikify="true"}}
+
+{{tree details="false"}}
+
+<p><br>
+
+Data courtesy of the <a href="{{resource  url=true}}">Federal Reserve Economic Data</a> system.
+
+-section
+
+]]>
+
+</wiki>
+
+  </type>
+
+
+
+  <type name="type_fred_series"  description="FRED Series" super="type_point"  foruser="true" handler="org.ramadda.plugins.biz.FredSeriesTypeHandler" mefirst="true">
+     <property name="icon" value="/biz/series.png"/>
+     <property name="record.file.class" value="org.ramadda.plugins.biz.FredFile"/>
+     <property name="form.resource.show" value="false"/>
+     <property name="form.properties.show" value="false"/>
+     <property name="point.initialize" value="false"/>
+
+     <property name="html.date.show" value="false"/>
+     <property name="html.type.show" value="false"/>
+     <property name="html.owner.show" value="false"/>
+     <property name="html.numberofpoints.show" value="false"/>
+     <column name="series_id" type="string"  label="Series ID"    />
+     <column name="frequency" type="enumeration"  label="Frequency"  values="A:Annual,M:Monthly" showinform="false"/>
+     <column name="units" type="string"  label="Units"  showinform="false"/>
+     <column name="seasonal_adjustment" type="enumeration"  values="NSA:Not Seasonally Adjusted" label="Seasonal Adjustment"  showinform="false"/>
+     <wiki_inner><![CDATA[
++section # title="FRED Time Series: {{name}}"
+<br>
+{{display type="linechart" title=""  height="200" width="800" column="0" layoutHere="true"}}
+<div style="margin:20px;max-height:300px;overflow-y:auto;">
+{{description wikify="true"}}
+</div>
++row
++col-md-8
+Data courtesy of the <a href="{{resource  url=true}}">Federal Reserve Economic Data</a> system.
+-col
++col-md-4
+<div style="text-align:right;">
+<a class="btn btn-primary" role="button" href="{{root}}/entry/show?entryid={{entryid}}&output=points.product&product=points.csv&asynch=false">Download CSV</a>
+</div>
+-col
+-row
+
+-section
+
+]]>
+
+</wiki_inner>
+
+  </type>
+
+
+
+  <type name="type_eia_category"  description="EIA Category"   foruser="true" handler="org.ramadda.plugins.biz.EiaCategoryTypeHandler">
+     <property name="icon" value="/biz/eia.png"/>
+     <property name="form.resource.show" value="false"/>
+     <column name="category_id" type="string"  label="Category ID"  showinform="true" />
+     <wiki><![CDATA[
++section # title="EIA Category: {{name}}"
+<br>
+
+{{description wikify="true"}}
+
+{{tree details="false"}}
+
+
+
+<p><br>
+
+Data courtesy of the <a href="{{resource  url=true}}">Energy Information Administration (EIA)</a>.
+
+-section
+
+]]>
+
+</wiki>
+
+  </type>
+
+
+
+  <type name="type_eia_series"  description="EIA Series" super="type_point"  foruser="true" handler="org.ramadda.plugins.biz.EiaSeriesTypeHandler" mefirst="true">
+     <property name="icon" value="/biz/series.png"/>
+     <property name="record.file.class" value="org.ramadda.plugins.biz.EiaFile"/>
+     <property name="form.resource.show" value="false"/>
+     <property name="form.properties.show" value="false"/>
+     <property name="point.initialize" value="false"/>
+
+     <property name="html.date.show" value="false"/>
+     <property name="html.type.show" value="false"/>
+     <property name="html.owner.show" value="false"/>
+     <property name="html.numberofpoints.show" value="false"/>
+     <column name="series_id" type="string"  label="Series ID"    />
+     <wiki_inner><![CDATA[
++section # title="EIA Time Series: {{name}}"
+<br>
+{{display type="linechart" title=""  height="200" width="800" column="0" layoutHere="true"}}
+<div style="margin:20px;max-height:300px;overflow-y:auto;">
+{{description wikify="true"}}
+</div>
++row
++col-md-8
+Data courtesy of the <a href="{{resource  url=true}}">Energy Information Administration (EIA)</a>.
+-col
++col-md-4
+<div style="text-align:right;">
+<a class="btn btn-primary" role="button" href="{{root}}/entry/show?entryid={{entryid}}&output=points.product&product=points.csv&asynch=false">Download CSV</a>
+</div>
+-col
+-row
+
+-section
+
+]]>
+
+</wiki_inner>
+
+  </type>
+
+
+  <type name="type_biz_stockseries"  super="type_point" description="Stock Ticker Data"  handler="org.ramadda.plugins.biz.StockSeriesTypeHandler" mefirst="true">
+     <property name="icon" value="/biz/chart-up.png"/>
+     <property name="point.initialize" value="false"/>
+     <property name="form.resource.show" value="false"/>
+     <property name="form.location.show" value="false"/>
+     <property name="form.date.show" value="false"/>
+     <property name="form.properties.show" value="false"/>
+     <property name="record.file.class" value="org.ramadda.data.point.text.CsvFile"/>
+     <property name="record.properties">
+skiplines=1
+fields=Date[type=date format=yyyy-MM-dd],Open[chartable=true],High[chartable=true],Low[chartable=true],Close[chartable=true],Volume[chartable=true],Adj_Close[chartable=true]
+     </property>
+     <column name="symbol" type="string"  label="Symbol"   />
+     <wiki_inner><![CDATA[
++section # title="Stock: {{name}}"
+<br>
+{{display type="linechart" title=""  height="200" width="800" column="0" layoutHere="true"}}
+<div style="margin:20px;max-height:300px;overflow-y:auto;">
+{{description wikify="true"}}
+</div>
++row
++col-md-8
+Data courtesy of <a href="http://finance.yahoo.com/charts">YAHOO Charts</a>.
+-col
++col-md-4
+<div style="text-align:right;">
+<a class="btn btn-primary" role="button" href="{{resource  url=true}}">Download Data</a>
+
+<a href="http://feeds.finance.yahoo.com/rss/2.0/headline?s={{field name=symbol}}&region=US"><img src="{{root}}/icons/rss.png"></a>
+</div>
+-col
+-row
+
+-section
+
+]]>
+
+</wiki_inner>
+
+
+</type>
+
+  <type name="type_quandl_series"  description="QUANDL Series" super="type_point"  foruser="true" handler="org.ramadda.plugins.biz.QuandlSeriesTypeHandler" mefirst="true">
+     <property name="icon" value="/biz/quandl.png"/>
+     <property name="record.file.class" value="org.ramadda.data.point.text.CsvFile"/>
+     <property name="form.resource.show" value="false"/>
+     <property name="form.properties.show" value="false"/>
+     <property name="point.initialize" value="false"/>
+
+     <property name="record.properties">
+firstLineDefinesFields=true
+picky=false
+     </property>
+
+     <property name="html.date.show" value="false"/>
+     <property name="html.type.show" value="false"/>
+     <property name="html.owner.show" value="false"/>
+     <property name="html.numberofpoints.show" value="false"/>
+
+     <column name="source_code"  type="string"  label="Source Code"    />
+     <column name="series_id" type="string"  label="Series Code"    />
+     <wiki_inner><![CDATA[
++section # title="QUANDL Time Series: {{name}}"
+<br>
+{{group showMenu="true"}}
+{{display type="linechart" title=""  height="200" width="800" column="0" layoutHere="true" showMenu="true"}}
+<div style="margin:20px;max-height:300px;overflow-y:auto;">
+{{description wikify="true"}}
+</div>
+-section
++section #
++row
++col-md-4
+Data courtesy of  <a href="{{resource  url=true}}">Quandl</a>.
+-col
++col-md-4
+<center><a href="https://www.quandl.com"><img src="{{root}}/biz/quandl_logo.png" width="200" border="0"></a></center>
+-col
++col-md-4
+<div style="text-align:right;">
+<a class="btn btn-primary" role="button" href="{{root}}/entry/show?entryid={{entryid}}&output=points.product&product=points.csv&asynch=false">Download CSV</a>
+</div>
+-col
+-row
+
+-section
+
+]]>
+
+</wiki_inner>
+
+  </type>
+
+
+
+  <type name="type_enigma_table"  super="type_point"  description="Enigma Table"  handler="org.ramadda.plugins.biz.EnigmaTableTypeHandler"  mefirst="true">
+     <property name="record.file.class" value="org.ramadda.plugins.biz.EnigmaTable"/>
+     <property name="form.resource.show" value="false"/>
+     <property name="form.properties.show" value="false"/>
+     <property name="point.initialize" value="false"/>
+     <property name="chart.type" value="table"/>
+     <property name="icon" value="/biz/enigma.png"/>
+     <column   name="table_id" type="string"  columns="60" label="Enigma Table ID"  >
+<suffix><![CDATA[From <a href="https://app.enigma.io/search">Enigma</a>]]></suffix>
+</column>
+</type>
+
+
+</types>

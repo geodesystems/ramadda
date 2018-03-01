@@ -1,0 +1,35 @@
+org.ramadda.bio.entrez.EntrezSearchProvider;bioproject;BioProject
+org.ramadda.bio.entrez.EntrezSearchProvider;biosample;BioSample
+org.ramadda.bio.entrez.EntrezSearchProvider;biosystems;Biosystems
+org.ramadda.bio.entrez.EntrezSearchProvider;books;Books
+org.ramadda.bio.entrez.EntrezSearchProvider;cdd;Conserved Domains
+org.ramadda.bio.entrez.EntrezSearchProvider;gap;dbGaP
+org.ramadda.bio.entrez.EntrezSearchProvider;dbvar;dbVar
+org.ramadda.bio.entrez.EntrezSearchProvider;epigenomics;Epigenomics
+org.ramadda.bio.entrez.EntrezSearchProvider;nucest;EST
+org.ramadda.bio.entrez.EntrezSearchProvider;gene;Gene
+org.ramadda.bio.entrez.EntrezSearchProvider;genome;Genome
+org.ramadda.bio.entrez.EntrezSearchProvider;gds;GEO Datasets 
+org.ramadda.bio.entrez.EntrezSearchProvider;geoprofiles;GEO Profiles
+org.ramadda.bio.entrez.EntrezSearchProvider;nucgss;GSS
+org.ramadda.bio.entrez.EntrezSearchProvider;homologene;HomoloGene
+org.ramadda.bio.entrez.EntrezSearchProvider;mesh;MeSH          
+org.ramadda.bio.entrez.EntrezSearchProvider;toolkit;NCBI C++ Toolkit
+org.ramadda.bio.entrez.EntrezSearchProvider;ncbisearch;NCBI Web Site
+org.ramadda.bio.entrez.EntrezSearchProvider;nlmcatalog;NLM Catalog  
+org.ramadda.bio.entrez.EntrezSearchProvider;nuccore;Nucleotide      
+org.ramadda.bio.entrez.EntrezSearchProvider;omia;OMIA               
+org.ramadda.bio.entrez.EntrezSearchProvider;popset;PopSet           
+org.ramadda.bio.entrez.EntrezSearchProvider;probe;Probe             
+org.ramadda.bio.entrez.EntrezSearchProvider;protein;Protein         
+org.ramadda.bio.entrez.EntrezSearchProvider;proteinclusters;Protein Clusters
+org.ramadda.bio.entrez.EntrezSearchProvider;pcassay;PubChem BioAssay     
+org.ramadda.bio.entrez.EntrezSearchProvider;pccompound;PubChem Compound  
+org.ramadda.bio.entrez.EntrezSearchProvider;pcsubstance;PubChem Substance
+org.ramadda.bio.entrez.EntrezSearchProvider;pubmed;PubMed 
+org.ramadda.bio.entrez.EntrezSearchProvider;pmc;PubMed Centra
+org.ramadda.bio.entrez.EntrezSearchProvider;snp;SNP   
+org.ramadda.bio.entrez.EntrezSearchProvider;sra;SRA   
+org.ramadda.bio.entrez.EntrezSearchProvider;structure;Structure
+org.ramadda.bio.entrez.EntrezSearchProvider;taxonomy;Taxonomy  
+org.ramadda.bio.entrez.EntrezSearchProvider;unigene;UniGene   

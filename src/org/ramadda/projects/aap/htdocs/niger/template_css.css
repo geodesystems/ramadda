@@ -1,0 +1,51 @@
+html{font-size:100%; height:100%;}
+body{margin:0; padding:0; font:11px Verdana, Arial, Helvetica, sans-serif; color:#000; height:100%;}
+
+#header { background-color: black; background-image: url(img/header-bg-green.jpg); background-repeat: no-repeat; background-attachment: scroll; background-position: 50% 35px; }
+table{font-size:100%;}
+table td{vertical-align:top; }
+
+a{ color:#565249;  small-caps 13px Georgia, "Times New Roman", Times, serif; }
+
+.contentheading, .contentheading a{font:small-caps bold 14px Verdana, Arial, Helvetica, sans-serif; color:#666; text-decoration:none; line-height:14px; text-transform:capitalize;}
+.contentheading a:hover{text-decoration:underline; color:#000}
+.createdate{font:italic 11px Georgia, "Times New Roman", Times, serif!important; color:#999!important;}
+.readon{text-decoration:none; font:bold 11px Arial, Helvetica, sans-serif; text-transform:uppercase!important; color:#5263A9; display:block; clear:both; margin-top:5px;
+text-align:right!important}
+.readon:hover{color:#CC0000; text-decoration:underline}
+.intertitre{display:block; font:bold 15px Georgia, "Times New Roman", Times, serif; color:#333; line-height:18px; text-transform:capitalize; clear:both}
+
+.blog_more{margin:10px 0; padding:10px 0; border-top:1px dotted #aaa}
+.blog_more strong{display:block; font:bold 14px Georgia, "Times New Roman", Times, serif; color:#669; text-transform:capitalize; margin:0; padding:0; line-height:15px; margin-bottom:10px; letter-spacing:-1px;}
+.blog_more ul{margin:0; padding:0; list-style-type:none;}
+.blog_more ul li{margin:0; padding:0; list-style-type:none; padding-left:10px}
+.blog_more .blogsection{display:block; text-decoration:none; font:11px Verdana, Arial, Helvetica, sans-serif; color:#000; padding-bottom:3px}
+.blog_more .blogsection:hover{text-decoration:underline;}
+
+.pathway{display:block; float:left; text-decoration:none; color:#000; font:12px Arial, Helvetica, sans-serif;}
+.pathway img{margin:0 5px 0 10px; vertical-align:middle}
+.pathway a{color:#555;}
+
+.titre{font:small-caps bold 16px Georgia, "Times New Roman", Times, serif; color:#b6cdf1; text-transform:capitalize; margin:0; padding:0; line-height:17px; text-decoration:none}
+.componentheading{font:14px "Arial Black", Arial, Verdana, serif; text-transform:uppercase; margin:0; padding:0; line-height:18px; display:block; text-decoration:none; 
+letter-spacing:-1px; border-bottom:5px solid #7f7d73; color:#7f7d73; margin-bottom:5px}
+
+.modtitle{font:14px "Arial Black", Arial, Verdana, serif; text-transform:uppercase; margin:0; padding:0; line-height:18px; display:block; margin:0; text-decoration:none; 
+letter-spacing:-1px; border-bottom:5px solid #7f7d73; color:#7f7d73}
+
+.newsrect{display:block; margin:1px 0 1px; background-color:#f4ba4b; padding:5px;}
+
+.subtitle{display:block; font:11px Verdana, Arial, Helvetica, sans-serif; line-height:12px; color:#000; text-decoration:none; margin-bottom:4px}
+.subtitle:hover{text-decoration:underline; color:#3366CC}
+.parag{margin:0; padding:6px 0 8px; font:13px Arial, Helvetica, sans-serif;}
+
+.sharebox{color:#aaa; margin-top:2px; font-size:11px}
+.legende{font:11px Arial, Helvetica, sans-serif; color:#888; text-align:left; line-height:11px; margin:4px 0 4px; display:block}
+.redtitle{color:#6699FF; font-size:10px;}
+
+.article_seperator{display:block; clear:both; height:1px; border-bottom:1px dotted #cac5b5; margin:5px 0 10px;}
+.govlink{text-decoration:none; font:13pc "Arial Black", Arial, Verdana, serif; letter-spacing:-1px; color:#c30; display:block;}
+
+.whiteseparetor{display:block; margin:5px 0 10px; clear:both}
+
+.areagrid{display:block; margin:20px 0 20px; padding:10px; font:12px Arial, Helvetica, sans-serif; color:#eee; background-color:#666;}

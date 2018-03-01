@@ -1,0 +1,48 @@
+<types supercategory="Miscellaneous" >
+
+
+  <type name="gdata"  description="Gdata"  category="Google Data" handler="org.ramadda.plugins.gdata.GdataBaseTypeHandler" foruser="false">  
+     <property name="icon" value="/gdata/google.gif"/>
+  </type>
+
+
+
+  <type name="gdata_base"  super="gdata" description="Gdata"   handler="org.ramadda.plugins.gdata.GdataTypeHandler" foruser="false">  
+     <property name="icon" value="/gdata/google.gif"/>
+     <column name="userid" group="Google Login Information" type="string"     default="" label="User ID" columns="20"  showinhtml="false"/>
+     <column name="password" group="Google Login Information" type="password"     label="Password"  showinhtml="false"/>
+  </type>
+
+
+
+  <type name="gdata_docs"  super="gdata_base" description="Google Docs View"  handler="org.ramadda.plugins.gdata.DocsTypeHandler">  
+     <property name="icon" value="/icons/folder.png"/>
+     <property name="form.resource.show" value="false"/>
+   </type>
+
+  <type name="gdata_photos"  super="gdata_base" description="Google Web Albums View"  handler="org.ramadda.plugins.gdata.PhotosTypeHandler">  
+     <property name="icon" value="/gdata/picasa.png"/>
+     <property name="form.resource.show" value="false"/>
+   </type>
+
+
+  <type name="gdata_calendar"  super="gdata_base" description="Google Calendar"  handler="org.ramadda.plugins.gdata.CalendarTypeHandler">  
+     <property name="icon" value="/icons/calendar.png"/>
+     <property name="form.resource.show" value="false"/>
+   </type>
+
+
+  <type name="gdata_blogger"  super="gdata_base" description="Google Blogger"  handler="org.ramadda.plugins.gdata.BloggerTypeHandler">  
+     <property name="icon" value="/gdata/blog_icon.png"/>
+     <property name="form.resource.show" value="false"/>
+     <column name="blogid" group="Blogger Information" type="string"     default="" label="Blogger Blog ID" columns="20"  showinhtml="true"/>
+   </type>
+
+  <type name="gdata_sites"  super="gdata_base" description="Google Sites"  handler="org.ramadda.plugins.gdata.SitesTypeHandler">  
+     <property name="icon" value="/gdata/sites.png"/>
+     <property name="form.resource.show" value="false"/>
+     <column name="site" group="Site Information" type="string"     default="" label="Site name" columns="20"  showinhtml="true"/>
+   </type>
+
+
+</types>

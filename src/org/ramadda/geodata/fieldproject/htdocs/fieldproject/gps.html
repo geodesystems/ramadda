@@ -1,0 +1,104 @@
+<html>
+<head>
+<title>GPS Data and Services</title>
+</head>
+<body>
+<div class="subheader-container">&nbsp;<a href="index.html">Field Project Help</a></div>
+
+
+Note: to process GPS data RAMADDA requires <a href="#teqc">TEQC</a> to
+be installed.
+
+<h2>Suggested File Organization</h2>
+
+If you have a large number of files we suggest 
+creating the following Folder structure for GPS data:
+<pre>
+GPS
+    Raw  - The original GPS files from the receiver
+    RINEX -  RINEX files converted from the raw files
+    Solutions - Text solutions (e.g., from OPUS).
+    Products - Coordinate files generated, etc
+</pre>
+
+
+<h2>Uploading GPS Data</h2>
+To create a Folder:
+<pre>
+   File-&gt;New Folder
+</pre>
+and enter the Folder name.
+<p>
+Once created, from that Folder do:
+<pre>
+   File-&gt;New Entry
+</pre>
+Under the  <i>Field Project</i>  section choose <i>Raw GPS File</i>. 
+Select and upload your file.
+<p>
+To upload multiple files first zip them up. In the upload form open the "More..." section and check on the "Unzip archive" checkbox.
+<p>
+If <a href="#teqc">TEQC</a> is installed then the spatial location, time and station information (if it exists) should be harvested from the file.
+
+
+<h2>Converting GPS Data to RINEX</h2>
+You can convert one or more raw GPS files into RINEX. From the Folder or the GPS file entry choose the <i>Field Project</i>-&gt;Convert to RINEX</i> menu.
+
+From this page you can select which raw GPS files should be converted.
+If you are logged in to RAMADDA you can also specify a Folder to publish
+the RINEX files to. When publishing RAMADDA will add links between the raw and the generated RINEX entries.
+
+
+<a name="opus"></a>
+<h2>Submitting to OPUS</h2>
+You can submit one or more RINEX files 
+to <a href="http://www.ngs.noaa.gov/OPUS/">OPUS</a> through 
+the <i>Field Project</i>-&gt;Submit to OPUS</i> menu.
+Specify your email address and select which RINEX entries you want to
+submit. If the RINEX file is of a short duration or if it already has 
+a generated OPUS RAMADDA entry then the checkbox is off by default.
+<p>
+You can specify an antenna and antenna height for each file or, you 
+can specify a single value for all of the submissions.
+<p>
+For now, the next step is manual. OPUS will mail you the results.
+All you need to do is Copy and Paste the body of the email into
+the
+<a href="${root}/gps/addopus">OPUS Solution ingest form.</a>
+This will create an OPUS entry in RAMADDA and add the appropriate links
+to the source RINEX files. The UTM, ITRF and LAT/LON coordinates will 
+be extracted  and these more refined values will be applied to any linked RINEX
+or raw GPS files.
+
+
+<h2>Making Control Point Files</h2>
+When viewing a Folder that contains one or more OPUS result entries
+you can generate a control point file (i.e., tiepoints) for later use in
+processing software. Go to the <i>Field Project-&gt;Make Control Points</i> menu.
+<p>
+Add a comment, select the OPUS input files to use and optionally select
+a RAMADDA Folder to publish the results to.
+
+<a name="teqc"></a>
+<h2>Installing TEQC</h2>
+To process GPS data RAMADDA requires <a href="#teqc">TEQC</a> to be 
+installed on the repository server.
+<p>
+You then need to specify the path to teqc with the property:
+<pre>
+gps.teqc=/path/to/teqc
+</pre>
+This can be placed in a .properties (e.g., gps.properties)
+file in the RAMADDA home dir or can be specified in 
+the Admin-&gt;Settings properties field.
+
+<p>
+If you have raw Trimble GPS files you also need to install <i>runpkr</a> which is used to convert the raw files into a form that TEQC can process. To set this define the property:
+
+<pre>
+gps.runpkr=/path/to/runpkr
+</pre>
+
+
+</body>
+</html>

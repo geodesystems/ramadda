@@ -1,0 +1,7 @@
+<types supercategory="Geoscience">
+
+  <type name="type_point_idv"  description="IDV Point File" super="type_point" handler="org.ramadda.data.services.PointTypeHandler">
+     <property name="record.file.class" value="org.ramadda.data.point.idv.IdvPointFile"/>
+  </type>
+
+</types>

@@ -1,0 +1,11 @@
+
+<api handler="org.ramadda.geodata.disaster.DisasterList" id="disaster">
+      <property name="admin" value="false"/>
+<!--
+      <property name="metadatatypes" value="nlas_platform,nlas_haswaveform"/>
+-->
+      <property name="label" value="View Disasters"/>
+      <property name="searchurl" value="/disaster/search"/>
+      <property name="type" value="disaster"/>
+      <api request="/disaster/search"    method="processSearchRequest" toplevel="true" name="View Disasters"/>
+</api>

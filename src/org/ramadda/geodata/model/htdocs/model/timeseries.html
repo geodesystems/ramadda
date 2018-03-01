@@ -1,0 +1,77 @@
+<div class="helptext">
+
+<script>
+$(function() {
+    $( "#tabs" ).tabs();
+  });
+</script>
+
+<!--
+<h2>How to use this form</h2>
+-->
+
+This form allows you to plot a single field from a model/experiment or compare
+one field to itself or another.  The instructions below explain each of the sections
+of the form.
+<p>
+
+<div id="tabs">
+<ul>
+<li><a href="#tabs-1">Field(s)</a></li>
+<li><a href="#tabs-2">Time Series</a></li>
+<li><a href="#tabs-3">Make Time Series</a></li>
+</ul>
+
+<div id="tabs-1">
+<h3>Field(s)</h3>
+<ol>
+<li> From the <b>Collection</b>, select the <b>Model, Experiment, Ensemble Member</b> and <b>Variable</b> you wish to plot
+<li> Optionally, select a second data set you wish to compare with the first.
+<li> Click the <b>Select Data</b> button to bring up the options for analyzing and plotting the data you've selected.  
+If you make any changes in the <b>Field(s)</b> section, click the <b>Update Data Selection</b> button to refresh
+the options below.
+</ol>
+</div>
+
+<div id="tabs-2">
+<h3>Time Series</h3>
+
+<ol>
+<li>If you are plotting pressure level data, select the <b>Level</b> you wish to use
+<li>You can plot either the <b>Average</b> or the <b>Anomaly</b> over the region.   
+Anomalies are computed relative to 1981-2010 average for the ensemble mean.
+<li>Choose a starting and ending <b>month</b> over which to average the data. 
+<li>Choose a starting and ending <b>year</b> for the time series.
+<li>Select the <b>Region</b> that the data will be averaged over.  You can select from a predefined
+list of regions, or select Custom.  If you choose custom, you can draw a region on the map
+(use Shift+drag to draw the region), or enter the North, South, West and East coordinates of
+the region.
+</ol>
+</div>
+
+<div id="tabs-3">
+<h3>Make Time Series</h3>
+
+<ol>
+<li>You can select to plot a shaded area between the ensemble min and max values, or to plot each
+line individually. 
+<li>For either plot, you can select the color of the shaded area or the ensemble lines.  The mean is
+always plotted black.
+<li>For some fields, you can select the output units for the plot.
+<li>You can select a mask for the data to block out either ocean or land areas.
+<li>You can override the default range for the Y axis (data range).
+<li>By default, a 5-year running average is plotted to smooth out the lines.  You can select a longer or
+shorter period.
+</ol>
+
+<h3>Make Time Series</h3>
+<ol>
+<li>After you have made your selections, click the <b>Make Time Series</b> button to generate the time series image.
+<li>An image will be displayed to the right of the
+data selection region.  You can click on the image to get a full sized version of it.  There
+is link below the image which allows you to download the image to your computer.
+</ol>
+
+</div>
+</div>
+</div>

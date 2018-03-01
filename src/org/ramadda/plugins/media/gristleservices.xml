@@ -1,0 +1,37 @@
+<services  >
+
+<!--
+Each of these services needs an entry in the outputhandlers.xml file
+
+service.gristle is a property that is set in a .properties file in the ramadda home dir, e.g.:
+
+service.gristle=/usr/local/bin
+
+-->
+
+<!--
+
+<service id="gristle_slicer" label="Gristle Slicer" 
+         command="${service.gristle}/gristle_slicer">
+  <description><![CDATA[Run gristle_slicer]]></description>
+  <arg value="${entry.file}" type="entry" entryType="type_document_csv" primary="true" label="Input CSV File"></arg>
+
+  <arg type="string"  label="Show last records" help=""  value="-r-${value}"/>
+  <arg type="string"  label="Include columns" help=""  value="-c:${value}"/>
+  <arg type="string"  label="Exclude columns" help=""  value="-C:${value}"/>
+
+
+  <output type="type_document_csv" pattern=".*\.csv" stdout="true" filename="sliced.csv"/>
+</service>
+
+
+<service id="gristle_determinator" label="Gristle Determinator" 
+         command="${service.gristle}/gristle_determinator">
+  <description><![CDATA[Run gristle_determinator]]></description>
+  <arg value="${entry.file}" type="entry" entryType="type_document_csv" primary="true" label="Input CSV File"></arg>
+
+  <output showResults="true"  stdout="true" filename="sliced.csv"/>
+</service>
+
+-->
+</services>

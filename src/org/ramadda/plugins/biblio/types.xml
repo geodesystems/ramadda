@@ -1,0 +1,35 @@
+<types>
+
+<type  name="biblio"  description="Bibliographic Entry"  handler="org.ramadda.plugins.biblio.BiblioTypeHandler" category="Information"><property  name="search.synthetic.authors.label"  value="All Authors" /><property  name="search.tabs"  value="list" /><property  name="search.synthetic.authors.fields"  value="primary_author,other_authors" /><property  name="html.type.show"  value="false" /><property  name="form.todate.show"  value="false" /><property  name="form.description.label"  value="Abstract" /><property  name="form.name.label"  value="Title" /><property  name="search.synthetic.fields"  value="authors" /><property  name="icon"  value="/biblio/book.png" /><property  name="form.location.show"  value="false" /><property  name="search.form.area.show"  value="false" /><property  name="form.fromdate.label"  value="Date" /><property  name="search.label"  value="Search for Bibliographic entries" />
+
+  <column  name="primary_author"  label="Primary Author"  type="string"  cansearch="true"  size="500" ></column>
+  <column  name="type"  label="Publication Type"  type="enumerationplus"  cansearch="true" >
+     <values><![CDATA[Generic=Generic Journal Article=Journal Article Report=Report ]]></values>
+     <property  name="iscategory"  value="true" />
+  </column>
+  <column  name="institution"  label="Institution"  type="string"  cansearch="true"  size="200" ></column>
+  <column  name="other_authors"  label="Other Authors"  type="list"  rows="5"  cansearch="true"  size="5000" ></column>
+  <column  name="publication"  label="Publication"  type="enumerationplus"  cansearch="true" ></column>
+  <column  name="volume_number"  label="Volume"  type="string"  canlist="false"  size="200" ></column>
+  <column  name="issue_number"  label="Issue"  type="string"  canlist="false"  size="200" ></column>
+  <column  name="pages"  label="Pages"  type="string"  canlist="false"  size="200" ></column>
+  <column  name="doi"  label="DOI"  type="string"  canlist="false"  size="200" ></column>
+  <column  name="link"  label="Link"  type="url"  canlist="false" ></column>
+     <wiki><![CDATA[
++section # title={{name}}
+<div style="max-height: 400px; overflow-y: auto;">
+{{description wikify="true"}}
+</div>
+<div style="margin:10px;padding:5px;border: 1px #ccc solid;font-style:italic;">{{biblio}}</div>
+-section
++section #
+{{information details="true"}}
+{{properties  message="" }}
+-section
+]]>
+</wiki>
+
+
+</type>
+
+</types>

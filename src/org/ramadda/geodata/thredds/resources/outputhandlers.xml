@@ -1,0 +1,4 @@
+<outputhandlers>
+  <outputhandler class="org.ramadda.geodata.thredds.CatalogOutputHandler" name="THREDDS Catalog"/>
+  <outputhandler class="org.ramadda.geodata.thredds.CatalogImporter" name="THREDDS Catalog Importer"/>
+</outputhandlers>

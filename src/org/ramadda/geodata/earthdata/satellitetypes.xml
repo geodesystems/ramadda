@@ -1,0 +1,57 @@
+<types  supercategory="Geoscience" category="Satellite and Model Data">
+
+  <type name="earth_satellite"  description="Satellite Data" foruser="false" super="earth" category="Satellite and Model Data">
+     <property name="icon" value="/earthdata/satellite.gif"/>
+  </type>
+
+  <type name="earth_satellite_goes"  description="Goes Satellite Data" foruser="true" super="earth_satellite">
+  </type>
+
+<!--
+http://landsat.usgs.gov/naming_conventions_scene_identifiers.php
+LXSPPPRRRYYYYDDDGSIVV
+L = Landsat
+X = Sensor
+S = Satellite
+PPP = WRS path
+RRR = WRS row
+YYYY = Year
+DDD = Julian day of year
+GSI = Ground station identifier
+VV = Archive version number
+LT50480232011289PAC01.hdf
+-->
+
+
+
+  <type name="earth_satellite_landsat"  description="Landsat Satellite Data" foruser="true" super="earth_satellite"         
+        field_file_pattern=".*l(sensor:.)(satellite:.)(wrs_path_number:\d\d\d)(wrs_row_number:\d\d\d)(year:\d\d\d\d)(julian_day:\d\d\d)(ground_station:...)(archive_version_number:\d\d)\.hdf$">
+     <property name="search.tabs" value="map,list,timeline"/>
+     <column name="sensor" label="Sensor" type="enumerationplus" values="" cansearch="true" />
+     <column name="satellite" label="Satellite" type="enumerationplus" values="" cansearch="true" />
+     <column name="wrs_path_number" label="WRS Path" type="int"  cansearch="true" />
+     <column name="wrs_row_number" label="WRS Row" type="int"  cansearch="true" />
+     <column name="ground_station" label="Ground Station" type="string"  cansearch="true" />
+     <column name="archive_version_number" label="Archive Version Number" type="int"  cansearch="true" />
+  </type>
+
+  <type name="earth_satellite_modis"  description="Modis Satellite Data" foruser="false" super="earth_satellite">
+     <property name="search.tabs" value="map,list,timeline"/>
+     <column name="data_type" label="Earth Science Data Type" type="enumerationplus" values="" cansearch="true" />
+  </type>
+
+
+  <type name="earth_satellite_modis_terra"  description="Terra Modis Satellite Data" foruser="true" super="earth_satellite_modis"   field_file_pattern=".*(data_type:mod[^\.]+)\.a\d\d\d\d\d\d\d\..*\.hdf$">
+  </type>
+
+  <type name="earth_satellite_modis_aqua"  description="Aqua Modis Satellite Data" foruser="true" super="earth_satellite_modis" field_file_pattern=".*(data_type:myd[^\.]+)\.a\d\d\d\d\d\d\d\..*\.hdf$">
+  </type>
+
+  <type name="earth_satellite_aster"  description="Aster Satellite Data" foruser="true" super="earth_satellite">
+  </type>
+
+  <type name="earth_satellite_spot"  description="Spot Satellite Data" foruser="true" super="earth_satellite">
+  </type>
+
+
+</types>

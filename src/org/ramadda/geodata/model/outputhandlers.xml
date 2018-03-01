@@ -1,0 +1,4 @@
+<outputhandlers>
+  <outputhandler class="org.ramadda.geodata.model.CDOOutputHandler" name="Climate Data Operators"/>
+  <outputhandler class="org.ramadda.geodata.model.NCLOutputHandler" name="Map Plot"/>
+</outputhandlers>

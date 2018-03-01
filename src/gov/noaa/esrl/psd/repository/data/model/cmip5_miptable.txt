@@ -1,0 +1,24 @@
+#
+# CMIP5 MIP table definitions
+# From: http://cmip-pcmdi.llnl.gov/cmip5/docs/standard_output.pdf
+# 
+# format 
+# table id:description
+3hr:3 hour Fields
+6hrLev:6 hour Model Level Fields
+6hrPlev:6 hour Pressure Level Fields
+Amon:Monthly Mean Atmosphere Fields
+LImon:Monthly Mean Land Cryosphere Fields
+Lmon:Monthly Mean Land Fields
+OImon:Monthly Mean Ocean Cryosphere Fields
+Oclim:Monthly Mean Ocean Climatology Fields
+Omon:Monthly Mean Ocean Fields
+Oyr:Annual Mean Ocean Fields
+aero:Monthly Mean Aerosol-Related Fields
+cf3hr:CFMIP 3-Hourly Cloud Diagnostic Fields
+cfDay:CFMIP Daily Mean Cloud Diagnostic Fields
+cfMon:CFMIP Monthly Mean Cloud Diagnostic Fields
+cfOff:CFMIP monthly offline Mean Cloud Diagnostic Fields
+cfSites:CFMIP high frequency Cloud Diagnostic Fields
+day:Daily Mean Atmosphere, Ocean and Surface Fields
+fx:Time-Invariant Fields

@@ -1,0 +1,68 @@
+<types supercategory="Miscellaneous" category="Business Data">
+
+
+
+  <type name="type_usda_point"  super="type_point" foruser="false" description="USDA Data">
+     <property name="point.initialize" value="false"/>
+     <property name="search.form.area.show" value="true"/>
+     <property name="form.area.show" value="true"/>
+     <property name="search.form.date.show" value="false"/>
+     <property name="form.date.show" value="false"/>
+     <property name="form.properties.show" value="false"/>
+     <property name="icon" value="/usda/usda.png"/>
+<wiki>
+<![CDATA[
++section title="{{name}}"
++row
++col-md-8
+{{description}}
+{{displaygroup layoutType="table" showMenu="true"}}
+{{display   height="200"  layoutHere="false"}}
+{{display type="text" layoutHere="false" }}
+{{information  details="false"  }}
+-col
++col-md-4
+{{map width="250" height="250"  box.maxheight="300" message="" prefix="====Location===="}}
+{{list includeicon="true" details="false" entries="siblings,links"  message="" box.maxheight="200" box.class="entry-sidebox" prefix="====Related===="}}
+-col
+-row
+-section
+]]>
+</wiki>
+
+  </type>
+
+
+
+<!--
+Note - the ARMS crop and finance types have the same columns
+-->
+
+  <type name="type_usda_arms_crop"  super="type_usda_point" description="USDA ARMS Crop Data"  handler="org.ramadda.plugins.usda.ArmsTypeHandler" mefirst="true">
+     <property name="record.file.class" value="org.ramadda.plugins.usda.ArmsFile"/>
+     <column name="report"  type="enumeration"  values="file:/org/ramadda/plugins/usda/resources/${name}_reports.txt" label="Report" default="1" cansearch="true" />
+     <column name="subject"  type="enumeration"  values="file:/org/ramadda/plugins/usda/resources/${name}_subjects.txt" label="Subject" default="1" cansearch="true" />
+     <column name="state"  type="enumeration"  values="file:/org/ramadda/plugins/usda/resources/${name}_states.txt" label="State" default="00" cansearch="true" />
+     <column name="source_url"  type="url" label="Source URL" showinform="false"/>
+
+  </type>
+
+  <type name="type_usda_arms_finance"  super="type_usda_point" description="USDA ARMS Finance Data"  handler="org.ramadda.plugins.usda.ArmsTypeHandler" mefirst="true">
+     <property name="record.file.class" value="org.ramadda.plugins.usda.ArmsFile"/>
+     <column name="report"  type="enumeration"  values="file:/org/ramadda/plugins/usda/resources/${name}_reports.txt" label="Report" default="1" cansearch="true" />
+     <column name="subject"  type="enumeration"  values="file:/org/ramadda/plugins/usda/resources/${name}_subjects.txt" label="Subject" default="1" cansearch="true" />
+     <column name="state"  type="enumeration"  values="file:/org/ramadda/plugins/usda/resources/${name}_states.txt" label="State" default="00" cansearch="true" />
+     <column name="source_url"  type="url" label="Source URL"  showinform="false"/>
+  </type>
+
+
+  <type name="type_usda_nass"  super="type_usda_point" description="USDA NASS Data"  handler="org.ramadda.plugins.usda.NassTypeHandler" mefirst="true">
+     <property name="record.file.class" value="org.ramadda.plugins.usda.NassFile"/>
+     <column name="source"  type="enumeration"  values="SURVEY,CENSUS" label="Source" default="SURVEY" cansearch="true" />
+     <column name="commodity"  type="enumeration"  values="file:/org/ramadda/plugins/usda/resources/nass_commodities.txt" label="Commodities" default="AG LAND" cansearch="true" />
+     <column name="state"  type="enumeration"  values="file:/org/ramadda/plugins/usda/resources/nass_states.txt" label="State" default="US TOTAL" cansearch="true" />
+     <column name="source_url"  type="url" label="Source URL"  showinform="false"/>
+  </type>
+
+
+</types>

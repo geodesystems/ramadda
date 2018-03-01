@@ -1,0 +1,29 @@
+
+<tables>
+
+
+<table id="above_sites" name="ABoVE Sites" handler="org.ramadda.projects.above.AboveDbTypeHandler"  category="AbOVE">
+
+   <column name="name" type="string" label="Name"   canlist="true" cansearch="true"/>
+   <column name="url" type="url" label="URL"   canlist="true" size="500" />
+   <column name="type" type="enumerationplus" label="Type" xxxvalues="file:/org/ramadda/geodata/fieldproject/resources/equipmenttype.properties" cansearch="true"   canlist="true">
+       <property name="iscategory" value="true"/>
+   </column>
+   <column name="acronym" type="string" label="Acronym"   canlist="true"/>
+   <column name="description" type="string" label="Desription"   canlist="false" rows="5" size="3000"  cansearch="true"/>
+   <column name="leaders" type="string" label="Leaders"   canlist="false" rows="5" size="1000" />
+   <column name="sponsor" type="list" label="Sponsor"   cansearch="true" canlist="false" size="1000" rows="5"/>
+<!--
+   <column name="instrument" type="enumerationplus" label="Primary Instrument" xxxvalues="file:/org/ramadda/geodata/fieldproject/resources/equipmenttype.properties" cansearch="true"   canlist="true">
+       <property name="iscategory" value="true"/>
+   </column>
+-->
+   <column name="monitoringtype" type="list" label="Monitoring Type"   canlist="false" />
+   <column name="location" type="latlon" label="Location"   canlist="false" rows="5" cansearch="true"/>
+   <column name="notes" type="string" label="Notes"   canlist="false" rows="5" size="3000" />
+   <column name="icontype" type="string" label="Icon type"   canlist="false" />
+</table>
+
+
+
+</tables>

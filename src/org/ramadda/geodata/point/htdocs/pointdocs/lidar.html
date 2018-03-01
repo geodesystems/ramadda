@@ -1,0 +1,70 @@
+<html>
+<head>
+<title>LiDAR Data Formats</title>
+  <link rel="stylesheet" type="text/css" href="./default.css" title="Style">
+
+</head>
+
+<body>
+<div class="ramadda-documentation">
+<table width=100% cellpadding=0 cellspacing=0><tr><td width=30%>
+<a href="page_dataformats.html"><img src="images/PreviousArrow.gif" border="0"   alt="Previous: Data Formats" title="Previous: Data Formats"></a> <img src="images/NextArrowDisabled.gif" border="0"   alt="" title=""> <a href="toc.html#lidar.html"><img src="images/TOCIcon.gif" border="0"   alt="Table of contents" title="Table of contents"></a>
+</td>
+<td width=40% align=center>
+<div class="pagetitle">Point Data Documentation</div>
+</td>
+<td width=30%>&nbsp;</td>
+</tr></table>
+<div class="pagetitle">5.0 LiDAR Data Formats</div>
+
+<style type="text/css">
+pre {
+    margin-left:15px;
+}
+</style>
+
+
+
+
+
+There is support for a number of different LiDAR file formats.
+
+<ul>
+<li>
+LAS - Version 1.2 and 1.3 - all point formats
+<div class="note">
+Note: for now the Java LAS library does not read the GEOTIFF coordinate reference system information so  
+it is assume that  the x/y/z coordinates are geographic - i.e., they are longitude/latitude/meters.
+</div>
+
+<li>
+GLAS -  GLAS record formats 5, 6, 12, 13, 14, 15 and GLANL
+<div class="note">
+Note: the tiling won't work for the "non-flat" formats -  everything except GLANL. 
+</div>
+
+<li>
+LVIS - Version 1.2 and 1.3 - all points formats (LCE, LGE and LGW)
+
+<li>
+ATM, McORDS, PARIS text formats
+
+<li>
+General CSV text formats - See below
+
+
+</ul>
+
+
+
+
+
+<p>
+
+<p>&nbsp;<p>
+<a href="page_dataformats.html"><img src="images/PreviousArrow.gif" border="0"   alt="Previous: Data Formats" title="Previous: Data Formats"></a> <img src="images/NextArrowDisabled.gif" border="0"   alt="" title=""> <a href="toc.html#lidar.html"><img src="images/TOCIcon.gif" border="0"   alt="Table of contents" title="Table of contents"></a>
+<p>
+</div>
+</body>
+</html>
+

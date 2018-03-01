@@ -1,0 +1,63 @@
+[ht::head {Downloading and Exporting Entries}]
+
+<%nochildlist%>
+
+There are a number of ways to access the files and other content stored by RAMADDA.
+
+When you are viewing a Folder or other container entry open the menu (<img src="images/menu_arrow.gif">) and under the File menu are options - Zip and Download Tree and Bulk Download Script. If you are logged in there is also a Export Entries service.
+
+[ht::cimg images/downloadmenu.png {} {border=0}]
+
+The Zip and Download Tree will produce a .zip file of the entire entry hierarchy. Note - there are size limits in place (some number of GB).
+
+The Bulk Download Script will return a shell script that, when run on your machine, will recreate the entry hierarchy a directories on your machine and will download the files. Note: this uses some shell programming and the curl program to download the files. This has been tested on Mac and Unix machines but not in Windows.
+
+You can change the default behavior of the service, e.g., adding download of xml metadata files, overwriting the files, etc. by copy-and-pasting the URL and adding new URL arguments.
+
+e.g.:
+
+<pre>
+http://ramadda.org/repository/entry/show/RINEX_download.sh?entryid=d8e8c047-d990-40f7-9eb9-07c89323bbe4&output=bulk.curl
+</pre>
+
+
+If a file already exists the script will not download the file. To change this behavior add the URL argument:
+<pre>
+&overwrite=true
+</pre>
+
+
+Normally when you are viewing a Folder (or Project, etc) the download script will not create a directory for the Folder. It will just download all of the children entries. To have the script also create a directory (and fetch metadata, etc) for the current Folder add:
+<pre>
+&includeparent=true
+</pre>
+
+
+To also have the script download any other outputs (e.g., GeoRSS, THREDDS catalog) add the <i>outputs</i> URL argument:
+<pre>
+&outputs=&lt;comma separated list of output ids&gt;
+</pre>
+
+e.g.: to also fetch the ATOM xml feed do:
+<pre>
+&outputs=atom
+</pre>
+
+Other outputs include:
+<pre>
+&outputs=json,atom,rss.full,kml
+</pre>
+
+
+You can export the RAMADDA entry xml format then, from your own RAMADDA, harvest the directory tree the script creates and you will have an exact replica of the original RAMADDA content and data. 
+
+Just add on:
+<pre>
+&outputs=xml.xmlentry
+</pre>
+
+
+
+
+
+[ht::foot]

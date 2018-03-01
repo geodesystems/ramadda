@@ -1,0 +1,34 @@
+<types xxsupercategory="Miscellaneous" category="Information">
+
+  <type name="type_dropbox"  description="Dropbox Import" handler="org.ramadda.plugins.dropbox.DropboxTypeHandler"  >
+     <property name="icon" value="/dropbox/dropbox.png"/>
+     <property name="form.resource.show" value="false"/>
+     <property name="form.area.show" value="false"/>
+     <property name="form.location.show" value="false"/>
+     <property name="form.date.show" value="false"/>
+     <column name="access_token" type="password"  label="Access Token" />
+     <wiki><![CDATA[
+{{noheading}}
++section # title="Dropbox: {{name}}"
+{{description wikify="true"}}
+{{tree details="false" message="Nothing found"}}
+-section
+]]>
+</wiki>
+  </type>
+
+
+  <type name="dropbox_file"  description="Dropbox File" foruser="false" xhandler="org.ramadda.plugins.slack.SlackChannelTypeHandler" >
+     <property name="icon" value="/dropbox/dropbox.png"/>
+   </type>
+
+
+
+
+
+  <type name="dropbox_folder"  description="Dropbox Folder" foruser="false" xhandler="org.ramadda.plugins.slack.SlackChannelTypeHandler" >
+     <property name="icon" value="/dropbox/dropbox.png"/>
+   </type>
+
+
+</types>

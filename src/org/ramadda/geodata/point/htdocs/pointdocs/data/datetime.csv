@@ -1,0 +1,6 @@
+#
+#dateformat=yyyy/MM/dd HH:mm:ss
+#fields=date[type="string" isdate="true"],time[type="string" istime="true"],value
+#
+2012/10/12 14:11:17.14 -0.931363
+2012/10/12 14:11:17.24 -0.930391

@@ -1,0 +1,35 @@
+<types>
+
+
+  <type name="weblog"  description="Weblog" handler="org.ramadda.plugins.blog.WeblogTypeHandler" category="Information" metadata="enum_tag,content.attachment">
+
+     <property name="icon" value="/blog/blog-icon-box-orange-16.png"/>
+     <property name="form.description.rows" value="5"/>
+     <property name="form.area.show" value="false"/>
+     <property name="form.resource.show" value="false"/>
+     <property name="form.datatype.show" value="false"/>
+     <column name="header" type="string" size="5000" label="Header wiki  text"  rows="20" columns="80"/>
+     <column name="navhtml" type="string" size="5000" label="Navigation text"  rows="20" columns="80"/>
+</type>
+
+
+
+  <type name="blogentry"  description="Weblog Entry" handler="org.ramadda.plugins.blog.BlogEntryTypeHandler" category="Information" foruser="true" metadata="enum_tag,content.attachment">
+     <property name="icon" value="/blog/blog_icon.png"/>
+
+     <property name="form.name.label" value="Subject"/>
+     <property name="form.name.columns" value="80"/>
+
+     <property name="form.description.label" value="Blog Entry"/>
+     <property name="form.description.rows" value="10"/>
+     <property name="form.description.iswiki" value="true"/>
+     <property name="form.description.columns" value="80"/>
+
+     <property name="form.todate.show" value="false"/>
+     <property name="form.resource.show" value="false"/>
+
+     <column name="blogtext" type="clob" size="256000" label="Extra Text" cansearch="true" showinhtml="false" rows="20" columns="80" iswiki="true"/>
+</type>
+
+
+</types>

@@ -1,0 +1,48 @@
+<types supercategory="Bioinformatics">
+
+
+  <type name="bio_dicom"  description="DICOM File"  category="Bio" pattern=".*\.dcm" handler="org.ramadda.bio.image.DicomTypeHandler">
+     <property name="icon" value="/dicom/film.png"/>
+     <property name="form.area.show" value="false"/>
+     <property name="search.form.area.show" value="false"/>
+     <property name="form.todate.show" value="false"/>
+     <property name="form.fromdate.label" value="Date"/>
+     <service link="bio_dicom_makethumbnail" id="dicomimage"  target="attachment"/>
+     <service link="bio_dicom_xml" id="dicomxml"/>
+  </type>
+
+
+  <type name="bio_dicom_test"  super="bio_dicom" description="DICOM Test File"   handler="org.ramadda.bio.image.DicomTypeHandler">
+     <column name="PatientName" label="Patient Name"  cansearch="true"/>
+     <column name="PatientID" label="Patient ID"  cansearch="true"/>
+     <column name="PatientAge" label="Patient Age"  />
+     <property name="dicom.metadata">
+OperatorsName,
+StationName
+</property>
+
+  </type>
+
+
+  <type name="bio_dicom_xml"  description="DICOM Text File"  category="Bio">
+<!--
+     <property name="icon" value="/dicom/document-film.png"/>
+-->
+     <property name="form.area.show" value="false"/>
+     <property name="form.todate.show" value="false"/>
+     <property name="form.fromdate.label" value="Date"/>
+  </type>
+
+
+  <type name="bio_ome_tiff"  description="OME TIFF File"  category="Bio" pattern=".*\.ome\.tif+" handler="org.ramadda.bio.image.OmeTiffTypeHandler">
+     <property name="icon" value="/bioimage/ome.png"/>
+     <property name="form.area.show" value="false"/>
+     <property name="form.todate.show" value="false"/>
+     <property name="form.fromdate.label" value="Date"/>
+     <service link="bio_ome_bfconvert"  target="attachment"/>
+     <service link="bio_ome_xml"/>
+  </type>
+
+
+
+</types>

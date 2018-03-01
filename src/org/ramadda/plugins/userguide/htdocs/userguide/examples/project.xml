@@ -1,0 +1,35 @@
+<entries>
+<!--
+    Copy this file as .this.ramadda.xml in the directory that you want to be
+    represented as a Project entry
+-->
+  <entry  name="Example Project" type="project_project" east="-103.359" fromdate="2013-11-21 11:58:11 UTC"   north="40.17" parent="" south="32.833" todate="2013-11-21 11:58:11 UTC"  west="-111.094">
+    <description encoded="false"><![CDATA[
+Some description.<p>
+You can include html, etc
+]]></description>
+    <project_id encoded="false"><![CDATA[some id]]></project_id>
+    <status encoded="false"><![CDATA[active]]></status>
+    <project_type encoded="false"><![CDATA[airborne]]></project_type>
+    <location encoded="false"><![CDATA[some location]]></location>
+    <notes encoded="false"><![CDATA[some notes]]></notes>
+
+<!--
+You can include any kind of metadata
+A simple way is to use attr1, attr2, etc attributes:
+--> 
+    <metadata type="project_person" attr1="john doe" attr2="some place" />
+
+<!--
+Or for more complex attributes use the attribute tag. If encoded =true then the text 
+is assumed to be base 64 encoded
+--> 
+
+    <metadata inherited="false" type="project_person">
+      <attr encoded="false" index="1"><![CDATA[name]]></attr>
+      <attr encoded="false" index="2"><![CDATA[type]]></attr>
+      <attr encoded="false" index="3"><![CDATA[institution]]></attr>
+      <attr encoded="false" index="4"><![CDATA[email]]></attr>
+    </metadata>
+  </entry>
+</entries>

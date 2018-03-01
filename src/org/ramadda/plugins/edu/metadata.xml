@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<metadata>
+
+  <handler category="EDU">
+
+    <type id="edu_instructor" name="Instructor" searchable="true"  displaygroup="Instructors">
+      <element id="name" name="Name"/>
+      <element id="email" name="Email" datatype="email"/>
+      <element id="institution" name="Institution"/>
+      <element id="url" datatype="url" name="URL"/>
+      <element id="picture" datatype="file" name="Picture" thumbnail="false" attachment="false"/>
+    </type>
+
+</handler>
+
+
+</metadata>

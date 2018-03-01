@@ -1,0 +1,216 @@
+<?xml version="1.0"?>
+<sitesResponse xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns="http://www.cuahsi.org/waterML/1.1/">
+  <queryInfo>
+    <creationTime>2009-06-12T10:47:57.5-07:00</creationTime>
+    <criteria MethodCalled="GetSiteInfo">
+      <parameter name="site" value="LBR_TEST:USU-LBR-Wellsville" />
+    </criteria>
+  </queryInfo>
+  <site>
+    <siteInfo>
+      <siteName>Little Bear River near Wellsville, Utah</siteName>
+      <siteCode network="LBR" siteID="10">USU-LBR-Wellsville</siteCode>
+      <geoLocation>
+        <geogLocation xsi:type="LatLonPointType" srs="EPSG:4269">
+          <latitude>41.643457</latitude>
+          <longitude>-111.917649</longitude>
+        </geogLocation>
+        <localSiteXY projectionInformation=" NAD83 / UTM zone 12N">
+          <X>423579.317</X>
+          <Y>4610597.583</Y>
+        </localSiteXY>
+      </geoLocation>
+      <elevation_m>1365</elevation_m>
+      <verticalDatum>NGVD29</verticalDatum>
+      <siteProperty name="County">Cache</siteProperty>
+      <siteProperty name="State">Utah</siteProperty>
+      <siteProperty name="Site Comments">Located on the upstream side of State Highway 101 bridge.</siteProperty>
+    </siteInfo>
+    <seriesCatalog menuGroupName="Local OD GetValues" serviceWsdl="http://localhost:6278/genericODws/cuahsi_1_0.asmx">
+      <series>
+        <variable>
+          <variableCode vocabulary="LBR" default="true" variableID="3">USU3</variableCode>
+          <variableName>Battery voltage</variableName>
+          <valueType>Field Observation</valueType>
+          <dataType>Minimum</dataType>
+          <generalCategory>Instrumentation</generalCategory>
+          <sampleMedium>Other</sampleMedium>
+          <unit>
+            <unitName>volts</unitName>
+            <unitType>Potential Difference</unitType>
+            <unitAbbreviation>V</unitAbbreviation>
+            <unitCode>168</unitCode>
+          </unit>
+          <noDataValue>-9999</noDataValue>
+          <timeScale isRegular="true">
+            <unit>
+              <unitName>minute</unitName>
+              <unitType>Time</unitType>
+              <unitAbbreviation>min</unitAbbreviation>
+              <unitCode>102</unitCode>
+            </unit>
+            <timeSupport>30</timeSupport>
+          </timeScale>
+          <speciation>Not Applicable</speciation>
+        </variable>
+        <valueCount>7309</valueCount>
+        <variableTimeInterval xsi:type="TimeIntervalType">
+          <beginDateTime>2007-11-05T14:30:00</beginDateTime>
+          <endDateTime>2008-04-05T20:30:00</endDateTime>
+          <beginDateTimeUTC>2007-11-05T21:30:00</beginDateTimeUTC>
+          <endDateTimeUTC>2008-04-06T03:30:00</endDateTimeUTC>
+        </variableTimeInterval>
+        <method methodID="4">
+          <methodDescription>Battery voltage measured by Campbell Scientific CR206 datalogger.</methodDescription>
+        </method>
+        <source sourceID="2">
+          <organization>Utah State University Utah Water Research Laboratory</organization>
+          <sourceDescription>Continuous monitoring data collected by Utah State University as part of a National Science Foundation funded test bed project.</sourceDescription>
+          <citation>Continuous monitoring data collected by Jeff Horsburgh, David Stevens, David Tarboton, Nancy Mesner, Amber Spackman, and Sandra Gurrero at Utah State University as part of a National Science Foundation funded WATERS Network Test Bed project.</citation>
+        </source>
+        <qualityControlLevel qualityControlLevelID="0">
+          <qualityControlLevelCode>0</qualityControlLevelCode>
+          <definition>Raw data</definition>
+        </qualityControlLevel>
+      </series>
+      <series>
+        <variable>
+          <variableCode vocabulary="LBR" default="true" variableID="4">USU4</variableCode>
+          <variableName>Turbidity</variableName>
+          <valueType>Field Observation</valueType>
+          <dataType>Average</dataType>
+          <generalCategory>Water Quality</generalCategory>
+          <sampleMedium>Surface Water</sampleMedium>
+          <unit>
+            <unitName>nephelometric turbidity units</unitName>
+            <unitType>Turbidity</unitType>
+            <unitAbbreviation>NTU</unitAbbreviation>
+            <unitCode>221</unitCode>
+          </unit>
+          <noDataValue>-9999</noDataValue>
+          <timeScale isRegular="true">
+            <unit>
+              <unitName>second</unitName>
+              <unitType>Time</unitType>
+              <unitAbbreviation>s</unitAbbreviation>
+              <unitCode>100</unitCode>
+            </unit>
+            <timeSupport>5</timeSupport>
+          </timeScale>
+          <speciation>Not Applicable</speciation>
+        </variable>
+        <valueCount>7309</valueCount>
+        <variableTimeInterval xsi:type="TimeIntervalType">
+          <beginDateTime>2007-11-05T14:30:00</beginDateTime>
+          <endDateTime>2008-04-05T20:30:00</endDateTime>
+          <beginDateTimeUTC>2007-11-05T21:30:00</beginDateTimeUTC>
+          <endDateTimeUTC>2008-04-06T03:30:00</endDateTimeUTC>
+        </variableTimeInterval>
+        <method methodID="2">
+          <methodDescription>Turbidity measured using a Forest Technology Systems DTS-12  turbidity sensor.</methodDescription>
+        </method>
+        <source sourceID="2">
+          <organization>Utah State University Utah Water Research Laboratory</organization>
+          <sourceDescription>Continuous monitoring data collected by Utah State University as part of a National Science Foundation funded test bed project.</sourceDescription>
+          <citation>Continuous monitoring data collected by Jeff Horsburgh, David Stevens, David Tarboton, Nancy Mesner, Amber Spackman, and Sandra Gurrero at Utah State University as part of a National Science Foundation funded WATERS Network Test Bed project.</citation>
+        </source>
+        <qualityControlLevel qualityControlLevelID="0">
+          <qualityControlLevelCode>0</qualityControlLevelCode>
+          <definition>Raw data</definition>
+        </qualityControlLevel>
+      </series>
+      <series>
+        <variable>
+          <variableCode vocabulary="LBR" default="true" variableID="5">USU5</variableCode>
+          <variableName>Turbidity</variableName>
+          <valueType>Field Observation</valueType>
+          <dataType>Variance</dataType>
+          <generalCategory>Water Quality</generalCategory>
+          <sampleMedium>Surface Water</sampleMedium>
+          <unit>
+            <unitName>nephelometric turbidity units</unitName>
+            <unitType>Turbidity</unitType>
+            <unitAbbreviation>NTU</unitAbbreviation>
+            <unitCode>221</unitCode>
+          </unit>
+          <noDataValue>-9999</noDataValue>
+          <timeScale isRegular="true">
+            <unit>
+              <unitName>second</unitName>
+              <unitType>Time</unitType>
+              <unitAbbreviation>s</unitAbbreviation>
+              <unitCode>100</unitCode>
+            </unit>
+            <timeSupport>5</timeSupport>
+          </timeScale>
+          <speciation>Not Applicable</speciation>
+        </variable>
+        <valueCount>7309</valueCount>
+        <variableTimeInterval xsi:type="TimeIntervalType">
+          <beginDateTime>2007-11-05T14:30:00</beginDateTime>
+          <endDateTime>2008-04-05T20:30:00</endDateTime>
+          <beginDateTimeUTC>2007-11-05T21:30:00</beginDateTimeUTC>
+          <endDateTimeUTC>2008-04-06T03:30:00</endDateTimeUTC>
+        </variableTimeInterval>
+        <method methodID="2">
+          <methodDescription>Turbidity measured using a Forest Technology Systems DTS-12  turbidity sensor.</methodDescription>
+        </method>
+        <source sourceID="2">
+          <organization>Utah State University Utah Water Research Laboratory</organization>
+          <sourceDescription>Continuous monitoring data collected by Utah State University as part of a National Science Foundation funded test bed project.</sourceDescription>
+          <citation>Continuous monitoring data collected by Jeff Horsburgh, David Stevens, David Tarboton, Nancy Mesner, Amber Spackman, and Sandra Gurrero at Utah State University as part of a National Science Foundation funded WATERS Network Test Bed project.</citation>
+        </source>
+        <qualityControlLevel qualityControlLevelID="0">
+          <qualityControlLevelCode>0</qualityControlLevelCode>
+          <definition>Raw data</definition>
+        </qualityControlLevel>
+      </series>
+      <series>
+		<variable>
+			<variableCode vocabulary="LBR" default="true" variableID="40">USU40</variableCode>
+			<variableName>Phosphorus, total as P, filtered</variableName>
+			<valueType>Sample</valueType>
+			<dataType>Sporadic</dataType>
+			<generalCategory>Water Quality</generalCategory>
+			<sampleMedium>Surface Water</sampleMedium>
+			<unit>
+				<unitName>milligrams per liter</unitName>
+				<unitType>Concentration</unitType>
+				<unitAbbreviation>mg/L</unitAbbreviation>
+				<unitCode>199</unitCode>
+			</unit>
+			<noDataValue>-9999</noDataValue>
+			<timeScale>
+				<unit>
+					<unitName>second</unitName>
+					<unitType>Time</unitType>
+					<unitAbbreviation>s</unitAbbreviation>
+					<unitCode>100</unitCode>
+				</unit>
+				<timeSupport>0</timeSupport>
+			</timeScale>
+			<speciation>P</speciation>
+		</variable>
+		<valueCount>11</valueCount>
+		<variableTimeInterval xsi:type="TimeIntervalType">
+			<beginDateTime>2007-11-07T13:00:00</beginDateTime>
+			<endDateTime>2008-02-12T14:40:00</endDateTime>
+			<beginDateTimeUTC>2007-11-07T20:00:00</beginDateTimeUTC>
+			<endDateTimeUTC>2008-02-12T21:40:00</endDateTimeUTC>
+		</variableTimeInterval>
+		<method methodID="25">
+			<methodDescription>Water chemistry grab sample collected by technicians in the field.</methodDescription>
+		</method>
+		<source sourceID="3">
+			<organization>Utah State University Utah Water Research Laboratory</organization>
+			<sourceDescription>Water chemistry monitoring data collected by Utah State University as part of a National Science Foundation funded test bed project.</sourceDescription>
+			<citation>Water chemistry monitoring data collected by Jeff Horsburgh, David Stevens, David Tarboton, Nancy Mesner, Amber Spackman, and Sandra Gurrero at Utah State University as part of a National Science Foundation funded WATERS Network Test Bed project.</citation>
+		</source>
+		<qualityControlLevel qualityControlLevelID="1">
+			<qualityControlLevelCode>1</qualityControlLevelCode>
+			<definition>Quality controlled data</definition>
+		</qualityControlLevel>
+	</series>
+    </seriesCatalog>
+  </site>
+</sitesResponse>

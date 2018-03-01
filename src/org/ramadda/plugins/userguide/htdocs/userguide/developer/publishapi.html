@@ -1,0 +1,237 @@
+<html>
+<head>
+<title>Publish API</title>
+  <link rel="stylesheet" type="text/css" href="../default.css" title="Style">
+
+</head>
+
+<body>
+<div class="ramadda-documentation">
+<table width=100% cellspacing=0 cellpadding=0 ><tr><td width=30%>
+<a href="searchapi.html"><img src="../images/PreviousArrow.gif" border="0"   alt="Previous: Search API" title="Previous: Search API"></a> <a href="developer.html"><img src="../images/NextArrow.gif" border="0"   alt="Next: RAMADDA Developer Notes" title="Next: RAMADDA Developer Notes"></a>  <a href="../toc.html#developer/publishapi.html"><img src="../images/TOCIcon.gif" border="0"   alt="Table of contents" title="Table of contents"></a>
+</td>
+<td width=40% align=center>
+<div class="ramadda-page-title">RAMADDA User Guide</div>
+</td>
+<td width=30%>&nbsp;</td>
+</tr></table>
+<div class="ramadda-page-heading">15.6 Publish API</div>
+
+<style type="text/css">
+pre {
+    margin-left:15px;
+}
+</style>
+
+<div style="margin-left:20px;">
+
+
+You can programmatically create new entries on a RAMADDA server. There is a  Java class, ucar.unidata.repository.RepositoryClient, 
+that provides some of the facilities.  You can also look at the ucar.unidata.repository.idv.RamaddaPublisher which is used within the 
+IDV to publish content to RAMADDA. This class uses the ucar.unidata.repository.InteractiveRepositoryClient class that provides some 
+GUI facilities (e.g., a folder JTree component).
+
+<p>
+
+
+
+
+
+
+
+Lets say you want to upload a file (e.g., test.png) to RAMADDA. First you need to establish a session with RAMADDA.
+You can just do a url get with:
+<pre>
+https://&lt;server&gt;:&lt;https port&gt;/repository/user/login?output=xml&user.password=&lt;password&gt;&user.id=&lt;user&gt;
+Or if you don't have https:
+http://&lt;server&gt;/repository/user/login?output=xml&user.password=&lt;password&gt;&user.id=&lt;user&gt;
+</pre> 
+
+
+
+The output=xml tells RAMADDA to return the result as xml.
+<p>
+The above request returns xml of the form:
+<pre>
+&lt;response code="ok"&gt;
+sessionid
+&lt;/response&gt;
+</pre>
+
+Or if there was an error:
+<pre>
+&lt;response code="error"&gt;
+some error message
+&lt;/response&gt;
+</pre>
+
+
+Subsequent posts to RAMADDA just require an extra argument:
+<pre>sessionid=&lt;sessionid&gt;</pre>
+
+You can also use   RepositoryClient code:
+<pre>
+  RepositoryClient client = new RepositoryClient(server, 80, "/repository", userId,password);
+  String[] msg = { "" };
+  if (client.isValidSession(true, msg)) {
+       System.err.println("Valid session");
+   } else {
+        System.err.println("Invalid session:" + msg[0]);
+   }
+</pre>
+
+
+
+Next, create an <a href="../entryxml.html">entry xml</a> file that defines the entries you want to create.  
+
+<p>
+Now, zip up this xml file along with the file you want to upload and then post the zipped file to:
+<pre>http://&lt;server&gt;/repository/entry/xmlcreate</pre>
+
+
+Include the arguments:
+<pre>
+output=xml
+sessionid=&lt;sessionid&gt;
+file=thezipfile
+</pre>
+
+
+Note: an alternative way to specify the destination parent entry in the repository is to pass the entry id
+in as a URL argument:
+<pre>
+group=<i>some parent entry id</i> 
+</pre>
+
+
+
+If you are not uploading files you can just post the xml file instead of the zip file.
+In that case instead of a file= attribute in the xml use url=, e.g.,:
+<pre>
+ &lt;entries&gt;
+  &lt;entry name="Some opendap url" 
+            type="file" 
+            id="0" 
+            url="the opendap url"  
+            parent="&lt;some parent entry id&gt;" 
+&lt;/entries&gt;
+</pre>
+
+
+
+Either way, you will get back the response xml with either code=ok and a list of the entry ids created:
+<pre>
+&lt;response code="ok"&gt;
+  &lt;entry id="1219161636252_0.6145187911490728_17"/&gt;
+&lt;/response&gt;
+</pre>
+
+Or an error response:
+<pre>
+&lt;response code="error"&gt;
+error message
+&lt;/response&gt;
+</pre>
+
+
+Here is a longer version of an entries file:
+
+
+
+<pre>
+&lt;entries&gt;
+  &lt;entry description="" east="-3.950" file="test.xidv" fromdate="2008-08-19 16:01:00 GMT" id="0" name="test.png" north="71.864" parent="&lt;some parent entry id&gt;" south="-7.926" todate="2008-08-19 16:01:00 GMT" type="file" west="-198.358"/&gt;
+  &lt;entry east="-3.950" file="test.png" fromdate="2008-08-19 16:01:00 GMT" id="1" name="test.png - Product" north="71.864" parent="&lt;some parent entry id&gt;" south="-7.926" todate="2008-08-19 16:01:00 GMT" type="file" west="-198.358"/&gt;
+  &lt;association from="0" name="generated product" to="1"/&gt;
+&lt;/entries&gt;
+</pre>
+
+With its response:
+<pre>
+&lt;response code="ok"&gt;
+  &lt;entry id="1219161636252_0.5912686911125428_33"/&gt;
+  &lt;entry id="1219161636252_0.34475975368841827_34"/&gt;
+  &lt;association id="1219161636252_0.18087075533515407_35"/&gt;
+&lt;/response&gt;
+</pre>
+
+
+<a name="metadata"></a><div class="ramadda-page-heading">15.6.0 Metadata</div> 
+
+You can also create metadata (or properties) in the XML.
+
+Inside the entry tag you can have any number of metadata tags. You define the type and the attribute values.
+
+Note: This only works for the more simple metadata elements like tag, personnel, etc. The more complex
+ones with nested structured would require knowing RAMADDA's internal (and rather ill thought out) metadata storage model.
+
+A simple metadata xml tag looks like:
+
+<pre>
+<blockquote><pre>
+&lt;entry ...&gt;
+...
+&lt;metadata <span class="xmlattr">type</span>="some type&quot; <span class="xmlattr">attr1</span>="atribute 1 value&quot; <span class="xmlattr">attr2</span>="attribute 2 value&quot; .../&gt;
+</pre></blockquote>
+</pre>
+
+So to add a "tag" metadata use the xml:
+<pre>
+<blockquote><pre>
+    &lt;metadata <span class="xmlattr">inherited</span>="false&quot; <span class="xmlattr">type</span>="enum_tag&quot; <span class="xmlattr">attr1</span>="TAG VALUE&quot;&gt;
+</pre></blockquote>
+</pre>
+
+
+If you have values that don't work as XML attributes due to their content or their length 
+you can include them as tags.  The encoded="false" says this is unencoded text. The 
+default is encoded=true which implies the text is base64 encoded (see below).
+
+<pre>
+<blockquote><pre>
+   &lt;metadata <span class="xmlattr">inherited</span>="true&quot; <span class="xmlattr">type</span>="some type&quot;&gt;
+      &lt;attr <span class="xmlattr">index</span>="1&quot; <span class="xmlattr">encoded</span>="false&quot;&gt;<span class="xmlcdata">&lt;![CDATA[value 1]]&gt;</span>&lt;/attr&gt;
+      &lt;attr <span class="xmlattr">index</span>="2&quot; <span class="xmlattr">encoded</span>="false&quot;&gt;<span class="xmlcdata">&lt;![CDATA[value 2]]&gt;</span>&lt;/attr&gt;
+      ...
+    &lt;/metadata&gt;
+</pre></blockquote>
+</pre>
+
+
+
+A simple way to see the metadata xml is to create a folder or other entry  in RAMADDA. Add a number of properties to it then do File->Export. Uzip the .zip file and look at the entries.xml
+Note: the contents of the attr tags are CDATA blocks of base64 encoded text. 
+Base64 encoding of the text is the default and is what is expected when RAMADDA ingests this XML unless 
+you have encoded=false.
+
+
+<pre>
+<blockquote><pre>
+   &lt;metadata <span class="xmlattr">inherited</span>="true&quot; <span class="xmlattr">type</span>="some type&quot;&gt;
+      &lt;attr <span class="xmlattr">index</span>="1&quot;&gt;<span class="xmlcdata">&lt;![CDATA[TlNGLU9QUA==]]&gt;</span>&lt;/attr&gt;
+      &lt;attr <span class="xmlattr">index</span>="2&quot;&gt;<span class="xmlcdata">&lt;![CDATA[SW5jcmV=]]&gt;</span>&lt;/attr&gt;
+      ...
+    &lt;/metadata&gt;
+</pre></blockquote>
+</pre>
+
+
+
+
+
+
+
+</div>
+<p>
+<div  class="childlist" ><table  width="100%" ><tr  valign="top" ><td  width="10%"  align="right" ><span  class="childlist-level" >
+15.6.0&nbsp;
+</span></td><td><a  class="childlist-link"  href="publishapi.html#metadata" >
+Metadata
+</a><br></td></tr></table></div>
+<p>&nbsp;<p>
+<a href="searchapi.html"><img src="../images/PreviousArrow.gif" border="0"   alt="Previous: Search API" title="Previous: Search API"></a> <a href="developer.html"><img src="../images/NextArrow.gif" border="0"   alt="Next: RAMADDA Developer Notes" title="Next: RAMADDA Developer Notes"></a>  <a href="../toc.html#developer/publishapi.html"><img src="../images/TOCIcon.gif" border="0"   alt="Table of contents" title="Table of contents"></a>
+<p>
+</div>
+</body>
+</html>
+

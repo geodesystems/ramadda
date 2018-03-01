@@ -1,0 +1,16 @@
+<types supercategory="Miscellaneous">
+
+  <type name="mail_message"  
+        description="Mail Message" 
+        handler="org.ramadda.plugins.mail.MailTypeHandler" 
+        foruser="false"
+        category="Information" 
+        pattern=".*\.eml$">
+     <property name="icon" value="/mail/email.png"/>
+     <property name="form.area.show" value="false"/>
+     <property name="form.datatype.show" value="false"/>
+     <column name="fromaddress" type="string" label="From" size="500"/>
+     <column name="toaddress" type="string" label="To"  rows="5" size="1000"/>
+</type>
+
+</types>

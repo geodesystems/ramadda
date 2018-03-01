@@ -1,0 +1,24 @@
+<services command="${service.ffmpeg}" icon="/icons/mov.png">
+
+<service id="media_ffmpeg_createmovie" label="Create movie from images" handler="org.ramadda.plugins.media.FfmpegService" outputToStderr="true">
+<process_description><![CDATA[<wiki>
+{{description}}
+{{tree}}
+]]></process_description>
+
+<description><![CDATA[
+Runs <a href="https://www.ffmpeg.org/">ffmpeg</a>
+]]></description>
+<!--
+ffmpeg -f concat -i foo.txt test.mp4
+-->
+          <arg type="double" prefix="-r" label="Frame Rate" help="" default="1.0"/>
+          <arg value="-y"/>
+          <arg value="-f"/>
+          <arg value="concat"/>
+          <arg value="-i"/>
+          <arg value="${entry.file}" multiple="true" type="entry" entryType="type_image" entryPattern="(.*\.png|.*\.jpg|.*\.gif)" primary="true" label="Input Image File" include="false" ></arg>
+          <output type="media_video_quicktime" pattern=".*\.mp4"/>
+    </service>
+
+</services>

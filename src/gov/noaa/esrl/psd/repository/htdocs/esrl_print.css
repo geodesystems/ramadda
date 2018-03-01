@@ -1,0 +1,95 @@
+body    {	
+	font-family: sans-serif;
+	color: black; 
+	background: white;
+}
+
+div#banner {
+	padding: 0px;
+	margin: 10px;
+	border: none;
+}
+
+div#minor_header {
+	border: none;
+	width: inherit;
+	border-top: solid 2px #999;
+	border-bottom: solid 2px #999;
+	background-color: white;
+	color: black;
+}
+div#minor_header a {
+	color: black;
+}
+
+div#major_header {
+	height: 80px;
+}
+
+div#search {
+	display: none;
+}
+
+div#major_nav {
+	display: none;
+	border: none;
+}
+	
+div#content {
+	width: 95%;
+	margin: 0em;
+	padding: 1.0em;
+	border-left: none;
+	background: white;
+}
+
+h1 { 
+	font-size: 150%; 
+	padding-top: 0.3em;
+	margin-top: 0.3em;
+	padding-bottom: 0.1em;
+	margin-bottom: 0.1em;
+}
+
+h2 { 
+	font-size: 135%; 
+	padding-top: 0.7em;
+	margin-top: 0.3em;
+	padding-bottom: 0.1em;
+	margin-bottom: 0.1em;
+}
+
+h3 { 
+	font-size: 120%; 
+	padding-top: 0.7em;
+	margin-top: 0.3em;
+	padding-bottom: 0.1em;
+	margin-bottom: 0.1em;
+}
+
+h4 { 
+	font-size: 105%; 
+	padding-top: 0.7em;
+	margin-top: 0.3em;
+	padding-bottom: 0.1em;
+	margin-bottom: 0.1em;
+}
+
+div#minor_nav {
+	display: none;
+}
+
+blockquote#news {
+	display: none;
+}
+
+div#footer {
+	border-top: solid 2px #999;
+	border-bottom: solid 2px #999;
+	background-color: white;
+	color: black;
+}
+
+div#footer a {
+	color: black;
+}

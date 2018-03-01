@@ -1,0 +1,32 @@
+<services maxFileSize="5">
+
+<service id="media_tabular_extractsheet" label="Extract sheets" command="java:org.ramadda.data.docs.TabularService:extractSheet" >
+  <description><![CDATA[Extracts the XLS sheet]]></description>
+  <arg value="${entry.file}" type="entry" entryType="type_document_tabular" primary="true" label="Input Table File" include="false"></arg>
+
+  <arg type="string"  label="Sheets" help="Comma separated list of sheet numbers 1..N" ifdefined="false"/>
+  <output type="type_document_xls" pattern=".*\.xlsx"/>
+</service>
+
+<service id="media_tabular_csv" label="CSV" command="java:org.ramadda.data.docs.TabularService:csv" >
+  <description><![CDATA[CSV Services]]></description>
+
+  <arg value="${entry.file}" type="entry" entryType="type_document_tabular" primary="true" label="Input Table File" include="false"></arg>
+
+  <arg type="string"  label="Columns" help="Comma separated list of columns to select" ifdefined="false"/>
+  <arg type="category" label="Filters"/>
+  <arg type="int" size="5" label="Skip" help="How many rows to skip" prefix="-skip"></arg>
+  <arg type="category" label="Operations"/>
+  <arg type="flag" label="" help="Sum" value="-sum"></arg>
+  <arg type="flag" label="" help="Count" value="-count"></arg>
+  <arg type="flag" label="" help="Min" value="-min"></arg>
+  <arg type="flag" label="" help="Max" value="-max"></arg>
+  <arg type="flag" label="" help="Average" value="-average"></arg>
+  <arg type="flag" label="" help="Flip" value="-flip"></arg>
+  <arg type="string" label="Only use rows between" help="Enter ';' delimited row range, e.g. 3;7" prefix="-cut"></arg>
+  <arg type="flag" label="" help="Show unique values" value="-u"></arg>
+  <arg type="string"  label="Format" help="Decimal format for operation output" prefix="-format" ifdefined="false"/>
+  <output type="type_document_csv" pattern=".*\.csv"/>
+</service>
+
+</services>

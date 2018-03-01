@@ -1,0 +1,4 @@
+#fields=value1[unit="some unit"],value2[unit="some unit" missing="-999.0"]
+-0.93,100.0
+-0.23,-999.0
+-1.93,-999.0

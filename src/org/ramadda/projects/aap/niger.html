@@ -1,0 +1,81 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"><head>
+
+<!-- Insère les mots-clés extraits de la DB dans les meta -->
+<meta name="keywords" content="Ministère de l'Hydraulique et de l'Environnement" lang="fr">
+<!-- Insère la description extraite de la DB dans les meta -->
+<meta name="Description" content="Ministère de l'Hydraulique et de l'Environnement">
+<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+<!-- Insère le titre extrait de la DB dans la balise correspondante -->
+
+<title>${header.title} - ${title}</title>
+	<link rel="shortcut icon" href="http://www.gouv.ne/styles/images/icon_armoirie_128.png">
+	<meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
+
+
+<!--
+<properties>
+name=Niger Template
+id=niger
+
+ramadda.template.link.wrapper =<span class="navlink"><a  href="${url}">${label}</a></span>
+ramadda.template.link.separator=&nbsp;|&nbsp;
+
+ramadda.template.userlink.wrapper =<span class="navlink"><a  href="${url}">${label}</a></span>
+ramadda.template.userlink.separator=&nbsp;|&nbsp;
+
+ramadda.template.favorites = <b>Favorites:</b><div class="favorites">${entries}</div>
+ramadda.template.cart = <b>Cart:</b><div class="favorites">${entries}</div>
+
+</properties>
+-->
+${imports}
+
+
+<style type="text/css">
+
+.links_div {
+    padding-top:5px;
+}
+</style>
+
+
+
+<link href="${root}/niger/template_css.css" rel="stylesheet" type="text/css">
+<link href="${root}/niger/layout.css" rel="stylesheet" type="text/css">
+
+
+${headfinal}
+</head>
+<body>
+<table class="vbody" border="0" cellpadding="0" cellspacing="0" height="100%" width="100%">
+<tbody><tr><td>
+<div class="bg">
+<div style="height:167px;"></div>
+<div id="mainmenu">
+<div class="links_div">
+<table id="header_links" width=100%><tr valign=bottom><td>
+</td><td align=right>${links}</td></tr></table>
+</div>
+<table border=0 class="moduletable" cellpadding="0" cellspacing="0">
+<tbody><tr valign="bottom">
+<td>
+
+</td>
+</tr>
+</tbody></table>
+</div>
+		
+<div class="page">
+<div>
+${entry.header}
+</div>
+<table id="maintable" border="0" cellpadding="0" cellspacing="0">
+  <tbody><tr>
+  <td class="live1">  
+<div class="innercontent">${content}</div>
+
+<p>&nbsp;<p>&nbsp;<p>&nbsp;<p>&nbsp;<p>&nbsp;
+
+
+</body></html>

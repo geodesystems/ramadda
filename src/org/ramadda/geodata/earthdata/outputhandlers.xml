@@ -1,0 +1,4 @@
+<outputhandlers>
+  <outputhandler serviceId="gdal_tiff2image" class="org.ramadda.repository.output.ServiceOutputHandler"/>
+  <outputhandler serviceId="gdal_info" class="org.ramadda.repository.output.ServiceOutputHandler"/>
+</outputhandlers>

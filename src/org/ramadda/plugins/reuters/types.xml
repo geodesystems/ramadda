@@ -1,0 +1,8 @@
+<types xsupercategory="Geoscience" xcategory="GIS Data">
+
+  <type name="type_reuters_document"  description="Reuters Document" >
+     <property name="icon" value="/icons/doc.png"/>
+   </type>
+
+
+</types>

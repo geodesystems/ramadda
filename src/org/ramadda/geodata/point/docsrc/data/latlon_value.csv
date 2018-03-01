@@ -1,0 +1,5 @@
+#fields=latitude[unit="degrees"],longitude[unit="degrees"],value
+40,-107,-0.931363
+45,-110,-0.930391
+40,-107,-0.95
+35,-120,-0.96

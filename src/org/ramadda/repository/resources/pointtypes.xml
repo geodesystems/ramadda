@@ -1,0 +1,57 @@
+<types supercategory="Geoscience">
+
+  <type name="type_point_collection"  description="Point Data Collection" handler="org.ramadda.data.services.PointCollectionTypeHandler" category="Point Data">
+     <property name="icon" value="/point/sitemap_color.png"/>
+     <property name="form.resource.show" value="false"/>
+     <property name="form.area.show" value="true"/>
+     <property name="form.datatype.show" value="false"/>
+     <property name="form.date.show" value="false"/>
+     <property name="form.altitude.show" value="false"/>
+
+<wiki_inner>
+<![CDATA[
++inset
+<table width=100% border=0>
+<tr valign=top>
+<td width=50%>
+<div id=listdiv></div>
+<div id=textdiv></div>
+</td>
+<td width=50%>
+<div id=maindiv></div>
+</td>
+</tr>
+</table>
+
+{{displaygroup  showTitle="true"  showMenu="true"  layoutType="table"  layoutColumns="1" divid="maindiv" }}
+
+{{display  type="entrylist"   layoutHere="true"   showForm="false" divid="listdiv"  entryParent="this" title="Data Files"  }}
+
+{{display     type="text"   layoutHere="true"   divid="textdiv" title="Readout"  }}
+
+{{display    height="200"  fields=""  type="map"   layoutHere="false"  showTitle="true"  }}
+
+-inset
+
+]]>
+
+</wiki_inner>
+
+
+   </type>
+
+
+
+  <type name="type_point"  description="" handler="org.ramadda.data.services.PointTypeHandler"  category="Point Data" foruser="false">
+     <property name="icon" value="/point/points.gif"/>
+     <column name="numberofpoints" type="int"  label="Number of points"  showinhtml="false" showinform="false"/>
+     <column name="properties" type="string" size="4056" columns="80" rows="5"  label="Properties"  showinhtml="false" canlist="false" changetype="true" canexport="false"/>
+  </type>
+
+
+  <type name="point_text"  description="Text Point Data"  super="type_point"> 
+     <property name="record.file.class" value="org.ramadda.data.point.text.CsvFile"/>
+  </type>
+
+
+</types>

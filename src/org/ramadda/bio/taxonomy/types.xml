@@ -1,0 +1,36 @@
+<types supercategory="Bioinformatics">
+
+  <type name="bio_taxonomy"  description="Taxonomic Entry"  category="Bio"  handler="org.ramadda.repository.type.ExtensibleGroupTypeHandler">
+     <property name="icon" value="/taxonomy/chart_organisation.png"/>
+     <property name="form.fromdate.show" value="false"/>
+     <property name="form.todate.show" value="false"/>
+     <property name="form.fromdate.label" value="Date"/>
+     <column name="rank" type="enumerationplus" label="Rank" cansearch="true" />
+     <column name="embl_code" label="EMBL Code" cansearch="true"/>
+     <column name="division" label="Divison" type="enumeration" values="file:/org/ramadda/bio/taxonomy/divisions.txt" cansearch="true"/>
+     <column name="inherited_div" label="Inheritied division" type="boolean" cansearch="true" />
+     <column name="genetic_code" label="Genetic code"/>
+     <column name="inherited_gc" type="boolean" label="Inherits genetic code"/>
+     <column name="mitochondrial_genetic_code" label="Mitochondrial genetic code"/>
+     <column name="inherited_mgc" type="boolean" label="Inherits mitochondrial code"/>
+     <column name="aliases"  size="1000" type="list" label="Also known" cansearch="true" />
+
+
+<wiki><![CDATA[
+<div class="wiki-h1">{{field name="rank"}}: {{name}}</div>
+<table width=100%><tr valign=top>
+<td width=30%>
+==Information==
+{{description}}
+{{information}}</td>
+<td width=70%>
+{{tree details="false" prefix="==Children==" message=""}}
+</td>
+</tr>
+</table>
+
+]]></wiki>
+
+  </type>
+
+</types>

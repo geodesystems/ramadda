@@ -1,0 +1,155 @@
+<types supercategory="Science and Education" category="NIST Reference Data">
+
+
+  <type name="type_nist_constant"  description="CODATA Fundamental Physical Constants"   foruser="true" xhandler="org.ramadda.plugins.biz.FredCategoryTypeHandler">
+     <property name="icon" value="/nist/nist.png"/>
+     <property name="form.resource.show" value="false"/>
+     <property name="search.form.date.show" value="false"/>
+     <property name="search.form.area.show" value="false"/>
+
+     <property name="template.label.sms" value="${name.short} - ${value.content} ${unit.content}"/>
+     <property name="template.contents.sms" value="${name.short}&#10;Value: ${value.content}&#10;Unit: ${unit.content}&#10;Uncertainty: ${uncertainty.content} "/>
+
+     <column name="value" type="double"  label="Value"  showinform="true" />
+     <column name="uncertainty" type="double"  label="Uncertainty"  showinform="true" />
+     <column name="unit" type="string"  label="Unit"  showinform="true" cansearch="true"/>
+
+     <wiki><![CDATA[
++section # title="NIST CODATA Physical Constant - SRD121: {{name}}"
+<br>
+
+{{description wikify="true"}}
+
+<table class="formtable">
+{{field name="value" row.label="Value:"}}
+{{field name="uncertainty" row.label="Uncertainty:"}}
+{{field name="unit" row.label="Unit:"}}
+</table>
+
+<p>
+
+This data is provided by the <a href="http://physics.nist.gov/cuu/Constants/index.html">National Institute of Standards and Technology (NIST)</a> but is not endorsed or certified by NIST.
+
+-section
+
+]]>
+
+</wiki>
+
+  </type>
+
+
+  <type name="type_nist_energy"  description="NIST Ionization Energy Data"   foruser="true" xhandler="org.ramadda.plugins.biz.FredCategoryTypeHandler">
+     <property name="icon" value="/nist/nist.png"/>
+     <property name="form.resource.show" value="false"/>
+     <property name="search.form.date.show" value="false"/>
+     <property name="search.form.area.show" value="false"/>
+
+     <property name="template.label.sms" value="${name.short} - ${energy.content} ${shells.content}"/>
+     <property name="template.contents.sms" value="${name.short}&#10;Ion. Energy: ${energy.content} (eV)&#10;Shells: ${shells.content}&#10;Level: ${level.content} "/>
+
+     <column name="energy" type="string"  label="Ionization Energy (eV)"  showinform="true" cansearch="true"/>
+     <column name="shells" type="string"  label="Ground Shells"  showinform="true" cansearch="true"/>
+     <column name="level" type="string"  label="Ground Level"  showinform="true" cansearch="true"/>
+
+
+     <wiki><![CDATA[
++section # title="NIST SRD111: {{name}}"
+<br>
+
+{{description wikify="true"}}
+
+<table class="formtable">
+{{field name="energy" row.label="Energy:"}}
+{{field name="shells" row.label="Ground Shells:"}}
+{{field name="level" row.label="Ground Level:"}}
+</table>
+
+{{properties}}
+
+<hr>
+
+This data is provided by the <a href="http://www.nist.gov/pml/data/ion_energy.cfm">National Institute of Standards and Technology (NIST)</a> but is not endorsed or certified by NIST.
+
+-section
+
+]]>
+
+</wiki>
+
+  </type>
+
+  <type name="type_nist_isotope"  description="NIST Isotope"   foruser="true">
+     <property name="icon" value="/nist/nist.png"/>
+     <property name="form.resource.show" value="false"/>
+     <property name="search.form.date.show" value="false"/>
+     <property name="search.form.area.show" value="false"/>
+
+     <property name="template.label.sms" value="${name}"/>
+     <property name="template.contents.sms" value="${name}&#10;Symbol: ${atomic_symbol.content}&#10;Number: ${atomic_number.content}&#10;Weight: ${standard_atomic_weight.content} &#10;Iso. Comp: ${isotopic_composition.content} "/>
+
+     <column name="atomic_symbol" type="string"  label="Atomic Symbol"  />
+     <column name="atomic_number" type="double"  label="Atomic Number"  />
+     <column name="standard_atomic_weight" type="string"  label="Standard Atomic Weight"  />
+     <column name="mass_number" type="double"  label="Mass Number"  />
+     <column name="isotopic_composition" type="string"  label="Isotopic Composition"  />
+     <column name="relative_atomic_mass" type="string"  label="Relative Atomic Mass"  />
+     <column name="notes" type="string"  label="Relative Atomic Mass"  />
+     <wiki><![CDATA[
++section # title="NIST Atomic Weight and Isotopic Composition -  SRD144: {{name}}"
+
+{{description wikify="true"}}
+
+{{information}}
+
+<p>
+
+This data is provided by the <a href="http://www.nist.gov/pml/data/comp.cfm">National Institute of Standards and Technology (NIST)</a> but is not endorsed or certified by NIST.
+
+-section
+
+]]>
+
+</wiki>
+
+  </type>
+
+
+  <type name="type_nist_janaffile"  description="NIST JANAF Thermochemical Table"   super="type_document_tabular"    handler="org.ramadda.data.docs.TabularTypeHandler">
+     <property name="icon" value="/nist/nist.png"/>
+     <property name="form.date.show" value="false"/>
+     <property name="search.form.date.show" value="false"/>
+     <property name="search.form.area.show" value="false"/>
+     <property name="table.delimiter" value="tab"/>
+     <property name="template.label.sms" value="${name.short} - ${formula.content}  - ${state.content}"/>
+     <property name="template.contents.sms" value="${name.short}&#10;Formula: ${formula.content}&#10; State: ${state.content}&#10;CAS #: ${cas_number.content}"/>
+     <property name="template.contents.sms" value="${name.short}&#10;CAS No.: ${cas_number.content}&#10;Formula: ${forumla.content}&#10;State: ${state.content}"/>
+
+     <column name="cas_number" type="string"  label="CAS Number" />
+     <column name="formula" type="string"  label="Formula" />
+     <column name="state" type="string"  label="State" />
+     <column name="source_url" type="url"  label="Source" />
+     <wiki><![CDATA[
++section # title="NIST JANAF Thermochemical Table -  SRD13: {{name}}"
+
+{{description wikify="true"}}
+
+{{simple}}
+
+{{information}}
+
+<p>
+
+This data is provided by the <a href="http://kinetics.nist.gov/janaf/">National Institute of Standards and Technology (NIST)</a> but is not endorsed or certified by NIST.
+
+-section
+
+]]>
+
+</wiki>
+
+  </type>
+
+
+
+</types>

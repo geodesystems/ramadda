@@ -1,0 +1,130 @@
+<html>
+<head>
+<title>Running in the Cloud</title>
+  <link rel="stylesheet" type="text/css" href="./default.css" title="Style">
+
+</head>
+
+<body>
+<div class="ramadda-documentation">
+<table width=100% cellspacing=0 cellpadding=0 ><tr><td width=30%>
+<a href="installing.html"><img src="images/PreviousArrow.gif" border="0"   alt="Previous: Installing RAMADDA" title="Previous: Installing RAMADDA"></a> <a href="database.html"><img src="images/NextArrow.gif" border="0"   alt="Next: Configuring the RAMADDA Database" title="Next: Configuring the RAMADDA Database"></a>  <a href="toc.html#cloud.html"><img src="images/TOCIcon.gif" border="0"   alt="Table of contents" title="Table of contents"></a>
+</td>
+<td width=40% align=center>
+<div class="ramadda-page-title">RAMADDA User Guide</div>
+</td>
+<td width=30%>&nbsp;</td>
+</tr></table>
+<div class="ramadda-page-heading">14.1 Running in the Cloud</div>
+
+<style type="text/css">
+pre {
+    margin-left:15px;
+}
+</style>
+
+<div style="margin-left:20px;">
+
+
+
+
+An early version of a RAMADDA installer is available that does a complete installation of Postgres and RAMADDA.
+This runs on the  Amazon Linux Image but could (should) run on other Unix-es and in other cloud environments.
+
+
+<a name="installer"></a><div class="ramadda-page-heading">14.1.0 RAMADDA Installer</div> 
+
+The  installer <a href="examples/README.INSTALLER">README</a> describes 
+the set of steps required to launch and configure an instance through the
+<a href="https://us-west-2.console.aws.amazon.com/ec2/v2/home">Amazon EC2 Dashboard</a>,
+and how to download and run the RAMADDA installer on that instance.
+<p>
+An alternative  is to use the command line installation script described below.
+
+
+
+<a name="amazon"></a><div class="ramadda-page-heading">14.1.1 Amazon EC2 Instances</div> 
+
+
+<ol>
+
+<li> Create an Amazon AWS account. 
+
+<li> From the EC2 Dashboard go to the  Instances page and select  Launch Instance
+Choose the standard  Amazon Linux AMI and select the machine type
+
+<li> Create a security group with the following ports:
+<pre>
+HTTP port 80
+HTTPS port 443
+SSH  port 22
+Optionally open FTP: 
+Custom TCP Rule port 21  
+Custom TCP Rule port range 44001 - 44099
+</pre>
+
+
+<li>  Add a Storage Volume. <br>
+Normally, the instance has a smallish volume. This is where /home is mounted. You can add an extra 
+volume that holds the the database, the RAMADDA home directory and any data you may have. The size depends 
+on how much data and content you plan to have on your RAMADDA. 100 GB is more than plenty for normal RAMADDA 
+use. Note the device, e.g., /dev/sdb. This often will show up on the machine as /dev/xvdb. 
+
+<li>  Download the PEM file<br>
+When you Launch the instance create and save a .pem file. This is what you use to access your server.
+The permissions on the pem file need to be 400, e.g.:
+chmod 400 ramadda.pem
+
+<li>  Configure your server
+<pre>
+#SSH to the machine
+ssh -i <.pem file>  ec2-user@<server IP address>
+
+##get the installer
+wget "http://geodesystems.com/repository/entry/get/ramaddainstaller.zip?entryid=synth%3A498644e1-20e4-426a-838b-65cffe8bd66f%3AL3JhbWFkZGFfMi4xYi9yYW1hZGRhaW5zdGFsbGVyLnppcA%3D%3D"
+
+#Unpack the installer
+unzip ramaddainstaller.zip
+
+#run the installer - make sure to give it the absolute path
+sudo sh /home/ec2-user/ramaddainstaller/installer.sh
+</pre>
+
+This will walk you through a number of installation steps to setup the directories, and install and configure  Java, Postgres and RAMADDA
+
+To start and stop RAMADDA do:
+sudo sh ramaddainstaller/ramaddaserver/ramaddainit.sh stop|start|restart
+
+</ol>
+
+<a name="amazoncli"></a><div class="ramadda-page-heading">14.1.2 Command Line Amazon Install</div> 
+The installer also contains an <i>aws.sh</i> script.n
+This script uses the 
+<a href="http://docs.aws.amazon.com/cli/latest/userguide/cli-chap-welcome.html">Amazon Command Line Interface (CLI)</a>
+to create and configure an Amazon machine instance running RAMADDA. In just a couple of minutes you can have a server up and running.
+
+Consult the Amazon <a href="http://docs.aws.amazon.com/cli/latest/userguide/cli-chap-getting-set-up.html">CLI documentation</a>. 
+You will need to set up an Amazon AWS account, create and download an access key file, and install the CLI runtime on your machine.
+<p>
+Once you have the CLI installed run the script:<pre>
+  sh <a href="http://sourceforge.net/p/ramadda/code/HEAD/tree/src/org/ramadda/repository/release/aws.sh">aws.sh</a>
+</pre>
+
+
+You can kill the script at any time and re-run it without messing things up though you might see some warnings along the way.
+
+Right now, the script works best with the default instance type. Different instance types require running in a VPN and this all rather flummoxed the author.  More info about <a href="http://aws.amazon.com/ec2/instance-types/">instance types</a> 
+
+
+
+
+</div>
+<p>
+
+<p>&nbsp;<p>
+<a href="installing.html"><img src="images/PreviousArrow.gif" border="0"   alt="Previous: Installing RAMADDA" title="Previous: Installing RAMADDA"></a> <a href="database.html"><img src="images/NextArrow.gif" border="0"   alt="Next: Configuring the RAMADDA Database" title="Next: Configuring the RAMADDA Database"></a>  <a href="toc.html#cloud.html"><img src="images/TOCIcon.gif" border="0"   alt="Table of contents" title="Table of contents"></a>
+<p>
+</div>
+</body>
+</html>
+

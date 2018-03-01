@@ -1,0 +1,3 @@
+:title {{name}}
+{{description box.class="entry-page-description"}} 
+<block show="mobile" decorate="false">{{resource message="" includeicon="true" title="Download"}}</block>{{information details="true" showTitle="false"}}

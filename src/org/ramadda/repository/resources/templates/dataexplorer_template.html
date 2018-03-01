@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html>
+<head><title>${title}</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<properties>
+name=Data Magella
+id=dataexplorer
+ramadda.template.link.wrapper =<a class="link" href="${url}">${label}</a>
+ramadda.template.link.separator=&nbsp;|&nbsp;
+ramadda.template.userlink.popup=true
+ramadda.template.favorites = <b>Favorites:</b><div class="favorites">${entries}</div>
+ramadda.template.cart = <b>Cart:</b><div class="favorites">${entries}</div>
+</properties>
+${imports}
+<style type="text/css">
+body {
+   font-family: Arial, Helvetica, sans-serif;
+}
+.ramadda-header {
+   background-repeat: no-repeat;
+   background-image:url(${root}/images/earth.png);
+   background-size:cover;
+   padding: 0px;
+   padding-left: 2px;
+   padding-top: 0px;
+   border-bottom: 1px #888 solid;
+   min-height:65px;
+}
+
+
+.ramadda-breadcrumbs {
+   border-bottom : none;
+   background: none;
+   padding-bottom:0px;
+   margin:0px;
+}
+
+.breadCrumb ul li {
+   background: url(${root}/icons/arrow_right_white.png) no-repeat 100% center;
+}
+
+.breadCrumb ul li a {
+//  line-height:1.6em;
+   color: #fff;
+//   font-weight:bold;
+   font-size:12pt;
+}
+
+.breadCrumb ul li a:hover {
+   color: #fff;
+}
+
+.breadCrumb {
+   background: inherit;
+}
+.ramadda-header-label, .ramadda-header-label a {
+    margin-left:5px;
+    font-size:24px;
+    color:white;
+}
+.ramadda-header a {
+color:white;
+}
+.ramadda-footer {
+  border-top: 1px #000066 solid;
+}
+.ramadda-register-outer {
+text-align:inherit;
+}
+.ramadda-register {
+margin-top:6px;
+margin-right:6px;
+xborder:#fff 1px solid;
+}
+</style>
+${headfinal}
+</head>
+<body>
+<div class="ramadda-header">
+<table border=0 width="100%" cellspacing="0" cellpadding="0" border="0">
+<tr valign="top">
+<td>
+<div style="height:45px;">
+<a class="ramadda-header-label" href="//datamagella.com">dataMagella</a>
+</div>
+</td>
+<td colspan="2" align="right">${register}</td>
+</tr>
+<tr valign="bottom"><td style="min-height:26px;"><div>${header}</div></td>
+<td align="right" style="color:white;padding-right:5px;">${links}</td>
+</tr>
+</table>
+</div> 
+<div class="ramadda-content"><div class="ramadda-innercontent">${content}</div></div>
+<div class="ramadda-footer">
+${footer}
+<center>
+<div class="ramadda-acknowledgement">Powered by <a href="http://geodesystems.com">Geode Systems and RAMADDA</a></div>
+<a href="http://geodesystems.com" ><img border="0" width="150" src="${root}/images/logo.png" align="center"></a>
+</div>
+</center>
+${bottom}
+</body>
+</html>

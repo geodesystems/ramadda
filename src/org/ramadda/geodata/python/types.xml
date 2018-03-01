@@ -1,0 +1,28 @@
+<types  supercategory="Science and Education" category="Software and Services">
+
+  <type name="python_source"  description="Python source file"  pattern=".*\.py" handler="org.ramadda.geodata.python.PythonTypeHandler" >
+     <property name="icon" value="/python/python.png"/>
+     <property name="ingestLinks" value="true"/>
+  </type>
+
+  <type name="python_notebook"  description="IPython Notebook file"  pattern=".*\.ipynb" handler="org.ramadda.geodata.python.IPythonNotebookTypeHandler">
+     <property name="icon" value="/python/ipynb.png"/>
+     <wiki><![CDATA[
++section # title="Notebook: {{name}}"
+{{description wikify="true"}}
+
+{{information  details="true"  showTitle="false"  }}
+
+----
+
+{{notebook wikify="false"}}
+
+-section
+
+]]>
+
+</wiki>
+  </type>
+
+
+</types>

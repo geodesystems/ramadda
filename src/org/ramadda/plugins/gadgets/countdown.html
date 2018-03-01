@@ -1,0 +1,67 @@
+<style type="text/css">
+.countdown {
+   border:1px #999 solid; 
+   padding:2px;
+  -webkit-box-shadow: 5px 5px 5px rgba(0, 0, 0, 0.5);
+  -moz-box-shadow: 5px 5px 5px rgba(0, 0, 0, 0.5);
+  box-shadow: 5px 5px 5px rgba(0, 0, 0, 0.5);
+  /* IE */
+  filter:progid:DXImageTransform.Microsoft.dropshadow(OffX=5, OffY=5, Color='gray');
+  /* slightly different syntax for IE8 */
+  -ms-filter:"progid:DXImageTransform.Microsoft.dropshadow(OffX=5, OffY=5, Color='gray')";
+}
+.countdown-clock {}
+.countdown-number {font-size: 200%;color:#041593;color:#1205BF;}
+.countdown-label {   font-weight:bold;color:#000;padding:3px;}
+
+</style>
+
+<script>
+
+function countdownStart(name, id, base, orientation, howMany) {
+    if(!howMany) howMany=4;
+    var now = parseInt(new Date().getTime()/1000);
+    var diff = base-now;
+    var label = "Time until: ";
+    if(diff<0) {
+        diff = -diff;
+        label="Time since: ";
+    }
+    label+=name;
+    //    var years = parseInt(diff/(3600*24*365));
+    //    diff -= (years*3600*24*365);
+    var days = parseInt(diff/(3600*24));
+    diff -= (days*3600*24);
+    var hours = parseInt(diff/(3600));
+    diff -= (hours*3600);
+    var minutes = parseInt(diff/(60));
+    diff -= (minutes*60);
+    var seconds = diff;
+    var count = 0;
+    var width = "25%";
+    var clock = label+"<br><table><tr valign=bottom>";
+    var cnt=0;
+    if(cnt++<howMany)
+        clock+= countdownEntry(days, "Days", width, orientation);
+    if(cnt++<howMany)
+        clock+= countdownEntry(hours, "Hours", width, orientation);
+    if(cnt++<howMany)
+        clock+= countdownEntry(minutes, "Minutes", width, orientation);
+    if(cnt++<howMany)
+        clock+= countdownEntry(seconds, "Seconds", width, orientation);
+    clock+="</table>";
+    $("#"+id).html(clock);
+    setTimeout("countdownStart('" + name +"','" + id +"'," + base+",'"+orientation+"'," + howMany+")", 1000);
+}
+
+
+function countdownEntry (num, label, width, orientation) {
+    var content = "<div class=countdown-number>" + num+"</div><div class=countdown-label>"+ label+"</div>";
+    var col = "<td align=center width=" + width+">" + content+"</td>";
+    if(orientation =='vertical') {
+        return col+"</tr><tr>";    
+    }
+    return   col;
+}
+
+</script>

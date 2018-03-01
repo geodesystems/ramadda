@@ -1,0 +1,49 @@
+<types supercategory="Geoscience">
+
+<!--
+all point types need to have numberoofpoints and properties fields
+this gets it from the type_point super class
+--> 
+  <type name="type_point_unavco"  description="" super="type_point" category="Point Data" foruser="false">
+     <property name="icon" value="/point/unavco.png"/>
+  </type>
+
+
+  <type name="type_point_pbo_position_time_series"  super="type_point_unavco" description="PBO Position Time Series"  handler="org.ramadda.data.services.PointTypeHandler">
+     <property name="record.file.class" value="org.ramadda.data.point.unavco.PositionTimeSeriesPointFile"/>
+     <column  name="four_char_id"  type="enumerationplus" label="Four Char ID" cansearch="true"/>
+     <column  name="station_name"  type="string" label="Station Name" cansearch="true"/>
+     <column  name="reference_frame"  type="enumerationplus" label="Reference Frame" cansearch="true"/>
+     <column  name="format_version"  type="enumerationplus" label="Format Version" cansearch="true"/>
+     <column  name="processing_center"  type="enumerationplus" label="Processing Center" cansearch="true"/>
+<wiki>
+<![CDATA[
++inset
+:title Station: {{field name="station_name"}} -- {{name}} 
+
+<table width=100% cellpadding=5>
+<tr valign=top>
+<td width="30%">
+{{description}}
+{{information  details="false"  }}
+
+{{list includeicon="true" details="false" entries="siblings,links"  message="" box.maxheight="200" box.class="entry-sidebox" prefix="====Related===="}}
+
+</td>
+<td width="70%">
+{{displaygroup layoutType="columns"}}
+{{display type="map"  height="350"  column="1" layoutHere="false" }}
+{{display row="0" fields="North,dN" title="North"  height="100" column="0" layoutHere="false"}}
+{{display row="0" fields="East,dE" title="East"  height="100" column="0" layoutHere="false"}}
+{{display row="0" fields="Vertical,du" title="Vertical"  height="100" column="0" layoutHere="false"}}
+{{display type="text" column="1" layoutHere="true" }}
+</td>
+</tr></table>
+-inset
+]]>
+
+</wiki>
+
+  </type>
+
+</types>

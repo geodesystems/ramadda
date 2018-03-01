@@ -1,0 +1,38 @@
+  <services category="Earth Science Data" icon="/cdmdata/nco.png">
+    <service label="NCO Weighted Average" id="geo_nco_ncwa" command="${service.nco.ncwa}" handler="org.ramadda.geodata.cdmdata.NetcdfService">
+<description>
+Run NetCDF Climate Operators (NCO) weighted average
+</description>
+          <arg type="enumeration" name="nco.operation" prefix="--operation" label="Operation" help="">
+<values>
+avg:Mean value,
+sqravg:Square of the mean,
+avgsqr:Mean of sum of squares,
+max:Maximium value,
+min:Minimium value,
+rms:Root-mean-square (normalized by N),
+rmssdn:Root-mean square (normalized by N-1),
+sqrt:Square root of the mean,
+ttl:Sum of values
+</values>
+</arg>
+          <arg type="enumeration" name="nco.variable" label="Variable" multiple="true" multipleJoin="," size="5" prefix="--variable" addAll="true" valuesProperty="varNames"/>
+          <arg type="flag" name="nco.variable.exclude" label="Exclude" help="Exclude selected variables" value="--exclude" sameRow="true" depends="nco.variable"></arg>
+          <arg type="enumeration" name="nco.coord" label="Averaging Dimensions" help="" multiple="true" multipleJoin="," size="5" prefix="--average" addAll="true" valuesProperty="coordNames"/>
+          <arg type="enumeration" name="nco.mask.variable" label="Mask" help="" prefix="--mask_variable" addNone="true" valuesProperty="varNames"/>
+          <arg type="enumeration" name="nco.mask.comp" label="" help="" sameRow="true"  prefix="--mask_comparator" depends="nco.mask.variable" >
+<values>eq:=,ne:!=,gt:&gt;,lt:&lt;,ge:&gt;=,le:&lt;=</values>
+</arg>
+
+     <arg type="float" name="nco.mask.value" label="Mask Value" sameRow="true"  prefix="--mask_value" depends="nco.mask.variable"/>
+
+     <arg type="enumeration" name="nco.weight" label="Weight by" prefix="-w" addNone="true" valuesProperty="varNames"/>
+
+     <arg type="enumeration" name="nco.format" label="NetCDF Format" value="-${value}">
+<values>3:Classic Format,4:NetCDF 4 Format,6:NetCDF 3 64-bit Format</values>
+</arg>
+          <arg label="Input NetCDF File" value="${entry.file}"   type="entry" primary="true" entryPattern=".*\.nc"></arg>
+          <arg value="${file}" file="${entry.file.base}_nco.nc"></arg>
+          <output pattern=".*\.nc"/>
+    </service>
+</services>

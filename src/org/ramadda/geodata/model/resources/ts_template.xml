@@ -1,0 +1,13 @@
+<entry name="${name}" type="group">
+<description><![CDATA[<wiki>
+<h2>${description}</h2>
+<p>
+{{apply apply.tag="display" apply.entries.filter="type:type_single_point_grid_netcdf" apply.layout="table" apply.columns="1"}}
+<p>
+<br>
+<b>File(s) for Plot</b> 
+<a href="{{root}}/entry/show/download.zip?entryid={{entryid}}&output=zip.tree">(Download All)</a>
+{{tree entries.filter="type:type_single_point_grid_netcdf"}}
+</wiki>
+]]></description>
+</entry>

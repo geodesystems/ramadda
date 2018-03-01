@@ -1,0 +1,164 @@
+<types  supercategory="Science and Education">
+  <type name="project_tool"  category="Software and Services" foruser="false"/>
+
+
+  <type name="project_softwarepackage"  description="Software Tool" super="project_tool" handler="org.ramadda.repository.type.ExtensibleGroupTypeHandler">
+     <property name="icon" value="/fieldproject/disk_multiple.png"/>
+     <property name="form.file.show" value="true"/>
+     <property name="form.url.show" value="true"/>
+     <property name="form.resource.label" value="Link"/>
+     <property name="form.datatype.show" value="false"/>
+     <property name="form.date.show" value="false"/>
+     <property name="form.area.show" value="false"/>
+
+     <column name="software_use" label="Software Use"  type="enumerationplus" values="Visualization,Analysis,Data Management,Modeling,Other" cansearch="true" />
+     <column name="software_type" label="Software Type"  type="enumerationplus" values="Desktop,Server,Other" cansearch="true" />
+
+     <column name="domain" label="Science Domain"  type="enumerationplus" values="Air,Earth,Ocean" cansearch="true" />
+     <column name="platform" label="Platform"  type="enumerationplus" values="Any,Mac,Windows,Unix,Other" cansearch="true" />
+     <column name="license" label="License"  type="enumerationplus" values="Open Source,Commercial" cansearch="true" />
+     <column name="status" label="Development Status"  type="enumeration" values="planning,pre-alpha,alpha,beta,production,mature" cansearch="true" />
+
+     <column name="capabilities" label="Capabilities"  size="1024" rows="5" cansearch="true" />
+
+     <wiki><![CDATA[
+:title Package: {{name}}
+<table width=100%>
+<tr valign=top>
+<td width=50%>
+<table class="formtable">
+{{resource row.label="URL:"  message=""}}
+</table>
+{{description}}
+</td>
+
+<td width=50%>
+{{information}}
+
+{{properties message="" }}
+
+</td>
+</tr>
+</table>
+
+{{tree message=""}}
+
+]]></wiki>
+
+   </type>
+
+
+
+  <type name="project_service"  description="Data Access Service"  super="project_tool" handler="org.ramadda.repository.type.ExtensibleGroupTypeHandler">
+     <property name="icon" value="/fieldproject/connect.png"/>
+     <property name="form.file.show" value="false"/>
+     <property name="form.url.show" value="true"/>
+     <property name="form.resource.label" value="Link"/>
+     <property name="form.datatype.show" value="false"/>
+     <property name="form.date.show" value="false"/>
+     <property name="form.area.show" value="false"/>
+     <wiki><![CDATA[
+:title Service: {{name}}
+
+{{information}}
+
+{{tree message=""}}
+
+]]></wiki>
+
+
+     <column name="service_type" label="Service Type"  type="enumerationplus" values="WMS,WFS,CSW,OPeNDAP,FTP" cansearch="true" />
+     <column name="provider" label="Provider"  cansearch="true" />
+   </type>
+
+
+
+
+  <type name="project_vocabulary"  description="Vocabulary" handler="org.ramadda.repository.type.ExtensibleGroupTypeHandler" category="Software and Services" childtypes="project_term,project_standard_name">
+     <property name="icon" value="/fieldproject/book-open-text.png"/>
+     <property name="form.file.show" value="false"/>
+     <property name="form.datatype.show" value="false"/>
+     <property name="form.date.show" value="false"/>
+     <property name="form.area.show" value="false"/>
+     <wiki><![CDATA[
+:title Vocabulary: {{name}} 
+
+{{description}}
+{{display   
+type="entrylist"  
+columns="name,description,unit"
+columnNames="Name,Description,Units"
+columnWidths="25%,75%,25%"
+orientation="horizontal"
+layoutHere="true"   
+orientation="vertical"  
+showMetadata="true"
+innerHeight="500" 
+divid="listdiv" 
+entryParent="this"
+showType="false"
+formOpen="false"
+showSearchSettings="false"
+}}
+]]></wiki>
+
+   </type>
+
+
+  <type name="project_term"  description="Vocabulary Term" category="Software and Services" mefirst="true">
+     <property name="form.name.label" value="Term"/>
+     <property name="form.description.label" value="Definition"/>
+     <property name="icon" value="/fieldproject/textfield.png"/>
+     <property name="form.resource.show" value="false"/>
+     <property name="form.datatype.show" value="false"/>
+     <property name="form.date.show" value="false"/>
+     <property name="form.area.show" value="false"/>
+     <column name="value" label="Term Value"   cansearch="true" />
+   </type>
+
+
+
+  <type name="project_standard_name"  description="Standard Parameter Name" category="Software and Services">
+     <property name="icon" value="/fieldproject/pencil-ruler.png"/>
+      <property name="form.name.label" value="Standard Name"/>
+     <property name="form.resource.show" value="false"/>
+     <property name="form.datatype.show" value="false"/>
+     <property name="form.date.show" value="false"/>
+     <property name="html.date.show" value="false"/>
+     <property name="form.area.show" value="false"/>
+     <property name="search.tabs" value="list"/>
+     <property name="search.form.name.show" value="true"/>
+     <property name="search.form.description.show" value="true"/>
+
+     <property name="search.form.area.show" value="false"/>
+     <property name="search.form.date.show" value="false"/>
+     <column name="unit" label="Canonical Unit"  type="enumerationplus"  cansearch="true" />
+     <column name="aliases" label="Aliases"  size="2000" rows="5"  cansearch="true" />
+     <wiki_inner><![CDATA[
+:title {{name}}
+
+{{description}}
+
+<table class="formtable">
+{{field name="unit" row.label="Unit:"}}
+{{field name="aliases" row.label="Aliases:"}}
+</table>
+
+{{menu menus="feeds"}}
+]]></wiki_inner>
+   </type>
+
+
+
+  <type name="project_dataformat"  description="Data Format" category="Software and Services"  handler="org.ramadda.repository.type.ExtensibleGroupTypeHandler">
+     <property name="icon" value="/fieldproject/database_gear.png"/>
+     <property name="form.file.show" value="false"/>
+     <property name="form.datatype.show" value="false"/>
+     <property name="form.date.show" value="false"/>
+     <property name="form.area.show" value="false"/>
+     <column name="data_type" label="Data Type"  type="enumerationplus"  values="na,grid,point,track,image,other" cansearch="true" />
+     <column name="field" label="Field"  type="enumerationplus"  values="atmospheric,oceanographic,climate" cansearch="true" />
+   </type>
+
+
+</types>

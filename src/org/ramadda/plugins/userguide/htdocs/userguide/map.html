@@ -1,0 +1,39 @@
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+   <title>Maps</title>
+</head>
+<body>
+<div style="height: 500px; border:2px #888888 solid;" id="map"></div>
+
+<link href="/repository/openlayers/theme/default/style.css"  rel="stylesheet"  type="text/css" />
+<link href="/repository/openlayers/theme/default/google.css"  rel="stylesheet"  type="text/css" />
+<script src="/repository/openlayers/OpenLayers.js" ></script>
+<script src="/repository/ramaddamap.js" ></script>
+<script src="http://api.maps.yahoo.com/ajaxymap?v=3.0&appid=euzuro-openlayers" ></script>
+<script src="http://dev.virtualearth.net/mapcontrol/mapcontrol.ashx?v=6.1" ></script>
+<script src="http://maps.google.com/maps/api/js?v=3.2&amp;sensor=false" ></script>
+
+<script type="text/JavaScript" >
+  var lat = util.getUrlArg('lat');
+  var lon = util.getUrlArg('lon');
+  var initLocation = new OpenLayers.LonLat(-104, 40);
+  if(lat && lon) {
+       initLocation = new OpenLayers.LonLat(lon, lat);
+  }
+  var map = new RepositoryMap('map',
+  {'initialLocation': initLocation,
+  'mapLayers': [map_ms_shaded, map_ms_aerial,  map_wms_topographic, map_wms_openlayers]
+}
+);
+  map.initMap(false);
+  var zoom = util.getUrlArg('zoom');
+  if(zoom) {
+      map.getMap().zoomTo(zoom);
+  }
+
+  map.addMarker("marker", initLocation, null,"here");
+</script>
+
+</body>
+</html>

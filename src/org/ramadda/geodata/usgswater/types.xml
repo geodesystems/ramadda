@@ -1,0 +1,17 @@
+<types supercategory="Geoscience">
+
+  <type name="type_point_hydro"  description="" super="type_point" category="Point Data" foruser="false">
+  </type>
+
+
+
+  <type name="type_point_usgswater"  super="type_point" description="USGS Water Quality Site"  handler="org.ramadda.geodata.usgswater.UsgsWaterQualitySite">
+     <property name="icon" value="/point/waterml.png"/>
+     <property name="record.file.class" value="org.ramadda.geodata.usgswater.UsgsWaterQualityFile"/>
+     <column  name="site_id"   label="Site ID" />
+     <column  name="parameter"  type="enumerationplus" label="Paramater" cansearch="true"/>
+  </type>
+
+
+
+</types>

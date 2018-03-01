@@ -1,0 +1,65 @@
+[ht::head {RAMADDA Record Package}]
+
+The record package provides support for reading binary and text 
+oriented data files. The classes org.unavco.data.record.RecordFile 
+and org.unavco.data.record.Record 
+provide the core functionality of this package.
+
+<p>
+Record files are generally of the form:<pre>
+    header
+    record 1
+    record 2
+    ...
+    record N
+</pre>
+
+The RecordFile class is abstract and provides functionality to read 
+and write files. It uses derived instances of the 
+Record class to actually read and write the data. The Record class provides support for handling endian-ness and for up-promoting
+unsigned file variables (e.g., unsigned short) to the Java primitive type (e.g., int).
+
+
+
+<subhead intoc="false" id="visitor">Record Visitor</subhead>
+Access to files is based around the 
+<a href="http://en.wikipedia.org/wiki/Visitor_pattern">visitor pattern</a> embodied in the 
+org.unavco.data.record.RecordVisitor class.
+The basic algorithm is implemented in RecordFile:
+<pre>
+    public void visit(RecordVisitor visitor, VisitInfo visitInfo, RecordFilter filter)
+</pre>
+
+This method takes a RecordVisitor, a VisitInfo and a RecordFilter. Each record is read from 
+the file and the RecordVisitor method is called:
+<pre>
+    public abstract boolean visitRecord(RecordFile file, VisitInfo visitInfo,   Record record);
+</pre>
+
+If this method returns false then the visit is stopped. We use the VisitInfo class to hold the state of
+the visit, e.g., the RecordIO, skip factor, start and stop indices, etc.
+
+
+
+<subhead intoc="false" id="gen">Generating record classes</subhead>
+
+
+
+The record package provides a Tcl based script that allows one to define the structure of a record  and generate the class
+that reads the record.
+
+There are many examples  of its use under the lidar package, e.g., in org/unavco/data/lidar/lvis/generate.tcl
+<pre>
+generateRecordClass org.unavco.data.lidar.lvis.LceRecordV1_2  -super LvisRecord   -fields  { 
+    {lfid int}
+    {shotnumber int}
+    {lvisTime double -declare 0}
+    {tlon double}
+    {tlat double}
+    {zt float}
+} 
+</pre>
+
+
+[ht::foot]
+

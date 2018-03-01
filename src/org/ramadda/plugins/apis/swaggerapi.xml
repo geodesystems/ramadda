@@ -1,0 +1,10 @@
+
+<api handler="org.ramadda.plugins.apis.SwaggerApiHandler" id="swagger">
+     <api request="/swagger/apis.html"           method="processApisRequest"  admin="false"/>
+     <api request="/swagger/api-docs"           method="processSwaggerApiRequest"  admin="false"/>
+     <api request="/swagger/api-docs/type/*"           method="processSwaggerTypeRequest"  admin="false"/>
+     <api request="/swagger/api-docs/service/*"       method="processSwaggerServiceRequest"  admin="false"/>
+     <api request="/swagger/api-docs/point"           method="processSwaggerPointRequest"  admin="false"/>
+     <api request="/swagger/api-docs/gridaspoint"     method="processSwaggerGridAsPointRequest"  admin="false"/>
+     <api request="/swagger/api-docs/gridsubset"     method="processSwaggerGridSubsetRequest"  admin="false"/>
+</api>

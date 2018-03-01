@@ -1,0 +1,97 @@
+<types supercategory="Miscellaneous" category="Integration">
+
+  <type name="type_socrata_repository"  description="SOCRATA Repository"   foruser="true" handler="org.ramadda.plugins.socrata.SocrataTypeHandler">
+     <property name="icon" value="/socrata/socrata.png"/>
+     <property name="form.url.show" value="false"/>
+     <wiki><![CDATA[
++section # title="SOCRATA Repository: {{name}}"
+<br>
+
+{{description wikify="true"}}
+
+{{tree details="false"}}
+
+
+
+-section
+
+]]>
+
+</wiki>
+
+  </type>
+
+
+
+  <type name="type_socrata_category"  description="SOCRATA Category"   foruser="false" handler="org.ramadda.plugins.socrata.SocrataCategoryTypeHandler">
+     <property name="icon" value="/socrata/socrata.png"/>
+     <property name="form.resource.show" value="false"/>
+     <column name="category_id" type="string"  label="Category ID"  showinform="true" />
+     <wiki><![CDATA[
++section # title="SOCRATA Category: {{name}}"
+<br>
+
+{{description wikify="true"}}
+
+{{tree details="false"}}
+
+
+
+<p><br>
+
+
+-section
+
+]]>
+
+</wiki>
+
+  </type>
+
+
+
+  <type name="type_socrata_series"  description="SOCRATA Series" super="type_point"  foruser="true" handler="org.ramadda.plugins.socrata.SocrataSeriesTypeHandler" mefirst="true">
+     <property name="icon" value="/socrata/series.png"/>
+     <property name="record.file.class" value="org.ramadda.plugins.socrata.SocrataFile"/>
+     <property name="form.resource.show" value="false"/>
+     <property name="form.properties.show" value="false"/>
+     <property name="html.date.show" value="false"/>
+     <property name="html.type.show" value="false"/>
+     <property name="html.owner.show" value="false"/>
+     <property name="html.numberofpoints.show" value="false"/>
+     <property name="point.initialize" value="false"/>
+
+     <column name="repository" type="string"  label="Repository Base URL"   suffix="e.g., https://data.atf.gov" />
+     <column name="series_id" type="string"  label="Series ID"    />
+     <wiki_inner><![CDATA[
++section # title="SOCRATA Data: {{name}}"
+<br>
+{{group showMenu="true"}}
+{{display type="table" title=""  height="400" xwidth="800" column="0" layoutHere="false" showMenu="true"}}
+
+
+
+<div style="margin:20px;max-height:300px;overflow-y:auto;">
+{{description wikify="true"}}
+</div>
++row
++col-md-8
+Data courtesy of <a href="{{resource  url=true}}"> {{field name="repository"}}</a>.
+-col
++col-md-4
+<div style="text-align:right;">
+<a class="btn btn-primary" role="button" href="{{root}}/entry/show?entryid={{entryid}}&output=points.product&product=points.csv&asynch=false">Download CSV</a>
+</div>
+-col
+-row
+
+-section
+
+]]>
+
+</wiki_inner>
+
+  </type>
+
+
+</types>

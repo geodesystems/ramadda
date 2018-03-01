@@ -1,0 +1,105 @@
+<html>
+<head>
+<title>Data Ingest</title>
+  <link rel="stylesheet" type="text/css" href="./default.css" title="Style">
+
+</head>
+
+<body>
+<div class="ramadda-documentation">
+<table width=100% cellspacing=0 cellpadding=0 ><tr><td width=30%>
+<a href="page_dataingestharvestersandimport.html"><img src="images/PreviousArrow.gif" border="0"   alt="Previous: Data ingest,  harvesters and import" title="Previous: Data ingest,  harvesters and import"></a> <a href="entrytypes.html"><img src="images/NextArrow.gif" border="0"   alt="Next: Defining New Entries" title="Next: Defining New Entries"></a>  <a href="toc.html#dataingest.html"><img src="images/TOCIcon.gif" border="0"   alt="Table of contents" title="Table of contents"></a>
+</td>
+<td width=40% align=center>
+<div class="ramadda-page-title">RAMADDA User Guide</div>
+</td>
+<td width=30%>&nbsp;</td>
+</tr></table>
+<div class="ramadda-page-heading">12.0 Data Ingest</div>
+
+<style type="text/css">
+pre {
+    margin-left:15px;
+}
+</style>
+
+<div style="margin-left:20px;">
+
+
+
+
+Note: If you are trying to access files on your server you  need
+to first configure the <a href="admin.html#filesystemaccess">file access settings</a>.
+
+
+There are lots of ways of getting information and data ingested into RAMADDA.   
+
+If you have a large and/or dynamic collection of files that you want quick view only access try the 
+<a href="#serverfiles">Server Side File entry</a>. If you have a directory of data you want fully ingested you can use a 
+<a href="#harvester">harvester</a>.
+
+
+
+
+<a name="serverfiles"></a>
+<h2>Server Side File Entry</h2>
+
+If you have a very large set of files or you have a set of files that are changing all of the time (e.g,, real-time feeds)
+it might not be practical or possible to have RAMADDA ingest each and every file. However, you can provide RAMADDA view access 
+to these files by creating a Server Side File Entry. 
+
+
+<ul>
+<li> Go to the some destination folder  in RAMADDA
+
+<li> Select &quot;New Entry&quot; under the File menu.
+
+<li> Under the  &quot;General&quot; list choose Server Side Files.
+
+<li>  This will take you to the Server Side File View Entry create form. 
+Enter a name, the server file path and any patterns  to use to include or exclude specific files.
+
+<li> Once created all of the  entries  shown under the new entry are dynamic and are not stored
+in the RAMADDA database.
+</ul>
+
+
+
+<a name="harvester"></a>
+<h2>Data and project organization</h2>
+
+You can organize a file system directory tree that can represent project or data sets 
+
+<a href="harvesters.html">harvester</a>.
+
+There are a number of constructs provided by RAMADDA to help you create and organize your information and data.
+
+You might for example have  a directory tree as shown below  that you want to harvest into RAMADDA. Normally the <a href="harvesters.html">harvester</a> would create generic File and Folder entries for the directories and files. You can configure the types and metadata with  <a href="entryxml.html#configuration">Entry XML Configuration</a>. Copy this  <a href="examples/dataset.xml">dataset.xml</a> as a <i>.ramadda.xml</i> file under the  same parent directory before the harvest.
+
+<pre>
+Dataset_1
+     datafile1.suff
+     datafile2.suff
+          ...
+Dataset_2
+     datafile1.suff
+     datafile2.suff
+</pre>
+
+
+There are numerous other organizational schemes and constructs available. One could have Project information, Sites, Site Visits, etc. The entrtypes and metadata for the data files can be specified as well.
+
+
+
+
+
+</div>
+<p>
+<div  class="childlist" ><table  width="100%" ></table></div>
+<p>&nbsp;<p>
+<a href="page_dataingestharvestersandimport.html"><img src="images/PreviousArrow.gif" border="0"   alt="Previous: Data ingest,  harvesters and import" title="Previous: Data ingest,  harvesters and import"></a> <a href="entrytypes.html"><img src="images/NextArrow.gif" border="0"   alt="Next: Defining New Entries" title="Next: Defining New Entries"></a>  <a href="toc.html#dataingest.html"><img src="images/TOCIcon.gif" border="0"   alt="Table of contents" title="Table of contents"></a>
+<p>
+</div>
+</body>
+</html>
+

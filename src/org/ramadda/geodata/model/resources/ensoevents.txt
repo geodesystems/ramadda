@@ -1,0 +1,8 @@
+# the second line is the name of the group for each of these named time periods values are: ID,Name,startMonth,endMonth,years
+ENSO Events
+SuperNino;Super El Nino;12;2;1983,1998,2016
+ModerateNino;Moderate+ El Nino;12;2;1987,1992,2010
+WeakNino;Weak-Moderate El Nino;12;2;1995,2003,2005
+WeakNina;Weak La Nina;12;2;1985,1996,2001
+StrongNina;Strong La Nina;12;2;1989,2000,2011
+#TestNino;Test of years;12;2;1995/2003

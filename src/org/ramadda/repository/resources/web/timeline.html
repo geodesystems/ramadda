@@ -1,0 +1,126 @@
+
+
+<div id="timeline" class="timeline-default" style="${style}   overflow-x:hidden; overflow-y:scroll;"></div>
+
+<script>
+      var SimileAjax_urlPrefix='${root}/lib/timeline/timeline_ajax/';
+      var Timeline_urlPrefix='${root}/lib/timeline/timeline_js/';
+      var Timeline_ajax_url = '${root}/lib/timeline/timeline_ajax/simile-ajax-api.js?bundle=true';
+      Timeline_parameters='bundle=true';
+</script>
+
+<!--
+<script src='${root}/lib/timeline/timeline_ajax/simile-ajax-api.js?bundle=true' type='text/javascript'></script>
+-->
+
+<script src='${root}/lib/timeline/timeline_js/timeline-api.js?bundle=true' type='text/javascript'></script>
+<link rel='stylesheet' href='${root}/lib/timeline/timeline_js/timeline-bundle.css' type='text/css' />
+<script>
+      function createTimeline(dataUrl, baseDate, timelineIntervalUnit) {
+            if(!timelineIntervalUnit) {
+                 timelineIntervalUnit = SimileAjax.DateTime.DECADE;
+            }            
+           var nextInterval =  Timeline.DateTime.YEAR;
+            if(timelineIntervalUnit == Timeline.DateTime.DAY) 
+                 nextInterval =  Timeline.DateTime.WEEK;
+            else if(timelineIntervalUnit == Timeline.DateTime.WEEK) 
+                 nextInterval =  Timeline.DateTime.MONTH;
+            else if(timelineIntervalUnit == Timeline.DateTime.MONTH) 
+                 nextInterval =  Timeline.DateTime.YEAR;
+            else if(timelineIntervalUnit == Timeline.DateTime.YEAR) 
+                 nextInterval =  Timeline.DateTime.DECADE;
+            else if(timelineIntervalUnit == Timeline.DateTime.DECADE) 
+                 nextInterval =  Timeline.DateTime.CENTURY;
+            var eventSource = new Timeline.DefaultEventSource(0);
+            var theme1 = Timeline.ClassicTheme.create();
+            theme1.event.bubble.width = 320;
+            theme1.event.bubble.height = 220;
+            theme1.ether.backgroundColors[1] = theme1.ether.backgroundColors[0];
+            theme1.mouseWheel='zoom'; 
+            var bandInfos = [
+                Timeline.createBandInfo({
+                    width:          "100%", 
+                    intervalUnit:   timelineIntervalUnit, 
+                    intervalPixels: 100,
+                    eventSource:    eventSource,
+                    date:           baseDate,
+                    theme:          theme1,
+                   zoomIndex:      10,
+                   zoomSteps:      new Array(
+              {pixelsPerInterval: 1000,  unit: timelineIntervalUnit},
+              {pixelsPerInterval: 900,  unit: timelineIntervalUnit},
+              {pixelsPerInterval:  800,  unit: timelineIntervalUnit},
+              {pixelsPerInterval:  700,  unit: timelineIntervalUnit},
+              {pixelsPerInterval: 600,  unit: timelineIntervalUnit},
+              {pixelsPerInterval: 500,  unit: timelineIntervalUnit},
+              {pixelsPerInterval: 400,  unit: timelineIntervalUnit},
+              {pixelsPerInterval: 300,  unit: timelineIntervalUnit},
+              {pixelsPerInterval: 200,  unit: timelineIntervalUnit},
+              {pixelsPerInterval: 100,  unit: timelineIntervalUnit},
+              {pixelsPerInterval: 50,  unit: timelineIntervalUnit} // DEFAULT zoomIndex
+            )
+                })
+
+            ];
+
+        timeline = Timeline.create(document.getElementById("timeline"), bandInfos, Timeline.HORIZONTAL);
+
+/*
+      var dttm = "Jun 28 2006 00:00:00 GMT";
+        var dateParser = timeline._events.getUnit().getParser();
+        var event =new Timeline.DefaultEventSource.Event({id:"id",start:dateParser(dttm),end:dateParser(dttm),text:"hello",description:"desc"});
+      timeline._events.add(event);
+*/
+
+        timeline.loadXML(dataUrl, function(xml, url) {
+                eventSource.loadXML(xml, url);
+            });
+        return timeline;
+        }
+        var resizeTimerID = null;
+        function onResize() {
+            if (resizeTimerID == null) {
+                resizeTimerID = window.setTimeout(function() {
+                    resizeTimerID = null;
+                     if(timeline) {
+                        timeline.layout();
+                     }
+                }, 500);
+            }
+        }
+
+    function waitForTimeline() {
+      var waitTime = 200;
+      if(typeof Timeline == 'undefined') {
+         setTimeout(waitForTimeline, waitTime);
+         return;
+       }
+      if(!Timeline.allLoaded) {
+         setTimeout(waitForTimeline, waitTime);
+         return;
+      }
+      initTimeline();
+   }
+
+   function initTimeline() {
+     var url = "${timelineurl}";
+     var baseDate = "${basedate}";
+     var intervalUnit = ${intervalUnit};
+     var timeline = createTimeline(url, SimileAjax.DateTime.parseGregorianDateTime(baseDate), intervalUnit);
+     timeline.getBand(0).zoom(true);
+    }
+
+     function timelineZoom(inOrOut, timeline,evt) {
+        for(var i=0;i<1;i++) {
+             var band = timeline.getBand(i);
+             var loc = SimileAjax.DOM.getEventRelativeCoordinates(evt, band.innerFrame);
+             timeline.getBand(i).zoom(inOrOut, loc.x, loc.y);
+        }
+   }
+
+   waitForTimeline();
+
+</script>
+  
+
+

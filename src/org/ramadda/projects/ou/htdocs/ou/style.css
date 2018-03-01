@@ -1,0 +1,1842 @@
+@charset "UTF-8";
+/* Line 5 through 120 refers to home.css */
+/* CSS Document */
+
+.SSJournalAlternateTitle {
+	width: 300px;
+}
+
+/* img, div { behavior: url(/common/iepngfix.htc) } */
+
+#nav
+{
+    background: #ffffff;
+//    width: 172px;
+    height: 400px;
+    float: left;
+    margin: 0px 2px 3px 0px;
+    padding: 0px;
+    border-top: none;
+    border-bottom: none;
+    border-left: none;
+    border-right: 1px solid;
+    border-right-color: #cccccc;    
+}
+.navSpecial
+{ 
+//    width: 172px;
+    position: absolute; 
+    *position: inherit !important; 
+    margin: 0px 0px 0px 0px;
+    list-style:none;
+    }
+#nav ul
+{
+	margin-top: 0px;
+}
+
+#nav li{
+    margin-bottom: 0px;
+    margin-left: 0px;
+}
+
+#content-mid li{list-style: square; color: #000000; font-size: 12px;}
+#content-mid-wide ol li{list-style-type: decimal; color: #000000; font-size: 12px;}
+#content-mid-wide ul li{list-style-type: square; color: #000000; font-size: 12px;}
+
+#content-mid{
+    background: #ffffff;
+//    width: 525px;
+    min-height:600px;
+    *float: left !important; 
+    float: left;
+    margin: 0px 1px 2px 179px;
+    *margin: 0px 1px 2px 5px !important;
+    padding: 0px;
+}
+
+#content-mid-wide{
+    background: #ffffff;
+//    width: 700px;
+    min-height:600px;
+    float: left;
+    margin: 0px 1px 2px 179px;
+    *margin: 0px 1px 2px 5px !important;
+    padding: 0px;
+}
+
+#content-kb{
+    background: #ffffff;
+//    width: 525px; 
+    float: left;
+    min-height: 450px;
+    margin: 0px 1px 2px 5px;
+    padding: 0px;
+}
+
+#content-splash{
+     background: #ffffff;
+//    width: 525px;
+    height: auto;
+    float: right;
+    margin: 0px 12px 2px 179px;
+    *margin: 0px 14px 2px 0px !important;
+    padding: 0px;
+    display:inline;
+    position: relative;
+
+}
+
+.content-scheduler li
+{
+    list-style:none !important;
+}
+
+#homeWrapper{
+//   width: 710px;
+   height: 403px;
+   float: left;
+   margin:0;
+   padding:0;
+   }
+    
+.homeIMG{
+    width: auto;
+    height: auto;
+    padding:1px;
+    border: 6px #78001b solid;
+}
+
+/*  ************************* Side Menu ****************** */
+
+ul.dropdown,
+ul.dropdown li,
+ul.dropdown ul {
+ list-style: none;
+ margin: 0;
+ padding: 0;
+ 
+}
+
+ul.dropdown {
+ position: absolute;
+ z-index: 3000;
+ float: left;
+ margin: 0;
+ padding:0;
+}
+
+ul.dropdown li {
+ float: left;
+ line-height: 1.3em;
+ vertical-align: middle;
+ zoom: 1;
+}
+
+ul.dropdown li.hover,
+ul.dropdown li:hover {
+ position: relative;
+ z-index: 5099;
+ cursor: default;
+}
+
+ul.dropdown ul {
+ visibility: hidden;
+ position: absolute;
+ top: 0;
+ left: 0;
+ z-index: 5098;
+ width: 172px;
+  margin: 0;
+  padding:0;
+ 
+}
+
+ul.dropdown ul li {
+ float: none;
+}
+
+ul.dropdown ul ul {
+ top: 1px;
+ left: 99%;
+}
+
+ul.dropdown li:hover > ul {
+ visibility: visible;
+
+}
+
+
+
+ul.dropdown-vertical {
+font-family: Verdana;
+font-size:12px;
+width: 172px;
+}
+
+ul.dropdown-vertical ul {
+ top: 1px;
+ left: 99%;
+    
+}
+
+ul.dropdown-vertical li {
+float: none;
+}
+
+
+ul.dropdown {
+	font-weight:bold;
+	font-stretch:expanded;
+	color: #666;
+	
+}
+
+	ul.dropdown li {
+	 padding: 7px 10px;
+	 border-style: solid;
+	 border-width: 1px 1px 1px 0;
+	 border-color: #fff #d9d9d9 #d9d9d9;
+	 background-color: #efefef;
+	 color: #666;
+	 
+	}
+
+	ul.dropdown li.hover,
+	ul.dropdown li:hover {
+	 background-color: #fff;
+	 color: #666;
+	}
+
+	ul.dropdown a:link,
+	ul.dropdown a:visited	{ color: #666; text-decoration: none; }
+	ul.dropdown a:hover		{ color: #666; }
+	ul.dropdown a:active	{ color: #820020; }
+
+
+	/* -- level mark -- */
+
+	ul.dropdown ul {
+	 width: 172px;
+	 margin-top: 1px;
+	}
+
+		ul.dropdown ul li {
+		 font-weight: normal;
+		}
+
+
+
+/*-------------------------------------------------/
+ * @section		Support Class `dir`
+ * @level sep	ul, .class
+ */
+
+
+ul.dropdown *.dir {
+ padding-right: 20px;
+ background-image: url(http://libraries.ou.edu/common/images/nav-arrow-down.png);
+ background-position: 100% 50%;
+ background-repeat: no-repeat;
+ }
+ ul.dropdown *.dir2 {
+ padding-right: 0px;
+ background-image: url(http://libraries.ou.edu/common/images/nav-arrow-down.png);
+ background-position: 100% 50%;
+ background-repeat: no-repeat;
+ }
+
+/* -- Components override -- */
+
+ul.dropdown-horizontal ul *.dir {
+ padding-right: 15px;
+ background-image: url(http://libraries.ou.edu/common/images/nav-arrow-right.png);
+ background-position: 100% 50%;
+ background-repeat: no-repeat;
+
+}
+
+ul.dropdown-horizontal ul *.dir2 {
+ padding-right: 0px;
+ background-image: url(http://libraries.ou.edu/common/images/nav-arrow-right.png);
+ background-position: 100% 50%;
+ background-repeat: no-repeat;
+}
+
+*.dir2 a:hover{
+ padding-right: 0px;
+ background-image: url(http://libraries.ou.edu/common/images/nav-arrow-right.png);
+ background-position: 100% 50%;
+ background-repeat: no-repeat;
+
+}
+
+
+
+ul.dropdown-vertical *.dir,
+ul.dropdown-upward ul *.dir {
+ background-image: url(http://libraries.ou.edu/common/images/nav-arrow-right.png);
+}
+ul.dropdown-vertical *.dir2,
+ul.dropdown-upward ul *.dir2 {
+ background-image: url(http://libraries.ou.edu/common/images/nav-arrow-right.png);
+}
+
+
+
+
+/*-------------------------------------------------/
+ * @section		Base Style Extension
+ */
+
+ul.dropdown a{
+ display: block;
+ padding: 7px 10px;
+ }
+
+
+ul.dropdown span {
+ display: block;
+ padding: 7px 10px;
+ }
+
+
+/*-------------------------------------------------/
+ * @section		Base Style Override
+ */
+
+ul.dropdown li {
+ padding: 0;
+ border: none;
+}
+
+ul.dropdown ul a,
+ul.dropdown ul span {
+ padding: 8px;
+}
+
+
+/*-------------------------------------------------/
+ * @section		Base Style Reinitiate: post-override activities
+ */
+
+
+
+
+
+/*-------------------------------------------------/
+ *	@section	Custom Styles
+ */
+
+ul.dropdown li {
+}
+
+ul.dropdown li.hover,
+ul.dropdown li:hover {
+ background: #fff;
+ color: #fff;
+ border-left: solid 3px #820020;
+ border-top: solid 1px #ccc;
+}
+
+ul.dropdown li a:active {
+ background: url(../images/grad1.png) repeat-x;
+}
+
+
+/* Non-first level */
+
+ul.dropdown ul {
+ margin-top: 0;
+}
+
+	ul.dropdown ul li {
+	}
+
+	ul.dropdown ul li.hover,
+	ul.dropdown ul li:hover {
+	}
+
+
+
+/* Mixed */
+
+ul.dropdown li a,
+ul.dropdown *.dir {
+ border-style: solid;
+ border-width: 1px 1px 1px 0;
+ border-color: #fff #d9d9d9 #d9d9d9;
+ font-weight: bold;
+ 
+}
+
+
+
+/*-------------------------------------------------/
+ * @section		Support Class `open` Usage
+ * @source		js, artificial
+ *
+ */
+
+ul.dropdown li.hover *.open {
+ border-style: solid;
+ border-width: 1px 1px 1px 0;
+ border-color: #820020 #d9d9d9 #d9d9d9;
+ background-color: #ccc; 
+ color: #666;
+
+}
+
+ul.dropdown ul li.hover *.open,
+ul.dropdown-vertical li.hover *.open {
+ padding-left: 15px;
+ border-top-color: #ccc;
+}
+
+
+
+ul.dropdown-upward li.hover *.open {
+ border-top-color: #fff;
+ border-bottom-color: #820020;
+}
+
+ul.dropdown-upward ul li.hover *.open {
+ border-bottom-color: #d9d9d9;
+ 
+}
+
+
+	/* CSS2 clone */
+
+	ul.dropdown li:hover > *.dir {
+	 border-style: solid;
+	 border-width: 1px 1px 1px 0;
+	 border-color: #820020 #d9d9d9 #d9d9d9;
+	 background-color: #fff; 
+	 color: #999;
+	}
+
+	ul.dropdown ul li:hover > *.dir,
+	ul.dropdown-vertical li:hover > *.dir {
+	 padding-left: 15px;
+	 border-top-color: #fff;
+	 border-left: solid 0px #820020;
+	}
+
+
+	ul.dropdown-upward li:hover > *.dir {
+	 border-top-color: #fff;
+	 border-bottom-color: #820020;
+	}
+
+	ul.dropdown-upward ul li:hover > *.dir {
+	 border-bottom-color: #d9d9d9;
+	}
+
+/* ************************ End Side Menu *************** */
+
+/* *************** Telerik Scheduler  ******************* */
+.rsContentTable td 
+{
+    border-color:  #cccccc !important; 
+} 
+
+/* ****************End Telerik Scheduler *************** */
+
+/* ***************************************************** */
+/* Anouncement Section for Home Page */
+
+#announcements{
+    background: #ffffff;
+    width: 504px;
+    height: 200px;
+    float:left;
+    clear: left;
+    padding:0px;
+    margin: 8px 0px 0px 2px;
+    list-style-type: none;
+}
+#announcementLarge li 
+{
+    margin-bottom: 0px;
+    *margin-bottom: -2px;}
+    
+#announcementLarge{
+    background: url(http://libraries.ou.edu/common/images/home-btmModLarge.jpg) no-repeat;
+    width: 252px;
+    height: 185px;
+    padding: 0px;
+    margin: 0px 0px 0px 10px;
+    float: left;
+}
+
+
+#announcementMed li 
+{
+    margin-bottom:0px;
+    *margin-bottom: -2px;}
+    
+    
+#announcementMed{
+    background: url(http://libraries.ou.edu/common/images/home-btmModMed.jpg) no-repeat;
+    width: 224px;
+    height: 185px;
+    padding: 0px;
+    margin: 0px 0px 0px 0px;
+    float: left;
+}
+#announcementSm li 
+{
+    margin-bottom:0px;
+    font-size:medium;
+    *margin-bottom: -2px;}
+    
+#announcementSm{
+    background: url(http://libraries.ou.edu/common/images/home-btmModSM.jpg) no-repeat;
+    width: 215px;
+    height: 185px;
+    padding: 0px;
+    margin: 0px 0px 0px 0px;
+    float: left;
+}
+
+/* ance Classes for Announcements */
+.anceTitle{
+    width: 200px;
+    height: 30px;
+    color: #FFFFFF;
+    font-size: 12px;
+    font-family: Verdana, Arial;
+    margin: 4px 0px 0px 4px;
+    padding: 0px 0px 0px 0px;
+}
+
+#announcements li{
+    width: 200px;
+    height:auto;
+    font-size: 13px;
+    color:#999999;
+    list-style: none;
+    margin-left: 0px;
+}
+
+/* ***************************************************** */
+
+/* *********** End Location Header Style ********* */
+
+/* *********** Image Frame for Locations Page ******* */
+#loc-imageframe
+{
+    margin:0 0 2px 0;
+}
+
+/* *********** End Image Frame for Locations Page ******* */
+
+.find{
+    width: 525px;
+    height: 135px;
+    margin: 5px 0px 8px 0px;
+    padding: 0px;
+    border-right: none;
+    border-bottom: none;
+    border-left: none;
+    border-top: 1px solid;
+    border-top-color: #cccccc;
+    clear: inherit;
+}
+
+.findPadd{margin: 0px;}
+.findBar{
+    width: 425px;
+    height: 20px;
+    background: #cccccc;
+    border-top: 1px solid #666666;
+    border-bottom: 1px solid #666666;
+    border-left: 1px solid #666666;
+    border-right: 1px solid #666666;
+}
+
+.smPadd{margin-top: 7px;}
+
+/* Line 122 through 331 refers to master.css*/
+
+body{
+//    background: #CCCCCC url(http://libraries.ou.edu/common/images/lib-BG.jpg) repeat-x top;
+//    width: auto;
+//    height: auto;
+//    background-color: #CCCCCC;
+    margin: 0;
+    padding: 0;
+    font-family:Verdana, Arial;
+    font-size: 11px;
+}
+
+/* a
+{
+    color:Black;
+    text-decoration:none;
+    font-weight:bold;
+}
+
+a:hover
+{
+    color:#820020;
+}
+*/
+
+a
+{
+    /*color:Black; */
+    color: #608ACB;
+//    font-weight: bold; 
+    text-decoration:none;
+}
+a:hover {
+    text-decoration: underline;
+
+}
+
+.RadGrid_Default a{
+    color: #608ACB !important; 
+}
+
+#page-content
+{
+    font-family: verdana, arial;
+    padding:0;
+}
+/* --- Add Float Left Padd Class to Pages --- */
+/* --------- without Right Sidebar  --------- */
+.floatLeftPadd{
+    float: left;
+    margin-left: 20px;}
+/* ------------------------------------------ */
+
+#wrapper{
+//    background: #FFFFFF url(http://libraries.ou.edu/common/images/lib-content-BG.jpg) repeat-y top;
+    background: #FFFFFF;
+//    width: 950px;
+//    height: auto;
+    padding: 0px;
+    margin-top: 0px;
+    margin-left: auto;
+    margin-right: auto;
+    margin-bottom: 0px;
+//    display:table;
+    
+}
+
+#wrap-popup {
+    margin: auto;
+//    width: 700px;
+    height: 550px;
+    background: #ffffff;
+    background-image: none !important;
+    min-height:550px;
+    display:table;
+    padding: 10px 20px 20px 20px;
+}
+
+/* ***************************************************** */
+/* Header Elements */
+#header{
+//    width: 950px;
+    height: 119px;
+    margin: 4px auto;
+}
+
+.headerLogo{
+    float: left;
+    margin: 17px 0px 0px 20px;
+}
+
+.topIMG{
+    margin: 5px 10px 5px 0px;
+    float: right;
+}
+
+#header-top{
+//    float: left;
+//    width: 950px;
+    height: 90px;
+    margin: 0px 0px 0px 0px;
+}
+
+
+#header-btm {
+//    background: url(http://libraries.ou.edu/common/images/header_red.jpg) repeat-x;
+//    float: left;
+//    width: 950px;
+//    height: 30px;
+//    margin: 0px 0px 0px 0px;
+}
+
+.askus{
+    margin: 3px 5px 0px 25px;
+    float: left;
+}
+
+.login{
+    width: 77px;
+    height: 15px;
+    /*line-height:15px;*/
+    margin: auto 4px auto 4px;
+    border: 1px solid #5E0000;
+    color: #000000;
+    font-size: 9px;
+}
+.loginFloat{
+    font-family: Verdana, Arial;
+    color: #ffffff;
+    font-size:12px;
+    width: 477px;
+    height: 25px;
+    float: right;
+    margin: 4px 44px 0px 4px;
+}
+
+.loginFloat p{
+    color: #ffffff;
+    font-size:10px;
+    letter-spacing: .05em;
+    display: inline;
+}
+
+/* ***************************************************** */
+
+/* Master Nav Settings */
+
+.navButton{
+    padding: 0;
+    margin: 2px 0px 8px 10px;
+}
+/* ***************************************************** */
+
+
+
+/* ***************************************************** */
+/* Right Bar */
+
+#rightLinksWrap
+{
+    width: 229px;
+    height: 627px;
+    margin: 0px 2px 2px 2px;
+    float: right;
+    clear: inherit;
+}
+
+#rightLinksTop
+{
+    background: url(http://libraries.ou.edu/common/images/rightLinksTop.png) no-repeat;
+    width: 229px;
+    height: 14px;
+    margin:0;
+    padding:0;
+}
+
+#rightLinksGrow
+{
+    background: url(http://libraries.ou.edu/common/images/rightLinksGrow.png) repeat-y;
+    width: 229px;
+    height: auto;
+    margin:0;
+    padding:0;
+    padding-bottom:4px;
+}
+
+#rightLinks
+{
+    background: url(http://libraries.ou.edu/common/images/right-sidebar.jpg) no-repeat;
+    width: 229px;
+    height: 583px;
+    margin: 0px 0px 0px 0px;
+    float: right;
+    clear: inherit;
+}
+
+#rightLinks p
+{
+    padding-left:20px;
+
+}
+
+#rightLinks ul
+{
+    !margin-left:0px;
+    !line-height:18px; 
+    padding-left:15px;
+}
+
+.subdashLinks
+{
+    font-size:10px;
+    letter-spacing:0.02em;  
+    line-height:16px; 
+}
+
+#rightLinksMYLIB{
+    background: url(http://libraries.ou.edu/common/images/right-sidebar.jpg) no-repeat;
+    width: 229px;
+    height: 627px;
+    margin: 0px 2px 2px 2px;
+    float: right;
+    clear: inherit;
+}
+
+
+.rightHeader
+{
+    font-size: 16px;
+    margin-left: auto;
+    text-align: center;
+    margin-right: auto;
+    margin-top: 0px;
+    margin-bottom: 0px;
+    color: #820020;
+    width: 190px;
+}
+
+.rightHeader a
+{
+    color: #820020;
+}
+
+.rightTitle
+{
+    color: #8f0027;
+    font-size: 14px;
+    margin-left: 40px;
+    *margin-top: 6px !important;
+}
+
+.rightSubLibTitle
+{
+    font-size: 15px;
+    line-height:18px;
+    margin-left: 10px;
+    text-align: center;
+    letter-spacing: .03em;
+    margin-right: auto;
+    margin-top: 14px;
+    margin-bottom: 20px;
+    color: #000000;
+    width: 200px;    
+}
+
+#rightLinks li
+{
+    list-style: square;
+    color: #000000;
+    font-size: 11px;
+    font-weight:bolder;
+}
+
+#rightLinksMYLIB li
+{
+    list-style: square;
+    color: #000000;
+    margin-top: -2px;
+    font-size: 11px;
+    margin-left: 16px;
+    font-weight:bolder;
+}
+
+
+.librarianTBL{ margin: 5px 0px 5px 20px;}
+.libName
+{
+    font-size: 11px;
+    font-weight:700; 
+    color:#880000; 
+    letter-spacing: .03em;
+}
+    
+.libInfo{
+    font-size: 9px;
+    color: #000000;
+    line-height:16px;
+}
+
+.libLocation
+{
+    font-size:11px;
+    font-weight:normal;
+    margin:0 0 0 20px;
+
+}
+
+.libEmail{
+    font-size: 9px;
+    color:#880000;
+}
+/* ***************************************************** */
+/* MASTER Font Styles */
+
+img{border: none;}
+
+td{}
+tr
+{}
+
+/* Start Text Styles */
+
+p{
+    color: #000000;
+    font-size:12px;
+    margin-top:-.05em;
+    margin-bottom: 11px;
+}
+
+.contentEnd
+{
+	font-size:12px;
+	margin-bottom: 8px;
+}
+
+h1{
+    font-variant: small-caps;
+    color: #000000;
+    font-size:18px;
+}
+
+h2{
+    color: #000000;
+    font-size:16px;
+}
+
+.pageHeaderText
+{
+    color: #820020;
+    font-size:16px;
+    margin: 12px 0px 12px 0px;
+    text-align: left;
+}
+
+h3{
+    color: #820020;
+    font-size:13px;
+    margin: 4px 0px 3px 0px;
+}
+
+.h3Table{
+
+    color: #820020;
+    font-size:11px;
+    font-weight:bold;
+    margin: 4px 0px 3px 0px;
+}
+
+.h3Table a{
+
+    color: #820020;
+    font-size:11px;
+    margin: 4px 0px 3px 0px;
+    text-decoration:none;
+}
+
+h4 {
+//    color: #000000;
+//    font-size:14px;
+//    font-weight:bold;
+}
+
+.h4Table
+{
+	color: #720020;
+	font-size:12px;
+	font-weight:bold;
+	margin: 4px 0px 4px 0px;
+	padding-bottom: 4px;
+}
+
+ul{margin-top: 3px;}
+
+li{
+    color: #000000;
+//    font-size: 11px;
+    margin-bottom: 4px;
+    *margin-bottom: 0px;
+    margin-top: 0px;
+    /*font-weight:bolder; */
+}
+
+/*  Page Header with Graphic */
+#lib-variableHeader{
+    background: url(http://libraries.ou.edu/common/images/fullHeaderSlice.jpg) top right;
+    padding: 3px 32px 3px 5px;
+    margin:0;
+    list-style: none;
+    float: left;
+    color:#FFFFFF; 
+    font-size: 18px;
+}
+
+#grayTopHeader
+{
+    background: url(http://libraries.ou.edu/common/images/grayTop.jpg) repeat-x;
+    height:18px;
+    margin:0 0 20px 0;
+}
+
+#lib-variableHeaderSmall{
+    background: url(http://libraries.ou.edu/common/images/fullHeaderSlice.jpg) top right;
+    padding: 3px 28px 3px 5px;
+    margin:0;
+    list-style: none;
+    float: left;
+    color:#FFFFFF; 
+    font-size: 14px;
+    font-weight:700;
+}
+
+/*  End Page Header with Graphic */
+
+/* Start footer styles */
+#footer{
+    font-size: 9px;
+//    width: 950px;
+    height: 150px;
+    margin-left: auto;
+    margin-right: auto;
+    margin-top: 5px;
+    margin-bottom: 0px;
+    text-align: center;
+    color: #666666;
+}
+
+.footerBG
+{
+    margin:0px 0px 3px 0px;
+//    width: 950px;
+    height: 24px;
+    padding: 2px 0px 2px 0px;
+    text-align: center;
+    background: url(http://libraries.ou.edu/common/images/footer-bg.jpg) repeat-x;
+    font-weight: bold;
+    font-size: 13px;
+    color: #fff;
+}
+
+#footer a:link{color:#fff; font-size: 9px;}
+#footer a:hover{color:#fff; font-size: 9px;}
+#footer a:visited{color:#fff; font-size: 9px;}
+#footer p{color:#333333; display: inline; font-size: 9px; line-height: 10px; margin: 6px 0px 6px 0px;}
+.pfooter{color:#333333; display: inline; font-size: 9px; margin: 0px 0px 0px 0px;}
+.footerpadd{line-height: 17px;}
+
+/*
+#footer a:link{color:#666666; font-size: 9px;}
+#footer a:hover{color:#820020; font-size: 9px;}
+#footer a:visited{color:#666666; font-size: 9px;}
+#footer p{color:#666666; display: inline; font-size: 9px;}
+*/
+/* Line 334 to EOF refers to GlobalHeader.css */
+#header_global {
+	
+	font-size: 68.75%;
+	line-height: 1.8em;
+	font-size:10px;
+	background-image: url(http://libraries.ou.edu/common/images/header_global_silver.gif);
+	background-color: transparent;
+//	position:relative;
+	height:22px;
+//	width:946px;
+	vertical-align: top;
+	margin:0 auto;
+	padding:0;
+}
+
+#header_global h4 {
+	display:inline;
+	font-weight:normal;
+	font-size:110%;
+	margin:0;
+	padding:0;
+}
+
+#header_global a {
+	text-decoration: none;
+	color: #FFFFFF;
+	display:inline;
+	font-weight:normal;
+}
+
+#header_global #homelink {
+	position: absolute;
+	left: 5px;
+}
+
+#header_global #librarylink {
+	position: absolute;
+	left: 85px;
+}
+
+#header_global #applylink {
+	position: absolute;
+	left: 500px;
+}
+
+#header_global #globalnavdivider {
+	position: absolute;
+	left: 540px;
+	color: #FFFFFF;
+}
+
+#header_global #globalnavdivider2 {
+	position: absolute;
+	left: 650px;
+	color: #FFFFFF;
+}
+
+#header_global #firstpipe {
+	position: absolute;
+	left: 70px;
+	color: #FFFFFF;
+}
+#header_global #campuslinkslink {
+	position: absolute;
+	left: 555px;
+}
+
+#header_global #globalnavsearch 
+{
+    position:fixed;
+    right: 10px;
+
+}
+
+#header_global #globalnavsearch {
+	position: relative;
+	top: 0px;
+	background-image:url(http://libraries.ou.edu/common/images/search_bg.gif);
+	background-repeat: no-repeat;
+//	width:75px;
+	height: 14px;
+	font-size: 11px;
+	border:1px solid #888888;
+	vertical-align:top;
+	margin:0;
+	padding:0;
+}
+
+/* Search options for Global Header */
+#header_global #rb1
+{
+    position:absolute;
+    left: 670px; 
+    top: -1px;
+}    
+
+#header_global .OUlibr
+{
+    /*position:absolute;
+    left: 690px;*/
+    color:White;
+} 
+/* End Search options for Global Header */
+
+#googleSearchBox{
+    width: 130px;
+    height: 15px;
+    background: #fff url(http://libraries.ou.edu/common/images/search_bg.gif) no-repeat;
+    font-size: 11px;
+    border:1px solid #888888;
+    vertical-align:top;
+    margin:0;
+    padding:0;
+    float:right;
+    margin-right: 30px;
+}
+.scrBtn{float: right; margin:0;}
+.inputBoxSearch
+{
+    float: left;
+    width:100px; 
+    height:15px;
+    border: none;
+    margin: 0px;
+    padding: 0px; 
+    background: transparent;}
+    
+#header_global #globalnavsearch .searchimage {
+	position: relative;
+	top: 0px;
+}
+
+/* -------- 3 cloumn style ---------- */
+
+#leftCol
+{
+    float:left;
+    width:200px;
+    padding:10px 10px 0 10px;
+    border-right-style:solid;
+    border-right-color:#999999;
+    border-right-width:1px;
+    min-height:350px;
+}
+
+#centerCol
+{
+	float:left;
+    width:200px;
+    padding:10px 10px 0 10px;
+    min-height:540px;
+}
+
+#rightCol
+{
+    float: right;
+    width: 250px;
+    background-color: #C0C0C0;
+    min-height:540px;
+    padding:10px 10px 0 10px;
+}
+
+/* -------- end of 3 cloumn style ---------- */
+
+/* -------- 2 cloumn even style ---------- */
+
+#floatLeft
+{
+    width: 240px;
+    height:auto;
+    float: left;
+    margin:6px 6px 6px 0;
+    padding:0;
+    font-size:12px;
+    text-align:left !Important;
+}
+
+
+#floatRight
+{
+    width: 240px;
+    height:auto;
+    float: right;
+    margin:6px 6px 6px 0;
+    padding:0;
+    font-size:12px;
+    text-align:left !Important;
+}
+
+.clear{
+clear: right;
+}
+
+
+
+
+/* -------- end of 2 cloumn even style ---------- */
+
+/* -------- bti specific styles ---------- */
+
+#bti-container
+{
+    width:650px;
+    
+}
+.bti-list
+{
+    list-style: square;
+    color: #000000;
+    font-size: 12px;
+    margin-left: 0px;
+    margin-top: 0px;
+    font-weight:bold;
+    letter-spacing: .04em;
+    *margin-bottom: -5px;
+    }
+    
+.author
+{
+    color: #000000;
+    font-size:12px;
+    letter-spacing: .04em;
+    font-weight:lighter;
+    margin-bottom: 2px;
+}
+    
+#bti-container.a {
+	text-decoration:none;
+	font-weight:bold;
+	color:#000000;
+}
+
+#bti-book-title
+{
+    font-size:1.2em;
+    font-weight:bold;
+}
+
+#bti-title-block {
+
+	background-color:#CCCCCC;
+	border-style:solid;
+	border-width:2px;
+	border-color:#990000;
+	padding:5px;
+	text-decoration:none;
+}
+
+#bti-more-from-author
+{
+    text-align:center;
+}
+
+#bti-contributor-info
+{
+    font-weight:bold;
+}
+
+.leftPadd 
+{
+    float:left;
+    width: 30px;
+    height: 500px;}
+
+.sx
+{
+    color: #000000;
+    font-size:11px;
+    letter-spacing: .03em;
+}
+
+#bti-floatLeft{
+width: 350px;
+height:auto;
+float: left;
+margin:6px;
+padding:0;
+}
+
+#bti-floatRight{
+width: 240px;
+height:auto;
+float: right;
+margin:6px;
+padding:0;
+}
+
+/* -------- end of bti specific styles ---------- */
+
+/* -------- start of Employee styles ---------- */
+#empdescription{
+    height: 100%;
+    float:left;
+    margin-left:8px;
+}
+/* -------- end of Employee  styles ---------- */
+
+/* -------- start of Job Description styles ---------- */
+.tableInDeepShade 
+{  
+    background-color: #C8C8C8;
+}
+
+.tableInLtShade 
+{  
+    background-color: #EDEDED;
+}
+/* -------- end of Job Description styles ---------- */
+
+
+/* -------- start of CMS styles ---------- */
+
+#cms-footerInfo
+{
+    font-size:9px;
+}
+
+/* -------- end of CMS styles ---------- */
+
+#contentcolumn{
+    /* background: url(..http://libraries.ou.edu/common/images/empty-Title.jpg) no-repeat top; */
+    width: 253px;
+    min-height: 105px;
+    float: left;
+    padding-bottom:20px;
+}
+
+#contentFullWidth
+{
+    font-size:11px;
+    margin: 0 0 20px 0;
+    text-align:left justify;
+}
+
+
+.contentMasterHeader{
+    color: #820d2b;
+    font-size: 18px;
+    margin-top: 10px;
+    margin-left: 8px;
+    font-weight: bold;
+    font-variant: small-caps;
+}
+
+.contentHeader{
+    color: #FFFFFF;
+    font-size: 14px;
+    margin-top: 3px;
+    margin-left: 9px;
+    margin-bottom:0;
+}
+.contentTitle{
+    color: #8f0027;
+    font-size: 12px;
+    font-weight:800;
+    margin-left: 5px;
+    margin-bottom: 0;
+}
+
+.contentMoreLink
+{
+    float:left;
+    padding-right:40px;
+}
+
+.contentCenter
+{
+    text-align:center;
+}
+
+
+/* 2 column content container with no header image*/
+#cc-noImg
+{
+    width: 253px;
+    /* height: 100%; */
+    float: left;
+    margin: 0px 2px 0px 3px;
+    vertical-align: top;
+    
+}
+
+#cc-noImgFW
+{
+    font-size:12px;
+    margin: 0px 2px 0px 3px;
+    vertical-align: top; 
+}
+
+.cc-noImgHeader
+{
+    color: #820020;
+    font-size: 14px; 
+    margin:0;
+    padding:0;
+}
+
+.p_normal
+{
+    font-size:11px;
+    font-weight:normal;
+    text-align:justify;
+}
+
+#searchBox
+{
+    float: left;
+    width: 525px;
+    min-height: 175px;
+    margin: 2px 0px 20px 0px;
+    padding-left:0px;
+    border: 1px solid #820d2b;
+    background: url(http://libraries.ou.edu/common/images/grayTop.jpg) repeat-x top;
+}
+
+#searchBoxTab
+{
+    background: url(http://libraries.ou.edu/common/images/searchTitle.png) no-repeat top;
+    margin: 0px 0px 20px 0px;
+    padding:0;
+    width:164px;
+    height:22px;
+    float:left;
+    vertical-align: top;
+}
+    
+.searchBoxText
+{
+    font-size:12px;
+    text-align:left;
+    color:#8f0027;
+    font-weight:bold;
+    float: left;
+    clear: left;
+    margin-top: 10px;
+    margin-left:33px;
+    margin-bottom: 15px;
+}
+
+.searchBoxDesc
+{
+    font-size:12px;
+    text-align:left;
+    color:#000000;
+    float: left;
+    clear: left;
+    margin-top: 10px;
+    margin-left:33px;
+    margin-bottom: 15px;
+}
+
+.searchBoxList
+{
+    text-align:left;
+}
+
+.searchBar{
+    margin: 45px 0px 15px 18px;
+    width: 425px;
+    height: 20px;
+    background: #cccccc;
+    border-top: 1px solid #666666;
+    border-bottom: 1px solid #666666;
+    border-left: 1px solid #666666;
+    border-right: 1px solid #666666;
+}
+
+#normalSmallFont
+{
+    font-weight:normal;
+    font-size: 10px;
+    margin: 0;   
+}
+/* ------- end of secondary pages styles ------ */
+
+/* ------- start kb styles ------ */
+
+.content-kbFW
+{
+    width:100%;
+    float:left;
+    
+}
+
+/* -------- end kb styles ------ */
+
+/* ------- start resource styles ------ */
+    
+#er_resource_wrapper
+{   
+    width: 700px;
+    height: auto;
+    float: left;
+    padding:0;
+    margin: 0px 0px 0px 10px;}
+    
+.er_resource_container
+{
+    
+    font-size:11px;
+    width: 700px;
+    float: left;
+    padding:0;
+    margin: 0px 0px 0px 10px;
+}
+#resource_pnlResources
+{
+    width: 700px;
+    float: left;
+    padding:0;
+    margin: 0px 0px 0px 10px;
+}
+.er_resource_container *
+{
+
+    font-size:11px;
+}
+
+.er_resource_container label {
+    float: left;
+    text-align: right;
+    white-space: nowrap;
+    min-width: 130px;
+    padding-right: 8px;
+}
+
+.er_resource_subjects_container label
+{
+	float:none;
+	text-align:left;
+	white-space:nowrap;
+	min-width:0px;
+	padding-right:0px;
+}
+
+.er_resource_container div
+{
+	padding-top: 3px;
+}
+
+.er_resource_editor
+{
+		
+}
+
+/* ------- start top menu link styles ------ */
+
+.topmenu_link
+{
+    color: #ffffff;
+    font-size:11px;
+    letter-spacing: .03em;  
+	padding-left: 5px;
+}
+.topmenu_link:hover
+{
+	color: #ffffff;
+	text-decoration: underline;
+}
+.topmenu_login_button
+{
+	padding: 2px 3px 3px 3px;
+}
+
+/* ------- end top menu link styles ------ */
+
+
+
+.gen_horiz_pad
+{
+	padding: 3px 6px 3px 6px;
+}
+
+.gen_vert_pad
+{
+	padding: 6px 3px 6px 3px;
+}
+
+.gen_vert_pad_lg
+{
+	padding: 12px 3px 12px 3px;
+}
+
+#sersol_ej {
+	padding-left: 5px;
+}
+
+
+/* ------- My Library Dock styles ------ */
+	.myLibraryDockZone .RadDock_Default
+	{
+		opacity:0.9;
+		filter:alpha(opacity=90);
+		margin-bottom:8px;
+	}
+	
+	.myLibraryDockZone .RadDock_Default:hover
+	{
+		opacity:1;
+		filter:alpha(opacity=100);
+		margin-bottom:8px;
+	}
+	
+	.myLibraryDockZone .rdCollapsed
+	{
+		opacity:0.9;
+		filter:alpha(opacity=90);
+		border-bottom: 1px solid #888;
+	}
+	
+	.myLibraryDockZone .rdCollapsed:hover
+	{
+		opacity:1;
+		filter:alpha(opacity=100);
+	}
+	
+	.myLibraryDockZone .RadDock_Default .rdTitlebar 
+	{
+		color: #820020;
+		font-weight:bolder;
+		float:left;
+	}
+
+	.myLibraryDockZone .rdPlaceHolder 
+	{
+		padding-bottom:8px;
+		/*border:dashed black 1px;
+		background:transparent;*/
+	}
+   
+    #myLibraryRecentlyAddedDatabases td
+    {
+    	line-height:16px;
+    	padding:4px; 
+    	padding-bottom: 1px;
+    	vertical-align:top;
+    }
+    
+    #myLibraryAccountModule
+    {
+    	padding-bottom:3px;
+    }
+    
+    #myLibraryAccountModule li
+    {
+    	margin-left: 20px;
+    	font-family:Tahoma;
+    }
+    
+	.myLibraryModuleWrapper
+    {
+        padding-top: 4px;
+    }
+    
+    .myLibraryModuleWrapper
+    {
+    	line-height:20px;
+    	padding-bottom:4px;
+    }
+    
+    .myLibraryModuleWrapper ul
+    {
+        margin: 0;
+    }
+    
+    .myLibraryModuleWrapper li
+    {
+        margin: 0;
+    }
+    
+    .myLibraryModuleWrapper ul
+    {
+    	margin:0px;
+    	padding:0px;
+    }
+    
+    .myLibraryModuleWrapper li
+    {
+		list-style: square;
+    }
+    
+    #myLibrarySearchDatabasesModule
+    {
+    	padding-left:4px;
+    }
+    
+    #myLibrarySearchDatabasesModule .searchTerm
+    {
+    	font-size:smaller;
+    	width:75px;
+    }
+    
+    #myLibrarySearchDatabasesModule .btnSearch
+    {
+    	font-size:smaller;
+    	width:25px;
+    	margin: 0;
+    	padding:0;
+    }
+    
+    #myLibrarySearchDatabasesModule .chk
+    {
+    	margin-left:-4px;
+    }
+    
+    #myLibrarySearchDatabasesModule select
+    {
+    	font-size:smaller;
+    	width:50px;
+    }
+    
+    #myLibrarySearchCatalogModule
+    {
+    	padding-left:4px;
+    }
+    
+    #myLibrarySearchCatalogModule .searchTerm
+    {
+    	font-size:smaller;
+    	width:128px;
+    }
+    
+    #myLibrarySearchCatalogModule .btnSearch
+    {
+    	font-size:smaller;
+    	width:25px;
+    	margin: 0;
+    	padding:0;
+    }
+    
+    #myLibraryDatabasesModule table
+    {
+    	
+    }
+    
+    #myLibraryEReferenceModule table
+    {
+
+    }
+    
+    #myLibraryServicesModule table
+    {
+    }
+    
+    #myLibrarySubjectsModule table
+    {
+    	margin-left:4px;
+    }
+    
+    
+    /*temp sersol fix*/
+    .SSCentralSearchTopControlBox,
+    .SSCentralSearchResults
+    {
+    	padding-right:8px;
+    }
+    
+    .keywords
+    {
+        text-indent: -9999px; 
+        font-size: 0px; 
+        line-height: 0px; 
+        margin:0; 
+        padding:0; 
+        color:#ffffff;
+    }
+    
+    /* Input Button style */
+    input.rfdDecorated,
+    button.rfdDecorated
+    {
+     padding-left: 4px !important;
+    }
+
+    /* End Input Button style */
+    
+    /* Custom Table Design */
+     table.customTable
+     {
+        font-size: 12px;
+        padding: 0;
+        margin: 0;
+        border-collapse: collapse;
+     }
+ 
+     table.customTable tr
+     {
+        height: 25px;
+     }
+ 
+     table.customTable td
+     {
+         border: 1px solid #cccccc;
+         padding-left: 10px;
+         padding-right: 10px;
+         background-color:#ececec;
+         vertical-align:middle;
+     }
+     
+    /* End Custom Table Design */
+
+    .login, inputBoxSearch, riTextBox{
+    font-size: 1.2em !important;
+}
+
+        .social-icon{
+        padding-right: 5px;
+    }

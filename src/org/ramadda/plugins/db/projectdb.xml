@@ -1,0 +1,189 @@
+
+<tables>
+
+<!--
+
+   The RAMADDA database facility looks for any file that ends with "db.xml", e.g., 
+   testdb.xml
+   in the plugins directory. So, for example, you can easily add your own kind of database by
+   writing your own xml file and putting it into your plugins directory.
+
+    Each  database table is defined with a table tag. You need to specify a unique id and a name.
+    Contained in the table tag are a set of column definitions. Each column has a name which ends 
+    up being the database column name so this should be legal sql. There is also a label and some flags,
+    e.g. cansearch, canlist, that determine whether the column is shown in the list and in the search form.
+    
+    The column also has a type, e.g.:
+    string, enumeration, enumerationplus, date, datetime, double, int, latlon, latlonbbox, clob, email
+
+    If its an enumeration then you also have to specify a column separated list of values.
+    See the prioriity example below.
+
+    enumerationplus allows the user to enter their own value and/or use values that have already been created.
+
+    If there is an email type then there will be a mailto link. !!!This isn't working yet!!!!
+
+    If its a string or a clob then you also need to specify a size (byte size)
+
+
+    Column tags can also contain property tags
+
+    If a column tag has a property tag iscategory then the categorical views are shown, e.g.:
+   <column ...>
+       <property name="iscategory" value="true"/>
+   </column>
+
+
+   If  a column has a "label=true" property, e.g.:
+       <property name="label" value="true"/>
+   then that column value is used as the label for the entry
+
+        
+-->
+
+<!--
+<table id="testit" name="Test it db">
+   <column name="title" type="string" label="Title" cansearch="true"   canlist="true"/>
+   <column name="entry" type="entry" label="Entry" cansearch="true"   canlist="true"/>
+</table>
+-->
+
+
+
+<table id="tasks" name="Tasks" icon="/db/tasks.gif">
+   <column name="title" type="string" label="Title" cansearch="true"   canlist="true" required="true"/>
+   <column name="priority" type="enumeration" label="Priority" values="High,Medium,Low" cansearch="true"   canlist="true"/>
+   <column name="status" type="enumeration" label="Status" values="Not Started,In Progress,Completed,Deferred,Waiting" cansearch="true"   canlist="true">
+       <property name="iscategory" value="true"/>
+   </column>
+
+   <column name="complete" type="percentage" label="% Complete" cansearch="true"   canlist="true"/>
+   <column name="assignedto" type="enumerationplus" values="" label="Assigned To" cansearch="true"   canlist="true">
+       <property name="iscategory" value="true"/>
+   </column>
+   <column name="description" type="string" label="Description"  canlist="false" rows="5" columns="40" size="10000" />
+   <column name="startdate" type="date" label="Start Date" cansearch="true"   canlist="true"/>
+   <column name="enddate" type="date" label="End Date" cansearch="true"   canlist="true"/>
+</table>
+
+
+<table id="vote_yesno" name="Simple Yes-No Vote" >
+   <column name="name" type="string" label="Name"   canlist="true" required="true" columns="70"/>
+   <column name="address" type="string" label="Address"   canlist="true" size="400" xrows="4" columns="70" required="false"/>
+   <column name="vote" type="enumeration" label="My Vote" values="yes:Yes,no:No" cansearch="true"   canlist="true">
+       <property name="iscategory" value="true"/>
+   </column>
+</table>
+
+
+
+<table id="devtasks" name="Development Tasks">
+   <column name="title" type="string" label="Title" cansearch="true"   canlist="true"/>
+   <column name="package" type="enumerationplus" label="Package" cansearch="true"   canlist="true">
+       <property name="iscategory" value="true"/>
+   </column>
+   <column name="type" type="enumerationplus" label="Type" cansearch="true"   canlist="true">
+       <property name="iscategory" value="true"/>
+   </column>
+   <column name="status" type="enumeration" label="Status" values="Not Started,In Progress,Completed,Deferred,Waiting" cansearch="true"   canlist="true">
+       <property name="iscategory" value="true"/>
+   </column>
+   <column name="description" type="string" label="Description"  canlist="false" rows="10" columns="40" size="10000"/>
+</table>
+
+<table id="todo" name="Todo">
+   <column name="checked" type="boolean" label="Done" cansearch="true"   canlist="true" default="false"/>
+   <column name="title" type="string" label="What" cansearch="true"   canlist="true"/>
+   <column name="category" type="enumerationplus" values="" label="Category" cansearch="true"   canlist="true">
+       <property name="iscategory" value="true"/>
+   </column>
+   <column name="description" type="string" label="Description"  canlist="true" rows="5" columns="40" size="10000" />
+</table>
+
+
+<table id="statusboard" name="Status Board">
+   <column name="what" type="string" label="What" cansearch="true"   canlist="true"/>
+   <column name="status" type="enumerationplus" values="" label="Status" cansearch="true"   canlist="true">
+       <property name="iscategory" value="true"/>
+   </column>
+</table>
+
+
+
+<table id="notes" name="Notes" icon="/icons/note.gif">
+   <column name="note" type="string" label="Note"  canlist="true" rows="5" columns="40" size="10000" />
+</table>
+
+
+
+<table id="bookmarks" name="Bookmarks" icon="/db/bookmarks.gif">
+   <column name="title"  type="string" label="Title" cansearch="true"   canlist="true" columns="60" size="500" >
+       <property name="label" value="true"/>
+   </column>
+   <column name="url" type="url" label="URL" cansearch="true"   canlist="true" columns="60"/>
+   <column name="category" type="enumerationplus" label="Category" cansearch="true"   canlist="true">
+       <property name="iscategory" value="true"/>
+   </column>
+   <column name="date" type="date" label="Date" cansearch="true"   canlist="true"/>
+   <column name="snippet" type="string" label="Snippet"  canlist="true" rows="5" columns="80" size="10000" />
+</table>
+
+
+
+<table id="contact" name="Contact List" icon="/db/phone.png">
+   <column name="name" type="string" label="Name" cansearch="true"   canlist="true"/>
+   <column name="institution" type="string" label="Institution" cansearch="true"   canlist="true"/>
+   <column name="email" type="email" label="Email" cansearch="true"   canlist="true"/>
+   <column name="phone" type="string" label="Phone"  canlist="true" columns="12"/>
+   <column name="address" type="string" label="Street"  canlist="false" rows="4"  size="1000"/>
+   <column name="city" type="string" label="City"  canlist="false"/>
+   <column name="state" type="string" label="State or Province"  canlist="false"/>
+   <column name="postalcode" type="string" label="Postal Code"  canlist="false" columns="12"/>
+   <column name="country" type="string" label="Country"  canlist="false"/>
+   <column name="notes" type="string" label="Notes"  canlist="false" rows="5" columns="40" size="10000" />
+</table>
+
+
+<table id="devplans" name="Development Plans">
+   <column name="package" type="enumerationplus" label="Package or person" cansearch="true"   canlist="true">
+       <property name="iscategory" value="true"/>
+   </column>
+   <column name="date" type="date" label="Date" cansearch="true"   canlist="true"/>
+   <column name="status" type="string" label="Past work"  canlist="true" rows="5" columns="60" size="5000" />
+   <column name="plans" type="string" label="Future plans"  canlist="true" rows="5" columns="60" size="5000" />
+</table>
+
+
+<table id="agendaitems" name="Agenda Items">
+   <column name="who" type="enumerationplus" label="Who's idea" cansearch="true"   canlist="true">
+       <property name="iscategory" value="true"/>
+   </column>
+   <column name="title" type="string" label="Title" cansearch="true"   canlist="true">
+       <property name="label" value="true"/>
+   </column>
+  <column name="status" type="enumeration" label="Status" values="Idea,Scheduled,Completed" cansearch="true"   canlist="true">
+       <property name="iscategory" value="true"/>
+   </column>
+   <column name="date" type="date" label="Date" cansearch="true"   canlist="true"/>
+   <column name="description" type="string" label="Description"  canlist="true" rows="5" columns="60" size="10000" />
+   <column name="entry" type="entry" label="Ancillary Material"  canlist="true" />
+
+</table>
+
+
+
+
+
+<!--
+<table id="boundstest" name="Bounds Test">
+   <column name="subject1" type="string"   label="Subject1"  cansearch="true" canlist="true" />
+   <column name="date" type="date"  label="Date" cansearch="true" canlist="true" />
+   <column name="email" type="email" label="Email" cansearch="true"   canlist="true"/>
+   <column name="bounds" type="latlonbbox"  label="Bounds" cansearch="true" canlist="true" />
+
+   <column name="subject2" type="string"   label="Subject2"  cansearch="true" canlist="true" />
+</table>
+-->
+
+
+</tables>

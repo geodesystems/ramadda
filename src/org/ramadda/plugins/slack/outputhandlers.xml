@@ -1,0 +1,3 @@
+<outputhandlers>
+  <outputhandler class="org.ramadda.plugins.slack.SlackOutputHandler" name="Slack"/>
+</outputhandlers>

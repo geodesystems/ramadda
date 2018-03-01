@@ -1,0 +1,19 @@
+
+<tables>
+
+<table id="exercise" name="Exercise">
+   <column name="type" type="enumerationplus" label="Type"  cansearch="true"   canlist="true"/>
+   <column name="date" type="date" label="Date" cansearch="true"   canlist="true">
+     <property name="defaultsort" value="true"/>
+     <property name="ascending" value="false"/>
+   </column>
+   <column name="hours" type="double" label="Hours"  canlist="true" default="1">
+     <property name="dosum" value="true"/>
+   </column>
+   <column name="miles" type="double" label="Miles"  canlist="true" default="0">
+     <property name="dosum" value="true"/>
+   </column>
+   <column name="description" type="string" label="Description"  canlist="false" rows="5" columns="40"/>
+</table>
+
+</tables>

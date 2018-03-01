@@ -1,0 +1,169 @@
+[ht::head {Text Point Data}]
+<%nochildlist%>
+
+RAMADDA can provide rich support for structured CSV or text data files.
+
+First of all, download and install the 
+<a href="http://sourceforge.net/projects/ramadda/files/ramadda<%ramadda.version%>/">pointtools.zip</a> release.
+
+All of the examples below, once saved to disk, can be processed with:
+
+<pre>
+    sh &lt;install path&gt;/pointtools/pointchecker.sh  value.csv
+</pre>
+
+Here are some examples of different point data readers.
+
+<subhead intoc="false" id="csv">Simple CSV Examples</subhead>
+
+If you have text formatted data that you want to ingest into RAMADDA you can either
+generate the data in a standard CSV text format for specify a set of
+metadata properties in an external properties file.
+<p>
+
+The "standard CSV" format has any  number of "#" delimited comment and property lines 
+at the beginning of the file followed by any number of data records.
+The properties are defined in the header with:
+<pre>
+#comment
+#property name=property value
+#property name=property value
+#
+value1,value2,valueN
+value1,value2,valueN
+...
+</pre>
+
+
+Here is a simple example with just a single column value:
+[importcsv data/value.csv]
+
+The only property that is required is the <i>fields</i> property - a comma separated
+list of field identifiers with a set of attributes contained within &quot;\[&quot; and  &quot;\]&quot;.
+<pre>
+    fieldname\[attr1="value1" attr2="value2" ...\]
+</pre>
+
+
+Here is a simple example with 2 columns. The second column has a missing value defined.
+[importcsv data/2values.csv]
+
+
+An alternative way to specify attributes of fields is with other named properties as shown below. 
+
+[importcsv data/2values_alt.csv]
+
+<subhead intoc="false" id="datetime">Date/Time</subhead>
+
+You can specify a date/time by specifying its type=&quot;date&quot;. 
+Use format=&quot;date format&quot; to
+specify the 
+<a href="http://docs.oracle.com/javase/7/docs/api/java/text/SimpleDateFormat.html">date format</a>. 
+Here is an example with time and a single value. 
+
+[importcsv data/time_value.csv]
+
+
+Here we have a file where the date and time are in different columns.
+The <i>isdate</i> and <i>istime</i> attributes specify that the time field is 
+created from both of the columns. The <i>dateformat</i> specifies 
+the format to use.
+
+
+[importcsv data/datetime.csv]
+
+If you have fields with the names yyyy (or year), month (or mm), day, hour, minute, second (or a subset of them) then
+RAMADDA will figure out the date/time of the records from the column values.
+[importcsv data/yymmddhhmmss.csv]
+
+
+
+<subhead intoc="false" id="geo">Georeferenced Data</subhead>
+
+If you have georeferenced data then specify latitude and longitude columns. Please, please, please, use decimal degrees east -180 to 180 and decimal degrees north -90 to 90.
+
+[importcsv data/latlon_value.csv]
+
+Here is a georeferenced time series:
+[importcsv data/latlon_time_value.csv]
+
+You can specify different coordinate reference systems with the <i>crs</i> property.
+For UTM coordinates specify an X and Y field and the utm zone and north/south flag:
+Here is data in UTM zone 58 South:
+[importcsv data/utm58s_rgbi.csv]
+
+Here is data in a WGS84 ellipsoid:
+[importcsv data/wgs84_rgbi.csv]
+
+
+You can also specify EPSG coordinate systems  by setting the crs property to:
+<pre>
+crs=epsg:&lt;epgs code&gt;
+</pre>
+
+
+<p>
+
+<subhead intoc="false" id="site">Site Based Data</subhead>
+
+If you have text values
+then specify the <i>type="string"</i>
+
+[importcsv data/site_time_value.csv]
+
+
+Its often the case that a single file has site and lat/long data is implicit in a header, etc.
+For these cases we want to be able to access the site and location as we read the data. So, we define a
+fake field with a <i>value="..."</i> attribute.
+
+[importcsv data/fixed_site.csv]
+
+Likewise, you can specify the time value:
+
+[importcsv data/fixed_time.csv]
+
+You can also specify a pattern that is applied to the text in the header to extract out
+latitude, longitude, elevation, etc.
+
+[importcsv data/patternexample.csv]
+
+
+
+
+
+<p>
+
+<subhead intoc="false" id="property">Property Files</subhead>
+
+If you have text point files that are in some pre-existing format (i.e., you can't add "#" properties) then you can specfy
+
+
+Lets assume we have a simple CSV file with 4 columns - 
+
+[importcsv data/example1.csv]
+
+We can read this file with just a point.properties file. The key properties are
+<i>delimiter</i>, <i>skiplines</i> and <i>fields</i>.
+
+[importcsv data/example1.csv.properties]
+
+[importcsv data/example1_alt.csv.properties]
+
+<p>
+
+<subhead intoc="false" id="types">Integrating with RAMADDA</subhead>
+
+You can upload an arbitrary CSV point file and its accompanying properties file.
+When you are logged in go to File->New Entry. Under the Point Data list choose Text Point Data.
+Specify the properties in the text field or upload the properties file.
+
+
+You can also define a new entry type in RAMADDA for your point data. Embed the 
+properties in a <i>properties</i> tag. Install the types.xml file as a plugin.
+
+[import_xml data/exampletypes_.xml]
+
+
+[ht::foot]
+
+

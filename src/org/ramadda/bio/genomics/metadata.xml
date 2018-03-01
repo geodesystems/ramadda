@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<metadata>
+  <handler category="Bio">
+    <type id="bio_method" name="Experimental Method" foruser="true" searchable="true">
+      <element id="attr" name="Method" type="enumerationplus"/>
+    </type>
+
+    <type id="bio_author" name="Author" foruser="true" searchable="true">
+      <element id="name" name="Name" />
+    </type>
+
+    <type id="bio_pdb_compound" name="PDB Compound" foruser="true" searchable="true">
+      <element id="mol_id" name="Molecule ID" />
+      <element id="molecule" name="Molecule" />
+      <element id="chain" name="Chain" />
+      <element id="engineered" name="Engineered" />
+    </type>
+
+
+    <type id="bio_pdb_source" name="PDB Source" foruser="true" searchable="true">
+      <element id="mol_id" name="Molecule ID" />
+      <element id="organism_scientific" name="Organism scientific" />
+      <element id="organism_common" name="Organism common" />
+      <element id="organism_taxid" name="Organism taxid" />
+
+    </type>
+  </handler>
+
+
+</metadata>

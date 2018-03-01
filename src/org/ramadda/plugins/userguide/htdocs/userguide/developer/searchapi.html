@@ -1,0 +1,145 @@
+<html>
+<head>
+<title>Search API</title>
+  <link rel="stylesheet" type="text/css" href="../default.css" title="Style">
+
+</head>
+
+<body>
+<div class="ramadda-documentation">
+<table width=100% cellspacing=0 cellpadding=0 ><tr><td width=30%>
+<a href="api.html"><img src="../images/PreviousArrow.gif" border="0"   alt="Previous: RAMADDA Web API" title="Previous: RAMADDA Web API"></a> <a href="publishapi.html"><img src="../images/NextArrow.gif" border="0"   alt="Next: Publish API" title="Next: Publish API"></a>  <a href="../toc.html#developer/searchapi.html"><img src="../images/TOCIcon.gif" border="0"   alt="Table of contents" title="Table of contents"></a>
+</td>
+<td width=40% align=center>
+<div class="ramadda-page-title">RAMADDA User Guide</div>
+</td>
+<td width=30%>&nbsp;</td>
+</tr></table>
+<div class="ramadda-page-heading">15.5 Search API</div>
+
+<style type="text/css">
+pre {
+    margin-left:15px;
+}
+</style>
+
+<div style="margin-left:20px;">
+
+
+The main search API into RAMADDA is <i>/search/do </i>, e.g:
+<pre>
+http://localhost:8080/repository/search/do?&lt;arguments&gt;
+</pre>
+
+The entry types, metadata types and output types that are available at a given RAMADDA
+are listed at
+<i>/search/info</i>, e.g.:
+<pre>http://localhost:8080/repository/search/info</pre>
+
+The search arguments include:
+
+The default is to show the above results in a web page. Like any time dealing with entries in RAMADDA you can specify another output type with:
+<pre>
+output=&lt;some output&gt;
+</pre>
+
+Common  outputs include:
+<pre>
+output=atom
+output=rss.full
+output=thredds.catalog
+output=zip.tree
+output=default.csv
+</pre>
+
+
+
+
+
+To search on entry name or description:
+<pre>
+text=&lt;text in name or description&gt;
+http://localhost:8080/repository/search/do?text=test
+</pre>
+
+
+You can search on entries of specific types with:
+<pre>
+type=&lt;entry type&gt;
+http://localhost:8080/repository/search/do?type=group
+</pre>
+
+<h3>Date Search</h3>
+
+There are 3 types of date based searches. All dates expressed here should be in a standard formats, e.g., 2007-09-01'T'11:05.
+
+//TODO: fix this in the code
+
+
+
+Entries have a data date range. This can be searched with:
+<pre>
+datadate.from=&lt;lower date range&gt;
+datadate.to=&lt;upper date range&gt;
+</pre>
+Where the lower date of the entry date range needs to be &gt;= the datadate.from and the upper date of the entry date range is &lt;= the datedate.to
+
+
+The date when the entry was created and/or modified can be searched with:
+<pre>
+createdate.from=&lt;lower date range&gt;
+createdate.to=&lt;upper date range&gt;
+changedate.from=&lt;lower date range&gt;
+changedate.to=&lt;upper date range&gt;
+</pre>
+
+The type of search can be specified with:
+<pre>
+datadate.mode=containedby|overlaps|contains
+</pre>
+
+
+
+<h3>Spatial Search</h3>
+
+Entries have a spatial bounds. The <i>area_</i> search arguments define a search rectangle. The <i>areamode</i> argument specifies the type of search  - 
+does the search rectangle overlap or contain the entries bounds.
+
+<pre>
+area_north=&lt;decimal degrees&gt;
+area_west=&lt;decimal degrees&gt;
+area_east=&lt;decimal degrees&gt;
+area_south=&lt;decimal degrees&gt;
+areamode=overlaps|contains
+</pre>
+
+
+<h3>Miscellaneous</h3>
+
+
+For entries that have a file the file suffix (e.f., .pdf) can be search on
+<pre>
+filesuffix=pdf
+</pre>
+
+<h3>Metadata Properties</h3>
+
+<pre>
+metadata.attr1.&lt;type&gt;
+</pre>
+
+
+
+
+
+
+</div>
+<p>
+<div  class="childlist" ><table  width="100%" ></table></div>
+<p>&nbsp;<p>
+<a href="api.html"><img src="../images/PreviousArrow.gif" border="0"   alt="Previous: RAMADDA Web API" title="Previous: RAMADDA Web API"></a> <a href="publishapi.html"><img src="../images/NextArrow.gif" border="0"   alt="Next: Publish API" title="Next: Publish API"></a>  <a href="../toc.html#developer/searchapi.html"><img src="../images/TOCIcon.gif" border="0"   alt="Table of contents" title="Table of contents"></a>
+<p>
+</div>
+</body>
+</html>
+

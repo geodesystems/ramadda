@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<metadata>
+  <handler category="Identifiers" class="org.ramadda.plugins.doi.DoiMetadataHandler" >
+    <type id="doi_identifier" name="Identifier" foruser="true">
+      <element id="identifier_type" name="Identifier Type" />
+      <element id="identifier" name="Identifier"/>
+    </type>
+  </handler>
+</metadata>

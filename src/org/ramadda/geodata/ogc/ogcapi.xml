@@ -1,0 +1,16 @@
+
+<api>
+
+
+<group handler="org.ramadda.geodata.ogc.WfsApiHandler" id="wfs">
+      <property name="admin" value="false"/>
+      <api request="/ogc/wfs"    method="processWfsRequest"/>
+</group>
+
+<group handler="org.ramadda.geodata.ogc.CswApiHandler" id="csw">
+      <property name="admin" value="false"/>
+      <api request="/ogc/csw"    method="processCswRequest"/>
+</group>
+
+
+</api>

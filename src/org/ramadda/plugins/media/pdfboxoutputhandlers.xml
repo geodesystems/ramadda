@@ -1,0 +1,9 @@
+<outputhandlers class="org.ramadda.repository.output.ServiceOutputHandler" icon="/icons/pdf.png" category="Documents and Images">
+
+  <outputhandler serviceId="media_pdfbox_extracttext"/>
+  <outputhandler serviceId="media_pdfbox_extractimages"/>
+  <outputhandler serviceId="media_pdfbox_pdftoimage"/>
+  <outputhandler serviceId="media_pdfbox_pdfsplit"/>
+  <outputhandler serviceId="media_pdfbox_texttopdf"/>
+  <outputhandler serviceId="media_pdfbox_merge"/>
+</outputhandlers>

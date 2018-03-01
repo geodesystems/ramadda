@@ -1,0 +1,124 @@
+<types category="Ocean Data" icon="/mb/mb.png"  supercategory="Geoscience" >
+
+
+
+  <type name="type_mb_collection"  description="Bathymetry Collection" handler="org.ramadda.repository.type.ExtensibleGroupTypeHandler">
+     <property name="form.resource.show" value="true"/>
+
+<wiki>
+<![CDATA[
++inset
+:title {{name}}
+{{description}}
++row
++col-md-8
+{{timeline  height="150"  entries.filter="type:type_mb"}}
+-col
++col-md-4
+{{link title="Zip and Download Collection" button="true" output="zip.zipgroup"}}
+-col
+-row
+
+<br>
+
+{{map  width="800"  height="500"  listentries="true"  details="false"  icon="#/icons/dots/green.png"  iconsonly="false"  entries.filter="type:type_mb" layer="google.satellite"}}
+
+----
+
+{{tree  details="true"  prefix="==All Files=="}}
+-inset
+
+]]></wiki>
+
+</type>
+
+
+
+
+  <type name="type_mb"  description="MB Bathymetry" handler="org.ramadda.geodata.mb.MbTypeHandler" pattern=".*\.mb[0-9]+">
+     <property name="form.altitude.show" value="true"/>
+     <column name="format" label="Format"  type="enumerationplus"   values="file:/org/ramadda/geodata/mb/mbtypes.txt"/>
+     <column name="number_of_records" label="Number of records"  type="int"/>
+     <column name="total_track_length" label="Track length"  type="double"/>
+
+    <service link="geo_mb_mbinfo">
+      <params>
+          <param name="geo_mb_mbinfo.xml">true</param>
+      </params>
+    </service>
+    <service link="geo_mb_mblist" target="sibling" target.type="type_mb_point_basic"/>
+
+<wiki>
+<![CDATA[
++inset
++row
++col-md-9
+:title {{name}}
+{{description box.class="entry-page-description"}} 
+{{information}}
+<br>
++row
++col-md-8
+{{chart fields="depth" title="Depth"  height="150" width="500" entry="link:type_mb_point_basic" message=""}}
+{{chart fields="amplitude" title="Amplitude"  height="150"  width="500" entry="link:type_mb_point_basic" message=""}}
+-col
++col-md-4
+{{display type="map"  height="300"  width="300" layoutHere="true" defaultMapLayer="google.satellite" entry="link:type_mb_point_basic" message=""}}
+-col
+-row
+-col
++col-md-3
+{{tools includeicon="true" title="Services" message=""}}
+<br>
+{{list includeicon="true" details="false" entries="links,siblings"  message="" box.maxheight="200" box.class="entry-sidebox" prefix="====Related====" xblock.show="true" xblock.title="Related" xblock.open="false"}}
+-col
+-row
+-inset
+
+]]></wiki>
+
+   </type>
+
+  <type name="type_mb_point_basic"  
+        super="type_point" 
+        description="Basic MB point file"  
+        handler="org.ramadda.data.services.PointTypeHandler">
+    <property name="record.file.class" value="org.ramadda.data.point.text.CsvFile"/>
+<property name="record.properties">
+delimiter=tab
+fields=time[format="yyyy/MM/dd/HH/mm/ss"],longitude[unit="degrees"],latitude[unit="degrees"],depth[chartable="true" searchable="true"],amplitude[chartable="true" searchable="true"],value1[],value2[]
+</property>
+
+<wiki>
+<![CDATA[
++inset
+:title {{name}}
+
+{{description}}
+
++row
++col-md-8
+{{chart fields="depth" title="Depth"  height="150" }}
+{{chart fields="amplitude" title="Amplitude"  height="150" }}
+----
+{{information}}
+-col
++col-md-4
+{{display type="map"  height="300"  width="400" layoutHere="true" defaultMapLayer="google.satellite"}}
+----
+{{list includeicon="true" details="false" entries="links,siblings"  message="" box.maxheight="200" box.class="entry-sidebox" 
+ prefix="====Related===="}}
+-col
+-row
+
+
+
+
+-inset
+
+]]></wiki>
+
+</type>
+
+
+</types>

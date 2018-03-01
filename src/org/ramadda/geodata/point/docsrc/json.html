@@ -1,0 +1,78 @@
+<html>
+<head>
+<title>Time Series JSON Format</title>
+</head>
+<body>
+<div style="margin-left:10px; margin-top:10px;">
+<style type="text/css">
+pre {
+   margin-top: 5px;
+}
+</style>
+
+
+One of the point data  formats provided by RAMADDA is JSON. 
+
+The JSON is accessed through the point data API,
+
+<pre>
+/repository/point/json?entryid=&lt;entry id&gt;&amp;numpoints=500
+</pre>
+
+If numpoints is specified then RAMADDA will set a skip factor when processing the data and decimate the results to approximate the numpoints.
+
+
+<a href="http://ramadda.org/repository/point.json?entryid=3d7c2303-cd71-4f5c-9928-a4c84c788782&numpoints=500">Example on RAMADDA</a>
+
+<p>
+
+The call returns a map with a name, a list of the data fields provided and a set of data records.
+
+<pre>
+{
+    "name": "name of the data",
+    "fields": \[list of field definitions\],
+    "data": \[list of data records\]
+}
+</pre>
+
+Where a field definition is as follows. 
+These properties correspond to the field properties in the <a href="textdata.html">text data</a> facility.
+
+<pre>
+{
+    "index":0,
+    "id":"field1",
+    "label":"Field 1",
+    "type":"double",
+    "missing":-999.0,
+    "unit":"m"
+}
+</pre>
+
+
+<p>
+
+Each data record has geolocation, date and a set of values:
+
+<pre>
+{
+     "latitude":-64.77,
+     "longitude":-64.06,
+     "elevation":45, 
+     "date":null,
+     "values":\[8.0,1000\]
+}
+</pre>
+
+
+Putting it all together:
+
+[importcsv data/testpoint1.json]
+
+And adding geospatial and temporal information to the records:
+[importcsv data/testpoint2.json]
+
+</body>
+</html>
+

@@ -1,0 +1,12 @@
+<types  supercategory="Miscellaneous" category="Events">
+
+  <type name="beforeafter"  description="Before and After Images" handler="org.ramadda.plugins.beforeafter.BeforeAfterTypeHandler" >
+     <property name="icon" value="/icons/jpeg.png"/>
+     <property name="form.description.rows" value="5"/>
+     <property name="form.resource.show" value="false"/>
+</type>
+
+
+
+
+</types>

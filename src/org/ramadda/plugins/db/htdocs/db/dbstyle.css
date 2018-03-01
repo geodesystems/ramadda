@@ -1,0 +1,113 @@
+
+.dbtableheader {
+  background-color:#c3d9ff;
+  color: #000;
+  font-weight: bold;
+  padding-top:5px;
+  padding-left:5px;
+  padding-right:5px;
+  text-align:center;
+}
+
+
+
+.dbtableheader a {
+  color: #000;
+}
+
+
+.dbheader  {
+//    font-size:13pt;
+    text-align:center;
+}
+
+.dbheader a {
+//    font-size:13pt;
+}
+
+.dbtable {
+    border-color: #666;
+    border-width: 0 0 1px 1px;
+    border-style: solid;
+}
+
+
+
+.dbtable td {
+    padding:4px;
+    padding-bottom:1px;
+    border-color: #666;
+    border-width: 1px 1px 0 0;
+    border-style: solid;
+    margin: 0;
+    font-size: 14px;
+}
+
+.dbtablecell {
+  max-height:200px;
+  overflow-y: auto;
+}
+
+.dbtable-summary td {
+    border:0px;
+    padding: 4px;
+}
+
+.dbgridon {
+  background-color: #88C957;
+}
+
+.dbgridoff {
+  background-color: #efefef;
+}
+
+
+.gridtable {
+    border-color: #600;
+    border-width: 0 0 1px 1px;
+    border-style: solid;
+}
+
+.gridtable td {
+    padding:5px;padding-bottom:0px;padding-top:8px;
+    border-color: #600;
+    border-width: 1px 1px 0 0;
+    border-style: solid;
+    margin: 0;
+
+}
+
+.dbcategoryrow {
+     padding-top: 3px;
+     padding-bottom: 1px;
+     padding-left: 2px;
+}
+
+.dbcategoryblock {
+    margin-left:15px;
+}
+
+.dbstickynote {
+  background-color : #FFFFCC;
+  padding: 5px;
+  border : 1px #888888 solid;
+  z-index: 1;
+  position: absolute; 
+//  position: relative; 
+//  max-width: 400px; 
+  min-width:100px;
+  max-width:300px;
+  overflow-x: auto;
+}
+
+.dbstickylabel {
+  background-color : #eee;
+  font-size:16px;
+  font-weight: bold;
+  padding: 5px;
+  border : 1px #000 solid;
+  z-index: 1;
+  position: absolute; 
+  min-width:100px;
+  text-align: center;
+}

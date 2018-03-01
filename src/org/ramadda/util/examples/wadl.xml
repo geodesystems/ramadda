@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<application
+   xmlns="http://wadl.dev.java.net/2009/02"
+   xmlns:tns="urn:yahoo:yn"
+   xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+   xmlns:ya="urn:yahoo:api"
+   xmlns:yn="urn:yahoo:yn"
+   xsi:schemaLocation="http://wadl.dev.java.net/2009/02 wadl.xsd">
+ 
+     <grammars>
+ 
+         <include href="NewsSearchResponse.xsd"/>
+ 
+         <include href="Error.xsd"/>
+ 
+     </grammars>
+ 
+ 
+     <resources base="http://api.search.yahoo.com/NewsSearchService/V1/">
+ 
+         <resource path="newsSearch">
+ 
+             <method id="search" name="GET">
+ 
+                 <request>
+ 
+                     <param
+             name="appid"
+             required="true"
+             style="query"
+             type="xsd:string"/>
+ 
+                     <param
+             name="query"
+             required="true"
+             style="query"
+             type="xsd:string"/>
+ 
+                     <param
+             default="all"
+             name="type"
+             style="query">
+ 
+                         <option value="all"/>
+ 
+                         <option value="any"/>
+ 
+                         <option value="phrase"/>
+ 
+                     </param>
+ 
+                     <param
+             default="10"
+             name="results"
+             style="query"
+             type="xsd:int"/>
+ 
+                     <param
+             default="1"
+             name="start"
+             style="query"
+             type="xsd:int"/>
+ 
+                     <param
+             default="rank"
+             name="sort"
+             style="query">
+ 
+                         <option value="rank"/>
+ 
+                         <option value="date"/>
+ 
+                     </param>
+ 
+                     <param
+             name="language"
+             style="query"
+             type="xsd:string"/>
+ 
+                 </request>
+ 
+                 <response status="200">
+ 
+                     <representation element="yn:ResultSet" mediaType="application/xml"/>
+ 
+                 </response>
+ 
+                 <response status="400">
+ 
+                     <representation element="ya:Error" mediaType="application/xml"/>
+ 
+                 </response>
+ 
+             </method>
+ 
+         </resource>
+ 
+     </resources>
+
+ </application>

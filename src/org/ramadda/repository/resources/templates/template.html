@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html><head><title>${title}</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+
+${imports}
+
+<properties>
+name=Tabs
+id=tabs
+</properties>
+</head>
+<body>
+<table style="background-repeat: no-repeat; background-image:url(${header.image});" class="ramadda-header" background="${header.image}" width="100%" cellspacing="0" cellpadding="0" border="0" >
+<tr valign="bottom">
+
+<td width=25%>
+</td>
+
+<td width=50% align=center>
+<span  class="ramadda-header-title">${header.title}</span>
+</td>
+
+
+<td width=25% align="right">
+<span class="nav">${links}&nbsp;</span>
+</td>
+
+</tr>
+</table>
+
+<div class="ramadda-content">
+${entry.header}
+${content}</div>
+<div class="ramadda-footer">${footer}</div>
+${bottom}
+</body></html>

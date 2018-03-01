@@ -1,0 +1,60 @@
+<types supercategory="Geoscience">
+
+<!--
+all point types need to have numberoofpoints and properties fields
+this gets it from the type_point super class
+--> 
+  <type name="type_point_amrc"  description="" super="type_point" category="Point Data" foruser="false">
+  </type>
+
+
+  <type name="type_point_amrc_final"  super="type_point_amrc" description="AMRC Final QC Data"  handler="org.ramadda.data.services.PointTypeHandler">
+     <property name="icon" value="/point/tux.png"/>
+     <property name="record.file.class" value="org.ramadda.data.point.amrc.AmrcFinalQCPointFile"/>
+     <column  name="site_id"  type="enumerationplus" label="Site ID" cansearch="true"/>
+     <column  name="site_name"  type="string" label="Site Name" cansearch="true"/>
+     <column  name="argos_id"  type="enumerationplus" label="Argos ID" cansearch="true"/>
+<wiki_inner>
+<![CDATA[
++inset
+
+<table width="100%">
+
+<tr valign=top>
+<td width="50%">
+{{description}}
+{{information details="true"}}
+</td>
+<td wdith="50%">
+
+{{displaygroup  layoutType="columns"}}
+
+{{display type="linechart" fields="Temperature" title="Temperature"}}
+
+{{display type="linechart" fields="Pressure" title="Pressure"}}
+
+</td>
+</tr></table>
+-inset
+]]>
+</wiki_inner>
+
+
+  </type>
+
+
+  <type name="type_point_amrc_freewave"  super="type_point_amrc" description="AMRC Freewave  Data"  handler="org.ramadda.data.services.PointTypeHandler">
+     <property name="icon" value="/point/tux.png"/>
+     <property name="record.file.class" value="org.ramadda.data.point.amrc.FreewavePointFile"/>
+     <column  name="station_name"  type="enumerationplus" label="Station Name" cansearch="true"/>
+     <column  name="format"  type="string" label="File Format" cansearch="true"/>
+     <column  name="datalogger_model"  type="enumerationplus" label="Data Logger Model" cansearch="true"/>
+     <column  name="datalogger_serial"  type="enumerationplus" label="Data Logger Serial" cansearch="true"/>
+
+ <property name="record.properties">
+picky=false
+</property>
+
+  </type>
+
+</types>

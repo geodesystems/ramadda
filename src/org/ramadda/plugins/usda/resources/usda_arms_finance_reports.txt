@@ -1,0 +1,9 @@
+1=Farm Business Balance Sheet
+2=Farm Business Income Statement
+3=Farm Business Financial Ratios
+4=Structural Characteristics
+5=Farm Business Debt Repayment Capacity
+6=Government Payments
+7=Operator Household Income
+8=Operator Household Balance Sheet
+

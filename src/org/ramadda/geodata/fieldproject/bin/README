@@ -1,0 +1,55 @@
+This is a set of utilities used for data wrangling files
+
+########################################
+Site Entry Types
+########################################
+
+The file siteramadda.xml is used to tell define the RAMADDA  entry type for directories that represent "sites".
+
+This file needs to be renamed to .ramadda.xml and copied into the project directory. 
+For example, the file:
+
+ /archive/projects/Antarctica/B-504-Dry_Valleys_Ice_and_Rock_Glaciers/.ramadda.xml
+
+will get read and applied to any entry that is created for the other directories, e.g.:
+B-504_Canada_Glacier_Basin/
+B-504_Canada_Glacier_Cliff/
+B-504_Lake_Hoare_Watermarks/
+
+
+
+########################################
+Point Cloud Data
+########################################
+
+When RAMADDA ingests point data it needs to know the format of the files, 
+their fields, coordinate systems, etc.
+
+This metadata is defined in a point.properties file in the same directory as the data file. 
+ 
+resources/ecefpoint.properties
+resources/latlonpoint.properties
+
+These files define the field delimiter, fields, crs and how many header lines to skip . The formats of these files is documented at:
+http://ramadda.org/repository/pointdocs/dataformats.html
+
+Copy (and possibly modify) the appropriate properties file to the directory that contains your point cloud data
+
+On the TLS machine you can run a file checker from the command line before it gets ingested into RAMADDA. 
+cd <data directory>
+Run the script:
+<dev>/pointtools/pointbounds.sh <lidar file>
+
+On thump2 we need to upgrade java to 1.6 to run these scripts
+
+
+########################################
+Changing Permissions
+########################################
+When files are moved to the main archive area they should have their permissions set as read only
+
+run:
+sudo sh <bin>/changepermissions.sh
+
+sudo chmod 444 `find  . -type f`
+sudo chmod 555 `find  . -type d`

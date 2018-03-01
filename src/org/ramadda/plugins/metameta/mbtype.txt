@@ -1,0 +1,37 @@
+number_of_records,Number of records,int
+mbio_data_format_id,Mbio_data_format_id,enumerationplus
+format_name,Format_name,string
+informal_description,Informal_description,string
+
+bathymetry_max_beams_per_ping,Bathymetry-Max_beams_per_ping,int,group=Bathymetry data,canlist=false
+bathymetry_number_beams,Bathymetry-Number_beams,int,group=Bathymetry data,canlist=false
+bathymetry_number_good_beams,Bathymetry-Number_good_beams,int,group=Bathymetry data,canlist=false
+bathymetry_percent_good_beams,Bathymetry-Percent_good_beams,percentage,group=Bathymetry data,canlist=false
+bathymetry_number_zero_beams,Bathymetry-Number_zero_beams,int,group=Bathymetry data,canlist=false
+bathymetry_percent_zero_beams,Bathymetry-Percent_zero_beams,percentage,group=Bathymetry data,canlist=false
+bathymetry_number_flagged_beams,Bathymetry-Number_flagged_beams,int,group=Bathymetry data,canlist=false
+bathymetry_percent_flagged_beams,Bathymetry-Percent_flagged_beams,percentage,group=Bathymetry data,canlist=false
+
+amplitude_max_beams_per_ping,Amplitude-Max_beams_per_ping,int,group=Amplitude data,canlist=false
+amplitude_number_beams,Amplitude-Number_beams,int,group=Amplitude data,canlist=false
+amplitude_number_good_beams,Amplitude-Number_good_beams,int,group=Amplitude data,canlist=false
+amplitude_percent_good_beams,Amplitude-Percent_good_beams,percentage,group=Amplitude data,canlist=false
+amplitude_number_zero_beams,Amplitude-Number_zero_beams,int,group=Amplitude data,canlist=false
+amplitude_percent_zero_beams,Amplitude-Percent_zero_beams,percentage,group=Amplitude data,canlist=false
+amplitude_number_flagged_beams,Amplitude-Number_flagged_beams,int,group=Amplitude data,canlist=false
+amplitude_percent_flagged_beams,Amplitude-Percent_flagged_beams,percentage,group=Amplitude data,canlist=false
+
+sidescan_max_pixels_per_ping,Sidescan-Max_pixels_per_ping,int, group=Sidescan data,canlist=false
+sidescan_number_pixels,Sidescan-Number_pixels,int, group=Sidescan data,canlist=false
+sidescan_number_good_pixels,Sidescan-Number_good_pixels,int, group=Sidescan data,canlist=false
+sidescan_percent_good_pixels,Sidescan-Percent_good_pixels,percentage, group=Sidescan data,canlist=false
+sidescan_number_zero_pixels,Sidescan-Number_zero_pixels,int, group=Sidescan data,canlist=false
+sidescan_percent_zero_pixels,Sidescan-Percent_zero_pixels,percentage, group=Sidescan data,canlist=false
+sidescan_number_flagged_pixels,Sidescan-Number_flagged_pixels,int, group=Sidescan data,canlist=false
+sidescan_percent_flagged_pixels,Sidescan-Percent_flagged_pixels,percentage, group=Sidescan data,canlist=false
+
+total_time_hours,Total_time_hours,double,group=Navigation totals,canlist=true
+total_track_length_km,Total_track_length_km,double,group=Navigation totals,canlist=true
+average_speed_km_per_hr,Average_speed_km_per_hr,double,group=Navigation totals,canlist=false
+average_speed_knots,Average_speed_knots,double,group=Navigation totals,canlist=false
+

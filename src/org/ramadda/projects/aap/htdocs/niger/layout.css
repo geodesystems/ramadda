@@ -1,0 +1,90 @@
+
+
+
+.vbody{margin-top:50px; margin:0; padding:0; width:100%; text-align:center; background:#edf9ee  repeat-x; height:100%}
+.bg{margin:0; padding:0; width:100%; text-align:center; background:url(premier_copy.jpg) no-repeat top center;  height:100%}
+
+.page {margin:0 auto; width:950px; padding:0 3px 3px 3px; text-align:left;  xbackground-color:#2c532f;}
+
+#chemin_fer{ color:#FFFFFF; padding-top:5px; padding-bottom:5px;}
+#chemin_fer a{color: #f4ba4c; text-decoration:none}
+
+
+#maintable{margin:0; padding:0; width:950px;}
+#maintable .mainbody{margin:0; width:auto; padding-top:0; background-color:#fff;}
+#maintable .mainbody2{margin:0; width:auto; padding-top:0; background-color:#2c532f;}
+#maintable .searchbar{background:#202c41; border-bottom:1px solid #222; padding:0 2px 0 2px; margin:0; height:25px; color:#fff}
+#maintable .ways{padding:4px; overflow:hidden}
+
+#newstable{margin:0; padding:0; width:100%; background:#fffefe; font:13px Arial, Helvetica, sans-serif; color:#222; height:100%;}
+
+#newstable .mainnews{margin:0; padding:0; width:auto;}
+
+#newstable .quicknews{margin:5px; width:160px; padding-top:10px; padding-right:10px; background:#f4ba4c; text-align:center;}
+#newstable .quicknews ul{text-align:left; }
+#newstable .quicknews a{ text-decoration:none; }
+
+#newstable .todaytitle{display:block; margin:0; padding:0; height:32px; background-color:#ddd;}
+
+#news{margin:0; width:100%; background:#fff; padding:0; font:13px Arial, Helvetica, sans-serif; line-height:14px; color:#444; overflow:hidden}
+
+#news .contentheading{font:bold 14px Georgia, "Times New Roman", Times, serif; color:#4d6da4; text-transform:uppercase; margin:0; padding:0; line-height:16px;}
+#news .mosimage{margin:0 10px 10px 10px; padding:0; display:block; clear:left}
+#news .mosimage img{border:1px solid #000; max-width:575px}
+#news .mosimage_caption{width:auto; font:10px Verdana, Arial, Helvetica, sans-serif; color:#777; margin:5px 0 5px}
+#news .article_seperator{border-color:#fff;}
+#news ul{margin:0; padding:0; list-style-type:none; padding-left:20px}
+#news ul li{margin:0; padding:0 0 4px; list-style-type:none; padding-left:5px; background:#fff;}
+
+.bottom_link{ font-size:12px;}
+.bottom_link a:link{ color:#000; }
+.bottom_link a:hover{ color:#fc6f03; }
+.bottom_link a:visited{ color:#2c532f; }
+
+.table_predecesseur{ margin:auto; padding:auto; border-collapse:collapse; border-color: #CCCCCC; }
+.table_predecesseur tr{ margin:auto; padding:1px; border-collapse:collapse; border-color:#CCCCCC;  }
+
+#maintable .live1{margin:0; width:auto; padding:5px 7px 0 7px; background:#fff no-repeat top center;  -moz-border-radius: 20px 0 0 20px; border-radius:6px 0 0 6px; -khtml-border-radius: 6px 0 0 6px; -webkit-border-radius: 6px 0 0 6px; margin-left:0px; border-top:0px solid #000 }
+#maintable .live1 .best{border: solid #f4ba4c 3px; width:auto; background-color:#c0e2c3; -moz-border-radius: 20px 0 0 20px; border-radius:20px 0 0 20px; -khtml-border-radius:20px 0 0 20px; -webkit-border-radius:20px 0 0 20px;  opacity : 1.1; }
+
+.imglink{margin-bottom:10px; border:0; background-color:#fff; display:block;}
+
+#mainmenu{margin:0 auto; padding:0;  width:940px; text-align:left; height:28px;}
+#mainmenu ul{margin:0; padding:0; list-style-type:none;  text-align:left; padding-left:4px}
+#mainmenu ul li{margin:0; padding:0; list-style:none; display:inline; height:26px;}
+#mainmenu ul li img{border:0; float:left; margin-right:3px;}
+#mainmenu ul li a{display:block; float:left; margin-top:1px; text-decoration:none; color:#000; padding:4px 20px 6px 20px; font:12px Arial, Helvetica, sans-serif; text-transform:capitalize;}
+#mainmenu ul li #active_menu{color:#fff; background:url(images/item.jpg) repeat-x; font-size:14px; font-size-adjust:inherit; }
+#mainmenu ul li a:hover{color:#fff; background:url(images/item.jpg) repeat-x;  font-size-adjust:inherit; font-size:14px;  }
+
+.usermenu{margin:10px 0px 10px 0px; padding:0px 5px 0px 5px; padding-left:5px; clear:both; height:auto; text-align:center; background:#fff; }
+.usermenu .texte{margin:auto 0; padding:5px;  text-align:justify;}
+.usermenu2{margin:5px 0px 5px 0px; padding:0px 5px 0px 5px; padding-left:5px; clear:both; height:auto; text-align:center; background:#fff; }
+.usermenu2 .texte{margin:auto 0; padding:5px;  text-align:justify;}
+
+.moduletable-bigmenu{margin:0; padding:0; width:235px; margin-bottom:10px; }
+.moduletable-bigmenu th{font:bolder 14px Arial, Helvetica, sans-serif; padding:10px 5px 10px 5px; text-align:center; color:#3366CC; text-transform:uppercase}
+.moduletable-bigmenu table{margin:55px auto 10px; padding:0;}
+.moduletable-bigmenu .mainlevel{display:block; margin:0 5px 5px 0; text-decoration:none;  14px Georgia, "Times New Roman", Times, serif; color:#2c532f; 
+padding:2px 5px 0 10px; text-align:left; line-height:14px; letter-spacing:1px; border-top:thin; border-bottom:thin}
+.moduletable-bigmenu a:hover{color:#f4ba4c; font-size:large text-decoration:underline; background-color:#336633 }
+.moduletable-bigmenu a:active{color:#336633; font-size:large text-decoration:underline; background-color:#fff}
+.moduletable-bigmenu #active_menu{margin-bottom:5px; font-weight:bold; text-transform:uppercase; color:#2c532f; font:11px Verdana, Arial, Helvetica, sans-serif; letter-spacing:1px; text-align:center; font-size:14px;
+border-bottom:3px dotted #fff; padding-bottom:4px}
+
+.moduletable-bigmenu .sublevel{display:block; text-decoration:none; font:12px Arial, Helvetica, sans-serif; color:#99CCFF; padding:0; line-height:13px; padding-bottom:4px;}
+.moduletable-bigmenu .sublevel:hover{text-decoration:underline; color:#fff;}
+.searcharea{margin:5px 0 2px; padding:2px; border:1px solid #0066CC; }
+.searcharea .inputbox{border:0; font-size:11px; font-family:Arial, Helvetica, sans-serif; color:#333;}
+
+#access{margin:0 ; padding:10px 5px 5px 5px; border-top:3px solid #2c532f; color:#fff} 
+#access .moduletable{margin:0; padding:0; text-align:left; margin-bottom:10px; float:left; margin-right:30px}
+#access .moduletable th{color:#fff; padding-bottom:3px;}
+#access .moduletable ul{margin:0; padding:0; list-style-type:none;}
+#access .moduletable ul li{margin:0; padding:0; list-style-type:none;}
+#access .moduletable ul li a{text-decoration:none; color:#fff; font:9px Verdana, Arial, Helvetica, sans-serif; padding-right:10px;}
+#access .moduletable ul li a:hover{text-decoration:underline;}
+
+.videoctn{border:5px solid #236528; width:315px; height:235px;}
+.videoctn2{border:5px solid #236528; width:295px; height:235px; }
+.vbg{margin:auto; padding:0; height:260px; width:701px; background:#edf9ee; }

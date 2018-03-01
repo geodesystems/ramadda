@@ -1,0 +1,69 @@
+<types supercategory="Miscellaneous">
+
+  <type name="incident"  description="Incident" handler="org.ramadda.plugins.incident.IncidentTypeHandler" category="Events">
+     <property name="icon" value="/incident/incident.png"/>
+     <property name="form.resource.show" value="false"/>
+     <property name="form.datatype.show" value="false"/>
+     <column name="incidenttype" type="enumeration" label="Incident Type"  showinhtml="true" values="file:/org/ramadda/plugins/incident/resources/incidents.txt" cansearch="true" canlist="true"/>
+     <column name="cause" type="enumerationplus" label="Cause"  showinhtml="true" values="file:/org/ramadda/plugins/incident/resources/causes.txt" cansearch="true" canlist="true"/>
+     <column name="state" type="enumeration" label="State"  showinhtml="true" values="file:/org/ramadda/plugins/incident/resources/states.txt" cansearch="true" canlist="true" />
+     <column name="location" type="string" label="Location"  showinhtml="true"/>
+     <column name="commander" type="string" label="Incident Commander"  showinhtml="true"/>
+  </type>
+
+
+  <type name="incident_neighborhood"  description="Neighborhood" handler="org.ramadda.repository.type.ExtensibleGroupTypeHandler" category="Events">
+     <property name="icon" value="/incident/house.png"/>
+     <property name="form.resource.show" value="false"/>
+  </type>
+
+  <type name="incident_location"  description="Incident Location" handler="org.ramadda.plugins.incident.LocationTypeHandler" category="Events" mefirst="true">
+     <property name="icon" value="/incident/flag_red.png"/>
+     <property name="form.resource.show" value="false"/>
+     <property name="form.datatype.show" value="false"/>
+     <property name="form.name.show" value="true"/>
+     <column name="address" label="Street Address"  showinhtml="true" />
+     <column name="city" label="City"  showinhtml="true" />
+     <column name="state" type="enumeration" label="State"  showinhtml="true" values="file:/org/ramadda/plugins/incident/resources/states.txt" cansearch="true" canlist="true" />
+
+     <wiki><![CDATA[
++section
+:title {{name}}
+<table border=0 xwidth=100% cellspacing=0 cellpadding=0>
+<tr valign=top>
+<td>
+{{description}}
+{{information details="true"}}
+</td><td>
+{{mapentry}}
+</td>
+</tr>
+</table>
+-section
+
+]]>
+</wiki>
+
+  </type>
+
+
+
+<type name="incident_basement"  super="incident_location" description="Basement Flooding" category="Events" >
+     <column name="type" type="enumerationplus" label="Type of flooding"  showinhtml="true" values="groundwater,sewer,both,unknown" cansearch="true" canlist="true" />
+     <column name="depth" label="Water Depth"  suffix="in inches" type="int" showinhtml="true" cansearch="true" canlist="true"/>
+     <column name="duration" label="Duration"  suffix="in days" type="int" showinhtml="true" cansearch="true" canlist="true"/>
+     <column name="cost" label="Estimated Cost"  suffix="dollars" type="int" showinhtml="true" cansearch="true" canlist="true"/>
+
+</type>
+
+
+
+
+<type name="type_hazarddata"  description="Hazard Data" category="Events" >
+     <property name="icon" value="/incident/flag_red.png"/>
+     <column name="source" type="enumerationplus" label="Source Agency"  showinhtml="true"  cansearch="true" canlist="true" 
+             values="ADECA:Alabama Department of Economic and Community Affairs,ESRI:Environmental Systems Research Institute,GHRC:Global Hydrology Resource Center,GSA:Geological Survey of Alabama,NRCS:Natural Resources Conservation Service,NOAA:National Oceanic and Atmospheric Administration,NWS:National Weather Service,OGB:Alabama State Oil and Gas Board,SPC:Storm Prediction Center,UAH:University Alabama Huntsville,USDA:U.S. Department of Agriculture,USEPA:U.S. Environmental Protection Agency,USGS:U.S. Geological Survey" />
+</type>
+
+
+</types>

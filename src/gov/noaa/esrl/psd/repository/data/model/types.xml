@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<types>
+
+  <type name="noaa_facts_climate_collection"  description="NOAA FACTS Climate Data Collection" super="climate_collection" category="Climate Data" handler="gov.noaa.esrl.psd.repository.data.model.NOAAClimateModelCollectionTypeHandler" foruser="true">
+     <property name="icon" value="/noaa/noaa.gif"/>
+     <property name="granule_type" value="noaa_facts_climate_modelfile"/>
+     <property name="model.values" value="/gov/noaa/esrl/psd/repository/data/model/facts_models.txt"/>
+     <property name="experiment.values" value="/gov/noaa/esrl/psd/repository/data/model/facts_experiments.txt"/>
+     <property name="variable.values" value="/gov/noaa/esrl/psd/repository/data/model/facts_vars.txt"/>
+     <property name="ensemble.values" value="/gov/noaa/esrl/psd/repository/data/model/facts_ensembles.txt"/>
+   </type>
+
+
+  <type name="noaa_facts_climate_modelfile"  description="NOAA FACTS Climate Model File" super="climate_modelfile" foruser="true" handler="gov.noaa.esrl.psd.repository.data.model.NOAAClimateModelFileTypeHandler" >
+     <property name="icon" value="/noaa/noaa.gif"/>
+     <property name="collection_type" value="noaa_facts_climate_collection"/>
+   </type>
+   
+  <type name="cmip5_model_collection"  description="CMIP5 Model Collection" super="climate_collection" category="Climate Data" handler="gov.noaa.esrl.psd.repository.data.model.CMIP5CollectionTypeHandler" foruser="true">
+     <property name="icon" value="/images/ipcc.png"/>
+     <property name="granule_type" value="cmip5_model_file"/>
+     <!-- since this is defined in the granule, define below -->
+     <!--
+     <property name="model.values" value="/gov/noaa/esrl/psd/repository/data/model/cmip5_models.txt"/>
+     <property name="miptable.values" value="/gov/noaa/esrl/psd/repository/data/model/cmip5_miptable.txt"/>
+     <property name="experiment.values" value="/gov/noaa/esrl/psd/repository/data/model/cmip5_experiments.txt"/>
+     -->
+   </type>
+
+
+  <type name="cmip5_model_file"  description="CMIP5 Model File" super="climate_granule" foruser="true" handler="gov.noaa.esrl.psd.repository.data.model.CMIP5ModelFileTypeHandler" >
+     <property name="icon" value="/images/ipcc.png"/>
+     <property name="collection_type" value="cmip5_model_collection"/>
+     <property name="model.file.pattern" value="([^_]+)_([^_]+)_([^_]+)_([^_]+)_(r\\d+i\\d+p\\d+)(_([^_.]+))?(\\.1x1)?.nc"/>
+     <column name="collection_id" type="string"  label="Collection ID" showinhtml="false" showinform="false"/>
+     <column name="model" type="enumerationplus"  label="Model"  showinhtml="true" values="file:/gov/noaa/esrl/psd/repository/data/model/cmip5_models.txt"/>
+     <column name="miptable" type="enumeration"  label="MIP Table" values="file:/gov/noaa/esrl/psd/repository/data/model/cmip5_miptable.txt" />
+     <column name="experiment" type="enumerationplus"  label="Experiment" values="file:/gov/noaa/esrl/psd/repository/data/model/cmip5_experiments.txt" showinhtml="true" />
+     <column name="ensemble" type="string"  label="Ensemble"/>
+     <column name="variable" type="enumerationplus"  label="Variable"  xxxxxvalues="file:/org/ramadda/data/model/vars.txt"/>
+   </type>
+
+  <type name="c20cplus_climate_collection"  description="C20C+ Climate Data Collection" super="climate_collection" category="Climate Data" handler="org.ramadda.geodata.model.ClimateCollectionTypeHandler" foruser="true">
+     <property name="icon" value="/images/ipcc.png"/>
+     <property name="granule_type" value="c20cplus_climate_modelfile"/>
+     <property name="model.values" value="/gov/noaa/esrl/psd/repository/data/model/facts_models.txt"/>
+     <property name="experiment.values" value="/gov/noaa/esrl/psd/repository/data/model/facts_experiments.txt"/>
+     <property name="variable.values" value="/gov/noaa/esrl/psd/repository/data/model/facts_vars.txt"/>
+     <property name="ensemble.values" value="/gov/noaa/esrl/psd/repository/data/model/facts_ensembles.txt"/>
+   </type>
+
+  <type name="c20cplus_climate_modelfile"  description="C20C+ Model File" super="climate_modelfile" foruser="true" handler="org.ramadda.geodata.model.ClimateModelFileTypeHandler" >
+     <property name="icon" value="/images/ipcc.png"/>
+     <property name="collection_type" value="c20cplus_climate_collection"/>
+     <property name="model.file.pattern" value="([^_]+)_([^_]+)_([^_]+)_([^_]+)_([^_]+)_([^_]+)_(run\d+)(_([^_.]+))?.nc"/>
+     <column name="collection_id" type="string"  label="Collection ID" showinhtml="false" showinform="false"/>
+     <column name="subscenario" type="enumerationplus" label="Sub-Scenario"/>
+     <column name="subexperiment" type="enumerationplus" label="Sub-Experiment"/>
+     <!--
+     <column name="miptable" type="enumerationplus" label="Realm Frequency" />
+     <column name="miptable" type="enumerationplus"  label="Realm Frequency" values="file:/gov/noaa/esrl/psd/repository/data/model/cmip5_miptable.txt" />
+     <column name="model" type="enumerationplus"  label="Model"  showinhtml="true" values="file:/gov/noaa/esrl/psd/repository/data/model/cmip5_models.txt"/>
+     <column name="experiment" type="enumerationplus"  label="Experiment" values="file:/gov/noaa/esrl/psd/repository/data/model/cmip5_experiments.txt" showinhtml="true" />
+     <column name="ensemble" type="string"  label="Ensemble"/>
+     <column name="variable" type="enumerationplus"  label="Variable"  xxxxxvalues="file:/org/ramadda/data/model/vars.txt"/>
+     <column name="miptable" type="enumeration"  label="MIP Table" values="file:/gov/noaa/esrl/psd/repository/data/model/cmip5_miptable.txt" />
+     -->
+   </type>
+
+</types>
+

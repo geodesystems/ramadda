@@ -1,0 +1,182 @@
+<types>
+
+  
+  <type name="type_document_tika"  foruser="false" description="TIKA Doc"  super="type_document" handler="org.ramadda.plugins.media.TikaTypeHandler"  metadata="enum_tag,metadata_author,metadata_publisher">
+<!--
+     <service link="media_pdfbox_extracttext"/>
+-->
+     <service link="tika_extracttext"/>
+     <service link="media_pdfbox_thumbnail" target="attachment"/>
+     <wiki><![CDATA[
++section # title="{{name}}"
+{{information showTitle="false" details="true"}}
+:heading Description
+{{description wikify="true"}}
+-section
+]]>
+</wiki>
+</type>
+
+
+
+  <type name="type_document_pdf"  description="PDF File" pattern=".*\.pdf" super="type_document_tika">
+<!--
+     <service link="media_pdfbox_extracttext"/>
+-->
+     <property name="icon" value="/icons/pdf.png"/>
+</type>
+
+  <type name="type_document_doc"  description="Microsoft Word File" pattern="(.*\.doc|.*\.docx)"  super="type_document_tika"         handler="org.ramadda.data.docs.MsDocTypeHandler" >
+     <property name="icon" value="/icons/doc.png"/>
+</type>
+
+  <type name="type_document_ppt"  description="Microsoft Powerpoint File" pattern="(.*\.ppt|.*\.pptx)"  super="type_document_tika"   handler="org.ramadda.data.docs.MsDocTypeHandler" >
+     <property name="icon" value="/icons/ppt.png"/>
+</type>
+
+
+  <type name="type_document_xls"  description="Microsoft Excel File" pattern="(.*\.xls|.*\.xlsx)"  super="type_document_tabular"   handler="org.ramadda.plugins.media.XlsTypeHandler">
+     <property name="icon" value="/icons/xls.png"/>
+
+</type>
+
+  <type name="type_document_csv"  description="CSV File" pattern="(.*\.csv)"  super="type_document_tabular"    handler="org.ramadda.data.docs.TabularTypeHandler">
+     <property name="icon" value="/icons/document-excel-csv.png"/>
+</type>
+
+
+
+  <type name="media_youtubevideo"  
+        description="YouTube Video" 
+        handler="org.ramadda.plugins.media.YouTubeVideoTypeHandler" 
+        category="Documents" 
+        pattern="^(http|https)://www.youtube.com/watch\?v=.*">
+     <property name="icon" value="/media/youtube.png"/>
+     <property name="form.area.show" value="false"/>
+     <property name="form.date.show" value="false"/>
+     <property name="form.datatype.show" value="false"/>
+     <property name="form.file.show" value="false"/>
+     <property name="form.url.label" value="YouTube Video URL"/>
+     <column name="video_id" type="string" label="Video ID" showinhtml="false" editable="false"/>
+
+     <column name="width" type="int" label="Width"  default="640" showinhtml="false"/>
+     <column name="height" type="int" label="Height"  default="390" showinhtml="false"/>
+     <column name="video_start" type="double" label="Start"  suffix="(minutes)" default="0" showinhtml="false"/>
+     <column name="video_end" type="double" label="End"  suffix="(minutes)" default="-1" showinhtml="false"/>
+     <column name="display" type="boolean" label="Display" default="true"  showinhtml="false"/>
+</type>
+
+
+  <type name="media_video_channel"  description="Video Channel" handler="org.ramadda.repository.type.ExtensibleGroupTypeHandler" category="Information">
+     <property name="icon" value="/media/folder-open-film.png"/>
+     <property name="form.resource.show" value="false"/>
+     <wiki><![CDATA[
++section # title="{{name}}"
+{{description wikify="true"}}
+{{grid columns="3"}}
+-section
+]]>
+</wiki>
+</type>
+
+
+  <type name="media_audiofile"  
+        description="Audio File" 
+        handler="org.ramadda.plugins.media.AudioTypeHandler" 
+        category="Documents" 
+        pattern="(.*\.wav|.*\.m4a)">
+     <property name="icon" value="/media/sound.png"/>
+     <wiki><![CDATA[
++section title="{{name}}" #
+{{noheading}}
+{{audio}}
+{{description}}
+-section
+]]>
+</wiki>
+</type>
+
+
+  <type name="media_video"   foruser="false">
+     <column name="width" type="int" label="Width"  default="640" showinhtml="false"/>
+     <column name="height" type="int" label="Height"  default="390" showinhtml="false"/>
+  </type>
+
+  <type name="media_video_quicktime"  
+        super="media_video"
+        description="Quicktime Video" 
+        handler="org.ramadda.plugins.media.QuicktimeTypeHandler" 
+        category="Documents" 
+        pattern="(.*\.mov|.*\.mp4)">
+     <property name="icon" value="/icons/mov.png"/>
+     <service link="media.qttools.thumbnail" id="initmov"  target="attachment"/>
+</type>
+
+
+  <type name="media_photoalbum"  description="Photo Album" handler="org.ramadda.repository.type.ExtensibleGroupTypeHandler" category="Information">
+     <property name="icon" value="/media/pictures.png"/>
+     <property name="form.resource.show" value="false"/>
+     <wiki><![CDATA[
++section title="{{name}}" #
+{{noheading}}
+{{description}}
+{{gallery columns="3"}}
+-section
+]]>
+</wiki>
+</type>
+
+
+  <type name="media_imageloop"  description="Image Loop" handler="org.ramadda.repository.type.ExtensibleGroupTypeHandler" category="Information">
+     <property name="form.resource.show" value="false"/>
+     <property name="icon" value="/media/film.png"/>
+     <wiki><![CDATA[
+{{noheading}}
+{{description}}
+{{imageplayer show_sort_links="true"}}
+]]>
+</wiki>
+     <column name="autostart" type="boolean" label="Auto Start"  default="false" showinhtml="false"/>
+     <column name="delay" type="int" label="Delay"  default="0" suffix="(milliseconds)" showinhtml="false"/>
+</type>
+
+
+  <type name="type_image"  description="Image" foruser="true" category="Documents" pattern="(.*\.png|.*\.gif|.*\.jpg|.*\.jpeg)">
+     <property name="icon" value="/icons/image.gif"/>
+</type>
+
+
+
+  <type name="type_image_airport"  description="Airport Image" super="type_image" foruser="true" category="Imagery" supercategory="Miscellaneous" >
+     <property name="icon" value="/media/paper-plane.png"/>
+</type>
+
+
+
+  <type name="type_db_table"  description="Database Table"  super="type_document_tabular"   handler="org.ramadda.plugins.media.DbTableTypeHandler"         category="Database" >
+     <property name="form.resource.show" value="false"/>
+     <property name="icon" value="/media/database_table.png"/>
+     <column   name="db_id" type="string"  columns="60" label="External Database ID"  showinhtml="false"  group="Database">
+<suffix><![CDATA[The shorthand ID of the external database connection <a target="_help" href="http://ramadda.org/repository/media/dbtable.html"/>More information</a>]]></suffix>
+</column>
+     <column   name="table_name" type="string"  size="200" columns="60" label="Table name"  showinhtml="false" suffix="Database table to query"/>
+     <column name="properties" type="string"  size="5000"  showinhtml="false" />
+</type>
+
+
+<!--
+  <type name="type_db_schema"  description="Database Schema"  handler="org.ramadda.plugins.media.DbSchemaTypeHandler"  category="Database">
+     <property name="form.resource.show" value="false"/>
+     <property name="icon" value="/media/database.png"/>
+</type>
+-->
+
+  <type name="type_document_html"  description="HTML File" pattern="(.*\.html|.*\.htm)" super="type_document" handler="org.ramadda.plugins.media.HtmlDocTypeHandler">
+     <property name="icon" value="/icons/html.png"/>
+     <column name="embed_type" type="enumeration" values="frame,full,partial,none" default="full" label="Embed style"  showinhtml="false"/>
+</type>
+
+
+
+
+</types>

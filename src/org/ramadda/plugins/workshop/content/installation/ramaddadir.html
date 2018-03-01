@@ -1,0 +1,43 @@
+[ht::head {RAMADDA Home Directory}]
+
+Let's look at where RAMADDA stores data and content on disk.
+
+<ul>
+<li> Bring up a terminal window.
+<li> The repository.properties file we copied into the Tomcat directory
+specifies the RAMADDA home:
+<pre>
+/usr/share/tomcat6/conf
+</pre>
+<li> Do:
+<pre>
+cd /usr/share/tomcat6/conf
+ls
+</pre>
+
+And you should see:
+<pre>
+derby      - The built in Java Derby database
+htdocs     - A place where RAMADDA looks for miscellaneous web content
+idv        - Used by the IDV visualization plugin. You can 
+             put IDV plugins here (e.g., colortables, maps, etc)
+logs       - Stores log files
+plugins    - RAMADDA plugins
+resources  - ???
+storage    - Where RAMADDA stores files 
+tmp        -  A temporary directory 
+</pre>
+
+
+<li> If you forgot to install the plugins when you configured RAMADDA then:
+<ul>
+<li> Fetch the allplugins.jar from the 
+<a href="https://sourceforge.net/projects/ramadda/">RAMADDA SourceForge site</a>
+<li> Copy the allplugins.jar file to the plugins directory
+<li> You will need to restart RAMADDA to have it load the new plugins.
+</ul>
+
+
+</ul>
+
+[ht::foot]

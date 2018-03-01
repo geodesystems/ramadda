@@ -1,0 +1,4 @@
+
+<api handler="org.ramadda.plugins.slack.SlackApiHandler" id="slack">
+      <api request="/slack/api"    method="processSlackApi" admin="false"/>
+</api>

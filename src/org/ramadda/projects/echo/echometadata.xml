@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<metadata>
+
+  <handler xxxclass="org.ramadda.geodata.echo.EchoMetadataHandler" category="ECHO">
+
+    <type name="ECHO Collection" id="echo.collection"  searchable="false" browsable="true">
+      <element name="VersionId" label="Version Id"  datatype="string"/>
+      <element name="LongName" label="Long Name"  datatype="string"/>
+      <element name="Orderable"   datatype="boolean"/>
+      <element name="Visible"   datatype="boolean"/>
+      <element name="ProcessingLevelId" label="Processing Level Id"  datatype="string"/>
+      <element name="ArchiveCenter" label="Archive Center"  datatype="string"/>
+      <element name="RestrictionFlag" label="Restriction Flag"  datatype="string"/>
+
+      <template type="echo">
+        <![CDATA[ 
+      <VersionId>1</VersionId>
+      <LongName>${LongName}</LongName>
+      <Orderable>${Orderable}</Orderable>
+      <Visible>${Visible}</Visible>
+      <ProcessingLevelId>${ProcessingLevelId}</ProcessingLevelId>
+      <ArchiveCenter>${ArchiveCenter}</ArchiveCenter>
+      <RestrictionFlag>${RestrictionFlag}</RestrictionFlag>
+]]></template>
+
+</type>
+
+
+</handler>
+</metadata>

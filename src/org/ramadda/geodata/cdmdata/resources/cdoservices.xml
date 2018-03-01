@@ -1,0 +1,25 @@
+<services icon="/cdmdata/cdo.png" command="${service.cdo}" handler="org.ramadda.geodata.cdmdata.NetcdfService" category="Earth Science Data">
+
+    <service label="CDO Info" id="geo_cdo_info"   outputToStderr="true">
+<help><![CDATA[
+Run <a href="https://code.zmaw.de/projects/cdo/embedded/1.6.4/cdo.html#x1-400002.1.2" target="_help">cdo sinfo</a>
+]]></help>
+          <arg type="enumeration" name="operator" label="Operator" values="sinfo:Short Information, showformat:Show file format,showcode:Show code numbers,showname:Show variable names,showstdname:Show standard names,showlevel:Show levels,showltype:Show GRIB level types,showyear:Show years,showmon:Show months,showdate:Show date information,showtime:Show time,showtimestamp:Show timestamp,,griddes:Grid Description,infop,sinfoc,sinfon,sinfop,seinfo,seinfop,seinfon" />
+          <arg label="Input NetCDF file" value="${entry.file}"   type="entry" primary="true" entryPattern="(.*\.nc|.*\.grb|.*\.grib)"></arg>
+          <output showResults="true" stdout="true"/>
+    </service>
+    
+    <service label="CDO Date Select" id="geo_cdo_seldate"   xxxerrorPattern=".*Error.*" dateFormat="yyyy-MM-dd">
+<help><![CDATA[
+Run <a href="https://code.zmaw.de/projects/cdo/embedded/1.6.4/cdo.html#x1-1200002.3.3" target="_help">cdo seldate</a>
+]]></help>
+          <arg type="date" name="cdo.fromdate" label="Start Date" include="false" valuesProperty="dateList"/>
+          <arg type="date" name="cdo.todate" label="End Date" include="false" valuesProperty="dateList"/>
+          <arg value="-seldate,${cdo.fromdate},${cdo.todate}"/>
+          <arg label="Input NetCDF file" value="${entry.file}"   type="entry" primary="true" entryPattern="(.*\.nc|.*\.grb|.*\.grib)"></arg>
+          <arg value="${file}" file="${entry.file.base}_${cdo.fromdate}_${cdo.todate}.nc"></arg>
+          <output pattern=".*"/>
+    </service>
+</services>
+
+

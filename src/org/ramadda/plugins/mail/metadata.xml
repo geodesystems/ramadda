@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<metadata>
+  <handler category="YouTube" >
+    <type id="video_cue" name="Video Cue" entrytype="youtubevideo">
+      <element id="name" name="Name"/>
+      <element id="minutes" name="Offset" datatype="double" suffix="(Minutes)"/>
+    </type>
+  </handler>
+</metadata>

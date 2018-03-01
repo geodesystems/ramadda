@@ -1,0 +1,93 @@
+<html>
+<head>
+<title>Page Styles</title>
+  <link rel="stylesheet" type="text/css" href="./default.css" title="Style">
+
+</head>
+
+<body>
+<div class="ramadda-documentation">
+<table width=100% cellspacing=0 cellpadding=0 ><tr><td width=30%>
+<a href="gridaggregation.html"><img src="images/PreviousArrow.gif" border="0"   alt="Previous: Grid Aggregation" title="Previous: Grid Aggregation"></a> <a href="page_dataingestharvestersandimport.html"><img src="images/NextArrow.gif" border="0"   alt="Next: Data ingest,  harvesters and import" title="Next: Data ingest,  harvesters and import"></a>  <a href="toc.html#pagestyle.html"><img src="images/TOCIcon.gif" border="0"   alt="Table of contents" title="Table of contents"></a>
+</td>
+<td width=40% align=center>
+<div class="ramadda-page-title">RAMADDA User Guide</div>
+</td>
+<td width=30%>&nbsp;</td>
+</tr></table>
+<div class="ramadda-page-heading">11.4 Page Styles</div>
+
+<style type="text/css">
+pre {
+    margin-left:15px;
+}
+</style>
+
+<div style="margin-left:20px;">
+
+
+
+
+
+You can control much of how the  html pages are shown using a Page Style property.
+Go to the <code class="menu">Edit-&gt;Add Property</code> menu and
+under "Thumbnails, Page Style, Etc." select Page Style.
+The Page Style property allows you to specify what menus to show, whether to show other features and
+you can also specify a WIKI text template to use for the default HTML views of the entries:
+
+<a name="image1"></a><div class="cimg"><a href="images/pagestyle.png"><img  src="images/pagestyle.png" border=1 alt="Page Style Create Form" ></a><br><span class="caption">Image 1: Page Style Create Form</span></div>
+
+<ul> 
+<li> Menus.
+To control if the menu bar is shown and what menus get shown enter either "none" in
+the menus field (to not show the menu bar) or a comma separated list of the
+menus you do want to show:<pre>
+file
+edit
+feeds
+view 
+other
+</pre>
+
+<b>
+Note: Just so you don't lose the ability to
+edit the entry the menu bar is always shown for users who have edit privileges for the
+entry being displayed.
+</b>
+<li> Breadcrumbs: This is the breadcrumb trail of the ancestors of an entry.
+<li> Show Toolbar: This is the icon toolbar (e.g., edit, delete, copy, etc)
+<li> Show Entry Header: The Entry icon, name and Layout: icons
+<li> Wiki Template: If defined this is the Wiki template used for the default HTML
+display of the entry. See <a href="wikitext.html">wikitext.html</a> for information on
+the wiki facility.
+<li> Inherited: 
+You can have a Page Style apply to a whole sub-tree of RAMADDA entries. Add the Page Style
+property to the Folder entry and check on the Inherit flag.
+
+</ul>
+
+<p>
+You can have any number of Page Style properties and have them apply to certain entry types
+by specifying the Entry Type. For example, you can have one page style that is applicable
+to File entries and one that is applicable to Folders.
+
+
+<a name="templates"></a><div class="ramadda-page-heading">11.4.0 Page Template</div> 
+You can also specify which page template is used for an entry or for a whole tree. 
+
+Go to the <code class="menu">Edit-&gt;Add Property</code> menu and under "Thumbnails, Page Style, Etc." select Page Template.  
+Select the page template you want to use. You can create new <a href="templates.html">templates</a>.
+If you want to have this apply to all entries under the folder then select inherit.
+
+
+
+</div>
+<p>
+
+<p>&nbsp;<p>
+<a href="gridaggregation.html"><img src="images/PreviousArrow.gif" border="0"   alt="Previous: Grid Aggregation" title="Previous: Grid Aggregation"></a> <a href="page_dataingestharvestersandimport.html"><img src="images/NextArrow.gif" border="0"   alt="Next: Data ingest,  harvesters and import" title="Next: Data ingest,  harvesters and import"></a>  <a href="toc.html#pagestyle.html"><img src="images/TOCIcon.gif" border="0"   alt="Table of contents" title="Table of contents"></a>
+<p>
+</div>
+</body>
+</html>
+

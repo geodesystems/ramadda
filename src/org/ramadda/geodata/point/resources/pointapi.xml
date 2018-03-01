@@ -1,0 +1,7 @@
+
+<api handler="org.ramadda.geodata.point.PointApiHandler" id="pointapi">
+      <property name="admin" value="false"/>
+
+      <api request="/point/json"    method="processJsonRequest"/>
+      <api request="/point/data"    method="processDataRequest"/>
+</api>

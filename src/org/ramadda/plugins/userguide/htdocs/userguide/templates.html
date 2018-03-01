@@ -1,0 +1,127 @@
+<html>
+<head>
+<title>HTML Page Templates</title>
+  <link rel="stylesheet" type="text/css" href="./default.css" title="Style">
+
+</head>
+
+<body>
+<div class="ramadda-documentation">
+<table width=100% cellspacing=0 cellpadding=0 ><tr><td width=30%>
+<a href="services.html"><img src="images/PreviousArrow.gif" border="0"   alt="Previous: Service Integration Framework" title="Previous: Service Integration Framework"></a> <a href="admin.html"><img src="images/NextArrow.gif" border="0"   alt="Next: Admin Settings" title="Next: Admin Settings"></a>  <a href="toc.html#templates.html"><img src="images/TOCIcon.gif" border="0"   alt="Table of contents" title="Table of contents"></a>
+</td>
+<td width=40% align=center>
+<div class="ramadda-page-title">RAMADDA User Guide</div>
+</td>
+<td width=30%>&nbsp;</td>
+</tr></table>
+<div class="ramadda-page-heading">14.6 HTML Page Templates</div>
+
+<style type="text/css">
+pre {
+    margin-left:15px;
+}
+</style>
+
+<div style="margin-left:20px;">
+
+
+
+
+The HTML pages that RAMADDA generates are based on a template mechanism.
+Here is an example template that has documentation in it:
+<a href="exampletemplate.html.txt">exampletemplate.html.txt</a>.
+Copy the example to your local RAMADDA plugins directory and rename it as:
+&lt;your name&gt;template.html (strip off the .txt):
+<pre>
+&lt;user home&gt;/.ramadda/plugins/somenametemplate.html
+</pre>
+
+Any plugin file that ends with "template.html" is loaded by RAMADDA as a template.
+<p>
+
+In the template are a set of properties. You should change the id and name property.
+There are a number of other  macros shown as <i>${macro}</i> that are used to 
+instantiate a web page.  See the above example template for more information.
+<p>
+You can see many examples of templates at the
+at the <a href="http://ramadda.svn.sourceforge.net/viewvc/ramadda/src/org/ramadda/repository/resources/templates">SourceForge SVN</a> site. 
+
+<a name="jar"></a><div class="ramadda-page-heading">14.6.0 Packaging your template</div> 
+While you can just have a file called &lt;something&gt;template.html in your plugins directory if you
+have your own CSS or images or icons that go along with your template you will want to
+package them up in a .jar file. Here is an example 
+<a href="exampletemplate.jar">exampletemplate.jar</a>
+that provides the above exampletemplate.html.  
+
+<p>
+This file was created from a directory tree:<pre>
+exampletemplate
+       exampletemplate.html
+       htdocs
+            exampletemplate
+                 template.css
+                 banner.jpg
+</pre>
+
+The jar file is created with:<pre>
+mac:jar -Mcvf exampletemplate.jar  exampletemplate
+adding: exampletemplate/(in = 0) (out= 0)(stored 0%)
+adding: exampletemplate/exampletemplate.html(in = 1406) (out= 595)(deflated 57%)
+adding: exampletemplate/htdocs/(in = 0) (out= 0)(stored 0%)
+adding: exampletemplate/htdocs/exampletemplate/(in = 0) (out= 0)(stored 0%)
+adding: exampletemplate/htdocs/exampletemplate/banner.jpg(in = 55020) (out= 52006)(deflated 5%)
+adding: exampletemplate/htdocs/exampletemplate/template.css(in = 3680) (out= 1139)(deflated 69%)
+</pre>
+
+Note: if you don't have <i>jar</i> installed (it is part of the Java release) then
+you can just zip the file and call it <i>something.jar</i>.
+<p>
+The template.css and banner.jpg files are in a directory (exampletemplate) under the htdocs directory so
+they can be referenced in the html as:<pre>
+&lt;link href="${root}/exampletemplate/template.css" rel="stylesheet" type="text/css" media="screen"&gt;
+</pre>
+
+
+<a name="default"></a><div class="ramadda-page-heading">14.6.1 Specifying a Default Template</div> 
+
+You can specify a default template for your site in 2 ways. First, go to the Admin->Users list
+and edit the anonynmous user. Select the desired template from the list.
+You can also specify the default template for the site via a property:
+<pre>
+ramadda.html.template.default=&lt;your template id&gt;
+</pre>
+You can set this in a plugin .properties file or you can specify this property 
+(and other properties as well)
+in the Admin-&gt;Settings-&gt;Site and Contact Information-&gt;Extra Properties field.
+
+
+<a name="misc"></a><div class="ramadda-page-heading">14.6.2 Miscellaneous</div> 
+
+You can specify whether the "Created:" label is shown for entries with the property:
+<pre>
+#default:
+ramadda.created.display=all  
+
+#never show it
+ramadda.created.display=none  
+
+#only show it for admins
+ramadda.created.display=admin
+
+#only show it for logged in users
+ramadda.created.display=user
+</pre>
+
+
+
+</div>
+<p>
+
+<p>&nbsp;<p>
+<a href="services.html"><img src="images/PreviousArrow.gif" border="0"   alt="Previous: Service Integration Framework" title="Previous: Service Integration Framework"></a> <a href="admin.html"><img src="images/NextArrow.gif" border="0"   alt="Next: Admin Settings" title="Next: Admin Settings"></a>  <a href="toc.html#templates.html"><img src="images/TOCIcon.gif" border="0"   alt="Table of contents" title="Table of contents"></a>
+<p>
+</div>
+</body>
+</html>
+

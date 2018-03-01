@@ -1,0 +1,64 @@
+<services category="Genomics">
+`  <service label="Convert HMMER File" id="bio_hmmer_convert"  icon="/genomics/hmmer.png"   command="${service.hmmertools}/hmmconvert" >
+<description><![CDATA[
+This will convert the given HMMER binary file to text
+<br>
+Documentation available at <a target="_help" href="http://hmmer.janelia.org/">http://hmmer.janelia.org</a>
+]]></description>
+    <arg label="HMMER File" value="${entry.file}" type="entry" entryType="bio_hmmer_index" primary="true"></arg>
+    <output type="bio_hmmer_index" stdout="true" filename="${entry.file.base}.hmm"/>
+   </service>
+
+  <service label="Run HMMSTAT" id="bio_hmmer_stat"  icon="/genomics/hmmer.png"   command="${service.hmmertools}/hmmstat" >
+    <description><![CDATA[
+HMMSTAT documentation available at <a target="_help" href="http://hmmer.janelia.org/">http://hmmer.janelia.org</a>
+]]></description>
+    <arg type="flag" label="" help="Compute score for E-value (E) for database of (Z) sequences" value="--eval2score"></arg>
+    <arg type="flag" label="" help="Compute E-value for score (S) for database of (Z) sequences" value="--score2eval"></arg>
+    <arg type="int" size="5" label="Database size" help="Database size (in seqs) for --eval2score or --score2eval" prefix="-Z"></arg>
+    <arg type="int" size="5" label="Database size (M bases)" help="Database size (M bases) (DNA only, if search on both strands)" prefix="--baseZ"></arg>
+    <arg type="int" size="5" label="Database size (M bases)" help="Database size (M bases) (DNA only, if search on single strand)" prefix="--baseZ1"></arg>
+    <arg type="float" size="5" label="E-value threshold" help="For eval2score" prefix="-E"></arg>
+    <arg type="float" size="5" label="Score input" help="For score2eval" prefix="-S"></arg>
+    <arg type="category" label="Input File"/>
+    <arg label="HMMER File"  value="${entry.file}"   type="entry" entryType="bio_hmmer_index" primary="true"></arg>
+    <output showResults="true" stdout="true"/>
+   </service>
+
+  <service label="Run HMMEMIT" id="bio_hmmer_emit"  icon="/genomics/hmmer.png"   command="${service.hmmertools}/hmmemit" >
+    <description><![CDATA[
+HMMEMIT documentation available at <a target="_help" href="http://hmmer.janelia.org/">http://hmmer.janelia.org</a>
+]]></description>
+    <arg name="number_sequences" type="int" size="5" label="Number of sequences" help="Number of sequences to sample" prefix="-N"></arg>
+    <arg name="emit_1" type="flag" group="emitoptions" label="" help="Emit alignment" value="-a"></arg>
+    <arg name="emit_2" type="flag" group="emitoptions" label="" help="Emit simple majority-rule consensus sequence" value="-c"></arg>
+    <arg name="emit_3" type="flag" group="emitoptions" label="" help="Emit fancier consensus sequence" value="-C"></arg>
+    <arg name="emit_4" type="flag" group="emitoptions" label="" help="Sample sequences from profile, not core model" value="-p"></arg>
+
+    <arg type="category" label="Options controlling emission from profiles"/>
+
+    <arg name="expected_length" type="int" size="5" label="Expected length" help="Set expected length from profile to" prefix="-L"></arg>
+    <arg type="flag" group="configure_profile" label="" help="Configure profile in multihit local mode" value="--local"></arg>
+    <arg type="flag" group="configure_profile" label="" help="Configure profile in unilocal mode" value="--unilocal"></arg>
+    <arg type="flag" group="configure_profile" label="" help="Configure profile in multihit glocal mode" value="--glocal"></arg>
+    <arg type="flag" group="configure_profile" label="" help="Configure profile in unihit glocal mode" value="--uniglocal"></arg>
+
+    <arg type="category" label="Options controlling fancy consensus emission"></arg>
+    <arg type="float" size="5" label="Min L" help="Show consensus as 'any' (X/N) unless &gt;= this fraction" prefix="--minl"></arg>
+    <arg type="float" size="5" label="Min U" help="Show consensus as upper case if  prefix this fraction" prefix="--minu"/>
+
+    <arg type="category" label="Input File"/>
+    <arg label="HMMER File"  value="${entry.file}"  type="entry" entryType="bio_hmmer_index" primary="true"></arg>
+    <output showResults="true" stdout="true"/>
+   </service>
+
+  <service label="Run HMMFETCH" id="bio_hmmer_fetch"  icon="/genomics/hmmer.png"   command="${service.hmmertools}/hmmfetch" >
+    <description><![CDATA[
+HMMFETCH documentation available at <a target="_help" href="http://hmmer.janelia.org/">http://hmmer.janelia.org</a>
+]]></description>
+    <arg label="HMMER File" value="${entry.file}"  type="entry" entryType="bio_hmmer_index" primary="true"></arg>
+    <arg type="string" label="Key" size="35" required="true"></arg>
+    <output type="bio_hmmer_index" stdout="true" filename="${entry.file.base}.hmm"/>
+   </service>
+
+</services>

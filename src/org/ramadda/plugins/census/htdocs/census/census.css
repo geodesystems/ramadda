@@ -1,0 +1,19 @@
+
+
+.ramadda-acs-list {
+   position: absolute; 
+   margin-top:1px;
+   background: #fff;
+}
+
+.ramadda-acs-list-inner {
+   max-height: 400px;
+   overflow-y: auto;
+   border: 1px #ccc solid;
+   padding: 0px;
+   max-height: 400px;
+}
+
+.ramadda-acs-list-msg {
+    padding: 10px;
+}

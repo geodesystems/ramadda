@@ -1,0 +1,5 @@
+<outputhandlers>
+  <outputhandler class="org.ramadda.geodata.idv.IdvOutputHandler"  xrequired="false" name="Grid Visualization"/>
+  <outputhandler class="org.ramadda.geodata.idv.IdvWebstartOutputHandler"  name="IDV Webstart"/>
+  <outputhandler class="org.ramadda.geodata.idv.IdvBundlesOutputHandler"  name="IDV Bundles"/>
+</outputhandlers>

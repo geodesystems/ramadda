@@ -1,0 +1,113 @@
+<html>
+<head>
+<title>Grid Aggregation</title>
+  <link rel="stylesheet" type="text/css" href="./default.css" title="Style">
+
+</head>
+
+<body>
+<div class="ramadda-documentation">
+<table width=100% cellspacing=0 cellpadding=0 ><tr><td width=30%>
+<a href="wikidisplay.html"><img src="images/PreviousArrow.gif" border="0"   alt="Previous: Wiki Display Components" title="Previous: Wiki Display Components"></a> <a href="pagestyle.html"><img src="images/NextArrow.gif" border="0"   alt="Next: Page Styles" title="Next: Page Styles"></a>  <a href="toc.html#gridaggregation.html"><img src="images/TOCIcon.gif" border="0"   alt="Table of contents" title="Table of contents"></a>
+</td>
+<td width=40% align=center>
+<div class="ramadda-page-title">RAMADDA User Guide</div>
+</td>
+<td width=30%>&nbsp;</td>
+</tr></table>
+<div class="ramadda-page-heading">11.3 Grid Aggregation</div>
+
+<style type="text/css">
+pre {
+    margin-left:15px;
+}
+</style>
+
+<div style="margin-left:20px;">
+
+
+
+
+You can easily aggregate collections of grids in several different ways:
+<ul>
+<li>Aggregate a set of grid files that form a time series into one view (JoinExisting)
+<li>Aggregate a set of variables that are in different files 
+which all have the same time and space dimesions (Union)
+<li>Aggregate a set of ensemble members of a model into one view (Ensemble).
+</ul>
+
+To create a new grid aggregation, use the <code class="menu">File-&gt;New Entry</code> menu
+and select the Grid Aggregation item under the Geo Data category.  This will 
+bring up the Grid Aggregation form:
+
+<div class="cimg"><a href="images/gridagg.gif"><img  src="images/gridagg.gif"  alt="images/gridagg.gif" ></a></div>
+
+Options:
+
+<ul>
+
+<li><b>Name</b><p>Enter a name for this entry</p>
+
+<li><b>Description</b><p>Optionally, add a description</p>
+
+<li><b>Date Range</b><p>You can set the date range for the data.</p>
+
+<li><b>Location</b><p>You can set the bounding box of the data location.</p>
+
+<li><b>Aggregation type</b><p>Set the aggregation type.  The choices are:
+<ul>
+<li>JoinExisting - join the data along an existing time dimension.
+<li>Union - join the data as a union of all the files (must have same 
+temporal and spatial bounds)
+<li>Ensemble - join the data as an ensemble of the individual fils (must
+have same temporal and spatial bounds and fields)
+</ul>
+</p>
+
+<li><b>Time Coordinate</b><p>The name of the time coordinate for the 
+JoinExisting aggregation</p>
+
+<li><b>Fields</b><p>The name(s) of the variable(s) in the files that you 
+want to aggregate for the Ensemble type.</p>
+
+<li><b>Files</b><p>If you are an administrator, you can select a set of
+files on your local server (one per line) to use for this aggregation.
+You need to include the full path to the files in the name. You can optionally
+ leave this blank and add files to the aggregation by hand.</p>
+
+<li><b>File Pattern</b><p>If you are an administrator, you can set a directory
+name in the Files field and then give a file pattern (e.g. Foo*bar.nc) of the
+files you want to include in the aggregation.</p>
+
+<li><b>Recurse</b><p>Set to <b>Yes</b> to recurse into sub directories</p>
+
+<li><b>Ingest Files</b><p>Ingest the metadata into the database for the
+individual granules that make up the aggregation. Set this to <b>Yes</b>
+if you want to show the individual granules that make up the aggregation.</p>
+
+<li><b>Spatial/Temporal Metadata</b><p>Ingest just the spatial/temporal metadata
+into the database</p>
+
+<li><b>All Metadata</b><p>Ingest all metadata (spatial/temporal, variables, 
+attributes) into the database</p>
+
+<li><b>Owner</b><p>Specify the owner (admin) who has permission to modify
+and add to this entry.</p>
+
+</ul>
+
+When you click on the Add Grid Aggregation button, the entry will be created.
+If you specified a list of files, those will be included in the aggregation.
+If you specified <b>Yes</b> to <b>Ingest Files</b>, the individual files
+will be listed on entry page.
+
+</div>
+<p>
+
+<p>&nbsp;<p>
+<a href="wikidisplay.html"><img src="images/PreviousArrow.gif" border="0"   alt="Previous: Wiki Display Components" title="Previous: Wiki Display Components"></a> <a href="pagestyle.html"><img src="images/NextArrow.gif" border="0"   alt="Next: Page Styles" title="Next: Page Styles"></a>  <a href="toc.html#gridaggregation.html"><img src="images/TOCIcon.gif" border="0"   alt="Table of contents" title="Table of contents"></a>
+<p>
+</div>
+</body>
+</html>
+

@@ -1,0 +1,32 @@
+
+<tables>
+
+<table id="wetcc_water_quality" name="Water Quality" icon="/wetcc/beaker.png">
+   <column name="location" type="latlon"   label="Location"  cansearch="true" canlist="true" />
+   <column name="site" type="enumerationplus"   label="Sample Site"  cansearch="true" canlist="true">
+       <property name="iscategory" value="true"/>
+   </column>
+   <column name="date" type="date" label="Date" cansearch="true"   canlist="true"/>
+   <column name="nitrates" label="Nitrates"   cansearch="true" canlist="true" type="double" />
+   <column name="potassium" label="Potassium"   cansearch="true" canlist="true" type="double" />
+   <column name="phosphates" label="Phosphates"   cansearch="true" canlist="true" type="double" />
+   <column name="dissolved_oxygen" label="Dissolved Oxygen"   cansearch="true" canlist="true" type="double" />
+   <column name="sulfates" label="Sulfates"   cansearch="true" canlist="true" type="double" />
+   <column name="methylmercury" label="Methylmercury"   cansearch="true" canlist="true" type="double" />
+   <column name="ph" label="pH"   cansearch="true" canlist="true" type="double" min="-7" max="7"/>
+   <column name="clarity" label="Clarity"   cansearch="true" canlist="true" type="double" />
+</table>
+
+
+
+<table id="wetcc_test_water_quality2" name="Another Water Quality" icon="/wetcc/beaker.png">
+   <column name="location" type="latlon"   label="Location"  cansearch="true" canlist="true" />
+   <column name="site" type="enumerationplus"   label="Sample Site"  cansearch="true" canlist="true">
+       <property name="iscategory" value="true"/>
+   </column>
+   <column name="date" type="date" label="Date" cansearch="true"   canlist="true"/>
+   <column name="methylmercury" label="Methylmercury"   cansearch="true" canlist="true" type="double" />
+</table>
+
+
+</tables>

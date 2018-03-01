@@ -1,0 +1,38 @@
+.poll-table
+{
+    border-color: #600;
+    border-width: 0 0 1px 1px;
+    border-style: solid;
+}
+
+
+
+.poll-table td {
+    padding:7px;
+    padding-bottom:2px;
+    border-color: #600;
+    border-width: 1px 1px 0 0;
+    border-style: solid;
+    margin: 0;
+}
+
+.poll-header {
+    background-color:#c3d9ff;
+}
+
+.poll-input {
+    border : 1px #ccc solid;
+}
+
+.poll-response-yes {
+     background-color: #88C957;
+}
+
+.poll-response-no {
+     background: #eee;
+}
+
+
+
+
+

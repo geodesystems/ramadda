@@ -1,0 +1,5 @@
+#fields=yyyy[type="string"],month[type="string"],day[type="string"],hour[type="string"],minute[type="string"],second[type="string"],value
+2001,01,01,01,00,00,-0.931363
+2001,02,01,01,00,00,-0.930391
+2001,03,01,01,00,00,-0.95
+2001,04,01,01,00,00,-0.96

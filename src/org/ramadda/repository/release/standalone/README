@@ -1,0 +1,110 @@
+
+###################################################################
+Initial setup
+###################################################################
+Here is the recommended setup to run RAMADDA stand-alone.
+Create a ramadda directory to hold the @RELEASE@ release 
+and copy the ramaddaenv.sh file to the ramadda directory.
+
+
+
+ramadda
+      @RELEASE@
+      ramaddaenv.sh
+
+Edit the ramaddaenv.sh to point to where Java is located, what port to run 
+RAMADDA on and where is the RAMADDA home directory.
+
+RAMADDA requires Java 1.6 or above to run.
+
+To run RAMADDA just do:
+
+   sh @RELEASE@/ramadda.sh
+
+By default this  will run RAMADDA on port 8080 with the RAMADDA home 
+directory (where it stores everything) set to <user home>/.ramadda and 
+will use a local Java Derby database.
+
+See the Configuration section below for more details but an easy way to 
+change these settings is with command line arguments:
+
+    sh @RELEASE@/ramadda.sh -port 8081 -Dramadda_home=/some/other/directory/ramadda
+
+See the Database section below on how to change the database
+
+You need to complete the configuration at:
+http://localhost:8080/repository
+
+For more information see:
+http://ramadda.org/repository/userguide/installing.html
+
+
+###################################################################
+Running in the background
+###################################################################
+
+The script @RELEASE@/ramaddaService.sh can start, stop and restart a running
+RAMADDA process in the background. This should be used when running
+RAMADDA as a regular server.
+
+This runs with:
+sh ramaddaService.sh start
+sh ramaddaService.sh stop
+sh ramaddaService.sh restart
+sh ramaddaService.sh status
+
+
+###################################################################
+Configuration
+###################################################################
+
+The ramadda.sh script runs the stand-alone version of RAMADDA.
+
+The script uses the environment variables:
+RAMADDA_HOME - The directory RAMADDA stores everything in.  Defaults to <user home>/.ramadda
+
+!!!Important!!!
+
+There needs to be a .properties file in the home directory that contains
+ramadda.install.password=<some password>
+
+
+RAMADDA_PORT - The port that RAMADDA runs on. Defaults to 8080
+
+JAVA - Path to the Java executable. Defaults to "java"
+
+If not set by the calling process the script sets the RAMADDA_HOME, 
+RAMADDA_PORT  and JAVA variables to the defaults then runs the ramaddaenv.sh 
+in the release directory.  Then, if it exists, the script execs ramaddaenv.sh
+in the parent directory of the release directory.
+
+
+###################################################################
+Plugins
+###################################################################
+When you start RAMADDA it will create a plugins directory under the RAMADDA
+home directory. During the web-based initialization you can choose (on
+by default) to install the "allplugins.zip" file. This contains the majority
+of the RAMADDA plugins.
+
+There are some other plugin files available via Geode Systems (http://geodesystems.com/repository/alias/release/)
+which you can install in the plugins directory.
+
+When you re-install a new version of RAMADDA make sure to also download and install the most recent versions of any plugins you are using.
+
+
+###################################################################
+Database
+###################################################################
+By default this uses the built-in Java Derby database. Derby is quite 
+capable but it lacks certain features and might not be as performant
+as other databases.
+
+If you want to use a different database (e.g., mysql, postgres, oracle, H2) see:
+http://ramadda.org/repository/userguide/database.html
+
+
+
+
+
+

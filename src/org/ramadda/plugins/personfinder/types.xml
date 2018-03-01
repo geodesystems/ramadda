@@ -1,0 +1,54 @@
+<types supercategory="Miscellaneous">
+
+  <type name="pfif_person"  description="Missing Person" handler="org.ramadda.plugins.personfinder.PersonTypeHandler" category="Events">
+     <property name="icon" value="/personfinder/personfinder.png"/>
+     <property name="form.description.rows" value="5"/>
+     <property name="form.area.show" value="false"/>
+     <property name="form.date.show" value="false"/>
+     <property name="form.name.label" value="Full name"/>
+     <property name="form.resource.label" value="Upload photo"/>
+     <property name="form.datatype.show" value="false"/>
+<column name="author_name" type="string" label="Author name" showinhtml="true"/>
+<column name="author_email" type="string" label="Author email" showinhtml="true"/>
+<column name="author_phone" type="string" label="Author phone" showinhtml="true"/>
+<column name="source_name" type="string" label="Source name" showinhtml="true"/>
+<column name="source_url" type="string" label="Source url" showinhtml="true"/>
+<column name="first_name" type="string" label="First name" showinhtml="true"/>
+<column name="last_name" type="string" label="Last name" showinhtml="true"/>
+<column name="sex" type="string" label="Sex" showinhtml="true"/>
+<column name="date_of_birth" type="string" label="Date of birth" showinhtml="true"/>
+<column name="age" type="string" label="Age" showinhtml="true"/>
+<column name="home_street" type="string" label="Home street" showinhtml="true"/>
+<column name="home_neighborhood" type="string" label="Home neighborhood" showinhtml="true"/>
+<column name="home_city" type="string" label="Home city" showinhtml="true"/>
+<column name="home_state" type="string" label="Home state" showinhtml="true"/>
+<column name="home_postal_code" type="string" label="Home postal code" showinhtml="true"/>
+<column name="other" type="string" label="Other Information" showinhtml="true"/>
+</type>
+
+
+<type name="pfif_note"  description="Person Note" xxxhandler="org.ramadda.plugins.personfinder.PersonTypeHandler" category="Events"  foruser="false">
+     <property name="xxxicon" value="/faq/faq.png"/>
+     <property name="form.description.rows" value="5"/>
+     <property name="form.area.show" value="false"/>
+     <property name="form.date.show" value="false"/>
+     <property name="form.resource.show" value="false"/>
+     <property name="form.datatype.show" value="false"/>
+<!--
+<column name="linked_person_record_id"/>
+-->
+<column name="author_name" showinhtml="true" />
+<column name="author_email" showinhtml="true" />
+<column name="author_phone" showinhtml="true" />
+<column name="isfound" type="boolean" showinhtml="true" />
+<column name="status" showinhtml="true" />
+<column name="email_of_found_person" showinhtml="true" />
+<column name="phone_of_found_person" showinhtml="true" />
+<column name="last_known_location" showinhtml="true" />
+<column name="text" showinhtml="true"/>
+
+</type>
+
+
+
+</types>

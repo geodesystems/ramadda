@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<types  supercategory="Geoscience" >
+
+
+
+  <type name="climate_collection"   description="Climate Data Collection" handler="org.ramadda.geodata.model.ClimateCollectionTypeHandler" category="Climate Data" foruser="true">
+     <property name="icon" value="/model/application_cascade.png"/>
+     <property name="form.area.show" value="true"/>
+     <property name="form.resource.show" value="false"/>
+     <property name="form.date.show" value="true"/>
+     <property name="granule_type" value="climate_modelfile"/>
+     <column name="frequency" type="enumerationplus"  label="Frequency"  values="Daily,Monthly,4xDaily" showinhtml="true" cansearch="true"/>
+<!--
+    These properties point to a vocabulary properties file to be used for the below columns
+     <property name="model.values" value="/Users/jeffmc/test.properties"/>
+     <property name="experiment.values" value="/Users/jeffmc/test.properties"/>
+     <property name="variable.values" value="/Users/jeffmc/test.properties"/>
+-->
+   </type>
+
+
+  <type name="climate_granule"  description="Climate Granule"  category="Climate Data" foruser="false">
+     <property name="icon" value="/icons/data.gif"/>
+     <property name="form.area.show" value="false"/>
+     <property name="form.resource.show" value="true"/>
+     <property name="form.date.show" value="true"/>
+     <property name="collection_type" value="climate_collection"/>
+</type>
+
+
+  <type name="climate_modelfile"  description="Basic Climate Model File" handler="org.ramadda.geodata.model.ClimateModelFileTypeHandler" category="Climate Data" foruser="true" super="climate_granule">
+     <column name="collection_id" type="string"  label="Collection ID" showinhtml="false" showinform="false"/>
+     <column name="model" type="enumerationplus"  label="Model"  showinhtml="true" xxxxvalues="file:/org/ramadda/data/model/models.txt"/>
+     <column name="experiment" type="enumerationplus"  label="Experiment" xxxxvalues="file:/org/ramadda/data/model/experiments.txt" showinhtml="true" />
+     <column name="ensemble" type="enumerationplus"  label="Ensemble Member"/>
+     <column name="variable" type="enumerationplus"  label="Variable"  xxxxxvalues="file:/org/ramadda/data/model/vars.txt"/>
+   </type>
+
+
+<!--
+the handler makes this a group
+the metadata is a comma separated list of metadata types that show up in the Edit menu
+-->
+  <type 
+name="climate_model_description"  
+description="Climate Model Description" 
+handler="org.ramadda.repository.type.ExtensibleGroupTypeHandler" 
+metadata="enum_tag,content.keyword"
+category="Climate Data" 
+childtypes="biblio"
+>
+     <property name="icon" value="/model/globe-model.png"/>
+     <property name="form.file.show" value="false"/>
+     <property name="form.date.show" value="true"/>
+     <property name="form.date.label" value="Period of Simulations"/>
+
+<!--
+ just  a string or an enum?
+-->
+     <column name="source" type="string"  label="Source" columns="60"/>
+
+<!--
+Should this be a string or a numeric?
+-->
+     <column name="ensemble_size" type="string"  label="Ensemble Size"  columns="20"
+             group="Model Size and Resolution"/>
+     <column name="horizontal_resolution_x" type="double"  label="Longitude Resolution"  suffix="Degrees/Cell ???"/>
+     <column name="horizontal_resolution_y" type="double"  label="Latitude Resolution"  suffix="Degrees/Cell ???"/>
+     <column name="vertical_resolution_y" type="int"  label="Vertical Resolution"  suffix="Levels"/>
+     <column name="sst_forcing" group="Forcing" type="enumerationplus"  label="SST/Sea Ice Forcing" xxxxvalues="file:/org/ramadda/data/model/sstforcings.txt"/>
+     <column name="radiative_forcing" type="enumerationplus"  label="Radiative Forcing" xxxxvalues="file:/org/ramadda/data/model/radiativeforcings.txt"/>
+
+     <wiki><![CDATA[
+{{noheading}}
++inset
++row
++col-md-9 class="entry-page-main"
+:title {{name}}
+{{description wikify="true"}}
+
+
+==Climate Model Information==
+<!--
+if the field tag has a row.label then it adds a 2 column form row
+-->
+<table class="formtable">
+{{resource row.label="URL:"  message=""}}
+{{field name="source" row.label="Source:"}}
+{{field name="ensemble_size" row.label="Size:"}}
+<tr><td class="formlabel">Dimensions:</td><td>{{field name="horizontal_resolution_x"}} deg X {{field name="horizontal_resolution_y"}} deg X {{field name="vertical_resolution_y"}}</td></tr>
+{{field name="sst_forcing" row.label="SST/Sea Ice Forcing:"}}
+{{field name="radiative_forcing" row.label="Radiative Forcing:"}}
+</table>
+
+
+{{tree  details="false" showtoggle="false" message="" prefix="==Links=="}}
+
+-col
++col-md-3
+{{list includeicon="true" details="false" entries="siblings,links"  message=""  prefix="==Related=="}}
+-col
+-row
+-inset
+]]>
+</wiki>
+
+
+   </type>
+
+
+
+</types>
+

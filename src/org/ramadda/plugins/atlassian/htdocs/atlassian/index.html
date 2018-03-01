@@ -1,0 +1,165 @@
+<html>
+<title>Atlassian Hipchat Integration</title>
+<category:Integration>
+<body>
+<div class="ramadda-section">
+<h2>Hipchat Integration</h2>
+The RAMADDA Hipchat plugin provides a number of services for integrating RAMADDA search and content management services
+with <a href="https://www.hipchat.com/">Atlassian HipChat</a>.
+
+
+<a name="search"></a>
+<h3>Searching and Accessing Data</h3>
+Using Hipchat's "/slash" commands you can configure a Hipchat room to support searching and navigating 
+a RAMADDA repository. Along with its own content RAMADDA can provide search services to over 150 sources of content
+and data incuding Google, YouTube, Flickr and PubMed to name just a few.
+
+
+<ol>
+<li> From your HipChat Room  go to the Integrations page. Choose "Find New" and "Build your own". Click on "Add a command".
+
+<li> Enter the name of the slash command, e.g. "/ramadda". 
+<li> In the "We will POST to this URL" enter your RAMADDA HipChat API URL, e.g.:
+<pre>
+http://&lt;your host&gt;repository/hipchat/api?ramadda_key=&lt;some secret key&gt;
+</pre>
+
+The <i>ramadda_key</i> should be a secret key. This is what is used to authenticate with RAMADDA later. 
+
+<li> Copy the "Send messages to this room by posting to this URL" URL.
+
+<li> To enable HipChat to talk with your RAMADDA you will create a HipChat Harvester.
+<ol>
+<li> Login to RAMADDA as an administrator and go to the Admin->Harvesters page. 
+<li> Select New Harvester and select "Hipchat Harvester". (If you don't see it in the list then you don't have the hipchat plugin installed). You'll see something like:
+
+<p>
+<img src="images/harvester.png" align="center">
+<p>
+
+
+<li> Specify the name of the harvester and a base entry that is used for navigation in HipChat. 
+<li> Specify the <i>ramadda_key</i> secret key that was in the URL provided to HipChat 
+<li> Enter the HipChat URL in the "Web Hook URL" field.
+<li> To publish files back to HipChat you need to create a HipChat API token. Go to the HipChat API page, e.g. - 
+https://ramadda.hipchat.com/account/api. Create a token with the "Send ..." and "View ..."  scopes selected. Enter the token for the harvester.
+
+</ol>
+
+<li> Test it out. From HipChat enter the following message. This should return  a help message.
+<pre>
+/ramadda ?
+</pre>
+
+
+
+To search your RAMADDA enter:
+<pre>
+/ramadda search some text
+</pre>
+
+You can also search any of the external search  providers within RAMADDA. To search other sites enter:
+<pre>
+/ramadda search -provider google birds
+
+Or as a shortcut:
+/ramadda search -google birds
+
+Other providers include:
+/ramadda search -quandl economic data
+/ramadda search -flickr bees
+/ramadda search -youtube flowers
+/ramadda search -ncbi_pubmed medical
+/ramadda search -eia  energy
+/ramadda search -fred  economic data
+etc.
+</pre>
+
+You can make a slash command that is a short cut to search. Go and create the command, maybe naming it "/search". The URL that points to your RAMADDA should have:
+<pre>
+https://&lt;your host&gt;/repository/hipchat/api?ramadda_key=&lt;some secret key&gt;&amp;command=search
+</pre>
+
+And create a harvester and provide the secret key.
+To search just enter:
+<pre>
+/search -provider flickr birds
+</pre>
+
+</ol>
+
+
+
+
+
+<a name="import"></a>
+<h3>Importing Hipchat Rooms and Messages</h3>
+
+You can dynamically import HipChat Rooms and Messages into RAMADDA and display
+them in any number of ways.
+
+First, get an API key from your HipChat  server, e.g.:<pre>
+https://ramadda.hipchat.com/account/api
+</pre>
+
+They key should have "View Group", "View Messages" and "View Room" permissions.
+
+
+<a name="monitor"></a>
+<h3>RAMADDA Event Notification</h3>
+RAMADDA allows you to send notifications of new content to a Hipchat chat room using an 
+<a href="https://geodesystems.com/repository/userguide/monitors.html">Entry Monitor</a>. 
+
+<ol>
+<li> Go to your user settings page when logged into RAMADDA and there is a Monitors link. Select "New Hipchat Action".
+
+<p>
+<img src="images/monitor.png" align="center">
+<p>
+
+<li> Specify a search criteria to apply and enter the Hipchat message URL that is available from the Room Integrations page in Hipchat. Whenever a new entry is created in RAMADDA a notification message will be sent to HipChat.
+
+</ol>
+
+</div>
+
+
+<div class="ramadda-section">
+<a name="jira"></a>
+<h2>Jira Integration</h2>
+RAMADDA can be configured to search an external Jira repository.  
+
+Note: for now this only supports publicly accessible Jira servers.
+
+To configure searching Jira create a <i>classes.txt</i>, e.g., jira_classes.txt, and place it in the plugins directory under your RAMADDA home directory. Add the below lines and restart your RAMADDA. 
+
+<pre>
+#Format: 
+#org.ramadda.plugins.atlassian.JiraSearchProvider;&lt;ID&gt;;&lt;BASE URL&gt;;&lt;LABEL&gt;
+
+#e.g.:
+org.ramadda.plugins.atlassian.JiraSearchProvider;apache;https://issues.apache.org/jira;Apache JIRA
+org.ramadda.plugins.atlassian.JiraSearchProvider;spring;https://jira.spring.io;Spring JIRA
+org.ramadda.plugins.atlassian.JiraSearchProvider;twitter4j;http://jira.twitter4j.org;Twitter4J JIRA
+</pre>
+
+
+To configure searching a Confluence site add:
+
+<pre>
+#Format: 
+#org.ramadda.plugins.atlassian.ConfluenceSearchProvider;&lt;ID&gt;;&lt;BASE URL&gt;;&lt;LABEL&gt;
+
+#e.g.:
+org.ramadda.plugins.atlassian.ConfluenceSearchProvider;atlassian;https://confluence.atlassian.com;Atlassian Confluence Site
+
+</pre>
+
+
+
+</div>
+
+
+</body>
+</html>
+

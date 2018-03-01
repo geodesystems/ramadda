@@ -1,0 +1,16 @@
+<types supercategory="Miscellaneous">
+
+
+  <type name="poll"  description="Poll" handler="org.ramadda.plugins.poll.PollTypeHandler" category="Events">
+     <property name="icon" value="/poll/poll.gif"/>
+     <property name="form.description.rows" value="5"/>
+     <property name="form.area.show" value="false"/>
+     <property name="form.date.show" value="false"/>
+     <property name="form.resource.show" value="false"/>
+     <property name="form.datatype.show" value="false"/>
+     <column name="properties" type="clob" size="256000" label="" cansearch="false" showinhtml="false"/>
+</type>
+
+
+
+</types>

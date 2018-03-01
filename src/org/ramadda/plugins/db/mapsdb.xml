@@ -1,0 +1,13 @@
+
+<tables>
+
+<table id="locations" name="Locations" icon="/icons/map.png">
+   <column name="name" type="string"   label="Name"  cansearch="true" canlist="true" />
+   <column name="type" type="enumerationplus"   label="Type"  cansearch="true" canlist="true">
+       <property name="iscategory" value="true"/>
+   </column>
+   <column name="location" type="latlon"   label="Location"  cansearch="true" canlist="true" />
+</table>
+
+
+</tables>

@@ -1,0 +1,149 @@
+
+
+
+#This searches all Socrata sites
+org.ramadda.plugins.socrata.SocrataSearchProvider
+
+#To specify a specific  Socrata site add - 
+#org.ramadda.plugins.socrata.SocrataSearchProvider;<socrata domain>;<server name>
+#
+#Some examples - 
+org.ramadda.plugins.socrata.SocrataSearchProvider;finances.worldbank.org;World Bank
+org.ramadda.plugins.socrata.SocrataSearchProvider;data.cdc.gov;Center for Disease Control and Prevention
+org.ramadda.plugins.socrata.SocrataSearchProvider;cdph.data.ca.gov;California Department of Public Health
+org.ramadda.plugins.socrata.SocrataSearchProvider;bythenumbers.sco.ca.gov;California State Controller's Office
+org.ramadda.plugins.socrata.SocrataSearchProvider;data.colorado.gov;Colorado Open Data
+org.ramadda.plugins.socrata.SocrataSearchProvider;data.ct.gov;State of Connecticut
+org.ramadda.plugins.socrata.SocrataSearchProvider;data.hawaii.gov;State of Hawaii
+org.ramadda.plugins.socrata.SocrataSearchProvider;data.illinois.gov;State of Illinois
+org.ramadda.plugins.socrata.SocrataSearchProvider;data.datamontana.us;State of Montana
+org.ramadda.plugins.socrata.SocrataSearchProvider;data.ny.gov;New York State Office of ITS
+org.ramadda.plugins.socrata.SocrataSearchProvider;data.oregon.gov;State of Oregon
+org.ramadda.plugins.socrata.SocrataSearchProvider;opendata.utah.gov;Utah Open Data
+org.ramadda.plugins.socrata.SocrataSearchProvider;data.wa.gov;State of Washington
+org.ramadda.plugins.socrata.SocrataSearchProvider;www.opendatanyc.com;City of New York City Comptroller
+org.ramadda.plugins.socrata.SocrataSearchProvider;data.maryland.gov;State of Maryland
+org.ramadda.plugins.socrata.SocrataSearchProvider;data.michigan.gov;State of Michigan
+org.ramadda.plugins.socrata.SocrataSearchProvider;data.mo.gov;State of Missouri
+org.ramadda.plugins.socrata.SocrataSearchProvider;data.nj.gov;State of New Jersey
+org.ramadda.plugins.socrata.SocrataSearchProvider;healthdata.nj.gov;State of New Jersey - Department of Health
+org.ramadda.plugins.socrata.SocrataSearchProvider;data.ny.gov;State of New York
+org.ramadda.plugins.socrata.SocrataSearchProvider;health.data.ny.gov;State of New York Department of Health
+org.ramadda.plugins.socrata.SocrataSearchProvider;data.ok.gov;State of Oklahoma
+org.ramadda.plugins.socrata.SocrataSearchProvider;data.vermont.gov;State of Vermont
+
+
+#
+# List of Socrata servers from 
+# https://opendata.socrata.com/dataset/Socrata-Customer-Spotlights/6wk3-4ija
+#
+#org.ramadda.plugins.socrata.SocrataSearchProvider;data.act.gov.au;ACT Government
+#org.ramadda.plugins.socrata.SocrataSearchProvider;wfp.demo.socrata.com;AERC Africa
+#org.ramadda.plugins.socrata.SocrataSearchProvider;data.acgov.org;Alameda County
+#org.ramadda.plugins.socrata.SocrataSearchProvider;data.atf.gov;Alcohol, Tobacco, Firearms, and Explosives
+#org.ramadda.plugins.socrata.SocrataSearchProvider;datapilot.american.edu;American University
+#org.ramadda.plugins.socrata.SocrataSearchProvider;bmgf.demo.socrata.com;Bill and Melinda Gates Foundation
+#org.ramadda.plugins.socrata.SocrataSearchProvider;bristol.azure-westeurope-prod.socrata.com;Bristol City Council
+#org.ramadda.plugins.socrata.SocrataSearchProvider;data.cacs.org;California Common Sense
+#org.ramadda.plugins.socrata.SocrataSearchProvider;data.cms.hhs.gov;Centers for Medicare and Medicaid Services
+#org.ramadda.plugins.socrata.SocrataSearchProvider;www.consumerfinance.gov;CFPB
+#org.ramadda.plugins.socrata.SocrataSearchProvider;data.albanyny.gov;City of Albany
+#org.ramadda.plugins.socrata.SocrataSearchProvider;data.austintexas.gov;City of Austin
+#org.ramadda.plugins.socrata.SocrataSearchProvider;data.baltimorecity.gov;City of Baltimore
+#org.ramadda.plugins.socrata.SocrataSearchProvider;data.illinois.gov;City of Belleville
+#org.ramadda.plugins.socrata.SocrataSearchProvider;belohorizonte.azure-eastus-prod.socrata.com;City of Belo Horizonte
+#org.ramadda.plugins.socrata.SocrataSearchProvider;berkeley.demo.socrata.com;City of Berkeley
+#org.ramadda.plugins.socrata.SocrataSearchProvider;data.cityofboston.gov;City of Boston
+#org.ramadda.plugins.socrata.SocrataSearchProvider;data.burlingtonvt.gov;City of Burlington
+#org.ramadda.plugins.socrata.SocrataSearchProvider;data.illinois.gov;City of Champaign
+#org.ramadda.plugins.socrata.SocrataSearchProvider;performance.chattanooga.gov;City of Chattanooga
+#org.ramadda.plugins.socrata.SocrataSearchProvider;data.cityofchicago.org;City of Chicago
+#org.ramadda.plugins.socrata.SocrataSearchProvider;data.culvercity.org;City of Culver City
+#org.ramadda.plugins.socrata.SocrataSearchProvider;www.dallasopendata.com;City of Dallas
+#org.ramadda.plugins.socrata.SocrataSearchProvider;data.cityofdeleon.org;City of De Leon
+#org.ramadda.plugins.socrata.SocrataSearchProvider;data.edmonton.ca;City of Edmonton
+#org.ramadda.plugins.socrata.SocrataSearchProvider;data.eindhoven.nl;City of Eindhoven
+#org.ramadda.plugins.socrata.SocrataSearchProvider;stat.cityofgainesville.org;City of Gainseville
+#org.ramadda.plugins.socrata.SocrataSearchProvider;gavaobert.gavaciutat.cat;City of Gava
+#org.ramadda.plugins.socrata.SocrataSearchProvider;hampton.demo.socrata.com;City of Hampton
+#org.ramadda.plugins.socrata.SocrataSearchProvider;data.hartford.gov;City of Hartford
+#org.ramadda.plugins.socrata.SocrataSearchProvider;data.honolulu.gov;City of Honolulu
+#org.ramadda.plugins.socrata.SocrataSearchProvider;data.kcmo.org;City of Kansas City
+#org.ramadda.plugins.socrata.SocrataSearchProvider;opendata.lasvegasnevada.gov;City of Las Vegas
+#org.ramadda.plugins.socrata.SocrataSearchProvider;controllerdata.lacity.org;City of Los Angeles
+#org.ramadda.plugins.socrata.SocrataSearchProvider;data.cityofmadison.com;City of Madison
+#org.ramadda.plugins.socrata.SocrataSearchProvider;data.murphytx.org;City of Murphy
+#org.ramadda.plugins.socrata.SocrataSearchProvider;data.ci.newark.nj.us;City of Newark
+#org.ramadda.plugins.socrata.SocrataSearchProvider;data.nola.gov;City of New Orleans
+#org.ramadda.plugins.socrata.SocrataSearchProvider;data.cityofnewyork.us;City of New York City
+#org.ramadda.plugins.socrata.SocrataSearchProvider;www.opendatanyc.com;City of New York City Comptroller
+#org.ramadda.plugins.socrata.SocrataSearchProvider;data.oaklandnet.com;City of Oakland
+#org.ramadda.plugins.socrata.SocrataSearchProvider;data.providenceri.gov;City of Providence
+#org.ramadda.plugins.socrata.SocrataSearchProvider;data.raleighnc.gov;City of Raleigh
+#org.ramadda.plugins.socrata.SocrataSearchProvider;data.redmond.gov;City of Redmond
+#org.ramadda.plugins.socrata.SocrataSearchProvider;data.illinois.gov;City of Rockford
+#org.ramadda.plugins.socrata.SocrataSearchProvider;opendata.rubi.cat;City of Rubi
+#org.ramadda.plugins.socrata.SocrataSearchProvider;data.slcgov.com;City of Salt Lake
+#org.ramadda.plugins.socrata.SocrataSearchProvider;data.sfgov.org;City of San Francisco
+#org.ramadda.plugins.socrata.SocrataSearchProvider;reportcard.santamonicayouth.net;City of Santa Monica
+#org.ramadda.plugins.socrata.SocrataSearchProvider;data.seattle.gov;City of Seattle
+#org.ramadda.plugins.socrata.SocrataSearchProvider;data.somervillema.gov;City of Somerville
+#org.ramadda.plugins.socrata.SocrataSearchProvider;data.southbendin.gov;City of South Bend
+#org.ramadda.plugins.socrata.SocrataSearchProvider;data.cityoftacoma.org;City of Tacoma
+#org.ramadda.plugins.socrata.SocrataSearchProvider;data.weatherfordtx.gov;City of Weatherford
+#org.ramadda.plugins.socrata.SocrataSearchProvider;data.wellingtonfl.gov;"City of Wellington; FL"
+#org.ramadda.plugins.socrata.SocrataSearchProvider;westsacramento.demo.socrata.com;City of West Sacramento
+#org.ramadda.plugins.socrata.SocrataSearchProvider;data.winnipeg.ca;City of Winnipeg
+#org.ramadda.plugins.socrata.SocrataSearchProvider;data.colorado.gov;Colorado
+#org.ramadda.plugins.socrata.SocrataSearchProvider;www.consumerfinance.gov;Consumer Financial Protection Bureau
+#org.ramadda.plugins.socrata.SocrataSearchProvider;datacatalog.cookcountyil.gov;Cook County
+#org.ramadda.plugins.socrata.SocrataSearchProvider;exploredata.gov.ro;Country of Romania
+#org.ramadda.plugins.socrata.SocrataSearchProvider;data.acgov.org;County of Alameda
+#org.ramadda.plugins.socrata.SocrataSearchProvider;performance.smcgov.org;County of San Mateo
+#org.ramadda.plugins.socrata.SocrataSearchProvider;performance.westsussex.gov.uk;County of West Sussex
+#org.ramadda.plugins.socrata.SocrataSearchProvider;www.criminalytics.org;Criminaytics
+#org.ramadda.plugins.socrata.SocrataSearchProvider;www.data.gov;Data.gov
+#org.ramadda.plugins.socrata.SocrataSearchProvider;data.dcpcsb.org;DC Public Charter School Board
+#org.ramadda.plugins.socrata.SocrataSearchProvider;www.strategicplanning.aspe.hhs.gov;Department of Health and Human Services
+#org.ramadda.plugins.socrata.SocrataSearchProvider;health.data.ny.gov;Department of Health (NY)
+#org.ramadda.plugins.socrata.SocrataSearchProvider;dot.demo.socrata.com;Department of Transportation
+#org.ramadda.plugins.socrata.SocrataSearchProvider;data.energystar.gov;Energy Star
+#org.ramadda.plugins.socrata.SocrataSearchProvider;explore.data.gov;Ethics.Gov
+#org.ramadda.plugins.socrata.SocrataSearchProvider;ethics.data.gov;Ethics.Gov
+#org.ramadda.plugins.socrata.SocrataSearchProvider;inforegio.azure-westeurope-prod.socrata.com;European Commission
+#org.ramadda.plugins.socrata.SocrataSearchProvider;opendata.go.ke;Government of Kenya
+#org.ramadda.plugins.socrata.SocrataSearchProvider;explore.data.gov;GSA (Data.gov)
+#org.ramadda.plugins.socrata.SocrataSearchProvider;www.halifaxopendata.ca;Halfax Regional Municipality
+#org.ramadda.plugins.socrata.SocrataSearchProvider;healthmeasures.aspe.hhs.gov;HSMP
+#org.ramadda.plugins.socrata.SocrataSearchProvider;irs.demo.socrata.com;International Revenue Service
+#org.ramadda.plugins.socrata.SocrataSearchProvider;data.kingcounty.gov;"King County; WA"
+#org.ramadda.plugins.socrata.SocrataSearchProvider;bronx.lehman.cuny.edu;Lehman College
+#org.ramadda.plugins.socrata.SocrataSearchProvider;dati.lombardia.it;Lombardia Informatica
+#org.ramadda.plugins.socrata.SocrataSearchProvider;data.medicare.gov;Medicare
+#org.ramadda.plugins.socrata.SocrataSearchProvider;www.metrochicagodata.com;MetroChicagoData.com
+#org.ramadda.plugins.socrata.SocrataSearchProvider;nats.demo.socrata.com;Mexico - SCT
+#org.ramadda.plugins.socrata.SocrataSearchProvider;data.montgomerycountymd.gov;Montgomery County
+#org.ramadda.plugins.socrata.SocrataSearchProvider;data.nfpa.org;National Fire Protection Associations (NFPA)
+#org.ramadda.plugins.socrata.SocrataSearchProvider;nycopendata.socrata.com;New York City
+#org.ramadda.plugins.socrata.SocrataSearchProvider;www.opendatanyc.com;New York City Comptroller
+#org.ramadda.plugins.socrata.SocrataSearchProvider;nmfs.socrata.com;NOAA
+#org.ramadda.plugins.socrata.SocrataSearchProvider;data.ok.gov;OK NIC
+#org.ramadda.plugins.socrata.SocrataSearchProvider;data.oregon.gov;OR NIC
+#org.ramadda.plugins.socrata.SocrataSearchProvider;data.eae.alberta.ca;Province of Alberta
+#org.ramadda.plugins.socrata.SocrataSearchProvider;rdw.azure-westeurope-prod.socrata.com;RDW
+#org.ramadda.plugins.socrata.SocrataSearchProvider;www.dati.friuliveneziagiulia.it;Regione Autonoma Friuli Venezia Giulia
+#org.ramadda.plugins.socrata.SocrataSearchProvider;data.snostat.org;Snohomish County
+
+#org.ramadda.plugins.socrata.SocrataSearchProvider;healthdata.nj.gov;State of New Jersey - Department of Health
+#org.ramadda.plugins.socrata.SocrataSearchProvider;health.data.ny.gov;State of New York Department of Health
+
+
+#org.ramadda.plugins.socrata.SocrataSearchProvider;info.samhsa.gov;Substance Abuse and Mental Health Services Administration (SAMHSA)
+#org.ramadda.plugins.socrata.SocrataSearchProvider;data.taxpayer.net;Taxpayers for Common Sense
+#org.ramadda.plugins.socrata.SocrataSearchProvider;data.austintexas.gov;Travis County
+#org.ramadda.plugins.socrata.SocrataSearchProvider;hdr.undp.org;United Nations Development Program
+#org.ramadda.plugins.socrata.SocrataSearchProvider;data.undp.org;United Nations Development Programme
+#org.ramadda.plugins.socrata.SocrataSearchProvider;www.usaid.gov;USAID
+#org.ramadda.plugins.socrata.SocrataSearchProvider;open.whitehouse.gov;White House
+#org.ramadda.plugins.socrata.SocrataSearchProvider;data.wokingham.gov.uk;Wokingham Borough Council
+

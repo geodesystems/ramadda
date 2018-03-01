@@ -1,0 +1,10 @@
+<outputhandlers>
+  <outputhandler class="org.ramadda.geodata.cdmdata.WmsImageOutputHandler"/>
+  <outputhandler class="org.ramadda.geodata.cdmdata.CdmDataOutputHandler" required="true"/>
+  <outputhandler class="org.ramadda.geodata.cdmdata.GridPointOutputHandler" required="true"/>
+  <outputhandler class="org.ramadda.geodata.cdmdata.LdmOutputHandler"/>
+  <outputhandler class="org.ramadda.repository.output.ServiceOutputHandler" serviceId="geo_nco_ncwa" />
+  <outputhandler class="org.ramadda.repository.output.ServiceOutputHandler" serviceId="geo_cdo_info"/>
+  <outputhandler class="org.ramadda.repository.output.ServiceOutputHandler" serviceId="geo_cdo_seldate"/>
+  <outputhandler class="org.ramadda.repository.output.ServiceOutputHandler" serviceId="geo_h5_ls"/>
+</outputhandlers>

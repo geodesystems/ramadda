@@ -1,0 +1,33 @@
+<types  supercategory="Geoscience">
+
+
+<type name="cdm_radar"  description="Base Radar File" foruser="false" category="Radar Data">
+    <property name="icon" value="/cdmdata/radar.gif"/>
+    <property name="form.todate.show" value="false"/>
+    <column name="station_id"  type="enumerationplus" isindex="true" cansearch="true" canlist="true" searchtype="select" label="Station ID" 
+           properties="/org/ramadda/geodata/cdmdata/resources/level3radar.station.properties"/>
+    <column name="station_name"  type="string"  cansearch="true" canlist="true" label="Station Name" />
+    <column name="station_location"  type="latlon"  canlist="true" label="Station Location" />
+    <column name="product" type="enumerationplus"          isindex="true" cansearch="true" canlist="true" searchtype="select" label="Product"  
+                properties="/org/ramadda/geodata/cdmdata/resources/level3radar.product.properties"/>
+</type>
+
+
+
+<type name="cdm_radar_level3"  description="Level 3 Radar File" super="cdm_radar" handler="org.ramadda.geodata.cdmdata.Level3RadarTypeHandler">
+</type>
+
+
+<type name="cdm_radar_level2" description="Level 2 Radar File" super="cdm_radar" handler="org.ramadda.geodata.cdmdata.Level2RadarTypeHandler">
+</type>
+
+
+<type name="cdm_radar_UniversalFormat"  description="Universal Format Radar File" super="cdm_radar" handler="org.ramadda.geodata.cdmdata.UFRadarTypeHandler">
+</type>
+
+
+<type name="cdm_radar_Dorade"  description="Dorade Radar File" super="cdm_radar" handler="org.ramadda.geodata.cdmdata.DoradeRadarTypeHandler">
+</type>
+
+
+</types>

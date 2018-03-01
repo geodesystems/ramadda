@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<metadata>
+
+    <type name="Data Visualization" id="data.visualization"  foruser="false">
+      <element name="Name" />
+      <element name="Content" />
+      <element name="Sample Image" datatype="file" thumbnail="false"/>
+    </type>
+
+
+</metadata>

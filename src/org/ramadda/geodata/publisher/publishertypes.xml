@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<publishers>
+  <publisher
+     name="RAMADDA Publisher"
+     class="org.ramadda.geodata.publisher.RamaddaPublisher"/>
+</publishers>

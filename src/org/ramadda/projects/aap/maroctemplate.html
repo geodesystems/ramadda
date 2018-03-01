@@ -1,0 +1,138 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="fr" xml:lang="fr" xxxclass="js ext-strict">
+  <head>
+
+<!--
+<properties>
+name=Morroco Meteo Template
+id=maroc
+
+ramadda.template.link.wrapper =<span class="navlink"><a  href="${url}">${label}</a></span>
+ramadda.template.link.separator=&nbsp;|&nbsp;
+
+ramadda.template.userlink.wrapper =<span class="navlink"><a  href="${url}">${label}</a></span>
+ramadda.template.userlink.separator=&nbsp;|&nbsp;
+
+ramadda.template.favorites = <b>Favorites:</b><div class="favorites">${entries}</div>
+ramadda.template.cart = <b>Cart:</b><div class="favorites">${entries}</div>
+
+</properties>
+-->
+
+${imports}
+
+
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>${header.title} - ${title}</title>
+    <link rel="shortcut icon" href="http://www.marocmeteo.ma/files/favicon.ico" type="image/x-icon">
+    <link rel="stylesheet" href="${root}/maroc/main.css" type="text/css">
+    <link rel="stylesheet" href="${root}/maroc/reset-fonts-grids.css" type="text/css">
+<!--
+    <link rel="stylesheet" href="${root}/marochttp://www.marocmeteo.ma/themes/portail2007/css/reset-fonts-grids.css" type="text/css">
+-->
+    <link rel="stylesheet" href="http://www.marocmeteo.ma/themes/portail2007/portail2007.css" type="text/css">
+    <style type="text/css">
+      body {
+      font-family:verdana;
+      text-align:left;
+      }
+.ramadda-menubar {
+   background-image:none;
+}
+.innercontent {
+   padding-left:5px;
+}
+    </style> 
+
+  ${headfinal}
+  </head>
+
+<body style="margin-left:4px; margin-right:4px;" class="yui-skin-sam ext-safari ext-mac" id="ext-gen6">
+  <div class="hdwrap">
+    <div id="hd"> 
+      <div class="yui-g">
+        <div class="yui-g first c1g">
+          <div class="yui-u first c1g-c1">
+            <div id="logo">
+              <a href="http://www.marocmeteo.ma" title="Accueil">
+                <img src="http://www.marocmeteo.ma/themes/portail2007/logo.jpg" alt="Accueil" width="83" height="97">
+              </a>
+            </div>
+          </div>
+          <div class="yui-u c1g-c2">
+            <div id="mainbanner" align="center">&nbsp;</div>
+          </div>
+        </div>
+        <div class="yui-u c2">
+          <form action="http://www.marocmeteo.ma" accept-charset="UTF-8" method="post" id="search-theme-form">
+            <table border="0" cellspacing="0" cellpadding="0" >
+              <tbody>
+                <tr>
+                  <td class="meteo">&nbsp;</td> 
+                  <td class="searchfield">
+                    <script>
+                      function sFieldBlur(field, blur) {
+                      if (blur) {if (field.value=='') {field.value = 'RECHERCHE...';}} else {if (field.value == 'RECHERCHE...') {field.value = '';} else if (field.value == '') {field.value = 'RECHERCHE...';}}}
+                    </script>
+                    <input type="text" maxlength="128" name="search_theme_form_keys" id="edit-search_theme_form_keys" size="19" value="RECHERCHE..." title="Entrez les mots de recherche" class="form-text" onblur="sFieldBlur(this, true)" onfocus="sFieldBlur(this, false)">
+                  </td>
+                  <td class="searchbutton">
+                    <input id="searchbutton" type="image" src="http://www.marocmeteo.ma/themes/portail2007/images/search-loupe.jpg" name="op">
+                  </td>
+                </tr>
+                <tr>
+                  <td colspan="3"  align="center">
+                    <div id="secondary-links" class="" >
+                      <ul class="mm-menu" id="topmenu">
+                        <li class="first menu-1-1-60-active"><a href="http://www.marocmeteo.ma" title="Page d&#39;accueil du portail" class="menu-1-1-60-active active"><span>Accueil</span></a></li>
+                        <li class="menu-1-2-60"><a href="http://www.marocmeteo.ma/fr/sitemap" class="menu-1-2-60"><span>Plan du site</span></a></li>
+                        <li class="last menu-1-3-60"><a href="http://www.marocmeteo.ma/fr/mieux_nous_connaitre" title="Mieux connaître Maroc Météo" class="menu-1-3-60"><span>Maroc Météo</span></a></li>
+                      </ul>
+                    </div>  
+                  </td>
+                </tr>
+            </tbody></table>
+            <input type="hidden" name="form_id" id="edit-search-theme-form" value="search_theme_form">
+          </form>
+        </div>
+      </div>                                             
+    </div> 
+  </div>  
+
+
+
+
+<div style="height: 25px; background:none; text-align:left;  margin-left:5px; color: #3280d5; font-weight: bold;" >
+<table id="header_links" width=100%><tr><td></td><td align=right>${links}</td></tr></table>
+</div>
+
+
+<div id="yui-main" style="border-top:0px #ccc solid;border-left:0px #ccc solid;padding:2px;padding-top:2px;">
+  <div class="ramadda-content" style="min-height:800px;text-align:left;">
+<div style="margin-top:5px;">${entry.header}<div class="innercontent">${content}</div></div>
+  </div>
+</div>
+
+<div id="ft">
+  <div class="secondary-links">
+    <ul class="mm-menu" id="topmenu">
+      <li class="first menu-1-1-60-active"><a href="http://www.marocmeteo.ma" title="Page d&#39;accueil du portail" class="menu-1-1-60-active active"><span>Accueil</span></a></li>
+      <li class="menu-1-2-60"><a href="http://www.marocmeteo.ma/fr/sitemap" class="menu-1-2-60"><span>Plan du site</span></a></li>
+      <li class="last menu-1-3-60"><a href="http://www.marocmeteo.ma/fr/mieux_nous_connaitre" title="Mieux connaître Maroc Météo" class="menu-1-3-60"><span>Maroc Météo</span></a></li>
+    </ul>                                            
+  </div>            
+  <p>  
+    Maroc Météo - Aéroport Casa-Anfa, Face Préfecture Hay Hassani - B.P. 8106 Casa Oasis - Casablanca - Maroc <br>
+    <strong>Tél</strong>. (212) 5 22.65.49.00/65.48.00 - <strong>Fax</strong> : (212) 5 22.91.37.97 - <strong>e-mail</strong> : contact@marocmeteo.ma - Webmaster: DMN/DSI/SI
+  </p> 
+  <hr class="hrfooter">
+  Copyright &copy; 2011 Maroc Météo. Tous drois réservés. 
+  <a href="javascript:void(0)">Conditions légales</a>
+  &nbsp;|&nbsp;
+  <a href="javascript:void(0)">Termes d'utilisation</a>
+  <br>
+</div> 
+
+
+
+</body></html>

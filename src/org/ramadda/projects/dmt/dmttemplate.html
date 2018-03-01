@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html>
+<title>${repository_name} - ${title} </title>
+
+<properties>
+name=Droplet Measurement Technologies
+id=dmt
+ramadda.template.userlink.popup=true
+ramadda.template.link.wrapper =<a href="${url}">${label}</a>
+ramadda.template.link.separator=&nbsp;|&nbsp;
+</properties>
+
+${imports}
+
+<style type="text/css" media="all">
+@import url("${root}/dmt/mentor.min.css");
+</style>
+<link href="${root}/dmt/skin_blue.css" rel="stylesheet">  
+<style type="text/css" media="all">
+  .contents {
+       border-top:1px solid #5783C3;
+       min-height: 400px;
+    }
+</style>
+
+<style type="text/css">
+  .ramadda-links {
+     padding: 3px;
+     padding-left: 8px;
+     padding-right: 8px;
+     border-bottom 1px solid #cccccc;
+   }
+   body {
+     color: black;
+   }
+</style>
+
+${headfinal}
+</head>
+<body>
+<header class="navbar navbar-fixed-top" id="top">
+	<div class="navbar-inner">
+		<div class="container">
+			<a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse"> <span class="btnTitle">Menu</span> <span class="icon-chevron-down icon-white"></span>
+			</a>
+			<a class="brand" href="http://dropletmeasurement.com/" title="Home"> <img src="${root}/dmt/DMT_Logo.png" alt="Home">
+		        </a>
+			<div class="nav-collapse">
+			<ul class="nav"><li class="first leaf "><a href="http://dropletmeasurement.com/" class="active">Home</a></li>
+<li class="collapsed" id="about"><a href="http://dropletmeasurement.com/about-dmt">About</a></li>
+<li class="collapsed"><a href="http://dropletmeasurement.com/products">Products</a></li>
+<li class="leaf"><a href="http://dropletmeasurement.com/applications">Applications</a></li>
+<li class="collapsed"><a href="http://dropletmeasurement.com/resources" title="Resources" id="Resources">Resources</a></li>
+<li class="last leaf"><a href="http://dropletmeasurement.com/contact">Contact</a></li>
+</ul>											</div>
+		</div>
+	</div>
+</header>
+<!-- /#header -->
+
+<div class="ramadda-links">
+<table border="0" cellpadding="0" cellspacing="0" width="100%">
+<tr>
+<td><div>${links}</div></td>
+<td align="right"><div>${userlinks}</div></td>
+</tr>
+</table>
+</div>
+
+<div class="ramadda-content">
+${entry.header}
+<div class="innercontent">${content}</div> 
+</div>
+<footer>
+<section class="footerLower">
+<div class="ramadda-footer">${footer}</div>
+<div class="ramadda-acknowledgement">Powered by <a href="http://ramadda.org">RAMADDA</a></div>
+
+  <div class="container">
+      <div class="footer-lower row-fluid">
+        <div id="block-block-7" class="block block-block span3 copyright">
+  <p>&copy; 2014 Droplet Measurement Technologies, Inc.</p>
+</div><div id="block-mentor-tools-footer-main-menu" class="block block-mentor-tools span6 footNav">
+
+		<a class="first" href="http://dropletmeasurement.com/">Home</a><span>|</span><a href="http://dropletmeasurement.com/node/161">About</a><span>|</span><a href="http://dropletmeasurement.com/node/78">Products</a><span>|</span><a href="http://dropletmeasurement.com/node/160">Applications</a><span>|</span><a href="http://dropletmeasurement.com/node/79">Resources</a><span>|</span><a href="http://dropletmeasurement.com/contact">Contact</a>
+</div>
+<div id="block-block-8" class="block block-block span3 smedia">
+
+    
+  <p><a href="https://www.youtube.com/user/dropletmeasurement" data-rel="tooltip" class="sm-icon sm-icon-youtube" data-original-title="YouTube"></a> <a href="https://twitter.com/DropletMeasure" data-rel="tooltip" class="sm-icon sm-icon-twitter" data-original-title="Twitter"></a> </p>
+</div>  </div>
+		</div>
+	</section>
+	</footer>
+<!-- /#footer -->
+
+<a href="#top" id="peBackToTop" class="label btt disabled"><span class="icon-chevron-up icon-white"></span> </a>
+  
+</body></html>

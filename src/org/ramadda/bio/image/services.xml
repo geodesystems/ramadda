@@ -1,0 +1,101 @@
+<services icon="/dicom/document-film.png" category="Medical Imagery">
+
+
+   <service id="bio_dicom_image" label="Make images from DICOM" command="${service.imagemagick}/convert">
+        <description><![CDATA[Generate an image from a DICOM file using ImageMagick convert]]></description>
+<process_description><![CDATA[<wiki>
+{{description}}
+
+{{imageplayer sort="number:.*_(.*).png"}}
+
+== All Files ==
+{{tree sort="number:.*_(.*).png"}}
+
+
+
+]]></process_description>
+        <arg value="${entry.file}" type="entry"  label="Input DICOM file" primary="true" entryType="bio_dicom"></arg>
+        <arg value="${entry.file.base}_%d.png"/>
+        <output type="type_image" pattern=".*"/>
+    </service>
+
+
+
+
+  <service label="View DICOM attributes" id="bio_dicom_txt"   command="${service.dicom.dcm4che}/dcm2txt" >
+<description><![CDATA[Show attributes contained in a DICOM file]]></description>
+    <arg label="DICOM File" value="${entry.file}" type="entry" entryType="bio_dicom" primary="true"></arg>
+    <output showResults="true" stdout="true"/>
+   </service>
+
+  <service label="View DICOM XML" id="bio_dicom_xml"   command="${service.dicom.dcm4che}/dcm2xml" >
+<description><![CDATA[Run dcm2xml]]></description>
+    <arg label="DICOM File" value="${entry.file}" type="entry" entryType="bio_dicom" primary="true"></arg>
+    <arg value="-X"/>
+    <output type="bio_dicom_xml" pattern=".*\.xml" stdout="true" filename="${entry.file.base}.xml"/>
+   </service>
+
+
+
+   <service id="bio_dicom_makethumbnail" label="Make thumbnail" command="${service.imagemagick}/convert">
+        <description><![CDATA[Generate an image from a DICOM file using ImageMagick convert]]></description>
+        <arg value="${entry.file}" type="entry"  label="Input DICOM file" primary="true" entryType="bio_dicom"></arg>
+        <arg value="${entry.file.base}.png"/>
+        <output type="type_image" pattern=".*"/>
+    </service>
+
+
+   <service id="bio_ome_bfconvert" label="Convert image using bfconvert" command="${service.bfconvert}" icon="/bioimage/ome.png">
+        <description><![CDATA[Generate an image using the <a href="https://www.openmicroscopy.org/site/products/bio-formats">OME Bio-Formats</a> tool bfconvert]]></description>
+<process_description><![CDATA[<wiki>
+{{description}}
+
+{{gallery}}
+
+== All Files ==
+{{tree sort="number:.*_(.*).png"}}
+
+
+]]></process_description>
+<arg value="-no-upgrade"/>
+<arg type="flag" value="-separate" help="Split RGB images into separate channels"/>
+<arg type="flag" value="-merge" help="Combine separate channels into RGB image"/>
+<arg type="flag" value="-expand" help="Expand indexed color to RGB"/>
+<arg type="flag" value="-bigtiff" help="Force BigTIFF files to be written"/>
+<arg type="string" prefix="-series" label="Series" help="Specify which image series to convert"/>
+<arg type="string" prefix="-range" label="Range" help="Specify range of planes to convert (inclusive)"/>
+<arg type="flag" value="-autoscale" help="Automatically adjust brightness and contrast before converting"/>
+<arg type="category" value="Subset"/>
+<arg type="string" prefix="-crop" label="Crop" help="Crop images before converting; argument is 'x,y,w,h'"/>
+<arg type="string" prefix="-channel" label="Channel" help="Only convert the specified channel (indexed from 0)"/>
+<arg type="string" prefix="-z" label="Z" help="Only convert the specified Z section (indexed from 0)"/>
+<arg type="string" prefix="-timepoint" label="Time point" help="Only convert the specified timepoint (indexed from 0)"/>
+<arg type="category" value="Output file"/>
+<arg type="enumeration" name="imageformat" label="Image type" values="png,gif,jpg,tiff" include="false" default="png"/>
+<arg type="string" include="false" name="suffix" label="Pattern suffix" help="%s series index&lt;br&gt;%nseries name&lt;br&gt;%c channel index&lt;br&gt;%w channel name&lt;br&gt;%z Z index&lt;br&gt;%t T index&lt;br&gt;%A acquisition timestamp"/>
+
+<arg value="${entry.file}" type="entry"  label="Input image file" primary="true" entryType="bio_dicom,bio_ome_tiff"></arg>
+<arg value="${file}" file="${entry.file.base}${suffix}.${imageformat}"/>
+<output type="type_image" pattern=".*"/>
+</service>
+
+
+
+
+
+   <service id="bio_ome_xml" label="Extract ome metadata" command="${service.showinf}" icon="/bioimage/ome.png">
+        <description><![CDATA[Extract OME metadata xml from an OME-TIFF using the <a href="https://www.openmicroscopy.org/site/products/bio-formats">OME Bio-Formats</a> tool showinf]]></description>
+<arg value="-omexml"/>
+<arg value="-nopix"/>
+<arg value="-novalid"/>
+<arg value="-no-upgrade"/>
+<arg value="${entry.file}" type="entry"  label="OME Tiff file" primary="true" entryType="bio_ome_tiff"></arg>
+    <output type="file" pattern=".*\.xml" stdout="true" filename="${entry.file.base}.xml"/>
+</service>
+
+
+
+
+
+
+</services>

@@ -1,0 +1,43 @@
+
+RAMADDA has quite a number of plugins available
+
+adminsql.properties: This enables the Admin-SQL form for performing SQL queries in the database
+
+blogplugin.jar: Defines Weblog and and Blog entry types
+
+calendarplugin.jar: Defines Calendar and CalendarEntry types
+
+chatplugin.jar: Defines chat room types
+
+datascripttypes.xml: Enables the jython based scripting entry for geodata
+scripttypes.xml: Enables the jython based scripting entry 
+
+dbplugin.jar: A malleable database entry for strucutred information, e.g., todo list, notes, etc.
+
+feedplugin.jar: Supports views of RSS and ATOM feeds
+
+gdataplugin.jar: Access to google blogger, docs, web albums and sites
+
+mapplugin.jar: Not done yet but will be an interactive end user creatable map
+
+monitorexec.properties: Allows the monitor to execute programs on the server
+
+multisearchplugin.jar: Allows you to do a search and see the results across Google, Bing, etc.
+
+notetypes.xml: Adds a simple Note entry type
+
+ontologyplugin.jar: Support for ontologies
+
+pollplugin.jar: A quick way to poll a group of users to choose dates, etc.
+
+slideshowplugin.jar: A javascript based slideshow
+
+twittersearchplugin.jar: One or more real time twitter search feeds
+
+weatherplugin.jar: Shows a current weather report based on a zip code
+
+wikiplugin.jar: Wiki pages
+
+wmsplugin.jar: Supports ramadda views of external WMS servers
+
+

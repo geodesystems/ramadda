@@ -1,0 +1,160 @@
+<html>
+<head>
+<title>Climate Model Data Services</title>
+<category:Data>
+</head>
+
+<body>
+<div class="ramadda-section">
+<h2>Climate Model Data Services</h2>
+
+Several services have been implemented for comparing climate model experiment data.
+
+<h2>Set up</h2>
+
+<ul>
+<li>Begin by installing RAMADDA.  It can be downloaded <a href="http://ramadda.org/repository/alias/release/">here</a>.
+You can choose several different databases (e.g. MySQL) for the backend.  See <a href="http://ramadda.org/repository/userguide/database.html">
+http://ramadda.org/repository/userguide/database.html</a> for more information.
+<li>You will also need to download, build, and install these additional packages:
+   <ul>
+   <li>netCDF C library:  <a href="http://www.unidata.ucar.edu/downloads/netcdf/index.jsp">http://www.unidata.ucar.edu/downloads/netcdf/index.jsp</a>
+   <li>Climate Data Operators: <a href="https://code.zmaw.de/projects/cdo">https://code.zmaw.de/projects/cdo</a>
+   <li>NCAR Command Language (NCL) with OPeNDAP enabled:
+   <a href="http://www.ncl.ucar.edu/Download/">http://www.ncl.ucar.edu/Download/</a> (binary release recommended) 
+   <li>ImageMagick: <a href="http://www.imagemagick.org/script/binary-releases.php">http://www.imagemagick.org/script/binary-releases.php</a>
+   </ul>
+   <p>
+   Be sure to test the installations using the routines supplied with each package.
+</ul>
+
+<h2>Configuration</h2>
+
+<ul>
+<li><b>Disk Space:</b>  RAMADDA will use a directory on disk to store the intermediate files and output images from the
+model comparisons.  This will need to hold several days of processed data, so be sure it is large enough (e.g. 500 GB or more).  This
+does not have to be local to the machine, but must be accessible (e.g. NFS mount).
+<li><b>RAMADDA Resources</b>: You can redirect certain resources from their defaults.  (See the
+<a href="http://ramadda.org/repository/userguide/readonly.html">RAMADDA User's Guide</a> for more info)
+<p>
+
+<b>Disk Resources:</b>
+<p>
+<pre>
+ramadda.storage.storagedir=/mnt/ramaddaShares/storage
+ramadda.storage.entriesdir=/mnt/ramaddaShares/entries
+ramadda.storage.uploaddir=/mnt/ramaddaShares/uploads
+ramadda.storage.processdir=/mnt/ramaddaShares/process
+</pre>
+<p>
+
+<b>Program paths:</b>  Set the paths to CDO, NCL and ImageMagick's convert
+<p>
+
+<pre>
+cdo.path=/usr/local/bin/cdo
+ncl.ncarg_root=/usr/local
+convert.path=/usr/bin/convert
+</pre>
+<p>
+</ul>
+
+
+<h2>Data Harvesting</h2>
+
+Once you have set up your RAMADDA server as above, you can start populating the data base with your model output. By
+convention, the file naming conventions for your climate model output should follow the CMIP5 file naming convention.
+Each climate model file needs to have metadata associated with it.  At a minimum, it needs metadata for:
+
+<ul>
+<li>Model
+<li>Experiment
+<li>Ensemble member
+<li>Variable
+</ul>
+<p>
+
+During harvesting, these can be set automatically (see below).  Additional fields can be added by defining a new data type.
+<p>
+
+Each climate model file entry is held in a Climate Model Collection which
+defines the temporal extent of the data (e.g. Monthly, Daily, 4xDaily).  This is set when you create the collection.  Currently,
+the model comparisons only work for monthly output.
+
+<h3>How to harvest Climate Model data into RAMADDA</h3>
+
+<ol>
+<li>Have the data you wish to harvest accessible (e.g. on an NFS mount) on the RAMADDA server.
+<li>Log into your RAMADDA server with an administrator account.
+<li>Bring up your RAMADDA server interface in a web browser.
+<li>Create a new Climate Collection entry to hold the harvested data.
+  <ul>
+  <li>Click the dropdown arrow and select the <b>Pick a Type...</b> menu item.
+  <li>Find the Climate Data Collection item in the list, or the specfic type of
+      Climate Collection you want (e.g. NOAA FACTS Climate Data Collection).
+  <li>Give the collection a name, and optionally a description.  Also set the time 
+      frequency of the collection (e.g. Monthly, Daily)
+  <li>Add the collection.
+  </ul>
+<li>Click on the cog wheel on the page and select the <b>Admin</b> menu item.
+<li>You must first make the directory where the climate files are stored accessible to the RAMADDA server.
+From the Admin interface:
+   <ul>
+   <li>Select the <b>Settings</b> tab.
+   <li>Expand the <b>Access</b> section on the <b>Settings</b> page.
+   <li>In the <b>File system access</b> box, type in the top level directory or 
+       directories where the files reside.  
+   </ul>
+<li>From the Admin interface, select the <b>Harvesters</b> tab.
+<li>Click the "New Harvester" button.
+  <ul>
+  <li>Give the new harvester a name.
+  <li>Select the </b>Server File System</b> or a particular type of harvester.
+  <li>Click the Create button to create the harvester.
+  </ul>
+<li>Fill out the fields for the new harvester:
+  <ul>
+  <li>Enter the top level directory for the files you want to ingest. 
+  <li>Set the file pattern for your files, using a regular expression to indicate the
+      positions for the metadata fields.  For example, the NOAA FACTS pattern would look like:<br>
+      <p>
+      .*/(variable:[^_]+)_(model:[^_]+)_(experiment:.*)_(ensemble:ens..|mean|sprd|clim)(_([^_]+))?.nc
+      <p>
+      The C20C+ pattern would look like:
+      <p>
+      .*/(variable:[^_]+)_([^_]+)_(model:[^_]+)_(experiment:[^_]+)_(subscenario:[^_]+)_(subexperiment:[^_]+)_(ensemble:[^_]+)(_([^_.]+))?\.nc
+      <p>
+   <li>Set the <b>Base Group</b> to be the Climate Collection that you created above.
+   <li>Set the <b>Entry type</b> to the type of entry you want (e.g. Basic Climate Model File, 
+       NOAA FACTS Climate Model File) 
+   <li>Do not check the <b>Move file to storage</b> checkbox!
+   <li>Check the <b>Add full metadata</b> checkbox.
+   <li>Set the User to one with admin privileges.
+   <li>Click the <b>Change</b> button to save your options.
+   </ul>
+<li>Click on the <b>Harvesters</b> tab to view the list of harvesters.  Your new one should be listed there.
+<li>Click the <b>Start</b> link to start the harvester.  You can reload the page occassionally to view the
+    harvester progress.
+<li>After the harvester has finished importing the metadata, navigate to the climate collection entry you created.  This
+    should show the search interface.  If nothing shows in the menus, restart the server and reload the page.
+</ol>
+
+<h2>Using the Model Comparison tools</h2>
+
+To use the Monthly Climate Model Comparison API, direct your browser to:
+<p>
+<ul>
+http://&lt;your server:port&gt;/repository/model/compare
+</ul>
+<p>
+Your climate collection should be listed under the collections.  To go directly to that collection, you can use:
+<ul>
+http://&lt;your server:port&gt;/repository/model/compare?collection=&lt;collection id&gt;
+</ul>
+<p>
+where &lt;collection id&gt; is the entry id of the Climate Model Collection.
+
+
+</body>
+</html>
+

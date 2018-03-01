@@ -1,0 +1,11 @@
+# 
+#any line beginning with '#' is a comment or a property
+#Define the column delimiter
+#delimiter=,
+#
+#define the fields
+#fields=latitude[unit="degrees"],longitude[unit="degrees"],date[type="date" format="yyyy/MM/dd"],value[unit="some unit"]
+#latitude, longitude, date, value
+#Here is the data
+40.0,-107,2012/10/12,  -0.931363
+45.0,-110.0,2012/10/12, -0.930391

@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<types>
+
+    <type
+     description="Test data"
+     handler="org.ramadda.data.services.PointTypeHandler"
+     name="type_point_test"
+     super="type_point">
+
+         <property name="record.file.class" value="org.ramadda.data.point.text.CsvFile"/>
+
+         <property name="record.properties">
+delimiter=
+position.required=false
+skiplines=1
+dateformat=yyyy/MM/dd HH:mm:ss
+fields=date[type=&quot;string&quot; isdate=&quot;true&quot;],time[type=&quot;string&quot; istime=&quot;true&quot;],value[searchable=&quot;true&quot; chartable=&quot;true&quot; unit=&quot;some unit&quot;]
+     </property>
+
+      </type>
+
+</types>

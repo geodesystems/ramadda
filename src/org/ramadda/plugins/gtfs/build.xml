@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project basedir="../../../../../" default="plugin" name="gtfs plugin">
+    <target name="plugin">
+      <property name="plugin_extra_classes" value="${basedir}/src/org/ramadda/plugins/gtfs/lib/gtfs-realtime-bindings.jar"/>
+      <property name="plugin" value="gtfs"/>
+      <property name="plugin_group" value="miscplugins"/>
+      <ant antfile="${basedir}/build.xml" target="plugin_build"/>
+    </target>
+</project>

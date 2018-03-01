@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<metadata>
+
+  <handler category="GDATA">
+
+    <type name="Last Modified By" id="gdata.lastmodifiedby" searchable="false" browsable="false">
+      <element name="Name" />
+      <element name="Email" datatype="email"/>
+    </type>
+
+    <type name="Author" id="gdata.author" searchable="false" browsable="false">
+      <element name="Name" />
+      <element name="Email" datatype="email"/>
+    </type>
+
+    <type name="Contributor" id="gdata.contributor" searchable="false" browsable="false">
+      <element name="Name" />
+      <element name="Email" datatype="email"/>
+    </type>
+
+    <type name="Participant" id="gdata.participant" searchable="false" browsable="false">
+      <element name="Name" />
+      <element name="Email" datatype="email"/>
+    </type>
+
+    <type name="Location" id="gdata.location" searchable="false" browsable="false">
+      <element name="Location" />
+    </type>
+
+    <type name="Rights" id="gdata.rights" searchable="false" browsable="false">
+      <element name="Rights" />
+    </type>
+
+  </handler>
+
+</metadata>

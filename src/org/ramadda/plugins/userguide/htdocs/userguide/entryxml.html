@@ -1,0 +1,227 @@
+<html>
+<head>
+<title>Entry Xml Import/Export Format</title>
+  <link rel="stylesheet" type="text/css" href="./default.css" title="Style">
+
+</head>
+
+<body>
+<div class="ramadda-documentation">
+<table width=100% cellspacing=0 cellpadding=0 ><tr><td width=30%>
+<a href="entrytypes.html"><img src="images/PreviousArrow.gif" border="0"   alt="Previous: Defining New Entries" title="Previous: Defining New Entries"></a> <a href="harvesters.html"><img src="images/NextArrow.gif" border="0"   alt="Next: Harvesters" title="Next: Harvesters"></a>  <a href="toc.html#entryxml.html"><img src="images/TOCIcon.gif" border="0"   alt="Table of contents" title="Table of contents"></a>
+</td>
+<td width=40% align=center>
+<div class="ramadda-page-title">RAMADDA User Guide</div>
+</td>
+<td width=30%>&nbsp;</td>
+</tr></table>
+<div class="ramadda-page-heading">12.2 Entry Xml Import/Export Format</div>
+
+<style type="text/css">
+pre {
+    margin-left:15px;
+}
+</style>
+
+<div style="margin-left:20px;">
+
+
+
+RAMADDA supports a simple import/export xml format. 
+
+
+<pre>
+ &lt;entries&gt;
+  &lt;entry name="test.png" 
+            description=""  
+            type="file" 
+            id="0" 
+            file="test.png"  
+            parent="&lt;some parent entry id&gt;" 
+            south="-7.926" 
+            west="-198.358"
+            north="71.864" 
+            east="-3.950"
+            fromdate="2008-08-19 16:01:00 GMT"
+            todate="2008-08-19 16:01:00 GMT" 
+
+&lt;/entries&gt;
+</pre>
+
+A simple way to see the example entry xml is to create a folder or file entry  in RAMADDA. 
+Set its description, time, spatial bounds, etc and add a number of properties to it.
+Or create a tree of folders and files.
+Then do File->Export. Uzip the .zip file and look at the entries.xml
+
+
+
+<ul>
+<li> The type attribute is the data types available in RAMADDA. 
+<li> The parent is the actual parent id in RAMADDA or may be an id of another entry defined in the XML file.
+<li> The fromdata, todate, south, west, east, north and description are all optional. 
+<li> The id attribute will not be the actual id of the entry but allows you to reference the entries elsewhere. For example, you
+could create a folder entry and then another entry that is a child of the folder:
+<pre>
+ &lt;entries&gt;
+  &lt;entry name="Some folder" 
+            id="somedummyid0"
+            parent="&lt;some parent entry id&gt;" 
+            type="group"  /&gt;
+
+  &lt;entry name="test.png" 
+            description=""  
+            type="file" 
+            id="somedummyid1" 
+            file="test.png"  
+            parent="somedummyid0"  /&gt;
+&lt;/entries&gt;
+</pre>
+
+
+</ul>
+
+
+<a name="import"></a><div class="ramadda-page-heading">12.2.0 Importing Entries</div> 
+
+
+Here is a simple <a href="examples/test.zip">test.zip</a> entries file that you can import. It contains a single file entry defined in an entries.xml file and its associated data file (test.txt). In your RAMADDA, go to File->Import Entries menu and you can upload a .zip file or the entries.xml directly.
+
+
+
+
+<a name="metadata"></a><div class="ramadda-page-heading">12.2.1 Metadata</div> 
+
+The <a href="examples/folder.xml">folder.xml</a> example just defines a set of folders with associated metadata. 
+
+Inside the entry tag you can have any number of metadata tags. You define the type and the attribute values.
+
+Note: This only works for the more simple metadata elements like tag, personnel, etc. The more complex
+ones with nested structured would require knowing RAMADDA's internal (and rather ill thought out) metadata storage model.
+
+A simple metadata xml tag looks like:
+
+<pre>
+<blockquote><pre>
+&lt;entry ...&gt;
+...
+&lt;metadata <span class="xmlattr">type</span>="some type&quot; <span class="xmlattr">attr1</span>="atribute 1 value&quot; <span class="xmlattr">attr2</span>="attribute 2 value&quot; .../&gt;
+</pre></blockquote>
+</pre>
+
+So to add a "tag" metadata use the xml:
+<pre>
+<blockquote><pre>
+    &lt;metadata <span class="xmlattr">inherited</span>="false&quot; <span class="xmlattr">type</span>="enum_tag&quot; <span class="xmlattr">attr1</span>="TAG VALUE&quot;&gt;
+</pre></blockquote>
+</pre>
+
+
+If you have values that don't work as XML attributes due to their content or their length 
+you can include them as tags.  The encoded="false" says this is unencoded text. The 
+default is encoded=true which implies the text is base64 encoded (see below).
+
+<pre>
+<blockquote><pre>
+   &lt;metadata <span class="xmlattr">inherited</span>="true&quot; <span class="xmlattr">type</span>="some type&quot;&gt;
+      &lt;attr <span class="xmlattr">index</span>="1&quot; <span class="xmlattr">encoded</span>="false&quot;&gt;<span class="xmlcdata">&lt;![CDATA[value 1]]&gt;</span>&lt;/attr&gt;
+      &lt;attr <span class="xmlattr">index</span>="2&quot; <span class="xmlattr">encoded</span>="false&quot;&gt;<span class="xmlcdata">&lt;![CDATA[value 2]]&gt;</span>&lt;/attr&gt;
+      ...
+    &lt;/metadata&gt;
+</pre></blockquote>
+</pre>
+
+
+
+A simple way to see the metadata xml is to create a folder or other entry  in RAMADDA. Add a number of properties to it then do File->Export. Uzip the .zip file and look at the entries.xml
+Note: the contents of the attr tags are CDATA blocks of base64 encoded text. 
+Base64 encoding of the text is the default and is what is expected when RAMADDA ingests this XML unless 
+you have encoded=false.
+
+
+<pre>
+<blockquote><pre>
+   &lt;metadata <span class="xmlattr">inherited</span>="true&quot; <span class="xmlattr">type</span>="some type&quot;&gt;
+      &lt;attr <span class="xmlattr">index</span>="1&quot;&gt;<span class="xmlcdata">&lt;![CDATA[TlNGLU9QUA==]]&gt;</span>&lt;/attr&gt;
+      &lt;attr <span class="xmlattr">index</span>="2&quot;&gt;<span class="xmlcdata">&lt;![CDATA[SW5jcmV=]]&gt;</span>&lt;/attr&gt;
+      ...
+    &lt;/metadata&gt;
+</pre></blockquote>
+</pre>
+
+
+
+<a name="configuration"></a><div class="ramadda-page-heading">12.2.2 Harvest Configuration</div> 
+When <a href="harvesters.html">harvesting files</a> or configuring <a href="dataingest.html">Server Side Files</a> RAMADDA will look on the file system for an entry XML configuration file to use as a template when creating entries for the files and folders being ingested or displayed. For a given file RAMADDA will look for the following entry xml file in the file's parent directory:
+<pre>
+.&lt;filename&gt;.ramadda.xml
+.dir.ramadda.xml
+.file.ramadda.xml
+.ramadda.xml
+</pre>
+
+
+So if you had:
+<pre>
+dir1
+     file1.txt
+     file2.txt
+dir2
+</pre>
+
+
+The file types and metadata could be configured with:
+<pre>
+.dir1.ramadda.xml
+dir1
+     file1.txt
+     .file1.txt.ramadda.xml
+     file2.txt
+     .file2.txt.ramadda.xml
+.dir2.ramadda.xml
+dir2
+</pre>
+
+You could also place a single .ramadda.xml as a sibling file of dir1 and dir2 to configure their types.
+
+
+A directory can also contain its own entry xml file:
+
+<pre>
+.this.ramadda.xml 
+</pre>
+
+
+You could also have  .this.ramadda.xml for each directory:
+<pre>
+dir1
+     .this.ramadda.xml
+     file1.txt
+     file2.txt
+dir2
+     .this.ramadda.xml
+</pre>
+
+
+
+</div>
+<p>
+<div  class="childlist" ><table  width="100%" ><tr  valign="top" ><td  width="10%"  align="right" ><span  class="childlist-level" >
+12.2.0&nbsp;
+</span></td><td><a  class="childlist-link"  href="entryxml.html#import" >
+Importing Entries
+</a><br></td></tr><tr  valign="top" ><td  width="10%"  align="right" ><span  class="childlist-level" >
+12.2.1&nbsp;
+</span></td><td><a  class="childlist-link"  href="entryxml.html#metadata" >
+Metadata
+</a><br></td></tr><tr  valign="top" ><td  width="10%"  align="right" ><span  class="childlist-level" >
+12.2.2&nbsp;
+</span></td><td><a  class="childlist-link"  href="entryxml.html#configuration" >
+Harvest Configuration
+</a><br></td></tr></table></div>
+<p>&nbsp;<p>
+<a href="entrytypes.html"><img src="images/PreviousArrow.gif" border="0"   alt="Previous: Defining New Entries" title="Previous: Defining New Entries"></a> <a href="harvesters.html"><img src="images/NextArrow.gif" border="0"   alt="Next: Harvesters" title="Next: Harvesters"></a>  <a href="toc.html#entryxml.html"><img src="images/TOCIcon.gif" border="0"   alt="Table of contents" title="Table of contents"></a>
+<p>
+</div>
+</body>
+</html>
+

@@ -1,0 +1,51 @@
+<types  supercategory="Geoscience">
+
+  <type name="borehole_site"  description="Borehole Site" handler="org.ramadda.repository.type.ExtensibleGroupTypeHandler" category="Borehole">
+     <property name="icon" value="/borehole/well.gif"/>
+     <property name="form.file.show" value="false"/>
+     <property name="form.url.show" value="false"/>
+     <property name="form.datatype.show" value="false"/>
+     <property name="form.altitude.show" value="false"/>
+     <property name="form.altitude.show.top" value="false"/>
+     <column name="short_name"   label="Short Name"    cansearch="true"/>
+     <column name="status"  type="enumerationplus"  values="file:/org/ramadda/geodata/borehole/statuses.txt" label="Status"/>
+     <column name="location" label="Location" />
+     <wiki><![CDATA[
+{{noheading}}
+<table width="100%">
+<tr valign=top>
+<td width="50%">
+<div style="max-height: 400px; overflow-y: auto;">
+{{description wikify="true"}}
+</div>
+
+<table class="formtable">
+{{resource row.label="URL:"  message=""}}
+{{resource row.label="URL:"  message=""}}
+{{field name="short_name" row.label="Site ID"}}
+{{field name="status" row.label="Status:"}}
+{{field name="location" row.label="Location:"}}
+</table>
+
+<p>
+{{tree message="" details="false" prefix="==All Sub-Folders =="}}
+
+
+</td>
+<td width="50%">
+{{image src="::*" message="" width="300"}}
+<p>
+{{mapentry message="" width="300" prefix="==Location=="}}
+
+</td></tr>
+</table>
+
+
+]]>
+</wiki>
+
+   </type>
+
+
+
+</types>

@@ -1,0 +1,27 @@
+<types>
+
+  <type name="faq"  description="FAQ" handler="org.ramadda.plugins.faq.FaqTypeHandler" category="Information">
+     <property name="icon" value="/faq/faq.png"/>
+     <property name="form.description.rows" value="5"/>
+     <property name="form.area.show" value="false"/>
+     <property name="form.date.show" value="false"/>
+     <property name="form.resource.show" value="false"/>
+     <property name="form.datatype.show" value="false"/>
+     <column name="showlink" type="boolean" default="true" label="Show Entry Links" cansearch="false" showinhtml="true"/>
+  </type>
+
+
+  <type name="faqentry"  description="FAQ Entry" handler="org.ramadda.plugins.faq.FaqEntryTypeHandler" category="Information" foruser="false">
+     <property name="icon" value="/faq/question-mark.jpg"/>
+     <property name="form.name.label" value="Question"/>
+     <property name="form.description.label" value="Answer"/>
+     <property name="form.description.rows" value="5"/>
+     <property name="form.area.show" value="false"/>
+     <property name="form.date.show" value="false"/>
+     <property name="form.resource.show" value="false"/>
+     <property name="form.datatype.show" value="false"/>
+     <column name="category" iscategory="true" type="string" label="Category" cansearch="true" showinhtml="true"/>
+</type>
+
+
+</types>

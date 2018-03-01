@@ -1,0 +1,32 @@
+
+<api handler="org.ramadda.repository.search.SpecialSearch" id="biblio">
+
+<!--The search form label -->
+      <property name="label" value="Bibliography Search"/>
+      <property name="searchopen" value="true"/>
+
+<!--What tabs to display results in -->
+      <property name="tabs" value="list"/>
+
+<!--Add these metadata search elements to the search form -->
+<!--
+    <property name="metadatatypes" value="above_monitoring_type,above_site_equipment,above_organization_sponsor"/>
+
+-->
+
+<!--The entry point. This corresponds to the below API entry -->
+      <property name="searchurl" value="/biblio/search"/>
+      <property name="initsearch" value="true"/>
+      <property name="form.area.show" value="false"/>
+      <property name="form.date.show" value="true"/>
+
+<!--The entry type to search for -->
+      <property name="type" value="biblio"/>
+
+
+<!-- None of the API entry points defined below require admin privileges -->
+      <property name="admin" value="false"/>
+
+      <api request="/biblio/search"    method="processSearchRequest" toplevel="false" name="Search Bibliography"/>
+
+</api>

@@ -1,0 +1,5 @@
+<outputhandlers>
+  <outputhandler class="org.ramadda.geodata.gps.GpsOutputHandler" name="GPS"/>
+  <outputhandler  class="org.ramadda.repository.output.ServiceOutputHandler" serviceId="gps.teqc.torinex"/>
+  <outputhandler  class="org.ramadda.repository.output.ServiceOutputHandler" serviceId="gps.teqc.qc"/>
+</outputhandlers>

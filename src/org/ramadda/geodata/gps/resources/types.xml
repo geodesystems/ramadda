@@ -1,0 +1,77 @@
+<types  supercategory="Geoscience">
+
+
+  <type name="project_gps"  description="GPS File" foruser="false" category="GPS Data"  handler="org.ramadda.geodata.gps.GpsTypeHandler">
+     <property name="location.format" value="####0.00000000"/>
+     <property name="icon" value="/gps/gps.png"/>
+     <property name="form.datatype.show" value="false"/>
+     <property name="form.altitude.show" value="false"/>
+     <property name="form.altitude.show.top" value="false"/>
+     <column name="format" label="Format"  type="enumerationplus"   values="file:/org/ramadda/geodata/gps/resources/gps_equipment.txt"/>
+     <column name="site_code" label="Site Code"  type="enumerationplus" />
+     <column name="antenna_type" label="Antenna"  type="enumerationplus" />
+     <column name="antenna_height" label="Antenna Height"  type="double" suffix="meters"/>
+   </type>
+
+  <type name="project_gps_rinex"  description="RINEX File" category="GPS Data" pattern="(.*\.obs|.*\.rinex|.*\.\d\do|.*\.o)"
+        super="project_gps">
+     <property name="icon" value="/gps/unavco.png"/>
+   </type>
+
+  <type name="project_gps_raw"  description="Raw GPS File" category="GPS Data" pattern="(.*/GPS/Raw/T?\d+.*|.*\.tps$|.*\.t\d\d|.*\.T\d\d)" super="project_gps">
+  </type>
+
+  <type name="gps_solution"  description="GPS Solution" category="GPS Data" foruser="false">
+     <property name="location.format" value="####0.00000000"/>
+     <property name="form.datatype.show" value="false"/>
+     <property name="form.altitude.show" value="true"/>
+     <property name="form.altitude.show.top" value="false"/>
+     <column name="site_code" label="Site Code"  type="enumerationplus" />
+     <column name="utm_x" label="UTM X"  type="double"/>
+     <column name="utm_y" label="UTM Y"  type="double"/>
+     <column name="reference_frame" label="Reference Frame"  type="enumerationplus"/>
+     <column name="itrf_x" label="X"  type="double"/>
+     <column name="itrf_y" label="Y"  type="double"/>
+     <column name="itrf_z" label="Z"  type="double"/>
+  </type>
+
+  <type name="gps_solution_opus"  super="gps_solution" description="OPUS Solution" xcategory="GPS Data" pattern=".*\.opus"
+        handler="org.ramadda.geodata.gps.OpusTypeHandler" >
+     <property name="icon" value="/gps/tux.png"/>
+   </type>
+
+  <type name="gps_solution_csrs"    super="gps_solution" description="CSRS Solution" xcategory="GPS Data" 
+        handler="org.ramadda.geodata.gps.SolutionTypeHandler">
+     <property name="icon" value="/gps/canada.png"/>
+  </type>
+
+
+  <type name="project_gps_controlpoints"  description="Control Points File" category="GPS Data">
+     <property name="icon" value="/icons/csv.png"/>
+  </type>
+
+  <type name="project_gps_trimble_vce"  description="Trimble Project File" category="GPS Data" pattern=".*\.vce"
+        >
+     <property name="icon" value="/gps/trimble.png"/>
+   </type>
+
+  <type name="project_gps_trimble_zip"  description="Trimble Business Center zip" category="GPS Data" pattern=".*\.tbc.*"
+        >
+     <property name="icon" value="/gps/trimble.png"/>
+   </type>
+
+
+  <type name="project_gps_folder"  description="GPS Folder" handler="org.ramadda.repository.type.ExtensibleGroupTypeHandler" category="GPS Data">
+     <property name="icon" value="/gps/transmit_blue.png"/>
+     <wiki><![CDATA[
+{{description wikify="true"}}
+
+{{map  width="600"  height="500"  listentries="true"  details="false" level="2" message=""}}
+
+==Links ==
+{{tree}}
+]]>
+</wiki>
+</type>
+
+</types>

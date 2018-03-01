@@ -1,0 +1,11 @@
+#
+#fields=Site_Id[ type="string"   pattern="ID:\s(.*)ARGOS:"  ], Latitude[ pattern="Lat:\s(.*)Lon:"  ], Longitude[ pattern="Lon:\s(.*)Elev:"  ], Elevation[pattern="Elev:(.*)"  ], value
+#
+#
+#Year: 2011  Month: 02  ID: KMS  ARGOS: 21364  Name: Kominko-Slade       
+#Lat: 79.47S  Lon: 112.11W  Elev: 1801m
+#
+1
+2
+3
+4

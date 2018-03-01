@@ -1,0 +1,46 @@
+<types supercategory="Science and Education">
+
+  <type name="edu_course"  description="Course" category="EDU"  handler="org.ramadda.repository.type.ExtensibleGroupTypeHandler" metadata="edu_instructor,enum_tag,content.keyword">
+     <property name="icon" value="/edu/books-stack.png"/>
+     <property name="form.resource.show" value="false"/>
+     <property name="form.datatype.show" value="false"/>
+     <property name="form.area.show" value="false"/>
+     <property name="form.date.show" value="true"/>
+     <property name="form.location.show" value="true"/>
+     <column name="course_id" label="Course ID"   cansearch="true" />
+     <column name="topic" type="enumerationplus" label="Topic"   cansearch="true" />
+     <column name="times" label="Times" rows="5"  size="2000"  />
+     <column name="building" label="Building"  type="enumerationplus" cansearch="true" />
+     <column name="room" label="Room #"  type="enumerationplus" cansearch="true" />
+     <column name="prerequisites" label="Prerequisites" rows="5"  size="2000"  cansearch="true" />
+     <xwiki><![CDATA[]]></xwiki>
+   </type>
+
+
+  <type name="edu_department"  description="Department" category="EDU"  handler="org.ramadda.repository.type.ExtensibleGroupTypeHandler" metadata="enum_tag,content.keyword">
+     <property name="icon" value="/edu/users.png"/>
+     <property name="form.file.show" value="false"/>
+     <property name="form.datatype.show" value="false"/>
+     <property name="form.area.show" value="false"/>
+     <property name="form.location.show" value="true"/>
+     <xwiki><![CDATA[
+]]>
+</xwiki>
+   </type>
+
+  <type name="edu_meeting"  description="Meeting" category="EDU"  handler="org.ramadda.repository.type.ExtensibleGroupTypeHandler">
+     <property name="icon" value="/edu/group.png"/>
+     <property name="form.resource.show" value="false"/>
+     <property name="form.datatype.show" value="false"/>
+     <property name="form.todate.show" value="false"/>
+     <property name="form.area.show" value="false"/>
+     <property name="form.location.show" value="true"/>
+     <column name="topic" label="Topic"  size="1000"  cansearch="true" />
+     <column name="location" label="Location"  size="1000"  cansearch="true" />
+     <column name="participants" label="Participants"  size="5000" rows="5"  cansearch="true" />
+     <wiki><![CDATA[
+]]>
+</wiki>
+   </type>
+
+</types>

@@ -1,0 +1,64 @@
+<html>
+<head>
+<title>Backups</title>
+  <link rel="stylesheet" type="text/css" href="./default.css" title="Style">
+
+</head>
+
+<body>
+<div class="ramadda-documentation">
+<table width=100% cellspacing=0 cellpadding=0 ><tr><td width=30%>
+<a href="adminmisc.html"><img src="images/PreviousArrow.gif" border="0"   alt="Previous: Miscellaneous Admin Settings" title="Previous: Miscellaneous Admin Settings"></a> <a href="remoteservers.html"><img src="images/NextArrow.gif" border="0"   alt="Next: Registry Services" title="Next: Registry Services"></a>  <a href="toc.html#backups.html"><img src="images/TOCIcon.gif" border="0"   alt="Table of contents" title="Table of contents"></a>
+</td>
+<td width=40% align=center>
+<div class="ramadda-page-title">RAMADDA User Guide</div>
+</td>
+<td width=30%>&nbsp;</td>
+</tr></table>
+<div class="ramadda-page-heading">14.10 Backups</div>
+
+<style type="text/css">
+pre {
+    margin-left:15px;
+}
+</style>
+
+<div style="margin-left:20px;">
+
+
+You should probably run backups of the content  stored in your RAMADDA server.
+There are two things that need to be backed up: the files managed by RAMADDA and the database.
+<p>
+
+All of RAMADDA's files are stored in the <a href="installing.html#directory">repository home directory</a> and that should be backed up. 
+
+<p>
+
+If you are running with the built in Java Derby database then all of the database files will be in the "derby" subdirectory of the repository home directory. If you are running with mysql or postgres then you need to backup wherever you have your database store.
+<p>
+You can also take a database agnostic snapshot of the RAMADDA database. Go to the Admin-&gt;Maintenance page and press the "Export Database" button. This may take a while depending on the size of the database but RAMADDA will write out a timestamped ".rdb" (RAMADDA DB) file into home/backups directory. 
+<p>
+You can use this database to recreate your RAMADDA on another machine though you will also have to copy the files over. 
+To load this database start up RAMADDA as usual but also pass in as a command line argument:<pre>
+java ...  -load &lt;the .rdb file&gt;
+</pre>
+
+
+
+<b>
+Important Note: if the RAMADDA instance you are running has already been initialized and contains content in its database then loading in the new database will delete everything in the original database.
+<p>
+If you are changing your start script to include the -load remember to shutdown RAMADDA and then remove the -load argument after the initial database load as subsequent -load will wipe out the original database.
+</b>
+
+
+</div>
+<p>
+<div  class="childlist" ><table  width="100%" ></table></div>
+<p>&nbsp;<p>
+<a href="adminmisc.html"><img src="images/PreviousArrow.gif" border="0"   alt="Previous: Miscellaneous Admin Settings" title="Previous: Miscellaneous Admin Settings"></a> <a href="remoteservers.html"><img src="images/NextArrow.gif" border="0"   alt="Next: Registry Services" title="Next: Registry Services"></a>  <a href="toc.html#backups.html"><img src="images/TOCIcon.gif" border="0"   alt="Table of contents" title="Table of contents"></a>
+<p>
+</div>
+</body>
+</html>
+

@@ -1,0 +1,128 @@
+
+
+
+.gtfs-table {
+  border:0px #444 solid;
+}
+
+.gtfs-table tr {
+   border-bottom:1px #ccc solid;
+}
+
+
+.gtfs-trip-list-past  {
+   background: #fff;
+}
+
+
+.gtfs-trip-next {
+  padding-left:5px;
+  padding-top:5px;
+  background:#D1F9D1; 
+  border:1px #ccc solid;
+}
+
+.gtfs-trip-next a {
+   color:#000;
+}
+
+.gtfs-trip-next .gtfs-stops {
+}
+
+.gtfs-trip-list-now {
+  background:palegreen; 
+}
+
+.gtfs-trip-list-future {
+  background:#D1F9D1; 
+  background:#ffffcc; 
+}
+
+
+.gtfs-trip-list-oos {
+  background:#ccc; 
+}
+
+.gtfs-trip-list-inactive td {
+  background: #fff;
+}
+
+
+
+.gtfs-table .gtfs-header {
+  font-weight:bold;
+  background: #eee;
+  text-align:center;
+}
+
+.gtfs-table td {
+   padding-top:4px;
+   padding-bottom:1px;
+   padding-left:10px;
+   padding-right:10px;
+}
+
+
+.gtfs-schedule td {
+   text-align:center;
+}
+
+.gtfs-day-on {
+   background:lightgreen;
+}
+
+.gtfs-day-off {
+   background:#fff;
+}
+
+
+.gtfs-swatch {
+ border: 1px #000 solid;
+ width: 18px;
+ height: 18px;
+ margin-left: 5px;
+ margin-right: 5px;
+}
+
+.gtfs-route-badge, .gtfs-route-tag {
+   border-radius: 4px;
+   display: inline-block;
+   border: 1px #888 solid;
+   padding:5px; 
+   padding-top: 0px; 
+   padding-bottom:0px; 
+}
+
+
+.gtfs-stops-list td {
+   padding-right: 10px;
+   padding-left: 10px;
+}
+
+.gtfs-stops-list .gtfs-timerange {
+   text-align:right;
+}
+
+.gtfs-trips-list a {
+        color: #000;
+}
+
+
+.gtfs-trips-list  .gtfs-route-badge {
+    margin-left:0.5em;
+    margin-right:0.5em;
+    padding-top: 2px; 
+    padding-bottom:2px; 
+    margin-bottom:2px;
+}
+
+.gtfs-timerange {
+}
+
+td .gtfs-timerange {
+   text-align:right;
+}
+
+.ui-accordion .ui-accordion-header {
+//   border-bottom: 0px #fff solid;
+}

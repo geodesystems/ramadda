@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+
+<project basedir="../../../../" default="plugins" name="Ramadda Plugins">
+
+    <target name="init">
+       <tstamp>
+         <format property="date" pattern="yyyy-MM-dd HH:mm z" timezone="UTC"/>
+       </tstamp>
+        <property file="${basedir}/build.properties"/>
+    </target>
+
+    <target name="clean" depends="init" >
+        <delete>
+            <fileset dir="${compiledir}" includes="**/*.class"/>
+        </delete>
+    </target>
+
+    <target name="plugins" depends="init">
+      <echo message="Building RAMADDA plugins"/>
+      <ant antfile="${src_dir}/org/ramadda/geodata/dif/build.xml" inheritAll="false"/>
+      <ant antfile="${src_dir}/org/ramadda/geodata/thredds/build.xml" inheritAll="false"/>
+      <ant antfile="${src_dir}/org/ramadda/geodata/cdmdata/build.xml" inheritAll="false"/>
+      <ant antfile="${src_dir}/org/ramadda/geodata/earthdata/build.xml" inheritAll="false"/>
+      <ant antfile="${src_dir}/org/ramadda/geodata/mb/build.xml" inheritAll="false"/>
+      <ant antfile="${src_dir}/org/ramadda/geodata/idv/build.xml" inheritAll="false"/>
+      <ant antfile="${src_dir}/org/ramadda/geodata/fieldproject/build.xml" inheritAll="false"/>
+      <ant antfile="${src_dir}/org/ramadda/geodata/gps/build.xml" inheritAll="false"/>
+      <ant antfile="${src_dir}/org/ramadda/geodata/publisher/build.xml" inheritAll="false"/>
+      <ant antfile="${src_dir}/org/ramadda/geodata/ogc/build.xml" inheritAll="false"/>
+      <ant antfile="${src_dir}/org/ramadda/geodata/model/build.xml" inheritAll="false"/>
+      <ant antfile="${src_dir}/org/ramadda/geodata/point/build.xml" inheritAll="false"/>
+      <ant antfile="${src_dir}/org/ramadda/geodata/python/build.xml" inheritAll="false"/>
+      <ant antfile="${src_dir}/org/ramadda/geodata/astro/build.xml" inheritAll="false"/>
+    </target>
+
+</project>

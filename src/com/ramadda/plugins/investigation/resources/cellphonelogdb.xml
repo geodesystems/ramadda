@@ -1,0 +1,28 @@
+<tables>
+
+<table id="investigation_cellphonelog" name="Cell Phone Log" supercategory="Miscellaneous" category="Investigation" icon="/investigation/phone.png" handler="com.ramadda.plugins.investigation.CellPhoneDbTypeHandler">
+   <column name="from_name" type="enumerationplus" label="From Name"   cansearch="true" canlist="true" editable="true"/>
+   <column name="from_number" type="string" label="From Number"   cansearch="true" canlist="true" editable="false"/>
+   <column name="to_name" type="enumerationplus" label="To Name"   cansearch="true" canlist="true" editable="true"/>
+   <column name="to_number" type="string" label="To Number"   cansearch="true" canlist="true" editable="false"/>
+   <column name="time" type="datetime"   label="Date"  cansearch="true" canlist="true" editable="false">
+       <property name="label" value="true"/>
+   </column>
+   <column name="duration" type="double"   label="Duration"  cansearch="true" canlist="false" editable="false" suffix="minutes" advanced="true"/>
+   <column name="type" type="enumeration"   label="Direction" values="inbound:In Bound,outbound:Outbound,voice:Voice Mail,mobiletomobile:Mobile to mobile" cansearch="true" canlist="true" editable="false">
+       <property name="iscategory" value="true"/>
+   </column>
+   <column name="location" type="latlon"   label="Location"  cansearch="true" canlist="false" editable="false"/>
+   <column name="tower_address" type="string"   label="Address"  cansearch="false" canlist="false" editable="false" />
+   <column name="tower_city"    type="string"   label="City"  cansearch="true" canlist="true" editable="false" advanced="true"/>
+   <column name="tower_state"    type="enumeration"   label="State"  cansearch="true" canlist="true" editable="false" columns="5" xxxvalues="file:/com/ramadda/plugins/investigation/resources/states.txt" advanced="true"/>
+   <column name="tower_zipcode"    type="string"   label="Zip Code"  cansearch="true" canlist="false" editable="false" columns="10" advanced="true"/>
+
+   <column name="tag"    type="enumerationplus"   label="Tag"  cansearch="true" canlist="true" values="default,important" advanced="true">
+   </column>
+   <column name="notes"    type="string"   label="Notes"  cansearch="true" canlist="true" rows="5" advanced="true"/>
+</table>
+
+
+
+</tables>

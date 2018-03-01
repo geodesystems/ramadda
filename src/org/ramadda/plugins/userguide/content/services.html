@@ -1,0 +1,138 @@
+[ht::head {Service Integration Framework}]
+<%nochildlist%>
+
+The Service Integration Framework makes it easy to integrate command line  tools that are installed  on 
+the server as services that operate on  data and content within  RAMADDA. 
+
+There are a number of examples at  <a href="http://ramadda.org/alias/services">ramadda.org</a>.
+All RAMADDA repositories (running the latest release) have their list of enabled services at
+<a href="http://ramadda.org/repository/services/list">http://ramadda.org/repository/services/list</a>.
+
+
+<subhead  id="configuration"  intoc="false">Configuration</subhead>
+To enable an installed service you need to specify one or more properties 
+in a .properties file in your RAMADDA home directory that specify the 
+location of the installed software.
+
+Below is the full set of properties that ramadda.org is using for the various plugins that are available.
+The <i>/usr/local/bin</i> and <i>/opt/local/bin</i>  are just where different packages happened
+to be installed.
+
+<pre style="max-height:300px; overflow-y: auto;margin-left:10px;border:1px #ccc solid;" >
+#################################
+#General media
+#################################
+
+#<a href="http://www.imagemagick.org/">ImageMagick</a>
+#Where convert, etc., are installed
+service.imagemagick=/opt/local/bin
+
+#<a href="https://pdfbox.apache.org/">PDFBox</a>
+#See <a href="examples/pdfbox.sh">pdfbox.sh</a>
+service.pdfbox=&lt;path&gt;/pdfbox/pdfbox.sh
+
+
+#<a href="http://www.omino.com/sw/qt_tools/">Quicktime tools</a>  
+#Where qt_info, qt_export, etc. are 
+service.qttools=/usr/local/bin
+
+
+#################################
+# Geo data
+#################################
+
+#<a href="http://nco.sourceforge.net/">NetCDF Operators - NCO </a>
+service.nco.ncwa=/opt/local/bin/ncwa
+
+#<a href="https://code.zmaw.de/projects/cdo">Climate data operators - CDO </a>
+service.cdo=/opt/local/bin/cdo
+
+#GDAL
+service.gdal.gdal_translate=/usr/local/bin/gdal_translate
+service.gdal.gdalinfo=/usr/local/bin/gdalinfo
+
+#<a href="http://www.hdfgroup.org/products/hdf5_tools/">HDF5 tools</a> 
+service.hdf5.h5ls=/opt/local/bin/h5ls
+
+
+#<a href="http://www.ldeo.columbia.edu/res/pi/MB-System/">MB System Bathymetry  data</a> 
+service.mb.mbinfo=/usr/local/bin/mbinfo
+service.mb.mblist=/usr/local/bin/mblist
+
+
+#################################
+#Bioinformatics
+#################################
+
+#Dicom image tools <a href="http://sourceforge.net/projects/dcm4che/">dcm4che</a>
+service.dicom.dcm4che=&lt;path&gt;/dcm4che-2.0.28/bin
+
+#OME Bio-Formats                                                                
+#http://www.openmicroscopy.org/site/support/bio-formats5/users/comlinetools/    
+service.bfconvert = &lt;path&gt;/bftools/bfconvert
+
+#SRATools - 
+service.sratools=&lt;path&gt;/sratoolkit.2.3.5-2/bin
+
+#HMMER Tools - 
+service.hmmertools=&lt;path&gt;/hmmer-3.1b1-macosx-intel/binaries
+
+#Picard - 
+service.picard=&lt;path&gt;/picard-tools-1.119/picard.sh
+
+</pre>
+
+
+<subhead  id="run"  intoc="false">Service XML</subhead>
+A service is specified as either an outputhandler XML file or a services XML plugin.
+There are numerous examples under the SVN source tree  at 
+<a href="http://sourceforge.net/p/ramadda/code/HEAD/tree/src/org/ramadda/">http://sourceforge.net/p/ramadda/code/HEAD/tree/src/org/ramadda/</a>
+
+Below is an example of two output services, one defined inline and the other referencing a service defined in the below services.xml file.
+
+There are enabled by setting the properties in a .properties file:<pre>
+service.test1=/path/to/program
+service.test2=/path/to/program</pre>
+
+Note: To install as a plugin remove the "_ex1" so you have an outputhandlers.xml plugin file.
+[importxml examples/outputhandlers_ex1.xml]
+
+
+Services can be defined in a separate services.xml file.
+[importxml examples/services_ex1.xml]
+
+
+<subhead  id="faq"  intoc="false">Common Argument Constructs</subhead>
+
+<h3>One command line argument made up of multiple  user choices.</h3>
+Use the <i>include</i> attribute to provide a user interface element (e.g., date select) but not directly add the value to the 
+command line arguments. Rather you can embed the value in a later argument with the "\${name}" macro syntax. 
+
+e.g. org/ramadda/geodata/cdmdata/resources/cdoservices.xml
+
+<pre>
+//specify 2 date arguments
+   &lt;arg type="date" name="cdo.fromdate" label="Start Date" include="false" valuesProperty="dateList"/&gt;
+   &lt;arg type="date" name="cdo.todate" label="End Date" include="false" valuesProperty="dateList"/&gt;
+//specify a simple value argument that includes the values of the two date args
+   &lt;arg value="-seldate,${cdo.fromdate},${cdo.todate}"/&gt;
+</pre>
+
+
+Here we have an image format enumeration value with include=false. It is used 
+From  org/ramadda/bio/image/services.xml
+
+<pre>
+&lt;arg type="enumeration" name="imageformat" label="Image type" values="png,gif,jpg,tiff" include="false" default="png"/&gt;
+
+//Specify an entry
+&lt;arg value="\${entry.file}" type="entry"  label="Input image file" primary="true" entryType="bio_dicom,bio_ome_tiff"&gt;&lt;/arg&gt;
+
+//Provide the output image
+&lt;arg value="\${file}" file="\${entry.file.base}\${suffix}.\${imageformat}"/&gt;
+
+</pre>
+
+
+
+[ht::foot]

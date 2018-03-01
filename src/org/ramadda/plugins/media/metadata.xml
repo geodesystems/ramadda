@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<metadata>
+  <handler category="YouTube" >
+    <type id="media_video_cue" name="Video Cue" entrytype="media_youtubevideo">
+      <element id="name" name="Name"/>
+      <element id="minutes" name="Offset" datatype="double" suffix="(Minutes)"/>
+    </type>
+  </handler>
+
+  <handler category="Tags">
+    <type name="Document Comment" displaycategory="Comments" id="media_comment"  searchable="false" browsable="true">
+      <element name="Location"  searchable="false"/>
+      <element name="Comment"  searchable="false" rows="5"/>
+      <element name="Screen shot" datatype="file" thumbnail="false"/>
+      <template type="xxxhtml"><![CDATA[<b>${attr1}</b><br>${attr2}]]></template>
+    </type>
+</handler>
+</metadata>

@@ -1,0 +1,11 @@
+aeronet:Aeronet
+aircraft:Aircraft
+airport:Airport
+borehole:Borehole
+camp:Camp
+flask:Flask
+insitu:In-Situ
+metstation:Met Station
+streamgauge:Stream Gauge
+tower:Tower
+well:Well

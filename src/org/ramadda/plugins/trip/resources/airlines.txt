@@ -1,0 +1,18 @@
+Alaska
+America West
+American Airlines
+Continental Airlines
+Delta Air Lines
+Frontier
+jetBlue
+Northwest Airlines
+Southwest Airlines
+United Airlines
+United Express
+USAir
+USAir Express
+Aer Lingus
+Aeroflot - Russian International Airlines
+Air France
+Ryan Air
+British Airways

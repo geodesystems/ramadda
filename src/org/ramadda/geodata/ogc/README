@@ -1,0 +1,24 @@
+
+This package provides  support for displaying WMS Capabilities files.
+
+To build this do:
+ant
+
+This builds a wmsplugin.jar in the top level dist dir
+
+To build and install locally:
+ant install
+
+
+Files:
+
+WmsTypeHandler.java: A simple place holder that handles entries of type wms.capabilities
+
+WmsOutputHandler.java: Does all of the real work. See the outputEntry method
+
+wmsoutputhandlers.xml: Defines the WmsOutputHandler class to the repository
+
+wmstypes.xml: Defines the wms.capabilities type
+
+htdocs/wms/wms.js: An empty javascript file. This gets included in the plugin and is loaded into the html page by the WmsOutputHandler
+

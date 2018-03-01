@@ -1,0 +1,10 @@
+service_provider:Service Provider
+church:Church
+civic:Civic Organization
+educational_facility:Educational Facility
+daycare:Licensed Daycare Facility
+treatment_facility:Treatment Facility
+marijuana_facility:Marijuana Facility
+biking:Biking
+camping:Camping
+other:Other

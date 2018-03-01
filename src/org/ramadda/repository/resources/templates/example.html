@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html>
+<head><title>${title}</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+
+<!--
+When defining a new template just name your file ending with "template.html" and
+put it in RAMADDA's plugins directory. You should change the name and id below
+in the properties section.
+
+
+An easy way to edit the template is to run RAMADDA with the property:
+    ramadda.cacheresources==false
+or with the runtime argument:
+     java org.ramadda.repository...  -Dramadda.cacheresources=false
+This causes RAMADDA to reload the templates and other resources at every request. This way
+you can edit the template and just reload the page.
+Note: Don't leave this flag when running in production.
+
+
+The properties section is parsed by ramadda and is treated as Java properties.
+They are used to define the name and id of this template and to define html wrappers
+for when ramadda is generating the html for the main nav links, the user links, etc.
+
+The rest of this file is just html with ${...} macros. The macros include:
+${root}  - the url root to the RAMADDA server
+${imports} - The ramadda specific imports - e.g., style sheet, etc
+${headfinal} - Needs to be put at the  end of the head section
+${repository_name}  - Name defined in the Admin pages
+${title}  - The current page title (e.g. "Metadata")
+${entry.breadcrumbs} - Text bread crumbs of  entry hierarchy - used in title
+${links} - The main navigational links. Can be configured in the properties 
+${entry.header} - The Entry menubar, toolbar, breadcrumb header thing
+${content} - The page content
+${logo.url} - Url for clicking on logo - specified in the Admin pages
+${logo.image}  - The logo image url - specified in the Admin pages
+${footer} - footer text define in Admin pages
+-->
+
+<properties>
+name=Example Template
+id=example
+
+ramadda.template.link.wrapper =<a href="${url}">${label}</a>
+ramadda.template.link.separator=&nbsp;|&nbsp;
+
+ramadda.template.userlink.wrapper =<a href="${url}">${label}</a>
+ramadda.template.userlink.separator=&nbsp;|&nbsp;
+
+ramadda.template.favorites = <b>Favorites:</b><div class="favorites">${entries}</div>
+ramadda.template.cart = <b>Cart:</b><div class="favorites">${entries}</div>
+
+</properties>
+
+${imports}
+
+<style type="text/css">
+body {
+   color: black;
+   margin: 0px;
+}
+.breadcrumbs {
+   margin-left:4px;
+}
+.ramadda-header {
+   background-repeat: repeat; 
+   background-image:url(${root}/images/background.png);
+   padding-top: 6px;
+   margin: 5px;
+   color:black;
+   border-bottom : 2px #444 solid;
+}
+.ramadda-header a:hover  {color:red;}
+.ramadda-header a {color:black;}
+.ramadda-header-label {font-size:24px;}
+.ramadda-footer {
+   margin:0px;
+   padding:20px;
+   align:center;
+   text-align:center;
+   background-repeat: repeat; 
+   background-image:url(${root}/images/background.png);
+   border-top: 1px #000 solid;
+}
+
+.ramadda-outercontents {
+   padding-top: 0px;
+}
+
+.ramadda-innercontent {
+   padding-top: 5px;
+   padding-left: 5px;
+}
+
+.ramadda-menubar {
+   margin-top:5px;
+   background-repeat: repeat-x;
+   background-image:none;
+   padding-top:0px;
+}
+
+.entrymenulink {
+    color: #000000;
+    font-weight: bold;
+}
+.ramadda-content {
+  border: 0px #aaa solid;
+}
+
+.navlinks {
+  margin-top:10px;
+  border-bottom: 1px #444 solid;
+}
+</style>
+${headfinal}
+</head>
+
+<body>
+<table border="0" cellpadding="0" cellspacing="0" width="100%">
+<tr>
+<td class="ramadda-header">
+<table border="0" cellpadding="2" cellspacing="0" width="100%">
+<tr valign="bottom">
+<td rowspan="2"  width="5%"><a href="${logo.url}" ><img border="0"  src="${logo.image}" align="center"></a></td>
+<td valign="top">
+<span class="ramadda-header-label">${header.title} - ${title}</span>
+</td>
+</tr>
+<tr valign="bottom">
+<td>
+</td>
+<td align="right">${links}</td>
+</tr>
+</table>
+</td>
+</tr>
+<tr>
+<td>
+<div class="ramadda-outercontents">
+<div class="ramadda-content">
+${header}
+<div class="ramadda-innercontent">${content}</div>
+</div>
+</div>
+<div class="ramadda-footer">${footer}</div>
+</td>
+</tr>
+</table>
+${bottom}
+<div class="ramadda-acknowledgement">Powered by <a href="http://geodesystems.com">Geode Systems and RAMADDA</a></div>
+</body>
+</html>

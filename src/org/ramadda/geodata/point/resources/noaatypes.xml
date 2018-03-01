@@ -1,0 +1,129 @@
+<types supercategory="Geoscience">
+
+<!--
+all point types need to have numberoofpoints and properties fields
+this gets it from the type_point super class
+--> 
+  <type name="type_point_noaa"  description="" super="type_point" category="Point Data" foruser="false">
+     <property name="icon" value="/point/noaa.gif"/>
+  </type>
+
+
+  <type name="type_point_noaa_tower"  super="type_point_noaa" description="NOAA Tower Network"  handler="org.ramadda.data.services.PointTypeHandler">
+     <property name="icon" value="/point/tower.png"/>
+     <property name="record.file.class" value="org.ramadda.data.point.noaa.NoaaTowerPointFile"/>
+     <column  name="site_id"  type="enumerationplus" label="Site ID" cansearch="true"/>
+  </type>
+
+
+  <type name="type_point_noaa_carbon"  super="type_point_noaa" description="NOAA Carbon Measurements"  handler="org.ramadda.data.services.PointTypeHandler">
+
+     <property name="record.file.class" value="org.ramadda.data.point.noaa.NoaaCarbonPointFile"/>
+     <column  name="site_id"  type="enumerationplus" label="Site ID" cansearch="true"/>
+     <column  name="parameter"  type="enumerationplus" label="Parameter" cansearch="true"/>
+     <column  name="project"  type="string" label="Project" cansearch="true"/>
+     <column  name="lab_id_number"  type="string" label="Lab ID Number" cansearch="true"/>
+     <column  name="measurement_group"  type="string" label="Measurement Group" cansearch="true"/>
+  </type>
+
+
+  <type name="type_point_noaa_flask_event"  super="type_point_noaa" description="NOAA Flask Event Measurements"  handler="org.ramadda.data.services.PointTypeHandler">
+     <property name="icon" value="/point/noaa.gif"/>
+
+     <property name="record.file.class" value="org.ramadda.data.point.noaa.NoaaFlaskEventPointFile"/>
+     <column  name="site_id"  type="enumerationplus" label="Site ID" cansearch="true"/>
+     <column  name="parameter"  type="enumerationplus" label="Parameter" cansearch="true"/>
+     <column  name="project"  type="string" label="Project" cansearch="true"/>
+     <column  name="lab_id_number"  type="string" label="Lab ID Number" cansearch="true"/>
+     <column  name="measurement_group"  type="string" label="Measurement Group" cansearch="true"/>
+  </type>
+
+  <type name="type_point_noaa_flask_month"  super="type_point_noaa" description="NOAA Flask Month Measurements"  handler="org.ramadda.data.services.PointTypeHandler">
+     <property name="icon" value="/point/noaa.gif"/>
+
+     <property name="record.file.class" value="org.ramadda.data.point.noaa.NoaaFlaskMonthPointFile"/>
+     <column  name="site_id"  type="enumerationplus" label="Site ID" cansearch="true"/>
+     <column  name="parameter"  type="enumerationplus" label="Parameter" cansearch="true"/>
+     <column  name="project"  type="string" label="Project" cansearch="true"/>
+     <column  name="lab_id_number"  type="string" label="Lab ID Number" cansearch="true"/>
+     <column  name="measurement_group"  type="string" label="Measurement Group" cansearch="true"/>
+  </type>
+
+
+  <type name="type_point_noaa_madis"  super="type_point_noaa" description="NOAA MADIS Point Data"  handler="org.ramadda.data.services.PointTypeHandler">
+     <property name="record.file.class" value="org.ramadda.data.point.netcdf.NetcdfPointFile"/>
+     <property name="icon" value="/point/noaa.gif"/>
+<!--
+     <property name="record.file.class" value="org.ramadda.data.point.noaa.NoaaTowerPointFile"/>
+     <column  name="site_id"  type="enumerationplus" label="Site ID" cansearch="true"/>
+-->
+  </type>
+
+
+
+
+  <type name="type_point_ncdc_climate"  super="type_point_noaa" description="NC
+
+DC Climate Data"  handler="org.ramadda.data.services.PointTypeHandler">
+     <property name="record.file.class" value="org.ramadda.data.point.noaa.NcdcClimatePointFile"/>
+  </type>
+
+
+  <type name="type_psd_monthly_climate_index"  super="type_point_noaa" category="Climate Data" description="NOAA-ESRL-PSD Monthly Climate Index"  handler="org.ramadda.data.services.NoaaPsdMonthlyClimateIndexTypeHandler">
+     <property name="icon" value="/point/noaa.gif"/>
+     <property name="record.file.class" value="org.ramadda.data.point.text.MultiMonthFile"/>
+     <column  name="missing_value"  type="double" label="Missing Value" cansearch="false"/>
+     <column  name="units"  type="string" label="Units" cansearch="true"/>
+  </type>
+
+
+  <type name="type_point_atcf"  super="type_point_noaa" description="ATCF Hurricane Track"  handler="org.ramadda.data.services.PointTypeHandler">
+     <property name="icon" value="/point/noaa.gif"/>
+     <property name="record.file.class" value="org.ramadda.data.point.text.CsvFile"/>
+ <property name="record.properties">
+fields=BASIN[type="string"],CY[type="string"],YYYYMMDDHH[type="date" format="yyyyMMddHH"],TECHNUM[type="string"],TECH[type="string"],TAU,Latitude[scale="0.10"],Longitude[scale="0.10"],VMAX[],MSLP[],TY[],RAD[],WINDCODE[],RAD1[],RAD2[],RAD3[],RAD4[],RADP[],RRP[],MRD[],GUSTS[],EYE[],SUBREGION[],MAXSEAS[],INITIALS[],DIR[],SPEED[],STORMNAME[],DEPTH[],SEAS[],SEASCODE[],SEAS1[],SEAS2[],SEAS3[],SEAS4[]
+picky=false
+     </property>
+  </type>
+
+
+  <type name="type_point_snotel"  super="type_point" description="SNOTEL Snow Data"  handler="org.ramadda.data.services.PointTypeHandler">
+     <property name="icon" value="/point/snotel.png"/>
+     <property name="map.chart.type" value="barchart"/>
+     <property name="map.chart.fields" value="snow_depth"/>
+     <property name="record.file.class" value="org.ramadda.data.point.text.CsvFile"/>
+     <column  name="site_id"  label="Site ID" cansearch="true"/>
+     <column  name="site_number"  label="Site Number" cansearch="true"/>
+     <column  name="state"  type="enumerationplus" label="State" cansearch="true"/>
+     <column  name="network"  label="Network" type="enumerationplus" cansearch="true"/>
+     <column  name="huc_name"   label="HUC Name" cansearch="true"/>
+     <column  name="huc_id"   label="HUC ID" cansearch="true"/>
+ <property name="record.properties">
+<![CDATA[
+fields=date[label="Date" type="date" format="yyyy-MM-dd" ] , snow_water_equivalent[label="Snow Water Equivalent " unit="in" ] , change_in_snow_water_equivalent[label="Change In Snow Water Equivalent " unit="in" ] , snow_depth[label="Snow Depth " unit="in" ] , change_in_snow_depth[label="Change In Snow Depth " unit="in" ] , precipitation_accumulation[label="Precipitation Accumulation " unit="in" ] , air_temperature_observed[label="Air Temperature Observed " unit="F" ] , air_temperature_minimum[label="Air Temperature Minimum " unit="F" ] , air_temperature_maximum[label="Air Temperature Maximum " unit="F" ] 
+skiplines=1
+commentLineStart=#
+]]>
+     </property>
+<wiki>
+<![CDATA[
++section # title="Snotel Site: {{field name=site_id}} - {{name}}"
+{{description}}
+----
++row
++col-md-8
+{{group showMenu="true" layoutType="table" layoutColumns="1" showTitle="false"}}
+{{display type="barchart" showTitle="false" layoutHere="false" fields="snow_depth,precipitation_accumulation" vAxisMinValue="0" }}
+{{display type="linechart" showTitle="false" layoutHere="false" fields="snow_water_equivalent"  vAxisMinValue="0"}}
+{{display type="linechart" showTitle="false" layoutHere="false" fields="air_temperature_observed"  vAxisMinValue="0"}}
+-col
++col-md-4
+{{map}}
+-col
+-row
+-section
+]]>
+</wiki>
+</type>
+
+</types>

@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html>
+<head><title>${title}</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="viewport" content="width=device-width; initial-scale=1.0; maximum-scale=1.0; user-scalable=1;" />
+<properties>
+name=For Mobile
+id=mobile
+ramadda.template.link.wrapper =<span class="navlink"><a href="${url}">${label}</a></span>
+ramadda.template.link.separator=&nbsp;|&nbsp;
+ramadda.template.userlink.wrapper =<span class="navlink"><a class="navlink" href="${url}">${label}</a></span>
+ramadda.template.userlink.separator=&nbsp;|&nbsp;
+ramadda.template.favorites = <b>Favorites:</b><div class="favorites">${entries}</div>
+ramadda.template.cart = <b>Cart:</b><div class="favorites">${entries}</div>
+</properties>
+
+${imports}
+
+<style type="text/css">
+body, html, a, div, span, h1, h2, h3, h4, h5, h6, p, ul, ol, li, blockquote, form, input, fieldset { 
+//    font-size:11px;
+//    font-family: Tahome, Geneva, sans-serif;
+}
+
+.navlinks {
+  padding-top:5px;
+  border-bottom : 1px #444 solid;
+}
+.ramadda-section  {
+padding-left:0%;
+padding-right:0%;
+}
+.display-area-link {
+   width: 20px;
+}
+
+.formtable td {
+      padding-top: 2px;
+      padding-bottom: 2px;
+      padding-left: 2px;
+      padding-right: 2px;
+}
+
+.breadcrumbs a {
+   text-decoration: none;
+}
+.breadcrumbs {
+   margin-left:5px;
+}
+.ramadda-breadcrumbs {
+   font-size: 100%;
+}
+.linkslabel {
+   font-weight: bold;
+}
+.ramadda-innercontent {
+  margin-left:5px;
+  margin-right:5px;
+}
+.ramadda-content {
+  border-top: 0px #aaa solid;
+  border-left: none;
+  border-right: none;
+  margin:0px;
+}
+
+body {
+  margin:0px;
+  padding:0px;
+  font-size: 12px;
+}
+.ramadda-header {
+  margin:0px;
+  padding:0px;
+  padding-top:2px;
+  padding-right:3px;
+  background-color:#eee;
+  border-bottom: 1px #000 solid;
+  padding: 8px;
+  padding-bottom: 2px;
+  font-size: 16px;
+}
+.ramadda-header-title  {
+  font-size: 16px;
+  color: black;
+}
+.navlink a {
+   color:#000;
+}
+.navlink a:hover {
+   color:red;
+}
+.formlabel, .formlabeltop {
+  font-weight: bold;
+  text-align:left;
+}
+</style>
+
+${headfinal}
+
+</head>
+
+<body>
+<div class="ramadda-header">
+${register} 
+</div>
+<div class="ramadda-content">${entry.header}<div class="ramadda-innercontent">${content}</div></div>
+
+
+<div class="ramadda-footer">
+<center>${header.title} - ${title}</center>
+${links}
+</div>
+${bottom}
+<div class="ramadda-acknowledgement">Powered by <a href="http://geodesystems.com">Geode Systems and RAMADDA</a></div>
+</body></html>

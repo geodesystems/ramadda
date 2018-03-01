@@ -1,0 +1,5 @@
+social_services:Social Services
+church:Church
+civic:Civic Organization
+edu:Educational
+other:Other

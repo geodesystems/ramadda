@@ -1,0 +1,21 @@
+org.ramadda.plugins.atlassian.HipchatHarvester
+org.ramadda.plugins.atlassian.HipchatAction
+
+##To specify a JIRA search provider add a local classes.txt file to you
+##plugins directory with the following:
+
+#org.ramadda.plugins.atlassian.JiraSearchProvider;ID;BASE URL;LABEL
+
+
+#org.ramadda.plugins.atlassian.JiraSearchProvider;jira_apache;https://issues.apache.org/jira;Apache JIRA
+#org.ramadda.plugins.atlassian.JiraSearchProvider;jira_spring;https://jira.spring.io;Spring JIRA 
+#org.ramadda.plugins.atlassian.JiraSearchProvider;jira_twitter4j;http://jira.twitter4j.org;Twitter4J JIRA 
+
+
+#org.ramadda.plugins.atlassian.ConfluenceSearchProvider;confluence_atlassian;https://confluence.atlassian.com;Atlassian Confluence Site
+
+
+
+
+
+

@@ -1,0 +1,98 @@
+Custom JAR files in the lib directory:
+
+jfreechart.jar:
+Note: for now I (jeffmc) fixed s ticky bug in AbstractXYItemRenderer where it passed in 
+NaN coordinates. This caused some JVMs to never return from the java2d draw call.
+I will submit the fix to the jfreechart folks but for now we're good (I think)
+
+javax.jar:
+This was some old javax components that were originally in the giant IDV external.jar
+
+ramaddalib.jar:
+  This holds all of the 3rd party libs  used by ramadda. It is made
+  with the ant target ramaddalib in src/org/ramadda/repository
+
+
+ramaddatds.jar:
+  This gets built from the THREDDS TDS war file, ncIdv.jar and 
+  unidatacommon.jar.
+
+  To build this:
+
+  - Get the latest thredds.war from the Unidata FTP site, e.g:
+    ftp://ftp.unidata.ucar.edu/pub/thredds/4.2/current/thredds.war
+
+  - Because thredds.war might not be as up to date as the classes used in IDV,
+  also get the latest ncIdv.jar and unidatacommon.jar from the IDV 
+  git repository (see below)
+
+  Now run the tcl script:
+    tclsh ../bin/makethredds.tcl
+
+  This unjars the war and unjars certain jars and makes repositorytds.jar
+
+
+ncIdv.jar:
+  This should be the definitive source of the netcdf package. It gets
+  included in both the repositorytds.jar and the repositorylib.jar.
+  We do this because other packages have netcdf in it (e.g., visad.jar).
+  This can be retrieved from the IDV github repository:
+
+     http://github.com/Unidata/IDV
+
+ncIdv.jar:
+  This is common code that was supposed to be shared between IDV and 
+  netCDF-java.  Unfortunately, netCDF-Java has it's own version of these
+  classes which are not kept up to date with the unidatacommon.jar
+  classes.  So, we need to unpack this on top of the thredds.war.
+  In netCDF-Java 4.3, this will no longer be necessary as it has 
+  sucked in the ucar.unidata.geoloc package and the ucar.unidata.util
+  classes are back in idv.jar
+
+visad.jar:
+  Note: the version used in RAMADDA has been unjarred, had the top-level 
+  nom package removed, and rejarred.  The original jar has an old version 
+  of the nom package (for fits data) and was screwing up the 
+  org/ramadda/geodata/fits plugin
+
+jetty.jar:
+
+This is the combination of the following all the jetty modules:
+    jetty-<module>-<version>.jar
+
+tika-app-1.4.jar
+  The tika-app-1.4.jar  has been modified. I (jeffmc) removed the
+  ucar, thredds, org/slf4j and  com/drew  tree from this because we had too many
+  conflicts with other libs
+
+jmapproj.jar:
+
+  This comes from http://sourceforge.net/projects/jmapprojlib/ and
+  is a Java implementation of the proj4 library.  It is used in the
+  lidar package for doing coordinate transforms.
+
+junit.jar:
+
+  https://github.com/KentBeck/junit/downloads This is from junit-4.10.jar
+
+h2.jar:
+This is the H2 database jar.  Original version h2-1.3.167.jar  
+
+
+ezid.jar:
+This was built from  https://github.com/mbjones/ezid
+
+  This work was created by the National Center for Ecological Analysis and
+  Synthesis at the University of California Santa Barbara (UCSB).
+  Copyright 2011 Regents of the University of California
+ 
+jsbeautify.jar
+This was built from https://github.com/belgampaul/JsBeautifier.git
+
+  took the js.jar from the lib directory and updated it with the compiled JsBeautifier
+  beautify.js.
+
+json.jar:
+This is from the JSON in Java project http://www.json.org/java/index.html
+
+

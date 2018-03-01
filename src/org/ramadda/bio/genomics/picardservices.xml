@@ -1,0 +1,108 @@
+<services command="${service.picard}" outputToStderr="true" icon="/genomics/picard.png" category="Genomics">
+
+    <service  label="Convert FASTQ to SAM" id="bio_picard_fastqtosam" outputToStderr="true">
+      <description><![CDATA[
+Run Picard to convert FASTQ to SAM
+<br>
+<a href="http://broadinstitute.github.io/picard/" target="_help">Documentation</a>
+]]></description>
+      <output type="bio_sam" pattern=".*\.sam"/>
+      <arg value="FastqToSam.jar"></arg>
+      <arg value="FASTQ=${entry.file}"  type="entry" entryType="bio_fastq" primary="true"></arg>
+      <arg value="OUTPUT=${file}"  file="${entry.file.base}.sam"></arg>
+      <arg label="Sample Name" required="true" type="string" size="60" value="SAMPLE_NAME=${value}">
+        <help>Sample name to insert into the read group header.</help>
+      </arg>
+      <arg type="enumeration" label="Quality Format" values=":-none-,Solexa,Illumina,Standard" value="QUALITY_FORMAT=${value}">
+<help><![CDATA[
+A value describing how the quality values are encoded in the fastq.  Either Solexa for 
+pre-pipeline 1.3 style scores (solexa scaling + 66), Illumina for pipeline 1.3 and above 
+(phred scaling + 64) or Standard for phred scaled scores with a character shift of 33.  
+If this value is not specified, the quality format will be detected automatically.  
+<br>
+<a target="_help" href="http://broadinstitute.github.io/picard/">Documentation</a>
+]]></help>
+</arg>
+    </service>
+
+    <service  label="Convert SAM to FASTQ" id="bio_picard_samtofastq">
+      <description><![CDATA[
+Run Picard to convert SAM to FASTQ
+<br>
+<a href="http://broadinstitute.github.io/picard/" target="_help">Documentation</a>
+]]></description>
+      <output type="bio_fastq" pattern=".*\.fastq"/>
+      <arg value="SamToFastq.jar"></arg>
+      <arg value="INPUT=${entry.file}"  type="entry" entryType="bio_sambam" primary="true"></arg>
+      <arg value="FASTQ=${file}" file="${entry.file.base}.fastq"></arg>
+
+<arg type="enumeration" values=":-default-,true,false,null" value="RE_REVERSE=${value}" label="Re-Reverse" help="Re-reverse bases and qualities of reads with negative strand flag set before writing them to fastq Default value: true."/>
+<arg type="enumeration" values=":-default-,true,false,null" value="INTERLEAVE=${value}" label="Interleave" help="Will generate an interleaved fastq if paired, each line will have /1 or /2 to describe which end it came from Default value: false."/>
+<arg type="enumeration" values=":-default-,true,false,null" value="INCLUDE_NON_PF_READS=${value}" label="Include non-pf" help="Include non-PF reads from the SAM file into the output FASTQ files. PF means 'passes filtering'. Reads whose 'not passing quality controls' flag is set are non-PF reads. Default value: false."/>
+<arg type="string"  value="CLIPPING_ATTRIBUTE=${value}" label="Clipping attribute" help="The attribute that stores the position at which the SAM record should be clipped."/>
+<arg type="string" value="CLIPPING_ACTION=${value}" label="Clipping action" help="The action that should be taken with clipped reads: 'X' means the reads and qualities should be trimmed at the clipped position; 'N' means the bases should be changed to Ns in the clipped region; and any integer means that the base qualities should be set to that value in the clipped region."/>
+<arg type="int" value="READ1_TRIM=${value}" label="Read 1 trim" help="The number of bases to trim from the beginning of read 1. Default value: 0."/>
+<arg type="int" value="READ1_MAX_BASES_TO_WRITE=${value}" label="Read 1 max bases" help="The maximum number of bases to write from read 1 after trimming. If there are fewer than this many bases left after trimming, all will be written. If this value is null then all bases left after trimming will be written."/>
+<arg type="int" value="READ2_TRIM=${value}" label="Read 2 trim" help="The number of bases to trim from the beginning of read 2. Default value: 0."/>
+<arg type="int" value="READ2_MAX_BASES_TO_WRITE=${value}" label="Read 2 max bases" help="The maximum number of bases to write from read 2 after trimming. If there are fewer than this many bases left after trimming, all will be written. If this value is null then all bases left after trimming will be written."/>
+<arg type="enumeration" values=":-default-,true,false" value="INCLUDE_NON_PRIMARY_ALIGNMENTS=${value}" label="Include non-primary" help="If true, include non-primary alignments in the output. Support of non-primary alignments in SamToFastq is not comprehensive, so there may be exceptions if this is set to true and there are paired reads with non-primary alignments. Default value: false."/>
+    </service>
+
+
+
+
+    <service  label="Alignment Summary Statistics" id="bio_picard_collectalignmentsummarymetrics">
+      <description><![CDATA[
+Reads a SAM or BAM file and writes a file containing summary alignment metrics. 
+<br>
+<a href="http://broadinstitute.github.io/picard/" target="_help">Documentation</a>
+]]></description>
+      <output type="bio_sam" pattern=".*\.sam"/>
+      <arg value="CollectAlignmentSummaryMetrics.jar"></arg>
+      <arg value="INPUT=${entry.file}"  type="entry" entryType="bio_sambam" primary="true"></arg>
+      <arg value="OUTPUT=${file}" file="${entry.file.base}.txt"></arg>
+      <arg type="int" label="Max insert size" value="MAX_INSERT_SIZE=${value}" help="Paired end reads above this insert size will be considered chimeric along with inter-chromosomal pairs. Default value: 100000."/>
+      <arg type="string" size="60"  value="ADAPTER_SEQUENCE=${value}" label="Adapter Sequence" help="List of adapter sequences to use when processing the alignment metrics This option may be specified 0 or more times."/>
+      <arg type="enumeration" size="60" label="Metric accumulation"  value="METRIC_ACCUMULATION_LEVEL=${value}" help="The level(s) at which to accumulate metrics. Possible values: {ALL_READS, SAMPLE, LIBRARY, READ_GROUP} This option may be specified 0 or more times." values=":-none-,ALL_READS,SAMPLE,LIBRARY,READ_GROUP"/>
+      <arg type="enumeration" values=":default,true,false,null"  label="Is Bisulfite" value="IS_BISULFITE_SEQUENCED=${value}" help="Whether the SAM or BAM file consists of bisulfite sequenced reads. Default value: false."/>
+      <arg type="enumeration" values="default,true,false,null"  label="Assume sorted" value="ASSUME_SORTED=${value}" help="If true (default), then the sort order in the header file will be ignored."/>
+      <arg type="int"  label="Stop after" value="STOP_AFTER=${value}" help="Stop after processing N reads, mainly for debugging. Default value: 0. "/>
+    </service>
+
+
+
+
+
+
+
+    <service command="${service.picard}" label="Add Or Replace Read Groups" id="bio_picard_addorreplacegroups"  >
+      <description><![CDATA[
+Replaces all read groups in the INPUT file with a new read group and assigns all reads to this read group in the OUTPUT
+<br>
+<a target="_help" href="http://broadinstitute.github.io/picard/">Documentation</a>
+]]></description>
+      <output type="bio_sam" pattern=".*\.sam"/>
+      <output type="bio_bam" pattern=".*\.bam"/>
+      <arg value="AddOrReplaceReadGroups.jar"></arg>
+      <arg value="INPUT=${entry.file}"  type="entry" entryType="bio_sambam" primary="true"></arg>
+      <arg value="OUTPUT=${file}" file="${entry.file.base}.sam"></arg>
+<arg  type="string" value="RGID=${value}" size="60" label="Read Group ID" help="Default value: 1."/>
+<arg label="Sort Order" type="enumeration" values=":-none-,unsorted, queryname, coordinate" value="SORT_ORDER=${value}"/>
+
+<arg type="Category" value="Read Group"/>
+<arg type="string" value="RGID=${value}" size="60" label="ID" help="Default value: 1."/>
+<arg type="string" required="true" value="RGLB=${value}" size="60" label="Library"/>
+<arg type="string" required="true" value="RGPL=${value}" size="60" label="Platform" help="e.g. illumina, solid"/>
+<arg type="string" required="true" value="RGPU=${value}" size="60" label="Platform unit" help="e.g. run barcode"/>
+<arg type="string" required="true" value="RGSM=${value}" size="60" label="Sample name" />
+<arg type="string" value="RGCN=${value}" size="60" label="Sequencing center"/>
+<arg type="string" value="RGDS=${value}" size="60" label="Description"/>
+<arg type="string" value="RGDT=${value}" size="60" label="Run date" help="Iso8601 Date" />
+<arg type="int" value="RGPI=${value}" size="8"  label="Predicted insert size"/>
+    </service>
+
+
+
+
+
+</services>

@@ -1,0 +1,7 @@
+/disaster/disaster.png
+/disaster/earthquake.jpg
+/disaster/fire.gif
+/disaster/hurricane.gif
+/disaster/icons.txt
+/disaster/tsunami.gif
+/disaster/volcano.jpg

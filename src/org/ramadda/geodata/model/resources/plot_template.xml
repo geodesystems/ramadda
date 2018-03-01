@@ -1,0 +1,13 @@
+<entry name="${name}" type="group">
+<description><![CDATA[<wiki>
+<h2>${description}</h2>
+<p>
+${output}
+<p>
+<br>
+<b>Files Generated During Processing</b> 
+<a href="{{root}}/entry/show/download.zip?entryid={{entryid}}&output=zip.tree">(Download All)</a>
+{{tree}}
+</wiki>
+]]></description>
+</entry>

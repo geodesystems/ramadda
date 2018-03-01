@@ -1,0 +1,51 @@
+<html>
+<head>
+  <title>Defining New Entries</title>
+  <link rel="stylesheet" type="text/css" href="ramadda.css" title="Style">
+</head>
+
+<body>
+
+
+RAMADDA recognizes any file that ends with types.xml as an entry type definition file
+
+
+<a href="examples/exampletypes.xml.txt">exampletypes.xml</a>
+
+You can use this xml file as a plugin. But, if you wanted to include html resources
+you would have a zipped directory like:
+someplugin
+      exampletypes.xml
+      htdocs
+          myplugin
+               example.png
+
+Note: the names above do not matter except 
+
+
+<h3> Column Types</h3>
+
+<ul>
+<li> <i> string</i> -  Use size="..." to specify the column size
+<li> <i> enumeration</i>  - See below to specify values
+<li> <i> enumerationplus</i>  - Just like enumeration but allows use to enter new text values
+<li> <i> list</i>  - A big string internally but shows a list of newline separated text values to the user
+<li> <i> password</i>  - A string but is shown in a password field
+<li> <i> clob</i>  - A big character large object
+<li> <i> int</i>  - Integer
+<li> <i> double</i>  - floating point number
+<li> <i> percentage</i> - floating point number shows as percentage
+<li> <i> boolean</i>  
+<li> <i> date</i>  - Just a date
+<li> <i> datetime</i>  - A date and a time
+<li> <i> email</i>  - Shows as an email address
+<li> <i> url</i>  - Shows as a URL
+<li> <i> latlonbbox</i> - spatial bounds
+<li> <i> latlon</i>  - A single point
+</ul>
+
+For enumeration or  enumerationplus types you can specify a set of enumeration values. 
+<pre>
+    <column name="fruit" label="Fruit" type="enumeration" values="apple,banana,orange" cansearch="true" />
+
+</body>

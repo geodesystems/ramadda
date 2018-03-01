@@ -1,0 +1,29 @@
+<types>
+
+  <type name="glossary"  description="Glossary" handler="org.ramadda.plugins.glossary.GlossaryTypeHandler" category="Information" childtypes="glossaryentry">
+     <property name="icon" value="/glossary/glossary.png"/>
+     <property name="form.name.label" value="Glossary Name"/>
+     <property name="form.description.rows" value="5"/>
+     <property name="form.area.show" value="false"/>
+     <property name="form.date.show" value="false"/>
+     <property name="form.resource.show" value="false"/>
+     <property name="form.datatype.show" value="false"/>
+</type>
+
+
+  <type name="glossaryentry"  description="Glosssary Entry" handler="org.ramadda.plugins.glossary.GlossaryEntryTypeHandler" category="Information" foruser="false">
+     <property name="icon" value="/glossary/glossaryentry.gif"/>
+     <property name="form.name.label" value="Topic"/>
+     <property name="form.description.label" value="Descripton"/>
+     <property name="form.description.rows" value="5"/>
+     <property name="form.area.show" value="false"/>
+     <property name="form.date.show" value="false"/>
+     <property name="form.resource.show" value="false"/>
+     <property name="form.datatype.show" value="false"/>
+<!--
+     <column name="category" iscategory="true"  type="string" label="Category" cansearch="true" showinhtml="true"/>
+-->
+</type>
+
+
+</types>

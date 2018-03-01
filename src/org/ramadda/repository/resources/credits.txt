@@ -1,0 +1,20 @@
+
+RAMADDA includes software developed by:
+    * The Apache Software Foundation (http://www.apache.org/).
+    * The Jetty project (http://jetty.codehaus.org/jetty/)
+    * The University Corporation for Atmospheric Research  (UCAR)
+    * The Jython project (http://www.jython.org)
+    * NOAA
+    * Google 
+    * ViSAD  (http://www.ssec.wisc.edu/~billh/visad.html)
+    * JPEG Metadata Extractor (http://www.drewnoakes.com/code/exif/)
+    * Jquery (http://jquery.com/)
+    * JQuery Data Tables (http://datatables.net/index)
+    * Password Hashing With PBKDF2 (http://crackstation.net/hashing-security.htm) Taylor Hornby 
+    * Slidesjs (http://slidesjs.com/)
+    * Fancybox (http://fancybox.net/)
+    * Icons from the famfamfam icon collection: http://www.famfamfam.com/lab/icons/
+    * Icons from http://www.splitbrain.org/projects/file_icons
+    * Some Icons are Copyright &copy; Yusuke Kamiyamane.  All rights reserved.
+      Licensed under a Creative Commons Attribution 3.0 license.
+    * Maps Icons Collection http://code.google.com/p/google-maps-icons/ 

@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html>
+<head><title>${title}</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<properties>
+name=Earth
+id=earth
+ramadda.template.link.wrapper =<a class="link" href="${url}">${label}</a>
+ramadda.template.link.separator=&nbsp;|&nbsp;
+ramadda.template.userlink.popup=true
+ramadda.template.favorites = <b>Favorites:</b><div class="favorites">${entries}</div>
+ramadda.template.cart = <b>Cart:</b><div class="favorites">${entries}</div>
+</properties>
+${imports}
+<style type="text/css">
+body {
+  background-color: #fff;
+}
+#major_nav {
+	clear: both;
+        padding:3px;
+	background-color: #ccddff;
+	color: #000066;
+	border-top: solid 1px #000066; 
+}
+#container {
+border: solid 1px #bbb;
+margin: 0px;
+}          
+#container {
+margin: auto;
+}
+* html #container {
+width: 56em;
+margin: auto;
+}
+#major_nav {
+    text-align:center;
+    border-bottom: solid 1px #006699;
+}
+.breadcrumbs {
+   margin-left:4px;
+}
+.link {
+font-size:90%;
+font-weight:bold;
+color:black
+}
+.ramadda-header-label a {
+    font-size:24px;
+    color:white;
+}
+.ramadda-header-label  {
+    font-size:24px;
+    color:white;
+}
+
+.ramadda-header {
+   background:#030361;
+   background-repeat: no-repeat;
+   background-image:url(${root}/images/globe_top.png);
+   padding: 5px;
+   padding-top: 30px;
+   padding-bottom: 0px;
+}
+
+.ramadda-header a {
+color:white;
+}
+.ramadda-outercontents {
+   padding-top: 0px;
+}
+
+.ramadda-menubar {
+   margin-top:5px;
+   background-repeat: repeat-x;
+   background-image:none;
+   padding-top:0px;
+}
+
+
+.ramadda-innercontent {
+  margin:0px;
+  padding-left:10px;
+  padding-right:10px;
+}
+
+.ramadda-content {
+  margin:0px;
+  background:white;
+  border: 0px #aaa solid;
+  min-height:800px;
+
+}
+
+.navlinks {
+  background:white;
+  padding-top:10px;
+  border-bottom: 1px #444 solid;
+}
+
+
+.navlink a:link, .navlink a:visited {
+   color:white;
+}
+
+.ramadda-footer {
+        background: white;
+	padding: 5px;
+        border-top: 2px #000066 solid;
+	margin: 0px;
+}
+
+.ramadda-footer a {
+	color: black;
+}
+</style>
+${headfinal}
+</head>
+<body>
+<div id="container">
+<div class="ramadda-header">
+<table width="100%" cellspacing="0" cellpadding="0" border="0">
+<tr valign="bottom">
+<td><span class="ramadda-header-label">${header.title} - ${title}</span></td>
+<td align="right" style="color:white;">${links}</td>
+</tr></table>
+</div> 
+<div>
+<div class="ramadda-content">${header}
+<div class="ramadda-innercontent">${content}</div>
+</div>
+</div>
+<div class="ramadda-footer">
+${footer}
+<center><a href="${logo.url}" ><img border="0"  src="${logo.image}" align="center"></a>
+</div>
+${bottom}
+
+<div class="ramadda-acknowledgement">Powered by <a href="http://geodesystems.com">Geode Systems and RAMADDA</a></div>
+</body>
+</html>

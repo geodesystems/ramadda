@@ -1,0 +1,139 @@
+<types supercategory="Geoscience" category="GIS Data">
+
+
+  <type name="geo_kml"  description="KML/KMZ File"   handler="org.ramadda.plugins.map.KmlTypeHandler" pattern="(.*\.kml$|.*\.kmz$)">
+     <property name="icon" value="/icons/kml.png"/>
+   </type>
+
+
+  <type name="latlonimage"  description="WMS Image" datatype="latlonimage"  handler="org.ramadda.plugins.map.LatLonImageTypeHandler">
+     <property name="icon" value="/icons/map.png"/>
+     <column name="map_width" label="Map Width" type="int" showinhtml="false" default="800"/>
+     <column name="map_height" label="Map Height" type="int" showinhtml="false" default="600"/>
+     <wiki_inner><![CDATA[
++section title="WMS Image: {{name}}"
+{{description}}
+{{map width="600" height="450" details="true"}}
+
+{{resource includeicon="true"}}
+-section
+]]>
+</wiki_inner>
+  </type>
+
+
+  <type name="geo_gpx"  super="type_point" description="GPX GPS File"   handler="org.ramadda.plugins.map.GpxTypeHandler" pattern=".*\.gpx$">
+     <property name="icon" value="/map/tracklog.gif"/>
+     <property name="point.initialize" value="false"/>
+     <column name="distance" label="Distance" type="double" cansearch="true" showinhtml="true" databaseDefault="-1"/>
+     <column name="total_time" label="Total Time" type="double" cansearch="true" showinhtml="true"  databaseDefault="-1"/>
+     <column name="moving_time" label="Moving Time" type="double" cansearch="true" showinhtml="true"  databaseDefault="-1"/>
+     <column name="speed" label="Average Speed" type="double" cansearch="true" showinhtml="true"  databaseDefault="-1"/>
+     <column name="elevation_gain" label="Elevation Gain" type="double" cansearch="true" showinhtml="true"  databaseDefault="-1"/>
+     <column name="elevation_loss" label="Elevation Loss" type="double" cansearch="true" showinhtml="true"  databaseDefault="-1"/>
+<wiki>
+<![CDATA[
++section class="ramadda-section-map" title={{name}}
+{{description wikify="true"}}
+<center>
+{{gpx.stats}}
+</center>
+<p>
+  {{mapentry  width="-100" height="400" details="true" layer="opentopo" mapVar="gpxMap" }}
+  {{group showMenu="true" mapVar="gpxMap"}}
+  {{display type="linechart" showTitle="false" layoutHere="true" showMenu="true" fields="point_altitude,speed"  errorMessage=" "  }}
+
+----
+{{gallery message=""}}
+{{tabs message="" entries.filter="type:media_video_quicktime;media_audiofile"}}
+{{information showTitle="false"}}
+-section
+]]>
+</wiki>
+   </type>
+
+
+  <type name="geo_shapefile"  description="Shapefile"   handler="org.ramadda.plugins.map.ShapefileTypeHandler" pattern="(.*\.shp$|.*shp.*\.zip)">
+     <property name="icon" value="/icons/map.png"/>
+     <property name="upload.zip" value="true"/>
+
+
+<wiki>
++section title={{name}}
++row
++col-md-2
+-col
++col-md-8
+{{map width="100%" height="450" details="true"}}
+-col
+-row
+{{information}}
+-section
+</wiki>
+   </type>
+
+
+<!--
+
+
+  <type name="map"  description="Map"  >
+     <property name="icon" value="/icons/map.png"/>
+     <column name="maptype" label="Map Type" type="enumerationplus" cansearch="true" values="file:/org/ramadda/plugins/map/maptypes.txt" showinhtml="true"/>
+
+     <column name="country" label="Country" type="enumerationplus" cansearch="true" showinhtml="true"/>
+     <column name="state" label="State" type="enumerationplus" cansearch="true" showinhtml="true"/>
+     <column name="scale" label="Scale"  type="enumerationplus" cansearch="true" showinhtml="true"/>
+   </type>
+-->
+
+<!--
+  <type name="map_map"  description="Editable Map" handler="org.ramadda.plugins.map.MapTypeHandler" >
+     <property name="icon" value="/icons/map.png"/>
+     <property name="form.show.resource" value="false"/>
+     <property name="form.show.area" value="true"/>
+     <property name="form.show.datatype" value="false"/>
+     <property name="form.show.date" value="false"/>
+     <property name="form.show.altitude" value="false"/>
+     <property name="form.show.altitude.top" value="false"/>
+   </type>
+
+
+  <type name="map_entry"  description="Map Item" handler="org.ramadda.plugins.map.MapEntryTypeHandler" foruser="false" >
+     <column name="properties" type="clob" size="256000" label="" cansearch="false" showinhtml="false"/>
+   </type>
+
+
+  <type name="map_entry_image"  super="map.entry" description="Map Image" handler="org.ramadda.plugins.map.MapEntryTypeHandler" foruser="false" >
+     <property name="icon" value="/icons/map.png"/>
+   </type>
+
+  <type name="map_entry_polygon"  super="map.entry" description="Map Polygon" handler="org.ramadda.plugins.map.MapEntryTypeHandler" foruser="false" >
+     <property name="icon" value="/icons/map.png"/>
+   </type>
+
+
+  <type name="map_entry_marker"  super="map.entry" description="Map Marker" handler="org.ramadda.plugins.map.MapEntryTypeHandler" foruser="false" >
+     <property name="icon" value="/icons/map.png"/>
+   </type>
+
+-->
+
+  <type name="map_googlemap"  
+        description="Google Map URL" 
+        handler="org.ramadda.plugins.map.GoogleMapsTypeHandler" 
+        pattern="^https://maps.google.com/maps/ms.*">
+     <property name="icon" value="/media/youtube.png"/>
+     <property name="form.area.show" value="false"/>
+     <property name="form.date.show" value="false"/>
+     <property name="form.datatype.show" value="false"/>
+     <property name="form.file.show" value="false"/>
+     <property name="form.url.label" value="Google Map URL"/>
+     <column name="width" type="int" label="Width"  default="640" showinhtml="false"/>
+     <column name="height" type="int" label="Height"  default="390" showinhtml="false"/>
+     <column name="display" type="boolean" label="Display" default="true"  showinhtml="false"/>
+</type>
+
+
+
+
+</types>

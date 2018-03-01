@@ -1,0 +1,12 @@
+<types>
+  <type name="wikipage"  description="Wiki Page" handler="org.ramadda.plugins.wiki.WikiPageTypeHandler" category="Information">
+     <property name="icon" value="/icons/wiki.png"/>
+     <property name="form.description.rows" value="50"/>
+     <property name="form.date.show" value="true"/>
+     <property name="form.area.show" value="true"/>
+     <property name="form.resource.show" value="false"/>
+     <column name="wikitext" type="clob" size="256000" label="Wiki Text" cansearch="true" showinhtml="false"/>
+     <column name="category" iscategory="true"  type="string"  label="Wiki Page Category" cansearch="true" isindex="true" searchtype="select" showinhtml="false"/>
+</type>
+
+</types>

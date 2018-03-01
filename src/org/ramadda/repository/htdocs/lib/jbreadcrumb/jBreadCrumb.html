@@ -1,0 +1,210 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml">
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+        <title>CompareNetworks jQuery'd Bread Crumb - jBreadCrumb</title>
+        <link rel="stylesheet" href="Styles/Base.css" type="text/css">
+        <link rel="stylesheet" href="Styles/BreadCrumb.css" type="text/css">
+        <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.3.2/jquery.min.js">
+        </script>
+        <script src="js/jquery.easing.1.3.js" type="text/javascript" language="JavaScript">
+        </script>
+        <script src="js/jquery.jBreadCrumb.1.1.js" type="text/javascript" language="JavaScript">
+        </script>
+        <script type="text/javascript">
+            jQuery(document).ready(function()
+            {
+                jQuery("#breadCrumb0").jBreadCrumb({easing:'swing'});
+                jQuery("#breadCrumb1").jBreadCrumb();
+                jQuery("#breadCrumb2").jBreadCrumb();
+                jQuery("#breadCrumb3").jBreadCrumb();
+            })
+        </script>
+    </head>
+    <body>
+        <div id="container">
+            <h1>CompareNetworks jQuery'd Bread Crumb - jBreadCrumb</h1>
+            <!-- Bread Crumb Code - Be sure to include the chevronOverlay element so we can load the semi transparend png -->
+            <div class="breadCrumbHolder module">
+                <div id="breadCrumb0" class="breadCrumb module">
+                    <ul>
+                        <li>
+                            <a href="#">Home</a>
+                        </li>
+                        <li>
+                            <a href="#">Biocompare Home</a>
+                        </li>
+                        <li>
+                            <a href="#">Product Discovery</a>
+                        </li>
+                        <li>
+                            <a href="#">Life Science Products / Laboratory Supplies</a>
+                        </li>
+                        <li>
+                            <a href="#">Kits and Assays</a>
+                        </li>
+                        <li>
+                            <a href="#">Mutagenesis Kits</a>
+                        </li>
+                        <li>
+                            Mutation Generation System&trade;
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            <div class="breadCrumbHolder module">
+                <div id="breadCrumb1" class="breadCrumb module">
+                    <ul>
+                        <li>
+                            <a href="#">Home</a>
+                        </li>
+                        <li>
+                            <a href="#">Biocompare Home</a>
+                        </li>
+                        <li>
+                            <a href="#">Product Discovery</a>
+                        </li>
+                        <li>
+                            <a href="#">Life Science Products / Laboratory Supplies</a>
+                        </li>
+                        <li>
+                            <a href="#">Kits and Assays</a>
+                        </li>
+                        <li>
+                            <a href="#">Mutagenesis Kits</a>
+                        </li>
+                        <li>
+                            Mutation Generation System&trade; Kit (MGS&trade; Kit) from Finnzymes Oy
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            <div class="breadCrumbHolder module">
+                <div id="breadCrumb2" class="breadCrumb module">
+                    <ul>
+                        <li>
+                            <a href="#">Home</a>
+                        </li>
+                        <li>
+                            <a href="#">Biocompare Home</a>
+                        </li>
+                        <li>
+                            <a href="#">Product Discovery</a>
+                        </li>
+                        <li>
+                            <a href="#">Life Science Products / Laboratory Supplies</a>
+                        </li>
+                        <li>
+                            <a href="#">Kits and Assays</a>
+                        </li>
+                        <li>
+                            <a href="#">Mutagenesis Kits</a>
+                        </li>
+                        <li>
+                            Mutation Generation System&trade; Kit (MGS&trade; Kit) from Finnzymes Oy. Ok, let's get ridiculously long here, we all know it happens.
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            <div class="breadCrumbHolder module">
+                <div id="breadCrumb3" class="breadCrumb module">
+                    <ul>
+                        <li>
+                            <a href="#">Home</a>
+                        </li>
+                        <li>
+                            <a href="#">Biocompare Home</a>
+                        </li>
+                        <li>
+                            Mutation Generation System&trade;
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            <div class="chevronOverlay main">
+            </div>
+            <!-- End Bread Crumb Code -->
+            <div class="writeup module">
+                <div class="description">
+                    <h2>Update - jBreadCrumb 1.1</h2>
+                    With a little help from jquery user "mikejbond", the chevron overlay div no longer needs to be part of the HTML, it is inserted dynamically.  You may still want include it if you want to cache image on page load.  Also, the easing plugn is no longer required, the animation will default to "swing" easing.  I still recommend "easeOutQuad" for the best looking animation, but it's not necessary.<h2>Explanation</h2>
+                    <p>
+                        This collapsible breadcrumb was developed to deal with deeply nested, verbosely named pages. Rather than limit the amount of elements shown on the sever side, we decided to go with a client side solution for usability and SEO reasons. It also turned out nice to look at and fun to play with. 
+                    </p>
+                    <p>
+                        It is smart in the sense that it collapses based upon the amount and length of the elements in the set.  The breadcrumb uses a semitransparent .png overlay to achieve the gradient effect seen on the elements.  Visually, it helps to show a "peek" at what is underneath.
+                    </p>
+                    <p>
+                        Oh, and it's compatible with ie 6, ie 7 and all standards compliant browsers.
+                    </p>
+                    <p>
+                        To use the plugin, it's as simple as the code below.
+                    </p>
+                    <pre>jQuery(document).ready(function()
+{
+	jQuery("#breadCrumb").jBreadCrumb();
+})</pre>
+                    <p>
+                        The only additional jQuery plugin required is the <a href="http://gsgd.co.uk/sandbox/jquery/easing/" title="jQuery Easing">easing plugin</a>
+                        written by GSGD.  The plugin uses Robert Penner's wonderful easing equations that anyone from a flash background is familiar with, I love 'easeOutQuad', it makes things so smooooth.
+                    </p>
+                    <p>
+                        If you don't want to use the plugin, set the options to use the normal "swing" (esentially "easeInOut") or "linear" easing provided by jQuery.  The easing equations will no longer be necessary.
+                    </p>
+                    <pre>jQuery(document).ready(function()
+{
+	jQuery("#breadCrumb").jBreadCrumb({easing:'swing'});
+})
+</pre>
+                    <p>
+                        Or, set it globally
+                    </p>
+                    <pre>
+jQuery.fn.jBreadCrumb.defaults.easing = 'linear';
+</pre>
+                    <p>
+                        There are a lot of options in there, you can adjust many of the features pretty easily through the options.  Have fun with it.
+                    </p>
+                    <p>
+                        Written by Jason Roy for CompareNetworks Inc.
+                    </p>
+                    <div class="license">
+                        <p>
+                            Copyright (c) 2008 CompareNetworks Inc.
+                        </p>
+                        <p>
+                            Permission is hereby granted, free of charge, to any person obtaining a copy
+                            of this software and associated documentation files (the "Software"), to deal
+                            in the Software without restriction, including without limitation the rights
+                            to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+                            copies of the Software, and to permit persons to whom the Software is
+                            furnished to do so, subject to the following conditions:
+                        </p>
+                        <p>
+                            The above copyright notice and this permission notice shall be included in
+                            all copies or substantial portions of the Software.
+                        </p>
+                        <p>
+                            THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+                            IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+                            FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+                            AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+                            LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+                            OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+                            THE SOFTWARE.
+                        </p>
+                    </div>
+                </div>
+                <div class="sideBar">
+                    <h3>Get jQuery.jBreadCrumb</h3>
+                    <p>
+                        You can download the files necessary to use the plugin here
+                    </p>
+                    <p>
+                        <strong><a href="jBreadCrumb.zip" title="Download jBreadCrumb Plugin">Download jBreadCrumb Plugin</a></strong>
+                    </p>
+                </div>
+            </div>
+        </div>
+    </body>
+</html>

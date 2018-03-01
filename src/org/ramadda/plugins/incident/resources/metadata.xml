@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<metadata>
+
+  <handler  category="Incidents">
+
+    <type name="Fire Situation" id="incident.fire.situation"  searchable="false" browsable="true" entrytype="incident">
+      <element id="personnel" name="Total Personnel"  datatype="int"/>
+      <element id="size" name="Size"  datatype="int"/>
+      <element id="percentcontained" name="Percent Contained"  datatype="int"/>
+      <element id="fuels"  name="Fuels Involved" datatype="string"/>
+      <element id="behavior" name="Fire Behavior"  datatype="string" rows="5"/>
+      <element id="events" name="Significant Events"  datatype="string" rows="5"/>
+    </type>
+
+
+    <type name="Fire Outlook" id="incident.fire.outlook"  searchable="false" browsable="true" entrytype="incident">
+      <element id="actions" name="Planned Actions"  datatype="string" rows="5"/>
+      <element id="growth" name="Growth Potential"  datatype="enumeration" values="Low,Medium,High,Extreme" searchable="true"/>
+      <element id="terrain" name="Terrain Difficulty"  datatype="enumeration" values="Low,Medium,High,Extreme" searchable="true"/>
+      <element id="remarks" name="Remarks"  datatype="string" rows="5"/>
+    </type>
+
+
+</handler>
+
+</metadata>

@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html><head>
+<!--
+<properties>
+name=Tunisia Template
+id=tunisia
+
+ramadda.template.link.wrapper =<span class="navlink"><a  href="${url}">${label}</a></span>
+ramadda.template.link.separator=&nbsp;|&nbsp;
+
+ramadda.template.userlink.wrapper =<span class="navlink"><a  href="${url}">${label}</a></span>
+ramadda.template.userlink.separator=&nbsp;|&nbsp;
+
+ramadda.template.favorites = <b>Favorites:</b><div class="favorites">${entries}</div>
+ramadda.template.cart = <b>Cart:</b><div class="favorites">${entries}</div>
+
+</properties>
+-->
+
+${imports}
+
+<title>${header.title} - ${title}</title>
+<meta http-equiv="Content-Type" content="text/html; charset=windows-1256">
+<link rel="stylesheet" href="${root}/tunisia/cssen.css" type="text/css">
+<style type="text/css">
+body {
+background-color:  #FFCF31;
+margin-top:6px;
+margin-left:10px;
+margin-right:10px;
+}
+.tunisia-header {
+background-color: #315994;
+}
+.tunisia-outercontents {
+border: 2px solid #739ED6;
+min-height: 700px;
+background-color: #fff;
+}
+.tunisia-subheader {
+   background-color: #739ED6;
+   color:white;
+}
+
+.navlink a:link, .navlink a:visited {
+   color:white;
+}
+
+.navlink a:link {
+   color:white;
+}
+
+
+</style>
+</head>
+
+<body>
+<div class="tunisia-header">
+<table border="0" cellpadding="0" cellspacing="0" width="100%">
+  <tbody>
+   <tr> 
+    <td><img src="${root}/tunisia/logo.gif" height="59" width="80"></td>
+    <td align="right"><img src="${root}/tunisia/banner.jpg" height="59" width="624"></td>
+  </tr>
+  <tr> 
+    <td  width="106"><img src="${root}/tunisia/logo2.gif" height="25" width="80"></td>
+    <td  width="598" align="right"><img src="${root}/tunisia/titre2.gif" alt="Institut National de la Météorologie" height="25" width="483"></td>
+  </tr>
+</tbody></table>
+</div>
+
+<div class="tunisia-outercontents">
+<div class="tunisia-subheader">
+<table id="header_links" width=100%><tr>
+<td><span class="txt12Bbc"></span></td>
+<td align=right><span class="txt12Bbc"> ${links}</span></td></tr></table>
+</div>
+<div style="margin-top:5px;">${entry.header}<div class="innercontent">${content}</div></div>
+
+
+</div>
+</body></html>

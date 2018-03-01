@@ -1,0 +1,81 @@
+<html>
+<head>
+<title>Defining New Entries</title>
+  <link rel="stylesheet" type="text/css" href="./default.css" title="Style">
+
+</head>
+
+<body>
+<div class="ramadda-documentation">
+<table width=100% cellspacing=0 cellpadding=0 ><tr><td width=30%>
+<a href="dataingest.html"><img src="images/PreviousArrow.gif" border="0"   alt="Previous: Data Ingest" title="Previous: Data Ingest"></a> <a href="entryxml.html"><img src="images/NextArrow.gif" border="0"   alt="Next: Entry Xml Import/Export Format" title="Next: Entry Xml Import/Export Format"></a>  <a href="toc.html#entrytypes.html"><img src="images/TOCIcon.gif" border="0"   alt="Table of contents" title="Table of contents"></a>
+</td>
+<td width=40% align=center>
+<div class="ramadda-page-title">RAMADDA User Guide</div>
+</td>
+<td width=30%>&nbsp;</td>
+</tr></table>
+<div class="ramadda-page-heading">12.1 Defining New Entries</div>
+
+<style type="text/css">
+pre {
+    margin-left:15px;
+}
+</style>
+
+<div style="margin-left:20px;">
+
+
+
+RAMADDA recognizes any file that ends with types.xml as an entry type definition file
+
+
+<a href="examples/exampletypes.xml.txt">exampletypes.xml</a>
+
+You can use this xml file as a plugin. But, if you wanted to include html resources
+you would have a zipped directory like:
+someplugin
+      exampletypes.xml
+      htdocs
+          myplugin
+               example.png
+
+Note: the names above do not matter except 
+
+
+<h3> Column Types</h3>
+
+<ul>
+<li> <i> string</i> -  Use size="..." to specify the column size
+<li> <i> enumeration</i>  - See below to specify values
+<li> <i> enumerationplus</i>  - Just like enumeration but allows use to enter new text values
+<li> <i> list</i>  - A big string internally but shows a list of newline separated text values to the user
+<li> <i> password</i>  - A string but is shown in a password field
+<li> <i> clob</i>  - A big character large object
+<li> <i> int</i>  - Integer
+<li> <i> double</i>  - floating point number
+<li> <i> percentage</i> - floating point number shows as percentage
+<li> <i> boolean</i>  
+<li> <i> date</i>  - Just a date
+<li> <i> datetime</i>  - A date and a time
+<li> <i> email</i>  - Shows as an email address
+<li> <i> url</i>  - Shows as a URL
+<li> <i> latlonbbox</i> - spatial bounds
+<li> <i> latlon</i>  - A single point
+</ul>
+
+For enumeration or  enumerationplus types you can specify a set of enumeration values. 
+<pre>
+    <column name="fruit" label="Fruit" type="enumeration" values="apple,banana,orange" cansearch="true" />
+
+
+</div>
+<p>
+<div  class="childlist" ><table  width="100%" ></table></div>
+<p>&nbsp;<p>
+<a href="dataingest.html"><img src="images/PreviousArrow.gif" border="0"   alt="Previous: Data Ingest" title="Previous: Data Ingest"></a> <a href="entryxml.html"><img src="images/NextArrow.gif" border="0"   alt="Next: Entry Xml Import/Export Format" title="Next: Entry Xml Import/Export Format"></a>  <a href="toc.html#entrytypes.html"><img src="images/TOCIcon.gif" border="0"   alt="Table of contents" title="Table of contents"></a>
+<p>
+</div>
+</body>
+</html>
+

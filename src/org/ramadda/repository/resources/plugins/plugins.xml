@@ -1,0 +1,4 @@
+<plugins>
+<plugin url="/org/ramadda/repository/plugins/ramadda1.3b-allplugins.zip" 
+        name="All plugins"/>
+</plugins>

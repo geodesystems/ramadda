@@ -1,0 +1,467 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<project basedir="../../../.." default="all" name="Ramadda">
+
+    <target name="all" depends="ramadda.jar,repository.war,ramadda.zip,installer">
+    </target>
+
+
+    <target name="initbasic">
+       <tstamp>
+         <format property="date" pattern="yyyy-MM-dd HH:mm z" timezone="UTC"/>
+       </tstamp>
+        <property file="${basedir}/build.properties"/>
+        <property name="ramadda_relpath" value="org/ramadda/repository" />
+        <property name="ramadda_dir" value="${src_dir}/${ramadda_relpath}" />
+        <property name="release_dir" value="${dist_dir}/${release_name}" />
+        <property name="tmpjar_dir" value="${dist_dir}/tmpjardir" />
+        <property name="srcrelease_dir" value="${release_name}src${_version}" />
+	<property name="docs_dir" value="${dist_dir}/${release_name}docs"/>
+        <property name="docs_javadoc_dest" value="${docs_dir}/javadoc" />
+
+        <property name="tika_jar" value="tika-app-1.13.jar" />
+        <property name="jfreechart_jar" value="jfreechart-1.0.19.jar" />
+        <property name="unidata_jar" value="idv.jar" />
+
+        <property name="clientbase" value="ramaddaclient" />
+
+        <mkdir dir="${dist_dir}"/>
+        <copy overwrite="true" file="${ramadda_dir}/release/README" todir="${dist_dir}">
+            <filterset>
+                <filter token="DATE" value="${date}"/>
+                <filter token="VERSION" value="${version}"/>
+                <filter token="RELEASE_VERSION" value="${release_version}"/>
+            </filterset>
+       </copy>
+       
+    </target>
+
+    <target name="init" depends="initbasic,initcore,initfull">
+    </target>
+
+
+    <target name="initcore" if="core">
+       <property name="classpath" value="${lib_dir}/ramaddalib.jar:${lib_dir}/servlet-api.jar:${lib_dir}/jetty.jar"/>
+       <property name="manifestjars" value="${tika_jar} ${jfreechart_jar} ramaddalib.jar   servlet-api.jar jetty.jar allplugins_classes.jar"/>
+       <property name="lib1" value="${lib_dir}/dummy.jar"/>
+       <property name="lib2" value="${lib_dir}/dummy.jar"/>
+       <property name="lib3" value="${lib_dir}/dummy.jar"/>
+    </target>
+
+    <target name="initfull">
+       <property name="classpath" value="${lib_dir}/ramaddalib.jar:${lib_dir}/${unidata_jar}:${lib_dir}/${tika_jar}:${lib_dir}/ramaddatds.jar:${lib_dir}/servlet-api.jar:${lib_dir}/jetty.jar"/>
+       <property name="manifestjars" value="${unidata_jar} ${tika_jar}  ${jfreechart_jar} ramaddalib.jar   ramaddatds.jar servlet-api.jar jetty.jar allplugins_classes.jar" />
+       <property name="lib1" value="${lib_dir}/visad.jar" />
+       <property name="lib2" value="${lib_dir}/ncIdv.jar"/>
+    </target>
+
+
+    <target name="clean" depends="init" >
+        <delete>
+            <fileset dir="${compile_dir}" includes="**/*.class"/>
+        </delete>
+    </target>
+
+    <target name="runserver" depends="init">
+      <java classname="org.ramadda.repository.server.JettyServer" maxmemory="1024m" fork="true">
+          <arg value="-port"/>
+          <arg value="8080"/>
+          <arg value="-Dramadda.cacheresources=false"/>
+          <classpath>
+             <pathelement path="${dist_dir}/${ramadda_jar}"/>
+             <pathelement path="${classpath}"/>
+             <pathelement location=""/>
+         </classpath>
+     </java>
+   </target>
+
+
+    <target name="release" depends="init,clean">
+        <!-- ramadda.zip depends on ramadda.jar so it's redundant
+        <antcall target="ramadda.jar"/>
+        -->
+        <antcall target="ramadda.zip"/>
+        <antcall target="repository.war"/>
+        <antcall target="installer"/>
+        <antcall target="client"/>
+    </target>
+
+    <target name="client" depends="init,clean">
+       <javac
+            verbose="false"
+            classpath="${classpath}"
+            debug="true"
+            deprecation="false" 
+            destdir="${compile_dir}"
+            failonerror="${javac.failonerror}" 
+            nowarn="true"
+            srcdir="${src_dir}"
+            fork="true"
+            memoryMaximumSize="${javac.maxmemory}"
+            source="${javac.version}"
+            target="${javac.version}"
+        >
+        <include name="${ramadda_relpath}/client/InteractiveRepositoryClient.java"/>
+        <include name="${ramadda_relpath}/client/RepositorySearch.java"/>
+        </javac>
+        <mkdir dir="${tmpjar_dir}"/>
+        <delete includeemptydirs="true">
+            <fileset dir="${tmpjar_dir}" includes="**/*"/>
+        </delete>
+        <unjar src="${lib_dir}/extra.jar" dest="${tmpjar_dir}"/>
+
+        <jar 
+            basedir="${compile_dir}"
+            update="false"
+            compress="true"
+            jarfile="${dist_dir}/${clientbase}.jar">
+           <manifest>
+              <attribute name="Implementation-Title" value="Ramadda Client"/>
+              <attribute name="Implementation-Version" value="1.0"/>
+              <attribute name="Implementation-Vendor" value="RAMADDA"/>
+              <attribute name="Main-class" value="org.ramadda.repository.client.RepositoryClient"/>
+              <attribute name="Class-Path" value="unidatautil.jar commons-httpclient-3.1.jar commons-logging-1.1.jar commons-codec-1.3.jar"/>
+            </manifest> 
+
+            <include name="org/**/*.class"/>
+            <include name="${ramadda_dir}/htdocs/icons/folderopen.png"/>
+            <include name="${ramadda_dir}/htdocs/icons/folderclosed.png"/>
+	    </jar>
+
+        <jar 
+            basedir="${compile_dir}"
+            update="false"
+            compress="true"
+            jarfile="${dist_dir}/ramaddasearch.jar">
+           <include name="org/**/*.class"/>
+           <include name="${ramadda_dir}/htdocs/icons/folderopen.png"/>
+           <manifest>
+              <attribute name="Implementation-Title" value="Ramadda Search Client"/>
+              <attribute name="Implementation-Version" value="1.0"/>
+              <attribute name="Implementation-Vendor" value="RAMADDA"/>
+              <attribute name="Main-class" value="org.ramadda.repository.client.RepositorySearch"/>
+              <attribute name="Class-Path" value="unidatautil.jar commons-httpclient-3.1.jar commons-logging-1.1.jar commons-codec-1.3.jar"/>
+            </manifest> 
+       </jar>
+
+        <zip destfile="${dist_dir}/${clientbase}.zip">
+         <zipfileset dir="${dist_dir}" includes="${clientbase}.jar" fullpath="${clientbase}/lib/${clientbase}.jar"/>
+         <zipfileset dir="${dist_dir}" includes="ramaddasearch.jar" fullpath="${clientbase}/lib/ramaddasearch.jar"/>
+         <zipfileset dir="${lib_dir}" includes="unidatautil.jar" fullpath="${clientbase}/lib/unidatautil.jar"/>
+         <zipfileset dir="${lib_dir}" includes="commons-httpclient-3.1.jar" fullpath="${clientbase}/lib/commons-httpclient-3.1.jar"/>
+         <zipfileset dir="${lib_dir}" includes="commons-logging-1.1.jar" fullpath="${clientbase}/lib/commons-logging-1.1.jar"/>
+         <zipfileset dir="${lib_dir}" includes="commons-codec-1.3.jar" fullpath="${clientbase}/lib/commons-codec-1.3.jar"/>
+         <zipfileset dir="${ramadda_dir}/release" includes="README.CLIENT" fullpath="${clientbase}/README"/>
+         <zipfileset dir="${ramadda_dir}/client" includes="ramaddaclient.sh" fullpath="${clientbase}/ramaddaclient.sh"/>
+         <zipfileset dir="${ramadda_dir}/client" includes="search.sh" fullpath="${clientbase}/search.sh"/>
+         <zipfileset dir="${ramadda_dir}/client" includes="install.sh" fullpath="${clientbase}/install.sh"/>
+         <zipfileset dir="${ramadda_dir}/client" includes="ramaddaenv.sh" fullpath="${clientbase}/ramaddaenv.sh"/>
+         <zipfileset dir="${ramadda_dir}/client" includes="README" fullpath="${clientbase}/README"/>
+        </zip>
+
+    </target>
+
+
+    <target name="installer" depends="init,clean">
+        <property name="installer_dir" value="${dist_dir}/ramaddainstaller" />
+        <mkdir dir="${installer_dir}"/>
+        <copy overwrite="true" file="${ramadda_dir}/release/installer/installer.sh" todir="${installer_dir}">
+            <filterset>
+                <filter token="VERSION" value="${version}"/>
+                <filter token="RELEASE_VERSION" value="${release_version}"/>
+            </filterset>
+
+        </copy>
+        <copy overwrite="true" file="${ramadda_dir}/release/installer/aws.sh" todir="${installer_dir}">
+            <filterset>
+                <filter token="VERSION" value="${version}"/>
+                <filter token="RELEASE_VERSION" value="${release_version}"/>
+            </filterset>
+          </copy>
+        <copy overwrite="true" file="${ramadda_dir}/release/installer/update.sh" todir="${installer_dir}">
+            <filterset>
+                <filter token="VERSION" value="${version}"/>
+            </filterset>
+          </copy>
+        <copy overwrite="true" file="${ramadda_dir}/release/installer/README" todir="${installer_dir}">
+            <filterset>
+                <filter token="VERSION" value="${version}"/>
+                <filter token="RELEASE_VERSION" value="${release_version}"/>
+            </filterset>
+          </copy>
+        <zip destfile="${dist_dir}/ramaddainstaller.zip">
+         <zipfileset dir="${installer_dir}" includes="*" prefix="ramaddainstaller"/>
+        </zip>
+    </target>
+
+
+    <target name="compile" depends="init,clean">
+        <javac
+            classpath="${classpath}"
+            debug="true"
+            deprecation="false" 
+            destdir="${compile_dir}"
+            failonerror="${javac.failonerror}" 
+            nowarn="true"
+            srcdir="${src_dir}"
+            source="${javac.version}"
+            target="${javac.version}"
+
+	    fork="true"
+            memoryMaximumSize="${javac.maxmemory}"
+        >
+        <include name="${ramadda_relpath}/*.java"/>
+        <include name="${ramadda_relpath}/admin/*.java"/>
+        <include name="${ramadda_relpath}/auth/*.java"/>
+        <include name="${ramadda_relpath}/client/*.java"/>
+        <include name="${ramadda_relpath}/ftp/*.java"/>
+        <include name="${ramadda_relpath}/harvester/*.java"/>
+        <include name="${ramadda_relpath}/metadata/*.java"/>
+        <include name="${ramadda_relpath}/monitor/*.java"/>
+        <include name="${ramadda_relpath}/output/*.java"/>
+        <include name="${ramadda_relpath}/type/*.java"/>
+        <include name="${ramadda_relpath}/util/*.java"/>
+        <include name="org/ramadda/util/*.java"/>
+        <include name="org/ramadda/data/**/*.java"/>
+        <include name="${ramadda_relpath}/search/*.java"/>
+        <include name="${ramadda_relpath}/server/*.java"/>
+        <include name="${ramadda_relpath}/services/*.java"/>
+        <exclude name="${ramadda_relpath}/examples/*.java"/>
+        </javac>
+    </target>
+
+    <target name="ramadda.jar" depends="init,compile">
+        <copy overwrite="true" file="ramadda_license.txt" tofile="${ramadda_dir}/resources/ramadda_license.txt"/>
+        <copy overwrite="true" file="${ramadda_dir}/resources/version.properties" tofile="${ramadda_dir}/resources/build.properties">
+            <filterset>
+                <filter token="DATE" value="${date}"/>
+                <filter token="VERSION" value="${version}"/>
+            </filterset>
+        </copy>
+        <jar 
+            basedir="${src_dir}"
+            compress="true"
+            update="false"
+            jarfile="${dist_dir}/${ramadda_jar}">
+           <manifest>
+              <attribute name="Implementation-Title" value="Geode Systems Ramada"/>
+              <attribute name="Implementation-Version" value="1.1"/>
+              <attribute name="Implementation-Vendor" value="RAMADDA"/>
+              <attribute name="Main-class" value="org.ramadda.repository.server.JettyServer"/>
+              <attribute name="Class-Path" value="${manifestjars}"/>
+            </manifest> 
+            <include name="**/*.class"/>
+<!--
+            <include name="**/*.xml"/>
+-->
+
+            <include name="org/ramadda/data/**/*.txt"/>
+            <include name="org/ramadda/data/**/*.properties"/>
+            <include name="${ramadda_relpath}/htdocs/**/*.*"/>
+            <include name="${ramadda_relpath}/resources/**/*.*"/>
+            <include name="${ramadda_relpath}/idv/template.jnlp"/>
+        </jar>
+    </target>
+
+
+    <target name="zip" depends="init">
+        <zip destfile="${dist_dir}/${ramadda_zip}">
+          <zipfileset dir="${release_dir}" prefix="${release_name}"/>
+        </zip>
+     </target>
+
+
+    <target name="ramadda.zip" depends="init,ramadda.jar">
+        <mkdir dir="${release_dir}"/>
+        <delete includeemptydirs="true">
+            <fileset dir="${release_dir}" includes="**/*"/>
+        </delete>
+        <mkdir dir="${release_dir}/lib"/>
+        <copy  file="${dist_dir}/${ramadda_jar}" todir="${release_dir}/lib" overwrite="true" />
+        <copy  file="${lib_dir}/${unidata_jar}" todir="${release_dir}/lib" overwrite="true" />
+        <copy  file="${lib_dir}/ramaddalib.jar" todir="${release_dir}/lib" overwrite="true" />
+        <copy  file="${lib_dir}/${tika_jar}" todir="${release_dir}/lib" overwrite="true" />
+        <copy  todir="${release_dir}" overwrite="true">
+          <fileset dir="${ramadda_dir}/release/standalone">
+              <exclude name="**/init.sh"/>
+          </fileset>
+          <filterset>
+              <filter token="RELEASE" value="${release_name}"/>
+              <filter token="REPOSITORYJAR" value="${ramadda_jar}"/>
+              <filter token="VERSION" value="${version}"/>
+          </filterset>
+        </copy>
+
+        <copy  file="${lib_dir}/ramaddatds.jar" todir="${release_dir}/lib" overwrite="true" />
+        <copy  file="${lib_dir}/servlet-api.jar" todir="${release_dir}/lib" overwrite="true" />
+        <copy  file="${lib_dir}/jetty.jar" todir="${release_dir}/lib" overwrite="true" />
+        <delete file="${lib_dir}/repository.tar"/>
+        <delete file="${dist_dir}/${ramadda_zip}"/>
+        <zip destfile="${dist_dir}/${ramadda_zip}">
+          <zipfileset dir="${release_dir}" prefix="${release_name}"/>
+        </zip>
+    </target>
+
+
+    <target name="war" depends="repository.war">
+    </target>
+
+
+    <target name="repository.war" depends="init">
+      <delete>
+           <fileset file="${dist_dir}/${ramadda_war}"/>
+       </delete>
+      <war webxml="${ramadda_dir}/release/web.xml" destfile="${dist_dir}/${ramadda_war}">
+          <webinf file="${ramadda_dir}/release/repository.properties"/>
+          <lib file="${dist_dir}/${ramadda_jar}"/>
+          <lib file="${lib_dir}/ramaddalib.jar"/>
+          <lib file="${lib_dir}/ramaddatds.jar"/>
+          <lib file="${lib_dir}/${unidata_jar}"/>
+          <lib file="${lib_dir}/${tika_jar}"/>
+      </war>
+    </target>
+
+
+    <target name="ramaddalib" depends="init">
+        <mkdir dir="${tmpjar_dir}"/>
+        <delete includeemptydirs="true">
+            <fileset dir="${tmpjar_dir}" includes="**/*"/>
+
+        </delete>
+
+
+        <unjar src="${lib_dir}/extra.jar" dest="${tmpjar_dir}"/>
+        <unjar src="${lib_dir}/json.jar" dest="${tmpjar_dir}"/>
+        <unjar src="${lib_dir}/jython.jar" dest="${tmpjar_dir}"/>
+        <unjar src="${lib_dir}/gdata.jar" dest="${tmpjar_dir}"/>
+<!--
+        <unjar src="${lib_dir}/idvmaps.jar" dest="${tmpjar_dir}"/>
+        <unjar src="${lib_dir}/external.jar" dest="${tmpjar_dir}"/>
+-->
+
+
+        <unjar src="${lib_dir}/javax.jar" dest="${tmpjar_dir}"/>
+        <unjar src="${lib_dir}/jmapproj.jar" dest="${tmpjar_dir}"/>
+        <unjar src="${lib_dir}/lucene-core-3.0.3.jar" dest="${tmpjar_dir}"/>
+        <unjar src="${lib_dir}/mail.jar" dest="${tmpjar_dir}"/>
+        <unjar src="${lib_dir}/javadiff.jar" dest="${tmpjar_dir}"/>
+        <unjar src="${lib_dir}/smtp.jar" dest="${tmpjar_dir}"/>
+        <unjar src="${lib_dir}/gson-2.2.4.jar" dest="${tmpjar_dir}"/>
+        <unjar src="${lib_dir}/postgres.jar" dest="${tmpjar_dir}"/>
+        <unjar src="${lib_dir}/mysql-connector-java-5.1.32-bin.jar" dest="${tmpjar_dir}"/>
+        <unjar src="${lib_dir}/h2.jar" dest="${tmpjar_dir}"/>
+        <unjar src="${lib_dir}/derby.jar" dest="${tmpjar_dir}"/>
+        <unjar src="${lib_dir}/derbytools.jar" dest="${tmpjar_dir}"/>
+        <unjar src="${lib_dir}/commons-lang3-3.1.jar" dest="${tmpjar_dir}"/>
+        <unjar src="${lib_dir}/commons-net-3.3.jar" dest="${tmpjar_dir}"/>
+        <unjar src="${lib_dir}/commons-io-1.4.jar" dest="${tmpjar_dir}"/>
+        <unjar src="${lib_dir}/commons-dbcp2-2.0.1.jar" dest="${tmpjar_dir}"/>
+        <unjar src="${lib_dir}/commons-pool2-2.2.jar" dest="${tmpjar_dir}"/>
+<!--
+        <unjar src="${lib_dir}/commons-fileupload-1.2.2.jar" dest="${tmpjar_dir}"/>
+-->
+        <unjar src="${lib_dir}/commons-fileupload-1.3.1.jar" dest="${tmpjar_dir}"/>
+
+        <unjar src="${lib_dir}/commons-httpclient-3.1.jar" dest="${tmpjar_dir}"/>
+        <unjar src="${lib_dir}/httpclient-4.4.1.jar" dest="${tmpjar_dir}"/>
+        <unjar src="${lib_dir}/httpcore-4.4.1.jar" dest="${tmpjar_dir}"/>
+        <unjar src="${lib_dir}/httpmime-4.4.1.jar" dest="${tmpjar_dir}"/>
+
+<!--
+        <unjar src="${lib_dir}/metadata-extractor-2.6.2.jar" dest="${tmpjar_dir}"/>
+-->
+        <unjar src="${lib_dir}/xmpcore.jar" dest="${tmpjar_dir}"/>
+        <unjar src="${lib_dir}/${jfreechart_jar}" dest="${tmpjar_dir}"/>
+        <unjar src="${lib_dir}/jcommon-1.0.23.jar" dest="${tmpjar_dir}"/>
+
+
+        <unjar src="${lib_dir}/ftplet-api-1.0.6.jar" dest="${tmpjar_dir}"/>
+        <unjar src="${lib_dir}/ftpserver-core-1.0.6.jar" dest="${tmpjar_dir}"/>
+
+        <unjar src="${lib_dir}/mina-core-2.0.0-M6.jar" dest="${tmpjar_dir}"/>
+
+<!--
+        <unjar src="${lib_dir}/log4j-1.2.15.jar" dest="${tmpjar_dir}"/>
+        <unjar src="${lib_dir}/slf4j-api-1.6.4.jar" dest="${tmpjar_dir}"/>
+        <unjar src="${lib_dir}/slf4j-simple-1.6.4.jar" dest="${tmpjar_dir}"/>
+-->
+
+<!--
+        <unjar src="${lib_dir}/jetty.jar" dest="${tmpjar_dir}"/>
+        <unjar src="${lib_dir}/mailapi.jar" dest="${tmpjar_dir}"/>
+        <unjar src="${lib_dir}/ftplet-api-1.0.3.jar" dest="${tmpjar_dir}"/>
+        <unjar src="${lib_dir}/ftpserver-core-1.0.3.jar" dest="${tmpjar_dir}"/>
+        <unjar src="${lib_dir}/servlet-api.jar" dest="${tmpjar_dir}"/>
+-->
+        <echo message="Unjarring ${lib1}"/>
+        <unjar src="${lib1}" dest="${tmpjar_dir}"/>
+
+<!--
+        <echo message="Unjarring ${lib2}"/>
+        <unjar src="${lib2}" dest="${tmpjar_dir}"/>
+-->
+
+        <jar 
+            basedir="${tmpjar_dir}"
+            update="false"
+            compress="true"
+            jarfile="${lib_dir}/ramaddalib.jar">
+              <include name="**"/>
+              <exclude name="ucar/multiarray/**"/>
+        </jar>
+
+        <delete dir="${tmpjar_dir}"/>
+    </target>
+
+
+    <target name="javadoc" depends="init">
+        <mkdir dir="${docs_dir}"/>
+        <mkdir dir="${docs_javadoc_dest}"/>
+        <javadoc
+            Author="true"
+            Doctitle="RAMADDA"
+            Use="true"
+            Version="true"
+            Windowtitle="RAMADDA"
+            classpath="${classpath}"
+            destdir="${docs_javadoc_dest}"
+            maxmemory="${javac.maxmemory}"
+            source="${javac.version}"
+            target="${javac.version}"
+            sourcepath="${src_dir}">
+            <link href="http://java.sun.com/j2se/1.5.0/docs/api"/>
+            <package name="org.ramadda.repository.*"/>
+        </javadoc>
+    </target>
+
+
+     <target name="userauthenticator" depends="init">
+        <javac
+            classpath="${classpath}"
+            debug="true"
+            deprecation="false" 
+            destdir="${compile_dir}"
+            failonerror="${javac.failonerror}" 
+            nowarn="true"
+            srcdir="${src_dir}"
+	    fork="true"
+            memoryMaximumSize="${javac.maxmemory}"
+            source="${javac.version}"
+            target="${javac.version}"
+        >
+        <include name="${ramadda_dir}/auth/TestUserAuthenticator.java"/>
+        </javac>
+        <jar 
+            basedir="${compile_dir}"
+            update="false"
+            compress="true"
+            jarfile="${dist_dir}/userauthenticator.jar">
+              <include name="${ramadda_dir}/auth/TestUserAuthenticator.class"/>
+        </jar>
+        <echo message="The test user authenticator jar has been created: ${dist_dir}/userauthenticator.jar"/>
+        <echo message="Copy the jar to &lt;ramadda home&gt;/plugins"/>
+
+     </target>
+
+
+</project>

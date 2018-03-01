@@ -1,0 +1,14 @@
+#from http://innovationchallenge.azurewebsites.net/#ArmsTab
+1=Corn
+2=Soybeans
+4=Cotton
+7=Rice
+9=Barley
+10=Spring wheat
+11=Winter wheat
+12=Durum wheat
+13=Sorghum
+14=Oats
+15=Peanuts
+246=Barley, feed
+247=Barley, malt

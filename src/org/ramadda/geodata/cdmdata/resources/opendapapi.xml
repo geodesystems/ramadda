@@ -1,0 +1,5 @@
+
+<api handler="org.ramadda.geodata.cdmdata.OpendapApiHandler" id="opendap">
+      <api request="/opendap/*" admin="false" method="processOpendapRequest"  name="OPeNDAP"/>
+      <api request="/grid/json/*" admin="false" method="processJsonRequest" name="Grid JSON"/>
+</api>

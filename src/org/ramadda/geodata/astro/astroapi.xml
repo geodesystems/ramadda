@@ -1,0 +1,14 @@
+
+<api handler="org.ramadda.geodata.astro.AstroApiHandler" id="astro">
+      <property name="admin" value="false"/>
+      <property name="searchopen" value="true"/>
+      <property name="form.area.show" value="false"/>
+      <property name="tabs" value="list"/>
+<!--
+      <property name="metadatatypes" value="nlas_platform,nlas_haswaveform"/>
+-->
+      <property name="label" value="FITS Search"/>
+      <property name="searchurl" value="/fits/search"/>
+      <property name="type" value="fits_data"/>
+      <api request="/fits/search"    method="processSearchRequest" toplevel="false" name="Search Fits"/>
+</api>

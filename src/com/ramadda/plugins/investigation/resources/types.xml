@@ -1,0 +1,122 @@
+<types supercategory="Miscellaneous" category="Investigation">
+
+  <type name="investigation_case"  description="Investigation" handler="com.ramadda.plugins.investigation.CaseTypeHandler" >
+     <property name="icon" value="/investigation/briefcase.png"/>
+     <property name="form.resource.show" value="false"/>
+     <property name="form.datatype.show" value="false"/>
+     <property name="form.altitude.show" value="false"/>
+     <property name="form.altitude.show.top" value="false"/>
+     <property name="form.fromdate.label" value="Incident Date"/>
+     <property name="form.todate.show" value="false"/>
+     <property name="form.time.show" value="false"/>
+
+     <column  name="case_number"  type="string" label="Case Number"/>
+     <column  name="case_type"  type="enumerationplus" label="Case Type" values="file:/com/ramadda/plugins/investigation/resources/casetypes.txt"/>
+     <column  name="status"  type="enumerationplus"  values="file:/com/ramadda/plugins/investigation/resources/statuses.txt" label="Status"/>
+     <column  name="ncic_number"  type="string" label="NCIC Number"/>
+     <column  name="city"  type="string" label="City"/>
+     <column  name="county"  type="string" label="County"/>
+     <column  name="state"  type="enumerationplus"  values="file:/com/ramadda/plugins/investigation/resources/states.txt"  label="State"/>
+     <wiki><![CDATA[
+{{noheading}}
+<table width="100%">
+<tr valign=top>
+<td width="50%">
+<b>Case Number:</b> {{field name="case_number"}}<p>
+{{description wikify="true"}}
+
+==Information==
+<table>
+<tr><td align="right"><b>Status:</b></td><td>{{field name="status"}}</td></tr>
+<tr><td align="right"><b>City:</b></td><td>{{field name="city"}}</td></tr>
+<tr><td align="right"><b>County:</b></td><td>{{field name="county"}}</td></tr>
+<tr><td align="right"><b>State:</b></td><td>{{field name="state"}}</td></tr>
+<tr><td align="right"><b>NCIC:</b></td><td>{{field name="ncic_number"}}</td></tr>
+</table>
+
+==Data==
+{{tree title="Data" showtoggle="false"}}
+
+</td>
+<td width="50%">
+{{image src="::*" message="" width="300"}}
+<p>
+{{mapentry width="350"}}
+</td></tr>
+
+
+
+</table>
+
+==Properties==
+<block open="false" title="Click to view Properties">
+{{properties}}
+</block>
+
+<p>
+]]>
+</wiki>
+
+   </type>
+
+
+  <type name="investigation_person"  description="Person"  handler="org.ramadda.repository.type.ExtensibleGroupTypeHandler">  
+     <property name="icon" value="/icons/user.png"/>
+     <property name="form.resource.show" value="false"/>
+     <property name="form.area.show" value="false"/>
+     <property name="form.location.show" value="true"/>
+     <property name="form.date.show" value="false"/>
+     <property name="form.description.show" value="true"/>
+     <column name="type" label="Type"  type="enumerationplus" />
+     <column name="age" label="Age" type="string" columns="5"/>
+     <column name="dob" label="Dob" type="date"/>
+     <column name="height" label="Height" type="string" columns="5"/>
+     <column name="weight" label="Weight" type="string" columns="5"/>
+     <column name="gender" label="Gender" type="enumeration" values="male,female"/>
+     <column name="hair" label="Hair" type="enumerationplus" values="file:/com/ramadda/plugins/investigation/resources/colors.properties"/>
+     <column name="eyes" label="Eyes" type="enumerationplus" values="file:/com/ramadda/plugins/investigation/resources/colors.properties"/>
+     <column name="race" label="Race" type="enumerationplus" values="file:/com/ramadda/plugins/investigation/resources/races.properties"/>
+     <column name="contact" type="string" label="Contact" rows="5" showinhtml="true"/>
+   </type>
+
+
+  <type name="investigation_place"  description="Place"  handler="org.ramadda.repository.type.ExtensibleGroupTypeHandler">  
+     <property name="icon" value="/icons/map.png"/>
+     <property name="form.resource.show" value="false"/>
+     <property name="form.area.show" value="false"/>
+     <property name="form.location.show" value="true"/>
+     <property name="form.date.show" value="false"/>
+     <property name="form.description.show" value="true"/>
+     <column name="type" label="Type"  type="enumerationplus" />
+     <column name="address" label="Address"  type="string" columns="40"/>
+     <column name="city" label="City" type="string" columns="40"/>
+     <column name="county" label="County"  type="string" columns="40"/>
+     <column name="state" label="State" type="enumeration" values="file:/com/ramadda/plugins/investigation/resources/states.txt"/>
+   </type>
+
+
+  <type name="investigation_thing"  description="Thing"  handler="org.ramadda.repository.type.ExtensibleGroupTypeHandler">  
+     <property name="icon" value="/icons/wrench.png"/>
+     <property name="form.resource.show" value="false"/>
+     <property name="form.area.show" value="false"/>
+     <property name="form.location.show" value="true"/>
+     <property name="form.date.show" value="false"/>
+     <property name="form.description.show" value="true"/>
+     <column name="type" label="Type"  type="enumerationplus" />
+   </type>
+
+
+
+  <type name="investigation_event"  description="Event" handler="org.ramadda.repository.type.ExtensibleGroupTypeHandler">  
+     <property name="icon" value="/icons/clock.png"/>
+     <property name="form.resource.show" value="false"/>
+     <property name="form.area.show" value="false"/>
+     <property name="form.location.show" value="true"/>
+     <property name="form.date.show" value="true"/>
+     <property name="form.description.show" value="true"/>
+     <column name="type" label="Type"  type="enumerationplus" />
+   </type>
+
+
+
+</types>

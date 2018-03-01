@@ -1,0 +1,41 @@
+<types supercategory="Science and Education">
+
+  <type name="owl.ontology"  description="OWL Ontology" category="Ontology" handler="org.ramadda.repository.type.ExtensibleGroupTypeHandler">  
+     <property name="icon" value="/icons/rdfgroup.gif"/>
+     <property name="form.resource.show" value="false"/>
+   </type>
+
+
+  <type name="owl.class"  description="OWL Class" category="Ontology" handler="org.ramadda.repository.type.ExtensibleGroupTypeHandler">  
+     <property name="icon" value="/icons/rdf.gif"/>
+     <property name="form.resource.show" value="false"/>
+   </type>
+
+
+  <type name="owl.class.collection"  description="OWL Collection" category="Ontology" super="owl.class">  
+     <property name="icon" value="/icons/collection.png"/>
+     <property name="form.file.show" value="false"/>
+     <property name="form.resource.download.show" value="false"/>
+   </type>
+
+  <type name="owl.class.party"  description="OWL Party" category="Ontology" super="owl.class">
+     <property name="icon" value="/icons/group.png"/>
+     <property name="form.file.show" value="false"/>
+     <property name="form.resource.download.show" value="false"/>
+   </type>
+
+  <type name="owl.class.activity"  description="OWL Activity" category="Ontology" super="owl.class">
+     <property name="icon" value="/icons/cog.png"/>
+     <property name="form.file.show" value="false"/>
+     <property name="form.resource.download.show" value="false"/>
+   </type>
+
+  <type name="owl.class.service"  description="OWL Service" category="Ontology" super="owl.class">
+     <property name="icon" value="/icons/wrench.png"/>
+     <property name="form.file.show" value="false"/>
+     <property name="form.resource.download.show" value="false"/>
+   </type>
+
+
+
+</types>

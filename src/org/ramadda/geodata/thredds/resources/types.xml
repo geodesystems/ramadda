@@ -1,0 +1,28 @@
+<types supercategory="Geoscience" >
+
+
+  <type name="cataloglink"  description="Catalog Link" category="Geoscience Data" >
+     <property name="icon" value="/icons/book_link.png"/>
+     <property name="form.date.show" value="false"/>
+     <property name="form.area.show" value="false"/>
+     <property name="form.file.show" value="false"/>
+  </type>
+
+
+
+  <type name="catalog"  description="THREDDS Catalog View" handler="org.ramadda.geodata.thredds.CatalogTypeHandler" category="Geoscience Data">
+     <property name="icon" value="/icons/book_open.png"/>
+     <property name="form.file.show" value="false"/>
+     <property name="form.url.show" value="true"/>
+     <property name="form.url.label" value="Catalog URL"/>
+     <property name="form.resource.download.show" value="false"/>
+     <property name="form.datatype.show" value="false"/>
+     <property name="form.area.show" value="false"/>
+     <property name="form.date.show" value="false"/>
+  </type>
+
+
+
+
+
+</types>

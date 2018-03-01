@@ -1,0 +1,4 @@
+
+org.ramadda.plugins.fda.FdaSearchProvider;food;openFDA Food Reports
+org.ramadda.plugins.fda.FdaSearchProvider;drug;openFDA Drug Reports
+org.ramadda.plugins.fda.FdaSearchProvider;device;openFDA Device Reports

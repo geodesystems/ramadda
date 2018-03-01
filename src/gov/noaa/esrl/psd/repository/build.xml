@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project basedir="../../../../../../" default="plugin" name="PSD_Repository">
+
+  <target name="init">
+       <tstamp>
+         <format property="date" pattern="yyyy-MM-dd HH:mm z" timezone="UTC"/>
+       </tstamp>
+        <property file="${basedir}/build.properties"/>
+    </target>
+
+    <target name="plugin">
+      <property name="plugin" value="psdramadda"/>
+      <property name="plugin_dir" value="gov/noaa/esrl/psd/repository"/>
+      <property name="plugin_group" value="miscplugins"/>
+      <property name="plugin_jar" value="${plugin}.last.plugin.jar"/>
+      <property name="plugin_extra_class" value="gov/noaa/**/*.class"/>
+      <property name="plugin_extra_src" value="gov/noaa/**/*.java"/>
+      <ant antfile="${basedir}/build.xml" target="plugin_build"/>
+    </target>
+
+
+   <target name="clean" depends="init" >
+        <delete>
+            <fileset dir="src/gov/noaa/esrl/psd/repository" includes="**/*.class"/>
+        </delete>
+    </target>
+
+</project>

@@ -1,0 +1,77 @@
+<div class="helptext">
+
+<script>
+$(function() {
+    $( "#tabs" ).tabs();
+  });
+</script>
+
+<!--
+<h2>How to use this form</h2>
+-->
+
+This form allows you to plot a single field from a model/experiment or compare
+one field to itself or another.  The instructions below explain each of the sections
+of the form.
+<p>
+
+<div id="tabs">
+<ul>
+<li><a href="#tabs-1">Field(s)</a></li>
+<li><a href="#tabs-2">Time Series Comparison</a></li>
+<li><a href="#tabs-3">Plot Options</a></li>
+<li><a href="#tabs-4">Make Plot</a></li>
+</ul>
+
+<div id="tabs-1">
+<h3>Field(s)</h3>
+<ol>
+<li> From the <b>Collection</b>, select the <b>Model, Experiment, Ensemble Member</b> and <b>Variable</b> you wish to plot. You can select
+one or more ensemble members, however, if you select more than 10-15, the process will most likely time out.
+<li> From the <b>Time Series</b>, select the <b>Climate Index</b> you wish to compare with the model data. A description
+of the timeseries can be found <a href="http://www.esrl.noaa.gov/psd/data/climateindices/list/" target="_blank">here</a>.
+<li> Click the <b>Select Data</b> button to bring up the options for comparing and plotting the data you've selected.  
+If you make any changes in the <b>Field(s)</b> section, click the <b>Update Data Selection</b> button to refresh
+the options below.
+</ol>
+</div>
+
+<div id="tabs-2">
+<h3>Time Series Comparison</h3>
+
+<ol>
+<li>The model variable and time series you selected are listed. If you are plotting pressure level data, select the <b>Level</b> you wish to use.
+<li>Choose a starting and ending <b>month</b> over which to average the data.
+<li>Choose a starting and ending <b>year</b> for the time series. 
+<li>Select the <b>Region</b> that the data will be averaged over.  You can select from a predefined
+list of regions, or select Custom.  If you choose custom, you can draw a region on the map
+(use Shift+drag to draw the region), or enter the North, South, West and East coordinates of
+the region.
+</ol>
+</div>
+
+<div id="tabs-3">
+<h3>Plot Options</h3>
+
+<ol>
+<li>You can select to plot the correlation or comparison between the two time series.
+<li>You can select a mask for the data to block out either ocean or land areas.
+<li>You can plot the output as color-filled contours and optionally overlay contour lines and labels.
+<li>You can override the default contour intervals for the plots by specifying 
+a contour interval, minimum and maximum values.
+</ol>
+</div>
+
+<div id="tabs-4">
+<h3>Make Plot</h3>
+
+<ol>
+<li>After you have made your selections, click the Make Plot button to generate the image.
+<li>An image will be displayed to the right of the data selection region.  You can 
+click on the image to get a full sized version of it.  There
+is link below the image which allows you to download the image to your computer.
+<li>There are links for downloading the individual files that were used to create the image and to download all files.
+</ol>
+</div>
+</div>
+</div>

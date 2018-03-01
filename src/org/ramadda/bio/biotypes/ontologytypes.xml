@@ -1,0 +1,65 @@
+<types supercategory="Bioinformatics">
+
+  <type name="bio_ontology"  foruser="false" description="Bio Ontology" category="Bio">
+     <property name="icon" value="/biotypes/dna.png"/>
+     <property name="form.resource.show" value="false"/>
+     <property name="form.datatype.show" value="false"/>
+     <property name="form.altitude.show" value="false"/>
+     <property name="form.altitude.top.show" value="false"/>
+     <property name="form.area.show" value="false"/>
+     <property name="form.todate.show" value="false"/>
+     <property name="form.fromdate.label" value="Date"/>
+  </type>
+
+
+  <type name="bio_ontology_assay" super="bio_ontology"  description="Assay" >
+     <property name="icon" value="/biotypes/scanner.png"/>
+   </type>
+
+
+  <type name="bio_ontology_sample" super="bio_ontology"  description="Sample" >
+     <property name="icon" value="/biotypes/pipette.png"/>
+     <property name="form.fromdate.label" value="Sample Date"/>
+   </type>
+
+  <type name="bio_ontology_study"  description="Study" handler="org.ramadda.repository.type.ExtensibleGroupTypeHandler" category="Bio">
+     <property name="icon" value="/biotypes/report_magnify.png"/>
+  </type>
+
+  <type name="bio_ontology_series"  description="Series" handler="org.ramadda.repository.type.ExtensibleGroupTypeHandler" category="Bio">
+     <property name="icon" value="/biotypes/images.png"/>
+     <wiki><![CDATA[
++section
++row
++col-md-10
+<h2>{{name}}</h2>
+-col
++col-md-2
+<a href="{{root}}/entry/show?entryid={{entryid}}&output=zip.zipgroup" class="btn btn-primary btn-default" role="button">Download Zip</a>
+-col
+-row
+{{description}}
+{{imageplayer  loopdelay="1000"  loopstart="false"  useAttachment="true" message=""}}
+----
+<h2>Files</h2>
+{{tree message=""}}
+-section
+]]>
+</wiki>
+  </type>
+
+
+
+  <type name="bio_ontology_person" super="bio_ontology"  description="Person"  >
+     <property name="icon" value="/biotypes/user.png"/>
+     <property name="form.fromdate.label" value="Date of Birth"/>
+     <column name="gender"  type="enumeration"  values="f:Female,m:Male" label="Gender" cansearch="true"/>
+   </type>
+
+  <type name="bio_ontology_cohort" super="bio_ontology"  description="Cohort"  handler="org.ramadda.repository.type.ExtensibleGroupTypeHandler" childtypes="bio_ontology_person">
+     <property name="icon" value="/biotypes/users.png"/>
+   </type>
+
+
+
+</types>

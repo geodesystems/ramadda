@@ -1,0 +1,17 @@
+<types supercategory="Science and Education">
+
+  <type name="workshop_participant"  description="Workshop Participant" category="EDU" handler="org.ramadda.repository.type.ExtensibleGroupTypeHandler">  
+     <property name="icon" value="/icons/user.png"/>
+     <property name="form.resource.show" value="false"/>
+     <property name="form.area.show" value="false"/>
+     <property name="form.location.show" value="true"/>
+     <property name="form.date.show" value="false"/>
+     <property name="form.description.show" value="false"/>
+     <column name="email" type="email" label="Email" showinhtml="true"/>
+    
+     <column name="country" type="enumerationplus" label="Country" canlist="true" values="file:/org/ramadda/plugins/workshop/resources/countries.txt"  cansearch="true" />
+     <column name="position" type="string" label="Position" canlist="true"/>
+     <column name="interest" type="string" rows="5" label="Interests" canlist="true"  cansearch="true"  />
+   </type>
+
+</types>

@@ -1,0 +1,11 @@
+<types supercategory="Geoscience">
+
+  <type name="type_idv_bundle"  
+        description="IDV Bundle" 
+        category="Geoscience Data" 
+        pattern="(.*\.zidv|.*\.xidv)">
+     <property name="icon" value="/idv/idv.gif"/>
+</type>
+
+
+</types>

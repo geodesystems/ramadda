@@ -1,0 +1,342 @@
+<types supercategory="Miscellaneous" category="Community">
+
+  <type name="type_gtfs_agency"  description="Transit Agency" handler="org.ramadda.plugins.gtfs.GtfsAgencyTypeHandler"  >
+     <property name="icon" value="/gtfs/building.png"/>
+     <property name="html.url.label" value="Agency Web Site"/>
+     <property name="form.file.show" value="false"/>
+     <property name="form.url.show" value="true"/>
+     <property name="form.area.show" value="true"/>
+     <property name="form.datatype.show" value="false"/>
+     <property name="search.tabs" value="map,list"/>
+     <column name="agency_id"  type="string"  label="Agency ID" />
+     <column name="fare_url"  type="url" label="Fare URL" />
+     <column name="phone"  type="string" label="Phone" />
+     <column name="timezone"  type="string" label="Timezone"/>
+     <column name="language"  type="string"  label="Language"/>
+     <column name="realtime_url"  type="url"  label="Vehicle real-time URL"/>
+     <column name="realtime_url_id"   label="Vehicle real-time ID"/>
+     <column name="realtime_url_pasword"   type="password" label="Vehicle real-time Password"/>
+     <wiki><![CDATA[
+<wiki>
++section title={{name}} 
+{{description wikify="true"}}
+{{group  layoutType="table"  layoutColumns="1"  showMenu="false"  }}
++row
++col-md-6
+:heading {{link title="Find a Stop" entry="child:type:type_gtfs_stops"}}
+{{display
+entry="child:type:type_gtfs_stops"
+message="No stops available"
+searchMessage="Searching for stops"
+eg="Enter stop name"
+type="entrylist"
+orientation="horizontal"
+myLocationOffset="0.008"
+layoutHere="true"
+orientation="vertical"
+showMetadata="true"
+innerHeight="200"
+entryParent="this"
+entryType="type_gtfs_stop"
+showToolbar="false"
+showType="false"
+formOpen="false"
+showTitle="false"
+showDate="false"
+showMetadata="false"
+showSearchSettings="true"
+showFooter="false"
+}}
+
+
+-col
++col-md-6
+:heading {{link title="Find a Route" entry="child:type:type_gtfs_routes"}}
+{{display
+entry="child:type:type_gtfs_routes"
+message="No routes available"
+searchMessage="Searching for routes"
+eg="Enter route ID, street name, destination, etc"
+type="entrylist"
+orientation="horizontal"
+layoutHere="true"
+orientation="vertical"
+showMetadata="true"
+innerHeight="200"
+entryParent="this"
+entryType="type_gtfs_route"
+showToolbar="false"
+showTitle="false"
+showDate="false"
+showMetadata="false"
+showType="false"
+formOpen="false"
+showSearchSettings="true"
+showFooter="false"
+myLocationOffset="0.008"
+}}
+
+-col
+-row
+<p>
++row
++col-md-12
+{{display  type="map"  width="100%"  height="500"  layoutHere="true"  showMenu="false"  showTitle="false"  showBoxes="false"}}
+-col
+-row
+-section
+<p>
+----
+<p>
++section title="Agency Information" class="ramadda-section-map"
++box-yellow
+{{information details="false" showTitle="false"}}
+-box-yellow
+-section
+]]>
+</wiki>
+     <bubble><![CDATA[
+:heading Agency: {{name}}
+<center>
+{{link title="View agency details"}}
+</center>
+]]>
+</bubble>
+
+   </type>
+
+
+
+  <type name="type_gtfs_stop"  description="Transit Stop" handler="org.ramadda.plugins.gtfs.GtfsStopTypeHandler"  >
+     <property name="icon" value="/gtfs/stop.png"/>
+     <property name="form.file.show" value="false"/>
+     <property name="form.url.show" value="true"/>
+     <property name="form.area.show" value="false"/>
+     <property name="form.datatype.show" value="false"/>
+     <property name="search.tabs" value="map,list"/>
+     <column name="stop_id"  type="string" cansearch="true"   label="Stop ID"  />
+     <column name="stop_code"  type="string" values=""  cansearch="true"  label="Stop Code"/>
+     <column name="zone_id"  type="string"  cansearch="true"  label="Zone ID"/>
+     <column name="location_type"  type="enumeration" values="0:Stop,1:Station"  default="0" cansearch="true"  label="Location Type"/>
+     <column name="timezone"  type="string"  label="Timezone"/>
+     <column name="wheelchair_boarding"  type="enumeration" values="0:No Information,1:Yes,2:No"  default="0" cansearch="true"  label="Wheelchair Boarding"/>
+     <column name="routes"  label="Routes" type="clob"  size="5000" cansearch="false"  showinhtml="false" editable="false" />
+     <column name="agency_id"  type="string"  label="Agency ID" canedit="false" cansearch="false"/>
+     <wiki><![CDATA[
+:title Stop: {{name}}
+----
++section 
+{{description wikify="true" prefix="+box-yellow" suffix="-box"}}
++row
++col-md-8
+{{gtfs.stop.schedule}}
+-col
++col-md-4
+<center>
+{{properties  message="" metadata.types="content.alias" includeTitle="false"}}
+<br>
+{{mapentry width="95%" initialZoom="16" details="true"}}
+<br>
+{{image src="::*" message="" width="90%"}}
+{{streetview message="" caption="Google Streetview - North<p>" width="90%" heading="0"}}
+{{streetview message="" caption="Google Streetview - South<p>" width="90%" heading="180"}}
+</center>
+<table class="formtable">
+     {{resource row.label="URL:"  message=""}}
+     {{field name="stop_code"  row.label="Stop Code:"}}
+     {{field name="location_type"  row.label="Location:"}}
+     {{field name="wheelchair_boarding"  row.label="Wheelchair Boarding:"}}
+     {{field name="zone_id"  row.label="Zone ID:"}}
+</table>
+-col
+-row
+-section
+]]>
+</wiki>
+   </type>
+
+
+  <type name="type_gtfs_route"  description="Transit Route" handler="org.ramadda.plugins.gtfs.GtfsRouteTypeHandler"  >
+     <property name="icon" value="/gtfs/route.png"/>
+     <property name="form.file.show" value="false"/>
+     <property name="html.url.label" value="Agency Web Site"/>
+     <property name="form.url.show" value="true"/>
+     <property name="form.area.show" value="true"/>
+     <property name="form.datatype.show" value="false"/>
+     <property name="search.tabs" value="map,list"/>
+     <column name="route_id"  type="string" showinhtml="false" label="Route ID" cansearch="true"/>
+     <column name="route_type"  type="enumeration" label="Route Type" values="0:Light rail,1:Subway,2:Rail,3:Bus,4:Ferry,5:Cable car,6:Gondola,7:Funicular"/>
+     <column name="route_color"  type="string" label="Route Color"/>
+     <column name="route_text_color"  type="string" label="Text Color"/>
+     <column name="points"  type="clob"  size="35000" showinhtml="false" editable="false" changetype="true"/>
+     <column name="stop_names"  label="Stop Names" type="clob"  size="30000" cansearch="true"  showinhtml="false" editable="false" />
+     <column name="agency_id"  type="string"  label="Agency ID" canedit="false" cansearch="false"/>
+     <wiki><![CDATA[
+{{gtfs.route.title}}
+----
++section
+{{description wikify="true"}}
++row
++col-md-6
+{{gtfs.route.trips }}
+-col
++col-md-6
+{{mapentry width="100%" initialZoom="16" details="true" mapVar="gtfsTripMap"}}
+:heading Route Summary
+{{gtfs.route.info}}
+-col
+-row
+-section
+
+]]>
+</wiki>
+     <bubble><![CDATA[
+:heading Route: {{name}}
+<center>
+{{link title="View route details"}}
+</center>
+{{gtfs.route.latest}}
+]]>
+</bubble>
+
+   </type>
+
+
+
+  <type name="type_gtfs_trip"  description="Transit Trip" handler="org.ramadda.plugins.gtfs.GtfsTripTypeHandler"  >
+     <property name="icon" value="/gtfs/route.png"/>
+     <property name="form.file.show" value="false"/>
+     <property name="form.url.show" value="false"/>
+     <property name="form.area.show" value="true"/>
+     <property name="form.datatype.show" value="false"/>
+     <property name="search.tabs" value="map,list"/>
+     <column name="trip_id"  type="string"  label="Trip ID" cansearch="true"/>
+     <column name="direction"  type="enumeration" values="0:Outbound,1:Inbound"  label="Direction"/>
+     <column name="headsign"  type="string"   label="Head Sign"/>
+     <column name="start_time"  type="string"  label="Start Time"/>
+     <column name="end_time"  type="string"  label="End Time"/>
+     <column name="service_id"  type="string"  showinhtml="false" editable="false"  label="Service ID"/>
+     <column name="service_name"  type="string"   editable="true"  label="Service Name"/>
+     <column name="week"  type="string" size="1000" showinhtml="false" editable="false"  label="Scheduled Days"/>
+     <column name="stops"  type="clob"  size="30000" showinhtml="false" editable="false"  label="Stops"/>
+     <column name="stop_ids"  type="clob" size="30000" showinhtml="false" editable="false" cansearch="true"  label="Stop IDS"/>
+     <column name="block_id"  type="string" showinhtml="false"  label="Block ID"/>
+     <column name="wheelchair_accessible"  type="enumeration" values="0:Unknown,1:Yes,2:No" cansearch="true"  label="Wheelchair Accessible"/>
+     <column name="bikes_allowed"  type="enumeration" values="0:Unknown,1:Yes,2:No" cansearch="true"  label="Bikes Allowed"/>
+     <column name="points"  type="clob"  size="35000" showinhtml="false" editable="false"   label="Points" changetype="true"/>
+     <column name="agency_id"  type="string"  label="Agency ID" canedit="false" cansearch="false"/>
+
+     <wiki><![CDATA[
+{{gtfs.trip.title}}
+----
+{{description wikify="true"}}
++row
++col-md-6
+{{gtfs.trip.list}}
+-col
++col-md-6
+{{mapentry width="100%" height="400" initialZoom="15" details="true" mapVar="gtfsTripMap"}}
+:heading Trip Information
+{{gtfs.trip.info}}
+<br>
+-col
+-row
+]]>
+</wiki>
+   </type>
+
+
+
+  <type name="type_gtfs_routes"  description="Transit Route Collection" handler="org.ramadda.repository.type.ExtensibleGroupTypeHandler"  >
+     <wiki><![CDATA[
++section title={{name}}
++row
++col-md-6
+{{display
+type="entrylist"
+orientation="horizontal"
+layoutHere="true"
+orientation="vertical"
+showMetadata="true"
+innerHeight="400"
+divid="listdiv"
+entryParent="this"
+entryType="type_gtfs_route"
+showType="false"
+formOpen="false"
+showTitle="false"
+showDate="false"
+showMetadata="false"
+showSearchSettings="true"
+myLocationOffset="0.008"
+}}
+-col
++col-md-6
+{{display type="map"  listentries="true" width="100%" height="500" showBoxes="false"}}
+-col
+-row
+]]>
+</wiki>
+  </type>
+
+
+  <type name="type_gtfs_stops"  description="Transit Stop Collection" handler="org.ramadda.repository.type.ExtensibleGroupTypeHandler"  >
+     <wiki><![CDATA[
++section title={{name}}
++row
++col-md-6
+{{display
+type="entrylist"
+orientation="horizontal"
+layoutHere="true"
+orientation="vertical"
+showMetadata="true"
+innerHeight="400"
+divid="listdiv"
+entryParent="this"
+entryType="type_gtfs_stop"
+showType="false"
+formOpen="false"
+showTitle="false"
+showDate="false"
+showMetadata="false"
+showSearchSettings="true"
+myLocationOffset="0.008"
+showFooter="false"
+}}
+-col
++col-md-6
+{{display type="map"  listentries="true" width="100%" height="500" showBoxes="false"}}
+-col
+-row
+-section
+]]>
+</wiki>
+  </type>
+
+
+
+  <type name="type_gtfs_vehicle"  foruser="false" description="Transit Vehicle" handler="org.ramadda.plugins.gtfs.GtfsVehicleTypeHandler" >
+     <property name="icon" value="/gtfs/bus.png"/>
+     <column name="vehicle_id"  type="string"  label="Vehicle ID" />
+     <column name="route_id"  type="string"  label="Route ID" />
+     <column name="trip_id"  type="string"  label="Trip ID" />
+     <column name="current_status"  type="string"  label="Current Status" />
+     <column name="stop"  type="string"  label="Stop" />
+     <bubble><![CDATA[
++section title={{name}}
+<table class="formtable">
+<tr><td class=formlabel>Time:</td><td>{{fromdate}}</td></tr>
+{{field name="current_status" row.label="Status:"}}
+<tr><td class=formlabel>Stop:</td><td>{{gtfs.stop.link}}</td></tr>
+<tr><td class=formlabel>Trip:</td><td>{{gtfs.trip.link}}</td></tr>
+<tr><td class=formlabel>Route:</td><td>{{gtfs.route.link}}</td></tr>
+</table>
+-section
+]]>
+</bubble>
+  </type>
+
+
+
+</types>

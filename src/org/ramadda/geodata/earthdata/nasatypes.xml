@@ -1,0 +1,19 @@
+<types  supercategory="Geoscience">
+
+  <type name="earth_merra"  description="MERRA Data"  super="earth" category="Satellite and Model Data"
+        handler="org.ramadda.repository.type.GenericTypeHandler"
+        field_file_pattern=".*(frequency_type:inst|tavg|const)(frequency:1|3|6|M|U|0)_(dimensions:2d|3d)_(data_group:...)_(horizontal_resolution:N|F|C)(vertical_location:x|p|v|e).*\.hdf$">
+
+     <property name="icon" value="/earthdata/nasa.png"/>
+     <column name="frequency_type" label="Frequency Type" type="enumeration" values="inst:Instantaneous,tavg:Time Average,const:Time Independent" cansearch="true" />
+     <column name="frequency" label="Frequency" type="enumeration" values="1:1-hourly,3:3-hourly,6:6-hourly,M:Monthly Mean,U:Monthly Diurnal Mean,0:Not Applicable" cansearch="true" />
+
+     <column name="dimensions" label="Dimensions" type="enumeration" values="2d,3d" cansearch="true" />
+     <column name="data_group" label="Group" type="enumeration" cansearch="true" values="ana:Direct analysis products, asm:Assimilated state variables, tdt:Tendencies of temperature, udt:Tendencies of eastward and northward wind components, qdt:Tendencies of specific humidity, odt:Tendencies of ozone, lnd:Land surface variables, flx:Surface turbulent fluxes and related quantities, mst:Moist processes, cld:Clouds, rad:Radiation, trb:Turbulence, slv:Single level, int:Vertical integrals, chm:Chemistry forcing"/>
+     <column name="horizontal_resolution" label="Horizontal Resolution" type="enumeration" values="N: Native (2/3 x 1/2 deg),F:Reduced Resolution Version of Model Grid (1.25 x 1 deg),C:Reduced Resolution (1.25 x 1.25 deg) " cansearch="true" />
+     <column name="vertical_location" label="Vertical Location" type="enumeration" values="x:Two-dimensional,p:Pressure,v:Model Layer Center,e:Model Layer Edge " cansearch="true" />
+
+  </type>
+
+
+</types>

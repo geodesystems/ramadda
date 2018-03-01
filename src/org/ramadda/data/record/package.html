@@ -1,0 +1,64 @@
+<html>
+<body>
+
+The record package provides support for reading binary and text oriented data files.
+The classes RecordFile and Record provide the core functionality of this package.
+
+<p>
+Record files are generally of the form:<pre>
+    header
+    record 1
+    record 2
+    ...
+    record N
+</pre>
+
+The RecordFile class is abstract and provides functionality to read and write files. It uses derived instances of the 
+Record class to actually read and write the data. The Record class provides support for handling endian-ness and for up-promoting
+unsigned file variables (e.g., unsigned short) to the Java primitive type (e.g., int).
+
+
+<h2>Text files</h2>
+
+Text files are considered to be made up of a set of lines. We treat lines that start with "#" as a comment line.
+Blank lines are ignored. Each line is made up of a set of tokens with some delimiter (e.g., ","). 
+
+
+<h2>Record Visitor</h2>
+Access to files is based around the 
+<a href="http://en.wikipedia.org/wiki/Visitor_pattern">visitor pattern</a> embodied in the RecordVisitor class.
+The basic algorithm is implemented in RecordFile:
+<pre>
+    public void visit(RecordVisitor visitor, VisitInfo visitInfo, RecordFilter filter)
+</pre>
+
+This method takes a RecordVisitor, a VisitInfo and a RecordFilter. Each record is read from the file and the RecordVisitor method is called:
+<pre>
+    public abstract boolean visitRecord(RecordFile file, VisitInfo visitInfo,   Record record);
+</pre>
+
+If this method returns false then the visit is stopped. We use the VisitInfo class to hold the state of
+the visit, e.g., the RecordIO, skip factor, start and stop indices, etc.
+
+
+
+<h2>Generating record classes</h2>
+
+The record package provides a Tcl based script that allows one to define the structure of a record  and generate the class
+that reads the record.
+
+There are many examples  of its use under the lidar package, e.g., in org/unavco/data/lidar/lvis/generate.tcl
+<pre>
+generateRecordClass org.unavco.data.lidar.lvis.LceRecordV1_2  -super LvisRecord   -fields  { 
+    {lfid int}
+    {shotnumber int}
+    {lvisTime double -declare 0}
+    {tlon double}
+    {tlat double}
+    {zt float}
+} 
+</pre>
+
+
+</body>
+</html>

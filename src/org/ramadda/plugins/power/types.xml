@@ -1,0 +1,12 @@
+<types supercategory="Miscellaneous" category="Business Data">
+
+  <type name="type_power"  description="" super="type_point" category="Business" foruser="false">
+  </type>
+
+  <type name="type_power_miso_forecast"  super="type_power" description="MISO Foreacast XML"  handler="org.ramadda.data.services.PointTypeHandler">
+     <property name="icon" value="/power/wind.png"/>
+     <property name="record.file.class" value="org.ramadda.plugins.power.MisoForecastFile"/>
+  </type>
+
+
+</types>

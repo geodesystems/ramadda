@@ -1,0 +1,48 @@
+
+
+.slack_day_divider {
+    background: none repeat scroll 0% 0% #FFF;
+    margin: 1rem 0px;
+    padding: 0.5rem 0px;
+    line-height: 1.2rem;
+    font-size: 1rem;
+    font-family: "Lato","appleLogo",sans-serif;
+    color: #555459;
+    font-weight: 900;
+    text-align: center;
+    cursor: default;
+    clear: both;
+    position: relative;
+    font-size: 15px;
+}
+
+.slack_day_divider hr {
+    position: absolute;
+    border-top: 1px solid #DDD;
+    width: 100%;
+    top: 1.1rem;
+    margin: 0px;
+}
+
+
+.slack_day_divider_label {
+    background: none repeat scroll 0% 0% #FFF;
+    padding: 0px 1rem;
+    display: inline-block;
+    margin: 0px auto;
+    position: relative;
+}
+
+
+.slack_message {
+     font-family: "Lato","appleLogo",sans-serif;font-size: 15px;line-height: 22px;color: #3D3C40;
+     margin-top: 10px;
+}
+
+
+.slack_text {
+     margin-left: 10px;
+     font-family: "Lato","appleLogo",sans-serif;font-size: 15px;line-height: 22px;color: #3D3C40;
+}
+
+

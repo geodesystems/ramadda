@@ -1,0 +1,573 @@
+
+<style>
+
+.imageplayer {
+    background-color:#efefef;
+    background-color:#fff;
+}
+
+
+.imageplayer-images {
+    min-height: 200px; 
+}
+
+.imageplayer-buttons {
+ 
+    margin-left:4px;
+    padding: 2px;
+    padding-bottom: 4px;
+    padding-top: 10px;
+}
+
+.imageplayer-button {
+     margin: 0px;
+     margin-left: 2px;
+     margin-right: 2px;
+     padding: 0px;
+     margin-bottom: 2px;
+     font-size: 80%;
+}
+
+.imageplayer-button-play {
+     width: 50px;
+//     font-family: monospace;
+}
+
+.imageplayer-title {
+  padding: 5px;
+  color: #000;
+}
+
+
+.imageplayer-title a {
+  color: #000;
+}
+
+.imageplayer-title-date {
+  padding: 5px;
+   font-style:italic;
+}
+
+
+
+.imageplayer-filler {
+   width:10px;
+   height: 20px;
+   border: 0px red solid;
+}
+
+.imageplayer-box-on, .imageplayer-box-off {
+     display: inline-block;
+     margin-left: 2px;
+     padding:0px;
+     border: 1px #fff solid;
+}
+
+.imageplayer-box-on {
+     border: 1px #fff solid;
+     background-color: rgb(30, 144, 255);
+}
+
+.imageplayer-box-off {
+     background-color: #d3d3d3;
+//0cf;
+}
+
+
+.imageplayer-block {
+   padding-left:10px;
+//   border: 1px #aaa solid;
+//        height: 750px; 
+//	max-height: 750px; 
+	overflow-y: auto;
+	overflow-x: hidden;
+}
+
+.imageplayer-icon {
+margin: 1px;
+padding:1px;
+width: 18px;
+//border: 1px #aaa solid;
+}
+
+</style>
+
+
+
+<script LANGUAGE="JavaScript">
+var icon_blank = "${root}/icons/blank.gif";
+var icon_start="${root}/imageplayer/control_play_blue.png";
+var icon_stop="${root}/imageplayer/control_pause_blue.png";
+var modeNormalImage =  "${root}/imageplayer/button_norm.gif";
+var modeRockingImage =  "${root}/imageplayer/button_sweep.gif";
+
+
+
+focus()
+// <!--
+//============================================================
+//                >> jsImagePlayer 1.0 <<
+//            for Netscape3.0+, September 1996
+//============================================================
+//                  by (c)BASTaRT 1996
+//             Praha, Czech Republic, Europe
+//
+// feel free to copy and use as long as the credits are given
+//          by having this header in the code
+//
+//          contact: xholecko@sgi.felk.cvut.cz
+//          http://sgi.felk.cvut.cz/~xholecko
+//
+//============================================================
+// Thanx to Karel & Martin for beta testing and suggestions!
+//============================================================
+//
+//     modified by D. Watson and A. Earnhart (CIRA/CSU), 7/30/97
+//     and Greg Thompson (NCAR/RAP) Dec. 11 1997
+//
+//============================================================
+ 
+ 
+function MyImage (url,label, dttm) {
+    this.url = url;
+    this.label = label;
+    this.image = null;
+    this.dttm = dttm;
+    this.ok  =1;
+}
+
+
+
+dwell_step = 1;
+delay_step = 100;
+delay_max = 6000;
+delay_min = 100;
+dwell_multipler = 3;
+
+function ImagePlayer(args)  {
+    this.prefix = "${imagePlayerPrefix}";
+    this.DIR_FORWARD = 0;
+    this.DIR_BACKWARD = 1;
+    this.MODE_NORMAL=0;
+    this.MODE_ROCKING=1;
+
+
+    this.images= new Array();
+    this.delay = 500;
+    this.end_dwell_multipler   = dwell_multipler;
+    this.start_dwell_multipler = dwell_multipler;
+    this.current_image = 0;
+    this.direction =this.DIR_FORWARD;
+
+    this.resetImageWait = function() {
+        this.imageStepIsPending = false;
+        this.waitingForImageToLoad = false;
+        this.waitCnt= 0;
+    }
+
+    this.resetImageWait();
+
+    this.running = 0;
+    this.timestamp=1;
+    this.play_mode = this.MODE_NORMAL;  
+ 
+    if(args) {
+        $.extend(this, args);
+    }
+
+    if(this.delay == 0) {
+       this.delay = 500;
+    }
+
+    this.getId = function(name) {
+        return "#" + this.prefix + name;
+    }
+
+    this.addImage = function(url,label, dttm) {
+        this.images.push(new MyImage(url,label,dttm));
+    }
+
+    this.startStop = function() {
+        if(this.running==1) {
+            this.stop();
+        } else {
+            this.start();
+        }
+    }
+
+
+    this.start = function() {
+        this.resetImageWait();
+        this.running=true;
+        $(this.getId("startstop")).attr("src",  icon_stop);
+        $(this.getId("startstopbuttonlabel")).html("Stop");
+        this.timestamp++;
+        setTimeout("${imagePlayerVar}.play(" + this.timestamp +")", this.delay);
+    }
+
+    this.stop = function() {
+        this.resetImageWait();
+        $(this.getId("startstop")).attr("src", icon_start);
+        $(this.getId("startstopbuttonlabel")).html("Play");
+        this.timestamp++;
+        this.running = false;
+    }
+ 
+
+
+    this.play = function(mytimestamp) {
+       if(this.waitingForImageToLoad && this.waitCnt>5) {
+           console.log("play: waited too many times:" + this.waitCnt);
+           this.resetImageWait();
+       }
+
+       if(this.waitingForImageToLoad) {
+           this.waitCnt ++;
+           var waitLabel = "Waiting ";
+           for(var i=0;i<this.waitCnt && i<5;i++) {
+               waitLabel+= ".";
+           }
+//           $(this.getId("waiting")).html(waitLabel);
+           this.imageStepIsPending = true;
+           console.log("play: still waiting for image to load -  # " + this.waitCnt);
+           setTimeout("${imagePlayerVar}.play(" +mytimestamp +")", 1000);
+           return;
+       }
+       $(this.getId("waiting")).html("&nbsp;");
+       this.imageStepIsPending = false;
+       if(mytimestamp!= this.timestamp) {
+            return;
+        }
+        if(this.direction == this.DIR_FORWARD) {
+            this.current_image++;  
+        } else {
+            this.current_image--;
+        }
+
+        if (this.current_image >= this.images.length) {
+            if (this.play_mode == this.MODE_NORMAL) {      
+                this.current_image = 0;
+            } else {
+                //rocking
+                this.current_image = this.images.length-1;
+                this.direction=this.DIR_BACKWARD;
+            }
+        } else if (this.current_image < 0) {
+            if (this.play_mode == this.MODE_NORMAL) {      
+                this.current_image = 0;
+            } else {
+                this.current_image = 0;
+                this.direction=this.DIR_FORWARD;
+            }
+        }
+
+ 
+        //== Make sure there is at least one image selected
+        //== and find first_selected_image and last_selected_image
+        has_selected = false;
+        first_selected_image = this.images.length-1;
+        last_selected_image = 0;
+        for (var i = 0; i < this.images.length; i++) {
+            if(this.images[i].ok) { 
+                has_selected = true;
+                first_selected_image = i < first_selected_image ? i : first_selected_image;  
+                last_selected_image = i > last_selected_image ? i : last_selected_image;  
+            }
+        }
+
+        //== check to ensure that this.current image has not been deselected from the loop ==
+        //== if it has, then find the next image that hasn't been ==
+        if(has_selected) {
+            while (this.images[this.current_image].ok == false) {
+                this.current_image++;
+                if (this.current_image >= this.images.length) {
+                    if (this.play_mode == this.MODE_NORMAL) {
+                        this.current_image = 0;
+                    } else {
+                        this.current_image = this.images.length-1;
+                        this.direction=this.DIR_BACKWARD;
+                    }
+                }
+            }
+        } else {
+            this.current_image--;
+        }
+        this.delay_time = this.delay;
+        if (this.current_image == first_selected_image) {
+             this.delay_time = this.start_dwell_multipler*this.delay;
+        }
+        if (this.current_image == last_selected_image) {
+            this.delay_time = this.end_dwell_multipler*this.delay;
+        }
+
+        this.displayImage();
+        setTimeout("${imagePlayerVar}.play(" +mytimestamp +")", this.delay_time);
+    }
+
+
+    this.change_speed = function(dv) {
+        this.delay+=dv;
+        //== check to ensure max and min delay constraints have not been crossed ==
+        if(this.delay > this.delay_max) this.delay = this.delay_max;
+        if(this.delay < this.delay_min) this.delay = this.delay_min;
+    }
+ 
+    this.change_end_dwell = function(dv) {
+        this.end_dwell_multipler+=dv;
+        if ( this.end_dwell_multipler < 1 ) this.end_dwell_multipler = 0;
+    }
+ 
+    this.change_start_dwell = function(dv) {
+        this.start_dwell_multipler+=dv;
+        if ( this.start_dwell_multipler < 1 ) this.start_dwell_multipler = 0;
+    }
+ 
+
+    this.setImage = function(number,dir) {
+        this.stop();
+        if (number < 0) number = this.images.length-1;
+        if (number >= this.images.length) number = 0;
+
+        //== Make sure there is at least one image selected
+        has_selected = false;
+        for (var i = 0; i < this.images.length; i++) {
+            if(this.images[i].ok) { has_selected = true; }
+        }
+        if(!has_selected) { return };
+
+        //== check to ensure that image has not been deselected from loop ==
+        while (this.images[number].ok == false) {
+            number+=dir;
+            if (number < 0) number = this.images.length-1;
+            else if(number>=this.images.length) number = 0;
+        }
+        this.current_image = number;
+        this.displayImage();
+    }
+
+
+    this.toggle_mode = function()  {
+        if(this.play_mode==this.MODE_NORMAL) this.change_mode(this.MODE_ROCKING);
+        else this.change_mode(this.MODE_NORMAL);
+    }
+ 
+
+    this.change_mode = function(mode) {
+        this.play_mode = mode;
+        var url;
+        if(this.play_mode == 0) {
+            url= modeNormalImage;
+        } else {
+            url = modeRockingImage;
+        }
+        $(this.getId("loopmode")).attr("src",url);
+    }
+ 
+    this.setBoxes = function() {
+        var boxes="";
+        var hideboxes = "";
+        for (var i = 0; i < this.images.length; i++) {
+            var title = "Date:  " + this.images[i].dttm; 
+            gotoalt=alt(title);
+            hidecolor = "blue";
+            color = "blue";
+            var isActiveImage = false;
+
+            if(this.images[i].ok==0) {
+                hidealt=alt("Use image  " + (i+1) +" in animation"); 
+                color = "red";
+                hidecolor = "red";
+            } else {
+                hidealt=alt("Don't use image  " + (i+1) +" in animation"); 
+                if(i == this.current_image) {
+                    color = "green";
+                    isActiveImage = true;
+                }
+            }
+            width=14;
+            while(width>2 && this.images.length*width >500) {
+                width--;
+            }
+            imgAttrs =  attr("class","imageplayer-filler") + gotoalt;
+            var filler = HtmlUtil.div(["class", "imageplayer-box-" + (isActiveImage?"on":"off")],HtmlUtil.image(icon_blank,["width",width,"height","20","title",title,"alt", title]));
+            box = tag("A", attr2("href","JavaScript: noop()", "onClick", call("${imagePlayerVar}.setImage", i + ",-1")), filler);
+
+            hidebox = tag("A", attr2("href","JavaScript: noop()", "onClick", call("${imagePlayerVar}.toggleImageOk",i)),
+                          span(attr("style", "xbackground-color:" + hidecolor),img(icon_blank,imgAttrs + hidealt)));
+            boxes+=box;
+            hideboxes+=hidebox;
+        }
+
+        boxes = span(attr("style","font-size:10"),boxes);
+        $(this.getId("boxes")).html(boxes);
+        //        $(this.getId("hideboxes")).html(span(attr("style","font-size:10"),hideboxes));
+    }
+
+    this.checkImage = function(status,i) {
+        this.images[i].ok = status;
+        this.setBoxes();
+    }
+
+    this.toggleImageOk = function(i) {
+        if(this.images[i].ok==0) this.images[i].ok=1;
+        else this.images[i].ok=0;
+        this.setBoxes();
+    }
+
+    this.goToImage = function(frame_num) {
+        this.stop();
+        this.current_image = frame_num;
+        this.displayImage();
+    }
+
+    this.frameNumberClicked = function() {
+        var value = parseInt($(this.getId("framenumber")).attr("value"));
+        value--;
+        this.goToImage(value);
+    }
+
+
+
+
+    this.displayImage = function() {
+        if(this.images.length==0) {
+            //            alert('no images');
+            return
+        }
+/*
+        if(!this.images[this.current_image].image) {
+            this.images[this.current_image].image = new Image();
+            this.images[this.current_image].image.src = this.images[this.current_image].url;
+        }
+*/
+
+        var currentImage = this.images[this.current_image];
+        this.waitingForImageToLoad= true;
+        $(this.getId("animation")).attr("src",  this.images[this.current_image].url);
+        this.setBoxes();
+        $(this.getId("header")).html(this.images[this.current_image].label);
+        $(this.getId("framenumber")).attr("value",  (this.current_image+1));
+    }
+
+
+    var theImagePlayer = this;
+
+    $(this.getId("animation")).load(function() {
+      console.log("load: " + $(theImagePlayer.getId("animation")).attr("src"));
+      theImagePlayer.waitingForImageToLoad = false;
+      theImagePlayer.waitCnt= 0;
+      if(theImagePlayer.imageStepIsPending) {
+          theImagePlayer.imageStepIsPending = false;
+//          theImagePlayer.play();
+      }
+});
+
+}
+
+
+function quote(s) {
+    return "\"" + s +"\"";
+}
+
+
+function alt(s) {
+    return " alt=" + quote(s) +" title=" + quote(s) +" ";
+}
+
+function img(path,extra) {
+    return "<img " + attr("src", path) + " " + extra +"/>";
+}
+
+function call(func, args) {
+    return func+"("+args+")";
+}
+
+function attr2(name1, value1,name2, value2) { 
+    return attr(name1,value1) + " " + attr(name2, value2);
+}
+
+
+function attr(name, value) {
+    return " " + name +"="+ quote(value) +" " ;
+}
+
+function span(attrs, contents ) {
+    return tag("span",  attrs,contents);
+}
+
+function tag(tag, attrs, contents ) {
+    return "<" + tag +" " + attrs + ">" + contents +"</" + tag +">";
+}
+
+function noop() {
+}
+
+
+// -->
+</script>
+
+<noscript>
+<h3>This requires Javascript for an animation of the imagery.</h3>
+</noscript>
+
+
+
+
+<table border=0 cellpadding="0" cellspacing="0" width="100%" class="imageplayer-outer">
+    <tr valign="bottom">
+    <td width="250"> 
+<div class="imageplayer-buttons"><button class="imageplayer-button"   title="Go to first frame"  onClick="${imagePlayerVar}.setImage(0,1)">|&lt;&lt;</button><button class="imageplayer-button"  title="One step back" onClick="${imagePlayerVar}.setImage(${imagePlayerVar}.current_image-1,-1)">&lt;&lt;</button><button class="imageplayer-button imageplayer-button-play"  title="Start/stop" id="${imagePlayerPrefix}startstopbutton"    onClick="${imagePlayerVar}.startStop()"><div  id="${imagePlayerPrefix}startstopbuttonlabel">Play</div></button><button class="imageplayer-button"  title="One step forward" onClick="${imagePlayerVar}.setImage(${imagePlayerVar}.current_image+1,1)">&gt;&gt;</button><button class="imageplayer-button"  title="Go to last frame" href="JavaScript: noop()" onClick="${imagePlayerVar}.setImage(-1,-1)">&gt;&gt;|</button></div>
+</td>
+<td  valign="center">
+<table  border=0  width="100%" cellpadding=4 cellspacing=0><tr>
+<td>
+<div id="${imagePlayerPrefix}boxes">&nbsp;</div>
+</td>
+<td width=100 align=left>
+<div id="${imagePlayerPrefix}waiting">&nbsp;</div>
+</td>
+<td width="5%" align="right">
+<form method="POST" name="${imagePlayerPrefix}control_form" action="javascript:${imagePlayerVar}.frameNumberClicked();">
+<input type="text" id="${imagePlayerPrefix}framenumber" value=1 size="2" >
+</form>
+</td>
+</table>
+</td>
+</tr>
+<tr valign="top" >
+<td style="border-top: 1px #aaa solid;" colspan="2" valign=top>
+   <div  id="${imagePlayerPrefix}header" style="margin:2">&nbsp;</div>
+   <div class="imageplayer-block">
+${imagehtml}
+   </div>
+</td>
+</tr>
+<tr>
+<td colspan="2">
+Loop Mode:
+<a href="JavaScript: noop()" onClick="${imagePlayerVar}.toggle_mode();">
+<img border=0 id="${imagePlayerPrefix}loopmode" SRC="${root}/imageplayer/button_norm.gif">
+</a>
+&nbsp;
+Adjust Speed:
+<a href="JavaScript: noop()" onClick="${imagePlayerVar}.change_speed(delay_step)"><img  border=0  SRC="${root}/imageplayer/bullet_arrow_down.png" ALT="Reduce animation speed" TITLE="Reduce animation speed"></A><a href="JavaScript: noop()" onClick="${imagePlayerVar}.change_speed(-delay_step)"><img  border=0  SRC="${root}/imageplayer/bullet_arrow_up.png" ALT="Increase animation speed" TITLE="Increase animation speed"></A>
+&nbsp;
+Start Dwell:
+<a href="JavaScript: noop()" onClick="${imagePlayerVar}.change_start_dwell(-dwell_step)"><img  border=0  SRC="${root}/imageplayer/bullet_arrow_down.png" ALT="Reduce start dwell" TITLE="Reduce start dwell"></A><a href="JavaScript: noop()" onClick="${imagePlayerVar}.change_start_dwell(dwell_step)"><img  border=0  SRC="${root}/imageplayer/bullet_arrow_up.png" ALT="Increase start dwell" TITLE="Increase start dwell"></A>
+&nbsp;
+End Dwell:
+<a href="JavaScript: noop()" onClick="${imagePlayerVar}.change_end_dwell(-dwell_step)"><img  border=0  SRC="${root}/imageplayer/bullet_arrow_down.png" ALT="Reduce end dwell" TITLE="Reduce end dwell"></A><a href="JavaScript: noop()" onClick="${imagePlayerVar}.change_end_dwell(dwell_step)"><img border=0  SRC="${root}/imageplayer/bullet_arrow_up.png" ALT="Increase end dwell" TITLE="Increase end dwell"></A>
+
+</td>
+</tr>
+</table>
+
+
+<script language="JavaScript">
+  var ${imagePlayerVar} = new ImagePlayer(${imageArgs});
+  ${imagelist}
+  ${imagePlayerVar}.displayImage();
+  if(${imagePlayerVar}.autostart) {  
+      ${imagePlayerVar}.start();
+  }
+</script>

@@ -1,0 +1,4 @@
+# the second line is the name of the group for each of these map regions values are: Name,ID,North,West,South,East
+model regions
+Upper Colorado River Basin,UCRB,42,-112,35,-106
+East Africa,EAF,14,30,-18,52

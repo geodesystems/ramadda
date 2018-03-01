@@ -1,0 +1,53 @@
+
+##
+## You need to set 3 things here - what database to use, your SSL configuration and the password salt
+##
+
+################################################################################################
+## Database properties  
+################################################################################################
+
+ramadda.db=derby
+#ramadda.db=mysql
+#ramadda.db=postgres
+
+## derby settings - requires no configuration. The database is in <ramadda home>/derby
+
+## mysql settings
+ramadda.db.mysql.url=jdbc:mysql://localhost:3306/repository?zeroDateTimeBehavior=convertToNull&initialTimeout=1000&connectTimeout=5000
+ramadda.db.mysql.user=some_user
+ramadda.db.mysql.password=some_password
+
+#postgres settings
+ramadda.db.postgres.url=jdbc:postgresql://localhost/repository
+ramadda.db.postgres.user=some_user
+ramadda.db.postgres.password=some_password
+
+
+
+################################################################################################
+## SSL properties
+################################################################################################
+
+#ramadda.ssl.password=
+#ramadda.ssl.keypassword=
+
+##You can override where the keystore is. The default is:  <ramadda home>/keystore
+#ramadda.ssl.keystore=/Users/jeffmc/keystore
+
+##You can override the default SSL port
+#ramadda.ssl.port=8043
+
+
+
+################################################################################################
+## Password salt properties
+################################################################################################
+
+#Uncomment and set this to a unique random string
+#this is used to salt the hashed passwords in the database
+#ramadda.password.hash.salt=
+
+
+
+

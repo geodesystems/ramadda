@@ -1,0 +1,5 @@
+
+<api handler="org.ramadda.geodata.thredds.ThreddsApiHandler" id="thredds">
+      <property name="admin" value="false"/>
+      <api request="/thredds/*"    method="processThreddsRequest"/>
+</api>

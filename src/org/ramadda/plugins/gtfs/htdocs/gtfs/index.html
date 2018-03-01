@@ -1,0 +1,44 @@
+<html>
+<title>GTFS Transit Data</title>
+<category:Integration>
+<body>
+<div class="ramadda-section">
+
+<h2>Importing GTFS Data</h2>
+
+<a href="https://developers.google.com/transit/gtfs/reference">GTFS</a> is a standard format for describing 
+A large collection of GTFS feeds is available at 
+<a href="http://transitfeeds.com/">TransitFeeds</a>
+
+<p>
+To import a GTFS file
+<ul>
+<li> From the RAMADDA folder you want to import into go to the File-&gt;Import Entries menu.
+<li> Select your GTFS .zip file
+<li> For Type select GTFS Feed
+<li> Optionally in the Extra field you can specify a number of parameters as name=value pairs
+<ul>
+<li> Add domain aliases, e.g., rtd.10000cities.org, with:<br> 
+<pre>
+host=&lt;hostname&gt;
+host=10000cities.org
+</pre>
+
+<li> Specify an alternative agency short id. use this if the gtfs file doesn't have a meaningful id specified (some just have a number).
+<pre>
+agency=&lt;some other short name&gt;
+e.g.:
+agency=rtd
+</pre>
+
+<li> Import a directory of GTFS files in the server disk
+<pre>
+directory=/path/to/files
+</pre>
+</ul>
+
+</ul>
+
+</body>
+</html>
+

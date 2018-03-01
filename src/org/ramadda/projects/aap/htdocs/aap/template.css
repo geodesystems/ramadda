@@ -1,0 +1,260 @@
+@charset "utf-8";
+/* CSS Document */
+
+body {
+	margin-left: 0px;
+	margin-top: 0px;
+	margin-right: 0px;
+	margin-bottom: 0px;
+	background-color: #D4D4D4;
+	font-family: Arial, Helvetica, sans-serif;
+	font-size: 12px;
+}
+
+.box {
+	width:950px;
+	border:solid #898989 1px;
+	margin: 20px auto;	
+}
+
+.banner {
+	height:151px;
+	background-image:url(banner.jpg);
+	background-repeat:no-repeat;
+}
+
+.banner_fr {
+	height:151px;
+	background-image:url(banner_fr.jpg);
+	background-repeat:no-repeat;
+}
+
+.banner_print {
+	display:none;
+}
+
+.undp_logo {
+	width: 85px;
+	height:151px;
+	left: 865px;
+	top: -76px;
+	position:absolute;
+	cursor:pointer;
+}
+
+.home {
+	width: 865px;
+	height:151px;
+	left: 0px;
+	top: -76px;
+	position:absolute;
+	cursor:pointer;
+}
+
+.left_menu {
+	width:175px;
+	background-color:#E8E8E8;
+	border-right:solid #898989 1px;
+	border-top:solid #898989 1px;
+}
+
+.left_menu_item {
+	height:40px;
+	border-bottom:solid #FFFFFF 1px;
+	color:#666666;
+	
+}
+
+.left_menu_item a, .left_menu_item visited {
+	color:#666666;
+	text-decoration:none;
+	margin: 0px 0px 0px 4px;
+	line-height: 40px;	
+}
+
+.left_menu_search {
+	border-bottom:solid #FFFFFF 1px;
+	color:#666666;
+	padding-left: 4px;
+	padding-bottom: 4px;
+	line-height: 20px;
+	vertical-align:middle;
+}
+
+.right {
+	background-color:#FFFFFF;
+}
+
+.top {
+	height:38px;
+	background-color:#E8E8E8;
+	border-top:solid #898989 1px;
+	border-bottom:solid #898989 1px;
+}
+
+.top_menu {
+	float:left;
+	height:38px;
+	background-color:#E8E8E8;
+}
+
+.top_menu table{
+	height:38px;
+	margin: 0px;
+	padding: 0px;
+	line-height:normal;
+}
+
+.top_menu table td {
+	padding: 0px 20px;
+	margin: 0px;
+	line-height: normal;
+}
+
+.top_menu table td a {
+	font-weight:bold;
+	color:#666666;
+	text-decoration:none;
+	line-height:normal;
+}
+
+.top_menu table td:hover, .top_menu table td:hover a, .active, .active a, .active a:visited {
+	color:#fff;
+	background-color:#992017;
+}
+
+.language {
+	float:right;
+	height:38px;
+	background-color:#E8E8E8;
+}
+
+.language a {
+	color:#0C47A1;
+	text-decoration:none;
+}
+
+.content {
+	background-color:#FFFFFF;
+	border-top:solid #898989 1px;
+	padding: 3px 0px 10px 3px;
+	color:#666666;
+	font-size:14px;
+}
+
+.content h1 {
+	color:#992017;
+	font-size:18px;
+}
+
+.japan_logo {
+	background-image:url(japan_logo.jpg);
+	background-repeat:no-repeat;
+	height:132px;
+	width:106px;
+	float:right;
+	cursor:pointer;
+}
+
+.aapfooter {
+	height: 43px;
+	background-color:#666666;
+	color:#FFFFFF;
+	font-size:14px;
+}
+
+.footer a, .footer visited {
+	color:#FFFFFF;
+	text-decoration:none;
+}
+
+/* MENU */
+/* Version: 2 */
+#menu {
+	FLOAT: left; 
+	WIDTH: 700px; 
+	height:38px;
+}
+#menu UL {
+	PADDING-RIGHT: 0px; 
+	PADDING-LEFT: 0px; 
+	FLOAT: left; 
+	PADDING-BOTTOM: 0px; 
+	MARGIN: 0px; 
+	WIDTH:auto; 
+	PADDING-TOP: 0px; 
+	LIST-STYLE-TYPE: none; 
+	height: 38px;
+}
+#menu A {
+	DISPLAY: block;
+	MARGIN: 0px; 
+	FONT: bold 11px/16px arial, helvetica, sans-serif;
+	cursor:pointer;
+}
+#menu H2 {
+	display: table-cell; 
+	MARGIN: 0px; 
+	font: 14px/16px arial, helvetica, sans-serif; 
+	vertical-align:middle;
+	text-align:center;
+	height: 38px;
+	padding: 0px 10px;
+	color: #666666;
+}
+#menu H2:hover {
+	BACKGROUND: #992017; 
+	COLOR: #ffffff;
+}
+
+.selected, .selected a {
+	BACKGROUND: #992017; 
+	COLOR: #ffffff !important;
+}
+
+#menu A {
+	COLOR: #666666; 
+	TEXT-DECORATION: none;
+}
+#menu A:hover {
+	BACKGROUND: #992017; 
+	COLOR: #ffffff;
+}
+#menu LI {
+	POSITION: relative
+}
+#menu UL UL {
+	Z-INDEX: 500; 
+	POSITION: absolute
+}
+#menu UL UL UL {
+	LEFT: 100%; 
+	POSITION: absolute; 
+	TOP: 0px
+}
+
+#menu UL UL A {
+	padding: 2px 12px;
+}
+
+DIV#menu UL UL {
+	DISPLAY: none
+}
+DIV#menu UL LI:hover UL UL {
+	DISPLAY: none
+}
+DIV#menu UL UL LI:hover UL UL {
+	DISPLAY: none
+}
+DIV#menu UL LI:hover UL {
+	background-color:#E8E8E8;
+	DISPLAY: block;
+	top: 38px;
+	height:auto;
+}
+DIV#menu UL UL LI:hover UL {
+	DISPLAY: block
+}
+DIV#menu UL UL UL LI:hover UL {
+	DISPLAY: block
+}

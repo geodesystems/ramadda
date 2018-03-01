@@ -1,0 +1,364 @@
+i0:Agriculture, Forestry And Fishing 
+i01000:Agriculture And Horticulture 
+i01001:Agriculture 
+i0100105:Cattle And Dairy Farming 
+i0100107:Egg Production 
+i0100119:Pig Farming 
+i0100121:Poultry Farming 
+i0100124:Sheep Farming 
+i0100128:Sugar Beet Farming 
+i0100132:Grain/cereal Farming 
+i0100136:Sugar Cane 
+i0100137:Coffee Growing 
+i0100138:Cotton Growing 
+i0100141:Rubber Growing 
+i0100142:Tea Growing 
+i0100144:Cocoa Growing 
+i0100145:Tobacco Growing 
+i01002:Horticulture 
+i0100206:Fruit Growing 
+i0100216:Vegetable Growing 
+i0100223:Soya Growing 
+i02000:Forestry 
+i03000:Fishing 
+i1:Energy And Water Supply 
+i11000:Coal Mining 
+i12000:Coke Production 
+i13000:Petroleum/natural Gas 
+i1300002:Crude Oil Exploration 
+i1300003:Crude Oil Extraction 
+i1300013:Natural Gas Exploration 
+i1300014:Natural Gas Extraction 
+i14000:Petroleum Refining And Processing 
+i15000:Nuclear Fuel Production And Reprocessing 
+i16000:Electricity, Gas Utilities 
+i16100:Electricity Production 
+i1610107:Hydro Electric Power 
+i1610109:Nuclear Power 
+i16200:Gas Production 
+i16300:Alternative Energy Including Solar Power, Wind Power And Wave Power 
+i17000:Water Supply 
+i2:Metals And Minerals 
+i21000:Metal Ore Extraction 
+i22000:Metal Manufacturing 
+i22100:Iron And Steel 
+i22200:Steel Tubes 
+i22300:Steel Cold Rolling And Forming 
+i22400:Non-ferrous Metals 
+i22450:Aluminium And Aluminium Alloys 
+i22460:Copper And Copper Alloys 
+i22470:Other Non-ferrous Metals 
+i22471:Other Base Non-ferrous Metals Including Lead, Nickel, Tin And Zinc 
+i22472:Precious Metals 
+i23000:Extraction Of Minerals Including Slate, Stone, Chalk And Salts 
+i24000:Mineral Products 
+i24100:Structural Clay Products Including Bricks, Tiles And Pipes 
+i24200:Cement, Lime And Plaster 
+i24300:Building Products Of Concrete, Lime Or Plaster 
+i24400:Asbestos Products 
+i24500:Stone And Slate Products 
+i24600:Abrasive Products 
+i24700:Glass And Glass Products 
+i24794:Glass Fibre 
+i24800:Ceramic Products Including Tiles, Bathroom Ware, China And Pottery 
+i25000:Chemical Industry 
+i25100:Basic Industrial Chemicals 
+i25110:Inorganic Chemicals Excluding Industrial Gases 
+i25120:Organic Chemicals Including Petrochemicals 
+i25130:Fertilisers 
+i25140:Synthetic Resins, Polymers And Plastics 
+i25160:Dyestuffs And Pigments 
+i25510:Paints 
+i25520:Printing Inks 
+i25620:Adhesives 
+i25650:Explosives 
+i25670:Industrial Chemicals Including Gases 
+i25680:Pesticides 
+i25700:Pharmaceuticals 
+i25800:Soaps And Cosmetics 
+i26000:Synthetic Fibres Including Polyester 
+i3:Metal Goods And Engineering 
+i31000:Metal Goods Including Nuts And Bolts, Cutlery, Packaging Products Etc 
+i32000:Mechanical Engineering 
+i32040:Industrial Plant And Steelwork 
+i32100:Agricultural Machinery 
+i32200:Machine Tools 
+i32050:Boilers And Process Plant Fabrications 
+i32300:Textile Machinery 
+i32440:Food Processing Machinery 
+i32450:Chemical Industry Machinery 
+i32510:Mining Machinery 
+i32540:Construction Machinery 
+i32550:Lifting And Handling Equipment 
+i32600:Power Transmission Equipment Including Chains, Gears And Bearings 
+i32751:Woodworking Machinery 
+i32752:Rubber And Plastics Working Machinery 
+i32753:Leatherworking And Footwear Making Machinery 
+i32754:Paper Making Machinery 
+i32755:Glass And Ceramic Working Machinery 
+i32810:Industrial And Marine Engines 
+i32830:Compressors, Hydraulic And Pneumatic Equipment 
+i32840:Refrigerating, Heating And Air Conditioning Equipment 
+i32851:Weighing Machinery 
+i32852:Portable Power Tools 
+i32870:Pumps 
+i32900:Arms Manufacturing 
+i33010:Electronic Office Equipment 
+i33020:Computer Systems And Software 
+i3302003:Computers 
+i3302004:Computer Peripherals, Including Modems 
+i3302013:Computer Printers 
+i3302015:Optical Character Readers 
+i3302017:Computer Terminals, Work Stations And Vdus 
+i3302018:Word Processors And Pcs 
+i3302019:Secondary Memory Stores, Including Disks, Ram And Rom 
+i3302020:Systems Software 
+i3302021:Applications Software 
+i3302022:Knowledge-based Systems Software 
+i33030:Datacommunications And Networking Including Lans, Vans And Electronic Funds Transfer 
+i34000:Electrical And Electronic Engineering 
+i34100:Wires And Cables 
+i34200:Basic Electrical Equipment Including Generators, Transformers, Turbines, Electric Motors And Switchgear 
+i34320:Batteries 
+i34330:Alarms And Signalling Equipment 
+i34340:Electrical Equipment For Vehicles And Aircraft 
+i34350:Industrial Electrical Equipment Including Welding Equipment,industrial Lasers And Industrial Robots 
+i34400:Telecommunications Equipment 
+i34410:Telephone Equipment 
+i34420:Electrical Instruments And Control Systems Including Meters, Sensors And Process Control Equipment 
+i34430:Radar And Electronic Equipment 
+i34440:Passive Components Including Resistors, Capacitors And Printed Circuits 
+i34520:Records, Tapes And Discs 
+i34531:Electronic Active Components Including Microchips 
+i34532:Components For Electronic Goods Including Aerials,loudspeakers, Etc 
+i34540:Electronic Consumer Goods 
+i34600:Electrical Appliances Including Fridges, Washing Machines 
+i34700:Electric Lighting Equipment 
+i35000:Motor Vehicles And Parts 
+i35101:Passenger Cars 
+i35102:Commercial Vehicles 
+i35200:Vehicle Bodies And Trailers 
+i35300:Vehicle Parts 
+i36101:Shipbuilding 
+i36102:Pleasure Boats And Yachts 
+i36103:Shipbreaking 
+i36200:Railway Equipment 
+i36300:Cycles And Motor Cycles 
+i36400:Aerospace 
+i3640002:Aero-engines 
+i3640007:Aircraft Parts And Equipment, Not Electrical 
+i3640010:Civil Aircraft Manufacturing 
+i3640026:Guided Weapons 
+i3640029:Civil Helicopter Manufacturing 
+i3640030:Hovercraft Manufacturing 
+i3640045:Satellite Manufacturing 
+i3640046:Spacecraft Manufacturing 
+i3640047:Military Aerospace Equipment 
+i3640048:Aircraft Maintenance 
+i37000:Instrument Engineering 
+i37100:Measuring And Precision Instruments 
+i37200:Medical Equipment 
+i37300:Optical Equipment 
+i37330:Photographic Equipment 
+i37400:Timekeeping Equipment 
+i4:Processing Industries 
+i41000:Food, Drink And Tobacco Processing 
+i41100:Oils And Fats Processing 
+i41200:Slaughterhouses And Meat Processing 
+i41220:Meat Processing 
+i41230:Poultry Slaughter And Processing 
+i41300:Dairy Products Processing 
+i41400:Fruit And Vegetable Processing Including Manufacture Of Jam, Marmalade, Chutneys, Etc 
+i41500:Fish Processing 
+i41600:Grain Milling And Processing 
+i41800:Starch Processing 
+i41900:Bread And Biscuit Making 
+i42000:Sugar And Sugar Products 
+i42100:Confectionery 
+i42210:Animal Feed 
+i42220:Pet Foods 
+i42390:Miscellaneous Foods Including Tea, Coffee And Convenience Foods 
+i42400:Spirits Distilling 
+i42600:Wine Production 
+i42700:Brewing 
+i42800:Soft Drinks 
+i42900:Tobacco 
+i43000:Textile Industry 
+i44000:Leather And Leather Goods 
+i45000:Footwear And Clothing 
+i45100:Footwear 
+i45300:Clothing 
+i45500:Household Textiles 
+i45600:Fur Goods 
+i46000:Timber Processing And Wood Articles 
+i46700:Wooden Furniture 
+i47000:Paper, Printing And Publishing 
+i47100:Paper Manufacturing 
+i47101:Pulp 
+i47200:Paper And Board Conversion Including Wallpaper, Hygiene Products, Stationery And Packaging 
+i47500:Printing And Publishing 
+i47510:Newspaper Printing And Publishing 
+i47520:Periodical Printing And Publishing 
+i4752105:Trade Journal Publishing 
+i47530:Book Printing And Publishing 
+i48000:Rubber And Plastics Processing 
+i48100:Rubber Products 
+i48110:Tyre Manufacturing 
+i48300:Plastics Products 
+i49100:Jewellery 
+i49200:Musical Instruments 
+i49300:Photographic Processing 
+i49410:Toys And Games 
+i49420:Sporting Equipment 
+i49540:Stationery Including Pens And Pencils, Etc, But Excluding Paper Products 
+i5:Construction 
+i50000:General Construction And Demolition 
+i50100:Construction Of Buildings 
+i5010022:Residential Construction 
+i5010023:Office Construction 
+i5010024:Hospital Construction 
+i5010025:Factory And Industrial Building Construction 
+i5010027:Retail Construction 
+i5010028:School Construction 
+i5010029:Building Refurbishment 
+i5010031:Leisure And Entertainments Facility Construction 
+i50200:Civil Engineering 
+i5020002:Airport Construction 
+i5020006:Bridge Building 
+i5020008:Car Park Construction 
+i5020011:Dam Construction 
+i5020017:Harbour Construction 
+i5020022:Oil Production Platform Construction 
+i5020028:Railway Construction 
+i5020030:Reservoir Construction 
+i5020032:Sewerage Construction 
+i5020039:Tunnel Construction 
+i5020041:Road Construction 
+i5020043:Pipeline Laying 
+i5020044:Power Station Construction 
+i5020045:Water Treatment Plant Construction 
+i5020047:Land Reclamation 
+i5020050:Sea Defence Construction 
+i5020051:Canal/waterway Construction 
+i50300:Building Installations Including Gas And Electric Fittings And Plumbing 
+i50400:Building Completion Including Decorating 
+i6:Distribution, Hotels And Catering 
+i61000:Wholesale Distribution 
+i63000:Product Trading And Broking 
+i64000:Retail Distribution 
+i64100:Food Retailing 
+i64200:Cigarette, Newspaper And Liquor Stores 
+i64300:Chemists And Drug Stores 
+i64500:Clothing Stores 
+i64600:Shoe Stores 
+i64700:Household Textiles Including Carpets, Curtains, Bedding 
+i64800:Household Goods And Hardware Including Furniture, Electrical Goods, China, Cutlery And Decorating Materials 
+i65100:Automobile Dealers 
+i65200:Filling Stations 
+i65300:Books, Stationery And Office Supplies Stores 
+i65400:Specialist Stores Including Photographic Materials, Watches, Jewellery, Sports Equipment 
+i6540005:Opticians 
+i6540011:Garden Centres 
+i6540030:Toys And Games 
+i65600:Mixed Retail 
+i6560002:Department Stores 
+i6560003:Mail Order 
+i6560011:Edge And Out Of Town Retailing 
+i66000:Hotels And Catering 
+i66100:Restaurants, Cafes And Fast Food Outlets 
+i66200:Bars And Public Houses 
+i66500:Hotels And Accommodation 
+i67000:Consumer Goods And Vehicle Repair 
+i7:Transport And Communication 
+i71000:Railways 
+i72101:Urban Mass Transit Systems 
+i72102:Bus And Coach Services 
+i72200:Taxis 
+i72300:Road Haulage 
+i72603:Inland Water Transport 
+i74000:Sea Transport 
+i75000:Air Transport 
+i75100:Space Transport Including Satellite Launching 
+i76300:Ports And Shipping Support Services 
+i76400:Airports And Air Support Services 
+i77001:Travel Agents 
+i77002:Freight Forwarding 
+i77003:Storage And Warehousing 
+i79010:Postal Services 
+i79020:Telecommunications 
+i8:Financial, Business And Other Services 
+i81000:Banking And Financial Services 
+i81400:Banking 
+i81401:Central Banking Authorities 
+i81402:Commercial Banking 
+i81403:Savings Banks 
+i81501:Non-bank Credit Institutions 
+i8150103:Mortgage Institutions, Building Societies, Thrifts And Savings And Loans 
+i8150106:Development Banks 
+i8150108:Credit Card Issuers 
+i8150110:Export-import Financing 
+i81502:Trusts And Investment Houses 
+i8150203:Venture Capital 
+i8150206:Investment Trusts 
+i8150211:Unit Trusts And Mutual Funds 
+i8150214:Pension Funds 
+i8150216:Personal Equity Plan - Pep 
+i82000:Insurance 
+i82001:Composite Insurance 
+i82002:Life Insurance 
+i82003:Non-life Insurance 
+i8200316:Motor Insurance 
+i8200318:Re-insurance 
+i83100:Financial Services Including Stockbrokers And Securities Houses 
+i83200:Insurance Brokers And Agents 
+i83400:Real Estate Agents 
+i83500:Legal Services 
+i83600:Accountancy And Auditing 
+i83700:Architects, Surveyors And Technical Services 
+i83800:Advertising Agencies 
+i83940:Computer Services 
+i8394007:Computer Maintenance And Support Services 
+i83951:Management Consultants 
+i83952:Market Research And Public Relations 
+i8395205:Public Relations Consultants 
+i83954:Business And Media Services 
+i83953:Document Copying And Duplicating 
+i8395416:Credit Rating 
+i8395419:Free-lance Journalists 
+i8395448:Sales Promotion 
+i8395449:Direct Marketing 
+i8395451:Media Planning 
+i83960:Diversified Holding Companies 
+i84000:Renting And Leasing Equipment 
+i84100:Agricultural Equipment Hire 
+i84200:Construction Equipment Hire 
+i84300:Office Equipment Hire 
+i84600:Consumer Goods Hire 
+i84801:Automobile Hire 
+i84802:Light Commercial Vehicle Hire 
+i84803:Commercial Vehicle Hire 
+i84804:Other Transport Equipment Hire 
+i8480401:Aircraft Leasing 
+i8480410:Ship Leasing 
+i85000:Real Estate Dealing 
+i8500005:Industrial Real Estate Dealing And Letting 
+i8500011:Residential Real Estate Dealing And Letting 
+i8500021:Commercial Real Estate Dealing And Letting 
+i8500029:Retail Real Estate Dealing And Letting 
+i8500031:Residential Property Dealing And Owning 
+i9:Services And Entertainment 
+i92110:Refuse Disposal 
+i92120:Sewage Disposal 
+i92300:Cleaning Services 
+i95100:Hospitals, Nursing Homes And Private Healthcare 
+i97100:Film Production And Distribution 
+i97400:Television And Radio 
+i9741102:Television Broadcasters 
+i9741105:Radio Broadcasting 
+i9741109:Cable Television 
+i9741110:Satellite Television 
+i9741112:Television Programme Production 
+i97412:Theatres And Live Entertainment Venues 
+i97911:Sporting Facilities And Venues 
+i97912:Betting And Gambling 
+i98100:Laundries And Dry Cleaners 

@@ -1,0 +1,3 @@
+lightning:Lightning
+human:Human Caused
+other:Other Cause

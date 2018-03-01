@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<metadata>
+  <handler category="Bio">
+    <type id="bio_dicom_attr" name="DICOM Attribute" foruser="true" searchable="true">
+      <element id="attr" name="Attribute" />
+      <element id="value" name="Value"/>
+    </type>
+  </handler>
+
+  <handler category="Bio">
+    <type id="bio_ome_experiment" name="OME Experiment" searchable="true">
+      <element id="type" name="Type"/>
+      <element id="description" name="Description"/>
+      <element id="id" name="ID" />
+      <element id="experimenter_ref" name="Experimenter Ref"/>
+    </type>
+    <type id="bio_ome_experimenter" name="OME Experimenter" searchable="true">
+      <element id="first_name" name="First name" />
+      <element id="last_name" name="Last name"/>
+      <element id="email" type="email" name="Email"/>
+      <element id="institution"  name="Institution"/>
+      <element id="id" name="ID"/>
+    </type>
+
+  </handler>
+
+
+</metadata>

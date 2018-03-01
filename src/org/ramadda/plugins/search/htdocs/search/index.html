@@ -1,0 +1,87 @@
+<html>
+<title>Search Integration</title>
+<category:Integration>
+<body>
+<div class="ramadda-section">
+<h2>Search Integration</h2>
+
+RAMADDA can search both its own local repository as well as other sources of content - Google, YouTube, Wolfram/Alpha, DuckDuckGo, Flickr, etc. 
+By default only the local RAMADDA is searched. You can select what other search providers to use in the  Search form under the "Where do you want to search?" tab.
+
+To configure your RAMADDA to use a search provider you will need to install the Search plugin from the latest <a href="https://geodesystems.com/repository/userguide/releasenotes.html">release</a>.
+
+Once installed, a number of the search providers require an API key. To enable the provider retrieve the the key and add it to some 
+.properties file (e.g, keys.properties) in your RAMADDA home or plugins directory. 
+
+
+
+<h3>Flickr Image Search</h3>
+Get an API key from <a href="https://www.flickr.com/services/api/misc.api_keys.html">Flickr</a> and define the RAMADDA property:
+
+<pre>
+flickr.api.key=&lt;your API key&gt;
+</pre>
+
+
+<h3>PLoS - Public Library of Science</h3>
+
+Get a registration key at <a href="http://api.plos.org/registration/">http://api.plos.org/registration/</a> and set the property:
+
+<pre>
+  plos.api.key=&lt;your API key&gt;
+</pre>
+
+<h3>Open Search</h3>
+To add a new search provider that uses Open Search you need to configure a "classes.txt" file in your RAMADDA plugins directory. This specifies the Java class that does the search, the id of the provider and the URL template to use. The URL template should contain a "${searchterms}" macro.
+
+You classes.txt file should look like:
+
+<pre>
+#For open search the form is:
+#classpath;ID;opensearch URL;Label
+#The URL should have the macro: ${searchterms}
+#
+#e.g:
+org.ramadda.plugins.search.OpenSearchProvider;nasa;https://api-test.echo.nasa.gov/opensearch/datasets.atom?keyword=${searchterms};NASA Open Search
+</pre>
+
+
+
+<h3>Webhose Search</h3>
+<a href="https://webhose.io">Webhose</a> provides:
+<blockquote>Direct access to live data from hundreds of thousands of forums, news and blogs</blockquote>
+
+Get the  API key from <a href="https://webhose.io">Webhose</a> and define the RAMADDA property:
+
+<pre>
+webhose.api.key=&lt;your API key&gt;
+</pre>
+
+
+
+<h3>Wolfram/Alpha Search</h3>
+
+Get the API key from <a href="https://developer.wolframalpha.com/portal/apisignup.html">Wolfram</a> and define the RAMADDA property:
+
+<pre>
+wolfram.api.key=&lt;your API key&gt;
+</pre>
+
+
+<h3>YouTube Search</h3>
+
+Get the  API key from <a href="https://developers.google.com/youtube/registering_an_application">Google</a> and define the RAMADDA property:
+
+<pre>
+youtube.api.key=&lt;your API key&gt;
+</pre>
+
+
+
+
+
+</div>
+
+</body>
+</html>
+

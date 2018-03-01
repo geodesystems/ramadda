@@ -1,0 +1,16 @@
+<wiki>
++section title={{name}}
+{{display
+type="entrylist"
+orientation="horizontal"
+layoutHere="true"
+orientation="vertical"
+showMetadata="true"
+innerHeight="500"
+divid="listdiv"
+entryParent="this"
+showType="false"
+formOpen="false"
+showSearchSettings="false"
+}}
+-section

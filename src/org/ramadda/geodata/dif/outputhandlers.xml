@@ -1,0 +1,3 @@
+<outputhandlers>
+  <outputhandler class="org.ramadda.geodata.dif.DifOutputHandler" name="GCMD DIF"/>
+</outputhandlers>

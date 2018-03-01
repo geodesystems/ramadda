@@ -1,0 +1,76 @@
+<types>
+
+
+<!--
+  <type name="above_organization"  description="Organization" handler="org.ramadda.repository.type.ExtensibleGroupTypeHandler" category="ABoVE" >
+     <property name="icon" value="/above/chart_organisation.png"/>
+     <property name="form.file.show" value="false"/>
+     <property name="form.url.show" value="true"/>
+     <property name="form.time.show" value="false"/>
+     <property name="form.location.show" value="true"/>
+     <column name="organization_type" type="enumerationplus"  label="Organization Type"    cansearch="true" values="file:/org/ramadda/projects/above/organizationtypes.txt"/>
+     <column name="status" type="enumerationplus"  label="Status"    cansearch="true" values="file:/org/ramadda/projects/above/statuses.txt"/>
+     <column name="short_name"   label="Short Name"    cansearch="false"/>
+     <column name="notes" type="string"  label="Notes" rows="5" size="5000" changetype="true"/>
+
+     <wiki><![CDATA[
+{{noheading}}
+<table width="100%">
+<tr valign=top>
+<td width="50%">
+<div class="wiki-h1">
+{{field name="short_name"}}  {{name}}
+</div>
+
+{{description wikify="true"}}
+
+==Information==
+<table class="formtable">
+<tr><td align="right"><b>Url:</b></td><td>{{resource}}</td></tr>
+<tr><td align="right"><b>Type:</b></td><td>{{field name="organization_type"}}</td></tr>
+<tr><td align="right"><b>Status:</b></td><td>{{field name="status"}}</td></tr>
+<tr><td align="right"><b>Notes:</b></td><td> {{field name="notes"}}</td></tr>
+</table>
+
+{{tree prefix="==Contents==" message="" showtoggle="false"}}
+
+</td>
+<td width="50%">
+{{image src="::*" message="" width="300"}}
+<p>
+{{map  entry="Sites" message="" width="300" suffix="<b>Site Map</b>"}}
+<p>
+{{links  entry="Links" message="" prefix="==Links=="}}
+<p>
+{{comments prefix="==Comments==" }}
+</td></tr>
+
+
+
+</table>
+
+==Properties==
+{{properties block.show="true" block.open="false"}}
+<p>
+]]>
+</wiki>
+
+
+   </type>
+
+  <type name="above_site"  description="Site" xxxhandler="org.ramadda.repository.type.ExtensibleGroupTypeHandler" category="ABoVE" >
+     <property name="icon" value="/above/site.png"/>
+     <property name="form.file.show" value="false"/>
+     <property name="form.url.show" value="true"/>
+     <property name="form.location.show" value="true"/>
+     <column name="site_type" type="enumerationplus"  label="Site Type"    cansearch="true" values="file:/org/ramadda/projects/above/sitetypes.txt"/>
+     <column name="status" type="enumerationplus"  label="Status"    cansearch="true"/>
+     <column name="short_name"   label="Short Name"    cansearch="true"/>
+     <column name="network"   label="Network"    type="enumerationplus"   cansearch="true" iscategory="true"/>
+     <column name="notes" type="string"  label="Notes" rows="5" size="5000" />
+   </type>
+-->
+
+
+
+</types>

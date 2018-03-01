@@ -1,0 +1,859 @@
+
+snotel {SNTL }  {AK}  {Alexander Lake (1267)}  {}  {2014-August}  { 61.75}  {-150.89}  { 160}  {Matanuska-susitna}  {Headwaters Alexander Creek (190205051106)}   
+snotel {SNTL }  {AK}  {American Creek (1189)}  {}  {2011-August}  { 64.79}  {-141.23}  { 1050}  {Southeast Fairbanks}  {American Creek (190404010104)}   
+snotel {SNTL }  {AK}  {Anchor River Divide (1062)}  {}  {1980-October}  { 59.86}  {-151.32}  { 1653}  {Kenai Peninsula}  {Headwaters Anchor River (190203010701)}   
+snotel {SNTL }  {AK}  {Anchorage Hillside (1070)}  {}  {2005-June}  { 61.11}  {-149.67}  { 2080}  {Anchorage}  {Lucile Creek (190204010501)}   
+snotel {SNTL }  {AK}  {Atigun Pass (957)}  {}  {1982-October}  { 68.13}  {-149.48}  { 4800}  {North Slope}  {Chandalar Shelf (190403010102)}   
+snotel {SNTL }  {AK}  {Bettles Field (1182)}  {}  {1980-October}  { 66.92}  {-151.53}  { 640}  {Yukon-koyukuk}  {Jack White Creek-Koyukuk River (190406012604)}   
+snotel {SNTL }  {AK}  {Chisana (1093)}  {}  {2008-July}  { 62.07}  {-142.05}  { 3320}  {Southeast Fairbanks}  {Red Hill Creek-Chisana River (190405010305)}   
+snotel {SNTL }  {AK}  {Coldfoot (958)}  {}  {1995-March}  { 67.25}  {-150.18}  { 1040}  {Yukon-koyukuk}  {Slate Creek (190406010604)}   
+snotel {SNTL }  {AK}  {Cooper Lake (959)}  {}  {1981-October}  { 60.39}  {-149.69}  { 1200}  {Kenai Peninsula}  {Kenai Lake (190203021205)}   
+snotel {SNTL }  {AK}  {Eagle Summit (960)}  {}  {1998-July}  { 65.49}  {-145.41}  { 3650}  {Yukon-koyukuk}  {Porcupine Creek (190404020801)}   
+snotel {SNTL }  {AK}  {Esther Island (1071)}  {}  {2005-June}  { 60.80}  {-148.09}  { 50}  {Valdez-cordova}  {Esther Lake-Frontal Prince William Sound (190202011605)}   
+snotel {SNTL }  {AK}  {Exit Glacier (1092)}  {}  {2011-July}  { 60.19}  {-149.62}  { 400}  {Kenai Peninsula}  {Oulet Resurrection River (190202020508)}   
+snotel {SNTL }  {AK}  {Fairbanks F.O. (1174)}  {}  {1982-October}  { 64.85}  {-147.80}  { 450}  {Fairbanks North Star}  {Chena River (190405060907)}   
+snotel {SNTL }  {AK}  {Fielding Lake (1268)}  {}  {2014-August}  { 63.20}  {-145.63}  { 3000}  {Valdez-cordova}  {Fielding Lake (190405040302)}   
+snotel {SNTL }  {AK}  {Fort Yukon (961)}  {}  {1993-October}  { 66.57}  {-145.25}  { 430}  {Yukon-koyukuk}  {Seventeen Mile Slough-Yukon River (190404030200)}   
+snotel {SNTL }  {AK}  {Gobblers Knob (962)}  {}  {1997-July}  { 66.75}  {-150.67}  { 2030}  {Yukon-koyukuk}  {Outlet Prospect Creek (190406020403)}   
+snotel {SNTL }  {AK}  {Grandview (956)}  {}  {1983-October}  { 60.61}  {-149.06}  { 1100}  {Kenai Peninsula}  {Headwaters Trail Creek (190203021001)}   
+snotel {SNTL }  {AK}  {Granite Crk (963)}  {}  {1987-October}  { 63.94}  {-145.40}  { 1240}  {Southeast Fairbanks}  {Granite Creek (190405031806)}   
+snotel {SNTL }  {AK}  {Grouse Creek Divide (964)}  {}  {1988-October}  { 60.26}  {-149.34}  { 700}  {Kenai Peninsula}  {South Fork Snow River (190203020902)}   
+snotel {SNTL }  {AK}  {Heen Latinee (1270)}  {}  {2015-June}  { 58.70}  {-134.86}  { 2065}  {Juneau}  {Davies Creek (190103010401)}   
+snotel {SNTL }  {AK}  {Imnaviat Creek (968)}  {}  {1981-March}  { 68.62}  {-149.30}  { 3050}  {North Slope}  {Headwaters Toolik River (190604010702)}   
+snotel {SNTL }  {AK}  {Independence Mine (1091)}  {}  {1997-October}  { 61.79}  {-149.28}  { 3550}  {Matanuska-susitna}  {Cow Lake-Fish Creek (190205051302)}   
+snotel {SNTL }  {AK}  {Indian Pass (946)}  {}  {1979-October}  { 61.07}  {-149.48}  { 2350}  {Anchorage}  {Headwaters Ship Creek (190204010402)}   
+snotel {SNTL }  {AK}  {Jack Wade Jct (1275)}  {}  {2015-October}  { 64.15}  {-141.33}  { 3585}  {Southeast Fairbanks}  {Kal Creek (190401042204)}   
+snotel {SNTL }  {AK}  {Johnsons Camp (1036)}  {}  {2002-August}  { 64.56}  {-164.29}  { 25}  {Nome}  {Pine Creek (190501042003)}   
+snotel {SNTL }  {AK}  {Kachemak Creek (1063)}  {}  {2003-October}  { 59.73}  {-150.66}  { 1660}  {Kenai Peninsula}  {Bradley Lake (190203011101)}   
+snotel {SNTL }  {AK}  {Kantishna (1072)}  {}  {2005-July}  { 63.54}  {-150.99}  { 1550}  {Denali}  {Moose Creek (190405101805)}   
+snotel {SNTL }  {AK}  {Kelly Station (1175)}  {}  {1991-October}  { 67.93}  {-162.28}  { 310}  {Northwest Arctic}  {190504030802-Noatak River (190504030802)}   
+snotel {SNTL }  {AK}  {Kenai Moose Pens (966)}  {}  {1983-October}  { 60.73}  {-150.48}  { 300}  {Kenai Peninsula}  {Upper Moose River (190203021601)}   
+snotel {SNTL }  {AK}  {Little Chena Ridge (947)}  {}  {1981-October}  { 65.12}  {-146.73}  { 2000}  {Fairbanks North Star}  {190405060706-Little Chena River (190405060706)}   
+snotel {SNTL }  {AK}  {Long Lake (1001)}  {}  {1966-October}  { 58.19}  {-133.83}  { 850}  {Juneau}  {Long River (190102060104)}   
+snotel {SNTL }  {AK}  {Lower Kachemak Creek (1265)}  {}  {2014-October}  { 59.74}  {-150.69}  { 1915}  {Kenai Peninsula}  {Bradley Lake (190203011101)}   
+snotel {SNTL }  {AK}  {May Creek (1096)}  {}  {2007-July}  { 61.35}  {-142.71}  { 1610}  {Valdez-cordova}  {Lower Young Creek (190201031603)}   
+snotel {SNTL }  {AK}  {Mcneil Canyon (1003)}  {}  {1986-October}  { 59.74}  {-151.25}  { 1320}  {Kenai Peninsula}  {Swift Creek-Frontal Kachemak Bay (190203010806)}   
+snotel {SNTL }  {AK}  {Mcneil River SGS (1191)}  {}  {2012-June}  { 59.08}  {-154.28}  { 140}  {Kenai Peninsula}  {Mikfik Creek-Frontal Kamishak Bay (190206021207)}   
+snotel {SNTL }  {AK}  {Middle Fork Bradley (1064)}  {}  {1990-October}  { 59.78}  {-150.76}  { 2300}  {Kenai Peninsula}  {Bradley River (190203011102)}   
+snotel {SNTL }  {AK}  {Monahan Flat (1094)}  {}  {1983-October}  { 63.31}  {-147.65}  { 2710}  {Matanuska-susitna}  {West Fork Susitna River (190205010304)}   
+snotel {SNTL }  {AK}  {Monument Creek (949)}  {}  {1980-October}  { 65.08}  {-145.87}  { 1850}  {Fairbanks North Star}  {Monument Creek (190405060402)}   
+snotel {SNTL }  {AK}  {Moore Creek Bridge (1176)}  {}  {1989-October}  { 59.59}  {-135.21}  { 2250}  {Skagway}  {Captain William Moore Creek (190103030301)}   
+snotel {SNTL }  {AK}  {Moraine (1035)}  {}  {2002-March}  { 61.38}  {-149.00}  { 2100}  {Anchorage}  {Eklutna Lake (190204010103)}   
+snotel {SNTL }  {AK}  {Mt. Alyeska (1103)}  {}  {1972-October}  { 60.96}  {-149.09}  { 1540}  {Anchorage}  {Glacier Creek (190203020702)}   
+snotel {SNTL }  {AK}  {Mt. Eyak (1073)}  {}  {2005-September}  { 60.55}  {-145.75}  { 1405}  {Valdez-cordova}  {Orca Inlet-Frontal Prince William Sound (190202010200)}   
+snotel {SNTL }  {AK}  {Mt. Ryan (948)}  {}  {1981-October}  { 65.25}  {-146.15}  { 2800}  {Fairbanks North Star}  {Headwaters West Fork Chena River (190405060404)}   
+snotel {SNTL }  {AK}  {Munson Ridge (950)}  {}  {1980-October}  { 64.85}  {-146.21}  { 3100}  {Fairbanks North Star}  {Rock Creek-Chena River (190405060602)}   
+snotel {SNTL }  {AK}  {Nuka Glacier (1037)}  {}  {1990-October}  { 59.70}  {-150.71}  { 1250}  {Kenai Peninsula}  {Nuka River (190202021002)}   
+snotel {SNTL }  {AK}  {Pargon Creek (986)}  {}  {2000-October}  { 64.99}  {-163.10}  { 100}  {Nome}  {Slate Creek-Fish River (190501040905)}   
+snotel {SNTL }  {AK}  {Port Graham (987)}  {}  {2000-October}  { 59.35}  {-151.85}  { 300}  {Kenai Peninsula}  {190203011207 (190203011207)}   
+snotel {SNTL }  {AK}  {Prudhoe Bay (1177)}  {}  {2003-October}  { 70.27}  {-148.57}  { 30}  {North Slope}  {190604010102 (190604010102)}   
+snotel {SNTL }  {AK}  {Rhoads Creek (1178)}  {}  {1987-October}  { 63.93}  {-145.33}  { 1225}  {Southeast Fairbanks}  {Rhoads Creek (190405031805)}   
+snotel {SNTL }  {AK}  {Rocky Point (973)}  {}  {1999-October}  { 64.53}  {-163.42}  { 250}  {Nome}  {Golovnin Lagoon-Frontal Golovnin Bay (190501041103)}   
+snotel {SNTL }  {AK}  {Sagwon (1183)}  {}  {1983-March}  { 69.42}  {-148.69}  { 1000}  {North Slope}  {190604010905 (190604010905)}   
+snotel {SNTL }  {AK}  {Sugarloaf Mtn (1095)}  {}  {2007-July}  { 61.08}  {-146.30}  { 550}  {Valdez-cordova}  {Port Valdez-Frontal Valdez Arm (190202011104)}   
+snotel {SNTL }  {AK}  {Summit Creek (955)}  {}  {1989-July}  { 60.62}  {-149.53}  { 1400}  {Kenai Peninsula}  {Headwaters Canyon Creek (190203020401)}   
+snotel {SNTL }  {AK}  {Susitna Valley High (967)}  {}  {1987-October}  { 62.13}  {-150.04}  { 375}  {Matanuska-susitna}  {Little Montana Creek-Montana Creek (190205050105)}   
+snotel {SNTL }  {AK}  {Telaquana Lake (1266)}  {}  {2014-July}  { 60.98}  {-153.92}  { 1275}  {Bethel}  {Upper Telaquana River (190304052303)}   
+snotel {SNTL }  {AK}  {Teuchet Creek (951)}  {}  {1981-October}  { 64.95}  {-145.52}  { 1640}  {Fairbanks North Star}  {Teuchet Creek (190405060301)}   
+snotel {SNTL }  {AK}  {Tokositna Valley (1089)}  {}  {2006-July}  { 62.63}  {-150.78}  { 850}  {Matanuska-susitna}  {Upper Tokositna River (190205020903)}   
+snotel {SNTL }  {AK}  {Turnagain Pass (954)}  {}  {1982-October}  { 60.78}  {-149.18}  { 1880}  {Kenai Peninsula}  {Granite Creek (190203020406)}   
+snotel {SNTL }  {AK}  {Upper Chena (952)}  {}  {1984-May}  { 65.10}  {-144.93}  { 2850}  {Fairbanks North Star}  {Headwaters Middle Fork Chena River (190405060102)}   
+snotel {SNTL }  {AK}  {Upper Nome Creek (1090)}  {}  {2006-August}  { 65.37}  {-146.59}  { 2520}  {Yukon-koyukuk}  {Sumner Creek-Nome Creek (190404022004)}   
+snotel {SNTL }  {AK}  {Upper Tsaina River (1055)}  {}  {2003-October}  { 61.19}  {-145.65}  { 1750}  {Valdez-cordova}  {Middle Tsina River (190201040203)}   
+snotel {SNTL }  {AZ}  {Baker Butte (308)}  {}  {1978-October}  { 34.46}  {-111.41}  { 7300}  {Gila}  {Pine Creek (150602030206)}   
+snotel {SNTL }  {AZ}  {Baldy (310)}  {}  {1978-October}  { 33.98}  {-109.50}  { 9125}  {Apache}  {Hall Creek-Little Colorado River (150200010203)}   
+snotel {SNTL }  {AZ}  {Bar M (1212)}  {}  {2012-September}  { 34.86}  {-111.61}  { 6393}  {Coconino}  {Bar M Canyon (150602020601)}   
+snotel {SNTL }  {AZ}  {Beaver Head (902)}  {}  {1994-May}  { 33.69}  {-109.22}  { 7990}  {Greenlee}  {Upper Beaver Creek (150601010107)}   
+snotel {SNTL }  {AZ}  {Beaver Spring (1143)}  {}  {2009-October}  { 36.33}  {-109.06}  { 9200}  {Apache}  {Tsaile Creek-Tsaile Lake (140802040401)}   
+snotel {SNTL }  {AZ}  {Chalender (1139)}  {}  {2009-May}  { 35.26}  {-112.06}  { 7100}  {Coconino}  {Pitman Valley-Scholz Lake (150602020305)}   
+snotel {SNTL }  {AZ}  {Coronado Trail (416)}  {}  {1978-December}  { 33.80}  {-109.15}  { 8400}  {Apache}  {Coleman Creek (150400040501)}   
+snotel {SNTL }  {AZ}  {Fort Valley (1121)}  {}  {2008-June}  { 35.27}  {-111.74}  { 7350}  {Coconino}  {Upper Rio de Flag (150200150102)}   
+snotel {SNTL }  {AZ}  {Fry (488)}  {}  {1978-October}  { 35.07}  {-111.84}  { 7200}  {Coconino}  {Fry Canyon (150602020501)}   
+snotel {SNTL }  {AZ}  {Hannagan Meadows (511)}  {}  {1978-November}  { 33.65}  {-109.31}  { 9020}  {Greenlee}  {Upper Beaver Creek (150601010107)}   
+snotel {SNTL }  {AZ}  {Happy Jack (969)}  {}  {1999-June}  { 34.75}  {-111.41}  { 7630}  {Coconino}  {Brady Canyon (150602020604)}   
+snotel {SNTL }  {AZ}  {Hawley Lake (1271)}  {}  {2015-July}  { 33.97}  {-109.77}  { 8300}  {Apache}  {Trout Creek (150601020106)}   
+snotel {SNTL }  {AZ}  {Heber (519)}  {}  {1979-August}  { 34.31}  {-110.75}  { 7640}  {Coconino}  {West Fork Black Canyon (150200100201)}   
+snotel {SNTL }  {AZ}  {Maverick Fork (617)}  {}  {1978-October}  { 33.92}  {-109.46}  { 9200}  {Apache}  {Upper West Fork Black River (150601010104)}   
+snotel {SNTL }  {AZ}  {Mormon Mountain (640)}  {}  {1978-October}  { 34.94}  {-111.52}  { 7500}  {Coconino}  {Mormon Lake (150200150201)}   
+snotel {SNTL }  {AZ}  {Mormon Mtn Summit (1125)}  {}  {2008-June}  { 34.97}  {-111.51}  { 8500}  {Coconino}  {Walnut Creek-Upper Lake Mary (150200150202)}   
+snotel {SNTL }  {AZ}  {Nutrioso (1127)}  {}  {2008-June}  { 33.90}  {-109.16}  { 8500}  {Apache}  {San Francisco River-Luna Lake (150400040301)}   
+snotel {SNTL }  {AZ}  {Promontory (705)}  {}  {1980-May}  { 34.37}  {-111.01}  { 7930}  {Coconino}  {Upper Willow Creek (150200080306)}   
+snotel {SNTL }  {AZ}  {Snowslide Canyon (927)}  {}  {1997-September}  { 35.34}  {-111.65}  { 9730}  {Coconino}  {Bear Jaw Canyon (150200160201)}   
+snotel {SNTL }  {AZ}  {White Horse Lake (861)}  {}  {1978-October}  { 35.14}  {-112.15}  { 7180}  {Coconino}  {Upper Hell Canyon (150602020204)}   
+snotel {SNTL }  {AZ}  {Wildcat (866)}  {}  {1984-July}  { 33.76}  {-109.48}  { 7850}  {Greenlee}  {Centerfire Creek (150601010109)}   
+snotel {SNTL }  {AZ}  {Workman Creek (877)}  {}  {1978-October}  { 33.81}  {-110.92}  { 6900}  {Gila}  {Workman Creek (150601030802)}   
+snotel {SNTL }  {CA}  {Adin Mtn (301)}  {}  {1984-September}  { 41.24}  {-120.79}  { 6190}  {Modoc}  {Cottonwood Creek (180200021403)}   
+snotel {SNTL }  {CA}  {Blue Lakes (356)}  {}  {1980-July}  { 38.61}  {-119.92}  { 8057}  {Alpine}  {Deer Creek (180400120101)}   
+snotel {SNTL }  {CA}  {Burnside Lake (1051)}  {}  {2003-September}  { 38.72}  {-119.89}  { 8129}  {Alpine}  {Hot Springs Creek (160502010107)}   
+snotel {SNTL }  {CA}  {Carson Pass (1067)}  {}  {2004-September}  { 38.69}  {-119.99}  { 8353}  {El Dorado}  {Caples Creek (180201290101)}   
+snotel {SNTL }  {CA}  {Cedar Pass (391)}  {}  {1978-October}  { 41.58}  {-120.30}  { 7030}  {Modoc}  {Thoms Creek (180200020603)}   
+snotel {SNTL }  {CA}  {Crowder Flat (977)}  {}  {1999-October}  { 41.89}  {-120.75}  { 5170}  {Modoc}  {Mosquito Creek-Willow Creek (180102040103)}   
+snotel {SNTL }  {CA}  {Css Lab (428)}  {}  {1981-May}  { 39.33}  {-120.37}  { 6855}  {Nevada}  {Rattlesnake Creek-South Yuba River (180201250602)}   
+snotel {SNTL }  {CA}  {Dismal Swamp (446)}  {}  {1980-August}  { 41.99}  {-120.18}  { 7360}  {Modoc}  {Dismal Creek-Deep Creek (171200070304)}   
+snotel {SNTL }  {CA}  {Ebbetts Pass (462)}  {}  {1978-October}  { 38.55}  {-119.80}  { 8765}  {Alpine}  {Silver Creek (160502010104)}   
+snotel {SNTL }  {CA}  {Echo Peak (463)}  {}  {1979-September}  { 38.85}  {-120.08}  { 7670}  {El Dorado}  {Upper Truckee River-Frontal Lake Tahoe (160501010303)}   
+snotel {SNTL }  {CA}  {Fallen Leaf (473)}  {}  {1978-October}  { 38.93}  {-120.05}  { 6236}  {El Dorado}  {Fallen Leaf Lake-Frontal Lake Tahoe (160501010401)}   
+snotel {SNTL }  {CA}  {Forestdale Creek (1049)}  {}  {2003-September}  { 38.68}  {-119.96}  { 8017}  {Alpine}  {Upper West Fork Carson River (160502010301)}   
+snotel {SNTL }  {CA}  {Hagan's Meadow (508)}  {}  {1978-October}  { 38.85}  {-119.94}  { 7776}  {El Dorado}  {Trout Creek (160501010302)}   
+snotel {SNTL }  {CA}  {Heavenly Valley (518)}  {}  {1978-October}  { 38.92}  {-119.92}  { 8582}  {El Dorado}  {Trout Creek (160501010302)}   
+snotel {SNTL }  {CA}  {Horse Meadow (1050)}  {}  {2003-September}  { 38.84}  {-119.89}  { 8557}  {Alpine}  {Middle West Fork Carson River (160502010302)}   
+snotel {SNTL }  {CA}  {Independence Camp (539)}  {}  {1978-October}  { 39.45}  {-120.29}  { 7003}  {Sierra}  {Independence Creek (160501020102)}   
+snotel {SNTL }  {CA}  {Independence Creek (540)}  {}  {1980-June}  { 39.49}  {-120.28}  { 6456}  {Sierra}  {Independence Creek (160501020102)}   
+snotel {SNTL }  {CA}  {Independence Lake (541)}  {}  {1978-October}  { 39.43}  {-120.31}  { 8352}  {Nevada}  {Sagehen Creek (160501020104)}   
+snotel {SNTL }  {CA}  {Leavitt Lake (574)}  {}  {1989-August}  { 38.28}  {-119.61}  { 9617}  {Mono}  {Leavitt Creek-West Walker River (160503020104)}   
+snotel {SNTL }  {CA}  {Leavitt Meadows (575)}  {}  {1980-July}  { 38.30}  {-119.55}  { 7198}  {Mono}  {Leavitt Creek-West Walker River (160503020104)}   
+snotel {SNTL }  {CA}  {Lobdell Lake (587)}  {}  {1978-October}  { 38.44}  {-119.37}  { 9233}  {Mono}  {Deep Creek (160503020201)}   
+snotel {SNTL }  {CA}  {Monitor Pass (633)}  {}  {1990-July}  { 38.67}  {-119.61}  { 8310}  {Alpine}  {Leviathan Canyon (160502010201)}   
+snotel {SNTL }  {CA}  {Poison Flat (697)}  {}  {1980-July}  { 38.51}  {-119.63}  { 7736}  {Alpine}  {Bryant Creek-East Fork Carson River (160502010102)}   
+snotel {SNTL }  {CA}  {Rubicon #2 (724)}  {}  {1980-August}  { 39.00}  {-120.13}  { 7689}  {El Dorado}  {General Creek-Frontal Lake Tahoe (160501010402)}   
+snotel {SNTL }  {CA}  {Sonora Pass (771)}  {}  {1978-October}  { 38.31}  {-119.60}  { 8827}  {Mono}  {Leavitt Creek-West Walker River (160503020104)}   
+snotel {SNTL }  {CA}  {Spratt Creek (778)}  {}  {1980-August}  { 38.67}  {-119.82}  { 6115}  {Alpine}  {Hot Springs Creek (160502010107)}   
+snotel {SNTL }  {CA}  {Squaw Valley G.C. (784)}  {}  {1980-August}  { 39.19}  {-120.26}  { 8029}  {Placer}  {Squaw Creek-Truckee River (160501020202)}   
+snotel {SNTL }  {CA}  {State Line (1258)}  {}  {2014-June}  { 41.99}  {-120.72}  { 5680}  {Modoc}  {Weed Valley-North Fork Willow Creek (180102040201)}   
+snotel {SNTL }  {CA}  {Summit Meadow (1052)}  {}  {2003-September}  { 38.40}  {-119.54}  { 9313}  {Alpine}  {Mill Creek (160503020203)}   
+snotel {SNTL }  {CA}  {Tahoe City Cross (809)}  {}  {1980-June}  { 39.17}  {-120.15}  { 6797}  {Placer}  {Burton Creek-Frontal Lake Tahoe (160501010101)}   
+snotel {SNTL }  {CA}  {Truckee #2 (834)}  {}  {1980-June}  { 39.30}  {-120.18}  { 6509}  {Placer}  {Martis Creek (160501020204)}   
+snotel {SNTL }  {CA}  {Virginia Lakes Ridge (846)}  {}  {1978-October}  { 38.07}  {-119.23}  { 9445}  {Mono}  {Virginia Creek (160503010103)}   
+snotel {SNTL }  {CA}  {Ward Creek #3 (848)}  {}  {1978-October}  { 39.14}  {-120.22}  { 6655}  {Placer}  {Ward Creek-Frontal Lake Tahoe (160501010403)}   
+snotel {SNTL }  {CO}  {Apishapa (303)}  {}  {1980-June}  { 37.33}  {-105.07}  { 10000}  {Huerfano}  {Middle Creek-Cucharas River (110200060406)}   
+snotel {SNTL }  {CO}  {Arapaho Ridge (1030)}  {}  {2002-August}  { 40.35}  {-106.38}  { 10960}  {Grand}  {Rabbit Ears Creek-Troublesome Creek (140100010604)}   
+snotel {SNTL }  {CO}  {Bear Lake (322)}  {}  {1980-July}  { 40.31}  {-105.64}  { 9500}  {Larimer}  {Glacier Creek (101900060201)}   
+snotel {SNTL }  {CO}  {Bear River (1061)}  {}  {2004-October}  { 40.06}  {-107.01}  { 9080}  {Routt}  {Yamcolo Reservoir-Bear River (140500010102)}   
+snotel {SNTL }  {CO}  {Beartown (327)}  {}  {1980-July}  { 37.71}  {-107.51}  { 11600}  {Mineral}  {Bear Creek-Rio Grande (130100010104)}   
+snotel {SNTL }  {CO}  {Beaver Ck Village (1041)}  {}  {2002-November}  { 39.60}  {-106.51}  { 8500}  {Eagle}  {Beaver Creek-Eagle Creek (140100030301)}   
+snotel {SNTL }  {CO}  {Berthoud Summit (335)}  {}  {1978-October}  { 39.80}  {-105.78}  { 11300}  {Grand}  {Upper Fraser River (140100010202)}   
+snotel {SNTL }  {CO}  {Bison Lake (345)}  {}  {1985-October}  { 39.76}  {-107.36}  { 10880}  {Garfield}  {Headwaters Deep Creek (140100011401)}   
+snotel {SNTL }  {CO}  {Black Mesa (1185)}  {}  {2012-August}  { 37.79}  {-108.18}  { 11580}  {Dolores}  {Fish Creek (140300020103)}   
+snotel {SNTL }  {CO}  {Black Mountain (1161)}  {}  {2010-October}  { 40.89}  {-105.66}  { 8920}  {Larimer}  {Sheep Creek-North Fork Cache La Poudre Creek (101900070402)}   
+snotel {SNTL }  {CO}  {Brumley (369)}  {}  {1980-June}  { 39.09}  {-106.54}  { 10600}  {Lake}  {North Fork Lake Creek (110200010101)}   
+snotel {SNTL }  {CO}  {Buckskin Joe (938)}  {}  {1999-July}  { 39.30}  {-106.11}  { 11150}  {Park}  {Headwaters Middle Fork South Platte River (101900010102)}   
+snotel {SNTL }  {CO}  {Buffalo Park (913)}  {}  {1995-September}  { 40.23}  {-106.60}  { 9240}  {Grand}  {Red Dirt Creek (140100010706)}   
+snotel {SNTL }  {CO}  {Burro Mountain (378)}  {}  {1978-November}  { 39.88}  {-107.60}  { 9400}  {Rio Blanco}  {North Elk Creek (140500050302)}   
+snotel {SNTL }  {CO}  {Butte (380)}  {}  {1980-August}  { 38.89}  {-106.95}  { 10160}  {Gunnison}  {Washington Gulch-Slate River (140200010206)}   
+snotel {SNTL }  {CO}  {Cascade #2 (387)}  {}  {1990-October}  { 37.66}  {-107.80}  { 8920}  {San Juan}  {Headwaters Cascade Creek (140801040201)}   
+snotel {SNTL }  {CO}  {Cascade (386)}  {}  {1978-October}  { 37.65}  {-107.81}  { 8880}  {San Juan}  {Headwaters Cascade Creek (140801040201)}   
+snotel {SNTL }  {CO}  {Chapman Tunnel (1101)}  {}  {2007-September}  { 39.26}  {-106.63}  { 10110}  {Pitkin}  {Deeds Creek-Fryingpan River (140100040504)}   
+snotel {SNTL }  {CO}  {Cochetopa Pass (1059)}  {}  {2004-September}  { 38.16}  {-106.60}  { 10020}  {Saguache}  {Luders Creek (130100040203)}   
+snotel {SNTL }  {CO}  {Columbine (408)}  {}  {1978-October}  { 40.39}  {-106.60}  { 9160}  {Jackson}  {Upper Grizzly Creek (101800010102)}   
+snotel {SNTL }  {CO}  {Columbine Pass (409)}  {}  {1986-September}  { 38.42}  {-108.38}  { 9400}  {Montrose}  {Potter Creek (140200050202)}   
+snotel {SNTL }  {CO}  {Columbus Basin (904)}  {}  {1994-September}  { 37.44}  {-108.02}  { 10785}  {La Plata}  {Headwaters La Plata River (140801050101)}   
+snotel {SNTL }  {CO}  {Copeland Lake (412)}  {}  {1980-June}  { 40.21}  {-105.57}  { 8600}  {Boulder}  {Headwaters North Saint Vrain Creek (101900050202)}   
+snotel {SNTL }  {CO}  {Copper Mountain (415)}  {}  {1978-October}  { 39.49}  {-106.17}  { 10550}  {Summit}  {West Tenmile Creek (140100020302)}   
+snotel {SNTL }  {CO}  {Crosho (426)}  {}  {1986-September}  { 40.17}  {-107.06}  { 9100}  {Rio Blanco}  {Outlet Hunt Creek (140500010106)}   
+snotel {SNTL }  {CO}  {Culebra #2 (430)}  {}  {1978-December}  { 37.21}  {-105.20}  { 10500}  {Costilla}  {Headwaters Culebra Creek (130100020902)}   
+snotel {SNTL }  {CO}  {Cumbres Trestle (431)}  {}  {1980-August}  { 37.02}  {-106.45}  { 10040}  {Conejos}  {Wolf Creek (130201020203)}   
+snotel {SNTL }  {CO}  {Deadman Hill (438)}  {}  {1978-October}  { 40.81}  {-105.77}  { 10220}  {Larimer}  {North Fork Cache La Poudre River-Panhandle Creek (101900070401)}   
+snotel {SNTL }  {CO}  {Dry Lake (457)}  {}  {1980-June}  { 40.53}  {-106.78}  { 8400}  {Routt}  {City of Steamboat Springs-Yampa River (140500010409)}   
+snotel {SNTL }  {CO}  {Echo Lake (936)}  {}  {1998-September}  { 39.66}  {-105.59}  { 10600}  {Clear Creek}  {Vance Creek (101900020801)}   
+snotel {SNTL }  {CO}  {El Diente Peak (465)}  {}  {1986-August}  { 37.79}  {-108.02}  { 10000}  {Dolores}  {Cayton Valley-Dolores River (140300020202)}   
+snotel {SNTL }  {CO}  {Elk River (467)}  {}  {1978-October}  { 40.85}  {-106.97}  { 8700}  {Routt}  {Steamboat Lake (140500010206)}   
+snotel {SNTL }  {CO}  {Elliot Ridge (1120)}  {}  {2009-August}  { 39.86}  {-106.42}  { 10520}  {Summit}  {Deep Creek-Blue River (140100020602)}   
+snotel {SNTL }  {CO}  {Fool Creek (1186)}  {}  {2011-October}  { 39.87}  {-105.87}  { 11150}  {Grand}  {Saint Louis Creek (140100010203)}   
+snotel {SNTL }  {CO}  {Fremont Pass (485)}  {}  {1980-July}  { 39.38}  {-106.20}  { 11400}  {Summit}  {Upper Tenmile Creek (140100020301)}   
+snotel {SNTL }  {CO}  {Glen Cove (1057)}  {}  {2004-August}  { 38.88}  {-105.07}  { 11460}  {Teller}  {Headwaters Fountain Creek (110200030201)}   
+snotel {SNTL }  {CO}  {Grayback (1058)}  {}  {2004-September}  { 37.47}  {-106.54}  { 11620}  {Rio Grande}  {East Fork Pinos Creek (130100020101)}   
+snotel {SNTL }  {CO}  {Grizzly Peak (505)}  {}  {1980-August}  { 39.65}  {-105.87}  { 11100}  {Summit}  {North Fork Snake River (140100020201)}   
+snotel {SNTL }  {CO}  {Hayden Pass (1102)}  {}  {2007-September}  { 38.29}  {-105.85}  { 10720}  {Saguache}  {Piney Creek-San Luis Creek (130100030301)}   
+snotel {SNTL }  {CO}  {High Lonesome (1187)}  {}  {2013-September}  { 40.04}  {-105.75}  { 10620}  {Grand}  {Meadows Creek-Ranch Creek (140100010205)}   
+snotel {SNTL }  {CO}  {Hoosier Pass (531)}  {}  {1980-July}  { 39.36}  {-106.06}  { 11400}  {Park}  {Headwaters Blue River (140100020101)}   
+snotel {SNTL }  {CO}  {Hourglass Lake (1122)}  {}  {2008-October}  { 40.58}  {-105.63}  { 9380}  {Larimer}  {Beaver Creek (101900070101)}   
+snotel {SNTL }  {CO}  {Idarado (538)}  {}  {1980-July}  { 37.93}  {-107.68}  { 9800}  {Ouray}  {Red Mountain Creek (140200060201)}   
+snotel {SNTL }  {CO}  {Independence Pass (542)}  {}  {1980-June}  { 39.08}  {-106.61}  { 10600}  {Pitkin}  {Lincoln Creek (140100040101)}   
+snotel {SNTL }  {CO}  {Ivanhoe (547)}  {}  {1991-October}  { 39.29}  {-106.55}  { 10400}  {Pitkin}  {Headwaters Fryingpan River (140100040501)}   
+snotel {SNTL }  {CO}  {Jackwhacker Gulch (935)}  {}  {1998-August}  { 39.57}  {-105.80}  { 10960}  {Clear Creek}  {Geneva Creek (101900020201)}   
+snotel {SNTL }  {CO}  {Joe Wright (551)}  {}  {1978-October}  { 40.53}  {-105.89}  { 10120}  {Larimer}  {Joe Wright Creek (101900070204)}   
+snotel {SNTL }  {CO}  {Jones Pass (970)}  {}  {1999-October}  { 39.76}  {-105.91}  { 10400}  {Grand}  {Headwaters Williams Fork (140100010402)}   
+snotel {SNTL }  {CO}  {Kiln (556)}  {}  {1980-July}  { 39.32}  {-106.61}  { 9600}  {Pitkin}  {Deeds Creek-Fryingpan River (140100040504)}   
+snotel {SNTL }  {CO}  {Lake Eldora (564)}  {}  {1978-October}  { 39.94}  {-105.59}  { 9700}  {Gilpin}  {Middle Boulder Creek (101900050402)}   
+snotel {SNTL }  {CO}  {Lake Irene (565)}  {}  {1978-October}  { 40.41}  {-105.82}  { 10700}  {Grand}  {Headwaters Colorado River (140100010302)}   
+snotel {SNTL }  {CO}  {Lily Pond (580)}  {}  {1980-July}  { 37.38}  {-106.55}  { 11000}  {Conejos}  {Headwaters Alamosa River (130100020302)}   
+snotel {SNTL }  {CO}  {Lizard Head Pass (586)}  {}  {1980-July}  { 37.80}  {-107.92}  { 10200}  {Dolores}  {Headwaters Dolores River (140300020201)}   
+snotel {SNTL }  {CO}  {Lone Cone (589)}  {}  {1980-July}  { 37.89}  {-108.20}  { 9600}  {San Miguel}  {Headwaters Beaver Creek (140300030302)}   
+snotel {SNTL }  {CO}  {Long Draw Resv (1123)}  {}  {2009-August}  { 40.51}  {-105.77}  { 9980}  {Larimer}  {La Poudre Pass Creek (101900070203)}   
+snotel {SNTL }  {CO}  {Lost Dog (940)}  {}  {1998-August}  { 40.82}  {-106.75}  { 9320}  {Routt}  {Outlet North Fork Elk Creek (140500010203)}   
+snotel {SNTL }  {CO}  {Loveland Basin (602)}  {}  {1992-August}  { 39.67}  {-105.90}  { 11400}  {Clear Creek}  {Headwaters Clear Creek (101900040102)}   
+snotel {SNTL }  {CO}  {Lynx Pass (607)}  {}  {1980-June}  { 40.08}  {-106.67}  { 8880}  {Routt}  {Headwaters Rock Creek (140100011001)}   
+snotel {SNTL }  {CO}  {Mancos (905)}  {}  {1994-September}  { 37.43}  {-108.17}  { 10000}  {Montezuma}  {West Mancos River (140801070102)}   
+snotel {SNTL }  {CO}  {Mc Clure Pass (618)}  {}  {1980-July}  { 39.13}  {-107.29}  { 9500}  {Pitkin}  {Lee Creek (140200040203)}   
+snotel {SNTL }  {CO}  {Mccoy Park (1040)}  {}  {2002-October}  { 39.60}  {-106.54}  { 9480}  {Eagle}  {June Creek-Eagle River (140100030302)}   
+snotel {SNTL }  {CO}  {Medano Pass (914)}  {}  {1995-October}  { 37.85}  {-105.44}  { 9649}  {Saguache}  {Medano Creek (130100030604)}   
+snotel {SNTL }  {CO}  {Mesa Lakes (622)}  {}  {1986-September}  { 39.06}  {-108.06}  { 10000}  {Mesa}  {Coon Creek (140100051307)}   
+snotel {SNTL }  {CO}  {Michigan Creek (937)}  {}  {1998-August}  { 39.44}  {-105.91}  { 10600}  {Park}  {Michigan Creek (101900010404)}   
+snotel {SNTL }  {CO}  {Middle Creek (624)}  {}  {1980-July}  { 37.62}  {-107.03}  { 11250}  {Mineral}  {Headwaters Red Mountain Creek (130100010501)}   
+snotel {SNTL }  {CO}  {Middle Fork Camp (1014)}  {}  {2001-September}  { 39.80}  {-106.03}  { 8940}  {Grand}  {Headwaters Williams Fork (140100010402)}   
+snotel {SNTL }  {CO}  {Mineral Creek (629)}  {}  {1978-October}  { 37.85}  {-107.73}  { 10040}  {San Juan}  {Mineral Creek (140801040103)}   
+snotel {SNTL }  {CO}  {Molas Lake (632)}  {}  {1986-August}  { 37.75}  {-107.69}  { 10500}  {San Juan}  {Tenmile Creek-Animas River (140801040302)}   
+snotel {SNTL }  {CO}  {Moon Pass (1124)}  {}  {2008-October}  { 37.97}  {-106.56}  { 11140}  {Saguache}  {California Gulch (130100040201)}   
+snotel {SNTL }  {CO}  {Nast Lake (658)}  {}  {1985-October}  { 39.30}  {-106.61}  { 8700}  {Pitkin}  {Deeds Creek-Fryingpan River (140100040504)}   
+snotel {SNTL }  {CO}  {Never Summer (1031)}  {}  {2002-September}  { 40.40}  {-105.96}  { 10280}  {Jackson}  {Jack Creek (101800010401)}   
+snotel {SNTL }  {CO}  {Niwot (663)}  {}  {1980-June}  { 40.04}  {-105.54}  { 9910}  {Boulder}  {North Boulder Creek (101900050401)}   
+snotel {SNTL }  {CO}  {North Lost Trail (669)}  {}  {1985-September}  { 39.08}  {-107.14}  { 9200}  {Gunnison}  {Yule Creek-Crystal River (140100040703)}   
+snotel {SNTL }  {CO}  {Overland Res. (675)}  {}  {1989-July}  { 39.09}  {-107.63}  { 9840}  {Delta}  {Cow Creek (140200040101)}   
+snotel {SNTL }  {CO}  {Park Cone (680)}  {}  {1980-March}  { 38.82}  {-106.59}  { 9600}  {Gunnison}  {Taylor Park Reservoir (140200010107)}   
+snotel {SNTL }  {CO}  {Park Reservoir (682)}  {}  {1978-October}  { 39.05}  {-107.87}  { 9960}  {Delta}  {Surface Creek (140200050111)}   
+snotel {SNTL }  {CO}  {Phantom Valley (688)}  {}  {1980-June}  { 40.40}  {-105.85}  { 9030}  {Grand}  {Headwaters Colorado River (140100010302)}   
+snotel {SNTL }  {CO}  {Porphyry Creek (701)}  {}  {1978-October}  { 38.49}  {-106.34}  { 10760}  {Gunnison}  {Porphyry Creek-Tomichi Creek (140200030105)}   
+snotel {SNTL }  {CO}  {Rabbit Ears (709)}  {}  {1986-September}  { 40.37}  {-106.74}  { 9400}  {Routt}  {Harrison Creek (140500010402)}   
+snotel {SNTL }  {CO}  {Rawah (1032)}  {}  {2002-September}  { 40.71}  {-106.01}  { 9020}  {Jackson}  {Middle Canadian River (101800010603)}   
+snotel {SNTL }  {CO}  {Red Mountain Pass (713)}  {}  {1980-July}  { 37.89}  {-107.71}  { 11200}  {Ouray}  {Mineral Creek (140801040103)}   
+snotel {SNTL }  {CO}  {Ripple Creek (717)}  {}  {1986-September}  { 40.11}  {-107.29}  { 10340}  {Rio Blanco}  {Snell Creek-North Fork White River (140500050102)}   
+snotel {SNTL }  {CO}  {Roach (718)}  {}  {1980-July}  { 40.88}  {-106.05}  { 9700}  {Larimer}  {La Garde Creek (101800100107)}   
+snotel {SNTL }  {CO}  {Rough And Tumble (939)}  {}  {1998-August}  { 39.03}  {-106.08}  { 10360}  {Park}  {Headwaters South Fork South Platte River (101900010202)}   
+snotel {SNTL }  {CO}  {Saint Elmo (1100)}  {}  {2007-September}  { 38.70}  {-106.37}  { 10540}  {Chaffee}  {Headwaters Chalk Creek (110200010501)}   
+snotel {SNTL }  {CO}  {Sargents Mesa (1128)}  {}  {2008-October}  { 38.29}  {-106.37}  { 11530}  {Saguache}  {Middle Creek (130100040306)}   
+snotel {SNTL }  {CO}  {Sawtooth (1251)}  {}  {2013-September}  { 40.14}  {-105.59}  { 9620}  {Boulder}  {Middle Saint Vrain Creek (101900050102)}   
+snotel {SNTL }  {CO}  {Schofield Pass (737)}  {}  {1985-August}  { 39.02}  {-107.05}  { 10700}  {Gunnison}  {South Fork Crystal River (140100040701)}   
+snotel {SNTL }  {CO}  {Scotch Creek (739)}  {}  {1986-August}  { 37.65}  {-108.01}  { 9100}  {Dolores}  {Scotch Creek-Dolores River (140300020204)}   
+snotel {SNTL }  {CO}  {Sharkstooth (1060)}  {}  {2004-October}  { 37.50}  {-108.11}  { 10720}  {Montezuma}  {Bear Creek (140300020206)}   
+snotel {SNTL }  {CO}  {Slumgullion (762)}  {}  {1980-July}  { 37.99}  {-107.20}  { 11440}  {Hinsdale}  {Headwaters Cebolla Creek (140200020502)}   
+snotel {SNTL }  {CO}  {South Colony (773)}  {}  {1991-September}  { 37.97}  {-105.54}  { 10800}  {Custer}  {Colony Creek-Grape Creek (110200011206)}   
+snotel {SNTL }  {CO}  {Spud Mountain (780)}  {}  {1986-September}  { 37.70}  {-107.78}  { 10660}  {San Juan}  {Lime Creek (140801040202)}   
+snotel {SNTL }  {CO}  {Stillwater Creek (793)}  {}  {1985-October}  { 40.23}  {-105.92}  { 8720}  {Grand}  {Stillwater Creek (140100010306)}   
+snotel {SNTL }  {CO}  {Stump Lakes (797)}  {}  {1986-September}  { 37.48}  {-107.63}  { 11200}  {San Juan}  {Virginia Gulch-Florida River (140801040702)}   
+snotel {SNTL }  {CO}  {Summit Ranch (802)}  {}  {1980-June}  { 39.72}  {-106.16}  { 9400}  {Summit}  {Rock Creek-Blue River (140100020502)}   
+snotel {SNTL }  {CO}  {Tower (825)}  {}  {1978-October}  { 40.54}  {-106.68}  { 10500}  {Routt}  {Fish Creek (140500010407)}   
+snotel {SNTL }  {CO}  {Trapper Lake (827)}  {}  {1985-October}  { 40.00}  {-107.24}  { 9700}  {Garfield}  {Headwaters North Fork White River (140500050101)}   
+snotel {SNTL }  {CO}  {Trinchera (829)}  {}  {1989-September}  { 37.35}  {-105.23}  { 10860}  {Costilla}  {North Fork Trinchera Creek (130100020601)}   
+snotel {SNTL }  {CO}  {University Camp (838)}  {}  {1978-October}  { 40.03}  {-105.58}  { 10300}  {Boulder}  {North Boulder Creek (101900050401)}   
+snotel {SNTL }  {CO}  {Upper Rio Grande (839)}  {}  {1986-September}  { 37.72}  {-107.26}  { 9400}  {Hinsdale}  {Rio Grande Reservoir (130100010106)}   
+snotel {SNTL }  {CO}  {Upper San Juan (840)}  {}  {1978-October}  { 37.49}  {-106.84}  { 10200}  {Mineral}  {Wolf Creek (140801010203)}   
+snotel {SNTL }  {CO}  {Upper Taylor (1141)}  {}  {2009-September}  { 38.99}  {-106.75}  { 10640}  {Gunnison}  {Upper Taylor River (140200010101)}   
+snotel {SNTL }  {CO}  {Ute Creek (1005)}  {}  {2000-August}  { 37.61}  {-105.37}  { 10650}  {Costilla}  {East Fork Ute Creek (130100020604)}   
+snotel {SNTL }  {CO}  {Vail Mountain (842)}  {}  {1978-October}  { 39.62}  {-106.38}  { 10300}  {Eagle}  {Middle Gore Creek (140100030102)}   
+snotel {SNTL }  {CO}  {Vallecito (843)}  {}  {1986-August}  { 37.49}  {-107.51}  { 10880}  {La Plata}  {Indian Creek-Los Pinos River (140801011105)}   
+snotel {SNTL }  {CO}  {Wager Gulch (1188)}  {}  {2011-September}  { 37.88}  {-107.36}  { 11100}  {Hinsdale}  {Lake Sanc Cristobal-Lake Fork (140200020602)}   
+snotel {SNTL }  {CO}  {Weminuche Creek (1160)}  {}  {2010-October}  { 37.52}  {-107.32}  { 10740}  {Archuleta}  {Sand Creek (140801020203)}   
+snotel {SNTL }  {CO}  {Whiskey Ck (857)}  {}  {1980-June}  { 37.21}  {-105.12}  { 10220}  {Las Animas}  {North Fork Purgatoire River (110200100102)}   
+snotel {SNTL }  {CO}  {Wild Basin (1042)}  {}  {2002-December}  { 40.20}  {-105.60}  { 9560}  {Boulder}  {Headwaters North Saint Vrain Creek (101900050202)}   
+snotel {SNTL }  {CO}  {Willow Creek Pass (869)}  {}  {1978-October}  { 40.35}  {-106.09}  { 9540}  {Grand}  {Upper Willow Creek (140100010102)}   
+snotel {SNTL }  {CO}  {Willow Park (870)}  {}  {1980-July}  { 40.43}  {-105.73}  { 10700}  {Larimer}  {Fall River (101900060204)}   
+snotel {SNTL }  {CO}  {Wolf Creek Summit (874)}  {}  {1986-August}  { 37.48}  {-106.80}  { 11000}  {Mineral}  {Wolf Creek (140801010203)}   
+snotel {SNTL }  {CO}  {Zirkel (1033)}  {}  {2002-August}  { 40.79}  {-106.60}  { 9340}  {Jackson}  {Middle North Fork North Platte River (101800010202)}   
+snotel {SNTL }  {ID}  {Atlanta Summit (306)}  {}  {1978-October}  { 43.76}  {-115.24}  { 7580}  {Elmore}  {Bald Mountain Creek-Middle Fork Boise River (170501110204)}   
+snotel {SNTL }  {ID}  {Banner Summit (312)}  {}  {1980-July}  { 44.30}  {-115.23}  { 7040}  {Boise}  {Canyon Creek (170501200202)}   
+snotel {SNTL }  {ID}  {Bear Basin (319)}  {}  {1980-July}  { 44.95}  {-116.14}  { 5350}  {Adams}  {Upper Goose Creek (170602100104)}   
+snotel {SNTL }  {ID}  {Bear Canyon (320)}  {}  {1980-August}  { 43.74}  {-113.94}  { 7900}  {Custer}  {Upper Star Hope Creek (170402180101)}   
+snotel {SNTL }  {ID}  {Bear Mountain (323)}  {}  {1980-August}  { 48.31}  {-116.07}  { 5400}  {Bonner}  {Middle Lightning Creek (170102131202)}   
+snotel {SNTL }  {ID}  {Bear Saddle (324)}  {}  {1980-July}  { 44.61}  {-116.98}  { 6180}  {Washington}  {Upper Mann Creek (170501241001)}   
+snotel {SNTL }  {ID}  {Big Creek Summit (338)}  {}  {1980-July}  { 44.63}  {-115.79}  { 6580}  {Valley}  {Curtis Creek (170602080402)}   
+snotel {SNTL }  {ID}  {Bogus Basin (978)}  {}  {1999-September}  { 43.76}  {-116.10}  { 6340}  {Boise}  {Cottonwood Creek-Shafer Creek (170501220201)}   
+snotel {SNTL }  {ID}  {Bostetter R.S. (359)}  {}  {1980-June}  { 42.16}  {-114.19}  { 7500}  {Cassia}  {Upper Big Cottonwood Creek (170402120201)}   
+snotel {SNTL }  {ID}  {Brundage Reservoir (370)}  {}  {1986-October}  { 45.04}  {-116.13}  { 6250}  {Adams}  {Upper Goose Creek (170602100104)}   
+snotel {SNTL }  {ID}  {Camas Creek Divide (382)}  {}  {1991-October}  { 43.27}  {-115.35}  { 5710}  {Elmore}  {Sheep Creek-Camas Creek (170402200101)}   
+snotel {SNTL }  {ID}  {Chocolate Gulch (895)}  {}  {1993-June}  { 43.77}  {-114.42}  { 6440}  {Blaine}  {Eagle Creek-Big Wood River (170402190301)}   
+snotel {SNTL }  {ID}  {Cool Creek (411)}  {}  {1984-August}  { 46.76}  {-115.30}  { 6280}  {Clearwater}  {Cold Springs Creek-North Fork Clearwater River (170603070702)}   
+snotel {SNTL }  {ID}  {Cozy Cove (423)}  {}  {1978-October}  { 44.29}  {-115.66}  { 5380}  {Valley}  {Deadwood River-Deadwood Reservoir (170501200403)}   
+snotel {SNTL }  {ID}  {Crab Creek (424)}  {}  {1980-August}  { 44.44}  {-111.99}  { 6860}  {Clark}  {Upper Camas Creek (170402140108)}   
+snotel {SNTL }  {ID}  {Crater Meadows (425)}  {}  {1984-August}  { 46.56}  {-115.29}  { 5960}  {Clearwater}  {Middle Weitas Creek (170603070502)}   
+snotel {SNTL }  {ID}  {Deadwood Summit (439)}  {}  {1978-October}  { 44.54}  {-115.56}  { 6860}  {Valley}  {Stratton Creek-Deadwood River (170501200401)}   
+snotel {SNTL }  {ID}  {Dollarhide Summit (450)}  {}  {1980-August}  { 43.60}  {-114.67}  { 8420}  {Blaine}  {Placer Creek-Warm Springs Creek (170402190201)}   
+snotel {SNTL }  {ID}  {Elk Butte (466)}  {}  {1982-October}  { 46.84}  {-116.12}  { 5690}  {Clearwater}  {Upper Elk Creek (170603080701)}   
+snotel {SNTL }  {ID}  {Emigrant Summit (471)}  {}  {1980-June}  { 42.36}  {-111.56}  { 7390}  {Bear Lake}  {Williams Creek (160102020206)}   
+snotel {SNTL }  {ID}  {Franklin Basin (484)}  {}  {1978-October}  { 42.05}  {-111.60}  { 8170}  {Franklin}  {Upper Cub River (160102020501)}   
+snotel {SNTL }  {ID}  {Galena (489)}  {}  {1980-August}  { 43.88}  {-114.67}  { 7470}  {Blaine}  {Headwaters Big Wood River (170402190101)}   
+snotel {SNTL }  {ID}  {Galena Summit (490)}  {}  {1978-October}  { 43.87}  {-114.71}  { 8780}  {Blaine}  {Headwaters Big Wood River (170402190101)}   
+snotel {SNTL }  {ID}  {Garfield R.S. (492)}  {}  {1980-July}  { 43.61}  {-113.93}  { 6560}  {Blaine}  {Upper Muldoon Creek (170402210301)}   
+snotel {SNTL }  {ID}  {Giveout (493)}  {}  {1980-June}  { 42.41}  {-111.17}  { 6930}  {Bear Lake}  {Upper Montpelier Creek (160102010401)}   
+snotel {SNTL }  {ID}  {Graham Guard Sta. (496)}  {}  {1978-October}  { 43.95}  {-115.27}  { 5690}  {Elmore}  {Big Silver Creek-North Fork Boise River (170501110303)}   
+snotel {SNTL }  {ID}  {Hemlock Butte (520)}  {}  {1983-July}  { 46.48}  {-115.63}  { 5810}  {Clearwater}  {French Creek (170603070601)}   
+snotel {SNTL }  {ID}  {Hidden Lake (988)}  {}  {2000-September}  { 48.89}  {-116.76}  { 5040}  {Boundary}  {Cow Creek (170101040502)}   
+snotel {SNTL }  {ID}  {Hilts Creek (524)}  {}  {1980-August}  { 44.02}  {-113.47}  { 8000}  {Custer}  {Upper Wet Creek (170402170401)}   
+snotel {SNTL }  {ID}  {Howell Canyon (534)}  {}  {1978-November}  { 42.32}  {-113.62}  { 7980}  {Cassia}  {Howell Creek (170402090602)}   
+snotel {SNTL }  {ID}  {Humboldt Gulch (535)}  {}  {1978-October}  { 47.53}  {-115.78}  { 4250}  {Shoshone}  {Canyon Creek-Upper South Fork Coeur d'Alene River (170103020102)}   
+snotel {SNTL }  {ID}  {Hyndman (537)}  {}  {1980-July}  { 43.71}  {-114.16}  { 7440}  {Blaine}  {Hyndman Creek (170402190402)}   
+snotel {SNTL }  {ID}  {Island Park (546)}  {}  {1980-July}  { 44.42}  {-111.39}  { 6290}  {Fremont}  {Buffalo River (170402020401)}   
+snotel {SNTL }  {ID}  {Jackson Peak (550)}  {}  {1980-July}  { 44.05}  {-115.44}  { 7070}  {Boise}  {Fivemile Creek-South Fork Payette River (170501200304)}   
+snotel {SNTL }  {ID}  {Lolo Pass (588)}  {}  {1982-October}  { 46.63}  {-114.58}  { 5240}  {Idaho}  {West Fork Lolo Creek (170102051401)}   
+snotel {SNTL }  {ID}  {Long Valley (1016)}  {}  {2001-October}  { 44.79}  {-116.09}  { 4890}  {Valley}  {Lake Fork Creek (170501230206)}   
+snotel {SNTL }  {ID}  {Lookout (594)}  {}  {1978-October}  { 47.46}  {-115.71}  { 5140}  {Shoshone}  {Little North Fork South Fork Coeur d'Alene River-South Fork Coeur d'Alene River (170103020101)}   
+snotel {SNTL }  {ID}  {Lost Lake (600)}  {}  {1980-September}  { 47.07}  {-115.96}  { 6110}  {Shoshone}  {Lost Lake-Little North Fork Clearwater River (170603080101)}   
+snotel {SNTL }  {ID}  {Lost-Wood Divide (601)}  {}  {1980-August}  { 43.82}  {-114.26}  { 7900}  {Blaine}  {Trail Creek (170402190304)}   
+snotel {SNTL }  {ID}  {Magic Mountain (610)}  {}  {1980-July}  { 42.18}  {-114.29}  { 6880}  {Twin Falls}  {Headwaters Rock Creek (170402120601)}   
+snotel {SNTL }  {ID}  {Meadow Lake (620)}  {}  {1980-July}  { 44.44}  {-113.32}  { 9150}  {Lemhi}  {Upper Texas Creek (170602040101)}   
+snotel {SNTL }  {ID}  {Mica Creek (623)}  {}  {1990-September}  { 47.15}  {-116.27}  { 4510}  {Shoshone}  {Mica Creek (170103040604)}   
+snotel {SNTL }  {ID}  {Mill Creek Summit (627)}  {}  {1978-November}  { 44.47}  {-114.49}  { 8800}  {Custer}  {Upper Yankee Fork (170602010501)}   
+snotel {SNTL }  {ID}  {Moonshine (636)}  {}  {1980-July}  { 44.41}  {-113.40}  { 7440}  {Lemhi}  {Upper Sawmill Creek (170402170201)}   
+snotel {SNTL }  {ID}  {Moose Creek (638)}  {}  {1980-July}  { 45.67}  {-113.95}  { 6200}  {Lemhi}  {Upper North Fork Salmon River (170602030601)}   
+snotel {SNTL }  {ID}  {Mores Creek Summit (637)}  {}  {1978-October}  { 43.93}  {-115.67}  { 6100}  {Boise}  {Middle Crooked River (170501110503)}   
+snotel {SNTL }  {ID}  {Morgan Creek (639)}  {}  {1980-July}  { 44.84}  {-114.27}  { 7600}  {Lemhi}  {Headwaters Panther Creek (170602030901)}   
+snotel {SNTL }  {ID}  {Moscow Mountain (989)}  {}  {2000-October}  { 46.81}  {-116.85}  { 4700}  {Latah}  {Little Bear Creek (170603061002)}   
+snotel {SNTL }  {ID}  {Mosquito Ridge (645)}  {}  {1978-October}  { 48.06}  {-116.23}  { 5200}  {Shoshone}  {Upper North Fork Coeur d'Alene River (170103010101)}   
+snotel {SNTL }  {ID}  {Mountain Meadows (650)}  {}  {1980-August}  { 45.70}  {-115.23}  { 6360}  {Idaho}  {Headwaters Meadow Creek (170603020301)}   
+snotel {SNTL }  {ID}  {Mud Flat (654)}  {}  {1980-July}  { 42.60}  {-116.56}  { 5730}  {Owyhee}  {Upper Pole Creek (170501041401)}   
+snotel {SNTL }  {ID}  {Myrtle Creek (1053)}  {}  {2003-October}  { 48.72}  {-116.46}  { 3520}  {Boundary}  {Myrtle Creek (170101040701)}   
+snotel {SNTL }  {ID}  {Oxford Spring (677)}  {}  {1980-July}  { 42.26}  {-112.13}  { 6740}  {Oneida}  {Lower Deep Creek (160102040206)}   
+snotel {SNTL }  {ID}  {Pierce R.S. (1142)}  {}  {2009-September}  { 46.49}  {-115.80}  { 3080}  {Clearwater}  {Upper Orofino Creek (170603060401)}   
+snotel {SNTL }  {ID}  {Pine Creek Pass (695)}  {}  {1988-October}  { 43.57}  {-111.21}  { 6720}  {Teton}  {Warm Creek (170402040104)}   
+snotel {SNTL }  {ID}  {Prairie (704)}  {}  {1980-July}  { 43.51}  {-115.57}  { 4800}  {Elmore}  {Lower Smith Creek (170501131103)}   
+snotel {SNTL }  {ID}  {Ragged Mountain (1081)}  {}  {2006-September}  { 47.86}  {-117.04}  { 4210}  {Kootenai}  {Rathdrum Creek (170103050302)}   
+snotel {SNTL }  {ID}  {Reynolds Creek (2029)}  {}  {1999-September}  { 43.29}  {-116.85}  { 5600}  {Owyhee}  {Upper Reynolds Creek (170501030601)}   
+snotel {SNTL }  {ID}  {Savage Pass (735)}  {}  {1983-February}  { 46.47}  {-114.63}  { 6170}  {Idaho}  {Lower Colt Killed Creek (170603030208)}   
+snotel {SNTL }  {ID}  {Schwartz Lake (915)}  {}  {1995-September}  { 44.85}  {-113.84}  { 8540}  {Lemhi}  {Basin Creek (170602040604)}   
+snotel {SNTL }  {ID}  {Schweitzer Basin (738)}  {}  {1980-August}  { 48.37}  {-116.64}  { 6090}  {Bonner}  {Middle Fork East River-East River (170102150502)}   
+snotel {SNTL }  {ID}  {Secesh Summit (740)}  {}  {1980-July}  { 45.19}  {-115.97}  { 6520}  {Valley}  {Headwaters North Fork Payette River (170501230101)}   
+snotel {SNTL }  {ID}  {Sedgwick Peak (741)}  {}  {1988-October}  { 42.52}  {-111.96}  { 7850}  {Bannock}  {Dempsey Creek (170402080209)}   
+snotel {SNTL }  {ID}  {Shanghi Summit (747)}  {}  {1983-January}  { 46.57}  {-115.74}  { 4570}  {Clearwater}  {Upper Orogrande Creek (170603070602)}   
+snotel {SNTL }  {ID}  {Sheep Mtn. (749)}  {}  {1978-October}  { 43.21}  {-111.69}  { 6570}  {Bingham}  {Horse Creek-Willow Creek (170402050304)}   
+snotel {SNTL }  {ID}  {Sherwin (752)}  {}  {1980-August}  { 46.95}  {-116.34}  { 3200}  {Latah}  {West Fork St Maries River (170103040703)}   
+snotel {SNTL }  {ID}  {Slug Creek Divide (761)}  {}  {1978-October}  { 42.56}  {-111.30}  { 7225}  {Caribou}  {Headwaters Slug Creek (170402070201)}   
+snotel {SNTL }  {ID}  {Smiley Mountain (926)}  {}  {2001-September}  { 43.73}  {-113.83}  { 9520}  {Custer}  {Lower Star Hope Creek (170402180102)}   
+snotel {SNTL }  {ID}  {Soldier R.S. (769)}  {}  {1986-October}  { 43.48}  {-114.83}  { 5740}  {Camas}  {Upper Soldier Creek (170402200303)}   
+snotel {SNTL }  {ID}  {Somsen Ranch (770)}  {}  {1978-October}  { 42.95}  {-111.36}  { 6800}  {Caribou}  {Upper Lanes Creek (170402070101)}   
+snotel {SNTL }  {ID}  {South Mtn. (774)}  {}  {1978-October}  { 42.76}  {-116.90}  { 6500}  {Owyhee}  {Deer Creek-Big Boulder Creek (170501080205)}   
+snotel {SNTL }  {ID}  {Squaw Flat (782)}  {}  {1980-July}  { 44.77}  {-116.25}  { 6240}  {Adams}  {Granite Creek-Middle Fork Weiser River (170501240401)}   
+snotel {SNTL }  {ID}  {Stickney Mill (792)}  {}  {1980-August}  { 43.86}  {-114.21}  { 7430}  {Custer}  {Summit Creek (170402180303)}   
+snotel {SNTL }  {ID}  {Sunset (803)}  {}  {1978-October}  { 47.56}  {-115.82}  { 5540}  {Shoshone}  {Canyon Creek-Upper South Fork Coeur d'Alene River (170103020102)}   
+snotel {SNTL }  {ID}  {Swede Peak (805)}  {}  {1978-October}  { 43.63}  {-113.97}  { 7640}  {Blaine}  {Upper Muldoon Creek (170402210301)}   
+snotel {SNTL }  {ID}  {Trinity Mtn. (830)}  {}  {1978-October}  { 43.63}  {-115.44}  { 7770}  {Elmore}  {Roaring River (170501110703)}   
+snotel {SNTL }  {ID}  {Van Wyck (979)}  {}  {2001-June}  { 44.38}  {-116.34}  { 4920}  {Washington}  {Lower North Crane Creek (170501240902)}   
+snotel {SNTL }  {ID}  {Vienna Mine (845)}  {}  {1978-October}  { 43.80}  {-114.85}  { 8960}  {Blaine}  {Smiley Creek (170602010201)}   
+snotel {SNTL }  {ID}  {West Branch (855)}  {}  {1980-July}  { 45.07}  {-116.45}  { 5560}  {Adams}  {Upper Weiser River (170501240201)}   
+snotel {SNTL }  {ID}  {White Elephant (860)}  {}  {1980-July}  { 44.53}  {-111.41}  { 7710}  {Fremont}  {Coffee Pot-Henrys Fork (170402020307)}   
+snotel {SNTL }  {ID}  {Wildhorse Divide (867)}  {}  {1980-July}  { 42.76}  {-112.48}  { 6490}  {Bannock}  {Mink Creek (170402080504)}   
+snotel {SNTL }  {ID}  {Wilson Creek (871)}  {}  {1990-September}  { 42.01}  {-115.00}  { 7120}  {Twin Falls}  {Upper Wilson Creek (170402130202)}   
+snotel {SNTL }  {MT}  {Albro Lake (916)}  {}  {1996-September}  { 45.60}  {-111.96}  { 8300}  {Madison}  {South Willow Creek (100200050701)}   
+snotel {SNTL }  {MT}  {Badger Pass (307)}  {}  {1978-October}  { 48.13}  {-113.02}  { 6900}  {Flathead}  {North Badger Creek (100302010201)}   
+snotel {SNTL }  {MT}  {Banfield Mountain (311)}  {}  {1968-October}  { 48.57}  {-115.45}  { 5600}  {Lincoln}  {Upper Fortine Creek (170101010702)}   
+snotel {SNTL }  {MT}  {Barker Lakes (313)}  {}  {1979-October}  { 46.10}  {-113.13}  { 8250}  {Deer Lodge}  {Warm Springs Creek-West Valley (170102010304)}   
+snotel {SNTL }  {MT}  {Basin Creek (315)}  {}  {1980-August}  { 45.80}  {-112.52}  { 7180}  {Silver Bow}  {Basin Creek (170102010201)}   
+snotel {SNTL }  {MT}  {Beagle Springs (318)}  {}  {1978-October}  { 44.47}  {-112.98}  { 8850}  {Beaverhead}  {Upper Nicholia Creek (100200010501)}   
+snotel {SNTL }  {MT}  {Beaver Creek (328)}  {}  {1966-October}  { 44.95}  {-111.36}  { 7850}  {Gallatin}  {Upper Beaver Creek (100200070402)}   
+snotel {SNTL }  {MT}  {Bisson Creek (346)}  {}  {1991-October}  { 47.68}  {-114.00}  { 4920}  {Lake}  {Mud Creek (170102120602)}   
+snotel {SNTL }  {MT}  {Black Bear (347)}  {}  {1971-October}  { 44.51}  {-111.13}  { 8170}  {Gallatin}  {Upper South Fork Madison River (100200070203)}   
+snotel {SNTL }  {MT}  {Black Pine (349)}  {}  {1965-October}  { 46.41}  {-113.43}  { 7210}  {Granite}  {Marshall Creek (170102020203)}   
+snotel {SNTL }  {MT}  {Blacktail Mtn (1144)}  {}  {2010-August}  { 47.98}  {-114.35}  { 5650}  {Flathead}  {Ronan Creek (170102080302)}   
+snotel {SNTL }  {MT}  {Bloody Dick (355)}  {}  {1976-October}  { 45.17}  {-113.50}  { 7600}  {Beaverhead}  {Upper Bloody Dick Creek (100200011002)}   
+snotel {SNTL }  {MT}  {Boulder Mountain (360)}  {}  {1978-October}  { 46.56}  {-111.29}  { 7950}  {Meagher}  {Upper Camas Creek (100301030501)}   
+snotel {SNTL }  {MT}  {Box Canyon (363)}  {}  {1978-October}  { 45.27}  {-110.25}  { 6670}  {Park}  {East Fork Boulder River (100700020901)}   
+snotel {SNTL }  {MT}  {Brackett Creek (365)}  {}  {1993-October}  { 45.89}  {-110.94}  { 7320}  {Gallatin}  {Upper Brackett Creek (100700030403)}   
+snotel {SNTL }  {MT}  {Burnt Mtn (981)}  {}  {2000-October}  { 45.24}  {-109.46}  { 5880}  {Carbon}  {West Red Lodge Creek (100700061001)}   
+snotel {SNTL }  {MT}  {Calvert Creek (381)}  {}  {1975-October}  { 45.88}  {-113.33}  { 6430}  {Deer Lodge}  {Fishtrap Creek (100200040801)}   
+snotel {SNTL }  {MT}  {Carrot Basin (385)}  {}  {1966-October}  { 44.96}  {-111.29}  { 9000}  {Gallatin}  {Sage Creek (100200080106)}   
+snotel {SNTL }  {MT}  {Clover Meadow (403)}  {}  {1978-October}  { 45.02}  {-111.85}  { 8600}  {Madison}  {Ruby Creek (100200070803)}   
+snotel {SNTL }  {MT}  {Cole Creek (407)}  {}  {1972-January}  { 45.19}  {-109.35}  { 7850}  {Carbon}  {East Red Lodge Creek (100700061002)}   
+snotel {SNTL }  {MT}  {Combination (410)}  {}  {1972-October}  { 46.47}  {-113.39}  { 5600}  {Granite}  {Upper South Fork Lower Middle Creek (170102020401)}   
+snotel {SNTL }  {MT}  {Copper Bottom (413)}  {}  {1975-October}  { 47.06}  {-112.60}  { 5200}  {Lewis And Clark}  {Copper Creek (170102030103)}   
+snotel {SNTL }  {MT}  {Copper Camp (414)}  {}  {1972-January}  { 47.08}  {-112.73}  { 6950}  {Lewis And Clark}  {Copper Creek (170102030103)}   
+snotel {SNTL }  {MT}  {Crystal Lake (427)}  {}  {1978-October}  { 46.79}  {-109.51}  { 6050}  {Fergus}  {Big Rock Creek (100401030204)}   
+snotel {SNTL }  {MT}  {Daisy Peak (919)}  {}  {1982-September}  { 46.67}  {-110.33}  { 7600}  {Meagher}  {Mud Creek (100402010106)}   
+snotel {SNTL }  {MT}  {Daly Creek (433)}  {}  {1980-August}  { 46.18}  {-113.85}  { 5780}  {Ravalli}  {Daly Creek (170102050901)}   
+snotel {SNTL }  {MT}  {Darkhorse Lake (436)}  {}  {1980-August}  { 45.17}  {-113.58}  { 8600}  {Beaverhead}  {Headwaters Big Hole River (100200040301)}   
+snotel {SNTL }  {MT}  {Deadman Creek (437)}  {}  {1967-October}  { 46.79}  {-110.68}  { 6450}  {Meagher}  {Headwaters Sheep Creek (100301030401)}   
+snotel {SNTL }  {MT}  {Divide (448)}  {}  {1972-January}  { 44.79}  {-112.06}  { 7800}  {Madison}  {Headwaters Ruby River (100200030102)}   
+snotel {SNTL }  {MT}  {Dupuyer Creek (458)}  {}  {1983-August}  { 48.06}  {-112.76}  { 5750}  {Teton}  {Upper Dupuyer Creek (100302010501)}   
+snotel {SNTL }  {MT}  {East Boulder Mine (1105)}  {}  {2008-June}  { 45.50}  {-110.08}  { 6335}  {Sweet Grass}  {Upper East Boulder River (100700020701)}   
+snotel {SNTL }  {MT}  {Elk Peak (1106)}  {}  {2008-July}  { 46.48}  {-110.71}  { 7600}  {Meagher}  {Alabaugh Creek (100402010203)}   
+snotel {SNTL }  {MT}  {Emery Creek (469)}  {}  {1976-October}  { 48.43}  {-113.94}  { 4350}  {Flathead}  {Hungry Horse Creek (170102090703)}   
+snotel {SNTL }  {MT}  {Fisher Creek (480)}  {}  {1966-October}  { 45.06}  {-109.94}  { 9100}  {Park}  {Broadwater Creek-Clarks Fork Yellowstone River (100700060101)}   
+snotel {SNTL }  {MT}  {Flattop Mtn. (482)}  {}  {1969-October}  { 48.80}  {-113.86}  { 6300}  {Flathead}  {McDonald Creek Headwaters (170102070501)}   
+snotel {SNTL }  {MT}  {Frohner Meadow (487)}  {}  {1972-October}  { 46.44}  {-112.19}  { 6480}  {Jefferson}  {Lump Gulch (100301011305)}   
+snotel {SNTL }  {MT}  {Garver Creek (918)}  {}  {1968-October}  { 48.98}  {-115.82}  { 4250}  {Lincoln}  {Upper West Fork Yaak River (170101030202)}   
+snotel {SNTL }  {MT}  {Grave Creek (500)}  {}  {1975-October}  { 48.91}  {-114.77}  { 4300}  {Flathead}  {Canada (170101010301)}   
+snotel {SNTL }  {MT}  {Hand Creek (510)}  {}  {1976-October}  { 48.31}  {-114.84}  { 5035}  {Flathead}  {Squaw Meadows Creek (170102100304)}   
+snotel {SNTL }  {MT}  {Hawkins Lake (516)}  {}  {1968-October}  { 48.97}  {-115.95}  { 6450}  {Lincoln}  {Canada (170101050103)}   
+snotel {SNTL }  {MT}  {Hoodoo Basin (530)}  {}  {1966-October}  { 46.98}  {-115.03}  { 6050}  {Mineral}  {Upper Trout Creek (170102040607)}   
+snotel {SNTL }  {MT}  {Kraft Creek (562)}  {}  {1980-September}  { 47.43}  {-113.78}  { 4750}  {Missoula}  {Kraft Creek (170102110104)}   
+snotel {SNTL }  {MT}  {Lakeview Ridge (568)}  {}  {1978-October}  { 44.59}  {-111.82}  { 7400}  {Beaverhead}  {Odell Creek (100200010105)}   
+snotel {SNTL }  {MT}  {Lemhi Ridge (576)}  {}  {1972-January}  { 44.99}  {-113.44}  { 8100}  {Beaverhead}  {Trail Creek (100200011106)}   
+snotel {SNTL }  {MT}  {Lick Creek (578)}  {}  {1963-October}  { 45.50}  {-110.97}  { 6860}  {Gallatin}  {Upper Hyalite Creek (100200081001)}   
+snotel {SNTL }  {MT}  {Lone Mountain (590)}  {}  {1991-October}  { 45.27}  {-111.43}  { 8880}  {Madison}  {South Fork West Fork Gallatin River (100200080201)}   
+snotel {SNTL }  {MT}  {Lower Twin (603)}  {}  {1980-August}  { 45.51}  {-111.92}  { 7900}  {Madison}  {Upper North Meadow Creek (100200071101)}   
+snotel {SNTL }  {MT}  {Lubrecht Flume (604)}  {}  {1970-October}  { 46.88}  {-113.32}  { 4680}  {Missoula}  {Upper Elk Creek (170102031104)}   
+snotel {SNTL }  {MT}  {Madison Plateau (609)}  {}  {1967-October}  { 44.59}  {-111.12}  { 7750}  {Gallatin}  {Lower South Fork Madison River (100200070205)}   
+snotel {SNTL }  {MT}  {Many Glacier (613)}  {}  {1976-October}  { 48.80}  {-113.67}  { 4900}  {Glacier}  {Swiftcurrent Lake (090400010201)}   
+snotel {SNTL }  {MT}  {Monument Peak (635)}  {}  {1980-August}  { 45.22}  {-110.24}  { 8850}  {Park}  {East Fork Boulder River (100700020901)}   
+snotel {SNTL }  {MT}  {Moss Peak (646)}  {}  {1985-July}  { 47.68}  {-113.96}  { 6780}  {Lake}  {Polson (170102080404)}   
+snotel {SNTL }  {MT}  {Mount Lockhart (649)}  {}  {1968-October}  { 47.92}  {-112.82}  { 6400}  {Teton}  {Middle North Fork Teton River (100302050102)}   
+snotel {SNTL }  {MT}  {Mule Creek (656)}  {}  {1980-August}  { 45.41}  {-112.96}  { 8300}  {Beaverhead}  {Birch Creek (100200041303)}   
+snotel {SNTL }  {MT}  {N Fk Elk Creek (657)}  {}  {1967-October}  { 46.87}  {-113.28}  { 6250}  {Powell}  {Upper Elk Creek (170102031104)}   
+snotel {SNTL }  {MT}  {Nevada Ridge (903)}  {}  {1994-July}  { 46.84}  {-112.51}  { 7020}  {Lewis And Clark}  {Poorman Creek (170102030302)}   
+snotel {SNTL }  {MT}  {Nez Perce Camp (662)}  {}  {1976-October}  { 45.73}  {-114.48}  { 5650}  {Ravalli}  {Nez Pierce Fork-Nelson Lake (170102050204)}   
+snotel {SNTL }  {MT}  {Noisy Basin (664)}  {}  {1974-October}  { 48.16}  {-113.95}  { 6040}  {Flathead}  {Flathead River-Rose Creek (170102080108)}   
+snotel {SNTL }  {MT}  {North Fork Jocko (667)}  {}  {1989-August}  { 47.27}  {-113.76}  { 6330}  {Missoula}  {Middle Fork Jocko River (170102120702)}   
+snotel {SNTL }  {MT}  {Northeast Entrance (670)}  {}  {1966-October}  { 45.01}  {-110.01}  { 7350}  {Yellowstone National Park}  {Upper Soda Butte Creek (100700010702)}   
+snotel {SNTL }  {MT}  {Onion Park (1008)}  {}  {1993-October}  { 46.91}  {-110.85}  { 7410}  {Meagher}  {Upper Tenderfoot Creek (100301030801)}   
+snotel {SNTL }  {MT}  {Peterson Meadows (930)}  {}  {1970-October}  { 46.13}  {-113.31}  { 7200}  {Granite}  {Silver Lake (170102020101)}   
+snotel {SNTL }  {MT}  {Pickfoot Creek (690)}  {}  {1978-October}  { 46.58}  {-111.27}  { 6650}  {Meagher}  {Upper Camas Creek (100301030501)}   
+snotel {SNTL }  {MT}  {Pike Creek (693)}  {}  {1976-October}  { 48.30}  {-113.33}  { 5930}  {Pondera}  {Upper South Fork Two Medicine River (100302010103)}   
+snotel {SNTL }  {MT}  {Placer Basin (696)}  {}  {1980-August}  { 45.42}  {-110.09}  { 8830}  {Sweet Grass}  {Upper East Boulder River (100700020701)}   
+snotel {SNTL }  {MT}  {Poorman Creek (932)}  {}  {1968-October}  { 48.13}  {-115.62}  { 5100}  {Lincoln}  {Upper Grave Creek (170101010801)}   
+snotel {SNTL }  {MT}  {Porcupine (700)}  {}  {1976-October}  { 46.11}  {-110.47}  { 6500}  {Park}  {Porcupine Creek (100700030303)}   
+snotel {SNTL }  {MT}  {Rocker Peak (722)}  {}  {1967-October}  { 46.36}  {-112.26}  { 8000}  {Jefferson}  {Cataract Creek (100200060302)}   
+snotel {SNTL }  {MT}  {Rocky Boy (917)}  {}  {1967-October}  { 48.17}  {-109.65}  { 4700}  {Hill}  {Upper Beaver Creek (100500040101)}   
+snotel {SNTL }  {MT}  {S Fork Shields (725)}  {}  {1980-October}  { 46.09}  {-110.43}  { 8100}  {Park}  {Bennett Creek-Shields River (100700030301)}   
+snotel {SNTL }  {MT}  {Sacajawea (929)}  {}  {1999-October}  { 45.87}  {-110.93}  { 6550}  {Gallatin}  {Upper Brackett Creek (100700030403)}   
+snotel {SNTL }  {MT}  {Saddle Mtn. (727)}  {}  {1967-October}  { 45.69}  {-113.97}  { 7940}  {Beaverhead}  {Camp Creek (170102050502)}   
+snotel {SNTL }  {MT}  {Short Creek (753)}  {}  {1988-July}  { 44.98}  {-111.95}  { 7000}  {Madison}  {Lazyman Creek-Ruby River (100200030106)}   
+snotel {SNTL }  {MT}  {Shower Falls (754)}  {}  {1965-October}  { 45.40}  {-110.96}  { 8100}  {Gallatin}  {Upper Hyalite Creek (100200081001)}   
+snotel {SNTL }  {MT}  {Skalkaho Summit (760)}  {}  {1976-October}  { 46.24}  {-113.77}  { 7250}  {Granite}  {Middle West Fork Ross Creek (170102021003)}   
+snotel {SNTL }  {MT}  {Sleeping Woman (783)}  {}  {1991-October}  { 47.18}  {-114.33}  { 6150}  {Sanders}  {East Fork Valley Creek (170102120708)}   
+snotel {SNTL }  {MT}  {Spur Park (781)}  {}  {1966-October}  { 46.78}  {-110.62}  { 8100}  {Judith Basin}  {Cleveland Creek (100401030301)}   
+snotel {SNTL }  {MT}  {Stahl Peak (787)}  {}  {1975-October}  { 48.91}  {-114.86}  { 6030}  {Lincoln}  {Canada (170101010301)}   
+snotel {SNTL }  {MT}  {Stringer Creek (1009)}  {}  {1995-October}  { 46.93}  {-110.90}  { 6550}  {Meagher}  {Upper Tenderfoot Creek (100301030801)}   
+snotel {SNTL }  {MT}  {Stuart Mountain (901)}  {}  {1994-September}  { 47.00}  {-113.93}  { 7400}  {Missoula}  {Lower Rattlesnake Creek (170102040102)}   
+snotel {SNTL }  {MT}  {Tepee Creek (813)}  {}  {1971-October}  { 44.79}  {-111.71}  { 8000}  {Madison}  {Middle West Fork Madison River (100200070602)}   
+snotel {SNTL }  {MT}  {Tizer Basin (893)}  {}  {1988-September}  { 46.35}  {-111.85}  { 6880}  {Jefferson}  {Headwaters Crow Creek (100301010701)}   
+snotel {SNTL }  {MT}  {Twelvemile Creek (835)}  {}  {1967-October}  { 46.14}  {-114.45}  { 5600}  {Ravalli}  {Lost Horse Creek (170102050601)}   
+snotel {SNTL }  {MT}  {Twin Lakes (836)}  {}  {1967-October}  { 46.14}  {-114.51}  { 6400}  {Ravalli}  {Lost Horse Creek (170102050601)}   
+snotel {SNTL }  {MT}  {Waldron (847)}  {}  {1968-October}  { 47.92}  {-112.79}  { 5600}  {Teton}  {Middle North Fork Teton River (100302050102)}   
+snotel {SNTL }  {MT}  {Warm Springs (850)}  {}  {1977-October}  { 46.27}  {-113.16}  { 7800}  {Granite}  {Headwaters Warm Springs Creek (170102010302)}   
+snotel {SNTL }  {MT}  {West Yellowstone (924)}  {}  {1966-October}  { 44.66}  {-111.09}  { 6700}  {Yellowstone National Park}  {Madison Arm-Madison River (100200070202)}   
+snotel {SNTL }  {MT}  {Whiskey Creek (858)}  {}  {1971-October}  { 44.61}  {-111.15}  { 6800}  {Gallatin}  {Middle South Fork Madison River (100200070204)}   
+snotel {SNTL }  {MT}  {White Mill (862)}  {}  {1973-October}  { 45.05}  {-109.91}  { 8700}  {Park}  {Broadwater Creek-Clarks Fork Yellowstone River (100700060101)}   
+snotel {SNTL }  {MT}  {Wood Creek (876)}  {}  {1978-October}  { 47.45}  {-112.81}  { 5960}  {Lewis And Clark}  {Wood Creek (100301040202)}   
+snotel {SNTL }  {NM}  {Bateman (316)}  {}  {1978-October}  { 36.51}  {-106.32}  { 9300}  {Rio Arriba}  {Montoya Canyon-Canjilon Creek (130201020901)}   
+snotel {SNTL }  {NM}  {Chamita (394)}  {}  {1978-November}  { 36.96}  {-106.66}  { 8400}  {Rio Arriba}  {Rio Chamita (130201020204)}   
+snotel {SNTL }  {NM}  {Elk Cabin (921)}  {}  {1996-October}  { 35.70}  {-105.81}  { 8210}  {Santa Fe}  {Headwaters Santa Fe River (130202010102)}   
+snotel {SNTL }  {NM}  {Frisco Divide (486)}  {}  {1978-November}  { 33.74}  {-108.95}  { 8000}  {Catron}  {Stone Creek-San Francisco River (150400040303)}   
+snotel {SNTL }  {NM}  {Gallegos Peak (491)}  {}  {1980-June}  { 36.19}  {-105.56}  { 9800}  {Taos}  {Headwaters Rio Grande de Rancho (130201010502)}   
+snotel {SNTL }  {NM}  {Hopewell (532)}  {}  {1978-October}  { 36.72}  {-106.26}  { 10000}  {Rio Arriba}  {Jarosa Creek-Rio Vallecitos (130201021401)}   
+snotel {SNTL }  {NM}  {Lookout Mountain (595)}  {}  {1978-November}  { 33.36}  {-107.83}  { 8500}  {Sierra}  {Taylor Creek (150400010402)}   
+snotel {SNTL }  {NM}  {Mcknight Cabin (1048)}  {}  {2003-September}  { 33.01}  {-107.87}  { 9240}  {Grant}  {Sheppard Canyon-Mimbres River (130302020103)}   
+snotel {SNTL }  {NM}  {Navajo Whiskey Ck (1138)}  {}  {2009-May}  { 36.18}  {-108.95}  { 9050}  {San Juan}  {Whiskey Creek (Local Drainage) (140802040206)}   
+snotel {SNTL }  {NM}  {North Costilla (665)}  {}  {1978-November}  { 36.99}  {-105.26}  { 10600}  {Taos}  {Casias Creek-Costillo Creek (130201010101)}   
+snotel {SNTL }  {NM}  {Palo (1170)}  {}  {2010-August}  { 36.41}  {-105.33}  { 9350}  {Taos}  {Headwaters Rio Fernando del Taos (130201010601)}   
+snotel {SNTL }  {NM}  {Quemazon (708)}  {}  {1980-June}  { 35.92}  {-106.39}  { 9500}  {Los Alamos}  {Los Alamos Canyon (130201011303)}   
+snotel {SNTL }  {NM}  {Red River Pass #2 (715)}  {}  {1978-October}  { 36.70}  {-105.34}  { 9850}  {Colfax}  {Upper Red River (130201010301)}   
+snotel {SNTL }  {NM}  {Rice Park (933)}  {}  {1998-September}  { 35.23}  {-108.27}  { 8460}  {Valencia}  {Sawyer Creek (130202070203)}   
+snotel {SNTL }  {NM}  {Rio Santa Barbara (1254)}  {}  {2013-September}  { 36.07}  {-105.63}  { 10664}  {Taos}  {Outlet Rio Santa Barbara (130201010905)}   
+snotel {SNTL }  {NM}  {San Antonio Sink (1172)}  {}  {2011-July}  { 36.86}  {-106.23}  { 9100}  {Rio Arriba}  {Canada Tio Grande-Rio San Antonio (130100050301)}   
+snotel {SNTL }  {NM}  {Santa Fe (922)}  {}  {1996-October}  { 35.77}  {-105.78}  { 11445}  {Santa Fe}  {Headwaters Santa Fe River (130202010102)}   
+snotel {SNTL }  {NM}  {Senorita Divide #2 (744)}  {}  {1980-June}  { 36.00}  {-106.83}  { 8600}  {Rio Arriba}  {Headwaters Rio de Las Vacas (130202020102)}   
+snotel {SNTL }  {NM}  {Shuree (1169)}  {}  {2010-August}  { 36.79}  {-105.24}  { 10100}  {Colfax}  {Comanche Creek (130201010102)}   
+snotel {SNTL }  {NM}  {Sierra Blanca (1034)}  {}  {2002-October}  { 33.40}  {-105.79}  { 10280}  {Lincoln}  {Upper Rio Ruidoso (130600080103)}   
+snotel {SNTL }  {NM}  {Signal Peak (755)}  {}  {1978-November}  { 32.92}  {-108.15}  { 8360}  {Grant}  {Lake Roberts-Sapillo Creek (150400010803)}   
+snotel {SNTL }  {NM}  {Silver Creek Divide (757)}  {}  {1978-October}  { 33.37}  {-108.71}  { 9000}  {Catron}  {Mineral Creek (150400040605)}   
+snotel {SNTL }  {NM}  {Taos Powderhorn (1168)}  {}  {2010-August}  { 36.58}  {-105.46}  { 11057}  {Taos}  {Headwaters Arroyo Hondo (130201010701)}   
+snotel {SNTL }  {NM}  {Tolby (934)}  {}  {1998-September}  { 36.47}  {-105.19}  { 10180}  {Colfax}  {Ute Creek-Cimarron River (110800020107)}   
+snotel {SNTL }  {NM}  {Tres Ritos (1083)}  {}  {2006-September}  { 36.13}  {-105.53}  { 8600}  {Taos}  {Osha Canyon-Rio Pueblo (130201010903)}   
+snotel {SNTL }  {NM}  {Vacas Locas (1017)}  {}  {2001-November}  { 36.03}  {-106.81}  { 9306}  {Rio Arriba}  {Headwaters Rio de Las Vacas (130202020102)}   
+snotel {SNTL }  {NM}  {Wesner Springs (854)}  {}  {1989-September}  { 35.78}  {-105.54}  { 11120}  {San Miguel}  {Porvenir Canyon-Gallinas Creek (130600010802)}   
+snotel {SNTL }  {NV}  {Bear Creek (321)}  {}  {1978-October}  { 41.83}  {-115.45}  { 8040}  {Elko}  {West Fork Pine Creek-Jarbidge River (170501020301)}   
+snotel {SNTL }  {NV}  {Berry Creek (334)}  {}  {1980-July}  { 39.32}  {-114.62}  { 9100}  {White Pine}  {Berry Creek (160600081301)}   
+snotel {SNTL }  {NV}  {Big Bend (336)}  {}  {1978-October}  { 41.76}  {-115.69}  { 6700}  {Elko}  {Martin Creek (170501040104)}   
+snotel {SNTL }  {NV}  {Big Creek Sum (337)}  {}  {1980-August}  { 39.29}  {-117.11}  { 8695}  {Lander}  {Big Creek (160401070303)}   
+snotel {SNTL }  {NV}  {Big Meadow (340)}  {}  {1983-October}  { 39.46}  {-119.94}  { 8249}  {Washoe}  {Hunter Creek-Truckee River (160501020505)}   
+snotel {SNTL }  {NV}  {Bird Creek (1155)}  {}  {2011-July}  { 39.46}  {-114.65}  { 7500}  {White Pine}  {Timber Creek-Duck Creek (160600081304)}   
+snotel {SNTL }  {NV}  {Bristlecone Trail (1111)}  {}  {2008-June}  { 36.32}  {-115.70}  { 8979}  {Clark}  {Lee Canyon (150100150206)}   
+snotel {SNTL }  {NV}  {Buckskin Lower (373)}  {}  {1980-June}  { 41.75}  {-117.53}  { 6915}  {Humboldt}  {Cabin Creek-Martin Creek (160401090502)}   
+snotel {SNTL }  {NV}  {Cave Mountain (1152)}  {}  {2011-July}  { 39.16}  {-114.61}  { 10583}  {White Pine}  {Bastian Creek (160600080402)}   
+snotel {SNTL }  {NV}  {Columbia Basin (1204)}  {}  {2012-January}  { 41.67}  {-116.07}  { 6650}  {Elko}  {Columbia Creek (170501050503)}   
+snotel {SNTL }  {NV}  {Corduroy Flat (1209)}  {}  {2012-January}  { 39.00}  {-115.42}  { 8720}  {White Pine}  {Black Canyon Wash (160600121206)}   
+snotel {SNTL }  {NV}  {Corral Canyon (417)}  {}  {1978-October}  { 40.28}  {-115.53}  { 8500}  {Elko}  {Corral Creek (160401030401)}   
+snotel {SNTL }  {NV}  {Defiance Mines (1210)}  {}  {2012-January}  { 39.09}  {-114.90}  { 9200}  {White Pine}  {Cooper Wash-Willow Creek (160600081002)}   
+snotel {SNTL }  {NV}  {Diamond Peak (443)}  {}  {1983-October}  { 39.56}  {-115.84}  { 8033}  {White Pine}  {Torre Creek-Slough Creek-Frontal Diamond Valley (160600051503)}   
+snotel {SNTL }  {NV}  {Disaster Peak (445)}  {}  {1980-August}  { 41.97}  {-118.19}  { 6500}  {Humboldt}  {Sage Creek (160402010201)}   
+snotel {SNTL }  {NV}  {Dorsey Basin (453)}  {}  {1978-October}  { 40.89}  {-115.20}  { 8100}  {Elko}  {Lower Secret Creek (160401010604)}   
+snotel {SNTL }  {NV}  {Draw Creek (454)}  {}  {1983-August}  { 41.66}  {-115.32}  { 7200}  {Elko}  {Upper T Creek (160401010403)}   
+snotel {SNTL }  {NV}  {Dry Creek (1243)}  {}  {2013-July}  { 40.86}  {-115.22}  { 6500}  {Elko}  {Upper Secret Creek (160401010601)}   
+snotel {SNTL }  {NV}  {Fawn Creek (476)}  {}  {1980-July}  { 41.82}  {-116.10}  { 7000}  {Elko}  {Fawn Creek-Owyhee River (170501040304)}   
+snotel {SNTL }  {NV}  {Fry Canyon (1262)}  {}  {2014-October}  { 41.58}  {-115.93}  { 6700}  {Elko}  {Deep Creek (170501040102)}   
+snotel {SNTL }  {NV}  {Golconda (1195)}  {}  {2011-September}  { 40.88}  {-117.59}  { 6596}  {Humboldt}  {Pole Creek (160401080102)}   
+snotel {SNTL }  {NV}  {Granite Peak (498)}  {}  {1980-July}  { 41.67}  {-117.57}  { 8543}  {Humboldt}  {Alkali Creek (160401090501)}   
+snotel {SNTL }  {NV}  {Green Mountain (503)}  {}  {1979-August}  { 40.38}  {-115.53}  { 8000}  {Elko}  {Corral Creek (160401030401)}   
+snotel {SNTL }  {NV}  {Hole-in-Mountain (527)}  {}  {1980-July}  { 40.94}  {-115.10}  { 7900}  {Elko}  {Winchell Creek-The Slough (160600071602)}   
+snotel {SNTL }  {NV}  {Jack Creek Upper (548)}  {}  {1978-October}  { 41.55}  {-116.01}  { 7250}  {Elko}  {Upper Harrington Creek (170501050201)}   
+snotel {SNTL }  {NV}  {Jacks Peak (549)}  {}  {1981-August}  { 41.53}  {-116.01}  { 8420}  {Elko}  {Upper Harrington Creek (170501050201)}   
+snotel {SNTL }  {NV}  {Jakes Creek (1211)}  {}  {2012-January}  { 41.57}  {-115.03}  { 7000}  {Elko}  {Upper Jakes Creek (170402130308)}   
+snotel {SNTL }  {NV}  {Kalamazoo (1150)}  {}  {2011-July}  { 39.56}  {-114.63}  { 7744}  {White Pine}  {Lower Spring Valley Creek (160600080700)}   
+snotel {SNTL }  {NV}  {Lamance Creek (569)}  {}  {1980-June}  { 41.52}  {-117.63}  { 6000}  {Humboldt}  {Lamance Creek-Big Cottonwood Creek (160401090603)}   
+snotel {SNTL }  {NV}  {Lamoille #3 (570)}  {}  {1980-July}  { 40.65}  {-115.38}  { 7700}  {Elko}  {Thomas Creek-Lamoille Creek (160401010607)}   
+snotel {SNTL }  {NV}  {Laurel Draw (573)}  {}  {1979-August}  { 41.78}  {-116.03}  { 6697}  {Elko}  {Trail Creek (170501040202)}   
+snotel {SNTL }  {NV}  {Lee Canyon (1112)}  {}  {2008-June}  { 36.31}  {-115.68}  { 8626}  {Clark}  {Lee Canyon (150100150206)}   
+snotel {SNTL }  {NV}  {Lewis Peak (1006)}  {}  {2000-August}  { 40.36}  {-116.86}  { 7400}  {Lander}  {Trout Creek (160401070903)}   
+snotel {SNTL }  {NV}  {Little Valley (1242)}  {}  {2013-July}  { 39.25}  {-119.88}  { 6510}  {Washoe}  {Franktown Creek-Frontal Washoe Lake (160501020301)}   
+snotel {SNTL }  {NV}  {Marlette Lake (615)}  {}  {1978-October}  { 39.16}  {-119.90}  { 7880}  {Carson City}  {Sand Harbor-Frontal Lake Tahoe (160501010201)}   
+snotel {SNTL }  {NV}  {Merritt Mountain (1207)}  {}  {2012-January}  { 41.89}  {-115.86}  { 7000}  {Elko}  {Merritt Creek-Sheep Creek (170501020601)}   
+snotel {SNTL }  {NV}  {Midas (1206)}  {}  {2012-January}  { 41.27}  {-116.80}  { 7000}  {Elko}  {Frazer Creek (160401060402)}   
+snotel {SNTL }  {NV}  {Mt Rose Ski Area (652)}  {}  {1980-June}  { 39.32}  {-119.89}  { 8801}  {Washoe}  {Hidden Valley-Steamboat Creek (160501020304)}   
+snotel {SNTL }  {NV}  {Pole Canyon (1244)}  {}  {2013-July}  { 40.86}  {-115.12}  { 7700}  {Elko}  {Woods Creek-Franklin River (160600071101)}   
+snotel {SNTL }  {NV}  {Pole Creek R.S. (698)}  {}  {1980-July}  { 41.87}  {-115.25}  { 8330}  {Elko}  {Upper Big Flat Creek (170501021002)}   
+snotel {SNTL }  {NV}  {Rainbow Canyon (1110)}  {}  {2008-June}  { 36.25}  {-115.63}  { 7920}  {Clark}  {Kyle Canyon (150100150301)}   
+snotel {SNTL }  {NV}  {Seventysix Creek (746)}  {}  {1978-October}  { 41.74}  {-115.47}  { 7100}  {Elko}  {Annie Creek-Bruneau River (170501020108)}   
+snotel {SNTL }  {NV}  {Silver Creek Nv (1205)}  {}  {2012-January}  { 39.23}  {-114.24}  { 8000}  {White Pine}  {Headwaters Silver Creek (160203010806)}   
+snotel {SNTL }  {NV}  {Snowstorm Mtn (1208)}  {}  {2012-January}  { 41.34}  {-116.98}  { 7420}  {Elko}  {First Creek-South Fork Little Humboldt River (160401090203)}   
+snotel {SNTL }  {NV}  {Stag Mountain (1203)}  {}  {2012-January}  { 41.41}  {-115.45}  { 7800}  {Elko}  {Stag Creek (170501020101)}   
+snotel {SNTL }  {NV}  {Summit Lk (1194)}  {}  {2011-September}  { 41.49}  {-119.00}  { 7609}  {Humboldt}  {Summit Lake (160402021301)}   
+snotel {SNTL }  {NV}  {Taylor Canyon (811)}  {}  {1980-May}  { 41.23}  {-116.03}  { 6200}  {Elko}  {Upper Taylors Canyon Creek (170501050105)}   
+snotel {SNTL }  {NV}  {Tent Mtn Lower (1202)}  {}  {2012-May}  { 40.98}  {-115.17}  { 7000}  {Elko}  {Starr Creek (160401010704)}   
+snotel {SNTL }  {NV}  {Toe Jam (1136)}  {}  {2009-July}  { 41.32}  {-116.34}  { 7700}  {Elko}  {Toe Jam Creek (160401060202)}   
+snotel {SNTL }  {NV}  {Vacarro Springs (1137)}  {}  {2011-June}  { 39.45}  {-115.98}  { 7836}  {Eureka}  {Torre Creek-Slough Creek-Frontal Diamond Valley (160600051503)}   
+snotel {SNTL }  {NV}  {Ward Mountain (849)}  {}  {1980-July}  { 39.13}  {-114.96}  { 9200}  {White Pine}  {Holt Creek (150100110105)}   
+snotel {SNTL }  {NV}  {Wheeler Peak (1147)}  {}  {2010-July}  { 39.01}  {-114.31}  { 10120}  {White Pine}  {Lehman Creek (160203010801)}   
+snotel {SNTL }  {NV}  {White River Nv (1213)}  {}  {2012-January}  { 38.95}  {-115.38}  { 7440}  {White Pine}  {Saddle Spring-White River (150100110302)}   
+snotel {SNTL }  {OR}  {Aneroid Lake #2 (302)}  {}  {1980-October}  { 45.21}  {-117.19}  { 7400}  {Wallowa}  {West Fork Wallowa River-Wallowa River (170601050101)}   
+snotel {SNTL }  {OR}  {Annie Springs (1000)}  {}  {2000-September}  { 42.87}  {-122.17}  { 6010}  {Klamath}  {Upper Annie Creek (180102030101)}   
+snotel {SNTL }  {OR}  {Arbuckle Mtn (304)}  {}  {1978-October}  { 45.19}  {-119.25}  { 5770}  {Morrow}  {Upper Fivemile Creek (170702020604)}   
+snotel {SNTL }  {OR}  {Bear Grass (1166)}  {}  {2011-September}  { 44.33}  {-122.09}  { 4720}  {Linn}  {Smith River (170900040203)}   
+snotel {SNTL }  {OR}  {Beaver Reservoir (331)}  {}  {1980-June}  { 45.15}  {-118.22}  { 5150}  {Union}  {Upper Beaver Creek (170601040301)}   
+snotel {SNTL }  {OR}  {Big Red Mountain (341)}  {}  {1980-June}  { 42.05}  {-122.85}  { 6050}  {Jackson}  {Upper Little Applegate River (171003090301)}   
+snotel {SNTL }  {OR}  {Bigelow Camp (343)}  {}  {1980-June}  { 42.08}  {-123.34}  { 5130}  {Josephine}  {Sturgis Fork Carberry Creek (171003090105)}   
+snotel {SNTL }  {OR}  {Billie Creek Divide (344)}  {}  {1978-October}  { 42.41}  {-122.27}  { 5280}  {Klamath}  {Seldom Creek (180102030201)}   
+snotel {SNTL }  {OR}  {Blazed Alder (351)}  {}  {1980-June}  { 45.43}  {-121.86}  { 3650}  {Clackamas}  {Clear Creek-Sandy River (170800010102)}   
+snotel {SNTL }  {OR}  {Blue Mountain Spring (357)}  {}  {1978-October}  { 44.25}  {-118.52}  { 5870}  {Grant}  {Summit Creek (170501160104)}   
+snotel {SNTL }  {OR}  {Bourne (361)}  {}  {1978-October}  { 44.83}  {-118.19}  { 5850}  {Baker}  {Cracker Creek (170502030101)}   
+snotel {SNTL }  {OR}  {Bowman Springs (362)}  {}  {1978-October}  { 45.36}  {-118.47}  { 4530}  {Umatilla}  {Johnson Creek (170701030401)}   
+snotel {SNTL }  {OR}  {Cascade Summit (388)}  {}  {1980-July}  { 43.59}  {-122.06}  { 5100}  {Deschutes}  {Upper Salt Creek (170900010301)}   
+snotel {SNTL }  {OR}  {Chemult Alternate (395)}  {}  {1980-June}  { 43.23}  {-121.81}  { 4850}  {Klamath}  {Deer Creek (180102010201)}   
+snotel {SNTL }  {OR}  {Clackamas Lake (398)}  {}  {1980-June}  { 45.10}  {-121.75}  { 3400}  {Clackamas}  {Headwaters Oak Grove Fork Clackamas River (170900110301)}   
+snotel {SNTL }  {OR}  {Clear Lake (401)}  {}  {1980-June}  { 45.19}  {-121.69}  { 3810}  {Wasco}  {Clear Creek (170703060901)}   
+snotel {SNTL }  {OR}  {Cold Springs Camp (406)}  {}  {1980-June}  { 42.53}  {-122.18}  { 5940}  {Klamath}  {Upper Fourmile Creek (180102030202)}   
+snotel {SNTL }  {OR}  {County Line (422)}  {}  {1980-June}  { 45.19}  {-118.55}  { 4830}  {Umatilla}  {Middle Meadow Creek (170601040202)}   
+snotel {SNTL }  {OR}  {Crazyman Flat (1010)}  {}  {2001-September}  { 42.64}  {-120.95}  { 6180}  {Klamath}  {Paradise Creek (180102020101)}   
+snotel {SNTL }  {OR}  {Daly Lake (434)}  {}  {1978-December}  { 44.52}  {-122.09}  { 3690}  {Linn}  {Pyramid Creek (170900060101)}   
+snotel {SNTL }  {OR}  {Derr. (440)}  {}  {1980-June}  { 44.45}  {-119.93}  { 5850}  {Wheeler}  {Jackson Creek (170703040401)}   
+snotel {SNTL }  {OR}  {Diamond Lake (442)}  {}  {1980-June}  { 43.19}  {-122.14}  { 5280}  {Douglas}  {Lake Creek (171003010204)}   
+snotel {SNTL }  {OR}  {Eilertson Meadows (464)}  {}  {1980-July}  { 44.87}  {-118.11}  { 5510}  {Baker}  {Rock Creek (170502030404)}   
+snotel {SNTL }  {OR}  {Emigrant Springs (470)}  {}  {1980-June}  { 45.56}  {-118.45}  { 3800}  {Umatilla}  {Iskuulpa Creek (170701030501)}   
+snotel {SNTL }  {OR}  {Fish Creek (477)}  {}  {1978-October}  { 42.71}  {-118.63}  { 7660}  {Harney}  {Fish Creek (171200030107)}   
+snotel {SNTL }  {OR}  {Fish Lk. (479)}  {}  {1980-June}  { 42.38}  {-122.35}  { 4660}  {Jackson}  {Upper North Fork Little Butte Creek (171003070801)}   
+snotel {SNTL }  {OR}  {Fourmile Lake (483)}  {}  {1978-October}  { 42.44}  {-122.23}  { 5970}  {Klamath}  {Upper Fourmile Creek (180102030202)}   
+snotel {SNTL }  {OR}  {Gerber Reservoir (945)}  {}  {1998-October}  { 42.21}  {-121.13}  { 4890}  {Klamath}  {Gerber Reservoir (180102040508)}   
+snotel {SNTL }  {OR}  {Gold Center (494)}  {}  {1980-July}  { 44.76}  {-118.31}  { 5410}  {Grant}  {Bull Run Creek (170702020202)}   
+snotel {SNTL }  {OR}  {Greenpoint (504)}  {}  {1978-October}  { 45.62}  {-121.70}  { 3310}  {Hood River}  {Lower West Fork Hood River (170701050603)}   
+snotel {SNTL }  {OR}  {High Ridge (523)}  {}  {1978-October}  { 45.70}  {-118.11}  { 4920}  {Umatilla}  {Buck Creek-South Fork Umatilla River (170701030103)}   
+snotel {SNTL }  {OR}  {Hogg Pass (526)}  {}  {1978-October}  { 44.42}  {-121.86}  { 4790}  {Linn}  {Parks Creek-Lost Lake (170900040201)}   
+snotel {SNTL }  {OR}  {Holland Meadows (529)}  {}  {1980-July}  { 43.67}  {-122.57}  { 4930}  {Lane}  {Layng Creek (170900020201)}   
+snotel {SNTL }  {OR}  {Howard Prairie (1158)}  {}  {2012-September}  { 42.22}  {-122.37}  { 4580}  {Jackson}  {Upper Jenny Creek (180102060401)}   
+snotel {SNTL }  {OR}  {Irish Taylor (545)}  {}  {1978-October}  { 43.80}  {-121.95}  { 5540}  {Deschutes}  {Deer Creek (170703010106)}   
+snotel {SNTL }  {OR}  {Jump Off Joe (552)}  {}  {1978-October}  { 44.39}  {-122.17}  { 3520}  {Linn}  {Sevenmile Creek-South Santiam River (170900060201)}   
+snotel {SNTL }  {OR}  {King Mountain (558)}  {}  {1980-June}  { 42.72}  {-123.20}  { 4340}  {Jackson}  {Whitehorse Creek-Cow Creek (171003020701)}   
+snotel {SNTL }  {OR}  {Lake Creek R.S. (563)}  {}  {1978-October}  { 44.21}  {-118.64}  { 5240}  {Grant}  {Lake Creek (170501160102)}   
+snotel {SNTL }  {OR}  {Little Meadows (584)}  {}  {1978-December}  { 44.61}  {-122.23}  { 4020}  {Linn}  {Headwaters Quartzville Creek (170900060301)}   
+snotel {SNTL }  {OR}  {Lucky Strike (605)}  {}  {1978-October}  { 45.27}  {-118.85}  { 4970}  {Umatilla}  {West Birch Creek (170701030606)}   
+snotel {SNTL }  {OR}  {Madison Butte (608)}  {}  {1980-June}  { 45.11}  {-119.50}  { 5150}  {Morrow}  {Chapin Creek-Rock Creek (170702041101)}   
+snotel {SNTL }  {OR}  {Marion Forks (614)}  {}  {1980-July}  { 44.59}  {-121.97}  { 2590}  {Linn}  {Minto Creek-North Santiam River (170900050205)}   
+snotel {SNTL }  {OR}  {Mckenzie (619)}  {}  {1980-July}  { 44.21}  {-121.87}  { 4770}  {Lane}  {White Branch (170900040207)}   
+snotel {SNTL }  {OR}  {Milk Shakes (1079)}  {}  {2007-September}  { 45.98}  {-117.95}  { 5580}  {Wallowa}  {Upper Mill Creek (170701020201)}   
+snotel {SNTL }  {OR}  {Miller Woods (1084)}  {}  {2006-September}  { 45.25}  {-123.28}  { 420}  {Yamhill}  {Baker Creek (170900080606)}   
+snotel {SNTL }  {OR}  {Moss Springs (647)}  {}  {1980-June}  { 45.27}  {-117.69}  { 5760}  {Union}  {Mill Creek (170601040702)}   
+snotel {SNTL }  {OR}  {Mt Hood Test Site (651)}  {}  {1980-July}  { 45.32}  {-121.72}  { 5370}  {Clackamas}  {Upper Salmon River (170800010302)}   
+snotel {SNTL }  {OR}  {Mt. Howard (653)}  {}  {1980-July}  { 45.27}  {-117.17}  { 7910}  {Wallowa}  {Upper Prairie Creek (170601050102)}   
+snotel {SNTL }  {OR}  {Mud Ridge (655)}  {}  {1978-October}  { 45.25}  {-121.74}  { 4070}  {Clackamas}  {Upper Salmon River (170800010302)}   
+snotel {SNTL }  {OR}  {New Crescent Lake (660)}  {}  {1980-July}  { 43.51}  {-121.98}  { 4910}  {Klamath}  {Upper Crescent Creek (170703020205)}   
+snotel {SNTL }  {OR}  {North Fork (666)}  {}  {1978-October}  { 45.55}  {-122.00}  { 3060}  {Multnomah}  {Middle Bull Run River (170800010503)}   
+snotel {SNTL }  {OR}  {Ochoco Meadows (671)}  {}  {1980-July}  { 44.43}  {-120.33}  { 5430}  {Crook}  {Headwaters Ochoco Creek (170703050201)}   
+snotel {SNTL }  {OR}  {Peavine Ridge (687)}  {}  {1980-June}  { 45.04}  {-121.93}  { 3420}  {Clackamas}  {Cot Creek-Oat Grove Fork Clackamas River (170900110306)}   
+snotel {SNTL }  {OR}  {Quartz Mountain (706)}  {}  {1980-June}  { 42.32}  {-120.83}  { 5720}  {Lake}  {Middle South Fork Sprague River (180102020404)}   
+snotel {SNTL }  {OR}  {Railroad Overpass (710)}  {}  {1981-July}  { 43.66}  {-122.21}  { 2680}  {Lane}  {Middle Salt Creek (170900010302)}   
+snotel {SNTL }  {OR}  {Red Hill (712)}  {}  {1978-October}  { 45.46}  {-121.70}  { 4410}  {Hood River}  {Lower Middle Fork Hood River (170701050505)}   
+snotel {SNTL }  {OR}  {Roaring River (719)}  {}  {1980-July}  { 43.90}  {-122.03}  { 4950}  {Lane}  {Roaring River-South Fork McKenzie River (170900040302)}   
+snotel {SNTL }  {OR}  {Rock Springs (721)}  {}  {1980-June}  { 44.01}  {-118.84}  { 5290}  {Grant}  {Calamity Creek (170501160204)}   
+snotel {SNTL }  {OR}  {Saddle Mountain (726)}  {}  {1978-November}  { 45.54}  {-123.37}  { 3110}  {Washington}  {Headwaters Tualatin River (170900100201)}   
+snotel {SNTL }  {OR}  {Salt Creek Falls (729)}  {}  {1980-July}  { 43.61}  {-122.12}  { 4220}  {Lane}  {Upper Salt Creek (170900010301)}   
+snotel {SNTL }  {OR}  {Santiam Jct. (733)}  {}  {1978-October}  { 44.44}  {-121.95}  { 3740}  {Linn}  {Parks Creek-Lost Lake (170900040201)}   
+snotel {SNTL }  {OR}  {Schneider Meadows (736)}  {}  {1980-October}  { 45.00}  {-117.17}  { 5400}  {Baker}  {Clear Creek (170502010603)}   
+snotel {SNTL }  {OR}  {Seine Creek (743)}  {}  {1980-June}  { 45.53}  {-123.30}  { 2060}  {Washington}  {Sain Creek-Scoggins Creek (170900100203)}   
+snotel {SNTL }  {OR}  {Sevenmile Marsh (745)}  {}  {1980-June}  { 42.70}  {-122.14}  { 5700}  {Klamath}  {Sevenmile Creek (180102030104)}   
+snotel {SNTL }  {OR}  {Silver Creek (756)}  {}  {1980-June}  { 42.96}  {-121.18}  { 5740}  {Lake}  {West Fork Silver Creek (171200050206)}   
+snotel {SNTL }  {OR}  {Silvies (759)}  {}  {1978-October}  { 42.75}  {-118.69}  { 6990}  {Harney}  {Mud Creek (171200030201)}   
+snotel {SNTL }  {OR}  {Smith Ridge (1167)}  {}  {2011-November}  { 44.30}  {-122.04}  { 3270}  {Linn}  {Smith River (170900040203)}   
+snotel {SNTL }  {OR}  {Snow Mountain (767)}  {}  {1978-October}  { 43.95}  {-119.54}  { 6230}  {Harney}  {Crowsfoot Creek-Emigrant Creek (171200020501)}   
+snotel {SNTL }  {OR}  {South Fork Bull Run (925)}  {}  {1997-September}  { 45.45}  {-122.03}  { 2690}  {Clackamas}  {South Fork Bull Run River (170800010504)}   
+snotel {SNTL }  {OR}  {Starr Ridge (789)}  {}  {1980-June}  { 44.26}  {-119.02}  { 5250}  {Grant}  {Starr Creek-Silvies River (171200020102)}   
+snotel {SNTL }  {OR}  {Strawberry (794)}  {}  {1980-June}  { 42.13}  {-120.84}  { 5770}  {Lake}  {Barnes Valley Creek (180102040501)}   
+snotel {SNTL }  {OR}  {Summer Rim (800)}  {}  {1978-October}  { 42.70}  {-120.80}  { 7080}  {Lake}  {Headwaters Sycan River (180102020103)}   
+snotel {SNTL }  {OR}  {Summit Lake (801)}  {}  {1978-October}  { 43.45}  {-122.14}  { 5610}  {Klamath}  {Summit Lake (170703020203)}   
+snotel {SNTL }  {OR}  {Sun Pass (1078)}  {}  {2006-June}  { 42.79}  {-121.98}  { 5400}  {Klamath}  {Egan Spring-Williamson River (180102010602)}   
+snotel {SNTL }  {OR}  {Swan Lake Mtn (1077)}  {}  {2006-October}  { 42.41}  {-121.68}  { 6830}  {Klamath}  {Grizzly Butte (180102040802)}   
+snotel {SNTL }  {OR}  {Taylor Butte (810)}  {}  {1978-October}  { 42.69}  {-121.43}  { 5030}  {Klamath}  {Chester Spring-Sycan River (180102020606)}   
+snotel {SNTL }  {OR}  {Taylor Green (812)}  {}  {1978-November}  { 45.08}  {-117.55}  { 5740}  {Baker}  {South Fork Catherine Creek (170601040502)}   
+snotel {SNTL }  {OR}  {Three Creeks Meadow (815)}  {}  {1980-July}  { 44.14}  {-121.64}  { 5690}  {Deschutes}  {Three Creek (170703010601)}   
+snotel {SNTL }  {OR}  {Tipton (821)}  {}  {1978-October}  { 44.66}  {-118.43}  { 5150}  {Baker}  {Upper North Fork Burnt River (170502020101)}   
+snotel {SNTL }  {OR}  {Toketee Airstrip (1044)}  {}  {2003-October}  { 43.23}  {-122.43}  { 3240}  {Douglas}  {Lower Fish Creek (171003010404)}   
+snotel {SNTL }  {OR}  {Wolf Creek (873)}  {}  {1978-October}  { 45.07}  {-118.15}  { 5630}  {Union}  {Upper Wolf Creek (170502030601)}   
+snotel {SNTL }  {SD}  {Blind Park (354)}  {}  {1990-June}  { 44.11}  {-103.98}  { 6890}  {Pennington}  {Upper Castle Creek (101201100104)}   
+snotel {SNTL }  {SD}  {North Rapid Creek (920)}  {}  {1996-August}  { 44.21}  {-103.79}  { 6130}  {Lawrence}  {North Fork Rapid Creek (101201100101)}   
+snotel {SNTL }  {UT}  {Agua Canyon (907)}  {}  {1994-September}  { 37.52}  {-112.27}  { 8900}  {Kane}  {East Fork Sevier River Headwaters (160300020301)}   
+snotel {SNTL }  {UT}  {Bear River RS (992)}  {}  {2010-October}  { 40.89}  {-110.83}  { 8777}  {Summit}  {Willow Creek-Bear River (160101010103)}   
+snotel {SNTL }  {UT}  {Beaver Dams (329)}  {}  {1980-June}  { 39.14}  {-111.56}  { 7990}  {Sanpete}  {Headwaters Twelvemile Creek (160300040402)}   
+snotel {SNTL }  {UT}  {Beaver Divide (330)}  {}  {1978-October}  { 40.61}  {-111.10}  { 8280}  {Wasatch}  {Shingle Creek-Provo River (160202030105)}   
+snotel {SNTL }  {UT}  {Ben Lomond Peak (332)}  {}  {1978-October}  { 41.38}  {-111.94}  { 8000}  {Weber}  {Cutler Creek-North Fork Ogden River (160201020302)}   
+snotel {SNTL }  {UT}  {Ben Lomond Trail (333)}  {}  {1980-June}  { 41.38}  {-111.92}  { 5829}  {Weber}  {Cutler Creek-North Fork Ogden River (160201020302)}   
+snotel {SNTL }  {UT}  {Bevans Cabin (1214)}  {}  {2012-May}  { 40.46}  {-112.25}  { 6430}  {Tooele}  {Settlement Canyon (160203040401)}   
+snotel {SNTL }  {UT}  {Big Flat (339)}  {}  {1978-October}  { 38.30}  {-112.36}  { 10349}  {Piute}  {Three Creeks (160300070202)}   
+snotel {SNTL }  {UT}  {Black Flat-U.M. Ck (348)}  {}  {1980-June}  { 38.68}  {-111.60}  { 9462}  {Sevier}  {U M Creek (140700030101)}   
+snotel {SNTL }  {UT}  {Blacks Fork Jct (1162)}  {}  {2010-October}  { 40.96}  {-110.58}  { 8870}  {Summit}  {Meeks Cabin Reservoir-Blacks Forks (140401070103)}   
+snotel {SNTL }  {UT}  {Box Creek (364)}  {}  {1979-August}  { 38.51}  {-112.02}  { 9828}  {Sevier}  {Greenwich Creek (160300020106)}   
+snotel {SNTL }  {UT}  {Brian Head (1154)}  {}  {2011-August}  { 37.68}  {-112.86}  { 9972}  {Iron}  {Dry Lakes Creek (160300060201)}   
+snotel {SNTL }  {UT}  {Brighton (366)}  {}  {1986-September}  { 40.60}  {-111.58}  { 8750}  {Salt Lake}  {Headwaters Big Cottonwood Canyon (160202040201)}   
+snotel {SNTL }  {UT}  {Brown Duck (368)}  {}  {1978-October}  { 40.58}  {-110.59}  { 10600}  {Duchesne}  {Brown Duck Creek-Lake Fork River (140600030604)}   
+snotel {SNTL }  {UT}  {Buck Flat (371)}  {}  {1978-October}  { 39.13}  {-111.44}  { 9430}  {Sanpete}  {Ferron Reservoir-Ferron Creek (140600090302)}   
+snotel {SNTL }  {UT}  {Buck Pasture (1192)}  {}  {2011-November}  { 40.84}  {-110.66}  { 9700}  {Summit}  {West Fork Blacks Fork (140401070101)}   
+snotel {SNTL }  {UT}  {Buckboard Flat (1153)}  {}  {2012-May}  { 37.87}  {-109.45}  { 8998}  {San Juan}  {North Creek-Montezuma Creek (140802030103)}   
+snotel {SNTL }  {UT}  {Bug Lake (374)}  {}  {1978-October}  { 41.68}  {-111.42}  { 7950}  {Rich}  {Laketown Canyon (160102010102)}   
+snotel {SNTL }  {UT}  {Burts Miller Ranch (1135)}  {}  {2009-June}  { 40.98}  {-110.85}  { 8000}  {Summit}  {Cottonwood Creek-Mill Creek (160101010106)}   
+snotel {SNTL }  {UT}  {Camp Jackson (383)}  {}  {1985-October}  { 37.81}  {-109.49}  { 8968}  {San Juan}  {Johnson Creek (140802010301)}   
+snotel {SNTL }  {UT}  {Cascade Mountain (1039)}  {}  {2002-October}  { 40.28}  {-111.61}  { 7774}  {Utah}  {Rock Canyon-Provo RIver (160202030505)}   
+snotel {SNTL }  {UT}  {Castle Valley (390)}  {}  {1980-June}  { 37.66}  {-112.74}  { 9580}  {Iron}  {Upper Mammoth Creek (160300010201)}   
+snotel {SNTL }  {UT}  {Chalk Creek #1 (392)}  {}  {1978-October}  { 40.85}  {-111.05}  { 8993}  {Summit}  {East Fork Chalk Creek (160201010301)}   
+snotel {SNTL }  {UT}  {Chalk Creek #2 (393)}  {}  {1978-October}  { 40.89}  {-111.07}  { 8158}  {Summit}  {East Fork Chalk Creek (160201010301)}   
+snotel {SNTL }  {UT}  {Chepeta (396)}  {}  {1980-July}  { 40.77}  {-110.01}  { 10592}  {Duchesne}  {East Fork Whiterocks River (140600031202)}   
+snotel {SNTL }  {UT}  {Clayton Springs (983)}  {}  {2000-June}  { 37.97}  {-111.83}  { 10049}  {Garfield}  {Coyote Hollow-Antimony Creek (160300020501)}   
+snotel {SNTL }  {UT}  {Clear Creek #1 (399)}  {}  {1978-October}  { 39.87}  {-111.28}  { 8908}  {Utah}  {Upper Soldier Creek (160202020102)}   
+snotel {SNTL }  {UT}  {Clear Creek #2 (400)}  {}  {1978-October}  { 39.89}  {-111.25}  { 7659}  {Utah}  {Upper Soldier Creek (160202020102)}   
+snotel {SNTL }  {UT}  {Corral (1236)}  {}  {2013-June}  { 39.66}  {-110.38}  { 8159}  {Carbon}  {Grassy Trail Reservoir-Grassy Trail Creek (140600070903)}   
+snotel {SNTL }  {UT}  {Currant Creek (432)}  {}  {1978-October}  { 40.36}  {-111.09}  { 8000}  {Wasatch}  {Current Creek Reservoir (140600040401)}   
+snotel {SNTL }  {UT}  {Daniels-Strawberry (435)}  {}  {1978-October}  { 40.30}  {-111.26}  { 8037}  {Wasatch}  {Willow Creek-Strawberry River (140600040101)}   
+snotel {SNTL }  {UT}  {Dill's Camp (444)}  {}  {1978-October}  { 39.05}  {-111.47}  { 9182}  {Sanpete}  {Beaver Creek (140700020201)}   
+snotel {SNTL }  {UT}  {Donkey Reservoir (452)}  {}  {1985-October}  { 38.21}  {-111.48}  { 9800}  {Sevier}  {Donkey Creek-Fremont River (140700030305)}   
+snotel {SNTL }  {UT}  {Dry Bread Pond (455)}  {}  {1978-October}  { 41.41}  {-111.54}  { 8350}  {Weber}  {Headwaters East Fork Little Bear River Canyon (160102030101)}   
+snotel {SNTL }  {UT}  {Dry Fork (906)}  {}  {1994-October}  { 40.57}  {-112.17}  { 7093}  {Salt Lake}  {Bingham Creek (160202040106)}   
+snotel {SNTL }  {UT}  {East Willow Creek (461)}  {}  {1986-August}  { 39.31}  {-109.53}  { 8301}  {Grand}  {Tenmmile Canyon (140600060205)}   
+snotel {SNTL }  {UT}  {EF Blacks Fork GS (1163)}  {}  {2010-October}  { 40.88}  {-110.54}  { 9360}  {Summit}  {East Fork Blacks Fork (140401070102)}   
+snotel {SNTL }  {UT}  {Farmington (474)}  {}  {1978-October}  { 40.99}  {-111.82}  { 8000}  {Davis}  {Farmington Creek-Frontal Farmington Bay (160201020502)}   
+snotel {SNTL }  {UT}  {Farmington Lower (1054)}  {}  {2003-November}  { 40.97}  {-111.81}  { 6779}  {Davis}  {Farmington Creek-Frontal Farmington Bay (160201020502)}   
+snotel {SNTL }  {UT}  {Farnsworth Lake (475)}  {}  {1980-July}  { 38.77}  {-111.68}  { 9682}  {Sevier}  {Gooseberry Creek (160300030405)}   
+snotel {SNTL }  {UT}  {Fish Lake Utah (1149)}  {}  {2010-August}  { 38.50}  {-111.77}  { 8798}  {Sevier}  {Deadman Hollow (140700030108)}   
+snotel {SNTL }  {UT}  {Five Points Lake (481)}  {}  {1980-August}  { 40.72}  {-110.47}  { 10940}  {Duchesne}  {Garfield Creek (140600030701)}   
+snotel {SNTL }  {UT}  {Garden City Summit (1114)}  {}  {2009-July}  { 41.92}  {-111.47}  { 7705}  {Cache}  {Garden City Canyon-Frontal Bear River (160102010106)}   
+snotel {SNTL }  {UT}  {Gardner Peak (1066)}  {}  {2004-August}  { 37.40}  {-113.46}  { 8322}  {Washington}  {Grass Valley Creek (150100080701)}   
+snotel {SNTL }  {UT}  {GBRC HQ (1221)}  {}  {2012-July}  { 39.32}  {-111.49}  { 8541}  {Sanpete}  {Ephraim Creek (160300040307)}   
+snotel {SNTL }  {UT}  {GBRC Meadows (1222)}  {}  {2012-July}  { 39.30}  {-111.45}  { 9780}  {Sanpete}  {Ephraim Creek (160300040307)}   
+snotel {SNTL }  {UT}  {George Creek (1151)}  {}  {2010-August}  { 41.92}  {-113.41}  { 9005}  {Box Elder}  {George Creek (170402100401)}   
+snotel {SNTL }  {UT}  {Gooseberry RS (495)}  {}  {1979-June}  { 38.80}  {-111.68}  { 7950}  {Sevier}  {Gooseberry Creek (160300030405)}   
+snotel {SNTL }  {UT}  {Gooseberry RS Up (1184)}  {}  {2011-July}  { 38.79}  {-111.69}  { 8400}  {Sevier}  {Gooseberry Creek (160300030405)}   
+snotel {SNTL }  {UT}  {Gutz Peak (1065)}  {}  {2004-August}  { 37.50}  {-113.94}  { 6763}  {Washington}  {Pine Park Canyon (150100100101)}   
+snotel {SNTL }  {UT}  {Hardscrabble (896)}  {}  {1993-October}  { 40.87}  {-111.72}  { 7250}  {Morgan}  {Hardscrabble Creek (160201020105)}   
+snotel {SNTL }  {UT}  {Harris Flat (514)}  {}  {1979-August}  { 37.49}  {-112.58}  { 7800}  {Kane}  {Swains Creek (160300010104)}   
+snotel {SNTL }  {UT}  {Hayden Fork (517)}  {}  {1978-October}  { 40.80}  {-110.88}  { 9212}  {Summit}  {Hayden Fork (160101010101)}   
+snotel {SNTL }  {UT}  {Hewinta (521)}  {}  {1985-September}  { 40.95}  {-110.48}  { 9519}  {Summit}  {West Fork Smiths Fork (140401070203)}   
+snotel {SNTL }  {UT}  {Hickerson Park (522)}  {}  {1985-September}  { 40.91}  {-109.96}  { 9145}  {Daggett}  {Upper Sheep Creek (140401060601)}   
+snotel {SNTL }  {UT}  {Hobble Creek (1223)}  {}  {2012-August}  { 40.19}  {-111.36}  { 7399}  {Wasatch}  {Upper Diamond Fork (160202020304)}   
+snotel {SNTL }  {UT}  {Hole-in-Rock (528)}  {}  {1985-September}  { 40.92}  {-110.19}  { 9150}  {Summit}  {Beaver Creek-Henrys Fork (140401060304)}   
+snotel {SNTL }  {UT}  {Horse Ridge (533)}  {}  {1978-October}  { 41.31}  {-111.45}  { 8160}  {Morgan}  {Blue Fork Creek (160201010601)}   
+snotel {SNTL }  {UT}  {Huntington Horse (1216)}  {}  {2012-June}  { 39.61}  {-111.30}  { 9657}  {Sanpete}  {Left Fork Huntington Creek (140600090101)}   
+snotel {SNTL }  {UT}  {Indian Canyon (543)}  {}  {1978-October}  { 39.89}  {-110.75}  { 9175}  {Duchesne}  {Left Fork Indian Canyon (140600040701)}   
+snotel {SNTL }  {UT}  {Jones Corral (1099)}  {}  {2007-September}  { 38.07}  {-112.17}  { 9749}  {Garfield}  {East Fork Sevier River Outlet (160300020507)}   
+snotel {SNTL }  {UT}  {Kilfoil Creek (1145)}  {}  {2010-June}  { 41.25}  {-111.41}  { 7220}  {Morgan}  {Upper Lost Creek (160201010603)}   
+snotel {SNTL }  {UT}  {Kimberly Mine (557)}  {}  {1980-July}  { 38.48}  {-112.39}  { 9129}  {Piute}  {Mill Creek (160300030104)}   
+snotel {SNTL }  {UT}  {King's Cabin (559)}  {}  {1978-October}  { 40.72}  {-109.54}  { 8724}  {Uintah}  {Middle Little Brush Creek (140600100303)}   
+snotel {SNTL }  {UT}  {Klondike Narrows (1115)}  {}  {2009-June}  { 41.97}  {-111.60}  { 7250}  {Cache}  {Hells Kitchen Canyon-Logan River (160102030302)}   
+snotel {SNTL }  {UT}  {Kolob (561)}  {}  {1978-October}  { 37.53}  {-113.05}  { 9206}  {Iron}  {Crystal Creek (150100080102)}   
+snotel {SNTL }  {UT}  {Lakefork #1 (566)}  {}  {1978-October}  { 40.60}  {-110.43}  { 10415}  {Duchesne}  {Crystal Creek-Yellowstone River (140600030705)}   
+snotel {SNTL }  {UT}  {Lakefork #3 (1116)}  {}  {2009-August}  { 40.55}  {-110.35}  { 8464}  {Duchesne}  {Crystal Creek-Yellowstone River (140600030705)}   
+snotel {SNTL }  {UT}  {Lakefork Basin (567)}  {}  {1979-September}  { 40.74}  {-110.62}  { 10966}  {Duchesne}  {Ottoson Creek-Lake Fork Creek (140600030601)}   
+snotel {SNTL }  {UT}  {Lasal Mountain (572)}  {}  {1980-August}  { 38.48}  {-109.27}  { 9560}  {Grand}  {Horse Creek-Mill Creek (140300050404)}   
+snotel {SNTL }  {UT}  {Lasal Mountain-Lower (1215)}  {}  {2012-May}  { 38.48}  {-109.29}  { 8825}  {San Juan}  {Horse Creek-Mill Creek (140300050404)}   
+snotel {SNTL }  {UT}  {Lightning Ridge (1056)}  {}  {2004-July}  { 41.36}  {-111.49}  { 8215}  {Weber}  {Left Fork South Fork Ogden River (160201020201)}   
+snotel {SNTL }  {UT}  {Lily Lake (579)}  {}  {1980-June}  { 40.86}  {-110.80}  { 9156}  {Summit}  {East Fork Bear River (160101010104)}   
+snotel {SNTL }  {UT}  {Little Bear (582)}  {}  {1978-October}  { 41.41}  {-111.83}  { 6544}  {Cache}  {South Fork Little Bear River (160102030103)}   
+snotel {SNTL }  {UT}  {Little Grassy (583)}  {}  {1985-October}  { 37.49}  {-113.85}  { 6100}  {Washington}  {Little Pine Creek (160300061302)}   
+snotel {SNTL }  {UT}  {Lonesome Beaver (1261)}  {}  {2014-October}  { 38.08}  {-110.77}  { 9700}  {Garfield}  {Upper Poison Spring Canyon (140700040701)}   
+snotel {SNTL }  {UT}  {Long Flat (592)}  {}  {1979-September}  { 37.51}  {-113.40}  { 8000}  {Washington}  {Pinto Creek (160300061403)}   
+snotel {SNTL }  {UT}  {Long Valley Jct (593)}  {}  {1986-June}  { 37.49}  {-112.51}  { 7464}  {Kane}  {Headwaters East Fork Virgin River (150100080201)}   
+snotel {SNTL }  {UT}  {Lookout Peak (596)}  {}  {1988-June}  { 40.84}  {-111.71}  { 8200}  {Salt Lake}  {Parleys Creek (160202040302)}   
+snotel {SNTL }  {UT}  {Lost Creek Resv (1118)}  {}  {2010-June}  { 41.22}  {-111.36}  { 6082}  {Morgan}  {Upper Lost Creek (160201010603)}   
+snotel {SNTL }  {UT}  {Louis Meadow (972)}  {}  {1999-September}  { 40.83}  {-111.76}  { 6700}  {Salt Lake}  {City Creek (160202040304)}   
+snotel {SNTL }  {UT}  {Mammoth-Cottonwood (612)}  {}  {1978-October}  { 39.68}  {-111.32}  { 8727}  {Emery}  {Cottonwood Canyon-San Pitch River (160300040203)}   
+snotel {SNTL }  {UT}  {Merchant Valley (621)}  {}  {1980-July}  { 38.30}  {-112.44}  { 8703}  {Beaver}  {Merchant Creek (160300070201)}   
+snotel {SNTL }  {UT}  {Midway Valley (626)}  {}  {1980-July}  { 37.57}  {-112.84}  { 9800}  {Iron}  {Midway Valley-Midway Creek (160300010101)}   
+snotel {SNTL }  {UT}  {Mill-D North (628)}  {}  {1988-September}  { 40.66}  {-111.64}  { 8967}  {Salt Lake}  {Headwaters Big Cottonwood Canyon (160202040201)}   
+snotel {SNTL }  {UT}  {Mining Fork (631)}  {}  {1988-September}  { 40.49}  {-112.61}  { 8221}  {Tooele}  {South Willow Creek-Frontal Great Salt Lake (160203040503)}   
+snotel {SNTL }  {UT}  {Monte Cristo (634)}  {}  {1978-October}  { 41.47}  {-111.50}  { 8960}  {Weber}  {Sheep Creek (160102030201)}   
+snotel {SNTL }  {UT}  {Mosby Mtn. (643)}  {}  {1978-October}  { 40.61}  {-109.89}  { 9510}  {Uintah}  {Mosby Sink-Dry Fork (140600100702)}   
+snotel {SNTL }  {UT}  {Mt Baldy (1224)}  {}  {2012-July}  { 39.14}  {-111.51}  { 9494}  {Sanpete}  {Headwaters Twelvemile Creek (160300040402)}   
+snotel {SNTL }  {UT}  {Mt Pennell (1269)}  {}  {2015-August}  { 37.98}  {-110.79}  { 9100}  {Garfield}  {State Creek (140700010502)}   
+snotel {SNTL }  {UT}  {Oak Creek (1146)}  {}  {2010-July}  { 39.35}  {-112.33}  { 7850}  {Millard}  {Upper Oak Creek (160300051503)}   
+snotel {SNTL }  {UT}  {Panguitch Lake RS (1148)}  {}  {2014-May}  { 37.70}  {-112.65}  { 8350}  {Garfield}  {Ipson Creek (160300010402)}   
+snotel {SNTL }  {UT}  {Parley's Summit (684)}  {}  {1978-October}  { 40.76}  {-111.63}  { 7500}  {Summit}  {Big Dutch Hollow-East Canyon Creek (160201020103)}   
+snotel {SNTL }  {UT}  {Parrish Creek (971)}  {}  {1999-August}  { 40.93}  {-111.81}  { 7740}  {Davis}  {Holbrook Creek-Frontal Farmington Bay (160201020501)}   
+snotel {SNTL }  {UT}  {Payson R.S. (686)}  {}  {1980-June}  { 39.93}  {-111.63}  { 8066}  {Utah}  {Lower Thistsle Creek (160202020205)}   
+snotel {SNTL }  {UT}  {Pickle Keg (691)}  {}  {1978-October}  { 39.01}  {-111.58}  { 9600}  {Sevier}  {Skumpah Creek-Salina Creek (160300030402)}   
+snotel {SNTL }  {UT}  {Pine Creek (694)}  {}  {1985-February}  { 38.88}  {-112.25}  { 8790}  {Millard}  {North Fork Chalk Creek (160300051401)}   
+snotel {SNTL }  {UT}  {Red Pine Ridge (714)}  {}  {1978-October}  { 39.45}  {-111.27}  { 9009}  {Emery}  {Lowry Water (140600090202)}   
+snotel {SNTL }  {UT}  {Redden Mine Lwr (1225)}  {}  {2012-August}  { 40.67}  {-111.22}  { 8500}  {Summit}  {Thorn Creek-Beaver Creek (160201010103)}   
+snotel {SNTL }  {UT}  {Rees Flat (1217)}  {}  {2012-June}  { 39.50}  {-111.73}  { 7211}  {Sanpete}  {Quaking Aspen Creek-Chicken Creek (160300050202)}   
+snotel {SNTL }  {UT}  {Rock Creek (720)}  {}  {1980-June}  { 40.55}  {-110.69}  { 7889}  {Duchesne}  {South Fork Rock Creek (140600030304)}   
+snotel {SNTL }  {UT}  {Rocky Basin-Settleme (723)}  {}  {1980-June}  { 40.44}  {-112.24}  { 8900}  {Tooele}  {Settlement Canyon (160203040401)}   
+snotel {SNTL }  {UT}  {Seeley Creek (742)}  {}  {1978-October}  { 39.31}  {-111.43}  { 9910}  {Sanpete}  {Seely Creek (140600090203)}   
+snotel {SNTL }  {UT}  {Smith &amp; Morehouse (763)}  {}  {1978-October}  { 40.79}  {-111.12}  { 7600}  {Summit}  {Moffit Creek-Weber River (160201010203)}   
+snotel {SNTL }  {UT}  {Snowbird (766)}  {}  {1989-August}  { 40.56}  {-111.66}  { 9640}  {Salt Lake}  {Headwaters Little Cottonwood Canyon (160202040202)}   
+snotel {SNTL }  {UT}  {Spirit Lk (1117)}  {}  {2009-September}  { 40.84}  {-110.01}  { 10235}  {Daggett}  {Upper Sheep Creek (140401060601)}   
+snotel {SNTL }  {UT}  {Squaw Springs (1156)}  {}  {2010-August}  { 38.50}  {-112.01}  { 9105}  {Sevier}  {Box Creek (160300020107)}   
+snotel {SNTL }  {UT}  {Steel Creek Park (790)}  {}  {1978-October}  { 40.91}  {-110.50}  { 10200}  {Summit}  {West Fork Smiths Fork (140401070203)}   
+snotel {SNTL }  {UT}  {Strawberry Divide (795)}  {}  {1978-October}  { 40.16}  {-111.21}  { 8123}  {Wasatch}  {Mud Creek (140600040103)}   
+snotel {SNTL }  {UT}  {Sunflower Flat (1249)}  {}  {2013-September}  { 38.05}  {-111.34}  { 9957}  {Garfield}  {Oak Creek (140700030406)}   
+snotel {SNTL }  {UT}  {Suu Ranch (1248)}  {}  {2013-August}  { 37.60}  {-112.92}  { 8179}  {Iron}  {Crow Creek-Coal Creek (160300060306)}   
+snotel {SNTL }  {UT}  {Takka Wiiya (1247)}  {}  {2013-August}  { 39.74}  {-113.98}  { 9168}  {Tooele}  {Fifteenmile Creek (160203060804)}   
+snotel {SNTL }  {UT}  {Temple Fork (1013)}  {}  {2001-November}  { 41.79}  {-111.55}  { 7406}  {Cache}  {Temple Fork (160102030303)}   
+snotel {SNTL }  {UT}  {Thaynes Canyon (814)}  {}  {1988-June}  { 40.62}  {-111.53}  { 9230}  {Summit}  {Kimball Creek (160201020101)}   
+snotel {SNTL }  {UT}  {Thistle Flat (1226)}  {}  {2012-July}  { 39.24}  {-111.52}  { 8858}  {Sanpete}  {Manti Canyon (160300040501)}   
+snotel {SNTL }  {UT}  {Timberline (1097)}  {}  {2007-August}  { 39.68}  {-110.43}  { 8736}  {Carbon}  {Grassy Trail Reservoir-Grassy Trail Creek (140600070903)}   
+snotel {SNTL }  {UT}  {Timpanogos Divide (820)}  {}  {1978-October}  { 40.43}  {-111.62}  { 8140}  {Wasatch}  {Middle American Fork Canyon (160202010802)}   
+snotel {SNTL }  {UT}  {Tony Grove Lake (823)}  {}  {1978-October}  { 41.90}  {-111.63}  { 8474}  {Cache}  {Tony Grove Creek (160102030304)}   
+snotel {SNTL }  {UT}  {Tony Grove RS (1113)}  {}  {2009-June}  { 41.89}  {-111.57}  { 6332}  {Cache}  {Tony Grove Creek (160102030304)}   
+snotel {SNTL }  {UT}  {Trial Lake (828)}  {}  {1978-October}  { 40.68}  {-110.95}  { 9992}  {Summit}  {Spring Canyon-Provo River (160202030102)}   
+snotel {SNTL }  {UT}  {Trout Creek (833)}  {}  {1978-October}  { 40.74}  {-109.67}  { 9518}  {Uintah}  {North Fork Ashley Creek (140600100802)}   
+snotel {SNTL }  {UT}  {Upper Joes Valley (1227)}  {}  {2012-July}  { 39.42}  {-111.25}  { 8681}  {Emery}  {Indian Creek (140600090201)}   
+snotel {SNTL }  {UT}  {Usu Doc Daniel (1098)}  {}  {2007-July}  { 41.86}  {-111.51}  { 8270}  {Cache}  {Tony Grove Creek (160102030304)}   
+snotel {SNTL }  {UT}  {Vernon Creek (844)}  {}  {1978-October}  { 39.94}  {-112.41}  { 7401}  {Tooele}  {Vernon Creek (160203040102)}   
+snotel {SNTL }  {UT}  {Webster Flat (853)}  {}  {1980-July}  { 37.58}  {-112.90}  { 9203}  {Iron}  {Upper Deep Creek (150100080101)}   
+snotel {SNTL }  {UT}  {White River #1 (864)}  {}  {1978-October}  { 39.96}  {-110.99}  { 8641}  {Wasatch}  {Right Fork White River (140600070102)}   
+snotel {SNTL }  {UT}  {Widtsoe #3 (865)}  {}  {1978-October}  { 37.84}  {-111.88}  { 9640}  {Garfield}  {Sweetwater Creek (160300020403)}   
+snotel {SNTL }  {UT}  {Wrigley Creek (1228)}  {}  {2012-July}  { 39.13}  {-111.35}  { 9162}  {Sanpete}  {Millsite Reservoir-Ferron Creek (140600090303)}   
+snotel {SNTL }  {UT}  {Yankee Reservoir (1197)}  {}  {2012-July}  { 37.75}  {-112.78}  { 8708}  {Iron}  {Center Creek-Parowan Creek (160300060202)}   
+snotel {SNTL }  {WA}  {Alpine Meadows (908)}  {}  {1994-September}  { 47.78}  {-121.70}  { 3500}  {King}  {Upper North Fork Tolt River (171100100501)}   
+snotel {SNTL }  {WA}  {Beaver Pass (990)}  {}  {2001-October}  { 48.88}  {-121.26}  { 3630}  {Whatcom}  {McNaught Creek-Skagit River (171100050305)}   
+snotel {SNTL }  {WA}  {Blewett Pass (352)}  {}  {1980-September}  { 47.35}  {-120.68}  { 4240}  {Chelan}  {Upper Peshastin Creek (170200110501)}   
+snotel {SNTL }  {WA}  {Brown Top (1080)}  {}  {2009-September}  { 48.93}  {-121.20}  { 5830}  {Whatcom}  {Maselpanik Creek (171100050301)}   
+snotel {SNTL }  {WA}  {Buckinghorse (1107)}  {}  {2008-September}  { 47.71}  {-123.46}  { 4870}  {Jefferson}  {Headwaters Elwha River (171100200501)}   
+snotel {SNTL }  {WA}  {Bumping Ridge (375)}  {}  {1978-October}  { 46.81}  {-121.33}  { 4610}  {Yakima}  {Upper Bumping River (170300020105)}   
+snotel {SNTL }  {WA}  {Bunchgrass Mdw (376)}  {}  {1980-August}  { 48.69}  {-117.18}  { 5000}  {Pend Oreille}  {East Branch Le Clerc Creek (170102160303)}   
+snotel {SNTL }  {WA}  {Burnt Mountain (942)}  {}  {1999-July}  { 47.04}  {-121.94}  { 4170}  {Pierce}  {Wilkeson Creek (171100140103)}   
+snotel {SNTL }  {WA}  {Calamity (1109)}  {}  {2008-August}  { 45.90}  {-122.22}  { 2500}  {Skamania}  {Lower Canyon Creek (170800020603)}   
+snotel {SNTL }  {WA}  {Cayuse Pass (1085)}  {}  {2006-October}  { 46.87}  {-121.53}  { 5240}  {Pierce}  {Headwaters White River (171100140301)}   
+snotel {SNTL }  {WA}  {Corral Pass (418)}  {}  {1980-September}  { 47.02}  {-121.46}  { 5800}  {Pierce}  {Silver Creek-White River (171100140307)}   
+snotel {SNTL }  {WA}  {Cougar Mountain (420)}  {}  {1980-September}  { 47.28}  {-121.67}  { 3200}  {King}  {North Fork Green River (171100130202)}   
+snotel {SNTL }  {WA}  {Dungeness (943)}  {}  {1998-October}  { 47.87}  {-123.08}  { 4010}  {Clallam}  {Headwaters Dungeness River (171100200301)}   
+snotel {SNTL }  {WA}  {Easy Pass (998)}  {}  {2008-September}  { 48.86}  {-121.44}  { 5270}  {Whatcom}  {Indian Creek-Chilliwack River (171100010101)}   
+snotel {SNTL }  {WA}  {Elbow Lake (910)}  {}  {1995-August}  { 48.69}  {-121.91}  { 3040}  {Whatcom}  {Wanlick Creek-South Fork Nooksack River (171100040401)}   
+snotel {SNTL }  {WA}  {Fish Lake (478)}  {}  {1980-September}  { 47.54}  {-121.09}  { 3430}  {Kittitas}  {Headwaters Cle Elum River (170300010102)}   
+snotel {SNTL }  {WA}  {Gold Axe Camp (1159)}  {}  {2010-October}  { 48.95}  {-118.99}  { 5360}  {Okanogan}  {Canada (170200020304)}   
+snotel {SNTL }  {WA}  {Gold Mountain (1256)}  {}  {2013-October}  { 48.19}  {-118.46}  { 4390}  {Ferry}  {Wilmont Creek (170200011703)}   
+snotel {SNTL }  {WA}  {Green Lake (502)}  {}  {1981-October}  { 46.55}  {-121.17}  { 5920}  {Yakima}  {Headwaters North Fork Ahtnum Creek (170300030101)}   
+snotel {SNTL }  {WA}  {Grouse Camp (507)}  {}  {1980-September}  { 47.28}  {-120.49}  { 5390}  {Kittitas}  {Upper Naneum Creek (170300010401)}   
+snotel {SNTL }  {WA}  {Harts Pass (515)}  {}  {1980-September}  { 48.72}  {-120.66}  { 6490}  {Okanogan}  {Canada (171100050201)}   
+snotel {SNTL }  {WA}  {Hozomeen Camp (991)}  {}  {2000-October}  { 48.98}  {-121.08}  { 1690}  {Whatcom}  {Klesilkwa River (171100050302)}   
+snotel {SNTL }  {WA}  {Huckleberry Creek (928)}  {}  {1997-October}  { 47.07}  {-121.59}  { 2250}  {Pierce}  {Silver Creek-White River (171100140307)}   
+snotel {SNTL }  {WA}  {Indian Rock (1129)}  {}  {2008-November}  { 45.99}  {-120.81}  { 5360}  {Klickitat}  {Headwaters Little Klickitat River (170701060301)}   
+snotel {SNTL }  {WA}  {June Lake (553)}  {}  {1980-December}  { 46.15}  {-122.15}  { 3440}  {Skamania}  {Swift Creek (170800020304)}   
+snotel {SNTL }  {WA}  {Lone Pine (591)}  {}  {1978-October}  { 46.27}  {-121.96}  { 3930}  {Skamania}  {Upper Clear Creek (170800020203)}   
+snotel {SNTL }  {WA}  {Lost Horse (599)}  {}  {1989-October}  { 46.36}  {-121.08}  { 5120}  {Yakima}  {Upper Simcoe Creek (170300030302)}   
+snotel {SNTL }  {WA}  {Lyman Lake (606)}  {}  {1979-July}  { 48.20}  {-120.92}  { 5980}  {Chelan}  {Upper Railroad Creek (170200090203)}   
+snotel {SNTL }  {WA}  {Lynn Lake (1069)}  {}  {2007-August}  { 47.20}  {-121.78}  { 3900}  {King}  {Howard Hansen Dam-Green River (171100130203)}   
+snotel {SNTL }  {WA}  {Marten Ridge (999)}  {}  {2006-July}  { 48.76}  {-121.70}  { 3520}  {Whatcom}  {Diablo Lake-Skagit River (171100050704)}   
+snotel {SNTL }  {WA}  {Meadows Pass (897)}  {}  {1993-October}  { 47.28}  {-121.47}  { 3230}  {King}  {Headwaters Cedar River (171100120101)}   
+snotel {SNTL }  {WA}  {MF Nooksack (1011)}  {}  {2002-October}  { 48.82}  {-121.93}  { 4970}  {Whatcom}  {Clearwater Creek (171100040303)}   
+snotel {SNTL }  {WA}  {Morse Lake (642)}  {}  {1978-October}  { 46.91}  {-121.48}  { 5410}  {Yakima}  {Upper American River (170300020106)}   
+snotel {SNTL }  {WA}  {Moses Mtn (644)}  {}  {1991-October}  { 48.36}  {-119.08}  { 5010}  {Okanogan}  {Upper Omak Creeek (170200061903)}   
+snotel {SNTL }  {WA}  {Mount Crag (648)}  {}  {1989-October}  { 47.76}  {-123.03}  { 3960}  {Jefferson}  {Tunnel Creek (171100180601)}   
+snotel {SNTL }  {WA}  {Mount Gardner (898)}  {}  {1993-October}  { 47.36}  {-121.57}  { 2920}  {King}  {Chester Morse Lake-Cedar River (171100120103)}   
+snotel {SNTL }  {WA}  {Mowich (941)}  {}  {1998-October}  { 46.93}  {-121.95}  { 3160}  {Pierce}  {Voight Creek (171100140105)}   
+snotel {SNTL }  {WA}  {Muckamuck (1259)}  {}  {2014-June}  { 48.59}  {-119.87}  { 4470}  {Okanogan}  {West Fork Salmon Creek (170200062001)}   
+snotel {SNTL }  {WA}  {Olallie Meadows (672)}  {}  {1980-September}  { 47.37}  {-121.44}  { 4030}  {King}  {Upper South Fork Snoqualmie River (171100100301)}   
+snotel {SNTL }  {WA}  {Paradise (679)}  {}  {1980-September}  { 46.78}  {-121.75}  { 5130}  {Pierce}  {Headwaters Nisqually River (171100150104)}   
+snotel {SNTL }  {WA}  {Park Creek Ridge (681)}  {}  {1978-October}  { 48.44}  {-120.92}  { 4600}  {Chelan}  {Park Creek-Stehekin River (170200090106)}   
+snotel {SNTL }  {WA}  {Pepper Creek (1104)}  {}  {2007-August}  { 46.10}  {-121.96}  { 2140}  {Skamania}  {Little Creek-Lewis River (170800020111)}   
+snotel {SNTL }  {WA}  {Pigtail Peak (692)}  {}  {1980-September}  { 46.62}  {-121.39}  { 5800}  {Yakima}  {Clear Creek (170300020301)}   
+snotel {SNTL }  {WA}  {Pinto Rock (1263)}  {}  {2014-October}  { 46.32}  {-121.94}  { 4440}  {Skamania}  {Iron Creek (170800040405)}   
+snotel {SNTL }  {WA}  {Pope Ridge (699)}  {}  {1980-September}  { 47.99}  {-120.57}  { 3590}  {Chelan}  {Lake Creek-Entiat River (170200100204)}   
+snotel {SNTL }  {WA}  {Potato Hill (702)}  {}  {1981-January}  { 46.35}  {-121.51}  { 4510}  {Yakima}  {Muddy Fork Cispus River (170800040303)}   
+snotel {SNTL }  {WA}  {Quartz Peak (707)}  {}  {1986-June}  { 47.88}  {-117.09}  { 4700}  {Spokane}  {Upper Deadman Creek (170103080302)}   
+snotel {SNTL }  {WA}  {Rainy Pass (711)}  {}  {1980-September}  { 48.52}  {-120.74}  { 4890}  {Chelan}  {Canada (171100050203)}   
+snotel {SNTL }  {WA}  {Rex River (911)}  {}  {1995-October}  { 47.30}  {-121.60}  { 3810}  {King}  {Rex River (171100120102)}   
+snotel {SNTL }  {WA}  {Salmon Meadows (728)}  {}  {1980-September}  { 48.66}  {-119.84}  { 4460}  {Okanogan}  {Canada (170200060303)}   
+snotel {SNTL }  {WA}  {Sasse Ridge (734)}  {}  {1983-October}  { 47.38}  {-121.06}  { 4340}  {Kittitas}  {Upper Cle Elum River (170300010104)}   
+snotel {SNTL }  {WA}  {Satus Pass (1231)}  {}  {2012-August}  { 45.99}  {-120.68}  { 3960}  {Klickitat}  {Headwaters Little Klickitat River (170701060301)}   
+snotel {SNTL }  {WA}  {Sawmill Ridge (1068)}  {}  {2006-July}  { 47.16}  {-121.42}  { 4640}  {King}  {Lester Creek-Green River (171100130104)}   
+snotel {SNTL }  {WA}  {Sentinel Butte (1043)}  {}  {2003-August}  { 48.86}  {-118.40}  { 4680}  {Ferry}  {Canada (170200020505)}   
+snotel {SNTL }  {WA}  {Sheep Canyon (748)}  {}  {1980-October}  { 46.19}  {-122.25}  { 3990}  {Cowlitz}  {Headwaters South Fork Toutle River (170800050601)}   
+snotel {SNTL }  {WA}  {Skate Creek (1257)}  {}  {2014-October}  { 46.64}  {-121.83}  { 3770}  {Lewis}  {Silver Creek (170800040505)}   
+snotel {SNTL }  {WA}  {Skookum Creek (912)}  {}  {1995-August}  { 47.68}  {-121.61}  { 3310}  {King}  {Upper South Fork Tolt River (171100100503)}   
+snotel {SNTL }  {WA}  {Sourdough Gulch (985)}  {}  {2000-July}  { 46.24}  {-117.39}  { 4000}  {Asotin}  {Lick Creek (170601030202)}   
+snotel {SNTL }  {WA}  {Spencer Meadow (776)}  {}  {1981-February}  { 46.18}  {-121.93}  { 3400}  {Skamania}  {Cussed Hollow-Lewis River (170800020108)}   
+snotel {SNTL }  {WA}  {Spirit Lake (777)}  {}  {1983-October}  { 46.26}  {-122.18}  { 3520}  {Skamania}  {Headwaters North Fork Toutle River (170800050502)}   
+snotel {SNTL }  {WA}  {Spruce Springs (984)}  {}  {2000-July}  { 46.18}  {-117.54}  { 5700}  {Garfield}  {North Fork Asotin Creek (170601030201)}   
+snotel {SNTL }  {WA}  {Stampede Pass (788)}  {}  {1980-September}  { 47.27}  {-121.34}  { 3850}  {King}  {Sunday Creek (171100130103)}   
+snotel {SNTL }  {WA}  {Stevens Pass (791)}  {}  {1980-September}  { 47.75}  {-121.09}  { 3950}  {King}  {Upper Tye River (171100090102)}   
+snotel {SNTL }  {WA}  {Surprise Lakes (804)}  {}  {1978-October}  { 46.09}  {-121.76}  { 4290}  {Skamania}  {Big Creek (170800020107)}   
+snotel {SNTL }  {WA}  {Swamp Creek (975)}  {}  {1999-October}  { 48.57}  {-120.78}  { 3930}  {Skagit}  {Canada (171100050203)}   
+snotel {SNTL }  {WA}  {Swift Creek (1012)}  {}  {2002-August}  { 46.16}  {-122.18}  { 4440}  {Skamania}  {Swift Creek (170800020304)}   
+snotel {SNTL }  {WA}  {Thunder Basin (817)}  {}  {1987-October}  { 48.53}  {-120.99}  { 4320}  {Skagit}  {Castle Fork (171100050402)}   
+snotel {SNTL }  {WA}  {Tinkham Creek (899)}  {}  {1993-October}  { 47.33}  {-121.47}  { 2990}  {King}  {Headwaters Cedar River (171100120101)}   
+snotel {SNTL }  {WA}  {Touchet (824)}  {}  {1980-July}  { 46.12}  {-117.85}  { 5530}  {Columbia}  {Wolf Creek (170701020303)}   
+snotel {SNTL }  {WA}  {Trinity (1171)}  {}  {2010-August}  { 48.07}  {-120.85}  { 2930}  {Chelan}  {Phelps Creek (170200110302)}   
+snotel {SNTL }  {WA}  {Trough (832)}  {}  {1978-October}  { 47.23}  {-120.29}  { 5480}  {Chelan}  {Colockum Creek (170200100402)}   
+snotel {SNTL }  {WA}  {Upper Wheeler (841)}  {}  {1980-September}  { 47.29}  {-120.37}  { 4330}  {Chelan}  {Stemilt Creek (170200100310)}   
+snotel {SNTL }  {WA}  {Waterhole (974)}  {}  {1999-October}  { 47.94}  {-123.43}  { 5010}  {Clallam}  {Lillian Creek (171100200506)}   
+snotel {SNTL }  {WA}  {Wells Creek (909)}  {}  {1995-August}  { 48.87}  {-121.79}  { 4030}  {Whatcom}  {Wells Creek (171100040103)}   
+snotel {SNTL }  {WA}  {White Pass E.S. (863)}  {}  {1980-September}  { 46.64}  {-121.38}  { 4440}  {Yakima}  {Clear Creek (170300020301)}   
+snotel {SNTL }  {WY}  {Bald Mtn. (309)}  {}  {1978-October}  { 44.80}  {-107.84}  { 9380}  {Big Horn}  {Upper Porcupine Creek (100800100601)}   
+snotel {SNTL }  {WY}  {Base Camp (314)}  {}  {1980-August}  { 43.95}  {-110.45}  { 7030}  {Teton}  {Lower Pacific Creek (170401010404)}   
+snotel {SNTL }  {WY}  {Battle Mountain (317)}  {}  {1985-October}  { 41.05}  {-107.27}  { 7440}  {Carbon}  {Lower Battle Creek (140500030110)}   
+snotel {SNTL }  {WY}  {Bear Trap Meadow (325)}  {}  {1980-August}  { 43.89}  {-107.06}  { 8200}  {Johnson}  {Lower North Fork Red Fork Powder River (100902010206)}   
+snotel {SNTL }  {WY}  {Beartooth Lake (326)}  {}  {1980-July}  { 44.94}  {-109.57}  { 9360}  {Park}  {Beartooth Creek (100700060107)}   
+snotel {SNTL }  {WY}  {Big Goose (931)}  {}  {1998-July}  { 44.58}  {-107.20}  { 7990}  {Sheridan}  {Lower East Fork Big Goose Creek (100901010202)}   
+snotel {SNTL }  {WY}  {Big Sandy Opening (342)}  {}  {1978-October}  { 42.65}  {-109.26}  { 9080}  {Sublette}  {Black Joe Creek-Big Sandy River (140401040101)}   
+snotel {SNTL }  {WY}  {Blackhall Mtn (1119)}  {}  {2009-August}  { 41.06}  {-106.71}  { 9820}  {Carbon}  {Beaver Creek (101800020205)}   
+snotel {SNTL }  {WY}  {Blackwater (350)}  {}  {1980-July}  { 44.38}  {-109.79}  { 9780}  {Park}  {Sheep Creek-North Fork Shoshone River (100800120205)}   
+snotel {SNTL }  {WY}  {Blind Bull Sum (353)}  {}  {1978-October}  { 42.96}  {-110.61}  { 8650}  {Sublette}  {Upper Horse Creek (140401010501)}   
+snotel {SNTL }  {WY}  {Bone Springs Div (358)}  {}  {1978-October}  { 44.68}  {-107.58}  { 9350}  {Sheridan}  {Cedar Creek (100800100103)}   
+snotel {SNTL }  {WY}  {Brooklyn Lake (367)}  {}  {1980-July}  { 41.36}  {-106.23}  { 10240}  {Albany}  {North Fork Little Laramie River (101800100603)}   
+snotel {SNTL }  {WY}  {Burgess Junction (377)}  {}  {1980-September}  { 44.79}  {-107.53}  { 7880}  {Sheridan}  {Lower North Tongue River (100901010102)}   
+snotel {SNTL }  {WY}  {Burroughs Creek (379)}  {}  {1978-October}  { 43.70}  {-109.67}  { 8750}  {Fremont}  {Middle Horse Creek (100800010202)}   
+snotel {SNTL }  {WY}  {Canyon (384)}  {}  {1980-July}  { 44.72}  {-110.51}  { 7870}  {Park}  {Cascade Creek-Yellowstone River (100700010503)}   
+snotel {SNTL }  {WY}  {Casper Mtn. (389)}  {}  {1978-October}  { 42.73}  {-106.32}  { 7900}  {Natrona}  {Elkhorn Creek (101800070305)}   
+snotel {SNTL }  {WY}  {Castle Creek (1130)}  {}  {2010-August}  { 43.67}  {-109.38}  { 8400}  {Fremont}  {Upper East Fork Wind River (100800010406)}   
+snotel {SNTL }  {WY}  {Cinnabar Park (1046)}  {}  {2003-October}  { 41.24}  {-106.23}  { 9574}  {Albany}  {Headwaters Little Laramie River (101800100601)}   
+snotel {SNTL }  {WY}  {Cloud Peak Reservoir (402)}  {}  {1978-October}  { 44.40}  {-107.06}  { 9860}  {Johnson}  {Upper South Piney Creek (100902060301)}   
+snotel {SNTL }  {WY}  {Cold Springs (405)}  {}  {1983-October}  { 43.28}  {-109.45}  { 9630}  {Fremont}  {Dry Creek (100800010602)}   
+snotel {SNTL }  {WY}  {Cole Canyon (982)}  {}  {2000-June}  { 44.49}  {-104.41}  { 5910}  {Crook}  {South Redwater Creek (101202030102)}   
+snotel {SNTL }  {WY}  {Cottonwood Creek (419)}  {}  {1982-October}  { 42.65}  {-110.81}  { 7670}  {Lincoln}  {Cottonwood Creek (170401050107)}   
+snotel {SNTL }  {WY}  {Crow Creek (1045)}  {}  {2003-August}  { 41.23}  {-105.38}  { 8330}  {Albany}  {North Fork Crow Creek (101900090104)}   
+snotel {SNTL }  {WY}  {Deer Park (923)}  {}  {1997-August}  { 42.59}  {-108.90}  { 9700}  {Fremont}  {Headwaters Little Popo Agie River (100800030101)}   
+snotel {SNTL }  {WY}  {Divide Peak (449)}  {}  {1980-August}  { 41.30}  {-107.15}  { 8880}  {Carbon}  {North Fork Savery Creek (140500030404)}   
+snotel {SNTL }  {WY}  {Dome Lake (451)}  {}  {1978-October}  { 44.57}  {-107.30}  { 8880}  {Sheridan}  {West Fork Big Goose Creek (100901010203)}   
+snotel {SNTL }  {WY}  {East Rim Divide (460)}  {}  {1985-August}  { 43.13}  {-110.20}  { 7930}  {Sublette}  {Fisherman Creek (170401030303)}   
+snotel {SNTL }  {WY}  {Elkhart Park G.S. (468)}  {}  {1980-August}  { 43.01}  {-109.76}  { 9400}  {Sublette}  {Lower Pine Creek (140401020203)}   
+snotel {SNTL }  {WY}  {Evening Star (472)}  {}  {1980-July}  { 44.65}  {-109.78}  { 9200}  {Park}  {Upper Sunlight Creek (100700060401)}   
+snotel {SNTL }  {WY}  {Grand Targhee (1082)}  {}  {2006-August}  { 43.78}  {-110.93}  { 9260}  {Teton}  {Teton Creek (170402040201)}   
+snotel {SNTL }  {WY}  {Granite Creek (497)}  {}  {1987-October}  { 43.34}  {-110.43}  { 6770}  {Teton}  {Lower Granite Creek (170401030405)}   
+snotel {SNTL }  {WY}  {Grassy Lake (499)}  {}  {1978-October}  { 44.13}  {-110.83}  { 7265}  {Teton}  {Calf Creek-Fall River (170402030203)}   
+snotel {SNTL }  {WY}  {Grave Springs (501)}  {}  {1992-August}  { 43.47}  {-107.24}  { 8550}  {Natrona}  {Upper Buffalo Creek (100902010103)}   
+snotel {SNTL }  {WY}  {Gros Ventre Summit (506)}  {}  {1978-October}  { 43.39}  {-110.13}  { 8750}  {Teton}  {Kinky Creek-Gros Ventre River (170401020202)}   
+snotel {SNTL }  {WY}  {Gunsight Pass (944)}  {}  {1998-September}  { 43.38}  {-109.88}  { 9820}  {Sublette}  {Middle South Fork Fish Creek (170401020102)}   
+snotel {SNTL }  {WY}  {Hams Fork (509)}  {}  {1985-August}  { 42.15}  {-110.68}  { 7840}  {Lincoln}  {West Beaver Creek-Hams Fork (140401070603)}   
+snotel {SNTL }  {WY}  {Hansen Sawmill (512)}  {}  {1980-July}  { 44.26}  {-106.98}  { 8360}  {Johnson}  {Upper South Clear Creek (100902060101)}   
+snotel {SNTL }  {WY}  {Hobbs Park (525)}  {}  {1978-October}  { 42.87}  {-109.09}  { 10100}  {Fremont}  {Sand Creek (100800030203)}   
+snotel {SNTL }  {WY}  {Indian Creek (544)}  {}  {1980-August}  { 42.30}  {-110.68}  { 9425}  {Lincoln}  {East Fork Hams Fork-Hams Fork (140401070601)}   
+snotel {SNTL }  {WY}  {Kelley R.S. (554)}  {}  {1980-August}  { 42.27}  {-110.81}  { 8180}  {Lincoln}  {West Fork Hams Fork (140401070602)}   
+snotel {SNTL }  {WY}  {Kendall R.S. (555)}  {}  {1985-August}  { 43.25}  {-110.02}  { 7740}  {Sublette}  {Lime Creek-Green River (140401010202)}   
+snotel {SNTL }  {WY}  {Kirwin (560)}  {}  {1980-August}  { 43.86}  {-109.32}  { 9550}  {Park}  {Upper Wood River (100800090201)}   
+snotel {SNTL }  {WY}  {Laprele Creek (571)}  {}  {1978-October}  { 42.44}  {-105.86}  { 8375}  {Converse}  {Upper La Prele Creek (101800071301)}   
+snotel {SNTL }  {WY}  {Larsen Creek (1134)}  {}  {2010-August}  { 42.58}  {-109.09}  { 9000}  {Sublette}  {Pool Creek-Sweetwater River (101800060101)}   
+snotel {SNTL }  {WY}  {Lewis Lake Divide (577)}  {}  {1978-October}  { 44.21}  {-110.67}  { 7850}  {Teton}  {Lower Lewis River (170401010204)}   
+snotel {SNTL }  {WY}  {Little Goose (1131)}  {}  {2010-August}  { 44.54}  {-107.18}  { 8870}  {Johnson}  {Upper Little Goose Creek (100901010206)}   
+snotel {SNTL }  {WY}  {Little Snake River (1047)}  {}  {2004-July}  { 41.07}  {-106.94}  { 8915}  {Carbon}  {North Fork Little Snake River (140500030104)}   
+snotel {SNTL }  {WY}  {Little Warm (585)}  {}  {1978-October}  { 43.50}  {-109.75}  { 9370}  {Fremont}  {Little Warm Spring Creek-Wind River (100800010109)}   
+snotel {SNTL }  {WY}  {Loomis Park (597)}  {}  {1980-September}  { 43.17}  {-110.14}  { 8240}  {Sublette}  {Miner Creek-North Beaver Creek (140401010302)}   
+snotel {SNTL }  {WY}  {Marquette (616)}  {}  {1980-July}  { 44.30}  {-109.24}  { 8760}  {Park}  {Carter Creek-South Fork Shoshone River (100800130303)}   
+snotel {SNTL }  {WY}  {Med Bow (1196)}  {}  {2012-August}  { 41.38}  {-106.35}  { 10500}  {Carbon}  {Turpin Creek-Medicine Bow River (101800040101)}   
+snotel {SNTL }  {WY}  {Middle Powder (625)}  {}  {1978-October}  { 43.63}  {-107.18}  { 7760}  {Washakie}  {Little Canyon Creek (100800080106)}   
+snotel {SNTL }  {WY}  {New Fork Lake (661)}  {}  {1985-August}  { 43.11}  {-109.95}  { 8340}  {Sublette}  {Marsh Creek-New Fork River (140401020101)}   
+snotel {SNTL }  {WY}  {North French Creek (668)}  {}  {1978-October}  { 41.33}  {-106.38}  { 10130}  {Carbon}  {French Creek (101800020203)}   
+snotel {SNTL }  {WY}  {Old Battle (673)}  {}  {1978-October}  { 41.15}  {-106.97}  { 10000}  {Carbon}  {Cow Creek (101800020602)}   
+snotel {SNTL }  {WY}  {Owl Creek (676)}  {}  {1980-August}  { 43.66}  {-109.01}  { 8975}  {Hot Springs}  {Middle Fork Owl Creek (100800070206)}   
+snotel {SNTL }  {WY}  {Parker Peak (683)}  {}  {1980-July}  { 44.73}  {-109.91}  { 9400}  {Park}  {Little Lamar River-Lamar River (100700010601)}   
+snotel {SNTL }  {WY}  {Phillips Bench (689)}  {}  {1978-October}  { 43.52}  {-110.91}  { 8200}  {Teton}  {Fish Creek (170401030103)}   
+snotel {SNTL }  {WY}  {Pocket Creek (1133)}  {}  {2009-September}  { 42.71}  {-109.41}  { 9360}  {Sublette}  {Cottonwood Creek (140401020606)}   
+snotel {SNTL }  {WY}  {Powder River Pass (703)}  {}  {1978-October}  { 44.16}  {-107.13}  { 9480}  {Johnson}  {Upper Canyon Creek (100800080405)}   
+snotel {SNTL }  {WY}  {Reno Hill (716)}  {}  {1980-August}  { 42.57}  {-106.09}  { 8400}  {Natrona}  {Upper Deer Creek (101800071001)}   
+snotel {SNTL }  {WY}  {Sage Creek Basin (1015)}  {}  {2001-October}  { 41.40}  {-107.26}  { 7850}  {Carbon}  {Upper Sage Creek (101800020901)}   
+snotel {SNTL }  {WY}  {Salt River Summit (730)}  {}  {1978-October}  { 42.51}  {-110.91}  { 7760}  {Lincoln}  {Cedar Creek-Salt River (170401050105)}   
+snotel {SNTL }  {WY}  {Sand Lake (731)}  {}  {1980-August}  { 41.46}  {-106.28}  { 10050}  {Carbon}  {Deep Creek-Rock Creek (101800040201)}   
+snotel {SNTL }  {WY}  {Sandstone RS (732)}  {}  {1985-October}  { 41.11}  {-107.17}  { 8150}  {Carbon}  {Little Sandstone Creek (140500030409)}   
+snotel {SNTL }  {WY}  {Shell Creek (751)}  {}  {1978-October}  { 44.50}  {-107.43}  { 9580}  {Big Horn}  {Willett Creek-Shell Creek (100800100101)}   
+snotel {SNTL }  {WY}  {Snake River Station (764)}  {}  {1989-October}  { 44.13}  {-110.67}  { 6920}  {Teton}  {Sheffield Creek-Snake River (170401010301)}   
+snotel {SNTL }  {WY}  {Snider Basin (765)}  {}  {1980-September}  { 42.49}  {-110.53}  { 8060}  {Sublette}  {Upper South Piney Creek (140401010807)}   
+snotel {SNTL }  {WY}  {Soldier Park (1132)}  {}  {2010-August}  { 44.35}  {-107.01}  { 8720}  {Johnson}  {North Clear Creek (100902060103)}   
+snotel {SNTL }  {WY}  {South Brush Creek (772)}  {}  {1978-October}  { 41.33}  {-106.50}  { 8440}  {Carbon}  {Barrett Creek-Brush Creek (101800020403)}   
+snotel {SNTL }  {WY}  {South Pass (775)}  {}  {1985-September}  { 42.57}  {-108.84}  { 9040}  {Fremont}  {Headwaters Little Popo Agie River (100800030101)}   
+snotel {SNTL }  {WY}  {Spring Creek Divide (779)}  {}  {1978-October}  { 42.53}  {-110.66}  { 9000}  {Sublette}  {Headwaters La Barge Creek (140401011101)}   
+snotel {SNTL }  {WY}  {St. Lawrence Alt (786)}  {}  {1983-October}  { 43.03}  {-109.17}  { 8620}  {Fremont}  {Saint Lawrence Creek (100800020106)}   
+snotel {SNTL }  {WY}  {Sucker Creek (798)}  {}  {1978-October}  { 44.72}  {-107.40}  { 8880}  {Sheridan}  {Upper South Tongue River (100901010103)}   
+snotel {SNTL }  {WY}  {Sylvan Lake (806)}  {}  {1979-February}  { 44.48}  {-110.16}  { 8420}  {Park}  {Clear Creek (100700010406)}   
+snotel {SNTL }  {WY}  {Sylvan Road (807)}  {}  {1987-September}  { 44.46}  {-110.14}  { 7120}  {Park}  {Middle Creek (100800120104)}   
+snotel {SNTL }  {WY}  {Thumb Divide (816)}  {}  {1987-October}  { 44.37}  {-110.58}  { 7980}  {Teton}  {Big Thumb Creek-Yellowstone Lake (100700010401)}   
+snotel {SNTL }  {WY}  {Tie Creek (818)}  {}  {1994-August}  { 44.81}  {-107.41}  { 6870}  {Sheridan}  {Sheep Creek-Tongue River (100901010105)}   
+snotel {SNTL }  {WY}  {Timber Creek (819)}  {}  {1987-September}  { 44.03}  {-109.18}  { 7950}  {Park}  {Rose Creek-Greybull River (100800090109)}   
+snotel {SNTL }  {WY}  {Togwotee Pass (822)}  {}  {1980-August}  { 43.75}  {-110.06}  { 9580}  {Teton}  {Brooks Lake Creek-Wind River (100800010104)}   
+snotel {SNTL }  {WY}  {Townsend Creek (826)}  {}  {1980-September}  { 42.70}  {-108.90}  { 8700}  {Fremont}  {Sawmill Creek (100800030208)}   
+snotel {SNTL }  {WY}  {Triple Peak (831)}  {}  {1985-August}  { 42.76}  {-110.59}  { 8500}  {Sublette}  {Upper South Cottonwood Creek (140401010601)}   
+snotel {SNTL }  {WY}  {Two Ocean Plateau (837)}  {}  {1980-July}  { 44.15}  {-110.22}  { 9240}  {Teton}  {Plateau Creek-Snake River (170401010101)}   
+snotel {SNTL }  {WY}  {Webber Springs (852)}  {}  {1978-October}  { 41.16}  {-106.93}  { 9250}  {Carbon}  {North Fork Encampment River (101800020507)}   
+snotel {SNTL }  {WY}  {Whiskey Park (859)}  {}  {1986-September}  { 41.00}  {-106.91}  { 8950}  {Carbon}  {Little Snake River-Whiskey Creek (140500030101)}   
+snotel {SNTL }  {WY}  {Willow Creek (868)}  {}  {1980-September}  { 42.82}  {-110.84}  { 8380}  {Lincoln}  {Willow Creek (170401050205)}   
+snotel {SNTL }  {WY}  {Windy Peak (872)}  {}  {1980-July}  { 42.28}  {-105.58}  { 7900}  {Albany}  {Headwaters Horseshoe Creek (101800080901)}   
+snotel {SNTL }  {WY}  {Wolverine (875)}  {}  {1980-July}  { 44.80}  {-109.66}  { 7650}  {Park}  {Lower Crandall Creek (100700060203)}   
+snotel {SNTL }  {WY}  {Younts Peak (878)}  {}  {1980-August}  { 43.93}  {-109.82}  { 8350}  {Park}  {Younts Creek-South Fork Shoshone River (100800130102)}   

@@ -1,0 +1,12 @@
+<entries>
+  <entry name="{entry.name} Census Snapshot - Nationality" type="type_census_nationality" lat="{lat}" lon="{lon}" >
+    <for_type encoded="false"><![CDATA[{for}]]></for_type>
+    <for_value encoded="false"><![CDATA[]]></for_value>
+    <in_type1 encoded="false"><![CDATA[state]]></in_type1>
+    <in_value1 encoded="false"><![CDATA[{state.fips}]]></in_value1>
+    <in_type2 encoded="false"><![CDATA[{type2}]]></in_type2>
+    <in_value2 encoded="false"><![CDATA[{value2}]]></in_value2>
+    <source_url encoded="false"><![CDATA[]]></source_url>
+    <include_locales encoded="false"><![CDATA[false]]></include_locales>
+  </entry>
+</entries>

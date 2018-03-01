@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html><head><title>${title}</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<properties>
+name=Left Navigation
+id=left
+</properties>
+
+${imports}
+
+
+</head>
+<body>
+<table style="background-repeat: no-repeat; background-image:url(${header.image});" class="ramadda-header-left" background="${header.image}" width="100%" cellspacing="0" cellpadding="0" border="0" >
+<tr valign="bottom">
+
+<td width=25%>
+</td>
+
+
+<td width=50% align=center>
+<span  class="ramadda-header-left-title">${header.title}</span>
+</td>
+
+
+<td width=25% align="right" >
+<span class="nav-left">${links}&nbsp;</span>
+</td>
+</tr>
+</table>
+<table border=0 cellspacing=0 cellpadding=0 width=100%>
+<tr valign=top>
+<td><div class="ramadda-content">
+${entry.header}
+${content}</div>
+</td></tr></table>
+<div class="ramadda-footer">${footer}</div>
+${bottom}
+</body></html>

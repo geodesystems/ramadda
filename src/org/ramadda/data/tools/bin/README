@@ -1,0 +1,159 @@
+
+The NLAS/RAMADDA Point Data Tools package is a suite of tools for accessing and converting 
+various  point data formats - LiDAR, met, etc 
+
+
+
+##############################################################################
+Requirements and Installation
+##############################################################################
+All of the NLAS tools run as shell scripts that call Java programs. 
+You need to have JDK 1.6 installed.
+
+To make the scripts executable do:
+    source install.sh
+
+
+
+
+##############################################################################
+Installing other libraries
+##############################################################################
+
+The point tools comes with a set of point file readers (from core RAMADDA) but can
+be extended by providing jar files that contain the point file readers. 
+The scripts are set up to load 3 files:
+
+lib/libext1.jar
+lib/libext2.jar
+lib/libext3.jar
+
+
+You can copy the jar file that contains your point file reader classes as one of the 3 files.
+For example, if you want to read various LiDAR formats (eg. LAS, GLANL, LVIS) copy the nlasplugin.jar
+as lib/libext1.jar
+
+
+##############################################################################
+Specifying the file reader
+##############################################################################
+
+Except for general text/csv point files you need to specify the file reader class to
+the point tools (we gave up guessing a long time ago). You can either provide a command
+line argument:
+
+
+<pointtool>  -class <full class path>
+e.g.:
+<pointtool>  -class org.unavco.data.lidar.glas.GlasFile
+
+or set the environment variable:
+
+export ramadda_point_class="org.unavco.data.lidar.glas.GlasFile"
+
+To read LAS files specify:
+<pointtool>  -class org.unavco.data.lidar.las.LasFile
+
+For LVIS files:
+<pointtool>  -class org.unavco.data.lidar.lvis.LvisFile
+
+
+
+##############################################################################
+Supported Data Formats
+##############################################################################
+
+LAS - Version 1.2 and 1.3 - all point formats
+Note: for now the Java LAS library does not read the GEOTIFF coordinate reference system information so  
+it is assume that  the x/y/z coordinates are geographic - i.e., they are longitude/latitude/meters.
+
+
+LVIS - Version 1.2 and 1.3 - all points formats (LCE, LGE and LGW)
+The class path is: org.unavco.data.lidar.lvis.LvisFile
+
+
+ATM, McORDS, PARIS text formats:
+org.ramadda.data.point.icebridge.<ice bridge file>
+AtmIceSSNFile      McordsIrmcr2File
+Igbgm2GravityV09File       McordsIrmcr3File
+Igbgm2GravityV11File       ParisFile
+Iggrv1bAirGravityFile      QfitFile
+
+
+General CSV text formats - See below
+
+
+##############################################################################
+Tools 
+##############################################################################
+
+The point data tools need to know what Java class should be instantiated to read the data file.
+For text point data that is defined with a data dictionary properties file then you do not
+need to specify the class.
+
+Otherwise, you need to do
+    point2csv.sh -class <full class name>
+e.g:
+    point2csv.sh -class org.ramadda.data.point.amrc.AmrcFinalQCPointFile ...
+    point2csv.sh -class org.unavco.data.lidar.glas.GlasFile
+    point2csv.sh -class org.unavco.data.lidar.las.LasFile
+
+
+You can also set an environment variable:
+
+export ramadda_point_class="org.unavco.data.lidar.glas.GlasFile"
+
+
+
+point2csv.sh:
+Convert a Point file to csv.
+For help do:
+
+    point2csv.sh -help
+
+
+pointtiler.sh:
+This takes one or more Point files and a specification of spatial grid (bounds and grid size) and tiles 
+the points in the input Point files into separate files corresponding to the grid squares.
+For help do:
+
+    pointtiler.sh -help
+
+
+pointbounds.sh:
+This takes one or more Point files as arguments and prints to the stdout the spatial bounds in the form:
+     <north> <west> <south> <east>
+
+pointchecker.sh:
+Reads in a file and prints out the number of points, etc.
+
+
+
+##############################################################################
+CSV Format
+##############################################################################
+
+The NLAS tools include a text file reader. This can read comma, tab and space separated data files.
+It depends on a properties file to describe the delimiter, coordinate reference system and
+the fields in the file. For a given data file <data file>.csv the tools look for one of the following:
+
+     <data file>.csv.properties
+     <data file>.properties
+     point.properties
+
+
+The simplest way is to have a point.properties file
+
+See the example in the data directory for an example data file.
+
+
+
+
+
+
+
+
+
+
+
+

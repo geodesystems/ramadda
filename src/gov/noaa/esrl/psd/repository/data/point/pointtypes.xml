@@ -1,0 +1,71 @@
+<types>
+
+<!--
+  <type name="type_point_collection"  description="Point Data Collection" handler="org.ramadda.data.services.PointCollectionTypeHandler" category="Point Data">
+     <property name="icon" value="/point/sitemap_color.png"/>
+     <property name="form.resource.show" value="false"/>
+     <property name="form.area.show" value="true"/>
+     <property name="form.datatype.show" value="false"/>
+     <property name="form.date.show" value="false"/>
+     <property name="form.altitude.show" value="false"/>
+
+<wiki_inner>
+<![CDATA[
++inset
+<table width=100% border=0>
+<tr valign=top>
+<td width=50%>
+<div id=listdiv></div>
+<div id=textdiv></div>
+</td>
+<td width=50%>
+<div id=maindiv></div>
+</td>
+</tr>
+</table>
+
+{{displaygroup  showTitle="true"  showMenu="true"  layoutType="table"  layoutColumns="1" divid="maindiv" }}
+
+{{display  type="entrylist"   layoutHere="true"   showForm="false" divid="listdiv"  entryParent="this" title="Data Files"  }}
+
+{{display     type="text"   layoutHere="true"   divid="textdiv" title="Readout"  }}
+
+{{display    height="200"  fields=""  type="map"   layoutHere="false"  showTitle="true"  }}
+
+-inset
+
+]]>
+
+</wiki_inner>
+
+
+   </type>
+-->
+
+  <type name="type_extremes"  description="NOAA Extremes Data"  super="type_point"> 
+     <column name="region" type="enumeration"  label="US Climate Region"  values="northeast:Northeast,southeast:Southeast,ohio:Ohio Valley,midwest:Upper Midwest,south:South,nrockies:Northern Rockies and Plains,southwest:Southwest,west:West,northwest:Northwest,conus:Continental U.S." showinhtml="true" showinform="true" cansearch="true"/>
+     <column name="variable" type="enumeration"  label="Variable"  values="dly_ppt:Daily Precipitation" showinhtml="true" showinform="true" cansearch="true"/>
+     <property name="record.file.class" value="org.ramadda.data.point.text.CsvFile"/>
+     <property name="record.properties">
+        skiplines=0
+        delimiter=space
+        fields=year[type=date format=yyyy],jan_feb[type=double label="January-February" missing=-99.0],mar_apr[type=double label="March-April" missing=-99.0],may_jun[type=double label="May-June" missing=-99.0],jul_aug[type=double label="July-August" missing=-99.0],sep_oct[type=double label="September-October" missing=-99.0],nov_dec[type=double label="November-December" missing=-99.0],annual[type=double label="Annual" missing=-99.0],
+     </property>
+     
+     <wiki>
+<![CDATA[
++section # title="{{name}}"
+ ----
+
+{{display type="linechart" showTitle="false" layoutHere="false" vAxisMinValue="0" vAxisMaxValue="100"  dateFormat="yyyy" width="800" height="200" vAxis="Percent of Stations" hAxis="Year" showMenu="true" useMultipleAxes="false" showLabels="true" fields="jan_feb"}}
+
+{{display type="barstack" showTitle="false" layoutHere="false" vAxisMinValue="0" vAxisMaxValue="100"  dateFormat="yyyy" width="800" height="200" vAxis="Percent of Stations" hAxis="Year" showMenu="false" useMultipleAxes="false" showLabels="true" fields="jan_feb,mar_apr,may_jun,jul_aug,sep_oct,nov_dec"}}
+
+{{display type="table" showTitle="false" showMenu="false" dateFormat="yyyy"  layoutHere="false" width="800" }}
+
+]]>
+ </wiki>
+  </type>
+
+
+</types>

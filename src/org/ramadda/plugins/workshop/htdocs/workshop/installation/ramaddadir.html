@@ -1,0 +1,79 @@
+<html>
+<head>
+<title>RAMADDA Home Directory</title>
+  <link rel="stylesheet" type="text/css" href="../default.css" title="Style">
+
+</head>
+
+<body>
+<div class="ramadda-documentation">
+<table width=100% cellspacing=0 cellpadding=0><tr><td width=30%>
+<a href="configuration.html"><img src="../images/PreviousArrow.gif" border="0"   alt="Previous: Configuration" title="Previous: Configuration"></a> <a href="../user/index.html"><img src="../images/NextArrow.gif" border="0"   alt="Next: User Settings" title="Next: User Settings"></a>  <a href="../toc.html#installation/ramaddadir.html"><img src="../images/TOCIcon.gif" border="0"   alt="Table of contents" title="Table of contents"></a>
+</td>
+<td width=40% align=center>
+<div class="pagetitle">RAMADDA Workshop</div>
+</td>
+<td width=30%>&nbsp;</td>
+</tr></table>
+<div class="pagetitle">1.2 RAMADDA Home Directory</div>
+
+<style type="text/css">
+pre {
+    margin-left:15px;
+}
+</style>
+
+
+
+
+Let's look at where RAMADDA stores data and content on disk.
+
+<ul>
+<li> Bring up a terminal window.
+<li> The repository.properties file we copied into the Tomcat directory
+specifies the RAMADDA home:
+<pre>
+/usr/share/tomcat6/conf
+</pre>
+<li> Do:
+<pre>
+cd /usr/share/tomcat6/conf
+ls
+</pre>
+
+And you should see:
+<pre>
+derby      - The built in Java Derby database
+htdocs     - A place where RAMADDA looks for miscellaneous web content
+idv        - Used by the IDV visualization plugin. You can 
+             put IDV plugins here (e.g., colortables, maps, etc)
+logs       - Stores log files
+plugins    - RAMADDA plugins
+resources  - ???
+storage    - Where RAMADDA stores files 
+tmp        -  A temporary directory 
+</pre>
+
+
+<li> If you forgot to install the plugins when you configured RAMADDA then:
+<ul>
+<li> Fetch the allplugins.jar from the 
+<a href="https://sourceforge.net/projects/ramadda/">RAMADDA SourceForge site</a>
+<li> Copy the allplugins.jar file to the plugins directory
+<li> You will need to restart RAMADDA to have it load the new plugins.
+</ul>
+
+
+</ul>
+
+
+<p>
+<div  class="childlist" ><table  width="100%" ></table></div>
+<p>&nbsp;<p>
+<a href="configuration.html"><img src="../images/PreviousArrow.gif" border="0"   alt="Previous: Configuration" title="Previous: Configuration"></a> <a href="../user/index.html"><img src="../images/NextArrow.gif" border="0"   alt="Next: User Settings" title="Next: User Settings"></a>  <a href="../toc.html#installation/ramaddadir.html"><img src="../images/TOCIcon.gif" border="0"   alt="Table of contents" title="Table of contents"></a>
+<p>
+
+</div>
+</body>
+</html>
+

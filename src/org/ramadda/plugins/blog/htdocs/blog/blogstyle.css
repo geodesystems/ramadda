@@ -1,0 +1,62 @@
+
+
+.blog-entries {
+    margin: 0px;
+    padding-left: 20px;
+}
+
+.blog-entries-embed {
+    margin: 0px;
+}
+
+.blog-entries-embed .wiki-image {
+   width: 200px;
+}
+
+.blog-body {
+//   font-family: georgia;
+   font-size: 16px;
+   line-height: 24px;
+}
+
+
+
+.blog-body .wiki-image {
+   margin:10px;
+} 
+
+.blog-body  .wiki-image-caption {
+   margin:10px;
+   margin-top:5px;
+} 
+
+.blog-header {
+    padding-top: 5px;
+    border-bottom : 1px #888888 solid;
+    margin-top: 10px;
+}
+
+.blog-posted {
+     color: #999;
+     font-size: 10pt;
+}
+
+.blog-subject {
+   font-size: 21px;
+   font-weight: 500;
+   color:black;
+}
+
+.blog-entries-embed .blog-subject {
+   font-size: 16px;
+}
+
+
+
+.blog-subject a {
+   color:black;
+}
+
+.blog-body {
+    margin-bottom: 5px;
+}

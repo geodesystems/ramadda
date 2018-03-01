@@ -1,0 +1,65 @@
+<types supercategory="Miscellaneous"><type  name="type_metameta_collection"  description="Data Dictionary: Metadata Collection"  handler="org.ramadda.plugins.metameta.MetametaCollectionTypeHandler" category="Services" ><property  name="form.date.show"  value="false" /><property  name="form.area.show"  value="false" /><property  name="form.resource.show"  value="false" /><property  name="icon"  value="/metameta/databases.png" /><property  name="category"  value="Admin" /></type>
+<type  name="type_metameta_dictionary"  category="Services" description="Data Dictionary: Metadata Dictionary"  handler="org.ramadda.plugins.metameta.MetametaDictionaryTypeHandler" ><column  name="field_index"  label="Index"  type="int"  columns="4"  cansearch="true" ></column>
+<column  name="dictionary_type"  label="Type"  type="enumeration"  default="entry"  cansearch="true" ><values><![CDATA[entry=Entry
+database=DB Database
+datafile=Point Datafile
+metadata=Metadata
+
+]]></values>
+</column>
+<column  name="short_name"  label="Short Name"  type="string"  cansearch="true"  size="200" ></column>
+<column  name="super_type"  label="Super Type"  type="string"  cansearch="true"  size="200" ></column>
+<column  name="isgroup"  label="Is Group"  type="boolean"  cansearch="true" ></column>
+<column  name="handler_class"  label="Handler Class"  type="string"  cansearch="true"  size="200" ></column>
+<column  name="properties"  label="Properties"  type="string"  rows="5"  cansearch="true"  size="1000" ></column>
+<column  name="wiki_text"  label="Wiki Text"  type="string"  rows="10"  cansearch="true"  size="2000" ></column>
+<property  name="form.date.show"  value="false" /><property  name="form.area.show"  value="false" /><property  name="form.resource.show"  value="false" /><property  name="icon"  value="/metameta/database_table.png" /><property  name="category"  value="Admin" />
+
+
+
+
+
+
+
+</type>
+<type  name="type_metameta_field"  category="Services" description="Data Dictionary: Metadata Field"  handler="org.ramadda.plugins.metameta.MetametaFieldTypeHandler" ><column  name="field_index"  label="Index"  type="int"  columns="4"  cansearch="true" ></column>
+<column  name="field_id"  label="Field ID"  type="string"  columns="80"  cansearch="true"  size="200" ></column>
+<column  name="datatype"  label="Data Type"  type="enumeration"  cansearch="true" ><values><![CDATA[boolean=boolean
+clob=clob
+date=date
+datetime=datetime
+double=double
+email=email
+enumeration=enumeration
+enumerationplus=enumerationplus
+int=int
+latlon=latlon
+latlonbbox=latlonbbox
+password=password
+percentage=percentage
+string=string
+url=url
+wiki=wiki
+]]></values>
+</column>
+<column  name="enumeration_values"  label="Enumeration Values"  type="string"  rows="5"  cansearch="true"  canlist="false"  size="3000"  changetype="true"></column>
+<column  name="properties"  label="Properties"  type="string"  rows="5"  cansearch="true"  size="1000" ></column>
+<column  name="database_column_size"  label="Database Column Size"  type="int"  default="200"  columns="5"  cansearch="true"  canlist="false" ></column>
+<column  name="missing"  label="Missing Value"  type="string"  columns="10"  cansearch="true"  canlist="false"  size="200" ></column>
+<column  name="unit"  label="Unit"  type="string"  columns="10"  cansearch="true"  canlist="false"  size="200" ></column>
+<wiki><![CDATA[
++section title={{name}
+{{information}}
+-section
+]]></wiki>
+
+<property  name="form.date.show"  value="false" /><property  name="form.area.show"  value="false" /><property  name="form.resource.show"  value="false" /><property  name="icon"  value="/metameta/blue-document-snippet.png" /><property  name="category"  value="Admin" />
+
+
+
+
+
+
+
+</type>
+</types>

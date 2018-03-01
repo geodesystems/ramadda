@@ -1,0 +1,22 @@
+{"fields":[
+{"index":0,
+          "id":"field1",
+          "label":"Field 1",
+          "type":"double",
+           "missing":"-999.0",
+           "unit":"m"},
+           {"index":1,
+          "id":"field2",
+          "label":"Field 2",
+          "type":"double",
+           "missing":"-999.0",
+           "unit":"m"}
+         ]
+,"data": [
+               {"latitude":-64.77,"longitude":-64.06,"elevation":45, "date":null,"values":[8.0,1000]},
+               {"latitude":-54.77,"longitude":-54.06,"elevation":45, "date":null,"values":[9.0,1500]},
+               {"latitude":-54.77,"longitude":-54.06,"elevation":45, "date":null,"values":[10.0,2000]}
+        
+               ]
+}
+

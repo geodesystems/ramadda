@@ -1,0 +1,220 @@
+<html>
+<head>
+<title>RAMADDA Web API</title>
+  <link rel="stylesheet" type="text/css" href="../default.css" title="Style">
+
+</head>
+
+<body>
+<div class="ramadda-documentation">
+<table width=100% cellspacing=0 cellpadding=0 ><tr><td width=30%>
+<a href="filesystem.html"><img src="../images/PreviousArrow.gif" border="0"   alt="Previous: RAMADDA File System Access" title="Previous: RAMADDA File System Access"></a> <a href="searchapi.html"><img src="../images/NextArrow.gif" border="0"   alt="Next: Search API" title="Next: Search API"></a>  <a href="../toc.html#developer/api.html"><img src="../images/TOCIcon.gif" border="0"   alt="Table of contents" title="Table of contents"></a>
+</td>
+<td width=40% align=center>
+<div class="ramadda-page-title">RAMADDA User Guide</div>
+</td>
+<td width=30%>&nbsp;</td>
+</tr></table>
+<div class="ramadda-page-heading">15.4 RAMADDA Web API</div>
+
+<style type="text/css">
+pre {
+    margin-left:15px;
+}
+</style>
+
+<div style="margin-left:20px;">
+
+
+In general, a RAMADDA URL can be specified as:
+
+<pre>
+http://<hostname>/<base path>/<api path>/<entry path>?entryid=<entry id>
+e.g.:
+http://ramadda.org/repository/entry/show/Home/RAMADDA+Examples?entryid=a96b9616-40b0-41f5-914a-fb1be157d97c
+</pre>
+
+The base path (by default /repository) is the same for the entire repository.
+This is set with the ramadda.html.urlbase property.
+
+The API path determines what service is being invoked.
+When viewing an entry the default path is /entry/show. 
+This supports a number of result encodings <a href="#output"> described below</a>.
+
+Other paths include:
+<pre>
+/entry/get  -  return the file
+</pre>
+
+The entry is identified by the entryid URL argument:
+<pre>
+http://ramadda.org/repository/entry/show/Home/RAMADDA+Examples?entryid=a96b9616-40b0-41f5-914a-fb1be157d97c
+</pre>
+
+The path to the entry (e.g., /Home/RAMADDA+Examples) is optional if the entryid argument is provided.
+However, if the entryid argument is not provided then RAMADDA will use the path:
+<pre>
+http://ramadda.org/repository/entry/show/Home/RAMADDA+Examples
+</pre>
+
+Though this works we kindof discourage this approach because if you change a name or location then any links the entry would break. 
+
+
+<a name="output"></a>
+
+<h2>Entry Output</h2>
+
+When viewing an entry in RAMADDA one can specify any number of encodings or views of the entries with
+the <i>output</i> URL argument:
+
+Basic HTML display:<br>
+<a href="http://ramadda.org/repository/entry/show/Home/RAMADDA+Examples?entryid=a96b9616-40b0-41f5-914a-fb1be157d97c&output=html.info">
+http://ramadda.org/repository/entry/show/Home/RAMADDA+Examples?entryid=a96b9616-40b0-41f5-914a-fb1be157d97c&output=html.info
+</a>
+
+<br>GeoRSS:<br>
+<a href="http://ramadda.org/repository/entry/show/Home/RAMADDA+Examples?entryid=a96b9616-40b0-41f5-914a-fb1be157d97c&output=rss.full">
+http://ramadda.org/repository/entry/show/Home/RAMADDA+Examples?entryid=a96b9616-40b0-41f5-914a-fb1be157d97c&output=rss.full
+</a>
+
+<br>ATOM-XML:<br>
+<a href="http://ramadda.org/repository/entry/show/Home/RAMADDA+Examples?entryid=a96b9616-40b0-41f5-914a-fb1be157d97c&output=atom">
+http://ramadda.org/repository/entry/show/Home/RAMADDA+Examples?entryid=a96b9616-40b0-41f5-914a-fb1be157d97c&output=atom
+</a>
+
+
+<br>Map:<br>
+<a href="http://ramadda.org/repository/entry/show/Home/RAMADDA+Examples?entryid=a96b9616-40b0-41f5-914a-fb1be157d97c&output=map.map">
+http://ramadda.org/repository/entry/show/Home/RAMADDA+Examples?entryid=a96b9616-40b0-41f5-914a-fb1be157d97c&output=map.map
+</a>
+
+<br>Google Earth:<br>
+<a href="http://ramadda.org/repository/entry/show/Home/RAMADDA+Examples?entryid=a96b9616-40b0-41f5-914a-fb1be157d97c&output=map.gemap">
+http://ramadda.org/repository/entry/show/Home/RAMADDA+Examples?entryid=a96b9616-40b0-41f5-914a-fb1be157d97c&output=map.gemap
+</a>
+
+<br>CSV:<br>
+<a href="http://ramadda.org/repository/entry/show/Home/RAMADDA+Examples?entryid=a96b9616-40b0-41f5-914a-fb1be157d97c&output=default.csv">
+http://ramadda.org/repository/entry/show/Home/RAMADDA+Examples?entryid=a96b9616-40b0-41f5-914a-fb1be157d97c&output=default.csv
+</a>
+
+
+<br>CDL/NCML<br>
+<a href="http://ramadda.org/repository/entry/show/Home/RAMADDA+Examples/Science+Data/Gridded+Data/elev.nc?output=data.cdl">
+http://ramadda.org/repository/entry/show/Home/RAMADDA+Examples/Science+Data/Gridded+Data/elev.nc?output=data.cdl
+</a>
+
+
+
+
+
+
+<a name="auth"></a>
+<h2>Authenticating Programmatically</h2>
+The below has access control set to only allow user "foo" with password "bar" to access the entry.
+If from the command line one were to view the CSV listing of the entry it would fail.
+
+<pre>
+curl --fail -k -o test.txt "https://geodesystems.com/repository/entry/get?entryid=03f21209-785d-48a8-8d79-bb92a3ad67ee"
+</pre>
+
+First off, the return from a failed call would be in HTML. To specify an alternative response format you can add the <i>response</i> argument -
+<pre>
+curl --fail -k -o test.txt "https://geodesystems.com/repository/entry/get?entryid=03f21209-785d-48a8-8d79-bb92a3ad67ee&response=json"
+or:
+curl --fail -k -o test.txt "https://geodesystems.com/repository/entry/get?entryid=03f21209-785d-48a8-8d79-bb92a3ad67ee&response=xml"
+or:
+curl --fail -k -o test.txt "https://geodesystems.com/repository/entry/get?entryid=03f21209-785d-48a8-8d79-bb92a3ad67ee&response=text"
+</pre>
+
+
+To authenticate you can do one of 2 things. 
+
+First, any request can have the url arguments <i>auth.user</i> and <i>auth.password</i> and the authentication is
+done on the fly when handling the request. The drawback is that your username/password can show up in log files unless you do a POST. 
+
+<pre>
+curl --fail -k -o test.txt "https://geodesystems.com/repository/entry/get?entryid=03f21209-785d-48a8-8d79-bb92a3ad67ee&response=json&auth.user=foo&auth.password=bar"
+</pre>
+
+
+You can also login and get the session id then use that.
+<pre>
+curl --fail -k  "https://geodesystems.com/repository/user/login?&response=json&user.id=foo&user.password=bar"
+&gt; {"ok":"8d4a5cb3-eaa0-4561-926a-f9a9f8ac73b7_0.1941947596962228"}
+
+curl --fail -k -o test.txt "https://geodesystems.com/repository/entry/get?entryid=03f21209-785d-48a8-8d79-bb92a3ad67ee&response=json&sessionid=8d4a5cb3-eaa0-4561-926a-f9a9f8ac73b7_0.1941947596962228"
+
+</pre>
+
+
+
+
+<h2>Adding APIs in plugins</h2>
+
+
+
+The API into RAMADDA is declaratively defined with one or more
+api.xml files:
+<blockquote><pre>&lt;api&gt;
+  &lt;property <span class="xmlattr">name</span>="admin&quot; <span class="xmlattr">value</span>="false&quot;/&gt;
+  &lt;property <span class="xmlattr">name</span>="cancache&quot; <span class="xmlattr">value</span>="true&quot;/&gt;
+  &lt;group <span class="xmlattr">handler</span>="repository&quot;&gt;
+      &lt;api <span class="xmlattr">request</span>="/entry/show&quot;             <span class="xmlattr">method</span>="processEntryShow&quot;    <span class="xmlattr">name</span>="Home&quot; <span class="xmlattr">toplevel</span>="true&quot; <span class="xmlattr">ishome</span>="true&quot;/&gt;
+      &lt;api <span class="xmlattr">request</span>="/entry/show/*&quot;           <span class="xmlattr">method</span>="processEntryShow&quot;/&gt;
+...
+  &lt;/group&gt;
+  &lt;group <span class="xmlattr">handler</span>="metadatamanager&quot;&gt;
+      &lt;api <span class="xmlattr">request</span>="/metadata/list&quot;       <span class="xmlattr">method</span>="processMetadataList&quot;/&gt;
+      &lt;api <span class="xmlattr">request</span>="/metadata/form&quot;       <span class="xmlattr">method</span>="processMetadataForm&quot;       <span class="xmlattr">actions</span>="edit&quot;/&gt;
+...
+  &lt;/group&gt;
+  &lt;group <span class="xmlattr">handler</span>="admin&quot;&gt;
+      &lt;api <span class="xmlattr">request</span>="/admin/sql&quot;          <span class="xmlattr">method</span>="adminSql&quot;           <span class="xmlattr">admin</span>="true&quot;/&gt;
+      &lt;api <span class="xmlattr">request</span>="/admin/startstop&quot;    <span class="xmlattr">method</span>="adminDbStartStop&quot;   <span class="xmlattr">admin</span>="true&quot;/&gt;
+...
+  &lt;/group&gt;
+
+&lt;/api&gt;
+<a href="developer/api_dummy.xml">developer/api_dummy.xml</a>
+</pre></blockquote>
+
+Note: The above file has "_dummy" appended to it. To actually use this in the IDV change the name so it ends with api.xml.
+
+This file can be organized as a set of group tags that define
+a <i>handler</i> and contain a set of <i>api</i>. The api tag
+can also define a handler. The handlers are one of: 
+usermanager, admin, harvestermanager, actionmanager, accessmanager, metadatamanager, repository.
+<p>
+External classes can be used as handlers by providing the full
+class name. These handlers need to implement <code>RequestHandler</code>
+and need to have a public constructor that takes as argument the
+Repository object and the xml api Element.
+<p>
+The api tag contains a <i>path</i> attribute which is used the 
+the url path. e.g., the main way to view an entry is the &quot;/entry/show&quot; path. The url ends up looking like:<br> 
+&lt;repository suffix&gt;/entry/show?id=&lt;entry id&gt;
+</br>
+The <i>method</i> attribute is the method name on the handler that is called.
+These methods have the signature:
+<pre>
+public Result processEntryShow(Request request) throws Exception {
+    ...
+}</pre>
+
+They take a <code>Request</code> object and return a <code>Result</code> object.
+
+
+
+
+
+</div>
+<p>
+<div  class="childlist" ><table  width="100%" ></table></div>
+<p>&nbsp;<p>
+<a href="filesystem.html"><img src="../images/PreviousArrow.gif" border="0"   alt="Previous: RAMADDA File System Access" title="Previous: RAMADDA File System Access"></a> <a href="searchapi.html"><img src="../images/NextArrow.gif" border="0"   alt="Next: Search API" title="Next: Search API"></a>  <a href="../toc.html#developer/api.html"><img src="../images/TOCIcon.gif" border="0"   alt="Table of contents" title="Table of contents"></a>
+<p>
+</div>
+</body>
+</html>
+

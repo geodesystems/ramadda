@@ -1,0 +1,215 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<CollectionMetaDataFile xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://www.echo.nasa.gov/ingest/schemas/operations/Collection.xsd">
+    <Collections>
+        <Collection>
+            <ShortName>MISR_ABC</ShortName>
+            <VersionId>1</VersionId>
+            <InsertTime>2007-11-19T10:00:00Z</InsertTime>
+            <LastUpdate>2007-11-19T12:00:00Z</LastUpdate>
+            <LongName>MISR_ABC LongName</LongName>
+            <DataSetId>MISR ABC DataSetID</DataSetId>
+            <Description>This is a sample dataset.</Description>
+            <Orderable>true</Orderable>
+            <Visible>false</Visible>
+            <ProcessingLevelId>1</ProcessingLevelId>
+            <ArchiveCenter>DAAC</ArchiveCenter>
+            <RestrictionFlag>5</RestrictionFlag>
+            <Price>100.00</Price>
+            <SpatialKeywords>
+                <Keyword>SpatialKeyword1</Keyword>
+            </SpatialKeywords>
+           <TemporalKeywords>
+                <Keyword>TemporalKeyword1</Keyword>
+            </TemporalKeywords>
+            <Temporal>
+                <RangeDateTime>
+                    <BeginningDateTime>2007-04-01T01:00:00Z</BeginningDateTime>
+                    <EndingDateTime>2007-05-01T01:00:00Z</EndingDateTime>
+                </RangeDateTime>
+            </Temporal>
+
+           <Contacts>
+                <Contact>
+                    <Role>Archive</Role>
+                    <HoursOfService>9:00 A.M. to 5:00 P.M., Monday to Friday</HoursOfService>
+                    <OrganizationName>National Here and There Data Center</OrganizationName>
+                    <OrganizationAddresses>
+                        <Address>
+                            <StreetAddress>5555 5th St.</StreetAddress>
+                            <City>Some City</City>
+                            <StateProvince>Some State</StateProvince>
+                            <PostalCode>55555-5555</PostalCode>
+                            <Country>USA</Country>
+                        </Address>
+                    </OrganizationAddresses>
+                    <OrganizationPhones>
+                        <Phone>
+                            <Number>+1 555-555-5555</Number>
+                            <Type>Telephone</Type>
+                        </Phone>
+                        <Phone>
+                            <Number>+1 555-555-5555</Number>
+                            <Type>Fax</Type>
+                        </Phone>
+                    </OrganizationPhones>
+                    <OrganizationEmails>
+                        <Email>datacenter@domain.org</Email>
+                    </OrganizationEmails>
+                    <ContactPersons>
+                        <ContactPerson>
+                            <FirstName>Datacenter</FirstName>
+                            <MiddleName>User</MiddleName>
+                            <LastName>Services</LastName>
+                        </ContactPerson>
+                    </ContactPersons>
+                </Contact>
+            </Contacts>
+
+            <ScienceKeywords>
+                <ScienceKeyword>
+                    <CategoryKeyword>EARTH SCIENCE</CategoryKeyword>
+                    <TopicKeyword>ATMOSPHERE</TopicKeyword>
+                    <TermKeyword>ATMOSPHERIC CHEMISTRY</TermKeyword>
+                    <VariableLevel1Keyword>
+                        <Value>OXYGEN COMPOUNDS</Value>
+                        <VariableLevel2Keyword>
+                            <Value>OZONE</Value>
+                        </VariableLevel2Keyword>
+                    </VariableLevel1Keyword>
+                </ScienceKeyword>
+                <ScienceKeyword>
+                    <CategoryKeyword>EARTH SCIENCE</CategoryKeyword>
+                    <TopicKeyword>ATMOSPHERE</TopicKeyword>
+                    <TermKeyword>ATMOSPHERIC CHEMISTRY</TermKeyword>
+                    <VariableLevel1Keyword>
+                        <Value>OXYGEN COMPOUNDS</Value>
+                        <VariableLevel2Keyword>
+                            <Value>OZONE</Value>
+                            <VariableLevel3Keyword>Keyword#3</VariableLevel3Keyword>
+                        </VariableLevel2Keyword>
+                    </VariableLevel1Keyword>
+                </ScienceKeyword>
+
+                <ScienceKeyword>
+                    <CategoryKeyword>Earth Science</CategoryKeyword>
+                    <TopicKeyword>ATMOSPHERE</TopicKeyword>
+                    <TermKeyword>ATMOSPHERIC PRESSURE</TermKeyword>
+                    <VariableLevel1Keyword>
+                        <Value>MEASUREMENTS</Value>
+                    </VariableLevel1Keyword>
+                    <DetailedVariableKeyword>BASELINE</DetailedVariableKeyword>
+                </ScienceKeyword>
+            </ScienceKeywords>
+
+            <Platforms>
+                <Platform>
+                    <ShortName>Aura</ShortName>
+                    <LongName>EOS Aura Mission Satellite</LongName>
+                    <Type>Spacecraft</Type>
+                    <Characteristics>
+                        <Characteristic>
+                            <Name>OrbitInclination</Name>
+                            <Description>Angle between the orbit plane and the Earth's equatorial plane </Description>
+                            <DataType>float</DataType>
+                            <Unit>Degrees</Unit>
+                            <Value>98.2</Value>
+                        </Characteristic>
+                    </Characteristics>
+                    <Instruments>
+                        <Instrument>
+                            <ShortName>HIRDLS</ShortName>
+                            <LongName>High Resolution Dynamic Limb Sounder</LongName>
+                            <Sensors>
+                                <Sensor>
+                                    <ShortName>HRDLS Channel 21</ShortName>
+                                    <LongName>HRDLS Channel 21 NO2 6.12-6.32</LongName>
+                                    <Technique>Infrared Limb Sounding</Technique>
+                                </Sensor>
+                            </Sensors>
+                        </Instrument>
+                    </Instruments>
+                </Platform>
+            </Platforms>
+
+            <AdditionalAttributes>
+                 <AdditionalAttribute>
+                     <Name>AcquisitionDate</Name>
+                     <DataType>DATE</DataType>
+                     <Description>AcquisitionDate</Description>
+                 </AdditionalAttribute>
+                 <AdditionalAttribute>
+                     <Name>AquisitionQuality</Name>
+                     <DataType>STRING</DataType>
+                     <Description>AquisitionQuality</Description>
+                 </AdditionalAttribute>
+            </AdditionalAttributes>
+            <Campaigns>
+                <Campaign>
+                    <ShortName>HRDLS</ShortName>
+                    <LongName>High Resolution Dynamics Limb Sounder(EOS CHEM Experiment)</LongName>
+                </Campaign>
+            </Campaigns>
+
+            <TwoDCoordinateSystems>
+                <TwoDCoordinateSystem>
+                    <TwoDCoordinateSystemName>MISR</TwoDCoordinateSystemName>
+                    <Coordinate1>
+                        <MinimumValue>1</MinimumValue>
+                        <MaximumValue>233</MaximumValue>
+                    </Coordinate1>
+                    <Coordinate2>
+                        <MinimumValue>1</MinimumValue>
+                        <MaximumValue>180</MaximumValue>
+                    </Coordinate2>
+                </TwoDCoordinateSystem>
+            </TwoDCoordinateSystems>
+          <OnlineAccessURLs>
+                <OnlineAccessURL>
+                    <URL>Text</URL>
+                    <URLDescription>Text</URLDescription>
+                    <MimeType>Text</MimeType>
+                </OnlineAccessURL>
+            </OnlineAccessURLs>
+
+          <OnlineResources>
+                <OnlineResource>
+                    <URL>http://aura.gsfc.nasa.gov/instruments/hirdls/</URL>
+                    <Description>This URL contains information and data access for HRDLS and all the Goddard DAAC's Aura Instruments.</Description>
+
+                    <Type>ASSOCIATED DATA SET(S)</Type>
+                </OnlineResource>
+            </OnlineResources>
+
+            <AssociatedDIFs>
+                <DIF>
+                    <EntryId>MOD14_V005</EntryId>
+                </DIF>
+            </AssociatedDIFs>
+
+            <Spatial>
+                <SpatialCoverageType>BOTH</SpatialCoverageType>
+                <HorizontalSpatialDomain>
+                    <ZoneIdentifier/>
+                    <Geometry>
+                        <CoordinateSystem>CARTESIAN</CoordinateSystem>
+                        <BoundingRectangle>
+                            <WestBoundingCoordinate>-180.0</WestBoundingCoordinate>
+                            <NorthBoundingCoordinate>38.0</NorthBoundingCoordinate>
+                            <EastBoundingCoordinate>180.0</EastBoundingCoordinate>
+                            <SouthBoundingCoordinate>-38.0</SouthBoundingCoordinate>
+                        </BoundingRectangle>
+                    </Geometry>
+                </HorizontalSpatialDomain>
+                <VerticalSpatialDomain>
+                    <Type>Atmosphere Layer</Type>
+                   <Value>Atmosphere Profile</Value>
+                </VerticalSpatialDomain>
+                <GranuleSpatialRepresentation>CARTESIAN</GranuleSpatialRepresentation>
+            </Spatial>
+
+            <AssociatedBrowseImages>
+                <ProviderBrowseId>Browse_132459231.hdf</ProviderBrowseId>
+            </AssociatedBrowseImages>
+        </Collection>
+    </Collections>
+</CollectionMetaDataFile>

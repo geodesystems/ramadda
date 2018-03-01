@@ -1,0 +1,326 @@
+aarct:Antartica 
+abdbi:Abu Dhabi 
+afgh:Afghanistan 
+africa:Africa 
+ajmn:Ajman 
+aladi:Latin American Integr.assoc. 
+alb:Albania 
+alg:Algeria 
+amsam:American Samoa 
+andean:Andean Group 
+ando:Andorra 
+angol:Angola 
+anguil:Anguilla 
+anta:Antigua 
+anzus:Anzus Pact 
+apec:Asia Pacific Economic Coop. 
+arabst:League Of Arab States 
+arg:Argentina 
+armen:Armenia 
+armhg:Arab Maghreb Union 
+aruba:Aruba 
+ascisl:Ascension Island 
+asean:Assoc.of Se.asian Nations 
+asia:Asia 
+ausnz:Australia &amp; New Zealand 
+aust:Austria 
+austr:Australia 
+azerb:Azerbaijan 
+bah:Bahamas 
+bahrn:Bahrain 
+baltst:Baltic States 
+bandh:Bangladesh 
+barb:Barbados 
+barbd:Barbuda 
+belg:Belgium 
+belz:Belize 
+benin:Benin 
+benlux:Benelux 
+berm:Bermuda 
+bhutan:Bhutan 
+biot:British Indian Ocean Territory 
+bol:Bolivia 
+bots:Botswana 
+braz:Brazil 
+brunei:Brunei 
+bshzg:Bosnia-herzegovina 
+bul:Bulgaria 
+burma:Burma (myanmar) 
+burun:Burundi 
+bvi:British Virgin Is. 
+byelrs:Belarus 
+caccm:Central American Common Market 
+cafr:Central African Rep. 
+cam:Central America 
+camer:Cameroon 
+cana:Canada 
+cani:Canary Is. 
+carcom:Caribbean Community 
+carib:Caribbean 
+casia:Central Asia 
+cayi:Cayman Is. 
+ceafr:Central Africa 
+chad:Chad 
+chil:Chile 
+china:China 
+col:Colombia 
+comor:Comoros 
+comwh:Commonwealth 
+congo:Congo 
+cookis:Cook Islands 
+cosr:Costa Rica 
+crtia:Croatia 
+cuba:Cuba 
+curac:Curaco 
+cvi:Cape Verde 
+cypr:Cyprus 
+cz:Canal Zone 
+czech:Czechoslovakia 
+czrep:Czech Republic 
+den:Denmark 
+devgco:Developing Countries 
+diego:Diego Garcia 
+doma:Dominica 
+domr:Dominican Rep. 
+dubai:Dubai 
+eafr:East Africa 
+easia:Eastern Asia 
+eastis:Easter Is. 
+ecowas:Econ.comm.w.african States 
+ecu:Ecuador 
+eec:European Economic Community 
+eeur:Eastern Europe 
+efta:European Free Trade Assoc. 
+egypt:Egypt 
+elsal:El Salvador 
+eqgna:Equatorial Guinea 
+ertra:Eritrea 
+estnia:Estonia 
+ethpa:Ethiopia 
+eur:Europe 
+eurea:European Economic Area 
+faeroe:Faroe Islands 
+falk:Falkland Is. 
+feast:Far East 
+fesmic:Federated States Of Micronesia 
+fgna:French Guiana 
+fiji:Fiji 
+fin:Finland 
+fpdt:French Pacific Depts.&amp; Terrs. 
+fpoly:French Polynesia 
+fra:France 
+fujh:Fujairah 
+gabon:Gabon 
+gamb:Gambia 
+gcc:Gulf Cooperation Council 
+gdr:East Germany 
+gdr:German Democratic Rep. 
+gfive:Group Of Five 
+gfr:German Federal Rep. 
+ghana:Ghana 
+gib:Gibraltar 
+greece:Greece 
+greenl:Greenland 
+gren:Grenada 
+grgia:Georgia 
+gseven:Group Of Seven 
+gten:Group Of Ten 
+guad:Guadeloupe 
+guam:Guam 
+guat:Guatemala 
+gubi:Guinea-bissau 
+gulfst:Gulf States 
+gurep:Guinea 
+guy:Guyana 
+hait:Haiti 
+hkong:Hong Kong 
+hon:Honduras 
+hung:Hungary 
+icel:Iceland 
+icst:Cote D'ivoire (ivory Coast) 
+ifni:Ifni 
+india:India 
+indoch:Indo-china 
+indon:Indonesia 
+indsub:Indian Subcontinent 
+iran:Iran 
+iraq:Iraq 
+ire:Ireland 
+islam:Organisation Of Islamic Conf. 
+israel:Israel 
+italy:Italy 
+jama:Jamaica 
+jap:Japan 
+jordan:Jordan 
+kampa:Cambodia (kampuchea) 
+kazk:Kazakhstan 
+kenya:Kenya 
+kirb:Kiribati (ex. Gilbert Islands) 
+kirgh:Kyrgyzstan 
+kuwait:Kuwait 
+lam:Latin America 
+laos:Laos 
+latv:Latvia 
+leban:Lebanon 
+leei:Leeward Is. 
+lesot:Lesotho 
+liber:Liberia 
+libya:Libya 
+liecht:Liechtenstein 
+lith:Lithuania 
+lux:Luxembourg 
+macao:Macao 
+mah:Marshall Is. 
+malag:Madagascar 
+malaw:Malawi 
+malay:Malaysia 
+maldr:Maldives 
+mali:Mali 
+malta:Malta 
+marq:Martinique 
+maurtn:Mauritania 
+maurts:Mauritius 
+mcdnia:Macedonia 
+meast:Middle East 
+med:Mediterranean Countries 
+mex:Mexico 
+moldv:Moldova 
+monac:Monaco 
+mongla:Mongolia 
+mont:Montserrat 
+moroc:Morocco 
+mozam:Mozambique 
+mrcsl:Mercosul 
+nafr:North Africa 
+nafta:North American Free Trade Ag 
+nam:North America 
+namib:Namibia 
+nant:Netherlands Antilles 
+nato:North Atlantic Treaty Org. 
+nauru:Nauru 
+nepal:Nepal 
+neth:Netherlands 
+newcal:New Caledonia 
+nicg:Nicaragua 
+nigea:Nigeria 
+niger:Niger 
+niue:Niue 
+nkorea:North Korea 
+nomari:Northern Marianas 
+norfis:Norfolk Island 
+norw:Norway 
+nz:New Zealand 
+oams:Org. Of American States 
+oapec:Org.arab Pet.exp.countries 
+oau:Org. Of African Unity 
+oceana:Oceania 
+oecd:Org.econ.cooperation And Dev. 
+oilex:Oil Exporting Countries 
+oman:Oman 
+opec:Org.pet.exporting Countries 
+pacis:Pacific Islands 
+pacrm:Pacific Rim 
+pakis:Pakistan 
+palau:Belau (formerly Palau) 
+pana:Panama 
+papng:Papua New Guinea 
+para:Paraguay 
+peru:Peru 
+phlns:Philippines 
+pitcis:Pitcairn Island 
+pol:Poland 
+porl:Portugal 
+pst:Principe &amp; Saotome 
+ptaesa:Pref.trade Area E.&amp;s.africa 
+puri:Puerto Rico 
+qatar:Qatar 
+rakh:Ras Al Khaimah 
+reuni:Reunion Is. 
+rom:Romania 
+russ:Russia 
+rwanda:Rwanda 
+saarab:Saudi Arabia 
+saarc:S.asian Assoc. Regional Coop. 
+sadcc:S.african Developm.coord.conf. 
+safr:South Africa 
+sam:South America 
+saraw:Sarawak 
+sasia:Southern Asia 
+scand:Scandinavia 
+seasia:Southeast Asia 
+sela:Latin American Econ.system 
+seneg:Senegal 
+seych:Seychelles 
+shajh:Sharjah 
+sikim:Sikkim 
+silen:Sierra Leone 
+singp:Singapore 
+skit:St.kitts 
+skorea:South Korea 
+sluc:St.lucia 
+slvak:Slovak Republic 
+slvnia:Slovenia 
+smarno:San Marino 
+solil:Solomon Is. 
+somal:Somalia 
+souafr:Southern Africa 
+spain:Spain 
+spsah:Western Sahara 
+srilan:Sri Lanka 
+sthel:St.helena 
+stpm:St.pierre-miquelon 
+sudan:Sudan 
+surm:Surinam 
+svin:St.vincent 
+swazd:Swaziland 
+swed:Sweden 
+switz:Switzerland 
+syria:Syria 
+tadzk:Tajikistan 
+tai:Djibouti (afars Issas) 
+taiwan:Taiwan 
+tanza:Tanzania 
+tcai:Turks And Caicos Islands 
+thail:Thailand 
+thdwld:Third World 
+timor:East Timor 
+togo:Togo 
+toklau:Tokelau 
+tonga:Tonga 
+trscun:Tristan Da Cunha 
+trto:Trinidad &amp; Tobago 
+tunis:Tunisia 
+turk:Turkey 
+turkm:Turkmenistan 
+tvlu:Tuvalu 
+uae:United Arab Emirates 
+uaq:Um Al Quaiwain 
+uganda:Uganda 
+uk:United Kingdom 
+ukrn:Ukraine 
+un:United Nations 
+upvola:Burkina Faso (upper Volta) 
+uru:Uruguay 
+usa:United States Of America 
+ussr:Cis 
+uzbk:Uzbekistan 
+vanu:Vanuatu (ex. New Hebrides) 
+vcan:Vatican 
+ven:Venezuela 
+vi:Virgin Is. 
+vietn:Vietnam 
+wafr:West Africa 
+wallis:Wallis Futuna Islands 
+wasia:Western Asia 
+weind:West Indies 
+wesber:West Berlin 
+weur:Western Europe 
+wi:Windward Is. 
+world:World 
+wsomoa:Western Samoa 
+yemar:Yemen 
+yempar:South Yemen 
+yug:Yugoslavia 
+zaire:Zaire 
+zambia:Zambia 
+zimbab:Zimbabwe 

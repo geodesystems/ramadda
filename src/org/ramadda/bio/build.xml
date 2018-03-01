@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<project basedir="../../../../" default="plugins" name="Bio Plugins">
+
+    <target name="init">
+       <tstamp>
+         <format property="date" pattern="yyyy-MM-dd HH:mm z" timezone="UTC"/>
+       </tstamp>
+        <property file="${basedir}/build.properties"/>
+    </target>
+
+    <target name="clean" depends="init" >
+        <delete>
+            <fileset dir="${compile_dir}" includes="**/*.class"/>
+        </delete>
+    </target>
+
+    <target name="plugins" depends="init">
+      <echo message="Building Bio plugins"/>
+      <ant antfile="${src_dir}/org/ramadda/bio/biotypes/build.xml" inheritAll="false"/>
+      <ant antfile="${src_dir}/org/ramadda/bio/entrez/build.xml" inheritAll="false"/>
+      <ant antfile="${src_dir}/org/ramadda/bio/fda/build.xml" inheritAll="false"/>
+      <ant antfile="${src_dir}/org/ramadda/bio/image/build.xml" inheritAll="false"/>
+      <ant antfile="${src_dir}/org/ramadda/bio/genomics/build.xml" inheritAll="false"/>
+      <ant antfile="${src_dir}/org/ramadda/bio/taxonomy/build.xml" inheritAll="false"/>
+    </target>
+
+
+    <target name="allplugins" depends="init">
+      <antcall target="plugins"/>
+   </target>
+
+
+    
+</project>

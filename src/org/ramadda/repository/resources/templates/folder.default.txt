@@ -1,0 +1,19 @@
++row
++col-md-9 class="entry-page-main"
+:title {{name}}
+${innercontent}
+-col
++col-md-3
+<div class="entry-page-info">
+{{tools includeicon="true" title="Links" message=""}}
+<p>
+{{information details="false"  block.show="true" block.title="Information" block.open="true" box.maxheight="300"  box.class="entry-sidebox" }}
+<p>
+{{map message="" width="250" height="250"  box.maxheight="300" block.show="true" block.title="Locations" block.open="true"}}
+<p>
+{{properties block.show="true" block.title="Properties" block.open="false"  message="" box.maxheight="300" box.class="entry-sidebox" display="small"}}
+<p>
+{{list includeicon="true" details="false" entries="siblings,links"  message="" box.maxheight="200" box.class="entry-sidebox" block.show="true" block.title="Related" block.open="false"}}
+</div>
+-col
+-row

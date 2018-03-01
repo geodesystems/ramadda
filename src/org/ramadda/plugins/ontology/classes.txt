@@ -1,0 +1,3 @@
+org.ramadda.plugins.ontology.OboConverter
+org.ramadda.plugins.ontology.OrcaConverter
+org.ramadda.plugins.ontology.OwlConverter

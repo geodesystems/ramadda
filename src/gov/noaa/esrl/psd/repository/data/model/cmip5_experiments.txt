@@ -1,0 +1,110 @@
+#
+# CMIP5 Experiment definitions
+# From: http://cmip-pcmdi.llnl.gov/cmip5/docs/cmip5_data_reference_syntax.pdf
+# Table 1.1
+
+# Format:
+# # (exp number) description
+# short_name:long_name
+
+# (3.1) coupled atmosphere/ocean pre-industrial control run 
+piControl:pre-industrial control
+
+# (3.2) simulation of recent past (1850-2005)
+historical:historical
+
+# (3.4) consistent with PMIP, impose Mid-Holocene conditions
+midHolocene:mid-Holocene
+
+# (3.5) consistent with PMIP, impose last glacial maximum conditions
+lgm:last glacial maximum
+
+# (3.6) consistent with PMIP, impose forcing for 850-1850
+past1000:last millennium
+
+# (4.1) future projection (2006-2300) forced by RCP4.5
+rcp45:RCP4.5
+
+# (4.2) future projection (2006-2300) forced by RCP8.5
+rcp85:RCP8.5
+
+# (4.3) future projection (2006-2300) forced by RCP2.6
+rcp26:RCP2.6
+
+# (4.4) future projection (2006-2100) forced by RCP6
+rcp60:RCP6
+
+# (5.1) as in experiment 3.1, but emissions-forced (with atmospheric CO2 determined by model)
+esmControl:ESM pre-industrial control
+
+# (5.2) as in experiment 3.2, but emissions-forced (with atmospheric CO2 determined by model)
+esmHistorical:ESM historical
+
+# (5.3) as in experiment 4.2, but emissions-forced (with atmospheric CO2 determined by model)
+esmrcp85:ESM RCP8.5
+
+# (5.4-1) radiation code "sees" control CO2, but carbon cycle sees 1%/yr rise
+esmFixClim1:ESM fixed climate 1
+
+# (5.4-2) radiation code "sees" control CO2, but carbon cycle sees historical followed by RCP4.5 rise in CO2
+esmFixClim2:ESM fixed climate 2
+
+# (5.5-1) carbon cycle "sees" control CO2, but radiation sees 1%/yr rise
+esmFdbk1:ESM feedback 1
+
+# (5.5-2) carbon cycle "sees" control CO2, but radiation sees historical followed by RCP4.5 rise in CO2
+esmFdbk2:ESM feedback 2
+
+# (6.1) imposed 1%/yr increase in CO2 to quadrupling
+1pctCO2:1 percent per year CO2
+
+# (6.3) impose an instantaneous quadrupling of CO2, then hold fixed
+abrupt4xCO2:abrupt 4XCO2
+
+# (7.1) historical simulation but with natural forcing only
+historicalNat:natural-only
+
+# (7.2) historical simulation but with greenhouse gas forcing only
+historicalGHG:GHG-only
+
+# (7.3) historical simulation but with other individual forcing agents or combinations of forcings.
+historicalMisc:other historical forcing
+
+# (7.4) extension of the historical simulation (experiment 3.2) through year 2012.
+historicalExt:historical extension
+
+# (3.3) AMIP (1979- at least 2008)
+amip:AMIP
+
+# (2.1) conditions for 2026-2035 imposed
+sst2030:2030 time-slice
+
+# (6.2a) control run climatological SSTs & sea ice imposed
+sstClim:control SST climatology
+
+# (6.2b) as in experiment 6.2a, but with 4XCO2 imposed
+sstClim4xCO2:CO2 forcing
+
+# (6.4a) as in experiment 6.2a, but with aerosols from year 2000 of experiment 3.2
+sstClimAerosol:all aerosol forcing
+
+# (6.4b) as in experiment 6.2a, but with sulfate aerosols from year 2000 of experiment 3.2
+sstClimSulfate:sulfate aerosol forcing
+
+# (6.5) AMIP (1979-2008) conditions (experiment 3.3) but with 4xCO2
+amip4xCO2:4xCO2 AMIP
+
+# (6.6) consistent with CFMIP, patterned SST anomalies added to AMIP conditions (experiment 3.3)
+amipFuture:AMIP plus patterned anomaly
+
+# (6.7a) consistent with CFMIP, zonally uniform SSTs for ocean-covered earth
+aquaControl:aqua planet control
+
+# (6.7b) as in experiment 6.7a, but with 4XCO2
+aqua4xCO2:4xCO2 aqua planet
+
+# (6.7c) as in experiment 6.7a, but with a uniform 4K increase in SST
+aqua4K:aqua planet plus 4K anomaly
+
+# (6.8) as in experiment 3.3, but with a uniform 4K increase in SST
+amip4K:AMIP plus 4K anomaly

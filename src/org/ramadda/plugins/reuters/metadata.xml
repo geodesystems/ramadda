@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<metadata>
+  <handler category="Tags">
+    <type name="Reuters Topic" id="reuters_topic"  searchable="true" browsable="true">
+      <element name="Topic"  searchable="true" datatype="enumerationplus" values="file:/org/ramadda/plugins/reuters/topics.txt"/>
+    </type>
+
+
+    <type name="Reuters Region" id="reuters_region"  searchable="true" browsable="true">
+      <element name="Region"  searchable="true" datatype="enumerationplus" values="file:/org/ramadda/plugins/reuters/regions.txt"/>
+    </type>
+
+    <type name="Reuters Industries" id="reuters_industries"  searchable="true" browsable="true">
+      <element name="Industries"  searchable="true" datatype="enumerationplus" values="file:/org/ramadda/plugins/reuters/industries.txt"/>
+    </type>
+
+
+
+</handler>
+</metadata>

@@ -1,0 +1,68 @@
+[ht::head {NLAS Harvesters}]
+
+
+One way to add LiDAR data sets to RAMADDA is to set up a LiDAR Collection
+harvester in RAMADDA. This is a special purpose instance of
+the general purpose 
+<a href="/repository/userguide/harvesters.html">File Harvester</a> facility
+that RAMADDA provides.
+<p>
+
+A Harvester is configured to scan a specified server-side file system 
+directory tree. A pattern can be provided to determine what files should be harvested.
+The harvester will automatically detect new LiDAR files and load them into RAMADDA. 
+You have the option of leaving the files in place or moving them into RAMADDA's data store.
+
+<h2>LVIS Example</h2>
+
+On our NLAS/LVIS machine we have data on disk:
+<pre>
+  mcgowan:ls lvis
+  LVIS_Antarctica_2009/
+  LVIS_Costa_Rica/
+  LVIS_Arkansas/
+  LVIS_Greenland/
+  LVIS_California/
+  LVIS_NH_Bartlett_Forest/
+
+  mcgowan:ls lvis/LVIS_Arkansas/
+  LVIS_US_AR_2006_20080819.lce
+</pre>
+
+That we want to map into the RAMADDA repository so that 
+the LVIS_... directories
+are represented with RAMADDA LiDAR Collections and the files are LiDAR Data as
+shown <a href="https://nlas.unavco.org/repository/alias/lvis">here</a>.
+
+<p>
+
+The Harvester we have set up 
+points to the top-level lvis directory.
+When it scans it walks the tree down and discovers a file (e.g., 
+LVIS_US_AR_2006_20080819.lce). 
+The harvester creates a LiDAR Collection folder from the 
+parent directory of the file (e.g.,  LVIS_Arkansas). It replaces any underscore
+"_"  with a space " " and uses that as the name of the collection entry.
+The file is then ingested and scanned to extract 
+spatial metadata. The new LiDAR Data entry is then created
+with the parent collection entry.
+
+<p>
+
+The NLAS plugin provides a special purpose LiDAR Collection harvester. This  harvester type
+creates the right kind of folder and entry types for the harvested data.
+To create a harvester you need to be a site administrator. 
+From the [ht::menu Admin Harvesters] page select the New Harvester button.
+Enter a name for your harvester and for Type select "LiDAR Collection" in the form:
+[ht::cimg images/newharvester.png {New Harvester Form} {border=0 width=600}]
+
+The Harvester edit form is the same as for the general purpose
+<a href="/repository/userguide/harvesters.html">File Harvester</a> facility in RAMADDA.
+The only difference is the Entry Types are just the LiDAR Data entry types.
+<p>
+Enter the server file system directory, the destination RAMADDA folder and, optionally, select
+a LiDAR entry type. The harvester can be configured to automatically run on a specified schedule.
+
+
+[ht::foot]
+

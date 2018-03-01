@@ -1,0 +1,27 @@
+
+Latest release: @RELEASE_VERSION@
+http://geodesystems.com/repository/alias/release
+
+repository.war: self contained war file for running under Tomcat, Glassfish, etc
+
+ramaddaserver.zip: stand-alone version of RAMADDA. Just needs Java to run. Download and unzip the file
+
+ramaddainstaller.zip: contains script to setup a Linux box with postgres and ramadda
+
+There are 4 sets of bundled plugins:
+coreplugins.jar
+bioplugins.jar
+geoplugins.jar
+miscplugins.jar
+
+These plugins can get installed during the initial system install and will get automatically updated.
+You can download and install the plugins after the fact. Just copy them into your RAMADDA home/plugins 
+directory.
+
+The plugins directory contains all of the individual plugins
+
+
+
+
+
+

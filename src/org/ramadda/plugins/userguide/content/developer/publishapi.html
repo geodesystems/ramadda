@@ -1,0 +1,205 @@
+<html>
+<head>
+  <title>Publish API</title>
+  <link rel="stylesheet" type="text/css" href="ramadda.css" title="Style">
+</head>
+<%nochildlist%>
+
+<body>
+
+You can programmatically create new entries on a RAMADDA server. There is a  Java class, ucar.unidata.repository.RepositoryClient, 
+that provides some of the facilities.  You can also look at the ucar.unidata.repository.idv.RamaddaPublisher which is used within the 
+IDV to publish content to RAMADDA. This class uses the ucar.unidata.repository.InteractiveRepositoryClient class that provides some 
+GUI facilities (e.g., a folder JTree component).
+
+<p>
+
+
+
+
+
+
+
+Lets say you want to upload a file (e.g., test.png) to RAMADDA. First you need to establish a session with RAMADDA.
+You can just do a url get with:
+<pre>
+https://&lt;server&gt;:&lt;https port&gt;/repository/user/login?output=xml&user.password=&lt;password&gt;&user.id=&lt;user&gt;
+Or if you don't have https:
+http://&lt;server&gt;/repository/user/login?output=xml&user.password=&lt;password&gt;&user.id=&lt;user&gt;
+</pre> 
+
+
+
+The output=xml tells RAMADDA to return the result as xml.
+<p>
+The above request returns xml of the form:
+<pre>
+&lt;response code="ok"&gt;
+sessionid
+&lt;/response&gt;
+</pre>
+
+Or if there was an error:
+<pre>
+&lt;response code="error"&gt;
+some error message
+&lt;/response&gt;
+</pre>
+
+
+Subsequent posts to RAMADDA just require an extra argument:
+<pre>sessionid=&lt;sessionid&gt;</pre>
+
+You can also use   RepositoryClient code:
+<pre>
+  RepositoryClient client = new RepositoryClient(server, 80, "/repository", userId,password);
+  String\[\] msg = { "" };
+  if (client.isValidSession(true, msg)) {
+       System.err.println("Valid session");
+   } else {
+        System.err.println("Invalid session:" + msg\[0\]);
+   }
+</pre>
+
+
+
+Next, create an <a href="../entryxml.html">entry xml</a> file that defines the entries you want to create.  
+
+<p>
+Now, zip up this xml file along with the file you want to upload and then post the zipped file to:
+<pre>http://&lt;server&gt;/repository/entry/xmlcreate</pre>
+
+
+Include the arguments:
+<pre>
+output=xml
+sessionid=&lt;sessionid&gt;
+file=thezipfile
+</pre>
+
+
+Note: an alternative way to specify the destination parent entry in the repository is to pass the entry id
+in as a URL argument:
+<pre>
+group=<i>some parent entry id</i> 
+</pre>
+
+
+
+If you are not uploading files you can just post the xml file instead of the zip file.
+In that case instead of a file= attribute in the xml use url=, e.g.,:
+<pre>
+ &lt;entries&gt;
+  &lt;entry name="Some opendap url" 
+            type="file" 
+            id="0" 
+            url="the opendap url"  
+            parent="&lt;some parent entry id&gt;" 
+&lt;/entries&gt;
+</pre>
+
+
+
+Either way, you will get back the response xml with either code=ok and a list of the entry ids created:
+<pre>
+&lt;response code="ok"&gt;
+  &lt;entry id="1219161636252_0.6145187911490728_17"/&gt;
+&lt;/response&gt;
+</pre>
+
+Or an error response:
+<pre>
+&lt;response code="error"&gt;
+error message
+&lt;/response&gt;
+</pre>
+
+
+Here is a longer version of an entries file:
+
+
+
+<pre>
+&lt;entries&gt;
+  &lt;entry description="" east="-3.950" file="test.xidv" fromdate="2008-08-19 16:01:00 GMT" id="0" name="test.png" north="71.864" parent="&lt;some parent entry id&gt;" south="-7.926" todate="2008-08-19 16:01:00 GMT" type="file" west="-198.358"/&gt;
+  &lt;entry east="-3.950" file="test.png" fromdate="2008-08-19 16:01:00 GMT" id="1" name="test.png - Product" north="71.864" parent="&lt;some parent entry id&gt;" south="-7.926" todate="2008-08-19 16:01:00 GMT" type="file" west="-198.358"/&gt;
+  &lt;association from="0" name="generated product" to="1"/&gt;
+&lt;/entries&gt;
+</pre>
+
+With its response:
+<pre>
+&lt;response code="ok"&gt;
+  &lt;entry id="1219161636252_0.5912686911125428_33"/&gt;
+  &lt;entry id="1219161636252_0.34475975368841827_34"/&gt;
+  &lt;association id="1219161636252_0.18087075533515407_35"/&gt;
+&lt;/response&gt;
+</pre>
+
+
+<subhead intoc="false" id="metadata">Metadata</subhead>
+
+You can also create metadata (or properties) in the XML.
+
+Inside the entry tag you can have any number of metadata tags. You define the type and the attribute values.
+
+Note: This only works for the more simple metadata elements like tag, personnel, etc. The more complex
+ones with nested structured would require knowing RAMADDA's internal (and rather ill thought out) metadata storage model.
+
+A simple metadata xml tag looks like:
+
+<pre>
+[xml {
+<entry ...>
+...
+<metadata type="some type" attr1="atribute 1 value" attr2="attribute 2 value" .../>
+}]
+</pre>
+
+So to add a "tag" metadata use the xml:
+<pre>
+[xml {
+    <metadata inherited="false" type="enum_tag" attr1="TAG VALUE">
+}]
+</pre>
+
+
+If you have values that don't work as XML attributes due to their content or their length 
+you can include them as tags.  The encoded="false" says this is unencoded text. The 
+default is encoded=true which implies the text is base64 encoded (see below).
+
+<pre>
+[xml {
+   <metadata inherited="true" type="some type">
+      <attr index="1" encoded="false"><![CDATA[value 1]]></attr>
+      <attr index="2" encoded="false"><![CDATA[value 2]]></attr>
+      ...
+    </metadata>
+}]
+</pre>
+
+
+
+A simple way to see the metadata xml is to create a folder or other entry  in RAMADDA. Add a number of properties to it then do File->Export. Uzip the .zip file and look at the entries.xml
+Note: the contents of the attr tags are CDATA blocks of base64 encoded text. 
+Base64 encoding of the text is the default and is what is expected when RAMADDA ingests this XML unless 
+you have encoded=false.
+
+
+<pre>
+[xml {
+   <metadata inherited="true" type="some type">
+      <attr index="1"><![CDATA[TlNGLU9QUA==]]></attr>
+      <attr index="2"><![CDATA[SW5jcmV=]]></attr>
+      ...
+    </metadata>
+}]
+</pre>
+
+
+
+
+
+
+</body>
+</html>

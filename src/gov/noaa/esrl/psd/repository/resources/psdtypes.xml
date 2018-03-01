@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<types>
+
+  <type name="ushcnpointdatabase"  description="USHCN Point Database" handler="gov.noaa.esrl.psd.repository.data.UshcnPointDatabaseTypeHandler" category="Geo Data">
+     <property name="icon" value="/icons/database.png"/>
+     <property name="form.date.show" value="false"/>
+<!--     <property name="form.area.show" value="false"/> -->
+     <property name="form.datatype.show" value="false"/>
+     <column name="properties" type="clob" size="256000" label="" cansearch="false" showinhtml="false"/>
+
+   </type>
+
+  <type name="type_psd_station"  description="Climate Extremes Stations"  category="Geo Data">
+     <property name="icon" value="/icons/marker.png"/>
+     <property name="form.date.show" value="true"/>
+     <property name="form.area.show" value="false"/> 
+     <property name="form.altitude.show" value="true"/> 
+     <property name="form.datatype.show" value="false"/>
+     <column name="station_id" type="string" label="Station ID"/>
+   </type>
+
+</types>
+

@@ -1,0 +1,185 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+
+<project basedir="../../../../.." default="release" name="Point Tools">
+
+    <target name="init">
+        <property name="dist_dir" value="${basedir}/dist"/>
+        <mkdir dir="${dist_dir}"/>
+        <property name="point_dest_dir" value="${dist_dir}/pointtools"/>
+        <mkdir dir="${point_dest_dir}"/>
+
+        <property name="point_lib_dir" value="${point_dest_dir}/lib"/>
+        <mkdir dir="${point_lib_dir}"/>
+
+        <property name="point_zip" value="${dist_dir}/pointtools.zip"/>
+
+        <property name="src_dir" value="${basedir}/src"/>
+
+        <property name="point_src_dir" value="${src_dir}/org/ramadda/data"/>
+        <property name="lib_dir" value="${basedir}/lib"/>
+       <property name="classpath" value="${lib_dir}/ramaddalib.jar:${lib_dir}/idv.jar:${lib_dir}/tika-app-1.13.jar:${lib_dir}/ramaddatds.jar:${lib_dir}/servlet-api.jar"/>
+<!--
+        <property name="classpath" value="${src_dir}:${lib_dir}/ramadda.jar:${lib_dir}/ramaddalib.jar:${lib_dir}/unidatautil.jar:${lib_dir}/jmapproj.jar:${lib_dir}/tika-app-1.13.jar"/>
+-->
+        <property name="build.sysclasspath"    value="ignore" />
+
+        <!-- javac flags -->
+        <property name="javac.failonerror" value="true"/>
+        <property name="javac.fork" value="true"/>
+        <property name="javac.maxmemory" value="512m"/>
+
+
+    </target>
+
+    <target name="compile" depends="init">
+        <javac
+            classpath="${classpath}"
+            verbose="false"
+            debug="true"
+            deprecation="false" 
+            nowarn="true"
+            srcdir="${src_dir}"
+            failonerror="${javac.failonerror}"
+            fork="${javac.fork}"
+            memoryMaximumSize="${javac.maxmemory}"
+            target="1.6"
+            source="1.6">
+        <include name="org/ramadda/data/tools/**/*.java"/>
+        <include name="org/ramadda/data/point/**/*.java"/>
+        </javac>
+    </target>
+
+
+    <target name="clean" depends="init" >
+        <delete>
+            <fileset dir="${src_dir}" includes="**/*.class"/>
+        </delete>
+    </target>
+
+   <target  name="release" depends="init,clean,compile">
+        <jar
+            basedir="${src_dir}"
+            update="false"
+            compress="true"
+            jarfile="${point_lib_dir}/pointtools.jar">
+            <include name="org/**/*.class"/>
+            <include name="org/ramadda/data/point/**/*.txt"/>
+            <include name="org/ramadda/data/point/**/*.properties"/>
+        </jar>
+
+
+        <copy overwrite="true"  todir="${point_lib_dir}">
+          <fileset file="${lib_dir}/unidatautil.jar"/>
+       </copy>
+
+        <copy overwrite="true"  todir="${point_lib_dir}">
+          <fileset file="${lib_dir}/ncIdv.jar"/>
+       </copy>
+
+        <copy overwrite="true"  todir="${point_lib_dir}">
+          <fileset file="${lib_dir}/ramadda.jar"/>
+       </copy>
+
+        <copy overwrite="true"  todir="${point_lib_dir}">
+          <fileset file="${lib_dir}/jmapproj.jar"/>
+       </copy>
+
+        <antcall target="execjar">
+          <param name="exec_jar" value="point2csv.jar"/>
+          <param name="exec_class" value="org.ramadda.data.tools.Point2Csv"/>
+        </antcall>
+
+        <antcall target="execjar">
+          <param name="exec_jar" value="point2netcdf.jar"/>
+          <param name="exec_class" value="org.ramadda.data.tools.Point2Netcdf"/>
+        </antcall>
+
+        <antcall target="execjar">
+          <param name="exec_jar" value="pointperf.jar"/>
+          <param name="exec_class" value="org.ramadda.data.tools.PointPerformance"/>
+        </antcall>
+
+        <antcall target="execjar">
+          <param name="exec_jar" value="glasconvert.jar"/>
+          <param name="exec_class" value="org.ramadda.data.point.glas.GlasFile"/>
+        </antcall>
+
+
+        <antcall target="execjar">
+          <param name="exec_jar" value="pointtiler.jar"/>
+          <param name="exec_class" value="org.ramadda.data.tools.PointTiler"/>
+        </antcall>
+
+
+        <antcall target="execjar">
+          <param name="exec_jar" value="pointbounds.jar"/>
+          <param name="exec_class" value="org.ramadda.data.tools.PointBounds"/>
+        </antcall>
+
+
+        <antcall target="execjar">
+          <param name="exec_jar" value="pointprinter.jar"/>
+          <param name="exec_class" value="org.ramadda.data.tools.PointPrinter"/>
+        </antcall>
+
+
+        <antcall target="execjar">
+          <param name="exec_jar" value="pointchecker.jar"/>
+          <param name="exec_class" value="org.ramadda.data.tools.PointChecker"/>
+        </antcall>
+
+      <antcall target="scripts"/>
+
+
+        <zip destfile="${point_zip}">
+          <zipfileset dir="${point_dest_dir}" prefix="pointtools"/>
+        </zip>
+
+
+
+
+   </target>
+
+   <target  name="scripts" depends="init">
+      <copy  overwrite="true" todir="${point_dest_dir}">
+          <fileset dir="${point_src_dir}/tools/bin">
+             <exclude name="template.sh"/>
+          </fileset>
+        </copy>
+
+      <mkdir dir="${point_dest_dir}/tools/data"/>
+      <copy  overwrite="true" todir="${point_dest_dir}/data">
+        <fileset dir="${point_src_dir}/tools/data"/>
+        <fileset dir="${point_src_dir}/tools/data"/>
+      </copy>
+
+    </target>
+
+
+
+<target name="execjar">
+        <jar
+            basedir="${src_dir}"
+            update="false"
+            compress="true"
+            jarfile="${point_lib_dir}/${exec_jar}">
+           <manifest>
+              <attribute name="Implementation-Title" value="Load Processor"/>
+              <attribute name="Implementation-Version" value="1.0"/>
+              <attribute name="Implementation-Vendor" value="RAMADDA"/>
+              <attribute name="Main-class" value="${exec_class}"/>
+              <attribute name="Class-Path" value="pointtools.jar ramadda.jar unidatautil.jar ncIdv.jar jmapproj.jar libext1.jar libext2.jar libext3.jar"/>
+            </manifest> 
+            <exclude name="*"/>
+<!-- Dummy so it doesn't include anything -->
+           <include name="org/ramadda/dummy**/*.class"/>
+        </jar>
+</target>
+
+
+
+
+
+
+</project>

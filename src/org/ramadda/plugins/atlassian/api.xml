@@ -1,0 +1,4 @@
+
+<api handler="org.ramadda.plugins.atlassian.HipchatApiHandler" id="hipchat">
+      <api request="/hipchat/api"    method="processHipchatApi" admin="false"/>
+</api>

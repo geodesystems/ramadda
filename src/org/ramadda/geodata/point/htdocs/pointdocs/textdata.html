@@ -1,0 +1,383 @@
+<html>
+<head>
+<title>Text Point Data</title>
+  <link rel="stylesheet" type="text/css" href="./default.css" title="Style">
+
+</head>
+
+<body>
+<div class="ramadda-documentation">
+<table width=100% cellpadding=0 cellspacing=0><tr><td width=30%>
+<a href="datamodel.html"><img src="images/PreviousArrow.gif" border="0"   alt="Previous: Data Model" title="Previous: Data Model"></a> <a href="pointreaders.html"><img src="images/NextArrow.gif" border="0"   alt="Next: Developing point data readers for RAMADDA" title="Next: Developing point data readers for RAMADDA"></a>  <a href="toc.html#textdata.html"><img src="images/TOCIcon.gif" border="0"   alt="Table of contents" title="Table of contents"></a>
+</td>
+<td width=40% align=center>
+<div class="pagetitle">Point Data Documentation</div>
+</td>
+<td width=30%>&nbsp;</td>
+</tr></table>
+<div class="pagetitle">4.2 Text Point Data</div>
+
+<style type="text/css">
+pre {
+    margin-left:15px;
+}
+</style>
+
+
+
+
+
+RAMADDA can provide rich support for structured CSV or text data files.
+
+First of all, download and install the 
+<a href="http://sourceforge.net/projects/ramadda/files/ramadda1.6b/">pointtools.zip</a> release.
+
+All of the examples below, once saved to disk, can be processed with:
+
+<pre>
+    sh &lt;install path&gt;/pointtools/pointchecker.sh  value.csv
+</pre>
+
+Here are some examples of different point data readers.
+
+<a name="csv"></a><div class="ramadda-page-heading">4.2.0 Simple CSV Examples</div> 
+
+If you have text formatted data that you want to ingest into RAMADDA you can either
+generate the data in a standard CSV text format for specify a set of
+metadata properties in an external properties file.
+<p>
+
+The "standard CSV" format has any  number of "#" delimited comment and property lines 
+at the beginning of the file followed by any number of data records.
+The properties are defined in the header with:
+<pre>
+#comment
+#property name=property value
+#property name=property value
+#
+value1,value2,valueN
+value1,value2,valueN
+...
+</pre>
+
+
+Here is a simple example with just a single column value:
+<div style="margin-top:10px; margin-bottom:20px;margin-left:20px;"><a href="data/value.csv">value.csv</a> <pre style="margin:0px;margin-top:5px;border: 1px #888 solid;max-height:150px; overflow-y:auto;max-width:1000px;overflow:auto;">#fields=value[unit="some unit"]
+-0.931363
+-0.930391
+</pre></div>
+
+
+The only property that is required is the <i>fields</i> property - a comma separated
+list of field identifiers with a set of attributes contained within &quot;[&quot; and  &quot;]&quot;.
+<pre>
+    fieldname[attr1="value1" attr2="value2" ...]
+</pre>
+
+
+Here is a simple example with 2 columns. The second column has a missing value defined.
+<div style="margin-top:10px; margin-bottom:20px;margin-left:20px;"><a href="data/2values.csv">2values.csv</a> <pre style="margin:0px;margin-top:5px;border: 1px #888 solid;max-height:150px; overflow-y:auto;max-width:1000px;overflow:auto;">#fields=value1[unit="some unit"],value2[unit="some unit" missing="-999.0"]
+-0.93,100.0
+-0.23,-999.0
+-1.93,-999.0
+</pre></div>
+
+
+
+An alternative way to specify attributes of fields is with other named properties as shown below. 
+
+<div style="margin-top:10px; margin-bottom:20px;margin-left:20px;"><a href="data/2values_alt.csv">2values_alt.csv</a> <pre style="margin:0px;margin-top:5px;border: 1px #888 solid;max-height:150px; overflow-y:auto;max-width:1000px;overflow:auto;">#fields=value1,value2
+#field.value1.unit=some unit
+#field.value2.unit=some other unit
+#field.value2.missing=-999.0
+-0.93,100.0
+-0.23,-999.0
+-1.93,-999.0
+</pre></div>
+
+
+<a name="datetime"></a><div class="ramadda-page-heading">4.2.1 Date/Time</div> 
+
+You can specify a date/time by specifying its type=&quot;date&quot;. 
+Use format=&quot;date format&quot; to
+specify the 
+<a href="http://docs.oracle.com/javase/7/docs/api/java/text/SimpleDateFormat.html">date format</a>. 
+Here is an example with time and a single value. 
+
+<div style="margin-top:10px; margin-bottom:20px;margin-left:20px;"><a href="data/time_value.csv">time_value.csv</a> <pre style="margin:0px;margin-top:5px;border: 1px #888 solid;max-height:150px; overflow-y:auto;max-width:1000px;overflow:auto;">#fields=date[type="date" format="yyyy-MM-dd"],value
+2001-01-01,-0.931363
+2001-02-01,-0.930391
+2001-03-01,-0.95
+2001-04-01,-0.96
+</pre></div>
+
+
+
+Here we have a file where the date and time are in different columns.
+The <i>isdate</i> and <i>istime</i> attributes specify that the time field is 
+created from both of the columns. The <i>dateformat</i> specifies 
+the format to use.
+
+
+<div style="margin-top:10px; margin-bottom:20px;margin-left:20px;"><a href="data/datetime.csv">datetime.csv</a> <pre style="margin:0px;margin-top:5px;border: 1px #888 solid;max-height:150px; overflow-y:auto;max-width:1000px;overflow:auto;">#
+#dateformat=yyyy/MM/dd HH:mm:ss
+#fields=date[type="string" isdate="true"],time[type="string" istime="true"],value
+#
+2012/10/12 14:11:17.14 -0.931363
+2012/10/12 14:11:17.24 -0.930391</pre></div>
+
+
+If you have fields with the names yyyy (or year), month (or mm), day, hour, minute, second (or a subset of them) then
+RAMADDA will figure out the date/time of the records from the column values.
+<div style="margin-top:10px; margin-bottom:20px;margin-left:20px;"><a href="data/yymmddhhmmss.csv">yymmddhhmmss.csv</a> <pre style="margin:0px;margin-top:5px;border: 1px #888 solid;max-height:150px; overflow-y:auto;max-width:1000px;overflow:auto;">#fields=yyyy[type="string"],month[type="string"],day[type="string"],hour[type="string"],minute[type="string"],second[type="string"],value
+2001,01,01,01,00,00,-0.931363
+2001,02,01,01,00,00,-0.930391
+2001,03,01,01,00,00,-0.95
+2001,04,01,01,00,00,-0.96
+</pre></div>
+
+
+
+
+<a name="geo"></a><div class="ramadda-page-heading">4.2.2 Georeferenced Data</div> 
+
+If you have georeferenced data then specify latitude and longitude columns. Please, please, please, use decimal degrees east -180 to 180 and decimal degrees north -90 to 90.
+
+<div style="margin-top:10px; margin-bottom:20px;margin-left:20px;"><a href="data/latlon_value.csv">latlon_value.csv</a> <pre style="margin:0px;margin-top:5px;border: 1px #888 solid;max-height:150px; overflow-y:auto;max-width:1000px;overflow:auto;">#fields=latitude[unit="degrees"],longitude[unit="degrees"],value
+40,-107,-0.931363
+45,-110,-0.930391
+40,-107,-0.95
+35,-120,-0.96
+</pre></div>
+
+
+Here is a georeferenced time series:
+<div style="margin-top:10px; margin-bottom:20px;margin-left:20px;"><a href="data/latlon_time_value.csv">latlon_time_value.csv</a> <pre style="margin:0px;margin-top:5px;border: 1px #888 solid;max-height:150px; overflow-y:auto;max-width:1000px;overflow:auto;">#fields=latitude[unit="degrees"],longitude[unit="degrees"],date[type="date" format="yyyy-MM-dd"],value
+40,-107,2001-01-01,-0.931363
+45,-110,2001-02-01,-0.930391
+40,-107,2001-03-01,-0.95
+35,-120,2001-04-01,-0.96
+</pre></div>
+
+
+You can specify different coordinate reference systems with the <i>crs</i> property.
+For UTM coordinates specify an X and Y field and the utm zone and north/south flag:
+Here is data in UTM zone 58 South:
+<div style="margin-top:10px; margin-bottom:20px;margin-left:20px;"><a href="data/utm58s_rgbi.csv">utm58s_rgbi.csv</a> <pre style="margin:0px;margin-top:5px;border: 1px #888 solid;max-height:150px; overflow-y:auto;max-width:1000px;overflow:auto;">#crs=utm
+#utm.zone=58
+#utm.north=false
+#fields=x,y,elevation[unit=m],red,green,blue,intensity
+449929.47,  1382815.76, 21.01,  67, 66, 61, 0
+449929.45,  1382815.77, 21.00,  67, 66, 61, 0
+449929.47,  1382815.77, 21.02,  78, 77, 72, 0
+449929.13,  1382815.69, 20.94,  89, 86, 77, 0
+449929.16,  1382815.71, 20.94,  90, 90, 82, 0
+
+</pre></div>
+
+
+Here is data in a WGS84 ellipsoid:
+<div style="margin-top:10px; margin-bottom:20px;margin-left:20px;"><a href="data/wgs84_rgbi.csv">wgs84_rgbi.csv</a> <pre style="margin:0px;margin-top:5px;border: 1px #888 solid;max-height:150px; overflow-y:auto;max-width:1000px;overflow:auto;">#crs=wgs84
+#fields=x[precision=2],y[precision=3],z[precision=4],r[type=integer],g[type=integer],b[type=integer],intensity[type=integer]
+-2313174.974,-3717949.974,4622885.034,4,4,4,1166
+-2313175.009,-3717949.961,4622885.028,2,2,2,1799
+-2313175.001,-3717950.058,4622884.669,2,2,2,1196
+-2313175.012,-3717949.889,4622884.824,4,4,4,2659
+-2313175.284,-3717950.819,4622883.842,4,4,4,1663
+-2313175.097,-3717950.210,4622884.419,6,6,6,2101
+-2313175.074,-3717949.930,4622884.744,5,5,4,1598
+-2313175.198,-3717950.351,4622884.298,5,5,4,1937
+-2313175.079,-3717949.814,4622884.857,3,3,3,1302
+-2313175.195,-3717950.237,4622884.345,4,4,4,1425
+</pre></div>
+
+
+
+You can also specify EPSG coordinate systems  by setting the crs property to:
+<pre>
+crs=epsg:&lt;epgs code&gt;
+</pre>
+
+
+<p>
+
+<a name="site"></a><div class="ramadda-page-heading">4.2.3 Site Based Data</div> 
+
+If you have text values
+then specify the <i>type="string"</i>
+
+<div style="margin-top:10px; margin-bottom:20px;margin-left:20px;"><a href="data/site_time_value.csv">site_time_value.csv</a> <pre style="margin:0px;margin-top:5px;border: 1px #888 solid;max-height:150px; overflow-y:auto;max-width:1000px;overflow:auto;">#
+#
+#fields=latitude[unit="degrees"],longitude[unit="degrees"],site[type="string"],date[type="date" format="yyyy-MM-dd"],value
+#
+40,-107,site id 1,2001-01-01,-0.931363
+45,-110,site id 2,2001-02-01,-0.930391
+40,-107,site id 1,2001-03-01,-0.95
+35,-120,site id 3,2001-04-01,-0.96
+</pre></div>
+
+
+
+Its often the case that a single file has site and lat/long data is implicit in a header, etc.
+For these cases we want to be able to access the site and location as we read the data. So, we define a
+fake field with a <i>value="..."</i> attribute.
+
+<div style="margin-top:10px; margin-bottom:20px;margin-left:20px;"><a href="data/fixed_site.csv">fixed_site.csv</a> <pre style="margin:0px;margin-top:5px;border: 1px #888 solid;max-height:150px; overflow-y:auto;max-width:1000px;overflow:auto;">#
+#
+#fields=latitude[unit="degrees" value="40"],longitude[unit="degrees" value="-107"],site[type="string" value="site id"],date[type="date" format="yyyy-MM-dd"],value
+#
+2001-01-01,-0.931363
+2001-02-01,-0.930391
+2001-03-01,-0.95
+2001-04-01,-0.96
+</pre></div>
+
+
+Likewise, you can specify the time value:
+
+<div style="margin-top:10px; margin-bottom:20px;margin-left:20px;"><a href="data/fixed_time.csv">fixed_time.csv</a> <pre style="margin:0px;margin-top:5px;border: 1px #888 solid;max-height:150px; overflow-y:auto;max-width:1000px;overflow:auto;">#
+#
+#fields=latitude[unit="degrees" value="40"],longitude[unit="degrees" value="-107"],site[type="string" value="site id"],date[type="date" format="yyyy-MM-dd" value="2001-01-01"],value
+#
+-0.931363
+-0.930391
+-0.95
+-0.96
+</pre></div>
+
+
+You can also specify a pattern that is applied to the text in the header to extract out
+latitude, longitude, elevation, etc.
+
+<div style="margin-top:10px; margin-bottom:20px;margin-left:20px;"><a href="data/patternexample.csv">patternexample.csv</a> <pre style="margin:0px;margin-top:5px;border: 1px #888 solid;max-height:150px; overflow-y:auto;max-width:1000px;overflow:auto;">#
+#fields=Site_Id[ type="string"   pattern="ID:\s(.*)ARGOS:"  ], Latitude[ pattern="Lat:\s(.*)Lon:"  ], Longitude[ pattern="Lon:\s(.*)Elev:"  ], Elevation[pattern="Elev:(.*)"  ], value
+#
+#
+#Year: 2011  Month: 02  ID: KMS  ARGOS: 21364  Name: Kominko-Slade       
+#Lat: 79.47S  Lon: 112.11W  Elev: 1801m
+#
+1
+2
+3
+4
+</pre></div>
+
+
+
+
+
+
+<p>
+
+<a name="property"></a><div class="ramadda-page-heading">4.2.4 Property Files</div> 
+
+If you have text point files that are in some pre-existing format (i.e., you can't add "#" properties) then you can specfy
+
+
+Lets assume we have a simple CSV file with 4 columns - 
+
+<div style="margin-top:10px; margin-bottom:20px;margin-left:20px;"><a href="data/example1.csv">example1.csv</a> <pre style="margin:0px;margin-top:5px;border: 1px #888 solid;max-height:150px; overflow-y:auto;max-width:1000px;overflow:auto;">latitude, longitude, date, value
+40.0,-107,2012/10/12,  -0.931363
+45.0,-110.0,2012/10/12, -0.930391
+</pre></div>
+
+
+We can read this file with just a point.properties file. The key properties are
+<i>delimiter</i>, <i>skiplines</i> and <i>fields</i>.
+
+<div style="margin-top:10px; margin-bottom:20px;margin-left:20px;"><a href="data/example1.csv.properties">example1.csv.properties</a> <pre style="margin:0px;margin-top:5px;border: 1px #888 solid;max-height:150px; overflow-y:auto;max-width:1000px;overflow:auto;">
+
+#Define the column delimiter
+delimiter=,
+
+#number of lines in header to skip
+skiplines=1
+
+#fields definition
+fields=latitude[unit="degrees"],longitude[unit="degrees"],date[type="date" format="yyyy/MM/dd"],value[unit="some unit"]
+
+
+
+</pre></div>
+
+
+<div style="margin-top:10px; margin-bottom:20px;margin-left:20px;"><a href="data/example1_alt.csv.properties">example1_alt.csv.properties</a> <pre style="margin:0px;margin-top:5px;border: 1px #888 solid;max-height:150px; overflow-y:auto;max-width:1000px;overflow:auto;">
+
+#number of lines in header to skip
+skiplines=1
+
+#An alternative method to define the attributes of the fields
+#define the field names here
+fields=latitude,longitude,date,value
+
+
+date.type=date
+date.format=yyyy/MM/dd
+
+
+
+#define the attributes with 
+#field.<field name>.<attr>=...
+
+field.latitude.unit=degrees
+field.longitude.unit=degrees
+field.date.type=date
+field.date.format=yyyy/MM/dd
+field.value.unit=some unit
+
+#One can also set searchable and chartable attributes for ramadda's use
+
+field.value.searchable=true
+field.value.chartable=true
+
+
+
+</pre></div>
+
+
+<p>
+
+<a name="types"></a><div class="ramadda-page-heading">4.2.5 Integrating with RAMADDA</div> 
+
+You can upload an arbitrary CSV point file and its accompanying properties file.
+When you are logged in go to File->New Entry. Under the Point Data list choose Text Point Data.
+Specify the properties in the text field or upload the properties file.
+
+
+You can also define a new entry type in RAMADDA for your point data. Embed the 
+properties in a <i>properties</i> tag. Install the types.xml file as a plugin.
+
+<br> <a href="data/exampletypes_.xml">exampletypes_.xml</a> <blockquote><pre>&lt;?xml <span class="xmlattr">version</span>="1.0&quot; <span class="xmlattr">encoding</span>="ISO-8859-1&quot;?&gt;
+&lt;types&gt;
+
+    &lt;type
+     <span class="xmlattr">description</span>="Test data&quot;
+     <span class="xmlattr">handler</span>="org.ramadda.data.services.PointTypeHandler&quot;
+     <span class="xmlattr">name</span>="type_point_test&quot;
+     <span class="xmlattr">super</span>="type_point&quot;&gt;
+
+         &lt;property <span class="xmlattr">name</span>="record.file.class&quot; <span class="xmlattr">value</span>="org.ramadda.data.point.text.CsvFile&quot;/&gt;
+
+         &lt;property <span class="xmlattr">name</span>="record.properties&quot;&gt;
+delimiter=
+position.required=false
+skiplines=1
+dateformat=yyyy/MM/dd HH:mm:ss
+<span class="xmlattr">fields=date[type</span>="string&quot; <span class="xmlattr">isdate=&quot;true&quot;],time[type</span>="string&quot; <span class="xmlattr">istime=&quot;true&quot;],value[searchable</span>="true&quot; <span class="xmlattr">chartable</span>="true&quot; <span class="xmlattr">unit</span>="some unit&quot;]
+     &lt;/property&gt;
+
+      &lt;/type&gt;
+
+&lt;/types&gt;
+
+
+
+<p>
+
+<p>&nbsp;<p>
+<a href="datamodel.html"><img src="images/PreviousArrow.gif" border="0"   alt="Previous: Data Model" title="Previous: Data Model"></a> <a href="pointreaders.html"><img src="images/NextArrow.gif" border="0"   alt="Next: Developing point data readers for RAMADDA" title="Next: Developing point data readers for RAMADDA"></a>  <a href="toc.html#textdata.html"><img src="images/TOCIcon.gif" border="0"   alt="Table of contents" title="Table of contents"></a>
+<p>
+</div>
+</body>
+</html>
+

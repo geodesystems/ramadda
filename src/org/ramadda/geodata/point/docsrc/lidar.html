@@ -1,0 +1,37 @@
+[ht::head {LiDAR Data Formats}]
+<%nochildlist%>
+
+There is support for a number of different LiDAR file formats.
+
+<ul>
+<li>
+LAS - Version 1.2 and 1.3 - all point formats
+<div class="note">
+Note: for now the Java LAS library does not read the GEOTIFF coordinate reference system information so  
+it is assume that  the x/y/z coordinates are geographic - i.e., they are longitude/latitude/meters.
+</div>
+
+<li>
+GLAS -  GLAS record formats 5, 6, 12, 13, 14, 15 and GLANL
+<div class="note">
+Note: the tiling won't work for the "non-flat" formats -  everything except GLANL. 
+</div>
+
+<li>
+LVIS - Version 1.2 and 1.3 - all points formats (LCE, LGE and LGW)
+
+<li>
+ATM, McORDS, PARIS text formats
+
+<li>
+General CSV text formats - See below
+
+
+</ul>
+
+
+
+
+[ht::foot]
+
+

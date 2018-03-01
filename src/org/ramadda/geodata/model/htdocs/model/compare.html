@@ -1,0 +1,93 @@
+<div class="helptext">
+
+<script>
+$(function() {
+    $( "#tabs" ).tabs();
+  });
+</script>
+
+<!--
+<h2>How to use this form</h2>
+-->
+
+This form allows you to plot a single field from a model/experiment or compare
+one field to itself or another.  The instructions below explain each of the sections
+of the form.
+<p>
+
+<div id="tabs">
+<ul>
+<li><a href="#tabs-1">Field(s)</a></li>
+<li><a href="#tabs-2">Area Statistics</a></li>
+<li><a href="#tabs-3">Plot Options</a></li>
+<li><a href="#tabs-4">Make Plot</a></li>
+</ul>
+
+<div id="tabs-1">
+<h3>Field(s)</h3>
+<ol>
+<li> From the <b>Collection</b>, select the <b>Model, Experiment, Ensemble Member</b> and <b>Variable</b> you wish to plot
+<li> Optionally, select a second data set you wish to compare with the first.
+<li> Click the <b>Select Data</b> button to bring up the options for analyzing and plotting the data you've selected.  
+If you make any changes in the <b>Field(s)</b> section, click the <b>Update Data Selection</b> button to refresh
+the options below.
+</ol>
+</div>
+
+<div id="tabs-2">
+<h3>Area Statistics</h3>
+
+<ol>
+<li>If you are plotting pressure level data, select the <b>Level</b> you wish to use
+<li>You can plot either the <b>Average</b>, the <b>Anomaly</b>, the <b>Standardized Anomaly</b> or
+(for precipitation) the <b>Percent of Normal</b> over the region.   
+Anomalies are computed relative to the <b>1981-2010</b> average for the ensemble mean.
+<li>For times, depending on the configuration you can either select:
+<ul>
+    <li>Choose a starting and ending <b>month</b> over which to average the data.
+    <li>Choose a starting and ending <b>year</b> over which to average the data. Alternatively, type in
+a list of years that are separated by commas (e.g. 1983, 1986, 1997)
+    <li>If you are doing a comparison, select the <b>years</b> for the second dataset.
+    </p><b>OR</b></p>
+    <li>Select from a list of pre-defined times.
+</ul>
+<li>Select the <b>Region</b> that the data will be averaged over.  You can select from a predefined
+list of regions, or select Custom.  If you choose custom, you can draw a region on the map
+(use Shift+drag to draw the region), or enter the North, South, West and East coordinates of
+the region.
+</ol>
+</div>
+
+<div id="tabs-3">
+<h3>Plot Options</h3>
+
+<ol>
+<li>If you are doing a comparison between datasets, you can either plot the result as a difference
+between the two fields, or as 2 separate plots.
+<li>You can select to plot the data as an image (Map) or load it into Google Earth.
+<li>For some fields, you can select the output units for the plot.
+<li>You can select a mask for the data to block out either ocean or land areas.
+<li>You can plot the output as color-filled contours and optionally overlay contour lines and labels.
+<li>You can override the default contour intervals for the plots by specifying 
+a contour interval, minimum and maximum values.
+</ol>
+</div>
+
+<div id="tabs-4">
+<h3>Make Plot</h3>
+
+<ol>
+<li>After you have made your selections, click the Make Plot button to generate the image or 
+load the data into Google Earth.
+<li>If you selected Map for the plot type, an image will be displayed to the right of the
+data selection region.  You can click on the image to get a full sized version of it.  There
+is link below the image which allows you to download the image to your computer.
+<li>If you selected Google Earth for the plot type, then the result will be loaded into the
+Google Earth Plugin.  You may have to download the plugin for this to work.  If you do not have 
+the plugin, or you want to load the image into Google Earth outside the browser, then you can
+use the <b>Download Google Earth (KMZ) file</b> link to download the file to your computer.
+<li>There are links for downloading the files that were used to create the images and to 
+download all files (images, kmz, etc)
+</ol>
+</div>
+</div>

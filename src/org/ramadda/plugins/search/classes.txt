@@ -1,0 +1,29 @@
+#org.ramadda.plugins.search.GoogleSearchProvider
+#org.ramadda.plugins.search.GoogleImageSearchProvider
+#org.ramadda.plugins.search.GoogleGraphSearchProvider
+org.ramadda.plugins.search.DuckDuckGoSearchProvider
+org.ramadda.plugins.search.WolframSearchProvider
+org.ramadda.plugins.search.RedditSearchProvider
+org.ramadda.plugins.search.YouTubeSearchProvider
+org.ramadda.plugins.search.FlickrSearchProvider
+org.ramadda.plugins.search.ArxivSearchProvider
+org.ramadda.plugins.search.NationalArchivesSearchProvider
+org.ramadda.plugins.search.PlosSearchProvider
+org.ramadda.plugins.search.NdnpSearchProvider
+
+
+
+
+
+#For open search the form is:
+#classpath;ID;opensearch URL;Label
+#The URL should have the macro: ${searchterms}
+#
+#org.ramadda.repository.search.OpenSearchProvider;nasa;https://api-test.echo.nasa.gov/opensearch/datasets.atom?keyword=${searchterms};NASA Open Search;/search/nasa.png
+
+
+##This isn't an OpenSearch provider but keep it around for future reference
+org.ramadda.repository.search.OpenSearchProvider;nature;http://www.nature.com/opensearch/request?httpAccept=application/atom%2Bxml&query=${searchterms};nature.com Search;/search/nature.png
+
+
+

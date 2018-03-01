@@ -1,0 +1,411 @@
+<types supercategory="Miscellaneous" category="Community">
+
+  <type name="type_resilience_project"  description="Resiliency Project" handler="org.ramadda.repository.type.ExtensibleGroupTypeHandler"      metadata="resilience_risk" >
+     <property name="icon" value="/community/globe-share.png"/>
+
+     <property name="form.file.show" value="false"/>
+     <property name="form.url.show" value="true"/>
+     <property name="form.datatype.show" value="false"/>
+     <property name="form.altitude.show" value="false"/>
+     <property name="form.altitude.top.show" value="false"/>
+     <property name="search.tabs" value="earth,list,timeline"/>
+     <property name="search.metadatatypes" value="project_person"/>
+     <column name="status"  type="enumerationplus"  values="active:Active,inactive:Inactive" label="Status" cansearch="true"/>
+     <column name="project_type"  type="enumerationplus"  label="Project Type" cansearch="true" values="undp_aap:UNDP African Adaptation Program,100cities:Rockefeller 100 Cities Project"/>
+    <column name="country" type="enumerationplus" label="Country" values="file:/org/ramadda/plugins/community/resources/countries.txt" showinhtml="true" cansearch="true"/>
+
+<children><![CDATA[
+<entries>
+<entry  name="People"  type="group"/>
+<entry  name="Documents"  type="group"/>
+<entry  name="Data"  type="group"/>
+</entries>
+]]>
+</children>
+
+     <wiki><![CDATA[
++inset
++row
++col-md-8
+:title Resiliency Project: {{name}}
+<div style="max-height: 400px; overflow-y: auto;margin:5px;">
+{{description wikify="true"}}
+</div>
+<table class="formtable">
+{{resource row.label="URL:"  message=""}}
+{{field name="project_type" row.label="Type:"}}
+{{field name="status" row.label="Status:"}}
+{{field name="country" row.label="Country:"}}
+</table>
+{{tree details="false" showtoggle="false" prefix="==Content==" message="No documents" }}
+<p>
+{{properties metadata.types="!resilience_risk" message="" }}
+-col
++col-md-4
+{{image src="::*" message="" width="300"}}
+<p>
+{{mapentry width="300" message=""}}
+<p>
+{{properties metadata.types="resilience_risk" message="" }}
+-col
+-row
+
+]]>
+</wiki>
+   </type>
+
+
+
+
+  <type name="type_resilience_assessment"  description="Resiliency Assessment" handler="org.ramadda.repository.type.ExtensibleGroupTypeHandler"    metadata="metadata_author,assessment_purpose,assessment_practice,assessment_sponsor,assessment_interaction,assessment_output,assessment_outcome" >
+     <property name="icon" value="/community/text_list_bullets.png"/>
+
+     <property name="html.date.show" value="false"/>
+     <property name="html.type.show" value="false"/>
+     <property name="html.owner.show" value="false"/>
+     <property name="form.file.show" value="true"/>
+     <property name="form.url.show" value="true"/>
+     <property name="form.datatype.show" value="false"/>
+     <property name="form.altitude.show" value="false"/>
+     <property name="form.altitude.top.show" value="false"/>
+
+     <property name="search.metadatatypes" value="metadata_author,assessment_purpose,assessment_practice,assessment_sponsor,assessment_interaction,assessment_output,assessment_outcome"/>
+<!--
+     <column name="authors"  type="string" label="Authors" size="500" cansearch="true"/>
+-->
+     <column name="organization"  type="string" label="Organization" cansearch="true"/>
+     <column name="country" type="enumerationplus" label="Country" values="file:/org/ramadda/plugins/community/resources/countries.txt" showinhtml="true" cansearch="true"/>
+     <column name="location"  type="string" label="Location" cansearch="true"/>
+     <column name="bioregion"  type="enumerationplus" label="Bioregion" cansearch="true"/>
+     <column name="assessment_type"  type="enumerationplus" label="Type" cansearch="true" values="oneoff:One-off,repeated:Repeated"/>
+     <column name="resilience_definition"  type="enumeration" label="Resilience definition" cansearch="true" values="yes:Yes,no:No" default="no"/>
+     <column name="theory_development"  type="enumeration" label="Theory development" cansearch="true"   values="yes:Yes,no:No" default="no"/>
+
+     <wiki><![CDATA[
++inset
++row
++col-md-8
+:title Resiliency Assessment: {{name}}
+<div style="max-height: 400px; overflow-y: auto;margin:5px;">
+{{description wikify="true"}}
+</div>
+
+{{information}}
+
+{{links details="false" showtoggle="false" prefix="<table><tr valign=top><td width=130 align=right><b>Files:</b></td><td><ul>" suffix="</ul></td></tr></table>" message="" linkresource="true" tagopen="<li>" }}
+</ul>
+
+
+{{properties  message="" metadata.types="metadata_author"}}
+{{properties   message="" metadata.types="!metadata_author"}}
+
+
+
+-col
++col-md-4
+{{image src="::*" message="" width="300"}}
+<p>
+{{mapentry width="300" message=""}}
+<p>
+-col
+-row
+
+]]>
+</wiki>
+   </type>
+
+
+
+  <type name="community_thing"  foruser="false" description="Community Thing" >
+     <property name="html.date.show" value="false"/>
+     <property name="form.date.show" value="false"/>
+     <property name="html.type.show" value="false"/>
+     <property name="html.owner.show" value="false"/>
+     <property name="form.file.show" value="false"/>
+     <property name="form.url.show" value="true"/>
+     <property name="form.datatype.show" value="false"/>
+     <property name="form.altitude.show" value="false"/>
+     <property name="form.altitude.top.show" value="false"/>
+     <property name="form.area.show" value="false"/>
+     <property name="form.location.show" value="true"/>
+     <property name="search.date.show" value="false"/>
+  </type>
+
+
+  <type name="community_datahub"  super="community_thing" description="Data Hub" handler="org.ramadda.repository.type.ExtensibleGroupTypeHandler"    metadata="" >
+     <property name="icon" value="/community/wheel.png"/>
+<!--
+     <property name="search.metadatatypes" value="community_service,content.contact"/>
+-->
+<!--
+     <column name="organization_type" type="enumerationplus" label="Type" values="file:/org/ramadda/plugins/community/resources/organizations.txt" showinhtml="true" cansearch="true"/>
+     <column name="address"  type="string" label="Address" cansearch="true"/>
+     <column name="city"  type="enumerationplus" label="City" cansearch="true"/>
+     <column name="state" type="enumerationplus" values="file:/org/ramadda/plugins/community/resources/states.txt" label="State or Province" showinhtml="true" cansearch="true"/>
+-->
+<children><![CDATA[
+<entries>
+<entry  name="Documents"  type="group"/>
+<entry  name="Data"  type="group"/>
+</entries>
+]]>
+</children>
+
+
+     <bubble><![CDATA[
+:heading {{link}}
+{{tree message="" details="false"}}
+]]>
+</bubble>
+     <wiki><![CDATA[
++section #
+:title {{name}}
++row
++col-md-8
+<div style="max-height: 400px; overflow-y: auto;margin:5px;">
+{{description wikify="true"}}
+</div>
+----
+{{tree details="false" message="" sort="name"}}
+-col
++col-md-4
+{{properties  message="" metadata.types="content.alias" includeTitle="false"}}
+{{image src="::*" message="" width="300"}}
+<p>
+{{mapentry width="300" message=""}}
+<p>
+{{properties   message="" metadata.types="!content.alias,!content.logo"}}
+-col
+-row
+-section
++section title="Workbench" # class="ramadda-section-map"
+<div id=listdiv style="min-height:200px;" ></div>
+<div id=maindiv style="min-height:200px;"></div>
+{{group  layoutType="table"  layoutColumns="2"  showMenu="true"  divid="maindiv" }}
+
+{{display  type="entrylist"    divid="listdiv" orientation="vertical"  showType="false" showForm="true"  showSearchSettings="false" formOpen="false"  layoutHere="true"  showMenu="true"  showTitle="false"  provider="fred" textRequired="true" 
+height="300"
+providers="this,eia,fred,quandl,socrata,category:.*CKAN.*,category:.*Socrata.*,flickr,youtube,duckduckgo"
+}}
+-section
+]]>
+</wiki>
+   </type>
+
+
+<!--
+  <type name="community_cityhub"  super="community_datahub" description="City Data Hub" metadata="" >
+     <column name="state" type="enumerationplus" label="State"  showinhtml="true" cansearch="true"/>
+     <column name="geoid" type="string" label="GeoID"  showinhtml="true" cansearch="true"/>
+     <column name="ansi_id" type="string" label="ANSI ID"  showinhtml="true" cansearch="true"/>
+     <column name="state" type="enumerationplus" values="file:/org/ramadda/plugins/community/resources/states.txt" label="State or Province" showinhtml="true" cansearch="true"/>
+  </type>
+-->
+  <type name="community_resource"  super="community_thing" description="Facility" handler="org.ramadda.plugins.community.ResourceTypeHandler"  metadata="community_service,content.contact">
+     <property name="icon" value="/community/house.png"/>
+     <property name="search.metadatatypes" value="community_service,content.contact"/>
+     <column name="resource_type" type="enumerationplus" label="Type" values="file:/org/ramadda/plugins/community/resources/types.txt" showinhtml="true" cansearch="true"/>
+     <column name="address"  type="string" label="Address" cansearch="true" category="Contact"/>
+     <column name="city"  type="enumerationplus" label="City" cansearch="true"/>
+     <column name="state" type="enumerationplus" values="file:/org/ramadda/plugins/community/resources/states.txt" label="State or Province" showinhtml="true" cansearch="true"/>
+     <column name="zipcode"  type="string" label="Zip Code" cansearch="true"/>
+     <column name="phone"  type="string" label="Phone"/>
+     <wiki><![CDATA[
++section 
++title
+{{field name="resource_type"}}: {{name}}
+-title
++row
++col-md-8
+<table class="formtable">
+{{resource prefix="URL:"  message="" row.label="Web:"}}
+<tr><td class="formlabel">Address:</td><td> {{field name="address"}} {{field name="city"}} {{field name="state"}} {{field name="zipcode"}}</td></tr>
+{{field name="phone" row.label="Phone:"}}
+</table>
+
+<div style="max-height: 400px; overflow-y: auto;margin:5px;">
+{{description wikify="true"}}
+</div>
+
+{{properties  message="" metadata.types="community_service,content.contact"}}
+{{properties   message="" metadata.types="!community_service,!content.contact"}}
+
+-col
++col-md-4
+{{image src="::*" message="" width="300"}}
+<p>
+{{mapentry width="300" message=""}}
+<p>
+-col
+-row
+
+
+{{tree details="false" message=""}}
+
+
+]]>
+</wiki>
+   </type>
+
+
+
+
+  <type name="community_organization"  super="community_thing" description="Community Organization" handler="org.ramadda.repository.type.ExtensibleGroupTypeHandler"    metadata="community_service,content.contact" >
+     <property name="icon" value="/community/house.png"/>
+     <property name="form.name.label" value="Organization Name"/>
+     <property name="search.metadatatypes" value="community_service,content.contact"/>
+     <column name="organization_type" type="enumerationplus" label="Type" values="file:/org/ramadda/plugins/community/resources/organizations.txt" showinhtml="true" cansearch="true"/>
+     <column name="address"  type="string" label="Address" cansearch="true"/>
+     <column name="city"  type="enumerationplus" label="City" cansearch="true"/>
+     <column name="state" type="enumerationplus" values="file:/org/ramadda/plugins/community/resources/states.txt" label="State or Province" showinhtml="true" cansearch="true"/>
+     <column name="zipcode"  type="string" label="Zip Code" cansearch="true"/>
+     <column name="phone"  type="string" label="Phone"/>
+     <wiki><![CDATA[
++inset
++row
++col-md-8
+:title {{field name="organization_type"}}: {{name}}</div>
+<table class="formtable">
+{{resource prefix="URL:"  message="" row.label="Web:"}}
+<tr><td class="formlabel">Address:</td><td> {{field name="address"}} {{field name="city"}} {{field name="state"}} {{field name="zipcode"}}</td></tr>
+{{field name="phone" row.label="Phone:"}}
+</table>
+
+<div style="max-height: 400px; overflow-y: auto;margin:5px;">
+{{description wikify="true"}}
+</div>
+
+{{properties  message="" metadata.types="community_service,content.contact"}}
+{{properties   message="" metadata.types="!community_service,!content.contact"}}
+
+-col
++col-md-4
+{{image src="::*" message="" width="300"}}
+<p>
+{{mapentry width="300" message=""}}
+<p>
+-col
+-row
+
+
+{{tree details="false" message=""}}
+
+
+]]>
+</wiki>
+   </type>
+
+
+
+
+  <type name="community_community"  description="Community" handler="org.ramadda.repository.type.ExtensibleGroupTypeHandler" >
+     <property name="icon" value="/community/house.png"/>
+     <property name="form.description.rows" value="40"/>
+     <property name="form.area.show" value="true"/>
+     <property name="form.date.show" value="true"/>
+     <property name="form.date.label" value="Founded"/>
+     <property name="form.time.show" value="false"/>
+     <property name="form.todate.show" value="false"/>
+     <property name="form.file.show" value="false"/>
+     <property name="form.datatype.show" value="false"/>
+<!--
+<column name="address1" type="string" label="Address 1" showinhtml="true"/>
+<column name="address2" type="string" label="Address 2" showinhtml="true"/>
+<column name="city" type="string" label="City" showinhtml="true" cansearch="true"/>
+<column name="state" type="enumerationplus" values="file:/org/ramadda/plugins/community/resources/states.txt" label="State or Province" showinhtml="true" cansearch="true"/>
+<column name="postal_code" type="string" columns="10" label="Postal code" showinhtml="true" cansearch="true"/>
+<column name="country" type="enumerationplus" label="Country" values="file:/org/ramadda/plugins/community/resources/countries.txt" showinhtml="true" cansearch="true"/>
+<column name="email" type="email" label="Email" showinhtml="true"/>
+<column name="phone" type="string" label="Phone" showinhtml="true"/>
+<column name="institution" type="enumerationplus" label="Institution" showinhtml="true" 
+values="file:/org/ramadda/plugins/community/resources/institutions.txt" cansearch="true"/>
+<column name="user_url" type="url" label="URL" showinhtml="true" />
+-->
+</type>
+
+
+
+
+
+  <type name="community_user"  description="Community Member" handler="org.ramadda.plugins.community.UserTypeHandler" >
+     <property name="icon" value="/icons/user.png"/>
+     <property name="form.description.rows" value="5"/>
+     <property name="form.description.show" value="false"/>
+     <property name="form.area.show" value="true"/>
+     <property name="form.date.show" value="true"/>
+     <property name="form.time.show" value="false"/>
+     <property name="form.date.show.before" value="false"/>
+     <property name="form.date.label" value="Membership Date"/>
+     <property name="form.todate.show" value="false"/>
+     <property name="form.location.show" value="true"/>
+     <property name="form.location.show.before" value="false"/>
+     <property name="form.resource.show" value="false"/>
+     <property name="form.datatype.show" value="false"/>
+     <property name="form.name.label" value="Name"/>
+
+<column name="address1" type="string" label="Address 1" showinhtml="true"/>
+<column name="address2" type="string" label="Address 2" showinhtml="true"/>
+<column name="city" type="string" label="City" showinhtml="true" cansearch="true"/>
+<column name="state" type="enumerationplus" values="file:/org/ramadda/plugins/community/resources/states.txt" label="State or Province" showinhtml="true" cansearch="true"/>
+<column name="postal_code" type="string" columns="10" label="Postal code" showinhtml="true" cansearch="true"/>
+<column name="country" type="enumerationplus" label="Country" values="file:/org/ramadda/plugins/community/resources/countries.txt" showinhtml="true" cansearch="true"/>
+<column name="email" type="email" label="Email" showinhtml="true"/>
+<column name="phone" type="string" label="Phone" showinhtml="true"/>
+<column name="institution" type="enumerationplus" label="Institution" showinhtml="true" 
+values="file:/org/ramadda/plugins/community/resources/institutions.txt" cansearch="true"/>
+<column name="user_url" type="url" label="URL" showinhtml="true" />
+</type>
+
+
+
+<!--
+  <type name="community_bibliographic_entry"  description="Bibliographic Entry" xhandler="org.ramadda.plugins.community.UserTypeHandler" category="Information">
+     <property name="icon" value="/community/book.png"/>
+     <property name="form.name.label" value="Article Title"/>
+     <property name="form.description.rows" value="5"/>
+     <property name="form.area.show" value="false"/>
+     <property name="form.date.show" value="true"/>
+     <property name="form.time.show" value="false"/>
+     <property name="form.date.label" value="Publish Date"/>
+     <property name="form.todate.show" value="false"/>
+     <property name="form.location.show" value="false"/>
+     <column name="type" type="enumeration" label="Bibliography Type" values="book,article,other" showinhtml="true"/>
+     <column name="authors" type="string" rows="5" label="Authors" showinhtml="true"/>
+</type>
+-->
+
+
+  <type name="community_case"  description="Development Review Case" handler="org.ramadda.repository.type.ExtensibleGroupTypeHandler" >
+     <property name="icon" value="/community/building.png"/>
+     <property name="form.area.show" value="true"/>
+     <property name="form.date.show" value="true"/>
+     <property name="form.time.show" value="false"/>
+     <property name="search.tabs" value="map,list"/>
+     <property name="search.text.show" value="false"/>
+     <property name="search.date.show" value="false"/>
+     <property name="form.resource.show" value="false"/>
+     <property name="form.datatype.show" value="false"/>
+<column name="case_number" type="string" isindex="true" label="Case Number"/>
+<column name="applicant" type="string" isindex="true" label="Applicant" cansearch="true"/>
+<column name="address" type="string" label="Address" showinhtml="true" cansearch="true"/>
+<column name="city" type="string" label="City" showinhtml="true"  canlist="false"/>
+<column name="state" type="enumerationplus" values="file:/org/ramadda/plugins/community/resources/states.txt" label="State or Province" showinhtml="true" default="CO" canlist="false"/>
+<column name="case_type" type="enumerationplus" isindex="true" label="Case Type" cansearch="true">
+<values><![CDATA[
+ADR=Administrative Review
+BAZ=Board of Zoning Adjustment?
+HIS=Historic Preservation Review
+LUR=Land Use Review
+PMT=Building Permit
+TEC=Technical Review
+]]></values>
+</column>
+<column name="contact" type="string" label="Staff Contact" cansearch="true"/>
+<column name="email" type="email" label="Email" showinhtml="true"/>
+<column name="phone" type="string" label="Phone" showinhtml="true"/>
+</type>
+
+
+
+
+</types>

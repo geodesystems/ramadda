@@ -1,0 +1,389 @@
+BODY {
+	MARGIN: 0px; 
+        FONT-SIZE: 12px; 
+	COLOR: #000000; 
+	FONT-FAMILY: Arial, Helvetica, sans-serif;
+	PADDING-RIGHT: 0px; PADDING-LEFT: 0px; PADDING-BOTTOM: 0px; PADDING-TOP: 0px
+	}
+
+TABLE {
+      COLOR: #000000; FONT-FAMILY: Arial, Helvetica, sans-serif
+	}
+
+TD {
+	COLOR: #000000; FONT-FAMILY: Arial, Helvetica, sans-serif
+        }
+
+FORM {
+	PADDING-RIGHT: 0px; PADDING-LEFT: 0px; PADDING-BOTTOM: 0px; MARGIN: 0px; PADDING-TOP: 0px
+	}
+	
+FORM {
+	 COLOR: #000000; FONT-FAMILY: Arial, Helvetica, sans-serif
+	}
+
+INPUT {
+	COLOR: #000000; FONT-FAMILY: Arial, Helvetica, sans-serif
+	}
+
+SELECT {
+	COLOR: #000000; FONT-FAMILY: Arial, Helvetica, sans-serif
+	}
+
+H1 {
+	COLOR: #000000; FONT-FAMILY: Arial, Helvetica, sans-serif; FONT-WEIGHT: bold
+	}
+
+H2 {
+	COLOR: #000000; FONT-FAMILY: Arial, Helvetica, sans-serif; FONT-WEIGHT: bold
+	}
+
+H3 {
+	COLOR: #000000; FONT-FAMILY: Arial, Helvetica, sans-serif; FONT-WEIGHT: bold
+	}
+
+H4 {
+	COLOR: #000000; FONT-FAMILY: Arial, Helvetica, sans-serif; FONT-WEIGHT: bold
+	}
+
+H5 {
+	COLOR: #000000; FONT-FAMILY: Arial, Helvetica, sans-serif; FONT-WEIGHT: bold
+	}
+
+H6 {
+	COLOR: #000000; FONT-FAMILY: Arial, Helvetica, sans-serif; FONT-WEIGHT: bold
+	}
+	
+
+
+A {
+	TEXT-DECORATION: none;
+	}
+
+A:link {
+	color: #006699;
+	}
+
+A:hover {
+	TEXT-DECORATION: underline
+	}
+A:visited {
+	color: #006699;
+	}
+
+.bold {
+	FONT-WEIGHT: bold
+	}
+
+.boldTitle {
+	FONT-WEIGHT: bold; FONT-SIZE: 13px;
+	}
+
+.italic {
+	FONT-STYLE: italic
+	}
+
+.light {
+	COLOR: #484848
+	}
+
+.small {
+	FONT-SIZE: 10px
+	}
+
+.headerLnk {
+	COLOR: #666666; LINE-HEIGHT: 18px
+	}
+
+.footerLnk {
+	COLOR: #000000
+	}
+
+.sectionLnk {
+	XFONT-SIZE: 12px; COLOR: #ffffff
+	}
+
+.featureTitle
+{
+   FONT-FAMILY: Arial, Helvetica, sans-serif;
+   xfont-size: 14px;
+   font-weight: bold;
+   color: #000000;
+}
+
+.featureText
+{
+   FONT-FAMILY: Arial, Helvetica, sans-serif;
+   xfont-size: 12px;
+   color: #000000;
+}
+
+.featureLnk {
+	COLOR: #006699
+	}
+
+.search {
+	WIDTH: 102px; HEIGHT: 17px
+	}
+
+.mynasa {
+	WIDTH: 165px; HEIGHT: 17px
+	}
+
+.bannerLnk {
+	FONT-WEIGHT: bold; XFONT-SIZE: 12px; COLOR: #ffffff
+	}
+
+.bannerTxt {
+	FONT-WEIGHT: bold; COLOR: #0398e8
+	}
+
+
+a.navLnkwhite:link {
+	COLOR: #FFFFFF; LINE-HEIGHT: 14px
+	}
+	
+a.navLnkwhite:visited {
+	COLOR: #FFFFFF; LINE-HEIGHT: 14px
+	}	
+	
+a.navLnkwhite:hover {
+	COLOR: #FFFFFF; LINE-HEIGHT: 14px
+	}	
+	
+a.navLnkwhite:active {
+	COLOR: #FFFFFF; LINE-HEIGHT: 14px
+	}
+	
+.navLnkBlack {
+	COLOR: #000000; LINE-HEIGHT: 14px;
+	}
+		
+a.navLnkBlack {
+	COLOR: #000000; LINE-HEIGHT: 14px;
+	}
+	
+a.navLnkBlack.visited {
+	COLOR: #000000; LINE-HEIGHT: 14px;
+	}	
+
+.navLnkBlue {
+	COLOR: #006699; LINE-HEIGHT: 18px
+	}
+
+.navLnkRed {
+	COLOR: #ff3333; LINE-HEIGHT: 18px
+	}
+
+.fact {
+	XFONT-SIZE: 13px; COLOR: #484848
+	}
+
+.factBlue {
+	COLOR: #006699
+	}
+
+.factRed {
+	COLOR: #ff3333
+	}
+
+.introLnk {
+	FONT-WEIGHT: bold; XFONT-SIZE: 12px; COLOR: #009eff
+	}
+
+.introTxt {
+	XFONT-SIZE: 12px; COLOR: #ffffff
+	}
+
+.featureLnkSelect {
+	COLOR: #006699; TEXT-DECORATION: underline
+	}
+
+.boldFeature {
+	FONT-WEIGHT: bold; COLOR: #006699;
+	LINE-HEIGHT: 36px
+	}
+
+.headlineLnk {
+	FONT-WEIGHT: bold; COLOR: #333333
+	}
+
+.detailBodyLnk {
+	COLOR: #006699; TEXT-DECORATION: underline
+	}
+
+.detailBodyItem {
+	COLOR: #006699
+	}
+
+.detailImageDesc {
+	COLOR: #999999
+	}
+
+.relevanceOn {
+	COLOR: #999999
+	}
+
+.relevanceOff {
+	COLOR: #cccccc
+	}
+
+.resultsMeter {
+	LETTER-SPACING: 1px
+	}
+
+.resultsMeterMiss {
+	COLOR: #cccccc; LETTER-SPACING: 1px
+	}
+
+.boldFeatureLg { FONT-WEIGHT: bolder; COLOR: #006699 ; xfont-size: medium; line-height: 60px	
+	}
+
+.pageheader { FONT-WEIGHT: bolder; COLOR: #006699 ; xfont-size: medium; 
+	}
+	
+.pageheader_ascends { FONT-WEIGHT: bold; COLOR: #006699; xfont-size: large; 
+	}
+	
+.pageheader_te { FONT-WEIGHT: normal; COLOR: #006699 ; xfont-size: large; 
+	}
+	
+		
+.welcome_te { FONT-WEIGHT: normal; COLOR: #006699 ; xfont-size: x-large; 
+	}
+
+.subsectionheader
+{
+   FONT-FAMILY: Arial, Helvetica, sans-serif;
+   xfont-size: 14px;
+   color: #000000;
+}
+
+.sectionheader
+{
+   FONT-FAMILY: Arial, Helvetica, sans-serif;
+   xfont-size: 14px;
+   font-weight: bold;
+   color: #000000;
+}
+.default-style
+{
+   FONT-FAMILY: Arial, Helvetica, sans-serif;
+   xfont-size: 12px;
+   color: #000000;
+   line-height: 18px
+}
+   .default-style_brown
+{
+   FONT-FAMILY: Arial, Helvetica, sans-serif;
+   xfont-size: 12px;
+   color: #6F4A00;
+   line-height: 18px
+}
+td#bgtd {
+	background-color: #000000;
+}
+
+table#printfriendlydisclaimer {display: none}
+.pageheader_te_2010 {
+	font-family: Arial, Helvetica, sans-serif;
+	xfont-size: 24px;
+	font-style: normal;
+	line-height: 32px;
+	font-weight: lighter;
+	color: #06C;
+}
+.Welcome_te2010 {
+	font-family: Arial, Helvetica, sans-serif;
+	xfont-size: 24px;
+	color: #2C4A04;
+	font-weight: bold;
+}
+.navLnkgray {
+	COLOR: #666600;
+	line-height: 14px
+	
+}
+.sectionheader_te2010 {
+	color: #360;
+	font-family: Arial, Helvetica, sans-serif;
+	xfont-size: 16px;
+	font-weight: bold;
+}
+.Welcome_te_2010_sm {
+	font-family: Arial, Helvetica, sans-serif;
+	xfont-size: 16px;
+	font-style: normal;
+	color: #666;
+}
+.subsectionheader_te2010 {
+	color: #360;
+	font-family: Arial, Helvetica, sans-serif;
+	xfont-size: 14px;
+}
+
+.heading_jsw2011 {
+FONT-FAMILY: Verdana, Arial, sans-serif;
+xfont-size: 20px;
+color: #CC6600;
+font-weight: bold;
+font-stretch: condensed; 
+}
+.heading_jsw2011_print {
+FONT-FAMILY: Verdana, Arial, sans-serif;
+xfont-size: 20px;
+color: #000000;
+font-weight: bold;
+font-stretch: condensed; 
+}
+
+.heading_cms {
+	font-family: Verdana, Arial, sans-serif;
+	xfont-size: 20px;
+	color: #666666;
+	font-weight: normal;
+	font-stretch: condensed;
+}
+.text_cms {
+	font-family: Arial, Helvetica, sans-serif;
+	xfont-size: 14px;
+	font-style: normal;
+	color: #666666;
+	line-height: 120%
+}
+	
+.pageheader_ascends { FONT-WEIGHT: bold; COLOR: #006699; xfont-size: large; 
+	}
+	
+		
+.banner_ascends { COLOR: #FFFFFF; xfont-size: 36px; font-family: "Times New Roman", Times, serif;
+	}
+
+.heading_jsw {
+	font-family: Verdana, Arial, sans-serif;
+	xfont-size: 20px;
+	color: #000000;
+	font-weight: normal;
+	font-stretch: condensed;
+}
+.font_times {
+	XFONT-SIZE: 14px; 
+	COLOR: #000000; 
+	FONT-FAMILY: "Times New Roman", Times, serif;
+	
+}
+.title_sm_org_jsw {
+	font-family: Arial, Helvetica, sans-serif;
+	xfont-size: 14px;
+	font-style: normal;
+	color: #CC6600;
+	line-height: 120%
+}
+
+.title_sm_org_jsw_print {
+	font-family: Arial, Helvetica, sans-serif;
+	xfont-size: 14px;
+	font-style: normal;
+	color: #000000;
+	line-height: 120%
+}

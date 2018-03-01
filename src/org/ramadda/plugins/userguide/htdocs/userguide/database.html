@@ -1,0 +1,128 @@
+<html>
+<head>
+<title>Configuring the RAMADDA Database</title>
+  <link rel="stylesheet" type="text/css" href="./default.css" title="Style">
+
+</head>
+
+<body>
+<div class="ramadda-documentation">
+<table width=100% cellspacing=0 cellpadding=0 ><tr><td width=30%>
+<a href="cloud.html"><img src="images/PreviousArrow.gif" border="0"   alt="Previous: Running in the Cloud" title="Previous: Running in the Cloud"></a> <a href="readonly.html"><img src="images/NextArrow.gif" border="0"   alt="Next: Read Only Mode" title="Next: Read Only Mode"></a>  <a href="toc.html#database.html"><img src="images/TOCIcon.gif" border="0"   alt="Table of contents" title="Table of contents"></a>
+</td>
+<td width=40% align=center>
+<div class="ramadda-page-title">RAMADDA User Guide</div>
+</td>
+<td width=30%>&nbsp;</td>
+</tr></table>
+<div class="ramadda-page-heading">14.2 Configuring the RAMADDA Database</div>
+
+<style type="text/css">
+pre {
+    margin-left:15px;
+}
+</style>
+
+<div style="margin-left:20px;">
+
+By default RAMADDA uses a built in Java Derby relational database. 
+RAMADDA also can run using MySQL, PostgresSQL, Oracle and H2.
+Derby works pretty well though there are some performance issues with search and doing many deletes.
+If you are planning on really using RAMADDA and foresee a large amount of content stored in the
+repository (by large we  we mean the number of entries in the repository not the overall file size)
+then its probably a good idea to use mysql or postgres. 
+<p>
+
+
+The database to use and its connection parameters are specified in a .properties file, e.g., db.properties. 
+The properties file can be placed in the <a href="installing.html#properties">ramadda home directory</a>.
+To define the database just uncomment the appropriate  ramadda.db properties in repository.properties, e.g.:
+
+<pre>
+ramadda.db=derby
+#ramadda.db=mysql
+#ramadda.db=postgres
+#ramadda.db=h2
+</pre>
+
+
+And then specify the jdbc url and the login credentials.
+The URLS can be  of the form:
+<pre>
+jdbc:&lt;db type&gt;://&lt;hostname&gt;/&lt;database name&gt;
+jdbc:&lt;db type&gt;:&lt;database name&gt;
+jdbc:&lt;db type&gt;://&lt;hostname&gt;/&lt;database name&gt;
+jdbc:&lt;db type&gt;://&lt;hostname&gt;:port/&lt;database name&gt;
+</pre>
+
+If you are running the database on the same machine as RAMADDA the hostname can be "localhost".
+In the below examples we assume a database called "repository".
+
+
+<h2>MySQL</h2>
+For <a href="http://dev.mysql.com/doc/connector-j/en/connector-j-reference-configuration-properties.html">MySQL</a>:
+
+<pre>
+ramadda.db=mysql
+ramadda.db.mysql.url=jdbc:mysql://localhost:3306/repository?zeroDateTimeBehavior=convertToNull
+ramadda.db.mysql.user=the database user
+ramadda.db.mysql.password=the database password
+</pre>
+
+
+<h3>Postgres</h3>
+For <a href="jdbc:postgresql://host:port/database">Postgres</a>:
+
+<pre>
+ramadda.db=postgres
+#note: the jdbc url uses "postgresql" as the database type
+ramadda.db.postgres.url=jdbc:postgresql://localhost/repository
+ramadda.db.postgres.user=the database user
+ramadda.db.postgres.password=the database password
+</pre>
+
+
+
+
+<h3>H2</h3>
+For H2 the default setting specifies  the database to be in the RAMADDA home directory under the sub-directory h2db. The JDBC URL has the full file path of where to store the database.
+<pre>
+ramadda.db=h2
+ramadda.db.h2.url=jdbc:h2:%repositorydir%/h2db
+ramadda.db.h2.user=
+ramadda.db.h2.password=
+</pre>
+
+
+<h3>Database Issues</h3>
+
+Because RAMADDA can run on top of most any relational database the SQL it uses is pretty simple and
+has to be the lowest common denominator. (Sorry, no fancy Oracle tricks, etc.)
+There are a few things that have to be dealt with though for each database in RAMADDA code. 
+For example, mysql and derby use
+&quot;double&quot; for the primitive double type. Postgres uses &quot;float8&quot;. Likewise there are issues
+with date/time. From repository/resources/makedb.sql is the comment:
+
+<pre>
+---Note: the ramadda.datetime and ramadda.double are replaced by ramadda
+---with the appropriate datatype for the database being used.
+---mysql has a datetime type, postgres and derby have timestamp
+---we can't use timestamp for mysql because it only goes back to 1970
+---derby and mysql have double. postgres has float8
+</pre>
+
+What we do is use the class org.ramadda.repository.database.DatabaseManager to convert the sql text to 
+the correct syntax of the underlying database. This is mostly done in the DatabaseManager.convertSql method.
+
+
+
+</div>
+<p>
+<div  class="childlist" ><table  width="100%" ></table></div>
+<p>&nbsp;<p>
+<a href="cloud.html"><img src="images/PreviousArrow.gif" border="0"   alt="Previous: Running in the Cloud" title="Previous: Running in the Cloud"></a> <a href="readonly.html"><img src="images/NextArrow.gif" border="0"   alt="Next: Read Only Mode" title="Next: Read Only Mode"></a>  <a href="toc.html#database.html"><img src="images/TOCIcon.gif" border="0"   alt="Table of contents" title="Table of contents"></a>
+<p>
+</div>
+</body>
+</html>
+

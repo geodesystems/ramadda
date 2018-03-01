@@ -1,0 +1,366 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<project basedir="." default="release" name="RAMADDA">
+
+    <target name="init">
+       <tstamp>
+         <format property="date" pattern="yyyy-MM-dd HH:mm z" timezone="UTC"/>
+       </tstamp>
+        <property file="${basedir}/build.properties"/>
+        <mkdir dir="${dist_dir}"/>
+        <mkdir dir="${dist_plugins}"/>
+    </target>
+
+
+    <target name="commoninit">
+      <mkdir dir="${dist_dir}"/>
+    </target>
+
+    <target name="all" depends="init">
+      <antcall target="release"/>
+   </target>
+
+    <target name="release" depends="init">
+      <antcall target="purge"/>
+      <antcall target="plugins"/>
+      <antcall target="pointtools"/>
+
+      <copy overwrite="true" file="${dist_plugins}/coreplugins.jar"  todir="${src_dir}/org/ramadda/repository/resources/plugins"/>
+      <copy overwrite="true" file="${dist_plugins}/geoplugins.jar"  todir="${src_dir}/org/ramadda/repository/resources/plugins"/>
+      <copy overwrite="true" file="${dist_plugins}/bioplugins.jar"  todir="${src_dir}/org/ramadda/repository/resources/plugins"/>
+      <copy overwrite="true" file="${dist_plugins}/miscplugins.jar"  todir="${src_dir}/org/ramadda/repository/resources/plugins"/>
+      <ant antfile="${src_dir}/org/ramadda/repository/build.xml" inheritAll="false" target="release"/>
+    </target>
+
+
+    <target name="client" depends="init">
+      <ant antfile="${src_dir}/org/ramadda/repository/build.xml" inheritAll="false" target="client"/>
+    </target>
+
+    <target name="ramadda" depends="init">
+      <echo message="Building RAMADDA"/>
+      <ant antfile="${src_dir}/org/ramadda/repository/build.xml" inheritAll="false"/>
+    </target>
+
+    <target name="plugins" depends="init,purgeplugins">
+
+      <ant antfile="${src_dir}/org/ramadda/plugins/build.xml" inheritAll="false"/>
+      <ant antfile="${src_dir}/org/ramadda/geodata/build.xml" inheritAll="false"/>
+      <ant antfile="${src_dir}/org/ramadda/bio/build.xml" inheritAll="false"/>
+      <ant antfile="${src_dir}/org/ramadda/projects/build.xml" inheritAll="false"/>
+
+      <ant target="plugins.zip" antfile="${basedir}/build.xml" inheritAll="false">
+        <property name="plugins_target" value="coreplugins"/>
+      </ant>
+
+      <ant target="plugins.zip" antfile="${basedir}/build.xml" inheritAll="false">
+        <property name="plugins_target" value="bioplugins"/>
+      </ant>
+
+      <ant target="plugins.zip" antfile="${basedir}/build.xml" inheritAll="false">
+        <property name="plugins_target" value="geoplugins"/>
+      </ant>
+
+      <ant target="plugins.zip" antfile="${basedir}/build.xml" inheritAll="false">
+        <property name="plugins_target" value="miscplugins"/>
+      </ant>
+
+   </target>
+
+
+    <target name="plugins.zip" depends="init">
+     <property name="plugins_target" value="coreplugins"/>
+     <property name="pluginszip" value="${dist_plugins}/${plugins_target}.zip"/>
+     <property name="pluginsjar" value="${dist_plugins}/${plugins_target}.jar"/>
+     <property name="noclasses_pluginsjar" value="${dist_plugins}/${plugins_target}_noclasses.jar"/>
+     <property name="classes_pluginsjar" value="${dist_plugins}/${plugins_target}_classes.jar"/>
+      <zip destfile="${pluginszip}">
+          <zipfileset dir="${dist_plugins}/${plugins_target}" includes="*"/>
+      </zip>
+      <property name="pluginsdir" value="${dist_plugins}/tmp"/>
+      <delete dir="${pluginsdir}"/>
+      <mkdir dir="${pluginsdir}"/>
+      <unjar dest="${pluginsdir}">
+          <fileset dir="${dist_plugins}/${plugins_target}">
+             <include name="**/*.jar"/>
+         </fileset>
+      </unjar>
+      <jar 
+         basedir="${pluginsdir}"
+         update="false"
+         compress="true"
+         jarfile="${pluginsjar}">
+      </jar>
+      <jar 
+         basedir="${pluginsdir}"
+         update="false"
+         compress="true"
+         excludes="**/*.class"
+         jarfile="${noclasses_pluginsjar}">
+      </jar>
+      <jar 
+         basedir="${pluginsdir}"
+         update="false"
+         compress="true"
+         includes="**/*.class"
+         jarfile="${classes_pluginsjar}">
+      </jar>
+    </target>
+
+
+    <target name="runserver" depends="init">
+      <ant antfile="${src_dir}/org/ramadda/repository/build.xml" inheritAll="false" target="runserver"/>
+    </target>
+
+    <target name="pluginclean">
+<!--
+      <delete><fileset dir="${src_dir}/${plugin_dir}" includes="**/*.class"/></delete>
+-->
+    </target>
+
+
+    <target name="plugin" depends="init,pluginclean">
+        <property name="plugin_extra_classes" value=""/>
+        <property name="plugin_destdir" value="${dist_plugins}/plugins"/>
+        <mkdir dir="${plugin_destdir}"/>
+
+<!--
+            memoryMaximumSize="${javac.maxmemory}"
+-->
+
+        <javac
+            classpath="${classpath}:${plugin_extra_classes}"
+            verbose="false"
+            debug="true"
+            deprecation="false" 
+            nowarn="true"
+            srcdir="${src_dir}"
+            destdir="${src_dir}"
+            failonerror="${javac.failonerror}"
+            fork="${javac.fork}"
+
+            source="${javac.version}"
+            target="${javac.version}">
+        <include name="${plugin_dir}/*.java"/>
+        <include name="${plugin_extra_src}"/>
+        </javac>
+
+        <jar 
+            basedir="${src_dir}"
+            update="false"
+            compress="true"
+            jarfile="${plugin_destdir}/${plugin_jar}">
+            <exclude name="${plugin_dir}/bin/**/*"/>
+            <include name="${plugin_dir}/**/*.class"/>
+            <include name="${plugin_extra_class}"/>
+            <include name="${plugin_dir}/htdocs/**/*"/>
+            <include name="${plugin_dir}/lib/**/*"/>
+            <include name="${plugin_dir}/resources/**/*"/>
+            <include name="${plugin_dir}/**/*.xml"/>
+            <include name="${plugin_dir}/**/*.sql"/>
+            <include name="${plugin_dir}/**/*.txt"/>
+            <include name="${plugin_dir}/**/*.html"/>
+            <include name="${plugin_dir}/**/*.properties"/>
+            <include name="${plugin_dir}/**/*.jnlp"/>
+	    </jar>
+    </target>
+
+
+
+    <target name="plugin_main">
+      <property file="${basedir}/build.properties"/>
+      <property name="plugin_jar" value="${plugin}plugin.jar"/>
+      <property name="plugin_dir" value="org/ramadda/plugins/${plugin}"/>
+      <ant antfile="${basedir}/build.xml" target="commoninit" />
+      <ant antfile="${basedir}/build.xml" target="plugin"/>
+      <ant antfile="${basedir}/build.xml" target="plugin_install"/>
+    </target>
+
+
+    <target name="pluginnocode" depends="init,pluginclean">
+        <property name="plugin_destdir" value="${dist_plugins}/plugins"/>
+        <mkdir dir="${plugin_destdir}"/>
+        <echo message="Making jar ${plugin_destdir}/${plugin_jar}"/>
+        <jar 
+            basedir="${src_dir}"
+            update="false"
+            compress="true"
+            jarfile="${plugin_destdir}/${plugin_jar}">
+            <include name="${plugin_dir}/htdocs/**/*"/>
+            <include name="${plugin_dir}/resources/**/*"/>
+            <include name="${plugin_dir}/*.xml"/>
+            <include name="${plugin_dir}/*.properties"/>
+	    </jar>
+    </target>
+
+
+
+    <target name="plugin_build" depends="init">
+      <property file="${basedir}/build.properties"/>                            
+
+      <property name="plugin_group" value="plugins"/>
+      <property name="plugin_dir" value="org/ramadda/plugins/${plugin}"/>
+
+      <property name="plugin_destdir" value="${dist_plugins}/${plugin_group}"/>
+      <ant antfile="${basedir}/build.xml" target="commoninit" />                
+      <property name="plugin_jar" value="${plugin}plugin.jar"/>                    
+      <property name="plugin_dir" value="org/ramadda/plugins/${plugin}"/>       
+
+      <ant antfile="${basedir}/build.xml" target="plugin"/>
+      <ant antfile="${basedir}/build.xml" target="plugin_install"/>
+    </target>
+
+    <target name="plugin_install">
+        <property name="plugin_destdir" value="${dist_plugins}/plugins"/>
+        <mkdir dir="${plugin_destdir}"/>
+        <copy overwrite="true"  todir="${user.home}/.ramadda/plugins">
+             <fileset file="${plugin_destdir}/${plugin_jar}"/>
+        </copy>
+    </target>
+
+
+
+
+   <target name="clean" depends="init" >
+        <delete>
+            <fileset dir="${src_dir}" includes="**/*.class"/>
+        </delete>
+    </target>
+
+
+   <target name="purge" depends="init,clean" >
+     <delete dir="${dist_dir}"/>
+    </target>
+   <target name="purgeplugins" depends="init,clean" >
+     <delete dir="${dist_plugins}"/>
+    </target>
+
+
+
+
+
+    <target name="javadoc" depends="init">
+        <mkdir dir="${dist_javadoc}"/>
+        <javadoc
+            Author="true"
+            Doctitle="RAMADDA"
+            Use="true"
+            Version="true" 
+            Windowtitle="RAMADDA"
+            classpath="${classpath}"
+            destdir="${dist_javadoc}"
+            maxmemory="512m"
+            sourcepath="${src_dir}"
+                 >
+            <link href="http://java.sun.com/javase/6/docs/api/"/>
+            <package name="org.ramadda.repository.*"/>
+<!--
+            <excludepackage name="org.unavco.???"/>
+-->
+        </javadoc>
+    </target>
+
+
+    <target name="ramaddadata" depends="init,clean">
+        <echo message="${src_dir}/org/ramadda/data/**"/>
+        <javac
+            classpath="${classpath}"
+            verbose="false"
+            debug="true"
+            deprecation="false" 
+            nowarn="true"
+            srcdir="${src_dir}"
+            destdir="${src_dir}"
+            failonerror="${javac.failonerror}"
+            fork="${javac.fork}"
+            memoryMaximumSize="${javac.maxmemory}"
+            source="${javac.version}"
+            target="${javac.version}">
+        <include name="org/ramadda/data/record/**"/>
+        <include name="org/ramadda/data/point/**"/>
+        <include name="org/ramadda/data/tools/**"/>
+        <include name="org/ramadda/util/**"/>
+        <include name="org/ramadda/util/text/**"/>
+        </javac>
+
+        <jar 
+            basedir="${src_dir}"
+            update="false"
+            compress="true"
+            jarfile="${dist_dir}/ramaddadata.jar">
+          <include name="org/ramadda/data/point/**/*.class"/>
+          <include name="org/ramadda/data/point/**/*.txt"/>
+          <include name="org/ramadda/data/point/**/*.properties"/>
+          <include name="org/ramadda/data/record/**/*.class"/>
+          <include name="org/ramadda/data/**/*.class"/>
+          <include name="org/ramadda/util/**/*.class"/>
+       </jar>
+
+      <ant antfile="${src_dir}/org/ramadda/data/tools/build.xml" inheritAll="false"/>
+
+    </target>
+
+
+    <target name="ramaddautil" depends="init,clean">
+        <javac
+            classpath="${classpath}"
+            verbose="false"
+            debug="true"
+            deprecation="false" 
+            nowarn="true"
+            srcdir="${src_dir}"
+            destdir="${src_dir}"
+            failonerror="${javac.failonerror}"
+            fork="${javac.fork}"
+            memoryMaximumSize="${javac.maxmemory}"
+            source="${javac.version}"
+            target="${javac.version}">
+        <include name="org/ramadda/util/**"/>
+        <include name="org/ramadda/sql/**"/>
+        </javac>
+
+        <jar 
+            basedir="${src_dir}"
+            update="false"
+            compress="true"
+            jarfile="${dist_dir}/ramaddautil.jar">
+          <include name="org/ramadda/util/**/*.class"/>
+          <include name="org/ramadda/sql/**/*.class"/>
+       </jar>
+    </target>
+
+
+    <target name="pointtools" depends="init">
+      <ant antfile="${src_dir}/org/ramadda/data/tools/build.xml" inheritAll="false"/>
+   </target>
+
+
+
+    <target name="compileall" depends="init,clean">
+        <javac
+            classpath="${classpath}"
+            verbose="false"
+            debug="true"
+            deprecation="false" 
+            nowarn="true"
+            srcdir="${src_dir}"
+            destdir="${src_dir}"
+            failonerror="${javac.failonerror}"
+            fork="${javac.fork}"
+            memoryMaximumSize="${javac.maxmemory}"
+            source="${javac.version}"
+            target="${javac.version}"
+>
+        <include name="**/*.java"/>
+        <exclude name="nom/**/*.java"/>
+        <exclude name="com/**/*.java"/>
+        <exclude name="org/ramadda/plugins/userguide/htdocs/**/*.java"/>
+        </javac>
+    </target>
+
+
+
+
+
+
+</project>

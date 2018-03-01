@@ -1,0 +1,61 @@
+<services  icon="/icons/mov.png" category="Documents and Images">
+   <service id="media_qttools_info" label="Show movie info" command="${service.qttools}/qt_info">
+<description><![CDATA[
+Show movie file information using  <a href="http://www.omino.com/sw/qt_tools/man/qt_info.html" target="_help">QTTools</a>
+]]></description>
+          <arg value="${entry.file}" type="entry" entryType="media_video_quicktime" primary="true" label="Input Quicktime File" ></arg>
+          <output showResults="true" stdout="true"/>
+    </service>
+
+
+
+   <service id="media_qttools_export" label="Movie export" command="${service.qttools}/qt_export">
+<description><![CDATA[
+Export movie using  <a href="http://www.omino.com/sw/qt_tools/man/qt_export.html" target="_help">QTTools</a>
+]]></description>
+          <arg type="entry" entryType="media_video_quicktime" primary="true" label="Input Quicktime File" value="${entry.file}" ></arg>
+          <arg type="enumeration" first="true" name="newtype" label="Convert to" values="mov,mp4,dv,aif,au" value="${file}"  file="${entry.file.base}.${value}" />
+          <arg label="Duration" type="string" value="--duration=${value}"  help="start-time or start-time,end-time"/>
+          <arg type="flag" help="Disable video" value="--video=0"/>
+          <arg type="flag" help="Disable audio" value="--audio=0"/>
+          <output type="media_video_quicktime" pattern=".*\.mov"/>
+          <output type="media_audiofile" pattern=".*\.au"/>
+          <output type="file" pattern=".*"/>
+    </service>
+
+
+
+   <service id="media_qttools_proofsheet" label="Movie proofsheet" command="${service.qttools}/qt_proofsheet">
+<description><![CDATA[
+Create proof sheet image using  <a href="http://www.omino.com/sw/qt_tools/man/qt_proofsheet.html" target="_help">QTTools</a>
+]]></description>
+          <arg label="Duration" type="string" value="--duration=${value}"  help="start-time or start-time,end-time"/>
+          <arg label="Frame rate" type="int" default="1" value="--framerate==${value}" help="Frames/second"/>
+          <arg type="category"  value="Formatting"/>
+          <arg label="Frames per row" type="int" value="--framesperrow=${value}" default="8"/>
+          <arg type="int" label="Title font size" default="0" value="--title=${value}"/>
+          <arg type="int" label="Time code font size" default="0" value="--timecode=${value}"/>
+          <arg type="int"  label="Spacing" default="2" value="--spacing=${value}"/>
+          <arg value="${entry.file}" type="entry" entryType="media_video_quicktime" primary="true" label="Input Quicktime File" ></arg>
+          <arg value="${entry.file.base}.png"/>
+          <output type="type_image" />
+    </service>
+
+
+   <service id="media_qttools_thumbnail" label="Movie thumbnail" command="${service.qttools}/qt_proofsheet">
+<description><![CDATA[
+Create thumbnail image using  <a href="http://www.omino.com/sw/qt_tools/man/qt_proofsheet.html" target="_help">QTTools</a>
+]]></description>
+          <arg value="${entry.file}" type="entry" entryType="media_video_quicktime" primary="true" label="Input Quicktime File" ></arg>
+          <arg value="${entry.file.base}.jpg"/>
+          <arg value="--duration=16"/>
+          <arg value="--framerate=1"/>
+          <arg value="--framesize=64,64"/>
+          <arg value="--framesperrow=4"/>
+          <arg value="--spacing=0"/>
+          <arg value="--title=0"/>
+          <arg value="--timecode=0"/>
+          <output type="type_image" />
+    </service>
+
+</services>

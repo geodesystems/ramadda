@@ -1,0 +1,40 @@
+<wiki>
+<!-- 
+Hi, this is RAMADDA's wiki text. The wiki tag above tells RAMADDA to treat this description as wiki
+The +section, +row, +col etc tags do the layout
+Documentation here: http://geodesystems.com/repository/userguide/wikitext.html
+-->
++section title="Welcome to your RAMADDA" #
++row
++col-md-6
+:heading Thanks
+Thank you for trying RAMADDA. If you have any problems or suggestions please send a note to <a href="mailto:support@geodesystems.com">support@geodesystems.com</a>.
+<p>
+Jeff McWhirter
+<br>
+President, Geode Systems
+-col
++col-md-6
+:heading Next Steps
+* <a  href="${root}/user/login">Login</a> to <a href="${root}/admin/settings">administer</a> your RAMADDA.
+* <a target="_registration" href="http://geodesystems.com/alias/ramadda_registration">Purchase a license</a>.
+* Join the <a href="https://lists.sourceforge.net/lists/listinfo/ramadda-users" target=_other>RAMADDA mailing list</a>.
+* <a href="${root}/entry/form?entryid=${topid}">Edit</a> this page (you must login to edit) - <a target="_docs" href="http://geodesystems.com/repository/userguide/wikitext.html">Documentation</a>
+* Create new <a href="${root}/entry/form?group=${topid}&type=group">folders</a> or upload <a href="${root}/entry/form?group=${topid}&type=file">files</a>. 
+* Lots of ways to view and edit this page with the <img src="${root}/icons/menu_arrow.gif"> menu above. 
+<p>
+-col
+-row
+-section
++section label="Your Content" #
+:note Here are some folders to get you started. Feel free to add, delete or rename any of this content.
+<p>
+{{tree showtoggle="false"}}
+<p>
+-section
++section label="Workbench" #
+<div id=listdiv></div>
+<div id=maindiv></div>
+{{group  layoutType="table"  layoutColumns="2"  showMenu="true"  divid="maindiv" }}
+{{display  type="entrylist"    divid="listdiv" orientation="vertical"  showType="false" showForm="true"  showSearchSettings="false" formOpen="false"  layoutHere="true"  showMenu="false"  showTitle="false"  textRequired="true" providers="name:.*"}}
+-section

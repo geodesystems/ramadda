@@ -1,0 +1,115 @@
+<html>
+<head>
+<title>Read Only Mode</title>
+  <link rel="stylesheet" type="text/css" href="./default.css" title="Style">
+
+</head>
+
+<body>
+<div class="ramadda-documentation">
+<table width=100% cellspacing=0 cellpadding=0 ><tr><td width=30%>
+<a href="database.html"><img src="images/PreviousArrow.gif" border="0"   alt="Previous: Configuring the RAMADDA Database" title="Previous: Configuring the RAMADDA Database"></a> <a href="plugins.html"><img src="images/NextArrow.gif" border="0"   alt="Next: Plugins" title="Next: Plugins"></a>  <a href="toc.html#readonly.html"><img src="images/TOCIcon.gif" border="0"   alt="Table of contents" title="Table of contents"></a>
+</td>
+<td width=40% align=center>
+<div class="ramadda-page-title">RAMADDA User Guide</div>
+</td>
+<td width=30%>&nbsp;</td>
+</tr></table>
+<div class="ramadda-page-heading">14.3 Read Only Mode</div>
+
+<style type="text/css">
+pre {
+    margin-left:15px;
+}
+</style>
+
+<div style="margin-left:20px;">
+
+
+
+<h2>Running in Read Only Mode</h2>
+RAMADDA can be run on multiple machines and, for security reasons, 
+can provide read only access to its contents.
+The main reason for this is so you can have a public facing RAMADDA
+setup in read-only mode so it does not allow logins, 
+uploads or any administration features but 
+does provide  the normal content and data access.
+Then within your firewall you can have a full featured RAMADDA that you 
+use to manage content and data.
+<p>
+RAMADDA gets its content from 2 places - a database and the file system.
+You need to have RAMADDA running on some external database
+server (e.g., mysql, postgres). You configure your internal and external 
+RAMADDA instances to use the same database. 
+<p>
+For the file system you could have both RAMADDA's use the same RAMADDA home directory. But,
+there are some things in there that shouldn't be shared (e.g., properties files, plugins, log files, etc). So, 
+its best to configure the RAMADDAs so each have their own home directory but configure the shared content 
+directories to be the same.
+<p>
+To configure this add the following property to one of the local property files on your read-only server.
+<pre>
+ramadda.readonly=true
+</pre>
+
+Set the following properties to define any alternate storage directories:
+<pre>
+ramadda.storage.storagedir=/some/dir/storage
+ramadda.storage.entriesdir=/some/dir/entries
+ramadda.storage.uploaddir=/some/dir/uploads
+</pre>
+
+These are the default settings. I know, I know, there should be 
+one main storage directory property that can be set once but there isn't. 
+Sorry. 
+<p>
+Note: you can refer to the RAMADDA home dir with the %repositorydir% macro:
+<pre>
+ramadda.storage.storagedir=%repositorydir%/storage
+</pre>
+
+<p>
+Note: you can also set the location of the log and tmp dirs:
+<pre>
+ramadda.storage.tmpdir=%repositorydir%/tmp
+ramadda.storage.logdir=%repositorydir%/logs
+</pre>
+
+
+<h2>No Cache RAMADDA</h2>
+You can also run multiple full featured RAMADDA (e.g., supports login, admin, creation/editing, etc) by setting the property:
+
+<pre>
+ramadda.docache=false
+</pre>
+
+This just turns off RAMADDA's memory cache mechanism. But, if you are doing lots of 
+simultaneous editing and deletion and moving of content on the different RAMADDA's you
+might run into some issues.
+
+<h2>Clearing the Cache</h2>
+
+You can force RAMADDA to clear its cache and also re-read all of the properties from the database by hitting:<brP>
+&lt;repository root&gt;/clearstate
+</pre>
+
+This will present a form where you need to enter a special pass-phrase  or password. 
+<b>
+Note:The pass-phrase is not meant to be secure. Its used to filter out strangers from resetting your repository.</b>
+
+To set the pass-phrase set a property on the server (e.g., plugins/admin.properties):<pre>
+ramadda.passphrase=....
+</pre>
+
+
+
+</div>
+<p>
+<div  class="childlist" ><table  width="100%" ></table></div>
+<p>&nbsp;<p>
+<a href="database.html"><img src="images/PreviousArrow.gif" border="0"   alt="Previous: Configuring the RAMADDA Database" title="Previous: Configuring the RAMADDA Database"></a> <a href="plugins.html"><img src="images/NextArrow.gif" border="0"   alt="Next: Plugins" title="Next: Plugins"></a>  <a href="toc.html#readonly.html"><img src="images/TOCIcon.gif" border="0"   alt="Table of contents" title="Table of contents"></a>
+<p>
+</div>
+</body>
+</html>
+

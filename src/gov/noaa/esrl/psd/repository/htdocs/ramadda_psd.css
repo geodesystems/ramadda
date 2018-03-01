@@ -1,0 +1,70 @@
+/* override PSD & RAMADDA defaults */
+
+/* Override bootstrap box stuff */
+#footer, #banner, #major_header, #search {
+  box-sizing: content-box;
+}
+
+.content {
+   min-height: 400px;
+   max-height: none;
+   border: 0px #aaa solid;
+   padding-top:5px;
+}
+
+#major_nav {
+   height: auto;
+}
+
+.ui-button {
+    color: #000;
+}
+
+#search input {
+    color: #000;
+}
+
+.outercontents {
+   padding-top: 0px;
+}
+
+.innercontent {
+   padding-top: 5px;
+   padding-left: 5px;
+   min-height: 400px;
+   max-height: none;
+}
+
+#leftNav h2 {
+   margin: 0em 0.2em 0em 0em;
+   font-weight: bold;
+}
+
+body {
+   font-size: 10pt;
+}
+
+body>div {
+        min-width: 20em;
+}
+
+.ramadda-header-links {
+    font-size: 100%;
+}
+
+.factstable  {
+   padding-top: 0px;
+   padding-bottom: 0px;
+}
+
+.factstable td, th {
+      padding-top: 4px;
+      padding-bottom: 4px;
+      padding-left: 3px;
+      padding-right: 3px;
+}
+
+.factstable  a:visited {
+   color: #006699;
+}
+

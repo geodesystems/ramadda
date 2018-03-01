@@ -1,0 +1,24 @@
+  <services icon="/mb/mb.png" entryType="type_mb" category="Oceanography">
+    <service label="MBInfo" id="geo_mb_mbinfo" command="${service.mb.mbinfo}" xhandler="org.ramadda.geodata.mb.MbService">
+      <description>Runs MB System mbinfo program</description>
+          <arg name="xml" type="flag" value="-X2" label="As XML" help="Output XML"/>
+          <arg value="-F"/>
+          <arg value="${entry.attr.format}"/>
+          <arg value="-I"/>
+          <arg label="Input MB bathymetry file" value="${entry.file}"   type="entry" primary="true" ></arg>
+          <output showResults="true" stdout="true" depends="!xml"/>
+          <output type="file" stdout="true" pattern=".*" depends="xml" filename="${entry.file.base}.xml"/>
+    </service>
+
+<service label="MB to CSV" id="geo_mb_mblist" command="${service.mb.mblist}" xhandler="org.ramadda.geodata.mb.MbService">
+      <description>Runs MB System mblist program</description>
+      <arg value="-F"/>
+      <arg value="${entry.attr.format}"/>
+      <arg value="-F"/>
+      <arg value="TXYZB"/>
+      <arg value="-I"/>
+      <arg label="Input MB bathymetry file" value="${entry.file}"   type="entry" primary="true" ></arg>
+      <output type="type_mb_point_basic" stdout="true" filename="${entry.file.base}.txt">
+      </output>
+    </service>
+</services>

@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<metadata>
+
+  <handler category="Investigation">
+
+    <type id="investigation_person" name="Person">
+      <element id="name" name="Name"/>
+      <element id="age" name="Age" datatype="string" columns="5"/>
+      <element id="dob" name="Dob" datatype="date"/>
+      <element id="height" name="Height" datatype="string" columns="5"/>
+      <element id="weight" name="Weight" datatype="string" columns="5"/>
+      <element id="gender" name="Gender" datatype="enumeration" values="male,female"/>
+      <element id="hair" name="Hair" datatype="enumerationplus"  columns="5" values="file:/com/ramadda/plugins/investigation/resources/colors.properties"/>
+      <element id="eyes" name="Eyes" datatype="enumerationplus"  columns="5" values="file:/com/ramadda/plugins/investigation/resources/colors.properties"/>
+      <element id="race" name="Race" datatype="enumerationplus"  columns="5" values="file:/com/ramadda/plugins/investigation/resources/races.properties"/>
+    </type>
+  </handler>
+</metadata>

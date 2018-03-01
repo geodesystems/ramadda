@@ -1,0 +1,92 @@
+<types supercategory="Miscellaneous" category="Integration">
+
+  <type name="slack_team"  description="Slack Team" handler="org.ramadda.plugins.slack.SlackTeamTypeHandler"  >
+     <property name="icon" value="/slack/slack.png"/>
+     <property name="form.description.label" value="Team Description"/>
+     <property name="form.name.show" value="false"/>
+     <property name="form.resource.show" value="false"/>
+     <property name="form.file.show" value="false"/>
+     <property name="form.area.show" value="false"/>
+     <property name="form.location.show" value="false"/>
+     <property name="form.date.show" value="false"/>
+     <column name="team_id" type="string"  label="Team ID"  showinform="false" />
+     <column name="team_domain" type="string"  label="Team Domain" showinform="false" />
+     <column name="token" type="password"  label="Authentication Token" columns="60" suffix="&lt;a target=&quot;_help&quot; href=&quot;${root}/slack/import.html&quot;&gt;Help&lt;/a&gt;"/>
+     <column name="channels_to_show"  showinhtml="false" size="500" rows="5" type="string"  label="Channels to display" suffix="Enter the Slack channel IDS for the channels you want to show" />
+     <wiki><![CDATA[
+{{noheading}}
++section # title="Slack Team: {{name}}"
+{{description wikify="true"}}
+{{tree details="false" message="No channels found"}}
+-section
+]]>
+</wiki>
+  </type>
+
+
+  <type name="slack_channel"  description="Slack Channel" foruser="false" handler="org.ramadda.plugins.slack.SlackChannelTypeHandler" >
+     <property name="icon" value="/slack/mails-stack.png"/>
+     <property name="form.name.label" value="Channel Name"/>
+     <property name="form.description.label" value="Channel Topic"/>
+     <property name="form.file.show" value="false"/>
+     <property name="form.file.show" value="false"/>
+     <property name="form.url.show" value="true"/>
+     <column name="channel_id" type="string"  label="Channel ID" />
+     <column name="channel_purpose" type="string"  label="Channel Purpose" />
+     <wiki><![CDATA[
+{{noheading}}
++section # title="Slack Channel: {{name}}"
++row
++col-md-10
+<table class="formtable">
+     {{resource row.label="URL:"  message=""}}
+     {{field name="channel_purpose"  row.label="Channel Purpose:"}}
+</table>
+-col
++col-md-2
+<a href="{{root}}/entry/show/entry.rss?entryid={{entryid}}&output=rss.full"><img src="{{root}}/icons/rss.png"></a>
+-col
+-row
+-section
++section  label="Messages"
+{{timeline message=""}}
+<br>
+{{messages details="false" message="No messages found"}}
+-section
+]]>
+</wiki>
+   </type>
+
+  <type name="slack_message"  description="Slack Message" foruser="false" handler="org.ramadda.plugins.slack.SlackMessageTypeHandler" >
+     <property name="icon" value="/slack/mail.png"/>
+     <property name="form.description.label" value="Message Text"/>
+     <property name="form.file.show" value="false"/>
+     <property name="form.file.show" value="false"/>
+     <property name="form.url.show" value="true"/>
+     <column name="user_id" type="string"  label="User ID" showinform="false" />
+     <column name="user_name" type="string"  label="User Name" showinform="false" />
+     <column name="user_image" type="string"  label="User Image" showinform="false"  showinhtml="false"/>
+     <wiki><![CDATA[
+{{noheading}}
++section # title="Slack Message: {{name}}"
+<table width=100%>
+<tr valign=top>
+<td width="80" align="center">
+<img src="{{field name=user_image}}">
+</td>
+<td>
+<table class="formtable">
+     {{field name="user_name"  row.label="User"}}
+     {{resource row.label="URL:"  message=""}}
+</table>
+{{description}}
+</td>
+</tr>
+</table>
+-section
+]]>
+</wiki>
+   </type>
+
+
+</types>

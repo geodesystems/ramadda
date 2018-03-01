@@ -1,0 +1,81 @@
+[ht::head {Point Data Command Line Tools}]
+<%nochildlist%>
+
+The point data tools package is a suite of tools for accessing and converting 
+various point data formats.   They are implemented in Java so can run on any platform. 
+
+First of all, download and unzip the 
+<a href="http://sourceforge.net/projects/ramadda/files/ramadda<%ramadda.version%>/">pointtools.zip</a> release.
+There is a README that describes the tools and how to add new point readers.
+
+<p>
+All of the point tools run as shell scripts that call Java programs. 
+You need to have JAVA JDK 1.6 or higher installed.
+<p>
+To make the scripts executable do:
+<pre>
+    source install.sh
+</pre>
+
+
+If you are trying to read CSV or other text formats then you need to 
+<a href="textpoint.html">specify the metadata</a> for the file.
+If you are trying to read some other format then you need to specify
+the point reader class to use (I've given up guessing with data).
+
+The scripts take the form:
+<pre>
+  script -class &lt;file reader class&gt;
+e.g.:
+  point2csv.sh -class org.ramadda.data.point.amrc.AmrcFinalQCPointFile ...
+</pre>
+
+
+<subhead intoc="false" id="tools">Tools </subhead>
+
+<ul>
+
+<li>  <i>point2csv.sh </i><br>
+Convert a point file to csv.
+For help do:
+<pre>
+    point2csv.sh -help
+</pre>
+
+<a name="tiler"></a>
+<li>  <i>pointtiler.sh</i><br>
+This takes one or more point files and a specification of a spatial grid (bounds and grid size) and tiles 
+the points in the input point files into separate files corresponding to the grid squares.
+For help do:
+<pre>
+    pointtiler.sh -help
+</pre>
+
+
+
+
+<li> <i>pointbounds.sh</i><br>
+This takes one or more point files as arguments and prints to the stdout the spatial bounds in the form:
+<pre> 
+     north west south east
+</pre>
+
+<li>  <i>pointchecker.sh</i><br>
+Reads in a file and prints out the number of points, etc.
+
+</ul>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+[ht::foot]

@@ -1,0 +1,11 @@
+<api>
+    <group handler="org.ramadda.geodata.model.ClimateModelApiHandler" id="model.analysis">
+      <property name="collectiontype" value="climate_collection"/>
+      <api request="/model/compare/*"    method="processCompareRequest"  name="Model Compare" admin="false"/>
+      <api request="/model/multicompare/*"  method="processMultiCompareRequest"  name="Multi-Model Compare" admin="false"/>
+      <api request="/model/enscompare/*"    method="processEnsCompareRequest"  name="Ensemble Compare" admin="false"/>
+      <api request="/model/timeseries/*"    method="processTimeSeriesRequest"  name="Model Time Series" admin="false"/>
+      <api request="/model/multitimeseries/*"    method="processMultiTimeSeriesRequest"  name="Multi-Ensemble Time Series" admin="false"/>
+      <api request="/model/correlation/*"    method="processCorrelationRequest"  name="Model Correlation" admin="false"/>
+    </group>
+</api>

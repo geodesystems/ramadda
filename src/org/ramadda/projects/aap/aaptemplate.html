@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html><head>
+  <title>${header.title} - ${title}</title>
+
+<properties>
+name=AAP Template
+id=aap
+
+ramadda.template.link.wrapper =<span class="navlink"><a  href="${url}">${label}</a></span>
+ramadda.template.link.separator=&nbsp;|&nbsp;
+
+ramadda.template.userlink.wrapper =<span class="navlink"><a  href="${url}">${label}</a></span>
+ramadda.template.userlink.separator=&nbsp;|&nbsp;
+
+ramadda.template.favorites = <b>Favorites:</b><div class="favorites">${entries}</div>
+ramadda.template.cart = <b>Cart:</b><div class="favorites">${entries}</div>
+
+</properties>
+
+${imports}
+
+<link href="${root}/aap/template.css" rel="stylesheet" type="text/css" media="screen">
+
+
+${headfinal}
+
+</head>
+
+<body>
+ <table class="box"  cellpadding="0" cellspacing="0" width="950">
+  <tbody>
+<tr class="banner">
+<td colspan="2" valign="top">
+</td>
+  </tr>
+  <tr>
+<td class="ramadda-content">
+<table id="header_links" width=100%><tr><td></td><td align=right>${links}</td></tr></table>
+<div xclass="content">${entry.header}<div class="innercontent">${content}</div></div>
+</td>
+  </tr>
+  <tr class="aapfooter">
+    <td colspan="2" align="right">
+    <a href="http://www.undp-adaptation.org/africaprogramme/contactus.html">Contact Us</a>&nbsp;&nbsp;
+    <a href="http://www.undp.org/copyright/">Copyright &amp; Terms of Use</a>&nbsp;&nbsp;&nbsp;
+    </td>
+  </tr>
+</tbody></table>
+</body></html>

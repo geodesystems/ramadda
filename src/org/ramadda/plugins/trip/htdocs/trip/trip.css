@@ -1,0 +1,13 @@
+
+
+.itinerary-header {
+      font-weight: bold;
+      font-size: 120%;
+      border-bottom:1px #000 solid;
+      margin-top:10px;
+}
+
+.itinerary-day {
+      margin-top:10px;
+      margin-left:10px;
+}

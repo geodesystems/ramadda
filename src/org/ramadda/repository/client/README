@@ -1,0 +1,14 @@
+
+To run the search script you need to specify the RAMADDA to search.
+
+You can do this in the command line, e.g.:
+   search.sh -repos http://ramadda.org/repository -user userid password
+
+Or you can  set environment variables in ramaddaenv.sh or in your shell 
+environment that specify the repository and user id
+
+
+export RAMADDA_CLIENT_REPOSITORY=http://localhost/repository
+export RAMADDA_CLIENT_USER=
+export RAMADDA_CLIENT_PASSWORD=
+

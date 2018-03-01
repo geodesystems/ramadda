@@ -1,0 +1,78 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN" "http://www.w3.org/TR/html4/loose.dtd">
+<html><head>
+
+<!--
+<properties>
+name=Lesotho Template
+id=lesotho
+
+ramadda.template.link.wrapper =<tr><td ><div class="lnavlink"><a  href="${url}">${label}</a></div></td></tr>
+ramadda.template.link.separator=
+
+ramadda.template.userlink.wrapper =<tr><td ><div class="lnavlink"><a  href="${url}">${label}</a></div></td></tr>
+ramadda.template.userlink.separator=
+
+ramadda.template.favorites = <b>Favorites:</b><div class="favorites">${entries}</div>
+ramadda.template.cart = <b>Cart:</b><div class="favorites">${entries}</div>
+
+</properties>
+-->
+
+${imports}
+
+<style type="text/css">
+
+.lnavlink {
+  margin-top:2px;
+  margin-bottom:2px;
+  font-weight: bold;
+  font-size: 13pt;
+}
+</style>
+
+<meta http-equiv="content-type" content="text/html; charset=ISO-8859-1">
+<title>${header.title} - ${title}</title>
+
+
+<link href="http://www.lesmet.org.ls/favicon.ico" type="image/x-read" rel="shortcut icon">
+<meta name="description" content="Lesotho Meteorological Services">
+<meta name="keywords" content="climate of Lesotho, weather of Lesotho, meteorology in Lesotho, weather services, climate services, weather, climate, Lesotho weather, Lesotho climate, weather in the Kingdom, climate in the Kingdom">
+
+${headfinal}
+
+<link rel="stylesheet" type="text/css" href="${root}/lesotho/jnhb.css">
+
+</head>
+
+<body style="margin-top:8px">
+<center>
+<div id="hd" style="font-size:40px">
+Lesotho Meteorological Services
+<span id="mot" style="font-size:20px">We are at your service/Re sebelise</span>
+</div> 
+
+<div id="ctt">
+<table cellspacing="0" cellpadding="0" border="0" width="100%">
+<tr valign="top">
+<td width=200 nowrap>
+<span id="ctlft">
+<table width="100%">
+<tbody>
+${links}
+</tbody>
+</table>
+</span>
+</td>
+<td>
+${entry.header}
+<div class="innercontent">${content}</div>
+</td></tr></table>
+</div> 
+
+<div id="ft">
+Lesotho Meteorological Services &copy; 2011 <br>Ministry of Natural Resources
+</div> 
+
+</center>
+
+</body></html>

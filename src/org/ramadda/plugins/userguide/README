@@ -1,0 +1,23 @@
+This uses the IDV generate.tcl script to create the userguide 
+content and places it in htdocs/userguide directory. 
+
+The ant script calls tclsh. See the top level README to see how to set
+the path to tclsh.  To generate the docs, run:
+
+   ant userguide
+
+To install the userguide plugin, run:
+
+   ant 
+
+(default target)
+
+To generate and install the userguide plugin, run:
+
+   ant all
+
+To view the content in RAMADDA just go to:
+http://localhost:8080/repository/userguide/index.html
+
+
+

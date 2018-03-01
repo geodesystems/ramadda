@@ -1,0 +1,531 @@
+<types supercategory="Miscellaneous" category="Business Data">
+
+
+  <type name="type_census_acs"  super="type_point"  description="US Census ACS Data" handler="org.ramadda.plugins.census.AcsTypeHandler" >
+     <property name="point.initialize" value="false"/>
+     <property name="search.form.area.show" value="false"/>
+     <property name="form.resource.show" value="false"/>
+     <property name="html.resource.show" value="true"/>
+     <property name="form.area.show" value="false"/>
+     <property name="search.form.date.show" value="false"/>
+     <property name="form.date.show" value="false"/>
+     <property name="form.properties.show" value="false"/>
+     <property name="icon" value="/census/census.png"/>
+     <property name="map.chart.type" value="bartable"/>
+     <property name="map.chart.minSizeX" value="750"/>
+     <property name="map.chart.minSizeY" value="500"/>
+     <property name="record.file.class" value="org.ramadda.plugins.census.AcsFile"/>
+     <column name="fields"  type="string"  rows="10" columns="60" label="Indicators" cansearch="true" size="2000" changetype="true"  >
+       <xdefault></xdefault>
+     </column>
+     <column name="header"  type="string"  rows="10" columns="60" label="Header" default="" suffix="Optional list of column names to use" size="4000" changetype="true"/>
+     <column name="for_type"  type="enumeration"  values="file:/org/ramadda/plugins/census/resources/for.txt" label="For" default="us" cansearch="true" >
+       <suffix><![CDATA[This is the main aggregation level. <a href="http://www.census.gov/data/developers/data-sets/acs-survey-5-year-data.html" target="_help">Census.gov API help</a>]]>
+</suffix>
+</column>
+     <column name="for_value"  type="string"   label="For Value" >
+       <suffix><![CDATA[
+The FIPS code to search for when you want a single value, e.g. 08.
+<ul>
+<li> <a href="https://www.census.gov/geo/reference/ansi_statetables.html" target="_help">State FIPS listings</a>
+<li> <a href="https://www.census.gov/geo/reference/codes/cou.html" target="_help">County FIPS listings</a>
+</ul>
+]]>
+</suffix>
+
+     </column>
+
+     <column name="in_type1"  type="enumeration"  values="file:/org/ramadda/plugins/census/resources/in.txt" label="In"  cansearch="true" >
+       <suffix><![CDATA[
+The geography specification. If you wanted to just look at data in Colorado set this to "state" and the value to "08"
+]]>
+
+       </suffix>
+</column>
+     <column name="in_value1"  type="string"   label="In Value" />
+
+     <column name="in_type2"  type="enumeration"  values="file:/org/ramadda/plugins/census/resources/in.txt" label="In #2" cansearch="true" >
+       <suffix><![CDATA[
+This allows you to do a subsequent selection, e.g. set this to "county" and the value to "013" for Boulder County CO
+]]>
+
+       </suffix>
+</column>
+     <column name="in_value2"  type="string"   label="In Value #2" />
+
+     <column name="source_url"  type="url"   label="Source URL" showinform="false" size="2000" changetype="true"/>
+     <column name="include_locales"  type="boolean"  default="false"  label="Include Locales" suffix="Include the state/county/... fields?"/>
+<wiki><![CDATA[
++section title="{{name}}" #
+{{description}}
+{{group  layoutType="columns"  layoutColumns="2" showMenu="true"}}
+{{display  type="bartable"  column="0" layoutHere="false" height="400" showTitle="false" }}
+{{display  type="map" column="1"  width="500" height="400"   layoutHere="false" includeData="false"   showTitle="false" }}
+{{display  type="text"  column="1" layoutHere="false" showTitle="true" title="Readout"}}
+-section
++section label="Information" #
+{{information  details="false"  }}
+-section
+]]>
+</wiki>
+
+  </type>
+
+  
+
+  <type name="type_census_age"  super="type_census_acs"  description="US Census ACS Data - Age" foruser="false">
+<wiki><![CDATA[
++section title={{name}} #
+{{group showMenu="true" layoutColumns="2"  layoutType="table" showTitle="false"}}
+{{display type="table" layoutHere="false" skipFields="latitude,longitude" chartHeight="600"
+map-colorBy="B01002_001E"
+map-colorBar="blue_white_red"
+map-strokeColor="black"
+xxx-map-sizeBy="B01001_001E"
+}}
+{{display type="map" layoutHere="false"  height="600" showTitle="true" title="Colored by median age from blue (younger), to white (middle) to red (older)"}}
+{{display type="stats" layoutHere="false" showTitle="true" title="Summary Statistics"}}
+{{display type="text" layoutHere="false" showTitle="true" title="Details"}}
+-section
+]]></wiki>
+
+    <property name="fields.databaseDefault"><![CDATA[NAME
+B01001_001E
+B01001_002E:%1
+B01001_026E:%1
+B01002_001E
+B01002_002E
+B01002_003E
+B05003_003E:%1
+B05003_014E:%1
+B06011_001E
+]]></property>
+    <property name="header.databaseDefault"><![CDATA[
+Area
+Population
+% Male
+% Female
+Median age
+Median age male
+Median age female
+% Male under 18
+% Female under 18
+Median income
+]]></property>
+  </type>
+
+
+  <type name="type_census_children"  super="type_census_acs"  description="US Census ACS Data - Children" foruser="false">
+<wiki><![CDATA[
++section title={{name}} #
+{{group showMenu="true" layoutColumns="2"  layoutType="table" showTitle="false"}}
+{{display type="table" layoutHere="true" skipFields="latitude,longitude" chartHeight="350"
+map-colorBar="blue_white_red"
+map-strokeColor="black"
+map-sizeBy="B01001_001E"
+}}
+:note Blue - smaller values. Red - larger values.
++row
++col-md-6
+:heading Under 6 living with two parents
+{{display type="map" layoutHere="true"  height="400" sizeBy="B06011_001E" colorBy="B05009_003E" colorBar="blue_white_red"}}
+-col
++col-md-6
+:heading Under 6 living with one parent
+{{display type="map" layoutHere="true"  height="400" sizeBy="B06011_001E" colorBy="B05009_013E" colorBar="blue_white_red"}}
+-col
+-row
++row
++col-md-6
+{{display type="scatterplot" layoutHere="true"  height="400" fields="B06011_001E,B05009_003E"}}
+-col
++col-md-6
+{{display type="scatterplot" layoutHere="true"  height="400" fields="B06011_001E,B05009_013E"}}
+-col
+-row
++row
++col-md-6
+{{display type="stats" layoutHere="true" showTitle="true" title="Summary Statistics"}}
+-col
++col-md-6
+{{display type="text" layoutHere="true" showTitle="true" title="Details"}}
+-col
+-row
+-section
+
+]]></wiki>
+
+    <property name="fields.databaseDefault"><![CDATA[NAME
+B05009_001E
+B05009_002E
+B05009_003E:%2
+B05009_013E:%2
+B05009_020E
+B05009_021E:%5
+B05009_031E:%5
+B06011_001E
+
+]]></property>
+    <property name="header.databaseDefault"><![CDATA[Area
+Children under 18 
+Children under 6
+Under 6 living with two parents
+Under 6 living with one parent
+Children 6  to 17
+6 to 17 living with two parents
+6 to 17 living with one parent
+Median income
+]]></property>
+  </type>
+
+
+
+
+
+  <type name="type_census_race"  super="type_census_acs"  description="US Census ACS Data - Race" foruser="false">
+<wiki><![CDATA[
++section title={{name}} #
+{{group showMenu="true" layoutColumns="2" layoutType="table" showTitle="false" }}
+:note Colored by percentage race from blue (higher) to white (lower).
++row
++col-md-4
+{{display type="map" layoutHere="true"   height="400" colorBy="B01001A_001E" excludeZero="true" title="% White" showTitle="true"   }}
+-col
++col-md-4
+{{display type="map" layoutHere="true"  height="400" colorBy="B01001B_001E" title="% Black or African American" showTitle="true" excludeZero="true"}}
+-col
++col-md-4
+{{display type="map" layoutHere="true"  height="400" colorBy="B01001I_001E" title="% Hispanic or Latino" showTitle="true" excludeZero="true"}}
+-col
+-row
+
++row
++col-md-4
+{{display type="scatterplot" layoutHere="true" fields="B06011_001E,B01001A_001E" map-display="false" chartHeight="350" excludeZero="true"}}
+-col
++col-md-4
+{{display type="scatterplot" layoutHere="true" fields="B06011_001E,B01001B_001E" map-display="false" chartHeight="350" excludeZero="true"}}
+-col
++col-md-4
+{{display type="scatterplot" layoutHere="true" fields="B06011_001E,B01001I_001E" map-display="false" chartHeight="350" excludeZero="true"}}
+-col
+-row
++row
++col-md-12
+<center>
+{{display type="table" layoutHere="true" skipFields="latitude,longitude" map-colorBar="blues"}}
+</center>
+-col
+-row
+-section
+]]></wiki>
+
+    <property name="fields.databaseDefault"><![CDATA[NAME
+B01003_001E
+B01001A_001E:%1
+B01001B_001E:%1
+B01001I_001E:%1
+B01001D_001E:%1
+B06011_001E
+]]></property>
+    <property name="header.databaseDefault"><![CDATA[
+Area
+Population
+% White
+% Black or African American
+% Hispanic or Latino
+% Asian
+Median income
+]]></property>
+  </type>
+
+
+
+  <type name="type_census_poverty"  super="type_census_acs"  description="US Census ACS Data - Poverty" foruser="false">
+<wiki><![CDATA[+section title={{name}} #
+{{group showMenu="true" layoutColumns="2"  layoutType="table" showTitle="false"}}
+{{display type="table" layoutHere="false" skipFields="latitude,longitude" chartHeight="600" 
+map-colorBy="B07012_002E"
+map-colorBar="blue_white_red"
+map-strokeColor="black"
+}}
+{{display type="map" layoutHere="false"  height="600" showTitle="true" title="Colored by poverty levels from blue (lower) to white (middle) to red (higher)"}}
+{{display type="stats" layoutHere="false" showTitle="true" title="Summary Statistics"}}
+{{display type="text" layoutHere="false" showTitle="true" title="Details"}}
+-section
+]]></wiki>
+
+    <property name="fields.databaseDefault"><![CDATA[
+NAME
+B07012_001E
+B07012_002E:%1
+B07012_003E:%1
+B07012_004E:%1
+B06011_001E
+]]></property>
+    <property name="header.databaseDefault"><![CDATA[Area
+Population
+% Below poverty level
+default
+default
+Median income
+]]></property>
+  </type>
+
+  <type name="type_census_nationality"  super="type_census_acs"  description="US Census ACS Data - Nationality" foruser="false">
+<wiki><![CDATA[
++section title={{name}} #
+{{group showMenu=true layoutColumns=2 layoutType=table showTitle="false"}}
+{{display type=table layoutHere=false skipFields="latitude,longitude" column=0 
+map-colorBy="B05001_006E"
+map-colorBar="blues"
+map-strokeColor="magenta"
+map-sizeBy="B05001_001E"
+}}
+{{display type=map layoutHere=false column=1 showTitle="true" title="Sized by population. Colored by percent non-citizens from light blue (low) to dark blue (high)"}}
+{{display type=scatterplot layoutHere=false column=1 fields="B06011_001E,B05001_006E" map-display="false" chartWidth="600"}}
+{{display type="stats" layoutHere="false"  showTitle="true" title="Summary Statistics"}}
+{{display type="text" layoutHere=false column=1 showTitle="true" title="Details"}}
+-section
+]]></wiki>
+
+    <property name="fields.databaseDefault"><![CDATA[NAME
+B05001_001E
+B05001_002E:%1
+B05001_004E:%1
+B05001_005E:%1
+B05001_006E:%1
+B06011_001E
+]]></property>
+    <property name="header.databaseDefault"><![CDATA[
+Area
+Population
+default
+default
+default
+% Not a U.S. citizen
+Median income
+]]></property>
+  </type>
+
+
+  <type name="type_census_housing"  super="type_census_acs"  description="US Census ACS Data - Housing" foruser="false">
+<wiki><![CDATA[
++section title={{name}} #
+{{group showMenu=true layoutColumns=2 layoutType=table showTitle="false"}}
+{{display type=table layoutHere=false skipFields="latitude,longitude" column=0 
+map-colorBy="B25003_003E"
+map-colorBar="blues"
+map-strokeColor="magenta"
+map-sizeBy="B25001_001E"
+}}
+{{display type="map" layoutHere="false" showTitle="true" title="Sized by number of housing units. Darker blue shows more renters."}}
+{{display type="scatterplot" layoutHere="false" fields="B06011_001E,B25003_002E" map-display="false" showTitle="true" title="Owner Occupied"}}
+{{display type="scatterplot" layoutHere="false" fields="B06011_001E,B25003_003E" map-display="false" showTitle="true" title="Renter Occupied"}}
+{{display type="scatterplot" layoutHere="false" fields="B06011_001E,B25027_002E" map-display="false" showTitle="true" title="Housing units with a mortgage"}}
+{{display type="stats" layoutHere="false"  showTitle="true" title="Summary Statistics"}}
+{{display type="text" layoutHere="false"  showTitle="true" title="Details"}}
+-section
+]]></wiki>
+
+    <property name="fields.databaseDefault"><![CDATA[NAME
+B25001_001E
+B25003_002E:%1
+B25003_003E:%1
+B25009_001E:skip
+B25009_003E:%4
+B25009_004E:%4
+B25009_005E:%4
+B25009_014E:%4
+B25027_002E:%4
+B06011_001E
+]]></property>
+    <property name="header.databaseDefault"><![CDATA[Area
+Total Units
+% Owner Occupied
+% Renter Occupied
+skip
+% 1 Person Household
+% 2 Person Household
+% 3 Person Household
+default
+default
+Median income
+]]></property>
+  </type>
+
+  <type name="type_census_education"  super="type_census_acs"  description="US Census ACS Data - Education" foruser="false">
+<wiki><![CDATA[
++section title={{name}} #
+{{group showMenu=true layoutColumns=2 layoutType="table" showTitle="false"}}
+{{display type=table layoutHere=false skipFields="latitude,longitude" 
+map-colorBy="B15003_022E"
+map-colorBar="blues"
+map-strokeColor="magenta"
+map-sizeBy="B06011_001E"
+}}
+{{display type=map layoutHere=false showTitle="true" title="Sized by median income. Colored by percent bachelors degree holders."}}
+{{display type=scatterplot layoutHere=false map-display="false" fields="B06011_001E,B15003_017E" title="High School Diploma" showTitle="true"  }}
+{{display type=scatterplot layoutHere=false  map-display="false" fields="B06011_001E,B15003_022E" title="Bachelor's Degree"  showTitle="true" }}
+{{display type=scatterplot layoutHere=false  map-display="false" fields="B06011_001E,B15003_024E" title="Professional Degree"  showTitle="true" }}
+{{display type="stats" layoutHere="false"  showTitle="true" title="Summary Statistics"}}
+{{display type="text" layoutHere="false"  showTitle="true" title="Details"}}
+-section
+]]></wiki>
+
+    <property name="fields.databaseDefault"><![CDATA[NAME
+B15003_001E
+B15003_002E:%1
+B15003_016E:%1
+B15003_017E:%1
+B15003_018E:%1
+B15003_021E:%1
+B15003_022E:%1
+B15003_023E:%1
+B15003_024E:%1
+B15003_025E:%1
+B06011_001E
+]]></property>
+    <property name="header.databaseDefault"><![CDATA[Area
+Population
+default
+default
+default
+default
+% Associates
+% Bachelors
+% Masters
+% Professional degree
+% PhD
+Median income
+]]></property>
+  </type>
+
+  <type name="type_census_commuting"  super="type_census_acs"  description="US Census ACS Data - Commuting" foruser="false">
+<wiki><![CDATA[
++section title={{name}} #
+{{group showMenu="true" layoutColumns="2" layoutType="table" showTitle="false"}}
+{{display type="table" layoutHere="false" skipFields="latitude,longitude" 
+map-colorBy="B08006_003E"
+xxxmap-colorByMin="60"
+map-colorBar="blues"
+map-strokeColor="black"
+map-sizeBy="B08006_001E"
+}}
+{{display type="map" layoutHere="false" showTitle="true" title="Sized by total number of workers. Darker blue shows more workers that drove alone."}}
+{{display type="scatterplot" layoutHere="false" fields="B06011_001E,B08006_003E" map-display="false" chartWidth="600" showTitle="true" title="Drove Alone"}}
+{{display type="scatterplot" layoutHere="false" fields="B06011_001E,B08006_004E" map-display="false" chartWidth="600" showTitle="true" title="Car Pooled"}}
+{{display type="scatterplot" layoutHere="false" fields="B06011_001E,B08006_008E" map-display="false" chartWidth="600" showTitle="true" title="Public Transportation"}}
+{{display type="scatterplot" layoutHere="false" fields="B06011_001E,B08006_014E" map-display="false" chartWidth="600" showTitle="true" title="Biked"}}
+
+{{display type="stats" layoutHere="false" showTitle="true" title="Summary Statistics"}}
+{{display type="text" layoutHere="false"  showTitle="true" title="Details"}}
+
+-section
+]]></wiki>
+
+    <property name="fields.databaseDefault"><![CDATA[NAME
+B08006_001E
+B08006_003E:%1
+B08006_004E:%1
+B08006_008E:%1
+B08006_014E:%1
+B08006_015E:%1
+B06011_001E
+]]></property>
+    <property name="header.databaseDefault"><![CDATA[Area
+Population
+% Workers drove alone
+% Workers carpooled
+default
+% Biked
+% Walked
+Median income
+]]></property>
+  </type>
+
+<!--
+  <type name="type_census_xxx"  super="type_census_acs"  description="US Census ACS Data - Children" foruser="false">
+<wiki><![CDATA[
+
+]]></wiki>
+
+    <property name="fields.databaseDefault"><![CDATA[
+
+]]></property>
+    <property name="header.databaseDefault"><![CDATA[
+
+]]></property>
+  </type>
+
+  <type name="type_census_xxx"  super="type_census_acs"  description="US Census ACS Data - Children" foruser="false">
+<wiki><![CDATA[
+
+]]></wiki>
+
+    <property name="fields.databaseDefault"><![CDATA[
+
+]]></property>
+    <property name="header.databaseDefault"><![CDATA[
+
+]]></property>
+  </type>
+
+  <type name="type_census_xxx"  super="type_census_acs"  description="US Census ACS Data - Children" foruser="false">
+<wiki><![CDATA[
+
+]]></wiki>
+
+    <property name="fields.databaseDefault"><![CDATA[
+
+]]></property>
+    <property name="header.databaseDefault"><![CDATA[
+
+]]></property>
+  </type>
+
+-->
+
+
+  <type name="type_urbaninstitute_trend"  super="type_point" foruser="false">
+     <property name="point.initialize" value="false"/>
+     <property name="search.form.area.show" value="true"/>
+     <property name="form.resource.show" value="true"/>
+     <property name="html.resource.show" value="true"/>
+     <property name="search.form.date.show" value="false"/>
+     <property name="form.date.show" value="false"/>
+     <property name="form.properties.show" value="false"/>
+     <property name="icon" value="/census/urbaninstitute.png"/>
+     <property name="map.chart.type" value="linechart"/>
+     <property name="map.chart.minSizeX" value="750"/>
+     <property name="map.chart.minSizeY" value="400"/>
+     <property name="record.file.class" value="org.ramadda.data.point.text.CsvFile"/>
+  </type>
+
+  <type name="type_urbaninstitute_employment"  super="type_urbaninstitute_trend"  description="MetroTrends Employment Data" handler="org.ramadda.data.services.PointTypeHandler" >
+     <property name="map.chart.fields" value="NumTotNonFarm,NumTotPriv"/>
+     <property name="record.properties">
+<![CDATA[
+skiplines=1
+fields=year[type=string label="Year"],month[type=string label="Month"],metronm[type=string],cbsa[type=string],NumEduHealth[label="Edu and Health"  chartable=true] ,NumFinance[label="Finance"  chartable=true], NumGoodsProd[label="Goods and Production"  chartable=true], NumGovt[label="Government"  chartable=true], NumInfo[label="Information"  chartable=true], NumLeisureHospit[label="Leisure and Hospitality"  chartable=true], NumManufact[label="Manufacturing"  chartable=true], NumOther[label="Other"  chartable=true], NumPrivServProv[label="Private Service Provider"  chartable=true], NumProfBusiness[label="Prof. Business"  chartable=true], NumRetailTrad[label="Retail and Trade"  chartable=true], NumServProv[label="Service Provider"  chartable=true], NumTotNonFarm[label="Total Non-Farm"  chartable=true], NumTotPriv[label="Total Private"  chartable=true], NumTradTranspUtil[label="Trad. Transp. and Util."  chartable=true], NumTranspUtil[label="Transp. and Util."  chartable=true], NumWholesaleTrad [label="Wholesale and Trade"  chartable=true]
+]]></property>
+    <column name="region"  type="enumerationplus"  columns="60" label="Region" default=""  cansearch="true"/>
+
+<wiki><![CDATA[
++section title="{{name}}" #
+{{description}}
+{{group  layoutType="table"  layoutColumns="2" showMenu="true"}}
+{{display  type="linechart" fields="NumTotNonFarm,NumTotPriv" layoutHere="false" showTitle="false" vAxisMinValue="0"  }}
+-section
++section label="Information" #
+{{information  details="false"  }}
+-section
+]]>
+</wiki>
+
+  </type>
+
+
+
+
+</types>

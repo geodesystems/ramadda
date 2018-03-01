@@ -1,0 +1,37 @@
+
+Many of the icons are from the famfamfam icon collection:
+http://www.famfamfam.com/lab/icons/
+
+We also use icons from:
+http://www.splitbrain.org/projects/file_icons
+
+
+Some Icons are Copyright © Yusuke Kamiyamane. 
+All rights reserved. 
+Licensed under a Creative Commons Attribution 3.0 license.
+
+And the gogole icons:
+Maps Icons Collection http://code.google.com/p/google-maps-icons/ 
+
+The slideshow javascript is the S5 slideshow:
+http://meyerweb.com/eric/tools/s5/
+
+
+The JPEG metadata extractor used is from Drew Noake's metadataxtractor:
+http://code.google.com/p/metadata-extractor/
+
+
+jQuery
+We make extensive use of jQuery (http://jquery.com/) and a number of plugins.
+
+handsontable table plugin
+http://handsontable.com/
+
+
+The HTML select form style is done using Greg Franko's selectboxit 
+http://gregfranko.com/jquery.selectBoxIt.js/
+
+
+
+We use Knight Labs timeline.js:
+https://github.com/NUKnightLab/TimelineJS

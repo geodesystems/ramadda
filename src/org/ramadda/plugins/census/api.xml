@@ -1,0 +1,5 @@
+
+<api handler="org.ramadda.plugins.census.CensusApiHandler" id="census">
+      <api request="/census/variables"    method="processVariableApi" admin="false"/>
+      <api request="/census/states"    method="processStatesApi" admin="false"/>
+</api>

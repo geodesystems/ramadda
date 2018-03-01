@@ -1,0 +1,13 @@
+<netcdf xmlns='http://www.unidata.ucar.edu/namespaces/netcdf/ncml-2.2'>
+ <variable name='ens' type='String' shape='ens'>
+   <attribute name='long_name' value='ensemble coordinate' />
+   <attribute name='_CoordinateAxisType' value='Ensemble' />
+ </variable>
+ <aggregation dimName='ens' type='joinNew'>
+   <variableAgg name='tasmax'/>
+   <netcdf location='E:/work/dmurray/A1B_HadCM3Q3_DM_25km_2001-2010_tasmax.nc.gz'
+           coordValue='HadCM'/>
+   <netcdf location='E:/work/dmurray/A1B_ECHAM5-r3_DM_25km_2001-2010_tasmax.nc.gz'
+           coordValue='ECHAM5'/>
+ </aggregation>
+</netcdf>

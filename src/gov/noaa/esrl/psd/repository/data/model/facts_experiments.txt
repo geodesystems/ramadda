@@ -1,0 +1,34 @@
+#
+# new names
+#
+amip_obs_rf:AMIP with Observed Radiative Forcing
+amip_1880s_rf:AMIP with 1880s Radiative Forcing
+amip_nat_hist:AMIP with Natural History Forcing
+amip_clim_rf:AMIP with Climatological Radiative Forcing
+amip_clim_sic:AMIP with Observed Radiative Forcing, Climatological Sea Ice
+amip_clim_polar:AMIP with Observed Radiative Forcing, Climatological Sea Ice and Polar SST
+amip_clim_o3:AMIP with Observed Radiative Forcing, Climatological Ozone
+eof1_sst:Leading Pattern of Global SST Variabilty with Observed Radiative Forcing
+eof1+eof2_sst:First 2 Leading Patterns of Global SST Variabilty with Observed Radiative Forcing
+# 
+# old names
+#
+amip_vary_ghg:AMIP Time Evolving GHG,Ozone
+amip_fixed_ghg:AMIP Climatological GHG,Ozone
+amip_1880s_forcing:AMIP 1880s Forcing
+amip_fixed_o3:AMIP Climatological Ozone
+amip_fixed_sic:AMIP Climatological Sea Ice
+amip_eof1_sst:AMIP with 1st EOF of SST Forcing
+amip_eof1+eof2_sst:AMIP Full ENSO (EOF1+EOF2)
+amip_fully_forced:AMIP Fully Forced
+
+#
+# Other
+reanalysis:Reanalysis
+obs:Observations
+LENS:CESM Large Ensemble
+CESM-LENS:CESM Large Ensemble
+historical:Historical Observed Radiative Forcing
+historicalNat:Historical Natural Radiative Forcing
+historicalMisc:Historical Anthropogenic Aerosol-Only Forcing
+historicalMisc-ozone:Historical Stratospheric Ozone-Only Forcing

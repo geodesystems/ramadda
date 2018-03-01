@@ -1,0 +1,36 @@
+
+<tables>
+<table id="registrations" name="Registrations" handler="com.ramadda.plugins.registration.RegistrationDbTypeHandler">
+   <column name="date" type="date" label="Date" cansearch="true"   canlist="true"/>
+   <column name="type" type="enumeration" label="Type" values="pending,purchased,nonprofit,optout" cansearch="true"   canlist="true">
+       <property name="iscategory" value="true"/>
+   </column>
+   <column name="name" type="string" label="Name" cansearch="true"   canlist="true" required="true"/>
+   <column name="email" type="string" label="Email" cansearch="true"   canlist="true" required="true"/>
+   <column name="organization" type="string" label="Organization" cansearch="true"   canlist="true" required="false"/>
+   <column name="country" type="enumeration" label="Country" values="file:/org/ramadda/repository/resources/data/countries.txt" cansearch="true"   canlist="false"/>
+   <column name="state_province" label="State or Province" cansearch="true"   canlist="true"/>
+   <column name="postal_code" type="string" label="Postal Code"  cansearch="true"   canlist="false" columns="15"/>
+   <column name="url" type="url" label="RAMADDA Site URL" cansearch="true"   canlist="true" />
+   <column name="users" type="int" label="# users"  cansearch="true"   canlist="true"/>
+
+   <column name="organization_type" type="enumerationplus" label="Organization type" values="normal:Normal,academic:Academic" cansearch="true"   canlist="true" default="normal"/>
+   <column name="support_tier" type="enumeration" label="Support tier"  values="0:None,1:Tier 1,2:Tier 2" cansearch="true"   canlist="true" default="0"/>
+
+   <column name="license_amount" type="double" label="License Amount"   canlist="true" default="0">
+     <property name="dostats" value="true"/>
+   </column>
+
+   <column name="support_amount" type="double" label="Support Amount"   canlist="true" default="0">
+       <property name="dostats" value="true"/>
+   </column>
+
+   <column name="amount" type="double" label="Total Amount"    canlist="true" >
+     <property name="dostats" value="true"/>
+   </column>
+   <column name="registration_key" type="string" label="Key"   canlist="false" />
+   <column name="payment_details" type="string" size="2000" label="Payment Details"   rows="10" canlist="false" htmlTemplate="&lt;pre&gt;${value}&lt;/pre&gt;" />
+   <column name="comments" type="string" size="2000" label="Comments"   rows="10" canlist="false" htmlTemplate="&lt;pre&gt;${value}&lt;/pre&gt;" />
+</table>
+
+</tables>

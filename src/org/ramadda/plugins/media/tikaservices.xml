@@ -1,0 +1,10 @@
+<services maxFileSize="5">
+
+<service id="tika_extracttext" label="Extract text" command="java:org.ramadda.data.docs.TikaService:extractText" >
+  <description><![CDATA[Extract text from document]]></description>
+
+  <arg value="${entry.file}" type="entry" entryType="type_document_tika" primary="true" label="Input Document"  entryPattern="(.*\.pdf|.*\.doc|.*\.docx|.*\.ppt.*)"></arg>
+  <output type="file" pattern=".*\.txt"/>
+</service>
+
+</services>

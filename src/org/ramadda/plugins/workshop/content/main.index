@@ -1,0 +1,58 @@
+
+index.html
+>title:Installing and configuring RAMADDA
+
+>>installation/index.html
+-installation/repository.properties
+>>installation/configuration.html
+>>installation/ramaddadir.html
+>>user/index.html
+
+
+>title:The RAMADDA User Interface
+>>entries/index.html
+>>entries/crud.html
+>>entries/listing.html
+>>entries/views.html
+>>entries/metadata.html
+>>entries/search.html
+
+
+
+
+>title:Working with gridded data
+>>data/loadagrid.html
+>>data/subsetting.html
+#>>data/gridaggregation.html
+#>>data/idv.html
+
+
+##Don - can you do these two sections?
+>title:Working with point data
+>>data/pointdata.html
+>>data/pointdb.html
+
+
+>title:Populating your RAMADDA server
+>>doingmore/localfileview.html
+>>harvesters/fileharvesters.html
+#>>harvesters/urlharvesters.html
+#>>doingmore/wiki.html
+#>>doingmore/images.html
+
+>title:Repository Administration 
+>>admin/settings.html
+>>admin/users.html
+>>admin/access.html
+
+exit
+>>doingmore/latlonimage.html
+>>doingmore/kml.html
+
+##>>doingmore/otherservers.html
+##>>doingmore/sendai.html
+
+
+
+
+

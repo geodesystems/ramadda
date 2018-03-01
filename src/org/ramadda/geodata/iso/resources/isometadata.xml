@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<metadata>
+  <handler category="ISO 19115" class="org.ramadda.geodata.iso.IsoMetadataHandler">
+  </handler>
+</metadata>

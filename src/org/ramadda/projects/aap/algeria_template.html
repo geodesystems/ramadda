@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html><head>
+<!--
+<properties>
+name=Algeria Template
+id=algeria
+
+ramadda.template.link.wrapper =<span class="navlink"><a  href="${url}">${label}</a></span>
+ramadda.template.link.separator=&nbsp;|&nbsp;
+
+ramadda.template.userlink.wrapper =<span class="navlink"><a  href="${url}">${label}</a></span>
+ramadda.template.userlink.separator=&nbsp;|&nbsp;
+
+ramadda.template.favorites = <b>Favorites:</b><div class="favorites">${entries}</div>
+ramadda.template.cart = <b>Cart:</b><div class="favorites">${entries}</div>
+
+</properties>
+-->
+
+<link href="${root}/algeria/template.css" rel="stylesheet" type="text/css">
+<link href="${root}/algeria/blue.css" rel="stylesheet" type="text/css">
+
+${imports}
+
+<title>${header.title} - ${title}</title>
+
+
+
+
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <meta name="robots" content="index, follow">
+  <meta name="keywords" content="meteo,algerie,Ageria,temps,weather">
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<link rel="shortcut icon" href="http://www.meteo.dz/images/favicon.ico">
+
+<style type="text/css">
+.navlink {
+  color:white;
+}
+.navlink a {
+   color:white;
+   text-decoration: none;
+}
+.navlink a:link {
+   color:white;
+}
+.navlink a:visited {
+   color:white;
+}
+//Override settings in template.css
+tr, td {
+padding-top: 3pt;
+padding-right: 3pt;
+padding-bottom: 3pt;
+padding-left: 3pt;
+margin-top: 2pt;
+margin-right: 2pt;
+margin-bottom: 2pt;
+margin-left: 2pt;
+}
+</style>
+
+</head>
+
+<body>
+  <div id="left_border">
+    <div id="right_border">
+      <div id="bottom">
+        <div id="bottom_right"> 
+          <div id="bottom_left">
+            <div id="container">
+              <div id="banner_out">
+                <div id="banner_in">
+		  <div class="sitetitle"></div>
+                </div>           
+              </div>
+              <div id="topmenu_out">
+                <div id="topmenu_left">
+                  <div id="topmenu_right">
+<div style="padding-top:14px;margin-left:22px;margin-right:22px;">
+<table width="100%" border="0" cellspacing="0" cellpadding="0"><tr>
+<td></td>
+<td align="right">${links}</td></tr></table>
+                          </div>
+                          </div>
+                        </div>
+                      </div>
+                      <div id="maincontent" style="min-height:700px;">
+<div style="margin-top:5px;">${entry.header}<div class="innercontent">${content}</div></div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="clr"></div>
+	  </div>
+        </div>
+      </div>
+    </div>
+    <div id="footer">
+      <div id="copy">© 2008  | Template by <a href="http://www.vonfio.de/" target="_blank">vonfio.de</a></div>
+      <div id="othermenu">
+        <div id="othermenu_in">
+	  <div class="moduletable">
+	    <div class="bannergroup">
+	      <div class="bannerheader">Meteo.dz</div>
+             </div>
+	  </div>
+	  <div class="moduletable">
+	    <div>Copyright © 2011 . Tous droits réservés.</div>
+            <div><a href="http://www.joomla.org/">Joomla!</a> est un logiciel libre sous <a href="http://www.gnu.org/licenses/gpl-2.0.html">licence GNU/GPL.</a></div>		</div>
+	</div>
+      </div>
+    </div>
+  </div>
+</div>
+</body></html>

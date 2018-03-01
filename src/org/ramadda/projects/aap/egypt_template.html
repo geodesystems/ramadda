@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html>
+<head>
+<!--
+<properties>
+name=Egypt Template
+id=egpyt
+ramadda.template.link.wrapper =<span class="navlink"><a  href="${url}">${label}</a></span>
+ramadda.template.link.separator=&nbsp;|&nbsp;
+
+ramadda.template.userlink.wrapper =<span class="navlink"><a  href="${url}">${label}</a></span>
+ramadda.template.userlink.separator=&nbsp;|&nbsp;
+
+ramadda.template.favorites = <b>Favorites:</b><div class="favorites">${entries}</div>
+ramadda.template.cart = <b>Cart:</b><div class="favorites">${entries}</div>
+
+</properties>
+-->
+
+${imports}
+
+<style type="text/css">
+.ramadda-menubar {
+   margin-top: 0px;
+   padding-top:5px;
+   border-bottom: 1px #aaa solid; 
+}
+.navlink a:link, .navlink a:visited {
+   color:white;
+}
+
+.navlink a:link {
+   color:white;
+}
+
+</style>
+
+
+<title>${header.title} - ${title}</title>
+<link href="${root}/egypt/template.css" rel="stylesheet" type="text/css">
+</head>
+
+<body id="bg-body">
+  <div id="mfi-general-container" style="background-color:#fff;font-size: 12px;">
+    <!-- BEGIN: HEADER -->
+    <div id="mfi-header">
+      <div id="mfi-header-top">
+	<div class="logolang-container">
+	  <div class="logo"><a href="http://ema.gov.eg/"><img src="${root}/egypt/logo_ema.jpg"/></a></div>
+	  <div class="clear"></div>
+	  <div id="mfi-header-mainmenu"><div class="header-modules"><div class="classic"><div class="module-content">
+             <ul> 
+               <li><a href="http://ema.gov.eg/map?menu=3&amp;lang=en">Weather</a></li>
+               <li><a href="http://ema.gov.eg/articles?menu=61&amp;lang=en">Climate</a></li>
+               <li><a href="http://ema.gov.eg/productview?menu=83&amp;lang=en">Marine</a></li>
+               <li><a href="http://ema.gov.eg/articles?menu=52&amp;lang=en">Research</a></li>
+               <li><a href="http://ema.gov.eg/articles?menu=62&amp;lang=en">News</a></li>
+               <li><a href="http://ema.gov.eg/articles?menu=63&amp;lang=en">Cooperation</a></li>
+               <li><a href="http://ema.gov.eg/articles?menu=36&amp;lang=en">About</a></li>
+             </ul>
+          </div></div></div></div>
+	</div></div>
+        <div id="mfi-header-bluearea">
+          <table id="header_links" width=100%><tr><td></td><td align=right><span class="txt12Bbc"> ${links}</span></td></tr></table>
+        </div>
+      </div>
+      <!-- END: HEADER -->
+
+     <div style="margin-top:5px;">${entry.header}<div style="min-height:600px;background-color:#FFF;" class="innercontent">${content}</div></div>
+
+     <div id="mfi-content" style="background-color:#FFF;">
+     <!-- BEGIN: BOTTOM -->
+		<div id="mfi-bottom" style="background-color:#FFF;">
+			<div id="mfi-bottom-modules">
+			<div class="bottom-modules"><div class="browny" style="width:925px;"><div class="module-content">
+     <div class="article">
+	<div class="title_article">
+		<h3>                                            </h3>
+		<!--
+		<div class="informations_article">
+			<a href="/articles?menu=52&lang=en&catid=6" >Contact</a>
+			 - written by EMA  - Monday 08 February, 08:58		</div> -->
+	</div>
+	
+	<div class="mainpart_article">
+				<div class="introduction_article">
+			<p>
+				</p><p style="text-align: center">
+	<span style="font-family:arial, helvetica, sans-serif;">Contact Us</span></p>
+<p style="text-align: center">
+	<span style="font-family:arial, helvetica, sans-serif;">Egyptian Meteorological Authority (EMA) - Koubry El-Ouabba - Cairo - Egypt<br>
+	Tel. 202 26849859 &nbsp; 202 26842473</span></p>
+<p style="text-align: center">
+	<span style="font-family:arial, helvetica, sans-serif;">support@ema.gov.eg</span></p>
+			<p></p>
+		</div>
+				<div class="content_article"><p>
+			</p><p></p>
+		</div>
+			</div>
+</div>
+</div></div></div>			</div>
+			    <p class="mfi-align">
+					<small>Copyright  © 2005 - 2009 MFI. Designed by <a href="http://www.mfi.fr/">MFI</a></small>
+					<br>
+				</p>
+			</div>
+		</div>
+		<!-- END: BOTTOM -->
+	
+
+
+</body></html>

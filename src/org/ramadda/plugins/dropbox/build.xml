@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project basedir="../../../../../" default="plugin" name="ramadda plugin">
+    <target name="plugin">
+      <property name="plugin" value="dropbox"/>
+      <property name="plugin_group" value="miscplugins"/>
+        <property name="plugin_extra_classes" value="${basedir}/src/org/ramadda/plugins/dropbox/lib/dropbox-core-sdk-1.7.7.jar"/>
+      <ant antfile="${basedir}/build.xml" target="plugin_build"/>
+    </target>
+</project>

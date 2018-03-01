@@ -1,0 +1,17 @@
+<services  command="${gps.teqc}" icon="/gps/unavco.png" handler="org.ramadda.geodata.gps.GpsService" category="Earth Science Data">
+   <service id="gps.teqc.torinex" label="Convert to RINEX">
+   <description><![CDATA[Converts raw GPS files to RINEX using  Unavco's teqc program]]></description>
+   <arg value="+out" />
+   <arg value="${workdir}/${input_file.file.base}.rinex"/>
+   <arg name="input_file" value="${entry.file}" type="entry"  entryType="project_gps_raw" label="Input GPS File" primary="true"/>
+   <output type="project_gps_rinex" pattern=".*"/>
+   </service>
+
+   <service id="gps.teqc.qc" label="View GPS QC" ignoreStderr="true">
+   <description><![CDATA[View GPS QC using  Unavco's teqc program]]></description>
+   <arg value="+qcq" />
+   <arg entryType="project_gps" value="${entry.file}" type="entry"  label="Input GPS File" primary="true"></arg>
+   <output showResults="true" stdout="true"/>
+   </service>
+
+</services>

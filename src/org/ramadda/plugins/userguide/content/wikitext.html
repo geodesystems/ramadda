@@ -1,0 +1,1021 @@
+
+[ht::head {Wiki Text} ]
+
+<%nochildlist%>
+
+All of the display in RAMADDA is accomplished through its  wiki facility. This supports both regular wiki markup as well as special 
+RAMADDA wiki tags that allow for displaying maps, lists, charts, etc. The <a href="http://geodesystems.com/repository/alias/wikis">geodesystems.com site</a> has many examples of the wiki facility.
+
+
+<subhead intoc="false" id="editor">Wiki Editor</subhead>
+RAMADDA provides a wiki text editor:
+[ht::cimg images/wikiedit.png {Wiki Text Editor} {border=0 width=600}]
+<ul>
+<li>
+The  buttons allow you to add basic wiki markup.
+<li>
+The Add property menu adds RAMADDA specific properties from the entry that is being displayed 
+(e.g., name, description, children entries, etc).
+<li>
+The Add entry id menu allows you to specify the entry to use in properties (see below).
+<li>
+The Add entry link menu adds wiki links to other entries.
+</ul>
+
+<subhead intoc="false" id="markup">Basic Markup</subhead>
+
+The RAMADDA Wiki facility generally follows the format
+that Wikipedia follows. For example:
+[wiki::text {
+==Section Heading 1==
+===Section Heading 2===
+}]
+
+A horizontal line:
+[wiki::text {
+----
+}]
+
+Lists:
+[wiki::text {
+* bullet 1
+* bullet 2
+** sub bullet 1
+** sub bullet 2
+* bullet 3
+}]
+
+
+You can escape your wiki text and include raw, unprocessed text with the &lt;nowiki&gt; tag:
+[wiki::text {
+Some wiki text
+&lt;nowiki&gt;
+This is text that does not get formatted
+&lt;/nowiki&gt;
+more wiki text
+}]
+
+See the <a href=" http://en.wikipedia.org/wiki/Help:Wiki_markup">Wikipedia page on Wiki Markup</a> for more information on basic Wiki markup. 
+
+
+<subhead intoc="false" id="display">Layout and Display Markup</subhead>
+There are a number of helper layout tags that make it easy to do page layout and display.
+
+<b>Sections</b><br>
+
+To get the full page layout like on <a href="http://ramadda.org/repository">ramadda.org</a> use the "+section" tag:
+<pre>
++section 
+...
+-section
+</pre>
+
+If you append a "#" then the row number is kept track of and an even/odd color scheme is applied. 
+
+<pre>
++section  #
+...
+-section
++section  #
+...
+-section
+</pre>
+
+
+
+If you add title="..." then a title is added. If you add label="..." then a header is added. The normal use is:
+
+<pre>
++section # title="section 1"
+...
+-section
++section # label="section 2"
+...
+-section
++section # label="section 3"
+...
+-section
+</pre>
+
+You can change the background color/image by specifying one of the classes:
+
+<pre>
++section class="ramadda-section-map"
+...
+-section
++section class="ramadda-section-lightpink"
+...
+-section
++section class="ramadda-section-lightblue"
+...
+-section
++section class="ramadda-section-lightgreen"
+...
+-section
+</pre>
+
+You can also add a CSS style descriptor
+
+<pre>
++section style="background: #888; border: 1px red solid;"
+...
+-section
+</pre>
+
+
+<b>Titles and headings</b><br>
+There are a number of block display elements - 
+title, heading, blurb, note, and block that can be used as:
+<pre>
+One line forms:
+:title Some title
+:heading Some heading
+:blurb Some blurb
+:note Some note
+:block A block
+
+Multi line forms:
++note
+Some lengthy text
+and more
+-note
+</pre>
+
+You can change the background color with:
+<pre>
+:blurb-green Some green background
+:note-rose Rose colored background
+</pre>
+
+Examples at <a href="https://geodesystems.com/repository/alias/wikiexamples">https://geodesystems.com/repository/alias/wikiexamples</a>.
+
+
+
+
+
+
+<b>Inset</b>
+By default, a page has no margins on the left-side. If you have normal text layout you can make an inset with "+inset":
+<pre>
++inset
+...
+-inset
+</pre>
+
+This by default gives a 20px left and right margin. To change this you can add any of the attributes, e.g:
+
+<pre>
++inset top="100" left="50" right="50" bottom="100"
+...
+-inset
+</pre>
+
+
+
+<a name="layout"></a>
+
+
+<b>Grid Layout</b><br>
+There is support for the <a href="http://getbootstrap.com/">Bootstrap</a> CSS grid system. To do a row layout use the following. The "+col-md-..." correspond to Bootstraps column widths, e.g., col-md-\[2,3,4,6,8,9,10,12\].
+Basically you can have any number of columns within a row.
+Each column has a width, the sum of which adds up to 12.
+
+Three equally spaced columns:
+
+<pre>+row
++col-md-4 
+Left column contents
+-col
++col-md-4 
+Center column contents
+-col
++col-md-4
+Right column contents
+-col
+-row
+</pre>
+
+Results in: 
+
+<div class="row">
+<div class="col-md-4" style="border: 1px #000 solid;">
+Left column contents
+</div>
+<div class="col-md-4"  style="border: 1px #000 solid;">
+Center column contents
+</div>
+<div class="col-md-4"  style="border: 1px #000 solid;">
+Right column contents
+</div>
+</div>
+
+
+
+You can set the widths of different columns:
+<pre>
++row
++col-md-2 
+Left column contents
+-col
++col-md-10
+Right column contents
+-col
+-row
+</pre>
+
+Results in:
+
+<div class="row">
+<div class="col-md-2"  style="border: 1px #000 solid;">
+Left column contents
+</div>
+<div class="col-md-10"  style="border: 1px #000 solid;">
+Right column contents
+</div>
+
+
+
+
+
+<subhead intoc="false" id="links">Linking to other entries</subhead>
+Normally in a wiki a link to another page is of the form:
+[wiki::text {
+[[Page name]]
+}]
+
+In RAMADDA you can use the name of another entry to create the link.
+You can use the Add entry link menu to select an entry. 
+This produces wiki text of the form:
+[wiki::text {
+[[entry id|Label to show for link]]
+}]
+
+e.g.:
+[wiki::text {
+[[7ca13e52-8efb-4d17-863f-e17027dbcc22|Earthquake data]]
+}]
+
+You can also just specify an entry by name. Either an absolute path:
+[wiki::text {
+[[Top entry/Some other entry]]
+}]
+
+Or relative to the wiki entry:
+[wiki::text {
+[[Some entry]]
+}]
+
+You can also set the output type for an entry using the hashtag (#) symbol after the entry id:
+
+[wiki::text {
+[[7ca13e52-8efb-4d17-863f-e17027dbcc22#html.table|Earthquake data as a table]]
+}]
+
+which will override the default display.
+
+
+If the entry with the given name does not exist then the link will take one to the
+create entry form.
+
+
+<subhead intoc="false" id="properties">Wiki Properties</subhead>
+You can also import content from the current Wiki Page entry or any other entry with the import  
+syntax:
+[wiki::text [wiki::tag property]]
+
+e.g., if we wanted to show the information tabs for an entry we'd do:
+[wiki::text [wiki::tag information]]
+
+
+For example, if we want to import the information block with it open:
+[wiki::text [wiki::tag information {open="true"}]]
+
+This would give us:
+[ht::cimg images/wikiinformation.png {} {border=0}]
+
+
+Normally, all property tags refer to the current entry. However, you can specify another entry:
+[wiki::text [wiki::tag information {entry="some other entry id or name or 'parent' or 'grandparent'"}]]
+
+
+
+The entry value can be:
+<ul>
+<li> The ID of an entry
+<li> Its full path, e.g., /Top/.../entry_name
+<li> The parent entry - "parent" 
+<li> The parent of the parent entry  -"grandparent"
+<li> The entry itself - "this"
+<li> An entry linked to the entry. Either "link" to find the first one or to specify an entry type use "link:entry_type"
+</ul>
+
+
+The <i>Add Entry ID</i> menu in the editor toolbar allows you to select the entry to use. As a convenience this
+adds both the ID of the entry as well as its name. 
+
+<p>
+Some of the properties can result in an error message (e.g., image not found, entry not found, etc). You can specify a different message (or blank) with message attribute:
+
+[wiki::text [wiki::tag someproperty {message="some message"}]]
+
+For example, you can set up a wiki template that shows an image attachment 
+and a list of entries in a sub-folder called "Links". If you used the below wiki text then you would see displayed 
+"Could not find image" 
+and "Could not find entry" error messages. 
+
+[wiki::text {
+{{image src="::*"}}
+{{links entry="Links"}}
+}]
+
+If, however, you specify a blank message then nothing will be shown:
+
+[wiki::text {
+{{image src="::*" message=""}}
+{{links entry="Links" message=""}}
+}]
+
+Note: you can specify a prefix and suffix attributes that are only used if the tag was successful. So for example you could specify a heading for the links: 
+
+[wiki::text {
+{{links entry="Links" message="" prefix="Here are the links:&lt;br&gt;}}
+}]
+
+
+This would only show when there is a Links sub-folder.
+
+
+<subhead intoc="false" id="basic">Basic Wiki Properties</subhead>
+
+The first set of property tags show some information for the entry. Note: the attributes are all optional.
+
+<ul>
+<li> [wiki::tagdef name]:  Entry name
+<li> [wiki::tagdef entryid]:  Entry ID
+<li> [wiki::tagdef description {wikify="true|false"}]: Entry description. If wikify=true then treat the description as
+wiki text.
+<li> 
+[wiki::tagdef fromdate {format="date time format"} ]<br> 
+[wiki::tagdef todate {format="date time format"} ]<br> 
+[wiki::tagdef daterange {format="date time format" separator=" -- "} ]<br> 
+[wiki::tagdef createdate {format="date time format"} ]<br>  
+[wiki::tagdef changedate {format="date time format"} ]<br>  
+Show the different dates available for an entyr.
+If specified, format the date with the given date time format.
+This follows the
+Java <a href="http://docs.oracle.com/javase/6/docs/api/java/text/SimpleDateFormat.html">date format</a> conventions.
+
+
+<li> [wiki::tagdef information]: The information tabs.
+<li> [wiki::tagdef properties {metadata.types="types to show or not show"}]: Show the properties listing.
+The attribute metadata.types is an optional comma separated list of the metata (or property) types that should be shown or not shown.
+
+For example, if you wanted to show all of the properties except for the Project PI property do:
+<pre>
+{{properties metadata.types="!project_pi" message="" }}
+</pre>
+
+Then if you wanted to just show  the Project PI property then do:
+<pre>
+{{properties metadata.types="project_pi" message="" }}
+</pre>
+
+
+<li> [wiki::tagdef html]: Shows the default html view of the entry. Note: this requires an entry="..." to specify a different entry.
+<li> [wiki::tagdef link {linkresource=true|false button=true|false output=someoutput}]: Makes a link to the entry. Set button=true to buttonize the link. Link to the file with linkresource=true. Link to some other view with output=
+<li> [wiki::tagdef map {width="width of map" height="height of map" listentries="true|false" listwidth="width or percent"}]: Display a map. If the entry is a folder then display the children entries of the folder.
+
+If you do not specify a width then the map will be sized to fit its page. 
+
+The listwidth is the width devoted to the entry list. This may be a fixed pixel value or a percentage:
+
+<pre>
+{{map listentries="true" listwidth="25%"}}
+</pre>
+
+
+If you have a Folder (or other group) and want to just show the Folder and nots it children then do:
+<pre>
+{{map entries="this"}}
+</pre>
+
+
+<li> [wiki::tagdef earth {width="width of map" height="height of map"}]: 
+Display the Google Earth plugin. 
+
+<li> [wiki::tagdef comments]: Show the comments.
+<li> [wiki::tagdef breadcrumbs]: Show the breadcrumb path.
+<li> [wiki::tagdef layout]: This shows the "Layout:" toolbar bar for an entry.
+<li> [wiki::tagdef toolbar]: Show the entry toolbar.
+<li> [wiki::tagdef image {src="image source" alt="alt text" width="image width" link="true|false" left="absolute position" top="absolute position" linkresource="true|false" alt="image alt label"}]: Include an image. If src is not given then this shows the image (if there is one) 
+from the entry.  If src is specified it can take on the form: 
+<pre>
+src="entry name"
+</pre>
+to show an entry. This is equivalent to using entry="...". You can also specify the name of a file attachment to an entry with:
+
+<pre>
+entry="entryid" src="::attachment name"
+</pre>
+
+Or any attachment with:
+<pre>
+entry="entryid" src="::*"
+</pre>
+
+If link is true, the image displayed will be linked to the entry page, if 
+linkresource is true, it will be linked to the full sized image (the entry
+resource).  height and width can be used to scale the image, the alt 
+attribute will be used in place of the entry id as a label on the image
+for accessibility.
+
+<li> [wiki::tagdef menu {popup="true|false" title="title to use" menus="file,edit,feeds,view,other"}]: 
+Show the menu actions. If menus is not specified
+show all of the menus. If menus is specified only show those menus listed.
+Show all menus in a toggle block:
+<pre>
+{{menu}}
+</pre>
+
+
+You can specify which menus to show with a comma separated list of menu names. Only show the
+file and view menu:
+<pre>
+{{menu menus="file,view"}}
+</pre>
+
+
+Show the menu actions in a popup:
+<pre>
+{{menu popup="true" title="Click here"}}
+</pre>
+
+</ul>
+
+
+
+<subhead intoc="false" id="displays">Display Components</subhead>
+There is a set of new "display" wiki tags that allow you to develop rich 
+integrated and interactive search, map and charting wiki pages.
+
+There are numerous examples of this facility available at <a href="http://ramadda.org/repository/alias/displays">ramadda.org</a>. You can always see the underlying wiki text from the Information or Wiki Text entry menu item.
+
+
+
+The idea is that there is a new <i>group</i> tag that can manage a number of children displays. Each child display
+may be located in a fixed location (using layoutHere=false) in the web page or the group can manage the layout of the children displays.
+
+
+
+
+
+
+The group is defined as:
+
+[wiki::tagdef group {showTitle="true"  showMenu="false"  layoutType="table"  layoutColumns="1" divid="maindiv"}]
+
+And the displays are defined as:
+[wiki::tagdef display {type="display type"   layoutHere="true"  ...}]
+
+Where type may be one of:
+<ul>
+<li> <i>entrylist</i> A search form and a list of entries. 
+
+Specify alternative search providers with the <i>provider</i> argument, e.g.:
+<pre>
+provider=google,arxiv,wolfram
+</pre>
+
+<li> <i>table</i> Tabular display of data
+
+<li> <i>linechart</i> A line chart
+
+<li> <i>barchart</i> A bar chart
+
+<li> <i>map</i> A map
+
+</pre>
+
+
+If you have a wiki page that does not have a group but only one or more display tags then a group will be
+added automatically.
+
+The major role for the group is to allow for the different displays to communicate with each other 
+(e.g., creating a new chart, map click, animation, etc) and to layout the set of children displays.
+
+<h3>Display Layout</h3>
+
+You can specify different layouts with the <i>layoutType</i> attribute. The available layouts are:
+<pre>
+layoutType=table
+layoutType=columns
+layoutType=rows
+</pre>
+
+Using the table layout you also specify a number of columns with the <i>layoutColumns</i> attibute.
+
+For the <i>columns</i> and <i>rows</i> layout type each child display can specify the <i>column</i> number of
+<i>row</i> number it should be placed in. 
+
+For example, for the <i>rows</i> layout if you had:
+<pre>
+{{group layoutType="rows"}}
+{{display display1  row="1"}}
+{{display display2  row="1"}}
+{{display display3  row="1"}}
+{{display display4  row="2"}}
+{{display display5  row="2"}}
+{{display display6  row="3"}}
+</pre>
+
+Would result in (without the border):
+<table width="50%" border=1><tr><td width=33%>display1</td><td width=33%>display2</td><td width=33%>display3</td></table>
+<table width="50%" border=1><tr><td width=50%>display4</td><td width=50%>display5</td></table>
+<table width="50%" border=1><tr><td width=100%>display6</td></table>
+
+
+The <i>divid</i> attribute allows you to specify a div tag that is in the wiki page as the location for the group and the displays
+to place themselves in. For example, below is the (abbreviated) wiki text used to create
+this <a href="http://ramadda.org/repository/entry/show/Home/RAMADDA+Examples/Rich+Content+Wikis/Display+Wikis/General+purpose+file+viewer?entryid=a98aa183-939b-471d-b31d-382e10657f2f">page</a> on ramadda.org.
+
+We want to have a fixed layout where the entry list is on the left and the map is on the right. Any charts or other display components that are interactively created by the user are managed by the group and layed out below the list and map.
+To do this we define a regular html table layout that contains a couple of div tags - one for the list and one for the map. We set the IDs of the div tags and then reference those IDs in the display wiki tags below.
+
+Likewise, the group has a divid=maindiv which corresponds to the div at the bottom of the page.
+
+[xml {
+<table width=100% border=0 cellpadding=10>
+<tr valign=top>
+<td width=50%><div id="listdiv"></div></td>
+<td width=50%><div id="mapdiv"></div></td>
+</table>
+
+<div id=maindiv></div>
+
+{{group  layoutType="table"  layoutColumns="1" divid="maindiv"}}
+
+{{display   type="entrylist"   divid="listdiv" }}
+
+{{display   type="map"  layoutHere="true" height="250" divid="mapdiv"}}
+}]
+
+
+
+
+When using the display tag you need to specify the type of display.
+
+[wiki::tagdef display {type="entrylist"   layoutHere="true"   orientation="vertical"  showMetadata="false" showTypes="true" name="list1" innerHeight="200" divid="listdiv" formOpen="false"}
+]:
+
+<h3>Entry List Display</h3>
+
+
+<pre>
+entryType="type_point_pbo_position_time_series"
+ramaddaBaseUrl="http://community.ramadda.org/repository/repos/data"
+</pre>
+
+
+<subhead intoc="false" id="collection">Collection Wiki Properties</subhead>
+
+The following properties display a collection of entries. By default they
+are the children entries of the wiki entry but you can specify
+other groups of entries with any of the following arguments:
+[wiki::text {{{property entry="some other entry" 
+               entries="entryid1,entryid2,entryid3.." 
+               entries.filter="file|folder|image|type:some type|geo|suffix:file suffixes"
+               exclude="entryid1,entryid2,entryid3.."  
+               first="entryid1,entryid2,entryid3.."  
+               last="entryid1,entryid2,entryid3.."  
+               sort="name|date"  sortorder="up|down"
+               max="number of entries to use" }}}]
+
+The entries attribute is a comma separated list of entry identifiers. They can be specific entry ids or they can be one of a set of relative descriptors:
+<ul>
+<li> <i>this</i> - the current entry
+<li> <i>children</i> - the children entry
+<li> <i>grandchildren</i> - the grandchildren entries
+<li> <i>greatgrandchildren</i> - the great-grandchildren entries
+<li> <i>parent</i>  - the parent entry
+<li> <i>grandparent</i> - the grandparent entry
+<li> <i>ancestors</i> - the ancestors up to the top-level entry
+<li> <i>siblings</i> - the sibling entries
+<li> <i>links</i>  - the associated or linked entries
+<li> <i>search</i>  - search the entire repository. The search terms are defined as attributes and described below.
+
+</ul>
+
+The relative descriptors are applied to the base entry specified with the <i>entry</i> attribute. You can specify an alternative
+base entry for each descriptor with the syntax:
+<pre>
+descriptor:baseEntryId
+</pre>
+
+
+So, for example, if you had 2 different Folder entries - folder1 and folder2 and you wanted to list all of the children of each folder you could do:
+
+<pre>
+{{tree  entries="children:folder1_id,children:folder2_id"}}
+</pre>
+
+
+You can combine different relative descriptors, e.g.:
+<pre>
+{{tree  entries="children:folder1_id,grandchildren:folder2_id"}}
+</pre>
+
+
+
+
+
+<h3>Search for entries</h3>
+
+When using the term "search" when specifying entries 
+you can specify the following search attributes.
+
+<ul>
+<li> search.text="text to search"
+<li> search.type="entry type"
+<li> search.bbox="north,west,south,east"   spatial bounds
+<li> search.group="parent entry id" or "this" for the current entry
+<li> search.filesuffix="file suffix" 
+<li> search.datadate.from="from date" 
+<li> search.datadate.to="to date" 
+<li> search.datadate.relative="relative date, e.g., -3 days, -12 hours, -1 week" 
+<li> search.createdate.from="from date" 
+<li> search.createdate.to="to date" 
+<li> search.createdate.relative="relative date, e.g., -3 days, -12 hours, -1 week" 
+<li> search.changedate.from="from date" 
+<li> search.changedate.to="to date" 
+<li> search.changedate.relative="relative date, e.g., -3 days, -12 hours, -1 week" 
+</ul>
+
+<p>
+Here are some examples:
+<p>
+Find all entries with text 'climate':
+<pre>
+{{tree search.text="climate" entries="search"}}
+</pre>
+
+
+Find all entries with file suffix 'pdf' that have been created in the last 2 days:
+<pre>
+{{tree search.suffix="pdf" search.createdate.relative="-2 days" entries="search"}}
+</pre>
+
+
+
+
+<h3>Filtering Entries</h3>
+
+You can filter what entries to use with <i>entries.filter</i>, e.g.:
+<pre>
+entries.filter=file|folder|image|type:some type|geo|suffix:file suffixes
+</pre>
+
+If you specify <i>suffix:file suffixes</i> then this will only match entries that have files with the given suffix. This
+ can be a comma separated list of suffixes, e.g.:
+<pre>
+entries.filter="suffix:.ppt,.pptx,.pdf" 
+</pre>
+
+
+Or negate them with "!":
+
+<pre>
+entries.filter=!file|!folder|!image|!type:some type|!geo
+</pre>
+So,  you could show all of the georeferenced entries in a map and all of the non-georeferenced entries in a list:
+
+<pre>
+{{map  message="" prefix="==Map=="}}
+
+{{tree message="" prefix="==Non georeferenced entries==" entries.filter="!geo"}}
+</pre>
+
+You can also:
+<ul>
+<li> If <i>first</i> is defined then these entry ids are put at the front of the list.
+
+<li> If <i>last</i> is defined then these entry ids are put at the end of the list.
+
+<li> Exclude any entries in the <i>exclude</i> comma separated list of entry ids.
+
+<li> Sort entries by name or date with <i>sort</i>
+<li> If <i>images</i> is set to true then only entries that are image files are included
+
+</ul>
+
+
+<a name="virtual_group"></a>
+<h3>Virtual Groups</h3>
+
+RAMADDA provides a "Virtual Group" entry type. This acts as a Folder except a set of entry IDs or searches can be specified. There are a number of examples available <a href="http://ramadda.org/repository/entry/show/Home/RAMADDA+Examples/Miscellany/Virtual+Groups?entryid=f5ccdc47-62f7-481a-b67d-bf76e5b34359">here</a>.
+
+The Entry IDs field of the Virtual Group can be a list of specific entries, e.g.:
+<pre>
+67259186-574e-4453-a2af-969e1cf658c8
+f5ccdc47-62f7-481a-b67d-bf76e5b34359
+...
+</pre>
+
+If an entry id has a "+" prefix then the children entries of the specified entry is used
+<pre>
++67259186-574e-4453-a2af-969e1cf658c8
++f5ccdc47-62f7-481a-b67d-bf76e5b34359
+...
+</pre>
+
+
+You can also specify a  search.  This is a set of search terms followed by  &quot;search&quot;. You can specify text to search for, the entry type, spatial bounds and date based search.
+<pre>
+search.text=text to search
+search.type=entry type
+search.bbox=north,west,south,east  
+search.createdate.relative=-1 day
+search
+</pre>
+
+
+
+<h3>Collection Tags</h3>
+
+<ul>
+
+<li> [wiki::tagdef tree]:
+The [wiki::tagdef tree] tag is used to display the children entries of a folder.
+It can take the form:
+[wiki::text [wiki::tagdef tree {title="Links" showtoggle="false" open="true" }]]
+
+The title attribute is used in place of "Children". 
+If showtoggle="false" then the show/hide toggle link is not shown.
+
+<li> [wiki::tagdef grid]: Show the children in a grid. e.g., show 
+the grandchildren as a grid:
+[wiki::text {{{grid entries="grandchildren"}}}]
+
+
+<li> [wiki::tagdef recent {days="number of days to show"}]:
+Show the most recent N days in a list organized by day.
+
+<li> [wiki::tagdef imageplayer {width="image width" loopdelay="delay in milliseconds" loopstart="true|false" useAttachment="true|false"}]:
+Show images in an image player, e.g.
+[wiki::text {{{imageplayer loopdelay="500" loopstart="true"}}}] </pre>
+
+If <i>useAttachment</i> is true then, if the entry's file is not an image but it has
+an attachment that is an image then use the attachment image.
+
+
+<li> [wiki::tagdef gallery {width="image width" columns="number of columns" showdescription="true"}]:
+Show a 3 column gallery:
+[wiki::text {{{gallery columns="3"}}}] </pre>
+
+Show a vertical listing of the children entry images:
+[wiki::text {{{gallery columns="1"}}}] </pre>
+
+Set the image width and only show up to 5 images:
+[wiki::text {{{gallery  width="300" max="5"}}}] </pre>
+
+<li> [wiki::tagdef tabs]: Show the children as tabs:
+[wiki::text {{{tabs}}}] </pre>
+
+Show only the 3 specified entries in tabs:
+[wiki::text {{{tabs entries="0af4d166-5723-4775-88fc-b83b72ab47a4,
+                 83539d5c-e9d9-408e-b0af-35f480000ae6,
+                 49684d25-6af1-4188-a0ae-4d5302d22f2a" }}}] </pre>
+
+Show only the children of type wikipage in tabs:
+[wiki::text {{{tabs entries="type:wikipage"}}}]</pre>
+
+Additional arguments:
+
+<ul>
+<li>tag="some tag name" - The wiki tag to use to show the children. e.g., tag="simple" tag="html"
+<li>includeicon="true|false" - if true, include the appropriate icon in the tab
+<li>showlink="true|false" - show a link to the entry (default: true)
+<li>linklabel="label" - if showlink is true, use label in place of the entry
+    name
+<li>imagewidth="width" - width of images
+<li>maximageheight="max height" - maximum height of images
+<li>linkresource="true|false" - if true, link to the entry resource
+</ul>
+
+<li> [wiki::tagdef accordian {border="0" collapse="true"}  ]: Show the children in an accordian:
+[wiki::text {{{accordian}}}] </pre>
+Uses the same arguments as tabs. If border is non-zero then show a border. If collapse is false then open the first section.
+
+<li> [wiki::tagdef slideshow]: Show the children in a slideshow:
+[wiki::text {{{slideshow}}}] </pre>
+<p>
+Uses the same arguments as tabs, plus:
+<ul>
+<li>autoplay="true|false" - if true, start the slideshow (default: false)
+<li>speed="secs" - number of seconds to pause on each entry in slideshow
+<li>border="pixs" - border size in pixels
+<li>bordercolor="color" - border color (name or hexadecimal value)
+<li>width="width" - width of the display 
+<li>height="height" - height of the display
+</ul>
+
+<p>
+
+<li> [wiki::tagdef links {separator="separator text to use" 
+                          style="inline css style for the link"
+                          class="css class for the link"
+                          tagopen="html to prepend to the link - default is li" 
+                          tagclose="close html"
+                          linkresource="true|false if true link to the entry's file or URL; If false link to the entry"}]: Layout links to the entries.<br>
+This produces a set of links to the entries. 
+
+A bulleted list:
+[wiki::text {
+&lt;ul&gt;
+{{links}}
+&lt;/ul&gt;
+}]
+
+A bulleted list with the links to the entry's file:
+[wiki::text {
+&lt;ul&gt;
+{{links linkresource="true"}}
+&lt;/ul&gt;
+}]
+
+If you wanted to make a vertical list do:
+[wiki::text {
+{{links tagopen="&lt;div&gt;" tagclose="&lt;/div&gt;"}}
+}]
+
+You can create a header with wiki text like:
+[wiki::text {
+&lt;center&gt;
+{{links separator="&amp;nbsp;|&amp;nbsp" tagopen=""}}
+&lt;/center&gt;
+}]
+
+
+<li> [wiki::tagdef search {
+                  type="entry type" 
+                  search.showform="true|false"
+                  search.showheader="true|false"}]
+
+The "search" tag performs an entry type specific search and embed it into the wiki. This is the same as the top-level type specific search. You can use any of the "search." attributes defined above, e.g., search.text.
+
+The default is to not show the form.
+
+
+<li> [wiki::tagdef apply]
+The apply tag allows you to apply some tag (e.g., links, map) to a set of entries in turn. You can then layout
+the results in a variety of ways (e.g.,  table, tabs);
+The apply tag is of the form:
+
+[wiki::text {
+{{apply
+apply.entry="the entry to find the children of"
+apply.tag="some tag to apply to the entries"
+apply.layout="table, accordian or tabs"
+apply.columns="number of columns in table"
+apply.header="text to go before can contain macros ${name} ${url}"
+apply.footer="text to go after"
+apply.border="border width - defaults to 0"
+apply.bordercolor="border color"
+apply.includeicon="true|false"
+...
+&lt;arguments for the apply tag&gt;
+}}
+}]
+
+All of the arguments, including the entry argument are the same as described above but have the prefix "apply.". This way you can
+mix the arguments that control the apply function with the arguments that you are using for each entry.
+
+
+Say you have the following entries:
+<pre>
+parent
+     entry1
+            sub-entry1
+            sub-entry2
+     entry2
+            sub-entry3
+            sub-entry4
+</pre>
+
+If you used the apply tag:
+
+[wiki::text {
+{{apply
+apply.entry="parent"
+apply.layout="tabs"
+apply.tag="links"
+linkresource="true"
+}}
+}]
+
+This applies the tag "links" to each main entry. It puts each result in a tab.
+
+This tag would make a 2 column table of maps with links to the entries show in the header.
+
+[wiki::text {
+{{apply
+apply.layout="table"
+apply.columns="2"
+apply.tag="map"
+apply.border="1"
+apply.header="${url}"
+&lt;any map arguments*gt;
+}}
+}]
+
+
+
+</ul>
+
+
+
+<subhead intoc="false" id="block">Hiding and showing content</subhead>
+
+The &lt;block&gt; tag allows you to easily create a toggle block and/or show or hide content
+based on the user's device.
+
+To show a simple toggle block just do:
+[xml {
+<block>
+ any content here
+</block>
+}]
+
+You can specify the toggle label title with:
+[xml {
+<block title="Click here to open">
+ any content here
+</block>
+}]
+
+
+You can specify whether the block is open or closed:
+[xml {
+<block open="false">
+ any content here
+</block>
+}]
+
+You can specify whether to show the content or not:
+[xml {
+<block show="mobile" decorate="false">
+  this will only show for mobile users
+</block>
+<block show="!mobile" decorate="false">
+  this will only show for non-mobile users
+</block>
+}]
+
+You can also use the block tag to define a variable or macro that is used later.
+
+[xml {
+<block var="var_name">
+ any content here
+</block>
+}]
+
+
+This will not show the content in place. Rather you can reference and insert the content later with:
+[xml {
+ \${var_name}
+</block>
+}]
+
+
+
+
+
+
+<subhead intoc="false" id="import">Importing any page</subhead>
+
+You can also import any of the views of an entry, e.g., the map view, 
+the calendar view, etc., with the  
+[wiki::tag import] tag:<br>
+[wiki::tagdef import {output="<any of the output types>"}]
+<p>
+
+So, if you wanted to show the calendar view of an entry you would do:
+[wiki::text [wiki::tag import {output="calendar.calendar"}]]
+
+To find the correct output identifier just navigate to the page you 
+want to include and look at the url for the output=... url argument 
+and use that.
+
+
+
+<a name="snippet"></a>
+<b>Snippet</b><br>
+A number of the layouts below (e.g,, table layout) will include a snippet of descriptive text from the entry that is being displayed. The snippet text is defined in the description of the entry with:
+<pre>
+Some description here.
+&lt;snippet&gt;This is the snippet&lt;/snippet&gt;
+More description
+</pre>
+
+
+
+[ht::foot]

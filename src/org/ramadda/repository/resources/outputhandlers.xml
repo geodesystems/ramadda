@@ -1,0 +1,23 @@
+<outputhandlers>
+  <outputhandler class="org.ramadda.repository.output.HtmlOutputHandler" name="Default HTML"/>
+  <outputhandler class="org.ramadda.repository.output.MapOutputHandler" name="Map"/>
+  <outputhandler class="org.ramadda.repository.output.CalendarOutputHandler" name="Calendar"/>
+  <outputhandler class="org.ramadda.repository.output.ImageOutputHandler" name="Image"/>
+  <outputhandler class="org.ramadda.repository.output.KmlOutputHandler" name="KML"/>
+  <outputhandler class="org.ramadda.repository.output.RssOutputHandler" name="RSS"/>
+  <outputhandler class="org.ramadda.repository.output.AtomOutputHandler" name="ATOM"/>
+  <outputhandler class="org.ramadda.repository.output.IcalOutputHandler" name="ICAL"/>
+  <outputhandler class="org.ramadda.repository.output.JsonOutputHandler" name="JSON"/>
+  <outputhandler class="org.ramadda.repository.output.XmlOutputHandler" name="XML"/>
+  <outputhandler class="org.ramadda.repository.output.ZipOutputHandler" name="ZIP Files" maxconnections="1"/>
+  <outputhandler class="org.ramadda.repository.output.BulkDownloadOutputHandler" name="Bulk download script"/>
+  <outputhandler class="org.ramadda.repository.output.GraphOutputHandler" name="Graph"/>
+  <outputhandler class="org.ramadda.repository.output.TextOutputHandler" name="Text"/>
+  <outputhandler class="org.ramadda.repository.output.ZipFileOutputHandler" name="Zip/Jar Listing"/>
+  <outputhandler class="org.ramadda.repository.output.JpegMetadataOutputHandler" name="JPEG Metadata"/>
+  <outputhandler class="org.ramadda.repository.output.CsvOutputHandler" name="CSV"/>
+<!--
+  <outputhandler class="org.ramadda.repository.output.ExampleOutputHandler"  name="Example"/>
+-->
+
+</outputhandlers>

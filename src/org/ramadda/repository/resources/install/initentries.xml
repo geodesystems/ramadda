@@ -1,0 +1,83 @@
+
+<entries>
+
+<entry parent="root" name="Projects" type="group">
+<description>A place to store projects</description>
+</entry>
+
+<entry parent="root" name="Users" type="group">
+<description>A place to create home directories for users</description>
+</entry>
+
+<entry parent="root" name="Data" type="group">
+<description>A place to store data</description>
+</entry>
+
+<entry parent="root" name="Utilities" type="group" id="utilities">
+<description></description>
+</entry>
+
+
+
+<entry parent="utilities" name="Metadata List" type="wikipage" >
+<wikitext><![CDATA[
++section label="{{name}}"
+{{display   
+type="metadata"  
+orientation="vertical"
+formOpen="true"
+layoutHere="true"  
+showMetadata="false"
+innerHeight="200" 
+}}
+-section
+]]></wikitext>
+</entry>
+
+
+<entry parent="utilities" name="All entries created in the last 1 days" type="type_virtual" >
+<description>Entries created in the last day</description>
+<entry_ids>
+search.createdate.relative=-1 days
+search
+</entry_ids>
+</entry>
+
+
+<entry parent="utilities" name="All entries created in the last 3 days" type="type_virtual" >
+<description>Entries created in the last 3 days</description>
+<entry_ids>
+search.createdate.relative=-3 days
+search
+</entry_ids>
+</entry>
+
+
+<entry parent="utilities" name="All entries created in the last 7 days" type="type_virtual" >
+<description>Entries created in the last 7 days</description>
+<entry_ids>
+search.createdate.relative=-7 days
+search
+</entry_ids>
+</entry>
+
+
+<entry parent="utilities" name="Search Page" type="wikipage" >
+<wikitext><![CDATA[
++section label="{{name}}"
+{{display   
+type="entrylist"  
+orientation="vertical"
+showForm="false"
+formOpen="false"
+layoutHere="true"  
+showMetadata="false"
+innerHeight="200" 
+}}
+-section
+]]></wikitext>
+</entry>
+
+
+
+</entries>

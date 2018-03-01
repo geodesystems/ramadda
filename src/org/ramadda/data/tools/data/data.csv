@@ -1,0 +1,7 @@
+#
+# Example data file
+# All lines starting with "#" are ignored
+#
+40,-107,2000,45
+40,-120,3000,50
+45,-120,2000,50

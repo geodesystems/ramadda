@@ -1,0 +1,22 @@
+<types supercategory="Geoscience">
+
+
+  <type name="type_point_aon"  description="" super="type_point" category="Point Data" foruser="false">
+  </type>
+
+
+  <type name="type_point_aon_borehole"  super="type_point_aon" description="Borehole Temperature Data"  handler="org.ramadda.data.services.PointTypeHandler">
+     <property name="record.file.class" value="org.ramadda.data.point.aon.BoreholePointFile"/>
+     <column  name="site_id"  type="enumerationplus" label="Site ID" cansearch="true"/>
+     <column  name="contact"  type="string" label="Contact" cansearch="true"/>
+  </type>
+
+  <type name="type_point_aon_switchyard"  super="type_point_aon" description="Arctic Freshwater Switchyard Data"  handler="org.ramadda.data.services.PointTypeHandler">
+     <property name="icon" value="/point/anchor.png"/>
+     <property name="record.file.class" value="org.ramadda.data.point.aon.SwitchyardPointFile"/>
+     <column  name="site_id"  type="enumerationplus" label="Site ID" cansearch="true"/>
+     <column  name="cast_number"  type="enumeration" label="Cast" />
+  </type>
+
+
+</types>

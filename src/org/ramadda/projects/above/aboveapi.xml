@@ -1,0 +1,27 @@
+
+<api handler="org.ramadda.repository.search.SpecialSearch" id="above">
+
+<!--The search form label -->
+      <property name="label" value="AbOVE Organizations"/>
+      <property name="searchopen" value="true"/>
+
+<!--What tabs to display results in -->
+      <property name="tabs" value="list"/>
+
+<!--Add these metadata search elements to the search form -->
+    <property name="metadatatypes" value="above_organization_sponsor,above_organization_leader"/>
+
+<!--The entry point. This corresponds to the below API entry -->
+      <property name="searchurl" value="/above/organizations/search"/>
+      <property name="form.date.show" value="false"/>
+
+<!--The entry type to search for -->
+      <property name="type" value="above_organization"/>
+
+
+<!-- None of the API entry points defined below require admin privileges -->
+      <property name="admin" value="false"/>
+
+      <api request="/above/organizations/search"    method="processSearchRequest" toplevel="false" name="Search Organizations"/>
+
+</api>

@@ -1,0 +1,212 @@
+<?xml version="1.0"?>
+<variablesResponse xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns="http://www.cuahsi.org/waterML/1.1/">
+  <queryInfo>
+    <creationTime>2009-06-12T10:47:52.078125-07:00</creationTime>
+    <criteria MethodCalled="GetVariableInfo">
+      <parameter name="variable" />
+    </criteria>
+    <note>OD Web Service</note>
+  </queryInfo>
+  <variables>
+    <variable>
+      <variableCode vocabulary="LBR" default="true" variableID="3">USU3</variableCode>
+      <variableName>Battery voltage</variableName>
+      <valueType>Field Observation</valueType>
+      <dataType>Minimum</dataType>
+      <generalCategory>Instrumentation</generalCategory>
+      <sampleMedium>Other</sampleMedium>
+      <unit>
+        <unitName>volts</unitName>
+        <unitType>Potential Difference</unitType>
+        <unitAbbreviation>V</unitAbbreviation>
+        <unitCode>168</unitCode>
+      </unit>
+      <noDataValue>-9999</noDataValue>
+      <timeScale isRegular="true">
+        <unit>
+          <unitName>minute</unitName>
+          <unitType>Time</unitType>
+          <unitAbbreviation>min</unitAbbreviation>
+          <unitCode>102</unitCode>
+        </unit>
+        <timeSupport>30</timeSupport>
+      </timeScale>
+      <speciation>Not Applicable</speciation>
+    </variable>
+    <variable>
+      <variableCode vocabulary="LBR" default="true" variableID="4">USU4</variableCode>
+      <variableName>Turbidity</variableName>
+      <valueType>Field Observation</valueType>
+      <dataType>Average</dataType>
+      <generalCategory>Water Quality</generalCategory>
+      <sampleMedium>Surface Water</sampleMedium>
+      <unit>
+        <unitName>nephelometric turbidity units</unitName>
+        <unitType>Turbidity</unitType>
+        <unitAbbreviation>NTU</unitAbbreviation>
+        <unitCode>221</unitCode>
+      </unit>
+      <noDataValue>-9999</noDataValue>
+      <timeScale isRegular="true">
+        <unit>
+          <unitName>second</unitName>
+          <unitType>Time</unitType>
+          <unitAbbreviation>s</unitAbbreviation>
+          <unitCode>100</unitCode>
+        </unit>
+        <timeSupport>5</timeSupport>
+      </timeScale>
+      <speciation>Not Applicable</speciation>
+    </variable>
+    <variable>
+      <variableCode vocabulary="LBR" default="true" variableID="5">USU5</variableCode>
+      <variableName>Turbidity</variableName>
+      <valueType>Field Observation</valueType>
+      <dataType>Variance</dataType>
+      <generalCategory>Water Quality</generalCategory>
+      <sampleMedium>Surface Water</sampleMedium>
+      <unit>
+        <unitName>nephelometric turbidity units</unitName>
+        <unitType>Turbidity</unitType>
+        <unitAbbreviation>NTU</unitAbbreviation>
+        <unitCode>221</unitCode>
+      </unit>
+      <noDataValue>-9999</noDataValue>
+      <timeScale isRegular="true">
+        <unit>
+          <unitName>second</unitName>
+          <unitType>Time</unitType>
+          <unitAbbreviation>s</unitAbbreviation>
+          <unitCode>100</unitCode>
+        </unit>
+        <timeSupport>5</timeSupport>
+      </timeScale>
+      <speciation>Not Applicable</speciation>
+    </variable>
+    <variable>
+      <variableCode vocabulary="LBR" default="true" variableID="6">USU6</variableCode>
+      <variableName>Turbidity</variableName>
+      <valueType>Field Observation</valueType>
+      <dataType>Median</dataType>
+      <generalCategory>Water Quality</generalCategory>
+      <sampleMedium>Surface Water</sampleMedium>
+      <unit>
+        <unitName>nephelometric turbidity units</unitName>
+        <unitType>Turbidity</unitType>
+        <unitAbbreviation>NTU</unitAbbreviation>
+        <unitCode>221</unitCode>
+      </unit>
+      <noDataValue>-9999</noDataValue>
+      <timeScale isRegular="true">
+        <unit>
+          <unitName>second</unitName>
+          <unitType>Time</unitType>
+          <unitAbbreviation>s</unitAbbreviation>
+          <unitCode>100</unitCode>
+        </unit>
+        <timeSupport>5</timeSupport>
+      </timeScale>
+      <speciation>Not Applicable</speciation>
+    </variable>
+    <variable>
+      <variableCode vocabulary="LBR" default="true" variableID="7">USU7</variableCode>
+      <variableName>Turbidity</variableName>
+      <valueType>Field Observation</valueType>
+      <dataType>Best Easy Systematic Estimator</dataType>
+      <generalCategory>Water Quality</generalCategory>
+      <sampleMedium>Surface Water</sampleMedium>
+      <unit>
+        <unitName>nephelometric turbidity units</unitName>
+        <unitType>Turbidity</unitType>
+        <unitAbbreviation>NTU</unitAbbreviation>
+        <unitCode>221</unitCode>
+      </unit>
+      <noDataValue>-9999</noDataValue>
+      <timeScale isRegular="true">
+        <unit>
+          <unitName>second</unitName>
+          <unitType>Time</unitType>
+          <unitAbbreviation>s</unitAbbreviation>
+          <unitCode>100</unitCode>
+        </unit>
+        <timeSupport>5</timeSupport>
+      </timeScale>
+      <speciation>Not Applicable</speciation>
+    </variable>
+    <variable>
+      <variableCode vocabulary="LBR" default="true" variableID="8">USU8</variableCode>
+      <variableName>Turbidity</variableName>
+      <valueType>Field Observation</valueType>
+      <dataType>Minimum</dataType>
+      <generalCategory>Water Quality</generalCategory>
+      <sampleMedium>Surface Water</sampleMedium>
+      <unit>
+        <unitName>nephelometric turbidity units</unitName>
+        <unitType>Turbidity</unitType>
+        <unitAbbreviation>NTU</unitAbbreviation>
+        <unitCode>221</unitCode>
+      </unit>
+      <noDataValue>-9999</noDataValue>
+      <timeScale isRegular="true">
+        <unit>
+          <unitName>second</unitName>
+          <unitType>Time</unitType>
+          <unitAbbreviation>s</unitAbbreviation>
+          <unitCode>100</unitCode>
+        </unit>
+        <timeSupport>5</timeSupport>
+      </timeScale>
+      <speciation>Not Applicable</speciation>
+    </variable>
+    <variable>
+      <variableCode vocabulary="LBR" default="true" variableID="9">USU9</variableCode>
+      <variableName>Turbidity</variableName>
+      <valueType>Field Observation</valueType>
+      <dataType>Maximum</dataType>
+      <generalCategory>Water Quality</generalCategory>
+      <sampleMedium>Surface Water</sampleMedium>
+      <unit>
+        <unitName>nephelometric turbidity units</unitName>
+        <unitType>Turbidity</unitType>
+        <unitAbbreviation>NTU</unitAbbreviation>
+        <unitCode>221</unitCode>
+      </unit>
+      <noDataValue>-9999</noDataValue>
+      <timeScale isRegular="true">
+        <unit>
+          <unitName>second</unitName>
+          <unitType>Time</unitType>
+          <unitAbbreviation>s</unitAbbreviation>
+          <unitCode>100</unitCode>
+        </unit>
+        <timeSupport>5</timeSupport>
+      </timeScale>
+      <speciation>Not Applicable</speciation>
+    </variable>
+    <variable>
+      <variableCode vocabulary="LBR" default="true" variableID="10">USU10</variableCode>
+      <variableName>Temperature</variableName>
+      <valueType>Field Observation</valueType>
+      <dataType>Continuous</dataType>
+      <generalCategory>Water Quality</generalCategory>
+      <sampleMedium>Surface Water</sampleMedium>
+      <unit>
+        <unitName>degree celcius</unitName>
+        <unitType>Temperature</unitType>
+        <unitAbbreviation>degC</unitAbbreviation>
+        <unitCode>96</unitCode>
+      </unit>
+      <noDataValue>-9999</noDataValue>
+      <timeScale isRegular="true">
+        <unit>
+          <unitName>second</unitName>
+          <unitType>Time</unitType>
+          <unitAbbreviation>s</unitAbbreviation>
+          <unitCode>100</unitCode>
+        </unit>
+        <timeSupport>0</timeSupport>
+      </timeScale>
+      <speciation>Not Applicable</speciation>
+    </variable>
+  </variables>
+</variablesResponse>

@@ -1,0 +1,153 @@
+<?xml version="1.0"?>
+<timeSeriesResponse xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns="http://www.cuahsi.org/waterML/1.1/">
+  <queryInfo>
+    <creationTime>2009-06-12T10:48:02.78125-07:00</creationTime>
+    <criteria MethodCalled="GetValues">
+      <parameter name="site" value="LBR_TEST:USU-LBR-Wellsville" />
+      <parameter name="variable" value="LBR_TEST:USU41" />
+      <parameter name="startDate" value="2007-10-04" />
+      <parameter name="endDate" value="2007-12-31" />
+    </criteria>
+  </queryInfo>
+  <timeSeries>
+    <sourceInfo xsi:type="SiteInfoType">
+      <siteName>Little Bear River near Wellsville, Utah</siteName>
+      <siteCode network="LBR" siteID="10">USU-LBR-Wellsville</siteCode>
+      <geoLocation>
+        <geogLocation xsi:type="LatLonPointType" srs="EPSG:4269">
+          <latitude>41.643457</latitude>
+          <longitude>-111.917649</longitude>
+        </geogLocation>
+        <localSiteXY projectionInformation=" NAD83 / UTM zone 12N">
+          <X>423579.317</X>
+          <Y>4610597.583</Y>
+        </localSiteXY>
+      </geoLocation>
+      <elevation_m>1365</elevation_m>
+      <verticalDatum>NGVD29</verticalDatum>
+      <siteProperty name="County">Cache</siteProperty>
+      <siteProperty name="State">Utah</siteProperty>
+      <siteProperty name="Site Comments">Located on the upstream side of State Highway 101 bridge.</siteProperty>
+    </sourceInfo>
+    <variable>
+      <variableCode vocabulary="LBR" default="true" variableID="41">USU41</variableCode>
+      <variableName>Solids, total Suspended</variableName>
+      <valueType>Sample</valueType>
+      <dataType>Sporadic</dataType>
+      <generalCategory>Water Quality</generalCategory>
+      <sampleMedium>Surface Water</sampleMedium>
+      <unit>
+        <unitName>milligrams per liter</unitName>
+        <unitType>Concentration</unitType>
+        <unitAbbreviation>mg/L</unitAbbreviation>
+        <unitCode>199</unitCode>
+      </unit>
+      <noDataValue>-9999</noDataValue>
+      <timeScale>
+        <unit>
+          <unitName>second</unitName>
+          <unitType>Time</unitType>
+          <unitAbbreviation>s</unitAbbreviation>
+          <unitCode>100</unitCode>
+        </unit>
+        <timeSupport>0</timeSupport>
+      </timeScale>
+      <speciation>Not Applicable</speciation>
+    </variable>
+    <values>
+      <value censorCode="nc" dateTime="2007-11-07T13:00:00" timeOffset="-07:00" dateTimeUTC="2007-11-07T20:00:00" methodCode="25" sourceCode="3" labSampleCode="9188" qualityControlLevelCode="2">10.5</value>
+      <value censorCode="nc" dateTime="2007-11-07T13:00:00" timeOffset="-07:00" dateTimeUTC="2007-11-07T20:00:00" methodCode="25" sourceCode="3" labSampleCode="9188" qualityControlLevelCode="1">10.5</value>
+      <value censorCode="nc" dateTime="2007-11-13T12:30:00" timeOffset="-07:00" dateTimeUTC="2007-11-13T19:30:00" methodCode="25" sourceCode="3" labSampleCode="9398" qualityControlLevelCode="1">2.5</value>
+      <value censorCode="nc" dateTime="2007-11-13T12:30:00" timeOffset="-07:00" dateTimeUTC="2007-11-13T19:30:00" methodCode="25" sourceCode="3" labSampleCode="9398" qualityControlLevelCode="2">2.5</value>
+      <value censorCode="nc" dateTime="2007-11-21T14:00:00" timeOffset="-07:00" dateTimeUTC="2007-11-21T21:00:00" methodCode="25" sourceCode="3" labSampleCode="9509" qualityControlLevelCode="2">7.2</value>
+      <value censorCode="nc" dateTime="2007-11-21T14:00:00" timeOffset="-07:00" dateTimeUTC="2007-11-21T21:00:00" methodCode="25" sourceCode="3" labSampleCode="9509" qualityControlLevelCode="1">7.2</value>
+      <value censorCode="nc" dateTime="2007-12-05T11:00:00" timeOffset="-07:00" dateTimeUTC="2007-12-05T18:00:00" methodCode="25" sourceCode="3" labSampleCode="G120507-WELL-TSS" qualityControlLevelCode="1">2.5</value>
+      <value censorCode="nc" dateTime="2007-12-05T11:00:00" timeOffset="-07:00" dateTimeUTC="2007-12-05T18:00:00" methodCode="25" sourceCode="3" labSampleCode="G120507-WELL-TSS" qualityControlLevelCode="2">2.5</value>
+      <value censorCode="nc" dateTime="2007-12-20T14:05:00" timeOffset="-07:00" dateTimeUTC="2007-12-20T21:05:00" methodCode="25" sourceCode="3" labSampleCode="G122007-WELL-TSS" qualityControlLevelCode="2">2.5</value>
+      <value censorCode="nc" dateTime="2007-12-20T14:05:00" timeOffset="-07:00" dateTimeUTC="2007-12-20T21:05:00" methodCode="25" sourceCode="3" labSampleCode="G122007-WELL-TSS" qualityControlLevelCode="1">2.5</value>
+      <qualityControlLevel qualityControlLevelID="2">
+        <qualityControlLevelCode>2</qualityControlLevelCode>
+        <definition>Derived products</definition>
+        <explanation>Derived products that require scientific and technical interpretation and may include multiple-sensor data. An example is basin average precipitation derived from rain gages using an interpolation procedure.</explanation>
+      </qualityControlLevel>
+      <qualityControlLevel qualityControlLevelID="1">
+        <qualityControlLevelCode>1</qualityControlLevelCode>
+        <definition>Quality controlled data</definition>
+        <explanation>Quality controlled data that have passed quality assurance procedures such as routine estimation of timing and sensor calibration or visual inspection and removal of obvious errors. An example is USGS published streamflow records following parsing through USGS quality control procedures.</explanation>
+      </qualityControlLevel>
+      <method methodID="25">
+        <methodCode>25</methodCode>
+        <methodDescription>Water chemistry grab sample collected by technicians in the field.</methodDescription>
+      </method>
+      <source sourceID="3">
+        <sourceCode>3</sourceCode>
+        <organization>Utah State University Utah Water Research Laboratory</organization>
+        <sourceDescription>Water chemistry monitoring data collected by Utah State University as part of a National Science Foundation funded test bed project.</sourceDescription>
+        <contactInformation>
+          <contactName>Amber Spackman</contactName>
+          <typeOfContact>main</typeOfContact>
+          <email>amber.s@aggiemail.usu.edu</email>
+          <phone>1-435-797-0045</phone>
+          <address xsi:type="xsd:string">8200 Old Main Hill
+,Logan, Utah 84322-8200</address>
+        </contactInformation>
+        <sourceLink>http://water.usu.edu/littlebearriver</sourceLink>
+        <citation>Water chemistry monitoring data collected by Jeff Horsburgh, David Stevens, David Tarboton, Nancy Mesner, Amber Spackman, and Sandra Gurrero at Utah State University as part of a National Science Foundation funded WATERS Network Test Bed project.</citation>
+      </source>
+      <sample sampleID="26">
+        <labSampleCode>9188</labSampleCode>
+        <sampleType>Grab</sampleType>
+        <labMethod>
+          <labCode>9188</labCode>
+          <labName>USU Analytical Laboratory</labName>
+          <labOrganization>Utah State University</labOrganization>
+          <LabMethodName>EPA 340.2</LabMethodName>
+        </labMethod>
+      </sample>
+      <sample sampleID="32">
+        <labSampleCode>9398</labSampleCode>
+        <sampleType>Grab</sampleType>
+        <labMethod>
+          <labCode>9398</labCode>
+          <labName>USU Analytical Laboratory</labName>
+          <labOrganization>Utah State University</labOrganization>
+          <LabMethodName>EPA 340.2</LabMethodName>
+        </labMethod>
+      </sample>
+      <sample sampleID="38">
+        <labSampleCode>9509</labSampleCode>
+        <sampleType>Grab</sampleType>
+        <labMethod>
+          <labCode>9509</labCode>
+          <labName>USU Analytical Laboratory</labName>
+          <labOrganization>Utah State University</labOrganization>
+          <LabMethodName>EPA 340.2</LabMethodName>
+        </labMethod>
+      </sample>
+      <sample sampleID="83">
+        <labSampleCode>G120507-WELL-TSS</labSampleCode>
+        <sampleType>Grab</sampleType>
+        <labMethod>
+          <labCode>G120507-WELL-TSS</labCode>
+          <labName>USU Aquatic Biogeochemistry Laboratory</labName>
+          <labOrganization>Utah State University</labOrganization>
+          <LabMethodName>Total Phosphorus</LabMethodName>
+        </labMethod>
+      </sample>
+      <sample sampleID="171">
+        <labSampleCode>G122007-WELL-TSS</labSampleCode>
+        <sampleType>Grab</sampleType>
+        <labMethod>
+          <labCode>G122007-WELL-TSS</labCode>
+          <labName>USU Analytical Laboratory</labName>
+          <labOrganization>Utah State University</labOrganization>
+          <LabMethodName>EPA 340.2</LabMethodName>
+        </labMethod>
+      </sample>
+      <censorCode>
+        <censorCode>nc</censorCode>
+        <censorCodeDescription>not censored</censorCodeDescription>
+      </censorCode>
+    </values>
+  </timeSeries>
+</timeSeriesResponse>

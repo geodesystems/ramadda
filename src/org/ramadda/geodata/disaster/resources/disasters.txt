@@ -1,0 +1,24 @@
+CW:CW - Cold Wave
+CE:CE - Complex Emergency
+DR:DR - Drought
+EQ:EQ - Earthquake
+EP:EP - Epidemic
+EC:EC - Extratropical Cyclone
+FR:FR - Fire
+FF:FF - Flash Flood
+FL:FL - Flood
+HT:HT - Heat Wave
+IN:IN - Insect Infestation
+LS:LS - Land Slide
+MS:MS - Mud Slide
+OT:OT - Other
+ST:ST - SEVERE LOCAL STORM
+AV:AV - Snow Avalanche
+SS:SS - Storm Surge
+AC:AC - Tech. Disaster
+TO:TO - Tornadoes
+TC:TC - Tropical Cyclone
+TS:TS - Tsunami
+VW:VW - Violent Wind
+VO:VO - Volcano
+WF:WF - Wild fire

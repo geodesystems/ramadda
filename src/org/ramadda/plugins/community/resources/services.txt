@@ -1,0 +1,4 @@
+food:Food
+clothing:Clothing
+shelter:Shelter
+counseling:Counseling

@@ -1,0 +1,39 @@
+  <services category="Earth Science Data">
+
+    <service label="Create image from GeoTIFF/NITF" id="gdal_tiff2image" command="${service.gdal.gdal_translate}" outputToStderr="true">
+<description>
+Run gdal_translate to make an image from a geotiff
+</description>
+<arg value="-of"/>
+<arg value="png"/>
+<arg value="${entry.file}"   type="entry" primary="true" entryPattern="(.*\.tif|.*\.tiff|.*\.ntf)"></arg>
+<arg value="${file}" file="${entry.file.base}.png"></arg>
+          <output pattern=".*\.png" type="type_image"/>
+    </service>
+
+
+    <service label="Create thumbnail image" id="gdal_makethumb" command="${service.gdal.gdal_translate}" outputToStderr="true">
+<description>
+Run gdal_translate to make an image from a geotiff
+</description>
+<arg value="-of"/>
+<arg value="png"/>
+<arg value="-outsize"/>
+<arg value="600"/>
+<arg value="400"/>
+<arg value="${entry.file}"   type="entry" primary="true" entryPattern="(.*\.tif|.*\.tiff|.*\.ntf)"></arg>
+<arg value="${file}" file="${entry.file.base}.png"></arg>
+          <output pattern=".*\.png" type="type_image"/>
+    </service>
+
+    <service label="GDAL Info" id="gdal_info" command="${service.gdal.gdalinfo}" xoutputToStderr="true">
+<description>
+Run gdalinfo
+</description>
+   <arg value="${entry.file}"   type="entry" primary="true" entryPattern="(.*\.tif|.*\.tiff|.*\.ntf)"></arg>
+   <output showResults="true" stdout="true"/>
+    </service>
+
+
+
+</services>

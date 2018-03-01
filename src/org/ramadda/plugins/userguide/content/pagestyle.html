@@ -1,0 +1,56 @@
+[ht::head {Page Styles}]
+
+<%nochildlist%>
+
+You can control much of how the  html pages are shown using a Page Style property.
+Go to the [ht::menu Edit {Add Property}] menu and
+under "Thumbnails, Page Style, Etc." select Page Style.
+The Page Style property allows you to specify what menus to show, whether to show other features and
+you can also specify a WIKI text template to use for the default HTML views of the entries:
+
+[ht::cimg images/pagestyle.png {Page Style Create Form} {border=1}]
+
+<ul> 
+<li> Menus.
+To control if the menu bar is shown and what menus get shown enter either "none" in
+the menus field (to not show the menu bar) or a comma separated list of the
+menus you do want to show:<pre>
+file
+edit
+feeds
+view 
+other
+</pre>
+
+<b>
+Note: Just so you don't lose the ability to
+edit the entry the menu bar is always shown for users who have edit privileges for the
+entry being displayed.
+</b>
+<li> Breadcrumbs: This is the breadcrumb trail of the ancestors of an entry.
+<li> Show Toolbar: This is the icon toolbar (e.g., edit, delete, copy, etc)
+<li> Show Entry Header: The Entry icon, name and Layout: icons
+<li> Wiki Template: If defined this is the Wiki template used for the default HTML
+display of the entry. See <a href="wikitext.html">wikitext.html</a> for information on
+the wiki facility.
+<li> Inherited: 
+You can have a Page Style apply to a whole sub-tree of RAMADDA entries. Add the Page Style
+property to the Folder entry and check on the Inherit flag.
+
+</ul>
+
+<p>
+You can have any number of Page Style properties and have them apply to certain entry types
+by specifying the Entry Type. For example, you can have one page style that is applicable
+to File entries and one that is applicable to Folders.
+
+
+<subhead intoc="false" id="templates">Page Template</subhead>
+You can also specify which page template is used for an entry or for a whole tree. 
+
+Go to the [ht::menu Edit {Add Property}] menu and under "Thumbnails, Page Style, Etc." select Page Template.  
+Select the page template you want to use. You can create new <a href="templates.html">templates</a>.
+If you want to have this apply to all entries under the folder then select inherit.
+
+
+[ht::foot]

@@ -1,0 +1,91 @@
+<types supercategory="Bioinformatics">
+
+  <type name="bio_genomics"  description="Genomics Data" foruser="false"  category="Genomics">
+     <property name="icon" value="/genomics/dna.png"/>
+     <property name="form.area.show" value="false"/>
+     <property name="form.todate.show" value="false"/>
+     <property name="form.fromdate.label" value="Date"/>
+  </type>
+
+  <type name="bio_fasta"  description="FASTA File" foruser="true" super="bio_genomics" handler="org.ramadda.bio.genomics.FastaTypeHandler" pattern=".*(\.fa|\.fasta)$">
+  </type>
+
+
+  <type name="bio_fastq"  description="FASTQ File" foruser="true" super="bio_genomics" handler="org.ramadda.bio.genomics.FastaTypeHandler" pattern=".*\.fastq$">
+  </type>
+
+  <type name="bio_sequence"  description="Sequence Data" foruser="false" super="bio_genomics">
+  </type>
+
+  <type name="bio_sambam"  description="SAM/BAM Data" foruser="false" super="bio_sequence" handler="org.ramadda.bio.genomics.SamTypeHandler">
+  </type>
+
+  <type name="bio_sam"  description="SAM Data" foruser="true" super="bio_sambam" pattern=".*\.sam$">
+  </type>
+
+  <type name="bio_bam"  description="BAM Data" foruser="true" super="bio_sambam">
+  </type>
+
+  <type name="bio_stockholm"  description="Stockholm File" foruser="true" super="bio_genomics" handler="org.ramadda.bio.genomics.StockholmTypeHandler" pattern=".*\.sto$">
+  </type>
+
+<!--
+     <column name="data_type" label="Earth Science Data Type" type="enumerationplus" values="" cansearch="true" />
+-->
+
+  <type name="bio_sra"  description="Sequence Read Archive" foruser="true" super="bio_genomics"  pattern=".*\.sra$" handler="org.ramadda.bio.genomics.SraTypeHandler">
+  </type>
+
+
+  <type name="bio_hmmer_index"  description="HMMER Index File" foruser="true" super="bio_genomics"  pattern=".*\.hmm$">
+     <property name="icon" value="/genomics/hmmer.png"/>
+  </type>
+
+  <type name="bio_biom"  description="BIOM File" foruser="true" super="bio_genomics" handler="org.ramadda.bio.genomics.BiomTypeHandler" pattern=".*\.biom$">
+  </type>
+
+
+  <type name="bio_bed"  description="BED format" foruser="true" super="bio_genomics" pattern=".*\.bed$">
+  </type>
+
+  <type name="bio_gff"  description="General Feature Format" foruser="true" super="bio_genomics" pattern=".*\.gff$">
+  </type>
+
+  <type name="bio_gtf"  description="Gene Transfer Format" foruser="true" super="bio_genomics" pattern=".*\.gtf$">
+  </type>
+
+  <type name="bio_maf"  description="Multiple Alignment Format" foruser="true" super="bio_genomics"  pattern=".*\.maf$">
+  </type>
+
+  <type name="bio_wig"  description="Wiggle (WIG) Format" foruser="true" super="bio_genomics"  pattern=".*\.wig$">
+  </type>
+
+  <type name="bio_sf" foruser="false" category="Genomics" >
+     <property name="icon" value="/genomics/dna.png"/>
+  </type>
+
+  <type name="bio_sf_pdb"  super="bio_sf" description="PDB Protein File" category="Genomics"  handler="org.ramadda.bio.genomics.PdbTypeHandler" pattern="(.*\.ent$|.*\.ent.gz$|.*\.pdb$|.*\.pdb\.gz$)">
+     <property name="icon" value="/genomics/dna.png"/>
+     <property name="form.area.show" value="false"/>
+     <property name="form.todate.show" value="false"/>
+     <property name="form.fromdate.label" value="Date"/>
+     <wiki_inner><![CDATA[
+<h2>{{name}}</h2>
+{{description}}
++mini
+<h2>Information</h2>
+{{information}}
+-mini
+----
++mini
+<h2>Properties</h2>
+{{properties}}
+-mini
+
+]]>
+</wiki_inner>
+  </type>
+
+
+
+</types>

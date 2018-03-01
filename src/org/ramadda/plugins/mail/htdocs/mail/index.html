@@ -1,0 +1,81 @@
+<html>
+<title>Email Services</title>
+<body>
+<div class="ramadda-section">
+
+<h2>Mail Harvester</h2>
+
+The email harvester allows you to harvest and ingest content from any IMAP enabled mail server.
+This harvester acts as other harvesters. It is created by RAMADDA an administrator and can
+be configured to run on a regular basis:
+<p>
+<img src="harvester.png" width="600" class="image-outer">
+<p>
+You first need to provide an IMAP URL of the form (assuming SSL IMAP):
+
+<pre>
+imaps://&lt;email address&gt;:&lt;email password&gt;@&lt;email server&gt;
+</pre>
+
+e.g.:
+<pre>
+imaps://sendtoramadda:password@imap.gmail.com
+</pre>
+
+
+Specify a mail Folder name (e.g., Inbox) and a set of criteria used to match
+on the email that is to be ingested - sender, subject and body. These are just string patterns
+that, if defined, are used to match on the mail.
+<p>
+Note: the harvester will only look at emails that have been marked as "unread". So, if you have mail that you want ingested
+that has been read you will  need to mark those messages as unread.
+
+<p>
+A destination RAMADDA Folder needs to be specified. You can either have the harvester ingest
+the mail message as a <i>.eml</i> file or it can create new RAMADDA entries from each attachment.
+The name of the entry is derived from the mail subject and the attachment file name. 
+If you specify:
+<pre>
+name: some name
+</pre>
+in the mail message then RAMADDA will use that as the entry name.
+
+You can also specify the destination folder relative to the harvesters base folder with:
+<pre>
+at: some folder name
+</pre>
+So, for example, the base folder may contain sub-folders:<pre>
+family
+work
+other
+</pre>
+
+If you send an email with:<pre>
+some text
+name: some name
+at: family
+some more text
+</pre>
+
+Then RAMADDA will add the entry to the family sub-folder and use "some name" as the name.
+
+
+<p>
+If no attachment is provided then RAMADDA will create a <i>note</i> entry type with the mail text body.
+If the first line of the email is a valid URL then RAMADDA will create a <i>link</i> entry type.
+
+<p>
+If the Email Response 
+is specified and if the RAMADDA server is configured to send email
+then the original sender of the harvested email will be notified of the
+new entries.
+
+
+<h2>EML Files</h2>
+RAMADDA can also ingest  <i>.eml </i> files as content. It will extract any attachments and add them as RAMADDA
+attachments and also will extract mail metadata - from, to and date. 
+
+</div>
+
+</html>
+

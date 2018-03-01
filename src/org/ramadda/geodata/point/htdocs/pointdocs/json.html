@@ -1,0 +1,151 @@
+<html>
+<head>
+<title>Time Series JSON Format</title>
+  <link rel="stylesheet" type="text/css" href="./default.css" title="Style">
+
+</head>
+
+<body>
+<div class="ramadda-documentation">
+<table width=100% cellpadding=0 cellspacing=0><tr><td width=30%>
+<a href="api.html"><img src="images/PreviousArrow.gif" border="0"   alt="Previous: Point Data Access API" title="Previous: Point Data Access API"></a> <a href="record.html"><img src="images/NextArrow.gif" border="0"   alt="Next: RAMADDA Record Package" title="Next: RAMADDA Record Package"></a>  <a href="toc.html#json.html"><img src="images/TOCIcon.gif" border="0"   alt="Table of contents" title="Table of contents"></a>
+</td>
+<td width=40% align=center>
+<div class="pagetitle">Point Data Documentation</div>
+</td>
+<td width=30%>&nbsp;</td>
+</tr></table>
+<div class="pagetitle">4.5 Time Series JSON Format</div>
+
+<style type="text/css">
+pre {
+    margin-left:15px;
+}
+</style>
+
+
+<div style="margin-left:10px; margin-top:10px;">
+<style type="text/css">
+pre {
+   margin-top: 5px;
+}
+</style>
+
+
+One of the point data  formats provided by RAMADDA is JSON. 
+
+The JSON is accessed through the point data API,
+
+<pre>
+/repository/point/json?entryid=&lt;entry id&gt;&amp;numpoints=500
+</pre>
+
+If numpoints is specified then RAMADDA will set a skip factor when processing the data and decimate the results to approximate the numpoints.
+
+
+<a href="http://ramadda.org/repository/point.json?entryid=3d7c2303-cd71-4f5c-9928-a4c84c788782&numpoints=500">Example on RAMADDA</a>
+
+<p>
+
+The call returns a map with a name, a list of the data fields provided and a set of data records.
+
+<pre>
+{
+    "name": "name of the data",
+    "fields": [list of field definitions],
+    "data": [list of data records]
+}
+</pre>
+
+Where a field definition is as follows. 
+These properties correspond to the field properties in the <a href="textdata.html">text data</a> facility.
+
+<pre>
+{
+    "index":0,
+    "id":"field1",
+    "label":"Field 1",
+    "type":"double",
+    "missing":-999.0,
+    "unit":"m"
+}
+</pre>
+
+
+<p>
+
+Each data record has geolocation, date and a set of values:
+
+<pre>
+{
+     "latitude":-64.77,
+     "longitude":-64.06,
+     "elevation":45, 
+     "date":null,
+     "values":[8.0,1000]
+}
+</pre>
+
+
+Putting it all together:
+
+<div style="margin-top:10px; margin-bottom:20px;margin-left:20px;"><a href="data/testpoint1.json">testpoint1.json</a> <pre style="margin:0px;margin-top:5px;border: 1px #888 solid;max-height:150px; overflow-y:auto;max-width:1000px;overflow:auto;">{"fields":[
+           {"index":0,
+          "id":"field1",
+          "label":"Field 1",
+          "type":"double",
+           "missing":"-999.0",
+           "unit":"m"},
+          {"index":1,
+          "id":"field2",
+          "label":"Field 2",
+          "type":"double",
+           "missing":"-999.0",
+           "unit":"m"}
+         ]
+,"data": [
+               {"values":[8.0,1000]},
+               {"values":[9.0,1500]},
+               {"values":[10.0,2000]}
+               ]
+}
+
+</pre></div>
+
+
+And adding geospatial and temporal information to the records:
+<div style="margin-top:10px; margin-bottom:20px;margin-left:20px;"><a href="data/testpoint2.json">testpoint2.json</a> <pre style="margin:0px;margin-top:5px;border: 1px #888 solid;max-height:150px; overflow-y:auto;max-width:1000px;overflow:auto;">{"fields":[
+{"index":0,
+          "id":"field1",
+          "label":"Field 1",
+          "type":"double",
+           "missing":"-999.0",
+           "unit":"m"},
+           {"index":1,
+          "id":"field2",
+          "label":"Field 2",
+          "type":"double",
+           "missing":"-999.0",
+           "unit":"m"}
+         ]
+,"data": [
+               {"latitude":-64.77,"longitude":-64.06,"elevation":45, "date":null,"values":[8.0,1000]},
+               {"latitude":-54.77,"longitude":-54.06,"elevation":45, "date":null,"values":[9.0,1500]},
+               {"latitude":-54.77,"longitude":-54.06,"elevation":45, "date":null,"values":[10.0,2000]}
+        
+               ]
+}
+
+</pre></div>
+
+
+
+<p>
+<div  class="childlist" ><table  width="100%" ></table></div>
+<p>&nbsp;<p>
+<a href="api.html"><img src="images/PreviousArrow.gif" border="0"   alt="Previous: Point Data Access API" title="Previous: Point Data Access API"></a> <a href="record.html"><img src="images/NextArrow.gif" border="0"   alt="Next: RAMADDA Record Package" title="Next: RAMADDA Record Package"></a>  <a href="toc.html#json.html"><img src="images/TOCIcon.gif" border="0"   alt="Table of contents" title="Table of contents"></a>
+<p>
+</div>
+</body>
+</html>
+

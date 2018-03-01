@@ -1,0 +1,24 @@
+.ipynb-input pre, .ipynb-output pre {
+    overflow-x: auto;
+    max-width:800px;
+}
+
+.ipynb-input, .ipynb-output {
+    padding: 4px;
+    overflow-y: auto;
+    overflow-x: auto;
+}
+
+.ipynb-input-label {
+   color: #000080;
+}
+
+.ipynb-ouput-label {
+      color: #000080;
+}
+        
+.ipynb-output img {
+    max-width:800px;
+    height: auto;
+    vertical-align: middle;
+}

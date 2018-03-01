@@ -1,0 +1,93 @@
+<html>
+<head>
+<title>Installating RAMADDA under Tomcat</title>
+  <link rel="stylesheet" type="text/css" href="../default.css" title="Style">
+
+</head>
+
+<body>
+<div class="ramadda-documentation">
+<table width=100% cellspacing=0 cellpadding=0><tr><td width=30%>
+<a href="../page_installingandconfiguringramadda.html"><img src="../images/PreviousArrow.gif" border="0"   alt="Previous: Installing and configuring RAMADDA" title="Previous: Installing and configuring RAMADDA"></a> <a href="configuration.html"><img src="../images/NextArrow.gif" border="0"   alt="Next: Configuration" title="Next: Configuration"></a>  <a href="../toc.html#installation/index.html"><img src="../images/TOCIcon.gif" border="0"   alt="Table of contents" title="Table of contents"></a>
+</td>
+<td width=40% align=center>
+<div class="pagetitle">RAMADDA Workshop</div>
+</td>
+<td width=30%>&nbsp;</td>
+</tr></table>
+<div class="pagetitle">1.0 Installating RAMADDA under Tomcat</div>
+
+<style type="text/css">
+pre {
+    margin-left:15px;
+}
+</style>
+
+
+
+
+
+RAMADDA is available at:<br>
+<a href="http://www.sourceforge.com/projects/ramadda">
+http://www.sourceforge.com/projects/ramadda
+</a>
+
+
+
+<p>
+
+Steps performed as root:
+
+<ol>
+<li>
+
+If you haven't already then install Tomcat
+<pre>
+yum -y install tomcat6
+</pre>
+
+
+<li> 
+Before we install RAMADDA we need to add a property file to
+the Tomcat <i>conf</i> directory to tell RAMADDA where to
+store data and files. Copy the file:<br>
+<a href="repository.properties">repository.properties</a> 
+<br> to: <br> 
+<i>/usr/share/tomcat6/conf</i>
+
+
+<li> Download the repository.war file from:<br>
+<a href="http://sourceforge.net/projects/ramadda/files">
+http://sourceforge.net/projects/ramadda/files
+</a>
+
+
+<li>
+Copy the RAMADDA war file to the webapps directory:
+
+<br>
+<i>cp repository.war /usr/share/tomcat6/webapps</i>
+<br>
+
+
+<li>
+And now restart Tomcat (don't forget that you need to be root to do this).
+<pre>
+su
+service tomcat6 stop
+service tomcat6 start
+</pre>
+
+</ol>
+
+
+<p>
+<div  class="childlist" ><table  width="100%" ></table></div>
+<p>&nbsp;<p>
+<a href="../page_installingandconfiguringramadda.html"><img src="../images/PreviousArrow.gif" border="0"   alt="Previous: Installing and configuring RAMADDA" title="Previous: Installing and configuring RAMADDA"></a> <a href="configuration.html"><img src="../images/NextArrow.gif" border="0"   alt="Next: Configuration" title="Next: Configuration"></a>  <a href="../toc.html#installation/index.html"><img src="../images/TOCIcon.gif" border="0"   alt="Table of contents" title="Table of contents"></a>
+<p>
+
+</div>
+</body>
+</html>
+

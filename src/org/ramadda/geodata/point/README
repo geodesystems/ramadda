@@ -1,0 +1,2 @@
+This is stupid but there is a dependency between the amrctypes.xml and the 1types.xml
+We prefixed the types.xml file with 1 so it gets process by ramadda 1st

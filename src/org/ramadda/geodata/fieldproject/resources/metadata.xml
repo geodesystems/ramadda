@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<metadata>
+
+  <handler category="Project" xclass="org.unavco.projects.nlas.ramadda.NlasMetadataHandler">
+
+    <type id="project_creator" name="Creator" searchable="true" priority="20"  displaygroup="Creator">
+      <element id="name" name="Name"/>
+      <element id="institution" name="Institution"/>
+      <element id="email" name="Email" datatype="email"/>
+      <element id="url" datatype="url" name="URL"/>
+      <element id="picture" datatype="file" name="Picture" thumbnail="false" attachment="false"/>
+    </type>
+
+
+
+
+    <type id="project_person" name="Project Personnel" searchable="true" priority="10">
+      <element id="name" name="Name"/>
+      <element id="type" name="Type" datatype="enumerationplus" values="file:/org/ramadda/geodata/fieldproject/resources/personnel.properties"/>
+      <element id="institution" name="Institution"/>
+      <element id="email" name="Email" datatype="email"/>
+
+      <template type="html"><![CDATA[<a href="mailto:${email}">${name}</a> - ${type.label} - ${institution}]]></template>
+
+    </type>
+
+
+
+    <type id="project_pi" name="Principal Investigator" searchable="true" priority="20"  displaygroup="Project Lead">
+      <element id="name" name="Name"/>
+      <element id="institution" name="Institution"/>
+      <element id="email" name="Email" datatype="email"/>
+      <element id="url" datatype="url" name="URL"/>
+      <element id="picture" datatype="file" name="Picture" thumbnail="false" attachment="false"/>
+      <template type="html"><![CDATA[<a href="mailto:${email}">${name}</a> <a href="${url}">${institution}</a>]]></template>
+    </type>
+
+
+    <type id="project_funding" name="Funding Information" searchable="true" browsable="true"  priority="5">
+      <element id="agency" name="Funding Agency" datatype="enumerationplus" values="NSF,NASA"/>
+      <element id="funding_title" name="Title"/>
+      <element id="funding_id" name="ID"/>
+      <element id="funding_url" datatype="url" name="URL"/>
+      <element id="notes" name="Notes" rows="5"/>
+      <template type="html"><![CDATA[<a href="${funding_url}">${funding_title}</a> ID: ${funding_id} ${notes} ]]></template>
+    </type>
+
+
+
+  </handler>
+
+
+
+</metadata>

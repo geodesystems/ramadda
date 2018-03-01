@@ -1,0 +1,141 @@
+<types supercategory="Miscellaneous" category="Integration">
+
+  <type name="hipchat_group"  description="HipChat Group" handler="org.ramadda.plugins.atlassian.HipchatGroupTypeHandler"  >
+     <property name="icon" value="/atlassian/hipchat.png"/>
+     <property name="form.description.label" value="Group Description"/>
+     <property name="form.url.show" value="true"/>
+     <property name="form.url.label" value="HipChat Server URL"/>
+     <property name="form.file.show" value="false"/>
+     <property name="form.area.show" value="false"/>
+     <property name="form.location.show" value="false"/>
+     <property name="form.date.show" value="false"/>
+
+
+     <column name="token" type="password"  label="Authentication Token" columns="60" suffix="&lt;a target=&quot;_help&quot; href=&quot;${root}/atlassian/index.html&quot;&gt;Help&lt;/a&gt;"/>
+     <column name="rooms_to_show"  showinhtml="false" size="500" rows="5" type="string"  label="Rooms to display" suffix="Enter the HipChat room IDS for the rooms you want to show" />
+     <wiki><![CDATA[
+{{noheading}}
++section # title="HipChat Group: {{name}}"
+{{description wikify="true"}}
+{{tree details="false" message="No rooms found"}}
+-section
+]]>
+</wiki>
+  </type>
+
+
+  <type name="hipchat_room"  description="HipChat Room" foruser="false" handler="org.ramadda.plugins.atlassian.HipchatRoomTypeHandler" >
+     <property name="icon" value="/atlassian/hipchat.png"/>
+     <property name="form.name.label" value="Room Name"/>
+     <property name="form.description.label" value="Room Topic"/>
+     <property name="form.file.show" value="false"/>
+     <property name="form.file.show" value="false"/>
+     <property name="form.url.show" value="true"/>
+     <column name="room_id" type="string"  label="Room ID" />
+     <wiki><![CDATA[
+{{noheading}}
++section # title="HipChat Room: {{name}}"
++row
++col-md-10
+<table class="formtable">
+     {{resource row.label="URL:"  message=""}}
+</table>
+-col
++col-md-2
+<a href="{{root}}/entry/show/entry.rss?entryid={{entryid}}&output=rss.full"><img src="{{root}}/icons/rss.png"></a>
+-col
+-row
+-section
++section  label="Messages"
+{{timeline message=""}}
+<br>
+{{messages details="false" message="No messages found"}}
+-section
+]]>
+</wiki>
+   </type>
+
+  <type name="hipchat_message"  description="HipChat Message" foruser="false" handler="org.ramadda.plugins.atlassian.HipchatMessageTypeHandler" >
+     <property name="icon" value="/atlassian/hipchat.png"/>
+     <property name="form.description.label" value="Message Text"/>
+     <property name="form.file.show" value="false"/>
+     <property name="form.file.show" value="false"/>
+     <property name="form.url.show" value="true"/>
+     <column name="from_user" type="string"  label="From" showinform="false" />
+     <column name="room_id" type="string"  label="User ID" showinform="false" />
+     <column name="color" type="string"  label="Color" showinform="false" />
+     <wiki><![CDATA[
+<link rel="stylesheet" href="{{root}}/atlassian/hipchat.css" type="text/css" />
+{{noheading}}
++section # title="HipChat Message: {{name}}"
+{{field name="from_user"}} @ {{fromdate}}
+<div class="hipchat_message hipchat_message_{{field name=color}}">
+{{description}}
+</div>
+-section
+]]>
+</wiki>
+   </type>
+
+
+
+  <type name="jira_issue"  description="Jira Issue" foruser="false" handler="org.ramadda.repository.type.GenericTypeHandler" >
+     <property name="icon" value="/atlassian/jira.png"/>
+     <property name="form.file.show" value="false"/>
+     <property name="form.url.show" value="true"/>
+     <column name="issue_type" type="enumerationplus"  label="Issue Type"  values="1:Bug"/>
+     <column name="priority" type="enumerationplus"  label="Priority"  values="4:Minor"/>
+     <wiki><![CDATA[
+<link rel="stylesheet" href="{{root}}/atlassian/hipchat.css" type="text/css" />
+{{noheading}}
++section # title="Jira Issue: {{name}}"
+
+<table class="formtable">
+{{resource row.label="URL:"  message=""}}
+{{field name="issue_type" row.label="Issue Type:"}} 
+{{field name="priority" row.label="Priority:"}} 
+{{fromdate row.label="Date Created:"}}
+</table>
+
+----
+
++mini
+{{description convert_newline="true"}}
+-mini
+
+-section
+]]>
+</wiki>
+   </type>
+
+
+
+  <type name="confluence_page"  description="Confluence Page" foruser="false" handler="org.ramadda.repository.type.GenericTypeHandler" >
+     <property name="icon" value="/atlassian/confluence.png"/>
+     <property name="form.file.show" value="false"/>
+     <property name="form.url.show" value="true"/>
+<!-- 
+     <column name="issue_type" type="enumerationplus"  label="Issue Type"  values="1:Bug"/>
+     <column name="priority" type="enumerationplus"  label="Priority"  values="4:Minor"/>
+-->
+     <wiki><![CDATA[
+<link rel="stylesheet" href="{{root}}/atlassian/hipchat.css" type="text/css" />
+{{noheading}}
++section # title="Confluence Page: {{name}}"
+
+<table class="formtable">
+{{resource row.label="URL:"  message=""}}
+{{fromdate row.label="Date Created:"}}
+</table>
+
+----
+
+{{description convert_newline="true"}}
+
+-section
+]]>
+</wiki>
+   </type>
+
+
+</types>

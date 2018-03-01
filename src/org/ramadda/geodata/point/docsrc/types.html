@@ -1,0 +1,48 @@
+[ht::head {Managing point data in RAMADDA}]
+
+There are two main types of Point related entries you can create. 
+The first is the Point Data type. Entries of this type refer to a 
+single Point data file.  
+<p>
+You can upload a file directly to RAMADDA:
+<ol>
+<li>
+Navigate to the Folder you want to upload the file to
+<li>
+From the File menu select "New Entry".
+<li> Select an appropriate Point Data type:
+<p>
+<img src="images/lidarentries.png">
+<p>
+
+There is no specific functionality associated with the
+LAS, LVIS and GLAS entry types. If you have this type of data
+you could just select "LiDAR Data". But, specifying the type
+would allow you to search for files of particular types.
+See <a href="#types">below</a> for more information regarding
+supported file formats.
+
+<li>
+Now that you have selected the type you can upload the file
+through the next form. 
+See the <a href="harvester.html">Harvester section</a>
+to find out how to automate this process.
+
+</ol>
+
+A Point Data type in RAMADDA provides a number of services (viewing, data access, etc)
+The Point Collection type is used for aggregating a set of Point Data entries
+and providing the POINT data access services (conversion, subset, etc) to the whole
+collection.
+Furthermore, the Point Data entries are not accessed directly 
+from queries through the POINT API from external portals (e.g., Open Topography).
+The Point Collection entries are what is accessed by external portals and through
+the top-level POINT search UI.
+<p>
+So, if you want to make data collections available to OpenTopography 
+then create a Point Collection folder and add the Point Data to it.
+
+
+[ht::foot]
+
+

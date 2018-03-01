@@ -1,0 +1,113 @@
+<head><title>${repository_name} - ${title} ${entry.breadcrumbs}</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+
+<!--
+When defining a new template just name your file ending with "template.html" and
+put it in RAMADDA's plugins directory. You should change the name and id below
+in the properties section.
+
+An easy way to edit the template is to run RAMADDA with the property:
+    ramadda.cacheresources==false
+or with the runtime argument:
+     java org.ramadda.repository...  -Dramadda.cacheresources=false
+This causes RAMADDA to reload the templates and other resources at every request. This way
+you can edit the template and just reload the page.
+Note: Don't leave this flag when running in production.
+
+The properties section is parsed by ramadda and is treated as Java properties.
+They are used to define the name and id of this template and to define html wrappers
+for when ramadda is generating the html for the main nav links, the user links, etc.
+-->
+<properties>
+
+#Change these for your template
+
+name=Example Template
+id=exampletemplate
+
+#This is a template used to create the main navigation links
+ramadda.template.link.wrapper =<span class="navlink"><a href="${url}">${label}</a></span>
+ramadda.template.link.separator=&nbsp;|&nbsp;
+
+#This is a template used to create the user login links
+ramadda.template.userlink.wrapper =<span class="navlink"><a class="navlink" href="${url}">${label}</a></span>
+ramadda.template.userlink.separator=&nbsp;|&nbsp;
+
+#This is a template used to create the favorite links
+ramadda.template.favorites = <b>Favorites:</b><div class="favorites">${entries}</div>
+ramadda.template.cart = <b>Cart:</b><div class="favorites">${entries}</div>
+
+</properties>
+
+${imports}
+
+<!-- You can have inline css here -->
+<style type="text/css">
+</style>
+
+<!-- Or link to resources in your plugin -->
+<link href="${root}/exampletemplate/template.css" rel="stylesheet" type="text/css" media="screen">
+
+${headfinal}
+
+<!--
+The rest of this file is just html with ${...} macros. The macros include:
+${root}  - the url root to the RAMADDA server
+${imports} - The ramadda specific imports - e.g., style sheet, etc
+${headfinal} - Needs to be put at the  end of the head section
+${repository_name}  - Name defined in the Admin pages
+${title}  - The current page title (e.g. "Metadata")
+${entry.breadcrumbs} - Text bread crumbs of  entry hierarchy - used in title
+${links} - The main navigational links. Can be configured in the properties 
+${userlinks} - The user specific links. Can be configured in the properties 
+${entry.header} - The Entry menubar, toolbar, breadcrumb header thing
+${content} - The page content
+${logo.url} - Url for clicking on logo - specified in the Admin pages
+${logo.image}  - The logo image url - specified in the Admin pages
+${footer} - footer text define in Admin pages
+-->
+
+
+
+</head>
+
+<body>
+<table border="0" cellpadding="0" cellspacing="0" width="100%">
+<tr>
+<td class="header">
+<table border="0" cellpadding="2" cellspacing="0" width="100%">
+<tr valign="bottom">
+<!--
+    Note: this uses the logo image from RAMADDA
+    You don't have to do this. You could include your own banner with:
+    ${root}/exampletemplate/banner.jpg
+-->
+<td rowspan="2"  width="5%"><a href="${logo.url}" target="external"><img border="0"  src="${logo.image}" align="center"></a></td>
+<td valign="top">
+<span class="header_label">${header.title} - ${title}</span>
+</td>
+</tr>
+<tr valign="bottom">
+<td>
+${links}
+</td>
+<td align="right">${userlinks}</td>
+</tr>
+</table>
+</td>
+</tr>
+<tr>
+<td>
+<div class="outercontents">
+<div class="content">
+${header}
+<div class="innercontent">${content}</div>
+</div>
+</div>
+<div class="footer">${footer}</div>
+</td>
+</tr>
+</table>
+${bottom}
+</body>
+</html>

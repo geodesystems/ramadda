@@ -1,0 +1,130 @@
+<html>
+<head>
+<title>Data Subsetting and Conversion</title>
+  <link rel="stylesheet" type="text/css" href="./default.css" title="Style">
+
+</head>
+
+<body>
+<div class="ramadda-documentation">
+<table width=100% cellpadding=0 cellspacing=0><tr><td width=30%>
+<a href="viewer.html"><img src="images/PreviousArrow.gif" border="0"   alt="Previous: Map and Time Series Displays" title="Previous: Map and Time Series Displays"></a> <a href="page_forrepositoryadministrators.html"><img src="images/NextArrow.gif" border="0"   alt="Next: For Repository Administrators" title="Next: For Repository Administrators"></a>  <a href="toc.html#access.html"><img src="images/TOCIcon.gif" border="0"   alt="Table of contents" title="Table of contents"></a>
+</td>
+<td width=40% align=center>
+<div class="pagetitle">Point Data Documentation</div>
+</td>
+<td width=30%>&nbsp;</td>
+</tr></table>
+<div class="pagetitle">2 Data Subsetting and Conversion</div>
+
+<style type="text/css">
+pre {
+    margin-left:15px;
+}
+</style>
+
+
+
+
+
+RAMADDA provides an interactive service for point data subsetting, 
+converting and product generation.
+This facility is available through the <code class="menu">Data-&gt;Subset and Products</code> menu, e.g.:
+<a href="http://ramadda.org/repository/entry/show/Home/RAMADDA+Examples/Science+Data/Point+Data/LiDAR+Data/LVIS+Arenal?entryid=ca0703ff-0333-4ac8-8ce4-262d630a7266&output=points.form">LVIS/Costa Rica</a>.
+
+<p>
+This facility is available for both individual point data entries as well
+as Point collections. For collections certain products are not supported.
+
+<p>
+The subset and product form is composed of a number of 
+sections that allow you to select what
+products are desired, specify subsetting information and provide information
+about the processing job.
+
+<a name="product"></a><div class="ramadda-page-heading">2.0 Product Selection</div> 
+
+One can select any number of point or grid data  formats:
+<a name="image1"></a><div class="cimg"><a href="images/access_products.png"><img  src="images/access_products.png" border=0 alt="Product Selection" ></a><br><span class="caption">Image 1: Product Selection</span></div>
+
+Under Point Products the "Native Format" will return the data in its original
+format. For LAS we generate LAS 1.2. The LAS point format depends on what the
+original data contains (e.g., rgb, intensity, time, etc).
+
+<div class="note">Note: For now we don't write out the geotiff CRS section. All coordinates are assumed to be latitude/longitude/altitude
+</div>
+
+There are 2 forms of Comma Separate Values (CSV) provided: "all fields" and
+"Lat/Lon/Alt".
+All fields  will include all of the Point observation parameters.
+If the Point file has waveforms then you can also include the
+waveform values in the CSV by checking the checkbox under
+the <code class="menu">Advanced Settings-&gt;Points-&gt;Include waveforms</code>
+section.
+<p>
+You can also create a variety of gridded products from a variety of grids.
+You select what grids you want (e.g., minimum value, inverse distance weighted average (IDW)) and you select what kinds of products you want to create.
+
+<div class="note">
+Note: The gridding algorithms are being refined and have yet to be fully vetted.
+The minimum, maximum and average values are simple gridding - i.e., the  point value only affects a single grid cell.
+The IDW average does an inverse distance weighted average within a region
+of grid cells.
+</div>
+
+By default the altitude is the field that is gridded. However, 
+under Advanced Settings you can select other parameters (if available) to grid.
+
+
+<a name="subset"></a><div class="ramadda-page-heading">2.1 Subset Data</div> 
+You can do both spatial subsetting and decimation. For decimation
+you can select a skip factor or a probability. The skip factor allows you, for example, to use every 10th point (e.g., skip=9). The probability
+is a value between 0 and 1, e.g., 0.3 = 30% probability that a point 
+will be included.  
+
+<a name="advanced"></a><div class="ramadda-page-heading">2.2 Advanced Settings</div> 
+There are a number of processing options you can select under Advanced Settings:
+<a name="image2"></a><div class="cimg"><a href="images/access_advanced.png"><img  src="images/access_advanced.png" border=0 alt="Advanced Settings" ></a><br><span class="caption">Image 2: Advanced Settings</span></div>
+
+If you chose the IDW average grid product then you can specify
+a radius of influence for each Point point. The radius can either be
+in terms of degrees or number of grid cells.
+<p>
+If "Fill missing points" is checked on then grid cells that had no value
+but are adjacent to grid cells that have values are filled with the
+adjoining value. No attempt is made to average or interpolate the values.
+<p>
+The Hill shading azimuth and angle are used for the hill shaded image product.
+<p>
+You can also specify the dimensions of the grid or image and the color table
+to use for the image product. 
+<div class="note">
+Note: The color table range is the min/max of the grid values.
+</div>
+
+
+<a name="job"></a><div class="ramadda-page-heading">2.3 Job Processing</div> 
+When you submit a request the processing job will be run 
+asynchronously (unless you uncheck the option under Processing Options) and
+you will be redirected to a Job Status page. This page will reload until the
+processing is complete. At that time it will display links to the data files and 
+products that you selected.
+If you specified an email address then RAMADDA will send you an email 
+notification when your processing request is completed.
+
+
+
+
+
+
+
+
+<p>
+
+<p>&nbsp;<p>
+<a href="viewer.html"><img src="images/PreviousArrow.gif" border="0"   alt="Previous: Map and Time Series Displays" title="Previous: Map and Time Series Displays"></a> <a href="page_forrepositoryadministrators.html"><img src="images/NextArrow.gif" border="0"   alt="Next: For Repository Administrators" title="Next: For Repository Administrators"></a>  <a href="toc.html#access.html"><img src="images/TOCIcon.gif" border="0"   alt="Table of contents" title="Table of contents"></a>
+<p>
+</div>
+</body>
+</html>
+

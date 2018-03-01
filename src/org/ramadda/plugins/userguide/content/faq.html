@@ -1,0 +1,249 @@
+[ht::head {FAQ}]
+
+<%nochildlist%>
+
+
+
+
+<faq>
+
+
+<faqitem cxat="Logins and User Account" q="I forgot my user id. How do I retrieve it?" >
+If your RAMADDA site has been configured to send email (see <a href="#email">here</a> to configure email)
+then on the Login page you should see &quot;Forget your User ID?&quot; and
+&quot;Forget your Password?&quot; links. 
+</faqitem>
+
+
+<faqitem id="checkbox" q="How do I select multiple checkboxes at once?">
+In RAMADDA when there is a collection of checkboxes in a form (e.g., in the entry list or in the edit metadata form)
+selecting one and then
+selecting another with a Shift-Click toggles the range of checkboxes between the first the second
+checkbox clicked. Doing a Control-Click on a checkbox toggles all of them on or off.
+</faqitem>
+
+
+
+
+
+<faqitem cat="Administration" id="ssl" q="How do I configure SSL access to RAMADDA?" >
+To configure SSL access see <a href="installing.html#ssl">here</a> if you are running under Tomcat.
+See <a href="installing.html#ssljetty">here</a> if you are running stand-alone.
+</faqitem>
+
+
+<faqitem cat="Administration" id="permgen" q="I got an out of memory error saying something about PermGen size. Whats up with that?" >
+You will need to change your java runtime memory settings by adding:
+<pre>
+java ... -XX:MaxPermSize=256m ...
+</pre>
+
+See the <a href="installing.html#tomcat">Tomcat installation section</a>
+for more information.
+
+</faqitem>
+
+
+
+
+
+<faqitem cat="Administration" id="allowedlogin" q="I want to restrict where users can login from" >
+For security reasons you can configure what IP addresses users are allowed to login from.
+In your <i>repository.properties</i> file in your local RAMADDA directory, e.g.,<pre>
+&lt;home&gt;/.ramadda/repository.properties</pre>
+add the property:<pre>
+
+##Comma separated list of ip addresses (or prefixes) that are the ones where the user can login
+##If blank then login is allowed from anywhere
+ramadda.login.allowedips=
+##e.g.:
+##ramadda.login.allowedips=127.0.0,201.43.72.5
+</pre>
+</faqitem>
+
+
+<faqitem cat="Administration" id="fixssl" q="Oops, I told RAMADDA to use an SSL port and SSL is not working. Now I cannot access the admin page to turn off SSL and I'm stuck. What can I do?" >
+You need to comment out the ramadda.ssl.port property in your .properties file.
+Alternatively, you can run RAMADDA with the command line argument:
+<pre>-Dramadda.ssl.ignore=true</pre>
+</faqitem>
+
+<faqitem cat="Administration" q="I forgot the administrator password and cannot access RAMADDA. How do I login?" >
+
+The easiest way is to set a username/password  in the repository.properties file in the 
+RAMADDA home directory. Just add:<pre>
+ramadda.admin=userid:password
+</pre>
+and then restart RAMADDA. This sets the password for the given userid.
+Note: you should remove this entry once you have reset your password.
+
+<p>
+You can also specify an administrator user id and password from the command line when starting RAMADDA.
+If you are running RAMADDA stand alone then just provide the arguments:<pre>
+-admin &lt;user id&gt; &lt;password&gt;
+</pre>
+This creates a new user id if needed and sets the password.
+<p>
+If you are running RAMADDA under Tomcat then change the web.xml to pass in command line arguments
+using the &quot;args&quot; entry. This is a comma separated value list of the command line arguments
+that are processed by RAMADDA.
+<pre>
+    &lt;param-name&gt;args&lt;/param-name&gt;
+    &lt;param-value&gt;-admin,userid,password&lt;/param-value&gt;
+</pre>
+
+</faqitem>
+
+
+
+
+
+
+<faqitem cat="Administration" id="hostname" q="I set the hostname to an incorrect hostname. Now I can't login?" >
+Make a &lt;anyname&gt;.properties that contains:
+<pre>
+override.ramadda.hostname=&lt;good host name&gt;
+</pre>
+and place it in your ramadda home directory or plugins directory and restart ramadda. 
+Once you are logged in go to the Admin Settings page and change the hostname then remove
+the properties file.
+<p>
+In general, you can override any property that has been set by defining a property with the "override." prefix.
+
+</faqitem>
+
+<faqitem cat="Administration" id="hostnamemap" q="Map a hostname to some entry">
+You can configure your RAMADDA so that access via some specific hostname (e.g. <a href="http://boulderdata.org/">http://boulderdata.org/</a>) uses some entry.
+
+To do this first set a server property to enable this and restart your RAMADDA.
+<pre>
+ramadda.enable_hostname_mapping = true
+</pre>
+
+Then add an Alias property to the entry of interest with the value:
+<pre>
+http://your_hostname
+e.g.:
+http://boulderdata.org
+</pre>
+
+If you had different domains you can add multiple aliases -
+<pre>
+http://www.boulderdata.org
+</pre>
+
+This will use the entry as the root when accessing the repository under the given hostname. For example, the site
+<a href="http://boulderdata.org/">http://boulderdata.org/</a> really just maps to an entry at - 
+<a href="http://geodesystems.com/repository/entry/show?entryid=79f24329-8c98-4d15-9804-821a70bfb606">http://geodesystems.com/repository/entry/show?entryid=79f24329-8c98-4d15-9804-821a70bfb606</a>.
+
+Note: when searching under the alias the whole site will be searched.
+
+</faqitem>
+
+
+
+<faqitem cat="Administration" id="email" q="How do I configure RAMADDA to send email?" >
+RAMADDA can send email for both the password reset process and for monitoring new entries.
+On the main Site Administration  page under the &quot;Contact&quot; area you can specify
+a SMTP server that RAMADDA will use to send email.
+</faqitem>
+
+
+
+<faqitem cat="Administration" id="not_for_server" q="I have a root .ramadda home dir that I don't want to run in" >
+
+If you build from source then the build process will create a ~user/.ramadda/plugins directory and copy all of the plugins to that directory. The problem that can occur is if you are running your server and the RAMADDA home directory property goes missing then RAMADDA will default to use the ~user/.ramadda as the home dir if it exists. Now, if you are running the build say as root then the home dir will exist.
+
+If this occurs then <b>anyone can hit your site and go through the installation process</a>. To not allow this to happen create a file called <i>not_for_server.txt</i> and place it in the ~user/.ramadda directory that is getting created as part of the build but should not be used as the home directory.
+
+
+See the <a href="templates.html">documentation</a>.
+</faqitem>
+
+
+
+
+
+
+
+<faqitem cat="Administration" id="template" q="I want to change the html design of RAMADDA" >
+See the <a href="templates.html">documentation</a>.
+</faqitem>
+
+
+<faqitem cat="Administration" id="template" q="Changing the initial welcome text and entries" >
+When RAMADDA is first installed it populates your repository with some initial folders and sets the description
+of the root entry with some initial text. You can override what entries are created and what the text is (for example, if
+you wanted to configure a number of different RAMADDA servers).
+
+<p>
+To change the description used just create a file <i>initdescription.txt</i> in the RAMADDA home directory. This file, if it exists,
+is read by RAMADDA. You can see the default one in the source tree at:
+<pre>
+src/org/ramadda/repository/resources/examples/initdescription.txt
+</pre>
+
+This file contains 2 macros:<pre>
+$<filler>{root} - the top-level URL path
+$<filler>{topid} - the ID of the root entry
+</pre>
+
+To change what entries are created RAMADDA looks for a <i>initentries.xml</i> file in the RAMADDA home directory. The default file is:
+<pre>
+src/org/ramadda/repository/resources/examples/initentries.xml
+</pre>
+
+
+This is just the entries xml format. The ID of the top-level entry is simply "root", e.g.:
+<pre>
+&lt;entries&gt;
+&lt;entry parent="root" name="Projects" type="group"&gt;
+&lt;description&gt;A place to store projects&lt;/description&gt;
+&lt;/entry&gt;
+&lt;/entries&gt;
+</pre>
+
+</faqitem>
+
+<faqitem cat="Administration" id="characterset" q="Running with non-ascii characters" >
+There are a number of things you will need to do to run with content that is non-ascii (e.g., Chinese characters).
+<p>
+For Tomcat  set the URIEncoding:
+<a href="http://stackoverflow.com/questions/138948/how-to-get-utf-8-working-in-java-webapps">http://stackoverflow.com/questions/138948/how-to-get-utf-8-working-in-java-webapps</a>.
+
+<p>
+
+If you are running mysql there are some <a href="https://www.google.com/search?hl=en&ie=ISO-8859-1&q=utf-8+mysql&btnG=Search">things</a> you need to do. Postgres and Derby seem OK out of the box.
+
+<p>
+
+Your Java runtime should also have the system property -Dfile.encoding=utf-8  defined.
+
+</faqitem>
+
+
+
+
+
+<faqitem cat="Administration" id="missing" q="I've cleaned up files on my server that I had harvested in RAMADDA. How do I delete those entries in RAMADDA?" >
+
+
+If you have harvested files into RAMADDA from your server file system and subsequently delete those files (e.g., scouring a real-time archive) RAMADDA will not delete the corresponding entries automatically. Instead, by default, RAMADDA will not show those kinds of entries to non logged in users but will show them to logged in users. However, no file download is available because the file is missing.
+
+To clean up these entries in RAMADDA you can manually delete the entries or you can set a property to automatically delete these types of entries.
+
+<pre>
+ramadda.delete_entry_when_file_is_missing=true
+</pre>
+
+<b>
+Be careful with this. I (jeffmc) have seen remote file systems go down momentarily and if this had been set then all of my entries that I had harvested would have been deleted.
+</b>
+
+
+</faqitem>
+
+</faq>
+
+
+[ht::foot]

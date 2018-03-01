@@ -1,0 +1,7 @@
+#fields=value1,value2
+#field.value1.unit=some unit
+#field.value2.unit=some other unit
+#field.value2.missing=-999.0
+-0.93,100.0
+-0.23,-999.0
+-1.93,-999.0

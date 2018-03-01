@@ -1,0 +1,21 @@
+
+To run this from the command line do:
+
+    sh ramaddaclient.sh
+
+This will print out the command line arguments
+
+To do a search do:
+
+sh ramaddaclient.sh <authentication info> -search  arg1   value1 arg2 value2 ... argN valueN
+
+Where the argN are the search url args that you can specify in an advanced search:
+http://ramadda.org/repository/search/form
+
+For now this prints out the entry xml to the stdout.
+
+
+
+
+
+

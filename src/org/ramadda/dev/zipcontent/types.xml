@@ -1,0 +1,13 @@
+<types>
+
+  <type name="zipcontent"  description="Zip Content" handler="org.ramadda.plugins.zipcontent.ZipContentTypeHandler" category="Information">
+     <property name="icon" value="/icons/html.png"/> 
+     <property name="form.description.rows" value="5"/>
+     <property name="form.area.show" value="false"/>
+     <property name="form.date.show" value="false"/>
+     <property name="form.resource.show" value="true"/>
+     <property name="form.datatype.show" value="false"/>
+</type>
+
+
+</types>

@@ -1,0 +1,8 @@
+yr:Yearly
+mon:Monthly
+day:Daily
+6hr:6 hourly
+3hr:3 hourly
+subhr:Sub hourly
+monClim:Monthly Climatology
+fx:Fixed 

@@ -1,0 +1,161 @@
+<types>
+
+<!-- 
+RAMADDA recognizes any file that ends with types.xml as a entry type definition file
+-->
+
+<!--
+This defines a a base type. The foruser=false says to not show this entry type in the UI
+This allows us to define a category and an icon, etc. for all "derived" types
+-->
+  <type name="example_base"  description="Base Example Type"  category="Example" foruser="false">
+<!-- All entry types that are derived from this type will inherit the icon -->
+     <property name="icon" value="/question.png"/>
+   </type>
+
+
+<!--
+    This is a simple file. 
+    The handler attribute (optional) specifies  a Java TypeHandler class.  The default 
+    is the base class org.ramadda.repository.type.TypeHandler
+    
+    The pattern attribute (optional) specifies a regular expression that matches on the file name
+    This is used when the user asks to find a match when uploading or harvesting files
+-->
+
+  <type name="example_file1"  description="Example file 1"  super="example_base" 
+        handler="org.ramadda.repository.type.TypeHandler"
+        pattern=".*\.foo">
+<!-- You can specify any number of additional properties -->
+
+<!-- Override base type icon -->
+    <property name="icon" value="/myplugin/example.png"/>
+
+<!--
+    The form.show. properties hide or show components of the create/edit form for this type
+    You can also specify the label to use with form.label. properties
+-->
+
+<!--
+
+Set the label for the name field:
+    <property name="form.name.label" value="Some Name"/>
+
+Set the label for the description field:
+    <property name="form.description.label" value="Some Description"/>
+
+
+Hide the date range field:
+    <property name="form.date.show" value="false"/>
+
+Hide the time field:
+    <property name="form.time.show" value="false"/>
+
+Hide the from date:
+    <property name="form.fromdate.show" value="false"/>
+
+Hide the to date:
+    <property name="form.todate.show" value="false"/>
+
+
+Hide all of the file/url form:
+    <property name="form.resource.show" value="false"/>
+
+Hide the file upload:
+     <property name="form.file.show" value="false/>
+
+Hide the URL:
+     <property name="form.url.show" value="false"/>
+
+Hide the spatial bounds:
+     <property name="form.area.show" value="false"/>
+
+Show the lat/lon location:
+     <property name="form.location.show" value="true"/>
+
+Show the altitude
+     <property name="form.altitude.show" value="false"/>
+
+But hide the top altitude
+     <property name="form.altitude.top.show" value="false"/>
+
+Hide the bottom altitude
+     <property name="form.altitude.bottom.show" value="false"/>
+-->
+
+  </type>
+
+
+<!--
+If you want to have a simple container entry type then use the handler:
+-->
+  <type name="example_container1"  description="Example container 1"  super="example_base" 
+        handler="org.ramadda.repository.type.GroupTypeHandler">
+  </type>
+
+
+
+<!-- 
+This is a file entry type that has a number of attributes 
+The handler for entry types that have attributes needs to be
+org.ramadda.repository.type.GenericTypeHandler
+or derived from this class
+
+You can have any number of column definitons. Each contains a name, label, type
+and other attributes
+
+The type can be string, enumeration, enumerationplus
+-->
+  <type name="example_file2"  description="Example file 2"  super="example_base" 
+        handler="org.ramadda.repository.type.GenericTypeHandler">
+     <column name="some_attribute1" label="Some label" type="string" cansearch="true" />
+
+<!--   enumeration types can have a set of comma separated -->
+    <column name="fruit" label="Fruit" type="enumeration" values="apple,banana,orange" cansearch="true" />
+<!-- You can specify the labels to show -->
+    <column name="fruit" label="Fruit" type="enumeration" values="apple,banana,orange" cansearch="true" />
+
+     <column name="enum_attr_1" label="Enum attr 1" type="enumeration" values="1:1-hourly,3:3-hourly,6:6-hourly,M:Monthly Mean,U:Monthly Diurnal Mean,0:Not Applicable" cansearch="true" />
+
+     <column name="dimensions" label="Dimensions" type="enumeration" values="2d,3d" cansearch="true" />
+     <column name="data_group" label="Group" type="enumeration" cansearch="true" values="ana:Direct analysis products, asm:Assimilated state variables, tdt:Tendencies of temperature, udt:Tendencies of eastward and northward wind components, qdt:Tendencies of specific humidity, odt:Tendencies of ozone, lnd:Land surface variables, flx:Surface turbulent fluxes and related quantities, mst:Moist processes, cld:Clouds, rad:Radiation, trb:Turbulence, slv:Single level, int:Vertical integrals, chm:Chemistry forcing"/>
+     <column name="horizontal_resolution" label="Horizontal Resolution" type="enumeration" values="N: Native (2/3 x 1/2 deg),F:Reduced Resolution Version of Model Grid (1.25 x 1 deg),C:Reduced Resolution (1.25 x 1.25 deg) " cansearch="true" />
+     <column name="vertical_location" label="Vertical Location" type="enumeration" values="x:Two-dimensional,p:Pressure,v:Model Layer Center,e:Model Layer Edge " cansearch="true" />
+
+  </type>
+
+
+
+<!--
+If you want to have a container entry type that has attributes then use the handler:
+-->
+  <type name="example_container2"  description="Example container 2"  super="example_base" 
+        handler="org.ramadda.repository.type.ExtensibleGroupTypeHandler">
+  </type>
+
+
+<!-- this example is from the earthdata plugin (src/org/ramadda/geodata/earthdata)
+This matches on MERRA file names - http://disc.sci.gsfc.nasa.gov/daac-bin/DataHoldings.pl
+
+The field_file_pattern is an extended regular expression. The groups in the regexp 
+are of the form:
+... (some_attribute_name:some_pattern) ...
+This allows you to specify what pattern groups go with what entry attributes.
+This pattern is used to match on a file name and then extract entry type attributes from the
+file name. 
+-->
+  <type name="example_file3"  description="Example file 3"  super="example_base" 
+        handler="org.ramadda.repository.type.GenericTypeHandler"
+        field_file_pattern=".*(frequency_type:inst|tavg|const)(frequency:1|3|6|M|U|0)_(dimensions:2d|3d)_(data_group:...)_(horizontal_resolution:N|F|C)(vertical_location:x|p|v|e).*">
+     <column name="frequency_type" label="Frequency Type" type="enumeration" values="inst:Instantaneous,tavg:Time Average,const:Time Independent" cansearch="true" />
+     <column name="frequency" label="Frequency" type="enumeration" values="1:1-hourly,3:3-hourly,6:6-hourly,M:Monthly Mean,U:Monthly Diurnal Mean,0:Not Applicable" cansearch="true" />
+
+     <column name="dimensions" label="Dimensions" type="enumeration" values="2d,3d" cansearch="true" />
+     <column name="data_group" label="Group" type="enumeration" cansearch="true" values="ana:Direct analysis products, asm:Assimilated state variables, tdt:Tendencies of temperature, udt:Tendencies of eastward and northward wind components, qdt:Tendencies of specific humidity, odt:Tendencies of ozone, lnd:Land surface variables, flx:Surface turbulent fluxes and related quantities, mst:Moist processes, cld:Clouds, rad:Radiation, trb:Turbulence, slv:Single level, int:Vertical integrals, chm:Chemistry forcing"/>
+     <column name="horizontal_resolution" label="Horizontal Resolution" type="enumeration" values="N: Native (2/3 x 1/2 deg),F:Reduced Resolution Version of Model Grid (1.25 x 1 deg),C:Reduced Resolution (1.25 x 1.25 deg) " cansearch="true" />
+     <column name="vertical_location" label="Vertical Location" type="enumeration" values="x:Two-dimensional,p:Pressure,v:Model Layer Center,e:Model Layer Edge " cansearch="true" />
+
+  </type>
+
+
+</types>

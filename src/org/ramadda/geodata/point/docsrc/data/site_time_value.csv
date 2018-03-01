@@ -1,0 +1,8 @@
+#
+#
+#fields=latitude[unit="degrees"],longitude[unit="degrees"],site[type="string"],date[type="date" format="yyyy-MM-dd"],value
+#
+40,-107,site id 1,2001-01-01,-0.931363
+45,-110,site id 2,2001-02-01,-0.930391
+40,-107,site id 1,2001-03-01,-0.95
+35,-120,site id 3,2001-04-01,-0.96

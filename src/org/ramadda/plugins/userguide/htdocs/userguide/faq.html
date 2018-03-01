@@ -1,0 +1,268 @@
+<html>
+<head>
+<title>FAQ</title>
+  <link rel="stylesheet" type="text/css" href="./default.css" title="Style">
+
+</head>
+
+<body>
+<div class="ramadda-documentation">
+<table width=100% cellspacing=0 cellpadding=0 ><tr><td width=30%>
+<a href="overview.html"><img src="images/PreviousArrow.gif" border="0"   alt="Previous: RAMADDA Overview" title="Previous: RAMADDA Overview"></a> <a href="user.html"><img src="images/NextArrow.gif" border="0"   alt="Next: Logging in and User Settings" title="Next: Logging in and User Settings"></a>  <a href="toc.html#faq.html"><img src="images/TOCIcon.gif" border="0"   alt="Table of contents" title="Table of contents"></a>
+</td>
+<td width=40% align=center>
+<div class="ramadda-page-title">RAMADDA User Guide</div>
+</td>
+<td width=30%>&nbsp;</td>
+</tr></table>
+<div class="ramadda-page-heading">3 FAQ</div>
+
+<style type="text/css">
+pre {
+    margin-left:15px;
+}
+</style>
+
+<div style="margin-left:20px;">
+
+
+
+
+
+
+
+
+<div class="faq"><div class="faq-top"><div class="faq-category-title"><a class="faq-category-link" href="#faq1_cat1_">1.0 Administration</a></div><div class="faq-category"><div class="faq-question"> <b>1.1.</b> <a class="faq-question-link" href="#faq1_cat1_0">I forgot my user id. How do I retrieve it?</a></div>
+<div class="faq-question"> <b>1.2.</b> <a class="faq-question-link" href="#checkbox">How do I select multiple checkboxes at once?</a></div>
+<div class="faq-question"> <b>1.3.</b> <a class="faq-question-link" href="#ssl">How do I configure SSL access to RAMADDA?</a></div>
+<div class="faq-question"> <b>1.4.</b> <a class="faq-question-link" href="#permgen">I got an out of memory error saying something about PermGen size. Whats up with that?</a></div>
+<div class="faq-question"> <b>1.5.</b> <a class="faq-question-link" href="#allowedlogin">I want to restrict where users can login from</a></div>
+<div class="faq-question"> <b>1.6.</b> <a class="faq-question-link" href="#fixssl">Oops, I told RAMADDA to use an SSL port and SSL is not working. Now I cannot access the admin page to turn off SSL and I'm stuck. What can I do?</a></div>
+<div class="faq-question"> <b>1.7.</b> <a class="faq-question-link" href="#faq1_cat1_6">I forgot the administrator password and cannot access RAMADDA. How do I login?</a></div>
+<div class="faq-question"> <b>1.8.</b> <a class="faq-question-link" href="#hostname">I set the hostname to an incorrect hostname. Now I can't login?</a></div>
+<div class="faq-question"> <b>1.9.</b> <a class="faq-question-link" href="#hostnamemap">Map a hostname to some entry</a></div>
+<div class="faq-question"> <b>1.10.</b> <a class="faq-question-link" href="#email">How do I configure RAMADDA to send email?</a></div>
+<div class="faq-question"> <b>1.11.</b> <a class="faq-question-link" href="#not_for_server">I have a root .ramadda home dir that I don't want to run in</a></div>
+<div class="faq-question"> <b>1.12.</b> <a class="faq-question-link" href="#template">I want to change the html design of RAMADDA</a></div>
+<div class="faq-question"> <b>1.13.</b> <a class="faq-question-link" href="#template">Changing the initial welcome text and entries</a></div>
+<div class="faq-question"> <b>1.14.</b> <a class="faq-question-link" href="#characterset">Running with non-ascii characters</a></div>
+<div class="faq-question"> <b>1.15.</b> <a class="faq-question-link" href="#missing">I've cleaned up files on my server that I had harvested in RAMADDA. How do I delete those entries in RAMADDA?</a></div>
+</div></div>
+<div class="faq-bottom"><p><hr><p><div class="faq-category-title"><a name="faq1_cat1_"></a>1.0 Administration</div><div class="faq-category"><a name="faq1_cat1_0"></a><div class="faq-question"><h4> 1.1.  I forgot my user id. How do I retrieve it?</h4></div>
+</a><div class="faq-answer"><b>A.</b> 
+If your RAMADDA site has been configured to send email (see <a href="#email">here</a> to configure email)
+then on the Login page you should see &quot;Forget your User ID?&quot; and
+&quot;Forget your Password?&quot; links. 
+</div>
+<p><hr align="center" width="10%"><p><a name="checkbox"></a><div class="faq-question"><h4> 1.2.  How do I select multiple checkboxes at once?</h4></div>
+</a><div class="faq-answer"><b>A.</b> 
+In RAMADDA when there is a collection of checkboxes in a form (e.g., in the entry list or in the edit metadata form)
+selecting one and then
+selecting another with a Shift-Click toggles the range of checkboxes between the first the second
+checkbox clicked. Doing a Control-Click on a checkbox toggles all of them on or off.
+</div>
+<p><hr align="center" width="10%"><p><a name="ssl"></a><div class="faq-question"><h4> 1.3.  How do I configure SSL access to RAMADDA?</h4></div>
+</a><div class="faq-answer"><b>A.</b> 
+To configure SSL access see <a href="installing.html#ssl">here</a> if you are running under Tomcat.
+See <a href="installing.html#ssljetty">here</a> if you are running stand-alone.
+</div>
+<p><hr align="center" width="10%"><p><a name="permgen"></a><div class="faq-question"><h4> 1.4.  I got an out of memory error saying something about PermGen size. Whats up with that?</h4></div>
+</a><div class="faq-answer"><b>A.</b> 
+You will need to change your java runtime memory settings by adding:
+<pre>
+java ... -XX:MaxPermSize=256m ...
+</pre>
+
+See the <a href="installing.html#tomcat">Tomcat installation section</a>
+for more information.
+
+</div>
+<p><hr align="center" width="10%"><p><a name="allowedlogin"></a><div class="faq-question"><h4> 1.5.  I want to restrict where users can login from</h4></div>
+</a><div class="faq-answer"><b>A.</b> 
+For security reasons you can configure what IP addresses users are allowed to login from.
+In your <i>repository.properties</i> file in your local RAMADDA directory, e.g.,<pre>
+&lt;home&gt;/.ramadda/repository.properties</pre>
+add the property:<pre>
+
+##Comma separated list of ip addresses (or prefixes) that are the ones where the user can login
+##If blank then login is allowed from anywhere
+ramadda.login.allowedips=
+##e.g.:
+##ramadda.login.allowedips=127.0.0,201.43.72.5
+</pre>
+</div>
+<p><hr align="center" width="10%"><p><a name="fixssl"></a><div class="faq-question"><h4> 1.6.  Oops, I told RAMADDA to use an SSL port and SSL is not working. Now I cannot access the admin page to turn off SSL and I'm stuck. What can I do?</h4></div>
+</a><div class="faq-answer"><b>A.</b> 
+You need to comment out the ramadda.ssl.port property in your .properties file.
+Alternatively, you can run RAMADDA with the command line argument:
+<pre>-Dramadda.ssl.ignore=true</pre>
+</div>
+<p><hr align="center" width="10%"><p><a name="faq1_cat1_6"></a><div class="faq-question"><h4> 1.7.  I forgot the administrator password and cannot access RAMADDA. How do I login?</h4></div>
+</a><div class="faq-answer"><b>A.</b> 
+
+The easiest way is to set a username/password  in the repository.properties file in the 
+RAMADDA home directory. Just add:<pre>
+ramadda.admin=userid:password
+</pre>
+and then restart RAMADDA. This sets the password for the given userid.
+Note: you should remove this entry once you have reset your password.
+
+<p>
+You can also specify an administrator user id and password from the command line when starting RAMADDA.
+If you are running RAMADDA stand alone then just provide the arguments:<pre>
+-admin &lt;user id&gt; &lt;password&gt;
+</pre>
+This creates a new user id if needed and sets the password.
+<p>
+If you are running RAMADDA under Tomcat then change the web.xml to pass in command line arguments
+using the &quot;args&quot; entry. This is a comma separated value list of the command line arguments
+that are processed by RAMADDA.
+<pre>
+    &lt;param-name&gt;args&lt;/param-name&gt;
+    &lt;param-value&gt;-admin,userid,password&lt;/param-value&gt;
+</pre>
+
+</div>
+<p><hr align="center" width="10%"><p><a name="hostname"></a><div class="faq-question"><h4> 1.8.  I set the hostname to an incorrect hostname. Now I can't login?</h4></div>
+</a><div class="faq-answer"><b>A.</b> 
+Make a &lt;anyname&gt;.properties that contains:
+<pre>
+override.ramadda.hostname=&lt;good host name&gt;
+</pre>
+and place it in your ramadda home directory or plugins directory and restart ramadda. 
+Once you are logged in go to the Admin Settings page and change the hostname then remove
+the properties file.
+<p>
+In general, you can override any property that has been set by defining a property with the "override." prefix.
+
+</div>
+<p><hr align="center" width="10%"><p><a name="hostnamemap"></a><div class="faq-question"><h4> 1.9.  Map a hostname to some entry</h4></div>
+</a><div class="faq-answer"><b>A.</b> 
+You can configure your RAMADDA so that access via some specific hostname (e.g. <a href="http://boulderdata.org/">http://boulderdata.org/</a>) uses some entry.
+
+To do this first set a server property to enable this and restart your RAMADDA.
+<pre>
+ramadda.enable_hostname_mapping = true
+</pre>
+
+Then add an Alias property to the entry of interest with the value:
+<pre>
+http://your_hostname
+e.g.:
+http://boulderdata.org
+</pre>
+
+If you had different domains you can add multiple aliases -
+<pre>
+http://www.boulderdata.org
+</pre>
+
+This will use the entry as the root when accessing the repository under the given hostname. For example, the site
+<a href="http://boulderdata.org/">http://boulderdata.org/</a> really just maps to an entry at - 
+<a href="http://geodesystems.com/repository/entry/show?entryid=79f24329-8c98-4d15-9804-821a70bfb606">http://geodesystems.com/repository/entry/show?entryid=79f24329-8c98-4d15-9804-821a70bfb606</a>.
+
+Note: when searching under the alias the whole site will be searched.
+
+</div>
+<p><hr align="center" width="10%"><p><a name="email"></a><div class="faq-question"><h4> 1.10.  How do I configure RAMADDA to send email?</h4></div>
+</a><div class="faq-answer"><b>A.</b> 
+RAMADDA can send email for both the password reset process and for monitoring new entries.
+On the main Site Administration  page under the &quot;Contact&quot; area you can specify
+a SMTP server that RAMADDA will use to send email.
+</div>
+<p><hr align="center" width="10%"><p><a name="not_for_server"></a><div class="faq-question"><h4> 1.11.  I have a root .ramadda home dir that I don't want to run in</h4></div>
+</a><div class="faq-answer"><b>A.</b> 
+
+If you build from source then the build process will create a ~user/.ramadda/plugins directory and copy all of the plugins to that directory. The problem that can occur is if you are running your server and the RAMADDA home directory property goes missing then RAMADDA will default to use the ~user/.ramadda as the home dir if it exists. Now, if you are running the build say as root then the home dir will exist.
+
+If this occurs then <b>anyone can hit your site and go through the installation process</a>. To not allow this to happen create a file called <i>not_for_server.txt</i> and place it in the ~user/.ramadda directory that is getting created as part of the build but should not be used as the home directory.
+
+
+See the <a href="templates.html">documentation</a>.
+</div>
+<p><hr align="center" width="10%"><p><a name="template"></a><div class="faq-question"><h4> 1.12.  I want to change the html design of RAMADDA</h4></div>
+</a><div class="faq-answer"><b>A.</b> 
+See the <a href="templates.html">documentation</a>.
+</div>
+<p><hr align="center" width="10%"><p><a name="template"></a><div class="faq-question"><h4> 1.13.  Changing the initial welcome text and entries</h4></div>
+</a><div class="faq-answer"><b>A.</b> 
+When RAMADDA is first installed it populates your repository with some initial folders and sets the description
+of the root entry with some initial text. You can override what entries are created and what the text is (for example, if
+you wanted to configure a number of different RAMADDA servers).
+
+<p>
+To change the description used just create a file <i>initdescription.txt</i> in the RAMADDA home directory. This file, if it exists,
+is read by RAMADDA. You can see the default one in the source tree at:
+<pre>
+src/org/ramadda/repository/resources/examples/initdescription.txt
+</pre>
+
+This file contains 2 macros:<pre>
+$<filler>{root} - the top-level URL path
+$<filler>{topid} - the ID of the root entry
+</pre>
+
+To change what entries are created RAMADDA looks for a <i>initentries.xml</i> file in the RAMADDA home directory. The default file is:
+<pre>
+src/org/ramadda/repository/resources/examples/initentries.xml
+</pre>
+
+
+This is just the entries xml format. The ID of the top-level entry is simply "root", e.g.:
+<pre>
+&lt;entries&gt;
+&lt;entry parent="root" name="Projects" type="group"&gt;
+&lt;description&gt;A place to store projects&lt;/description&gt;
+&lt;/entry&gt;
+&lt;/entries&gt;
+</pre>
+
+</div>
+<p><hr align="center" width="10%"><p><a name="characterset"></a><div class="faq-question"><h4> 1.14.  Running with non-ascii characters</h4></div>
+</a><div class="faq-answer"><b>A.</b> 
+There are a number of things you will need to do to run with content that is non-ascii (e.g., Chinese characters).
+<p>
+For Tomcat  set the URIEncoding:
+<a href="http://stackoverflow.com/questions/138948/how-to-get-utf-8-working-in-java-webapps">http://stackoverflow.com/questions/138948/how-to-get-utf-8-working-in-java-webapps</a>.
+
+<p>
+
+If you are running mysql there are some <a href="https://www.google.com/search?hl=en&ie=ISO-8859-1&q=utf-8+mysql&btnG=Search">things</a> you need to do. Postgres and Derby seem OK out of the box.
+
+<p>
+
+Your Java runtime should also have the system property -Dfile.encoding=utf-8  defined.
+
+</div>
+<p><hr align="center" width="10%"><p><a name="missing"></a><div class="faq-question"><h4> 1.15.  I've cleaned up files on my server that I had harvested in RAMADDA. How do I delete those entries in RAMADDA?</h4></div>
+</a><div class="faq-answer"><b>A.</b> 
+
+
+If you have harvested files into RAMADDA from your server file system and subsequently delete those files (e.g., scouring a real-time archive) RAMADDA will not delete the corresponding entries automatically. Instead, by default, RAMADDA will not show those kinds of entries to non logged in users but will show them to logged in users. However, no file download is available because the file is missing.
+
+To clean up these entries in RAMADDA you can manually delete the entries or you can set a property to automatically delete these types of entries.
+
+<pre>
+ramadda.delete_entry_when_file_is_missing=true
+</pre>
+
+<b>
+Be careful with this. I (jeffmc) have seen remote file systems go down momentarily and if this had been set then all of my entries that I had harvested would have been deleted.
+</b>
+
+
+</div>
+<p><hr align="center" width="10%"><p></div></div></div>
+
+
+
+</div>
+<p>
+
+<p>&nbsp;<p>
+<a href="overview.html"><img src="images/PreviousArrow.gif" border="0"   alt="Previous: RAMADDA Overview" title="Previous: RAMADDA Overview"></a> <a href="user.html"><img src="images/NextArrow.gif" border="0"   alt="Next: Logging in and User Settings" title="Next: Logging in and User Settings"></a>  <a href="toc.html#faq.html"><img src="images/TOCIcon.gif" border="0"   alt="Table of contents" title="Table of contents"></a>
+<p>
+</div>
+</body>
+</html>
+

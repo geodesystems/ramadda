@@ -1,0 +1,140 @@
+<types supercategory="Miscellaneous">
+
+
+  <type name="trip_report"  description="Trip Report" handler="org.ramadda.repository.type.ExtensibleGroupTypeHandler" category="Travel" >
+     <property name="icon" value="/trip/trip.png"/>
+     <property name="form.area.show" value="true"/>
+     <property name="form.date.show" value="true"/>
+     <property name="form.time.show" value="false"/>
+     <property name="form.date.label" value="Trip Dates"/>
+     <property name="form.resource.show" value="false"/>
+     <property name="form.datatype.show" value="false"/>
+     <property name="form.name.label" value="Trip"/>
+     <column name="who" label="With who" />
+     <column name="triptype" label="Type"  type="enumerationplus" 
+             values="file:/org/ramadda/plugins/trip/resources/triptypes.txt" />
+/>
+     <column name="location" label="Location"   />
+
+     <wiki><![CDATA[
++section title="{{name}}"
++row
++col-md-8
+{{description wikify="true"}}
+<br>
+----
+<br>
+<center>
+{{slideshow  message="" entries.filter="image" tag="simple"  showlink="true"  textposition="left" imagewidth="500"  width="500"  height="500"   sort="name"}}
+</center>
+-col
++col-md-4
+{{image src="::*" message="" width="300"}}
+{{map entries="this,children;type;geo_gpx,children;type;geo_kml" width="-100" details="true"}}
+<table class="formtable">
+{{daterange row.label="Dates:"  message=""}}
+{{field name="who" row.label="Who:"}}
+{{field name="triptype" row.label="Type:"}}
+{{field name="location" row.label="Location:"}}
+</table>
+-col
+-row
+<br>
+{{tree message="" sort="name"}}
+]]>
+</wiki>
+
+
+  </type>
+
+
+
+  <type name="trip_trip"  description="Trip" handler="org.ramadda.plugins.trip.TripTypeHandler" category="Travel">
+     <property name="icon" value="/trip/trip.png"/>
+     <property name="form.area.show" value="true"/>
+     <property name="form.date.show" value="true"/>
+     <property name="form.time.show" value="false"/>
+     <property name="form.date.label" value="Trip Dates"/>
+     <property name="form.resource.show" value="false"/>
+     <property name="form.datatype.show" value="false"/>
+     <property name="form.name.label" value="Trip"/>
+     <column name="timezone" type="enumerationplus" values="file:/org/ramadda/plugins/trip/resources/timezones.txt" label="Time Zone" showinhtml="false"/>
+
+     <wiki><![CDATA[
++section title="{{name}}"
+{{newheader}}
+{{description}}
+{{calendar entries.filter="type:trip_item"}}
+
+----
+
+{{tree}}
+
+-section
+]]>
+</wiki>
+
+  </type>
+
+
+  <type name="trip_item"  handler="org.ramadda.plugins.trip.TripItemHandler" foruser="false" category="Travel">
+     <property name="form.setbounds.show" value="false"/>
+     <property name="form.file.show" value="false"/>
+     <property name="form.resource.extra.show" value="false"/>
+     <property name="form.resource.download.show" value="false"/>
+     <property name="form.location.show" value="true"/>
+     <column name="timezone" type="enumerationplus" values="file:/org/ramadda/plugins/trip/resources/timezones.txt" label="Time Zone" showinhtml="false"/>
+  </type>
+
+
+
+  <type name="trip_hotel"  super="trip_item" description="Lodging"  handler="org.ramadda.plugins.trip.TripItemHandler" category="Travel">
+     <property name="icon" value="/trip/hotel.png"/>
+     <property name="form.file.show" value="false"/>
+     <property name="form.datatype.show" value="false"/>
+     <property name="form.name.label" value="Lodging"/>
+     <column name="address" type="string" label="Address" rows="5" showinhtml="true"/>
+     <column name="phone" type="string" label="Phone" rows="1" showinhtml="true"/>
+     <column name="email" type="email" label="Email" rows="1" showinhtml="true"/>
+     <column name="confirmation_info" type="string" label="Confirmation Information" showinhtml="true"/>
+   </type>
+
+
+  <type name="trip_flight"  super="trip_item" description="Flight Leg"  handler="org.ramadda.plugins.trip.TripItemHandler" category="Travel">
+     <property name="icon" value="/trip/plane.png"/>
+     <property name="form.todate.show" value="false"/>
+     <property name="form.datatype.show" value="false"/>
+     <property name="form.name.label" value="Flight"/>
+     <column name="airline" type="enumerationplus" label="Airline" values="file:/org/ramadda/plugins/trip/resources/airlines.txt" showinhtml="true"/>
+     <column name="flightnumber" type="string" label="Confirmation Information" showinhtml="true"/>
+   </type>
+
+  <type name="trip_car"  super="trip_item" description="Car Rental"  handler="org.ramadda.plugins.trip.TripItemHandler" category="Travel">
+     <property name="icon" value="/trip/car.gif"/>
+     <property name="form.datatype.show" value="false"/>
+     <property name="form.name.label" value="Train"/>
+     <column name="agency" type="enumerationplus" label="Rental Agency" values="file:/org/ramadda/plugins/trip/resources/rentalagencies.txt" showinhtml="true"/>
+     <column name="confirmation_info" type="string" label="Confirmation" showinhtml="true"/>
+     
+   </type>
+
+
+  <type name="trip_train"  super="trip_item" description="Train Information"  handler="org.ramadda.plugins.trip.TripItemHandler" category="Travel">
+     <property name="icon" value="/trip/train.gif"/>
+     <property name="form.datatype.show" value="false"/>
+     <property name="form.name.label" value="Train"/>
+   </type>
+
+
+  <type name="trip_event"  super="trip_item" description="Event"  handler="org.ramadda.plugins.trip.TripItemHandler" category="Travel">
+     <property name="icon" value="/trip/event.png"/>
+     <property name="form.datatype.show" value="false"/>
+     <property name="form.name.label" value="Event"/>
+     <column name="address" type="string" label="Address" rows="5" showinhtml="true"/>
+     <column name="phone" type="string" label="Phone" rows="1" showinhtml="true"/>
+     <column name="email" type="email" label="Email" rows="1" showinhtml="true"/>
+   </type>
+
+
+
+</types>

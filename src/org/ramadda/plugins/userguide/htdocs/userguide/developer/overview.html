@@ -1,0 +1,136 @@
+<html>
+<head>
+<title>RAMADDA Overview</title>
+  <link rel="stylesheet" type="text/css" href="../default.css" title="Style">
+
+</head>
+
+<body>
+<div class="ramadda-documentation">
+<table width=100% cellspacing=0 cellpadding=0 ><tr><td width=30%>
+<a href="index.html"><img src="../images/PreviousArrow.gif" border="0"   alt="Previous: RAMADDA Developer Documents" title="Previous: RAMADDA Developer Documents"></a> <a href="datamodel.html"><img src="../images/NextArrow.gif" border="0"   alt="Next: RAMADDA Data Model" title="Next: RAMADDA Data Model"></a>  <a href="../toc.html#developer/overview.html"><img src="../images/TOCIcon.gif" border="0"   alt="Table of contents" title="Table of contents"></a>
+</td>
+<td width=40% align=center>
+<div class="ramadda-page-title">RAMADDA User Guide</div>
+</td>
+<td width=30%>&nbsp;</td>
+</tr></table>
+<div class="ramadda-page-heading">15.0 RAMADDA Overview</div>
+
+<style type="text/css">
+pre {
+    margin-left:15px;
+}
+</style>
+
+<div style="margin-left:20px;">
+
+
+RAMADDA is organized around a central class 
+<code>ucar.unidata.repository.Repository</code>. This class is responsible for
+system initialization, receipt and dispatch of incoming http
+requests and orchestration of the various manager components.
+<p> 
+A key design goal of RAMADDA is to limit dependendcies 
+from any particular web or database environment.
+In the future  we don't know the contexts in which it might run. If we 
+design it with core dependencies on a particular database or a particular
+web environment it will be very difficult to change. Furthermore,
+RAMADDA implements a framework, a domain specific framework for
+geoscience oriented content management. 
+<p>
+The design of RAMADDA is similar to the Tomcat servlet framework in that 
+incoming requests are defined with a <code>Request</code> object and the
+results are captured in a <code>Result</code> object. However, RAMADDA explicitly 
+does not have dependencies on Tomcat or any other framework. This has been
+done so that it can run in a wide variety of contexts. It can run stand-alone
+with its own built in http server or it can run within Tomcat in a servlet 
+context. The <code>RepsitoryServer</code> class (~300 LOC) is the wrapper used 
+when running with the stand alone <code>ucar.unidata.util.HttpServer</code> class.
+The <code>RepositoryServlet</code> (~400 LOC) class is the wrapper when running
+in the Tomcat environment. The only functional difference is that some services
+(e.g., OpenDAP) only are available under Tomcat because of their dependencies
+on that framework.
+
+<p>
+There are a set of <code>RepositoryManager</code> classes that are responsible
+for different functional areas:
+<ul>
+<li> <code>DatabaseManager</code> 
+Handles access to the database.
+<li> <code>AccessManager</code> 
+Manages the access control to entries.
+<li> <code>HarvesterManager</code>  
+Manages  the set of <a href="#harvester"> <code>Harvester</code> objects</a>.
+<li> <code>MetadataManager</code> 
+Manages  the set of <a href="#metadatahandler"> <code>MetadataHandler</code> objects</a>.
+<li> <code>StorageManager</code> Manages storing data files to disk.
+<li> <code>UserManager</code> Manages the users.
+<li> <code>ActionManager</code> Used to provide asynchronous 
+actions to browser based clients.
+</ul>
+
+
+<h3>Initialization</h3>
+The API into RAMADDA is declaratively defined with one or more
+api.xml files:
+<blockquote><pre>&lt;api&gt;
+  &lt;property <span class="xmlattr">name</span>="admin&quot; <span class="xmlattr">value</span>="false&quot;/&gt;
+  &lt;property <span class="xmlattr">name</span>="cancache&quot; <span class="xmlattr">value</span>="true&quot;/&gt;
+  &lt;group <span class="xmlattr">handler</span>="repository&quot;&gt;
+      &lt;api <span class="xmlattr">request</span>="/entry/show&quot;             <span class="xmlattr">method</span>="processEntryShow&quot;    <span class="xmlattr">name</span>="Home&quot; <span class="xmlattr">toplevel</span>="true&quot; <span class="xmlattr">ishome</span>="true&quot;/&gt;
+      &lt;api <span class="xmlattr">request</span>="/entry/show/*&quot;           <span class="xmlattr">method</span>="processEntryShow&quot;/&gt;
+...
+  &lt;/group&gt;
+  &lt;group <span class="xmlattr">handler</span>="metadatamanager&quot;&gt;
+      &lt;api <span class="xmlattr">request</span>="/metadata/list&quot;       <span class="xmlattr">method</span>="processMetadataList&quot;/&gt;
+      &lt;api <span class="xmlattr">request</span>="/metadata/form&quot;       <span class="xmlattr">method</span>="processMetadataForm&quot;       <span class="xmlattr">actions</span>="edit&quot;/&gt;
+...
+  &lt;/group&gt;
+  &lt;group <span class="xmlattr">handler</span>="admin&quot;&gt;
+      &lt;api <span class="xmlattr">request</span>="/admin/sql&quot;          <span class="xmlattr">method</span>="adminSql&quot;           <span class="xmlattr">admin</span>="true&quot;/&gt;
+      &lt;api <span class="xmlattr">request</span>="/admin/startstop&quot;    <span class="xmlattr">method</span>="adminDbStartStop&quot;   <span class="xmlattr">admin</span>="true&quot;/&gt;
+...
+  &lt;/group&gt;
+
+&lt;/api&gt;
+<a href="developer/api_dummy.xml">developer/api_dummy.xml</a>
+</pre></blockquote>
+
+This file can be organized as a set of group tags that define
+a <i>handler</i> and contain a set of <i>api</i>. The api tag
+can also define a handler. The handlers are one of: 
+usermanager, admin, harvestermanager, actionmanager, accessmanager, metadatamanager, repository.
+<p>
+External classes can be used as handlers by providing the full
+class name. These handlers need to implement <code>RequestHandler</code>
+and need to have a public constructor that takes as argument the
+Repository object and the xml api Element.
+<p>
+The api tag contains a <i>path</i> attribute which is used the 
+the url path. e.g., the main way to view an entry is the &quot;/entry/show&quot; path. The url ends up looking like:<br> 
+&lt;repository suffix&gt;/entry/show?id=&lt;entry id&gt;
+</br>
+The <i>method</i> attribute is the method name on the handler that is called.
+These methods have the signature:
+<pre>
+public Result processEntryShow(Request request) throws Exception {
+    ...
+}</pre>
+
+They take a <code>Request</code> object and return a <code>Result</code> object.
+
+
+
+
+
+</div>
+<p>
+<div  class="childlist" ><table  width="100%" ></table></div>
+<p>&nbsp;<p>
+<a href="index.html"><img src="../images/PreviousArrow.gif" border="0"   alt="Previous: RAMADDA Developer Documents" title="Previous: RAMADDA Developer Documents"></a> <a href="datamodel.html"><img src="../images/NextArrow.gif" border="0"   alt="Next: RAMADDA Data Model" title="Next: RAMADDA Data Model"></a>  <a href="../toc.html#developer/overview.html"><img src="../images/TOCIcon.gif" border="0"   alt="Table of contents" title="Table of contents"></a>
+<p>
+</div>
+</body>
+</html>
+

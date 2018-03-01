@@ -1,0 +1,43 @@
+<types supercategory="Science and Education">
+
+  <type name="astro_collection"  description="Astronomy Collection" handler="org.ramadda.repository.type.ExtensibleGroupTypeHandler" category="Astronomy" >
+     <property name="icon" value="/astro/stars.gif"/>
+     <property name="form.area.show" value="false"/>
+     <property name="form.date.show" value="true"/>
+     <property name="form.time.show" value="false"/>
+     <property name="form.resource.show" value="false"/>
+     <property name="form.datatype.show" value="false"/>
+     <property name="form.name.label" value="Collection Name"/>
+  </type>
+
+
+  <type name="fits_data"  description="FITS Data File" handler="org.ramadda.geodata.astro.FitsTypeHandler" category="Astronomy" pattern=".*\.fits$">
+     <property name="icon" value="/astro/fits.gif"/>
+     <property name="form.area.show" value="false"/>
+     <property name="form.datatype.show" value="false"/>
+
+     <column name="origin" type="enumerationplus"  label="Origin" cansearch="true" browsable="true" isindex="true"/>
+     <column name="telescope" type="enumerationplus"  label="Telescope" cansearch="true" browsable="true" isindex="true"/>
+     <column name="instrument" type="enumerationplus"  label="Instrument" cansearch="true" browsable="true" isindex="true"/>
+     <column name="obstype"   type="enumerationplus"  label="Observation Type" />
+   </type>
+
+
+  <type name="fits_eclipse" super="fits_data"  description="FITS Eclipse Data File" handler="org.ramadda.geodata.astro.EclipseTypeHandler" category="Astronomy" >
+     <property name="icon" value="/astro/eclipse.png"/>
+     <column name="location"  label="Location"/>
+     <column name="source"     label="Source" type="enumerationplus"/>
+     <column name="sourcetype"  label="Source Type" />
+     <column name="magnitude"  type="double" label="Magnitude"/>
+   </type>
+
+
+  <type name="astro_horoscope"  description="Horoscope" handler="org.ramadda.geodata.astro.HoroscopeTypeHandler" category="Astronomy" >
+     <property name="icon" value="/astro/horoscope.jpg"/>
+     <property name="form.resource.show" value="false"/>
+     <property name="form.area.show" value="false"/>
+     <property name="form.datatype.show" value="false"/>
+
+   </type>
+
+</types>

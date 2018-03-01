@@ -1,0 +1,191 @@
+<services icon="/genomics/dna.png" category="Genomics">
+    <service command="${service.sratools}/abi-dump" label="Convert SRA to ABI format" id="bio_sra_to_abi" >
+      <description><![CDATA[
+Convert SRA data into ABI format (csfasta / qual)
+<br>
+<a target="_help" href="http://www.ncbi.nlm.nih.gov/Traces/sra/sra.cgi?view=toolkit_doc&f=abi-dump">Documentation at NCBI</a>
+]]></description>
+      <output type="bio_fasta" pattern=".*\.csfasta"/>
+      <output type="file" pattern=".*\.qual"/>
+      <arg value="-O"/>
+      <arg value="${workdir}"/>
+      <arg label="SRA File" value="${entry.file}" type="entry" entryType="bio_sra" primary="true"/>
+      <arg type="category" label="Data formatting"/>
+      <arg name="origfmt" type="flag" label="Original format" value="--origfmt" help="Excludes SRR accession on defline (read id)."/>
+      <arg type="category" label="Filtering"/>
+      <arg name="spotgroups" type="string" label="Spot Groups" prefix="--spot-groups" help="Filter by spot group (read group): name[,...]."/>
+      <arg type="string" label="Minimum spot id" prefix="--minSpotId" placeHolder="&lt;row id&gt;"/>
+      <arg type="string" label="Maximum spot id" prefix="--maxSpotId" placeHolder="&lt;row id&gt;"/>
+      <arg type="enumeration" label="Read filter" values=":-none-,pass,reject,criteria,redacted" prefix="--read-filter" help="Split into files by filter value."/>
+      <arg type="flag" label="" help="Do not output reads consisting mostly of dots." value="--noDotReads"/>
+      <arg type="flag" label="" help="Do not clip quality left and right for spot." value="--noclip"/>
+      <arg type="category" label="Workflow and piping"/>
+      <arg type="flag" label="" help="Split into files by spot group (read group)." value="--spot-group"/>
+    </service>
+
+
+    <service command="${service.sratools}/fastq-dump" label="Convert SRA to FASTQ" id="bio_sra_to_fastq" >
+      <description><![CDATA[
+Convert the given SRA file to the FASTQ format
+<br>
+<a target="_help" href="http://www.ncbi.nlm.nih.gov/Traces/sra/sra.cgi?view=toolkit_doc&f=fastq-dump">Documentation at NCBI</a>
+]]></description>
+      <output type="bio_fastq" pattern=".*\.fastq"/>
+      <arg value="-O"/>
+      <arg value="${workdir}"/>
+
+      <arg type="category" label="Data formatting"/>
+      <arg type="flag" label="Split files" help="Dump each read into separate file. Files will receive suffix corresponding to read number." value="--split-files"/>
+      <arg type="flag" label="Split spot" help="Split spots into individual reads." value="--split-spot"/>
+      <arg type="string" label="Fasta" prefix="--fasta" placeHolder="&lt;[line width]&gt;" help="FASTA only, no qualities. Optional line wrap width (set to zero for no wrapping)."/>
+      <arg type="string" label="Maximum spot id" prefix="--maxSpotId" placeHolder="&lt;row id&gt;"/>
+      <arg type="flag" label="" help="Append read id after spot id as 'accession.spot.readid' on defline." value="--readids"/>
+      <arg type="flag" label="" help="Defline contains only original sequence name." value="--origfmt"/>
+      <arg type="string" label="Dump CS" prefix="--dumpcs" placeHolder="&lt;[cskey]&gt;" help="Formats sequence using color space (default for SOLiD). &quot;cskey&quot; may be specified for translation. "/>
+      <arg type="flag" label="" help="Formats sequence using base space (default for other than SOLiD)." value="--dumpbase"/>
+      <arg type="int" label="Offset" help="Offset to use for ASCII quality scores. Default is 33 (&quot;!&quot;). " value="--offset"/>
+
+
+      <arg type="category" label="Filtering"/>
+      <arg type="string" label="Minimum spot id" prefix="--minSpotId" placeHolder="&lt;row id&gt;"/>
+      <arg type="string" label="Maximum spot id" prefix="--maxSpotId" placeHolder="&lt;row id&gt;"/>
+      <arg type="int" label="Minimum read length" prefix="--minReadLen" placeHolder="&lt;read length&gt;" help="Filter by sequence length &gt;= &lt;len&gt; "/>
+      <arg type="flag" label="Skip Technical" help="Dump only biological reads." value="--skip-technical"/>
+      <arg type="flag" label="Aligned" help="Dump only aligned sequences. Aligned datasets only; see sra-stat." value="--aligned"/>
+      <arg type="flag" label="Unaligned" help="Dump only unaligned sequences. Will dump all for unaligned datasets." value="--unaligned"/>
+
+
+      <arg  label="SRA File" value="${entry.file}" type="entry" entryType="bio_sra" primary="true"/>
+    </service>
+
+
+
+    <service command="${service.sratools}/illumina-dump" label="Convert SRA to ILLUMA format" id="bio_sra_to_illuma" >
+      <description><![CDATA[
+Convert SRA data into ILLUMA format (csfasta / qual)
+<br>
+<a target="_help" href="http://www.ncbi.nlm.nih.gov/Traces/sra/sra.cgi?view=toolkit_doc&f=illuma-dump">Documentation at NCBI</a>
+]]></description>
+      <output type="file" pattern=".*"/>
+      <arg value="-O"/>
+      <arg value="${workdir}"/>
+      <arg type="category" label="Data formatting"/>
+      <arg type="string" label="Accession" prefix="--accession" help=" Replaces accession derived from &lt;accession&gt; in filename(s) and deflines."/>
+      <arg type="enumeration" values="1:whole spot,2:split by reads" label="QSEQ" prefix="--qseq" help="Output QSEQ format: whole spot (1) or split by reads (2)."/>
+      <arg type="category" label="Filtering"/>
+      <arg type="string" label="Minimum spot id" prefix="--minSpotId" placeHolder="&lt;row id&gt;"/>
+      <arg type="string" label="Maximum spot id" prefix="--maxSpotId" placeHolder="&lt;row id&gt;"/>
+      <arg type="string" label="Read filter" prefix="--read-filter" help="Split into files by filter value: pass|reject|criteria|redacted."/>
+      <arg type="flag" label="" help="Do not output reads consisting mostly of dots." value="--noDotReads"/>
+      <arg type="flag" label="" help="Do not clip quality left and right for spot." value="--noclip"/>
+      <arg type="category" label="Workflow and piping"/>
+      <arg type="flag" label="" help="Split into files by spot group (read group)." value="--spot-group"/>
+      <arg  label="SRA File" value="${entry.file}" type="entry" entryType="bio_sra" primary="true"/>
+    </service>
+
+
+
+
+
+    <service  id="bio_sra_to_sam"  command="${service.sratools}/sam-dump"  label="Convert SRA to SAM" >
+     <description>
+<![CDATA[
+Convert the given SRA file to SAM format
+<br>
+<a target="_help" href="http://www.ncbi.nlm.nih.gov/Traces/sra/sra.cgi?view=toolkit_doc&f=sam-dump">Documentation at NCBI</a>
+]]></description>
+     <output type="bio_sam" pattern=".*\.sam"/>
+     <arg type="flag" label="" help="Output unaligned reads along with aligned reads" value="--unaligned"></arg>
+     <arg type="flag" label="" help="Output only primary alignments " value="--primary"></arg>
+     <arg type="string" label="Aligned region name" ifdefined="true" help="Filter by position on genome. Name can either be file specific name (ex: &quot;chr1&quot; or &quot;1&quot;). &quot;from&quot; and &quot;to&quot; (inclusive) are 1-based coordinates" prefix="--aligned-region"></arg>
+     <arg type="string" label="Mate pair distance" ifdefined="true" help="&lt;from-to|'unknown'&gt;  Filter by distance between matepairs. Use &quot;unknown&quot; to find matepairs slit between the references. Use from-to (inclusive) to limit matepair distance on  the same reference " prefix="--matepair-distance"></arg>
+
+     <arg type="category" label="Miscellaneous"></arg>
+     <arg type="flag" label="" help="Print reference SEQ_ID in RNAME instead of NAME" value="--seqid"></arg>
+     <arg type="flag" label="" help="Do not output headers " value="--no-header"></arg>
+     <arg type="flag" label="" help="Output reads for spots with no aligned reads" value="--unaligned-spots-only"></arg>
+     <arg type="flag" label="" help="Min. mapq an alignment has to have, to be printed " value="--min-mapq"></arg>
+     <arg type="flag" label="" help="Modify cigar-string and output flags if rna-splicing detected" value="--rna-splicing"></arg>
+     <arg type="flag" label="" help="Disable Multithreading" value="--disable-multithreading"></arg>
+     <arg type="flag" label="" help="Reverse unaligned reads according to read type " value="--reverse"></arg>
+     <arg type="flag" label="" help="Output '=' if base is identical to reference" value="--hide-identical"></arg>
+     <arg value="--output-file"></arg>
+     <arg label="SRA File" type="entry" entryType="bio_sra" primary="true" 
+          value="${file}" file="${entry.file.base}.sam"></arg>
+     <arg value="${entry.file}"></arg>
+<!--
+     <arg type="entry" entryType="bio_sra" primary="true" value="${entry.file}"></arg>
+-->
+   </service>
+
+
+
+    <service command="${service.sratools}/sff-dump" label="Convert SRA to SFF format" id="bio_sra_to_sff" >
+      <description><![CDATA[
+Convert SRA data into SFF format
+<br>
+<a target="_help" href="http://www.ncbi.nlm.nih.gov/Traces/sra/sra.cgi?view=toolkit_doc&f=sff-dump">Documentation at NCBI</a>
+]]></description>
+      <output type="file" pattern=".*"/>
+      <arg value="-O"/>
+      <arg value="${workdir}"/>
+      <arg type="category" label="Data formatting"/>
+      <arg type="flag" label="Spot group" help="Split into files by spot group (&quot;read group&quot;). " value="--spot-group"/>
+      <arg type="string" label="Spot groups" prefix="--spot-groups" placeHolder="&lt;[list]&gt;" help="Filter by spot group (read group): name[,...]. "/>
+
+      <arg type="category" label="Filtering"/>
+      <arg type="string" label="Minimum spot id" prefix="--minSpotId" placeHolder="&lt;row id&gt;"/>
+      <arg type="string" label="Maximum spot id" prefix="--maxSpotId" placeHolder="&lt;row id&gt;"/>
+      <arg type="string" label="Read filter" prefix="--read-filter" help="Split into files by filter value: pass|reject|criteria|redacted."/>
+      <arg  label="SRA File" value="${entry.file}" type="entry" entryType="bio_sra" primary="true"/>
+    </service>
+
+
+
+
+    <service command="${service.sratools}/sra-stat" label="SRA stats" id="bio_sra_stat" >
+      <description><![CDATA[
+Show SRA stats
+<br>
+<a target="_help" href="http://www.ncbi.nlm.nih.gov/Traces/sra/sra.cgi?view=toolkit_doc&f=sra-stat">Documentation at NCBI</a>
+]]></description>
+     <output showResults="true" stdout="true"/>
+      <arg type="category" label="Output formatting"/>
+      <arg type="flag" label="Statistics" help="Calculate READ_LEN average and standard deviation " value="--statistics"/>
+      <arg type="category" label="Filtering"/>
+      <arg type="enumeration" values=":default,on,off" label="Alignment" help="Print alignment info, default is on" value="--alignment"/>
+      <arg type="enumeration" values=":default,on,off" label="Alignment" help="Print alignment info, default is on" value="--alignment"/>
+      <arg type="string"  label="Start" help="starting spot id, default is 1" value="--start"/>
+      <arg type="string" placeHolder="&lt;row-id&gt;" label="Start spot id" help="starting spot id, default is 1" value="--start"/>
+      <arg type="string" placeHolder="&lt;row-id&gt;" label="End spot id" help="ending spot id, default is max" value="--stop"/>
+      <arg type="flag"   label="Quick mode" help="get statistics from metadata; do not scan the table " value="--quick"/>
+      <arg  label="SRA File" value="${entry.file}" type="entry" entryType="bio_sra" primary="true"/>
+    </service>
+
+
+
+
+
+    <service command="${service.sratools}/sra-pileup" label="SRA pileup" id="bio_sra_pileup" >
+      <description><![CDATA[
+Generate pileup statistics on aligned SRA data 
+<br>
+<a target="_help" href="http://www.ncbi.nlm.nih.gov/Traces/sra/sra.cgi?view=toolkit_doc&f=sra-pileup">Documentation at NCBI</a>
+]]></description>
+      <output type="file" pattern=".*"/>
+      <arg type="category" label="Data Formatting"/>
+      <arg type="flag"  label="Sequence name" help="Use the original sequence-names (ex: chr1) instead of matching accessions. " value="--seqname"/>
+      <arg type="flag" label="Count" help="Sorted output with per-base counters (name, position, reference base, read depth, # of matches to reference, # of calls for each non-reference base, insertions, deletions, strand %). " prefix="--function" value="count"/>
+      <arg type="flag" label="Mismatch" help="Output only lines with a mismatch. " prefix="--function" value="mismatch"/>
+      <arg type="flag" label="Min mismatch" help="Minimum percent of mismatches used as the cutoff in &quot;--function mismatch&quot; (default is 5)" value="-minmismatch"/>
+      <arg type="flag" label="References" help="List the references used in the file. " prefix="--function" value="ref"/>
+
+
+      <arg type="category" label="Filtering"/>
+      <arg type="flag"   label="Aligned region" help="Filter by position on genome &lt;name[:from-to]&gt;. Name: The file specific reference name (ex: &quot;chr1&quot; or &quot;1&quot;). &quot;from&quot; and &quot;to&quot; are 1-based coordinates." value="--aligned-region"/>
+
+      <arg type="string" placeHolder="&lt;min. mapq&gt;" label="Min mapping quality" help="Minimum mapping quality, alignments with a lower mapq will be ignored (default=0). " value="--minmapq"/>
+      <arg  label="SRA File" value="${entry.file}" type="entry" entryType="bio_sra" primary="true"/>
+    </service>
+
+</services>

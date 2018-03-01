@@ -1,0 +1,85 @@
+.txt10b { font-family: Arial, Helvetica, sans-serif; font-size: 10px; color: #315994 ; font-weight: normal}
+.txt10Bb { font-family: Arial, Helvetica, sans-serif; font-size: 10px; color: #315994 ; font-weight: bold}
+.txt12Bb { font-family: Arial, Helvetica, sans-serif; font-size: 12px; color: #315994 ; font-weight: bold }
+.txt12Bb1 { font-family: Arial, Helvetica, sans-serif; font-size: 12px; color: #739ED6; font-weight: bold }
+.txt12Bbc { font-family: Arial, Helvetica, sans-serif; font-size: 12px; color: #FFFFFF; font-weight: bold }
+.txt12b { font-family: Arial, Helvetica, sans-serif; font-size: 12px; color: #315994 ; font-weight: normal}
+.txt14Bb { font-family: Arial, Helvetica, sans-serif; font-size: 14px; color: #315994 ; font-weight: bold }
+.txt14Bbc { font-family: Arial, Helvetica, sans-serif; font-size: 14px; color: #FFFFFF; font-weight: bold }
+.txt14bc { font-family: Arial, Helvetica, sans-serif; font-size: 14px; color: #FFFFFF; font-weight: normal}
+.m12bgris {  font-family: Arial, Helvetica, sans-serif; font-size: 12px; font-weight: normal; color: #315994; text-decoration: none}
+a.m12bgris:hover {  font-family: Arial, Helvetica, sans-serif; font-size: 12px; font-weight: normal; color: #FF0000; text-decoration: underline}
+.m10bb {  font-family: Arial, Helvetica, sans-serif; font-size: 10px; font-weight: normal; color: #315994; text-decoration: none}
+a.m10bb:hover {  font-family: Arial, Helvetica, sans-serif; font-size: 10px; font-weight: normal; color: #FF0000; text-decoration: underline}
+.m14bc {  font-family: Arial, Helvetica, sans-serif; font-weight: normal; color: #FFFFFF; text-decoration: none; font-size: 14px}
+a.m14bc:hover {  font-family: Arial, Helvetica, sans-serif; font-size: 14px; font-weight: normal; color: #FF0000; text-decoration: underline}
+.m12bvert {  font-family: Arial, Helvetica, sans-serif; font-size: 12px; font-weight: normal; color: #315994; text-decoration: none}
+a.m12bvert:hover {  font-family: Arial, Helvetica, sans-serif; font-size: 12px; font-weight: normal; color: #FF0000; text-decoration: underline}
+.m12bbleu {  font-family: Arial, Helvetica, sans-serif; font-size: 12px; font-style: normal; font-weight: normal; color: #315994; text-decoration: none}
+a.m12bbleu:hover {  font-family: Arial, Helvetica, sans-serif; font-size: 12px; font-weight: normal; color: #FF0000; text-decoration: underline}
+.m12Bbo {  font-family: Arial, Helvetica, sans-serif; font-size: 12px; font-weight: bold; color: #739ed6; text-decoration: none}
+a.m12Bbo:hover {  font-family: Arial, Helvetica, sans-serif; font-size: 12px; font-weight: bold; color: #FF0000; text-decoration: underline}
+.m12bcgB {
+	font-family: Arial, Helvetica, sans-serif;
+	font-size: 12px;
+	font-weight: bold;
+	color: #FFFFFF;
+	text-decoration: none;
+}
+a.m12bcgB:hover {
+	font-family: Arial, Helvetica, sans-serif;
+	font-size: 12px;
+	font-weight: bold;
+	color: #FF0000;
+	text-decoration: underline;
+}
+.txt14b {
+	font-family: Arial, Helvetica, sans-serif;
+	font-size: 14px;
+	font-weight: normal;
+	color: #315994;
+	text-decoration: none;
+}
+.txt12b1 {
+	font-family: Arial, Helvetica, sans-serif;
+	font-size: 12px;
+	font-weight: normal;
+	color: #739ed6;
+	text-decoration: none;
+}
+.m14bo {
+	font-family: Arial, Helvetica, sans-serif;
+	font-size: 14px;
+	font-weight: normal;
+	color: #315994;
+	text-decoration: none;
+}
+a.m14bo:hover {
+	font-family: Arial, Helvetica, sans-serif;
+	font-size: 14px;
+	font-weight: normal;
+	color: #FF0000;
+	text-decoration: underline;
+}
+.txt12g {  font-family: Arial, Helvetica, sans-serif; font-size: 12px; font-style: normal; font-weight: normal; color: #CFCFCF}
+.txt12o {  font-family: Arial, Helvetica, sans-serif; font-size: 12px; font-style: normal; font-weight: bold; color: #ff9a00}
+.txt11b {  font-family: Arial, Helvetica, sans-serif; font-size: 11px; font-style: normal; font-weight: normal; color: #315994}
+
+
+INPUT {BORDER-RIGHT: #739ed6 1px solid; BORDER-TOP: #739ed6 1px solid; 
+ BACKGROUND: white; BORDER-LEFT: #739ed6 1px solid;  BORDER-BOTTOM: #739ed6 1px solid;   border: #739ed6; border-style: solid; border-top-width: 1px; border-right-width: 1px; border-bottom-width: 1px; border-left-width: 1px}
+TEXTAREA {BORDER-RIGHT: #739ed6 1px solid; BACKGROUND: grey;BORDER-TOP: #739ed6 1px solid; FONT-SIZE: 8pt; OVERFLOW: auto; BORDER-LEFT: #739ed6 1px solid; COLOR: #739ed6; BORDER-BOTTOM: #739ed6 1px solid; FONT-FAMILY: Arial, Helvetica, sans-serif; TEXT-DECORATION: none}
+
+INPUTaa {BORDER-RIGHT: #739ed6 1px solid; BORDER-TOP: #739ed6 1px solid; 
+FONT-SIZE: 8pt; BACKGROUND: grey; BORDER-LEFT: #739ed6 1px solid; COLOR: #4C588C; BORDER-BOTTOM: #739ed6 1px solid; FONT-FAMILY: Arial, Helvetica, sans-serif; TEXT-DECORATION: none; border: #739ed6; border-style: solid; border-top-width: 1px; border-right-width: 1px; border-bottom-width: 1px; border-left-width: 1px}
+.txt10bbc {
+	font-family: Arial, Helvetica, sans-serif;
+	font-size: 10px;
+	font-weight: bold;
+	color: #FFFFFF;
+}
+.txt12on {  font-family: Arial, Helvetica, sans-serif; font-size: 12px; font-weight: normal; color: #FF9B37}
+.txt11bc {  font-family: Arial, Helvetica, sans-serif; font-size: 11px; font-weight: bold; color: #FFFFFF}
+BODY { scrollbar-face-color: #ffcf31; scrollbar-shadow-color: black; scrollbar-highlight-color: #FFFCCC; scrollbar-3dlight-color: #FFFFCC; scrollbar-darkshadow-color: navy; scrollbar-track-color: #739ED6; scrollbar-arrow-color: #315994 }.txt10Bb2 {
+font-family: Arial, Helvetica, sans-serif; font-size: 10px; color: #FFFFFF; font-weight: bold
+}

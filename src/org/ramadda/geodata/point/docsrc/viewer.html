@@ -1,0 +1,41 @@
+[ht::head {Map and Time Series Displays}]
+<%nochildlist%>
+
+When you are viewing a LiDAR data file entry 
+(e.g., <a href="https://nlas.unavco.org/repository/entry/show/NLAS+Repository/Data/LVIS+Costa+Rica/LVIS_CR_2005_WAVE_20060518_West_Slope.lgw?entryid=a26ea477-f085-4585-8cab-0cd917d6655a">LVIS Costa Rica</a>)
+choose the [ht::menu {LiDAR Data} {LiDAR Map and Chart}] menu
+for an interactive map and timeseries chart of the data.
+If the LiDAR data file contains waveforms (as the example above does)
+there will also be an image of the waveform for a given point displayed.
+
+[ht::cimg images/chart.png {LiDAR Map and Chart} {border=0 width=800}]
+
+Clicking on the time series image will show the approximate location 
+in the map of that point in the LiDAR data
+and will also create and show the waveform at that point.
+<p>
+
+
+<b><div class="note">Note: because the time series image is 
+generated from a sub-sampling of the actual data the mapping 
+and is limited in size (e.g., 800 pixels vs. 20 million points)
+the positions are only approximate.</div></b>
+<p>
+The CSV link will give a CSV file of the displayed waveform.
+
+<p>
+
+The Settings section allows you to hide the map and choose other fields to 
+display  in the time series:
+
+[ht::cimg images/chartsettings.png {Chart Settings} {border=0}]
+
+The Waveform Background menu allows you to show the waveform fully expanded 
+to the size of the time series chart. Normally the waveform is shown 
+at the actual height as measured.
+
+
+
+
+[ht::foot]
+

@@ -1,0 +1,17 @@
+<types supercategory="Miscellaneous" category="Business Data">
+
+  <type name="type_edgar_filing"  description="SEC EDGAR Filing"  handler="org.ramadda.plugins.biz.EdgarFilingTypeHandler" >
+     <property name="icon" value="/biz/sec.png"/>
+
+     <column name="form_type"   label="Form Type" type="enumerationplus" cansearch="true" canlist="false" />
+     <column name="accession_number"  type="string" label="Accession Number"/>
+     <column name="company_name"   label="Company Name" type="enumerationplus" cansearch="true" />
+     <column name="cik_number"   label="CIK Number" type="enumerationplus" cansearch="true" canlist="false" />
+     <column name="central_index_key"  type="string" label="Central Index Key" canlist="false" />
+     <column name="standard_industrial_classification"  type="enumerationplus" label="Standard Industrial Classification" cansearch="true" />
+     <column name="irs_number"  type="enumerationplus" label="IRS Number" cansearch="true" canlist="false" />
+     <column name="state"  type="enumerationplus" label="State of Incorporation" cansearch="true" />
+
+  </type>
+
+</types>

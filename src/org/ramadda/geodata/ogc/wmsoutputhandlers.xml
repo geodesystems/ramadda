@@ -1,0 +1,6 @@
+<outputhandlers>
+  <outputhandler class="org.ramadda.geodata.ogc.WmsOutputHandler" name="WMS Viewer"/>
+<!--
+  <outputhandler class="org.ramadda.geodata.ogc.CswOutputHandler" name="CSW"/>
+-->
+</outputhandlers>

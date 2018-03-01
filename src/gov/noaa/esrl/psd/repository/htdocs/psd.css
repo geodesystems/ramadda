@@ -1,0 +1,367 @@
+body>div {
+        min-width: 66em; /* needs to stay this amt */
+        max-width: none;
+}
+
+/* IE override of ESRL globe background image in content */
+html #content {
+background-image: none;
+}
+ 
+ #major_header {
+        background-color: #1d3a83;
+        background-image: url('${urlroot}/images/globe2013.100.png');
+        background-image: url('${urlroot}/images/globe2013.100.png'), -webkit-gradient(linear, left top, right top, from(#000066), to(#336699)); /* Saf4+, Chrome */
+        background-image: url('${urlroot}/images/globe2013.100.png'), -webkit-linear-gradient(left, #336699, #000066); /* Chrome 10+, Saf5.1+ */
+        background-image: url('${urlroot}/images/globe2013.100.png'), -moz-linear-gradient(left, #336699, #000066); /* FF3.6+ */
+        background-image: url('${urlroot}/images/globe2013.100.png'), -ms-linear-gradient(left, #336699, #000066); /* IE10 */
+        background-image: url('${urlroot}/images/globe2013.100.png'), -o-linear-gradient(left, #336699, #000066); /* Opera 11.10+ */
+        background-image: url('${urlroot}/images/globe2013.100.png'), linear-gradient(left, #336699, #000066);/* W3C */
+        background-repeat: no-repeat;
+        background-position: right;
+        height: 100px;
+        font-size: small;
+    line-height: 1;     
+}
+
+#search {
+        background-color: transparent;
+        padding: 30px 40px 0 0; 
+}
+
+#minor_header {
+        line-height: 1;
+}
+
+#minor_header a {
+        font-weight: normal;
+        font-size: small;
+}
+
+#major_nav {
+        background-color: #FFFFE1 /*#FFFFCC*/;
+        color: #000066;
+        line-height: 1;
+}
+
+#minor_nav {
+        width: 12.15em;
+}
+
+#minor_nav dt {
+        display: block;
+        padding: 0.4em 0 0.4em 0;
+        width: 100%;
+}
+
+#minor_nav dd ul {
+        margin: 0.3em 0em 0em 1.0em;
+        padding: 0.2em 0em 0em 0.5em;
+        list-style: none;
+}
+
+#minor_nav li {
+        padding-bottom: 0.2em;
+        padding-top: 0.2em;
+}
+
+#minor_nav a:link {
+        color: #006699;
+}
+
+#minor_nav a:visited {
+        color: #006699;
+}
+
+#minor_nav a:hover {
+        text-decoration: underline;
+        color: #006699;
+}
+
+#minor_nav dt a:link {
+        color: #000066;
+}
+
+#minor_nav dt a:visited {
+        color: #000066;
+}
+
+#minor_nav dt a:hover {
+        color: #000066;
+}
+
+#minor_nav dd ul{
+        padding-left: 2px;
+        color: black;
+}
+
+blockquote#news {
+    font-weight: normal;
+        color: #000000;
+}
+
+/* psd site-wide default image style */
+img {
+        display: inline;
+        border: none;
+}
+
+/* padding around page content */
+#content {
+        padding-top: 1em;
+        padding-left: 0.5em;
+        padding-bottom: 2em;
+        color: #444;
+        border-top: none;
+        border-right: none; 
+        font-size: 95%; 
+        min-height: 35em;
+}
+
+/* fix formatting of list items */
+#content ol li {
+        margin-left: 3.5em;
+        margin-bottom: .5em;
+}
+
+#content dl dt {
+        margin-bottom: 1em;
+}
+
+#content dl dd {
+        margin-bottom: 0.5em;
+}
+
+#content blockquote {
+        margin-left: 2em;
+        margin-top: 1em;
+        margin-bottom: 1em;
+        max-width: 85%;
+}
+
+/* space above and below a horizontal line*/
+#content hr {
+        margin-top: .5em;
+        margin-bottom: .5em;
+}
+
+/* remove underline & set font to black for internal page links */
+#content a[name] {
+        color: #000000;
+        text-decoration: none;
+}
+
+h1 {
+        color: rgb(55,47,98);
+        margin-bottom: 0.5em;
+        font-size: x-large;
+}
+
+h2 {
+        color: #663366/*rgb(198,49,64)*/;       
+        font-size: large;
+}
+
+h3 {
+        font-size: medium;
+}
+
+#footer {
+        background: #1d3a83;
+        background: -webkit-gradient(linear, left top, right top, from(#000066), to(#336699)); /* Saf4+, Chrome */
+        background: -webkit-linear-gradient(left, #336699, #000066); /* Chrome 10+, Saf5.1+ */
+        background: -moz-linear-gradient(left, #336699, #000066); /* FF3.6+ */
+        background: -ms-linear-gradient(left, #336699, #000066); /* IE10 */
+        background: -o-linear-gradient(left, #336699, #000066); /* Opera 11.10+ */
+        background: linear-gradient(left, #336699, #000066); /* W3C */
+}
+
+/* a div containing links to the organizations shown in the footer. */
+#orgs {
+        float: left;
+        width: 45%;
+        text-align: left;
+        padding: 0em 0.2em 0em 0em;
+}
+
+#media_icons {
+        float: left;
+        text-align: center;
+        padding-top: 5px;
+        padding-bottom: 5px;
+}
+
+#media_icons .fa {
+        margin: 0 8px;
+}
+
+/* a div containing policy-type links shown in the footer. */
+#policies {
+        float: right;
+        width: 35%;
+        text-align: right;
+}
+
+
+#alert {
+        color: red;
+        font-size: small;
+    margin: 1em 2em 2em 1em;
+    padding: 0.5em 0 0.5em;
+        width: auto;
+        text-align: center;
+        background: #FFFFCC;
+        font-weight: bold;
+        border: 1px dotted red;
+}
+
+.current_sub {
+        font-weight: bold;
+        color: black;
+        list-style: url(${urlroot}/images/black_bullet.gif);
+}
+
+.current_sub2 {
+        color: black;
+        font-weight: bold;
+        list-style: url(${urlroot}/images/black_bullet.gif);
+        margin-left: 1em;
+        margin-bottom: .25em;
+}
+
+/* style for captions */
+.caption {
+        font-style: italic;
+        color: #333333;
+        font-size: small;
+}
+
+/* style for photo credit captions */
+.credit {
+        padding: 0;
+        font-size: xx-small;
+        font-style: italic;
+        text-align: right;
+        color: #666666;
+}
+
+.handout {
+        border: solid 1px rgb(65,137,201);
+        padding-bottom: 0.5em; 
+        text-align: center;
+        width: 160px;
+        background-color: rgb(227,237,247);     
+}
+
+.handoutTitle {
+        color: #000066;
+        font-weight: bold; 
+        padding: 0.5em 0em 0.5em 0em;
+        margin-bottom: 0.5em;
+        border-bottom: solid 1px rgb(65,137,201);
+        background-image: url(${urlroot}/images/rightGrad.gif);
+        background-repeat: repeat-y;
+}
+
+/* STYLES FOR IMAGE FRAMER */
+.highslide-caption {
+        display: none;
+        padding: 5px;
+        background: #666;
+        color: white;
+}
+
+.smImg {
+        padding: 0 0 0.75em 0;
+        font-size: 100%;
+        font-family: calibri;
+        font-weight: bold;
+        color: #000;
+}
+
+.click {
+        width: 100%;
+        border-bottom: 1px solid #CCC;
+        font-size: small;
+        font-family: calibri;
+        color: #666;
+}
+
+/* STYLES FOR RIGHT COLUMN INFORMATION */
+
+.moreInfo {
+        background-image: url(${urlroot}/images/icons/info.png);
+        background-repeat: no-repeat;
+        background-position: left center;
+        margin-top: 1em; 
+        border-top: 1px solid #999;
+        border-bottom: 1px dotted #999; 
+        padding: 1em 0 1em 2.75em;
+}
+
+
+#moreInfo ul {
+        margin-left: 0;
+        padding-left: 0;
+}
+
+#moreInfo li {
+        list-style: url(${urlroot}/images/dblArrow.png);
+}
+
+#moreInfo h5 {
+        font-size: 100%;
+        font-family: calibri; 
+        font-weight: bold; 
+        color: #000;
+        text-decoration: none;  
+}
+
+.related {
+        border-top: 1px solid #999;
+        border-bottom: 1px dotted #999;  
+        padding: 0.75em 0 0 0;
+        margin-top: 1em;
+}
+
+.related dl {
+        margin: 0.5em 0 0.75em 0;
+}
+
+.related dd {
+        border-bottom: 1px dotted #999;
+        padding: 0.25em;
+}
+
+.related dd:hover {
+        background: #FFFFCC;
+}
+
+.video {
+        background-image: url(${urlroot}/images/icons/video.png);
+        background-repeat: no-repeat;
+        background-position: left center;
+        border-bottom: 1px dotted #999; 
+        padding: 1em 0 1em 2.75em;
+}
+
+.download {
+        background-image: url(${urlroot}/images/icons/download-grn.png);
+        background-repeat: no-repeat;
+        background-position: left center;
+        border-bottom: 1px dotted #999; 
+        padding: 1em 0 1em 2.75em;
+}
+
+.contact {
+        margin: 1em 0 1em 0; 
+        border-bottom: 1px solid #999; 
+        padding-bottom: 1em;
+}
+
+
+
+
+/* LIGHTBOX STYLES 
+Deleted: DRM
+*/

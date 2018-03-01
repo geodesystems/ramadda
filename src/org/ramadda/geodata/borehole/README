@@ -1,0 +1,14 @@
+
+To build the boreholeplugin.jar just run ant:
+ant
+
+this will create the plugin in <top dir>/dist/otherplugins and copy it to your local RAMADDA plugins directory.
+
+Any icons or other content  can be placed in the htdocs/borehole directory and referenced as /borehole/...
+
+
+The file types.xml (or any file ending in "types.xml") defines new entry types. 
+The file metadata.xml (or any file ending in "metadata.xml") defines some example metadata types.  There are lots of other examples in the other plugins. Look in ../fieldproject/resources
+
+If you get too many files in this dir you can create a sub dir (e.g., resources) to put things in. 
+

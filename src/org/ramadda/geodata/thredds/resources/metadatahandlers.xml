@@ -1,0 +1,3 @@
+<metadatahandlers>
+  <metadatahandler class="org.ramadda.geodata.thredds.ThreddsMetadataHandler"/>
+</metadatahandlers>

@@ -1,0 +1,322 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<metadata>
+
+  <handler category="Basic Properties">
+<!--
+
+    <type name="Test 1" id="test_it" searchable="true" browsable="true">
+      <element name="Simple string 1" />
+      <element  datatype="group"     name="Group 1"         subname="Sub name group 1">
+        <element name="Text"/>
+      </element>
+      <element  datatype="group"     name="Group 2"         subname="Sub name group 2">
+        <element name="Text 1"/>
+        <element name="Text 2"/>
+      </element>
+
+      <element  datatype="group"     name="Group 3"         subname="Sub name group 3">
+        <element name="Text 1"/>
+        <element name="Text 2" datatype="group">
+           <element name="Text 3"/>
+           <element name="Text 4"/>
+        </element>
+      </element>
+
+      <element name="Simple string 2" />
+    </type>
+-->
+
+    <type name="Tag" id="enum_tag" searchable="true" browsable="true" displaygroup="Tags and Keywords">
+      <element name="Tag Value" />
+      <template type="thredds"><![CDATA[<keyword>${attr1}</keyword>]]></template>
+      <template type="dif"><![CDATA[<Keyword>${attr1}</Keyword>]]></template>
+      <template type="oaidc"><![CDATA[<dc:subject>${attr1.cdata}</dc:subject>]]></template>
+    </type>
+
+
+    <type name="Keyword" id="content.keyword" searchable="true" browsable="true" displaygroup="Tags and Keywords"  >
+      <element name="Keyword" />
+      <template type="thredds"><![CDATA[<keyword>${attr1}</keyword>]]></template>
+      <template type="dif"><![CDATA[<Keyword>${attr1}</Keyword>]]></template>
+      <template type="oaidc"><![CDATA[<dc:subject>${attr1.cdata}</dc:subject>]]></template>
+    </type>
+
+
+    <type name="Acknowledgement" id="content.acknowledgement" searchable="true" browsable="true" displaygroup="Acknowledgements"  >
+      <element name="Acknowledgement" />
+<!-- todo -->
+      <template type="thredds"><![CDATA[<keyword>${attr1}</keyword>]]></template>
+      <template type="dif"><![CDATA[<Keyword>${attr1}</Keyword>]]></template>
+      <template type="oaidc"><![CDATA[<dc:subject>${attr1.cdata}</dc:subject>]]></template>
+    </type>
+
+    <type
+       name="URL"
+       searchable="false"
+       id="content.url"
+       displaygroup="Links" >
+      <element datatype="url" name="URL"/>
+      <element name="Name"/>
+      <template type="html"><![CDATA[<a href="${attr1}">${attr2}</a>]]></template>
+    </type>
+
+    <type id="metadata_source" name="Source" searchable="true" priority="20"  displaygroup="Source">
+      <element id="url" datatype="url" name="URL"/>
+      <element id="via" name="VIA"/>
+    </type>
+
+
+    <type
+       name="Author"
+       searchable="true"
+       browsable="true"
+       displaygroup="Authors" 
+       id="metadata_author">
+      <element name="Name"/>
+      <element name="Email"/>
+      <element name="Organization"/>
+    </type>
+
+    <type
+       name="Publisher"
+       searchable="true"
+       browsable="true"
+       displaygroup="Publishers" 
+       id="metadata_publisher">
+      <element name="Organization"/>
+      <element name="Email"/>
+
+    </type>
+
+    <type
+       foruser="false"
+       name="Author"
+       searchable="false"
+       displaygroup="Authors" 
+       id="content.author">
+      <element name="Author"/>
+    </type>
+
+    <type
+       name="Email"
+       searchable="false"
+       id="content.email">
+      <element name="Email"/>
+    </type>
+
+
+
+    <type name="Wiki Category" id="wikicategory" foruser="false">
+      <element name="Wiki Category" />
+    </type>
+
+    <type name="Property" id="property"  searchable="true" browsable="true"
+          displaygroup="Properties" >
+      <element name="Name"  searchable="true"/>
+      <element name="Value"  searchable="true"/>
+      <template type="thredds"><![CDATA[<property name="${Name}" value="${Value}"/>]]></template>
+      <template type="atom"><![CDATA[<property name="${Name}" value="${Value}"/>]]></template>
+      <template type="html"><![CDATA[${Name}=${Value}]]></template>
+    </type>
+
+    <type name="Synonym" id="synonym"  searchable="true" browsable="true">
+      <element name="Value"  searchable="true"/>
+      <template type="thredds"><![CDATA[<property name="synonym" value="${Value}"/>]]></template>
+      <template type="atom"><![CDATA[<property name="synonym" value="${Value}"/>]]></template>
+      <template type="html"><![CDATA[${Value}]]></template>
+    </type>
+
+  </handler>
+
+
+  <handler class="org.ramadda.repository.metadata.ContentMetadataHandler"        
+           category="Thumbnails, Page Style,  Etc.">
+    <type
+       name="Thumbnail Image"
+       id="content.thumbnail">
+      <element name="Thumbnail File" datatype="file" thumbnail="true"/>
+    </type>
+
+    <type
+       name="File Attachment"
+       id="content.attachment">
+      <element name="File" datatype="file" thumbnail="false"/>
+      <element name="Type" />
+    </type>
+
+<!--
+    <type
+       name="Icon"
+       id="content.icon">
+      <element name="File" datatype="file" thumbnail="false"/>
+    </type>
+-->
+
+    <type
+       name="Page Style"
+       showinhtml="false"
+       id="content.pagestyle">
+      <element name="menus" label="Menus to show" datatype="string" suffix=" Comma separated list: &quot;file,edit,feeds,view,other&quot; or &quot;none&quot;"/>
+      <element id="showbreadcrumbs" name="Show Breadcrumbs" datatype="boolean" default="true"/>
+      <element id="showtoolbar" name="Show Toolbar" datatype="boolean" default="true"/>
+      <element id="showentryheader" name="Show Entry Header" datatype="boolean" default="true"/>
+      <element id="showlayouttoolbar" name="Show Layout Toolbar" datatype="boolean" default="true"/>
+      <element name="entrytype" label="Entry Type" datatype="enumerationplus" values="folder:Folder,file:File"
+               suffix="Entry type that this page style is applicable to"/>
+      <element name="apply_to_this" label="Apply to this entry" datatype="boolean" default="true"
+               suffix=""/>
+      <element name="wikitemplate" label="Wiki Template" datatype="wiki" rows="20"/>
+      <element name="namepattern" label="Name Pattern" datatype="string" suffix="Only apply to entries that match this pattern"/>
+    </type>
+
+
+    <type
+       name="Page Template"
+       showinhtml="false"
+       id="content.pagetemplate">
+      <element name="template" label="Template" datatype="enumeration" />
+    </type>
+
+    <type
+       name="Logo"
+       id="content.logo">
+      <element name="Logo Image File" datatype="file" thumbnail="false" attachment="false"/>
+      <element name="Logo URL"/>
+      <element name="Page Title"/>
+    </type>
+
+    <type name="Display Timezone" id="content.timezone">
+      <element
+         default="GMT"
+         name="Timezone"/>
+    </type>
+
+    <type name="Sort Order" id="content.sort">
+      <element
+        showinhtml="false"
+         default="fromdate"
+         name="Field"
+         datatype="enumeration"
+         values="fromdate:From Date,todate:To Date,createdate:Create Date,name:Name,type:Type,mixed:Mixed"/>
+      <element
+         default="true"
+         name="Ascending"
+         datatype="boolean"/>
+      <element
+         default="-1"
+         name="Max Count"
+         datatype="int"/>
+    </type>
+
+    <type
+       name="Alias"
+       id="content.alias"
+       displaycategory="AKA"
+       >
+      <element name="Alias" />
+      <template type="html"><![CDATA[<a href="${root}/alias/${attr1}">${attr1}</a>]]></template>
+    </type>
+
+    <type
+       name="Exclude in XML Output"
+       showinhtml="false"
+       id="display.exclude">
+      <element name="output"  datatype="string" default="*" />
+    </type>
+
+  </handler>
+
+  <handler adminonly="true" class="org.ramadda.repository.metadata.AdminMetadataHandler" category="Admin">
+<!--
+    <type name="Page Template" id="admin.template"/>
+-->
+    <type name="Local File Pattern" id="admin.localfile.pattern"/>
+    <type name="Anonymous Upload" id="admin.anonymousupload">
+      <element name="From" />
+      <element name="IP" />
+      <element name="Type" />
+      <element name="Email" />
+    </type>
+  </handler>
+
+  <handler class="org.ramadda.repository.metadata.JpegMetadataHandler"    >
+    <type
+       name="Camera direction"
+       id="camera.direction">
+      <element name="Direction" datatype="double" suffix="Degrees"/>
+    </type>
+  </handler>
+
+
+  <handler class="org.ramadda.repository.metadata.MetadataHandler"        category="Miscellaneous">
+    <type name="Contact" id="content.contact">
+      <element name="Name" />
+      <element name="Email" datatype="email"/>
+      <element name="Phone" />
+    </type>
+
+<!--
+    <type
+       name="Contact Information"
+       id="misc.contact">
+      <element name="type"/>
+      <element name="value"/>
+    </type>
+-->
+
+    <type
+       name="Named Spatial Region"
+       id="spatial.region">
+      <element name="value"/>
+    </type>
+
+    <type
+       name="Spatial Polygon Coordinates"
+       showinhtml="false"
+       id="spatial.polygon">
+      <element name="polygon1" suffix="lat1,lon1;lat2,lon2;...;latN,lonN;"/>
+      <element name="polygon2" suffix="..."/>
+      <element name="polygon3" suffix="..."/>
+      <element name="polygon4" suffix="..."/>
+    </type>
+
+    <type
+       name="KML Polygon Coordinates"
+       showinhtml="false"
+       id="spatial.kmlpolycoords">
+      <element name="polygon1" suffix="lon,lat "/>
+    </type>
+
+    <type name="Biography" id="content.biography"       displaycategory="Biography">
+      <element  name="Name"/>
+      <element
+         default=""
+         name="Bio"
+	 rows="10"/>
+    </type>
+
+    <type
+       name="Jython Script"
+       id="content.jython">
+      <element name="Jython File" datatype="file" thumbnail="false"/>
+    </type>
+
+
+    <type
+       name="Reference"
+       id="metadata_reference"
+       searchable="true"
+       displaygroup="References" >
+      <element datatype="url" name="URL"/>
+      <element name="Name"/>
+      <template type="html"><![CDATA[<a href="${attr1}">${attr2}</a>]]></template>
+    </type>
+
+
+
+
+</handler>
+
+
+
+</metadata>

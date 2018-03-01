@@ -1,0 +1,14 @@
+<entry id="${id}" name="${4}" type="type_resilience_assessment" ${attrs}>
+<description><![CDATA[
+${10}
+
+${35}
+
+${36}
+]]></description>
+<assessment_type>${assessment_type}</assessment_type>
+<resilience_definition>${resilience_definition}</resilience_definition>
+<theory_development>${theory_development}</theory_development>
+<url><![CDATA[${9}]]></url>
+${content}
+</entry>

@@ -1,0 +1,4 @@
+backpacking:Backpacking
+carcamping: Car Camping
+travel: Travel
+business: Business Trip

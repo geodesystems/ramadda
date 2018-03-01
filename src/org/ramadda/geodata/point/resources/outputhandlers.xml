@@ -1,0 +1,3 @@
+<outputhandlers>
+  <outputhandler class="org.ramadda.data.services.PointOutputHandler" name="Point Data"/>
+</outputhandlers>

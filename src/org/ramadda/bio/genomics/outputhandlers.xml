@@ -1,0 +1,25 @@
+<outputhandlers class="org.ramadda.repository.output.ServiceOutputHandler" icon="/genomics/dna.png">
+
+<!-- HMMER outputs -->
+  <outputhandler serviceId="bio_hmmer_convert"/>
+  <outputhandler serviceId="bio_hmmer_stat"/>
+  <outputhandler serviceId="bio_hmmer_emit"/>
+  <outputhandler serviceId="bio_hmmer_fetch"/>
+
+<!-- SRA outputs -->
+  <outputhandler serviceId="bio_sra_to_abi" />
+  <outputhandler serviceId="bio_sra_to_fastq" />
+  <outputhandler serviceId="bio_sra_to_illuma" />
+  <outputhandler serviceId="bio_sra_to_sam"/>
+  <outputhandler serviceId="bio_sra_to_sff" />
+  <outputhandler serviceId="bio_sra_stat" />
+  <outputhandler serviceId="bio_sra_pileup" />
+
+<!-- Picard outputs -->
+  <outputhandler serviceId="bio_picard_fastqtosam"/>
+  <outputhandler serviceId="bio_picard_samtofastq"/>
+
+  <outputhandler serviceId="bio_picard_collectalignmentsummarymetrics"/>
+  <outputhandler serviceId="bio_picard_addorreplacegroups"/>
+
+</outputhandlers>

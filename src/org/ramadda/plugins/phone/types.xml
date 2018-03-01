@@ -1,0 +1,32 @@
+<types supercategory="Miscellaneous">
+
+  <type name="phone_sms"  description="Text Message" xxxhandler="org.ramadda.repository.type.GenericTypeHandler" category="Information" foruser="false">
+     <property name="icon" value="/phone/sms.png"/>
+     <property name="form.name.label" value="Message"/>
+     <property name="form.description.label" value="Abstract"/>
+     <property name="form.file.show" value="false"/>
+     <property name="form.area.show" value="false"/>
+     <property name="form.location.show" value="true"/>
+     <property name="form.fromdate.label" value="Date"/>
+     <property name="form.todate.show" value="false"/>
+     <column name="from_number" type="string"  label="From Number"  />
+     <column name="to_number" type="string"  label="To Number"  />
+   </type>
+
+
+  <type name="phone_message"  description="Voice Message" handler="org.ramadda.plugins.phone.VoiceMailTypeHandler" category="Information" foruser="false">
+     <property name="icon" value="/phone/voicemail.png"/>
+<!--
+     <property name="form.name.label" value="Message"/>
+     <property name="form.description.label" value="Abstract"/>
+-->
+     <property name="form.file.show" value="true"/>
+     <property name="form.url.show" value="false"/>
+     <property name="form.fromdate.label" value="Date"/>
+     <property name="form.todate.show" value="false"/>
+     <column name="from_number" type="string"  label="From Number"  />
+     <column name="to_number" type="string"  label="To Number"  />
+   </type>
+
+
+</types>

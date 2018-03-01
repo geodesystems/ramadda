@@ -1,0 +1,2 @@
+#org.ramadda.plugins.box.BoxSearchProvider
+

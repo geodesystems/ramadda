@@ -1,0 +1,11 @@
+
+<api handler="org.ramadda.repository.search.SpecialSearch" id="point_amrc_qc">
+      <property name="admin" value="false"/>
+      <property name="label" value="Search for AMRC QC Point Data"/>
+      <property name="searchurl" value="/point/amrc/qc/search"/>
+      <property name="type" value="type_point_amrc_final"/>
+      <property name="initsearch" value="false"/>
+      <property name="searchopen" value="true"/>
+      <property name="tabs" value="earth,map,list,timeline"/>
+      <api request="/point/amrc/qc/search"    method="processSearchRequest"  name="View AMRC Point Data"/>
+</api>

@@ -1,0 +1,102 @@
+<html>
+<head>
+<title>Sub Repositories</title>
+  <link rel="stylesheet" type="text/css" href="./default.css" title="Style">
+
+</head>
+
+<body>
+<div class="ramadda-documentation">
+<table width=100% cellspacing=0 cellpadding=0 ><tr><td width=30%>
+<a href="remoteservers.html"><img src="images/PreviousArrow.gif" border="0"   alt="Previous: Registry Services" title="Previous: Registry Services"></a> <a href="monitors.html"><img src="images/NextArrow.gif" border="0"   alt="Next: Monitoring Events" title="Next: Monitoring Events"></a>  <a href="toc.html#subrepositories.html"><img src="images/TOCIcon.gif" border="0"   alt="Table of contents" title="Table of contents"></a>
+</td>
+<td width=40% align=center>
+<div class="ramadda-page-title">RAMADDA User Guide</div>
+</td>
+<td width=30%>&nbsp;</td>
+</tr></table>
+<div class="ramadda-page-heading">14.12 Sub Repositories</div>
+
+<style type="text/css">
+pre {
+    margin-left:15px;
+}
+</style>
+
+<div style="margin-left:20px;">
+
+  <link rel="stylesheet" type="text/css" href="ramadda.css" title="Style">
+</head>
+
+
+
+If you are running RAMADDA with the Derby database then RAMADDA has the ability to 
+create self-contained sub-repositories whose users, database and contents  are wholly independent 
+from the parent repository. Derby is required because the database is stored fully in the RAMADDA home directory 
+and RAMADDA has programmatic control over creating multiple databases.
+
+
+To create a sub-repository:
+
+<ul>
+<li> Go to Admin->Local Repositories
+<li> Specify a repository ID, e.g. "test"
+<li> Specify an admin ID and password.
+<li> Once created, the new repository can be accessed at:
+<pre>
+http://hostname/&lt;base&gt;/repos/&lt;sub repository&gt;
+e.g:
+http://community.ramadda.org/repository/repos/data
+</pre>
+
+<li> You can login to a sub repository with the credentials from its parent repository
+<li> Sub- repositories themselves can contain sub-repositories
+</ul>
+
+
+<h2>Moving a sub-repository</h2>
+
+<ul>
+<li> First of all, go to the Admin->Local Repositories page of the parent repository and Stop the child repository.
+
+<li> In your RAMADDA home directory there should be a directory:
+<pre>
+.../repositories/repository_&lt;sub repository id&gt;
+e.g.:
+.../repositories/repository_test
+</pre>
+This is the home directory of the test repository.
+
+
+<li> Move the repository_test directory to the destination server or other location
+
+<li>
+In the repository_test directory edit the repository.properties - comment out ramadda.html.urlbase and ramadda_home
+
+<li> You can <a href="http://ramadda.org/repository/userguide/faq.html#faq1_cat1_6">add an admin user</a> here if you don't have a login to the sub repository.  Add to the properties file -  
+<pre>
+ramadda.admin=userid:password
+</pre>
+
+If you have https configured in the new server specify the port in the properties file:
+http://ramadda.org/repository/userguide/installing.html#ssl
+
+<li> In your new server configure the ramadda_home property to point to the repository_test directory
+
+<li> You should be good to go now. Once you're running log in as admin and go to Admin->Settings page and 
+clear the hostname and port - you don't have to set a new one.
+
+</ul>
+
+
+</body>
+</div>
+<p>
+<div  class="childlist" ><table  width="100%" ></table></div>
+<p>&nbsp;<p>
+<a href="remoteservers.html"><img src="images/PreviousArrow.gif" border="0"   alt="Previous: Registry Services" title="Previous: Registry Services"></a> <a href="monitors.html"><img src="images/NextArrow.gif" border="0"   alt="Next: Monitoring Events" title="Next: Monitoring Events"></a>  <a href="toc.html#subrepositories.html"><img src="images/TOCIcon.gif" border="0"   alt="Table of contents" title="Table of contents"></a>
+<p>
+</div>
+</body>
+</html>
+

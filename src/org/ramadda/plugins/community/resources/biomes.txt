@@ -1,0 +1,18 @@
+1:Tropical and subtropical moist broadleaf forests (tropical and subtropical, humid)
+2: Tropical and subtropical dry broadleaf forests (tropical and subtropical, semihumid)
+3: Tropical and subtropical coniferous forests (tropical and subtropical, semihumid)
+4: Temperate broadleaf and mixed forests (temperate, humid)
+5: Temperate coniferous forests (temperate, humid to semihumid)
+6: Boreal forests/taiga (subarctic, humid)
+7: Tropical and subtropical grasslands, savannas, and shrublands (tropical and subtropical, semiarid)
+8: Temperate grasslands, savannas, and shrublands (temperate, semiarid)
+9: Flooded grasslands and savannas (temperate to tropical, fresh or brackish water inundated)
+10: Montane grasslands and shrublands (alpine or montane climate)
+11: Tundra (Arctic)
+12: Mediterranean forests, woodlands, and scrub or sclerophyll forests (temperate warm, semihumid to semiarid with winter rainfall)
+13: Deserts and xeric shrublands (temperate to tropical, arid)
+14: Mangrove (subtropical and tropical, salt water inundated)
+marine:Marine
+lake:Lakes
+wetlands:Wetlands
+

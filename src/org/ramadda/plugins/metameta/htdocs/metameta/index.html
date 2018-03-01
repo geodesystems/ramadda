@@ -1,0 +1,39 @@
+<html>
+<title>Defining new entry types, point data and metadata</title>
+<category:Advanced>
+<body>
+<div class="ramadda-section">
+<h2>Defining new entry types, point data types and metadata</h2>
+
+
+
+The <a href="http://sourceforge.net/projects/ramadda/files/ramadda<%ramadda.version%>/plugins">metameta plugin</a> 
+provides a data dictionary facility that allows one to easily define new entry types, point data readers, structured 
+list database types and (soon to be) metadata types. This is released in the core plugins so it should already be installed.
+<p>
+The plugin provides a Data Dictionary entry type. This entry can be configured to be used for defining its target construct - 
+new entry types, db types, point data, etc. One then adds any number of Field entries. Each of these has a type (e.g, string, integer, double, enumeration) and other properties.
+
+<p>
+You can then install a working version of your new type, interactively try it out, go an edit the dictionary some more, etc. In the the you can export the resources that can be used to install these types as plugins.
+<p>
+
+One of the services that is provided is to generate the Dictionary and Field entrys export XML. If you go to &lt;your repository&gt;/metameta/list, e.g.:
+<br>
+<a href="http://${hostname}/${urlroot}/metameta/list">
+http://ramadda.org/repository/metameta/list
+</a>
+<br>
+the links will be to the generated export xml. Copy a link, e.g.,:
+<br>
+<a href="http://ramadda.org/repository/metameta/type/project_site">http://ramadda.org/repository/metameta/type/project_site
+</a>
+<br>
+
+then go to Folder in your RAMADDA and do File->Import and paste the link. THis will create a Dictionary from the given entry type. You can then go and edit this Dictionary and interactively try it out.
+
+
+</div>
+</body>
+</html>
+

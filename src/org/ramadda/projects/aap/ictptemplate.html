@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">  
+<head>  
+  <title>${header.title} - ${title}</title>
+  <link rel="icon" href="http://www.ictp.it/favicon.gif" type="image/gif" />  
+  <link href="http://www.ictp.it/css/common.css?1" rel="stylesheet" type="text/css" media="screen" />
+<properties>
+name=ICTP Template
+id=ictp
+
+ramadda.template.link.wrapper =<span class="navlink"><a  href="${url}">${label}</a></span>
+ramadda.template.link.separator=&nbsp;|&nbsp;
+
+ramadda.template.userlink.wrapper =<span class="navlink"><a  href="${url}">${label}</a></span>
+ramadda.template.userlink.separator=&nbsp;|&nbsp;
+
+ramadda.template.favorites = <b>Favorites:</b><div class="favorites">${entries}</div>
+ramadda.template.cart = <b>Cart:</b><div class="favorites">${entries}</div>
+
+</properties>
+
+
+${imports}
+
+<style type="text/css">
+
+body {
+background:url("http://www.ictp.it/images/bkgnd_header_8.png") repeat-x scroll center top transparent;
+color:#242411;
+font-size:14px;
+margin:0;
+}
+
+#ictp_header {
+   height:153px;
+}
+
+#ictp_wrapper {
+background:url("http://www.ictp.it/images/bkgnd_body.gif") repeat-y scroll center center transparent;
+margin:0 auto;
+overflow:auto;
+width:960px;
+}
+
+#header_links {
+   margin-top:42px;
+   padding-left:5px;
+   padding-right:5px;
+}
+
+.navlink a:visited, .navlink a {
+   color: #015692;
+   font-weight:bold;
+}
+
+.navlink a:hover {
+   color: red;
+   font-weight:bold;
+}
+
+.content {
+  margin-right:0px;
+  min-height:400px;
+}
+</style>
+${headfinal}
+</head>
+<body>
+  <div id="ictp_wrapper">
+    <div id="ictp_header">
+      <p>&nbsp;<br>
+      <a id="ictp_logo" title="International Centre for Theoretical Physics" href="http://www.ictp.it/homepage.aspx">
+       <img src="${root}/ictp/ictp_logo.png" alt="International Centre for Theoretical Physics"/>                                      
+         </a>
+<table id="header_links" width=100%><tr><td></td><td align=right>${links}</td></tr></table>
+    </div>
+<div class="content">${entry.header}<div class="innercontent">${content}</div></div>
+
+
+  <div id="footer_wrapper">
+    <div id="footer"><div id="resources_for"><h3>resources<strong>For</strong></h3><ul><li><a href="http://www.ictp.it/resources/graduate-students.aspx" title="Graduate Students">graduate students</a></li><li><a href="http://www.ictp.it/resources/visitors.aspx" title="Visitors">visitors </a></li><li class="last"><a href="http://www.ictp.it/resources/media.aspx" title="Media">media</a></li></ul><div id="terms"><p>© 2010 ICTP | <a href="http://www.ictp.it/terms-of-use.aspx" title="read more about the terms of use">terms of use</a> | <a class="js_emailLink" href="mailto:web%at%ictp.it" rel="web%at%ictp.it" title="contact ICTP by mail">web contacts</a> |   web design by <a href="http://www.promoscience.com" title="go to Promoscience s.r.l. website">promoscience</a></p></div></div><div id="ICTP_contacts"><h3>ICTP<strong>contacts</strong></h3><p><i><span class="georgia">The Abdus Salam</span></i></p><p><strong><span class="georgia">International Centre for Theoretical Physics</span></strong></p><p>Strada Costiera, 11</p><p>I - 34151 Trieste Italy</p><p>(+39) 040 2240 111</p><p><a href="mailto:sci_info%at%ictp.it" class="js_emailLink" rel="sci_info%at%ictp.it">Send e-mail</a></p><p class="follow_us"><a href="http://www.facebook.com/pages/ICTP-Official-Fan-Page/135941803092130"><img src="http://www.ictp.it/images/facebook.gif" alt="Facebook - " /> Follow Us</a></p><a href="http://www.ictp.it/phonebook.aspx" class="phonebook">PHONEBOOK</a><p class="aegis">
+       ICTP operates under the aegis of 
+       UNESCO and IAEA and has a seat 
+       agreement with the Government of Italy
+    </p><ul class="institutions_link"><li class="unesco_ft"><a href="http://www.unesco.org" title="external link"> </a></li><li class="iaea_ft"><a href="http://www.iaea.org" title="external link"> </a></li><li class="government_ft"><a href="http://www.governo.it" title="external link"> </a></li></ul></div></div>
+  </div>
+
+${bottom}
+</body>
+</html>

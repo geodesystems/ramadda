@@ -1,0 +1,169 @@
+<html>
+<title>Slack Shell</title>
+<body>
+<div class="ramadda-section">
+<center><a href="${urlroot}/slack/index.html">Slack Documentation</a></center>
+<h2>Slack Shell</h2>
+<img src="${urlroot}/slack/slack-logo.jpg" align="right" width="450">
+The RAMADDA Slack Shell lets you access content and  data in your RAMADDA site directly from Slack. 
+<br clear=all><p>
+
+To set this up  -
+
+<ol>
+<li> Create a Slack Slash Command. In Slack go to the Integrations page for your team. Under Configured Integrations select Slash Commands and add a new Slash Commands integration. You can choose any command (I've used "/r" or "/ramadda"). 
+
+<li> To configure this Slash Command enter your RAMADDA URL  - 
+<a href="https://${hostname}${urlroot}//slack/api">https://${hostname}${urlroot}/slack/api</a>
+- in the Configuration page. 
+<center><img src="images/slashcommand.png" width="600"></center>
+
+<li> Before Saving the command copy the Token,  we'll use it to configure things on the RAMADDA side.
+</ol>
+
+
+<br>
+
+Now, go to your RAMADDA repository and log in as an admin. You will create a RAMADDA Slack Harvester.
+<ol>
+
+<li> Under the Admin-&gt;Harvesters page add a New Harvester and select  Slack Harvester. 
+
+<center><img src="images/harvester.png" width="800"></center>
+
+<li> The "Active on Start Up" enables the harvester.
+
+<br> 
+
+<li> Copy the token you got from Slack into the harvester tokens field. You can have any number of Slash commands that point to this single harvester.
+
+<br> 
+
+<li> Select the area in RAMADDA you want to provide access to. Under the Base Folder select a RAMADDA entry. 
+
+<br> 
+
+<li> The Slack Incoming Web Hook URL is the way that RAMADDA can talk back to Slack. 
+To enable this go back to your Slack Team. Under the Integrations page create an Incoming Web Hook and copy the URL that Slack provides into the RAMADDA harvester. 
+
+<br> 
+
+<li> The Slack API Token allows RAMADDA to publish files back to Slack. 
+Go the Slack's   <a href="https://api.slack.com/web" target="_other">Web API</a> page and copy the API token to the RAMADDA Harvester.
+
+<br> 
+
+<li> Save the Slack Harvester and you should be good to go. 
+
+</ol>
+
+
+
+<a name="commands"></a>
+<h3>Slack Shell Commands</h3>
+You can do a number of things in RAMADDA through Slack. 
+<p>
+Search:
+<pre>
+/r search some search text
+</pre>
+<br>
+
+The interface lets you navigate around RAMADDA like a command line:
+<pre>
+#Show the current entry 
+/r pwd
+
+#List the sub-entries of the current entry
+/r ls
+
+#change directory to a sub folder
+/r cd some folder
+
+#change directory to the top-level entry
+/r cd
+
+#cd up a couple
+/r cd ../..
+</pre>
+
+You can enter multiple commands on one line separated by a semi-colon:
+<pre>
+/r pwd; ls; cd;
+</pre>
+
+<br>
+
+
+<a name="new"></a>
+Create wiki pages, web logs and other entries
+<pre>
+/r new &lt;folder or wiki or blog or note&gt; New entry name | Optional description or wiki text
+</pre>
+
+
+<p>
+You can also define a slash command that has the RAMADDA command predefined. So you can add a slash command, e.g. "/cd", that maps to the URL:
+<pre>
+<a href="https://${hostname}${urlroot}/slack/slack/api">https://${hostname}${urlroot}/slack/slack/api?ramadda_command=cd</a>
+</pre>
+Create multiple slash commands, e.g.:
+<pre>
+<a href="https://${hostname}${urlroot}/slack/slack/api">https://${hostname}${urlroot}/slack/slack/api?ramadda_command=ls</a>
+<a href="https://${hostname}${urlroot}/slack/slack/api">https://${hostname}${urlroot}/slack/slack/api?ramadda_command=pwd</a>
+<a href="https://${hostname}${urlroot}/slack/slack/api">https://${hostname}${urlroot}/slack/slack/api?ramadda_command=new</a>
+</pre>
+
+Now in Slack you would just do:
+<pre>
+/cd &lt;some_entry&gt;
+/ls
+/etc
+</pre>
+
+
+<a name="search"></a>
+<h3>Search</h3>
+
+You can search your RAMADDA repository from slack by doing:
+<pre>
+/r search &lt;terms&gt;
+</pre>
+
+RAMADDA provides federates search across multiple providers. To choose a specific provider do:
+<pre>
+/r search -provider &lt;provider id&gt; &lt;terms&gt;
+e.g:
+/r search -provider google zanzibar
+/r search -provider wolfram zanzibar
+
+Or:
+/r search -google zanzibar
+/r search -wolfram zanzibar
+/r search -duckduckgo zanzibar
+/r search -flickr zanzibar
+/r search -youtube zanzibar
+/r search -arxiv zanzibar
+</pre>
+
+
+You can set up a Slash command that searches a particular provider. For example, I like to have "/w" mapped to the Wolfram/Alpha search:
+<pre>
+https://geodesystems.com/repository/slack/api?ramadda_command=search&amp;provider=wolfram
+</pre>
+
+
+<a name="tokens"></a>
+<h3>Handling API Tokens</h3>
+
+You may end up having a number Slack Harvesters and Slack Team imports where each requires an API token. You can simplify management of the API tokens by adding a properties file to your RAMADDA server home directory. This properties file contains an property that specifies an API token. It may be any name, e.g. 
+<pre>
+slack.api.token=&lt;API token from Slack&gt;
+</pre>
+
+Instead of entering the actual API token in the Harvester or in the Team Entry you can just specify the property, e.g. "slack.api.token" 
+
+</div>
+</body>
+</html>
+

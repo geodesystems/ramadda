@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<metadata>
+
+  <handler category="Earth Gauge" >
+
+    <type id="earthgauge_test" name="Test" makedatabase="true">
+      <element id="name" name="Name"/>
+      <element id="date" name="Date" datatype="datetime"/>
+      <element id="number1" name="Number 1" datatype="double"/>
+      <element id="number2" name="Number 1" datatype="int"/>
+      <element id="fruit" name="Fruit" datatype="enumeration" values="apple;banana;orange"/>
+    </type>
+
+
+  </handler>
+
+
+
+</metadata>

@@ -1,0 +1,125 @@
+<html>
+<title>Phone and SMS Integration</title>
+<category:Integration>
+<body>
+<div class="ramadda-section">
+<h2>Phone and SMS Integration</h2>
+You can browse through RAMADDA content and create wiki pages, notes, etc., via text messages. 
+
+<p>
+
+<style type="text/css">
+.sms {
+  border : 1px #888888 solid;
+  background: #efefef;
+   border-radius: 6px;
+   border-radius: 6px;
+   -moz-border-radius: 6px;
+   -moz-border-radius: 6px;
+   -webkit-border-radius: 6px;
+   -webkit-border-radius: 6px;
+   margin: 5px;
+   margin-bottom: 10px;
+   padding-left: 5px;
+   padding-right: 5px;
+   font-style:italic;
+   max-width: 300px;
+}
+</style>
+
+
+See <a href="configuration.html">here</a> to configure your RAMADDA server.
+
+<h2>Using SMS</h2>
+
+
+<table width=100%>
+<tr valign=top>
+<td width=50%>
+Create a note:
+<pre class=sms>note &lt;name&gt;
+some text 
+more text
+</pre>
+</td><td width=50%>
+Create a folder:
+<pre class=sms>folder &lt;name&gt;
+text
+</pre>
+</tr>
+<tr  valign=top><td>
+Create a sms message:
+<pre class=sms>sms &lt;name&gt;
+text
+</pre>
+</td><td>
+
+
+Create a wiki page:
+<pre class=sms>wiki &lt;name&gt;
+text
+</pre>
+</tr>
+<tr valign=top><td width=50%>
+Append to an existing entry:
+<pre class=sms>add &lt;name of entry&gt;
+text to append
+</pre>
+</td>
+</tr>
+
+<tr><td colspan=2>If you don't specify an entry for the various commands the current folder will be used by default.</tr>
+
+<tr  valign=top><td width=50%>
+List the entries:
+<pre class=sms>ls</pre>
+
+
+Note: you can access these entries either by name or by index, e.g. this
+will get the second entry in the list:
+<pre class=sms>get 2</pre>
+
+Print the current folder:
+<pre class=sms>ur</pre>
+or
+<pre class=sms>pwd</pre>
+
+Change directory to a folder:
+<pre class=sms>go &lt;folder&gt;
+go ..
+etc.
+</pre>
+or:
+<pre class=sms>cd &lt;folder&gt;</pre>
+
+
+</td><td>
+
+Get the link to the entry:
+<pre class=sms>url &lt;entry name&gt;</pre>
+
+Get the text of an entry:
+<pre class=sms>get &lt;entry name&gt;</pre>
+
+Create a folder, go into it and create a note:
+<pre class=sms>folder some folder</pre>
+<pre class=sms>go some folder
+note Some note
+</pre>
+
+
+Logging in:
+<pre class=sms>pass &lt;password&gt;
+any command</pre>
+
+</table>
+
+<h2>Using Voice</h2>
+If RAMADDA has been configured it will also receive voice messages. If the Twilio account is
+a paid account then the text transcription of the voice  will be included in the RAMADDA entry.
+
+</div>
+
+</body>
+</html>
+

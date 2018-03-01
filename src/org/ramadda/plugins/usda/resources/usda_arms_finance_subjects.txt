@@ -1,0 +1,4 @@
+1=All Farms
+2=Farm Businesses
+3=Farm Operator Households
+

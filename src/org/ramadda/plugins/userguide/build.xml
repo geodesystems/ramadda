@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project basedir="../../../../../" default="plugin" name="ramadda plugin">
+
+    <target name="all" depends="userguide,plugin"/>
+
+    <target name="plugin">
+      <property name="plugin" value="userguide"/>
+      <property name="plugin_group" value="coreplugins"/>
+      <ant antfile="${basedir}/build.xml" target="plugin_build"/>
+    </target>
+
+
+    <target name="userguide">
+      <echo message="Generating user guide content"/>
+      <property file="${basedir}/build.properties"/>
+      <echo message="Building docs for version: ${version}"/>
+
+<!--
+    copy the lib.tcl.template to lib.tcl so we get the version added
+-->
+      <copy overwrite="true" file="${basedir}/src/org/ramadda/plugins/userguide/content/lib.tcl.template" toFile="${basedir}/src/org/ramadda/plugins/userguide/content/lib.tcl">
+        <filterset>
+          <filter token="RELEASE" value="${release_name}"/>
+          <filter token="VERSION" value="${version}"/>
+        </filterset>
+      </copy>
+      <exec dir="${basedir}/src/org/ramadda/plugins/userguide/content" executable="${tclsh}">
+          <arg value="${basedir}/bin/idvdocgen/generate.tcl"/> 
+      </exec>
+      <antcall target="plugin"/>
+    </target>
+
+</project>

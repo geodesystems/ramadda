@@ -1,0 +1,70 @@
+<html>
+<title>FRED and EIA Data</title>
+<category:Integration>
+<body>
+<div class="ramadda-section">
+
+
+<h2>FRED Data</h2>
+
+You can integrate data from the
+<a href="https://research.stlouisfed.org/fred2/">Federal Reserve Economic Data (FRED)</a> system into RAMADDA. This requires a freely available API key.   To configure this:
+<ol>
+<li> Get a <a href="http://api.stlouisfed.org/api_key.html">FRED API key</a> 
+<li> Add a .properties file, e.g., biz.properties, to your RAMADDA home directory directory.
+<pre>
+fred.api.key=&lt;your key&gt;
+</pre>
+
+<li> Once RAMADDA is restarted you can create a Fred Category entry (File->Pick a Type...). If you do not provide a Category ID then the data from the top-level category is shown, e.g. :
+<a href="https://research.stlouisfed.org/fred2/categories">https://research.stlouisfed.org/fred2/categories</a>
+
+Else, to import a specific category, e.g., <a href="https://research.stlouisfed.org/fred2/categories/32991">Money, Banking &amp; Finance</a> (https://research.stlouisfed.org/fred2/categories/32991) enter the category ID, e.g. 32991.
+
+
+</ol>
+</div>
+
+<div class="ramadda-section">
+<h2>EIA Data</h2>
+
+You can integrate data from the <a href="http://www.eia.gov/beta/api/">Energy Information Administration</a>.
+
+<ol>
+<li> Get a <a href="http://www.eia.gov/beta/api/register.cfml">EIA API key</a> 
+<li> Add a .properties file, e.g., biz.properties, to your RAMADDA home directory directory.
+<pre>
+eia.api.key=&lt;your key&gt;
+</pre>
+
+<li> Once RAMADDA is restarted you can create a EIA Category entry (File->Pick a Type...). If you do not provide a Category ID then the data from the top-level category is shown, e.g. :
+
+<a href="http://www.eia.gov/beta/api/qb.cfm">http://www.eia.gov/beta/api/qb.cfm</a>
+
+Else, to import a specific category, e.g., 
+<a href="http://www.eia.gov/beta/api/qb.cfm?category=714804">Natural Gas</a> 
+(http://www.eia.gov/beta/api/qb.cfm?category=714804) enter the category ID, e.g. 714804. 
+
+
+</ol>
+
+
+</div>
+
+<div class="ramadda-section">
+<a name="quandl"></a>
+<h2>Quandl</h2>
+Quandl provides a treasure trove of over 10 million time series.
+To enable access create an account at <a href="https://www.quandl.com/">Quandl</a> and get the API key. Add  to a .properties file in your RAMADDA home dir:
+<pre>
+quandl.api.key=&lt;your key&gt;
+</pre>
+</div>
+
+
+
+
+
+</body>
+</html>
+

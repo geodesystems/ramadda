@@ -1,0 +1,61 @@
+<html><head>
+  <title>${header.title} - ${title}</title>
+
+<properties>
+name=White Earth CC
+id=wetcc
+
+ramadda.template.link.wrapper =<a  href="${url}">${label}</a>
+ramadda.template.link.separator=&nbsp;|&nbsp;
+ramadda.template.userlink.popup=true
+ramadda.template.favorites = <b>Favorites:</b><div class="favorites">${entries}</div>
+ramadda.template.cart = <b>Cart:</b><div class="favorites">${entries}</div>
+
+</properties>
+
+${imports}
+
+<style type="text/css">
+  .wetcc-header { 
+       background-image: url('${root}/wetcc/bg.png'); 
+       padding-top:20px;
+       padding-left:10px;
+       padding-right:10px;
+       color: white;
+   }
+  .wetcc-header-links  { 
+       padding-top:10px;
+       padding-bottom:5px;
+       color: white;
+   }
+  .wetcc-header-links a { 
+       color: white;
+   }
+  .ramadda-innercontent {
+      margin-left:10px;
+      margin-right:10px;
+  }
+
+}
+
+</style>
+
+${headfinal}
+
+
+</head>
+
+<body>
+<table  class="wetcc-header"  cellpadding="0" cellspacing="0" width="100%">
+<tr><td colspan="2"><center><img src="${root}/wetcc/logo.png"></center>
+</td></tr>
+<tr valign="bottom"><td><div class="wetcc-header-links">${links}</div></td><td align=right>${userlinks}</td></tr>
+</table>
+<div class="ramadda-content">${entry.header}<div class="ramadda-innercontent">${content}</div></div>
+</td>
+</tr>
+<div class="ramadda-footer">
+&copy; 2013 White Earth Tribal & Community College \ 102 3rd St. NE  PO Box 478  Mahnomen, MN 56557; Phone: 218-935-0417:: Fax: 218-936-5814
+The White Earth Tribal & Community College In accordance with Federal law and U.S. Department of Agriculture policy, this institute is prohibited from discriminating on the basis of race, color, national origin, age, disability, religion, sex, familial status, sexual orientation, and reprisal.
+</div>
+</body></html>

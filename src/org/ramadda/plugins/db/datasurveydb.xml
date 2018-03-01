@@ -1,0 +1,20 @@
+
+<tables>
+
+
+<table id="db_datasurvey" name="Data Survey" >
+   <column name="project" type="string" label="Project Name" cansearch="true"   canlist="true" columns="60"/>
+   <column name="instrument" type="string" label="Instrument" rows="5" columns="60"/>
+   <column name="o_and_m" label="Operations and Management" type="string"  rows="5" columns="60"/>
+   <column name="comm" label="Communications" type="string"  rows="5" columns="60"/>
+   <column name="processing" label="Computing and Processing" type="string"  rows="5" columns="60"/>
+   <column name="data" label="Data Types" type="string"  rows="5" columns="60"/>
+   <column name="metadata" label="Important Metadata" type="string"  rows="5" columns="60"/>
+   <column name="alg" label="Algorithms and Software" type="string"  rows="5" columns="60"/>
+   <column name="storage" label="Storage Requirements" type="string"  rows="5" columns="60"/>
+   <column name="search" label="Search and Access" type="string"  rows="5" columns="60"/>
+   <column name="interoperability" label="Interoperability" type="string"  rows="5" columns="60"/>
+</table>
+
+
+</tables>

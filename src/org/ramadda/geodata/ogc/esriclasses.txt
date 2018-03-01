@@ -1,0 +1,1 @@
+org.ramadda.geodata.ogc.EsriSearchProvider;https://nga.maps.arcgis.com/sharing/rest;NGA Esri Maps Repository

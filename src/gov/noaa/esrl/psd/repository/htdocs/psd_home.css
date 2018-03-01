@@ -1,0 +1,259 @@
+/* ESRL OVERRIDES */
+body {
+        margin: auto;
+        width: 1100px;
+        font-size: 0.85em;      
+        background: #eee;
+}
+
+#major_nav {
+        background-color: #FFFFE1;
+        color: #000066;
+        font-size: 110%;
+}
+
+#container {
+        -moz-box-shadow: 5px 5px 5px #999;
+        -webkit-box-shadow: 5px 5px 5px#999;
+        box-shadow: 5px 5px 5px #999;           
+        background: white;
+}
+
+#content {
+        font-family: "Lucida Sans", "Lucida Grande", "Lucida Sans Unicode", "Trebuchet MS", "Liberation Sans", FreeSans, Arial, sans-serif;
+        line-height: 1.5;
+        border-left: none;
+        padding: 0 1.5em 0 1.5em;
+}
+
+/* override psd style for dd*/
+#content dl dd {
+        margin-bottom: 0;
+}
+
+h1 {
+        font-weight: normal;
+        color: #2b477d;         
+        font-size: 2.1em;
+        -webkit-text-shadow: 2px 2px 2px #CCC;
+        -moz-text-shadow: 2px 2px 2px #CCC;
+        text-shadow: 2px 2px 2px #CCC;
+}
+
+h2 {
+        font-weight: normal;
+        color: #666;
+        font-size: 1.25em;
+        text-transform: uppercase;      
+}
+
+h3 {
+        font-weight: bold;
+        color: #666;
+        font-size: 1em;
+        margin-top: 1.25em;
+}
+
+
+/* --------------PSD HOME STYLES-------------*/
+.attn {
+        font-weight: bold;
+        font-size: 90%;
+        font-style: normal;
+        color: black;
+        margin-top: 1em;
+        line-height: 1.25;
+        width: 58em;
+        text-align: left;
+}
+
+/* -----------LEFT SIDE OF HOME PAGE------------- */
+#leftCol {
+        float: left;
+        position: relative;
+        width: 790px;
+        padding: 2em 0 0.75em 0;
+        border-right: 1px dotted #999;
+}
+
+/* SLIDESHOW */
+#slideShowContainer {
+        position: relative;
+        margin: 0 0 0 0.5em;
+}
+
+#slideShow {
+        position: relative;
+        margin: 1em 0 0 1em;
+}
+
+#slideShowTitleBox {
+        position: absolute;
+        top: 0;
+        left: 0;
+        z-index: 1;
+        padding: 5px 0 0 5px; 
+        display: block;
+        width: 726px;
+        height: 30px;
+        background-color: rgba(0,0,0,0.7);
+        border-bottom: 1px solid white; 
+}
+
+.slideShowTitle {
+        color: white;
+        margin: 0;
+        padding: 0;
+        text-align: center;
+        text-transform: none;
+}
+
+#imageContainer { 
+        position: relative;
+}  
+
+#imageContainer img { 
+        position: absolute;
+        width: 730px
+        height: 275px;
+        left: 0;
+        top: 0;
+        opacity: -0.01;
+        border: 1px solid #CCC;
+}       
+
+#captionArea {
+        position: absolute;
+        left: 0;
+        top: 225px;
+        padding: 5px 0 0 5px; 
+        width: 726px;
+        height: 45px;
+        background-color: rgba(0,0,0,0.7);
+        border-top: 1px solid white;
+        border-bottom: 1px solid white; 
+}
+
+#captionArea a {
+        color: white;
+        text-decoration: none;
+}
+
+#slideControl {
+        float: left; 
+        padding-left: 0.25em;
+        padding-top: 0.25em;
+        width: 5.25em;
+}
+
+#slideControl img {
+        width: 1.5em;
+        height: 1.5em;
+}
+
+#captionContainer {
+        float: left;
+        display: block;
+        margin-left: 1em;
+        width: 600px;
+        color: white;
+}
+
+#captionContainer h3 {
+        font-weight: normal;
+        padding: 0;
+        margin: 0;
+}
+
+/* RESEARCH HIGHLIGHTS SECTION */
+#rsrch {
+        margin: 275px 0 0 15px;
+        color: #333333;
+        line-height: 1.1;
+}
+
+#rsrch h2 {
+        font-size: 1.5em;
+}
+
+#rsrch table img {
+        padding-right: 10px;
+}
+
+.hightlightTxt {
+        font-size: .5em;
+}
+
+/* -----------RIGHT SIDE OF HOME PAGE------------- */
+#rightCol {
+        float: right;
+        position: relative;
+        top: 0;
+        right: 0;
+        width: 235px;
+        padding-left: 1.5em;
+        /*border-left: 1px dotted #999;*/
+}
+
+/* RIGHT NAVIGATION */
+#rightNavContainer {
+        float: left;
+        padding: 3em 0 0 0;
+}
+
+#rightNav {
+        margin-left: 0;
+        margin-bottom: 2.5em;
+}
+
+#rightNav a {font-size: .95em; }
+#rightNav a:hover {font-size: .95em; color: black; text-decoration: none;}
+#rightNav a:visited {font-size: .95em;}
+
+#rightNav div.h2Box {
+        margin:  0 0 0 0;
+}
+
+#rightNav dd{
+        text-align: left;
+        margin-left: 0;
+}
+
+#rightNav ul {
+        width: 100%;
+        margin-left: -1.25em;
+        margin-top: 0.5em;
+        list-style: none;
+        line-height: 1;
+}
+
+#rightNav li {
+        border-bottom: 1px dotted #999;
+}
+
+#rightNav li:hover {
+        background: rgb(240,240,240);
+}
+
+.announce {
+        margin: 1em 1em 1em 0.5em;
+        background: #ededee;
+        border-radius: 1em;
+        line-height: 1.4; 
+        padding: 0.5em 0 0.5em 0; 
+        box-shadow: 5px 5px 5px #CCC; 
+        -webkit-box-shadow: 5px 5px 5px #CCC; 
+        -moz-box-shadow: 5px 5px 5px #CCC;      
+}
+
+.announce dd {
+        margin: 0;
+        padding: 10px;
+}
+
+.caption {
+        font-style: normal; 
+        font-size: 80%;
+        line-height: 1.2;               
+        margin-top: 3px;
+}

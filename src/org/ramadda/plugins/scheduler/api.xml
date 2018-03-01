@@ -1,0 +1,5 @@
+
+<api handler="org.ramadda.plugins.scheduler.Scheduler" id="scheduler">
+      <property name="admin" value="false"/>
+      <api request="/scheduler/schedule"    method="processScheduleRequest"  name="Scheduler"/>
+</api>

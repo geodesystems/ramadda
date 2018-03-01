@@ -1,0 +1,907 @@
+<types  supercategory="Science and Education">
+
+  <type name="project_program"  description="Program" handler="org.ramadda.repository.type.ExtensibleGroupTypeHandler" category="Science Project">
+     <property name="icon" value="/fieldproject/chart_organisation.png"/>
+     <property name="form.file.show" value="false"/>
+     <property name="form.url.show" value="true"/>
+     <property name="form.datatype.show" value="false"/>
+     <property name="form.altitude.show" value="false"/>
+     <property name="form.altitude.top.show" value="false"/>
+     <wiki><![CDATA[
+{{noheading}}
++inset
+<table width="100%">
+<tr valign=top>
+<td width="50%">
+<div style="max-height: 400px; overflow-y: auto;">
+:title {{name}}
+
+{{description wikify="true"}}
+</div>
+
+<table class="formtable">
+{{resource row.label="URL:"  message=""}}
+</table>
+
+<p>
+{{tree message="" details="false" prefix="==All Sub-Folders =="}}
+
+
+</td>
+<td width="50%">
+{{image src="::*" message="" width="300"}}
+<p>
+{{map  entry="Sites" message="" width="300" prefix="==Sites=="}}
+
+</td></tr>
+</table>
+-inset
+]]>
+</wiki>
+
+   </type>
+
+
+
+  <type name="project_project"  description="Project" handler="org.ramadda.geodata.fieldproject.FieldProjectTypeHandler" category="Science Project"      metadata="project_pi,project_person,project_funding,enum_tag,content.keyword">
+     <property name="icon" value="/fieldproject/page_world.png"/>
+
+     <property name="form.file.show" value="false"/>
+     <property name="form.url.show" value="true"/>
+     <property name="form.datatype.show" value="false"/>
+     <property name="form.altitude.show" value="false"/>
+     <property name="form.altitude.top.show" value="false"/>
+     <property name="search.label" value="Search for Projects"/>
+     <property name="search.tabs" value="list,timeline"/>
+     <property name="search.metadatatypes" value="project_pi,project_person"/>
+     <column name="project_id"  type="string" label="Project ID"/>
+     <column name="status"  type="enumerationplus"  values="file:/org/ramadda/geodata/fieldproject/resources/statuses.txt" label="Status"/>
+     <column name="project_type"  type="enumerationplus"  label="Project Type"/>
+     <column name="location"  type="string"  label="Where" rows="2" columns="60"/>
+     <column name="notes" type="string"  label="Notes" rows="5" size="5000" changetype="true"/>
+     <wiki><![CDATA[
++section
++row
++col-md-8
+:title {{name}}
+<div style="max-height: 400px; overflow-y: auto;">
+{{description wikify="true"}}
+</div>
+<p>
+:heading Project Information
+<table class="formtable">
+{{resource row.label="URL:"  message=""}}
+{{daterange row.label="Project Dates:"  message=""}}
+{{field name="project_id" row.label="Project ID:"}}
+{{field name="status" row.label="Status:"}}
+{{field name="project_type" row.label="Type:"}}
+{{field name="location" row.label="Location:"}}
+{{field name="notes" row.label="Notes:"}}
+</table>
+
+{{properties metadata.types="project_pi,project_person,project_funding" message="" }}
+
+{{tree title="Data" details="false" showtoggle="false" message="" prefix="==Data=="}}
+
+{{properties metadata.types="!project_pi,!project_person,!project_funding" message="" }}
+{{links entry="Links" message=""}}
+-col
++col-md-4
+{{image src="::*" message="" width="300"}}
+<p>
+{{mapentry width="350" message=""}}
+-col
+-row
+-section
+]]>
+</wiki>
+<children><![CDATA[
+<entries>
+<entry  name="Data"  type="group"/>
+<entry  name="Documents"  type="group"/>
+</entries>
+]]>
+</children>
+
+
+   </type>
+
+  <type name="project_site"  description="Site" handler="org.ramadda.repository.type.ExtensibleGroupTypeHandler" category="Science Project" mefirst="true">
+     <property name="icon" value="/fieldproject/site.png"/>
+     <property name="form.resource.show" value="false"/>
+     <property name="form.datatype.show" value="false"/>
+     <property name="form.altitude.show" value="true"/>
+     <property name="form.altitude.top.show" value="false"/>
+
+     <property name="search.label" value="Sites"/>
+     <property name="search.tabs" value="map,list"/>
+<!--
+     <property name="search.metadatatypes" value="project_person"/>
+-->
+
+     <property name="search.form.date.show" value="false"/>
+
+
+     <column name="short_name"   label="Short Name"    cansearch="true"  showempty="false"/>
+     <column name="site_type" type="enumerationplus"  label="Site Type"    cansearch="true" values="file:/org/ramadda/geodata/fieldproject/resources/sitetypes.txt" showempty="false"/>
+     <column name="status" type="enumerationplus"  label="Status"    cansearch="true"  showempty="false"/>
+     <column name="network"   label="Network"    type="enumerationplus"   cansearch="true" iscategory="true"  showempty="false"/>
+     <column name="location"  type="string"  label="Where" rows="2" columns="60"  showempty="false"/>
+     <column name="country"   label="Country"    type="enumerationplus"  cansearch="true"  showempty="false" canlist="false"/>
+     <column name="state"   label="State/Province"    type="enumerationplus"  cansearch="true" showempty="false"  canlist="false" />
+     <column name="county"   label="County"    type="enumerationplus"  cansearch="true"  showempty="false"  canlist="false" />
+     <column name="local_x"   label="Local X Coordinate"    type="double"   default="0"  showempty="false"  canlist="false" />
+     <column name="local_y"   label="Local Y Coordinate"    type="double"   default="0"  showempty="false"  canlist="false" />
+     <column name="local_projection"   label="Local Projection"    type="enumerationplus"   showempty="false"  canlist="false" />
+     <column name="vertical_datum"   label="Vertical Datum"    type="enumerationplus"   showempty="false"  canlist="false" />
+     <column name="latlong_datum"   label="Horizontal Datum"    type="enumerationplus"   showempty="false"  canlist="false" />
+     <column name="position_accuracy"   label="Position Accuracy"    type="double"  suffix="meters"  default="0"  showempty="false"  canlist="false" />
+
+
+     <wiki><![CDATA[
+{{noheading}}
++inset
+<table width="100%" cellpadding="5" cellspacing="5">
+<tr valign=top>
+<td width="50%">
+:title {{name}}
+<div style="max-height: 400px; overflow-y: auto;">
+{{description wikify="true"}}
+</div>
+
+==Site Information==
+<table class="formtable">
+     {{resource row.label="URL:"  message=""}}
+     {{field name="short_name"  row.label="Short Name"}}
+     {{field name="site_type"   row.label="Site Type"}}
+     {{field name="status"      row.label="Status"}}
+     {{field name="network"     row.label="Network"}}
+     {{field name="location"    row.label="Where"}}
+     {{field name="country"     row.label="Country"}}
+     {{field name="state"       row.label="State/Province"}}
+     {{field name="county"      row.label="County"}}
+</table>
+
+
+{{properties metadata.types="!project_pi" message="" }}
+
+
+</td>
+<td width="50%">
+{{image src="::*" message="" width="300"}}
+<p>
+{{mapentry width="350" message=""}}
+<p>
+
+{{tree title="Data" details="false" showtoggle="false" message="" prefix="==Data=="}}
+
+</td></tr>
+
+</table>
+
+-inset
+
+]]>
+</wiki>
+
+
+
+   </type>
+
+
+
+
+
+<type name="project_visit"  description="Site Visit" handler="org.ramadda.repository.type.ExtensibleGroupTypeHandler" category="Science Project">
+     <column name="release_status" type="enumerationplus"  label="Status"  values="file:/org/ramadda/geodata/fieldproject/resources/statuses.txt"  default="active"/>
+     <column name="results" label="Results" rows="5"/>
+     <column name="weather_conditions" label="Weather Conditions" rows="2"/>
+
+     <property name="icon" value="/fieldproject/world_go.png"/>
+     <property name="form.description.label" value="Objective"/>
+     <property name="form.resource.show" value="false"/>
+     <property name="form.datatype.show" value="false"/>
+     <property name="form.altitude.show" value="true"/>
+     <property name="form.altitude.top.show" value="false"/>
+
+     <property name="search.label" value="Search Visits"/>
+     <property name="search.searchopen" value="true"/>
+     <property name="search.tabs" value="map,list"/>
+     <property name="search.metadatatypes" value="project_person"/>
+     <property name="search.initsearch" value="true"/>
+     <property name="search.form.date.show" value="true"/>
+
+
+   </type>
+
+
+  <type name="project_site_assessment"  description="Site Assessment"  category="Science Project">
+     <property name="icon" value="/fieldproject/map_magnify.png"/>
+     <property name="html.type.show" value="false"/>
+     <property name="html.date.show" value="false"/>
+     <property name="form.resource.show" value="false"/>
+     <property name="form.date.show" value="false"/>
+     <property name="form.area.show" value="false"/>
+     <property name="form.location.show" value="true"/>
+     <property name="form.datatype.show" value="false"/>
+     <property name="form.altitude.show" value="false"/>
+     <property name="search.tabs" value="list,map"/>
+     <property name="search.form.date.show" value="false"/>
+
+     <column label="Description" group="Facilities" name="facilities_description"  size="1000" rows="5"   canexport="false"  showlabel="false"/>
+     <column label="Research Logistics" group="Facilities" name="facilities_score" type="enumeration" values="0:na,1,2,3,4,5" cansearch="true"/>
+     <column label="Lodging" group="Facilities" name="lodging" rows="3"    xxxcanexport="false"  size="500" changetype="true" />
+     <column label="Communications" group="Facilities" name="communications" rows="3"    xxxcanexport="false"  size="500" changetype="true"  />
+     <column label="Vehicles" group="Facilities" name="vehicles" rows="3"    xxxcanexport="false"  size="500" changetype="true"  />
+     <column label="Food" group="Facilities" name="food" rows="3"    xxxcanexport="false"  size="500" changetype="true"  />
+     <column label="Equipment" group="Facilities" name="equipment" rows="3"    xxxcanexport="false"  size="500" changetype="true"  />
+     <column label="Usable Space" group="Facilities" name="usable_space" rows="3"    xxxcanexport="false"  size="500" changetype="true"  />
+     <column label="URLs" group="Facilities" name="facilities_url" rows="3" size="500" changetype="true"  type="url"   xxxcanexport="false"   />
+     <column group="Accessibility"  name="access_description" label="Description" size="1000"  rows="5"   xxxcanexport="false"   showlabel="false"/>
+     <column label="Transportation" group="Accessibility" name="access_score" type="enumeration" values="0:na,1,2,3,4,5" cansearch="true"/>
+     <column label="URLs" group="Accessibility" name="access_url" rows="3" size="500" changetype="true"   type="url"   xxxcanexport="false" />
+     <column group="Research Record"  name="research_description" label="Description" size="1000"  rows="5"   xxxcanexport="false"   showlabel="false"/>
+     <column label="Observatory" group="Research Record" name="research_score" type="enumeration" values="0:na,1,2,3,4,5" cansearch="true"/>
+     <column label="URLs" group="Research Record" name="research_url" rows="3" size="500" changetype="true"   type="url"   xxxcanexport="false"   />
+     <column group="Data Availability"  name="data_description" label="Description" size="1000" rows="5"   xxxcanexport="false"   showlabel="false"/>
+     <column label="Data Access" group="Data Availability" name="data_score" type="enumeration" values="0:na,1,2,3,4,5" cansearch="true"/>
+     <column label="URLs" group="Data Availability" name="data_url" rows="3" size="500" changetype="true"   type="url"   xxxcanexport="false" />
+
+
+     <wiki><![CDATA[
+{{noheading}}
++inset
+:title Assessment: {{name}}
+
+{{description wikify="true"}}
+
+{{information details="true"}}
+
+{{tree  showtoggle="false" message="" prefix="==Data=="}}
+]]>
+-inset
+</wiki>
+   </type>
+
+
+
+    <type name="project_fieldnote" description="Field Note" category="Science Project" handler="org.ramadda.geodata.fieldproject.FieldNoteTypeHandler">
+      <property name="icon" value="/fieldproject/notebook.png"/> 
+      <property name="form.name.label" value="Title"/>
+      <property name="form.description.label" value="Objective"/>
+      <property name="form.resource.show" value="false"/>
+      <property name="form.todate.show" value="false"/>
+
+      <property name="form.time.show" value="false"/>
+      <property name="form.setbounds.show" value="false"/>
+      <property name="form.settimerange.show" value="false"/>
+<!--
+     <property name="form.location.show" value="true"/>
+-->
+
+      <column name="location" label="Where" type="enumerationplus" values=""/>
+      <column name="who" label="Who" rows="5"/>
+      <column name="instrument1" label="Instrument 1"  type="enumerationplus" values="file:/org/ramadda/geodata/fieldproject/resources/instruments.txt"/>
+      <column name="instrument2" label="Instrument 2"  type="enumerationplus" values="file:/org/ramadda/geodata/fieldproject/resources/instruments.txt"/>
+      <column name="instrument3" label="Instrument 3"  type="enumerationplus" values="file:/org/ramadda/geodata/fieldproject/resources/instruments.txt"/>
+      <column name="conditions" label="Conditions" rows="5"/>
+      <column name="notes" label="Notes" rows="5"/>
+     <wiki><![CDATA[
+{{noheading}}
++inset
+<table width="100%">
+<tr valign=top>
+<td width="50%">
+:title Field Note: {{name}}
+
+{{description wikify="true"}}
+
+===Where===
+{{field name="location"}}
+
+===Who===
+{{field name="who"}}
+
+===Instruments===
+{{field name="instrument1"}}
+{{field name="instrument2"}}
+{{field name="instrument3"}}
+
+
+===Conditions===
+{{field name="conditions"}}
+
+===Notes===
+{{field name="notes"}}
+</td>
+<td width="50%">
+{{image src="::*" message="" width="300"}}
+<p>
+{{mapentry width="350" message=""}}
+<p>
+{{tree showtoggle="false" title=""}}
+</td>
+</tr>
+</table>
+
+-inset
+]]>
+</wiki>
+
+
+    </type>
+
+
+
+  <type name="project_dataset"  description="Dataset" handler="org.ramadda.repository.type.ExtensibleGroupTypeHandler" category="Science Project">
+     <property name="icon" value="/fieldproject/dataset.png"/>
+     <property name="form.resource.show" value="false"/>
+     <property name="form.datatype.show" value="false"/>
+     <property name="form.altitude.show" value="true"/>
+     <property name="form.altitude.top.show" value="true"/>
+     <column name="dataset_id"   label="Dataset ID" cansearch="true"/>
+     <column name="data_type"  type="enumerationplus"  label="Data Type" values="na:NA,grid:Gridded Data,observation:Observation,satellite:Satellite,remote_sensing:Remote Sensing,misc:Miscellaneous" cansearch="true"/>
+     <column name="data_level"  type="enumerationplus"  label="Data Level" values="na:NA,level0:Level 0,level1:Level 1,level2:Level 2,level3:Level 3" cansearch="true"/>
+     <column name="usage_notes" type="string"  label="Usage Notes" rows="5" size="5000" changetype="true"/>
+
+
+     <wiki><![CDATA[
++section title="Dataset: {{name}}"
++row
++col-md-8
+<div style="max-height: 400px; overflow-y: auto;">
+{{description wikify="true"}}
+</div>
+
+
+==Dataset Information==
+<table class="formtable">
+{{resource row.label="URL:"  message=""}}
+{{field name="dataset_id" row.label="Dataset ID:"}}
+{{field name="data_type" row.label="Data Type:"}}
+{{field name="usage_notes" row.label="Usage Notes:"}}
+</table>
+
+{{properties metadata.types="project_pi,project_person,project_funding" message="" }}
+
+{{tree title="Data" details="false" showtoggle="false" message="" prefix="==Data=="}}
+
+
+{{properties metadata.types="!project_pi,!project_person,!project_funding,!content.sort" message="" }}
+-col
++col-md-4
+{{image src="::*" message="" width="300"}}
+<p>
+{{mapentry width="350" message=""}}
+-col
+-row
+
+]]>
+</wiki>
+
+
+
+
+   </type>
+
+
+
+  <type name="project_experiment"  description="Experiment" handler="org.ramadda.repository.type.ExtensibleGroupTypeHandler" category="Science Project"      metadata="enum_tag,content.keyword,project_person">
+     <property name="icon" value="/fieldproject/experiment.png"/>
+     <property name="form.file.show" value="false"/>
+     <property name="form.url.show" value="false"/>
+     <property name="form.datatype.show" value="false"/>
+     <property name="form.altitude.show" value="false"/>
+     <property name="form.altitude.top.show" value="false"/>
+     <property name="form.area.show" value="false"/>
+     <property name="search.label" value="Search for Experiments"/>
+     <property name="search.tabs" value="list,timeline"/>
+     <children><![CDATA[
+<entries>
+<entry  name="Data"  type="group"/>
+<entry  name="Documents"  type="group"/>
+</entries>
+]]>
+</children>
+     <column name="experiment_type"  type="enumerationplus"  label="Experiment Type"/>
+     <column name="notes" type="string"  label="Notes" rows="5" size="5000" changetype="true"/>
+     <wiki><![CDATA[
+{{noheading}}
++inset
+<table width="100%">
+<tr valign=top>
+<td width="50%">
+:title {{name}}
+<div style="max-height: 400px; overflow-y: auto;">
+{{description wikify="true"}}
+</div>
+
+==Experiment Information==
+<table class="formtable">
+{{field name="experiment_type" row.label="Type:"}}
+{{field name="notes" row.label="Notes:"}}
+</table>
+
+{{properties message="" }}
+
+{{links entry="Links" message=""}}
+
+
+{{tree title="Data" details="false" showtoggle="false" message="" prefix="==Data=="}}
+
+
+</td></tr>
+
+
+</table>
+-inset
+]]>
+</wiki>
+   </type>
+
+
+
+  <type name="project_instrument"  description="Instrument Data Collection" handler="org.ramadda.geodata.fieldproject.FieldProjectTypeHandler" category="Science Project">
+     <property name="icon" value="/fieldproject/system-monitor.png"/>
+     <property name="form.resource.show" value="false"/>
+     <property name="form.datatype.show" value="false"/>
+     <property name="form.altitude.show" value="false"/>
+     <property name="form.altitude.top.show" value="false"/>
+     <column name="instrument_id" type="string"  label="Instrument ID"   />
+     <column name="type" type="enumeration"  label="Instrument Type"   />
+     <wiki><![CDATA[
+{{noheading}}
++inset
+<table width="100%">
+<tr valign=top>
+<td width="50%">
+:title Instrument: {{name}}
+
+{{description wikify="true"}}
+
+==Information==
+<table class="formtable">
+<tr><td align="right"><b>ID:</b></td><td>{{field name="instrument_id"}}</td></tr>
+<tr><td align="right"><b>Type:</b></td><td>{{field name="type"}}</td></tr>
+</table>
+
+{{tree prefix="==Data==" message="" showtoggle="false"}}
+
+</td>
+<td width="50%">
+{{image src="::*" message="" width="300"}}
+{{mapentry width="350" message=""}}
+<p>
+</td></tr>
+
+
+</table>
+
+==Properties==
+<block open="false" title="View all properties">
+{{properties}}
+</block>
+-inset
+
+
+]]>
+</wiki>
+
+
+ </type>
+
+  <type name="project_deployment"  description="Deployment" handler="org.ramadda.geodata.fieldproject.FieldProjectTypeHandler" category="Science Project">
+     <property name="icon" value="/fieldproject/paper-plane.png"/>
+     <property name="form.resource.show" value="false"/>
+     <property name="form.datatype.show" value="false"/>
+     <property name="form.altitude.show" value="false"/>
+     <property name="form.altitude.top.show" value="false"/>
+     <wiki><![CDATA[
+{{noheading}}
++section
+:title {{name}}
+<div style="max-height: 400px; overflow-y: auto;">
+{{description wikify="true"}}
+</div>
+<p>
+{{map listentries="true" width="600"}}
+<p>
+{{timeline width="600"}}
+<p>
+{{tree message=""}}
+-section
+]]>
+</wiki>
+
+ </type>
+
+
+  <type name="project_campaign"  description="Campaign" handler="org.ramadda.geodata.fieldproject.FieldProjectTypeHandler" category="Science Project">
+     <property name="icon" value="/fieldproject/paste_plain.png"/>
+     <property name="form.resource.show" value="false"/>
+     <property name="form.datatype.show" value="false"/>
+     <property name="form.altitude.show" value="false"/>
+     <property name="form.altitude.top.show" value="false"/>
+   </type>
+
+
+
+  <type name="project_meeting"  description="Meeting" category="Science Project"  handler="org.ramadda.repository.type.ExtensibleGroupTypeHandler">
+     <property name="icon" value="/fieldproject/group.png"/>
+     <property name="form.resource.show" value="false"/>
+     <property name="form.datatype.show" value="false"/>
+     <property name="form.todate.show" value="false"/>
+     <property name="form.area.show" value="false"/>
+     <property name="form.location.show" value="true"/>
+     <column name="topic" label="Topic"  size="1000"  cansearch="true" />
+     <column name="location" label="Location"  size="1000"  cansearch="true" />
+     <column name="participants" label="Participants"  size="5000" rows="5"  cansearch="true" />
+   </type>
+
+
+  <type name="project_contact"  description="Contact" handler="org.ramadda.repository.type.ExtensibleGroupTypeHandler" category="Science Project">
+     <property name="icon" value="/icons/user.png"/>
+     <property name="html.type.show" value="false"/>
+     <property name="html.date.show" value="false"/>
+
+     <property name="form.resource.show" value="false"/>
+     <property name="form.date.show" value="false"/>
+
+     <property name="form.area.show" value="false"/>
+     <property name="form.description.show" value="false"/>
+     <property name="form.datatype.show" value="false"/>
+     <property name="form.altitude.show" value="false"/>
+
+     <property name="search.tabs" value="list"/>
+     <property name="search.form.date.show" value="false"/>
+
+     <column name="address" label="Address" size="1000" rows="5"/>
+     <column name="email" label="Email" type="email"/>
+     <column name="phone" label="Phone" />
+     <column name="affiliation" label="Affiliation" type="enumerationplus" />
+     <column name="notes" label="Notes"  size="1000" rows="5" />
+     <wiki><![CDATA[
+{{noheading}}
++inset
+:title {{name}}
+<table width="100%">
+<tr valign=top>
+<td width="50%">
+{{description wikify="true"}}
+
+{{information}}
+
+{{tree  showtoggle="false" message="" prefix="==Data=="}}
+
+</td>
+<td width="50%">
+{{image src="::*" message="" width="300"}}
+<p>
+</td></tr>
+</table>
+-inset
+]]>
+</wiki>
+   </type>
+
+
+
+
+
+
+  <type name="project_contribution"  description="Research Contribution" handler="org.ramadda.geodata.fieldproject.FieldProjectTypeHandler" category="Science Project">
+     <property name="icon" value="/fieldproject/lightbulb.png"/>
+     <property name="form.resource.show" value="true"/>
+     <property name="form.datatype.show" value="false"/>
+     <property name="form.altitude.show" value="false"/>
+     <property name="form.altitude.top.show" value="false"/>
+     <column name="status" type="string"  label="Status"   />
+     <column name="expected_users" type="string"  label="Expected Users"   changetype="true" size="2000"/>
+     <wiki><![CDATA[
+{{noheading}}
++section
+:title {{name}}
+<table width="100%"><tr valign="top">
+<td width="50%">{{description wikify="true"}}</td>
+<td>
+<table class="formtable">
+{{resource row.label="URL:"  message=""}}
+{{field name="status" row.label="Status:"}}
+{{field name="expected_users" row.label="Expected Users:"}}
+</table>
+{{properties}}
+</td>
+
+</tr>
+</table>
+{{links  prefix="==Links=="   message=""}}
+-section
+
+]]>
+</wiki>
+
+   </type>
+
+
+
+    <type name="project_surveylocation" description="Survey Location" category="Science Project" >
+      <property name="icon" value="/fieldproject/compass.png"/> 
+      <property name="form.file.label" value="Location Image"/>
+      <property name="form.url.show" value="false"/>
+      <property name="form.serverfile.show" value="false"/>
+      <property name="form.metdata.add.default" value="true"/>
+      <property name="form.name.label" value="Location"/>
+      <property name="form.description.label" value="Notes"/>
+      <property name="form.location.show" value="true"/>
+      <property name="form.area.show" value="false"/>
+
+<!-- 
+features 
+-->
+
+      <column name="survey_type" label="Location Type"  type="enumerationplus"   values="file:/org/ramadda/geodata/fieldproject/resources/surveylocation_type.txt"/>
+      <column name="equipment" label="Equipment"  type="enumerationplus"   values="file:/org/ramadda/geodata/fieldproject/resources/surveylocation_equipment.txt"/>
+
+     <wiki><![CDATA[
+{{noheading}}
++section title={{name}}
+<table width="100%">
+<tr valign=top>
+<td width="50%">
+{{description wikify="true"}}
+
+==Information==
+<table>
+<tr><td align="right"><b>Survey Type:</b></td><td>{{field name="survey_type"}}</td></tr>
+<tr><td align="right"><b>Equipment:</b></td><td> {{field name="equipment"}}</td></tr>
+</table>
+<p>
+
+{{image  message="" width="600"}}
+
+</td>
+<td width="50%">
+{{mapentry width="350" message=""}}
+</td></tr>
+</table>
+-section
+
+]]>
+</wiki>
+
+
+
+    </type>
+
+
+
+
+  <type name="project_organization"  description="Organization" handler="org.ramadda.repository.type.ExtensibleGroupTypeHandler" category="Science Project" >
+     <property name="icon" value="/fieldproject/chart_organisation.png"/>
+     <property name="form.file.show" value="false"/>
+     <property name="form.url.show" value="true"/>
+     <property name="form.time.show" value="false"/>
+     <property name="form.location.show" value="true"/>
+     <column name="organization_type" type="enumerationplus"  label="Organization Type"    cansearch="true" values="file:/org/ramadda/geodata/fieldproject/resources/organizationtypes.txt"/>
+     <column name="status" type="enumerationplus"  label="Status"    cansearch="true" values="file:/org/ramadda/geodata/fieldproject/resources/statuses.txt"/>
+     <column name="short_name"   label="Short Name"    cansearch="false"/>
+     <column name="notes" type="string"  label="Notes" rows="5" size="5000" changetype="true"/>
+
+     <wiki><![CDATA[
+{{noheading}}
++inset
+<table width="100%">
+<tr valign=top>
+<td width="50%">
++title
+{{field name="short_name"}}  {{name}}
+-title
+
+{{description wikify="true"}}
+
+==Information==
+<table class="formtable">
+<tr><td align="right"><b>Url:</b></td><td>{{resource}}</td></tr>
+<tr><td align="right"><b>Type:</b></td><td>{{field name="organization_type"}}</td></tr>
+<tr><td align="right"><b>Status:</b></td><td>{{field name="status"}}</td></tr>
+<tr><td align="right"><b>Notes:</b></td><td> {{field name="notes"}}</td></tr>
+</table>
+
+{{tree prefix="==Contents==" message="" showtoggle="false"}}
+
+</td>
+<td width="50%">
+{{image src="::*" message="" width="300"}}
+<p>
+{{map  entry="Sites" message="" width="300" suffix="<b>Site Map</b>"}}
+<p>
+{{links  entry="Links" message="" prefix="==Links=="}}
+<p>
+{{comments prefix="==Comments==" }}
+</td></tr>
+
+
+
+</table>
+
+==Properties==
+{{properties block.show="true" block.open="false"}}
+<p>
+-inset
+]]>
+</wiki>
+
+
+   </type>
+
+
+
+
+  <type name="project_tls_scan"  description="TLS Scan" category="Science Project" pattern="(.*\.RiSCAN\.zip|.*Scanner-Projects.zip|.*\.leica\.zip)">
+     <property name="icon" value="/fieldproject/tripod.png"/>
+     <property name="form.url.show" value="false"/>
+     <property name="form.resource.label" value="Site Photo"/>
+     <property name="form.datatype.show" value="false"/>
+     <property name="form.datatype.show" value="false"/>
+     <property name="form.altitude.show" value="true"/>
+     <property name="form.altitude.top.show" value="false"/>
+     <column name="equipment" label="Equipment"  type="enumerationplus"   values="file:/org/ramadda/geodata/fieldproject/resources/tls_equipment.txt"/>
+   </type>
+
+
+
+
+  <type name="project_casestudy"  description="Case Study" handler="org.ramadda.repository.type.ExtensibleGroupTypeHandler" category="Science Project"      metadata="project_creator,enum_tag,content.keyword">
+     <property name="icon" value="/fieldproject/briefcase.png"/>
+
+     <property name="form.file.show" value="false"/>
+     <property name="form.url.show" value="true"/>
+     <property name="form.datatype.show" value="false"/>
+     <property name="form.altitude.show" value="false"/>
+     <property name="form.altitude.top.show" value="false"/>
+
+     <column name="intended_use"  type="string" rows="5" size="1000" label="Intended Use" columns="60"  cansearch="true"/>
+
+
+     <column name="location"  type="string"  label="Where" rows="2" columns="60"  cansearch="true"/>
+     <column name="notes" type="string"  label="Notes" rows="5" size="5000" changetype="true" columns="60" />
+     <children><![CDATA[
+<entries>
+<entry  name="Data"  type="group"/>
+<entry  name="Documents"  type="group"/>
+</entries>
+]]>
+</children>
+
+     <wiki><![CDATA[
+{{noheading}}
++inset
+<table width="100%" cellspacing="10" >
+<tr valign=top>
+<td width="50%">
+:title {{name}}
+<div style="max-height: 400px; overflow-y: auto;">
+{{description wikify="true"}}
+</div>
+
+==Case Study Information==
+<table class="formtable">
+{{resource row.label="URL:"  message=""}}
+{{field name="intended_use" row.label="Intended Use:"}}
+{{field name="notes" row.label="Notes:"}}
+</table>
+
+{{tree title="Data" details="false" showtoggle="false" message="No data available" prefix="==Data=="}}
+
+
+</td><td>
+
+{{properties metadata.types="project_creator" message="" }}
+
+== Location and Time ==
+
+{{mapentry width="350" message=""}}
+
+<table class="formtable">
+{{field name="location" row.label="Location:"}}
+{{daterange row.label="Date Range:" format="yyyy-MM-dd"}}
+</table>
+
+<p>
+
+{{properties metadata.types="!project_creator" message="" }}
+
+
+
+{{list includeicon="true" details="false" entries="siblings:type:project_casestudy,links"  message="" box.maxheight="200" box.class="entry-sidebox" prefix="==Related=="}}
+
+
+</td>
+</table>
+
+
+-inset
+
+]]>
+</wiki>
+   </type>
+
+
+
+  <type name="project_learning_resource"  description="Teaching Resource" handler="org.ramadda.repository.type.ExtensibleGroupTypeHandler" category="Science Project"      metadata="project_creator,enum_tag,content.keyword">
+     <property name="icon" value="/fieldproject/reports-stack.png"/>
+
+     <property name="form.file.show" value="false"/>
+     <property name="form.url.show" value="true"/>
+     <property name="form.datatype.show" value="false"/>
+     <property name="form.altitude.show" value="false"/>
+     <property name="form.altitude.top.show" value="false"/>
+     <column name="topic"  type="enumerationplus"  label="Topic"   cansearch="true"/>
+     <column name="grade_level"  type="enumerationplus"  values="graduate:Graduate,advanced_undergraduate:Advanced Undergradute,intro_undergraduate:Intro Undergradute,secondary:Secondary,elementary:Elementary" rows="5" size="1000" label="Grade Level" columns="60"  cansearch="true"/>
+
+     <column name="teacher_notes" type="string"  label="Notes for educators" rows="5" size="5000" columns="60" />
+     <column name="student_notes" type="string"  label="Notes for students" rows="5" size="5000" columns="60" />
+
+     <children><![CDATA[
+<entries>
+<entry  name="Data"  type="group"/>
+<entry  name="Documents"  type="group"/>
+</entries>
+]]>
+</children>
+
+     <wiki><![CDATA[
+{{noheading}}
++inset
++row
++col-md-8
+:title {{name}}
+<div style="max-height: 400px; overflow-y: auto;">
+{{description wikify="true"}}
+</div>
+
+==Teaching Resource==
+<table class="formtable">
+{{resource row.label="URL:"  message=""}}
+{{field name="topic" row.label="Topic:"}}
+{{field name="grade_level" row.label="Grade Level:"}}
+{{field name="student_notes" row.label="Notes for student:"}}
+{{field name="teacher_notes" row.label="Notes for teacher:"}}
+</table>
+
+{{tree title="Data" details="false" showtoggle="false" message="No data available" prefix="==Data=="}}
+
+-col
++col-md-4
+
+{{properties metadata.types="project_creator" message="" }}
+
+== Location and Time ==
+
+{{mapentry width="350" message=""}}
+
+<table class="formtable">
+{{daterange row.label="Date Range:" format="yyyy-MM-dd"}}
+</table>
+
+<p>
+
+{{properties metadata.types="!project_creator" message="" }}
+
+
+{{list includeicon="true" details="false" entries="siblings:type:project_learning_resource,links"  message="" box.maxheight="200" box.class="entry-sidebox" prefix="==Related=="}}
+
+
+-col
+-row
+
+-inset
+
+]]>
+</wiki>
+   </type>
+
+
+
+
+</types>

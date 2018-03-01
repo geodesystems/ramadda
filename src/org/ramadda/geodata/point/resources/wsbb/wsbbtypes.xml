@@ -1,0 +1,22 @@
+<types supercategory="Geoscience">
+
+  <type name="type_point_wsbb"  description="" super="type_point" category="Point Data" foruser="false">
+  </type>
+
+
+
+
+  <type name="type_point_wsbb_ggp"  super="type_point_wsbb" description="Global Geodynamics GGP Format"  handler="org.ramadda.data.services.PointTypeHandler" pattern=".*\.ggp$">
+     <property name="icon" value="/point/waterml.png"/>
+     <property name="record.file.class" value="org.ramadda.data.point.wsbb.GgpPointFile"/>
+     <column  name="station"  type="enumerationplus" label="Station" cansearch="true"/>
+     <column  name="instrument"  type="enumerationplus" label="Instrument" cansearch="true"/>
+     <column  name="author"  type="enumerationplus" label="Author" cansearch="true"/>
+     <column  name="time_delay"  type="double" label="Time Delay" cansearch="false"/>
+     <column  name="gravity_calibration"  type="double" label="Gravity Calibration" cansearch="false"/>
+     <column  name="pressure_calibration"  type="double" label="Pressure Calibration" cansearch="false"/>
+
+  </type>
+
+
+</types>
