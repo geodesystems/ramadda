@@ -1376,6 +1376,7 @@ public class Column implements DataTypes, Constants {
                     value = (int) databaseDfltNum;
                 }
             }
+            System.err.println(this  +" value=" + value);
             values[offset] = new Integer(value);
             valueIdx++;
         } else if (isType(DATATYPE_PERCENTAGE)) {
@@ -1393,6 +1394,7 @@ public class Column implements DataTypes, Constants {
                 }
             }
             //            System.err.println("col: " + this +" " + results.wasNull() +" value:" + value);
+            System.err.println(this  +" value=" + value);
             values[offset] = new Double(value);
             valueIdx++;
         } else if (isType(DATATYPE_BOOLEAN)) {
