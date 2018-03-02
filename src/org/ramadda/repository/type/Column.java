@@ -1368,7 +1368,7 @@ public class Column implements DataTypes, Constants {
         if (isType(DATATYPE_INT)) {
             int value  = results.getInt(valueIdx);
             if (results.wasNull()) {
-                System.err.println(this  +" was null:" + value);
+                //                System.err.println(this  +" was null:" + value);
                 if (databaseDflt != null) {
                     if (Double.isNaN(databaseDfltNum)) {
                         databaseDfltNum = Double.parseDouble(databaseDflt);
@@ -1376,7 +1376,7 @@ public class Column implements DataTypes, Constants {
                     value = (int) databaseDfltNum;
                 }
             }
-            System.err.println(this  +" value=" + value);
+            //            System.err.println(this  +" value=" + value);
             values[offset] = new Integer(value);
             valueIdx++;
         } else if (isType(DATATYPE_PERCENTAGE)) {
@@ -1385,7 +1385,7 @@ public class Column implements DataTypes, Constants {
         } else if (isDouble()) {
             double value = results.getDouble(valueIdx);
             if (results.wasNull()) {
-                System.err.println(this  +" was null:" + value);
+                //                System.err.println(this  +" was null:" + value);
                 if (databaseDflt != null) {
                     if (Double.isNaN(databaseDfltNum)) {
                         databaseDfltNum = Double.parseDouble(databaseDflt);
@@ -1394,7 +1394,7 @@ public class Column implements DataTypes, Constants {
                 }
             }
             //            System.err.println("col: " + this +" " + results.wasNull() +" value:" + value);
-            System.err.println(this  +" value=" + value);
+            //            System.err.println(this  +" value=" + value);
             values[offset] = new Double(value);
             valueIdx++;
         } else if (isType(DATATYPE_BOOLEAN)) {
