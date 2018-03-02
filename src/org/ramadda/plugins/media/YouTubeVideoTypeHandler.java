@@ -311,9 +311,9 @@ public class YouTubeVideoTypeHandler extends GenericTypeHandler {
      * @param args _more_
      */
     public static void main(String[] args) {
-        String pattern = "^http://www.youtube.com/watch\\?v=.*";
-        String url =
-            "http://www.youtube.com/watch?v=sOU2WXaDEs0&feature=g-vrec";
+        String         pattern="^(http|https)://www.youtube.com/(watch\\?v=|v/).*";
+        String url = "https://www.youtube.com/v/q2H_fLuGZgo";
+        //            "http://www.youtube.com/watch?v=sOU2WXaDEs0&feature=g-vrec";
         System.err.println(url.matches(pattern));
     }
 
