@@ -1467,6 +1467,8 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
 
                 String zoom = Misc.getProperty(props, "initialZoom",
                                   (String) null);
+                String doCategories = Misc.getProperty(props, "doCategories",
+                                                       "true");
 
                 String layer = Misc.getProperty(props, ATTR_LAYER,
                                    (String) null);
@@ -1518,7 +1520,8 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                                   listEntries + "", "showCheckbox",
                                   "" + showCheckbox, "checkboxOn",
                                                      "" + checkboxOn,
-                                                     "mapVar", mapVar);
+                                                     "mapVar", mapVar,
+                                                     "doCategories",doCategories);
                 if (icon != null) {
                     newRequest.remove(ARG_ICON);
                 }
