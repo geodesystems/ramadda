@@ -1368,6 +1368,7 @@ public class Column implements DataTypes, Constants {
         if (isType(DATATYPE_INT)) {
             int value  = results.getInt(valueIdx);
             if (results.wasNull()) {
+                System.err.println(this  +" was null:" + value);
                 if (databaseDflt != null) {
                     if (Double.isNaN(databaseDfltNum)) {
                         databaseDfltNum = Double.parseDouble(databaseDflt);
@@ -1383,6 +1384,7 @@ public class Column implements DataTypes, Constants {
         } else if (isDouble()) {
             double value = results.getDouble(valueIdx);
             if (results.wasNull()) {
+                System.err.println(this  +" was null:" + value);
                 if (databaseDflt != null) {
                     if (Double.isNaN(databaseDfltNum)) {
                         databaseDfltNum = Double.parseDouble(databaseDflt);
