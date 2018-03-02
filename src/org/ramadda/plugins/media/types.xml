@@ -50,7 +50,7 @@
         description="YouTube Video" 
         handler="org.ramadda.plugins.media.YouTubeVideoTypeHandler" 
         category="Documents" 
-        pattern="^(http|https)://www.youtube.com/watch\?v=.*">
+        pattern="^(http|https)://www.youtube.com/(watch\?v=|v/).*">
      <property name="icon" value="/media/youtube.png"/>
      <property name="form.area.show" value="false"/>
      <property name="form.date.show" value="false"/>
