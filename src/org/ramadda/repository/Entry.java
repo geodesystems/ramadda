@@ -914,6 +914,17 @@ public class Entry implements Cloneable {
         return name + " id:" + id + "  type:" + getTypeHandler();
     }
 
+    public void printMe() {
+        System.err.println(this.toString());
+        if(values!=null) {
+            for(Object obj: values) {
+                System.err.println("\tvalue:" + obj);
+            }
+        }
+
+    }
+
+
     /**
      * _more_
      *

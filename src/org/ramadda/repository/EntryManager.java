@@ -2658,8 +2658,6 @@ public class EntryManager extends RepositoryManager {
                 entry = typeHandlerToUse.createEntry(id);
 
 
-
-
                 if (theDateRange[0] == null) {
                     //Don't try to extract the date from the name of the file
                     //Its more trouble than worth due to bad matches
@@ -7700,6 +7698,7 @@ public class EntryManager extends RepositoryManager {
         int               metadataCnt = 0;
 
 
+
         PreparedStatement entryStmt   = connection.prepareStatement(isNew
                 ? Tables.ENTRIES.INSERT
                 : SqlUtil.makeUpdate(Tables.ENTRIES.NAME,
@@ -7739,6 +7738,8 @@ public class EntryManager extends RepositoryManager {
             }
             //           System.err.println ("entry: " + entry.getId());
             setStatement(entry, entryStmt, isNew, typeHandler);
+
+
             batchCnt++;
             entryStmt.addBatch();
 

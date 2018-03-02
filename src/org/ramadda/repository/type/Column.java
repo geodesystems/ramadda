@@ -1366,7 +1366,7 @@ public class Column implements DataTypes, Constants {
                           int valueIdx)
             throws Exception {
         if (isType(DATATYPE_INT)) {
-            int value = 0;
+            int value  = results.getInt(valueIdx);
             if (results.wasNull()) {
                 if (databaseDflt != null) {
                     if (Double.isNaN(databaseDfltNum)) {
@@ -1374,8 +1374,6 @@ public class Column implements DataTypes, Constants {
                     }
                     value = (int) databaseDfltNum;
                 }
-            } else {
-                value = results.getInt(valueIdx);
             }
             values[offset] = new Integer(value);
             valueIdx++;
@@ -1383,7 +1381,7 @@ public class Column implements DataTypes, Constants {
             values[offset] = new Double(results.getDouble(valueIdx));
             valueIdx++;
         } else if (isDouble()) {
-            double value = 0;
+            double value = results.getDouble(valueIdx);
             if (results.wasNull()) {
                 if (databaseDflt != null) {
                     if (Double.isNaN(databaseDfltNum)) {
@@ -1391,8 +1389,6 @@ public class Column implements DataTypes, Constants {
                     }
                     value = databaseDfltNum;
                 }
-            } else {
-                value = results.getDouble(valueIdx);
             }
             //            System.err.println("col: " + this +" " + results.wasNull() +" value:" + value);
             values[offset] = new Double(value);
@@ -2351,7 +2347,7 @@ public class Column implements DataTypes, Constants {
             throws Exception {
 
         if ( !showInForm || !editable) {
-            //            System.err.println ("not adding to form" );
+            //            System.err.println (this + " not adding to form" );
             return;
         }
 
@@ -2466,6 +2462,7 @@ public class Column implements DataTypes, Constants {
             } else {
                 values[offset] = dfltValue;
             }
+
         } else if (isType(DATATYPE_PERCENTAGE)) {
             double dfltValue = (Utils.stringDefined(dflt)
                                 ? new Double(dflt.trim()).doubleValue()
