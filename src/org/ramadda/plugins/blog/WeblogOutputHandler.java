@@ -284,11 +284,15 @@ public class WeblogOutputHandler extends OutputHandler {
                                            entry);
         String subject;
         if (single) {
-            subject = HtmlUtils.div(entry.getLabel(),
-                                    HtmlUtils.cssClass("blog-subject"));
+            //            subject = HtmlUtils.div(entry.getLabel(),
+            //                                    HtmlUtils.cssClass("blog-subject"));
+            subject = HtmlUtils.div(
+                    HtmlUtils.href(
+                    entryUrl, entry.getLabel(), HtmlUtils.cssClass(
+                        "blog-subject")), HtmlUtils.cssClass("blog-subject"));
         } else {
             subject = HtmlUtils.div(
-                HtmlUtils.href(
+                    HtmlUtils.href(
                     entryUrl, entry.getLabel(), HtmlUtils.cssClass(
                         "blog-subject")), HtmlUtils.cssClass("blog-subject"));
         }
