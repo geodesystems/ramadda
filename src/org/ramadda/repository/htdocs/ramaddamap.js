@@ -29,7 +29,7 @@ var map_osm = "osm";
 
 
 // doesn't support EPSG:900913
-var map_wms_topographic = "wms:Topo Maps,http://terraservice.net/ogcmap.ashx,DRG";
+var map_wms_topographic = "wms:Topo Maps,//terraservice.net/ogcmap.ashx,DRG";
 var map_ol_openstreetmap = "ol.openstreetmap";
 
 var map_default_layer =  map_osm;
@@ -546,7 +546,12 @@ function RepositoryMap(mapId, params) {
                             wrapDateLine : wrapDatelineDefault
                         });
             } else if(mapLayer == map_osm) {
-                newLayer = new OpenLayers.Layer.OSM();
+                urls=  [
+                        '//a.tile.openstreetmap.org/${z}/${x}/${y}.png',
+                        '//b.tile.openstreetmap.org/${z}/${x}/${y}.png',
+                        '//c.tile.openstreetmap.org/${z}/${x}/${y}.png'
+                        ];
+                newLayer = new OpenLayers.Layer.OSM("Open Street Map", urls);
             } else if (mapLayer == map_ms_shaded) {
                 newLayer  =  new OpenLayers.Layer.VirtualEarth(
                         "Virtual Earth - Shaded", {
@@ -581,7 +586,7 @@ function RepositoryMap(mapId, params) {
                   });
             */
             } else if (mapLayer == map_opentopo) {
-                var layerURL = "http://a.tile.opentopomap.org/${z}/${x}/${y}.png}";
+                var layerURL = "//a.tile.opentopomap.org/${z}/${x}/${y}.png}";
                 newLayer  =  new OpenLayers.Layer.XYZ(
                         "OpenTopo", layerURL, {
                             sphericalMercator : sphericalMercatorDefault,
@@ -631,7 +636,7 @@ function RepositoryMap(mapId, params) {
 
 
             } else if (mapLayer == map_esri_topo) {
-                var layerURL = "http://server.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer/tile/${z}/${y}/${x}";
+                var layerURL = "//server.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer/tile/${z}/${y}/${x}";
                 newLayer  =  new OpenLayers.Layer.XYZ(
                         "ESRI - Topo", layerURL, {
                             sphericalMercator : sphericalMercatorDefault,
@@ -639,7 +644,7 @@ function RepositoryMap(mapId, params) {
                             wrapDateLine : wrapDatelineDefault
                         });
             } else if (mapLayer == map_esri_street) {
-                var layerURL = "http://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/${z}/${y}/${x}";
+                var layerURL = "//server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/${z}/${y}/${x}";
                 newLayer  =  new OpenLayers.Layer.XYZ(
                         "ESRI - Streets", layerURL, {
                             sphericalMercator : sphericalMercatorDefault,
