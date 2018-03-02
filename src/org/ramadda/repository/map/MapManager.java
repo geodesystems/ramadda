@@ -1089,6 +1089,7 @@ public class MapManager extends RepositoryManager {
 
         }
 
+        boolean doCategories = Misc.getProperty(props, "doCategories", true);
         boolean detailed    = Misc.getProperty(props, "detailed", false);
         boolean listentries = Misc.getProperty(props, "listEntries", false);
         boolean cbx         = Misc.getProperty(props, "showCheckbox", false);
@@ -1124,12 +1125,17 @@ public class MapManager extends RepositoryManager {
             }
 
             String category;
-            if (Misc.equals(categoryType, "parent")) {
-                category = getEntryDisplayName(entry.getParentEntry());
+            if(!doCategories) {
+                category = "";
             } else {
-                category = entry.getTypeHandler().getCategory(
-                    entry).getLabel().toString();
+                if (Misc.equals(categoryType, "parent")) {
+                    category = getEntryDisplayName(entry.getParentEntry());
+                } else {
+                    category = entry.getTypeHandler().getCategory(
+                                                                  entry).getLabel().toString();
+                }
             }
+
             StringBuilder catSB = catMap.get(category);
             if (catSB == null) {
                 catMap.put(category, catSB = new StringBuilder());
