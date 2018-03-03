@@ -114,4 +114,28 @@ public class LatLonImageTypeHandler extends GenericTypeHandler {
 
 
 
+    @Override
+    public boolean addToMapSelector(Request request, Entry entry, MapInfo map)
+        throws Exception {
+        if (entry.hasAreaDefined()) {
+            String url =
+                getRepository().getHtmlOutputHandler().getImageUrl(request,
+                                                                   entry);
+            map.addJS(HtmlUtils.call("theMap.addImageLayer",
+                                     HtmlUtils.jsMakeArgs(false,
+                                                          HtmlUtils.squote(entry.getId()),
+                                                          HtmlUtils.squote(entry.getName()),
+                                                          HtmlUtils.squote(""),
+                                                          HtmlUtils.squote(url), "true",
+                                                          "" + entry.getNorth(),
+                                                          "" + entry.getWest(),
+                                                          "" + entry.getSouth(),
+                                                          "" + entry.getEast(), "400",
+                                                          "400","{forSelect:true}")));
+
+            map.addJS("\n");
+        }
+        return super.addToMapSelector(request, entry, map);
+    }
+
 }
