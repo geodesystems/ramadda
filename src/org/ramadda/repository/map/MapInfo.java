@@ -55,10 +55,10 @@ public class MapInfo {
     public static final String DFLT_BOX_COLOR = "blue";
 
     /** default map width */
-    public static final int DFLT_WIDTH = 600;
+    public static final int DFLT_WIDTH = 700;
 
     /** default map height */
-    public static final int DFLT_HEIGHT = 300;
+    public static final int DFLT_HEIGHT = 500;
 
     /** The associated repository */
     private Repository repository;
