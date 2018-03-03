@@ -127,6 +127,8 @@ function RepositoryMap(mapId, params) {
                 },
                 });
 
+    initMapFunctions(this);
+
 
         var  dflt = {
             pointRadius: 3,
@@ -157,6 +159,18 @@ function RepositoryMap(mapId, params) {
             this.defaultBounds = createBounds(params.initialBounds[1], params.initialBounds[2],params.initialBounds[3],params.initialBounds[0]);
         }
 
+        this.name = "map";
+        var options = {
+            projection : this.sourceProjection,
+            displayProjection : this.displayProjection,
+            units : "m",
+            controls: [],
+            maxResolution : 156543.0339,
+            maxExtent : maxExtent
+            
+        };
+        this.map = new OpenLayers.Map(this.mapDivId,options);
+        this.addBaseLayers();
 
 
     jQuery(document).ready(function($) {
@@ -165,8 +179,12 @@ function RepositoryMap(mapId, params) {
             }
      });
 
+}
 
-    RamaddaUtil.defineMembers(this,  {
+function initMapFunctions(theMap) {
+
+
+    RamaddaUtil.defineMembers(theMap,  {
             addLayer: function(layer) {
                 if(this.map!=null) {
                     this.map.addLayer(layer);
@@ -176,8 +194,17 @@ function RepositoryMap(mapId, params) {
             },
         });
 
-    this.addImageLayer = function(layerId, name, desc, url, visible, north,west,south,east, width,height) {
+    theMap.addImageLayer = function(layerId, name, desc, url, visible, north,west,south,east, width,height,args) {
         var _this = this;
+
+        var theArgs = {
+            forSelect: false
+        };
+        if(args)
+            OpenLayers.Util.extend(theArgs, args);
+
+
+
         //Things go blooeey with lat up to 90
         if(north>88) north = 88;
         if(south<-88) south = -88;
@@ -193,6 +220,10 @@ function RepositoryMap(mapId, params) {
                                                             maxResolution:this.map.layers[0].resolutions[0]}
                                                     );
         
+        //        image.setOpacity(0.5);
+        if(theArgs.forSelect) {
+            theMap.selectImage = image;
+        }
         var lonlat =  new createLonLat(west,north);
         image.lonlat = this.transformLLPoint(lonlat);
 
@@ -207,7 +238,7 @@ function RepositoryMap(mapId, params) {
         image.south =  south;
         image.east =  east;
         if(visible)  {
-            image.box = this.createBox(layerId, north, west, south, east, desc, {});
+            //            image.box = this.createBox(layerId, north, west, south, east, desc, {});
         } 
 
         if(!this.imageLayers) this.imageLayers = {}
@@ -216,7 +247,7 @@ function RepositoryMap(mapId, params) {
     }
 
 
-    this.addWMSLayer = function(name, url, layer, isBaseLayer) {
+    theMap.addWMSLayer = function(name, url, layer, isBaseLayer) {
         var layer = new OpenLayers.Layer.WMS(name, url, {
                 layers : layer,
                 format: "image/png",
@@ -245,7 +276,7 @@ function RepositoryMap(mapId, params) {
 
 
 
-    this.addMapLayer = function(name, url, layer, isBaseLayer, isDefault) {
+    theMap.addMapLayer = function(name, url, layer, isBaseLayer, isDefault) {
         var layer;
         if (/\/tile\//.exec(url)) {
             layer = new OpenLayers.Layer.XYZ(
@@ -276,7 +307,7 @@ function RepositoryMap(mapId, params) {
         }
     }
 
-    this.addGeoJsonLayer = function(name, geoJsonUrl, canSelect, selectCallback, unselectCallback) {
+    theMap.addGeoJsonLayer = function(name, geoJsonUrl, canSelect, selectCallback, unselectCallback) {
         var geoJsonLayer = new OpenLayers.Layer.Vector(name, {
             projection: this.displayProjection,
             strategies: [new OpenLayers.Strategy.Fixed()],
@@ -328,7 +359,7 @@ function RepositoryMap(mapId, params) {
     }
 
 
-    this.onFeatureSelect = function(layer) {
+    theMap.onFeatureSelect = function(layer) {
         if( this.onSelect) {
             func = window[this.onSelect];
             func(this, layer);
@@ -370,15 +401,15 @@ function RepositoryMap(mapId, params) {
         theMap.currentPopup = popup;
     }
 
-    this.onFeatureUnselect = function(layer) {
+    theMap.onFeatureUnselect = function(layer) {
        theMap.onPopupClose();
     }
 
-    this.removeKMLLayer = function(layer) {
+    theMap.removeKMLLayer = function(layer) {
         this.map.removeLayer(layer);
     }
 
-    this.addKMLLayer = function(name, kmlUrl, canSelect, selectCallback, unselectCallback, argProps) {
+    theMap.addKMLLayer = function(name, kmlUrl, canSelect, selectCallback, unselectCallback, argProps) {
         if(argProps) {
             console.log("map.addKMLLayer:" + argProps);
         }
@@ -458,7 +489,7 @@ function RepositoryMap(mapId, params) {
         return kmlLayer;
     }
 
-    this.addBaseLayers = function() {
+    theMap.addBaseLayers = function() {
         if (!this.mapLayers) {
             this.mapLayers = [ 
                               map_osm,
@@ -694,37 +725,22 @@ function RepositoryMap(mapId, params) {
 
 
 
-    this.setLatLonReadout = function(llr) {
+    theMap.setLatLonReadout = function(llr) {
         this.latlonReadout = llr;
     }
 
-    this.getMap = function() {
+    theMap.getMap = function() {
         return this.map;
     }
-    this.initMap = function(doRegion) {
+    theMap.initMap = function(doRegion) {
         if (this.inited)
             return;
         this.inited = true;
-        this.name = "map";
         var theMap = this;
-        var options = {
-            projection : this.sourceProjection,
-            displayProjection : this.displayProjection,
-            units : "m",
-            controls: [],
-            maxResolution : 156543.0339,
-            maxExtent : maxExtent
-            
-        };
-        
 
-        this.map = new OpenLayers.Map(this.mapDivId,options);
-        this.addBaseLayers();
 
         //this.vectors = new OpenLayers.Layer.Vector("Drawing");
         //this.map.addLayer(this.vectors);
-
-
 
         if (this.enableDragPan) {
           this.map.addControl(new OpenLayers.Control.Navigation({
@@ -734,7 +750,6 @@ function RepositoryMap(mapId, params) {
                             }
           }));
         }
-        
         
         /*this.map.addControl(new OpenLayers.Control.TouchNavigation({
             dragPanOptions: {
@@ -754,7 +769,33 @@ function RepositoryMap(mapId, params) {
             this.map.addControl(new OpenLayers.Control.ScaleLine());
         }
         //        this.map.addControl(new OpenLayers.Control.OverviewMap());
+
+        var keyboardControl = new OpenLayers.Control();
+        var control = new OpenLayers.Control();
+        var callbacks = { keydown: function(evt) {
+                if(!Utils.isDefined(theMap.selectImage)) return;
+                if(evt.keyCode == 79) {
+                    opacity = theMap.selectImage.opacity;
+                    if(evt.shiftKey) {
+                        opacity+=.1;
+                    } else {
+                        opacity-=0.1;
+                    }
+                    if(opacity<0) opacity=0;
+                    else if(opacity>1) opacity=1;
+                    theMap.selectImage.setOpacity(opacity);
+                }
+                if(evt.keyCode == 84) {
+                    theMap.selectImage.setVisibility(!theMap.selectImage.getVisibility());
+                }
+            }
+
+        };
+        var handler = new OpenLayers.Handler.Keyboard(control, callbacks, {});
+        handler.activate();
+        this.map.addControl(keyboardControl);
         this.map.addControl(new OpenLayers.Control.KeyboardDefaults());
+
         if (this.showLayerSwitcher) {
             this.map.addControl(new OpenLayers.Control.LayerSwitcher());
         }
@@ -839,7 +880,7 @@ function RepositoryMap(mapId, params) {
 
 
 
-    this.addVectorLayer = function(layer) {
+    theMap.addVectorLayer = function(layer) {
         this.map.addLayer(layer);
         this.vectorLayers.push(layer);
         var _this = this;
@@ -858,13 +899,13 @@ function RepositoryMap(mapId, params) {
         }
     }
 
-    this.isLayerVisible = function(id) {
+    theMap.isLayerVisible = function(id) {
         var cbx =   $(':input[id*=\"' + "visible_" + this.mapId +"_" + id+'\"]');
         if(cbx.size()==0) return true;
         return cbx.is(':checked');
     }
 
-    this.initForDrawing = function() {
+    theMap.initForDrawing = function() {
         var theMap = this;
         if (!theMap.drawingLayer) {
             theMap.drawingLayer = new OpenLayers.Layer.Vector("Drawing");
@@ -876,12 +917,12 @@ function RepositoryMap(mapId, params) {
         theMap.map.addControl(theMap.drawControl);
     }
 
-    this.drawingFeatureAdded = function(feature) {
+    theMap.drawingFeatureAdded = function(feature) {
         // alert(feature);
     }
 
 
-    this.addClickHandler = function(lonfld, latfld, zoomfld, object) {
+    theMap.addClickHandler = function(lonfld, latfld, zoomfld, object) {
 
         this.lonFldId = lonfld;
         this.latFldId = latfld;
@@ -897,7 +938,7 @@ function RepositoryMap(mapId, params) {
         this.clickHandler.activate();
     }
 
-    this.setSelection = function(argBase, doRegion, absolute) {
+    theMap.setSelection = function(argBase, doRegion, absolute) {
     	this.selectRegion = doRegion;
         this.argBase = argBase;
         if (!GuiUtils) {
@@ -953,7 +994,7 @@ function RepositoryMap(mapId, params) {
 
 
 
-    this.selectionPopupInit = function() {
+    theMap.selectionPopupInit = function() {
         if (!this.inited) {
             this.initMap(this.selectRegion);
             if (this.argBase && !this.fldNorth) {
@@ -974,7 +1015,7 @@ function RepositoryMap(mapId, params) {
         }
     }
 
-    this.setSelectionBoxFromFields = function(zoom) {
+    theMap.setSelectionBoxFromFields = function(zoom) {
         if (this.fldNorth) {
             // alert("north = " + this.fldNorth.obj.value);
             this.setSelectionBox(this.fldNorth.obj.value,
@@ -990,7 +1031,7 @@ function RepositoryMap(mapId, params) {
         }
     }
 
-    this.toggleSelectorBox = function(toggle) {
+    theMap.toggleSelectorBox = function(toggle) {
        if (this.selectorControl) {
           if (toggle) {
              this.selectorControl.activate();
@@ -1002,13 +1043,13 @@ function RepositoryMap(mapId, params) {
        }
     }
 
-    this.resetExtent = function() {
+    theMap.resetExtent = function() {
        this.map.zoomToMaxExtent();
     }
 
     // Assume that north, south, east, and west are in degrees or
     // some variant thereof
-    this.setSelectionBox = function(north, west, south, east) {
+    theMap.setSelectionBox = function(north, west, south, east) {
         if (north == "" || west == "" || south == "" || east == "")
             return;
         if (!this.selectorBox) {
@@ -1026,16 +1067,24 @@ function RepositoryMap(mapId, params) {
         if(this.boxes) {
             this.boxes.redraw();
         }
+
+        if(theMap.selectImage) {
+            var imageBounds = createBounds(west, south,east,north);
+            imageBounds = theMap.transformLLBounds(imageBounds);
+            theMap.selectImage.extent = imageBounds;
+            theMap.selectImage.redraw();
+        }
+
     }
 
-    this.clearSelectionMarker = function() {
+    theMap.clearSelectionMarker = function() {
         if(this.selectorMarker!=null) {
             this.removeMarker(this.selectorMarker);
             this.selectorMarker = null;
         }
     }
 
-    this.clearSelectedFeatures = function() {
+    theMap.clearSelectedFeatures = function() {
         if(this.map.controls != null) {
             var myControls = this.map.controls;
             for (i = 0; i < myControls.length; i++) {
@@ -1046,7 +1095,7 @@ function RepositoryMap(mapId, params) {
         }
     }
 
-    this.setSelectionMarker = function(lon, lat, andCenter, zoom) {
+    theMap.setSelectionMarker = function(lon, lat, andCenter, zoom) {
         if (!lon || !lat || lon == "" || lat == "")
             return;
         if(this.lonFldId!=null) {
@@ -1093,35 +1142,35 @@ function RepositoryMap(mapId, params) {
         }
     }
     
-    this.transformLLBounds = function(bounds) {
+    theMap.transformLLBounds = function(bounds) {
         if (!bounds)
             return;
         var llbounds = bounds.clone();
         return llbounds.transform(this.displayProjection, this.sourceProjection);
     }
 
-    this.transformLLPoint = function(point) {
+    theMap.transformLLPoint = function(point) {
         if (!point)
             return null;
         var llpoint = point.clone();
         return llpoint.transform(this.displayProjection, this.sourceProjection);
     }
 
-    this.transformProjBounds = function(bounds) {
+    theMap.transformProjBounds = function(bounds) {
         if (!bounds)
             return;
         var projbounds = bounds.clone();
         return projbounds.transform(this.sourceProjection, this.displayProjection);
     }
 
-    this.transformProjPoint = function(point) {
+    theMap.transformProjPoint = function(point) {
         if (!point)
             return;
         var projpoint = point.clone();
         return projpoint.transform(this.sourceProjection, this.displayProjection);
     }
 
-    this.normalizeBounds = function(bounds) {
+    theMap.normalizeBounds = function(bounds) {
         if (!this.map) {
             return bounds;
         }
@@ -1156,13 +1205,13 @@ function RepositoryMap(mapId, params) {
         return newBounds;
     }
 
-    this.findSelectionFields = function() {
+    theMap.findSelectionFields = function() {
         if (this.argBase && !(this.fldNorth || this.fldLon)) {
             this.setSelection(this.argBase);
         }
     }
 
-    this.selectionClear = function() {
+    theMap.selectionClear = function() {
         this.findSelectionFields();
         if (this.fldNorth) {
             this.fldNorth.obj.value = "";
@@ -1183,11 +1232,11 @@ function RepositoryMap(mapId, params) {
         }
     }
 
-    this.getMarkers = function() {
+    theMap.getMarkers = function() {
         if(this.markers == null) return [];
         return this.markers.features;
     },
-    this.clearRegionSelector = function(listener) {
+    theMap.clearRegionSelector = function(listener) {
         if (!this.selectorControl)
             return;
         if(this.selectorControl.box) {
@@ -1195,19 +1244,20 @@ function RepositoryMap(mapId, params) {
             this.selectorControl.box.removeBox();
         }
     },
-    this.addRegionSelectorControl = function(listener) {
+    theMap.addRegionSelectorControl = function(listener) {
         var theMap = this;
         if (theMap.selectorControl)
             return;
         theMap.selectorListener = listener;
+
         theMap.selectorControl = new OpenLayers.Control();
         OpenLayers.Util.extend(theMap.selectorControl, {
             draw : function() {
-                // this Handler.Box will intercept the shift-mousedown
-                // before Control.MouseDefault gets to see it
                 this.box = new OpenLayers.Handler.Box(theMap.selectorControl, 
                     { "done" : this.notice }, 
-                    { keyMask : OpenLayers.Handler.MOD_SHIFT });
+                                                      { keyMask : OpenLayers.Handler.MOD_SHIFT,
+                                                        xxxboxDivClassName:"map-drag-box"
+                                                      });
                 this.box.activate();
             },
 
@@ -1227,22 +1277,110 @@ function RepositoryMap(mapId, params) {
                     listener(bounds);
                 }
                 if (theMap.fldNorth) {
-                    // theMap.fldNorth.obj.value = ur.lat;
-                    // theMap.fldSouth.obj.value = ll.lat;
-                    // theMap.fldWest.obj.value = ll.lon;
-                    // theMap.fldEast.obj.value = ur.lon;
                     theMap.fldNorth.obj.value = formatLocationValue(bounds.top);
                     theMap.fldSouth.obj.value = formatLocationValue(bounds.bottom);
                     theMap.fldWest.obj.value = formatLocationValue(bounds.left);
                     theMap.fldEast.obj.value = formatLocationValue(bounds.right);
                 }
-                // OpenLayers.Event.stop(evt);
             }
         });
         theMap.map.addControl(theMap.selectorControl);
+
+
+        theMap.panControl = new OpenLayers.Control();
+        OpenLayers.Util.extend(theMap.panControl, {
+            draw : function() {
+                this.box = new OpenLayers.Handler.Drag(theMap.panControl, 
+                                                       { "down":this.down,
+                                                         "move":this.move
+                                                       }, 
+                    { keyMask : OpenLayers.Handler.MOD_META,
+                      boxDivClassName:"map-drag-box"});
+                this.box.activate();
+            },
+
+            down : function(pt) {
+                    this.firstPoint =  this.map.getLonLatFromPixel(new OpenLayers.Pixel(
+                                                                                        pt.x,pt.y));
+                    this.firstPoint = theMap.transformProjPoint(this.firstPoint);
+                    theMap.findSelectionFields();
+                    if (theMap.fldNorth) {
+                        n = this.origNorth = parseFloat(theMap.fldNorth.obj.value);
+                        s = this.origSouth = parseFloat(theMap.fldSouth.obj.value);
+                        w = this.origWest = parseFloat(theMap.fldWest.obj.value);
+                        e = this.origEast = parseFloat(theMap.fldEast.obj.value);
+                        pt = this.firstPoint;
+                        this.doWest = false;
+                        this.doSouth = false;
+                        this.doEast = false;
+                        this.doNorth = false;
+                        if(pt.lon<=e && pt.lon>=w && pt.lat<=n && pt.lat>=s){
+                            this.doSouth = this.doWest = this.doEast = this.doNorth = true;
+                            this.type="center";
+                        } else if(pt.lon>e) {
+                            if(pt.lat>n) {
+                                this.type="ne";
+                                this.doEast = this.doNorth = true;
+                            } else if(pt.lat<s) {
+                                this.type="se";
+                                this.doSouth = this.doEast = true;
+                            } else {
+                                this.type = "e";
+                                this.doEast = true;
+                            }
+                        } else if(pt.lon<w) {
+                            if(pt.lat>n) {
+                                this.type="nw";
+                                this.doWest = this.doNorth = true;
+                            } else if(pt.lat<s) {
+                                this.type="sw";
+                                this.doSouth = this.doWest = true;
+                            }  else {
+                                this.type = "w";
+                                this.doWest  = true;
+                            }
+                        } else if(pt.lat>n) {
+                            this.type = "n";
+                            this.doNorth = true;
+                        } else {
+                            this.type = "s";
+                            this.doSouth = true;
+                        }
+                    }
+                },
+            move : function(pt) {
+                var ll = this.map.getLonLatFromPixel(new OpenLayers.Pixel(pt.x,pt.y));
+                ll = theMap.transformProjPoint(ll);
+                dx = ll.lon-this.firstPoint.lon;
+                dy = ll.lat-this.firstPoint.lat;
+                newWest = this.origWest;
+                newEast = this.origEast;
+                newSouth = this.origSouth;
+                newNorth = this.origNorth;
+                if(this.doWest)
+                    newWest+=dx;
+                if(this.doSouth)
+                    newSouth+=dy;
+                if(this.doEast)
+                    newEast+=dx;
+                if(this.doNorth)
+                    newNorth+=dy;
+                var bounds = createBounds(newWest,newSouth, newEast, newNorth);
+                bounds = theMap.normalizeBounds(bounds);
+                theMap.setSelectionBox(bounds.top, bounds.left, bounds.bottom, bounds.right);
+                theMap.findSelectionFields();
+                if(!theMap.fldNorth) return;
+                theMap.fldNorth.obj.value = bounds.top;
+                theMap.fldSouth.obj.value = bounds.bottom;
+                theMap.fldWest.obj.value = bounds.left;
+                theMap.fldEast.obj.value = bounds.right;
+
+            }
+        });
+        theMap.map.addControl(theMap.panControl);
     }
 
-    this.onPopupClose = function(evt) {
+    theMap.onPopupClose = function(evt) {
         if (this.currentPopup) {
             this.map.removePopup(this.currentPopup);
             this.currentPopup.destroy();
@@ -1251,7 +1389,7 @@ function RepositoryMap(mapId, params) {
         }
     }
 
-    this.findObject = function(id, array) {
+    theMap.findObject = function(id, array) {
         for (i = 0; i < array.length; i++) {
             var aid  = array[i].ramaddaId;
             if(!aid)
@@ -1263,25 +1401,25 @@ function RepositoryMap(mapId, params) {
         return null;
     }
 
-    this.findMarker = function(id) {
+    theMap.findMarker = function(id) {
         if (!this.markers) {
             return null;
         }
         return this.findObject(id, this.getMarkers());
     }
 
-    this.findFeature = function(id) {
+    theMap.findFeature = function(id) {
         return this.features[id];
     }
 
-    this.findBox = function(id) {
+    theMap.findBox = function(id) {
         if (!this.boxes) {
             return null;
         }
         return this.findObject(id, this.boxes.markers);
     }
 
-    this.hiliteBox = function(id) {
+    theMap.hiliteBox = function(id) {
         if (this.currentBox) {
             this.currentBox.setBorder("blue");
         }
@@ -1290,7 +1428,7 @@ function RepositoryMap(mapId, params) {
             this.currentBox.setBorder("red");
         }
     }
-    this.checkMarkerVisibility= function() {
+    theMap.checkMarkerVisibility= function() {
         if(!this.markers) return;
         var list =  this.getMarkers();
         for(var marker in list) {
@@ -1306,7 +1444,7 @@ function RepositoryMap(mapId, params) {
         this.markers.redraw();
     }
 
-    this.checkLinesVisibility = function() {
+    theMap.checkLinesVisibility = function() {
         if (!this.lines) return;
         var features = this.lines.features;
         for (var i = 0; i < features.length; i++) {
@@ -1324,7 +1462,7 @@ function RepositoryMap(mapId, params) {
     }
 
 
-    this.checkBoxesVisibility = function() {
+    theMap.checkBoxesVisibility = function() {
         if (!this.boxes) return;
         for(var marker in this.boxes.markers) {
             marker = this.boxes.markers[marker];
@@ -1337,7 +1475,7 @@ function RepositoryMap(mapId, params) {
 
 
 
-    this.checkImageLayerVisibility = function() {
+    theMap.checkImageLayerVisibility = function() {
         if(!this.imageLayers) return;
         for(var i in this.imageLayers) {
             var visible = this.isLayerVisible(i);
@@ -1357,7 +1495,7 @@ function RepositoryMap(mapId, params) {
         }
     }
 
-    this.hiliteMarker = function(id) {
+    theMap.hiliteMarker = function(id) {
         var mymarker = this.findMarker(id);
         if(!mymarker) {
             mymarker = this.findFeature(id);
@@ -1375,7 +1513,7 @@ function RepositoryMap(mapId, params) {
     }
 
     // bounds are in lat/lon
-    this.centerOnMarkers = function(bounds) {
+    theMap.centerOnMarkers = function(bounds) {
         // bounds = this.boxes.getDataExtent();
         if(bounds) {
             if(bounds.left<-180||bounds.right>180 || bounds.bottom<-90 || bounds.top>90) {
@@ -1430,13 +1568,13 @@ function RepositoryMap(mapId, params) {
         this.map.setCenter(projBounds.getCenterLonLat());
     }
 
-    this.setCenter = function(latLonPoint) {
+    theMap.setCenter = function(latLonPoint) {
         var projPoint =  this.transformLLPoint(latLonPoint);
         this.map.setCenter(projPoint);
     }
 
 
-    this.zoomToMarkers = function() {
+    theMap.zoomToMarkers = function() {
         if (!this.markers)
             return;
         bounds = this.markers.getDataExtent();
@@ -1445,21 +1583,21 @@ function RepositoryMap(mapId, params) {
         this.map.zoomToExtent(bounds);
     }
 
-    this.centerToMarkers = function() {
+    theMap.centerToMarkers = function() {
         if (!this.markers)
             return;
         bounds = this.markers.getDataExtent();
         this.map.setCenter(bounds.getCenterLonLat());
     }
 
-    this.setInitialCenterAndZoom = function(lon, lat, zoomLevel) {
+    theMap.setInitialCenterAndZoom = function(lon, lat, zoomLevel) {
         this.defaultLocation = createLonLat(lon, lat);
         this.initialZoom = zoomLevel;
     }
 
 
 
-    this.getPopupText = function (text, marker) {
+    theMap.getPopupText = function (text, marker) {
         if(text == null) return null;
         if(text.indexOf("base64:")==0) {
             text =             window.atob(text.substring(7));
@@ -1475,7 +1613,7 @@ function RepositoryMap(mapId, params) {
         return text;
     }
 
-    this.addMarker = function(id, location, iconUrl, text, size, voffset) {
+    theMap.addMarker = function(id, location, iconUrl, text, size, voffset) {
         if(size == null) size = 16;
         if(voffset ==null) voffset = 0;
 
@@ -1555,7 +1693,7 @@ function RepositoryMap(mapId, params) {
 
 
 
-    this.initBoxes = function(theBoxes) {
+    theMap.initBoxes = function(theBoxes) {
         if (!this.map) {
             // alert('whoa, no map');
         }
@@ -1569,14 +1707,14 @@ function RepositoryMap(mapId, params) {
         sf.activate();
     }
 
-    this.removeBox = function(box) {
+    theMap.removeBox = function(box) {
         if (this.boxes && box) {
             this.boxes.removeMarker(box);
             this.boxes.redraw();
         }
     }
 
-    this.addBox = function(box) {
+    theMap.addBox = function(box) {
         if (!this.boxes) {
             this.boxes = new OpenLayers.Layer.Boxes("Boxes", {
                             wrapDateLine : wrapDatelineDefault
@@ -1592,7 +1730,7 @@ function RepositoryMap(mapId, params) {
     }
 
 
-    this.createBox = function(id, north, west, south, east, text, params) {
+    theMap.createBox = function(id, north, west, south, east, text, params) {
 
         if(text.indexOf("base64:")==0) {
             text =             window.atob(text.substring(7));
@@ -1644,7 +1782,7 @@ function RepositoryMap(mapId, params) {
     }
 
 
-    this.circleMarker = function(id, attrs) {
+    theMap.circleMarker = function(id, attrs) {
         myattrs = {pointRadius : 12, 
                    stroke: true,
                    strokeColor : "red",
@@ -1660,13 +1798,13 @@ function RepositoryMap(mapId, params) {
         return this.addPoint(id,marker.location, myattrs);
     }
 
-    this.uncircleMarker = function(id) {
+    theMap.uncircleMarker = function(id) {
         feature = this.features[id];
         if(feature)
             this.circles.removeFeatures( [feature]);
     }
 
-    this.addPoint = function(id, point, attrs, text) {
+    theMap.addPoint = function(id, point, attrs, text) {
         //Check if we have a LonLat instead of a Point
         var location = point;
         if(typeof point.x  ==='undefined') {
@@ -1742,11 +1880,11 @@ function RepositoryMap(mapId, params) {
         return feature;
     }
 
-    this.removePoint = function(point){
+    theMap.removePoint = function(point){
         this.circles.removeFeatures( [point]);
     }
 
-    this.addRectangle = function(id, north, west, south, east, attrs,info) {
+    theMap.addRectangle = function(id, north, west, south, east, attrs,info) {
         var points = [ new OpenLayers.Geometry.Point(west, north),
                 new OpenLayers.Geometry.Point(west, south),
                 new OpenLayers.Geometry.Point(east, south),
@@ -1756,13 +1894,13 @@ function RepositoryMap(mapId, params) {
     }
 
 
-    this.addLine = function(id, lat1, lon1, lat2, lon2, attrs, info) {
+    theMap.addLine = function(id, lat1, lon1, lat2, lon2, attrs, info) {
         var points = [ new OpenLayers.Geometry.Point(lon1, lat1),
                        new OpenLayers.Geometry.Point(lon2, lat2) ];
         return this.addPolygon(id, points, attrs,info);
     }
 
-    this.addLines = function(id, attrs, values,info) {
+    theMap.addLines = function(id, attrs, values,info) {
         var points = [];
         for(var i=0;i<values.length;i+=2) {
             points.push(new OpenLayers.Geometry.Point(values[i+1],values[i]));
@@ -1770,7 +1908,7 @@ function RepositoryMap(mapId, params) {
         return this.addPolygon(id, points, attrs,info);
     }
 
-    this.removePolygon = function(line) {
+    theMap.removePolygon = function(line) {
         if (this.lines) {
             this.lines.removeAllFeatures();
             this.lines.removeFeatures([line]);
@@ -1779,7 +1917,7 @@ function RepositoryMap(mapId, params) {
 
     var cnt = 0;
 
-    this.addPolygon = function(id, points, attrs,marker) {
+    theMap.addPolygon = function(id, points, attrs,marker) {
         var _this = this;
 
         for(var i =0;i<points.length;i++) {
@@ -1823,7 +1961,7 @@ function RepositoryMap(mapId, params) {
         return line;
     }
 
-    this.showMarkerPopup = function(marker) {
+    theMap.showMarkerPopup = function(marker) {
         if(this.entryClickHandler && window[this.entryClickHandler]) {
             if(!window[this.entryClickHandler](this,marker)) {
                 return;
@@ -1848,6 +1986,7 @@ function RepositoryMap(mapId, params) {
         var markertext = marker.text;
         // set marker text as the location
         var location = marker.location;
+        if(!location) return;
         if(typeof location.lon === 'undefined') {
             location =  createLonLat(location.x, location.y);
         }
@@ -1881,7 +2020,7 @@ function RepositoryMap(mapId, params) {
 
     }
 
-    this.popupChart = function(props) {
+    theMap.popupChart = function(props) {
         var displayManager = getOrCreateDisplayManager(props.divId,{},true);
         var pointDataProps = {entryId:props.entryId};
         var title = props.title;
@@ -1896,7 +2035,7 @@ function RepositoryMap(mapId, params) {
                           "data":new  PointData(title,  null,null,getRamadda().getRoot()+"/entry/show?entryid=" + props.entryId +"&output=points.product&product=points.json&numpoints=1000",pointDataProps)};
         displayManager.createDisplay(props.chartType,chartProps);
     },
-    this.removeMarker = function(marker) {
+    theMap.removeMarker = function(marker) {
         if (this.markers) {
             //            this.markers.removeMarker(marker);            
             this.markers.removeFeatures([marker]);

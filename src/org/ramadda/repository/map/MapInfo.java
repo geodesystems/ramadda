@@ -522,7 +522,7 @@ public class MapInfo {
         }
 
         String        msg       = HtmlUtils.italics(doRegion
-                ? msg("Shift-drag to select region")
+                                                    ? msg("Shift-drag to select region") +" " + msg("Command-drag to move region")
                 : msg("Click to select point"));
 
         StringBuilder sb        = new StringBuilder();

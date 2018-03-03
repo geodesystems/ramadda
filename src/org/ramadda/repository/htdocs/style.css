@@ -860,6 +860,15 @@ td.entry-table-block {
     font-weight: bold;
 }
 
+.map-drag-box {
+   border :4px #ccc solid;
+}
+
+
+.map-pan-box {
+   border :0px #ccc solid;
+}
+
 .map-legend-div {
     max-height: 300px; 
     overflow-y: auto;
