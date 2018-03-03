@@ -942,6 +942,11 @@ public class TypeHandler extends RepositoryManager {
         return true;
     }
 
+    public boolean addToMapSelector(Request request, Entry entry, MapInfo map)
+            throws Exception {
+        return true;
+    }
+
     /**
      * _more_
      *
@@ -3890,6 +3895,7 @@ public class TypeHandler extends RepositoryManager {
         String extraMapStuff = "";
         MapInfo map = getRepository().getMapManager().createMap(request,
                           true, props);
+        addToMapSelector(request, entry, map);
         String mapSelector = map.makeSelector(ARG_AREA, true, nwse, "", "")
                              + extraMapStuff;
         sb.append(formEntry(request, msgLabel("Location"), mapSelector));
