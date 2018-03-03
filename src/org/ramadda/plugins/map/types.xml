@@ -10,15 +10,14 @@
      <property name="icon" value="/icons/map.png"/>
      <column name="map_width" label="Map Width" type="int" showinhtml="false" default="800"/>
      <column name="map_height" label="Map Height" type="int" showinhtml="false" default="600"/>
-     <wiki_inner><![CDATA[
+     <wiki><![CDATA[
 +section title="WMS Image: {{name}}"
 {{description}}
-{{map width="600" height="450" details="true"}}
-
+{{map width="-100" height="450" details="true"}}
 {{resource includeicon="true"}}
 -section
 ]]>
-</wiki_inner>
+</wiki>
   </type>
 
 
