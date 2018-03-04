@@ -29,6 +29,7 @@ The FIPS code to search for when you want a single value, e.g. 08.
 <ul>
 <li> <a href="https://geodesystems.com/repository/census/states" target="_help">State FIPS listings</a>
 <li> <a href="https://geodesystems.com/repository/alias/gazeteer_counties" target="_help">County FIPS listings</a>
+<li> <a href="https://geodesystems.com/repository/alias/census_tracts" target="_help">Census Tract listings</a>
 </ul>
 ]]>
 </suffix>
