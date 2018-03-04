@@ -1963,6 +1963,24 @@ public class DbTypeHandler extends BlobTypeHandler {
         String count = msgLabel("Count") + " "
                        + HtmlUtils.input(ARG_MAX, getMax(request),
                                          HtmlUtils.SIZE_5);
+        List<TwoFacedObject> tfos = new ArrayList<TwoFacedObject>();
+        for (Column column : columnsToUse) {
+            if (column.getCanSearch()) {
+                tfos.add(new TwoFacedObject(column.getLabel(),
+                                            column.getName()));
+            }
+        }
+
+        sb.append(
+            formEntry(
+                request, msgLabel("Order By"),
+                HtmlUtils.select(
+                                 ARG_DB_SORTBY, tfos,
+                    request.getString(ARG_DB_SORTBY, ""),
+                    HtmlUtils.cssClass("search-select")) + HtmlUtils.space(2)
+                +  HtmlUtils.radio(ARG_DB_SORTDIR, "asc", request.getString(ARG_DB_SORTDIR,"asc").equals("asc")) + " " + "Ascending " +
+                HtmlUtils.radio(ARG_DB_SORTDIR, "desc", request.getString(ARG_DB_SORTDIR,"asc").equals("desc")) + " " + "Descending"));
+
         sb.append(
             formEntry(
                 request, msgLabel("View As"),
