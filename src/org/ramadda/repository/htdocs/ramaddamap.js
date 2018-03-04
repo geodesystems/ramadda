@@ -198,7 +198,9 @@ function initMapFunctions(theMap) {
         var _this = this;
 
         var theArgs = {
-            forSelect: false
+            forSelect: false,
+            addBox: true
+
         };
         if(args)
             OpenLayers.Util.extend(theArgs, args);
@@ -1489,8 +1491,8 @@ function initMapFunctions(theMap) {
             } else {
                 if(image.box) {
                     this.removeBox(image.box);
+                    image.box = this.createBox(i, image.north, image.west, image.south, image.east, image.text, {});
                 }
-                image.box = this.createBox(i, image.north, image.west, image.south, image.east, image.text, {});
             }
         }
     }
