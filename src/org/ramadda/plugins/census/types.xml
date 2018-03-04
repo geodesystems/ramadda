@@ -186,16 +186,16 @@ Median income
 <wiki><![CDATA[
 +section title={{name}} #
 {{group showMenu="true" layoutColumns="2" layoutType="table" showTitle="false" }}
-:note Colored by percentage race from blue (higher) to white (lower).
+:note Colored by percentage race from blue (higher) to white (lower). Sized by median income.
 +row
 +col-md-4
-{{display type="map" layoutHere="true"   height="400" colorBy="B01001A_001E" excludeZero="true" title="% White" showTitle="true"   }}
+{{display type="map" layoutHere="true"   height="400" colorBy="B01001A_001E" excludeZero="true" title="% White" showTitle="true"   sizeBy="B06011_001E"}}
 -col
 +col-md-4
-{{display type="map" layoutHere="true"  height="400" colorBy="B01001B_001E" title="% Black or African American" showTitle="true" excludeZero="true"}}
+{{display type="map" layoutHere="true"  height="400" colorBy="B01001B_001E" title="% Black or African American" showTitle="true" excludeZero="true"  sizeBy="B06011_001E"}}
 -col
 +col-md-4
-{{display type="map" layoutHere="true"  height="400" colorBy="B01001I_001E" title="% Hispanic or Latino" showTitle="true" excludeZero="true"}}
+{{display type="map" layoutHere="true"  height="400" colorBy="B01001I_001E" title="% Hispanic or Latino" showTitle="true" excludeZero="true"  sizeBy="B06011_001E"}}
 -col
 -row
 
