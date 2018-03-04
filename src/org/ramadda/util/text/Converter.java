@@ -1147,9 +1147,9 @@ public abstract class Converter extends Processor {
                 return row;
             }
             if(rowCnt++==0)
-                row.add(index, name);
+                row.add(index+1, name);
             else
-                row.add(index, row.getValues().get(index));
+                row.add(index+1, row.getValues().get(index));
 
             return row;
         }
