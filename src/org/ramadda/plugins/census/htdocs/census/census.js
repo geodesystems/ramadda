@@ -1,5 +1,4 @@
 
-
 function setAcsField(id) {
     var ta = $("textarea[name*='edit.type_census_acs.fields']");
     var s = ta.val().trim();
@@ -86,4 +85,8 @@ $(document).ready(function() {
             });
     });
 
+
+function acsShowState() {
+
+}
 

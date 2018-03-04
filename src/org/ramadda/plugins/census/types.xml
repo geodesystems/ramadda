@@ -27,8 +27,8 @@
        <suffix><![CDATA[
 The FIPS code to search for when you want a single value, e.g. 08.
 <ul>
-<li> <a href="https://www.census.gov/geo/reference/ansi_statetables.html" target="_help">State FIPS listings</a>
-<li> <a href="https://www.census.gov/geo/reference/codes/cou.html" target="_help">County FIPS listings</a>
+<li> <a href="https://geodesystems.com/repository/census/states" target="_help">State FIPS listings</a>
+<li> <a href="https://geodesystems.com/repository/alias/gazeteer_counties" target="_help">County FIPS listings</a>
 </ul>
 ]]>
 </suffix>
