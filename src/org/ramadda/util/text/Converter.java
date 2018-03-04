@@ -1113,6 +1113,50 @@ public abstract class Converter extends Processor {
     }
 
 
+    public static class ColumnCopier extends Converter {
+
+        /** _more_ */
+        private String name;
+
+
+        /**
+         * _more_
+         *
+         * @param col _more_
+         * @param name _more_
+         */
+        public ColumnCopier(String col, String name) {
+            super(col);
+            this.name = name;
+        }
+
+        /**
+         * _more_
+         *
+         *
+         * @param info _more_
+         * @param row _more_
+         * @param line _more_
+         *
+         * @return _more_
+         */
+        @Override
+        public Row processRow(TextReader info, Row row, String line) {
+            int index = getIndex(info);
+            if ((index < 0) || (index >= row.size())) {
+                return row;
+            }
+            if(rowCnt++==0)
+                row.add(index, name);
+            else
+                row.add(index, row.getValues().get(index));
+
+            return row;
+        }
+
+    }
+
+
 
 
     /**

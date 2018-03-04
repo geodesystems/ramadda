@@ -728,6 +728,7 @@ public class CsvUtil {
             + "\n\t-explode <col #>   make separate files based on value of column"
             + "\n\t-unfurl <col to get new column header#> <col with value> <unique col>  <other columns>   unfurl"
             + "\n\t-decimate <skip factor>   only include every <skip factor> row"
+            + "\n\t-copy <col #> <name>"
             + "\n\t-delete <col #>" + "\n\t-add <col #> <value>"
             + "\n\t-insert <col #> <comma separated values> "
             + "\n\t-case <lower|upper|camel> <col #> "
@@ -1221,6 +1222,13 @@ public class CsvUtil {
             if (arg.equals("-add")) {
                 info.getProcessor().addProcessor(
                     new Converter.ColumnAdder(args.get(++i), args.get(++i)));
+
+                continue;
+            }
+
+            if (arg.equals("-copy")) {
+                info.getProcessor().addProcessor(
+                    new Converter.ColumnCopier(args.get(++i), args.get(++i)));
 
                 continue;
             }
