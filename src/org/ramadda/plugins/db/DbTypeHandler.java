@@ -1964,6 +1964,8 @@ public class DbTypeHandler extends BlobTypeHandler {
                        + HtmlUtils.input(ARG_MAX, getMax(request),
                                          HtmlUtils.SIZE_5);
         List<TwoFacedObject> tfos = new ArrayList<TwoFacedObject>();
+        tfos.add(new TwoFacedObject("",
+                                    "----"));
         for (Column column : columnsToUse) {
             if (column.getCanSearch()) {
                 tfos.add(new TwoFacedObject(column.getLabel(),
