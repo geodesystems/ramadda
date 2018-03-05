@@ -24,6 +24,19 @@
      <service link="media_pdfbox_extracttext"/>
 -->
      <property name="icon" value="/icons/pdf.png"/>
+     <wiki><![CDATA[
++section # title="{{name}}"
+{{description wikify="true"}}
+----
+<iframe src="{{resource url=true}}" type="application/pdf" width="100%" height="600">
+  <p>You don't have a PDF plugin, but you can <a href="{{resource url=true}}">download the PDF file.</a></p>
+</iframe>
+----
+{{information}}
+-section
+]]>
+</wiki>
+
 </type>
 
   <type name="type_document_doc"  description="Microsoft Word File" pattern="(.*\.doc|.*\.docx)"  super="type_document_tika"         handler="org.ramadda.data.docs.MsDocTypeHandler" >
