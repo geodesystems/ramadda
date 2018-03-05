@@ -1025,6 +1025,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                                        ARG_OUTPUT, output);
             }
 
+
             if (Misc.getProperty(props, "button", false)) {
                 return HtmlUtils.href(
                     url, title,
@@ -1046,7 +1047,6 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
 
             String url;
             String label;
-
             if (entry.getResource().isFile()) {
                 url = entry.getTypeHandler().getEntryResourceUrl(request,
                         entry);
@@ -1058,8 +1058,6 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
             if (Misc.getProperty(props, "url", false)) {
                 return url;
             }
-
-
             boolean includeIcon = Misc.getProperty(props, ATTR_INCLUDEICON,
                                       false);
             if (includeIcon) {
@@ -1073,12 +1071,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
             }
 
             String extra = "";
-
-
-
-
             return HtmlUtils.href(url, label, extra);
-
         } else if (theTag.equals(WIKI_TAG_UPLOAD)) {
             Entry group = getEntryManager().findGroup(request);
             if ( !getEntryManager().canAddTo(request, group)) {
