@@ -1347,7 +1347,9 @@ public class Repository extends RepositoryBase implements RequestHandler,
         getAdmin().checkRegistration();
 
         GeoUtils.setGoogleKey(getProperty("google.key", (String) null));
-        GeoUtils.setCacheDir(getStorageManager().getRepositoryDir());
+        if (getParentRepository() == null) {
+            GeoUtils.setCacheDir(getStorageManager().getRepositoryDir());
+        }
 
 
         /**
