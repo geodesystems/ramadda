@@ -775,10 +775,10 @@ function initMapFunctions(theMap) {
         var keyboardControl = new OpenLayers.Control();
         var control = new OpenLayers.Control();
         var callbacks = { keydown: function(evt) {
-                //                if(!Utils.isDefined(theMap.selectImage)) return;
                 if(evt.keyCode == 79) {
-                    for(id in         this.imageLayers) {
-                        image= this.imageLayers[id];
+                    if(!theMap.imageLayers) return;
+                    for(id in theMap.imageLayers) {
+                        image= theMap.imageLayers[id];
                         if(!Utils.isDefined(image.opacity)) {
                             image.opacity = 1.0;
                         }
@@ -800,8 +800,8 @@ function initMapFunctions(theMap) {
                 }
             }
 
-        };
-        var handler = new OpenLayers.Handler.Keyboard(control, callbacks, {});
+        }; 
+       var handler = new OpenLayers.Handler.Keyboard(control, callbacks, {});
         handler.activate();
         this.map.addControl(keyboardControl);
         this.map.addControl(new OpenLayers.Control.KeyboardDefaults());
