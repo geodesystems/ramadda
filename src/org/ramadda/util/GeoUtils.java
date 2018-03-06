@@ -391,7 +391,6 @@ public class GeoUtils {
             if (cacheDir != null) {
                 File cacheFile = new File(IOUtil.joinDir(cacheDir,
                                      "addresslocations.txt"));
-                System.err.println("cachefile:" + cacheFile +" " +cacheFile.exists());
                 if (cacheFile.exists()) {
                     for (String line :
                             StringUtil.split(IOUtil.readContents(cacheFile),
@@ -415,7 +414,6 @@ public class GeoUtils {
 
         double[] location = addressToLocation.get(address);
         if (location != null) {
-            System.err.println("cached:" + address);
             if (Double.isNaN(location[0])) {
                 return null;
             }
@@ -437,8 +435,6 @@ public class GeoUtils {
                     + encodedAddress + "&key=" + googleKey;
                 String result = IOUtil.readContents(url, GeoUtils.class);
 
-                System.err.println("url:" + url);
-                System.err.println("result:" + result);
                 //                    "lng" : -105.226021
                 latString = StringUtil.findPattern(result,
                         "\"lat\"\\s*:\\s*([-\\d\\.]+),");
