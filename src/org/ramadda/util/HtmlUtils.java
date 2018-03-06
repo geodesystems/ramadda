@@ -5103,8 +5103,10 @@ public class HtmlUtils {
             if (href.toLowerCase().startsWith("javascript:")) {
                 continue;
             }
-            URL newUrl = new URL(url, href);
-            links.add(new Link(newUrl, label));
+            try {
+                URL newUrl = new URL(url, href);
+                links.add(new Link(newUrl, label));
+            } catch(Exception exc) {}
         }
 
         return links;
