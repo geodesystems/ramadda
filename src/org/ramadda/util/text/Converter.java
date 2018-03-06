@@ -798,7 +798,7 @@ public abstract class Converter extends Processor {
          *
          * @throws Exception _more_
          */
-        public Geocoder(String cols, String suffix) throws Exception {
+        public Geocoder(List<String> cols, String suffix) throws Exception {
             super(cols);
             this.suffix = suffix;
             this.writeForDb = false;
@@ -884,7 +884,7 @@ public abstract class Converter extends Processor {
             StringBuilder key = new StringBuilder();
             for(int i:indices) {
                 Object value = values.get(i);
-                if(key.length()>0) key.append(" ");
+                if(key.length()>0) key.append(", ");
                 key.append(value);
             }
             if(suffix!=null) {

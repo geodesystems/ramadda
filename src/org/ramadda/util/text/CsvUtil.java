@@ -1154,9 +1154,9 @@ public class CsvUtil {
             }
 
             if (arg.equals("-geocodeaddress")) {
-                String col = args.get(++i);
+                List<String> cols = getCols(args.get(++i));
                 String suffix = args.get(++i);
-                info.getProcessor().addProcessor(new Converter.Geocoder(col, suffix));
+                info.getProcessor().addProcessor(new Converter.Geocoder(cols, suffix));
 
                 continue;
             }
