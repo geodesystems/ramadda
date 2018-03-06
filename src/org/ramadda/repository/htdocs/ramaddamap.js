@@ -775,20 +775,28 @@ function initMapFunctions(theMap) {
         var keyboardControl = new OpenLayers.Control();
         var control = new OpenLayers.Control();
         var callbacks = { keydown: function(evt) {
-                if(!Utils.isDefined(theMap.selectImage)) return;
+                //                if(!Utils.isDefined(theMap.selectImage)) return;
                 if(evt.keyCode == 79) {
-                    opacity = theMap.selectImage.opacity;
-                    if(evt.shiftKey) {
-                        opacity+=.1;
-                    } else {
-                        opacity-=0.1;
+                    for(id in         this.imageLayers) {
+                        image= this.imageLayers[id];
+                        if(!Utils.isDefined(image.opacity)) {
+                            image.opacity = 1.0;
+                        }
+                        opacity = image.opacity;
+                        if(evt.shiftKey) {
+                            opacity+=.1;
+                        } else {
+                            opacity-=0.1;
+                        }
+                        if(opacity<0) opacity=0;
+                        else if(opacity>1) opacity=1;
+                        image.setOpacity(opacity);
                     }
-                    if(opacity<0) opacity=0;
-                    else if(opacity>1) opacity=1;
-                    theMap.selectImage.setOpacity(opacity);
                 }
                 if(evt.keyCode == 84) {
-                    theMap.selectImage.setVisibility(!theMap.selectImage.getVisibility());
+                    if(theMap.selectImage) {
+                        theMap.selectImage.setVisibility(!theMap.selectImage.getVisibility());
+                    }
                 }
             }
 
