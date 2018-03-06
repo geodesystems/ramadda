@@ -391,6 +391,7 @@ public class GeoUtils {
             if (cacheDir != null) {
                 File cacheFile = new File(IOUtil.joinDir(cacheDir,
                                      "addresslocations.txt"));
+                System.err.println("cachefile:" + cacheFile +" " +cacheFile.exists());
                 if (cacheFile.exists()) {
                     for (String line :
                             StringUtil.split(IOUtil.readContents(cacheFile),
