@@ -428,12 +428,16 @@ public class GeoUtils {
         String lonString      = null;
         String encodedAddress = StringUtil.replace(address, " ", "%20");
 
+
+
         if (googleKey != null) {
             try {
                 String url =
                     "https://maps.googleapis.com/maps/api/geocode/json?address="
                     + encodedAddress + "&key=" + googleKey;
                 String result = IOUtil.readContents(url, GeoUtils.class);
+                //                System.err.println("url:" + url);
+                ///                System.err.println("result:" + result);
 
                 //                    "lng" : -105.226021
                 latString = StringUtil.findPattern(result,
