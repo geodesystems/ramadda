@@ -438,6 +438,8 @@ public class DbTypeHandler extends BlobTypeHandler {
     /** _more_ */
     private List<Column> labelColumns;
 
+    private String labelColumnNames;
+
     /** _more_ */
     private Column descColumn;
 
@@ -496,6 +498,7 @@ public class DbTypeHandler extends BlobTypeHandler {
         this.tableIcon = XmlUtil.getAttribute(tableNode, "icon",
                 "/db/database.png");
 
+        this.labelColumnNames =  XmlUtil.getAttribute(tableNode, "labelColumns","");
         //Initialize this type handler with a string blob
         Element root = XmlUtil.getRoot("<type></type>");
         Element node = XmlUtil.create("column", root, new String[] {
@@ -732,6 +735,7 @@ public class DbTypeHandler extends BlobTypeHandler {
             }
         }
 
+
         for (Column column : columnsToUse) {
             isNumeric[cnt] = column.isNumeric();
             doStats[cnt] = column.isNumeric()
@@ -806,6 +810,18 @@ public class DbTypeHandler extends BlobTypeHandler {
                 columnMap.put(name, column);
             }
         }
+
+        if(labelColumnNames.length()>0) {
+            for(String label: StringUtil.split(labelColumnNames,",",true,true)) {
+                Column column = columnMap.get(label);
+                if(column!=null) {
+                    if(labelColumns==null)
+                        labelColumns = new ArrayList<Column>();
+                    labelColumns.add(column);
+                }
+            }
+        }
+
 
         if ((mapCategoryColumn == null) && (categoryColumns.size() > 0)) {
             mapCategoryColumn = categoryColumns.get(0);
