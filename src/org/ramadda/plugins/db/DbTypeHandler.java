@@ -436,7 +436,7 @@ public class DbTypeHandler extends BlobTypeHandler {
     private boolean dfltSortAsc = true;
 
     /** _more_ */
-    private Column labelColumn;
+    private List<Column> labelColumns;
 
     /** _more_ */
     private Column descColumn;
@@ -718,7 +718,7 @@ public class DbTypeHandler extends BlobTypeHandler {
         enumColumns     = new ArrayList<Column>();
         dateColumns     = new ArrayList<Column>();
         hasDate         = false;
-        labelColumn     = null;
+        labelColumns     = null;
         descColumn      = null;
         urlColumn       = null;
         dfltSortColumn  = null;
@@ -740,7 +740,9 @@ public class DbTypeHandler extends BlobTypeHandler {
             doUniques[cnt] = column.isEnumeration();
 
             if (Misc.equals(column.getProperty("label"), "true")) {
-                labelColumn = column;
+                if(labelColumns==null)
+                    labelColumns = new ArrayList<Column>();
+                labelColumns.add(column);
             }
             if ((descColumn == null)
                     && column.getType().equals(Column.DATATYPE_STRING)
@@ -1612,8 +1614,8 @@ public class DbTypeHandler extends BlobTypeHandler {
                            + urlColumn.getEditArg() + "='+"
                            + "document.location";
 
-            if (labelColumn != null) {
-                jsUrl = jsUrl + "+'&" + labelColumn.getEditArg()
+            if (labelColumns != null) {
+                jsUrl = jsUrl + "+'&" + labelColumns.get(0).getEditArg()
                         + "='+document.title";
             }
 
@@ -5261,11 +5263,13 @@ public class DbTypeHandler extends BlobTypeHandler {
                                 SimpleDateFormat sdf)
             throws Exception {
         StringBuilder sb = new StringBuilder();
-        if (labelColumn != null) {
-            labelColumn.formatValue(entry, sb, Column.OUTPUT_HTML, values,
-                                    sdf);
-
-            return sb.toString();
+        if (labelColumns != null) {
+            for(Column labelColumn: labelColumns) {
+                labelColumn.formatValue(entry, sb, Column.OUTPUT_HTML, values,
+                                        sdf);
+                sb.append(" ");
+            }
+            return sb.toString().trim();
         }
         for (Column column : allColumns) {
             if ( !isDataColumn(column)) {
