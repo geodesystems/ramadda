@@ -1250,6 +1250,8 @@ Get the TableId property.
                                                                      "_");
             tableId = CsvUtil.getDbProp(props, "table", "id", tableId);
 
+            String labels = CsvUtil.getDbProp(props, "table", "labelColumns", "");
+
             File output = reader.getOutputFile();
             if (output != null) {
                 reader.setOutputFile(
@@ -1268,7 +1270,9 @@ Get the TableId property.
                 XmlUtil.openTag(
                     "table",
                     XmlUtil.attrs(
-                        "id", tableId, "name", label, "icon",
+                        "id", tableId, "name", label, 
+                        "labelColumns", labels,
+                        "icon",
                         CsvUtil.getDbProp(
                             props, "table", "icon", "/db/database.png"))));
             List<Row> samples = new ArrayList<Row>();
