@@ -3390,10 +3390,14 @@ public class DbTypeHandler extends BlobTypeHandler {
                 hb.append(values[1]);
                 hb.append("</td>");
             } else {
-                hb.append("<td xclass=dbtableheader>");
+                hb.append("<td>");
                 hb.append(values[0]);
-                hb.append("</td><td xclass=dbtableheader>");
-                hb.append(values[1]);
+                hb.append("</td><td align=right >");
+                if(values[1] instanceof Double) {
+                    hb.append(dfmt.format((Double)values[1]));
+                } else {
+                    hb.append(values[1]);
+                }
                 hb.append("</td>");
             }
             hb.append("</tr>");
