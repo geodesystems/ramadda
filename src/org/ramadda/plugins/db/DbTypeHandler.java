@@ -3386,7 +3386,7 @@ public class DbTypeHandler extends BlobTypeHandler {
             if(cnt==0) {
                 hb.append("<td class=dbtableheader>");
                 hb.append(values[0]);
-                hb.append("</td><td class=dtbableheader>");
+                hb.append("</td><td class=dbtableheader>");
                 hb.append(values[1]);
                 hb.append("</td>");
             } else {
