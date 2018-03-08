@@ -4951,11 +4951,13 @@ public class DbTypeHandler extends BlobTypeHandler {
         String agg="";
         if(doGroupBy) {
             colNames = new ArrayList<String>(); 
+            agg = request.getEnum(ARG_AGG_TYPE,null, "sum","count","min","max");
             groupByColumn = columnMap.get(request.getString(ARG_GROUPBY,""));
             aggColumn = columnMap.get(request.getString(ARG_AGG,""));
-            if(aggColumn==null)
-                throw new IllegalArgumentException("You must select an aggregation column");
-            agg = request.getEnum(ARG_AGG_TYPE,null, "sum","count","min","max");
+            if(aggColumn==null) {
+                aggColumn = groupByColumn;
+                agg = "count";
+            }
             colNames.add(groupByColumn.getName());
             String aggSelector = agg+"(" + aggColumn.getName()+") ";
             colNames.add(aggSelector);
