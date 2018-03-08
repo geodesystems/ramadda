@@ -3373,7 +3373,7 @@ public class DbTypeHandler extends BlobTypeHandler {
         if (valueList.size() > 0) {
             hb.append(HtmlUtils.p());
             hb.append(
-                "<table class=\"dbtable\"  border=1 cellspacing=\"0\" cellpadding=\"0\" width=\"100%\">");
+                "<table class=\"dbtable\"  border=1 cellspacing=\"0\" cellpadding=\"0\" >");
         }
 
         for (int cnt = 0; cnt < valueList.size(); cnt++) {
@@ -3386,7 +3386,7 @@ public class DbTypeHandler extends BlobTypeHandler {
             if(cnt==0) {
                 hb.append("<td class=dbtableheader>");
                 hb.append(values[0]);
-                hb.append("</td><td class=dbtableheader>");
+                hb.append("</td><td class=dtbableheader>");
                 hb.append(values[1]);
                 hb.append("</td>");
             } else {
@@ -3395,8 +3395,8 @@ public class DbTypeHandler extends BlobTypeHandler {
                 hb.append("</td><td align=right >");
                 if(values[1] instanceof Double) {
                     hb.append(dfmt.format((Double)values[1]));
-                } else {
-                    hb.append(values[1]);
+                } else { 
+                   hb.append(values[1]);
                 }
                 hb.append("</td>");
             }
