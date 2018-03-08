@@ -568,7 +568,7 @@ public class DbTypeHandler extends BlobTypeHandler {
         super.addToEntryNode(request, entry, node);
         if (getAccessManager().canDoAction(request, entry,
                                            Permission.ACTION_FILE)) {
-            List<Object[]> valueList = readValues(Clause.eq(COL_ID,
+            List<Object[]> valueList = readValues(request,Clause.eq(COL_ID,
                                            entry.getId()), "", -1);
             Element dbvalues = XmlUtil.create(TAG_DBVALUES, node);
             XmlUtil.createCDataNode(dbvalues,
@@ -1534,6 +1534,7 @@ public class DbTypeHandler extends BlobTypeHandler {
                                   String action, boolean fromSearch,
                                   List<Object[]> valueList)
             throws Exception {
+        boolean doGroupBy =  request.defined(ARG_GROUPBY);
         if (action.equals(ACTION_CSV) || view.equals(VIEW_CSV)) {
             return handleListCsv(request, entry, valueList);
         }
@@ -1542,56 +1543,54 @@ public class DbTypeHandler extends BlobTypeHandler {
             return handleListJson(request, entry, valueList);
         }
 
-        if (view.equals(VIEW_RSS)) {
-            return handleListRss(request, entry, valueList);
+        if(!doGroupBy) {
+            if (view.equals(VIEW_RSS)) {
+                return handleListRss(request, entry, valueList);
+            }
+
+            if (action.equals(ACTION_EMAIL)) {
+                return handleListEmail(request, entry, valueList);
+            }
+            if (view.equals(VIEW_SEARCH)) {
+                return handleSearchForm(request, entry);
+            }
+            if (view.equals(VIEW_MAP)) {
+                return handleListMap(request, entry, valueList, fromSearch);
+            }
+            if (view.equals(VIEW_STICKYNOTES)) {
+                return handleListStickyNotes(request, entry, valueList,
+                                             fromSearch);
+            }
+
+            if (view.equals(VIEW_KML)) {
+                return handleListKml(request, entry, valueList, fromSearch);
+            }
+
+            if (view.startsWith(VIEW_GRID)) {
+                return handleListGrid(request, entry, valueList, fromSearch);
+            }
+
+            if (view.startsWith(VIEW_CATEGORY)) {
+                return handleListCategory(request, entry, valueList, fromSearch);
+            }
+
+            if (view.equals(VIEW_TIMELINE)) {
+                return handleListTimeline(request, entry, valueList, fromSearch);
+            }
+
+            if (view.equals(VIEW_CHART)) {
+                return handleListChart(request, entry, valueList, fromSearch);
+            }
+
+            if (view.equals(VIEW_CALENDAR)) {
+                return handleListCalendar(request, entry, valueList, fromSearch);
+            }
+
+
+            if (view.equals(VIEW_ICAL)) {
+                return handleListIcal(request, entry, valueList, fromSearch);
+            }
         }
-
-        if (action.equals(ACTION_EMAIL)) {
-            return handleListEmail(request, entry, valueList);
-        }
-
-        if (view.equals(VIEW_SEARCH)) {
-            return handleSearchForm(request, entry);
-        }
-
-        if (view.equals(VIEW_MAP)) {
-            return handleListMap(request, entry, valueList, fromSearch);
-        }
-
-        if (view.equals(VIEW_STICKYNOTES)) {
-            return handleListStickyNotes(request, entry, valueList,
-                                         fromSearch);
-        }
-
-        if (view.equals(VIEW_KML)) {
-            return handleListKml(request, entry, valueList, fromSearch);
-        }
-
-        if (view.startsWith(VIEW_GRID)) {
-            return handleListGrid(request, entry, valueList, fromSearch);
-        }
-
-        if (view.startsWith(VIEW_CATEGORY)) {
-            return handleListCategory(request, entry, valueList, fromSearch);
-        }
-
-        if (view.equals(VIEW_TIMELINE)) {
-            return handleListTimeline(request, entry, valueList, fromSearch);
-        }
-
-        if (view.equals(VIEW_CHART)) {
-            return handleListChart(request, entry, valueList, fromSearch);
-        }
-
-        if (view.equals(VIEW_CALENDAR)) {
-            return handleListCalendar(request, entry, valueList, fromSearch);
-        }
-
-
-        if (view.equals(VIEW_ICAL)) {
-            return handleListIcal(request, entry, valueList, fromSearch);
-        }
-
         return handleListTable(request, entry, valueList, fromSearch, true);
     }
 
@@ -1990,6 +1989,25 @@ public class DbTypeHandler extends BlobTypeHandler {
                                             column.getName()));
             }
         }
+
+        sb.append(
+            formEntry(
+                request, msgLabel("Group By"),
+                HtmlUtils.select(
+                                 ARG_GROUPBY, tfos,
+                    request.getString(ARG_GROUPBY, ""),
+                                 HtmlUtils.cssClass("search-select"))));
+
+        sb.append(
+                  formEntry(request,
+                            msgLabel("Aggregate"),
+                HtmlUtils.select(
+                                 ARG_AGG, tfos,
+                    request.getString(ARG_AGG, ""),
+                                 HtmlUtils.cssClass("search-select")) +
+                  HtmlUtils.space(2) +
+                            HtmlUtils.radio(ARG_AGG_TYPE, "count", request.getString(ARG_AGG_TYPE,"count").equals("count")) + " " + "Count " +
+                            HtmlUtils.radio(ARG_AGG_TYPE, "sum", request.getString(ARG_AGG_TYPE,"").equals("sum")) + " " + "Sum "));
 
         sb.append(
             formEntry(
@@ -2949,9 +2967,15 @@ public class DbTypeHandler extends BlobTypeHandler {
         } else {
             addStyleSheet(sb);
         }
-        makeTable(request, entry, valueList, fromSearch, sb,
-                  !request.isAnonymous(),
-                  showHeaderLinks && !request.get(ARG_EMBEDDED, false));
+        boolean doGroupBy =  request.defined(ARG_GROUPBY);
+        if(doGroupBy) {
+            makeGroupByTable(request, entry, valueList,  sb,
+                      showHeaderLinks && !request.get(ARG_EMBEDDED, false));
+        } else {
+            makeTable(request, entry, valueList, fromSearch, sb,
+                      !request.isAnonymous(),
+                      showHeaderLinks && !request.get(ARG_EMBEDDED, false));
+        }
 
         if ( !embedded) {
             addViewFooter(request, entry, sb);
@@ -3336,6 +3360,50 @@ public class DbTypeHandler extends BlobTypeHandler {
             }
         }
         hb.append(HtmlUtils.formClose());
+        sb.append(insetHtml(hb.toString()));
+    }
+
+
+    public void makeGroupByTable(Request request, Entry entry,
+                          List<Object[]> valueList, 
+                          Appendable sb, boolean showHeaderLinks)
+            throws Exception {
+
+        StringBuilder    hb         = new StringBuilder();
+        if (valueList.size() > 0) {
+            hb.append(HtmlUtils.p());
+            hb.append(
+                "<table class=\"dbtable\"  border=1 cellspacing=\"0\" cellpadding=\"0\" width=\"100%\">");
+        }
+
+        for (int cnt = 0; cnt < valueList.size(); cnt++) {
+            Object[] values = valueList.get(cnt);
+            hb.append(HtmlUtils.open(HtmlUtils.TAG_TR,
+                                     HtmlUtils.attrs(HtmlUtils.ATTR_VALIGN,
+                                         "top") + HtmlUtils.cssClass("dbrow")
+                                             ));
+
+            if(cnt==0) {
+                hb.append("<td class=dbtableheader>");
+                hb.append(values[0]);
+                hb.append("</td><td class=dbtableheader>");
+                hb.append(values[1]);
+                hb.append("</td>");
+            } else {
+                hb.append("<td xclass=dbtableheader>");
+                hb.append(values[0]);
+                hb.append("</td><td xclass=dbtableheader>");
+                hb.append(values[1]);
+                hb.append("</td>");
+            }
+            hb.append("</tr>");
+        }
+        if (valueList.size() > 0) {
+            hb.append("</table>\n");
+        } else { 
+           hb.append(
+                      getPageHandler().showDialogNote(msg("Nothing found")));
+        }
         sb.append(insetHtml(hb.toString()));
     }
 
@@ -4817,6 +4885,8 @@ public class DbTypeHandler extends BlobTypeHandler {
         }
 
 
+        boolean doGroupBy =  request.defined(ARG_GROUPBY);
+        if(!doGroupBy) {
         if (request.defined(ARG_DB_SORTBY)) {
             String by     = request.getString(ARG_DB_SORTBY, "");
             Column column = columnMap.get(by);
@@ -4829,11 +4899,12 @@ public class DbTypeHandler extends BlobTypeHandler {
                         : " desc ");
             }
         }
+        }
         int max  = getMax(request);
         int skip = request.get(ARG_SKIP, 0);
         extra += getDatabaseManager().getLimitString(skip, max);
 
-        return readValues(clause, extra, max);
+        return readValues(request, clause, extra, max);
     }
 
 
@@ -4860,32 +4931,68 @@ public class DbTypeHandler extends BlobTypeHandler {
      *
      * @throws Exception _more_
      */
-    private List<Object[]> readValues(Clause clause, String extra, int max)
+    private List<Object[]> readValues(Request request,Clause clause, String extra, int max)
             throws Exception {
         List<Object[]> result   = new ArrayList<Object[]>();
 
-        List<String>   colNames = tableHandler.getColumnNames();
+        boolean doGroupBy =  request.defined(ARG_GROUPBY);
+        List<String>   colNames; 
+        Column groupByColumn = null;
+        Column aggColumn = null;
+
+        String agg="";
+        if(doGroupBy) {
+            colNames = new ArrayList<String>(); 
+            groupByColumn = columnMap.get(request.getString(ARG_GROUPBY,""));
+            aggColumn = columnMap.get(request.getString(ARG_AGG,""));
+            if(aggColumn==null)
+                throw new IllegalArgumentException("You must select an aggregation column");
+            agg = request.getEnum(ARG_AGG_TYPE,null, "sum","count","min","max");
+            colNames.add(groupByColumn.getName());
+            String aggSelector = agg+"(" + aggColumn.getName()+") ";
+            colNames.add(aggSelector);
+            extra = " GROUP BY " + groupByColumn.getName() +" " 
+            +  " ORDER BY " + aggSelector +
+                (request.getString(ARG_DB_SORTDIR,"asc").equals("asc")?" asc ": " desc ") +
+                extra;
+            Object[] labels   = new Object[2];
+            labels[0] = groupByColumn.getLabel();
+            labels[1] =agg+"(" + aggColumn.getLabel()+")";
+            result.add(labels);
+        } else {
+            colNames = tableHandler.getColumnNames();
+        }
         Statement stmt = getDatabaseManager().select(SqlUtil.comma(colNames),
                              Misc.newList(tableHandler.getTableName()),
                              clause, extra, max);
-
         try {
             SqlUtil.Iterator iter = getDatabaseManager().getIterator(stmt);
             ResultSet        results;
+
             while ((results = iter.getNext()) != null) {
-                Object[] values   = tableHandler.makeEntryValueArray();
                 int      valueIdx = 2;
-                for (Column column : allColumns) {
-                    valueIdx = column.readValues(myEntry, results, values,
-                            valueIdx);
+                if(doGroupBy) {
+                    Object[] values   = new Object[2];
+                    values[0] = results.getString(1);
+                    if(agg.equals("count")) {
+                        values[1]  = results.getInt(2);
+                    } else {
+                        values[1]  = results.getDouble(2);
+                    }
+                    result.add(values);
+                } else {
+                    Object[] values   = tableHandler.makeEntryValueArray();
+                    for (Column column : allColumns) {
+                        valueIdx = column.readValues(myEntry, results, values,
+                                                     valueIdx);
+                    }
+                    result.add(values);
                 }
-                result.add(values);
             }
         } finally {
             getRepository().getDatabaseManager().closeAndReleaseConnection(
                 stmt);
         }
-
         return result;
     }
 
