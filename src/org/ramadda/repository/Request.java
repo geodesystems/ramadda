@@ -1541,6 +1541,14 @@ public class Request implements Constants, Cloneable {
         return false;
     }
 
+    public String getEnum(String arg, String dflt, String...values) {
+        String value = getString(arg,"");
+        for(String enumValue:values) {
+            if(value.equals(enumValue)) return value;
+        }
+        return dflt;
+    }
+
     /**
      * _more_
      *

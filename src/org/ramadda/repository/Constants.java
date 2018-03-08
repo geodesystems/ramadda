@@ -1134,6 +1134,13 @@ public interface Constants {
     /** _more_ */
     public static final String ARG_ORDERBY = "orderby";
 
+    public static final String ARG_GROUPBY= "group_by";
+
+    public static final String ARG_AGG =  "group_agg";
+
+
+    public static final String ARG_AGG_TYPE= "group_agg_type";
+
     /** _more_ */
     public static final String ARG_OUTPUT = "output";
 
