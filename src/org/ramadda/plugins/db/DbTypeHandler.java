@@ -1516,6 +1516,10 @@ public class DbTypeHandler extends BlobTypeHandler {
     }
 
 
+    private boolean isGroupBy(Request request) {
+        return Utils.stringDefined(request.getString(ARG_GROUPBY,""));
+    }
+
     /**
      * _more_
      *
@@ -1534,7 +1538,7 @@ public class DbTypeHandler extends BlobTypeHandler {
                                   String action, boolean fromSearch,
                                   List<Object[]> valueList)
             throws Exception {
-        boolean doGroupBy =  request.defined(ARG_GROUPBY);
+            boolean doGroupBy =  isGroupBy(request);
         if (action.equals(ACTION_CSV) || view.equals(VIEW_CSV)) {
             return handleListCsv(request, entry, valueList);
         }
@@ -2967,7 +2971,7 @@ public class DbTypeHandler extends BlobTypeHandler {
         } else {
             addStyleSheet(sb);
         }
-        boolean doGroupBy =  request.defined(ARG_GROUPBY);
+        boolean doGroupBy =  isGroupBy(request);
         if(doGroupBy) {
             makeGroupByTable(request, entry, valueList,  sb,
                       showHeaderLinks && !request.get(ARG_EMBEDDED, false));
@@ -4889,7 +4893,7 @@ public class DbTypeHandler extends BlobTypeHandler {
         }
 
 
-        boolean doGroupBy =  request.defined(ARG_GROUPBY);
+        boolean doGroupBy =  isGroupBy(request);
         if(!doGroupBy) {
         if (request.defined(ARG_DB_SORTBY)) {
             String by     = request.getString(ARG_DB_SORTBY, "");
@@ -4939,7 +4943,7 @@ public class DbTypeHandler extends BlobTypeHandler {
             throws Exception {
         List<Object[]> result   = new ArrayList<Object[]>();
 
-        boolean doGroupBy =  request.defined(ARG_GROUPBY);
+        boolean doGroupBy =  isGroupBy(request);
         List<String>   colNames; 
         Column groupByColumn = null;
         Column aggColumn = null;
