@@ -1100,7 +1100,8 @@ public class DbTypeHandler extends BlobTypeHandler {
         }
 
 
-        if (request.exists(ARG_DB_DELETE) || action.equals(ACTION_DELETE)
+
+       if  (request.exists(ARG_DB_DELETE)|| action.equals(ACTION_DELETE)
                 || action.equals(ACTION_DELETEALL)) {
             if ( !canEdit) {
                 throw new AccessException("You cannot edit this database",
@@ -2140,6 +2141,7 @@ public class DbTypeHandler extends BlobTypeHandler {
         List      dbids = request.get(ARG_DBID_SELECTED, new ArrayList());
         Statement statement      = getDatabaseManager().createStatement();
 
+
         try {
             if (deleteSelected) {
                 for (Object dbid : dbids) {
@@ -2200,6 +2202,8 @@ public class DbTypeHandler extends BlobTypeHandler {
             String formUrl = request.makeUrl(getRepository().URL_ENTRY_SHOW);
             sb.append(HtmlUtils.formPost(formUrl));
             sb.append(HtmlUtils.hidden(ARG_ENTRYID, entry.getId()));
+            sb.append(HtmlUtils.hidden(ARG_DB_ACTION, action));
+
 
             for (Object dbid : dbids) {
                 sb.append(HtmlUtils.hidden(ARG_DBID_SELECTED,
