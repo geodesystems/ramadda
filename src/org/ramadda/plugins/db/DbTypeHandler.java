@@ -2012,7 +2012,10 @@ public class DbTypeHandler extends BlobTypeHandler {
                                  HtmlUtils.cssClass("search-select")) +
                   HtmlUtils.space(2) +
                             HtmlUtils.radio(ARG_AGG_TYPE, "count", request.getString(ARG_AGG_TYPE,"count").equals("count")) + " " + "Count " +
-                            HtmlUtils.radio(ARG_AGG_TYPE, "sum", request.getString(ARG_AGG_TYPE,"").equals("sum")) + " " + "Sum "));
+                            HtmlUtils.radio(ARG_AGG_TYPE, "sum", request.getString(ARG_AGG_TYPE,"").equals("sum")) + " " + "Sum " +
+                            HtmlUtils.radio(ARG_AGG_TYPE, "avg", request.getString(ARG_AGG_TYPE,"").equals("avg")) + " " + "Average " +
+                            HtmlUtils.radio(ARG_AGG_TYPE, "min", request.getString(ARG_AGG_TYPE,"").equals("min")) + " " + "Minimum " +
+                            HtmlUtils.radio(ARG_AGG_TYPE, "max", request.getString(ARG_AGG_TYPE,"").equals("max")) + " " + "Maximum " ));
 
         sb.append(
             formEntry(
@@ -4955,7 +4958,7 @@ public class DbTypeHandler extends BlobTypeHandler {
         String agg="";
         if(doGroupBy) {
             colNames = new ArrayList<String>(); 
-            agg = request.getEnum(ARG_AGG_TYPE,null, "sum","count","min","max");
+            agg = request.getEnum(ARG_AGG_TYPE,null, "sum","count","min","max","avg");
             groupByColumn = columnMap.get(request.getString(ARG_GROUPBY,""));
             aggColumn = columnMap.get(request.getString(ARG_AGG,""));
             if(aggColumn==null) {
