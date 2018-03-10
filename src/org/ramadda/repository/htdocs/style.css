@@ -2334,6 +2334,7 @@ h3 a:visited {
 
 .hideshowblock {
    margin-top:0px;
+   z-index: 2;
 }
 
 .block {
