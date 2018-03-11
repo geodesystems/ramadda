@@ -1986,11 +1986,18 @@ public class DbTypeHandler extends BlobTypeHandler {
                        + HtmlUtils.input(ARG_MAX, getMax(request),
                                          HtmlUtils.SIZE_5);
         List<TwoFacedObject> tfos = new ArrayList<TwoFacedObject>();
-        tfos.add(new TwoFacedObject("----",
-                                    ""));
+        List<TwoFacedObject> aggtfos = new ArrayList<TwoFacedObject>();
+        tfos.add(new TwoFacedObject("----",""));
+        aggtfos.add(new TwoFacedObject("----",""));
         for (Column column : columnsToUse) {
             if (column.getCanSearch()) {
                 tfos.add(new TwoFacedObject(column.getLabel(),
+                                            column.getName()));
+                if(column.isDate()) {
+                    tfos.add(new TwoFacedObject("Year of " + column.getLabel(),
+                                                "year("+column.getName()+")"));
+                }
+                aggtfos.add(new TwoFacedObject(column.getLabel(),
                                             column.getName()));
             }
         }
@@ -2014,7 +2021,7 @@ public class DbTypeHandler extends BlobTypeHandler {
         StringBuilder aggSB = new StringBuilder();
         for(int i=0;i<3;i++) {
             aggSB.append(HtmlUtils.select(
-                                          ARG_AGG+i, tfos,
+                                          ARG_AGG+i, aggtfos,
                                           request.getString(ARG_AGG+i, ""),
                                           HtmlUtils.cssClass("search-select")) +
                          HtmlUtils.space(2) +
@@ -2030,7 +2037,7 @@ public class DbTypeHandler extends BlobTypeHandler {
             formEntry(
                 request, msgLabel("Order By"),
                 HtmlUtils.select(
-                                 ARG_DB_SORTBY, tfos,
+                                 ARG_DB_SORTBY, aggtfos,
                     request.getString(ARG_DB_SORTBY, ""),
                     HtmlUtils.cssClass("search-select")) + HtmlUtils.space(2)
                 +  HtmlUtils.radio(ARG_DB_SORTDIR, "asc", request.getString(ARG_DB_SORTDIR,"asc").equals("asc")) + " " + "Ascending " +
@@ -4966,61 +4973,84 @@ public class DbTypeHandler extends BlobTypeHandler {
         boolean doGroupBy =  isGroupBy(request);
         List<String>   colNames; 
         List<Column> groupByColumns = null;
-        List<Column> aggColumns = null;
+        List<String> aggColumns = null;
+        List<String> aggLabels = null;
         List<String> aggSelectors = null;
 
         if(doGroupBy) {
             colNames = new ArrayList<String>(); 
             groupByColumns = new ArrayList();
             extra = " GROUP BY ";
+            String orderBy = null;
 
+            List<String> cols   = new ArrayList<String>();
+            List<String> labels   = new ArrayList<String>();
             List<String> args = (List<String>)(request.get(ARG_GROUPBY,new ArrayList()));
             for(int i=0;i<args.size();i++) {
                 String col = args.get(i);
                 Column groupByColumn = columnMap.get(col);
+                boolean doYear = false;
+                if(groupByColumn==null && col.startsWith("year(")) {
+                    String tmp = col.substring(5);
+                    tmp = tmp.substring(0,tmp.length()-1);
+                    groupByColumn = columnMap.get(tmp);
+                    doYear = true;
+                    orderBy =  " ORDER BY " + col +
+                        (request.getString(ARG_DB_SORTDIR,"asc").equals("asc")?" asc ": " desc ");
+                }
+
                 if(groupByColumn!=null) {
-                    if(i>0) extra+=", ";
-                    extra += groupByColumn.getName();
-                    groupByColumns.add(groupByColumn);
-                    colNames.add(groupByColumn.getName());
+                    if(doYear) {
+                        cols.add(0,col);
+                        groupByColumns.add(0,groupByColumn);
+                        colNames.add(0,col);
+                        labels.add(0, "Year of "+ groupByColumn.getLabel());
+                    } else {
+                        cols.add(col);
+                        groupByColumns.add(groupByColumn);
+                        colNames.add(col);
+                        labels.add(groupByColumn.getLabel());
+                    }
                 }
             }
 
-            aggColumns = new ArrayList<Column>();
+            aggColumns = new ArrayList<String>();
+            aggLabels = new ArrayList<String>();
             aggSelectors = new ArrayList<String>();
             for(int i=0;i<3;i++) {
                 Column aggColumn = columnMap.get(request.getString(ARG_AGG+i,""));
                 if(aggColumn!=null) {
-                    aggColumns.add(aggColumn);
+                    aggColumns.add(aggColumn.getName());
+                    aggLabels.add(aggColumn.getLabel());
                     aggSelectors.add(request.getEnum(ARG_AGG_TYPE+i,"count","sum","count","min","max","avg"));
                 }
             }
             if(aggColumns.size()==0) {
-                aggColumns.add(groupByColumns.get(0));
+                aggColumns.add(colNames.get(0));
+                aggLabels.add(labels.get(0));
                 aggSelectors.add("count");
             }
 
-            Object[] labels   = new Object[aggColumns.size()+groupByColumns.size()];
-            for(int i=0;i<groupByColumns.size();i++) {
-                labels[i] = groupByColumns.get(i).getLabel();
-            }
             for(int i=0;i<aggColumns.size();i++) {
-                Column aggColumn = aggColumns.get(i);
+                String aggColumn = aggColumns.get(i);
                 String agg = aggSelectors.get(i);
-                String aggSelector = agg+"(" + aggColumn.getName()+") ";
+                String aggSelector = agg+"(" + aggColumn+") ";
                 colNames.add(aggSelector);
-                if(i==0)
-                    extra+=  " ORDER BY " + aggSelector +
+                if(orderBy==null)
+                    orderBy =  " ORDER BY " + aggSelector +
                         (request.getString(ARG_DB_SORTDIR,"asc").equals("asc")?" asc ": " desc ");
-                labels[i+groupByColumns.size()] =agg+"(" + aggColumn.getLabel()+")";
+                labels.add(agg+" of " + aggLabels.get(i));
             }
-            result.add(labels);
+            result.add(labels.toArray());
+            extra += StringUtil.join(",", cols);
+            extra += orderBy;
         } else {
             colNames = tableHandler.getColumnNames();
         }
         Statement stmt = getDatabaseManager().select(SqlUtil.comma(colNames),
                              Misc.newList(tableHandler.getTableName()),
                              clause, extra, max);
+        System.err.println("Clause:" + clause);
         try {
             SqlUtil.Iterator iter = getDatabaseManager().getIterator(stmt);
             ResultSet        results;
@@ -5033,7 +5063,7 @@ public class DbTypeHandler extends BlobTypeHandler {
                         values[i] = results.getString(i+1);
                     }
                     for(int i=0;i<aggColumns.size();i++) {
-                        Column aggColumn = aggColumns.get(i);
+                        //   Column aggColumn = aggColumns.get(i);
                         String agg = aggSelectors.get(i);
                         int index = groupByColumns.size()+i;
                         if(agg.equals("count")) {
