@@ -2000,22 +2000,31 @@ public class DbTypeHandler extends BlobTypeHandler {
                 request, msgLabel("Group By"),
                 HtmlUtils.select(
                                  ARG_GROUPBY, tfos,
-                    request.getString(ARG_GROUPBY, ""),
-                                 HtmlUtils.cssClass("search-select"))));
+                                 (List<String>)request.get(ARG_GROUPBY, new ArrayList()),
+                                 " multiple size=4 "
+                                 /*HtmlUtils.cssClass("search-select")*/)));
+        
+        List<TwoFacedObject> aggTypes = new ArrayList<TwoFacedObject>();
+        aggTypes.add(new TwoFacedObject("Count","count"));
+        aggTypes.add(new TwoFacedObject("Sum","sum"));
+        aggTypes.add(new TwoFacedObject("Average","avg"));
+        aggTypes.add(new TwoFacedObject("Min","min"));
+        aggTypes.add(new TwoFacedObject("Max","max"));
 
+        StringBuilder aggSB = new StringBuilder();
+        for(int i=0;i<3;i++) {
+            aggSB.append(HtmlUtils.select(
+                                          ARG_AGG+i, tfos,
+                                          request.getString(ARG_AGG+i, ""),
+                                          HtmlUtils.cssClass("search-select")) +
+                         HtmlUtils.space(2) +
+                         HtmlUtils.select(ARG_AGG_TYPE+i, aggTypes, request.getString(ARG_AGG_TYPE+i, ""), HtmlUtils.cssClass("search-select")));
+            aggSB.append("<br>");
+        }
         sb.append(
                   formEntry(request,
                             msgLabel("Aggregate"),
-                HtmlUtils.select(
-                                 ARG_AGG, tfos,
-                    request.getString(ARG_AGG, ""),
-                                 HtmlUtils.cssClass("search-select")) +
-                  HtmlUtils.space(2) +
-                            HtmlUtils.radio(ARG_AGG_TYPE, "count", request.getString(ARG_AGG_TYPE,"count").equals("count")) + " " + "Count " +
-                            HtmlUtils.radio(ARG_AGG_TYPE, "sum", request.getString(ARG_AGG_TYPE,"").equals("sum")) + " " + "Sum " +
-                            HtmlUtils.radio(ARG_AGG_TYPE, "avg", request.getString(ARG_AGG_TYPE,"").equals("avg")) + " " + "Average " +
-                            HtmlUtils.radio(ARG_AGG_TYPE, "min", request.getString(ARG_AGG_TYPE,"").equals("min")) + " " + "Minimum " +
-                            HtmlUtils.radio(ARG_AGG_TYPE, "max", request.getString(ARG_AGG_TYPE,"").equals("max")) + " " + "Maximum " ));
+                            aggSB.toString()));
 
         sb.append(
             formEntry(
@@ -3395,21 +3404,25 @@ public class DbTypeHandler extends BlobTypeHandler {
                                              ));
 
             if(cnt==0) {
-                hb.append("<td class=dbtableheader>");
-                hb.append(values[0]);
-                hb.append("</td><td class=dbtableheader>");
-                hb.append(values[1]);
-                hb.append("</td>");
-            } else {
-                hb.append("<td>");
-                hb.append(values[0]);
-                hb.append("</td><td align=right >");
-                if(values[1] instanceof Double) {
-                    hb.append(dfmt.format((Double)values[1]));
-                } else { 
-                   hb.append(values[1]);
+                for(Object obj: values) {
+                    hb.append("<td class=dbtableheader>");
+                    hb.append(obj);
+                    hb.append("</td>");
                 }
-                hb.append("</td>");
+            } else {
+                for(Object obj: values) {
+                    if(obj instanceof Double) {
+                        hb.append("<td align=right>");
+                        hb.append(dfmt.format((Double)obj));
+                    } else if(obj instanceof Integer) {
+                        hb.append("<td align=right>");
+                        hb.append(obj);
+                    } else {
+                        hb.append("<td>");
+                        hb.append(obj);
+                    }
+                    hb.append("</td>");
+                }
             }
             hb.append("</tr>");
         }
@@ -4952,29 +4965,55 @@ public class DbTypeHandler extends BlobTypeHandler {
 
         boolean doGroupBy =  isGroupBy(request);
         List<String>   colNames; 
-        Column groupByColumn = null;
-        Column aggColumn = null;
+        List<Column> groupByColumns = null;
+        List<Column> aggColumns = null;
+        List<String> aggSelectors = null;
 
-        String agg="";
         if(doGroupBy) {
             colNames = new ArrayList<String>(); 
-            agg = request.getEnum(ARG_AGG_TYPE,null, "sum","count","min","max","avg");
-            groupByColumn = columnMap.get(request.getString(ARG_GROUPBY,""));
-            aggColumn = columnMap.get(request.getString(ARG_AGG,""));
-            if(aggColumn==null) {
-                aggColumn = groupByColumn;
-                agg = "count";
+            groupByColumns = new ArrayList();
+            extra = " GROUP BY ";
+
+            List<String> args = (List<String>)(request.get(ARG_GROUPBY,new ArrayList()));
+            for(int i=0;i<args.size();i++) {
+                String col = args.get(i);
+                Column groupByColumn = columnMap.get(col);
+                if(groupByColumn!=null) {
+                    if(i>0) extra+=", ";
+                    extra += groupByColumn.getName();
+                    groupByColumns.add(groupByColumn);
+                    colNames.add(groupByColumn.getName());
+                }
             }
-            colNames.add(groupByColumn.getName());
-            String aggSelector = agg+"(" + aggColumn.getName()+") ";
-            colNames.add(aggSelector);
-            extra = " GROUP BY " + groupByColumn.getName() +" " 
-            +  " ORDER BY " + aggSelector +
-                (request.getString(ARG_DB_SORTDIR,"asc").equals("asc")?" asc ": " desc ") +
-                extra;
-            Object[] labels   = new Object[2];
-            labels[0] = groupByColumn.getLabel();
-            labels[1] =agg+"(" + aggColumn.getLabel()+")";
+
+            aggColumns = new ArrayList<Column>();
+            aggSelectors = new ArrayList<String>();
+            for(int i=0;i<3;i++) {
+                Column aggColumn = columnMap.get(request.getString(ARG_AGG+i,""));
+                if(aggColumn!=null) {
+                    aggColumns.add(aggColumn);
+                    aggSelectors.add(request.getEnum(ARG_AGG_TYPE+i,"count","sum","count","min","max","avg"));
+                }
+            }
+            if(aggColumns.size()==0) {
+                aggColumns.add(groupByColumns.get(0));
+                aggSelectors.add("count");
+            }
+
+            Object[] labels   = new Object[aggColumns.size()+groupByColumns.size()];
+            for(int i=0;i<groupByColumns.size();i++) {
+                labels[i] = groupByColumns.get(i).getLabel();
+            }
+            for(int i=0;i<aggColumns.size();i++) {
+                Column aggColumn = aggColumns.get(i);
+                String agg = aggSelectors.get(i);
+                String aggSelector = agg+"(" + aggColumn.getName()+") ";
+                colNames.add(aggSelector);
+                if(i==0)
+                    extra+=  " ORDER BY " + aggSelector +
+                        (request.getString(ARG_DB_SORTDIR,"asc").equals("asc")?" asc ": " desc ");
+                labels[i+groupByColumns.size()] =agg+"(" + aggColumn.getLabel()+")";
+            }
             result.add(labels);
         } else {
             colNames = tableHandler.getColumnNames();
@@ -4989,12 +5028,19 @@ public class DbTypeHandler extends BlobTypeHandler {
             while ((results = iter.getNext()) != null) {
                 int      valueIdx = 2;
                 if(doGroupBy) {
-                    Object[] values   = new Object[2];
-                    values[0] = results.getString(1);
-                    if(agg.equals("count")) {
-                        values[1]  = results.getInt(2);
-                    } else {
-                        values[1]  = results.getDouble(2);
+                    Object[] values   = new Object[aggColumns.size()+groupByColumns.size()];
+                    for(int i=0;i<groupByColumns.size();i++) {
+                        values[i] = results.getString(i+1);
+                    }
+                    for(int i=0;i<aggColumns.size();i++) {
+                        Column aggColumn = aggColumns.get(i);
+                        String agg = aggSelectors.get(i);
+                        int index = groupByColumns.size()+i;
+                        if(agg.equals("count")) {
+                            values[index]  = results.getInt(index+1);
+                        } else {
+                            values[index]  = results.getDouble(index+1);
+                        }
                     }
                     result.add(values);
                 } else {
