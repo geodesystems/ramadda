@@ -83,11 +83,13 @@
 
 {{tree title="Data" details="false" showtoggle="false" message="" prefix="==Data=="}}
 
-{{properties metadata.types="!project_pi,!project_person,!project_funding" message="" }}
+{{properties metadata.types="!content.attachment,!content.thumbnail,!project_pi,!project_person,!project_funding" message="" }}
 {{links entry="Links" message=""}}
 -col
 +col-md-4
+<center>
 {{image src="::*" message="" width="300"}}
+</center>
 <p>
 {{mapentry width="350" message=""}}
 -col
