@@ -142,11 +142,17 @@ public class TextRecord extends DataRecord {
         int idx = 0;
         for (int i = 0; i < fields.size(); i++) {
             RecordField field = fields.get(i);
-            //            System.err.println("Field:" + field.getName() +" index:" + indices[i]);
+            //            System.err.println("  field:" + i +" " + field.getName());
+        }
+
+        for (int i = 0; i < fields.size(); i++) {
+            RecordField field = fields.get(i);
+
             if (field.getSynthetic() || field.hasDefaultValue()
                     || field.getSkip()) {
                 continue;
             }
+            //            System.err.println("Field:" + field.getName() +" idx:" + idx +" " + indices.length);
             indices[idx++] = field.getIndex();
             if (field.getColumnWidth() > 0) {
                 fixedWidth = new int[tokens.length];

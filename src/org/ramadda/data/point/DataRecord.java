@@ -182,6 +182,7 @@ public class DataRecord extends PointRecord {
                     && !hasDefault[fieldIdx]) {
                 numDataFields++;
             }
+            //            System.err.println("data record Field:" + field.getName() +" num:" + numDataFields);
             if (field.isTypeDate() && (idxTime == -1)) {
                 idxTime = fieldIdx;
 
@@ -292,13 +293,7 @@ public class DataRecord extends PointRecord {
                 getRecordFile().setYMDHMSIndices(ymdhmsIndices);
             }
         }
-
-
         checkIndices();
-
-
-
-
     }
 
 
@@ -403,7 +398,8 @@ public class DataRecord extends PointRecord {
      */
     protected void addFields(List<RecordField> fields) {
         super.addFields(fields);
-        fields.addAll(this.fields);
+        if(fields.size()==0)
+            fields.addAll(this.fields);
     }
 
 
