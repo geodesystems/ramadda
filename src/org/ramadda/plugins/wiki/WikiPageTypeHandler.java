@@ -153,6 +153,17 @@ public class WikiPageTypeHandler extends ExtensibleGroupTypeHandler {
     }
 
 
+    public String getWikiInclude(WikiUtil wikiUtil, Request request,
+                                 Entry originalEntry, Entry entry,
+                                 String tag, Hashtable props)
+            throws Exception {
+        if (tag.equals("wikitext")) {
+            return (String) entry.getValue(0,"");
+        }
+        return super.getWikiInclude(wikiUtil, request, originalEntry, entry, tag, props);
+    }
+
+
     /**
      * _more_
      *

@@ -20,6 +20,8 @@ package org.ramadda.plugins.wiki;
 import org.incava.util.diff.Diff;
 import org.incava.util.diff.Difference;
 
+import org.ramadda.repository.metadata.*;
+
 import org.ramadda.repository.Association;
 import org.ramadda.repository.Entry;
 import org.ramadda.repository.Link;
@@ -244,6 +246,42 @@ public class WikiPageOutputHandler extends HtmlOutputHandler {
         }
 
 
+        List<Metadata> metadataList =
+            getMetadataManager().findMetadata(request, entry,
+                                              ContentMetadataHandler.TYPE_PAGESTYLE, true);
+        String template = null;
+        if (metadataList != null && (metadataList.size() > 0)) {
+            for (Metadata metadata : metadataList) {
+                if (Misc.equals(metadata.getAttr(7), "false")) {
+                    if (metadata.getEntryId().equals(entry.getId())) {
+                        continue;
+                    }
+                }
+                String types = metadata.getAttr(6);
+
+                boolean typeOk = true;
+                if(types!=null && types.trim().length()>0) {
+                    typeOk = false;
+                    for (String type : StringUtil.split(types, ",", true, true)) {
+                        if (entry.getTypeHandler().isType(type)) {
+                            typeOk = true;
+                            break;
+                        }
+                    }
+                }
+
+
+                if(!typeOk) continue;
+
+                if ((metadata.getAttr(8) != null)
+                    && (metadata.getAttr(8).trim().length() > 0)) {
+                    template = metadata.getAttr(8);
+                    break;
+                }
+            }
+        }
+
+
         WikiUtil wikiUtil = getWikiManager().initWikiUtil(request,
                                 new WikiUtil(Misc.newHashtable(new Object[] {
                                     OutputHandler.PROP_REQUEST,
@@ -252,7 +290,7 @@ public class WikiPageOutputHandler extends HtmlOutputHandler {
         StringBuffer sb = new StringBuffer();
         sb.append(header);
         sb.append(getRepository().getWikiManager().wikifyEntry(request,
-                entry, wikiUtil, wikiText, true, null, null));
+                                                               entry, wikiUtil, template!=null?template:wikiText, true, null, null));
         Hashtable links = (Hashtable) wikiUtil.getProperty("wikilinks");
         if (links != null) {
             List<Association> associations =
@@ -262,6 +300,9 @@ public class WikiPageOutputHandler extends HtmlOutputHandler {
         return makeLinksResult(request, entry.getName(), sb,
                                new State(entry));
     }
+
+
+
 
 
 
