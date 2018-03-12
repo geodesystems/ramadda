@@ -2621,8 +2621,8 @@ public class Column implements DataTypes, Constants {
      *
      * @return _more_
      */
-    private String[] getNWSE(Request request, Entry entry, String searchArg) {
-        if (request.defined(searchArg + "_north")) {
+    private String[] getNWSE(Request request, Entry entry, String searchArg, boolean fromEntry) {
+        if (!fromEntry && request.defined(searchArg + "_north")) {
             return new String[] { request.getString(searchArg + "_north", ""),
                                   request.getString(searchArg + "_west", ""),
                                   request.getString(searchArg + "_south", ""),
@@ -2665,15 +2665,17 @@ public class Column implements DataTypes, Constants {
         List<Clause> tmp        = new ArrayList<Clause>(where);
         String       widget     = "";
         if (isType(DATATYPE_LATLON)) {
-            String[] nwse = getNWSE(request, entry, searchArg);
+            String[] nwseValues = getNWSE(request, null, searchArg,false);
+            String[] nwseView = getNWSE(request, entry, searchArg, true);
             MapInfo map = getRepository().getMapManager().createMap(request,
                               true, null);
-            widget = map.makeSelector(searchArg, true, nwse, "", "");
+            widget = map.makeSelector(searchArg, true, nwseValues, nwseView, "", "");
         } else if (isType(DATATYPE_LATLONBBOX)) {
-            String[] nwse = getNWSE(request, entry, searchArg);
+            String[] nwseValues = getNWSE(request, null, searchArg,false);
+            String[] nwseView = getNWSE(request, entry, searchArg, true);
             MapInfo map = getRepository().getMapManager().createMap(request,
                               true, null);
-            widget = map.makeSelector(searchArg, true, nwse, "", "");
+            widget = map.makeSelector(searchArg, true, nwseValues, nwseView, "", "");
         } else if (isDate()) {
             List dateSelect = new ArrayList();
             dateSelect.add(new TwoFacedObject(msg("Relative Date"), "none"));

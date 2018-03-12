@@ -499,16 +499,27 @@ public class MapInfo {
      *
      * @throws Exception _more_
      */
-    public String makeSelector(String arg, boolean popup, String[] nwse,
+    public String makeSelector(String arg, boolean popup, String[] nwseValues,
+                               String extraLeft, String extraTop)
+            throws Exception {
+        return makeSelector(arg, popup, nwseValues, nwseValues, extraLeft, extraTop);
+    }
+
+
+    public String makeSelector(String arg, boolean popup, String[] nwseValues,
+                               String[]nwseView,
                                String extraLeft, String extraTop)
             throws Exception {
 
         boolean doRegion = true;
-        if (nwse == null) {
-            nwse = new String[] { "", "", "", "" };
+        if (nwseValues == null) {
+            nwseValues = new String[] { "", "", "", "" };
+        }
+        if (nwseView == null) {
+            nwseView = nwseValues;
         }
 
-        if (nwse.length == 2) {
+        if (nwseValues.length == 2) {
             doRegion = false;
         }
         StringBuilder widget  = new StringBuilder();
@@ -516,7 +527,7 @@ public class MapInfo {
         if (doRegion) {
             regions = getRegionSelectorWidget(arg);
         }
-        widget.append(getSelectorWidget(arg, nwse));
+        widget.append(getSelectorWidget(arg, nwseValues));
         if ( !showMaps()) {
             return widget.toString();
         }
@@ -543,13 +554,13 @@ public class MapInfo {
 
         Hashtable<String, String> sessionProps =
             repository.getMapManager().getMapProps(request, null, null);
-        if (Utils.stringDefined(nwse[0])) {
-            if (nwse.length == 4) {
+        if (Utils.stringDefined(nwseView[0])) {
+            if (nwseView.length == 4) {
                 addProperty(MapManager.PROP_INITIAL_BOUNDS,
-                            Json.list(nwse[0], nwse[1], nwse[2], nwse[3]));
+                            Json.list(nwseView[0], nwseView[1], nwseView[2], nwseView[3]));
             } else {
                 addProperty(MapManager.PROP_INITIAL_LOCATION,
-                            Json.list(nwse[0], nwse[1]));
+                            Json.list(nwseView[0], nwseView[1]));
             }
         }
 
