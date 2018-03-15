@@ -103,26 +103,16 @@ fields=date[type="string" isdate="true"] time[type="string" istime="true"],LATIT
   <type   name="type_point_ocean_csv_sado_position"  super="type_point_ocean" 
 			description="SADO Position Data"  handler="org.ramadda.data.services.PointTypeHandler">
 		 <property name="record.file.class" value="org.ramadda.data.point.text.CsvFile"/>
+                 <property name="isTrajectory" value="true"/>
 		 <property name="record.properties">
 	delimiter=,
 	position.required=false
 	skiplines=1
-	dateformat=dd-mm-yyyy HH:mm:ss
-	fields=fecha[type="string" isdate="true"] time[type="string" istime="true"],longitude[isLatitude="true"],latitude[isLongitude="true"],COURSE[searchable="true" chartable="true" sortorder="1"],COURSE_OVER_GROUND[searchable="true" chartable="true" sortorder="5"],SPEED_OVER_GROUND[searchable="true" chartable="true" sortorder="10"],sensor_date[searchable="true" chartable="true"]
+	
+	fields=date[type="date" isdate="true" format="dd-mm-yyyy HH:mm:ss"],longitude[isLongitude="true"],latitude[isLatitude="true"],COURSE[searchable="true" chartable="true" sortorder="1"],velocity[searchable="true" chartable="true" sortorder="5"],depth[searchable="true" chartable="true" sortorder="10"],cog[searchable="true" chartable="true"],sog[searchable="true" chartable="true"],sensor_date[searchable="true" chartable="true" type="date" format="dd-mm-yyyy HH:mm:ss"]
 		 </property>
 	</type>
   
-  	<type   name="type_point_ocean_csv_sado_position"  super="type_point_ocean" 
-			description="SADO Position Data"  handler="org.ramadda.data.services.PointTypeHandler">
-		 <property name="record.file.class" value="org.ramadda.data.point.text.CsvFile"/>
-		 <property name="record.properties">
-	delimiter=,
-	position.required=false
-	skiplines=1
-	dateformat=dd-mm-yyyy HH:mm:ss
-	fields=fecha[type="string" isdate="true"] time[type="string" istime="true"],longitude[isLatitude="true"],latitude[isLongitude="true"],COURSE[searchable="true" chartable="true" sortorder="1"],COURSE_OVER_GROUND[searchable="true" chartable="true" sortorder="5"],SPEED_OVER_GROUND[searchable="true" chartable="true" sortorder="10"],sensor_date[type="string" searchable="true" chartable="true"]
-		 </property>
-	</type>
 	  	<type   name="type_point_ocean_csv_sado_TTS"  super="type_point_ocean" 
 			description="SADO TTS Data"  handler="org.ramadda.data.services.PointTypeHandler">
 		 <property name="record.file.class" value="org.ramadda.data.point.text.CsvFile"/>
