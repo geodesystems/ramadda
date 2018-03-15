@@ -72,7 +72,8 @@ public class NoaaPsdMonthlyClimateIndexTypeHandler extends PointTypeHandler {
             throws Exception {
         super.initializeNewEntry(request, entry);
         // override to set the missing value from the file/url
-        String   loc    = entry.getResource().getPath();
+        String   loc    = fixUrl(entry.getResource().getPath());
+
         Object[] values = entry.getValues();
         /* Values are:
          *    0 - number of points
@@ -85,6 +86,11 @@ public class NoaaPsdMonthlyClimateIndexTypeHandler extends PointTypeHandler {
             values[2] = new Double(missingValue);
             entry.setValues(values);
         }
+    }
+
+    private String fixUrl(String loc) {
+        if(loc.startsWith("http:")) loc = loc.replace("http:","https:");
+        return loc;
     }
 
     /**
@@ -102,7 +108,7 @@ public class NoaaPsdMonthlyClimateIndexTypeHandler extends PointTypeHandler {
     public RecordFile doMakeRecordFile(Request request, Entry entry)
             throws Exception {
         String name        = entry.getName();
-        String loc         = entry.getResource().getPath();
+        String loc         = fixUrl(entry.getResource().getPath());
         String description = entry.getDescription();
         if ((description == null) || description.isEmpty()) {
             description = name;
