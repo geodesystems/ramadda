@@ -369,10 +369,12 @@ public class PageHandler extends RepositoryManager {
         if (!getAdmin().isRegistered()
                  &&
             getAdmin().getInstallationComplete()) {
-            if ( !htmlTemplate.hasMacro(MACRO_REGISTER)) {
-                contents.append(REGISTER_MESSAGE);
-            } else {
-                registerMessage = REGISTER_MESSAGE;
+            if(!getRepository().getProperty("ramadda.hidepoweredby",false)) {
+                if ( !htmlTemplate.hasMacro(MACRO_REGISTER)) {
+                    contents.append(REGISTER_MESSAGE);
+                } else {
+                    registerMessage = REGISTER_MESSAGE;
+                }
             }
         }
 
