@@ -1,9 +1,9 @@
 
 
 
-###########################################################################
-Building
-###########################################################################
+
+# Building
+
 
 To build RAMADDA run:
 ant
@@ -15,9 +15,9 @@ dist/ramadda<version>.zip  - Stand-alone release
 The war is created with the "repository" name so the context path for tomcat
 is /repository
 
-###########################################################################
-Running stand-alone
-###########################################################################
+
+# Running stand-alone
+
 You can run RAMADDA stand-alone from the source tree. After building do:
    cd  dist/ramadda<version>/
    sh ramadda.sh
@@ -31,9 +31,8 @@ java -XX:MaxPermSize=256m -Xmx2048m org.ramadda.repository.server.JettyServer
 
 
 
-###########################################################################
-Plugins
-###########################################################################
+
+# Plugins
 To build the ramadda.org plugins run:
 ant plugins
 This compiles all of the released plugins and installs them in your local
@@ -52,9 +51,9 @@ file or when you run ant do:
      ant -Dtclsh=<path to tclsh>
 
 
-###########################################################################
-Making a release
-###########################################################################
+
+# Making a release
+
 Just do: 
 ant release
 
@@ -75,9 +74,9 @@ dist/repositoryclient.zip  - To run the stand-alone command line client
 
 
 
-###########################################################################
-RAMADDA SVN Tree
-###########################################################################
+
+# RAMADDA SVN Tree
+
 src:
 The main source of RAMADDA is in src/org/ramadda/repository
 There is a build.xml there that does all of the building. The top level
