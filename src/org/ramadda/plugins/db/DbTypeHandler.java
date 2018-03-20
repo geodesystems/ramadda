@@ -4995,8 +4995,10 @@ public class DbTypeHandler extends BlobTypeHandler {
                     tmp = tmp.substring(0,tmp.length()-1);
                     groupByColumn = columnMap.get(tmp);
                     doYear = true;
-                    orderBy =  " ORDER BY " + col +
-                        (request.getString(ARG_DB_SORTDIR,"asc").equals("asc")?" asc ": " desc ");
+                    col = getRepository().getDatabaseManager().getExtractYear(tmp);
+                    //                    extract (year from col)
+                    orderBy =  " ORDER BY " + col + " "  +
+                        request.getEnum(ARG_DB_SORTDIR,"asc","asc","desc");
                 }
 
                 if(groupByColumn!=null) {
@@ -5050,7 +5052,7 @@ public class DbTypeHandler extends BlobTypeHandler {
         Statement stmt = getDatabaseManager().select(SqlUtil.comma(colNames),
                              Misc.newList(tableHandler.getTableName()),
                              clause, extra, max);
-        System.err.println("Clause:" + clause);
+        //        System.err.println("Clause:" + clause);
         try {
             SqlUtil.Iterator iter = getDatabaseManager().getIterator(stmt);
             ResultSet        results;
