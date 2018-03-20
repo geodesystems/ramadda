@@ -1539,9 +1539,9 @@ public class DbTypeHandler extends BlobTypeHandler {
                                   String action, boolean fromSearch,
                                   List<Object[]> valueList)
             throws Exception {
-            boolean doGroupBy =  isGroupBy(request);
+        boolean doGroupBy =  isGroupBy(request);
         if (action.equals(ACTION_CSV) || view.equals(VIEW_CSV)) {
-            return handleListCsv(request, entry, valueList);
+            return handleListCsv(request, entry, valueList, doGroupBy);
         }
 
         if (action.equals(ACTION_JSON) || view.equals(VIEW_JSON)) {
@@ -2723,11 +2723,27 @@ public class DbTypeHandler extends BlobTypeHandler {
      * @throws Exception _more_
      */
     public Result handleListCsv(Request request, Entry entry,
-                                List<Object[]> valueList)
+                                List<Object[]> valueList,boolean doGroupBy)
             throws Exception {
         StringBuilder sb = new StringBuilder();
         for (int cnt = 0; cnt < valueList.size(); cnt++) {
             Object[] values = valueList.get(cnt);
+            if(doGroupBy) {
+                for (int i = 0; i < values.length; i++) {
+                    if (i > 0) {
+                        sb.append(",");
+                    }
+                    String s  = values[i].toString();
+                    s = s.replaceAll("\"","\"\"\"");
+                    if(s.indexOf(",")>=0) {
+                        s = "\"" + s +"\"";
+                    }
+                    sb.append(s);
+                }
+                sb.append("\n");
+                continue;
+            }
+
             for (int i = 0; i < columnsToUse.size(); i++) {
                 StringBuilder cb = new StringBuilder();
                 columnsToUse.get(i).formatValue(entry, cb, Column.OUTPUT_CSV,
