@@ -2366,6 +2366,17 @@ public class DatabaseManager extends RepositoryManager implements SqlUtil
         return sql;
     }
 
+
+    public String getExtractYear(String col) {
+        if (db.equals(DB_POSTGRES)) {
+            return " extract (year from " + col+") ";
+        } else {
+            return "year(" + col+")";
+        }
+    }
+
+
+
     /**
      * _more_
      *
