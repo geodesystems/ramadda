@@ -5013,6 +5013,23 @@ public class Repository extends RepositoryBase implements RequestHandler,
     }
 
 
+    public Result processLicense(Request request) throws Exception {
+        StringBuilder sb = new StringBuilder("");
+        sb.append(HtmlUtils.sectionOpen(msg("RAMADDA License"),
+                                        false));
+        String license =
+            getStorageManager().readSystemResource(
+                "/org/ramadda/repository/resources/ramadda_license.txt");
+
+        license = license.replace("(C)", "&copy;");
+        license = license.replace("(c)", "&copy;");
+        sb.append("<pre>");
+        sb.append(license);
+        sb.append("</pre>");
+        return new Result("", sb);
+    }
+
+
 
 
     /**

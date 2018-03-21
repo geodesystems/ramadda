@@ -5,6 +5,7 @@
   <group>
      <api request="/ping"             method="processPing"/>
      <api request="/info"             method="processInfo"/>
+     <api request="/license"          method="processLicense"/>
      <api request="/robots.txt"       method="processRobotsTxt"/>
      <api request="/clearstate"       method="processClearState"/>
      <api request="/docs"             method="processDocs"/>
