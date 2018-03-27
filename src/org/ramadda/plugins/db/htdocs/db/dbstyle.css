@@ -43,6 +43,24 @@
     font-size: 14px;
 }
 
+
+.db-map-list-inner {
+}
+
+.db-map-list-outer { 
+//      border:  1px #888888 solid;
+}
+
+.db-map-table { 
+      border:  1px #888888 solid;
+}
+
+.db-map-table #ramadda-map-latlonreadout {
+       display:none;
+}
+
+
+
 .dbtablecell {
   max-height:200px;
   overflow-y: auto;

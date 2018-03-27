@@ -1952,7 +1952,8 @@ public class DbTypeHandler extends BlobTypeHandler {
 
 
         String formUrl   = request.makeUrl(getRepository().URL_ENTRY_SHOW);
-        sb.append(HtmlUtils.form(formUrl));
+        String formId = HtmlUtils.getUniqueId("form_");
+        sb.append(HtmlUtils.form(formUrl,HtmlUtils.id(formId)));
         sb.append(HtmlUtils.hidden(ARG_ENTRYID, entry.getId()));
         sb.append(HtmlUtils.formTable());
         String buttons = HtmlUtils.submit(msg("Search"), ARG_DB_SEARCH)
@@ -2080,6 +2081,8 @@ public class DbTypeHandler extends BlobTypeHandler {
         sb.append(formEntry(request, "", buttons));
         sb.append(HtmlUtils.formTableClose());
         HtmlUtils.script(sb, "HtmlUtil.initSelect('.search-select')");
+        OutputHandler.addUrlShowingForm(sb, formId,
+                                        "[\".*OpenLayers_Control.*\"]");
 
         return sb;
     }
@@ -3681,7 +3684,7 @@ public class DbTypeHandler extends BlobTypeHandler {
         }
 
 
-        int width  = 800;
+        int width  = 0;
         int height = 500;
         MapInfo map = getRepository().getMapManager().createMap(request,
                           width, height, false, null);
@@ -3692,7 +3695,14 @@ public class DbTypeHandler extends BlobTypeHandler {
         StringBuilder entryList      = new StringBuilder();
         entryList.append(
             HtmlUtils.cssBlock(
-                "\n.db-map-list-inner {max-height: 500px; overflow-y: auto; overflow-x:auto; }\n.db-map-list-outer {border:  1px #888888 solid;}\n"));
+                "\n.db-map-list-inner {max-height: 500px; overflow-y: auto; overflow-x:auto; }\n\n"));
+
+
+
+        entryList.append(
+            HtmlUtils.open(
+                HtmlUtils.TAG_DIV, HtmlUtils.cssClass("db-map-list-outer")));
+
         entryList.append(
             HtmlUtils.open(
                 HtmlUtils.TAG_DIV, HtmlUtils.cssClass("db-map-list-inner")));
@@ -3823,16 +3833,16 @@ public class DbTypeHandler extends BlobTypeHandler {
             }
         }
         entryList.append(HtmlUtils.close(HtmlUtils.TAG_DIV));
+        entryList.append(HtmlUtils.close(HtmlUtils.TAG_DIV));
 
         sb.append(
-            "<table cellpadding=5 border=\"0\" width=\"100%\"><tr valign=\"top\">");
+            "<table class=db-map-table cellpadding=0 border=\"0\" width=\"100%\"><tr valign=\"top\">");
         map.center();
         sb.append(HtmlUtils.col(entryList.toString(),
-                                HtmlUtils.cssClass("db-map-list-outer")
-                                + HtmlUtils.attr("width", leftWidth)));
+                                HtmlUtils.attr("width", leftWidth+"px")));
         sb.append(HtmlUtils.col(map.getHtml(),
                                 HtmlUtils.attr(HtmlUtils.ATTR_WIDTH,
-                                    "" + width)));
+                                    "" + width+"px")));
         sb.append("</tr></table>");
 
         String js ="highlightMarkers('.db-map-list-outer .db-map-list-entry', " + map.getVariableName() +", '#ffffcc', 'white');";
