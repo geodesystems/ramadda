@@ -257,9 +257,9 @@ public class MapInfo {
      */
     private String getMapDiv(String contents) {
         StringBuilder result = new StringBuilder();
-        String        swidth = " width:" + ((width > 0)
+        String        swidth = width==0?"":(" width:" + ((width > 0)
                                             ? width + "px; "
-                                            : (-width) + "%;");
+                                                         : (-width) + "%;"));
         String styles =
             "border:1px #888888 solid; background-color:#7391ad; height:"
             + height + "px; " + swidth;

@@ -735,6 +735,7 @@ function initMapFunctions(theMap) {
         return this.map;
     }
     theMap.initMap = function(doRegion) {
+        this.startTime = Date.now();
         if (this.inited)
             return;
         this.inited = true;
@@ -910,7 +911,8 @@ function initMapFunctions(theMap) {
     }
 
     theMap.isLayerVisible = function(id) {
-        var cbx =   $(':input[id*=\"' + "visible_" + this.mapId +"_" + id+'\"]');
+        //        var cbx =   $(':input[id*=\"' + "visible_" + this.mapId +"_" + id+'\"]');
+        var cbx =   $('#' + "visible_" + this.mapId +"_" + id);
         if(cbx.size()==0) return true;
         return cbx.is(':checked');
     }
@@ -1524,6 +1526,8 @@ function initMapFunctions(theMap) {
 
     // bounds are in lat/lon
     theMap.centerOnMarkers = function(bounds) {
+        now = Date.now();
+        //        console.log("center on markers:" + ((now-this.startTime)/1000));
         // bounds = this.boxes.getDataExtent();
         if(bounds) {
             if(bounds.left<-180||bounds.right>180 || bounds.bottom<-90 || bounds.top>90) {
@@ -1626,7 +1630,6 @@ function initMapFunctions(theMap) {
     theMap.addMarker = function(id, location, iconUrl, text, size, voffset) {
         if(size == null) size = 16;
         if(voffset ==null) voffset = 0;
-
         
         if (!this.markers) {
             this.markers = new OpenLayers.Layer.Markers("Markers");
@@ -1683,6 +1686,7 @@ function initMapFunctions(theMap) {
 
         marker.events.register('click', marker, clickFunc);
         marker.events.register('touchstart', marker, clickFunc);
+
 
         var visible = this.isLayerVisible(marker.ramaddaId);
         if(!visible) marker.display(false);
