@@ -810,7 +810,6 @@ var HtmlUtil =  {
         return "<textarea " + HtmlUtil.attrs(attrs) + HtmlUtil.attrs(["name", name]) +">"+value +"</textarea>";
     },
     initSelect: function(s) {
-        console.log("initSelect");
         $(s).selectBoxIt({});
     },
     valueDefined: function(value) {
