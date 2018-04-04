@@ -42,7 +42,7 @@
 
     <target name="initcore" if="core">
        <property name="classpath" value="${lib_dir}/ramaddalib.jar:${lib_dir}/servlet-api.jar:${lib_dir}/jetty.jar"/>
-       <property name="manifestjars" value="${tika_jar} ${jfreechart_jar} ramaddalib.jar   servlet-api.jar jetty.jar allplugins_classes.jar"/>
+       <property name="manifestjars" value=" ramaddalib.jar   servlet-api.jar jetty.jar allplugins_classes.jar ${tika_jar} ${jfreechart_jar}"/>
        <property name="lib1" value="${lib_dir}/dummy.jar"/>
        <property name="lib2" value="${lib_dir}/dummy.jar"/>
        <property name="lib3" value="${lib_dir}/dummy.jar"/>
@@ -50,7 +50,7 @@
 
     <target name="initfull">
        <property name="classpath" value="${lib_dir}/ramaddalib.jar:${lib_dir}/${unidata_jar}:${lib_dir}/${tika_jar}:${lib_dir}/ramaddatds.jar:${lib_dir}/servlet-api.jar:${lib_dir}/jetty.jar"/>
-       <property name="manifestjars" value="${unidata_jar} ${tika_jar}  ${jfreechart_jar} ramaddalib.jar   ramaddatds.jar servlet-api.jar jetty.jar allplugins_classes.jar" />
+       <property name="manifestjars" value="${unidata_jar} ramaddalib.jar   ramaddatds.jar servlet-api.jar jetty.jar allplugins_classes.jar  ${tika_jar}  ${jfreechart_jar}" />
        <property name="lib1" value="${lib_dir}/visad.jar" />
        <property name="lib2" value="${lib_dir}/ncIdv.jar"/>
     </target>
