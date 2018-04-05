@@ -181,7 +181,6 @@ public class IPythonNotebookTypeHandler extends TypeHandler {
             HtmlUtils.cssLink(
                 "https://cdn.pydata.org/bokeh/release/bokeh-tables-0.12.9.min.css"));
 
-
         HtmlUtils.importJS(
             sb, "https://cdn.pydata.org/bokeh/release/bokeh-0.12.9.min.js");
         HtmlUtils.importJS(
