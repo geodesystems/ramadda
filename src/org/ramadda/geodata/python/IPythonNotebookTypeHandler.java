@@ -41,6 +41,7 @@ import ucar.unidata.util.PatternFileFilter;
 import ucar.unidata.util.StringUtil;
 
 import java.io.File;
+import java.io.InputStream;
 
 
 import java.util.ArrayList;
@@ -51,6 +52,8 @@ import java.util.Enumeration;
 import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.List;
+
+import org.ramadda.util.ProcessRunner;
 
 
 /**
@@ -122,6 +125,7 @@ public class IPythonNotebookTypeHandler extends TypeHandler {
 
 
 
+
     /**
      * _more_
      *
@@ -134,6 +138,35 @@ public class IPythonNotebookTypeHandler extends TypeHandler {
      */
     private String getHtmlDisplayInner(Request request, Entry entry)
             throws Exception {
+        String jupyterPath = getRepository().getProperty("ramadda.jupyter.path",(String)null);
+        if(jupyterPath!=null) {
+            System.err.println(jupyterPath);
+            return renderNotebookWithJupyter(request, entry, jupyterPath);
+        } else {
+            return renderNotebook(request,  entry);
+        }
+    }
+
+
+    private String renderNotebookWithJupyter(Request request, Entry entry, String path)
+            throws Exception {
+        List<String> commands = new ArrayList<String>();
+        commands.add(path);
+        commands.add("nbconvert");
+        commands.add("--to"); 
+        commands.add("html");
+        commands.add("--stdout"); 
+        commands.add(entry.getFile().toString()); 
+        ProcessBuilder pb = new ProcessBuilder(commands);
+        Process process = pb.start();
+        InputStream is = process.getInputStream();
+        return new String(IOUtil.readBytes(is));
+    }
+
+
+    private String renderNotebook(Request request, Entry entry)
+            throws Exception {
+
 
         StringBuilder sb = new StringBuilder();
         HtmlUtils.importJS(sb, getRepository().fileUrl("/lib/require.js"));
