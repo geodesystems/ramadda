@@ -1212,7 +1212,7 @@ public class OutputHandler extends RepositoryManager {
         //FOR NOW - 
         //        formSB.append(request.formPost(getRepository().URL_ENTRY_GETENTRIES,
         //                                   HtmlUtils.id(formId)));
-        formSB.append(request.form(getRepository().URL_ENTRY_GETENTRIES,
+        formSB.append(request.formPost(getRepository().URL_ENTRY_GETENTRIES,
                                    HtmlUtils.id(formId)));
 
 
