@@ -112,6 +112,8 @@ public class YouTubeVideoTypeHandler extends GenericTypeHandler {
         getPageHandler().entrySectionOpen(request, entry, sb, "");
 
 
+        sb.append(getRepository().getWikiManager().wikifyEntry(request, entry,
+                                                               entry.getDescription()));
         String url = entry.getResource().getPath();
         String id  = entry.getValue(IDX_ID, (String) null);
         //For legacy entries
