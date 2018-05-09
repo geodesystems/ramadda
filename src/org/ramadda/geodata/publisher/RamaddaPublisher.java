@@ -909,11 +909,12 @@ public class RamaddaPublisher extends ucar.unidata.idv.publish
      * @return _more_
      */
     public String toString() {
+        //        System.err.println("Publisher.tostring:" + getName() +" super: " + super.getName());
         if ((repositoryClient != null) && repositoryClient.hasSession()) {
-            return super.toString() + "  (connected)";
+            //            System.err.println("\t if 1 " + super.toString() + "  (connected)");
+            return getName() + "  (connected)";
         }
-
-        return super.getName();
+        return getName();
     }
 
     /**
