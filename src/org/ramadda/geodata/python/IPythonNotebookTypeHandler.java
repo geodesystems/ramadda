@@ -158,9 +158,13 @@ public class IPythonNotebookTypeHandler extends TypeHandler {
         commands.add("--stdout"); 
         commands.add(entry.getFile().toString()); 
         ProcessBuilder pb = new ProcessBuilder(commands);
+        pb.redirectErrorStream(true);
         Process process = pb.start();
         InputStream is = process.getInputStream();
-        return new String(IOUtil.readBytes(is));
+        String html = new String(IOUtil.readBytes(is));
+        html = html.replaceAll("<script src=\"https://cdnjs.cloudflare.com/ajax/libs/jquery/2.0.3/jquery.min.js\"></script>","");
+        html  = html.replaceAll("\\[NbConvertApp\\] Converting notebook .* to html","");
+        return html;
     }
 
 
