@@ -340,11 +340,14 @@ public class RepositoryServlet extends HttpServlet implements Constants {
                     //                    response.setHeader("Cache-Control",
                     //                                       "public,max-age=259200");
                     response.setHeader("Expires",
-                                       "Tue, 08 Jan 2019 07:41:19 GMT");
+                                       "Tue, 08 Jan 2020 07:41:19 GMT");
                     if (lastModified == null) {
                         //                        response.setHeader("Last-Modified",
                         //                                           "Tue, 20 Jan 2010 01:45:54 GMT");
                     }
+                } else {
+                    response.setHeader("Cache-Control",
+                                       "no-cache");
                 }
 
                 if (isHeadRequest) {
