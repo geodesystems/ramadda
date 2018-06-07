@@ -5506,8 +5506,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
             if (checkAddOk && !typeHandler.canBeCreatedBy(request)) {
                 continue;
             }
-            System.err.println("type: " + typeHandler.getType() + " label:"
-                               + typeHandler.getLabel());
+            //            System.err.println("type: " + typeHandler.getType() + " label:" + typeHandler.getLabel());
             items.add(new TwoFacedObject(typeHandler.getLabel(),
                                          typeHandler.getType()));
         }
