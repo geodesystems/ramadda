@@ -1498,13 +1498,13 @@ public class Request implements Constants, Cloneable {
             mySessionId = argSessionId;
         }
 
-        System.err.println("ensureAuthToken authToken:" + authToken +" arg session:"+ argSessionId +" session id:"+ mySessionId);
+        //        System.err.println("ensureAuthToken authToken:" + authToken +" arg session:"+ argSessionId +" session id:"+ mySessionId);
         if(authToken == null && argSessionId!=null) {
             if(argSessionId.equals(mySessionId)) {
-                System.err.println("ensureAuthToken arg session id == session id");
+                //                System.err.println("ensureAuthToken arg session id == session id");
                 return;
             }
-            System.err.println("ensureAuthToken arg session id != session id");
+            //            System.err.println("ensureAuthToken arg session id != session id");
         }
 
         if ((authToken != null) && (mySessionId != null)) {
