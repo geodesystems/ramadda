@@ -248,8 +248,25 @@ public class RepositoryClient extends RepositoryBase {
      *
      * @return _more_
      */
-    protected int getHttpsPort() {
+    public int getHttpsPort() {
         return sslPort;
+    }
+
+    public boolean useSsl() {
+        return sslPort>0;
+    }
+
+    public void setHttpsPort(int port) {
+        sslPort = port;
+        boolean useSsl = sslPort > 0;
+        URL_INFO.setNeedsSsl(useSsl);
+        URL_USER_LOGIN.setNeedsSsl(useSsl);
+        URL_USER_HOME.setNeedsSsl(useSsl);
+        URL_ENTRY_SHOW.setNeedsSsl(useSsl);
+        URL_ENTRY_GET.setNeedsSsl(useSsl);
+        URL_ENTRY_XMLCREATE.setNeedsSsl(useSsl);
+        URL_PING.setNeedsSsl(useSsl);
+        URL_USER_HOME.setNeedsSsl(useSsl);
     }
 
 
@@ -443,15 +460,17 @@ public class RepositoryClient extends RepositoryBase {
 
         List<HttpFormEntry> postEntries = new ArrayList<HttpFormEntry>();
         postEntries.add(HttpFormEntry.hidden(ARG_SESSIONID, getSessionId()));
+        /*
         postEntries.add(
             HttpFormEntry.hidden(
-                ARG_AUTHTOKEN, RepositoryUtil.hashString(getSessionId())));
+            ARG_AUTHTOKEN, RepositoryUtil.hashString(getSessionId())));
+        */
         postEntries.add(HttpFormEntry.hidden(ARG_RESPONSE, RESPONSE_XML));
         postEntries.add(new HttpFormEntry(ARG_FILE, "entries.zip",
                                           bos.toByteArray()));
 
         RequestUrl URL_ENTRY_XMLCREATE = new RequestUrl(this,
-                                             "/entry/xmlcreate");
+                                                        "/entry/xmlcreate",  useSsl());
         String[] result = doPost(URL_ENTRY_XMLCREATE, postEntries);
         if (result[0] != null) {
             throw new EntryErrorException(result[0]);
@@ -560,7 +579,7 @@ public class RepositoryClient extends RepositoryBase {
                                           bos.toByteArray()));
 
         RequestUrl URL_ENTRY_XMLCREATE = new RequestUrl(this,
-                                             "/entry/xmlcreate");
+                                                        "/entry/xmlcreate", useSsl());
         String[] result = doPost(URL_ENTRY_XMLCREATE, postEntries);
 
         if (result[0] != null) {
@@ -1102,8 +1121,8 @@ public class RepositoryClient extends RepositoryBase {
      */
     public void addUrlArgs(List entries) {
         entries.add(HttpFormEntry.hidden(ARG_SESSIONID, getSessionId()));
-        String authToken = RepositoryUtil.hashString(getSessionId());
-        entries.add(HttpFormEntry.hidden(ARG_AUTHTOKEN, authToken));
+        //        String authToken = RepositoryUtil.hashString(getSessionId());
+        //        entries.add(HttpFormEntry.hidden(ARG_AUTHTOKEN, authToken));
         entries.add(HttpFormEntry.hidden(ARG_RESPONSE, RESPONSE_XML));
         if (isAnonymous()) {
             entries.add(HttpFormEntry.hidden(ARG_ANONYMOUS, "true"));
@@ -1254,6 +1273,7 @@ public class RepositoryClient extends RepositoryBase {
 
             List entries = new ArrayList();
             entries.add(HttpFormEntry.hidden(ARG_RESPONSE, RESPONSE_XML));
+            entries.add(HttpFormEntry.hidden(ARG_AGREE, "true"));
             entries.add(HttpFormEntry.hidden(ARG_USER_PASSWORD,
                                              getPassword()));
             entries.add(HttpFormEntry.hidden(ARG_USER_ID, getUser()));
@@ -1338,11 +1358,7 @@ public class RepositoryClient extends RepositoryBase {
         description = XmlUtil.getGrandChildText(root,
                 ServerInfo.TAG_INFO_DESCRIPTION);
         //        System.err.println (sslPort + "  "+ title +" " + description);
-        if (sslPort > 0) {
-            URL_USER_LOGIN.setNeedsSsl(true);
-        } else {
-            URL_USER_LOGIN.setNeedsSsl(false);
-        }
+        setHttpsPort(sslPort);
     }
 
 
@@ -1652,7 +1668,7 @@ public class RepositoryClient extends RepositoryBase {
         checkSession();
         url = HtmlUtils.url(url, new String[] {
             ARG_RESPONSE, RESPONSE_XML, ARG_SESSIONID, getSessionId(),
-            ARG_AUTHTOKEN, RepositoryUtil.hashString(getSessionId())
+            /*ARG_AUTHTOKEN, RepositoryUtil.hashString(getSessionId())*/
         }, false);
         System.err.println("url:" + url);
         String  xml  = IOUtil.readContents(url, getClass());
@@ -1674,7 +1690,7 @@ public class RepositoryClient extends RepositoryBase {
      */
     private void xxxdoSearch() throws Exception {
         RequestUrl URL_ENTRY_SEARCH = new RequestUrl(this, "/search/do",
-                                          "Search");
+                                                     useSsl());
         List<String> argList = new ArrayList<String>();
         String       output  = "xml.xml";
         for (String[] args : searchArgs) {
