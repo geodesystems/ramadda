@@ -1493,8 +1493,13 @@ public class Request implements Constants, Cloneable {
     public void ensureAuthToken() {
         String authToken   = getString(ARG_AUTHTOKEN, (String) null);
         String mySessionId = getSessionId();
+        String argSessionId = getString(ARG_SESSIONID, (String) null);
         if (mySessionId == null) {
-            mySessionId = getString(ARG_SESSIONID, (String) null);
+            mySessionId = argSessionId;
+        }
+
+        if(authToken == null && argSessionId!=null) {
+            if(argSessionId.equals(mySessionId)) return;
         }
 
         if ((authToken != null) && (mySessionId != null)) {
