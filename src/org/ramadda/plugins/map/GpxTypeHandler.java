@@ -764,6 +764,12 @@ public class GpxTypeHandler extends PointTypeHandler {
 
     }
 
+    @Override
+    public void initMapAttrs(Entry entry, MapInfo mapInfo, StringBuilder sb) {
+        super.initMapAttrs(entry, mapInfo, sb);
+        String color = "blue";
+        sb.append("'strokeColor':'" + color + "','strokeWidth':2");
+    }
 
    @Override
     public RecordFile doMakeRecordFile(Request request, Entry entry)
