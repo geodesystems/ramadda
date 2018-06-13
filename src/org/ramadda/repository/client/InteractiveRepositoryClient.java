@@ -42,6 +42,7 @@ import java.util.List;
 
 import javax.swing.ImageIcon;
 import javax.swing.JComponent;
+import javax.swing.JCheckBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JPasswordField;
@@ -490,7 +491,12 @@ public class InteractiveRepositoryClient extends RepositoryClient {
         JTextField nameFld     = new JTextField(getName(), 30);
         JTextField serverFld   = new JTextField(getHostname(), 30);
         JTextField pathFld     = new JTextField(getUrlBase(), 30);
-        JTextField portFld     = new JTextField("" + getPort());
+        int sslPort = getHttpsPort();
+        JTextField portFld     = new JTextField("" + (sslPort>0?sslPort:getPort()));
+
+        JCheckBox sslCbx = new JCheckBox("Use HTTPS",(sslPort>0));
+        JComponent portEntry     = GuiUtils.hbox(portFld, GuiUtils.hbox(sslCbx, new JLabel("Leave blank or set to default HTTPS port 443")));
+
         JTextField passwordFld = new JPasswordField(getPassword());
         JTextField userFld     = new JTextField(getUser(), 30);
         List       comps       = new ArrayList();
@@ -499,7 +505,7 @@ public class InteractiveRepositoryClient extends RepositoryClient {
         comps.add(GuiUtils.rLabel("Server:"));
         comps.add(GuiUtils.inset(serverFld, 4));
         comps.add(GuiUtils.rLabel("Port:"));
-        comps.add(GuiUtils.inset(portFld, 4));
+        comps.add(GuiUtils.inset(portEntry, 4));
         comps.add(GuiUtils.rLabel("Base Path:"));
         comps.add(GuiUtils.inset(pathFld, 4));
         comps.add(GuiUtils.rLabel("User Name:"));
@@ -520,7 +526,15 @@ public class InteractiveRepositoryClient extends RepositoryClient {
             }
             setName(nameFld.getText());
             setHostname(serverFld.getText().trim());
-            setPort(new Integer(portFld.getText().trim()).intValue());
+            String ports = portFld.getText().trim();
+            int port = (ports.length()==0?443:new Integer(ports));
+            if(sslCbx.isSelected() || port == 443 || port ==0) {
+                setPort(0);
+                setHttpsPort(port);
+            } else {
+                setPort(port);
+                setHttpsPort(0);
+            }
             setUrlBase(pathFld.getText().trim());
             setUser(userFld.getText().trim());
             setPassword(passwordFld.getText().trim());
