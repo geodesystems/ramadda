@@ -1,4 +1,4 @@
-/*
+/**
 * Copyright (c) 2008-2018 Geode Systems LLC
 *
 * Licensed under the Apache License, Version 2.0 (the "License");
@@ -4999,12 +4999,17 @@ public class Repository extends RepositoryBase implements RequestHandler,
         sb.append(HtmlUtils.formTable());
         sb.append(
             HtmlUtils.formEntry(
-                msgLabel("Version"),
+                msgLabel("RAMADDA Version"),
                 getRepository().getProperty(PROP_BUILD_VERSION, "1.0")));
         sb.append(
             HtmlUtils.formEntry(
                 msgLabel("Build Date"),
                 getRepository().getProperty(PROP_BUILD_DATE, "N/A")));
+        String version = Runtime.class.getPackage().getImplementationVersion();
+        sb.append(
+            HtmlUtils.formEntry(
+                msgLabel("Java Version"),
+                version));
         getAdmin().addInfo(request, sb);
         sb.append(HtmlUtils.formTableClose());
         sb.append(HtmlUtils.sectionClose());
