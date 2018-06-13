@@ -115,7 +115,8 @@ public class Column implements DataTypes, Constants {
 
     /** _more_ */
     public static final List EXPR_ITEMS =
-        Misc.newList(new TwoFacedObject("=", EXPR_EQUALS),
+        Misc.newList(new TwoFacedObject("", ""),
+                     new TwoFacedObject("=", EXPR_EQUALS),
                      new TwoFacedObject("<=", EXPR_LE),
                      new TwoFacedObject(">=", EXPR_GE),
                      new TwoFacedObject("between", EXPR_BETWEEN));
@@ -1693,8 +1694,9 @@ public class Column implements DataTypes, Constants {
                     south, east);
 
         } else if (isNumeric()) {
-            String expr = request.getCheckedString(searchArg + "_expr",
-                              EXPR_EQUALS, EXPR_PATTERN);
+            String expr = request.getEnum(searchArg + "_expr",
+                                          "",
+                                          "",EXPR_EQUALS,EXPR_LE,EXPR_GE,EXPR_BETWEEN);                                          
             expr = expr.replace("&lt;", "<").replace("&gt;", ">");
             double from  = request.get(searchArg + "_from", Double.NaN);
             double to    = request.get(searchArg + "_to", Double.NaN);
@@ -1714,6 +1716,9 @@ public class Column implements DataTypes, Constants {
                 to   = value;
             }
             if (from == from) {
+                if(expr.equals("")) {
+                    expr = EXPR_EQUALS;
+                }
                 if (expr.equals(EXPR_EQUALS)) {
                     where.add(Clause.eq(getFullName(), from));
                 } else if (expr.equals(EXPR_LE)) {
@@ -2678,7 +2683,7 @@ public class Column implements DataTypes, Constants {
             widget = map.makeSelector(searchArg, true, nwseValues, nwseView, "", "");
         } else if (isDate()) {
             List dateSelect = new ArrayList();
-            dateSelect.add(new TwoFacedObject(msg("Relative Date"), "none"));
+            dateSelect.add(new TwoFacedObject(msg("Relative Date"), ""));
             dateSelect.add(new TwoFacedObject(msg("Last hour"), "-1 hour"));
             dateSelect.add(new TwoFacedObject(msg("Last 3 hours"),
                     "-3 hours"));
@@ -2695,7 +2700,8 @@ public class Column implements DataTypes, Constants {
             } else {
                 dateSelectValue = "none";
             }
-
+            if(dateSelectValue.equals("")) 
+                dateSelectValue = "none";
             String dateSelectInput =
                 HtmlUtils.select(searchArg + "_relative", dateSelect,
                                  dateSelectValue,
