@@ -5011,6 +5011,17 @@ public class Repository extends RepositoryBase implements RequestHandler,
                 msgLabel("Java Version"),
                 version));
         getAdmin().addInfo(request, sb);
+        if(request.exists("class")) {
+            Class c= Class.forName(request.getString("class",""));
+            URL classesRootDir = c.getProtectionDomain().getCodeSource().getLocation();
+            sb.append(
+                      HtmlUtils.formEntry(
+                                          msgLabel("Class location - " + request.getString("class","")),
+                                          classesRootDir.toString()));
+
+        }
+
+
         sb.append(HtmlUtils.formTableClose());
         sb.append(HtmlUtils.sectionClose());
 
