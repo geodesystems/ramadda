@@ -62,7 +62,7 @@ This is the combination of the following all the jetty modules:
 
 tika-app-1.4.jar
   The tika-app-1.4.jar  has been modified. I (jeffmc) removed the
-  ucar, thredds, org/slf4j and  com/drew  tree from this because we had too many
+  ucar, thredds, org/slf4j, org/apache/http  and  com/drew  tree from this because we had too many
   conflicts with other libs
 
 jmapproj.jar:
