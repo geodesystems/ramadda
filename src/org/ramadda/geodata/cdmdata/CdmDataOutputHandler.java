@@ -318,18 +318,22 @@ public class CdmDataOutputHandler extends OutputHandler implements CdmConstants 
         }
 
 
+        System.err.println("cdm.getlinks");
         if (entry == null) {
+        System.err.println("cdm.getlinks-1");
             return;
         }
 
         if ( !getRepository().getAccessManager().canAccessFile(request,
                 entry)) {
+        System.err.println("cdm.getlinks-can't access");
             return;
         }
 
         long    t1           = System.currentTimeMillis();
         boolean canLoadAsCdm = getCdmManager().canLoadAsCdm(entry);
 
+        System.err.println("cdm.getlinks-can load as cdm:" + canLoadAsCdm);
         if ( !canLoadAsCdm) {
             long t2 = System.currentTimeMillis();
             if ((t2 - t1) > 1) {
@@ -340,7 +344,8 @@ public class CdmDataOutputHandler extends OutputHandler implements CdmConstants 
             return;
         }
 
-        if (getCdmManager().canLoadAsGrid(entry)) {
+        System.err.println("cdm.getlinks-can load as grid:" + getCdmManager().canLoadAsGrid(entry) + " " + getCdmManager().canLoadAsCdmGrid(entry));
+        if (getCdmManager().canLoadAsGrid(entry) || getCdmManager().canLoadAsCdmGrid(entry) ) {
             addOutputLink(request, entry, links, OUTPUT_GRIDSUBSET_FORM);
             addOutputLink(request, entry, links,
                           GridPointOutputHandler.OUTPUT_GRIDASPOINT_FORM);
