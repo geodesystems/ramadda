@@ -762,11 +762,11 @@ public class CdmManager extends RepositoryManager {
                     String path = entry.getFile().toString();
                     //Exclude zip files becase canOpen tries to unzip them (?)
                     if ( !(path.endsWith(".zip"))) {
-                        System.err.println  ("checking file:" + path);
+                        //                        System.err.println  ("checking file:" + path);
                         ok = NetcdfDataset.canOpen(path);
                     }
                 } catch (Exception ignoreThis) {
-                    System.err.println("   error:" + ignoreThis);
+                    //                    System.err.println("   error:" + ignoreThis);
                     //                    System.err.println("error:" + ignoreThis);
                 }
             }
