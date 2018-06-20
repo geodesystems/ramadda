@@ -3709,7 +3709,6 @@ public class Repository extends RepositoryBase implements RequestHandler,
         for (String root : htdocRoots) {
             String fullPath = root + path;
             try {
-                System.err.println("full path:" + fullPath);
                 InputStream inputStream =
                     getStorageManager().getInputStream(fullPath);
 
@@ -3718,7 +3717,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
                     decorate = false;
                 }
 
-                System.err.println("decorate:" + decorate);
+
                 if (path.endsWith(".js") || path.endsWith(".css")
                         || path.endsWith(".json")) {
                     String js = IOUtil.readInputStream(inputStream);
@@ -3746,11 +3745,14 @@ public class Repository extends RepositoryBase implements RequestHandler,
                     Result result = new Result(BLANK,
                                         new StringBuilder(html));
 
+                    System.err.println("decorate:" + decorate);
+                    System.err.println("html:" + html);
                     if (decorate) {
+                        System.err.println("adding header");
                         return getEntryManager().addHeaderToAncillaryPage(
                             request, result);
                     }
-
+                    System.err.println("returning result");
                     return result;
                 }
                 Result result = new Result(BLANK, inputStream, mimeType);
