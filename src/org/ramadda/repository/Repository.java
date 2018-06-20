@@ -3691,7 +3691,6 @@ public class Repository extends RepositoryBase implements RequestHandler,
             decorate = false;
         }
 
-        decorate = false;
 
         byte[] bytes = htdocsCache.get(path);
         if (bytes != null) {
@@ -3743,6 +3742,8 @@ public class Repository extends RepositoryBase implements RequestHandler,
 
                     Result result = new Result(BLANK,
                                         new StringBuilder(html));
+                    decorate  = false;
+
                     if (decorate) {
                         return getEntryManager().addHeaderToAncillaryPage(
                             request, result);
