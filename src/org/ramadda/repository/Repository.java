@@ -3751,6 +3751,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
                         return getEntryManager().addHeaderToAncillaryPage(
                             request, result);
                     }
+                    result.setShouldDecorate(false);
                     System.err.println("returning result:" + result.getStringContent());
                     return result;
                 }
