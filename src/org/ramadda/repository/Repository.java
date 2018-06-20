@@ -3742,7 +3742,6 @@ public class Repository extends RepositoryBase implements RequestHandler,
 
                     Result result = new Result(BLANK,
                                         new StringBuilder(html));
-                    decorate  = false;
 
                     if (decorate) {
                         return getEntryManager().addHeaderToAncillaryPage(
@@ -3779,6 +3778,9 @@ public class Repository extends RepositoryBase implements RequestHandler,
                 putHtdocsCache(path, bytes);
                 inputStream = new ByteArrayInputStream(bytes);
             } else if (path.endsWith(".html")) {
+                if(true) {
+                    return  new Result(BLANK, inputStream, mimeType);
+                }
                 String html = IOUtil.readInputStream(inputStream);
                 html = html.replace("${urlroot}", urlBase);
                 html = html.replace("${hostname}", request.getServerName());
