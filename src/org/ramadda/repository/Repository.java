@@ -3691,6 +3691,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
             decorate = false;
         }
 
+        decorate = false;
 
         byte[] bytes = htdocsCache.get(path);
         if (bytes != null) {
