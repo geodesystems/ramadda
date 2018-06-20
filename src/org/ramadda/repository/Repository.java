@@ -3481,6 +3481,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
 
         ApiMethod apiMethod = getApiManager().findApiMethod(request);
         if (apiMethod == null) {
+            System.err.println("calling getHtdocsFile:" + request);
             return getHtdocsFile(request);
         }
         Result sslRedirect = checkForSslRedirect(request, apiMethod);
@@ -3708,6 +3709,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
         for (String root : htdocRoots) {
             String fullPath = root + path;
             try {
+                System.err.println("full path:" + fullPath);
                 InputStream inputStream =
                     getStorageManager().getInputStream(fullPath);
 
@@ -3716,6 +3718,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
                     decorate = false;
                 }
 
+                System.err.println("decorate:" + decorate);
                 if (path.endsWith(".js") || path.endsWith(".css")
                         || path.endsWith(".json")) {
                     String js = IOUtil.readInputStream(inputStream);
@@ -3778,9 +3781,6 @@ public class Repository extends RepositoryBase implements RequestHandler,
                 putHtdocsCache(path, bytes);
                 inputStream = new ByteArrayInputStream(bytes);
             } else if (path.endsWith(".html")) {
-                if(true) {
-                    return  new Result(BLANK, inputStream, mimeType);
-                }
                 String html = IOUtil.readInputStream(inputStream);
                 html = html.replace("${urlroot}", urlBase);
                 html = html.replace("${hostname}", request.getServerName());
