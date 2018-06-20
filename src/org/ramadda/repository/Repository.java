@@ -3748,11 +3748,10 @@ public class Repository extends RepositoryBase implements RequestHandler,
                     System.err.println("decorate:" + decorate);
                     System.err.println("html:" + html);
                     if (decorate) {
-                        System.err.println("adding header");
                         return getEntryManager().addHeaderToAncillaryPage(
                             request, result);
                     }
-                    System.err.println("returning result");
+                    System.err.println("returning result:" + result.getStringContent());
                     return result;
                 }
                 Result result = new Result(BLANK, inputStream, mimeType);
