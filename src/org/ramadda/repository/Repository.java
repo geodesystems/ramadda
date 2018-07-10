@@ -3481,7 +3481,6 @@ public class Repository extends RepositoryBase implements RequestHandler,
 
         ApiMethod apiMethod = getApiManager().findApiMethod(request);
         if (apiMethod == null) {
-            System.err.println("calling getHtdocsFile:" + request);
             return getHtdocsFile(request);
         }
         Result sslRedirect = checkForSslRedirect(request, apiMethod);

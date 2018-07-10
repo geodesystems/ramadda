@@ -811,13 +811,13 @@ public class Request implements Constants, Cloneable {
                           ? "https"
                           : "http";
         if ((httpServletRequest != null) && !alwaysHttps) {
-            System.err.println("Scheme:" + httpServletRequest.getScheme());
-            List<String> toks = StringUtil.split(httpServletRequest.getScheme(), "/",
-                                                 true, true);
-            if(toks.size()>0) {
-                protocol = toks.get(0);
-            } else {
-                protocol = "http";
+            String scheme = httpServletRequest.getScheme();
+            if(scheme!=null) {
+                List<String> toks = StringUtil.split(scheme, "/",
+                                                     true, true);
+                if(toks.size()>0) {
+                    protocol = toks.get(0);
+                } 
             }
         }
         //        System.err.println("Request.getAbsoluteUrl:" + protocol +" port:" + port);
