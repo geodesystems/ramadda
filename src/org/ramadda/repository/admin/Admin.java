@@ -1264,6 +1264,7 @@ public class Admin extends RepositoryManager {
                                        HtmlUtils.input(PROP_REGISTER_KEY,
                                            regKey, HtmlUtils.SIZE_90)));
 
+        /*
         if (isRegistered()) {
             csb.append(HtmlUtils.formEntry("",
                                            "Registered for " + numberUsers
@@ -1274,7 +1275,8 @@ public class Admin extends RepositoryManager {
             } else {
                 csb.append(HtmlUtils.formEntry("", "Not registered"));
             }
-        }
+            }
+        */
 
         csb.append(
             HtmlUtils.row(
@@ -1626,9 +1628,11 @@ public class Admin extends RepositoryManager {
      * @throws Exception _more_
      */
     public void addInfo(Request request, Appendable sb) throws Exception {
+        /*
         if (isRegistered()) {
             sb.append(HtmlUtils.formEntry("Registered", regId));
         }
+        */
     }
 
 
@@ -1791,7 +1795,9 @@ public class Admin extends RepositoryManager {
                                         ""));
 
         getRepository().writeGlobal(request, PROP_REGISTER_KEY);
+        /*
         checkRegistration();
+        */
 
         getRepository().setLocalFilePaths();
         getRepository().clearCache();
