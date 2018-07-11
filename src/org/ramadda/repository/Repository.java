@@ -1344,7 +1344,9 @@ public class Repository extends RepositoryBase implements RequestHandler,
         //Initialize the local repositories in a thread
         Misc.run(getLocalRepositoryManager(), "initializeLocalRepositories");
 
+        /**
         getAdmin().checkRegistration();
+        **/
 
         if (getParentRepository() == null) {
             GeoUtils.setGoogleKey(getProperty("google.key", (String) null));
