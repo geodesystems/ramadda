@@ -429,6 +429,8 @@ public class GpxTypeHandler extends PointTypeHandler {
                             elevationGain+= (elevation-lastElevation);
                         else 
                             elevationLoss+= (lastElevation-elevation);
+                        if(lastLat==lat && lastLon == lon)
+                            System.err.println("lastLat:" + lastLat +" " + elevation +" " + lastElevation);
                     }
                     lastElevation = elevation;
                     double speed = 0;
@@ -466,8 +468,8 @@ public class GpxTypeHandler extends PointTypeHandler {
         entry.setValue(IDX_TOTAL_TIME, new Double ((maxTime-minTime)/1000.0/60/60));
         entry.setValue(IDX_MOVING_TIME, new Double (movingTime));
         entry.setValue(IDX_SPEED, new Double(Math.round(100*averageSpeed)/100.0));
-        entry.setValue(IDX_GAIN, new Double((int)elevationGain));
-        entry.setValue(IDX_LOSS, new Double((int)elevationLoss));
+        entry.setValue(IDX_GAIN, new Double((int)(3.28084*elevationGain)));
+        entry.setValue(IDX_LOSS, new Double((int)(3.28084*elevationLoss)));
 
     }
 
