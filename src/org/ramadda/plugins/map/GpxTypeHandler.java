@@ -180,6 +180,11 @@ public class GpxTypeHandler extends PointTypeHandler {
     @Override
     public void initializeNewEntry(Request request, Entry entry)
             throws Exception {
+        extractInfo(request, entry, true);
+    }
+
+    public void extractInfo(Request request, Entry entry, boolean isNew)
+            throws Exception {
 
         //Don't call super
         //super.initializeNewEntry(request, entry);
@@ -201,79 +206,80 @@ public class GpxTypeHandler extends PointTypeHandler {
             entry.setNorth(XmlUtil.getAttribute(bounds, GpxUtil.ATTR_MAXLAT,
                     Entry.NONGEO));
             entry.setSouth(XmlUtil.getAttribute(bounds, GpxUtil.ATTR_MINLAT,
-                    Entry.NONGEO));
+                                                Entry.NONGEO));
             entry.setWest(XmlUtil.getAttribute(bounds, GpxUtil.ATTR_MINLON,
-                    Entry.NONGEO));
+                                               Entry.NONGEO));
             entry.setEast(XmlUtil.getAttribute(bounds, GpxUtil.ATTR_MAXLON,
-                    Entry.NONGEO));
+                                               Entry.NONGEO));
         }
 
-        String name = XmlUtil.getGrandChildText(root, GpxUtil.TAG_NAME,
-                          (String) null);
-        if ((name == null) && (metadata != null)) {
-            name = XmlUtil.getGrandChildText(metadata, GpxUtil.TAG_NAME,
-                                             entry.getName());
-
-        }
-        if (name != null) {
-            entry.setName(name);
-        }
-        if (entry.getDescription().length() == 0) {
-            String desc = XmlUtil.getGrandChildText(root, GpxUtil.TAG_DESC,
-                              (String) null);
-            if ((desc == null) && (metadata != null)) {
-                desc = XmlUtil.getGrandChildText(metadata, GpxUtil.TAG_DESC,
-                        "");
+        if(isNew) {
+            String name = XmlUtil.getGrandChildText(root, GpxUtil.TAG_NAME,
+                                                    (String) null);
+            if ((name == null) && (metadata != null)) {
+                name = XmlUtil.getGrandChildText(metadata, GpxUtil.TAG_NAME,
+                                                 entry.getName());
 
             }
-            if (desc != null) {
-                entry.setDescription(desc);
+            if (name != null) {
+                entry.setName(name);
             }
-        }
+            if (entry.getDescription().length() == 0) {
+                String desc = XmlUtil.getGrandChildText(root, GpxUtil.TAG_DESC,
+                                                        (String) null);
+                if ((desc == null) && (metadata != null)) {
+                    desc = XmlUtil.getGrandChildText(metadata, GpxUtil.TAG_DESC,
+                                                     "");
 
-        String keywords = XmlUtil.getGrandChildText(root,
-                              GpxUtil.TAG_KEYWORDS, null);
-        if (keywords != null) {
-            for (String word : StringUtil.split(keywords, ",", true, true)) {
+                }
+                if (desc != null) {
+                    entry.setDescription(desc);
+                }
+            }
+
+            String keywords = XmlUtil.getGrandChildText(root,
+                                                        GpxUtil.TAG_KEYWORDS, null);
+            if (keywords != null) {
+                for (String word : StringUtil.split(keywords, ",", true, true)) {
+                    entry.addMetadata(new Metadata(getRepository().getGUID(),
+                                                   entry.getId(), ContentMetadataHandler.TYPE_KEYWORD,
+                                                   false, word, "", "", "", ""));
+                }
+            }
+
+            String url = XmlUtil.getGrandChildText(root, GpxUtil.TAG_URL, null);
+            String urlName = XmlUtil.getGrandChildText(root, GpxUtil.TAG_URLNAME,
+                                                       "");
+            if (url != null) {
                 entry.addMetadata(new Metadata(getRepository().getGUID(),
-                        entry.getId(), ContentMetadataHandler.TYPE_KEYWORD,
-                        false, word, "", "", "", ""));
+                                               entry.getId(),
+                                               ContentMetadataHandler.TYPE_URL,
+                                               false, url, urlName, "", "", ""));
+
+            }
+
+            String author = XmlUtil.getGrandChildText(root, GpxUtil.TAG_AUTHOR,
+                                                      null);
+            if (author != null) {
+                entry.addMetadata(
+                                  new Metadata(
+                                               getRepository().getGUID(), entry.getId(),
+                                               ContentMetadataHandler.TYPE_AUTHOR, false, author, "",
+                                               "", "", ""));
+
+            }
+
+
+            String email = XmlUtil.getGrandChildText(root, GpxUtil.TAG_EMAIL,
+                                                     null);
+            if (email != null) {
+                entry.addMetadata(new Metadata(getRepository().getGUID(),
+                                               entry.getId(),
+                                               ContentMetadataHandler.TYPE_EMAIL,
+                                               false, email, "", "", "", ""));
+
             }
         }
-
-        String url = XmlUtil.getGrandChildText(root, GpxUtil.TAG_URL, null);
-        String urlName = XmlUtil.getGrandChildText(root, GpxUtil.TAG_URLNAME,
-                             "");
-        if (url != null) {
-            entry.addMetadata(new Metadata(getRepository().getGUID(),
-                                           entry.getId(),
-                                           ContentMetadataHandler.TYPE_URL,
-                                           false, url, urlName, "", "", ""));
-
-        }
-
-        String author = XmlUtil.getGrandChildText(root, GpxUtil.TAG_AUTHOR,
-                            null);
-        if (author != null) {
-            entry.addMetadata(
-                new Metadata(
-                    getRepository().getGUID(), entry.getId(),
-                    ContentMetadataHandler.TYPE_AUTHOR, false, author, "",
-                    "", "", ""));
-
-        }
-
-
-        String email = XmlUtil.getGrandChildText(root, GpxUtil.TAG_EMAIL,
-                           null);
-        if (email != null) {
-            entry.addMetadata(new Metadata(getRepository().getGUID(),
-                                           entry.getId(),
-                                           ContentMetadataHandler.TYPE_EMAIL,
-                                           false, email, "", "", "", ""));
-
-        }
-
 
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
 
@@ -424,15 +430,19 @@ public class GpxTypeHandler extends PointTypeHandler {
                                                       GpxUtil.ATTR_LON, 0.0);
                     String ele = XmlUtil.getGrandChildText(trackPoint,"ele","0");
                     double elevation = Double.parseDouble(ele);
-                    if(lastElevation!=0) {
-                        if(elevation>lastElevation)
-                            elevationGain+= (elevation-lastElevation);
-                        else 
-                            elevationLoss+= (lastElevation-elevation);
-                        if(lastLat==lat && lastLon == lon)
-                            System.err.println("lastLat:" + lastLat +" " + elevation +" " + lastElevation);
+                    if(lastElevation==0) {
+                        lastElevation = elevation;
+                    } else {
+                        double delta = Math.abs(lastElevation-elevation);
+                        if(delta>5) {
+                            if(elevation>lastElevation)
+                                elevationGain+= (elevation-lastElevation);
+                            else 
+                                elevationLoss+= (lastElevation-elevation);
+                            lastElevation = elevation;
+                        }
                     }
-                    lastElevation = elevation;
+
                     double speed = 0;
                     if(ele !=null) {
                         ele = ""+(new Double(ele).doubleValue()*3.28084);
@@ -473,6 +483,16 @@ public class GpxTypeHandler extends PointTypeHandler {
 
     }
 
+
+    public void initializeEntryFromForm(Request request, Entry entry,
+                                        Entry parent, boolean newEntry)
+            throws Exception {
+
+        super.initializeEntryFromForm(request, entry,
+                                      parent,  newEntry);
+        if(newEntry) return;
+        extractInfo(request, entry, false);
+    }
 
     /**
      * _more_
