@@ -56,7 +56,7 @@ public class AcsTypeHandler extends PointTypeHandler {
 
     /** _more_ */
     public static final String URL =
-        "https://api.census.gov/data/{year}/acs5";
+        "https://api.census.gov/data/{year}/acs/acs5";
 
 
     /** _more_ */
@@ -376,11 +376,12 @@ public class AcsTypeHandler extends PointTypeHandler {
         String url = HtmlUtils.url(URL, new String[] { "get",
                 getArgValue.replaceAll(" ", "+"), "for",
                 forArgValue.replaceAll(" ", "+") }, false);
+
         if (key != null) {
             url += "&key=" + key;
         }
         url = url.replace("{year}", "2015");
-
+        //        System.err.println(url);
         if (Utils.stringDefined(inType1)) {
             String inArgValue = inType1 + ":" + (Utils.stringDefined(inValue1)
                     ? inValue1
