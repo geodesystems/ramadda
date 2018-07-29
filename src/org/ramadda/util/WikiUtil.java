@@ -967,42 +967,66 @@ public class WikiUtil {
             String    attrs = s.substring(idx1 + 6, idx2);
             String    inner = s.substring(idx2 + 1, idx3);
             Hashtable props = StringUtil.parseHtmlProperties(attrs);
-
-
             sb.append(first);
+
+            String before =(String) props.get("before");
+            String after = (String) props.get("after");
+            String show = Misc.getProperty(props, ATTR_SHOW,
+                                           (String) null);
+            boolean shouldShow = true;
+            
+
+            if (show != null) {
+                if (show.equals("mobile")) {
+                    if ( !getMobile()) {
+                        shouldShow = false;
+                    }
+                } else if (show.equals("!mobile")) {
+                    if (getMobile()) {
+                        shouldShow = false;
+                    }
+                } else if (show.equals("none")) {
+                    shouldShow = false;
+                } else if (show.startsWith("user")) {
+                    if (user == null) {
+                        shouldShow = false;
+                    } else {
+                        shouldShow = true;
+                    }
+                }
+            }
+            
+    
+
+            if(shouldShow) {
+                if(before!=null) {
+                    Date dttm = Utils.parseDate(before);
+                    if(dttm == null) {
+                        inner = "before Bad date format:" + before;
+                    } else {
+                        Date now = new Date();
+                        if(now.getDate()>dttm.getDate()) shouldShow = false;
+                    }
+                }
+                if(after!=null) {
+                    Date dttm = Utils.parseDate(after);
+                    if(dttm == null) {
+                        inner = "Bad date format:" + after;
+                    } else {
+                        Date now = new Date();
+                        if(now.getDate()<dttm.getDate()) shouldShow = false; 
+                    }
+                }
+            }
 
             if (props.get(ATTR_VAR) != null) {
                 myVars.put(props.get(ATTR_VAR).toString().trim(), inner);
             } else {
                 boolean open = Misc.getProperty(props, ATTR_OPEN, true);
                 boolean decorate = Misc.getProperty(props, ATTR_DECORATE,
-                                       true);
+                                                    false);
                 String title = Misc.getProperty(props, ATTR_TITLE, "");
                 //<block show="ismobile"
-                String show = Misc.getProperty(props, ATTR_SHOW,
-                                  (String) null);
-                boolean shouldShow = true;
-
-                if (show != null) {
-                    if (show.equals("mobile")) {
-                        if ( !getMobile()) {
-                            shouldShow = false;
-                        }
-                    } else if (show.equals("!mobile")) {
-                        if (getMobile()) {
-                            shouldShow = false;
-                        }
-                    } else if (show.equals("none")) {
-                        shouldShow = false;
-                    } else if (show.startsWith("user")) {
-                        if (user == null) {
-                            shouldShow = false;
-                        } else {
-                            shouldShow = true;
-                        }
-                    }
-                }
-
 
                 if (shouldShow) {
                     if (decorate) {

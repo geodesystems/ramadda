@@ -51,6 +51,8 @@ import java.net.*;
 
 import java.text.DecimalFormat;
 
+import java.text.ParsePosition;
+
 import java.text.SimpleDateFormat;
 
 import java.util.ArrayList;
@@ -2581,6 +2583,40 @@ public class Utils {
         return new double[] { centroidX, centroidY };
     }
 
+    private static List<SimpleDateFormat> dateFormats;
+
+    public static Date parseDate(String dttm) {
+        if(dateFormats==null) {
+            String[] formats = {
+                "yyyy-MM-dd'T'HH:mm:ss",
+                "yyyy-MM-dd HH:mm:ss z", "yyyy-MM-dd HH:mm:ss",
+                "yyyy-MM-dd HH:mm", "yyyy-MM-dd", "yyyyMMddHHmmss",
+                "yyyyMMddHHmm", "yyyyMMddHH", "yyyyMMdd"
+            };
+
+            dateFormats = new ArrayList<SimpleDateFormat>();
+            for (int i = 0; i < formats.length; i++) {
+                SimpleDateFormat dateFormat =
+                    new java.text.SimpleDateFormat(formats[i]);
+                dateFormat.setTimeZone(java.util.TimeZone.getTimeZone("GMT"));
+                dateFormats.add(dateFormat);
+            }
+        
+        }
+        int cnt = 0;
+        ParsePosition pp = new ParsePosition(0);
+        for(SimpleDateFormat dateFormat: dateFormats) {
+            Date date = dateFormat.parse(dttm, pp);
+            if (date != null) {
+                return date;
+            }
+        }
+        return null;
+    }
+
+
+
+
 
     /**
      * _more_
@@ -2590,10 +2626,17 @@ public class Utils {
      * @throws Exception _more_
      */
     public static void main(String args[]) throws Exception {
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
-        sdf.parse("2017-12-28T19:11:57Z");
+        String url = "https://api.census.gov/data/2015/acs5?get=NAME,B01003_001E,B01001_002E,B01001_026E,B01001A_001E,B01001B_001E,B01001I_001E,B01001D_001E,B25001_001E,B07013_002E,B07013_003E&for=county:*";
+        doGet(new URL(url));
+        //        parseDate(args[0]);
+        //        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
+        //        sdf.parse("2017-12-28T19:11:57Z");
         //        System.err.println(parseCommandLine(args[0]));
     }
+
+
+
+
 
 
 }
