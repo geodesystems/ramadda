@@ -271,8 +271,18 @@ public class MapInfo {
         result.append(HtmlUtils.div(contents,
                                     HtmlUtils.style(styles) + " "
                                     + HtmlUtils.id(mapVarName)));
+        String url  = request.getUrl();
+        String label;
+        if(request.get("mapdetails", false)) {
+            url = url.replace("mapdetails=true","");
+            label = "Details Off";
+        } else {
+            url = url+"&mapdetails=true";
+            label = "Details On";
+        }
+
         result.append("\n");
-        result.append(readout);
+        result.append(HtmlUtils.leftRight(readout, HtmlUtils.href(url, label)));
         result.append("\n");
 
         return result.toString();
