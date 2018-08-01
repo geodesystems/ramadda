@@ -1091,6 +1091,7 @@ public class MapManager extends RepositoryManager {
 
         boolean doCategories = Misc.getProperty(props, "doCategories", true);
         boolean detailed    = Misc.getProperty(props, "detailed", false);
+        detailed = request.get("mapdetails", detailed);
         boolean listentries = Misc.getProperty(props, "listEntries", false);
         boolean cbx         = Misc.getProperty(props, "showCheckbox", false);
         boolean cbxOn       = Misc.getProperty(props, "checkboxOn", true);
