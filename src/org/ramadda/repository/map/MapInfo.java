@@ -928,10 +928,17 @@ public class MapInfo {
      */
     public void addMarker(String id, double lat, double lon, String icon,
                           String info) {
+        addMarker(id,lat,lon,icon,info,null);
+    }
+
+    public void addMarker(String id, double lat, double lon, String icon,
+                          String info, String parentId) {
         getJS().append(mapVarName + ".addMarker(" + HtmlUtils.squote(id)
                        + "," + llp(lat, lon) + "," + ((icon == null)
                 ? "null"
                 : HtmlUtils.squote(icon)) + "," + HtmlUtils.squote(info)
+                       +"," +
+                       (parentId==null?"null":HtmlUtils.squote(parentId))
                                           + ");\n");
     }
 
