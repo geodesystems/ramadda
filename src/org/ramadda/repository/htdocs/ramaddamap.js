@@ -910,9 +910,10 @@ function initMapFunctions(theMap) {
         }
     }
 
-    theMap.isLayerVisible = function(id) {
+    theMap.isLayerVisible = function(id, parentId) {
         //        var cbx =   $(':input[id*=\"' + "visible_" + this.mapId +"_" + id+'\"]');
         var cbx =   $('#' + "visible_" + this.mapId +"_" + id);
+        if(cbx.size()==0 && parentId!=null) cbx =   $('#' + "visible_" + this.mapId +"_" + parentId);
         if(cbx.size()==0) return true;
         return cbx.is(':checked');
     }
@@ -1443,9 +1444,10 @@ function initMapFunctions(theMap) {
     theMap.checkMarkerVisibility= function() {
         if(!this.markers) return;
         var list =  this.getMarkers();
-        for(var marker in list) {
-            marker = list[marker];
-            var visible = this.isLayerVisible(marker.ramaddaId);
+        for(var idx=0;idx<list.length;idx++) {
+            marker = list[idx];
+            var visible = this.isLayerVisible(marker.ramaddaId, marker.parentId);
+            //            console.log("   visible:" + visible +" " + marker.ramaddaId + " " + marker.parentId);
             if(visible) {
                 marker.style.display = 'inline';
             } else {
@@ -1627,7 +1629,7 @@ function initMapFunctions(theMap) {
         return text;
     }
 
-    theMap.addMarker = function(id, location, iconUrl, text, size, voffset) {
+    theMap.addMarker = function(id, location, iconUrl, text, parentId, size, voffset) {
         if(size == null) size = 16;
         if(voffset ==null) voffset = 0;
         
@@ -1668,6 +1670,7 @@ function initMapFunctions(theMap) {
 
 
         feature.ramaddaId = id;
+        feature.parentId = parentId;
         feature.text= this.getPopupText(text, feature);
         feature.location = location;
 
@@ -1688,7 +1691,7 @@ function initMapFunctions(theMap) {
         marker.events.register('touchstart', marker, clickFunc);
 
 
-        var visible = this.isLayerVisible(marker.ramaddaId);
+        var visible = this.isLayerVisible(marker.ramaddaId, marker.parentId);
         if(!visible) marker.display(false);
 
         feature.what = "marker";
@@ -2064,6 +2067,13 @@ function formatLocationValue(value) {
 
 
     OpenLayers.Control.Click = OpenLayers.Class(OpenLayers.Control, {
+            listeners: null,
+            addListener: function(listener) {
+                if(this.listeners == null) {
+                    this.listeners = [];
+                }
+                this.listeners.push(listener);
+            },
             defaultHandlerOptions : {
                 'single' : true,
                 'double' : false,
@@ -2094,6 +2104,11 @@ function formatLocationValue(value) {
             trigger : function(e) {
                 var xy = this.theMap.getMap().getLonLatFromViewPortPx(e.xy);
                 var lonlat = this.theMap.transformProjPoint(xy)
+                if(this.listeners != null) {
+                    for(var i=0;i<this.listeners.length;i++) {
+                        this.listeners[i](lonlat);
+                    }
+                }
                 if (!this.lonFldId) {
                     this.lonFldId = "lonfld";
                     this.latFldId = "latfld";
