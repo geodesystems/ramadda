@@ -955,7 +955,7 @@ public class MapManager extends RepositoryManager {
             //"slides_image"
             String image =
                 HtmlUtils.img(
-                    getRepository().getHtmlOutputHandler().getImageUrl(
+                              getRepository().getHtmlOutputHandler().getImageUrl(
                         request, entry), "", extra);
             if (request.get(WikiManager.ATTR_LINK, true)) {
                 image = HtmlUtils.href(
@@ -1039,20 +1039,28 @@ public class MapManager extends RepositoryManager {
             info,
             getPageHandler().getEntryHref(
                 request, entry, entry.getTypeHandler().getEntryName(entry)));
-        info.append("<table class=\"formtable\">");
-        info.append(entry.getTypeHandler().getInnerEntryContent(entry,
-                request, null, OutputHandler.OUTPUT_HTML, true, false,
-                false));
 
-        List<String> urls = new ArrayList<String>();
-        getMetadataManager().getThumbnailUrls(request, entry, urls);
+        String wikiTemplate = getRepository().getHtmlOutputHandler().getWikiText(request, entry);
+        if (wikiTemplate != null) {
+            String wiki = getWikiManager().wikifyEntry(request, entry,
+                                                       wikiTemplate);
+            info.append(wiki);
+        } else {
+            info.append("<table class=\"formtable\">");
+            info.append(entry.getTypeHandler().getInnerEntryContent(entry,
+                                                                    request, null, OutputHandler.OUTPUT_HTML, true, false,
+                                                                    false));
 
-        if ( !isImage && (urls.size() > 0)) {
-            info.append("<tr><td colspan=2>"
-                        + HtmlUtils.img(urls.get(0), "", " width=300 ")
-                        + "</td></tr>");
+            List<String> urls = new ArrayList<String>();
+            getMetadataManager().getThumbnailUrls(request, entry, urls);
+
+            if ( !isImage && (urls.size() > 0)) {
+                info.append("<tr><td colspan=2>"
+                            + HtmlUtils.img(urls.get(0), "", " width=300 ")
+                            + "</td></tr>");
+            }
+            info.append("</table>\n");
         }
-        info.append("</table>\n");
         String s = getRepository().translate(request, info.toString());
 
         return s;
