@@ -1035,10 +1035,6 @@ public class MapManager extends RepositoryManager {
         }
 
 
-        HtmlUtils.sectionHeader(
-            info,
-            getPageHandler().getEntryHref(
-                request, entry, entry.getTypeHandler().getEntryName(entry)));
 
         String wikiTemplate = getRepository().getHtmlOutputHandler().getWikiText(request, entry);
         if (wikiTemplate != null) {
@@ -1046,6 +1042,11 @@ public class MapManager extends RepositoryManager {
                                                        wikiTemplate);
             info.append(wiki);
         } else {
+            HtmlUtils.sectionHeader(
+                                    info,
+                                    getPageHandler().getEntryHref(
+                                                                  request, entry, entry.getTypeHandler().getEntryName(entry)));
+
             info.append("<table class=\"formtable\">");
             info.append(entry.getTypeHandler().getInnerEntryContent(entry,
                                                                     request, null, OutputHandler.OUTPUT_HTML, true, false,
