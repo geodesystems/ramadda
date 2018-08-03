@@ -302,6 +302,11 @@ public class HtmlOutputHandler extends OutputHandler {
 
 
 
+    public Result getMapInfo(Request request, Entry entry) throws Exception {
+        return getMapInfo(request, entry, true);
+    }
+
+
     /**
      * _more_
      *
@@ -312,7 +317,7 @@ public class HtmlOutputHandler extends OutputHandler {
      *
      * @throws Exception _more_
      */
-    public Result getMapInfo(Request request, Entry entry) throws Exception {
+    public Result getMapInfo(Request request, Entry entry, boolean asXml) throws Exception {
         String html = null;
         Result typeResult = entry.getTypeHandler().getHtmlDisplay(request,
                                 entry);
@@ -335,12 +340,16 @@ public class HtmlOutputHandler extends OutputHandler {
         }
         html = getRepository().translate(request, html);
 
+        if(asXml) {
         StringBuffer xml = new StringBuffer(XmlUtil.XML_HEADER);
         xml.append("\n<content>\n");
         XmlUtil.appendCdata(xml, html);
         xml.append("\n</content>");
 
         return new Result("", xml, "text/xml");
+        } else {
+            return new Result("", html);
+        }
     }
 
 
@@ -2016,7 +2025,7 @@ public class HtmlOutputHandler extends OutputHandler {
      *
      * @throws Exception _more_
      */
-    private String getWikiText(Request request, Entry entry)
+    public String getWikiText(Request request, Entry entry)
             throws Exception {
         String description = entry.getDescription();
 
