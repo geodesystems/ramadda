@@ -162,7 +162,7 @@ public class BlogEntryTypeHandler extends ExtensibleGroupTypeHandler {
     @Override
     public String getWikiTemplate(Request request, Entry entry)
             throws Exception {
-        return "+section title={{name}\n{{description}}\n-section";
+        return "+section title={{name}}\n{{description}}\n-section";
     }
 
 
