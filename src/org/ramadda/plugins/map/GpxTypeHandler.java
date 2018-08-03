@@ -98,6 +98,11 @@ public class GpxTypeHandler extends PointTypeHandler {
         return true;
     }
 
+    @Override
+    public String getMapInfoBubble(Request request, Entry entry) {
+       return null;
+    }
+
     /**
      * _more_
      *
