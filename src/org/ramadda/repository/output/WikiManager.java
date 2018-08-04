@@ -284,7 +284,6 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                 return "";
             }
 
-
             property = property.replaceAll("(?m)^\\s*//.*?$", "");
             property = property.replaceAll(".*<p></p>[\\n\\r]+", "");
             property = property.replaceAll("\\n", " ");
@@ -1141,7 +1140,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                 }
             }
             if (wikify) {
-                desc = wikifyEntry(request, entry, desc, false, null, null);
+                desc = wikifyEntry(request, entry, desc, false, null, null, wikiUtil.getNotTags());
                 //                desc = makeWikiUtil(request, false).wikify(desc, null);
             }
             if (Misc.getProperty(props, "convert_newline", false)) {
@@ -2012,7 +2011,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                     String snippet     = getSnippet(request, child);
                     if (Utils.stringDefined(snippet)) {
                         snippet = wikifyEntry(request, child, snippet, false,
-                                null, null);
+                                              null, null, wikiUtil.getNotTags());
                         displayHtml = snippet += displayHtml;
                     }
 
@@ -2445,7 +2444,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
             if (fromTypeHandler != null) {
                 if (wikify) {
                     fromTypeHandler = wikifyEntry(request, entry,
-                            fromTypeHandler, false, null, null);
+                                                  fromTypeHandler, false, null, null,  wikiUtil.getNotTags());
                 }
 
                 return fromTypeHandler;
@@ -2468,7 +2467,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
             if (fromProperty != null) {
                 if (wikify) {
                     fromProperty = wikifyEntry(request, entry, fromProperty,
-                            false, null, null);
+                            false, null, null, wikiUtil.getNotTags());
                 }
 
                 return fromProperty;
@@ -4282,8 +4281,16 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
      */
     public String wikifyEntry(Request request, Entry entry,
                               String wikiContent, boolean wrapInDiv,
+                              List<Entry> subGroups, List<Entry> subEntries)
+            throws Exception {
+        return wikifyEntry(request, entry, wikiContent, wrapInDiv, subGroups, subEntries, null);
+    }
+
+        
+    public String wikifyEntry(Request request, Entry entry,
+                              String wikiContent, boolean wrapInDiv,
                               List<Entry> subGroups, List<Entry> subEntries,
-                              String ...notTags)
+                              String[]notTags)
             throws Exception {
         
         Request myRequest = request.cloneMe();

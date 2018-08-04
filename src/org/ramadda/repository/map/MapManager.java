@@ -1030,7 +1030,7 @@ public class MapManager extends RepositoryManager {
 
         if (bubble != null) {
             bubble = getWikiManager().wikifyEntry(request, entry, bubble,
-                    false, null, null);
+                                                  false, null, null,new String[]{WikiConstants.WIKI_TAG_MAPENTRY,WikiConstants.WIKI_TAG_MAP});
 
             return getRepository().translate(request, bubble);
         }
@@ -1040,7 +1040,7 @@ public class MapManager extends RepositoryManager {
         String wikiTemplate = getRepository().getHtmlOutputHandler().getWikiText(request, entry);
         if (wikiTemplate != null) {
             String wiki = getWikiManager().wikifyEntry(request, entry,
-                                                       wikiTemplate, true,null,null,WikiConstants.WIKI_TAG_MAPENTRY,WikiConstants.WIKI_TAG_MAP);
+                                                       wikiTemplate, true,null,null,new String[]{WikiConstants.WIKI_TAG_MAPENTRY,WikiConstants.WIKI_TAG_MAP});
             info.append(wiki);
         } else {
             HtmlUtils.sectionHeader(

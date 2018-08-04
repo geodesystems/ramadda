@@ -333,11 +333,16 @@ public class WikiUtil {
         return wikify(text, handler, null);
     }
 
+    private String[] notTags;
+    public String[] getNotTags() {
+        return notTags;
+    }
+    
     public String wikify(String text, WikiPageHandler handler, String[]notTags) {
         try {
+            this.notTags = notTags;
             StringBuffer mainBuffer = new StringBuffer();
             wikify(mainBuffer, text, handler,notTags);
-
             return mainBuffer.toString();
         } catch (IOException ioe) {
             throw new RuntimeException(ioe);
