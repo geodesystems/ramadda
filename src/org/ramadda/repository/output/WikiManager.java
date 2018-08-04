@@ -273,7 +273,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
      *
      * @return the value
      */
-    public String getWikiPropertyValue(WikiUtil wikiUtil, String property) {
+    public String getWikiPropertyValue(WikiUtil wikiUtil, String property, String []notTags) {
 
         try {
             Entry   entry   = (Entry) wikiUtil.getProperty(ATTR_ENTRY);
@@ -299,6 +299,12 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                        + "</b>";
             }
             String tag       = toks.get(0);
+            if(notTags!=null) {
+                for(String notTag: notTags) {
+                    if(notTag.equals(tag)) return "";
+                }
+            }
+
             String remainder = "";
             if (toks.size() > 1) {
                 remainder = toks.get(1);
@@ -4276,8 +4282,10 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
      */
     public String wikifyEntry(Request request, Entry entry,
                               String wikiContent, boolean wrapInDiv,
-                              List<Entry> subGroups, List<Entry> subEntries)
+                              List<Entry> subGroups, List<Entry> subEntries,
+                              String ...notTags)
             throws Exception {
+        
         Request myRequest = request.cloneMe();
         WikiUtil wikiUtil =
             initWikiUtil(myRequest,
@@ -4286,7 +4294,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                              myRequest, ATTR_ENTRY, entry })), entry);
 
         return wikifyEntry(request, entry, wikiUtil, wikiContent, wrapInDiv,
-                           subGroups, subEntries);
+                           subGroups, subEntries, notTags);
     }
 
 
@@ -4308,7 +4316,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
     public String wikifyEntry(Request request, Entry entry,
                               WikiUtil wikiUtil, String wikiContent,
                               boolean wrapInDiv, List<Entry> subGroups,
-                              List<Entry> subEntries)
+                              List<Entry> subEntries, String[]notTags)
             throws Exception {
         List children = new ArrayList();
         if (subGroups != null) {
@@ -4323,7 +4331,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
 
         //TODO: We need to keep track of what is getting called so we prevent
         //infinite loops
-        String content = wikiUtil.wikify(wikiContent, this);
+        String content = wikiUtil.wikify(wikiContent, this, notTags);
         if ( !wrapInDiv) {
             return content;
         }
