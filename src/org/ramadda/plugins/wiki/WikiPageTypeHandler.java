@@ -257,7 +257,7 @@ public class WikiPageTypeHandler extends ExtensibleGroupTypeHandler {
 
 
             getRepository().getWikiManager().wikifyEntry(request, entry,
-                    wikiUtil, newText, true, null, null);
+                                                         wikiUtil, newText, true, null, null,null);
 
             List categories = (List) wikiUtil.getProperty("wikicategories");
             if (categories == null) {

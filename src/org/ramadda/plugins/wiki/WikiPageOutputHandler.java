@@ -290,7 +290,7 @@ public class WikiPageOutputHandler extends HtmlOutputHandler {
         StringBuffer sb = new StringBuffer();
         sb.append(header);
         sb.append(getRepository().getWikiManager().wikifyEntry(request,
-                                                               entry, wikiUtil, template!=null?template:wikiText, true, null, null));
+                                                               entry, wikiUtil, template!=null?template:wikiText, true, null, null,null));
         Hashtable links = (Hashtable) wikiUtil.getProperty("wikilinks");
         if (links != null) {
             List<Association> associations =
