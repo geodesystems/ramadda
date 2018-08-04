@@ -200,7 +200,7 @@ public class WikiUtil {
          * @return _more_
          */
         public String getWikiPropertyValue(WikiUtil wikiUtil,
-                                           String property);
+                                           String property, String[]notTags);
     }
 
     /**
@@ -330,9 +330,13 @@ public class WikiUtil {
      * @return _more_
      */
     public String wikify(String text, WikiPageHandler handler) {
+        return wikify(text, handler, null);
+    }
+
+    public String wikify(String text, WikiPageHandler handler, String[]notTags) {
         try {
             StringBuffer mainBuffer = new StringBuffer();
-            wikify(mainBuffer, text, handler);
+            wikify(mainBuffer, text, handler,notTags);
 
             return mainBuffer.toString();
         } catch (IOException ioe) {
@@ -354,6 +358,12 @@ public class WikiUtil {
     public void wikify(Appendable mainBuffer, String text,
                        WikiPageHandler handler)
             throws IOException {
+        wikify(mainBuffer, text,handler,new String[]{});
+    }
+
+    public void wikify(Appendable mainBuffer, String text,
+                       WikiPageHandler handler, String[] notTags)
+            throws IOException {
         if (text.startsWith("<wiki>")) {
             text = text.substring("<wiki>".length());
         }
@@ -367,7 +377,7 @@ public class WikiUtil {
                 continue;
             }
             isText = false;
-            s      = wikifyInner(s, handler);
+            s      = wikifyInner(s, handler, notTags);
             mainBuffer.append(s);
         }
     }
@@ -380,7 +390,7 @@ public class WikiUtil {
      *
      * @return _more_
      */
-    private String wikifyInner(String s, WikiPageHandler handler) {
+    private String wikifyInner(String s, WikiPageHandler handler, String[] notTags) {
 
         s = s.replace("\\\\[", "_BRACKETOPEN_");
 
@@ -935,7 +945,7 @@ public class WikiUtil {
             } else {
                 String value = null;
                 if (handler != null) {
-                    value = handler.getWikiPropertyValue(this, property);
+                    value = handler.getWikiPropertyValue(this, property,notTags);
                 }
                 if (value == null) {
                     value = "Unknown property:" + property;
