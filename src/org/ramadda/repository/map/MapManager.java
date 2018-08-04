@@ -27,6 +27,7 @@ import org.ramadda.repository.metadata.Metadata;
 import org.ramadda.repository.metadata.MetadataHandler;
 import org.ramadda.repository.output.KmlOutputHandler;
 import org.ramadda.repository.output.OutputHandler;
+import org.ramadda.repository.output.WikiConstants;
 import org.ramadda.repository.output.WikiManager;
 import org.ramadda.util.HtmlUtils;
 import org.ramadda.util.Json;
@@ -1039,7 +1040,7 @@ public class MapManager extends RepositoryManager {
         String wikiTemplate = getRepository().getHtmlOutputHandler().getWikiText(request, entry);
         if (wikiTemplate != null) {
             String wiki = getWikiManager().wikifyEntry(request, entry,
-                                                       wikiTemplate);
+                                                       wikiTemplate, true,null,null,WikiConstants.WIKI_TAG_MAPENTRY,WikiConstants.WIKI_TAG_MAP);
             info.append(wiki);
         } else {
             HtmlUtils.sectionHeader(
