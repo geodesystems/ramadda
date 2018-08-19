@@ -146,7 +146,13 @@ public class EiaSearchProvider extends SearchProvider {
         for (int i = 0; i < docs.length(); i++) {
             JSONObject item      = docs.getJSONObject(i);
             String     id        = item.getString("series_id");
-            String     name      = item.getString("name");
+            String     name      = "name";
+            try {
+                JSONArray tmp =  item.getJSONArray("name");
+                name = tmp.getString(0);
+            } catch(Exception exc) {
+                name       = item.getString("name");
+            }
             String     units     = item.getString("units");
             String     frequency = item.getString("frequency");
             String     desc      = "";
