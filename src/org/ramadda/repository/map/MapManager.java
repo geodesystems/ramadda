@@ -929,7 +929,10 @@ public class MapManager extends RepositoryManager {
         String fromEntry = entry.getTypeHandler().getMapInfoBubble(request,
                                entry);
         if (fromEntry != null) {
-            return fromEntry;
+            fromEntry = getWikiManager().wikifyEntry(request, entry, fromEntry,
+                                                  false, null, null,new String[]{WikiConstants.WIKI_TAG_MAPENTRY,WikiConstants.WIKI_TAG_MAP});
+
+            return getRepository().translate(request, fromEntry);
         }
         StringBuilder info    = new StringBuilder();
 
