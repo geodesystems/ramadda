@@ -213,6 +213,7 @@ public class TypeHandler extends RepositoryManager {
     /** _more_ */
     public static final String ATTR_WIKI = "wiki";
 
+
     /** _more_ */
     public static final String ATTR_BUBBLE = "bubble";
 
@@ -6143,8 +6144,8 @@ public class TypeHandler extends RepositoryManager {
      *
      * @return _more_
      */
-    public String getMapInfoBubble(Request request, Entry entry) {
-        return null;
+    public String getMapInfoBubble(Request request, Entry entry) throws Exception {
+        return  getBubbleTemplate(request,  entry);
     }
 
     /**
