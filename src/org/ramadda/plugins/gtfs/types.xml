@@ -153,6 +153,25 @@ myLocationOffset="0.008"
 -section
 ]]>
 </wiki>
+
+
+     <bubble><![CDATA[
+:title Stop: {{name}}
+----
++section 
+{{description wikify="true" prefix="+box-yellow" suffix="-box"}}
+<table class="formtable">
+     {{resource row.label="URL:"  message=""}}
+     {{field name="stop_code"  row.label="Stop Code:"}}
+     {{field name="location_type"  row.label="Location:"}}
+     {{field name="wheelchair_boarding"  row.label="Wheelchair Boarding:"}}
+     {{field name="zone_id"  row.label="Zone ID:"}}
+</table>
+-col
+-row
+-section
+]]>
+</bubble>
    </type>
 
 
