@@ -581,7 +581,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
                             var denom = (sizeBy.maxValue-sizeBy.minValue);
                             var percent = (denom == 0?NaN:(value-sizeBy.minValue)/denom);
                             props.pointRadius = 6 + parseInt(15*percent);
-                            console.log("percent:" + percent +  " radius: " + props.pointRadius +" Value: " + value  + " range: " + sizeBy.minValue +" " + sizeBy.maxValue);
+                            //                            console.log("percent:" + percent +  " radius: " + props.pointRadius +" Value: " + value  + " range: " + sizeBy.minValue +" " + sizeBy.maxValue);
                         }
                         if(colorBy.index>=0) {
                             var value = pointRecord.getData()[colorBy.index];
