@@ -216,6 +216,12 @@ public class User {
         return properties.get(key);
     }
 
+    public Object getProperty(String key, Object dflt) {
+        Object o  =  properties.get(key);
+        if(o==null) return dflt;
+        return o;
+    }
+
     /**
      * _more_
      *

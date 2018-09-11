@@ -799,7 +799,7 @@ public class UserManager extends RepositoryManager {
         if (userAgree != null) {
             sb.append(formEntry(request, "",
                                 HtmlUtils.checkbox(ARG_USERAGREE, "true",
-                                    false) + HtmlUtils.space(2) + userAgree));
+                                                   request.get(ARG_USERAGREE,false)) + HtmlUtils.space(2) + userAgree));
         }
         sb.append(extra);
 
@@ -1154,6 +1154,8 @@ public class UserManager extends RepositoryManager {
         if (doAdmin) {
             applyAdminState(request, user);
         }
+        user.putProperty("phone", request.getString("phone", (String) user.getProperty("phone")));
+
         makeOrUpdateUser(user, true);
     }
 
@@ -1355,6 +1357,9 @@ public class UserManager extends RepositoryManager {
             sb.append(formEntry(request, msgLabel("Email"),
                                 HtmlUtils.input(ARG_USER_EMAIL,
                                     user.getEmail(), HtmlUtils.SIZE_40)));
+            sb.append(formEntry(request, msgLabel("Phone"),
+                                HtmlUtils.input("phone",
+                                                (String) user.getProperty("phone",""), HtmlUtils.SIZE_40)));
         }
 
         List<TwoFacedObject> templates =
@@ -2752,7 +2757,7 @@ public class UserManager extends RepositoryManager {
 
         String key = request.getString(ARG_USER_PASSWORDKEY, (String) null);
         PasswordReset resetInfo = null;
-        StringBuffer  sb        = new StringBuffer();
+        StringBuilder  sb        = new StringBuilder();
         if (key != null) {
             resetInfo = passwordResets.get(key);
             if (resetInfo != null) {
@@ -2892,7 +2897,7 @@ public class UserManager extends RepositoryManager {
      * @param sb _more_
      * @param name _more_
      */
-    private void addPasswordResetForm(Request request, StringBuffer sb,
+    private void addPasswordResetForm(Request request, StringBuilder sb,
                                       String name) {
         sb.append("Please enter your user ID");
         sb.append(HtmlUtils.p());
@@ -2947,7 +2952,6 @@ public class UserManager extends RepositoryManager {
     }
 
 
-
     /**
      * _more_
      *
@@ -2970,43 +2974,62 @@ public class UserManager extends RepositoryManager {
         }
 
         boolean      responseAsData = request.responseAsData();
-        StringBuffer sb             = new StringBuffer();
+        StringBuilder sb             = new StringBuilder();
         User         user           = null;
         String       output         = request.getString(ARG_OUTPUT, "");
         StringBuffer loginFormExtra = new StringBuffer();
 
+        AccessManager.TwoFactorAuthenticator tfa = getAccessManager().getTwoFactorAuthenticator();
+        tfa = null;
 
         if (request.exists(ARG_USER_ID)) {
             String name = request.getString(ARG_USER_ID, "").trim();
             if (name.equals(USER_DEFAULT) || name.equals(USER_ANONYMOUS)) {
                 name = "";
             }
-            String password = request.getString(ARG_USER_PASSWORD, "").trim();
-
-            if ((name.length() > 0) && (password.length() > 0)) {
-                user = authenticateUser(request, name, password,
-                                        loginFormExtra);
-            }
 
             boolean keepChecking = true;
-            String  loginExtra   = "";
-
-            if ((user != null) && (userAgree != null)) {
-                if ( !request.get(ARG_USERAGREE, false)) {
-                    user         = null;
-                    keepChecking = false;
-                    if (responseAsData) {
-                        return getRepository().makeErrorResult(request,
-                                "You must agree to the terms");
+            if(tfa !=null) {
+                user = findUser(request.getString(ARG_USER_ID, ""), false);
+                if(user!=null) {
+                    if(!tfa.userHasBeenAuthenticated(request, user, sb)) {
+                        user = null;
                     }
-                    sb.append(
-                        getPageHandler().showDialogWarning(
-                            msg("You must agree to the terms")));
-                } else {
-                    loginExtra = "User agreed to terms and conditions";
+                }
+            }
+            String  loginExtra   = "";
+            if(user==null) {
+                String password = request.getString(ARG_USER_PASSWORD, "").trim();
+
+                if ((name.length() > 0) && (password.length() > 0)) {
+                    user = authenticateUser(request, name, password,
+                                            loginFormExtra);
+                }
+
+                if ((user != null) && (userAgree != null)) {
+                    if ( !request.get(ARG_USERAGREE, false)) {
+                        user         = null;
+                        keepChecking = false;
+                        if (responseAsData) {
+                            return getRepository().makeErrorResult(request,
+                                                                   "You must agree to the terms");
+                        }
+                        sb.append(
+                                  getPageHandler().showDialogWarning(
+                                                                     msg("You must agree to the terms")));
+                    } else {
+                        loginExtra = "User agreed to terms and conditions";
+                    }
                 }
             }
 
+            if (user != null) {
+                if(tfa.userCanBeAuthenticated(user)) {
+                    tfa.addAuthForm(request, user, sb);
+                    keepChecking = false;
+                }
+                user = null;
+            }
 
             if (keepChecking) {
                 if (user != null) {
@@ -3079,7 +3102,7 @@ public class UserManager extends RepositoryManager {
                                                       name));
                         ResultSet results = statement.getResultSet();
                         if (results.next()) {
-                            password = results.getString(1);
+                            String password = results.getString(1);
                             if ((password == null)
                                     || (password.length() == 0)) {
                                 if (getAdmin().isEmailCapable()) {

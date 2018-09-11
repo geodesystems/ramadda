@@ -1095,6 +1095,27 @@ public class AccessManager extends RepositoryManager {
 
     }
 
+    private TwoFactorAuthenticator twoFactorAuthenticator;
+
+    public void setTwoFactorAuthenticator(TwoFactorAuthenticator tfa) {
+        twoFactorAuthenticator  = tfa;
+    }
+
+    public TwoFactorAuthenticator getTwoFactorAuthenticator() {
+        return twoFactorAuthenticator;
+    }
+
+    public static class TwoFactorAuthenticator {
+        public void addAuthForm(Request request, User user, Appendable sb) throws Exception  {
+        }
+
+        public boolean userHasBeenAuthenticated(Request request, User user, Appendable sb) throws Exception  {
+            return true;
+        }
+        public boolean userCanBeAuthenticated(User user) {
+            return false;
+        }
+    }
 
 
 
