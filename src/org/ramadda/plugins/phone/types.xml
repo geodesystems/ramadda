@@ -29,4 +29,16 @@
    </type>
 
 
+
+  <type name="phone_tttf"  description="Text to the future" handler="org.ramadda.plugins.phone.TTTFTypeHandler" category="Information" foruser="false">
+     <property name="icon" value="/phone/sms.png"/>
+     <property name="form.resource.show" value="false"/>
+     <property name="form.fromdate.label" value="Valid Date From"/>
+     <property name="form.todate.label" value="Valid Date To"/>
+     <column name="enabled" type="boolean"  default="true" label="Enabled"  />
+     <column name="text_message" type="string"  label="Text Message"  />
+     <column name="text_message" type="string"  label="Text Message"  />
+   </type>
+
+
 </types>
