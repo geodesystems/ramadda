@@ -18,6 +18,17 @@
 <!--
      <column name="category" iscategory="true"  type="enumerationplug" label="Category" cansearch="true" showinhtml="true"/>
 -->
+     <wiki><![CDATA[
+{{noheading}}
++section # title="{{name}}"
++note
+{{description wikify="true"}}
+-section
+-note
+]]>
+</wiki>
+
+
 </type>
 
 
