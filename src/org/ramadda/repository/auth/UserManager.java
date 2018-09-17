@@ -1154,7 +1154,10 @@ public class UserManager extends RepositoryManager {
         if (doAdmin) {
             applyAdminState(request, user);
         }
-        user.putProperty("phone", request.getString("phone", (String) user.getProperty("phone")));
+        String phone = request.getString("phone", (String) user.getProperty("phone"));
+        if(phone!=null) {
+            user.putProperty("phone", phone);
+        }
 
         makeOrUpdateUser(user, true);
     }
