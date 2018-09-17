@@ -3031,7 +3031,6 @@ public class UserManager extends RepositoryManager {
                     tfa.addAuthForm(request, user, sb);
                     keepChecking = false;
                 }
-                user = null;
             }
 
             if (keepChecking) {
