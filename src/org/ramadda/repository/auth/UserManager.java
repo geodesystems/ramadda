@@ -3024,7 +3024,7 @@ public class UserManager extends RepositoryManager {
             }
 
             if (user != null) {
-                if(tfa.userCanBeAuthenticated(user)) {
+                if(tfa!=null && tfa.userCanBeAuthenticated(user)) {
                     tfa.addAuthForm(request, user, sb);
                     keepChecking = false;
                 }
