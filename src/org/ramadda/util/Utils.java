@@ -231,8 +231,10 @@ public class Utils {
     public static List<String> tokenizeColumns(String line,
             String columnDelimiter) {
         //        System.err.println("line:" + line);
+        //        System.err.println("line:" + line.replaceAll("\t","_TAB_"));
         List<String> toks      = new ArrayList<String>();
         StrTokenizer tokenizer = StrTokenizer.getCSVInstance(line);
+        tokenizer.setEmptyTokenAsNull(true);
         //        StrTokenizer tokenizer = new StrTokenizer(line, columnDelimiter);
         if ( !columnDelimiter.equals(",")) {
             tokenizer.setDelimiterChar(columnDelimiter.charAt(0));
@@ -240,6 +242,7 @@ public class Utils {
         //        tokenizer.setQuoteChar('"');
         while (tokenizer.hasNext()) {
             String tok = tokenizer.nextToken();
+            if(tok == null) tok = "";
             //            System.err.println("tok:" + tok);
             toks.add(tok);
         }
