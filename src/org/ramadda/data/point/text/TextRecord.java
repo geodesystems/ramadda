@@ -252,7 +252,8 @@ public class TextRecord extends DataRecord {
             if (currentLine == null) {
                 return null;
             }
-            currentLine = currentLine.trim();
+            //Don't trim the line as there might be a tab delimiter at the end
+            //            currentLine = currentLine.trim();
             if ( !lineOk(currentLine)) {
                 continue;
             }
