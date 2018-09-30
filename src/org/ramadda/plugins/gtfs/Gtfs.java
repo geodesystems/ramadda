@@ -1693,7 +1693,7 @@ public class Gtfs implements Constants {
                 routeVehicles.add(vehicle);
             }
         }
-        System.err.println(" route:" + routeId +" vehicles:" + routeVehicles);
+        //        System.err.println(" route:" + routeId +" vehicles:" + routeVehicles);
         return routeVehicles;
     }
 
@@ -1706,7 +1706,7 @@ public class Gtfs implements Constants {
                 stopVehicles.add(vehicle);
             }
         }
-        System.err.println("stop:" + stopId + " vehicles:" + stopVehicles);
+        //        System.err.println("stop:" + stopId + " vehicles:" + stopVehicles);
 
         return stopVehicles;
     }

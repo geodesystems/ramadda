@@ -133,7 +133,7 @@ public class GtfsVehicleTypeHandler extends GenericTypeHandler {
 
         if (tag.equals("gtfs.trip.link")) {
             String tripId =  (String) entry.getValue(IDX_TRIP_ID);
-            System.err.println("calling gettrip trip id:" + tripId);
+            //            System.err.println("calling gettrip trip id:" + tripId);
             Entry trip = Gtfs.getTrip(request, entry, tripId);
             if(trip == null) {
                 if(tripId==null) return "No trip defined";
