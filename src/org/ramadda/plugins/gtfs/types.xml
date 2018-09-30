@@ -188,7 +188,7 @@ myLocationOffset="0.008"
      <column name="route_color"  type="string" label="Route Color"/>
      <column name="route_text_color"  type="string" label="Text Color"/>
      <column name="points"  type="clob"  size="35000" showinhtml="false" editable="false" changetype="true"/>
-     <column name="stop_names"  label="Stop Names" type="clob"  size="30000" cansearch="true"  showinhtml="false" editable="false" />
+     <column name="stop_names"  label="Stop Names" type="clob"  size="30000" cansearch="true"  cansearchtext="false" showinhtml="false" editable="false" />
      <column name="agency_id"  type="string"  label="Agency ID" canedit="false" cansearch="false"/>
      <wiki><![CDATA[
 {{gtfs.route.title}}

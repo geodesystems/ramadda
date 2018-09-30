@@ -181,6 +181,8 @@ public class Column implements DataTypes, Constants {
     /** _more_ */
     public static final String ATTR_CANSEARCH = "cansearch";
 
+    public static final String ATTR_CANSEARCHTEXT = "cansearchtext";
+
     /** _more_ */
     public static final String ATTR_ADVANCED = "advanced";
 
@@ -297,6 +299,7 @@ public class Column implements DataTypes, Constants {
 
     /** _more_ */
     private boolean canSearch;
+    private boolean canSearchText;
 
 
     /** _more_ */
@@ -466,6 +469,7 @@ public class Column implements DataTypes, Constants {
         isWiki         = getAttributeOrTag(element, "iswiki", false);
         isCategory     = getAttributeOrTag(element, ATTR_ISCATEGORY, false);
         canSearch      = getAttributeOrTag(element, ATTR_CANSEARCH, false);
+        canSearchText      = getAttributeOrTag(element, ATTR_CANSEARCHTEXT, canSearch);
         advancedSearch = getAttributeOrTag(element, ATTR_ADVANCED, false);
         editable       = getAttributeOrTag(element, ATTR_EDITABLE, true);
         showInForm = getAttributeOrTag(element, ATTR_SHOWINFORM, showInForm);
@@ -667,6 +671,8 @@ public class Column implements DataTypes, Constants {
         col.add("" + getCanShow());
         col.add("cansearch");
         col.add("" + getCanSearch());
+        col.add("cansearchtext");
+        col.add("" + getCanSearchText());
         col.add("canlist");
         col.add("" + getCanList());
         if (isEnumeration()) {
@@ -3128,6 +3134,25 @@ public class Column implements DataTypes, Constants {
      */
     public boolean getCanSearch() {
         return canSearch;
+    }
+
+
+    /**
+     * Set the IsSearchable property.
+     *
+     * @param value The new value for IsSearchable
+     */
+    public void setCanSearchText(boolean value) {
+        canSearchText = value;
+    }
+
+    /**
+     * Get the IsSearchable property.
+     *
+     * @return The IsSearchable
+     */
+    public boolean getCanSearchText() {
+        return canSearchText;
     }
 
     /**

@@ -5718,7 +5718,7 @@ public class TypeHandler extends RepositoryManager {
                 List<Column> columns = getColumns();
                 if (columns != null) {
                     for (Column column : columns) {
-                        if (column.getCanSearch() && column.isString()) {
+                        if (column.getCanSearch() && column.getCanSearchText() && column.isString()) {
                             ors.add(
                                 dbm.makeLikeTextClause(
                                     column.getFullName(), nameTok, doNot));
