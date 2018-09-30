@@ -1721,7 +1721,7 @@ public class Gtfs implements Constants {
                 tripVehicles.add(vehicle);
             }
         }
-        //        System.err.println("Trip:" + tripId +" vehicles:" + tripVehicles);
+        System.err.println("Trip:" + tripId +" vehicles:" + tripVehicles);
         return tripVehicles;
     }
 
