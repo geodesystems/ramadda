@@ -815,6 +815,7 @@ public class Gtfs implements Constants {
      */
     public static String getLyftToken(Request request, boolean force)
             throws Exception {
+        HttpURLConnection huc =null;
         try {
             if ((lyftToken != null) && !force) {
                 return lyftToken;
@@ -836,7 +837,7 @@ public class Gtfs implements Constants {
             String auth = lyftId + ":" + lyftSecret;
             auth = Utils.encodeBase64(auth.getBytes());
             String url = "https://api.lyft.com/oauth/token";
-            HttpURLConnection huc =
+            huc =
                 (HttpURLConnection) new URL(url).openConnection();
 
             String data =
@@ -865,6 +866,9 @@ public class Gtfs implements Constants {
             return lyftToken = obj.getString("access_token");
         } catch (Exception exc) {
             System.err.println("Error doing Lyft authentication:" + exc);
+            if(huc!=null) {
+                System.err.println("Error:" + huc.getResponseMessage());
+            }
         }
 
         return null;
@@ -934,7 +938,6 @@ public class Gtfs implements Constants {
             json = new String(IOUtil.readBytes(huc.getInputStream()));
         } catch (Exception exc) {
             System.err.println("Lyft error:" + exc);
-
             return false;
         }
 
