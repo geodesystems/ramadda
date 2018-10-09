@@ -165,6 +165,11 @@
 </type>
 
 
+  <type name="type_image_webcam"  description="Webcam" super="type_image" foruser="true" category="Imagery" supercategory="Miscellaneous" >
+</type>
+
+
+
 
   <type name="type_db_table"  description="Database Table"  super="type_document_tabular"   handler="org.ramadda.plugins.media.DbTableTypeHandler"         category="Database" >
      <property name="form.resource.show" value="false"/>
