@@ -713,25 +713,23 @@ public class Json {
                 String inner = "";
                 String dirName = readValue(view, "Direction", "");
                 String dir = null;
-                switch (dirName) {
-                    case "North": dir = "0";
-                    break;
-                    case "Northeast": dir = "45";
-                    break;
-                    case "East": dir = "90";
-                    break;
-                    case "Southeast": dir = "135";
-                    break;
-                    case "South": dir = "180";
-                    break;
-                    case "Southwest": dir = "225";
-                    break;
-                    case "West": dir = "270";
-                    break;
-                    case "Northwest": dir = "315";
-                    break;
+                if(dirName.equals( "North")) {
+                    dir = "0";
+                } else if(dirName.equals( "Northeast")) {
+                    dir = "45";
+                } else if(dirName.equals( "East")) {
+                    dir = "90";
+                } else if(dirName.equals( "Southeast")) {
+                    dir = "135";
+                } else if(dirName.equals( "South")) {
+                    dir = "180";
+                } else if(dirName.equals( "Southwest")) {
+                    dir = "225";
+                } else if(dirName.equals( "West")) {
+                    dir = "270";
+                } else if(dirName.equals( "Northwest")) {
+                    dir = "315";
                 }
-
                 if(dir!=null) {
                     desc.append("Camera Direction:  " + dirName+"<br>");
                     inner += "<metadata inherited=\"false\" type=\"camera.direction\"><attr encoded=\"false\" index=\"1\">" + dir +"</attr></metadata>\n";
