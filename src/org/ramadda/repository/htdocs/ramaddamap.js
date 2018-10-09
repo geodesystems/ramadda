@@ -900,7 +900,7 @@ function initMapFunctions(theMap) {
                     multiple: false,
                     hover: this.selectOnHover,
                     onSelect: function(feature) { 
-                        _this.showMarkerPopup(feature);
+                        _this.showMarkerPopup(feature, true);
                     }
                 });
             this.map.addControl(this.map.featureSelect);
@@ -1629,6 +1629,8 @@ function initMapFunctions(theMap) {
         return text;
     }
 
+    theMap.seenMarkers = {};
+
     theMap.addMarker = function(id, location, iconUrl, text, parentId, size, voffset) {
         if(size == null) size = 16;
         if(voffset ==null) voffset = 0;
@@ -1663,6 +1665,8 @@ function initMapFunctions(theMap) {
         var projPoint = this.transformLLPoint(location);
         var marker = new OpenLayers.Marker(projPoint, icon);
 
+
+
         var feature = new OpenLayers.Feature.Vector(
                                                     new OpenLayers.Geometry.Point( location.lon,location.lat ).transform(this.displayProjection, this.sourceProjection),
     {description:''} ,
@@ -1677,10 +1681,21 @@ function initMapFunctions(theMap) {
         marker.ramaddaId = id;
         marker.text = this.getPopupText(text, marker);
         marker.location = location;
+        var locationKey = location+"";
+        feature.locationKey  = locationKey;
+        var seenMarkers = this.seenMarkers[locationKey];
+        if(seenMarkers == null) {
+            seenMarkers = [];
+            this.seenMarkers[locationKey] = seenMarkers;
+        } else {
+        }
+        seenMarkers.push(feature);
+        //        console.log("loc:" + locationKey +" " + seenMarkers);
+
 
         var _this = this;
         var clickFunc = function(evt) {
-            _this.showMarkerPopup(marker);
+            _this.showMarkerPopup(marker, true);
             if(marker.ramaddaClickHandler!=null) {
                 marker.ramaddaClickHandler.call(null, marker);
             }
@@ -1773,7 +1788,7 @@ function initMapFunctions(theMap) {
 
         if (args["selectable"]) {
             box.events.register("click", box, function(e) {
-                theMap.showMarkerPopup(box);
+                    theMap.showMarkerPopup(box, true);
                 OpenLayers.Event.stop(e);
             });
         }
@@ -1978,7 +1993,7 @@ function initMapFunctions(theMap) {
         return line;
     }
 
-    theMap.showMarkerPopup = function(marker) {
+    theMap.showMarkerPopup = function(marker, fromClick=false) {
         if(this.entryClickHandler && window[this.entryClickHandler]) {
             if(!window[this.entryClickHandler](this,marker)) {
                 return;
@@ -2001,6 +2016,22 @@ function initMapFunctions(theMap) {
         }
 
         var markertext = marker.text;
+        if(fromClick && marker.locationKey!=null) {
+            markers = this.seenMarkers[marker.locationKey];
+            if(markers.length>1) {
+                markertext = "";
+                for(var i=0;i<markers.length;i++) {
+                    otherMarker = markers[i];
+                    if(i>0)
+                        markertext+='<hr>';
+                    if(otherMarker.inputProps) {
+                        otherMarker.text = this.getPopupText(otherMarker.inputProps.text);
+                    }
+                    markertext+=otherMarker.text;
+                    if(i>10) break;
+                }
+            }
+        }
         // set marker text as the location
         var location = marker.location;
         if(!location) return;
