@@ -3418,7 +3418,7 @@ public class TypeHandler extends RepositoryManager {
      * @return _more_
      */
     public boolean isImage(Entry entry) {
-        if (getType().equals("type_image")) {
+        if (isType("type_image")) {
             return true;
         }
         if (entry.getResource().isImage()) {
