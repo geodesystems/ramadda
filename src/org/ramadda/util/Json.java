@@ -590,7 +590,8 @@ public class Json {
      * @throws Exception _more_
      */
     public static void main(String[] args) throws Exception {
-        toCsv(args[0], System.out);
+        //        toCsv(args[0], System.out);
+        convertCameras(args);
     }
 
     public static void toCsv(String file, PrintStream pw) throws Exception {
@@ -679,6 +680,8 @@ public class Json {
         for (int i = 0; i < cameras.length(); i++) {
             JSONObject camera = cameras.getJSONObject(i);
 
+            String tourId = readValue(camera, "CameraTourId", null);
+            if(tourId!=null) continue;
             double lat = Double.parseDouble(readValue(camera,
                              "Location.Latitude", "0.0"));
             double lon = Double.parseDouble(readValue(camera,
@@ -691,7 +694,7 @@ public class Json {
                 String dttm = readValue(view, "LastUpdatedDate", "");
                 String url = "http://www.cotrip.org/"
                              + readValue(view, "ImageLocation", "");
-                desc.append("\n");
+                desc.append("<br>");
                 String cameraName = readValue(view, "CameraName", "NA");
                 String roadName   = readValue(view, "RoadName", "NA");
                 String s1         = cameraName.toLowerCase();
@@ -705,14 +708,41 @@ public class Json {
                 }
                 //                System.out.println (cameraName);
                 desc.append("Mile marker:  "
-                            + readValue(view, "MileMarker", "NA") + "\n");
+                            + readValue(view, "MileMarker", "NA") + "<br>");
                 String name = "CDOT Camera - " + cameraName;
+                String inner = "";
+                String dirName = readValue(view, "Direction", "");
+                String dir = null;
+                switch (dirName) {
+                    case "North": dir = "0";
+                    break;
+                    case "Northeast": dir = "45";
+                    break;
+                    case "East": dir = "90";
+                    break;
+                    case "Southeast": dir = "135";
+                    break;
+                    case "South": dir = "180";
+                    break;
+                    case "Southwest": dir = "225";
+                    break;
+                    case "West": dir = "270";
+                    break;
+                    case "Northwest": dir = "315";
+                    break;
+                }
+
+                if(dir!=null) {
+                    desc.append("Camera Direction:  " + dirName+"<br>");
+                    inner += "<metadata inherited=\"false\" type=\"camera.direction\"><attr encoded=\"false\" index=\"1\">" + dir +"</attr></metadata>\n";
+                }
+                inner += HtmlUtils.tag("description", "",
+                                       "<![CDATA[" + desc + "]]>");
                 System.out.println(XmlUtil.tag("entry",
                         XmlUtil.attrs(new String[] {
-                    "type", "type_image", "url", url, "latitude", lat + "",
+                    "type", "type_image_webcam", "url", url, "latitude", lat + "",
                     "longitude", "" + lon, "name", name
-                }), HtmlUtils.tag("description", "",
-                                  "<![CDATA[" + desc + "]]>")));
+                }), inner));
 
             }
         }
