@@ -94,7 +94,7 @@ public class VirtualTypeHandler extends ExtensibleGroupTypeHandler {
             String widget = HtmlUtils.textArea(urlArg, value, 10, 60,
                                 HtmlUtils.id(textAreaId));
             formInfo.addMaxSizeValidation(column.getLabel(), textAreaId,
-                                          1500);
+                                          5000);
             String suffix =
                 "entry ids - one per row<br>Or use the  <a target=_help href=\"http://ramadda.org/repository/userguide/wikitext.html#collection\">entry shortcut and search</a> services";
             String buttons = OutputHandler.getSelect(request, textAreaId,
