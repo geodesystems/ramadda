@@ -758,12 +758,17 @@ public class CsvUtil {
             + "\n\t-delimiter (specify an alternative delimiter)"
             + "\n\t-print (print to stdout)"
             + "\n\t-raw (print the file raw)" + "\n\t-record (print records)"
+            + "\n\t-rotate" + "\n\t-flip"
+            + "\n\t-concat\n\t*.csv - one or more csv files"
             + "\n\t-header (print the first line)"
             + "\n\t-pointheader (generate the RAMADDA point properties)"
             + "\n\t-addheader (add the RAMADDA point properties)"
             + "\n\t-db <props> (generate the RAMADDA db xml from the header)"
-            + "\n\t-rotate" + "\n\t-flip"
-            + "\n\t-concat\n\t*.csv - one or more csv files"
+            + "\n\tdb props are a set of name value pairs:"
+            + "\n\t\ttable.id new_id table.name new_name table.cansearch <true|false> (dflt can search) table.canlist <true|false> (dflt can list) <column name>.type <string|enumeration|double|int|date> <column name>.format <yyyy mm dd format for dates> "
+            + "\n\t\t<column name>.id <new id for column> <column name>.label <new label> "
+            + "\n\t\t<column name>.canlist <true|false> <column name>.cansearch <true|false> "
+            + "\n\t\t-install <true|false> (install the new db table) -nukedb <true|false> (delete any prior created dbs>"
             + "\n\t-run <name of process directory>");
         pw.flush();
     }
