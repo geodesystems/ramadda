@@ -83,7 +83,7 @@ public class ResourceTypeHandler extends ExtensibleGroupTypeHandler {
             return iconUrl("/icons/bike.png");
         }
         if (type.equals("camping")) {
-            return iconUrl("/community/star.png");
+            return iconUrl("/community/tent.png");
         }
 
         if (type.equals("marijuana_facility")) {
