@@ -4346,9 +4346,14 @@ public class EntryManager extends RepositoryManager {
 
 
         if ( !request.exists(ARG_CONFIRM) || (toEntry == null)) {
+
+
             StringBuilder sb = new StringBuilder();
             if (entries.size() == 1) {
                 getPageHandler().entrySectionOpen(request, entries.get(0), sb, null);
+            }
+            if (request.exists(ARG_CONFIRM) && (toEntry == null)) {
+                sb.append(getPageHandler().showDialogWarning("Please select a destination"));
             }
             request.formPostWithAuthToken(sb, getRepository().URL_ENTRY_COPY);
             if (force != null) {
