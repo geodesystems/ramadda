@@ -4408,6 +4408,7 @@ public class EntryManager extends RepositoryManager {
                 sb.append(toEntry.getTypeHandler().getEntryName(toEntry));
                 sb.append(HtmlUtils.hidden(ARG_TO, toEntry.getId()));
             } else {
+                Entry parent = entries.get(0).getParentEntry();
                 String select =
                     getRepository().getHtmlOutputHandler().getSelect(
                         request, ARG_TO, HtmlUtils.img(
@@ -4415,15 +4416,15 @@ public class EntryManager extends RepositoryManager {
                                 ICON_FOLDER_OPEN)) + HtmlUtils.space(1)
                                     + msg("Select")
                                     + HtmlUtils.space(
-                                                      1), true, "", entries.get(0).getParentEntry(), false);
+                                                      1), true, "", parent, false);
 
-                sb.append(HtmlUtils.hidden(ARG_TO + "_hidden", "",
+                sb.append(HtmlUtils.hidden(ARG_TO + "_hidden",  parent.getId(),
                                            HtmlUtils.id(ARG_TO + "_hidden")));
 
                 sb.append(select);
                 sb.append(HtmlUtils.space(1));
-                sb.append(HtmlUtils.disabledInput(ARG_TO, "",
-                        HtmlUtils.SIZE_60 + HtmlUtils.id(ARG_TO)));
+                sb.append(HtmlUtils.disabledInput(ARG_TO, parent.getName(),
+                                                  HtmlUtils.SIZE_60 + HtmlUtils.id(ARG_TO)));
 
             }
             sb.append(HtmlUtils.close(HtmlUtils.TAG_DIV));
