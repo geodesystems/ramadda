@@ -746,11 +746,12 @@ function initMapFunctions(theMap) {
                 marker = list[idx];
                 var visible = true;
                 var cbx =   $('#' + "visible_" + this.mapId +"_" + marker.ramaddaId);
+                var name = marker.name;
                 if(all) visible= true;
-                else if(!Utils.isDefined(marker.name)) {
+                else if(!Utils.isDefined(name)) {
                     visible = false;
                 } else {
-                    visible = marker.name.includes(text);
+                    visible = name.includes(text);
                 }
                 if(visible) {
                     marker.style.display = 'inline';
@@ -765,16 +766,38 @@ function initMapFunctions(theMap) {
         if(this.boxes && this.boxes.markers) {
             for(var marker in this.boxes.markers) {
                 marker = this.boxes.markers[marker];
+                name = marker.name;
                 var visible = true;
                 if(all) visible= true;
-                else if(!Utils.isDefined(marker.name)) {
+                else if(!Utils.isDefined(name)) {
                     visible = false;
                 } else {
-                    visible = marker.name.includes(text);
+                    visible = name.includes(text);
                 }
                 marker.display(visible);
             }
             this.boxes.redraw();
+        }
+
+        if (this.lines) {
+            var features = this.lines.features;
+            for (var i = 0; i < features.length; i++) {
+                var line = features[i];
+                name = line.name;
+                var visible = true;
+                if(all) visible= true;
+                else if(!Utils.isDefined(name)) {
+                    visible = false;
+                } else {
+                    visible = name.includes(text);
+                }
+                if(visible) {
+                    line.style.display = 'inline';
+                } else {
+                    line.style.display = 'none';
+                }
+            }
+            this.lines.redraw();
         }
 
 
@@ -1977,22 +2000,22 @@ function initMapFunctions(theMap) {
                 new OpenLayers.Geometry.Point(east, south),
                 new OpenLayers.Geometry.Point(east, north),
                 new OpenLayers.Geometry.Point(west, north) ];
-        return this.addPolygon(id, points, attrs,info);
+        return this.addPolygon(id, "", points, attrs,info);
     }
 
 
-    theMap.addLine = function(id, lat1, lon1, lat2, lon2, attrs, info) {
+    theMap.addLine = function(id, name, lat1, lon1, lat2, lon2, attrs, info) {
         var points = [ new OpenLayers.Geometry.Point(lon1, lat1),
                        new OpenLayers.Geometry.Point(lon2, lat2) ];
-        return this.addPolygon(id, points, attrs,info);
+        return this.addPolygon(id, name, points, attrs,info);
     }
 
-    theMap.addLines = function(id, attrs, values,info) {
+    theMap.addLines = function(id, name, attrs, values,info) {
         var points = [];
         for(var i=0;i<values.length;i+=2) {
             points.push(new OpenLayers.Geometry.Point(values[i+1],values[i]));
         }
-        return this.addPolygon(id, points, attrs,info);
+        return this.addPolygon(id, name, points, attrs,info);
     }
 
     theMap.removePolygon = function(line) {
@@ -2004,7 +2027,7 @@ function initMapFunctions(theMap) {
 
     var cnt = 0;
 
-    theMap.addPolygon = function(id, points, attrs,marker) {
+    theMap.addPolygon = function(id, name, points, attrs,marker) {
         var _this = this;
 
         for(var i =0;i<points.length;i++) {
@@ -2036,6 +2059,7 @@ function initMapFunctions(theMap) {
         line.markerPopup = marker;
         line.ramaddaId = id;
         line.location = new OpenLayers.LonLat(points[0].x,points[0].y);
+        line.name = name;
         var visible = this.isLayerVisible(line.ramaddaId);
         if(visible) {
             line.style.display = 'inline';
