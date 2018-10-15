@@ -240,7 +240,7 @@ function initMapFunctions(theMap) {
         image.south =  south;
         image.east =  east;
         if(visible)  {
-            //            image.box = this.createBox(layerId, north, west, south, east, desc, {});
+            //            image.box = this.createBox(layerId, "", north, west, south, east, desc, {});
         } 
 
         if(!this.imageLayers) this.imageLayers = {}
@@ -727,6 +727,60 @@ function initMapFunctions(theMap) {
 
 
 
+    theMap.initSearch = function(inputId) {
+        $("#" + inputId).keyup(function(e){
+            if(e.keyCode == 13)     {
+                theMap.searchMarkers($("#" + inputId).val());
+            }
+            });
+    }
+
+    theMap.searchMarkers = function(text) {
+        text = text.trim();
+        var all  = text=="";
+        var cbxall =   $(':input[id*=\"' + "visibleall_" + this.mapId +'\"]');
+        cbxall.prop('checked', all);
+        if(this.markers) {
+            var list =  this.getMarkers();
+            for(var idx=0;idx<list.length;idx++) {
+                marker = list[idx];
+                var visible = true;
+                var cbx =   $('#' + "visible_" + this.mapId +"_" + marker.ramaddaId);
+                if(all) visible= true;
+                else if(!Utils.isDefined(marker.name)) {
+                    visible = false;
+                } else {
+                    visible = marker.name.includes(text);
+                }
+                if(visible) {
+                    marker.style.display = 'inline';
+                } else {
+                    marker.style.display = 'none';
+                }
+                cbx.prop('checked',visible);
+                //            marker.display(visible);
+            }
+            this.markers.redraw();
+        }
+        if(this.boxes && this.boxes.markers) {
+            for(var marker in this.boxes.markers) {
+                marker = this.boxes.markers[marker];
+                var visible = true;
+                if(all) visible= true;
+                else if(!Utils.isDefined(marker.name)) {
+                    visible = false;
+                } else {
+                    visible = marker.name.includes(text);
+                }
+                marker.display(visible);
+            }
+            this.boxes.redraw();
+        }
+
+
+
+    }
+
     theMap.setLatLonReadout = function(llr) {
         this.latlonReadout = llr;
     }
@@ -1118,7 +1172,7 @@ function initMapFunctions(theMap) {
 
         var lonlat = new createLonLat(lon,lat);
         if (this.selectorMarker == null) {
-            this.selectorMarker = this.addMarker(positionMarkerID, lonlat, "", "", 20,10);
+            this.selectorMarker = this.addMarker(positionMarkerID, lonlat, "", "", "", 20,10);
         } else {
             this.selectorMarker.lonlat = this.transformLLPoint(lonlat);
         }
@@ -1484,7 +1538,6 @@ function initMapFunctions(theMap) {
             marker.display(visible);
         }
         this.boxes.redraw();
-        
     }
 
 
@@ -1503,7 +1556,7 @@ function initMapFunctions(theMap) {
             } else {
                 if(image.box) {
                     this.removeBox(image.box);
-                    image.box = this.createBox(i, image.north, image.west, image.south, image.east, image.text, {});
+                    image.box = this.createBox(i, "", image.north, image.west, image.south, image.east, image.text, {});
                 }
             }
         }
@@ -1631,7 +1684,7 @@ function initMapFunctions(theMap) {
 
     theMap.seenMarkers = {};
 
-    theMap.addMarker = function(id, location, iconUrl, text, parentId, size, voffset) {
+    theMap.addMarker = function(id, location, iconUrl, markerName, text, parentId, size, voffset) {
         if(size == null) size = 16;
         if(voffset ==null) voffset = 0;
         
@@ -1676,10 +1729,12 @@ function initMapFunctions(theMap) {
         feature.ramaddaId = id;
         feature.parentId = parentId;
         feature.text= this.getPopupText(text, feature);
+        feature.name = markerName;
         feature.location = location;
 
         marker.ramaddaId = id;
         marker.text = this.getPopupText(text, marker);
+        marker.name = markerName;
         marker.location = location;
         var locationKey = location+"";
         feature.locationKey  = locationKey;
@@ -1762,7 +1817,7 @@ function initMapFunctions(theMap) {
     }
 
 
-    theMap.createBox = function(id, north, west, south, east, text, params) {
+    theMap.createBox = function(id, name, north, west, south, east, text, params) {
 
         if(text.indexOf("base64:")==0) {
             text =             window.atob(text.substring(7));
@@ -1796,7 +1851,7 @@ function initMapFunctions(theMap) {
         var lonlat =  new createLonLat(west,north);
         box.lonlat = this.transformLLPoint(lonlat);
         box.text = this.getPopupText(text);
-
+        box.name = name;
         box.setBorder(args["color"], 1);
         box.ramaddaId = id;
         var attrs =   {

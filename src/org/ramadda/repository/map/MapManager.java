@@ -1107,8 +1107,10 @@ public class MapManager extends RepositoryManager {
         detailed = request.get("mapdetails", detailed);
         boolean listentries = Misc.getProperty(props, "listEntries", false);
         boolean cbx         = Misc.getProperty(props, "showCheckbox", false);
+        boolean search      = Misc.getProperty(props, "showSearch", false);
         boolean cbxOn       = Misc.getProperty(props, "checkboxOn", true);
         String mapVar =      Misc.getProperty(props,"mapVar",(String) null);
+
 
         MapInfo map         = createMap(request, width, height, false, null);
         if (map == null) {
@@ -1184,9 +1186,17 @@ public class MapManager extends RepositoryManager {
         String listwidth = request.getString(WikiManager.ATTR_LISTWIDTH,
                                              "250");
         String navTop = "";
+        String searchId = "";
+        if (search) {
+            searchId = "search_" + map.getMapId();
+            navTop +=  HtmlUtils.input("tmp", "", 20,
+                                      HtmlUtils.attr("placeholder", msg("Search text")) + 
+                                      HtmlUtils.id(searchId)) + "<br>";
+
+        }
         if (cbx) {
             String cbxId = "visibleall_" + map.getMapId();
-            navTop = HtmlUtils.checkbox("tmp", "true", true,
+            navTop += HtmlUtils.checkbox("tmp", "true", true,
                                           HtmlUtils.id(cbxId)) + "<br>";
 
         }
@@ -1199,6 +1209,12 @@ public class MapManager extends RepositoryManager {
                   categories, catMap, map.getHtml(), navTop, extra);
 
         String js ="highlightMarkers('." + map.getVariableName() +" .ramadda-earth-nav', " + map.getVariableName() +", '#ffffcc', 'white');";
+
+        if (search) {
+            js+=map.getVariableName() + ".initSearch(" + sqt(searchId) + ");";
+        }
+
+
         sb.append(HtmlUtils.script(JQuery.ready(js)));
         return map;
     }

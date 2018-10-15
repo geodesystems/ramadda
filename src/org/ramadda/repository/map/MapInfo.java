@@ -737,7 +737,7 @@ public class MapInfo {
      */
     public void addBox(Entry entry, MapBoxProperties properties)
             throws Exception {
-        addBox(entry.getId(),
+        addBox(entry.getId(),entry.getName(),
                repository.getMapManager().makeInfoBubble(request, entry,
                    true), properties, entry.getNorth(), entry.getWest(),
                           entry.getSouth(), entry.getEast());
@@ -751,9 +751,9 @@ public class MapInfo {
      * @param llr  the bounds
      * @param properties the box properties
      */
-    public void addBox(String id, String text, LatLonRect llr,
+    public void addBox(String id, String boxName, String text, LatLonRect llr,
                        MapBoxProperties properties) {
-        addBox(id, text, properties, llr.getLatMax(), llr.getLonMin(),
+        addBox(id, boxName, text, properties, llr.getLatMax(), llr.getLonMin(),
                llr.getLatMin(), llr.getLonMax());
     }
 
@@ -769,7 +769,7 @@ public class MapInfo {
      * @param south  south value
      * @param east   east value
      */
-    public void addBox(String id, String text, MapBoxProperties properties,
+    public void addBox(String id, String boxName, String text, MapBoxProperties properties,
                        double north, double west, double south, double east) {
         getJS().append("var mapBoxAttributes = {\"color\":\""
                        + properties.getColor() + "\",\"selectable\": "
@@ -777,7 +777,10 @@ public class MapInfo {
                        + properties.getZoomToExtent() + "};\n");
 
         getJS().append(mapVarName + ".createBox(" + HtmlUtils.squote(id)
-                       + "," + north + "," + west + "," + south + "," + east
+                       + "," + 
+                       HtmlUtils.squote(boxName)
+                       + "," + 
+                       north + "," + west + "," + south + "," + east
                        + "," + HtmlUtils.squote(text)
                        + ", mapBoxAttributes);\n");
     }
@@ -913,8 +916,9 @@ public class MapInfo {
      * @param info  the associated text
      */
     public void addMarker(String id, LatLonPointImpl pt, String icon,
+                          String markerName,
                           String info) {
-        addMarker(id, pt.getLatitude(), pt.getLongitude(), icon, info);
+        addMarker(id, pt.getLatitude(), pt.getLongitude(), icon, markerName, info);
     }
 
     /**
@@ -927,16 +931,18 @@ public class MapInfo {
      * @param info  the associated text
      */
     public void addMarker(String id, double lat, double lon, String icon,
+                          String markerName,
                           String info) {
-        addMarker(id,lat,lon,icon,info,null);
+        addMarker(id,lat,lon,icon,markerName, info,null);
     }
 
     public void addMarker(String id, double lat, double lon, String icon,
-                          String info, String parentId) {
+                          String markerName, String info, String parentId) {
         getJS().append(mapVarName + ".addMarker(" + HtmlUtils.squote(id)
                        + "," + llp(lat, lon) + "," + ((icon == null)
                 ? "null"
-                : HtmlUtils.squote(icon)) + "," + HtmlUtils.squote(info)
+                : HtmlUtils.squote(icon)) + "," + HtmlUtils.squote(markerName) +
+                       "," + HtmlUtils.squote(info)
                        +"," +
                        (parentId==null?"null":HtmlUtils.squote(parentId))
                                           + ");\n");
@@ -958,6 +964,7 @@ public class MapInfo {
         addMarker(entry.getId(),
                   new LatLonPointImpl(Math.max(-80,
                       Math.min(80, location[0])), location[1]), icon,
+                  entry.getName(),
                           repository.getMapManager().makeInfoBubble(request,
                               entry, true));
     }

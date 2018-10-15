@@ -136,6 +136,8 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                             new WikiTag(WIKI_TAG_MAP,
                                         attrs(ATTR_WIDTH, "100%", ATTR_HEIGHT, "400",
                                               ATTR_LISTENTRIES, "true", ATTR_DETAILS, "false",
+                                              "showCheckbox", "true",
+                                              "showSearch", "false",
                                               ATTR_ICON, "#/icons/dots/green.png", ARG_MAP_ICONSONLY,
                                               "false")), 
                             /*
@@ -1395,6 +1397,8 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                                       false);
             boolean showCheckbox = Misc.getProperty(props, "showCheckbox",
                                        false);
+            boolean showSearch = Misc.getProperty(props, "showSearch",
+                                       false);
             boolean checkboxOn = Misc.getProperty(props, "checkboxOn", true);
             boolean googleEarth =
                 theTag.equals(WIKI_TAG_EARTH)
@@ -1515,7 +1519,8 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                 MapInfo map = getMapManager().getMap(newRequest, children,
                                   sb, width, height, mapProps, "detailed",
                                   "" + details, "listEntries",
-                                  listEntries + "", "showCheckbox",
+                                                     listEntries + "", "showSearch", ""+showSearch,
+                                                     "showCheckbox",
                                   "" + showCheckbox, "checkboxOn",
                                                      "" + checkboxOn,
                                                      "mapVar", mapVar,
