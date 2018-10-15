@@ -778,7 +778,7 @@ public class MapInfo {
 
         getJS().append(mapVarName + ".createBox(" + HtmlUtils.squote(id)
                        + "," + 
-                       HtmlUtils.squote(boxName)
+                       HtmlUtils.squote(boxName.replaceAll("'", "\\\\'"))
                        + "," + 
                        north + "," + west + "," + south + "," + east
                        + "," + HtmlUtils.squote(text)
@@ -941,7 +941,7 @@ public class MapInfo {
         getJS().append(mapVarName + ".addMarker(" + HtmlUtils.squote(id)
                        + "," + llp(lat, lon) + "," + ((icon == null)
                 ? "null"
-                : HtmlUtils.squote(icon)) + "," + HtmlUtils.squote(markerName) +
+                : HtmlUtils.squote(icon)) + "," + HtmlUtils.squote(markerName.replaceAll("'", "\\\\'")) +
                        "," + HtmlUtils.squote(info)
                        +"," +
                        (parentId==null?"null":HtmlUtils.squote(parentId))
