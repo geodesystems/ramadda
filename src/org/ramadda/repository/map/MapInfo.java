@@ -776,13 +776,17 @@ public class MapInfo {
                        + properties.getSelectable() + ",\"zoomToExtent\": "
                        + properties.getZoomToExtent() + "};\n");
 
-        getJS().append(mapVarName + ".createBox(" + HtmlUtils.squote(id)
-                       + "," + 
-                       HtmlUtils.squote(boxName.replaceAll("'", "\\\\'"))
-                       + "," + 
-                       north + "," + west + "," + south + "," + east
-                       + "," + HtmlUtils.squote(text)
-                       + ", mapBoxAttributes);\n");
+        getJS().append(mapVarName + ".createBox(" + 
+                       HtmlUtils.comma(
+                                       HtmlUtils.squote(id),
+                                       HtmlUtils.squote(boxName.replaceAll("'", "\\\\'")),
+                                       ""+north,
+                                       ""+ west,
+                                       "" + south,
+                                       "" + east,
+                                       HtmlUtils.squote(text),
+                                       "mapBoxAttributes")
+                       +");\n");
     }
 
 
@@ -877,10 +881,13 @@ public class MapInfo {
             }
             sb.append("]");
             String name = entry.getName().replaceAll("'", "\\\\'");
-            getJS().append(mapVarName + ".addLines(" + HtmlUtils.squote(id)
-                           + "," +
-                           HtmlUtils.squote(name)
-                           + "," + attrs + "," + sb + ");\n");
+            getJS().append(mapVarName + ".addLines(" + 
+                           HtmlUtils.comma(
+                                           HtmlUtils.squote(id),
+                                           HtmlUtils.squote(name),
+                                           attrs.toString(),   
+                                           sb.toString())
+                           + ");\n");
         }
 
 
@@ -906,10 +913,16 @@ public class MapInfo {
         entry.getTypeHandler().initMapAttrs(entry, this, attrs);
         attrs.append("}");
         String name = entry.getName().replaceAll("'", "\\\\'");
-        getJS().append(mapVarName + ".addLine(" + HtmlUtils.squote(id) + ","
-                       + HtmlUtils.squote(name) +
-                       + fromLat + "," + fromLon + "," + toLat + "," + toLon
-                       + "," + attrs + ");\n");
+        getJS().append(mapVarName + ".addLine(" + 
+                       HtmlUtils.comma(
+                                       HtmlUtils.squote(id),
+                                       HtmlUtils.squote(name), 
+                                       ""+fromLat,
+                                       ""+fromLon,
+                                       ""+toLat,
+                                       ""+toLon,
+                                       attrs.toString())
+                       + ");\n");
     }
 
     /**
