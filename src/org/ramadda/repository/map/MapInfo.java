@@ -876,10 +876,10 @@ public class MapInfo {
                 sb.append(pt[1]);
             }
             sb.append("]");
-            String name = entry.getName()..replaceAll("'", "\\\\'");
+            String name = entry.getName().replaceAll("'", "\\\\'");
             getJS().append(mapVarName + ".addLines(" + HtmlUtils.squote(id)
                            + "," +
-                           HtmlUtis.squote(name)
+                           HtmlUtils.squote(name)
                            + "," + attrs + "," + sb + ");\n");
         }
 
@@ -905,7 +905,7 @@ public class MapInfo {
         StringBuilder attrs = new StringBuilder("{");
         entry.getTypeHandler().initMapAttrs(entry, this, attrs);
         attrs.append("}");
-        String name = entry.getName()..replaceAll("'", "\\\\'");
+        String name = entry.getName().replaceAll("'", "\\\\'");
         getJS().append(mapVarName + ".addLine(" + HtmlUtils.squote(id) + ","
                        + HtmlUtils.squote(name) +
                        + fromLat + "," + fromLon + "," + toLat + "," + toLon
