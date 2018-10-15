@@ -4345,9 +4345,11 @@ public class EntryManager extends RepositoryManager {
 
 
 
-
         if ( !request.exists(ARG_CONFIRM) || (toEntry == null)) {
             StringBuilder sb = new StringBuilder();
+            if (entries.size() == 1) {
+                getPageHandler().entrySectionOpen(request, entries.get(0), sb, null);
+            }
             request.formPostWithAuthToken(sb, getRepository().URL_ENTRY_COPY);
             if (force != null) {
                 sb.append(HtmlUtils.hidden(ARG_ACTION_FORCE, force));
@@ -4408,7 +4410,7 @@ public class EntryManager extends RepositoryManager {
                                 ICON_FOLDER_OPEN)) + HtmlUtils.space(1)
                                     + msg("Select")
                                     + HtmlUtils.space(
-                                        1), true, "", null, false);
+                                                      1), true, "", entries.get(0).getParentEntry(), false);
 
                 sb.append(HtmlUtils.hidden(ARG_TO + "_hidden", "",
                                            HtmlUtils.id(ARG_TO + "_hidden")));
@@ -4438,6 +4440,9 @@ public class EntryManager extends RepositoryManager {
             sb.append(HtmlUtils.formClose());
             sb.append(HtmlUtils.sectionClose());
 
+            if (entries.size() == 1) {
+                getPageHandler().entrySectionClose(request, entries.get(0), sb);
+            }
             return addEntryHeader(request, entries.get(0),
                                   new Result(msg("Entry Move/Copy"), sb));
         }
