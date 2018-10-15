@@ -3751,7 +3751,7 @@ public class DbTypeHandler extends BlobTypeHandler {
             }
 
             if (bbox) {
-                map.addBox("", "", new MapBoxProperties("red", false), north,
+                map.addBox("", "", "", new MapBoxProperties("red", false), north,
                            west, south, east);
             }
             StringBuilder theSB = entryList;
@@ -3809,15 +3809,15 @@ public class DbTypeHandler extends BlobTypeHandler {
             info = info.replace("\"", "\\\"");
             if ( !bbox) {
                 map.addMarker(dbid, new LatLonPointImpl(lat, lon), iconToUse,
-                              info);
+                              "", info);
             } else {
                 if ( !makeRectangles) {
                     map.addMarker(dbid, new LatLonPointImpl(south, east),
-                                  iconToUse, info);
+                                  iconToUse, "", info);
                 } else {
                     map.addMarker(dbid, new LatLonPointImpl(south
                             + (north - south) / 2, west
-                                + (east - west) / 2), icon, info);
+                                                            + (east - west) / 2), "", icon, info);
                 }
             }
         }

@@ -788,7 +788,7 @@ public class CdmDataOutputHandler extends OutputHandler implements CdmConstants 
         if (llr != null) {
             MapInfo map = getRepository().getMapManager().createMap(request,
                               true, null);
-            map.addBox("", "", llr,
+            map.addBox("", "", "", llr,
                        new MapBoxProperties("blue", false, true));
             String[] points = new String[] { "" + llr.getLatMax(),
                                              "" + llr.getLonMin(),
@@ -1298,7 +1298,7 @@ public class CdmDataOutputHandler extends OutputHandler implements CdmConstants 
                                + "}\n");
             map.addMarker("",
                           new LatLonPointImpl(el.getLatitude(),
-                              el.getLongitude()), icon, info.toString());
+                                              el.getLongitude()), icon, "", info.toString());
         }
 
 
@@ -1460,13 +1460,13 @@ public class CdmDataOutputHandler extends OutputHandler implements CdmConstants 
                 if (ptIdx > 0) {
                     if (ptIdx + stride >= lats.length) {
                         map.addMarker("", lat, lon, null,
-                                      "End time:" + todt.getEndDate());
+                                      "", "End time:" + todt.getEndDate());
                     }
                     //#FF0000
                     map.addLine(entry, "", lastLat, lastLon, lat, lon, null);
                 } else {
                     map.addMarker("", lat, lon, null,
-                                  "Start time:" + todt.getEndDate());
+                                  "", "Start time:" + todt.getEndDate());
                 }
                 lastLat = lat;
                 lastLon = lon;

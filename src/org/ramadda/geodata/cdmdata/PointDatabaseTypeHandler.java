@@ -2489,7 +2489,7 @@ public class PointDatabaseTypeHandler extends BlobTypeHandler {
             }
 
             map.addMarker(HtmlUtils.quote("" + cnt), pointData.lat,
-                          pointData.lon, icon, info.toString());
+                          pointData.lon, icon, "", info.toString());
         }
         map.center();
         sb.append(map.getHtml());

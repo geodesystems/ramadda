@@ -723,7 +723,7 @@ public class GpxTypeHandler extends PointTypeHandler {
                         + RepositoryUtil.encodeBase64(sinfo.getBytes());
                 String id = entry.getId() + "-" + markerCnt;
                 markerCnt++;
-                map.addMarker(id, lat, lon, null, sinfo, entry.getId());
+                map.addMarker(id, lat, lon, null, name, sinfo, entry.getId());
                 String navUrl = "javascript:" + map.getVariableName()
                                 + ".hiliteMarker(" + sqt(id) + ");";
                 tfos.add(new TwoFacedObject(name,

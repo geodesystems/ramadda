@@ -446,7 +446,7 @@ sb.append(HtmlUtils.form(formUrl,
                               true, null);
 
             map.setMapRegions(getPageHandler().getMapRegions(mapRegionGroup));
-            map.addBox("", "", llr,
+            map.addBox("", "", "", llr,
                        new MapBoxProperties("blue", false, true));
             String[] points = new String[] { "" + llr.getLatMax(),
                                              "" + llr.getLonMin(),
