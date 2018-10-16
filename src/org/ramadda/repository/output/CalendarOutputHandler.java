@@ -239,6 +239,7 @@ public class CalendarOutputHandler extends OutputHandler {
         showNext(request, subGroups, entries, sb);
         entries.addAll(subGroups);
         Result result;
+        getPageHandler().entrySectionOpen(request, group, sb, "");
         if (outputType.equals(OUTPUT_DATE_GRID)) {
             result = outputDateGrid(request, group, entries, sb);
         } else if (outputType.equals(OUTPUT_TIMELINE)) {
@@ -246,7 +247,8 @@ public class CalendarOutputHandler extends OutputHandler {
             List allEntries = new ArrayList(entries);
             allEntries.addAll(subGroups);
             //            makeTimeline(request, allEntries, sb, "height: 300px;");
-            makeTimeline(request, group, allEntries, sb, "height: 300px;");
+            makeTimeline(request, group, allEntries, sb, "height: 300px;", new Hashtable());
+            getPageHandler().entrySectionClose(request, group, sb);
             result = makeLinksResult(request,
                                      msg("Timeline") + " - "
                                      + group.getName(), sb,
@@ -257,7 +259,9 @@ public class CalendarOutputHandler extends OutputHandler {
         } else {
             result = outputCalendar(request, group, entries, sb);
         }
+
         addLinks(request, result, new State(group, subGroups, entries));
+
 
         return result;
     }
@@ -295,6 +299,7 @@ public class CalendarOutputHandler extends OutputHandler {
             String entryUrl =
                 request.entryUrl(getRepository().URL_ENTRY_SHOW, entry);
             attrs.append(XmlUtil.attrs(ATTR_LINK, entryUrl));
+            attrs.append(XmlUtil.attrs("eventID", entry.getId()));
 
             attrs.append(
                 XmlUtil.attrs(
@@ -331,7 +336,7 @@ public class CalendarOutputHandler extends OutputHandler {
      * @throws Exception _more_
      */
     public void makeTimeline(Request request, Entry mainEntry,
-                             List<Entry> entries, Appendable sb, String style)
+                             List<Entry> entries, Appendable sb, String style, Hashtable props)
             throws Exception {
         SimpleDateFormat sdf = new SimpleDateFormat("MMM d yyyy HH:mm:ss Z");
         long             minDate = 0;
@@ -375,6 +380,9 @@ public class CalendarOutputHandler extends OutputHandler {
         timelineTemplate = getRepository().getPageHandler().applyBaseMacros(
             timelineTemplate);
         timelineTemplate = timelineTemplate.replace("${timelineurl}", url);
+        String mapVar = (String) props.get("mapVar");
+        if(mapVar == null) mapVar = "null";
+        timelineTemplate = timelineTemplate.replace("${mapvar}", mapVar);
         timelineTemplate = timelineTemplate.replace("${basedate}",
                 sdf.format(new Date(minDate)));
         timelineTemplate = timelineTemplate.replace("${intervalUnit}",
@@ -480,6 +488,7 @@ public class CalendarOutputHandler extends OutputHandler {
         }
         sb.append("</table>");
 
+        getPageHandler().entrySectionClose(request, group, sb);
         return new Result(msg("Date Grid"), sb);
 
     }
@@ -605,6 +614,7 @@ public class CalendarOutputHandler extends OutputHandler {
         }
         outputCalendar(request, makeCalendarEntries(request, entries), sb,
                        request.defined(ARG_DAY));
+        getPageHandler().entrySectionClose(request, group, sb);
         if (true) {
             return new Result(msg("Calendar"), sb);
         }

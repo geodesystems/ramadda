@@ -1384,8 +1384,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
             int    height = Misc.getProperty(props, ATTR_HEIGHT, 150);
             String style  = "height: " + height + "px;";
             getCalendarOutputHandler().makeTimeline(request, mainEntry,
-                    children, sb, style);
-
+                                                    children, sb, style, props);
             return sb.toString();
         } else if (theTag.equals(WIKI_TAG_MAP)
                    || theTag.equals(WIKI_TAG_EARTH)

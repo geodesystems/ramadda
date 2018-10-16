@@ -16,7 +16,9 @@
 <script src='${root}/lib/timeline/timeline_js/timeline-api.js?bundle=true' type='text/javascript'></script>
 <link rel='stylesheet' href='${root}/lib/timeline/timeline_js/timeline-bundle.css' type='text/css' />
 <script>
-      function createTimeline(dataUrl, baseDate, timelineIntervalUnit) {
+
+
+      function createTimeline(dataUrl, baseDate, timelineIntervalUnit, mapVar) {
             if(!timelineIntervalUnit) {
                  timelineIntervalUnit = SimileAjax.DateTime.DECADE;
             }            
@@ -63,7 +65,28 @@
 
             ];
 
-        timeline = Timeline.create(document.getElementById("timeline"), bandInfos, Timeline.HORIZONTAL);
+      var timeline;
+      oldCancelFunction =   SimileAjax.WindowManager.cancelPopups;
+      SimileAjax.WindowManager.cancelPopups = function() {
+          oldCancelFunction.call(this);
+          if(mapVar && timeline.highlightID) {
+             mapVar.uncircleMarker(timeline.highlightID);
+             timeline.highlightID=null;
+          }
+      }
+
+
+
+      oldClickFunction =       Timeline.OriginalEventPainter.prototype._showBubble;
+      Timeline.OriginalEventPainter.prototype._showBubble = function(x, y, evt) {
+            oldClickFunction.call(this,x,y,evt);
+            if(mapVar) {
+                  mapVar.circleMarker(evt.getEventID(),{strokeColor:'blue'}); 
+                  timeline.highlightID = evt.getEventID();
+            }
+
+      }
+     timeline = Timeline.create(document.getElementById("timeline"), bandInfos, Timeline.HORIZONTAL);
 
 /*
       var dttm = "Jun 28 2006 00:00:00 GMT";
@@ -106,7 +129,7 @@
      var url = "${timelineurl}";
      var baseDate = "${basedate}";
      var intervalUnit = ${intervalUnit};
-     var timeline = createTimeline(url, SimileAjax.DateTime.parseGregorianDateTime(baseDate), intervalUnit);
+     var timeline = createTimeline(url, SimileAjax.DateTime.parseGregorianDateTime(baseDate), intervalUnit, ${mapvar});
      timeline.getBand(0).zoom(true);
     }
 
