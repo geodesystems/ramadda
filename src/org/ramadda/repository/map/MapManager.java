@@ -1330,7 +1330,7 @@ public class MapManager extends RepositoryManager {
      *
      * @throws Exception _more_
      */
-    private String cleanupInfo(Request request, String infoHtml)
+    public String cleanupInfo(Request request, String infoHtml)
             throws Exception {
         infoHtml = infoHtml.replace("\r", " ");
         infoHtml = infoHtml.replace("\n", " ");
