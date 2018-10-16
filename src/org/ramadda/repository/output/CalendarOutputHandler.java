@@ -314,7 +314,7 @@ public class CalendarOutputHandler extends OutputHandler {
                 String infoHtml =
                     getMapManager().cleanupInfo(request,
                                                 getMapManager().makeInfoBubble(request, entry,
-                                                                               true));
+                                                                               false));
                 infoHtml = HtmlUtils.div(infoHtml,HtmlUtils.style("max-height: 350px;      overflow-y:auto;"));
                 sb.append(XmlUtil.getCdata(infoHtml));
             }
