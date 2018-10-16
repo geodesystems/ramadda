@@ -311,7 +311,12 @@ public class CalendarOutputHandler extends OutputHandler {
             }
             sb.append(XmlUtil.openTag(TAG_EVENT, attrs.toString()));
             if (entry.getDescription().length() > 0) {
-                sb.append(XmlUtil.getCdata(entry.getDescription()));
+                String infoHtml =
+                    getMapManager().cleanupInfo(request,
+                                                getMapManager().makeInfoBubble(request, entry,
+                                                                               true));
+                infoHtml = HtmlUtils.div(infoHtml,HtmlUtils.style("max-height: 350px;      overflow-y:auto;"));
+                sb.append(XmlUtil.getCdata(infoHtml));
             }
             sb.append(XmlUtil.closeTag(TAG_EVENT));
             sb.append("\n");
