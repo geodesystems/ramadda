@@ -492,7 +492,7 @@ public class SpecialSearch extends RepositoryManager implements RequestHandler {
         getRepository().getCalendarOutputHandler().makeTimeline(request, null,  //Pass null for the main entry
                 allEntries, timelineSB,
                 "width:" + contentsWidth + "px; height: " + contentsHeight
-                + "px;");
+                                                                + "px;",new Hashtable());
 
 
         StringBuffer mapSB = new StringBuffer(
