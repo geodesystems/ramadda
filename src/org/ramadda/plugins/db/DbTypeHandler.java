@@ -2188,6 +2188,7 @@ public class DbTypeHandler extends BlobTypeHandler {
                     for(String tok:toks) {
                         List<String> pair = StringUtil.splitUpTo(tok,"=",2);
                         String value = (pair.size()>1?pair.get(1):"");
+                        value = value.replaceAll("\\+"," ");
                         r.put(pair.get(0),value);
                     }
                     request=r;
