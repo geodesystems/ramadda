@@ -226,7 +226,7 @@ public class EntrezSearchProvider extends SearchProvider {
                             if ( !Utils.stringDefined(backupName)) {
                                 backupName = text;
                             } else {
-                                newEntry.addMetadata(
+                                getMetadataManager().addMetadata(newEntry, 
                                     new Metadata(
                                         getRepository().getGUID(),
                                         newEntry.getId(), "synonym", false,

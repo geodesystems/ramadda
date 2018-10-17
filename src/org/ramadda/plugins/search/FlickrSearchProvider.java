@@ -202,7 +202,7 @@ public class FlickrSearchProvider extends SearchProvider {
                              ContentMetadataHandler.TYPE_THUMBNAIL, false,
                              imageUrl.replace("${size}", "t"), null, null,
                              null, null);
-            newEntry.addMetadata(thumbnailMetadata);
+            getMetadataManager().addMetadata(newEntry, thumbnailMetadata);
 
             newEntry.initEntry(name, desc, parent,
                                getUserManager().getLocalFileUser(),

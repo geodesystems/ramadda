@@ -389,7 +389,7 @@ public class DoiOutputHandler extends OutputHandler {
                                              DoiMetadataHandler.ID_TYPE_DOI,
                                              doi, "", "", "");
             getMetadataManager().insertMetadata(metadata);
-            entry.addMetadata(metadata);
+            getMetadataManager().addMetadata(entry, metadata);
 
             sb.append(HtmlUtils.p());
             sb.append("DOI has been created");

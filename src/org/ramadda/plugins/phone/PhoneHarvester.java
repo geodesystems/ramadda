@@ -669,7 +669,7 @@ public class PhoneHarvester extends Harvester {
                                      false, tag, "", "", "", null);
                     System.err.println("metadata:" + currentEntry + " "
                                        + metadata + " " + tag);
-                    currentEntry.addMetadata(metadata);
+                    getMetadataManager().addMetadata(currentEntry, metadata);
                     getMetadataManager().insertMetadata(metadata);
                 }
 

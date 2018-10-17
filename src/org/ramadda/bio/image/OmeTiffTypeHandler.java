@@ -143,7 +143,7 @@ public class OmeTiffTypeHandler extends GenericTypeHandler {
 
         if (experiment != null) {
             Element ref = XmlUtil.findChild(experiment, "ExperimenterRef");
-            entry.addMetadata(
+            getMetadataManager().addMetadata(entry, 
                 new Metadata(
                     getRepository().getGUID(), entry.getId(),
                     "bio_ome_experiment", false,
@@ -162,7 +162,7 @@ public class OmeTiffTypeHandler extends GenericTypeHandler {
 
             //For extra metadata we put it into a hash
             mapToExtra.put(5, XmlUtil.getAttribute(experimenter, "ID", ""));
-            entry.addMetadata(
+            getMetadataManager().addMetadata(entry,
                 new Metadata(
                     getRepository().getGUID(), entry.getId(),
                     "bio_ome_experimenter", false,

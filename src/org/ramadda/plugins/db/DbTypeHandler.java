@@ -1218,6 +1218,17 @@ public class DbTypeHandler extends BlobTypeHandler {
                     headerToks), HtmlUtils.cssClass("dbheader")));
         }
 
+        List<Metadata> savedSearch = getMetadataManager().getMetadata(entry, "db_saved_search");
+        if(savedSearch.size()>0) {
+            headerToks = new ArrayList<String>();
+            for(Metadata m: savedSearch) {
+                StringBuilder link = new StringBuilder();
+                headerToks.add(HtmlUtils.href(baseUrl + "&" + ARG_DB_SEARCH
+                                              + "=" + "true"+"&" + HtmlUtils.arg("saved_search", m.getId()), m.getAttr1()));
+            }
+            sb.append(HtmlUtils.div(StringUtil.join("&nbsp;|&nbsp;",
+                    headerToks), HtmlUtils.cssClass("dbheader")));
+        }
 
 
         if (request.defined(ARG_MESSAGE)) {
@@ -1314,6 +1325,7 @@ public class DbTypeHandler extends BlobTypeHandler {
                         + "=" + VIEW_NEW, msg("New")));
             }
         }
+
 
 
         /*
@@ -2059,6 +2071,14 @@ public class DbTypeHandler extends BlobTypeHandler {
                 HtmlUtils.input("searchname", request.getString("searchname",""),
                                 HtmlUtils.SIZE_50)));
 
+        if(getAccessManager().canEditEntry(request, entry)) {
+            sb.append(
+                      formEntry(
+                                request, "",
+                                HtmlUtils.checkbox("savesearch", "true", request.get("savesearch", false))+" Save Search"));
+        }
+
+
         /*
         if (false && request.getUser().getAdmin()) {
             advanced.append(
@@ -2122,6 +2142,60 @@ public class DbTypeHandler extends BlobTypeHandler {
      */
     public Result handleSearch(Request request, Entry entry)
             throws Exception {
+        if(request.exists("savesearch")) {
+            request.remove("savesearch"); 
+            StringBuilder args = new StringBuilder();
+            Hashtable parameters = request.getArgs();
+            for (Enumeration keys = parameters.keys(); keys.hasMoreElements(); ) {
+                String arg = (String) keys.nextElement();
+                if(arg.equals("entryid") || arg.equals(ARG_DB_SEARCH)||arg.equals("savesearch")) continue;
+                Object value = parameters.get(arg);
+                if(value instanceof String) {
+                    String svalue  = (String) value;
+                    if(Utils.stringDefined(svalue)) {
+                        args.append(HtmlUtils.arg(arg,svalue));
+                        args.append("&");
+                    }
+                } else if(value instanceof List) {
+                    for(String svalue: (List<String>)value) {
+                        if(Utils.stringDefined(svalue)) {
+                            args.append(HtmlUtils.arg(arg,svalue));
+                            args.append("&");
+                        }
+                    }
+                }
+            }
+            String name = request.getString("searchname",null);
+            if(!Utils.stringDefined(name)) name = "Saved Search";
+            getMetadataManager().addMetadata(entry, new Metadata(getRepository().getGUID(),
+                                           entry.getId(), "db_saved_search",
+                                           false, name, args.toString(), null, null,
+                                           null));
+            getEntryManager().updateEntry(request, entry);
+        }
+
+
+        if(request.exists("saved_search")) {
+            List<Metadata> savedSearch = getMetadataManager().getMetadata(entry, "db_saved_search");
+            String id = request.getString("saved_search","");
+            for(Metadata m: savedSearch) {
+                if(m.getId().equals(id)) {
+                    Request r = request.cloneMe();
+                    r.clearUrlArgs();
+                    r.put(ARG_ENTRYID, entry.getId());
+                    String[] toks = m.getAttr2().split("&");
+                    for(String tok:toks) {
+                        List<String> pair = StringUtil.splitUpTo(tok,"=",2);
+                        String value = (pair.size()>1?pair.get(1):"");
+                        r.put(pair.get(0),value);
+                    }
+                    request=r;
+                    break;
+                }
+            }
+        }
+
+
         StringBuilder sb    = new StringBuilder();
         List<Clause>  where = new ArrayList<Clause>();
         if (request.get(ARG_DB_ALL, false) && request.getUser().getAdmin()) {

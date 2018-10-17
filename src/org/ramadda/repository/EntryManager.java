@@ -3733,7 +3733,7 @@ public class EntryManager extends RepositoryManager {
                                request.getString(
                                    ARG_CONTRIBUTION_FROMEMAIL, ""));
         String user = fromName;
-        entry.addMetadata(
+        getMetadataManager().addMetadata(entry,
             new Metadata(
                 getRepository().getGUID(), entry.getId(),
                 AdminMetadataHandler.TYPE_ANONYMOUS_UPLOAD, false, user,
@@ -5989,7 +5989,7 @@ public class EntryManager extends RepositoryManager {
         for (Element entryChild : (List<Element>) entryChildren) {
             String tag = entryChild.getTagName();
             if (tag.equals("tag")) {
-                entry.addMetadata(new Metadata(getRepository().getGUID(),
+                getMetadataManager().addMetadata(entry, new Metadata(getRepository().getGUID(),
                         entry.getId(), "enum_tag", true,
                         XmlUtil.getChildText(entryChild), "", "", "", ""));
 
@@ -6415,7 +6415,7 @@ public class EntryManager extends RepositoryManager {
             throws Exception {
         String theFile = getStorageManager().moveToEntryDir(entry,
                              file).getName();
-        entry.addMetadata(
+        getMetadataManager().addMetadata(entry,
             new Metadata(
                 getRepository().getGUID(), entry.getId(),
                 ContentMetadataHandler.TYPE_ATTACHMENT, false, theFile, "",
@@ -7780,6 +7780,7 @@ public class EntryManager extends RepositoryManager {
                             ? 1
                             : 0);
                     String name = metadata.getType() + " " + metadata.getId();
+                    System.err.println ("\tattr1:" + metadata.getAttr1());
                     dbm.setString(metadataStmt, col++, name,
                                   metadata.getAttr1(), Metadata.MAX_LENGTH);
                     dbm.setString(metadataStmt, col++, name,

@@ -112,7 +112,7 @@ public class PdbTypeHandler extends GenericTypeHandler {
                     remarks.add(remark);
                 }
             } else if (line.startsWith("EXPDATA ")) {
-                entry.addMetadata(new Metadata(getRepository().getGUID(),
+                getMetadataManager().addMetadata(entry, new Metadata(getRepository().getGUID(),
                         entry.getId(), "bio_method", true,
                         line.substring("EXPDATA ".length()), "", "", "", ""));
 
@@ -142,7 +142,7 @@ public class PdbTypeHandler extends GenericTypeHandler {
 
         for (StringBuilder compound : compounds) {
             Hashtable<String, String> map = getMap(compound);
-            entry.addMetadata(new Metadata(getRepository().getGUID(),
+            getMetadataManager().addMetadata(entry,new Metadata(getRepository().getGUID(),
                                            entry.getId(), "bio_pdb_compound",
                                            true, map.get("MOL_ID"),
                                            map.get("MOLECULE"),
@@ -152,7 +152,7 @@ public class PdbTypeHandler extends GenericTypeHandler {
 
         for (StringBuilder source : sources) {
             Hashtable<String, String> map = getMap(source);
-            entry.addMetadata(new Metadata(getRepository().getGUID(),
+            getMetadataManager().addMetadata(entry, new Metadata(getRepository().getGUID(),
                                            entry.getId(), "bio_pdb_source",
                                            true, map.get("MOL_ID"),
                                            map.get("ORGANISM_SCIENTIFIC"),
@@ -161,14 +161,14 @@ public class PdbTypeHandler extends GenericTypeHandler {
         }
 
         for (String word : authors) {
-            entry.addMetadata(new Metadata(getRepository().getGUID(),
+            getMetadataManager().addMetadata(entry, new Metadata(getRepository().getGUID(),
                                            entry.getId(), "bio_author", true,
                                            word, "", "", "", ""));
         }
 
 
         for (String word : keywords) {
-            entry.addMetadata(new Metadata(getRepository().getGUID(),
+            getMetadataManager().addMetadata(entry, new Metadata(getRepository().getGUID(),
                                            entry.getId(), "content.keyword",
                                            true, word, "", "", "", ""));
         }

@@ -309,7 +309,7 @@ public class DifImporter extends ImportHandler {
                                          ""), Metadata.DFLT_EXTRA);
             metadata.setAttr(5, XmlUtil.getGrandChildText(node,
                     DifUtil.TAG_Email, ""));
-            entry.addMetadata(metadata);
+            getMetadataManager().addMetadata(entry, metadata);
 
         }
 
@@ -346,7 +346,7 @@ public class DifImporter extends ImportHandler {
                                              Metadata.DFLT_ATTR,
                                              Metadata.DFLT_ATTR,
                                              Metadata.DFLT_EXTRA);
-            entry.addMetadata(metadata);
+            getMetadataManager().addMetadata(entry, metadata);
         }
     }
 
@@ -375,7 +375,7 @@ public class DifImporter extends ImportHandler {
             Metadata metadata = new Metadata(getRepository().getGUID(),
                                              entry.getId(), metadataId,
                                              values);
-            entry.addMetadata(metadata);
+            getMetadataManager().addMetadata(entry, metadata);
         }
     }
 

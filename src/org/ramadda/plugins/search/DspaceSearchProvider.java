@@ -202,7 +202,7 @@ public class DspaceSearchProvider extends SearchProvider {
                     new Metadata(getRepository().getGUID(), newEntry.getId(),
                                  ContentMetadataHandler.TYPE_THUMBNAIL,
                                  false, thumb, null, null, null, null);
-                newEntry.addMetadata(thumbnailMetadata);
+                                 getMetadataManager().addMetadata(newEntry, thumbnailMetadata);
             */
 
             newEntry.initEntry(title, desc, parent,
@@ -221,7 +221,7 @@ public class DspaceSearchProvider extends SearchProvider {
             if (tags != null) {
                 for (int tagIdx = 0; tagIdx < tags.length(); tagIdx++) {
                     JSONObject tag = tags.getJSONObject(tagIdx);
-                    newEntry.addMetadata(
+                    getMetadataManager().addMetadata(newEntry,
                         new Metadata(
                             getRepository().getGUID(), newEntry.getId(),
                             "enum_tag", false,

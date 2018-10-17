@@ -1425,7 +1425,7 @@ public class Gtfs implements Constants {
      * @param prefix _more_
      */
     public static void addHostAlias(Request request, Entry entry,
-                                    String host, String prefix) {
+                                    String host, String prefix)  throws Exception {
         if (host != null) {
             addAlias(request, entry, "http://" + prefix + "." + host);
         }
@@ -1439,9 +1439,9 @@ public class Gtfs implements Constants {
      * @param entry _more_
      * @param alias _more_
      */
-    public static void addAlias(Request request, Entry entry, String alias) {
+    public static void addAlias(Request request, Entry entry, String alias) throws Exception {
         alias = alias.replaceAll(" ", "_");
-        entry.addMetadata(new Metadata(request.getRepository().getGUID(),
+        request.getRepository().getMetadataManager().addMetadata(entry, new Metadata(request.getRepository().getGUID(),
                                        entry.getId(),
                                        ContentMetadataHandler.TYPE_ALIAS,
                                        false, alias.toLowerCase(), null,
@@ -1818,7 +1818,7 @@ public class Gtfs implements Constants {
                                                  .DFLT_ATTR, Metadata
                                                  .DFLT_ATTR, Metadata
                                                  .DFLT_EXTRA);
-                        newEntry.addMetadata(dirMetadata);
+                        request.getRepository().getMetadataManager().addMetadata(newEntry, dirMetadata);
                     }
                 }
             }

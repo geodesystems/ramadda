@@ -260,7 +260,7 @@ public class DocsTypeHandler extends GdataTypeHandler {
             newEntries.add(newEntry);
             //            System.err.println("ID:" + newEntry.getId());
             entryMap.put(newEntry.getId(), newEntry);
-            newEntry.addMetadata(new Metadata(getRepository().getGUID(),
+            getMetadataManager().addMetadata(newEntry, new Metadata(getRepository().getGUID(),
                     newEntry.getId(), "gdata.lastmodifiedby", false,
                     docListEntry.getLastModifiedBy().getName(),
                     docListEntry.getLastModifiedBy().getEmail(), "", "", ""));

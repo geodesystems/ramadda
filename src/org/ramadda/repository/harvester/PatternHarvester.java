@@ -1654,7 +1654,7 @@ public class PatternHarvester extends Harvester /*implements EntryInitializer*/ 
                 String newThumbFile =
                     getStorageManager().copyToEntryDir(entry, thumbnail,
                         jpegFile).getName();
-                entry.addMetadata(new Metadata(getRepository().getGUID(),
+                getMetadataManager().addMetadata(entry, new Metadata(getRepository().getGUID(),
                         entry.getId(), ContentMetadataHandler.TYPE_THUMBNAIL,
                         false, newThumbFile, null, null, null, null));
 

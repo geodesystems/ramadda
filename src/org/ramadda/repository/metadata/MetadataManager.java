@@ -592,10 +592,14 @@ public class MetadataManager extends RepositoryManager {
      * @throws Exception On badness
      */
     public List<Metadata> getMetadata(Entry entry) throws Exception {
+        return getMetadata(entry, null);
+    }
+
+    public List<Metadata> getMetadata(Entry entry, String type) throws Exception {
         if (entry.isDummy()) {
             return (entry.getMetadata() == null)
                    ? new ArrayList<Metadata>()
-                   : entry.getMetadata();
+                : getMetadata(entry.getMetadata(), type);
         }
         List<Metadata> metadataList = entry.getMetadata();
         if (metadataList != null) {
@@ -639,10 +643,18 @@ public class MetadataManager extends RepositoryManager {
 
         metadataList = Metadata.sort(finalMetadataList);
         entry.setMetadata(metadataList);
-
-        return finalMetadataList;
+        return getMetadata(metadataList, type);
     }
 
+
+    public List<Metadata> getMetadata(List<Metadata> metadata, String type) throws Exception {
+        if(type == null) return metadata;
+        List<Metadata> tmp  = new ArrayList<Metadata>();
+        for(Metadata m: metadata) {
+            if(m.getType().equals(type)) tmp.add(m);
+        }
+        return tmp;
+    }
 
     /**
      * _more_
@@ -700,11 +712,11 @@ public class MetadataManager extends RepositoryManager {
      * @return _more_
      */
     public boolean addInitialMetadata(Request request, Entry entry,
-                                      Hashtable extra, boolean shortForm) {
+                                      Hashtable extra, boolean shortForm) throws Exception {
         boolean changed = false;
         for (Metadata metadata :
                 getInitialMetadata(request, entry, extra, shortForm)) {
-            if (entry.addMetadata(metadata, true)) {
+            if (addMetadata(entry, metadata, true)) {
                 changed = true;
             }
         }
@@ -713,6 +725,27 @@ public class MetadataManager extends RepositoryManager {
         }
 
         return changed;
+    }
+
+
+    public boolean addMetadata(Entry entry,
+                            Metadata value) 
+        throws Exception {
+        return addMetadata(entry, value, false);
+    }
+        
+
+
+    public boolean addMetadata(Entry entry,
+                            Metadata value,
+                            boolean checkUnique) 
+        throws Exception {
+        List<Metadata> metadata= getMetadata(entry);
+        if (checkUnique && metadata.contains(value)) {
+            return false;
+        }
+        metadata.add(value);
+        return true;
     }
 
 

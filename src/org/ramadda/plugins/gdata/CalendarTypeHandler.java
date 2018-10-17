@@ -307,7 +307,7 @@ public class CalendarTypeHandler extends GdataTypeHandler {
 
 
             for (EventWho who : event.getParticipants()) {
-                newEntry.addMetadata(new Metadata(getRepository().getGUID(),
+                getMetadataManager().addMetadata(newEntry, new Metadata(getRepository().getGUID(),
                         newEntry.getId(), "gdata.participant", false,
                         who.getValueString(), who.getEmail(), "", "", ""));
 
@@ -318,7 +318,7 @@ public class CalendarTypeHandler extends GdataTypeHandler {
                 if ((s == null) || (s.length() == 0)) {
                     continue;
                 }
-                newEntry.addMetadata(new Metadata(getRepository().getGUID(),
+                getMetadataManager().addMetadata(newEntry, new Metadata(getRepository().getGUID(),
                         newEntry.getId(), "gdata.location", false, s, "", "",
                         "", ""));
             }

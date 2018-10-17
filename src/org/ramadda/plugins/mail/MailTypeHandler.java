@@ -195,7 +195,7 @@ public class MailTypeHandler extends GenericTypeHandler {
                                 getRepository().getGUID(), entry.getId(),
                                 ContentMetadataHandler.TYPE_ATTACHMENT,
                                 false, fileName, null, null, null, null);
-                        entry.addMetadata(metadata);
+                        getMetadataManager().addMetadata(entry, metadata);
                     }
                 }
             }

@@ -269,7 +269,8 @@ public class YouTubeVideoTypeHandler extends GenericTypeHandler {
                 try {
                     IOUtil.writeTo(is, fos);
                     f = getStorageManager().moveToEntryDir(entry, f);
-                    entry.addMetadata(new Metadata(getRepository().getGUID(),
+                    
+                    getMetadataManager().addMetadata(entry,new Metadata(getRepository().getGUID(),
                             entry.getId(),
                             ContentMetadataHandler.TYPE_THUMBNAIL, false,
                             f.getName(), null, null, null, null));

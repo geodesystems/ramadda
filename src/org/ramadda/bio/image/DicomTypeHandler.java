@@ -181,7 +181,7 @@ public class DicomTypeHandler extends GenericTypeHandler {
                                         false, tag.name, value, null, null,
                                         null);
 
-                entry.addMetadata(metadata);
+                getMetadataManager().addMetadata(entry, metadata);
             }
         }
 

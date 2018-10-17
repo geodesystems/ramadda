@@ -159,7 +159,7 @@ public class NchsSearchProvider extends SearchProvider {
                     new Metadata(getRepository().getGUID(), newEntry.getId(),
                                  ContentMetadataHandler.TYPE_THUMBNAIL,
                                  false, thumb, null, null, null, null);
-                newEntry.addMetadata(thumbnailMetadata);
+                getMetadataManager().addMetadata(newEntry, thumbnailMetadata);
             }
 
 

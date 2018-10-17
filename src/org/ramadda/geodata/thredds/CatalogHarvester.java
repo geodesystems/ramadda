@@ -711,7 +711,7 @@ public class CatalogHarvester extends Harvester {
         metadataList.add(makeImportMetadata(entry.getId(), catalogUrlPath));
         for (Metadata metadata : metadataList) {
             metadata.setEntryId(entry.getId());
-            entry.addMetadata(metadata);
+            getMetadataManager().addMetadata(entry, metadata);
         }
 
         if (isOpendap && (getAddMetadata() || getAddShortMetadata())) {

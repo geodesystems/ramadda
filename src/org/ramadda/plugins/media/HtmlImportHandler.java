@@ -228,7 +228,7 @@ public class HtmlImportHandler extends ImportHandler {
                                           null);
 
                         if (addProvenance) {
-                            entry.addMetadata(
+                            getMetadataManager().addMetadata(entry, 
                                 new Metadata(
                                     getRepository().getGUID(), entry.getId(),
                                     "metadata_source", false,

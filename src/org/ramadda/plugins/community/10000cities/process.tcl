@@ -156,6 +156,9 @@ proc addCensus {dir name for_type for_value type1 value1 type2 value2 lat lon} {
 
 
 
+proc city_county {state geoid ansi name pop hu aland awater aland_sqmi awater_sqmi lat lon} {
+
+
 proc county {state geoid ansi name pop hu aland awater aland_sqmi awater_sqmi lat lon} {
 
     if {0} {
@@ -276,6 +279,9 @@ proc county {state geoid ansi name pop hu aland awater aland_sqmi awater_sqmi la
 }
 
 
+proc city_county {city county state} {
+}
+
 proc place {state geoid ansi name lsad func pop hu aland awater aland_sqmi awater_sqmi lat lon} {
     if {$::doTest} {
         if {[expr rand()<0.95]} {
@@ -320,6 +326,7 @@ puts "Processing states"
 source $::scriptDir/dict.states.tcl
 puts "Processing counties"
 source $::scriptDir/counties.tcl
+source $::scriptDir/city_county.tcl
 
 #puts "Processing places"
 #source $::scriptDir/places.tcl

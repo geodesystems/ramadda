@@ -468,7 +468,7 @@ public class WmsCapabilitiesTypeHandler extends ExtensibleGroupTypeHandler {
                           WmsUtils.TAG_CONTACTELECTRONICMAILADDRESS), "");
 
         if (person != null) {
-            entry.addMetadata(new Metadata(getRepository().getGUID(),
+            getMetadataManager().addMetadata(entry, new Metadata(getRepository().getGUID(),
                                            entry.getId(), "project_person",
                                            true, person, position, org,
                                            email, ""));
@@ -493,7 +493,7 @@ public class WmsCapabilitiesTypeHandler extends ExtensibleGroupTypeHandler {
                                 WmsUtils.TAG_KEYWORD);
             for (int i = 0; i < children.size(); i++) {
                 String text = XmlUtil.getChildText((Element) children.get(i));
-                entry.addMetadata(new Metadata(getRepository().getGUID(),
+                getMetadataManager().addMetadata(entry, new Metadata(getRepository().getGUID(),
                         entry.getId(), "content.keyword", true, text, "", "",
                         "", ""));
 

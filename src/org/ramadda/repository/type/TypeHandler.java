@@ -1284,7 +1284,8 @@ public class TypeHandler extends RepositoryManager {
         Entry parentEntry = new Entry(this, true);
         parentEntry.setUser(getUserManager().getLocalFileUser());
         //Add metadata to hide the menubar
-        parentEntry.addMetadata(
+       
+        getMetadataManager().addMetadata(parentEntry,
             new Metadata(
                 getRepository().getGUID(), parentEntry.getId(),
                 ContentMetadataHandler.TYPE_PAGESTYLE, true, "", "true", "",
@@ -3187,7 +3188,7 @@ public class TypeHandler extends RepositoryManager {
             for (String url :
                     Utils.extractPatterns(contents,
                                           "(https?://[^\"' \\),]+)")) {
-                entry.addMetadata(new Metadata(getRepository().getGUID(),
+                getMetadataManager().addMetadata(entry, new Metadata(getRepository().getGUID(),
                         entry.getId(), ContentMetadataHandler.TYPE_URL,
                         false, url, url, "", "", ""));
             }
@@ -3373,7 +3374,7 @@ public class TypeHandler extends RepositoryManager {
                 Metadata metadata = new Metadata(getRepository().getGUID(),
                                         entry.getId(), mtype, false,
                                         fileName, null, null, null, null);
-                entry.addMetadata(metadata);
+                getMetadataManager().addMetadata(entry, metadata);
             }
         } else if (target.equals(TARGET_SIBLING)
                    || target.equals(TARGET_CHILD)) {

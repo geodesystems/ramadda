@@ -146,7 +146,7 @@ public class EclipseTypeHandler extends FitsTypeHandler {
                              fileName, null, null, null, null);
 
             System.err.println("Adding metadata: " + entry);
-            entry.addMetadata(thumbnailMetadata);
+            getMetadataManager().addMetadata(entry, thumbnailMetadata);
         } else {
             System.err.println("Failed to make image:" + entry.getFile());
         }

@@ -303,7 +303,7 @@ public class PhotosTypeHandler extends GdataTypeHandler {
                                  ContentMetadataHandler.TYPE_THUMBNAIL,
                                  false, thumbs.get(0).getUrl(), null, null,
                                  null, null);
-                newEntry.addMetadata(thumbnailMetadata);
+                getMetadataManager().addMetadata(newEntry, thumbnailMetadata);
             }
             getEntryManager().cacheSynthEntry(newEntry);
         }

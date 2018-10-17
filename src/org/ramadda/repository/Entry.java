@@ -1880,17 +1880,6 @@ public class Entry implements Cloneable {
 
 
     /**
-     * Add metadata
-     *
-     * @param value the new Metadata
-     *
-     * @return  true if successful
-     */
-    public boolean addMetadata(Metadata value) {
-        return addMetadata(value, false);
-    }
-
-    /**
      * Does this have any metaddata like value
      *
      * @param value  the metadata to check
@@ -1925,27 +1914,6 @@ public class Entry implements Cloneable {
         return false;
     }
 
-
-
-    /**
-     * _more_
-     *
-     * @param value _more_
-     * @param checkUnique _more_
-     *
-     * @return _more_
-     */
-    public boolean addMetadata(Metadata value, boolean checkUnique) {
-        if (metadata == null) {
-            metadata = new ArrayList<Metadata>();
-        }
-        if (checkUnique && metadata.contains(value)) {
-            return false;
-        }
-        metadata.add(value);
-
-        return true;
-    }
 
 
     /**

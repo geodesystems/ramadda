@@ -240,7 +240,7 @@
     </type>
   </handler>
 
-  <handler class="org.ramadda.repository.metadata.JpegMetadataHandler"    >
+  <handler class="org.ramadda.repository.metadata.JpegMetadataHandler"   category="Miscellaneous" >
     <type
        name="Camera direction"
        id="camera.direction">

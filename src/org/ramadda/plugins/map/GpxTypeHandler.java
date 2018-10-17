@@ -246,7 +246,7 @@ public class GpxTypeHandler extends PointTypeHandler {
                                                         GpxUtil.TAG_KEYWORDS, null);
             if (keywords != null) {
                 for (String word : StringUtil.split(keywords, ",", true, true)) {
-                    entry.addMetadata(new Metadata(getRepository().getGUID(),
+                    getMetadataManager().addMetadata(entry, new Metadata(getRepository().getGUID(),
                                                    entry.getId(), ContentMetadataHandler.TYPE_KEYWORD,
                                                    false, word, "", "", "", ""));
                 }
@@ -256,7 +256,7 @@ public class GpxTypeHandler extends PointTypeHandler {
             String urlName = XmlUtil.getGrandChildText(root, GpxUtil.TAG_URLNAME,
                                                        "");
             if (url != null) {
-                entry.addMetadata(new Metadata(getRepository().getGUID(),
+                getMetadataManager().addMetadata(entry, new Metadata(getRepository().getGUID(),
                                                entry.getId(),
                                                ContentMetadataHandler.TYPE_URL,
                                                false, url, urlName, "", "", ""));
@@ -266,7 +266,7 @@ public class GpxTypeHandler extends PointTypeHandler {
             String author = XmlUtil.getGrandChildText(root, GpxUtil.TAG_AUTHOR,
                                                       null);
             if (author != null) {
-                entry.addMetadata(
+                getMetadataManager().addMetadata(entry, 
                                   new Metadata(
                                                getRepository().getGUID(), entry.getId(),
                                                ContentMetadataHandler.TYPE_AUTHOR, false, author, "",
@@ -278,7 +278,7 @@ public class GpxTypeHandler extends PointTypeHandler {
             String email = XmlUtil.getGrandChildText(root, GpxUtil.TAG_EMAIL,
                                                      null);
             if (email != null) {
-                entry.addMetadata(new Metadata(getRepository().getGUID(),
+                getMetadataManager().addMetadata(entry, new Metadata(getRepository().getGUID(),
                                                entry.getId(),
                                                ContentMetadataHandler.TYPE_EMAIL,
                                                false, email, "", "", "", ""));

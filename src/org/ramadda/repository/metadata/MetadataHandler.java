@@ -233,7 +233,7 @@ public class MetadataHandler extends RepositoryManager {
                 internal)) {
             return;
         }
-        entry.addMetadata(metadata);
+        getMetadataManager().addMetadata(entry, metadata);
     }
 
     /**

@@ -416,7 +416,7 @@ public class HipchatGroupTypeHandler extends ExtensibleGroupTypeHandler {
                 System.err.println("url:" + url + " " + title + " thumb:"
                                    + thumbnailUrl);
                 //TODO:add this as metadata
-                messageEntry.addMetadata(
+                getMetadataManager().addMetadata(messageEntry,
                     new Metadata(
                         getRepository().getGUID(), messageEntry.getId(),
                         ContentMetadataHandler.TYPE_URL, false, url, title,
@@ -428,7 +428,7 @@ public class HipchatGroupTypeHandler extends ExtensibleGroupTypeHandler {
                                      ContentMetadataHandler.TYPE_THUMBNAIL,
                                      false, thumbnailUrl, null, null, null,
                                      null);
-                    messageEntry.addMetadata(thumbnailMetadata);
+                    getMetadataManager().addMetadata(messageEntry, thumbnailMetadata);
                 }
             }
         }
