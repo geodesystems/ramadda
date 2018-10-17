@@ -2142,7 +2142,8 @@ public class DbTypeHandler extends BlobTypeHandler {
      */
     public Result handleSearch(Request request, Entry entry)
             throws Exception {
-        if(request.exists("savesearch")) {
+        boolean canEdit = getAccessManager().canEditEntry(request, entry);
+        if(canEdit && request.exists("savesearch")) {
             request.remove("savesearch"); 
             StringBuilder args = new StringBuilder();
             Hashtable parameters = request.getArgs();
@@ -3062,6 +3063,7 @@ public class DbTypeHandler extends BlobTypeHandler {
             throws Exception {
         List<String> links = new ArrayList<String>();
 
+        /*
         if (showHeaderLinks) {
             if (showInHeader(VIEW_STICKYNOTES)) {
                 //                links.add(getHref(request, entry, VIEW_STICKYNOTES,msg("Sticky Notes")));
@@ -3079,11 +3081,12 @@ public class DbTypeHandler extends BlobTypeHandler {
                                   "/" + entry.getName() + ".json"));
             }
         }
+        */
         boolean embedded = request.get(ARG_EMBEDDED, false);
         if ( !embedded) {
             addViewHeader(request, entry, sb, VIEW_TABLE, valueList.size(),
                           fromSearch,
-                          StringUtil.join("&nbsp;|&nbsp;", links));
+                          ""/*StringUtil.join("&nbsp;|&nbsp;", links)*/);
         } else {
             addStyleSheet(sb);
         }
