@@ -7780,7 +7780,6 @@ public class EntryManager extends RepositoryManager {
                             ? 1
                             : 0);
                     String name = metadata.getType() + " " + metadata.getId();
-                    System.err.println ("\tattr1:" + metadata.getAttr1());
                     dbm.setString(metadataStmt, col++, name,
                                   metadata.getAttr1(), Metadata.MAX_LENGTH);
                     dbm.setString(metadataStmt, col++, name,
