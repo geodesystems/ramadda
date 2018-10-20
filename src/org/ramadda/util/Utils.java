@@ -64,6 +64,7 @@ import java.util.Date;
 import java.util.Enumeration;
 import java.util.GregorianCalendar;
 import java.util.Hashtable;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.TimeZone;
@@ -2638,7 +2639,12 @@ public class Utils {
     }
 
 
-
+    public static HashSet getHashset(Object...args) {
+        HashSet h = new HashSet();
+        for(Object arg: args)
+            h.add(arg);
+        return h;
+    }
 
 
 
