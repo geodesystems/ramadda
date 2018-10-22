@@ -1691,7 +1691,6 @@ function initMapFunctions(theMap) {
 
     theMap.getPopupText = function (text, marker) {
         if(text == null) return null;
-        console.log("text:" + typeof(text) +" " + text);
         if(text.indexOf("base64:")==0) {
             text =             window.atob(text.substring(7));
             if(text.indexOf("{") == 0) {

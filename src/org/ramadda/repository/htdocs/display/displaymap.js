@@ -408,7 +408,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
                                         if(latitude<-90 || latitude>90 || longitude<-180 || longitude>180) return;
 					var point = new OpenLayers.LonLat(longitude, latitude);
 					mapEntryInfo.marker = this.map.addMarker(id, point, entry
-                                                                                 .getIconUrl(), this.getEntryHtml(entry));
+                                                                                 .getIconUrl(), "", this.getEntryHtml(entry));
 
 					mapEntryInfo.lineColor = entry.lineColor;
                                         if(entry.polygon) {
@@ -676,7 +676,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
                                 }
 
 				this.myMarkers[source] = this.map.addMarker(source.getId(),
-                                                                            point, icon, args.html,24);
+                                                                            point, icon, "", args.html,24);
                                 //                                this.map.setCenter(point);
 			}
 		}
