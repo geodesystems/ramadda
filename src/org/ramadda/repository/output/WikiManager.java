@@ -1339,12 +1339,8 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
             return sb.toString();
         } else if (theTag.equals(WIKI_TAG_DISPLAY)
                    || theTag.equals(WIKI_TAG_CHART)) {
-
-
-
-
             String jsonUrl = entry.getTypeHandler().getUrlForWiki(request,
-                                 entry, theTag);
+                                                                  entry, theTag, props);
             //Gack - handle the files that are gridded netcdf
             //This is awful to have this here but I just don't know how to 
             //handle these entries
@@ -1355,7 +1351,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                 TypeHandler gridType =
                     getRepository().getTypeHandler("cdm_grid");
                 if (gridType != null) {
-                    jsonUrl = gridType.getUrlForWiki(request, entry, theTag);
+                    jsonUrl = gridType.getUrlForWiki(request, entry, theTag, props);
                 }
             }
             getEntryDisplay(request, entry, theTag, entry.getName(), jsonUrl,
