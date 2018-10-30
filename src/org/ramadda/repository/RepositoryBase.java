@@ -416,7 +416,7 @@ public class RepositoryBase implements Constants, RepositorySource {
      */
     public String absoluteUrl(String url) {
         int port = getPort();
-        if (port == 80) {
+        if (port == 80 || port == 0) {
             return getHttpProtocol() + "://" + getHostname() + url;
         } else {
             return getHttpProtocol() + "://" + getHostname() + ":" + port
