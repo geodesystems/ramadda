@@ -501,11 +501,11 @@ function initMapFunctions(theMap) {
                               map_usgs_imagery,
                               map_usgs_relief,
                               //                              map_esri_worldimagery,
-
-                              map_google_hybrid,
+                              /*                              map_google_hybrid,
                               map_google_terrain,
                               map_google_streets, 
                               map_google_satellite,
+                              */
             ];
         }
 
@@ -1147,7 +1147,7 @@ function initMapFunctions(theMap) {
                 "color" : "red",
                 "selectable" : false
             };
-            this.selectorBox = this.createBox("", north, west, south, east, "", args);
+            this.selectorBox = this.createBox("", "Selector box",north, west, south, east, "", args);
         } else {
             var bounds = createBounds(west, Math.max(south,
                     -maxLatValue), east, Math.min(north, maxLatValue));
