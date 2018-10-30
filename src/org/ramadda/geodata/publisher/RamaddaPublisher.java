@@ -117,7 +117,7 @@ public class RamaddaPublisher extends ucar.unidata.idv.publish
         new JCheckBox("Publish bundle and attach image", true);
 
     /** _more_ */
-    private JCheckBox doThumbnailCbx = new JCheckBox("Show as  a thumbnail",
+    private JCheckBox doThumbnailCbx = new JCheckBox("Show as a thumbnail",
                                            true);
 
     /** _more_ */
@@ -442,14 +442,13 @@ public class RamaddaPublisher extends ucar.unidata.idv.publish
             List      topComps          = new ArrayList();
 
 
-
             boolean   isImage           = false;
             if ((contentFile != null) && !isBundle && !isImport) {
                 topComps.add(GuiUtils.rLabel("File:"));
                 JComponent extra;
                 if (ImageUtils.isImage(contentFile)) {
                     isImage = true;
-                    //                    extra = doThumbnailCbx;
+                    extra = doThumbnailCbx;
                 } else {
                     extra = GuiUtils.filler(1, 1);
                 }
@@ -657,7 +656,6 @@ public class RamaddaPublisher extends ucar.unidata.idv.publish
 
 
 
-
                     String   fromDate = formatDate(fromDateFld.getDate());
                     String   toDate   = formatDate(toDateFld.getDate());
                     int      cnt      = 0;
@@ -709,6 +707,7 @@ public class RamaddaPublisher extends ucar.unidata.idv.publish
                                     bundleId, "uses bundle");
                         }
                     }
+                    System.err.println("isImage:" + isImage +" " + contentFile +" " + (node!=null)+" " + doThumbnailCbx.isSelected());
 
                     if ((contentFile != null) && (node != null)) {
                         if (isImage && doThumbnailCbx.isSelected()) {
@@ -852,7 +851,7 @@ public class RamaddaPublisher extends ucar.unidata.idv.publish
                         lastBundleId   = entryId;
                         lastBundleFile = bundleFile;
                     }
-                    LogUtil.userMessage("Publication was successful\nURL: "
+                    LogUtil.userMessage("Publication was successful. URL:\n"
                                         + url);
 
                     return url;
