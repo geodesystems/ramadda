@@ -29,6 +29,7 @@ import org.w3c.dom.Element;
 import ucar.unidata.util.IOUtil;
 
 import java.util.Date;
+import java.util.Hashtable;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -167,17 +168,17 @@ public class ClimateModelFileTypeHandler extends GranuleTypeHandler {
      * @return The point time series url
      */
     @Override
-    public String getUrlForWiki(Request request, Entry entry, String tag) {
+        public String getUrlForWiki(Request request, Entry entry, String tag, Hashtable props) {
         try {
             TypeHandler gridType = getRepository().getTypeHandler("cdm_grid");
             if (gridType != null) {
-                return gridType.getUrlForWiki(request, entry, tag);
+                return gridType.getUrlForWiki(request, entry, tag, props);
             }
         } catch (Exception exc) {
             throw new RuntimeException(exc);
         }
 
-        return super.getUrlForWiki(request, entry, tag);
+        return super.getUrlForWiki(request, entry, tag, props);
 
     }
 
