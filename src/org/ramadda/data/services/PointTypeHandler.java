@@ -78,6 +78,14 @@ public class PointTypeHandler extends RecordTypeHandler {
     /** _more_ */
     public static final String ARG_PROPERTIES_FILE = "properties.file";
 
+    public PointTypeHandler(Repository repository, String type,
+                              String description) {
+        super(repository, type, description);
+    }
+
+
+
+
     /**
      * _more_
      *
@@ -418,7 +426,7 @@ public class PointTypeHandler extends RecordTypeHandler {
      * @return _more_
      */
     @Override
-    public String getUrlForWiki(Request request, Entry entry, String tag) {
+     public String getUrlForWiki(Request request, Entry entry, String tag, Hashtable props) {
         if (tag.equals(WikiConstants.WIKI_TAG_CHART)
                 || tag.equals(WikiConstants.WIKI_TAG_DISPLAY)) {
             try {
@@ -429,7 +437,7 @@ public class PointTypeHandler extends RecordTypeHandler {
             }
         }
 
-        return super.getUrlForWiki(request, entry, tag);
+        return super.getUrlForWiki(request, entry, tag, props);
     }
 
 

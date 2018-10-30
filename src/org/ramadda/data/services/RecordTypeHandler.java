@@ -71,7 +71,7 @@ import java.util.List;
  * @author Jeff McWhirter
  * @version $Revision: 1.3 $
  */
-public abstract class RecordTypeHandler extends GenericTypeHandler implements RecordConstants {
+public abstract class RecordTypeHandler extends BlobTypeHandler implements RecordConstants {
 
     /** _more_ */
     public static final int IDX_RECORD_COUNT = 0;
@@ -87,6 +87,14 @@ public abstract class RecordTypeHandler extends GenericTypeHandler implements Re
 
     /** _more_ */
     private RecordOutputHandler recordOutputHandler;
+
+
+    public RecordTypeHandler(Repository repository, String type,
+                              String description) {
+        super(repository, type, description);
+    }
+
+
 
 
     /**
