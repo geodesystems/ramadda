@@ -6951,15 +6951,6 @@ public class EntryManager extends RepositoryManager {
             } else {
                 entry = createEntryFromDatabase(entryId, abbreviated);
                 debug("getEntry: from database:" + entry);
-                /*
-                for(int i=0;i<1000000;i++) {
-                    entry = createEntryFromDatabase(entryId, abbreviated);
-                    if ((i%10000)==0) {
-                        Misc.gc();
-                        getRepository().checkMemory("GC:" + i +" memory:");
-                    }
-                }
-                */
             }
         } catch (Exception exc) {
             logError("creating entry:" + entryId, exc);
