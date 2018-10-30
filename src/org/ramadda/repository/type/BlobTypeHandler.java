@@ -42,7 +42,6 @@ import java.util.Hashtable;
 public class BlobTypeHandler extends GenericTypeHandler {
 
 
-
     /**
      * _more_
      *
@@ -68,7 +67,6 @@ public class BlobTypeHandler extends GenericTypeHandler {
                            String description) {
         super(repository, type, description);
     }
-
 
 
     /**
@@ -103,11 +101,11 @@ public class BlobTypeHandler extends GenericTypeHandler {
         }
         Hashtable properties = null;
         if (properties == null) {
-            Object[] values = entry.getValues();
+            Object[] values = getEntryValues(entry);
             if ((values != null) && (values.length > 0)
-                    && (values[0] != null)) {
-                properties =
-                    (Hashtable) Repository.decodeObject((String) values[0]);
+                    && (values[getValuesIndex()] != null)) {
+                properties = (Hashtable) Repository.decodeObject(
+                    (String) values[getValuesIndex()]);
             }
             if (properties == null) {
                 properties = new Hashtable();
@@ -120,6 +118,15 @@ public class BlobTypeHandler extends GenericTypeHandler {
     /**
      * _more_
      *
+     * @return _more_
+     */
+    public int getValuesIndex() {
+        return 0;
+    }
+
+    /**
+     * _more_
+     *
      * @param entry _more_
      * @param properties _more_
      *
@@ -127,7 +134,8 @@ public class BlobTypeHandler extends GenericTypeHandler {
      */
     protected void setProperties(Entry entry, Hashtable properties)
             throws Exception {
-        entry.setValues(new Object[] { Repository.encodeObject(properties) });
+        Object[] values = getEntryValues(entry);
+        values[getValuesIndex()] = Repository.encodeObject(properties);
     }
 
 
