@@ -2059,6 +2059,9 @@ public interface Constants {
     public static final String CSS_CLASS_MENUITEM = "ramadda-menuitem";
 
     /** _more_ */
+    public static final String CSS_CLASS_MENU_GROUP = "ramadda-menugroup";
+
+    /** _more_ */
     public static final String CSS_CLASS_HIGHLIGHT = "ramadda-highlight";
 
     /** _more_ */
