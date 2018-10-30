@@ -83,7 +83,7 @@ public class GridTypeHandler extends TypeHandler {
      * @return _more_
      */
     @Override
-    public String getUrlForWiki(Request request, Entry entry, String tag) {
+    public String getUrlForWiki(Request request, Entry entry, String tag, Hashtable props) {
         if (tag.equals(WikiConstants.WIKI_TAG_CHART)
                 || tag.equals(WikiConstants.WIKI_TAG_DISPLAY)) {
             StringBuilder jsonbuf = new StringBuilder();
@@ -137,7 +137,7 @@ public class GridTypeHandler extends TypeHandler {
             return jsonbuf.toString();
         }
 
-        return super.getUrlForWiki(request, entry, tag);
+        return super.getUrlForWiki(request, entry, tag, props);
     }
 
 
