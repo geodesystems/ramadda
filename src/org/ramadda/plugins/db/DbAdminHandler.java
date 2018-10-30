@@ -190,7 +190,7 @@ public class DbAdminHandler extends AdminHandlerImpl {
             columnNodes.add(0, userNode);
             columnNodes.add(0, idNode);
             getRepository().addTypeHandler(tableId, typeHandler, true);
-            typeHandler.init(columnNodes);
+            typeHandler.initDbColumns(columnNodes);
         }
 
         return true;
