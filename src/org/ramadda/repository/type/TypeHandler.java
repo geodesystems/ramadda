@@ -454,11 +454,10 @@ public class TypeHandler extends RepositoryManager {
      * @param node _more_
      *
      */
-    private void initTypeHandler(Element node) {
+    public void initTypeHandler(Element node) {
         try {
             displayTemplatePath = Utils.getAttributeOrTag(node,
                     "displaytemplate", (String) null);
-
 
             category = Utils.getAttributeOrTag(node, ATTR_CATEGORY,
                     (String) null);
@@ -484,7 +483,6 @@ public class TypeHandler extends RepositoryManager {
             }
 
 
-
             wikiTemplate = Utils.getAttributeOrTag(node, ATTR_WIKI,
                     (String) null);
 
@@ -508,7 +506,6 @@ public class TypeHandler extends RepositoryManager {
                                          (String) null) });
             }
 
-
             List serviceNodes = XmlUtil.findChildren(node,
                                     Service.TAG_SERVICE);
             for (int i = 0; i < serviceNodes.size(); i++) {
@@ -524,7 +521,7 @@ public class TypeHandler extends RepositoryManager {
             childTypes = StringUtil.split(Utils.getAttributeOrTag(node,
                     ATTR_CHILDTYPES, ""));
             forUser = Utils.getAttributeOrTag(node, ATTR_FORUSER, forUser);
-            setType(Utils.getAttributeOrTag(node, ATTR_DB_NAME, ""));
+            setType(Utils.getAttributeOrTag(node, ATTR_DB_NAME, type==null?"":type));
             if (getType().indexOf(".") > 0) {
                 //            System.err.println("DOT TYPE: " + getType());
             }
@@ -648,7 +645,7 @@ public class TypeHandler extends RepositoryManager {
      *
      * @return _more_
      */
-    public String getUrlForWiki(Request request, Entry entry, String tag) {
+    public String getUrlForWiki(Request request, Entry entry, String tag, Hashtable props) {
         return null;
     }
 

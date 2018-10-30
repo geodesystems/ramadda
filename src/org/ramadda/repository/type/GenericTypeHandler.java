@@ -153,7 +153,7 @@ public class GenericTypeHandler extends TypeHandler {
      *
      * @throws Exception on badness
      */
-    private void initGenericTypeHandler(Element entryNode) throws Exception {
+    public void initGenericTypeHandler(Element entryNode) throws Exception {
         if (getType().indexOf(".") >= 0) {
             //Were screwed - too may types had a . in them
             //            throw new IllegalArgumentException ("Cannot have a '.' in the type name: "+ getType());
@@ -167,7 +167,7 @@ public class GenericTypeHandler extends TypeHandler {
         if (columnNodes.size() == 0) {
             return;
         }
-        init((List<Element>) columnNodes);
+        initColumns((List<Element>) columnNodes);
     }
 
 
@@ -195,7 +195,7 @@ public class GenericTypeHandler extends TypeHandler {
      *
      * @throws Exception on badness
      */
-    public void init(List<Element> columnNodes) throws Exception {
+    public void initColumns(List<Element> columnNodes) throws Exception {
         Statement statement = getDatabaseManager().createStatement();
         colNames.add(COL_ID);
         StringBuilder tableDef = new StringBuilder("CREATE TABLE "
