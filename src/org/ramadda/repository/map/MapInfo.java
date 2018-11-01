@@ -281,8 +281,14 @@ public class MapInfo {
             label = "Details On";
         }
 
+        String  showDetailsLink =(String) getMapProps().get("showDetailsLink");
+        
         result.append("\n");
-        result.append(HtmlUtils.leftRight(readout, HtmlUtils.href(url, label)));
+        if(Misc.equals(showDetailsLink,"true")) {
+            result.append(HtmlUtils.leftRight(readout, HtmlUtils.href(url, label)));
+        } else {
+            result.append(readout);
+        }
         result.append("\n");
 
         return result.toString();
@@ -542,13 +548,20 @@ public class MapInfo {
             return widget.toString();
         }
 
-        String        msg       = HtmlUtils.italics(doRegion
-                                                    ? msg("Shift-drag to select region") +" " + msg("Command-drag to move region")
-                : msg("Click to select point"));
+
 
         StringBuilder sb        = new StringBuilder();
         String        clearLink = getSelectorClearLink(msg("Clear"));
-        sb.append(HtmlUtils.leftRight(msg, clearLink));
+        if(doRegion) {
+            String  msg1   = HtmlUtils.italics(msg("Shift-drag to select region"));
+            String  msg2    = HtmlUtils.italics(msg("Command or Ctrl-drag to move region"));
+            sb.append(HtmlUtils.leftRight(msg1, ""));
+            sb.append(HtmlUtils.leftRight(msg2, clearLink));
+        } else {
+            sb.append(HtmlUtils.leftRight(HtmlUtils.italics(msg("Click to select point")), clearLink));
+        }
+
+
         //        sb.append(HtmlUtils.br());
         //        sb.append(clearLink);
         sb.append(getMapDiv(""));

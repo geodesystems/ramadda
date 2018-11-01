@@ -1490,7 +1490,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
 
                 String[] mapArgs = {
                     "strokeColor", "fillColor", "fillOpacity", "scrollToZoom",
-                    "selectOnHover", "onSelect"
+                    "selectOnHover", "onSelect","showDetailsLink"
                 };
                 for (String mapArg : mapArgs) {
                     String v = (String) props.get(mapArg);
