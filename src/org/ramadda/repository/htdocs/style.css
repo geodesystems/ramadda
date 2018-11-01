@@ -2401,6 +2401,14 @@ a.toggleblocklabellink:visited {
       padding-right: 3px;
 }
 
+
+.left_right_table td {
+      padding-top: 0px;
+      padding-bottom: 0px;
+      padding-left: 0px;
+      padding-right: 0px;
+}
+
 .formlabel, .formlabeltop {
   font-weight: bold;
   text-align:right;
