@@ -1,0 +1,481 @@
+/********************************************************************/
+/* new additions are below, starting from May 27th 2016 by Chris                       
+/* continued by Barb starting July 2016 */
+/********************************************************************/
+
+body {
+	font-family: 'Roboto', sans-serif;
+    font-size: 15px;
+    font-weight: 300;
+	color: #444;
+	width: 100%;
+	height: 100%;
+}
+
+// @media(min-width:820px) {
+//    .container {
+//        clear: both;
+//        }
+// }
+
+a {
+	color: rgb(0,104,172);
+}
+
+h1 {
+	margin-top: 0;
+	font-weight: 300;
+}
+
+h2,h3,h4 {
+	font-weight: 300;
+}
+
+nav {
+	width: 100%;
+	z-index:100;
+	padding-bottom: 0;
+	margin-bottom: 0;
+}
+ 
+.minor_header {
+	padding: 7px 0 0 30px;
+	text-align: left;
+	height: 30px;
+	font-size: 12px;
+	background-color: rgb(235,235,235);/*#f4f4f4;*/
+
+}
+
+.minor_header a {
+	font-weight: bold;
+}
+
+.navbar {
+ 	border: none;
+ }
+
+.navbar-psd {
+	border-radius: 0;
+	background-color:/*#337ab7;*/rgb(57,139,188);
+}
+
+.navbar-psd a {
+	border-radius: 0;
+	color: white;
+}
+
+.navbar-nav>li>a:hover {
+	color: #444;
+}
+
+.navbar-toggle {
+	border: 1px solid white;
+}
+
+li.dropdown.open a {
+	color: #444;
+	font-weight: 300;
+}
+
+li.dropdown.open {
+	background-color: #fff;
+	font-weight: 300;
+}
+
+.icon-bar {
+	background-color: white;
+	border: white;
+}
+
+.breadcrumb {clear: both; background-color: transparent; position: relative; font-size: 80%; }
+.breadcrumb a {color: #337ab7; font-weight: bold; }
+.breadcrumb>.active {color: #555; font-weight: bold; }
+.breadcrumb>li+li:before {color: #666; font-weight: normal; content: "\276F\00a0";}
+
+.crumb-bkgrnd {
+ 	height: 33px; 
+ 	padding-left: 0; 
+ 	margin: 0 0 20px -5px; 
+ 	border-bottom: 3px solid #eee; 
+ 	background-color: #f4f4f4;"
+ }
+
+
+.mainsection a:link {
+	margin-bottom: 15px;
+	font-weight: 400;
+}
+
+footer {
+	background-color: #f4f4f4;
+	border-top: 2px solid #eee;
+	margin-top: 30px;
+}
+
+footer a {
+	color: #337ab7;
+}
+
+.footer-content {
+	padding: 40px 0 40px 0;
+}
+
+.highlightscell {
+	margin-top: 15px;
+	min-height: 85px;
+	line-height:1.3;
+	font-size: 14px;
+}
+
+.highlightscell h4 {
+	font-size: 16px;
+	margin: 0;
+	padding: 0;
+}
+
+.highlightsimg {
+	float: left;
+	margin-right: 10px;
+	height: 75px;
+}
+
+.highlightscell a { text-decoration: none; font-weight: 400;}
+
+
+/* CUSTOMIZE THE CAROUSEL
+-------------------------------------------------- */
+
+/* Carousel base class */
+.carousel {
+  height: 400px;
+  margin-bottom: 60px;
+}
+/* Since positioning the image, we need to help out the caption */
+.carousel-caption {
+	z-index: 10;
+} 
+
+/* Declare heights because of positioning of img element */
+.carousel .item {
+  height: 400px;
+  background-color: #777;
+}
+.carousel-inner > .item > img {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+}
+
+
+/* MARKETING CONTENT
+-------------------------------------------------- */
+
+/* Center align the text within the three columns below the carousel */
+.marketing .col-lg-4 {
+  margin-bottom: 20px;
+  text-align: center;
+}
+.marketing h2 {
+  font-weight: normal;
+}
+.marketing .col-lg-4 p {
+  margin-right: 10px;
+  margin-left: 10px;
+}
+
+/* Featurettes
+------------------------- */
+
+.featurette-divider {
+  margin: 80px 0; /* Space out the Bootstrap <hr> more */
+}
+
+/* Thin out the marketing headings */
+.featurette-heading {
+  font-weight: 300;
+  line-height: 1;
+  letter-spacing: -1px;
+}
+
+.flex-caption {
+    background-color: rgba(100, 100, 100, 0.6);
+    bottom: 0;
+    color: white;
+    position: absolute;
+	margin: auto;
+    text-align:center;
+    padding: 3px 0 3px 0;
+    width: 100%;
+    z-index:99;
+    border-top :1px solid white;
+    
+}
+
+.flexslider-header {
+        background: none repeat scroll 0 0 rgba(100, 100, 100, 0.6);
+        width:100%;
+        text-align: center;
+        color: white;
+        font-size: 1.25em;
+        height: 40px;
+        line-height: 40px;
+        position:absolute;
+        margin:auto;
+        padding:0px;
+        z-index:99;
+        border-bottom :1px solid white;
+}
+
+@media (max-width: 767px) {
+        .flexslider-header {
+		background: none repeat scroll 0 0 rgba(100, 100, 100, 0.6);
+		width:100%;
+		text-align: center;
+		color: white;
+		font-size: 1em;
+		height: 20px;
+		line-height: 20px;
+		position:absolute;
+		margin:auto;
+		padding:0px;
+		z-index:99;
+        }
+}
+
+@media (min-width:800px) {
+        .leftSide {
+        }
+}
+
+.flexslider {
+        border:none !important;
+        --webkit-box-shadow:none !important;
+        box-shadow:none !important;
+}
+
+.rightNav {
+    margin-left: 0;
+    background-color: #f8f8f8;
+    border: 1px solid #ededee;
+    margin-bottom: 10px;
+}
+
+.rightNav img {
+    margin-bottom: 8px;
+}
+
+.rightNav h4 {
+	text-transform: uppercase;
+}
+
+.rightNav a { text-decoration: none; }
+.rightNav a:visited { text-decoration: none;}
+.rightNav a:hover { color: black; text-decoration: none;}
+
+.rightNav dd {
+        text-align: left;
+        margin-left: 0;
+}
+
+.rightNav ul {
+        width: 100%;
+        margin-left: -1.25em;
+        margin-top: 0.5em;
+        list-style: none;
+        line-height: 1;
+}
+
+.rightNav li {
+        border-bottom: 1px dotted #999;
+        padding: 0.5em 0 0.5em 1.25em;
+}
+
+.rightNav li:hover {
+        background: rgb(240, 240, 240);
+}
+
+
+.rightcol {
+    margin-left: 0;
+    margin-bottom: 20px;
+}
+
+.rightcol img {
+    margin-bottom: 8px;
+}
+
+.rightcol h4 {
+	text-transform: uppercase;
+}
+
+.rightcol div {
+    background-color: #f8f8f8;
+    padding: 0 8px 8px 8px;
+    border: 1px solid #ededee;  
+}
+
+.rightcol dl {
+   margin: 0 0 8px 0;
+}
+
+.rightcol dd {
+   border-bottom: 1px dotted #999;
+   padding: 2px 0 2px 20px;
+}
+
+.announce h5 {
+	font-weight: bold;
+	margin: 0;
+}
+
+
+.related {
+    background-color: #f8f8f8;
+    border: 1px solid #ededee;
+    padding: 10px;
+}
+
+.related dl {
+ 	width: 100%;
+    list-style: none;
+    line-height: 1;   
+}
+
+.related dd {
+	padding: 5px 5px 0 5px;
+}
+
+@media (max-width: 1024px) {
+        h2 {
+                
+        }
+}
+
+
+/* Override bootstrap 
+.navbar-default {
+	padding-bottom: 0;
+	background: transparent;
+	border: none;
+ /* Old browsers */
+/* Permalink - use to edit and share this gradient: http://colorzilla.com/gradient-editor/#e1ffff+0,e1ffff+7,e1ffff+12,fdffff+12,e6f8fd+30,c8eefb+54,bee4f8+75,b1d8f5+100;Blue+Pipe+%232 */
+/*background: -moz-linear-gradient(top,  #e1ffff 0%, #e1ffff 7%, #e1ffff 12%, #fdffff 12%, #e6f8fd 30%, #c8eefb 54%, #bee4f8 75%, #b1d8f5 100%); /* FF3.6-15 */
+/*background: -webkit-linear-gradient(top,  #e1ffff 0%,#e1ffff 7%,#e1ffff 12%,#fdffff 12%,#e6f8fd 30%,#c8eefb 54%,#bee4f8 75%,#b1d8f5 100%); /* Chrome10-25,Safari5.1-6 */
+/*background: linear-gradient(to bottom,  #e1ffff 0%,#e1ffff 7%,#e1ffff 12%,#fdffff 12%,#e6f8fd 30%,#c8eefb 54%,#bee4f8 75%,#b1d8f5 100%); /* W3C, IE10+, FF16+, Chrome26+, Opera12+, Safari7+ */
+/*filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#e1ffff', endColorstr='#b1d8f5',GradientType=0 ); /* IE6-9 */
+
+/*
+.navbar {
+        border-radius: 0px;
+        margin-bottom: 0px;
+        border: none;
+}
+
+.navbar-toggle {
+        line-height: 10px;
+        padding: 4px;
+        margin: 2px;
+}
+
+.navbar-default .navbar-nav>li>a {
+        padding-top: 4px;
+        padding-bottom: 4px;
+        line-height: 20px;
+        color: #666;
+}
+
+*/
+@media (min-width: 800px) {
+        .navbar-default .navbar-nav {
+        }
+        
+}@media (min-width:800px) {
+        #mainsection {
+        }
+ }
+
+.staffButtons {
+        float: left;
+        height: 24px;
+}
+
+table.staff td {
+        color: black;
+}
+
+table.staff tr:nth-child(even) td {
+        background-color: #FFFFCC;
+    }
+
+table.staff th {
+        text-align: left;
+}
+
+table.staff tr:nth-child(odd) td {
+        background-color: #FFFFFF;
+}
+
+
+table.staff {
+  width:95%;
+  border:0px;
+  cellspacing:0px;
+  cellpadding:0px;
+} 
+
+.staffButtons {
+        float: left;
+        height: 24px;
+}
+
+/****************************************/
+/* minor nav                                                      */
+/****************************************/
+
+#minor_nav {
+
+}
+
+#minor_nav a {
+	text-decoration: none;
+}
+
+#minor_nav h4 {
+	margin-top: 20px;
+	padding-left: 5px;
+	text-transform: uppercase;
+}
+
+#minor_nav dl {
+	padding: 0;
+}
+
+#minor_nav dd {
+    border-bottom: 1px dotted #999;
+    padding: 8px 0 5px 10px;
+}
+
+#minor_nav img {
+	width: 100%;
+}
+
+.infobox {
+	background: #ededee; 
+	padding: 20px;
+}
+
+.infobox h3 {
+	padding: 0;
+	margin: 0;
+}
+
+
+
+.caption {
+  padding-top: 10px
+  color: #999;
+  text-align: left;
+  font-size: 10px;
+}
