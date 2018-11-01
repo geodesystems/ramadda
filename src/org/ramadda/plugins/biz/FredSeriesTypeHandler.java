@@ -182,8 +182,7 @@ public class FredSeriesTypeHandler extends PointTypeHandler {
         args.add(Fred.ARG_SERIES_ID);
         args.add(id);
         String url = fcth.makeUrl(Fred.URL_SERIES_OBSERVATIONS, args);
-        System.err.println("FredSeries: URL:" + url);
-
+        //        System.err.println("FredSeries: URL:" + url);
         return url;
     }
 
