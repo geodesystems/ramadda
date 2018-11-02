@@ -62,7 +62,7 @@ public class LatLonImageTypeHandler extends GenericTypeHandler {
     public boolean addToMap(Request request, Entry entry, MapInfo map)
             throws Exception {
         try {
-            if ( !entry.hasAreaDefined()) {
+            if (entry == null ||  !entry.hasAreaDefined()) {
                 return false;
             }
 
