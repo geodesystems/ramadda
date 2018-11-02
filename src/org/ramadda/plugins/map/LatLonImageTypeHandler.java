@@ -117,6 +117,7 @@ public class LatLonImageTypeHandler extends GenericTypeHandler {
     @Override
     public boolean addToMapSelector(Request request, Entry entry, MapInfo map)
         throws Exception {
+        if(entry == null) return false;
         if (entry.hasAreaDefined()) {
             String url =
                 getRepository().getHtmlOutputHandler().getImageUrl(request,
