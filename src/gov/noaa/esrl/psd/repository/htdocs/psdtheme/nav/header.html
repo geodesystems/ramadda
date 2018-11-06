@@ -15,28 +15,21 @@
 	<meta name="keywords" content="noaa, national oceanic and atmospheric administration, earth system research, esrl, climate, weather, air quality, computer modeling">
 	<!--#endif -->
 	<title>
-	<!--#if expr="$title" -->
-            ESRL
-        <!--#else -->
-            Earth System Research Laboratory
-        <!--#endif -->
-		: PSD
-        : <!--#echo var="title"-->
+	  ESRL : PSD : <!--#echo var="title"-->
 	</title>
 
     <!-- Bootstrap Core CSS -->
-    
+
     <link href="/psd/css/bootstrap.css" rel="stylesheet">
-    <link href="/psd/css/bootstrap-datepicker.min.css" rel="stylesheet">
 
     <!-- Custom CSS -->
     <link href="/psd/css/psd.css" rel="stylesheet">
 
     <!-- Custom Fonts -->
     <link href="/psd/css/font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css">
-	<link href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700" rel="stylesheet">
-	<link href="https://fonts.googleapis.com/css?family=Open+Sans:300,400,400i,600,700" rel="stylesheet">
-	<link href="https://fonts.googleapis.com/css?family=Lato:300,400,700" rel="stylesheet">
+	  <link href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700" rel="stylesheet">
+	  <link href="https://fonts.googleapis.com/css?family=Open+Sans:300,400,400i,600,700" rel="stylesheet">
+	  <link href="https://fonts.googleapis.com/css?family=Lato:300,400,700" rel="stylesheet">
 
   <!-- Bootstrap core JavaScript
     ================================================== -->
@@ -50,12 +43,26 @@
 	 <!--jQuery core JavaScript
      ================================================== -->
 	<script type="text/javascript" src="/psd/jquery/js/jquery.cookie.js"></script>
-	
-	
+
+	<script type="text/javascript" src="/psd/js/highslide/highslide-full.js"></script>
+  <link rel="stylesheet" type="text/css" href="/psd/js/highslide/highslide.css" />
+  <script type="text/javascript">
+    hs.registerOverlay({
+	    html: '<div class="closebutton" onclick="return hs.close(this)" title="Close"></div>',
+	    position: 'top right',
+	    fade: 2 // fading the semi-transparent overlay looks bad in IE
+    });
+
+    hs.graphicsDir = '/psd/js/highslide/graphics/';
+    hs.showCredits = 0;
+    hs.align = 'center';
+    hs.dimmingOpacity = .75;
+  </script>
+
 	<!--#if expr="$stylesheet" -->
-<!-- page-specific stylesheet -->
-<link rel="stylesheet" href='<!--#echo var="stylesheet"-->' type="text/css">
-<!--#endif -->
+    <!-- page-specific stylesheet -->
+    <link rel="stylesheet" href='<!--#echo var="stylesheet"-->' type="text/css">
+  <!--#endif -->
 
 <style>
 
@@ -131,17 +138,23 @@ nav.shrink .navbar-toggle {
 	<!--#include virtual="/psd/nav/major_nav.html"-->
 </div><!--/.banner-->
 
-
 <!-- Page Content -->
 <div class="mainsection">
 <div class="container">
 	<!--#if expr="$self"-->
 		<!--#include virtual="/psd/nav/breadcrumbs.html"-->
+	<!--#elif expr="$title"-->
+		<!--#include virtual="/psd/nav/breadcrumbs.html"-->
 	<!--#endif-->
+  <!--#include virtual="/psd/warnings.html"-->
+  <!--#if expr="$warnfilepath" -->
+    <!--#include virtual="$warnfilepath"-->
+  <!--#endif-->
+
 	<div class="row">
 	<!-- minor navigation -->
 	<!--#if expr="$minor_nav" -->
-	<div class="col-xs-12 col-sm-9">
+	<div class="col-xs-12 col-sm-12 col-md-9">
 	<!--#else -->
     <div class="col-md-12">
     <!--#endif -->

@@ -8,7 +8,11 @@
 				<!--#if expr="$greatgrandparent"--><li class="breadcrumb-item"><a href="<!--#echo var="greatgrandparent_url"-->"><!--#echo var="greatgrandparent"--></a></li><!--#endif-->
 				<!--#if expr="$grandparent"--><li class="breadcrumb-item"><a href="<!--#echo var="grandparent_url"-->"><!--#echo var="grandparent"--></a></li><!--#endif-->
 				<!--#if expr="$parent"--><li class="breadcrumb-item"><span id="breadCrumbParent"><a href="<!--#echo var="parent_url"-->"><!--#echo var="parent"--></a></span></li><!--#endif-->
-			<!--#if expr="$self"--><li class="breadcrumb-item active"><span id="breadCrumb"><!--#echo var="self"--></span></li><!--#endif-->
+			<!--#if expr="$self"-->
+				<li class="breadcrumb-item active"><span id="breadCrumb"><!--#echo var="self"--></span></li>
+			<!--#elif expr="$title"-->
+				<li class="bradcrumb-item active"><span id="breadCrumb"><!--#echo var="title"--></span></li>
+			<!--#endif-->
 			</ul>
 	</div>
 </div>
