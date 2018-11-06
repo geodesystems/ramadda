@@ -1,122 +1,1167 @@
 <!DOCTYPE html>
-<html><head>
-<title>${repository_name} - ${title} ${entry.breadcrumbs}</title>
+<html class="no-js" lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<meta content="en" http-equiv="content-language"/>
+<title>United States Naval Academy :: Leaders to Serve the Nation :: USNA :: ${entry.breadcrumbs}</title>
+
 <properties>
-name=NASA-ABoVE
-id=nasa_above
+name=USNA Template
+id=usna
 ramadda.template.userlink.popup=true
 ramadda.template.link.wrapper =<a href="${url}">${label}</a>
 ramadda.template.link.separator=&nbsp;|&nbsp;
 </properties>
 
+
+<!--
+    Use the modified one for RAMADDA
+  -->
+<!--
+<link href="${root}/usna/app.css" rel="stylesheet">
+-->
+<link href="${root}/app.css" rel="stylesheet">
+
+<!--
+<link href="https://www.usna.edu/CMS/_standard3.0/_files/css/app.css" rel="stylesheet"/>
+-->
+<link href="/repository/htdocs_v2_2_20/app.css" rel="stylesheet"/>
+<link href="https://www.usna.edu/CMS/_standard3.0/_files/bower_components/slick-carousel/slick/slick.css" rel="stylesheet"/>
+<!--
+<link href="https://www.usna.edu/CMS/_standard3.0/_files/css/responsive-tables.css" rel="stylesheet"/>
+-->
+<script src="https://www.usna.edu/CMS/_standard3.0/_files/bower_components/modernizr/modernizr.js" type="text/javascript"></script>
+
+
+<script type="text/javascript">
+//Google Analytics
+(function(i,s,o,g,r,a,m){i.GoogleAnalyticsObject=r;i[r]=i[r]||function(){(i[r].q=i[r].q||[]).push(arguments);},i[r].l=1*new Date();a=s.createElement(o),m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m);})(window,document,"script","//www.usna.edu/templates/resources/analytics.js","ga");ga("create","UA-28609034-5","auto");ga("send","pageview");
+</script>
+
+
+    <link href="https://www.usna.edu/_files/css/home-full-width.css" rel="stylesheet"/>
+    <link href="https://www.usna.edu/_files/css/slider-full-width.css" rel="stylesheet"/>
+    <link href="https://www.usna.edu/CMS/_standard3.0/_files/css/feedback.css" rel="stylesheet"/>
+    <script src="//www.google.com/recaptcha/api.js"></script>
+
+
+<link href="https://www.usna.edu/_files/css/local.css" media="all" rel="stylesheet" type="text/css"/>
+
 ${imports}
 
-
-
-<link href="${root}/above/common_screen.css" rel="stylesheet" type="text/css" media="screen">
-
-<style type="text/css">
-
-.innercontent {
-  margin-left:5px;
-  margin-right:5px;
-}
-
-.logos {
-   margin-right:15px;
-}
-
-.navLnkWhite { 
-  margin-top:6px;
-  margin-bottom:3px;
-  margin-left:10px;
-  margin-right:10px;
-
-  font-size: 130%; 
-  color: white;
-}
-
-.navLnkWhite a:link, .navLnkWhite a:visited {
-   color:white;
-}
-
-.header-table {
-  background-repeat: repeat-x; 
-  background-image:url('${root}/above/Above_ramada_banner_blue_repeat.jpg');
-}
-
-.header-top {
-  padding-bottom:1px;
-  padding-top:5px;
-  padding-left:10px;
-  padding-right:10px;
-  border-bottom : 1px #666 solid;
-}
-
-.navlinks {
-  border-top : 1px #2C8E72 solid;
-  border-bottom : 1px #aaa solid;
-}
-
-</style>
-
-
 ${headfinal}
+
 </head>
 <body>
+<!--Announcements -->
+<div id="loadDelay"></div>
+<a id="top"></a>
 
-<div class="header-top">
-<table border="0" cellpadding="0" cellspacing="0" width="100%">
-<tr valign="bottom">
-<td>
-<a href="http://www.nasa.gov/" target="_blank"><img src="${root}/above/nasa.jpg" alt="nasa logo" border="0" width="40"></a>
-<a href="http://www.nasa.gov/" target="_blank">+ NASA Homepage</a>
-</td>
-<td align="right"><a href="http://cce.nasa.gov/" target="_blank" class="style4">+ NASA Carbon Cycle &amp; Ecosystems Website </a></td>
-</tr>
-</table>
+<!-- Header and Top Main Navigation -->
+<header class="contain-to-grid">
+<div style="position : absolute; right:10px; top:5px;">
+${links}
 </div>
 
+<div class="row-usna collapse-usna">
+<div class="small-3 large-4 columns">
+<div class="logo-container"><a href="https://www.usna.edu">
+<img alt="The U.S. Naval Academy" class="show-for-medium-up" src="https://www.usna.edu/CMS/_standard3.0/_files/img/logo.png"/>
+</a></div>
+</div>
+<div class="small-9 large-8 columns">
+<div class="row-usna collapse-usna">
+<div class="small-12 columns">
+<ul class="utility-menu inline-list">
+<li class="has-form">
 
-<table border="0" cellpadding="0" cellspacing="0" width="100%" >
-<tr valign="bottom"  class="header-table">
-<td>
-<a href="http://cce.nasa.gov/terrestrial_ecology/above/index.html">
-<img src="${root}/above/Above_ramada_banner_blue.jpg" border="0">
-</a>
-</td>
-</tr>
-</table>
-
-
-<div class="navlinks">
-<table border="0" cellpadding="0" cellspacing="0" width="100%">
-<tr bgcolor="#9999FF">
-<td></td>
-<td align="right">${links}</td>
-</tr>
-</table>
+<form action="/texis/search/" method="get">
+  <input name="dropXSL" type="hidden"/>
+  <input aria-hidden="true" name="pr" type="hidden" value="External Meta"/>
+  <input aria-label="Search USNA" class="queryAutocomplete top-nav" id="siteSearch" maxlength="2033" name="query" placeholder="Search USNA" type="text"/>
+  <input style="position: absolute; left: -9999px" type="submit"/>
+</form>
+ </li>
+ </ul>
+<ul class="utility-menu inline-list">
+<li><a href="https://www.usna.edu/PAO/calendars.php">Events</a></li>
+<li><a href="https://www.usna.edu/Visit/Directions.php">Maps</a></li>
+<li>
+<a href="https://www.usna.edu/PAO/phone-directory/index.php">Directory</a>
+</li>
+<li>
+<a href="https://www.usna.edu/TOC/index.php">A-Z Index</a>
+</li>
+</ul>
+</div>
+</div>
+<div class="row-usna">
+<div class="small-12 columns">
+<ul class="audience-menu inline-list show-for-medium-up">
+<li><a href="https://www.usna.edu/quicklinks/parents.php">Parents</a></li>
+<li class="divider"></li>
+<li><a href="https://www.usna.edu/quicklinks/prospective-students.php">Prospective Students</a></li>
+<li class="divider"></li>
+<li><a href="https://www.usna.edu/quicklinks/faculty-staff.php">Faculty/Staff</a></li>
+<li class="divider"></li>
+<li><a href="https://www.usna.edu/Alumni/">Alumni</a></li>
+</ul>
 </div>
 
+</div>
+</div>
+</div>
+<!-- Top Main Navigation -->
+<div class="top-navigation contain-to-grid">
+<nav aria-label="top menu" class="top-bar" data-topbar="">
+<ul class="title-area"><!-- Title Area -->
+<li class="name show-for-small-only"><h2><a href="https://www.usna.edu">U.S. Naval Academy</a></h2></li>
+<li class="toggle-topbar menu-icon"><a href="#"><span>MAIN MENU</span></a></li>
+</ul>
+<section aria-label="top menu" class="top-bar-section" role="menu"><!-- Left Nav -->
+<ul class="left">
+    <li><a href="About/index.php">About</a></li>
+    <li><a href="https://www.usna.edu/Academics/index.php">Academics</a></li>
+    <li><a href="https://www.usna.edu/Admissions/index.php">Admissions</a></li>
+    <li><a href="Athletics/index.php">Athletics</a></li>
+    <li><a href="Visit/index.php">Visit</a></li>
+</ul>
+</section>
+</nav>
+</div>
+<!-- End Top Main Navigation -->
+</header>
+<!-- End Header and Top Main Navigation -->
+ <!-- Breadcrumbs --> 
+ 
+ <!-- End Breadcrumbs --> 
+ <!-- Main Content Section -->
+ <!-- Site name --> 
+ 
+ <!-- End Site name --> 
+ <!-- Masthead Slider -->
+   <div class="masthead-slider-full-width" style="display:none"><div class="masthead-slider center" id="fouc"></div></div>
 <div class="ramadda-content">
 ${entry.header}
 <div class="innercontent">${content}</div> 
 </div>
-<div class="ramadda-footer">${footer}</div>
-<div class="ramadda-acknowledgement">Powered by <a href="http://ramadda.org">RAMADDA</a></div>
-<table border="0" cellpadding="4" cellspacing="0" width="100%">
-  <tbody><tr bgcolor="#FFD988">
-    <td valign="top"><a href="http://www.usa.gov/" target="_blank"><img src="${root}/above/usagov_logo.gif" alt="link to usagov" border="0" height="34" width="130"></a></td>
-    <td><span class="style4"><a href="mailto:support@cce.nasa.gov">+ Questions? email us</a><a href="http://www.nasa.gov/about/highlights/HP_Privacy.html" target="_blank"><br>
-    + NASA Privacy, Security, Notices&nbsp;  </a></span></td>
-    <td>&nbsp;</td>
-    <td>
-      <p><span class="style4">Curator: TODO<br>
-      NASA Official: Diane E. Wickland</span>&nbsp;  <br>
-      </p>
-    </td>
-  </tr>
-</tbody></table>
 
 
-</body></html>
+ <!-- End Masthead -->
+
+    <div style="display:none;" class="feedback-container"><div class="feedback-tab">
+  <span id="feedback-tab-title">Have a suggestion?</span>
+</div>
+<div class="feedback-contents">
+  <div class="row-usna">
+    <div class="large-12 columns">
+      <form method="post">
+        <input aria-hidden="true" name="required" type="hidden" value="message"/>
+        <input aria-hidden="true" name="sort" type="hidden" value="order:alphabetical"/>
+        <input aria-hidden="true" name="print_blank_fields" type="hidden" value="1"/>
+        <input aria-hidden="true" name="useajax" type="hidden" value="silent"/>
+        <!-- The next fields are for the email to you -->
+        <input aria-hidden="true" name="recipient" type="hidden" value="webmaster@usna.edu"/>
+        <input aria-hidden="true" name="env_report" type="hidden" value="REMOTE_ADDR"/>
+        <input aria-hidden="true" name="PageURL" type="hidden" value="https://www.usna.edu/homepage.php"/>
+        <input aria-hidden="true" name="subject" type="hidden" value="Website Feedback - https://www.usna.edu/homepage"/>
+        <!-- The next fields are for the HTML response page -->
+        <input aria-hidden="true" name="title" type="hidden" value="Thank You"/>
+        <input aria-hidden="true" name="resptext1" type="hidden" value="We appreciate your time and response."/>
+        <input aria-hidden="true" name="resptext2" type="hidden" value=" "/>
+        <!-- Beginning of Feedback Form *********************** -->
+        <input aria-label="Email (optional)" name="email" placeholder="Email (optional)" type="text"/>
+        <textarea aria-label="Type your suggestion here" cols="20" name="message" placeholder="Type Your Suggestion Here" rows="3"></textarea>
+        <div class="row-usna">
+          <div class="medium-12 columns">
+            <div class="g-recaptcha feebackform-captcha" data-sitekey="6LfE_BcTAAAAAMVMqMU-y7GOECNWFGYsFBRfRNno" style="transform: scale(0.72); transform-origin: 0 0; -webkit-transform:scale(0.72); -webkit-transform-origin:0 0; -ms-transform:scale(0.72); -ms-transform:origin(0 0); -moz-transform:scale0.72); -moz-transform:origin(0,0)"></div>
+            <input class="button tiny submit-button" type="submit" value="Submit"/>
+          </div>
+        </div>
+      </form>
+    </div>
+    <!-- end large-12 columns --></div>
+  <!-- end row --></div>
+<!-- end feeback contents --></div><!-- end feedback container -->
+  
+<!--
+<div class="top-footer">
+<div class="row-usna">
+  <div class="small-12 columns">
+  <h2>I am a....</h2>
+  <div class="row-usna small-12 medium-6 large-3">Current Student</div>
+    <div class="row-usna small-12 medium-6 large-3">Future Student</div>
+      <div class="row-usna small-12 medium-6 large-3">Parent</div>
+        <div class="row-usna small-12 medium-6 large-3">Alumni</div>
+  </div>
+  </div>
+  </div>-->
+
+    
+ <div class="row-usna">
+   <div class="page-main-content large-8 medium-7 columns">
+   </div>
+  <!-- Side boxes -->
+  <div class="large-4 medium-5 columns">
+ 
+  </div>
+  <!-- End Side boxes -->
+ </div>
+
+<!-- End Main content -->
+<!-- Footer -->
+<footer>
+<div class="row-usna collapse-usna">
+<div class="medium-12 large-9 columns">
+<div class="footer-links">
+<div class="row-usna">
+<div class="large-12 columns">
+<ul class="mobile-footer small-block-grid-1 small-text-center medium-block-grid-4 medium-text-left large-block-grid-4">
+<li>
+<h5>About USNA</h5>
+<ul class="no-bullet">
+<li><a href="https://www.usna.edu/Contact/">Contact USNA</a></li>
+<li><a href="https://www.usna.edu/About/mission.php">USNA Mission</a></li>
+<li><a href="https://www.usna.edu/NewsCenter/">USNA News Center</a></li>
+<li><a href="https://www.usna.edu/Commandant/">Commandant</a></li>
+<li><a href="https://www.usna.edu/PAO/">Public Affairs Office</a></li>
+<li><a href="https://www.usna.edu/quicklinks/">FAQ</a></li>
+<li><a href="https://www.usna.edu/Contact/emergency.php">Emergency Information</a></li>
+</ul>
+</li>
+<li>
+<h5>Academics</h5>
+<ul class="no-bullet">
+<li><a href="https://www.usna.edu/Academics/Majors-and-Courses/index.php">Majors</a></li>
+<li><a href="https://www.usna.edu/Academics/Majors-and-Courses/Divisions-Departments.php">Divisions &amp; Departments</a></li>
+<li><a href="https://www.usna.edu/NAPS/">NAPS</a></li>
+<li><a href="https://www.usna.edu/Library/">Library</a></li>
+<li><a href="https://www.usna.edu/Blackboard/">Blackboard</a></li>
+</ul>
+</li>
+<li>
+<h5>Learn More</h5>
+<ul class="no-bullet">
+<li><a href="https://www.usna.edu/Admissions/Steps-for-Admission/index.php">Steps for Admission</a></li>
+<li><a href="https://www.usna.edu/Admissions/Student-Life/index.php">Student Life</a></li>
+<li><a href="https://www.usna.edu/Admissions/Programs/index.php">Summer Programs</a></li>
+<li><a href="https://www.usna.edu/Chapel/index.php">Chapel</a></li>
+<li><a href="https://www.usna.edu/Employment/">Employment Opportunities</a></li>
+</ul>
+</li>
+<li>
+<h5>Admin</h5>
+<ul class="no-bullet">
+<li><a href="https://www.usna.edu/IG/">Inspector General</a></li>
+<li><a href="https://www.usna.edu/AdminSupport/foia/">USNA FOIA Program</a></li>
+<li><a href="https://www.usna.edu/Warning/">Privacy Policy Notice</a></li>
+<li><a href="http://prhome.defense.gov/NoFear/">No Fear Act Data</a></li>
+<li><a href="https://dodcio.defense.gov/DoDSection508/Std_Stmt.aspx">Accessibility/Section 508</a></li>
+<li><a href="https://www.usna.edu/FAQ/ext-link-disclaimer.php">External Link Disclaimer</a></li>
+<li><a href="http://www.navy.mil/cno/">Parent Command: CNO</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</div>
+</div>
+<div class="row-usna collapse-usna">
+<div class="small-12 columns">
+<div class="navy-images">
+<div><a href="https://www.safehelpline.org/"><img alt="Sexual Assault Support" height="66" src="https://www.usna.edu/CMS/_standard3.0/_files/img/Safehelpline-009.png" width="112"/></a></div>
+<div><a href="http://www.itsonus.org/"><img alt="It's on us campaign logo" height="66" src="https://www.usna.edu/CMS/_standard3.0/_files/img/onusfooter.png" width="112"/></a></div>
+<div><a href="https://www.usna.edu/SAPRO/"><img alt="USNA SAPRO Logo" height="66" src="https://www.usna.edu/CMS/_standard3.0/_files/img/SAPR.png" width="112"/></a></div>
+<div><a href="https://www.suicidepreventionlifeline.org/"><img alt="Suicidal prevention logo" height="66" src="https://www.usna.edu/CMS/_standard3.0/_files/img/life.png" width="112"/></a></div>
+<div><a href="https://www.usna.edu/ATFP/"><img alt="Anti-Terrorism Force Protection" height="66" src="https://www.usna.edu/CMS/_standard3.0/_files/img/atfp_seal.png" width="112"/></a></div>
+<div><a href="http://www.navy.mil"><img alt="United States Navy" height="66" src="https://www.usna.edu/CMS/_standard3.0/_files/img/navy-mil.png" width="112"/></a></div>
+<div><a href="https://www.navy.com"><img alt="United States Navy Recruiting" height="66" src="https://www.usna.edu/CMS/_standard3.0/_files/img/navylogo.png" width="112"/></a></div>
+<div><a href="https://www.USA.gov"><img alt="Official Guide to Government Information and Services USAGov" height="66" src="https://www.usna.edu/_files/images/USAgov.png" width="112"/></a></div>
+</div>
+</div>
+</div>
+</div>
+<div class="large-3 small-12 columns">
+<div class="footer-seal small-text-center"><a href="https://www.usna.edu"><img alt="U.S. Naval Academy Seal" height="137" src="https://www.usna.edu/CMS/_standard3.0/_files/img/logo-footer.png" width="90"/></a>
+<div class="footer-address">U.S. Naval Academy<br/> 121 Blake Road,<br/> Annapolis, MD 21402</div>
+<div class="footer-contact"><a href="https://www.usna.edu/Contact/index.php">&#160;Contact USNA</a></div>
+<ul class="social-media">
+<li><a href="https://www.facebook.com/USNavalAcademy"><img alt="Facebook icon" height="40" src="https://www.usna.edu/CMS/_standard3.0/_files/img/facebook.png" width="40"/></a></li>
+<li><a href="https://twitter.com/NavalAcademy"><img alt="Twitter Icon" height="40" src="https://www.usna.edu/CMS/_standard3.0/_files/img/twitter.png" width="40"/></a></li>
+<li><a href="https://www.flickr.com/photos/unitedstatesnavalacademy"><img alt="Flickr icon" height="40" src="https://www.usna.edu/CMS/_standard3.0/_files/img/flickr.png" width="40"/></a></li>
+<li><a href="https://www.youtube.com/user/usnapao"><img alt="YouTube icon" height="40" src="https://www.usna.edu/CMS/_standard3.0/_files/img/youtube.png" width="40"/></a></li>
+<li><a href="https://instagram.com/usnavalacademy"><img alt="Instagram icon" height="40" src="https://www.usna.edu/CMS/_standard3.0/_files/img/instagram.png" width="40"/></a></li>
+<li><a href="Social-Media/Snapchat.php"><img alt="Snapchat" height="40" src="https://www.usna.edu/CMS/_standard3.0/_files/img/snapchat.png" width="40"/></a></li>
+</ul>
+<p class="more-social-media"><a href="https://www.usna.edu/Social-Media/">Social Media Index</a></p>
+</div>
+</div>
+</div>
+</footer>
+<div class="footer-bottom">
+<div class="row-usna collapse-usna">
+<div class="small-12 columns">
+<div class="url-bottom small-text-center">
+This is an official <a href="https://www.navy.mil">U.S. Navy Web Site</a>. URL: <a href="https://www.usna.edu">https://www.usna.edu</a>
+</div>
+</div>
+</div>
+</div>
+<!-- End Footer  and footer-bottom-->
+
+
+
+<!--
+<script src="https://www.usna.edu/CMS/_standard3.0/_files/bower_components/jquery/dist/jquery.js" type="text/javascript"></script>
+-->
+<script src="https://www.usna.edu/CMS/_standard3.0/_files/bower_components/fastclick/lib/fastclick.js" type="text/javascript"></script>
+<script src="https://www.usna.edu/CMS/_standard3.0/_files/bower_components/foundation/js/foundation.min.js" type="text/javascript"></script>
+<!-- The following is always site local -->
+<script src="https://www.usna.edu/_files/scripts/slick-full-width.js" type="text/javascript"></script>
+<script src="https://www.usna.edu/CMS/_standard3.0/_files/js/vendor/responsive-tables.js" type="text/javascript"></script>
+
+
+<script src="https://www.usna.edu/CMS/_standard3.0/_files/js/feedback.js"></script>
+<script type="text/javascript">
+$(document).ready(function() {
+document.getElementById("fouc").style.display="block";
+});
+</script>
+
+<script src="https://www.usna.edu/CMS/_standard3.0/_files/js/app.js" type="text/javascript"></script>
+<link href="https://www.usna.edu/CMS/_standard3.0/_files/css/autosuggest.css" rel="stylesheet" type="text/css"/>
+<style type="text/css"><!--
+ul.as-selections li.as-original input { 
+    border-radius: 5px;
+    font-size: 0.92857rem;
+    height: auto;
+    padding-bottom: 4px;
+    padding-top: 4px;
+    position: relative;
+    top: 0;
+}
+--></style>
+
+<script src="https://www.usna.edu/CMS/_standard3.0/_files/js/plugins/jquery.autosuggest.min.js" type="text/javascript"></script>
+<script type="text/javascript">
+// Thundestone provides Opensearch suggestions, which has
+// the original term as the first element array, and the array
+// of suggestions 2nd, e.g. ["sea", ["sears","search ",seattle"]]
+// http://www.opensearch.org/Specifications/OpenSearch/Extensions/Suggestions
+// JQueryUI expects just an array of suggestions, so take
+// the 2nd element of the JSON response as the suggestions
+//http://intranet.usna.edu/texis/search/autocomplete.json?pr=Internal+Meta&term=rav
+var sp = '&pr'+$("input[name='pr']").val();
+$('#siteSearch.queryAutocomplete,#query.queryAutocomplete').autoSuggest("/texis/search/autocomplete.json",
+        {
+                queryParam: "term",
+                extraParams: sp,
+                minLength: 3,
+                startText: "Search USNA",
+    		clearQuery: true,
+                selectionLimit: 1,
+                retrieveComplete: function(data){ 
+                        var t_data=data[1]; 
+                        for(i=0,l=t_data.length;i<l;i++){
+                                t_data[i]={value:t_data[i]};
+                        } 
+                        return t_data;
+                },
+                resultClick: function(elem){
+                        if(console) console.log(elem.attributes.value);
+                        $(".as-selection-item").hide()
+                        $('input.queryAutocomplete').val(elem.attributes.value);
+                        $('input.queryAutocomplete').parents('form').submit();
+                }
+        });
+</script>
+
+
+
+    <script src="https://www.usna.edu/CMS/_standard3.0/_files/js/slick-carousel-public-home-page-hide-announcement-full-width.js" type="text/javascript"></script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+<script src="https://www.usna.edu/CMS/_standard3.0/_files/js/vendor/moment-2.4.0.min.js" type="text/javascript"></script>
+
+
+
+<script type="text/javascript" src="https://www.usna.edu/CMS/_standard3.0/_files/bower_components/fullcalendar/dist/fullcalendar.min.js"></script>
+
+<script type="text/javascript">
+   $(document).ready(function() {
+      var eventsList = $("div[data-type='events']"),
+         eventsArray = [];
+         parentContainer = eventsList.parent(),
+         listStartTimestamp = eventsList.attr("data-start"),
+         listEndTimestamp = eventsList.attr("data-end"),
+         listLimit = parseInt(eventsList.attr("data-limit")),
+         $deferredEvents = [],
+         generateEventItem = function(opts) {
+            // Ensure we have a title and start date before continuing.
+            if (opts.start === undefined || opts.title === undefined) return false;
+
+            // Initialize some of the event information.
+            var id = opts.id || opts.url.substring(opts.url.lastIndexOf("/")+1) || "",
+               start = opts.start,
+               end = opts.end,
+               title = opts.title,
+               url = opts.url || "",
+               m = null, n=null;
+
+            // If the timestamp is not a number, attempt to parse a Date string.
+            if (isNaN(start)) {
+               start = Date.parse(opts.start);
+            }
+            // If the timestamp is still not a number, we have an invalid date, return.
+            if (isNaN(start) || start < listStartTimestamp || start > listEndTimestamp) return false;
+            
+            // If the timestamp is still not a number, we have an invalid date, return.
+            if (isNaN(end) || end <= listStartTimestamp || typeof end === "undefined") end = false;
+
+            m = moment(start);
+            if(end) n = moment(end); else n = moment(start);
+            var event= {
+                  start: m.local().format("YYYY-MM-DD HH:mm"),
+                  title:  opts.title || "",
+                  url: opts.url || "",
+                  className: "" 
+                };
+            if(n && n>m) event.end = n.local().format("YYYY-MM-DD HH:mm");
+            if(opts.categories && opts.categories.length>0){
+               var categoryList = "";
+               event.className = "";
+               for(i=0,l=opts.categories.length;i<l;i++){
+                  var cat = opts.categories[i];
+                  categoryList=categoryList+" <span class='label round "+cat+"'>"+cat+"</span>";
+                  event.className= event.className + " " + cat;
+               }
+            } else {
+                var categoryList = "";
+            }
+            categoryList="";
+            eventsArray.push(event);
+            // Return the new list item to be appended.
+            var monVal = m.local().format("MMM");
+            var dayVal = m.local().format("DD");
+            try{
+                if(n.local().format("MMM")!=monVal)
+                    monVal = monVal +"- "+n.local().format("MMM");
+            }catch(e){};
+            try{
+            if(m.local().format("MMDD") < n.local().format("MMDD"))
+               dayVal = dayVal +"<span class='to'>-</span>"+n.local().format("DD");
+                         }catch(e){};
+            var htmlTemplate = '' +
+            ' <div class="pumpkins event-column" ><div class="row-usna"><div class="columns small-12">' + 
+            '<div class="event-name-home event-name-home-short">'+ (url ? '<a href="'+url+'">' + title + '</a>' : title ) + categoryList + '</div>' +
+             ' <div class="event-month-home"><a href="'+url+'" class="plain">' + monVal + '</a></div>' +
+            ' <div class="event-day-home"><a href="'+url+'" class="plain">' + dayVal + '</a></div> ' +
+            '</div></div>' +
+            '  </div>';
+            var temp = $('<div></div>', {
+               "data-timestamp": start,
+               "data-guid": id,
+               "class": "small-12 columns",
+               html: htmlTemplate
+            });
+            return temp;
+         };
+
+      // Bind a sorting event to the list.
+      eventsList.on("sort", function() {
+         var events = eventsList.children().clone();
+
+         // Clear the contents of the list.
+         eventsList.html("");
+
+         // Remove the list from it's parent container and sort it.
+         events.sort(function(a, b) {
+            // convert to integers from strings
+            a = parseInt($(a).attr("data-timestamp"));
+            b = parseInt($(b).attr("data-timestamp"));
+
+            // compare
+            if (a > b) {
+               return 1;
+            } else if (a < b) {
+               return -1;
+            } else {
+               return 0;
+            }
+         });
+                  // Add the newly sorted content back to the list and its parent container.
+            eventsList.html(events);
+         // If we're over the limit, hide the rest.
+         if (listLimit>0 && events.length > listLimit) {
+            eventsList.children(":gt("+(listLimit-1)+")").hide();
+         }
+         parentContainer.html(eventsList);
+               });
+
+      // Remove the list and display a preloader.
+      eventsList.empty();
+      //parentContainer.html("<p>Loading external sources...</p>");
+                            // XML from Index Block 
+                        $.each([
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                  {
+ title: 'Final Exams',
+ start: '1544526000000',
+ end: '1545166800000',
+ id: '-2044565302',
+ url: 'https://www.usna.edu/PAO/events/2018/12/final-exams.php',
+ categories: [ 'Midshipman', 'Academics'],
+ type: 'eventElementToJS'
+
+},
+                                    {
+ title: 'Veterans Day',
+ start: '1541912400000',
+ end: '1541912400000',
+ id: '-1815426288',
+ url: 'https://www.usna.edu/PAO/events/2018/11/Veterans Day.php',
+ categories: [ 'Holiday', 'General'],
+ type: 'eventElementToJS'
+
+},
+      {
+ title: 'Veterans Day Observed',
+ start: '1541998800000',
+ end: '1541998800000',
+ id: '837828088',
+ url: 'https://www.usna.edu/PAO/events/2018/11/Veterans Day Observed.php',
+ categories: [ 'Holiday', 'General'],
+ type: 'eventElementToJS'
+
+},
+      {
+ title: 'MIDN 1\/C Service Assignment',
+ start: '1542304200000',
+ end: '1542322800000',
+ id: '-492826977',
+ url: 'https://www.usna.edu/PAO/events/2018/11/MIDN 1C Service Assignment.php',
+ categories: [ 'Midshipman', 'Academics', 'Professional', 'General'],
+ type: 'eventElementToJS'
+
+},
+      {
+ title: 'Thanksgiving Leave',
+ start: '1542801600000',
+ end: '1543194000000',
+ id: '-1601477394',
+ url: 'https://www.usna.edu/PAO/events/2018/11/Thanksgiving Leave.php',
+ categories: [ 'General', 'Academics', 'Midshipman', 'Holiday'],
+ type: 'eventElementToJS'
+
+},
+      {
+ title: 'Giving Tree Ceremony',
+ start: '1543341000000',
+ end: '1543345200000',
+ id: '-934804526',
+ url: 'https://www.usna.edu/PAO/events/2018/11/Giving Tree Ceremony.php',
+ categories: [ 'General', 'Holiday', 'Midshipman'],
+ type: 'eventElementToJS'
+
+},
+      {
+ title: 'Trident Brass Holiday Concert',
+ start: '1543968000000',
+ end: '1543975200000',
+ id: '1444000001',
+ url: 'https://www.usna.edu/PAO/events/2018/12/Trident Brass Holiday Concert.php',
+ categories: [ 'Midshipman', 'Public', 'General', 'Musical', 'Alumni', 'Holiday'],
+ type: 'eventElementToJS'
+
+},
+      {
+ title: 'Classes End',
+ start: '1544072400000',
+ end: '1544072400000',
+ id: '1427503521',
+ url: 'https://www.usna.edu/PAO/events/2018/12/Classes End.php',
+ categories: [ 'Midshipman', 'General', 'Academics'],
+ type: 'eventElementToJS'
+
+},
+      {
+ title: 'Army Navy Ball Run',
+ start: '1544184300000',
+ end: '1544187600000',
+ id: '1555737809',
+ url: 'https://www.usna.edu/PAO/events/2018/12/Army Navy Ball Run.php',
+ categories: [ 'Midshipman', 'Alumni', 'General'],
+ type: 'eventElementToJS'
+
+},
+      {
+ title: 'Football vs. Beat Army',
+ start: '1544299200000',
+ end: '1544313600000',
+ id: '-1252935643',
+ url: 'https://www.usna.edu/PAO/events/2018/12/Football vs. Beat Army.php',
+ categories: [ 'Alumni', 'Public', 'General', 'Midshipman'],
+ type: 'eventElementToJS'
+
+},
+      {
+ title: 'Brigade Caroling',
+ start: '1544400000000',
+ end: '1544403600000',
+ id: '-953197571',
+ url: 'https://www.usna.edu/PAO/events/2018/12/Brigade Caroling.php',
+ categories: [ 'Midshipman', 'General', 'Holiday'],
+ type: 'eventElementToJS'
+
+},
+      {
+ title: 'Beat Army\/ Fall Sports Bell Ringing',
+ start: '1544418000000',
+ end: '1544418000000',
+ id: '1563868279',
+ url: 'https://www.usna.edu/PAO/events/2018/12/Beat Army Fall Sports Bell Ringing.php',
+ categories: [ 'Alumni', 'Midshipman', 'General'],
+ type: 'eventElementToJS'
+
+},
+      {
+ title: 'Christmas Eve Services',
+ start: '1545685200000',
+ end: '1545710400000',
+ id: '12343656',
+ url: 'https://www.usna.edu/PAO/events/2018/12/Christmas Eve Services.php',
+ categories: [ 'General', 'Holiday', 'Religious', 'Public'],
+ type: 'eventElementToJS'
+
+},
+      {
+ title: 'Christmas Day',
+ start: '1545714000000',
+ end: '1545714000000',
+ id: '-349926978',
+ url: 'https://www.usna.edu/PAO/events/2018/12/Christmas Day.php',
+ categories: [ 'Holiday', 'General'],
+ type: 'eventElementToJS'
+
+},
+                                                                                                            {
+ title: 'Football vs. Tulsa',
+ start: '1542486600000',
+ end: '1542501000000',
+ id: '1826684119',
+ url: 'https://www.usna.edu/PAO/events/2018/11/football-vs-Tulsa.php',
+ categories: [ 'Public'],
+ type: 'eventElementToJS'
+
+},
+            {
+ title: 'Shifley Lecture _ Dr. Virginia Smith',
+ start: '1542130200000',
+ end: '1542133800000',
+ id: '-700746915',
+ url: 'https://www.usna.edu/PAO/events/2018/11/shifley-lecture-Dr-Virginia-Smith.php',
+ categories: [ 'Public', 'Midshipman'],
+ type: 'eventElementToJS'
+
+},
+      {
+ title: 'Shifley Lecture _ Mr. Michael Schneider',
+ start: '1543512600000',
+ end: '1543516200000',
+ id: '-1352775758',
+ url: 'https://www.usna.edu/PAO/events/2018/11/shifley-lecture-Mr-Michael-Schneider.php',
+ categories: [ 'Public', 'Midshipman'],
+ type: 'eventElementToJS'
+
+},
+                                                {
+ title: 'Handel\'s Messiah',
+ start: '1543708800000',
+ end: '1543719600000',
+ id: '1140910186',
+ url: 'https://www.usna.edu/PAO/events/2018/12/handels-messiah.php',
+ categories: [ 'Musical', 'Public'],
+ type: 'eventElementToJS'
+
+},
+      {
+ title: 'Handel\'s Messiah',
+ start: '1543780800000',
+ end: '1543791600000',
+ id: '1140910186',
+ url: 'https://www.usna.edu/PAO/events/2018/12/handels-messiah2.php',
+ categories: [ 'Public', 'Musical'],
+ type: 'eventElementToJS'
+
+},
+      {
+ title: 'Masquerader\'s Fall Play',
+ start: '1541811600000',
+ end: '1541817000000',
+ id: '1746640257',
+ url: 'https://www.usna.edu/PAO/events/2018/11/The Masqueraders Fall Production.php',
+ categories: [ 'Alumni', 'Public', 'Musical', 'General', 'Midshipman'],
+ type: 'eventElementToJS'
+
+},
+      {
+ title: 'Masquerader\'s Fall Play',
+ start: '1541898000000',
+ end: '1541903400000',
+ id: '1746640257',
+ url: 'https://www.usna.edu/PAO/events/2018/11/The Masqueraders Fall Production1.php',
+ categories: [ 'Musical', 'Midshipman', 'Public', 'Alumni', 'General'],
+ type: 'eventElementToJS'
+
+},
+      {
+ title: 'Masquerader\'s Fall Play',
+ start: '1542416400000',
+ end: '1542421800000',
+ id: '1746640257',
+ url: 'https://www.usna.edu/PAO/events/2018/11/The Masqueraders Fall Production2.php',
+ categories: [ 'Public', 'Alumni', 'General', 'Midshipman', 'Musical'],
+ type: 'eventElementToJS'
+
+},
+      {
+ title: 'Masquerader\'s Fall Play',
+ start: '1542502800000',
+ end: '1542508200000',
+ id: '1746640257',
+ url: 'https://www.usna.edu/PAO/events/2018/11/The Masqueraders Fall Production3.php',
+ categories: [ 'Midshipman', 'Public', 'Musical', 'General', 'Alumni'],
+ type: 'eventElementToJS'
+
+},
+      {
+ title: 'USNA Band Holiday by the Bay Concert',
+ start: '1544229000000',
+ end: '1544236200000',
+ id: '-11130964',
+ url: 'https://www.usna.edu/PAO/events/2018/12/USNA Band Holiday by the Bay Concert.php',
+ categories: [ 'Holiday', 'Musical', 'Midshipman', 'General'],
+ type: 'eventElementToJS'
+
+},
+      {
+ title: 'Winter Leave',
+ start: '1544504400000',
+ end: '1546563600000',
+ id: '-1693190756',
+ url: 'https://www.usna.edu/PAO/events/2018/12/Winter Leave.php',
+ categories: [ 'Academics', 'Holiday', 'General', 'Midshipman'],
+ type: 'eventElementToJS'
+
+},
+      {
+ title: 'Classes Begin',
+ start: '1546923600000',
+ end: '1546923600000',
+ id: '1733283823',
+ url: 'https://www.usna.edu/PAO/events/2019/01/Classes_Begin.php',
+ categories: [ 'General', 'Midshipman', 'Academics'],
+ type: 'eventElementToJS'
+
+},
+      {
+ title: 'Birthday of Martin Luther King, Jr.',
+ start: '1548046800000',
+ end: '1548046800000',
+ id: '361865764',
+ url: 'https://www.usna.edu/PAO/events/2019/01/Birthday_of_Martin_Luther_King,_Jr..php',
+ categories: [ 'Academics', 'Holiday', 'Public', 'General', 'Professional'],
+ type: 'eventElementToJS'
+
+},
+      {
+ title: 'Midshipman Classical Recital',
+ start: '1548460800000',
+ end: '1548468000000',
+ id: '781808345',
+ url: 'https://www.usna.edu/PAO/events/2019/01/Midshipman_Classical_Recital.php',
+ categories: [ 'General', 'Midshipman', 'Musical'],
+ type: 'eventElementToJS'
+
+},
+      {
+ title: 'Valentines Day',
+ start: '1550120400000',
+ end: '1550120400000',
+ id: '1827331769',
+ url: 'https://www.usna.edu/PAO/events/2019/02/Valentines_Day.php',
+ categories: [ 'General', 'Holiday'],
+ type: 'eventElementToJS'
+
+},
+      {
+ title: 'Washington\'s Birthday',
+ start: '1550466000000',
+ end: '1550466000000',
+ id: '1099651813',
+ url: 'https://www.usna.edu/PAO/events/2019/02/Washingtons_Birthday.php',
+ categories: [ 'Academics', 'Holiday', 'Professional', 'General', 'Midshipman'],
+ type: 'eventElementToJS'
+
+},
+      {
+ title: 'Glee Club Winter Musical',
+ start: '1550880000000',
+ end: '1550887200000',
+ id: '-606879996',
+ url: 'https://www.usna.edu/PAO/events/2019/02/Glee_Club_Winter_Musical.php',
+ categories: [ 'Midshipman', 'Musical', 'Public', 'General'],
+ type: 'eventElementToJS'
+
+},
+      {
+ title: 'Glee Club Winter Musical',
+ start: '1550966400000',
+ end: '1550973600000',
+ id: '-606879996',
+ url: 'https://www.usna.edu/PAO/events/2019/02/Glee_Club_Winter_Musical.php',
+ categories: [ 'Public', 'General', 'Musical', 'Midshipman'],
+ type: 'eventElementToJS'
+
+},
+      {
+ title: 'Glee Club Winter Musical',
+ start: '1551038400000',
+ end: '1551045600000',
+ id: '-606879996',
+ url: 'https://www.usna.edu/PAO/events/2019/02/Glee_Club_Winter_Musical1.php',
+ categories: [ 'Musical', 'General', 'Public', 'Midshipman'],
+ type: 'eventElementToJS'
+
+},
+      {
+ title: 'Glee Club Winter Musical',
+ start: '1551484800000',
+ end: '1551492000000',
+ id: '-606879996',
+ url: 'https://www.usna.edu/PAO/events/2019/03/Glee_Club_Winter_Musical.php',
+ categories: [ 'Midshipman', 'Musical', 'Public', 'General'],
+ type: 'eventElementToJS'
+
+},
+      {
+ title: 'Glee Club Winter Musical',
+ start: '1551571200000',
+ end: '1551578400000',
+ id: '-606879996',
+ url: 'https://www.usna.edu/PAO/events/2019/03/Glee_Club_Winter_Musical1.php',
+ categories: [ 'Public', 'Midshipman', 'General', 'Musical'],
+ type: 'eventElementToJS'
+
+},
+      {
+ title: 'Glee Club Winter Musical',
+ start: '1551643200000',
+ end: '1551650400000',
+ id: '-606879996',
+ url: 'https://www.usna.edu/PAO/events/2019/03/Glee_Club_Winter_Musical2.php',
+ categories: [ 'Public', 'General', 'Musical', 'Midshipman'],
+ type: 'eventElementToJS'
+
+},
+      {
+ title: 'Girls STEM Day',
+ start: '1551531600000',
+ end: '1551560400000',
+ id: '2130402926',
+ url: 'https://www.usna.edu/PAO/events/2019/03/Girls_STEM_Day.php',
+ categories: [ 'Academics', 'General', 'Public'],
+ type: 'eventElementToJS'
+
+},
+      {
+ title: 'High School Girls Only STEM Day',
+ start: '1549720800000',
+ end: '1549746000000',
+ id: '942496482',
+ url: 'https://www.usna.edu/PAO/events/2019/02/High_School_Girls_Only_STEM_Day.php',
+ categories: [ 'Academics', 'Public', 'General'],
+ type: 'eventElementToJS'
+
+},
+      {
+ title: 'Pipes and Drums Concerts',
+ start: '1553900400000',
+ end: '1553907600000',
+ id: '-2032951036',
+ url: 'https://www.usna.edu/PAO/events/2019/03/Pipes_and_Drums_Concerts.php',
+ categories: [ 'Musical', 'Public', 'Midshipman', 'General'],
+ type: 'eventElementToJS'
+
+},
+      {
+ title: 'Spring Organ Recital',
+ start: '1554505200000',
+ end: '1554512400000',
+ id: '-687796444',
+ url: 'https://www.usna.edu/PAO/events/2019/04/Spring_Organ_Recital.php',
+ categories: [ 'Musical', 'Midshipman', 'Public', 'General'],
+ type: 'eventElementToJS'
+
+},
+      {
+ title: '53rd International Ball',
+ start: '1554591600000',
+ end: '1554523200000',
+ id: '-1396518559',
+ url: 'https://www.usna.edu/PAO/events/2019/04/53rd_International_Ball.php',
+ categories: [ 'General', 'Midshipman'],
+ type: 'eventElementToJS'
+
+},
+      {
+ title: 'Formal Parade',
+ start: '1555099200000',
+ end: '1555102800000',
+ id: '180062642',
+ url: 'https://www.usna.edu/PAO/events/2019/04/Formal_Parade1.php',
+ categories: [ 'Midshipman', 'General'],
+ type: 'eventElementToJS'
+
+},
+      {
+ title: 'Formal Parade',
+ start: '1554494400000',
+ end: '1554498000000',
+ id: '180062642',
+ url: 'https://www.usna.edu/PAO/events/2019/04/Formal_Parade.php',
+ categories: [ 'Public', 'General', 'Midshipman'],
+ type: 'eventElementToJS'
+
+},
+      {
+ title: 'Easter Sunday',
+ start: '1555819200000',
+ end: '1555819200000',
+ id: '-1174952634',
+ url: 'https://www.usna.edu/PAO/events/2019/04/Easter_Sunday.php',
+ categories: [ 'General', 'Holiday'],
+ type: 'eventElementToJS'
+
+},
+      {
+ title: 'Dedication Parade',
+ start: '1556308800000',
+ end: '1556312400000',
+ id: '291044553',
+ url: 'https://www.usna.edu/PAO/events/2019/04/Dedication_Parade.php',
+ categories: [ 'General', 'Midshipman', 'Public'],
+ type: 'eventElementToJS'
+
+},
+      {
+ title: 'Croquet Match',
+ start: '1556337600000',
+ end: '1556337600000',
+ id: '795938520',
+ url: 'https://www.usna.edu/PAO/events/2019/04/Croquet_Match.php',
+ categories: [ 'Alumni', 'Midshipman', 'General', 'Public'],
+ type: 'eventElementToJS'
+
+},
+      {
+ title: 'Classes End',
+ start: '1556596800000',
+ end: '1556596800000',
+ id: '1427503521',
+ url: 'https://www.usna.edu/PAO/events/2019/04/Classes_End.php',
+ categories: [ 'General', 'Academics', 'Midshipman'],
+ type: 'eventElementToJS'
+
+},
+      {
+ title: 'Blue Angels Rehearsal',
+ start: '1558461600000',
+ end: '1558465200000',
+ id: '-911637899',
+ url: 'https://www.usna.edu/PAO/events/2019/05/Blue_Angels_Rehearsal.php',
+ categories: [ 'General', 'Public'],
+ type: 'eventElementToJS'
+
+},
+      {
+ title: 'Blue Angels Flight Demonstration',
+ start: '1558548000000',
+ end: '1558551600000',
+ id: '-2128485465',
+ url: 'https://www.usna.edu/PAO/events/2019/05/Blue_Angels_Flight_Demonstration.php',
+ categories: [ 'Public', 'General'],
+ type: 'eventElementToJS'
+
+},
+      {
+ title: 'Commissioning Week Organ Concert',
+ start: '1558555200000',
+ end: '1558562400000',
+ id: '34870292',
+ url: 'https://www.usna.edu/PAO/events/2019/05/Commissioning_Week_Organ_Concert.php',
+ categories: [ 'General', 'Musical', 'Midshipman'],
+ type: 'eventElementToJS'
+
+},
+      {
+ title: 'Color Parade',
+ start: '1558623600000',
+ end: '1558627200000',
+ id: '1483533310',
+ url: 'https://www.usna.edu/PAO/events/2019/05/Color_Parade.php',
+ categories: [ 'Public', 'Midshipman', 'General'],
+ type: 'eventElementToJS'
+
+},
+      {
+ title: 'Leave Period',
+ start: '1556769600000',
+ end: '1557849600000',
+ id: '356328330',
+ url: 'https://www.usna.edu/PAO/events/2019/05/Leave_Period.php',
+ categories: [ 'Academics', 'General', 'Midshipman'],
+ type: 'eventElementToJS'
+
+},
+      {
+ title: 'Spring Break Leave',
+ start: '1552046400000',
+ end: '1552867200000',
+ id: '-1409665373',
+ url: 'https://www.usna.edu/PAO/events/2019/03/Spring_Break_Leave.php',
+ categories: [ 'General', 'Midshipman', 'Academics'],
+ type: 'eventElementToJS'
+
+},
+      {
+ title: '1\/C Leave Expires',
+ start: '1557878400000',
+ end: '1557878400000',
+ id: '867729834',
+ url: 'https://www.usna.edu/PAO/events/2019/05/Leave_Expires_for_1C.php',
+ categories: [ 'General', 'Midshipman'],
+ type: 'eventElementToJS'
+
+},
+      {
+ title: '2\/C and 3\/C Leave Expires',
+ start: '1557784800000',
+ end: '1557784800000',
+ id: '-1423031469',
+ url: 'https://www.usna.edu/PAO/events/2019/05/Leave_Expires_for_2C_and_3C.php',
+ categories: [ 'Midshipman', 'General'],
+ type: 'eventElementToJS'
+
+},
+      {
+ title: '4\/C Leave Expires',
+ start: '1557712800000',
+ end: '1557712800000',
+ id: '-2123487225',
+ url: 'https://www.usna.edu/PAO/events/2019/05/Leave_Expires_for_4C.php',
+ categories: [ 'General', 'Midshipman'],
+ type: 'eventElementToJS'
+
+},
+      {
+ title: 'Graduation',
+ start: '1558706400000',
+ end: '1558713600000',
+ id: '-1706217586',
+ url: 'https://www.usna.edu/PAO/events/2019/05/Class_of_2019_Graduation.php',
+ categories: [ 'Midshipman', 'General', 'Public'],
+ type: 'eventElementToJS'
+
+},
+      {
+ title: 'Herndon Climb',
+ start: '1558373400000',
+ end: '1558382400000',
+ id: '1310685567',
+ url: 'https://www.usna.edu/PAO/events/2019/05/Class_of_2022_Herndon_Climb.php',
+ categories: [ 'Public', 'Midshipman', 'General'],
+ type: 'eventElementToJS'
+
+},
+      {
+ title: 'Midshipmen Classical Recital',
+ start: '1542412800000',
+ end: '1542423600000',
+ id: '-853488555',
+ url: 'https://www.usna.edu/PAO/events/2018/11/Midshipmen Instrumental Recital.php',
+ categories: [ 'Midshipman', 'Musical', 'General'],
+ type: 'eventElementToJS'
+
+},
+      {
+ title: 'Pipes and Drums Concert',
+ start: '1543622400000',
+ end: '1543629600000',
+ id: '350062927',
+ url: 'https://www.usna.edu/PAO/events/2018/11/pipes-and-drums-concert.php',
+ categories: [ 'Midshipman', 'Public', 'Musical'],
+ type: 'eventElementToJS'
+
+},
+         
+                            null], 
+            function() {
+                if(this.start){
+                   var event,
+                   eventStart = parseInt(this.start),
+                   eventEnd = parseInt(this.end);
+                   event = generateEventItem({
+                       start: eventStart,
+                       end: eventEnd,
+                       title: this.title || "",
+                       url: this.url || "",
+                       categories: this.categories,
+                       type:'eventElementToJS'
+                   });
+                                      eventsList.append(event);
+                                   }
+            });
+                                       eventsList.trigger("sort");
+       //testing if the page has the empty wrapper for no events.
+      if ($("div#cal-wrapper > div.fc-mini").find(".event-column").length == 0 ) {
+        $("div#cal-wrapper").parent("div").hide();
+    }
+   });
+   function unhideListing(showN){
+        var eventsList = $("div[data-type='events']");
+        var listShown = eventsList.children(':visible').length;
+        if(isNaN(NaN) || parseInt(showN)<1){
+           showN = listLimit-1;
+        }
+        if((listShown+showN) >= eventsList.children().length) return true;
+        eventsList.children(":lt("+(listShown+showN)+")").show();
+        return false;
+    }
+</script>
+
+
+
+
+
+
+
+
+<meta content="8c860d450a014d0b5dcd1cf145db61d7" name="PageID"/>
+<!--
+<meta name="keywords" content="Navy, Naval, Service, Academy, Annapolis, USNA" />
+<meta name="description" content="The United States Naval Academy, established in 1845, is the undergraduate college for the 
+Navy that prepares young men and women to become professional officers in the US Navy and Marine Corps." />
+-->
+</body>
+</html>
