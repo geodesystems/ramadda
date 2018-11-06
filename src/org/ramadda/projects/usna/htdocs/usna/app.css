@@ -10490,7 +10490,7 @@ code {
 header {
     padding-bottom: 0;
     padding-top: 5px;
-    background: url(../img/Top.jpg) center top no-repeat #153a5e!important;
+    background: url(https://www.usna.edu/CMS/_standard3.0/_files/img/Top.jpg) center top no-repeat #153a5e!important;
     border-top: 5px solid #fbc42b
 }
 
@@ -10532,7 +10532,7 @@ header .utility-menu .has-form input {
     height: auto;
     padding-top: 4px;
     padding-bottom: 4px;
-    background: url(../img/search-icon.png) right no-repeat #fff;
+    background: url(https://www.usna.edu/CMS/_standard3.0/_files/img/search-icon.png) right no-repeat #fff;
     border-radius: 5px;
 }
 
@@ -10575,7 +10575,7 @@ header .audience-menu a {
 
 @media only screen and (max-width:40em) {
     header .logo-container {
-        background-image: url(../img/mobile-logo.png);
+        background-image: url(https://www.usna.edu/CMS/_standard3.0/_files/img/mobile-logo.png);
         background-position: 15% 50%;
         background-repeat: no-repeat;
         height: 60px
@@ -10745,7 +10745,7 @@ header .audience-menu a {
 }
 
 .sidebar .arrow {
-    background: url(../img/bullet.png) no-repeat;
+    background: url(https://www.usna.edu/CMS/_standard3.0/_files/img/bullet.png) no-repeat;
     height: 9px;
     width: 6px;
     position: absolute;
@@ -11049,7 +11049,7 @@ footer .mobile-footer li:first-child h5 {
 }
 
 .footer-bottom {
-    background: url(../img/background.png) #153a5e;
+    background: url(https://www.usna.edu/CMS/_standard3.0/_files/img/background.png) #153a5e;
     padding: 10px 0;
     color: #fff;
     font-size: .78571rem;
@@ -11262,7 +11262,7 @@ a.flat-button-panel:hover {
 .news-categories-container h3,
 .news-categories-container h4,
 .news-categories-container h5 {
-    background: url(../img/background.png) #153a5e;
+    background: url(https://www.usna.edu/CMS/_standard3.0/_files/img/background.png) #153a5e;
     color: #fff;
     padding-left: .5rem;
     padding-top: .21429rem;
@@ -12314,11 +12314,11 @@ a.extlink:after {
 }
 
 a.feedlink:after {
-    content: url(/CMS/_standard3.0/_files/images/feed-icon.png)
+    content: url(https://www.usna.edu/CMS/_standard3.0/_files/images/feed-icon.png)
 }
 
 a.imglink:after {
-    content: url(/CMS/_standard3.0/_files/images/img-icon.png)
+    content: url(https://www.usna.edu/CMS/_standard3.0/_files/images/img-icon.png)
 }
 
 a.txtlink:after {
@@ -12357,7 +12357,7 @@ a.xlslink:after {
 }
 
 a.poplink:after {
-    content: url(/CMS/_standard3.0/_files/images/popup-icon.gif);
+    content: url(https://www.usna.edu/CMS/_standard3.0/_files/images/popup-icon.gif);
 }
 
 a.no-icon:after,
@@ -12468,12 +12468,12 @@ blockquote {
    font-style: normal;
    font-weight: 300;
    src: local('Ubuntu Light'), local('Ubuntu-Light'),
-      url(/templates/resources/fonts/ubuntu/Ubuntu-Light.eot);
-   src: url(/templates/resources/fonts/ubuntu/Ubuntu-Light.eot?#iefix) format('embedded-opentype'),
-      url(/templates/resources/fonts/ubuntu/Ubuntu-Light.woff2) format('woff2'),
-      url(/templates/resources/fonts/ubuntu/Ubuntu-Light.woff) format('woff'),
-      url(/templates/resources/fonts/ubuntu/Ubuntu-Light.ttf) format('truetype'),
-      url(/templates/resources/fonts/ubuntu/Ubuntu-Light.svg#ubuntulight) format('svg');
+      url(https://usna.edu/templates/resources/fonts/ubuntu/Ubuntu-Light.eot);
+   src: url(https://usna.edu/templates/resources/fonts/ubuntu/Ubuntu-Light.eot?#iefix) format('embedded-opentype'),
+      url(https://usna.edu/templates/resources/fonts/ubuntu/Ubuntu-Light.woff2) format('woff2'),
+      url(https://usna.edu/templates/resources/fonts/ubuntu/Ubuntu-Light.woff) format('woff'),
+      url(https://usna.edu/templates/resources/fonts/ubuntu/Ubuntu-Light.ttf) format('truetype'),
+      url(https://usna.edu/templates/resources/fonts/ubuntu/Ubuntu-Light.svg#ubuntulight) format('svg');
    unicode-range: U+0460-052F, U+20B4, U+2DE0-2DFF, U+A640-A69F;
 }
 /* cyrillic */
@@ -12482,12 +12482,12 @@ blockquote {
   font-style: normal;
   font-weight: 300;
    src: local('Ubuntu Light'), local('Ubuntu-Light'),
-      url(/templates/resources/fonts/ubuntu/Ubuntu-Light.eot);
-   src: url(/templates/resources/fonts/ubuntu/Ubuntu-Light.eot?#iefix) format('embedded-opentype'),
-      url(/templates/resources/fonts/ubuntu/Ubuntu-Light.woff2) format('woff2'),
-      url(/templates/resources/fonts/ubuntu/Ubuntu-Light.woff) format('woff'),
-      url(/templates/resources/fonts/ubuntu/Ubuntu-Light.ttf) format('truetype'),
-      url(/templates/resources/fonts/ubuntu/Ubuntu-Light.svg#ubuntulight) format('svg');
+      url(https://usna.edu/templates/resources/fonts/ubuntu/Ubuntu-Light.eot);
+   src: url(https://usna.edu/templates/resources/fonts/ubuntu/Ubuntu-Light.eot?#iefix) format('embedded-opentype'),
+      url(https://usna.edu/templates/resources/fonts/ubuntu/Ubuntu-Light.woff2) format('woff2'),
+      url(https://usna.edu/templates/resources/fonts/ubuntu/Ubuntu-Light.woff) format('woff'),
+      url(https://usna.edu/templates/resources/fonts/ubuntu/Ubuntu-Light.ttf) format('truetype'),
+      url(https://usna.edu/templates/resources/fonts/ubuntu/Ubuntu-Light.svg#ubuntulight) format('svg');
   unicode-range: U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116;
 }
 /* greek-ext */
@@ -12496,12 +12496,12 @@ blockquote {
   font-style: normal;
   font-weight: 300;
    src: local('Ubuntu Light'), local('Ubuntu-Light'),
-      url(/templates/resources/fonts/ubuntu/Ubuntu-Light.eot);
-   src: url(/templates/resources/fonts/ubuntu/Ubuntu-Light.eot?#iefix) format('embedded-opentype'),
-      url(/templates/resources/fonts/ubuntu/Ubuntu-Light.woff2) format('woff2'),
-      url(/templates/resources/fonts/ubuntu/Ubuntu-Light.woff) format('woff'),
-      url(/templates/resources/fonts/ubuntu/Ubuntu-Light.ttf) format('truetype'),
-      url(/templates/resources/fonts/ubuntu/Ubuntu-Light.svg#ubuntulight) format('svg');
+      url(https://usna.edu/templates/resources/fonts/ubuntu/Ubuntu-Light.eot);
+   src: url(https://usna.edu/templates/resources/fonts/ubuntu/Ubuntu-Light.eot?#iefix) format('embedded-opentype'),
+      url(https://usna.edu/templates/resources/fonts/ubuntu/Ubuntu-Light.woff2) format('woff2'),
+      url(https://usna.edu/templates/resources/fonts/ubuntu/Ubuntu-Light.woff) format('woff'),
+      url(https://usna.edu/templates/resources/fonts/ubuntu/Ubuntu-Light.ttf) format('truetype'),
+      url(https://usna.edu/templates/resources/fonts/ubuntu/Ubuntu-Light.svg#ubuntulight) format('svg');
   unicode-range: U+1F00-1FFF;
 }
 /* greek */
@@ -12510,12 +12510,12 @@ blockquote {
   font-style: normal;
   font-weight: 300;
    src: local('Ubuntu Light'), local('Ubuntu-Light'),
-      url(/templates/resources/fonts/ubuntu/Ubuntu-Light.eot);
-   src: url(/templates/resources/fonts/ubuntu/Ubuntu-Light.eot?#iefix) format('embedded-opentype'),
-      url(/templates/resources/fonts/ubuntu/Ubuntu-Light.woff2) format('woff2'),
-      url(/templates/resources/fonts/ubuntu/Ubuntu-Light.woff) format('woff'),
-      url(/templates/resources/fonts/ubuntu/Ubuntu-Light.ttf) format('truetype'),
-      url(/templates/resources/fonts/ubuntu/Ubuntu-Light.svg#ubuntulight) format('svg');
+      url(https://usna.edu/templates/resources/fonts/ubuntu/Ubuntu-Light.eot);
+   src: url(https://usna.edu/templates/resources/fonts/ubuntu/Ubuntu-Light.eot?#iefix) format('embedded-opentype'),
+      url(https://usna.edu/templates/resources/fonts/ubuntu/Ubuntu-Light.woff2) format('woff2'),
+      url(https://usna.edu/templates/resources/fonts/ubuntu/Ubuntu-Light.woff) format('woff'),
+      url(https://usna.edu/templates/resources/fonts/ubuntu/Ubuntu-Light.ttf) format('truetype'),
+      url(https://usna.edu/templates/resources/fonts/ubuntu/Ubuntu-Light.svg#ubuntulight) format('svg');
   unicode-range: U+0370-03FF;
 }
 /* latin-ext */
@@ -12524,12 +12524,12 @@ blockquote {
   font-style: normal;
   font-weight: 300;
    src: local('Ubuntu Light'), local('Ubuntu-Light'),
-      url(/templates/resources/fonts/ubuntu/Ubuntu-Light.eot);
-   src: url(/templates/resources/fonts/ubuntu/Ubuntu-Light.eot?#iefix) format('embedded-opentype'),
-      url(/templates/resources/fonts/ubuntu/Ubuntu-Light.woff2) format('woff2'),
-      url(/templates/resources/fonts/ubuntu/Ubuntu-Light.woff) format('woff'),
-      url(/templates/resources/fonts/ubuntu/Ubuntu-Light.ttf) format('truetype'),
-      url(/templates/resources/fonts/ubuntu/Ubuntu-Light.svg#ubuntulight) format('svg');
+      url(https://usna.edu/templates/resources/fonts/ubuntu/Ubuntu-Light.eot);
+   src: url(https://usna.edu/templates/resources/fonts/ubuntu/Ubuntu-Light.eot?#iefix) format('embedded-opentype'),
+      url(https://usna.edu/templates/resources/fonts/ubuntu/Ubuntu-Light.woff2) format('woff2'),
+      url(https://usna.edu/templates/resources/fonts/ubuntu/Ubuntu-Light.woff) format('woff'),
+      url(https://usna.edu/templates/resources/fonts/ubuntu/Ubuntu-Light.ttf) format('truetype'),
+      url(https://usna.edu/templates/resources/fonts/ubuntu/Ubuntu-Light.svg#ubuntulight) format('svg');
   unicode-range: U+0100-024F, U+1E00-1EFF, U+20A0-20AB, U+20AD-20CF, U+2C60-2C7F, U+A720-A7FF;
 }
 /* latin */
@@ -12538,12 +12538,12 @@ blockquote {
   font-style: normal;
   font-weight: 300;
    src: local('Ubuntu Light'), local('Ubuntu-Light'),
-      url(/templates/resources/fonts/ubuntu/Ubuntu-Light.eot);
-   src: url(/templates/resources/fonts/ubuntu/Ubuntu-Light.eot?#iefix) format('embedded-opentype'),
-      url(/templates/resources/fonts/ubuntu/Ubuntu-Light.woff2) format('woff2'),
-      url(/templates/resources/fonts/ubuntu/Ubuntu-Light.woff) format('woff'),
-      url(/templates/resources/fonts/ubuntu/Ubuntu-Light.ttf) format('truetype'),
-      url(/templates/resources/fonts/ubuntu/Ubuntu-Light.svg#ubuntulight) format('svg');
+      url(https://usna.edu/templates/resources/fonts/ubuntu/Ubuntu-Light.eot);
+   src: url(https://usna.edu/templates/resources/fonts/ubuntu/Ubuntu-Light.eot?#iefix) format('embedded-opentype'),
+      url(https://usna.edu/templates/resources/fonts/ubuntu/Ubuntu-Light.woff2) format('woff2'),
+      url(https://usna.edu/templates/resources/fonts/ubuntu/Ubuntu-Light.woff) format('woff'),
+      url(https://usna.edu/templates/resources/fonts/ubuntu/Ubuntu-Light.ttf) format('truetype'),
+      url(https://usna.edu/templates/resources/fonts/ubuntu/Ubuntu-Light.svg#ubuntulight) format('svg');
   unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2212, U+2215, U+E0FF, U+EFFD, U+F000;
 }
 /* cyrillic-ext */
@@ -12552,12 +12552,12 @@ blockquote {
   font-style: normal;
   font-weight: 400;
    src: local('Ubuntu'),
-      url(/templates/resources/fonts/ubuntu/Ubuntu-Regular.eot);
-   src: url(/templates/resources/fonts/ubuntu/Ubuntu-Regular.eot?#iefix) format('embedded-opentype'),
-      url(/templates/resources/fonts/ubuntu/Ubuntu-Regular.woff2) format('woff2'),
-      url(/templates/resources/fonts/ubuntu/Ubuntu-Regular.woff) format('woff'),
-      url(/templates/resources/fonts/ubuntu/Ubuntu-Regular.ttf) format('truetype'),
-      url(/templates/resources/fonts/ubuntu/Ubuntu-Regular.svg#ubunturegular) format('svg');
+      url(https://usna.edu/templates/resources/fonts/ubuntu/Ubuntu-Regular.eot);
+   src: url(https://usna.edu/templates/resources/fonts/ubuntu/Ubuntu-Regular.eot?#iefix) format('embedded-opentype'),
+      url(https://usna.edu/templates/resources/fonts/ubuntu/Ubuntu-Regular.woff2) format('woff2'),
+      url(https://usna.edu/templates/resources/fonts/ubuntu/Ubuntu-Regular.woff) format('woff'),
+      url(https://usna.edu/templates/resources/fonts/ubuntu/Ubuntu-Regular.ttf) format('truetype'),
+      url(https://usna.edu/templates/resources/fonts/ubuntu/Ubuntu-Regular.svg#ubunturegular) format('svg');
   unicode-range: U+0460-052F, U+20B4, U+2DE0-2DFF, U+A640-A69F;
 }
 /* cyrillic */
@@ -12566,12 +12566,12 @@ blockquote {
   font-style: normal;
   font-weight: 400;
    src: local('Ubuntu'),
-      url(/templates/resources/fonts/ubuntu/Ubuntu-Regular.eot);
-   src: url(/templates/resources/fonts/ubuntu/Ubuntu-Regular.eot?#iefix) format('embedded-opentype'),
-      url(/templates/resources/fonts/ubuntu/Ubuntu-Regular.woff2) format('woff2'),
-      url(/templates/resources/fonts/ubuntu/Ubuntu-Regular.woff) format('woff'),
-      url(/templates/resources/fonts/ubuntu/Ubuntu-Regular.ttf) format('truetype'),
-      url(/templates/resources/fonts/ubuntu/Ubuntu-Regular.svg#ubunturegular) format('svg');  unicode-range: U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116;
+      url(https://usna.edu/templates/resources/fonts/ubuntu/Ubuntu-Regular.eot);
+   src: url(https://usna.edu/templates/resources/fonts/ubuntu/Ubuntu-Regular.eot?#iefix) format('embedded-opentype'),
+      url(https://usna.edu/templates/resources/fonts/ubuntu/Ubuntu-Regular.woff2) format('woff2'),
+      url(https://usna.edu/templates/resources/fonts/ubuntu/Ubuntu-Regular.woff) format('woff'),
+      url(https://usna.edu/templates/resources/fonts/ubuntu/Ubuntu-Regular.ttf) format('truetype'),
+      url(https://usna.edu/templates/resources/fonts/ubuntu/Ubuntu-Regular.svg#ubunturegular) format('svg');  unicode-range: U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116;
 }
 /* greek-ext */
 @font-face {
@@ -12579,12 +12579,12 @@ blockquote {
   font-style: normal;
   font-weight: 400;
    src: local('Ubuntu'),
-      url(/templates/resources/fonts/ubuntu/Ubuntu-Regular.eot);
-   src: url(/templates/resources/fonts/ubuntu/Ubuntu-Regular.eot?#iefix) format('embedded-opentype'),
-      url(/templates/resources/fonts/ubuntu/Ubuntu-Regular.woff2) format('woff2'),
-      url(/templates/resources/fonts/ubuntu/Ubuntu-Regular.woff) format('woff'),
-      url(/templates/resources/fonts/ubuntu/Ubuntu-Regular.ttf) format('truetype'),
-      url(/templates/resources/fonts/ubuntu/Ubuntu-Regular.svg#ubunturegular) format('svg');  unicode-range: U+1F00-1FFF;
+      url(https://usna.edu/templates/resources/fonts/ubuntu/Ubuntu-Regular.eot);
+   src: url(https://usna.edu/templates/resources/fonts/ubuntu/Ubuntu-Regular.eot?#iefix) format('embedded-opentype'),
+      url(https://usna.edu/templates/resources/fonts/ubuntu/Ubuntu-Regular.woff2) format('woff2'),
+      url(https://usna.edu/templates/resources/fonts/ubuntu/Ubuntu-Regular.woff) format('woff'),
+      url(https://usna.edu/templates/resources/fonts/ubuntu/Ubuntu-Regular.ttf) format('truetype'),
+      url(https://usna.edu/templates/resources/fonts/ubuntu/Ubuntu-Regular.svg#ubunturegular) format('svg');  unicode-range: U+1F00-1FFF;
 }
 /* greek */
 @font-face {
@@ -12592,12 +12592,12 @@ blockquote {
   font-style: normal;
   font-weight: 400;
    src: local('Ubuntu'),
-      url(/templates/resources/fonts/ubuntu/Ubuntu-Regular.eot);
-   src: url(/templates/resources/fonts/ubuntu/Ubuntu-Regular.eot?#iefix) format('embedded-opentype'),
-      url(/templates/resources/fonts/ubuntu/Ubuntu-Regular.woff2) format('woff2'),
-      url(/templates/resources/fonts/ubuntu/Ubuntu-Regular.woff) format('woff'),
-      url(/templates/resources/fonts/ubuntu/Ubuntu-Regular.ttf) format('truetype'),
-      url(/templates/resources/fonts/ubuntu/Ubuntu-Regular.svg#ubunturegular) format('svg');  unicode-range: U+0370-03FF;
+      url(https://usna.edu/templates/resources/fonts/ubuntu/Ubuntu-Regular.eot);
+   src: url(https://usna.edu/templates/resources/fonts/ubuntu/Ubuntu-Regular.eot?#iefix) format('embedded-opentype'),
+      url(https://usna.edu/templates/resources/fonts/ubuntu/Ubuntu-Regular.woff2) format('woff2'),
+      url(https://usna.edu/templates/resources/fonts/ubuntu/Ubuntu-Regular.woff) format('woff'),
+      url(https://usna.edu/templates/resources/fonts/ubuntu/Ubuntu-Regular.ttf) format('truetype'),
+      url(https://usna.edu/templates/resources/fonts/ubuntu/Ubuntu-Regular.svg#ubunturegular) format('svg');  unicode-range: U+0370-03FF;
 }
 /* latin-ext */
 @font-face {
@@ -12605,12 +12605,12 @@ blockquote {
   font-style: normal;
   font-weight: 400;
    src: local('Ubuntu'),
-      url(/templates/resources/fonts/ubuntu/Ubuntu-Regular.eot);
-   src: url(/templates/resources/fonts/ubuntu/Ubuntu-Regular.eot?#iefix) format('embedded-opentype'),
-      url(/templates/resources/fonts/ubuntu/Ubuntu-Regular.woff2) format('woff2'),
-      url(/templates/resources/fonts/ubuntu/Ubuntu-Regular.woff) format('woff'),
-      url(/templates/resources/fonts/ubuntu/Ubuntu-Regular.ttf) format('truetype'),
-      url(/templates/resources/fonts/ubuntu/Ubuntu-Regular.svg#ubunturegular) format('svg');  unicode-range: U+0100-024F, U+1E00-1EFF, U+20A0-20AB, U+20AD-20CF, U+2C60-2C7F, U+A720-A7FF;
+      url(https://usna.edu/templates/resources/fonts/ubuntu/Ubuntu-Regular.eot);
+   src: url(https://usna.edu/templates/resources/fonts/ubuntu/Ubuntu-Regular.eot?#iefix) format('embedded-opentype'),
+      url(https://usna.edu/templates/resources/fonts/ubuntu/Ubuntu-Regular.woff2) format('woff2'),
+      url(https://usna.edu/templates/resources/fonts/ubuntu/Ubuntu-Regular.woff) format('woff'),
+      url(https://usna.edu/templates/resources/fonts/ubuntu/Ubuntu-Regular.ttf) format('truetype'),
+      url(https://usna.edu/templates/resources/fonts/ubuntu/Ubuntu-Regular.svg#ubunturegular) format('svg');  unicode-range: U+0100-024F, U+1E00-1EFF, U+20A0-20AB, U+20AD-20CF, U+2C60-2C7F, U+A720-A7FF;
 }
 /* latin */
 @font-face {
@@ -12618,12 +12618,12 @@ blockquote {
   font-style: normal;
   font-weight: 400;
    src: local('Ubuntu'),
-      url(/templates/resources/fonts/ubuntu/Ubuntu-Regular.eot);
-   src: url(/templates/resources/fonts/ubuntu/Ubuntu-Regular.eot?#iefix) format('embedded-opentype'),
-      url(/templates/resources/fonts/ubuntu/Ubuntu-Regular.woff2) format('woff2'),
-      url(/templates/resources/fonts/ubuntu/Ubuntu-Regular.woff) format('woff'),
-      url(/templates/resources/fonts/ubuntu/Ubuntu-Regular.ttf) format('truetype'),
-      url(/templates/resources/fonts/ubuntu/Ubuntu-Regular.svg#ubunturegular) format('svg');  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2212, U+2215, U+E0FF, U+EFFD, U+F000;
+      url(https://usna.edu/templates/resources/fonts/ubuntu/Ubuntu-Regular.eot);
+   src: url(https://usna.edu/templates/resources/fonts/ubuntu/Ubuntu-Regular.eot?#iefix) format('embedded-opentype'),
+      url(https://usna.edu/templates/resources/fonts/ubuntu/Ubuntu-Regular.woff2) format('woff2'),
+      url(https://usna.edu/templates/resources/fonts/ubuntu/Ubuntu-Regular.woff) format('woff'),
+      url(https://usna.edu/templates/resources/fonts/ubuntu/Ubuntu-Regular.ttf) format('truetype'),
+      url(https://usna.edu/templates/resources/fonts/ubuntu/Ubuntu-Regular.svg#ubunturegular) format('svg');  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2212, U+2215, U+E0FF, U+EFFD, U+F000;
 }
 /* cyrillic-ext */
 @font-face {
@@ -12631,12 +12631,12 @@ blockquote {
   font-style: normal;
   font-weight: 500;
    src: local('Ubuntu Medium'), local('Ubuntu-Medium'),
-      url(/templates/resources/fonts/ubuntu/Ubuntu-Medium.eot);
-   src: url(/templates/resources/fonts/ubuntu/Ubuntu-Medium.eot?#iefix) format('embedded-opentype'),
-      url(/templates/resources/fonts/ubuntu/Ubuntu-Medium.woff2) format('woff2'),
-      url(/templates/resources/fonts/ubuntu/Ubuntu-Medium.woff) format('woff'),
-      url(/templates/resources/fonts/ubuntu/Ubuntu-Medium.ttf) format('truetype'),
-      url(/templates/resources/fonts/ubuntu/Ubuntu-Medium.svg#ubuntumedium) format('svg');
+      url(https://usna.edu/templates/resources/fonts/ubuntu/Ubuntu-Medium.eot);
+   src: url(https://usna.edu/templates/resources/fonts/ubuntu/Ubuntu-Medium.eot?#iefix) format('embedded-opentype'),
+      url(https://usna.edu/templates/resources/fonts/ubuntu/Ubuntu-Medium.woff2) format('woff2'),
+      url(https://usna.edu/templates/resources/fonts/ubuntu/Ubuntu-Medium.woff) format('woff'),
+      url(https://usna.edu/templates/resources/fonts/ubuntu/Ubuntu-Medium.ttf) format('truetype'),
+      url(https://usna.edu/templates/resources/fonts/ubuntu/Ubuntu-Medium.svg#ubuntumedium) format('svg');
   unicode-range: U+0460-052F, U+20B4, U+2DE0-2DFF, U+A640-A69F;
 }
 /* cyrillic */
@@ -12645,12 +12645,12 @@ blockquote {
   font-style: normal;
   font-weight: 500;
    src: local('Ubuntu Medium'), local('Ubuntu-Medium'),
-      url(/templates/resources/fonts/ubuntu/Ubuntu-Medium.eot);
-   src: url(/templates/resources/fonts/ubuntu/Ubuntu-Medium.eot?#iefix) format('embedded-opentype'),
-      url(/templates/resources/fonts/ubuntu/Ubuntu-Medium.woff2) format('woff2'),
-      url(/templates/resources/fonts/ubuntu/Ubuntu-Medium.woff) format('woff'),
-      url(/templates/resources/fonts/ubuntu/Ubuntu-Medium.ttf) format('truetype'),
-      url(/templates/resources/fonts/ubuntu/Ubuntu-Medium.svg#ubuntumedium) format('svg');
+      url(https://usna.edu/templates/resources/fonts/ubuntu/Ubuntu-Medium.eot);
+   src: url(https://usna.edu/templates/resources/fonts/ubuntu/Ubuntu-Medium.eot?#iefix) format('embedded-opentype'),
+      url(https://usna.edu/templates/resources/fonts/ubuntu/Ubuntu-Medium.woff2) format('woff2'),
+      url(https://usna.edu/templates/resources/fonts/ubuntu/Ubuntu-Medium.woff) format('woff'),
+      url(https://usna.edu/templates/resources/fonts/ubuntu/Ubuntu-Medium.ttf) format('truetype'),
+      url(https://usna.edu/templates/resources/fonts/ubuntu/Ubuntu-Medium.svg#ubuntumedium) format('svg');
   unicode-range: U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116;
 }
 /* greek-ext */
@@ -12659,12 +12659,12 @@ blockquote {
   font-style: normal;
   font-weight: 500;
    src: local('Ubuntu Medium'), local('Ubuntu-Medium'),
-      url(/templates/resources/fonts/ubuntu/Ubuntu-Medium.eot);
-   src: url(/templates/resources/fonts/ubuntu/Ubuntu-Medium.eot?#iefix) format('embedded-opentype'),
-      url(/templates/resources/fonts/ubuntu/Ubuntu-Medium.woff2) format('woff2'),
-      url(/templates/resources/fonts/ubuntu/Ubuntu-Medium.woff) format('woff'),
-      url(/templates/resources/fonts/ubuntu/Ubuntu-Medium.ttf) format('truetype'),
-      url(/templates/resources/fonts/ubuntu/Ubuntu-Medium.svg#ubuntumedium) format('svg');
+      url(https://usna.edu/templates/resources/fonts/ubuntu/Ubuntu-Medium.eot);
+   src: url(https://usna.edu/templates/resources/fonts/ubuntu/Ubuntu-Medium.eot?#iefix) format('embedded-opentype'),
+      url(https://usna.edu/templates/resources/fonts/ubuntu/Ubuntu-Medium.woff2) format('woff2'),
+      url(https://usna.edu/templates/resources/fonts/ubuntu/Ubuntu-Medium.woff) format('woff'),
+      url(https://usna.edu/templates/resources/fonts/ubuntu/Ubuntu-Medium.ttf) format('truetype'),
+      url(https://usna.edu/templates/resources/fonts/ubuntu/Ubuntu-Medium.svg#ubuntumedium) format('svg');
   unicode-range: U+1F00-1FFF;
 }
 /* greek */
@@ -12673,12 +12673,12 @@ blockquote {
   font-style: normal;
   font-weight: 500;
    src: local('Ubuntu Medium'), local('Ubuntu-Medium'),
-      url(/templates/resources/fonts/ubuntu/Ubuntu-Medium.eot);
-   src: url(/templates/resources/fonts/ubuntu/Ubuntu-Medium.eot?#iefix) format('embedded-opentype'),
-      url(/templates/resources/fonts/ubuntu/Ubuntu-Medium.woff2) format('woff2'),
-      url(/templates/resources/fonts/ubuntu/Ubuntu-Medium.woff) format('woff'),
-      url(/templates/resources/fonts/ubuntu/Ubuntu-Medium.ttf) format('truetype'),
-      url(/templates/resources/fonts/ubuntu/Ubuntu-Medium.svg#ubuntumedium) format('svg');
+      url(https://usna.edu/templates/resources/fonts/ubuntu/Ubuntu-Medium.eot);
+   src: url(https://usna.edu/templates/resources/fonts/ubuntu/Ubuntu-Medium.eot?#iefix) format('embedded-opentype'),
+      url(https://usna.edu/templates/resources/fonts/ubuntu/Ubuntu-Medium.woff2) format('woff2'),
+      url(https://usna.edu/templates/resources/fonts/ubuntu/Ubuntu-Medium.woff) format('woff'),
+      url(https://usna.edu/templates/resources/fonts/ubuntu/Ubuntu-Medium.ttf) format('truetype'),
+      url(https://usna.edu/templates/resources/fonts/ubuntu/Ubuntu-Medium.svg#ubuntumedium) format('svg');
   unicode-range: U+0370-03FF;
 }
 /* latin-ext */
@@ -12687,12 +12687,12 @@ blockquote {
   font-style: normal;
   font-weight: 500;
    src: local('Ubuntu Medium'), local('Ubuntu-Medium'),
-      url(/templates/resources/fonts/ubuntu/Ubuntu-Medium.eot);
-   src: url(/templates/resources/fonts/ubuntu/Ubuntu-Medium.eot?#iefix) format('embedded-opentype'),
-      url(/templates/resources/fonts/ubuntu/Ubuntu-Medium.woff2) format('woff2'),
-      url(/templates/resources/fonts/ubuntu/Ubuntu-Medium.woff) format('woff'),
-      url(/templates/resources/fonts/ubuntu/Ubuntu-Medium.ttf) format('truetype'),
-      url(/templates/resources/fonts/ubuntu/Ubuntu-Medium.svg#ubuntumedium) format('svg');
+      url(https://usna.edu/templates/resources/fonts/ubuntu/Ubuntu-Medium.eot);
+   src: url(https://usna.edu/templates/resources/fonts/ubuntu/Ubuntu-Medium.eot?#iefix) format('embedded-opentype'),
+      url(https://usna.edu/templates/resources/fonts/ubuntu/Ubuntu-Medium.woff2) format('woff2'),
+      url(https://usna.edu/templates/resources/fonts/ubuntu/Ubuntu-Medium.woff) format('woff'),
+      url(https://usna.edu/templates/resources/fonts/ubuntu/Ubuntu-Medium.ttf) format('truetype'),
+      url(https://usna.edu/templates/resources/fonts/ubuntu/Ubuntu-Medium.svg#ubuntumedium) format('svg');
   unicode-range: U+0100-024F, U+1E00-1EFF, U+20A0-20AB, U+20AD-20CF, U+2C60-2C7F, U+A720-A7FF;
 }
 /* latin */
@@ -12701,12 +12701,12 @@ blockquote {
   font-style: normal;
   font-weight: 500;
    src: local('Ubuntu Medium'), local('Ubuntu-Medium'),
-      url(/templates/resources/fonts/ubuntu/Ubuntu-Medium.eot);
-   src: url(/templates/resources/fonts/ubuntu/Ubuntu-Medium.eot?#iefix) format('embedded-opentype'),
-      url(/templates/resources/fonts/ubuntu/Ubuntu-Medium.woff2) format('woff2'),
-      url(/templates/resources/fonts/ubuntu/Ubuntu-Medium.woff) format('woff'),
-      url(/templates/resources/fonts/ubuntu/Ubuntu-Medium.ttf) format('truetype'),
-      url(/templates/resources/fonts/ubuntu/Ubuntu-Medium.svg#ubuntumedium) format('svg');
+      url(https://usna.edu/templates/resources/fonts/ubuntu/Ubuntu-Medium.eot);
+   src: url(https://usna.edu/templates/resources/fonts/ubuntu/Ubuntu-Medium.eot?#iefix) format('embedded-opentype'),
+      url(https://usna.edu/templates/resources/fonts/ubuntu/Ubuntu-Medium.woff2) format('woff2'),
+      url(https://usna.edu/templates/resources/fonts/ubuntu/Ubuntu-Medium.woff) format('woff'),
+      url(https://usna.edu/templates/resources/fonts/ubuntu/Ubuntu-Medium.ttf) format('truetype'),
+      url(https://usna.edu/templates/resources/fonts/ubuntu/Ubuntu-Medium.svg#ubuntumedium) format('svg');
   unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2212, U+2215, U+E0FF, U+EFFD, U+F000;
 }
 /* cyrillic-ext */
@@ -12715,12 +12715,12 @@ blockquote {
   font-style: normal;
   font-weight: 700;
    src: local('Ubuntu Bold'), local('Ubuntu-Bold'),
-      url(/templates/resources/fonts/ubuntu/Ubuntu-Bold.eot);
-   src: url(/templates/resources/fonts/ubuntu/Ubuntu-Bold.eot?#iefix) format('embedded-opentype'),
-      url(/templates/resources/fonts/ubuntu/Ubuntu-Bold.woff2) format('woff2'),
-      url(/templates/resources/fonts/ubuntu/Ubuntu-Bold.woff) format('woff'),
-      url(/templates/resources/fonts/ubuntu/Ubuntu-Bold.ttf) format('truetype'),
-      url(/templates/resources/fonts/ubuntu/Ubuntu-Bold.svg#ubuntubold) format('svg');
+      url(https://usna.edu/templates/resources/fonts/ubuntu/Ubuntu-Bold.eot);
+   src: url(https://usna.edu/templates/resources/fonts/ubuntu/Ubuntu-Bold.eot?#iefix) format('embedded-opentype'),
+      url(https://usna.edu/templates/resources/fonts/ubuntu/Ubuntu-Bold.woff2) format('woff2'),
+      url(https://usna.edu/templates/resources/fonts/ubuntu/Ubuntu-Bold.woff) format('woff'),
+      url(https://usna.edu/templates/resources/fonts/ubuntu/Ubuntu-Bold.ttf) format('truetype'),
+      url(https://usna.edu/templates/resources/fonts/ubuntu/Ubuntu-Bold.svg#ubuntubold) format('svg');
   unicode-range: U+0460-052F, U+20B4, U+2DE0-2DFF, U+A640-A69F;
 }
 /* cyrillic */
@@ -12729,12 +12729,12 @@ blockquote {
   font-style: normal;
   font-weight: 700;
    src: local('Ubuntu Bold'), local('Ubuntu-Bold'),
-      url(/templates/resources/fonts/ubuntu/Ubuntu-Bold.eot);
-   src: url(/templates/resources/fonts/ubuntu/Ubuntu-Bold.eot?#iefix) format('embedded-opentype'),
-      url(/templates/resources/fonts/ubuntu/Ubuntu-Bold.woff2) format('woff2'),
-      url(/templates/resources/fonts/ubuntu/Ubuntu-Bold.woff) format('woff'),
-      url(/templates/resources/fonts/ubuntu/Ubuntu-Bold.ttf) format('truetype'),
-      url(/templates/resources/fonts/ubuntu/Ubuntu-Bold.svg#ubuntubold) format('svg');
+      url(https://usna.edu/templates/resources/fonts/ubuntu/Ubuntu-Bold.eot);
+   src: url(https://usna.edu/templates/resources/fonts/ubuntu/Ubuntu-Bold.eot?#iefix) format('embedded-opentype'),
+      url(https://usna.edu/templates/resources/fonts/ubuntu/Ubuntu-Bold.woff2) format('woff2'),
+      url(https://usna.edu/templates/resources/fonts/ubuntu/Ubuntu-Bold.woff) format('woff'),
+      url(https://usna.edu/templates/resources/fonts/ubuntu/Ubuntu-Bold.ttf) format('truetype'),
+      url(https://usna.edu/templates/resources/fonts/ubuntu/Ubuntu-Bold.svg#ubuntubold) format('svg');
   unicode-range: U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116;
 }
 /* greek-ext */
@@ -12743,12 +12743,12 @@ blockquote {
   font-style: normal;
   font-weight: 700;
    src: local('Ubuntu Bold'), local('Ubuntu-Bold'),
-      url(/templates/resources/fonts/ubuntu/Ubuntu-Bold.eot);
-   src: url(/templates/resources/fonts/ubuntu/Ubuntu-Bold.eot?#iefix) format('embedded-opentype'),
-      url(/templates/resources/fonts/ubuntu/Ubuntu-Bold.woff2) format('woff2'),
-      url(/templates/resources/fonts/ubuntu/Ubuntu-Bold.woff) format('woff'),
-      url(/templates/resources/fonts/ubuntu/Ubuntu-Bold.ttf) format('truetype'),
-      url(/templates/resources/fonts/ubuntu/Ubuntu-Bold.svg#ubuntubold) format('svg');
+      url(https://usna.edu/templates/resources/fonts/ubuntu/Ubuntu-Bold.eot);
+   src: url(https://usna.edu/templates/resources/fonts/ubuntu/Ubuntu-Bold.eot?#iefix) format('embedded-opentype'),
+      url(https://usna.edu/templates/resources/fonts/ubuntu/Ubuntu-Bold.woff2) format('woff2'),
+      url(https://usna.edu/templates/resources/fonts/ubuntu/Ubuntu-Bold.woff) format('woff'),
+      url(https://usna.edu/templates/resources/fonts/ubuntu/Ubuntu-Bold.ttf) format('truetype'),
+      url(https://usna.edu/templates/resources/fonts/ubuntu/Ubuntu-Bold.svg#ubuntubold) format('svg');
   unicode-range: U+1F00-1FFF;
 }
 /* greek */
@@ -12757,12 +12757,12 @@ blockquote {
   font-style: normal;
   font-weight: 700;
    src: local('Ubuntu Bold'), local('Ubuntu-Bold'),
-      url(/templates/resources/fonts/ubuntu/Ubuntu-Bold.eot);
-   src: url(/templates/resources/fonts/ubuntu/Ubuntu-Bold.eot?#iefix) format('embedded-opentype'),
-      url(/templates/resources/fonts/ubuntu/Ubuntu-Bold.woff2) format('woff2'),
-      url(/templates/resources/fonts/ubuntu/Ubuntu-Bold.woff) format('woff'),
-      url(/templates/resources/fonts/ubuntu/Ubuntu-Bold.ttf) format('truetype'),
-      url(/templates/resources/fonts/ubuntu/Ubuntu-Bold.svg#ubuntubold) format('svg');
+      url(https://usna.edu/templates/resources/fonts/ubuntu/Ubuntu-Bold.eot);
+   src: url(https://usna.edu/templates/resources/fonts/ubuntu/Ubuntu-Bold.eot?#iefix) format('embedded-opentype'),
+      url(https://usna.edu/templates/resources/fonts/ubuntu/Ubuntu-Bold.woff2) format('woff2'),
+      url(https://usna.edu/templates/resources/fonts/ubuntu/Ubuntu-Bold.woff) format('woff'),
+      url(https://usna.edu/templates/resources/fonts/ubuntu/Ubuntu-Bold.ttf) format('truetype'),
+      url(https://usna.edu/templates/resources/fonts/ubuntu/Ubuntu-Bold.svg#ubuntubold) format('svg');
   unicode-range: U+0370-03FF;
 }
 /* latin-ext */
@@ -12771,12 +12771,12 @@ blockquote {
   font-style: normal;
   font-weight: 700;
    src: local('Ubuntu Bold'), local('Ubuntu-Bold'),
-      url(/templates/resources/fonts/ubuntu/Ubuntu-Bold.eot);
-   src: url(/templates/resources/fonts/ubuntu/Ubuntu-Bold.eot?#iefix) format('embedded-opentype'),
-      url(/templates/resources/fonts/ubuntu/Ubuntu-Bold.woff2) format('woff2'),
-      url(/templates/resources/fonts/ubuntu/Ubuntu-Bold.woff) format('woff'),
-      url(/templates/resources/fonts/ubuntu/Ubuntu-Bold.ttf) format('truetype'),
-      url(/templates/resources/fonts/ubuntu/Ubuntu-Bold.svg#ubuntubold) format('svg');
+      url(https://usna.edu/templates/resources/fonts/ubuntu/Ubuntu-Bold.eot);
+   src: url(https://usna.edu/templates/resources/fonts/ubuntu/Ubuntu-Bold.eot?#iefix) format('embedded-opentype'),
+      url(https://usna.edu/templates/resources/fonts/ubuntu/Ubuntu-Bold.woff2) format('woff2'),
+      url(https://usna.edu/templates/resources/fonts/ubuntu/Ubuntu-Bold.woff) format('woff'),
+      url(https://usna.edu/templates/resources/fonts/ubuntu/Ubuntu-Bold.ttf) format('truetype'),
+      url(https://usna.edu/templates/resources/fonts/ubuntu/Ubuntu-Bold.svg#ubuntubold) format('svg');
   unicode-range: U+0100-024F, U+1E00-1EFF, U+20A0-20AB, U+20AD-20CF, U+2C60-2C7F, U+A720-A7FF;
 }
 /* latin */
@@ -12785,12 +12785,12 @@ blockquote {
   font-style: normal;
   font-weight: 700;
    src: local('Ubuntu Bold'), local('Ubuntu-Bold'),
-      url(/templates/resources/fonts/ubuntu/Ubuntu-Bold.eot);
-   src: url(/templates/resources/fonts/ubuntu/Ubuntu-Bold.eot?#iefix) format('embedded-opentype'),
-      url(/templates/resources/fonts/ubuntu/Ubuntu-Bold.woff2) format('woff2'),
-      url(/templates/resources/fonts/ubuntu/Ubuntu-Bold.woff) format('woff'),
-      url(/templates/resources/fonts/ubuntu/Ubuntu-Bold.ttf) format('truetype'),
-      url(/templates/resources/fonts/ubuntu/Ubuntu-Bold.svg#ubuntubold) format('svg');
+      url(https://usna.edu/templates/resources/fonts/ubuntu/Ubuntu-Bold.eot);
+   src: url(https://usna.edu/templates/resources/fonts/ubuntu/Ubuntu-Bold.eot?#iefix) format('embedded-opentype'),
+      url(https://usna.edu/templates/resources/fonts/ubuntu/Ubuntu-Bold.woff2) format('woff2'),
+      url(https://usna.edu/templates/resources/fonts/ubuntu/Ubuntu-Bold.woff) format('woff'),
+      url(https://usna.edu/templates/resources/fonts/ubuntu/Ubuntu-Bold.ttf) format('truetype'),
+      url(https://usna.edu/templates/resources/fonts/ubuntu/Ubuntu-Bold.svg#ubuntubold) format('svg');
   unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2212, U+2215, U+E0FF, U+EFFD, U+F000;
 }
 /* cyrillic-ext */
@@ -12799,12 +12799,12 @@ blockquote {
   font-style: italic;
   font-weight: 300;
    src: local('Ubuntu Light Italic'), local('Ubuntu-LightItalic'), 
-      url(/templates/resources/fonts/ubuntu/Ubuntu-LightItalic.eot);
-   src: url(/templates/resources/fonts/ubuntu/Ubuntu-LightItalic.eot?#iefix) format('embedded-opentype'),
-      url(/templates/resources/fonts/ubuntu/Ubuntu-LightItalic.woff2) format('woff2'),
-      url(/templates/resources/fonts/ubuntu/Ubuntu-LightItalic.woff) format('woff'),
-      url(/templates/resources/fonts/ubuntu/Ubuntu-LightItalic.ttf) format('truetype'),
-      url(/templates/resources/fonts/ubuntu/Ubuntu-LightItalic.svg#ubuntulightitalic) format('svg');
+      url(https://usna.edu/templates/resources/fonts/ubuntu/Ubuntu-LightItalic.eot);
+   src: url(https://usna.edu/templates/resources/fonts/ubuntu/Ubuntu-LightItalic.eot?#iefix) format('embedded-opentype'),
+      url(https://usna.edu/templates/resources/fonts/ubuntu/Ubuntu-LightItalic.woff2) format('woff2'),
+      url(https://usna.edu/templates/resources/fonts/ubuntu/Ubuntu-LightItalic.woff) format('woff'),
+      url(https://usna.edu/templates/resources/fonts/ubuntu/Ubuntu-LightItalic.ttf) format('truetype'),
+      url(https://usna.edu/templates/resources/fonts/ubuntu/Ubuntu-LightItalic.svg#ubuntulightitalic) format('svg');
   unicode-range: U+0460-052F, U+20B4, U+2DE0-2DFF, U+A640-A69F;
 }
 /* cyrillic */
@@ -12813,12 +12813,12 @@ blockquote {
   font-style: italic;
   font-weight: 300;
    src: local('Ubuntu Light Italic'), local('Ubuntu-LightItalic'), 
-      url(/templates/resources/fonts/ubuntu/Ubuntu-LightItalic.eot);
-   src: url(/templates/resources/fonts/ubuntu/Ubuntu-LightItalic.eot?#iefix) format('embedded-opentype'),
-      url(/templates/resources/fonts/ubuntu/Ubuntu-LightItalic.woff2) format('woff2'),
-      url(/templates/resources/fonts/ubuntu/Ubuntu-LightItalic.woff) format('woff'),
-      url(/templates/resources/fonts/ubuntu/Ubuntu-LightItalic.ttf) format('truetype'),
-      url(/templates/resources/fonts/ubuntu/Ubuntu-LightItalic.svg#ubuntulightitalic) format('svg');
+      url(https://usna.edu/templates/resources/fonts/ubuntu/Ubuntu-LightItalic.eot);
+   src: url(https://usna.edu/templates/resources/fonts/ubuntu/Ubuntu-LightItalic.eot?#iefix) format('embedded-opentype'),
+      url(https://usna.edu/templates/resources/fonts/ubuntu/Ubuntu-LightItalic.woff2) format('woff2'),
+      url(https://usna.edu/templates/resources/fonts/ubuntu/Ubuntu-LightItalic.woff) format('woff'),
+      url(https://usna.edu/templates/resources/fonts/ubuntu/Ubuntu-LightItalic.ttf) format('truetype'),
+      url(https://usna.edu/templates/resources/fonts/ubuntu/Ubuntu-LightItalic.svg#ubuntulightitalic) format('svg');
   unicode-range: U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116;
 }
 /* greek-ext */
@@ -12827,12 +12827,12 @@ blockquote {
   font-style: italic;
   font-weight: 300;
    src: local('Ubuntu Light Italic'), local('Ubuntu-LightItalic'), 
-      url(/templates/resources/fonts/ubuntu/Ubuntu-LightItalic.eot);
-   src: url(/templates/resources/fonts/ubuntu/Ubuntu-LightItalic.eot?#iefix) format('embedded-opentype'),
-      url(/templates/resources/fonts/ubuntu/Ubuntu-LightItalic.woff2) format('woff2'),
-      url(/templates/resources/fonts/ubuntu/Ubuntu-LightItalic.woff) format('woff'),
-      url(/templates/resources/fonts/ubuntu/Ubuntu-LightItalic.ttf) format('truetype'),
-      url(/templates/resources/fonts/ubuntu/Ubuntu-LightItalic.svg#ubuntulightitalic) format('svg');
+      url(https://usna.edu/templates/resources/fonts/ubuntu/Ubuntu-LightItalic.eot);
+   src: url(https://usna.edu/templates/resources/fonts/ubuntu/Ubuntu-LightItalic.eot?#iefix) format('embedded-opentype'),
+      url(https://usna.edu/templates/resources/fonts/ubuntu/Ubuntu-LightItalic.woff2) format('woff2'),
+      url(https://usna.edu/templates/resources/fonts/ubuntu/Ubuntu-LightItalic.woff) format('woff'),
+      url(https://usna.edu/templates/resources/fonts/ubuntu/Ubuntu-LightItalic.ttf) format('truetype'),
+      url(https://usna.edu/templates/resources/fonts/ubuntu/Ubuntu-LightItalic.svg#ubuntulightitalic) format('svg');
   unicode-range: U+1F00-1FFF;
 }
 /* greek */
@@ -12841,12 +12841,12 @@ blockquote {
   font-style: italic;
   font-weight: 300;
    src: local('Ubuntu Light Italic'), local('Ubuntu-LightItalic'), 
-      url(/templates/resources/fonts/ubuntu/Ubuntu-LightItalic.eot);
-   src: url(/templates/resources/fonts/ubuntu/Ubuntu-LightItalic.eot?#iefix) format('embedded-opentype'),
-      url(/templates/resources/fonts/ubuntu/Ubuntu-LightItalic.woff2) format('woff2'),
-      url(/templates/resources/fonts/ubuntu/Ubuntu-LightItalic.woff) format('woff'),
-      url(/templates/resources/fonts/ubuntu/Ubuntu-LightItalic.ttf) format('truetype'),
-      url(/templates/resources/fonts/ubuntu/Ubuntu-LightItalic.svg#ubuntulightitalic) format('svg');
+      url(https://usna.edu/templates/resources/fonts/ubuntu/Ubuntu-LightItalic.eot);
+   src: url(https://usna.edu/templates/resources/fonts/ubuntu/Ubuntu-LightItalic.eot?#iefix) format('embedded-opentype'),
+      url(https://usna.edu/templates/resources/fonts/ubuntu/Ubuntu-LightItalic.woff2) format('woff2'),
+      url(https://usna.edu/templates/resources/fonts/ubuntu/Ubuntu-LightItalic.woff) format('woff'),
+      url(https://usna.edu/templates/resources/fonts/ubuntu/Ubuntu-LightItalic.ttf) format('truetype'),
+      url(https://usna.edu/templates/resources/fonts/ubuntu/Ubuntu-LightItalic.svg#ubuntulightitalic) format('svg');
   unicode-range: U+0370-03FF;
 }
 /* latin-ext */
@@ -12855,12 +12855,12 @@ blockquote {
   font-style: italic;
   font-weight: 300;
    src: local('Ubuntu Light Italic'), local('Ubuntu-LightItalic'), 
-      url(/templates/resources/fonts/ubuntu/Ubuntu-LightItalic.eot);
-   src: url(/templates/resources/fonts/ubuntu/Ubuntu-LightItalic.eot?#iefix) format('embedded-opentype'),
-      url(/templates/resources/fonts/ubuntu/Ubuntu-LightItalic.woff2) format('woff2'),
-      url(/templates/resources/fonts/ubuntu/Ubuntu-LightItalic.woff) format('woff'),
-      url(/templates/resources/fonts/ubuntu/Ubuntu-LightItalic.ttf) format('truetype'),
-      url(/templates/resources/fonts/ubuntu/Ubuntu-LightItalic.svg#ubuntulightitalic) format('svg');
+      url(https://usna.edu/templates/resources/fonts/ubuntu/Ubuntu-LightItalic.eot);
+   src: url(https://usna.edu/templates/resources/fonts/ubuntu/Ubuntu-LightItalic.eot?#iefix) format('embedded-opentype'),
+      url(https://usna.edu/templates/resources/fonts/ubuntu/Ubuntu-LightItalic.woff2) format('woff2'),
+      url(https://usna.edu/templates/resources/fonts/ubuntu/Ubuntu-LightItalic.woff) format('woff'),
+      url(https://usna.edu/templates/resources/fonts/ubuntu/Ubuntu-LightItalic.ttf) format('truetype'),
+      url(https://usna.edu/templates/resources/fonts/ubuntu/Ubuntu-LightItalic.svg#ubuntulightitalic) format('svg');
   unicode-range: U+0100-024F, U+1E00-1EFF, U+20A0-20AB, U+20AD-20CF, U+2C60-2C7F, U+A720-A7FF;
 }
 /* latin */
@@ -12869,12 +12869,12 @@ blockquote {
   font-style: italic;
   font-weight: 300;
    src: local('Ubuntu Light Italic'), local('Ubuntu-LightItalic'), 
-      url(/templates/resources/fonts/ubuntu/Ubuntu-LightItalic.eot);
-   src: url(/templates/resources/fonts/ubuntu/Ubuntu-LightItalic.eot?#iefix) format('embedded-opentype'),
-      url(/templates/resources/fonts/ubuntu/Ubuntu-LightItalic.woff2) format('woff2'),
-      url(/templates/resources/fonts/ubuntu/Ubuntu-LightItalic.woff) format('woff'),
-      url(/templates/resources/fonts/ubuntu/Ubuntu-LightItalic.ttf) format('truetype'),
-      url(/templates/resources/fonts/ubuntu/Ubuntu-LightItalic.svg#ubuntulightitalic) format('svg');
+      url(https://usna.edu/templates/resources/fonts/ubuntu/Ubuntu-LightItalic.eot);
+   src: url(https://usna.edu/templates/resources/fonts/ubuntu/Ubuntu-LightItalic.eot?#iefix) format('embedded-opentype'),
+      url(https://usna.edu/templates/resources/fonts/ubuntu/Ubuntu-LightItalic.woff2) format('woff2'),
+      url(https://usna.edu/templates/resources/fonts/ubuntu/Ubuntu-LightItalic.woff) format('woff'),
+      url(https://usna.edu/templates/resources/fonts/ubuntu/Ubuntu-LightItalic.ttf) format('truetype'),
+      url(https://usna.edu/templates/resources/fonts/ubuntu/Ubuntu-LightItalic.svg#ubuntulightitalic) format('svg');
   unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2212, U+2215, U+E0FF, U+EFFD, U+F000;
 }
 /* cyrillic-ext */
@@ -12883,12 +12883,12 @@ blockquote {
   font-style: italic;
   font-weight: 400;
   src: local('Ubuntu Italic'), local('Ubuntu-Italic'), 
-      url(/templates/resources/fonts/ubuntu/Ubuntu-Italic.eot);
-   src: url(/templates/resources/fonts/ubuntu/Ubuntu-Italic.eot?#iefix) format('embedded-opentype'),
-      url(/templates/resources/fonts/ubuntu/Ubuntu-Italic.woff2) format('woff2'),
-      url(/templates/resources/fonts/ubuntu/Ubuntu-Italic.woff) format('woff'),
-      url(/templates/resources/fonts/ubuntu/Ubuntu-Italic.ttf) format('truetype'),
-      url(/templates/resources/fonts/ubuntu/Ubuntu-Italic.svg#ubuntuitalic) format('svg');
+      url(https://usna.edu/templates/resources/fonts/ubuntu/Ubuntu-Italic.eot);
+   src: url(https://usna.edu/templates/resources/fonts/ubuntu/Ubuntu-Italic.eot?#iefix) format('embedded-opentype'),
+      url(https://usna.edu/templates/resources/fonts/ubuntu/Ubuntu-Italic.woff2) format('woff2'),
+      url(https://usna.edu/templates/resources/fonts/ubuntu/Ubuntu-Italic.woff) format('woff'),
+      url(https://usna.edu/templates/resources/fonts/ubuntu/Ubuntu-Italic.ttf) format('truetype'),
+      url(https://usna.edu/templates/resources/fonts/ubuntu/Ubuntu-Italic.svg#ubuntuitalic) format('svg');
   unicode-range: U+0460-052F, U+20B4, U+2DE0-2DFF, U+A640-A69F;
 }
 /* cyrillic */
@@ -12897,12 +12897,12 @@ blockquote {
   font-style: italic;
   font-weight: 400;
   src: local('Ubuntu Italic'), local('Ubuntu-Italic'), 
-      url(/templates/resources/fonts/ubuntu/Ubuntu-Italic.eot);
-   src: url(/templates/resources/fonts/ubuntu/Ubuntu-Italic.eot?#iefix) format('embedded-opentype'),
-      url(/templates/resources/fonts/ubuntu/Ubuntu-Italic.woff2) format('woff2'),
-      url(/templates/resources/fonts/ubuntu/Ubuntu-Italic.woff) format('woff'),
-      url(/templates/resources/fonts/ubuntu/Ubuntu-Italic.ttf) format('truetype'),
-      url(/templates/resources/fonts/ubuntu/Ubuntu-Italic.svg#ubuntuitalic) format('svg');
+      url(https://usna.edu/templates/resources/fonts/ubuntu/Ubuntu-Italic.eot);
+   src: url(https://usna.edu/templates/resources/fonts/ubuntu/Ubuntu-Italic.eot?#iefix) format('embedded-opentype'),
+      url(https://usna.edu/templates/resources/fonts/ubuntu/Ubuntu-Italic.woff2) format('woff2'),
+      url(https://usna.edu/templates/resources/fonts/ubuntu/Ubuntu-Italic.woff) format('woff'),
+      url(https://usna.edu/templates/resources/fonts/ubuntu/Ubuntu-Italic.ttf) format('truetype'),
+      url(https://usna.edu/templates/resources/fonts/ubuntu/Ubuntu-Italic.svg#ubuntuitalic) format('svg');
   unicode-range: U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116;
 }
 /* greek-ext */
@@ -12911,12 +12911,12 @@ blockquote {
   font-style: italic;
   font-weight: 400;
   src: local('Ubuntu Italic'), local('Ubuntu-Italic'), 
-      url(/templates/resources/fonts/ubuntu/Ubuntu-Italic.eot);
-   src: url(/templates/resources/fonts/ubuntu/Ubuntu-Italic.eot?#iefix) format('embedded-opentype'),
-      url(/templates/resources/fonts/ubuntu/Ubuntu-Italic.woff2) format('woff2'),
-      url(/templates/resources/fonts/ubuntu/Ubuntu-Italic.woff) format('woff'),
-      url(/templates/resources/fonts/ubuntu/Ubuntu-Italic.ttf) format('truetype'),
-      url(/templates/resources/fonts/ubuntu/Ubuntu-Italic.svg#ubuntuitalic) format('svg');
+      url(https://usna.edu/templates/resources/fonts/ubuntu/Ubuntu-Italic.eot);
+   src: url(https://usna.edu/templates/resources/fonts/ubuntu/Ubuntu-Italic.eot?#iefix) format('embedded-opentype'),
+      url(https://usna.edu/templates/resources/fonts/ubuntu/Ubuntu-Italic.woff2) format('woff2'),
+      url(https://usna.edu/templates/resources/fonts/ubuntu/Ubuntu-Italic.woff) format('woff'),
+      url(https://usna.edu/templates/resources/fonts/ubuntu/Ubuntu-Italic.ttf) format('truetype'),
+      url(https://usna.edu/templates/resources/fonts/ubuntu/Ubuntu-Italic.svg#ubuntuitalic) format('svg');
   unicode-range: U+1F00-1FFF;
 }
 /* greek */
@@ -12925,12 +12925,12 @@ blockquote {
   font-style: italic;
   font-weight: 400;
   src: local('Ubuntu Italic'), local('Ubuntu-Italic'), 
-      url(/templates/resources/fonts/ubuntu/Ubuntu-Italic.eot);
-   src: url(/templates/resources/fonts/ubuntu/Ubuntu-Italic.eot?#iefix) format('embedded-opentype'),
-      url(/templates/resources/fonts/ubuntu/Ubuntu-Italic.woff2) format('woff2'),
-      url(/templates/resources/fonts/ubuntu/Ubuntu-Italic.woff) format('woff'),
-      url(/templates/resources/fonts/ubuntu/Ubuntu-Italic.ttf) format('truetype'),
-      url(/templates/resources/fonts/ubuntu/Ubuntu-Italic.svg#ubuntuitalic) format('svg');
+      url(https://usna.edu/templates/resources/fonts/ubuntu/Ubuntu-Italic.eot);
+   src: url(https://usna.edu/templates/resources/fonts/ubuntu/Ubuntu-Italic.eot?#iefix) format('embedded-opentype'),
+      url(https://usna.edu/templates/resources/fonts/ubuntu/Ubuntu-Italic.woff2) format('woff2'),
+      url(https://usna.edu/templates/resources/fonts/ubuntu/Ubuntu-Italic.woff) format('woff'),
+      url(https://usna.edu/templates/resources/fonts/ubuntu/Ubuntu-Italic.ttf) format('truetype'),
+      url(https://usna.edu/templates/resources/fonts/ubuntu/Ubuntu-Italic.svg#ubuntuitalic) format('svg');
   unicode-range: U+0370-03FF;
 }
 /* latin-ext */
@@ -12939,12 +12939,12 @@ blockquote {
   font-style: italic;
   font-weight: 400;
   src: local('Ubuntu Italic'), local('Ubuntu-Italic'), 
-      url(/templates/resources/fonts/ubuntu/Ubuntu-Italic.eot);
-   src: url(/templates/resources/fonts/ubuntu/Ubuntu-Italic.eot?#iefix) format('embedded-opentype'),
-      url(/templates/resources/fonts/ubuntu/Ubuntu-Italic.woff2) format('woff2'),
-      url(/templates/resources/fonts/ubuntu/Ubuntu-Italic.woff) format('woff'),
-      url(/templates/resources/fonts/ubuntu/Ubuntu-Italic.ttf) format('truetype'),
-      url(/templates/resources/fonts/ubuntu/Ubuntu-Italic.svg#ubuntuitalic) format('svg');
+      url(https://usna.edu/templates/resources/fonts/ubuntu/Ubuntu-Italic.eot);
+   src: url(https://usna.edu/templates/resources/fonts/ubuntu/Ubuntu-Italic.eot?#iefix) format('embedded-opentype'),
+      url(https://usna.edu/templates/resources/fonts/ubuntu/Ubuntu-Italic.woff2) format('woff2'),
+      url(https://usna.edu/templates/resources/fonts/ubuntu/Ubuntu-Italic.woff) format('woff'),
+      url(https://usna.edu/templates/resources/fonts/ubuntu/Ubuntu-Italic.ttf) format('truetype'),
+      url(https://usna.edu/templates/resources/fonts/ubuntu/Ubuntu-Italic.svg#ubuntuitalic) format('svg');
   unicode-range: U+0100-024F, U+1E00-1EFF, U+20A0-20AB, U+20AD-20CF, U+2C60-2C7F, U+A720-A7FF;
 }
 /* latin */
@@ -12953,12 +12953,12 @@ blockquote {
   font-style: italic;
   font-weight: 400;
   src: local('Ubuntu Italic'), local('Ubuntu-Italic'), 
-      url(/templates/resources/fonts/ubuntu/Ubuntu-Italic.eot);
-   src: url(/templates/resources/fonts/ubuntu/Ubuntu-Italic.eot?#iefix) format('embedded-opentype'),
-      url(/templates/resources/fonts/ubuntu/Ubuntu-Italic.woff2) format('woff2'),
-      url(/templates/resources/fonts/ubuntu/Ubuntu-Italic.woff) format('woff'),
-      url(/templates/resources/fonts/ubuntu/Ubuntu-Italic.ttf) format('truetype'),
-      url(/templates/resources/fonts/ubuntu/Ubuntu-Italic.svg#ubuntuitalic) format('svg');
+      url(https://usna.edu/templates/resources/fonts/ubuntu/Ubuntu-Italic.eot);
+   src: url(https://usna.edu/templates/resources/fonts/ubuntu/Ubuntu-Italic.eot?#iefix) format('embedded-opentype'),
+      url(https://usna.edu/templates/resources/fonts/ubuntu/Ubuntu-Italic.woff2) format('woff2'),
+      url(https://usna.edu/templates/resources/fonts/ubuntu/Ubuntu-Italic.woff) format('woff'),
+      url(https://usna.edu/templates/resources/fonts/ubuntu/Ubuntu-Italic.ttf) format('truetype'),
+      url(https://usna.edu/templates/resources/fonts/ubuntu/Ubuntu-Italic.svg#ubuntuitalic) format('svg');
   unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2212, U+2215, U+E0FF, U+EFFD, U+F000;
 }
 /* cyrillic-ext */
@@ -12967,12 +12967,12 @@ blockquote {
   font-style: italic;
   font-weight: 500;
   src: local('Ubuntu Medium Italic'), local('Ubuntu-MediumItalic'),
-      url(/templates/resources/fonts/ubuntu/Ubuntu-MediumItalic.eot);
-   src: url(/templates/resources/fonts/ubuntu/Ubuntu-MediumItalic.eot?#iefix) format('embedded-opentype'),
-      url(/templates/resources/fonts/ubuntu/Ubuntu-MediumItalic.woff2) format('woff2'),
-      url(/templates/resources/fonts/ubuntu/Ubuntu-MediumItalic.woff) format('woff'),
-      url(/templates/resources/fonts/ubuntu/Ubuntu-MediumItalic.ttf) format('truetype'),
-      url(/templates/resources/fonts/ubuntu/Ubuntu-MediumItalic.svg#ubuntumediumitalic) format('svg');
+      url(https://usna.edu/templates/resources/fonts/ubuntu/Ubuntu-MediumItalic.eot);
+   src: url(https://usna.edu/templates/resources/fonts/ubuntu/Ubuntu-MediumItalic.eot?#iefix) format('embedded-opentype'),
+      url(https://usna.edu/templates/resources/fonts/ubuntu/Ubuntu-MediumItalic.woff2) format('woff2'),
+      url(https://usna.edu/templates/resources/fonts/ubuntu/Ubuntu-MediumItalic.woff) format('woff'),
+      url(https://usna.edu/templates/resources/fonts/ubuntu/Ubuntu-MediumItalic.ttf) format('truetype'),
+      url(https://usna.edu/templates/resources/fonts/ubuntu/Ubuntu-MediumItalic.svg#ubuntumediumitalic) format('svg');
   unicode-range: U+0460-052F, U+20B4, U+2DE0-2DFF, U+A640-A69F;
 }
 /* cyrillic */
@@ -12981,12 +12981,12 @@ blockquote {
   font-style: italic;
   font-weight: 500;
   src: local('Ubuntu Medium Italic'), local('Ubuntu-MediumItalic'),
-      url(/templates/resources/fonts/ubuntu/Ubuntu-MediumItalic.eot);
-   src: url(/templates/resources/fonts/ubuntu/Ubuntu-MediumItalic.eot?#iefix) format('embedded-opentype'),
-      url(/templates/resources/fonts/ubuntu/Ubuntu-MediumItalic.woff2) format('woff2'),
-      url(/templates/resources/fonts/ubuntu/Ubuntu-MediumItalic.woff) format('woff'),
-      url(/templates/resources/fonts/ubuntu/Ubuntu-MediumItalic.ttf) format('truetype'),
-      url(/templates/resources/fonts/ubuntu/Ubuntu-MediumItalic.svg#ubuntumediumitalic) format('svg');
+      url(https://usna.edu/templates/resources/fonts/ubuntu/Ubuntu-MediumItalic.eot);
+   src: url(https://usna.edu/templates/resources/fonts/ubuntu/Ubuntu-MediumItalic.eot?#iefix) format('embedded-opentype'),
+      url(https://usna.edu/templates/resources/fonts/ubuntu/Ubuntu-MediumItalic.woff2) format('woff2'),
+      url(https://usna.edu/templates/resources/fonts/ubuntu/Ubuntu-MediumItalic.woff) format('woff'),
+      url(https://usna.edu/templates/resources/fonts/ubuntu/Ubuntu-MediumItalic.ttf) format('truetype'),
+      url(https://usna.edu/templates/resources/fonts/ubuntu/Ubuntu-MediumItalic.svg#ubuntumediumitalic) format('svg');
   unicode-range: U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116;
 }
 /* greek-ext */
@@ -12995,12 +12995,12 @@ blockquote {
   font-style: italic;
   font-weight: 500;
   src: local('Ubuntu Medium Italic'), local('Ubuntu-MediumItalic'),
-      url(/templates/resources/fonts/ubuntu/Ubuntu-MediumItalic.eot);
-   src: url(/templates/resources/fonts/ubuntu/Ubuntu-MediumItalic.eot?#iefix) format('embedded-opentype'),
-      url(/templates/resources/fonts/ubuntu/Ubuntu-MediumItalic.woff2) format('woff2'),
-      url(/templates/resources/fonts/ubuntu/Ubuntu-MediumItalic.woff) format('woff'),
-      url(/templates/resources/fonts/ubuntu/Ubuntu-MediumItalic.ttf) format('truetype'),
-      url(/templates/resources/fonts/ubuntu/Ubuntu-MediumItalic.svg#ubuntumediumitalic) format('svg');
+      url(https://usna.edu/templates/resources/fonts/ubuntu/Ubuntu-MediumItalic.eot);
+   src: url(https://usna.edu/templates/resources/fonts/ubuntu/Ubuntu-MediumItalic.eot?#iefix) format('embedded-opentype'),
+      url(https://usna.edu/templates/resources/fonts/ubuntu/Ubuntu-MediumItalic.woff2) format('woff2'),
+      url(https://usna.edu/templates/resources/fonts/ubuntu/Ubuntu-MediumItalic.woff) format('woff'),
+      url(https://usna.edu/templates/resources/fonts/ubuntu/Ubuntu-MediumItalic.ttf) format('truetype'),
+      url(https://usna.edu/templates/resources/fonts/ubuntu/Ubuntu-MediumItalic.svg#ubuntumediumitalic) format('svg');
   unicode-range: U+1F00-1FFF;
 }
 /* greek */
@@ -13009,12 +13009,12 @@ blockquote {
   font-style: italic;
   font-weight: 500;
   src: local('Ubuntu Medium Italic'), local('Ubuntu-MediumItalic'),
-      url(/templates/resources/fonts/ubuntu/Ubuntu-MediumItalic.eot);
-   src: url(/templates/resources/fonts/ubuntu/Ubuntu-MediumItalic.eot?#iefix) format('embedded-opentype'),
-      url(/templates/resources/fonts/ubuntu/Ubuntu-MediumItalic.woff2) format('woff2'),
-      url(/templates/resources/fonts/ubuntu/Ubuntu-MediumItalic.woff) format('woff'),
-      url(/templates/resources/fonts/ubuntu/Ubuntu-MediumItalic.ttf) format('truetype'),
-      url(/templates/resources/fonts/ubuntu/Ubuntu-MediumItalic.svg#ubuntumediumitalic) format('svg');
+      url(https://usna.edu/templates/resources/fonts/ubuntu/Ubuntu-MediumItalic.eot);
+   src: url(https://usna.edu/templates/resources/fonts/ubuntu/Ubuntu-MediumItalic.eot?#iefix) format('embedded-opentype'),
+      url(https://usna.edu/templates/resources/fonts/ubuntu/Ubuntu-MediumItalic.woff2) format('woff2'),
+      url(https://usna.edu/templates/resources/fonts/ubuntu/Ubuntu-MediumItalic.woff) format('woff'),
+      url(https://usna.edu/templates/resources/fonts/ubuntu/Ubuntu-MediumItalic.ttf) format('truetype'),
+      url(https://usna.edu/templates/resources/fonts/ubuntu/Ubuntu-MediumItalic.svg#ubuntumediumitalic) format('svg');
   unicode-range: U+0370-03FF;
 }
 /* latin-ext */
@@ -13023,12 +13023,12 @@ blockquote {
   font-style: italic;
   font-weight: 500;
   src: local('Ubuntu Medium Italic'), local('Ubuntu-MediumItalic'),
-      url(/templates/resources/fonts/ubuntu/Ubuntu-MediumItalic.eot);
-   src: url(/templates/resources/fonts/ubuntu/Ubuntu-MediumItalic.eot?#iefix) format('embedded-opentype'),
-      url(/templates/resources/fonts/ubuntu/Ubuntu-MediumItalic.woff2) format('woff2'),
-      url(/templates/resources/fonts/ubuntu/Ubuntu-MediumItalic.woff) format('woff'),
-      url(/templates/resources/fonts/ubuntu/Ubuntu-MediumItalic.ttf) format('truetype'),
-      url(/templates/resources/fonts/ubuntu/Ubuntu-MediumItalic.svg#ubuntumediumitalic) format('svg');
+      url(https://usna.edu/templates/resources/fonts/ubuntu/Ubuntu-MediumItalic.eot);
+   src: url(https://usna.edu/templates/resources/fonts/ubuntu/Ubuntu-MediumItalic.eot?#iefix) format('embedded-opentype'),
+      url(https://usna.edu/templates/resources/fonts/ubuntu/Ubuntu-MediumItalic.woff2) format('woff2'),
+      url(https://usna.edu/templates/resources/fonts/ubuntu/Ubuntu-MediumItalic.woff) format('woff'),
+      url(https://usna.edu/templates/resources/fonts/ubuntu/Ubuntu-MediumItalic.ttf) format('truetype'),
+      url(https://usna.edu/templates/resources/fonts/ubuntu/Ubuntu-MediumItalic.svg#ubuntumediumitalic) format('svg');
   unicode-range: U+0100-024F, U+1E00-1EFF, U+20A0-20AB, U+20AD-20CF, U+2C60-2C7F, U+A720-A7FF;
 }
 /* latin */
@@ -13037,12 +13037,12 @@ blockquote {
   font-style: italic;
   font-weight: 500;
   src: local('Ubuntu Medium Italic'), local('Ubuntu-MediumItalic'),
-      url(/templates/resources/fonts/ubuntu/Ubuntu-MediumItalic.eot);
-   src: url(/templates/resources/fonts/ubuntu/Ubuntu-MediumItalic.eot?#iefix) format('embedded-opentype'),
-      url(/templates/resources/fonts/ubuntu/Ubuntu-MediumItalic.woff2) format('woff2'),
-      url(/templates/resources/fonts/ubuntu/Ubuntu-MediumItalic.woff) format('woff'),
-      url(/templates/resources/fonts/ubuntu/Ubuntu-MediumItalic.ttf) format('truetype'),
-      url(/templates/resources/fonts/ubuntu/Ubuntu-MediumItalic.svg#ubuntumediumitalic) format('svg');
+      url(https://usna.edu/templates/resources/fonts/ubuntu/Ubuntu-MediumItalic.eot);
+   src: url(https://usna.edu/templates/resources/fonts/ubuntu/Ubuntu-MediumItalic.eot?#iefix) format('embedded-opentype'),
+      url(https://usna.edu/templates/resources/fonts/ubuntu/Ubuntu-MediumItalic.woff2) format('woff2'),
+      url(https://usna.edu/templates/resources/fonts/ubuntu/Ubuntu-MediumItalic.woff) format('woff'),
+      url(https://usna.edu/templates/resources/fonts/ubuntu/Ubuntu-MediumItalic.ttf) format('truetype'),
+      url(https://usna.edu/templates/resources/fonts/ubuntu/Ubuntu-MediumItalic.svg#ubuntumediumitalic) format('svg');
   unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2212, U+2215, U+E0FF, U+EFFD, U+F000;
 }
 /* cyrillic-ext */
@@ -13051,12 +13051,12 @@ blockquote {
   font-style: italic;
   font-weight: 700;
    src: local('Ubuntu Bold Italic'), local('Ubuntu-BoldItalic'),
-      url(/templates/resources/fonts/ubuntu/Ubuntu-BoldItalic.eot);
-   src: url(/templates/resources/fonts/ubuntu/Ubuntu-BoldItalic.eot?#iefix) format('embedded-opentype'),
-      url(/templates/resources/fonts/ubuntu/Ubuntu-BoldItalic.woff2) format('woff2'),
-      url(/templates/resources/fonts/ubuntu/Ubuntu-BoldItalic.woff) format('woff'),
-      url(/templates/resources/fonts/ubuntu/Ubuntu-BoldItalic.ttf) format('truetype'),
-      url(/templates/resources/fonts/ubuntu/Ubuntu-BoldItalic.svg#ubuntubolditalic) format('svg');
+      url(https://usna.edu/templates/resources/fonts/ubuntu/Ubuntu-BoldItalic.eot);
+   src: url(https://usna.edu/templates/resources/fonts/ubuntu/Ubuntu-BoldItalic.eot?#iefix) format('embedded-opentype'),
+      url(https://usna.edu/templates/resources/fonts/ubuntu/Ubuntu-BoldItalic.woff2) format('woff2'),
+      url(https://usna.edu/templates/resources/fonts/ubuntu/Ubuntu-BoldItalic.woff) format('woff'),
+      url(https://usna.edu/templates/resources/fonts/ubuntu/Ubuntu-BoldItalic.ttf) format('truetype'),
+      url(https://usna.edu/templates/resources/fonts/ubuntu/Ubuntu-BoldItalic.svg#ubuntubolditalic) format('svg');
   unicode-range: U+0460-052F, U+20B4, U+2DE0-2DFF, U+A640-A69F;
 }
 /* cyrillic */
@@ -13065,12 +13065,12 @@ blockquote {
   font-style: italic;
   font-weight: 700;
    src: local('Ubuntu Bold Italic'), local('Ubuntu-BoldItalic'),
-      url(/templates/resources/fonts/ubuntu/Ubuntu-BoldItalic.eot);
-   src: url(/templates/resources/fonts/ubuntu/Ubuntu-BoldItalic.eot?#iefix) format('embedded-opentype'),
-      url(/templates/resources/fonts/ubuntu/Ubuntu-BoldItalic.woff2) format('woff2'),
-      url(/templates/resources/fonts/ubuntu/Ubuntu-BoldItalic.woff) format('woff'),
-      url(/templates/resources/fonts/ubuntu/Ubuntu-BoldItalic.ttf) format('truetype'),
-      url(/templates/resources/fonts/ubuntu/Ubuntu-BoldItalic.svg#ubuntubolditalic) format('svg');
+      url(https://usna.edu/templates/resources/fonts/ubuntu/Ubuntu-BoldItalic.eot);
+   src: url(https://usna.edu/templates/resources/fonts/ubuntu/Ubuntu-BoldItalic.eot?#iefix) format('embedded-opentype'),
+      url(https://usna.edu/templates/resources/fonts/ubuntu/Ubuntu-BoldItalic.woff2) format('woff2'),
+      url(https://usna.edu/templates/resources/fonts/ubuntu/Ubuntu-BoldItalic.woff) format('woff'),
+      url(https://usna.edu/templates/resources/fonts/ubuntu/Ubuntu-BoldItalic.ttf) format('truetype'),
+      url(https://usna.edu/templates/resources/fonts/ubuntu/Ubuntu-BoldItalic.svg#ubuntubolditalic) format('svg');
   unicode-range: U+0400-045F, U+0490-0491, U+04B0-04B1, U+2116;
 }
 /* greek-ext */
@@ -13079,12 +13079,12 @@ blockquote {
   font-style: italic;
   font-weight: 700;
    src: local('Ubuntu Bold Italic'), local('Ubuntu-BoldItalic'),
-      url(/templates/resources/fonts/ubuntu/Ubuntu-BoldItalic.eot);
-   src: url(/templates/resources/fonts/ubuntu/Ubuntu-BoldItalic.eot?#iefix) format('embedded-opentype'),
-      url(/templates/resources/fonts/ubuntu/Ubuntu-BoldItalic.woff2) format('woff2'),
-      url(/templates/resources/fonts/ubuntu/Ubuntu-BoldItalic.woff) format('woff'),
-      url(/templates/resources/fonts/ubuntu/Ubuntu-BoldItalic.ttf) format('truetype'),
-      url(/templates/resources/fonts/ubuntu/Ubuntu-BoldItalic.svg#ubuntubolditalic) format('svg');
+      url(https://usna.edu/templates/resources/fonts/ubuntu/Ubuntu-BoldItalic.eot);
+   src: url(https://usna.edu/templates/resources/fonts/ubuntu/Ubuntu-BoldItalic.eot?#iefix) format('embedded-opentype'),
+      url(https://usna.edu/templates/resources/fonts/ubuntu/Ubuntu-BoldItalic.woff2) format('woff2'),
+      url(https://usna.edu/templates/resources/fonts/ubuntu/Ubuntu-BoldItalic.woff) format('woff'),
+      url(https://usna.edu/templates/resources/fonts/ubuntu/Ubuntu-BoldItalic.ttf) format('truetype'),
+      url(https://usna.edu/templates/resources/fonts/ubuntu/Ubuntu-BoldItalic.svg#ubuntubolditalic) format('svg');
   unicode-range: U+1F00-1FFF;
 }
 /* greek */
@@ -13093,12 +13093,12 @@ blockquote {
   font-style: italic;
   font-weight: 700;
    src: local('Ubuntu Bold Italic'), local('Ubuntu-BoldItalic'),
-      url(/templates/resources/fonts/ubuntu/Ubuntu-BoldItalic.eot);
-   src: url(/templates/resources/fonts/ubuntu/Ubuntu-BoldItalic.eot?#iefix) format('embedded-opentype'),
-      url(/templates/resources/fonts/ubuntu/Ubuntu-BoldItalic.woff2) format('woff2'),
-      url(/templates/resources/fonts/ubuntu/Ubuntu-BoldItalic.woff) format('woff'),
-      url(/templates/resources/fonts/ubuntu/Ubuntu-BoldItalic.ttf) format('truetype'),
-      url(/templates/resources/fonts/ubuntu/Ubuntu-BoldItalic.svg#ubuntubolditalic) format('svg');
+      url(https://usna.edu/templates/resources/fonts/ubuntu/Ubuntu-BoldItalic.eot);
+   src: url(https://usna.edu/templates/resources/fonts/ubuntu/Ubuntu-BoldItalic.eot?#iefix) format('embedded-opentype'),
+      url(https://usna.edu/templates/resources/fonts/ubuntu/Ubuntu-BoldItalic.woff2) format('woff2'),
+      url(https://usna.edu/templates/resources/fonts/ubuntu/Ubuntu-BoldItalic.woff) format('woff'),
+      url(https://usna.edu/templates/resources/fonts/ubuntu/Ubuntu-BoldItalic.ttf) format('truetype'),
+      url(https://usna.edu/templates/resources/fonts/ubuntu/Ubuntu-BoldItalic.svg#ubuntubolditalic) format('svg');
   unicode-range: U+0370-03FF;
 }
 /* latin-ext */
@@ -13107,12 +13107,12 @@ blockquote {
   font-style: italic;
   font-weight: 700;
    src: local('Ubuntu Bold Italic'), local('Ubuntu-BoldItalic'),
-      url(/templates/resources/fonts/ubuntu/Ubuntu-BoldItalic.eot);
-   src: url(/templates/resources/fonts/ubuntu/Ubuntu-BoldItalic.eot?#iefix) format('embedded-opentype'),
-      url(/templates/resources/fonts/ubuntu/Ubuntu-BoldItalic.woff2) format('woff2'),
-      url(/templates/resources/fonts/ubuntu/Ubuntu-BoldItalic.woff) format('woff'),
-      url(/templates/resources/fonts/ubuntu/Ubuntu-BoldItalic.ttf) format('truetype'),
-      url(/templates/resources/fonts/ubuntu/Ubuntu-BoldItalic.svg#ubuntubolditalic) format('svg');
+      url(https://usna.edu/templates/resources/fonts/ubuntu/Ubuntu-BoldItalic.eot);
+   src: url(https://usna.edu/templates/resources/fonts/ubuntu/Ubuntu-BoldItalic.eot?#iefix) format('embedded-opentype'),
+      url(https://usna.edu/templates/resources/fonts/ubuntu/Ubuntu-BoldItalic.woff2) format('woff2'),
+      url(https://usna.edu/templates/resources/fonts/ubuntu/Ubuntu-BoldItalic.woff) format('woff'),
+      url(https://usna.edu/templates/resources/fonts/ubuntu/Ubuntu-BoldItalic.ttf) format('truetype'),
+      url(https://usna.edu/templates/resources/fonts/ubuntu/Ubuntu-BoldItalic.svg#ubuntubolditalic) format('svg');
   unicode-range: U+0100-024F, U+1E00-1EFF, U+20A0-20AB, U+20AD-20CF, U+2C60-2C7F, U+A720-A7FF;
 }
 /* latin */
@@ -13121,11 +13121,11 @@ blockquote {
   font-style: italic;
   font-weight: 700;
    src: local('Ubuntu Bold Italic'), local('Ubuntu-BoldItalic'),
-      url(/templates/resources/fonts/ubuntu/Ubuntu-BoldItalic.eot);
-   src: url(/templates/resources/fonts/ubuntu/Ubuntu-BoldItalic.eot?#iefix) format('embedded-opentype'),
-      url(/templates/resources/fonts/ubuntu/Ubuntu-BoldItalic.woff2) format('woff2'),
-      url(/templates/resources/fonts/ubuntu/Ubuntu-BoldItalic.woff) format('woff'),
-      url(/templates/resources/fonts/ubuntu/Ubuntu-BoldItalic.ttf) format('truetype'),
-      url(/templates/resources/fonts/ubuntu/Ubuntu-BoldItalic.svg#ubuntubolditalic) format('svg');
+      url(https://usna.edu/templates/resources/fonts/ubuntu/Ubuntu-BoldItalic.eot);
+   src: url(https://usna.edu/templates/resources/fonts/ubuntu/Ubuntu-BoldItalic.eot?#iefix) format('embedded-opentype'),
+      url(https://usna.edu/templates/resources/fonts/ubuntu/Ubuntu-BoldItalic.woff2) format('woff2'),
+      url(https://usna.edu/templates/resources/fonts/ubuntu/Ubuntu-BoldItalic.woff) format('woff'),
+      url(https://usna.edu/templates/resources/fonts/ubuntu/Ubuntu-BoldItalic.ttf) format('truetype'),
+      url(https://usna.edu/templates/resources/fonts/ubuntu/Ubuntu-BoldItalic.svg#ubuntubolditalic) format('svg');
   unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2212, U+2215, U+E0FF, U+EFFD, U+F000;
 }
