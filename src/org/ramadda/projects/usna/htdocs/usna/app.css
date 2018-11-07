@@ -121,7 +121,7 @@ html {
     box-sizing: border-box;
 }
 
-body {
+body-usna {
     //background: url("https://usna.edu/templates/standardv3.0/_files/img/pattern.png") #f8f8f8;
     //color: #575757;
     padding: 0;
@@ -138,7 +138,7 @@ a:hover {
     cursor: pointer;
 }
 
-img {
+.img-usna {
     max-width: 100%;
     height: auto;
     -ms-interpolation-mode: bicubic
@@ -6708,7 +6708,7 @@ ul {
     padding: 0;
 }
 
-a {
+a-usna {
     color: #1e5282;
     text-decoration: none;
     line-height: inherit
@@ -6865,9 +6865,9 @@ ul.off-canvas-list li label {
     font-weight: 700;
 }
 
-dl,
-ol,
-ul {
+dl-usna,
+ol-usna,
+ul-usna {
     font-size: 1rem;
     line-height: 1.45;
     margin-bottom: 1.42857rem;
@@ -6875,18 +6875,18 @@ ul {
     font-family: inherit
 }
 
-ul {
+ul-usna {
     margin-left: 1.7rem;
 }
 
-ul.no-bullet {
+ul-usna.no-bullet {
     margin-left: 0;
 }
 
-ul li ol,
-ul li ul,
-ul.no-bullet li ol,
-ul.no-bullet li ul {
+ul-usna li ol-usna,
+ul-usna li ul-usna,
+ul-usna.no-bullet li ol-usna,
+ul-usna.no-bullet li ul-usna {
     margin-left: 1.42857rem;
     margin-bottom: 0;
 }
@@ -11540,7 +11540,7 @@ a.flat-button-panel:hover {
     left: 0!important;
 }
 
-.inset,
+.inset-usna,
 .panel-primary-bottom-stripe {
     border-radius: 5px;
     border: 1px solid #ccc;
