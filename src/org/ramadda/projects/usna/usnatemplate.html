@@ -71,7 +71,7 @@ ${links}
 <ul class="utility-menu inline-list">
 <li class="has-form">
 
-<form action="/texis/search/" method="get">
+<form action="https://www.usna.edu/texis/search/" method="get">
   <input name="dropXSL" type="hidden"/>
   <input aria-hidden="true" name="pr" type="hidden" value="External Meta"/>
   <input aria-label="Search USNA" class="queryAutocomplete top-nav" id="siteSearch" maxlength="2033" name="query" placeholder="Search USNA" type="text"/>
@@ -347,7 +347,7 @@ ul.as-selections li.as-original input {
 // the 2nd element of the JSON response as the suggestions
 //http://intranet.usna.edu/texis/search/autocomplete.json?pr=Internal+Meta&term=rav
 var sp = '&pr'+$("input[name='pr']").val();
-$('#siteSearch.queryAutocomplete,#query.queryAutocomplete').autoSuggest("/texis/search/autocomplete.json",
+$('#siteSearch.queryAutocomplete,#query.queryAutocomplete').autoSuggest("https://www.usna.edu/texis/search/autocomplete.json",
         {
                 queryParam: "term",
                 extraParams: sp,
