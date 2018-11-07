@@ -347,7 +347,7 @@ public class MapManager extends RepositoryManager {
 
         }
 
-        addGoogleMapsApi(request, sb);
+        //        addGoogleMapsApi(request, sb);
         if (OPENLAYERS_VERSION == OPENLAYERS_V2) {
             sb.append(
                 HtmlUtils.importJS(
