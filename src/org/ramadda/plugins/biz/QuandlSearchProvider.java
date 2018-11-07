@@ -126,7 +126,7 @@ public class QuandlSearchProvider extends SearchProvider {
             return entries;
         }
 
-        System.out.println("quandl:" + url);
+        //        System.out.println("quandl:" + url);
 
         Entry parent = getSynthTopLevelEntry();
         TypeHandler seriesTypeHandler =

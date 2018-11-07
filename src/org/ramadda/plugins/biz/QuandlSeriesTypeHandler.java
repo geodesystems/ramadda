@@ -97,7 +97,7 @@ public class QuandlSeriesTypeHandler extends PointTypeHandler {
         url = HtmlUtils.url(url, "auth_token",
                             getRepository().getProperty("quandl.api.key",
                                 ""));
-        System.err.println("quandl:" + url);
+        //        System.err.println("quandl:" + url);
 
         return url;
     }
