@@ -5740,7 +5740,7 @@ public class DbTypeHandler extends PointTypeHandler /* BlobTypeHandler*/ {
                     }
                     s.append("\n");
                 }
-                System.err.println(s);
+                //                System.err.println(s);
                 ByteArrayInputStream bais =
                     new ByteArrayInputStream(s.toString().getBytes());
                 return bais;
@@ -5800,7 +5800,7 @@ public class DbTypeHandler extends PointTypeHandler /* BlobTypeHandler*/ {
             //            makeField("longitude", attrType("double"),
             //                      attrLabel("Longitude")),
         }
-        System.err.println(fields);
+        //        System.err.println(fields);
         putProperty(PROP_FIELDS, fields.toString());
         return visitInfo;
     }
