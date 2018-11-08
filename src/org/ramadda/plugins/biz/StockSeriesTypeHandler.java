@@ -21,8 +21,11 @@ import org.ramadda.data.services.PointTypeHandler;
 import org.ramadda.repository.*;
 import org.ramadda.repository.type.*;
 import org.ramadda.util.Utils;
+import org.ramadda.util.WikiUtil;
 
 import org.w3c.dom.*;
+
+import java.util.Hashtable;
 
 
 /**
@@ -34,7 +37,15 @@ public class StockSeriesTypeHandler extends PointTypeHandler {
     public static final int IDX_SYMBOL = IDX_PROPERTIES + 1;
 
     /** _more_ */
-    public static final String URL = "http://ichart.yahoo.com/table.csv?s=";
+    public static final int IDX_DATATYPE = IDX_SYMBOL + 1;
+
+    /** _more_ */
+    public static final int IDX_INTERVAL = IDX_DATATYPE + 1;
+
+
+    /** _more_ */
+    public static final String URL =
+        "https://www.alphavantage.co/query?function=${function}&symbol=${symbol}&apikey=${apikey}&datatype=csv";
 
     /**
      * ctor
@@ -51,6 +62,62 @@ public class StockSeriesTypeHandler extends PointTypeHandler {
 
 
     /**
+     * _more_
+     *
+     * @param wikiUtil _more_
+     * @param request _more_
+     * @param originalEntry _more_
+     * @param entry _more_
+     * @param tag _more_
+     * @param props _more_
+     *
+     * @return _more_
+     *
+     * @throws Exception _more_
+     */
+    @Override
+    public String getWikiInclude(WikiUtil wikiUtil, Request request,
+                                 Entry originalEntry, Entry entry,
+                                 String tag, Hashtable props)
+            throws Exception {
+        if (tag.equals("stockurl")) {
+            return getPathForEntry(request, entry);
+        }
+
+        return super.getWikiInclude(wikiUtil, request, originalEntry, entry,
+                                    tag, props);
+    }
+
+    /** _more_          */
+    public static final String PROPERTIES =
+        "skiplines=1\nfields=Timestamp[type=date format=yyyy-MM-dd HH:mm:ss],Open[chartable=true],High[chartable=true],Low[chartable=true],Close[chartable=true],Volume[chartable=true]";
+
+    /** _more_          */
+    public static final String PROPERTIES_ADJUSTED =
+        "skiplines=1\nfields=Timestamp[type=date format=yyyy-MM-dd HH:mm:ss],Open[chartable=true],High[chartable=true],Low[chartable=true],Close[chartable=true],Adjusted_Close[chartable=true]Volume[chartable=true],Dividend_Amount[chartable=true],Split_Coefficient[chartable=true]";
+
+    /**
+     * _more_
+     *
+     * @param entry _more_
+     *
+     * @return _more_
+     *
+     * @throws Exception _more_
+     */
+    public String getRecordPropertiesFromType(Entry entry) throws Exception {
+        String datatype = entry.getValue(IDX_DATATYPE, "");
+        if (datatype.equals("TIME_SERIES_INTRADAY")
+                || datatype.equals("TIME_SERIES_DAILY")
+                || datatype.equals("TIME_SERIES_WEEKLY")
+                || datatype.equals("TIME_SERIES_MONTHLY")) {
+            return PROPERTIES;
+        }
+
+        return PROPERTIES_ADJUSTED;
+    }
+
+    /**
      * Return the URL to the CSV file
      *
      *
@@ -64,12 +131,26 @@ public class StockSeriesTypeHandler extends PointTypeHandler {
     @Override
     public String getPathForEntry(Request request, Entry entry)
             throws Exception {
+        String apikey = getRepository().getProperty("alphavantage.api",
+                            (String) null);
+        if ( !Utils.stringDefined(apikey)) {
+            return null;
+        }
+
         String symbol = entry.getValue(IDX_SYMBOL, (String) null);
         if ( !Utils.stringDefined(symbol)) {
             return null;
         }
 
-        return URL + symbol;
+        String url      = URL;
+        String datatype = entry.getValue(IDX_DATATYPE, "");
+        if (datatype.equals("TIME_SERIES_INTRADAY")) {
+            url += "&interval=" + entry.getValue(IDX_INTERVAL, "");
+        }
+        url = url.replace("${apikey}", apikey).replace("${symbol}",
+                          symbol).replace("${function}", datatype);
+
+        return url;
     }
 
 

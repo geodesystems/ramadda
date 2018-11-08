@@ -150,22 +150,24 @@ skiplines=1
 fields=Date[type=date format=yyyy-MM-dd],Open[chartable=true],High[chartable=true],Low[chartable=true],Close[chartable=true],Volume[chartable=true],Adj_Close[chartable=true]
      </property>
      <column name="symbol" type="string"  label="Symbol"   />
+     <column name="datatype" type="enumeration"  label="Data Type"   values="TIME_SERIES_DAILY:Daily,TIME_SERIES_DAILY_ADJUSTED:Daily Adjusted,TIME_SERIES_WEEKLY:Weekly,TIME_SERIES_WEEKLY_ADJUSTED:Weekly Adjusted,TIME_SERIES_MONTHLY:Monthly,TIME_SERIES_MONTHLY_ADJUSTED:Monthly Adjusted,TIME_SERIES_INTRADAY:Intraday"/>
+     <column name="interval" type="enumeration"  label="Interval for Intraday"   values="1min:1 Minute,5min:5 Minute,15min:15 Minute,30min:30 Minute,60min:60 Minute"/>
      <wiki_inner><![CDATA[
 +section # title="Stock: {{name}}"
 <br>
-{{display type="linechart" title=""  height="200" width="800" column="0" layoutHere="true"}}
+{{displaygroup showMenu="true"}}
+{{display type="linechart" title=""  height="200" width="800" column="0" layoutHere="true" showMenu="true"}}
+{{display type="barchart" title="" fields="Volume"  height="200" width="800" column="0" layoutHere="true" showMenu="true"}}
 <div style="margin:20px;max-height:300px;overflow-y:auto;">
 {{description wikify="true"}}
 </div>
 +row
 +col-md-8
-Data courtesy of <a href="http://finance.yahoo.com/charts">YAHOO Charts</a>.
+Data courtesy of <a href="https://www.alphavantage.co">Alpha Vantage</a>.
 -col
 +col-md-4
 <div style="text-align:right;">
-<a class="btn btn-primary" role="button" href="{{resource  url=true}}">Download Data</a>
-
-<a href="http://feeds.finance.yahoo.com/rss/2.0/headline?s={{field name=symbol}}&region=US"><img src="{{root}}/icons/rss.png"></a>
+<a href="{{stockurl}}">Download Data</a>
 </div>
 -col
 -row
