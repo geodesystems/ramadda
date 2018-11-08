@@ -89,8 +89,15 @@ public abstract class RecordTypeHandler extends BlobTypeHandler implements Recor
     private RecordOutputHandler recordOutputHandler;
 
 
+    /**
+     * _more_
+     *
+     * @param repository _more_
+     * @param type _more_
+     * @param description _more_
+     */
     public RecordTypeHandler(Repository repository, String type,
-                              String description) {
+                             String description) {
         super(repository, type, description);
     }
 
@@ -293,15 +300,14 @@ public abstract class RecordTypeHandler extends BlobTypeHandler implements Recor
      * @throws Exception On badness
      */
     public Hashtable getRecordProperties(Entry entry) throws Exception {
-        Object[] values = entry.getTypeHandler().getEntryValues(entry);
-        String   propertiesString = (values[IDX_PROPERTIES] != null)
-                                    ? values[IDX_PROPERTIES].toString()
-                                    : "";
+        Object[]  values = entry.getTypeHandler().getEntryValues(entry);
+        String    propertiesString = (values[IDX_PROPERTIES] != null)
+                                     ? values[IDX_PROPERTIES].toString()
+                                     : "";
 
-        String typeProperties = getTypeProperty("record.properties",
-                                    (String) null);
+        String    typeProperties   = getRecordPropertiesFromType(entry);
 
-        Hashtable p = null;
+        Hashtable p                = null;
 
 
         if (typeProperties != null) {
@@ -321,6 +327,20 @@ public abstract class RecordTypeHandler extends BlobTypeHandler implements Recor
 
         return p;
     }
+
+    /**
+     * _more_
+     *
+     * @param entry _more_
+     *
+     * @return _more_
+     *
+     * @throws Exception _more_
+     */
+    public String getRecordPropertiesFromType(Entry entry) throws Exception {
+        return getTypeProperty("record.properties", (String) null);
+    }
+
 
     /**
      * _more_
