@@ -1724,7 +1724,7 @@ public class Gtfs implements Constants {
                 tripVehicles.add(vehicle);
             }
         }
-        System.err.println("Trip:" + tripId +" vehicles:" + tripVehicles);
+        //        System.err.println("Trip:" + tripId +" vehicles:" + tripVehicles);
         return tripVehicles;
     }
 
@@ -1768,7 +1768,7 @@ public class Gtfs implements Constants {
             TypeHandler vehicleTypeHandler = repository.getTypeHandler("type_gtfs_vehicle");
             for (FeedEntity entity : feed.getEntityList()) {
                 if (entity.hasTripUpdate()) {
-                    System.out.println(entity.getTripUpdate());
+                    //System.out.println(entity.getTripUpdate());
                 } else if (entity.hasVehicle()) {
                     com.google.transit.realtime.GtfsRealtime.VehiclePosition vehicle = entity.getVehicle();
                     com.google.transit.realtime.GtfsRealtime.TripDescriptor trip = vehicle.getTrip();
