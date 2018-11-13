@@ -1060,7 +1060,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                 label = Misc.getProperty(props, ATTR_TITLE, "Download");
             } else {
                 url   = entry.getResource().getPath();
-                label = url;
+                label = Misc.getProperty(props, ATTR_TITLE, url);
             }
             if (Misc.getProperty(props, "url", false)) {
                 return url;
