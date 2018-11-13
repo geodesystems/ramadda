@@ -2144,10 +2144,15 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
                     this.setContents(errorMessage);
                     return;
                 }
-                var msg = "<b>Sorry, but an error has occurred:</b>";
-                if(!data) data = "No data returned from server";
-                msg +=  HtmlUtil.tag("pre", ["style","background:#fff;margin:10px;padding:10px;border:1px #ccc solid;   border-radius: 0px;"],
-                                     (data.error?data.error:data)); 
+                var msg = "";
+                if(data && data.errorcode && data.errorcode=="warning") {
+                    msg =  data.error;
+                } else {
+                    msg = "<b>Sorry, but an error has occurred:</b>";
+                    if(!data) data = "No data returned from server";
+                    msg +=  HtmlUtil.tag("div", ["style","background:#fff;margin:10px;padding:10px;border:1px #ccc solid;   border-radius: 0px;"],
+                                         (data.error?data.error:data)); 
+                }
                 this.setContents(this.getMessage(msg));
             },
 

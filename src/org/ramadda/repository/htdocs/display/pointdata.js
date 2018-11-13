@@ -232,7 +232,7 @@ function PointData(name, recordFields, records, url, properties) {
                         pointData.stopLoading();
                     })
                     .fail(function(jqxhr, textStatus, error) {
-                            var err = textStatus + ", " + error;
+                            var err = textStatus + ": " + error;
                             console.log("JSON error:" +err);
                             display.pointDataLoadFailed(err);
                             pointData.stopLoading();
