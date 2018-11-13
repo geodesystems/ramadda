@@ -198,6 +198,7 @@ public class WeblogOutputHandler extends OutputHandler {
                                     "style",
                                     "text-align:center;")) + "\n<p>\n";
             }
+            System.err.println("header:" + headerValue);
             String header = getWikiManager().wikifyEntry(request, group,
                                 headerValue);
 
