@@ -4026,8 +4026,18 @@ Time:14625 cnt:7000
      */
     public String getEntryHref(Request request, Entry entry, String... args)
             throws Exception {
+        /*
+        List<Metadata> metadataList =
+            getMetadataManager().findMetadata(request, entry,
+                                              ContentMetadataHandler.TYPE_ALIAS,false);
+        String url;
+        if(metadataList.size()>0) {
+            url = request.entryUrl(getRepository().URL_ENTRY_SHOW, entry);
+        } else {
+            url = request.entryUrl(getRepository().URL_ENTRY_SHOW, entry);
+        }
+        */
         String url = request.entryUrl(getRepository().URL_ENTRY_SHOW, entry);
-
         return HtmlUtils.href(url, (args.length > 0)
                                    ? args[0]
                                    : entry.getLabel());
