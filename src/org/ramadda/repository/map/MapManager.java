@@ -1179,7 +1179,8 @@ public class MapManager extends RepositoryManager {
                     HtmlUtils.img(
                         iconUrl, msg("Click to view entry details"))));
             catSB.append("&nbsp;");
-            catSB.append(HtmlUtils.href(navUrl, getEntryDisplayName(entry)));
+            String label = getEntryDisplayName(entry);
+            catSB.append(HtmlUtils.href(navUrl, label,HtmlUtils.attr(HtmlUtils.ATTR_TITLE,label)));
             catSB.append(HtmlUtils.close(HtmlUtils.TAG_DIV));
             numEntries++;
         }
