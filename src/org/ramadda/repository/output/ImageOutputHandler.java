@@ -52,6 +52,8 @@ import java.net.*;
 
 import java.text.SimpleDateFormat;
 
+import java.awt.Color;
+
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Enumeration;
@@ -110,6 +112,9 @@ public class ImageOutputHandler extends OutputHandler {
 
     /** _more_ */
     public static final String ARG_IMAGE_EDIT_REDEYE = "image.edit.redeye";
+
+    /** _more_ */
+    public static final String ARG_IMAGE_EDIT_TRANSPARENT = "image.edit.transparent";
 
 
     /** _more_ */
@@ -401,6 +406,7 @@ public class ImageOutputHandler extends OutputHandler {
         if (shouldRedirect) {
             request.remove(ARG_IMAGE_EDIT_RESIZE);
             request.remove(ARG_IMAGE_EDIT_REDEYE);
+            request.remove(ARG_IMAGE_EDIT_TRANSPARENT);
             request.remove(ARG_IMAGE_EDIT_CROP);
             request.remove(ARG_IMAGE_EDIT_ROTATE_LEFT);
             request.remove(ARG_IMAGE_EDIT_ROTATE_RIGHT);
@@ -436,6 +442,8 @@ public class ImageOutputHandler extends OutputHandler {
         sb.append(HtmlUtils.submit(msg("Crop"), ARG_IMAGE_EDIT_CROP));
         sb.append(HtmlUtils.submit(msg("Remove Redeye"),
                                    ARG_IMAGE_EDIT_REDEYE));
+        sb.append(HtmlUtils.submit(msg("Make Transparent"),
+                                   ARG_IMAGE_EDIT_TRANSPARENT));
         sb.append(HtmlUtils.hidden(ARG_IMAGE_CROPX1, "",
                                    HtmlUtils.SIZE_3
                                    + HtmlUtils.id(ARG_IMAGE_CROPX1)));
@@ -626,6 +634,15 @@ public class ImageOutputHandler extends OutputHandler {
             if ((x1 < x2) && (y1 < y2)) {
                 newImage = ImageUtils.removeRedeye(image, x1, y1, x2, y2);
             }
+        } else if (request.exists(ARG_IMAGE_EDIT_TRANSPARENT)) {
+            BufferedImage bi = ImageUtils.toBufferedImage(image);
+            int x = request.get(ARG_IMAGE_CROPX1, 0);
+            int y = request.get(ARG_IMAGE_CROPY1, 0);
+            int clr=  bi.getRGB(x,y); 
+            int  red   = (clr & 0x00ff0000) >> 16;
+            int  green = (clr & 0x0000ff00) >> 8;
+            int  blue  =  clr & 0x000000ff;
+            newImage = ImageUtils.makeColorTransparent(bi,new Color(red,green, blue));
 
         } else if (request.exists(ARG_IMAGE_EDIT_CROP)) {
             int x1 = request.get(ARG_IMAGE_CROPX1, 0);
