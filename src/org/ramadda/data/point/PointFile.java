@@ -859,6 +859,8 @@ public abstract class PointFile extends RecordFile implements Cloneable,
 
     /** _more_ */
     public static final String ATTR_OFFSET = "offset";
+    public static final String ATTR_OFFSET1 = "offset1";
+    public static final String ATTR_OFFSET2 = "offset2";
 
     /** _more_ */
     public static final String ATTR_VALUE = "value";
@@ -919,8 +921,14 @@ public abstract class PointFile extends RecordFile implements Cloneable,
                     "index", "-1")).intValue());
             field.setScale(Double.parseDouble(getProperty(field, properties,
                     ATTR_SCALE, "1.0")));
-            field.setOffset(Double.parseDouble(getProperty(field, properties,
-                    ATTR_OFFSET, "0.0")));
+            field.setOffset1(Double.parseDouble(getProperty(field, properties, ATTR_OFFSET1, "0.0")));
+            field.setOffset2(Double.parseDouble(getProperty(field, properties, ATTR_OFFSET2, "0.0")));
+            String offset = getProperty(field, properties,
+                                        ATTR_OFFSET, (String) null);
+
+            if(offset!=null) {
+                field.setOffset2(Double.parseDouble(offset));
+            }
 
             field.setIsDate(getProperty(field, properties,
                                         RecordField.PROP_ISDATE,

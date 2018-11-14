@@ -144,7 +144,9 @@ public class RecordField {
     private double scale = 1.0;
 
     /** _more_ */
-    private double offset = 1.0;
+    private double offset1 = 0.0;
+
+    private double offset2 = 0.0;
 
     /** _more_ */
     private String name;
@@ -797,7 +799,7 @@ public class RecordField {
      */
     public double convertValue(double v) {
         //TODO: or is this the other way around
-        return v * scale + offset;
+        return (v+offset1) * scale + offset2;
     }
 
 
@@ -820,21 +822,39 @@ public class RecordField {
     }
 
     /**
-     *  Set the Offset property.
+     *  Set the Offset1 property.
      *
-     *  @param value The new value for Offset
+     *  @param value The new value for Offset1
      */
-    public void setOffset(double value) {
-        offset = value;
+    public void setOffset1(double value) {
+        offset1 = value;
     }
 
     /**
-     *  Get the Offset property.
+     *  Get the Offset1 property.
      *
-     *  @return The Offset
+     *  @return The Offset1
      */
-    public double getOffset() {
-        return offset;
+    public double getOffset1() {
+        return offset1;
+    }
+
+    /**
+     *  Set the Offset2 property.
+     *
+     *  @param value The new value for Offset2
+     */
+    public void setOffset2(double value) {
+        offset2 = value;
+    }
+
+    /**
+     *  Get the Offset2 property.
+     *
+     *  @return The Offset2
+     */
+    public double getOffset2() {
+        return offset2;
     }
 
 
