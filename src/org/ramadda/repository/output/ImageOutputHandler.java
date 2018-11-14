@@ -421,6 +421,7 @@ public class ImageOutputHandler extends OutputHandler {
         int imageWidth  = image.getWidth(null);
         int imageHeight = image.getHeight(null);
 
+        getPageHandler().entrySectionOpen(request, entry, sb, "Image Edit");
         sb.append(request.formPost(getRepository().URL_ENTRY_SHOW));
 
 
@@ -493,6 +494,7 @@ public class ImageOutputHandler extends OutputHandler {
                           clickParams));
         sb.append(HtmlUtils.img(url, "", HtmlUtils.id("imgid") + call));
 
+        getPageHandler().entrySectionClose(request, entry, sb);
         return new Result("Image Edit", sb);
 
     }
