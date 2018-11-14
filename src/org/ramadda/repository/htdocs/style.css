@@ -1430,6 +1430,9 @@ a.ramadda-entries-link {
    font-weight: bold;
 }
 
+
+
+
 a.ramadda-menuitem-link:hover {
    text-decoration: underline;
    color:#000;
@@ -1480,6 +1483,12 @@ a.ramadda-menuitem-link {
    margin-bottom:4px;
    border-bottom : 1px #ccc solid;
 }
+
+.ramadda-menugroup  {
+   max-height: 300px; 
+   overflow-y: auto;
+}
+
 
 .ramadda-menuitem {
     margin-left:10px;

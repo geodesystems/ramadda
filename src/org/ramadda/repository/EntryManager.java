@@ -6503,7 +6503,7 @@ public class EntryManager extends RepositoryManager {
             StringBuilder sb;
             if (link.isType(OutputType.TYPE_VIEW)) {
                 if (htmlSB == null) {
-                    htmlSB = new StringBuilder();
+                    htmlSB = new StringBuilder(HtmlUtils.open(HtmlUtils.TAG_DIV,HtmlUtils.cssClass(CSS_CLASS_MENU_GROUP)));
                     cnt++;
                 }
                 sb = htmlSB;
@@ -6512,35 +6512,38 @@ public class EntryManager extends RepositoryManager {
             } else if (link.isType(OutputType.TYPE_FEEDS)) {
                 if (exportSB == null) {
                     cnt++;
-                    exportSB = new StringBuilder();
+                    exportSB = new StringBuilder(HtmlUtils.open(HtmlUtils.TAG_DIV,HtmlUtils.cssClass(CSS_CLASS_MENU_GROUP)));
                 }
                 sb = exportSB;
             } else if (link.isType(OutputType.TYPE_FILE)) {
                 if (fileSB == null) {
                     cnt++;
-                    fileSB = new StringBuilder();
+                    fileSB = new StringBuilder(HtmlUtils.open(HtmlUtils.TAG_DIV,HtmlUtils.cssClass(CSS_CLASS_MENU_GROUP)));
                 }
                 sb = fileSB;
             } else if (link.isType(OutputType.TYPE_OTHER)) {
                 if (categorySB == null) {
                     cnt++;
-                    categorySB = new StringBuilder();
+                    categorySB = new StringBuilder(HtmlUtils.open(HtmlUtils.TAG_DIV,HtmlUtils.cssClass(CSS_CLASS_MENU_GROUP)));
                 }
                 sb = categorySB;
             } else {
                 if (actionSB == null) {
                     cnt++;
-                    actionSB = new StringBuilder();
+                    actionSB = new StringBuilder(HtmlUtils.open(HtmlUtils.TAG_DIV,HtmlUtils.cssClass(CSS_CLASS_MENU_GROUP)));
                     //                    actionSB.append("<tr><td class=entrymenulink>" + msg("Edit") +"</td></tr>");
                 }
                 sb = actionSB;
             }
             //Only add the hr if we have more things in the list
             if (needToAddHr && (sb.length() > 0)) {
+                sb.append("</div>");
+                
                 sb.append(
-                    HtmlUtils.div(
+                          HtmlUtils.div(
                         "",
                         HtmlUtils.cssClass(CSS_CLASS_MENUITEM_SEPARATOR)));
+                sb.append(HtmlUtils.open(HtmlUtils.TAG_DIV,HtmlUtils.cssClass(CSS_CLASS_MENU_GROUP)));
             }
             needToAddHr = link.getHr();
             if (needToAddHr) {
@@ -6577,17 +6580,20 @@ public class EntryManager extends RepositoryManager {
         menu.append("<table class=\"ramadda-menu\">");
         HtmlUtils.open(menu, HtmlUtils.TAG_TR, HtmlUtils.ATTR_VALIGN, "top");
         if (fileSB != null) {
+            fileSB.append("</div>");
             menu.append(HtmlUtils.tag(HtmlUtils.TAG_TD, "",
                                       HtmlUtils.b(msg("File")) + "<br>"
                                       + fileSB.toString()));
         }
         if (actionSB != null) {
+            actionSB.append("</div>");
             menu.append(HtmlUtils.tag(HtmlUtils.TAG_TD, "",
                                       HtmlUtils.b(msg("Edit")) + "<br>"
                                       + actionSB.toString()));
         }
 
         if (htmlSB != null) {
+            htmlSB.append("</div>");
             menu.append(HtmlUtils.tag(HtmlUtils.TAG_TD, "",
                                       HtmlUtils.b(msg("View")) + "<br>"
                                       + htmlSB.toString()));
@@ -6595,12 +6601,14 @@ public class EntryManager extends RepositoryManager {
 
 
         if (exportSB != null) {
+            exportSB.append("</div>");
             menu.append(HtmlUtils.tag(HtmlUtils.TAG_TD, "",
                                       HtmlUtils.b(msg("Links")) + "<br>"
                                       + exportSB.toString()));
         }
 
         if (categorySB != null) {
+            categorySB.append("</div>");
             menu.append(HtmlUtils.tag(HtmlUtils.TAG_TD, "",
                                       HtmlUtils.b(msg("Data")) + "<br>"
                                       + categorySB.toString()));
