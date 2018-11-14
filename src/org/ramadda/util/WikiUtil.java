@@ -821,6 +821,7 @@ public class WikiUtil {
                     }
                     clazz = clazz + " " + getAttribute(attrs, "class", "");
                 }
+                if(clazz.matches("col-[0-9]+")) clazz=clazz.replace("col-","col-md-");
                 buff.append(HtmlUtils.open("div",
                                            HtmlUtils.cssClass(clazz)
                                            + extra));
