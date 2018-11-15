@@ -2267,14 +2267,18 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 
                 var rowCnt = -1;
                 var date_formatter;
-                if (!( (typeof google === 'undefined') || (typeof google.visualization == 'undefined') )) {
-                  var df = this.getProperty("dateFormat",null);
-                  if (df) {
-                    date_formatter = new google.visualization.DateFormat({ 
-                         pattern: df,
-                         timeZone: 0
-                    }); 
-                  }
+                if (this.googleLoaded()) {
+                    var df = this.getProperty("dateFormat",null);
+                    if (df) {
+                        var tz = 0;
+                        if(Utils.isDefined(this.timezone)) {
+                            tz=parseFloat(this.timezone);
+                        }
+                        date_formatter = new google.visualization.DateFormat({ 
+                                pattern: df,
+                                timeZone: tz
+                            }); 
+                    }
                 }
                 for(j=0;j<records.length;j++) { 
                     var record = records[j];
@@ -2303,6 +2307,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
                             indexName =  field.getLabel();
                         } else {
                             if(this.hasDate) {
+                                //                                console.log(this.getDateValue(date, date_formatter));
                                 values.push(this.getDateValue(date, date_formatter));
                                 indexName = "Date";
                             } else {
@@ -2479,9 +2484,14 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             initDateFormats: function() {
                 if (!this.googleLoaded()) return false;
                 if(this.fmt_yyyy) return true;
-                this.fmt_yyyymmddhhmm =   new google.visualization.DateFormat({pattern: "yyyy-MM-dd HH:mm'Z'",timeZone:0});
-                this.fmt_yyyymmdd =   new google.visualization.DateFormat({pattern: "yyyy-MM-dd",timeZone:0});
-                this.fmt_yyyy =   new google.visualization.DateFormat({pattern: "yyyy",timeZone:0});
+                var tz = 0;
+                if(Utils.isDefined(this.timezone)) {
+                    tz=parseFloat(this.timezone);
+                }
+                console.log(tz)
+                this.fmt_yyyymmddhhmm =   new google.visualization.DateFormat({pattern: "yyyy-MM-dd HH:mm'Z'",timeZone:tz});
+                this.fmt_yyyymmdd =   new google.visualization.DateFormat({pattern: "yyyy-MM-dd",timeZone:tz});
+                this.fmt_yyyy =   new google.visualization.DateFormat({pattern: "yyyy",timeZone:tz});
                 return true;
             },
             getDateValue: function(arg, formatter) {
