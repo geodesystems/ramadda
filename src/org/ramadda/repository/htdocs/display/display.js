@@ -2490,7 +2490,6 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
                 if(Utils.isDefined(this.timezone)) {
                     tz=parseFloat(this.timezone);
                 }
-                console.log(tz)
                 this.fmt_yyyymmddhhmm =   new google.visualization.DateFormat({pattern: "yyyy-MM-dd HH:mm'Z'",timeZone:tz});
                 this.fmt_yyyymmdd =   new google.visualization.DateFormat({pattern: "yyyy-MM-dd",timeZone:tz});
                 this.fmt_yyyy =   new google.visualization.DateFormat({pattern: "yyyy",timeZone:tz});
