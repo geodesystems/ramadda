@@ -221,7 +221,7 @@ function PointData(name, recordFields, records, url, properties) {
                             display.pointDataLoadFailed(data);
                             return;
                         }
-                        var newData =    makePointData(data, _this.derived);
+                        var newData =    makePointData(data, _this.derived, display);
                         obj.pointData  = pointData.initWith(newData);
                         var tmp = obj.pending;
                         obj.pending = [];
@@ -399,12 +399,18 @@ function RecordField(props) {
                 if(this.label == null || this.label.length==0) return this.id;
                  return this.label;
              },
+               setLabel: function(l) {
+               this.label = l;
+           },
              getType: function() {
                  return this.type;
              },
              getMissing: function() {
                  return this.missing;
              },
+             setUnit: function(u) {
+               this.unit = u;
+              },
              getUnit: function() {
                  return this.unit;
              }
@@ -478,7 +484,7 @@ function PointRecord(lat, lon, elevation, time, data) {
 
 
 
-function makePointData(json, derived) {
+function makePointData(json, derived,source) {
 
     var fields = [];
     var latitudeIdx = -1;
@@ -601,7 +607,7 @@ function makePointData(json, derived) {
                             }
                         }
                         d.fieldsToUse.push(theField);
-                        
+                      
                     }
                     var code =  "";
                     for(var i=0;i<funcParams.length;i++) {
@@ -656,6 +662,8 @@ function makePointData(json, derived) {
         pointRecords.push(record);
     }
 
+
+
     for(var dIdx=0;dIdx<derived.length;dIdx++) {
         var d = derived[dIdx];
         if(!d.isColumn) continue;
@@ -709,6 +717,33 @@ function makePointData(json, derived) {
             }
         }
     }
+
+    if(source!=null) {
+        for(var i=0;i<fields.length;i++) {
+            var field  = fields[i];
+            var prefix = "field." + field.getId()+".";
+            if(Utils.isDefined(source[prefix+"unit"])) {
+                field.setUnit(source[prefix+"unit"]);
+            }
+            if(Utils.isDefined(source[prefix+"label"])) {
+                field.setLabel(source[prefix+"label"]);
+            }
+            if(Utils.isDefined(source[prefix+"scale"])  || Utils.isDefined(source[prefix+"offset1"]) || Utils.isDefined(source[prefix+"offset2"])) {
+                var offset1 = Utils.isDefined(source[prefix+"offset1"])?parseFloat(source[prefix+"offset1"]):0;
+                var offset2 = Utils.isDefined(source[prefix+"offset2"])?parseFloat(source[prefix+"offset2"]):0;
+                var scale = Utils.isDefined(source[prefix+"scale"])?parseFloat(source[prefix+"scale"]):1;
+                var index = field.getIndex();
+                for(var rowIdx=0;rowIdx<pointRecords.length;rowIdx++) {
+                    var record  = pointRecords[rowIdx];
+                    var values=  record.getData();
+                    var value =  values[index];
+                    values[index]= (value+offset1)*scale+offset2;
+                }
+            } 
+
+        } 
+    }
+
 
 
     var name = json.name;

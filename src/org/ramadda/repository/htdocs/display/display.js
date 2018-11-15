@@ -2471,7 +2471,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
                 return dataList;
             },
             googleLoaded: function() {
-               if ( (typeof google === 'undefined') || (typeof google.visualization === 'undefined') ) {
+                if ( (typeof google === 'undefined') || (typeof google.visualization === 'undefined') || (typeof google.visualization.DateFormat === 'undefined')) {
                   return false;
                }
                return true;
