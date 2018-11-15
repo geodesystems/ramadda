@@ -2271,6 +2271,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
                     var df = this.getProperty("dateFormat",null);
                     if (df) {
                         var tz = 0;
+                        this.timezone = this.getProperty("timezone");
                         if(Utils.isDefined(this.timezone)) {
                             tz=parseFloat(this.timezone);
                         }
@@ -2485,6 +2486,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
                 if (!this.googleLoaded()) return false;
                 if(this.fmt_yyyy) return true;
                 var tz = 0;
+                this.timezone = this.getProperty("timezone");
                 if(Utils.isDefined(this.timezone)) {
                     tz=parseFloat(this.timezone);
                 }
