@@ -243,7 +243,7 @@ public class DwmlFeedTypeHandler extends GenericTypeHandler {
             HtmlUtils.div(sb,"Hazardous Weather Conditions",HtmlUtils.cssClass("nws-header"));
             HtmlUtils.open(sb,"div",HtmlUtils.cssClass("nws-contents"));
         }
-        sb.append(HtmlUtils.tag("ul"));
+        sb.append(HtmlUtils.tag("ul",HtmlUtils.style("padding-left:5px;")));
         sb.append(forecast.hazards.toString());
         sb.append("</ul>");
         if(addHeader) {
