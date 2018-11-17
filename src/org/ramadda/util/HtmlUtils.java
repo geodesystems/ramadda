@@ -1691,6 +1691,10 @@ public class HtmlUtils {
     }
 
 
+    public static String td(String content) {
+        return td(content,"");
+    }
+
     /**
      * _more_
      *
