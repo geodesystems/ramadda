@@ -204,7 +204,7 @@ public class DwmlFeedTypeHandler extends GenericTypeHandler {
 
         boolean addHeader = !Misc.equals(props.get("addHeader"),"false");
         boolean vertical = Misc.equals(props.get("orientation"),"vertical");
-        if(tag.equals("nws.hazard")) {
+        if(tag.equals("nws.hazards")) {
             addHazard(request, entry, sb,addHeader);
         } else  if (tag.equals("nws.current")) {
             addCurrent(request, entry, sb,addHeader, vertical);
