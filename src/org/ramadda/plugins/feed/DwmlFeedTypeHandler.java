@@ -38,6 +38,7 @@ import ucar.unidata.xml.XmlUtil;
 
 import java.net.URL;
 
+import java.util.TimeZone;
 import java.text.SimpleDateFormat;
 
 
@@ -68,6 +69,7 @@ public class DwmlFeedTypeHandler extends GenericTypeHandler {
     /** _more_          */
     private static final String URL =
         "https://forecast.weather.gov/MapClick.php?lat=${lat}&lon=${lon}&unit=0&lg=english&FcstType=dwml";
+
 
     /**
      * _more_
@@ -233,77 +235,90 @@ public class DwmlFeedTypeHandler extends GenericTypeHandler {
     private void addCurrent(Request request, Entry entry, Appendable sb, boolean addHeader)
             throws Exception {
         Weather current = getCurrent(entry);
-        if ((current != null) && (current.times.size() > 0)) {
-            Weather.Time time = current.times.get(0);
-            if(addHeader) {
-                sb.append(HtmlUtils.b("Current conditions at"));
-                sb.append(
-                          HtmlUtils.div(
-                                        current.location,
-                                        " style=\"font-size:16px;color:#135897;\" "));
-                sb.append("<p>");
-            }
-            sb.append("<table border=0 cellspacing=0 cellpadding=0>\n");
-            sb.append("<tr valign=top>");
-            if (time.icon != null) {
-                sb.append(
-                    HtmlUtils.td(
-                        HtmlUtils.div(
-                            HtmlUtils.img(time.icon, time.words),
-                            "style=\" margin:5px;  font-weight: bold;\" ")));
-            }
-            sb.append(HtmlUtils.open("td"));
+        if ((current == null) || (current.times.size() == 0)) {
+            return;
+        }
+        SimpleDateFormat dateFormat = new SimpleDateFormat();
+        String timezone = entry.getValue(0,"");
+        if(!Utils.stringDefined(timezone)) {
+            timezone = getEntryUtil().getTimezone(entry);
+        }
+        if(Utils.stringDefined(timezone)) {
+            dateFormat.setTimeZone(TimeZone.getTimeZone(timezone));
+        } else {
+            dateFormat.setTimeZone(RepositoryUtil.TIMEZONE_DEFAULT);
+        }
+        dateFormat.applyPattern("MMM d - HH:mm Z");
+        Weather.Time time = current.times.get(0);
+        if(addHeader) {
+            sb.append(HtmlUtils.b("Current conditions at"));
             sb.append(
-                HtmlUtils.open(
-                    "div", " style=\"margin-left:5px; margin-right:30px;\""));
-            if (time.weather != null) {
-                sb.append(HtmlUtils.div(time.weather, "style=\" \" "));
-            }
-            if (time.apparent != null) {
-                sb.append(
-                    HtmlUtils.div(
-                        time.apparent + "&deg;&nbsp;F",
-                        "style=\" font-size:30px; font-weight: bold;\" "));
-            }
-            sb.append(HtmlUtils.close("div"));
-            sb.append(HtmlUtils.close("td"));
-
-            sb.append(HtmlUtils.open("td"));
-            sb.append("<table>");
-            String style1 =
-                " style=\"  margin-right:5px; font-weight: bold;\"  ";
-            String style2 = " style=\"  margin-left:8px; \"  ";
-            if (time.humidity != null) {
-                HtmlUtils.row(
-                    sb,
-                    HtmlUtils.td("Humidity", " align=right " + style1)
-                    + HtmlUtils.td(HtmlUtils.div(time.humidity+"%", style2)));
-            }
-            if (time.sustained != null) {
-                HtmlUtils.row(sb, HtmlUtils.td("Wind&nbsp;Speed", " align=right "
-                        + style1) + HtmlUtils.td(HtmlUtils.div(time.sustained
-                            + "&nbsp;G&nbsp;" + time.gust + "&nbsp;MPH", style2)));
-            }
-
-            if (time.pressure != null) {
-                HtmlUtils.row(sb, HtmlUtils.td("Barometer", "  align=right  "
-                        + style1) + HtmlUtils.td(HtmlUtils.div(time.pressure
-                            + "&nbsp;in", style2)));
-            }
-
-            if (time.dewpoint != null) {
-                HtmlUtils.row(sb, HtmlUtils.td("Dew&nbsp;Point", "  align=right "
-                        + style1) + HtmlUtils.td(HtmlUtils.div(time.dewpoint, style2)));
-            }
-
-            sb.append("</table>");
-            sb.append(HtmlUtils.close("td"));
-
-            sb.append("</tr>");
-            sb.append("</table>\n");
+                      HtmlUtils.div(
+                                    current.location,
+                                    " style=\"font-size:16px;color:#135897;\" "));
             sb.append("<p>");
         }
+        sb.append("<table border=0 cellspacing=0 cellpadding=0>\n");
+        sb.append("<tr valign=top>");
+        if (time.icon != null) {
+            sb.append(
+                      HtmlUtils.td(
+                                   HtmlUtils.div(
+                                                 HtmlUtils.img(time.icon, time.words),
+                                                 "style=\" margin:5px;  font-weight: bold;\" ")));
+        }
+        sb.append(HtmlUtils.open("td"));
+        sb.append(
+                  HtmlUtils.open(
+                                 "div", " style=\"margin-left:5px; margin-right:30px;\""));
+        if (time.weather != null) {
+            sb.append(HtmlUtils.div(time.weather, "style=\" \" "));
+        }
+        if (time.apparent != null) {
+            sb.append(
+                      HtmlUtils.div(
+                                    time.apparent + "&deg;&nbsp;F",
+                                    "style=\" font-size:30px; font-weight: bold;\" "));
+        }
+        sb.append(HtmlUtils.close("div"));
+        sb.append(HtmlUtils.close("td"));
 
+        sb.append(HtmlUtils.open("td"));
+        sb.append("<table>");
+        String style1 =
+            " style=\"  margin-right:5px; font-weight: bold;\"  ";
+        String style2 = " style=\"  margin-left:8px; \"  ";
+        if (time.humidity != null) {
+            HtmlUtils.row(
+                          sb,
+                          HtmlUtils.td("Humidity", " align=right " + style1)
+                          + HtmlUtils.td(HtmlUtils.div(time.humidity+"%", style2)));
+        }
+        if (time.sustained != null) {
+            HtmlUtils.row(sb, HtmlUtils.td("Wind&nbsp;Speed", " align=right "
+                                           + style1) + HtmlUtils.td(HtmlUtils.div(time.sustained
+                                                                                  + "&nbsp;G&nbsp;" + time.gust + "&nbsp;MPH", style2)));
+        }
+
+        if (time.pressure != null) {
+            HtmlUtils.row(sb, HtmlUtils.td("Barometer", "  align=right  "
+                                           + style1) + HtmlUtils.td(HtmlUtils.div(time.pressure
+                                                                                  + "&nbsp;in", style2)));
+        }
+
+        if (time.dewpoint != null) {
+            HtmlUtils.row(sb, HtmlUtils.td("Dew&nbsp;Point", "  align=right "
+                                           + style1) + HtmlUtils.td(HtmlUtils.div(time.dewpoint, style2)));
+        }
+
+        HtmlUtils.row(sb, HtmlUtils.td("Last Update", "  align=right "
+                                       + style1) + HtmlUtils.td(dateFormat.format(time.date)));
+        sb.append("</table>");
+        sb.append(HtmlUtils.close("td"));
+
+        sb.append("</tr>");
+        sb.append("</table>\n");
+        sb.append("<p>");
     }
 
     /**
