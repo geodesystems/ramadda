@@ -19,6 +19,7 @@
      <property name="form.date.show" value="false"/>
      <property name="form.area.show" value="true"/>
      <property name="form.location.show" value="true"/>
+     <column name="timezone" type="string" label="Timezone" showinhtml="false" editable="true" />
      <wiki><![CDATA[
 +section title={{name}}
 {{description}}
