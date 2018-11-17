@@ -198,17 +198,18 @@ public class DwmlFeedTypeHandler extends GenericTypeHandler {
             throws Exception {
 
         StringBuilder sb = new StringBuilder();
+        boolean addHeader = !Misc.equals(props.get("addHeader"),"false");
         if (tag.equals("nws.current")) {
-            addCurrent(request, entry, sb,!Misc.equals(props.get("addHeader"),"false"));
+            addCurrent(request, entry, sb,addHeader);
         } else if (tag.equals("nws.forecast")) {
             addForecast(request, entry, sb);
-            addDetails(request, entry, sb);
+            addDetails(request, entry, sb,addHeader);
         } else if (tag.equals("nws.details")) {
-            addDetails(request, entry, sb);
+            addDetails(request, entry, sb,addHeader);
         } else if (tag.equals("nws.all")) {
-            addCurrent(request, entry, sb,true);
+            addCurrent(request, entry, sb,addHeader);
             addForecast(request, entry, sb);
-            addDetails(request, entry, sb);
+            addDetails(request, entry, sb,addHeader);
         } else {
             return super.getWikiInclude(wikiUtil, request, originalEntry,
                                         entry, tag, props);
@@ -386,7 +387,7 @@ public class DwmlFeedTypeHandler extends GenericTypeHandler {
      *
      * @throws Exception _more_
      */
-    private void addDetails(Request request, Entry entry, Appendable sb)
+    private void addDetails(Request request, Entry entry, Appendable sb,boolean addHeader)
             throws Exception {
         Weather forecast = getForecast(entry);
         if (forecast == null) {
@@ -394,7 +395,9 @@ public class DwmlFeedTypeHandler extends GenericTypeHandler {
 
             return;
         }
-        sb.append(HtmlUtils.b("Detailed Forecast"));
+        if(addHeader) {
+            sb.append(HtmlUtils.b("Detailed Forecast"));
+        }
         HtmlUtils.open(sb, "div", HtmlUtils.style("border: 1px #ccc solid;"));
         sb.append("<table border=0 cellspacing=0 cellpadding=0>\n");
         boolean even = true;
