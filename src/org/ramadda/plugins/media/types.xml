@@ -166,7 +166,9 @@
 
 
   <type name="type_image_webcam"  description="Webcam" super="type_image" foruser="true" category="Imagery" supercategory="Miscellaneous" >
-</type>
+     <property name="form.file.show" value="false"/>
+
+ </type>
 
 
 
