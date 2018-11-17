@@ -32,6 +32,7 @@ import org.w3c.dom.*;
 
 import ucar.unidata.util.DateUtil;
 import ucar.unidata.util.IOUtil;
+import ucar.unidata.util.Misc;
 import ucar.unidata.util.StringUtil;
 import ucar.unidata.xml.XmlUtil;
 
@@ -198,14 +199,14 @@ public class DwmlFeedTypeHandler extends GenericTypeHandler {
 
         StringBuilder sb = new StringBuilder();
         if (tag.equals("nws.current")) {
-            addCurrent(request, entry, sb);
+            addCurrent(request, entry, sb,!Misc.equals(props.get("addHeader"),"false"));
         } else if (tag.equals("nws.forecast")) {
             addForecast(request, entry, sb);
             addDetails(request, entry, sb);
         } else if (tag.equals("nws.details")) {
             addDetails(request, entry, sb);
         } else if (tag.equals("nws.all")) {
-            addCurrent(request, entry, sb);
+            addCurrent(request, entry, sb,true);
             addForecast(request, entry, sb);
             addDetails(request, entry, sb);
         } else {
@@ -228,17 +229,19 @@ public class DwmlFeedTypeHandler extends GenericTypeHandler {
      *
      * @throws Exception _more_
      */
-    private void addCurrent(Request request, Entry entry, Appendable sb)
+    private void addCurrent(Request request, Entry entry, Appendable sb, boolean addHeader)
             throws Exception {
         Weather current = getCurrent(entry);
         if ((current != null) && (current.times.size() > 0)) {
             Weather.Time time = current.times.get(0);
-            sb.append(HtmlUtils.b("Current conditions at"));
-            sb.append(
-                HtmlUtils.div(
-                    current.location,
-                    " style=\"font-size:16px;color:#135897;\" "));
-            sb.append("<p>");
+            if(addHeader) {
+                sb.append(HtmlUtils.b("Current conditions at"));
+                sb.append(
+                          HtmlUtils.div(
+                                        current.location,
+                                        " style=\"font-size:16px;color:#135897;\" "));
+                sb.append("<p>");
+            }
             sb.append("<table border=0 cellspacing=0 cellpadding=0>\n");
             sb.append("<tr valign=top>");
             if (time.icon != null) {
@@ -258,8 +261,8 @@ public class DwmlFeedTypeHandler extends GenericTypeHandler {
             if (time.apparent != null) {
                 sb.append(
                     HtmlUtils.div(
-                        time.apparent + "&deg; F",
-                        "style=\" font-size:42px; font-weight: bold;\" "));
+                        time.apparent + "&deg;&nbsp;F",
+                        "style=\" font-size:30px; font-weight: bold;\" "));
             }
             sb.append(HtmlUtils.close("div"));
             sb.append(HtmlUtils.close("td"));
@@ -415,42 +418,6 @@ public class DwmlFeedTypeHandler extends GenericTypeHandler {
         HtmlUtils.close(sb, "div");
     }
 
-
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param entry _more_
-     * @param times _more_
-     * @param node _more_
-     * @param sb _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception _more_
-     */
-    /*
-    @Override
-    public Result getHtmlDisplay(Request request, Entry entry)
-            throws Exception {
-        StringBuffer sb  = new StringBuffer();
-        if (!entry.hasLocationDefined()) {
-            getPageHandler().entrySectionOpen(request, entry, sb, "");
-            sb.append("No location defined");
-            getPageHandler().entrySectionClose(request, entry, sb);
-            return new Result(msg("NWS Weather Forecast"), sb);
-        }
-        getPageHandler().entrySectionOpen(request, entry, sb, "");
-        addCurrent(request, entry, sb);
-        sb.append("<p>");
-        addForecast(request, entry, sb);
-        sb.append("<p>");
-        addDetails(request, entry, sb);
-        getPageHandler().entrySectionClose(request, entry, sb);
-        return new Result(msg("NWS Weather Forecast"), sb);
-
-    }
-*/
 
     private void checkTimes(Request request,
                             Hashtable<String, Element> times, Element node,
