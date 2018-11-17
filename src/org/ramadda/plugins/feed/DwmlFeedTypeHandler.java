@@ -255,7 +255,7 @@ public class DwmlFeedTypeHandler extends GenericTypeHandler {
             sb.append(HtmlUtils.open("td"));
             sb.append(
                 HtmlUtils.open(
-                    "div", " style=\"margin-left:5px; margin-right:40px;\""));
+                    "div", " style=\"margin-left:5px; margin-right:30px;\""));
             if (time.weather != null) {
                 sb.append(HtmlUtils.div(time.weather, "style=\" \" "));
             }
@@ -277,24 +277,23 @@ public class DwmlFeedTypeHandler extends GenericTypeHandler {
                 HtmlUtils.row(
                     sb,
                     HtmlUtils.td("Humidity", " align=right " + style1)
-                    + HtmlUtils.td(HtmlUtils.div(time.humidity, style2)));
+                    + HtmlUtils.td(HtmlUtils.div(time.humidity+"%", style2)));
             }
             if (time.sustained != null) {
-                HtmlUtils.row(sb, HtmlUtils.td("Wind Speed", " align=right "
+                HtmlUtils.row(sb, HtmlUtils.td("Wind&nbsp;Speed", " align=right "
                         + style1) + HtmlUtils.td(HtmlUtils.div(time.sustained
-                            + " G " + time.gust + " MPH", style2)));
+                            + "&nbsp;G&nbsp;" + time.gust + "&nbsp;MPH", style2)));
             }
 
             if (time.pressure != null) {
                 HtmlUtils.row(sb, HtmlUtils.td("Barometer", "  align=right  "
                         + style1) + HtmlUtils.td(HtmlUtils.div(time.pressure
-                            + " in", style2)));
+                            + "&nbsp;in", style2)));
             }
 
             if (time.dewpoint != null) {
-                HtmlUtils.row(sb, HtmlUtils.td("Dew Point", "  align=right "
-                        + style1) + HtmlUtils.td(HtmlUtils.div(time.dewpoint
-                            + " in", style2)));
+                HtmlUtils.row(sb, HtmlUtils.td("Dew&nbsp;Point", "  align=right "
+                        + style1) + HtmlUtils.td(HtmlUtils.div(time.dewpoint, style2)));
             }
 
             sb.append("</table>");
