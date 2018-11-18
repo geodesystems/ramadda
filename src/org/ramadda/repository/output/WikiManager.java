@@ -3566,7 +3566,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                             Hashtable props, StringBuilder sb)
             throws Exception {
 
-        int     width        = Misc.getProperty(props, ATTR_WIDTH, -100);
+        int     width        = Misc.getProperty(props, ATTR_WIDTH, -90);
         int serverImageWidth = Misc.getProperty(props, ATTR_IMAGEWIDTH, -1);
 
         int     columns      = Misc.getProperty(props, ATTR_COLUMNS, 3);
