@@ -3566,7 +3566,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                             Hashtable props, StringBuilder sb)
             throws Exception {
 
-        int     width        = Misc.getProperty(props, ATTR_WIDTH, 200);
+        int     width        = Misc.getProperty(props, ATTR_WIDTH, -100);
         int serverImageWidth = Misc.getProperty(props, ATTR_IMAGEWIDTH, -1);
 
         int     columns      = Misc.getProperty(props, ATTR_COLUMNS, 3);
@@ -3629,10 +3629,14 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                 url = url + "&" + ARG_IMAGEWIDTH + "=" + serverImageWidth;
             }
 
+
             String extra = "";
             if (width > 0) {
                 extra = extra
                         + HtmlUtils.attr(HtmlUtils.ATTR_WIDTH, "" + width);
+            } else if (width < 0) {
+                extra = extra
+                    + HtmlUtils.attr(HtmlUtils.ATTR_WIDTH, "" + (-width)+"%");
             }
             String name = getEntryDisplayName(child);
             if ((name != null) && !name.isEmpty()) {
@@ -3655,7 +3659,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                                             child.getDescription());
 
             if (popup) {
-                String popupExtras = HtmlUtils.cssClass("popup_image");
+                String popupExtras = HtmlUtils.cssClass("popup_image") + HtmlUtils.attr("width","100%");
                 if ( !captionPos.equals("none")) {
                     popupExtras += HtmlUtils.attr("title", theCaption);
                 }
@@ -3685,16 +3689,15 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
 
             buff.append("</div>");
         }
-        sb.append("<table cellspacing=4 align='center'>");
-        sb.append("<tr valign=\"top\">");
+        int colInt = 12/Math.min(12,columns);
+        String colClass = "col-md-"+ colInt;
+        HtmlUtils.open(sb,"div",HtmlUtils.cssClass("row"));
         for (StringBuilder buff : colsSB) {
-            sb.append("<td>");
+            HtmlUtils.open(sb, "div", HtmlUtils.cssClass(colClass)+ HtmlUtils.style("padding-left:5px; padding-right:5px;"));
             sb.append(buff);
-            sb.append("</td>");
+            HtmlUtils.close(sb, "div");
         }
-        sb.append("</tr>");
-        sb.append("</table>");
-
+        HtmlUtils.close(sb, "div");
     }
 
 
