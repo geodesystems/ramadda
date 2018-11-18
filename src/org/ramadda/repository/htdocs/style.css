@@ -1559,13 +1559,14 @@ a.ramadda-menuitem-link {
 }
 
 .image-inner {
-//   padding:2px;
+   padding-left:10px;
+   padding-right:10px;
 //   background-color:#F2F0F0;
    text-align:center;
 }
 
 .image-inner img { 
-//   padding:5px;
+//   margin:10px;
 //   background-color:#F2F0F0;
 }
 
