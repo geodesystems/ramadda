@@ -152,7 +152,7 @@ public class SunriseSunsetTypeHandler extends GenericTypeHandler {
                 sb.append(HtmlUtils.formTable());
                 sb.append(HtmlUtils.formEntry("Current Time:","${now}"));
                 sb.append(HtmlUtils.formEntry("Sunrise/Sunset:",dateFormat.format(sunrise) +" - " +dateFormat.format(sunset)));
-                String kudos = "(Courtesy of " + HtmlUtils.href("https://sunrise-sunset.org","Sunrise-Sunset.org") +")";
+                String kudos = "(From " + HtmlUtils.href("https://sunrise-sunset.org","Sunrise-Sunset.org") +")";
                 sb.append(HtmlUtils.formEntry("Day Length:",hours+":" +minutes+":"+seconds +"  " + kudos));
                 sb.append(HtmlUtils.formTableClose());
 
