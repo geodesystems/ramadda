@@ -151,12 +151,11 @@ public class SunriseSunsetTypeHandler extends GenericTypeHandler {
                 int seconds = (length-hours*3600-minutes*60);
                 sb.append(HtmlUtils.formTable());
                 sb.append(HtmlUtils.formEntry("Current Time:","${now}"));
-                sb.append(HtmlUtils.formEntry("Sunrise:",dateFormat.format(sunrise)));
-                sb.append(HtmlUtils.formEntry("Sunset:",dateFormat.format(sunset)));
-                sb.append(HtmlUtils.formEntry("Day Length:",hours+":" +minutes+":"+seconds));
+                sb.append(HtmlUtils.formEntry("Sunrise/Sunset:",dateFormat.format(sunrise) +" - " +dateFormat.format(sunset)));
+                String kudos = "(Courtesy of " + HtmlUtils.href("https://sunrise-sunset.org","Sunrise-Sunset.org") +")";
+                sb.append(HtmlUtils.formEntry("Day Length:",hours+":" +minutes+":"+seconds +"  " + kudos));
                 sb.append(HtmlUtils.formTableClose());
-                sb.append("Information courtesy of ");
-                sb.append(HtmlUtils.href("https://sunrise-sunset.org","Sunrise-Sunset.org"));
+
             } 
 
             SimpleDateFormat dateFormat2 = new SimpleDateFormat();
