@@ -2424,6 +2424,10 @@ a.toggleblocklabellink:visited {
       padding-right: 0px;
 }
 
+.formcontents {
+  text-align:left;
+}
+
 .formlabel, .formlabeltop {
   font-weight: bold;
   text-align:right;
