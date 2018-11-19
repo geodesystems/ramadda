@@ -29,5 +29,30 @@
 </wiki>
   </type>
 
+  <type name="sunrisesunset"  description="Sunrise/Sunset Display"   handler="org.ramadda.plugins.feed.SunriseSunsetTypeHandler" foruser="true" category="Events">  
+     <property name="icon" value="/feed/sunrise.png"/>
+     <property name="form.resource.show" value="false"/>
+     <property name="form.resource.download.show" value="false"/>
+     <property name="form.datatype.show" value="false"/>
+     <property name="form.date.show" value="false"/>
+     <property name="form.area.show" value="false"/>
+     <property name="form.location.show" value="true"/>
+     <column name="timezone" type="string" label="Timezone" showinhtml="false" editable="true" />
+     <wiki><![CDATA[
++section title={{name}}
+{{description}}
++row
++col-8
+{{sunrisesunset}}
+-col
++col-4
+{{mapentry}}
+-col
+-row
+-section
+]]>
+</wiki>
+  </type>
+
 
 </types>
