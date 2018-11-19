@@ -119,6 +119,7 @@ public class DwmlFeedTypeHandler extends GenericTypeHandler {
      */
     private Weather getWeather(Entry entry, boolean getForecast)
             throws Exception {
+        if(!entry.hasLocationDefined()) return null;
         Weather forecast = forecastCache.get(entry.getId());
         Weather current  = currentCache.get(entry.getId());
         if ((forecast == null) || (current == null)) {
