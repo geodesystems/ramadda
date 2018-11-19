@@ -405,6 +405,7 @@ public class HtmlUtils {
     /** _more_ */
 
     public static final String CLASS_FORMLABEL = "formlabel";
+    public static final String CLASS_FORMCONTENTS = "formcontents";
 
     /** _more_ */
     public static final String CLASS_FORMLABEL_TOP = "formlabeltop";
@@ -3673,9 +3674,10 @@ public class HtmlUtils {
         return tag(TAG_TR, "",
                    tag(TAG_TD,
                        attrs(ATTR_ALIGN, VALUE_RIGHT, ATTR_CLASS,
-                             CLASS_FORMLABEL), left) + tag(TAG_TD, "",
+                             CLASS_FORMLABEL), left) + tag(TAG_TD, attrs(ATTR_CLASS,CLASS_FORMCONTENTS),
                                  right)) + "\n";
 
+        
     }
 
 
@@ -3731,8 +3733,9 @@ public class HtmlUtils {
         sb.append(tag(TAG_TD,
                       attrs(ATTR_ALIGN, VALUE_RIGHT, ATTR_CLASS,
                             CLASS_FORMLABEL), left));
+        String clazz =attrs(ATTR_CLASS,CLASS_FORMCONTENTS);
         for (String col : cols) {
-            sb.append(tag(TAG_TD, "", col));
+            sb.append(tag(TAG_TD, clazz, col));
         }
 
         return tag(TAG_TR, "", sb.toString());
