@@ -1515,8 +1515,8 @@ public class HtmlOutputHandler extends OutputHandler {
         request.put(ARG_TREEVIEW, "true");
 
 
-        String wtr = "10";
-        String wtl = "2";
+        String wtr = "9";
+        String wtl = "3";
         //        sb.append("<table width=\"100%\"><tr valign=\"top\">");
 
         StringBuilder listSB = new StringBuilder();
