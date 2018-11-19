@@ -287,8 +287,8 @@ h2 a,   h2 a:visited, h2 a:link  {color: black;}
 .ramadda-section  {
     margin:0px;
     padding:0px;  
-    padding-left:3%;
-    padding-right:3%;
+    padding-left:1%;
+    padding-right:1%;
     padding-top:4px;
     padding-bottom:4px;
 }
@@ -2710,7 +2710,7 @@ a.wiki-link-noexist {
 
 
 .ramadda-treeview {
-  border-radius: 6px;
+//  border-radius: 6px;
   border-top-right-radius: 0px;
   border:1px solid #ccc;
 }
@@ -2730,6 +2730,11 @@ a.wiki-link-noexist {
 
 .ramadda-treeview-entries {
   padding: 0px;
+  float: left; 
+  white-space: nowrap;
+  width:100%;
+  max-width:100%;
+  overflow-x:auto;
 }
 
 

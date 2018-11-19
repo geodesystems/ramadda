@@ -1177,6 +1177,7 @@ public class HtmlUtils {
     public static Appendable quote(Appendable sb, String s) {
         try {
             sb.append("\"");
+            s = s.replaceAll("\"","\\\"");
             sb.append(s);
             sb.append("\"");
         } catch (IOException ioe) {

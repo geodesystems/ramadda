@@ -1515,8 +1515,8 @@ public class HtmlOutputHandler extends OutputHandler {
         request.put(ARG_TREEVIEW, "true");
 
 
-        String wtr = "9";
-        String wtl = "3";
+        String wtr = "10";
+        String wtl = "2";
         //        sb.append("<table width=\"100%\"><tr valign=\"top\">");
 
         StringBuilder listSB = new StringBuilder();
@@ -1542,12 +1542,12 @@ public class HtmlOutputHandler extends OutputHandler {
                                    HtmlUtils.call("treeViewClick",
                                        HtmlUtils.jsMakeArgs(true,
                                            child.getId(), url, label)));
-            listSB.append(HtmlUtils.open(HtmlUtils.TAG_DIV,
+            HtmlUtils.open(listSB, HtmlUtils.TAG_DIV,
                                          HtmlUtils.attrs(new String[] {
                                              "class",
-                                             "ramadda-treeview-entry" })));
-            listSB.append(HtmlUtils.href(url, leftLabel));
-            listSB.append(HtmlUtils.close(HtmlUtils.TAG_DIV));
+                                             "ramadda-treeview-entry" }));
+            HtmlUtils.href(listSB, url, leftLabel,HtmlUtils.attr("title","Click to view " + label));
+            HtmlUtils.close(listSB,HtmlUtils.TAG_DIV);
             listSB.append("\n");
         }
 
