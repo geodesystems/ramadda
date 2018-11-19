@@ -154,7 +154,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
         
         new WikiTagCategory("Images",
                             new WikiTag(WIKI_TAG_IMAGE,
-                                        attrs(ATTR_SRC, "", ATTR_ALIGN,
+                                        attrs(ATTR_SRC, "", ATTR_WIDTH,"100%", ATTR_ALIGN,
                                               "left|center|right")), 
                             new WikiTag(WIKI_TAG_GALLERY,
                                         attrs(ATTR_WIDTH, "-100", ATTR_COLUMNS, "3",
