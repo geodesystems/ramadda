@@ -292,6 +292,7 @@ public class DwmlFeedTypeHandler extends GenericTypeHandler {
         }
         if(!vertical) {
             sb.append("<table><tr><td>");
+            sb.append("<table><tr><td>");
             HtmlUtils.open(sb, "div"," class=\"row\" ");
             HtmlUtils.open(sb, "div"," class=\"col-md-6\" ");
         }
@@ -326,40 +327,29 @@ public class DwmlFeedTypeHandler extends GenericTypeHandler {
             HtmlUtils.open(sb, "div"," class=\"col-md-6\" ");
         }
 
-        sb.append("<table>");
-        String style1 =
-            " style=\"  margin-right:5px; font-weight: bold;\"  ";
-        String style2 = " style=\"  margin-left:8px; \"  ";
+        sb.append(HtmlUtils.formTable());
         if (time.humidity != null) {
-            HtmlUtils.row(
-                          sb,
-                          HtmlUtils.td("Humidity", " align=right " + style1)
-                          + HtmlUtils.td(HtmlUtils.div(time.humidity+"%", style2)));
+            sb.append(HtmlUtils.formEntry("Humidity:", time.humidity+"%"));
         }
         if (time.sustained != null) {
             String gust = "";
             if(Utils.stringDefined(time.gust) && !time.gust.equals("NA")) {
                 gust = "&nbsp;G&nbsp;" + time.gust;
             }
-            HtmlUtils.row(sb, HtmlUtils.td("Wind&nbsp;Speed", " align=right "
-                                           + style1) + HtmlUtils.td(HtmlUtils.div(time.sustained
-                                                                                  + gust + "&nbsp;MPH", style2)));
+            sb.append(HtmlUtils.formEntry("Wind&nbsp;Speed:", time.sustained + gust + "&nbsp;MPH"));
         }
 
         if (time.pressure != null) {
-            HtmlUtils.row(sb, HtmlUtils.td("Barometer", "  align=right  "
-                                           + style1) + HtmlUtils.td(HtmlUtils.div(time.pressure
-                                                                                  + "&nbsp;in", style2)));
+            sb.append(HtmlUtils.formEntry("Barometer:",time.pressure+ "&nbsp;in"));
         }
 
         if (time.dewpoint != null) {
-            HtmlUtils.row(sb, HtmlUtils.td("Dew&nbsp;Point", "  align=right "
-                                           + style1) + HtmlUtils.td(HtmlUtils.div(time.dewpoint, style2)));
+            sb.append(HtmlUtils.formEntry("Dew&nbsp;Point:",time.dewpoint));
         }
 
-        HtmlUtils.row(sb, HtmlUtils.td("Last&nbsp;Update", "  align=right "
-                                       + style1) + HtmlUtils.td(HtmlUtils.div(dateFormat.format(time.date).replaceAll(" ","&nbsp;"),style2)));
-        sb.append("</table>");
+        sb.append(HtmlUtils.formEntry("Last&nbsp;Update:",dateFormat.format(time.date).replaceAll(" ","&nbsp;")));
+        sb.append(HtmlUtils.formTableClose());
+
         if(!vertical) {
             HtmlUtils.close(sb, "div"); //col
             HtmlUtils.close(sb, "div"); //row
