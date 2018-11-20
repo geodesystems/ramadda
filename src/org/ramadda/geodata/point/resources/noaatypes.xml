@@ -118,7 +118,10 @@ commentLineStart=#
 {{display type="linechart" showTitle="false" layoutHere="false" fields="air_temperature_observed"  vAxisMinValue="0"}}
 -col
 +col-md-4
+<center>
 <img src="https://www.wcc.nrcs.usda.gov/siteimages/{{field name=site_number}}.jpg" width="300" alt="">
+</center>
+<br>
 {{image src="::*" message="" width="300"}}
 {{map}}
 -col
