@@ -93,6 +93,8 @@ public class MapInfo {
     /** right side of widget */
     private StringBuilder rightSide = new StringBuilder();
 
+    private String headerMessage;
+
     /** the html */
     private StringBuilder html = new StringBuilder();
 
@@ -257,6 +259,8 @@ public class MapInfo {
      */
     private String getMapDiv(String contents) {
         StringBuilder result = new StringBuilder();
+        if(headerMessage!=null)
+            result.append(headerMessage);
         String        swidth = width==0?"":(" width:" + ((width > 0)
                                             ? width + "px; "
                                                          : (-width) + "%;"));
@@ -1343,5 +1347,21 @@ public class MapInfo {
         return defaultMapRegion;
     }
 
+    /**
+Set the HeaderMessage property.
 
+@param value The new value for HeaderMessage
+    **/
+    public void setHeaderMessage (String value) {
+        headerMessage = value;
+    }
+
+    /**
+Get the HeaderMessage property.
+
+@return The HeaderMessage
+    **/
+    public String getHeaderMessage () {
+        return headerMessage;
+    }
 }

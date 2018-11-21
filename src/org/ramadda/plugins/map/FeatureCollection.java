@@ -243,8 +243,11 @@ public class FeatureCollection {
             }
         }
 
+        int points = 0;
         for (Feature feature : features) {
             feature.makeKmlElement(folder, "#" + styleName);
+            points+=feature.getNumPoints();
+            if(points>ShapefileTypeHandler.MAX_POINTS) break;
         }
 
         return root;

@@ -66,6 +66,14 @@ public class Feature {
         this.properties = properties;
     }
 
+    public int getNumPoints(){
+        int cnt=0;
+        for (float[][] coord : geometry.getCoordinates()) {
+            cnt+= coord[0].length;
+        }
+        return cnt;
+    }
+
     /**
      * Set the id of this Feature
      * @param id the id

@@ -207,7 +207,6 @@ public class ShapefileOutputHandler extends OutputHandler {
         FeatureCollection fc = new FeatureCollection(entry.getName(),
                                    entry.getDescription(), props);
 
-
         List          features   = shapefile.getFeatures();
         List<Feature> fcfeatures = new ArrayList<Feature>(features.size());
         for (int i = 0; i < features.size(); i++) {
