@@ -111,18 +111,7 @@ public class SunriseSunsetTypeHandler extends GenericTypeHandler {
             }
             String key = entry.getLatitude()+"-" + entry.getLongitude();
             Appendable sb = cache.get(key);
-            TimeZone timeZone = null;
-            String timezone = entry.getValue(0,"");
-            if(!Utils.stringDefined(timezone)) {
-                timezone = getEntryUtil().getTimezone(entry);
-            }
-            if(Utils.stringDefined(timezone)) {
-                timeZone = TimeZone.getTimeZone(timezone);
-            } else {
-                timeZone = RepositoryUtil.TIMEZONE_DEFAULT;
-            }
-
-
+            TimeZone timeZone = getTimeZone(request, entry, 0);
             if(sb==null) {
                 String url =
                     URL.replace("${lat}",
@@ -159,7 +148,7 @@ public class SunriseSunsetTypeHandler extends GenericTypeHandler {
             } 
 
             SimpleDateFormat dateFormat2 = new SimpleDateFormat();
-            dateFormat2.setTimeZone(TimeZone.getTimeZone(timezone));
+            dateFormat2.setTimeZone(timeZone);
             dateFormat2.applyPattern("MMM d, yyyy h:mm a z");
             return sb.toString().replace("${now}",dateFormat2.format(new Date()));
         } else {

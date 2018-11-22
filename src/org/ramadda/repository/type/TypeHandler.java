@@ -71,6 +71,7 @@ import java.sql.Statement;
 
 import java.text.DecimalFormat;
 
+import java.util.TimeZone;
 import java.text.SimpleDateFormat;
 
 import java.util.ArrayList;
@@ -6490,6 +6491,24 @@ public class TypeHandler extends RepositoryManager {
                 getEntryUtil().getTimezone(entry), extra);
 
     }
+
+    public TimeZone getTimeZone(Request request, Entry entry, int index) throws Exception {
+        TimeZone timeZone = null;
+        String timezone = null;
+        if(entry!=null) {
+            if(index>=0) timezone = entry.getValue(index,"");
+            if(!Utils.stringDefined(timezone)) {
+                timezone = getEntryUtil().getTimezone(entry);
+            }
+        }
+        if(Utils.stringDefined(timezone)) {
+            timeZone = TimeZone.getTimeZone(timezone);
+        } else {
+            timeZone = RepositoryUtil.TIMEZONE_DEFAULT;
+        }
+        return timeZone;
+    }
+
 
     /**
      *  Set the SpecialSearch property.
