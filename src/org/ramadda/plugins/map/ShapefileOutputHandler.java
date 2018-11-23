@@ -22,12 +22,14 @@ import org.ramadda.repository.Link;
 import org.ramadda.repository.Repository;
 import org.ramadda.repository.Request;
 import org.ramadda.repository.Result;
+import org.ramadda.repository.metadata.Metadata;
 import org.ramadda.repository.output.JsonOutputHandler;
 import org.ramadda.repository.output.KmlOutputHandler;
 import org.ramadda.repository.output.OutputHandler;
 import org.ramadda.repository.output.OutputType;
 import org.ramadda.util.Json;
 import org.ramadda.util.KmlUtil;
+import org.ramadda.util.Utils;
 
 import org.w3c.dom.Element;
 
@@ -140,11 +142,37 @@ public class ShapefileOutputHandler extends OutputHandler {
         String      nameField  = null;
         DbaseData[] dbd        = null;
         String[]    fieldNames = null;
-        String schemaName = IOUtil.getFileTail(
-                                IOUtil.stripExtension(
-                                    entry.getResource().getPath()));
-        String schemaId = "S_" + schemaName + System.currentTimeMillis()
-                          + "_" + (int) (Math.random() * 1000);
+
+        String      schemaName;
+        String      schemaId;
+
+        List<Metadata> metadataList =
+            getMetadataManager().findMetadata(request, entry, "kml_display",
+                true);
+        HashMap props           = new HashMap<String, Object>();
+        String  balloonTemplate = null;
+        if ((metadataList != null) && (metadataList.size() > 0)) {
+            Metadata balloon = metadataList.get(0);
+            schemaName      = schemaId = balloon.getAttr1();
+            balloonTemplate = balloon.getAttr2();
+            if ( !Utils.stringDefined(balloonTemplate)) {
+                balloonTemplate = null;
+            }
+            if (Utils.stringDefined(balloon.getAttr3())) {
+                props.put("lineColor", balloon.getAttr3());
+            }
+            if (Utils.stringDefined(balloon.getAttr4())) {
+                props.put("fillColor", balloon.getAttr4());
+            }
+        } else {
+            schemaId = schemaName = entry.getId();
+            /*IOUtil.getFileTail(
+                                            IOUtil.stripExtension(
+                                                                  entry.getResource().getPath()));
+            schemaId = "S_" + schemaName + System.currentTimeMillis()
+                + "_" + (int) (Math.random() * 1000);
+            */
+        }
         if (dbfile != null) {
             fieldNames = dbfile.getFieldNames();
             int nfld = fieldNames.length;
@@ -169,10 +197,18 @@ public class ShapefileOutputHandler extends OutputHandler {
             }
         }
 
-        HashMap<String, Object> props = new HashMap<String, Object>();
+
+
+        props.putAll(getRepository().getPluginProperties());
+
         if (dbfile != null) {
             props.put(FeatureCollection.PROP_SCHEMANAME, schemaName);
             props.put(FeatureCollection.PROP_SCHEMAID, schemaId);
+            props.put(FeatureCollection.PROP_STYLEID, schemaId);
+            if (balloonTemplate != null) {
+                props.put(FeatureCollection.PROP_BALLOON_TEMPLATE,
+                          balloonTemplate);
+            }
             HashMap<String, String[]> schema = new HashMap<String,
                                                    String[]>();
             for (int i = 0; i < dbd.length; i++) {
@@ -205,7 +241,8 @@ public class ShapefileOutputHandler extends OutputHandler {
             props.put(FeatureCollection.PROP_SCHEMA, schema);
         }
         FeatureCollection fc = new FeatureCollection(entry.getName(),
-                                   entry.getDescription(), props);
+                                   entry.getDescription(),
+                                   (HashMap<String, Object>) props);
 
         List          features   = shapefile.getFeatures();
         List<Feature> fcfeatures = new ArrayList<Feature>(features.size());
@@ -262,7 +299,7 @@ public class ShapefileOutputHandler extends OutputHandler {
                 }
                 fprops.put(FeatureCollection.PROP_SCHEMADATA, schemaData);
             }
-            Feature feature = new Feature(name, geom, fprops);
+            Feature feature = new Feature(name, geom, fprops, props);
             fcfeatures.add(feature);
         }
         fc.setFeatures(fcfeatures);

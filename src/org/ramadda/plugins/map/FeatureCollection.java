@@ -19,11 +19,13 @@ package org.ramadda.plugins.map;
 
 import org.ramadda.util.Json;
 import org.ramadda.util.KmlUtil;
+import org.ramadda.util.Utils;
 
 import org.w3c.dom.CDATASection;
 import org.w3c.dom.Element;
 
 import ucar.unidata.gis.shapefile.EsriShapefile;
+import ucar.unidata.util.StringUtil;
 import ucar.unidata.xml.XmlUtil;
 
 
@@ -70,6 +72,13 @@ public class FeatureCollection {
 
     /** Schema Id property */
     public static final String PROP_SCHEMAID = "SchemaId";
+
+    /** _more_          */
+    public static final String PROP_STYLEID = "StyleId";
+
+    /** _more_          */
+    public static final String PROP_BALLOON_TEMPLATE = "BalloonTemplate";
+
 
     /**
      * Create a FeatureCollection
@@ -192,24 +201,33 @@ public class FeatureCollection {
             makeKmlSchema(doc);
             haveSchema = true;
         }
+        String balloonTemplate =
+            (String) properties.get(PROP_BALLOON_TEMPLATE);
         Element folder = KmlUtil.folder(doc, getName(), true);
         KmlUtil.open(folder, false);
         if (getDescription().length() > 0) {
             KmlUtil.description(folder, getDescription());
         }
         // Apply one style to the entire document
-        String styleName = System.currentTimeMillis() + "_"
-                           + (int) (Math.random() * 1000);
+        String styleName = (String) properties.get(PROP_STYLEID);
 
+
+        if (styleName == null) {
+            styleName = "" + (int) (Math.random() * 1000);
+        }
         // could try to set these dynamically
-        Color   lineColor     = Color.red;
-        int     lineWidth     = 1;
-        String  polyColorMode = "random";
-        Color   polyColor     = Color.darkGray;
+        Color lineColor =
+            Utils.decodeColor((String) properties.get("lineColor"),
+                              Color.gray);
+        int    lineWidth     = 1;
+        String polyColorMode = "random";
+        Color polyColor =
+            Utils.decodeColor((String) properties.get("fillColor"),
+                              Color.lightGray);
 
-        Element style         = KmlUtil.style(folder, styleName);
+        Element style = KmlUtil.style(folder, styleName);
         if (haveSchema) {
-            makeBalloonForDB(style);
+            makeBalloonForDB(style, balloonTemplate);
         }
         String featureType = features.get(0).getGeometry().getGeometryType();
 
@@ -233,12 +251,21 @@ public class FeatureCollection {
                     || featureType.equals(Geometry.TYPE_MULTIPOLYGON)) {
                 Element polystyle = KmlUtil.makeElement(style,
                                         KmlUtil.TAG_POLYSTYLE);
-                KmlUtil.makeText(polystyle, KmlUtil.TAG_COLORMODE,
-                                 polyColorMode);
+                if (polyColor != null) {
+                    KmlUtil.makeText(
+                        polystyle, KmlUtil.TAG_COLOR,
+                        "66"
+                        + KmlUtil.toBGRHexString(polyColor).substring(1));
+                    KmlUtil.makeText(polystyle, KmlUtil.TAG_COLORMODE,
+                                     "normal");
+                } else {
+                    KmlUtil.makeText(polystyle, KmlUtil.TAG_COLORMODE,
+                                     polyColorMode);
+                }
                 if (polyColorMode.equals("normal")) {
-                    KmlUtil.makeText(polystyle, KmlUtil.TAG_COLOR,
+                    //                    KmlUtil.makeText(polystyle, KmlUtil.TAG_COLOR,
                     //"66" + KmlUtil.toBGRHexString(polyColor).substring(1));
-                    "66E6E6E6");
+                    //                    "66E6E6E6");
                 }
             }
         }
@@ -246,8 +273,10 @@ public class FeatureCollection {
         int points = 0;
         for (Feature feature : features) {
             feature.makeKmlElement(folder, "#" + styleName);
-            points+=feature.getNumPoints();
-            if(points>ShapefileTypeHandler.MAX_POINTS) break;
+            points += feature.getNumPoints();
+            if (points > ShapefileTypeHandler.MAX_POINTS) {
+                break;
+            }
         }
 
         return root;
@@ -336,9 +365,15 @@ public class FeatureCollection {
             Element simple = KmlUtil.makeElement(schema,
                                  KmlUtil.TAG_SIMPLEFIELD);
             String[] attrs = entry.getValue();
+            for (int i = 0; i < attrs.length; i += 2) {
+                if (attrs[i].equals("name")) {
+                    attrs[i + 1] = attrs[i + 1].toLowerCase();
+                }
+            }
             XmlUtil.setAttributes(simple, attrs);
             KmlUtil.makeText(simple, KmlUtil.TAG_DISPLAYNAME,
-                             "&lt;b&gt;" + entry.getKey() + "&lt;/b&gt;");
+                             "&lt;b&gt;" + Utils.makeLabel(entry.getKey())
+                             + "&lt;/b&gt;");
         }
 
         return schema;
@@ -348,26 +383,32 @@ public class FeatureCollection {
      * Make a balloon style for the db schema
      *
      * @param parent  the parent to add to
+     * @param template _more_
      *
      * @return the balloon element
      */
-    private Element makeBalloonForDB(Element parent) {
+    private Element makeBalloonForDB(Element parent, String template) {
         Element balloon = KmlUtil.makeElement(parent,
                               KmlUtil.TAG_BALLOONSTYLE);
         StringBuilder sb = new StringBuilder();
-        sb.append("<table boder=\"0\">\n");
-        HashMap<String, String[]> schema =
-            (HashMap<String, String[]>) properties.get(PROP_SCHEMA);
-        for (String fieldName : schema.keySet()) {
-            sb.append("<tr><td><b>");
-            sb.append(fieldName);
-            sb.append("</b></td><td>$[");
-            sb.append(properties.get(PROP_SCHEMANAME));
-            sb.append("/");
-            sb.append(fieldName);
-            sb.append("]</td></tr>\n");
+        if (template != null) {
+            sb.append(template);
+        } else {
+            sb.append("<table cellpadding=\"5\" border=\"0\">\n");
+            HashMap<String, String[]> schema =
+                (HashMap<String, String[]>) properties.get(PROP_SCHEMA);
+            for (String fieldName : schema.keySet()) {
+                //            String label = props.get
+                sb.append("<tr><td align=right><b>");
+                sb.append(Utils.makeLabel(fieldName));
+                sb.append(":</b>&nbsp;&nbsp;</td><td>$[");
+                sb.append(properties.get(PROP_SCHEMANAME));
+                sb.append("/");
+                sb.append(fieldName.toLowerCase());
+                sb.append("]</td></tr>\n");
+            }
+            sb.append("</table>");
         }
-        sb.append("</table>");
         Element node = KmlUtil.makeElement(balloon, KmlUtil.TAG_TEXT);
         CDATASection cdata =
             parent.getOwnerDocument().createCDATASection(sb.toString());

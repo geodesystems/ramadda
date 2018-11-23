@@ -42,7 +42,11 @@ public class Feature {
     private Geometry geometry;
 
     /** the list of properties */
-    private HashMap<String, Object> properties;
+
+    private HashMap<String, Object> featureProperties;
+
+    /** _more_          */
+    private HashMap allProperties;
 
     /**
      * Create a Feature
@@ -50,7 +54,7 @@ public class Feature {
      * @param geometry the Geometry
      */
     public Feature(String id, Geometry geometry) {
-        this(id, geometry, new HashMap<String, Object>());
+        this(id, geometry, new HashMap<String, Object>(), new HashMap());
     }
 
     /**
@@ -58,19 +62,29 @@ public class Feature {
      * @param id the id (name)
      * @param geometry the geometry
      * @param properties  properties for this feature
+     * @param featureProperties _more_
+     * @param allProperties _more_
      */
     public Feature(String id, Geometry geometry,
-                   HashMap<String, Object> properties) {
-        this.id         = id;
-        this.geometry   = geometry;
-        this.properties = properties;
+                   HashMap<String, Object> featureProperties,
+                   HashMap allProperties) {
+        this.id                = id;
+        this.geometry          = geometry;
+        this.featureProperties = featureProperties;
+        this.allProperties     = allProperties;
     }
 
-    public int getNumPoints(){
-        int cnt=0;
+    /**
+     * _more_
+     *
+     * @return _more_
+     */
+    public int getNumPoints() {
+        int cnt = 0;
         for (float[][] coord : geometry.getCoordinates()) {
-            cnt+= coord[0].length;
+            cnt += coord[0].length;
         }
+
         return cnt;
     }
 
@@ -142,18 +156,18 @@ public class Feature {
                 }
             }
         }
-        if ( !properties.isEmpty()
-                && (properties.get(FeatureCollection.PROP_SCHEMANAME)
-                    != null) && (properties
+        if ( !featureProperties.isEmpty()
+                && (featureProperties.get(FeatureCollection.PROP_SCHEMANAME)
+                    != null) && (featureProperties
                         .get(FeatureCollection
-                            .PROP_SCHEMAID) != null) && (properties
+                            .PROP_SCHEMAID) != null) && (featureProperties
                                 .get(FeatureCollection
                                     .PROP_SCHEMADATA) != null)) {
-            String schemaId =
-                properties.get(FeatureCollection.PROP_SCHEMAID).toString();
+            String schemaId = featureProperties.get(
+                                  FeatureCollection.PROP_SCHEMAID).toString();
             HashMap<String, Object> data =
                 (HashMap<String,
-                         Object>) properties.get(
+                         Object>) featureProperties.get(
                              FeatureCollection.PROP_SCHEMADATA);
             Element xdata = KmlUtil.makeElement(placemark,
                                 KmlUtil.TAG_EXTENDEDDATA);
@@ -164,10 +178,20 @@ public class Feature {
                 data.entrySet().iterator();
             while (entries.hasNext()) {
                 Map.Entry<String, Object> entry = entries.next();
+                String                    key   =
+                    entry.getKey().toLowerCase();
+                String value = entry.getValue().toString().trim();
+
+
+                String fromProps = (String) allProperties.get("kml." + key
+                                       + "." + value);
+                if (fromProps != null) {
+                    value = fromProps;
+                }
+
                 Element simple = KmlUtil.makeText(schemaData,
-                                     KmlUtil.TAG_SIMPLEDATA,
-                                     entry.getValue().toString().trim());
-                simple.setAttribute(KmlUtil.ATTR_NAME, entry.getKey());
+                                     KmlUtil.TAG_SIMPLEDATA, value);
+                simple.setAttribute(KmlUtil.ATTR_NAME, key);
             }
         }
 
@@ -188,10 +212,10 @@ public class Feature {
             map.add("id");
             map.add(Json.quote(getId()));
         }
-        if ((properties != null) && !properties.isEmpty()) {
+        if ((featureProperties != null) && !featureProperties.isEmpty()) {
             HashMap<String, Object> data =
                 (HashMap<String,
-                         Object>) properties.get(
+                         Object>) featureProperties.get(
                              FeatureCollection.PROP_SCHEMADATA);
             if (data != null) {
                 List<String> schemadata = new ArrayList<String>();
