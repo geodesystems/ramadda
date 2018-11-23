@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<metadata>
+  <handler category="Miscellaneous" >
+
+
+    <type id="kml_display" name="Kml Display" entrytype="geo_shapefile" values="">
+      <element id="schema_id" name="Schema ID"/>\
+      <element id="balloon_template" name="Balloon Template" rows="10"/>
+      <element id="line_color" name="Line Color" />
+      <element id="fill_color" name="Fill Color" />
+    </type>
+
+  </handler>
+
+
+</metadata>
