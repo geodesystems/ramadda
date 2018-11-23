@@ -36,6 +36,7 @@ import ucar.unidata.util.Misc;
 import ucar.unidata.util.StringUtil;
 import ucar.unidata.xml.XmlUtil;
 
+import java.awt.Color;
 import java.awt.Image;
 
 import java.awt.Toolkit;
@@ -63,8 +64,8 @@ import java.util.Comparator;
 import java.util.Date;
 import java.util.Enumeration;
 import java.util.GregorianCalendar;
-import java.util.Hashtable;
 import java.util.HashSet;
+import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
 import java.util.TimeZone;
@@ -243,7 +244,9 @@ public class Utils {
         //        tokenizer.setQuoteChar('"');
         while (tokenizer.hasNext()) {
             String tok = tokenizer.nextToken();
-            if(tok == null) tok = "";
+            if (tok == null) {
+                tok = "";
+            }
             //            System.err.println("tok:" + tok);
             toks.add(tok);
         }
@@ -2587,15 +2590,22 @@ public class Utils {
         return new double[] { centroidX, centroidY };
     }
 
+    /** _more_          */
     private static List<SimpleDateFormat> dateFormats;
 
+    /**
+     * _more_
+     *
+     * @param dttm _more_
+     *
+     * @return _more_
+     */
     public static Date parseDate(String dttm) {
-        if(dateFormats==null) {
+        if (dateFormats == null) {
             String[] formats = {
-                "yyyy-MM-dd'T'HH:mm:ss",
-                "yyyy-MM-dd HH:mm:ss z", "yyyy-MM-dd HH:mm:ss",
-                "yyyy-MM-dd HH:mm", "yyyy-MM-dd", "yyyyMMddHHmmss",
-                "yyyyMMddHHmm", "yyyyMMddHH", "yyyyMMdd"
+                "yyyy-MM-dd'T'HH:mm:ss", "yyyy-MM-dd HH:mm:ss z",
+                "yyyy-MM-dd HH:mm:ss", "yyyy-MM-dd HH:mm", "yyyy-MM-dd",
+                "yyyyMMddHHmmss", "yyyyMMddHHmm", "yyyyMMddHH", "yyyyMMdd"
             };
 
             dateFormats = new ArrayList<SimpleDateFormat>();
@@ -2605,16 +2615,17 @@ public class Utils {
                 dateFormat.setTimeZone(java.util.TimeZone.getTimeZone("GMT"));
                 dateFormats.add(dateFormat);
             }
-        
+
         }
-        int cnt = 0;
-        ParsePosition pp = new ParsePosition(0);
-        for(SimpleDateFormat dateFormat: dateFormats) {
+        int           cnt = 0;
+        ParsePosition pp  = new ParsePosition(0);
+        for (SimpleDateFormat dateFormat : dateFormats) {
             Date date = dateFormat.parse(dttm, pp);
             if (date != null) {
                 return date;
             }
         }
+
         return null;
     }
 
@@ -2630,7 +2641,8 @@ public class Utils {
      * @throws Exception _more_
      */
     public static void main(String args[]) throws Exception {
-        String url = "https://api.census.gov/data/2015/acs5?get=NAME,B01003_001E,B01001_002E,B01001_026E,B01001A_001E,B01001B_001E,B01001I_001E,B01001D_001E,B25001_001E,B07013_002E,B07013_003E&for=county:*";
+        String url =
+            "https://api.census.gov/data/2015/acs5?get=NAME,B01003_001E,B01001_002E,B01001_026E,B01001A_001E,B01001B_001E,B01001I_001E,B01001D_001E,B25001_001E,B07013_002E,B07013_003E&for=county:*";
         doGet(new URL(url));
         //        parseDate(args[0]);
         //        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
@@ -2639,13 +2651,272 @@ public class Utils {
     }
 
 
-    public static HashSet getHashset(Object...args) {
+    /**
+     * _more_
+     *
+     * @param args _more_
+     *
+     * @return _more_
+     */
+    public static HashSet getHashset(Object... args) {
         HashSet h = new HashSet();
-        for(Object arg: args)
+        for (Object arg : args) {
             h.add(arg);
+        }
+
+        return h;
+    }
+
+    /**
+     * _more_
+     *
+     * @param args _more_
+     *
+     * @return _more_
+     */
+    public static Hashtable getHashtable(Object... args) {
+        Hashtable h = new Hashtable();
+        for (int i = 0; i < args.length; i += 2) {
+            h.put(args[i], args[i + 1]);
+        }
+
         return h;
     }
 
 
+
+    /** _more_          */
+    public static final Hashtable<String, Color> COLORNAMES =
+        (Hashtable<String,
+                   Color>) getHashtable("lightsalmon",
+                                        new Color(255, 160, 122), "salmon",
+                                        new Color(250, 128, 114),
+                                        "darksalmon",
+                                        new Color(233, 150, 122),
+                                        "lightcoral",
+                                        new Color(240, 128, 128),
+                                        "indianred", new Color(205, 92, 92),
+                                        "crimson", new Color(220, 20, 60),
+                                        "firebrick", new Color(178, 34, 34),
+                                        "red", new Color(255, 0, 0),
+                                        "darkred", new Color(139, 0, 0),
+                                        "coral", new Color(255, 127, 80),
+                                        "tomato", new Color(255, 99, 71),
+                                        "orangered", new Color(255, 69, 0),
+                                        "gold", new Color(255, 215, 0),
+                                        "orange", new Color(255, 165, 0),
+                                        "darkorange", new Color(255, 140, 0),
+                                        "lightyellow",
+                                        new Color(255, 255, 224),
+                                        "lemonchiffon",
+                                        new Color(255, 250, 205),
+                                        "lightgoldenrodyellow",
+                                        new Color(250, 250, 210),
+                                        "papayawhip",
+                                        new Color(255, 239, 213), "moccasin",
+                                        new Color(255, 228, 181),
+                                        "peachpuff",
+                                        new Color(255, 218, 185),
+                                        "palegoldenrod",
+                                        new Color(238, 232, 170), "khaki",
+                                        new Color(240, 230, 140),
+                                        "darkkhaki",
+                                        new Color(189, 183, 107), "yellow",
+                                        new Color(255, 255, 0), "lawngreen",
+                                        new Color(124, 252, 0), "chartreuse",
+                                        new Color(127, 255, 0), "limegreen",
+                                        new Color(50, 205, 50), "lime",
+                                        new Color(0, 255, 0), "forestgreen",
+                                        new Color(34, 139, 34), "green",
+                                        new Color(0, 128, 0), "darkgreen",
+                                        new Color(0, 100, 0), "greenyellow",
+                                        new Color(173, 255, 47),
+                                        "yellowgreen",
+                                        new Color(154, 205, 50),
+                                        "springgreen",
+                                        new Color(0, 255, 127),
+                                        "mediumspringgreen",
+                                        new Color(0, 250, 154), "lightgreen",
+                                        new Color(144, 238, 144),
+                                        "palegreen",
+                                        new Color(152, 251, 152),
+                                        "darkseagreen",
+                                        new Color(143, 188, 143),
+                                        "mediumseagreen",
+                                        new Color(60, 179, 113), "seagreen",
+                                        new Color(46, 139, 87), "olive",
+                                        new Color(128, 128, 0),
+                                        "darkolivegreen",
+                                        new Color(85, 107, 47), "olivedrab",
+                                        new Color(107, 142, 35), "lightcyan",
+                                        new Color(224, 255, 255), "cyan",
+                                        new Color(0, 255, 255), "aqua",
+                                        new Color(0, 255, 255), "aquamarine",
+                                        new Color(127, 255, 212),
+                                        "mediumaquamarine",
+                                        new Color(102, 205, 170),
+                                        "paleturquoise",
+                                        new Color(175, 238, 238),
+                                        "turquoise", new Color(64, 224, 208),
+                                        "mediumturquoise",
+                                        new Color(72, 209, 204),
+                                        "darkturquoise",
+                                        new Color(0, 206, 209),
+                                        "lightseagreen",
+                                        new Color(32, 178, 170), "cadetblue",
+                                        new Color(95, 158, 160), "darkcyan",
+                                        new Color(0, 139, 139), "teal",
+                                        new Color(0, 128, 128), "powderblue",
+                                        new Color(176, 224, 230),
+                                        "lightblue",
+                                        new Color(173, 216, 230),
+                                        "lightskyblue",
+                                        new Color(135, 206, 250), "skyblue",
+                                        new Color(135, 206, 235),
+                                        "deepskyblue",
+                                        new Color(0, 191, 255),
+                                        "lightsteelblue",
+                                        new Color(176, 196, 222),
+                                        "dodgerblue",
+                                        new Color(30, 144, 255),
+                                        "cornflowerblue",
+                                        new Color(100, 149, 237),
+                                        "steelblue", new Color(70, 130, 180),
+                                        "royalblue", new Color(65, 105, 225),
+                                        "blue", new Color(0, 0, 255),
+                                        "mediumblue", new Color(0, 0, 205),
+                                        "darkblue", new Color(0, 0, 139),
+                                        "navy", new Color(0, 0, 128),
+                                        "midnightblue",
+                                        new Color(25, 25, 112),
+                                        "mediumslateblue",
+                                        new Color(123, 104, 238),
+                                        "slateblue", new Color(106, 90, 205),
+                                        "darkslateblue",
+                                        new Color(72, 61, 139), "lavender",
+                                        new Color(230, 230, 250), "thistle",
+                                        new Color(216, 191, 216), "plum",
+                                        new Color(221, 160, 221), "violet",
+                                        new Color(238, 130, 238), "orchid",
+                                        new Color(218, 112, 214), "fuchsia",
+                                        new Color(255, 0, 255), "magenta",
+                                        new Color(255, 0, 255),
+                                        "mediumorchid",
+                                        new Color(186, 85, 211),
+                                        "mediumpurple",
+                                        new Color(147, 112, 219),
+                                        "blueviolet",
+                                        new Color(138, 43, 226),
+                                        "darkviolet", new Color(148, 0, 211),
+                                        "darkorchid",
+                                        new Color(153, 50, 204),
+                                        "darkmagenta",
+                                        new Color(139, 0, 139), "purple",
+                                        new Color(128, 0, 128), "indigo",
+                                        new Color(75, 0, 130), "pink",
+                                        new Color(255, 192, 203),
+                                        "lightpink",
+                                        new Color(255, 182, 193), "hotpink",
+                                        new Color(255, 105, 180), "deeppink",
+                                        new Color(255, 20, 147),
+                                        "palevioletred",
+                                        new Color(219, 112, 147),
+                                        "mediumvioletred",
+                                        new Color(199, 21, 133), "white",
+                                        new Color(255, 255, 255), "snow",
+                                        new Color(255, 250, 250), "honeydew",
+                                        new Color(240, 255, 240),
+                                        "mintcream",
+                                        new Color(245, 255, 250), "azure",
+                                        new Color(240, 255, 255),
+                                        "aliceblue",
+                                        new Color(240, 248, 255),
+                                        "ghostwhite",
+                                        new Color(248, 248, 255),
+                                        "whitesmoke",
+                                        new Color(245, 245, 245), "seashell",
+                                        new Color(255, 245, 238), "beige",
+                                        new Color(245, 245, 220), "oldlace",
+                                        new Color(253, 245, 230),
+                                        "floralwhite",
+                                        new Color(255, 250, 240), "ivory",
+                                        new Color(255, 255, 240),
+                                        "antiquewhite",
+                                        new Color(250, 235, 215), "linen",
+                                        new Color(250, 240, 230),
+                                        "lavenderblush",
+                                        new Color(255, 240, 245),
+                                        "mistyrose",
+                                        new Color(255, 228, 225),
+                                        "gainsboro",
+                                        new Color(220, 220, 220),
+                                        "lightgray",
+                                        new Color(211, 211, 211), "silver",
+                                        new Color(192, 192, 192), "darkgray",
+                                        new Color(169, 169, 169), "gray",
+                                        new Color(128, 128, 128), "dimgray",
+                                        new Color(105, 105, 105),
+                                        "lightslategray",
+                                        new Color(119, 136, 153),
+                                        "slategray",
+                                        new Color(112, 128, 144),
+                                        "darkslategray",
+                                        new Color(47, 79, 79), "black",
+                                        new Color(0, 0, 0), "cornsilk",
+                                        new Color(255, 248, 220),
+                                        "blanchedalmond",
+                                        new Color(255, 235, 205), "bisque",
+                                        new Color(255, 228, 196),
+                                        "navajowhite",
+                                        new Color(255, 222, 173), "wheat",
+                                        new Color(245, 222, 179),
+                                        "burlywood",
+                                        new Color(222, 184, 135), "tan",
+                                        new Color(210, 180, 140),
+                                        "rosybrown",
+                                        new Color(188, 143, 143),
+                                        "sandybrown",
+                                        new Color(244, 164, 96), "goldenrod",
+                                        new Color(218, 165, 32), "peru",
+                                        new Color(205, 133, 63), "chocolate",
+                                        new Color(210, 105, 30),
+                                        "saddlebrown",
+                                        new Color(139, 69, 19), "sienna",
+                                        new Color(160, 82, 45), "brown",
+                                        new Color(165, 42, 42), "maroon",
+                                        new Color(128, 0, 0));
+
+    /** hex color string without leading # */
+    public static final String HEX_COLOR_PATTERN =
+        "^?(([a-fA-F0-9]){3}){1,2}$";
+
+    /**
+     * _more_
+     *
+     * @param value _more_
+     * @param dflt _more_
+     *
+     * @return _more_
+     */
+    public static Color decodeColor(String value, Color dflt) {
+        if (value == null) {
+            return dflt;
+        }
+        value = value.trim();
+        if (value.equals("null")) {
+            return null;
+        }
+        String s = value;
+        try {
+            if (Pattern.matches(HEX_COLOR_PATTERN, s) && !s.startsWith("#")) {
+                // add # so Integer will decode it properly
+                s = "#" + s;
+            }
+
+            return new Color(Integer.decode(s).intValue());
+        } catch (Exception e) {
+            return COLORNAMES.get(value.toLowerCase());
+        }
+    }
 
 }
