@@ -1,4 +1,4 @@
-/**
+/*
 * Copyright (c) 2008-2018 Geode Systems LLC
 *
 * Licensed under the Apache License, Version 2.0 (the "License");
@@ -1262,6 +1262,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
      * @throws Exception _more_
      */
     protected void initServer() throws Exception {
+
         getDatabaseManager().init();
         initDefaultTypeHandlers();
         boolean loadedRdb = false;
@@ -1345,8 +1346,8 @@ public class Repository extends RepositoryBase implements RequestHandler,
         Misc.run(getLocalRepositoryManager(), "initializeLocalRepositories");
 
         /**
-        getAdmin().checkRegistration();
-        **/
+         * getAdmin().checkRegistration();
+         */
 
         if (getParentRepository() == null) {
             GeoUtils.setGoogleKey(getProperty("google.key", (String) null));
@@ -1363,6 +1364,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
          *   getStorageManager().getProcessDirEntryId(processId);
          * System.err.println("id:" + processEntryId);
          */
+
     }
 
 
@@ -3753,7 +3755,9 @@ public class Repository extends RepositoryBase implements RequestHandler,
                             request, result);
                     }
                     result.setShouldDecorate(false);
-                    System.err.println("returning result:" + result.getStringContent());
+                    System.err.println("returning result:"
+                                       + result.getStringContent());
+
                     return result;
                 }
                 Result result = new Result(BLANK, inputStream, mimeType);
@@ -3922,6 +3926,16 @@ public class Repository extends RepositoryBase implements RequestHandler,
      */
     public String getProperty(String name) {
         return getPropertyValue(name, true);
+    }
+
+
+    /**
+     * _more_
+     *
+     * @return _more_
+     */
+    public Properties getPluginProperties() {
+        return pluginProperties;
     }
 
 
@@ -5012,19 +5026,17 @@ public class Repository extends RepositoryBase implements RequestHandler,
             HtmlUtils.formEntry(
                 msgLabel("Build Date"),
                 getRepository().getProperty(PROP_BUILD_DATE, "N/A")));
-        String version = Runtime.class.getPackage().getImplementationVersion();
-        sb.append(
-            HtmlUtils.formEntry(
-                msgLabel("Java Version"),
-                version));
+        String version =
+            Runtime.class.getPackage().getImplementationVersion();
+        sb.append(HtmlUtils.formEntry(msgLabel("Java Version"), version));
         getAdmin().addInfo(request, sb);
-        if(request.exists("class")) {
-            Class c= Class.forName(request.getString("class",""));
-            URL classesRootDir = c.getProtectionDomain().getCodeSource().getLocation();
-            sb.append(
-                      HtmlUtils.formEntry(
-                                          msgLabel("Class location - " + request.getString("class","")),
-                                          classesRootDir.toString()));
+        if (request.exists("class")) {
+            Class c = Class.forName(request.getString("class", ""));
+            URL classesRootDir =
+                c.getProtectionDomain().getCodeSource().getLocation();
+            sb.append(HtmlUtils.formEntry(msgLabel("Class location - "
+                    + request.getString("class",
+                                        "")), classesRootDir.toString()));
 
         }
 
@@ -5036,10 +5048,18 @@ public class Repository extends RepositoryBase implements RequestHandler,
     }
 
 
+    /**
+     * _more_
+     *
+     * @param request _more_
+     *
+     * @return _more_
+     *
+     * @throws Exception _more_
+     */
     public Result processLicense(Request request) throws Exception {
         StringBuilder sb = new StringBuilder("");
-        sb.append(HtmlUtils.sectionOpen(msg("RAMADDA License"),
-                                        false));
+        sb.append(HtmlUtils.sectionOpen(msg("RAMADDA License"), false));
         String license =
             getStorageManager().readSystemResource(
                 "/org/ramadda/repository/resources/ramadda_license.txt");
@@ -5049,6 +5069,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
         sb.append("<pre>");
         sb.append(license);
         sb.append("</pre>");
+
         return new Result("", sb);
     }
 
