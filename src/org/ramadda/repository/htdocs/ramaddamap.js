@@ -371,22 +371,39 @@ function initMapFunctions(theMap) {
 
         var format = new OpenLayers.Format.GeoJSON();
         var feature = layer.feature;
+        var style = feature.style;
         var json = format.write(feature);
         var p = feature.attributes;
-        var out = "<table>";
-        for (var attr in p) {
-            var label = attr.replace("_"," ");
-            out += "<tr><td align=right><div style=\"margin-right:5px;margin-bottom:3px;\"><b>" + label + ":</b></div></td><td><div style=\"margin-right:5px;margin-bottom:3px;\">";
-            if (typeof p[attr] == 'object' || typeof p[attr] == 'Object') {
-               var o = p[attr];
-               out += o["value"];
-            } else {
-                out +=  p[attr];
+        var out = "";
+        if(style && style["balloonStyle"]) {
+            out = style["balloonStyle"];
+            for (var attr in p) {
+                //$[styleid/attr]
+                var label = attr.replace("_"," ");
+                var value = "";
+                if (typeof p[attr] == 'object' || typeof p[attr] == 'Object') {
+                    var o = p[attr];
+                    value =  o["value"];
+                } else {
+                    value =   p[attr];
+                }
+                out = out.replace("${" +style.id+"/" + attr+"}", value);
             }
-            out +=  "</div></td></tr>";
+        } else {
+            out = "<table>";
+            for (var attr in p) {
+                var label = attr.replace("_"," ");
+                out += "<tr><td align=right><div style=\"margin-right:5px;margin-bottom:3px;\"><b>" + label + ":</b></div></td><td><div style=\"margin-right:5px;margin-bottom:3px;\">";
+                if (typeof p[attr] == 'object' || typeof p[attr] == 'Object') {
+                    var o = p[attr];
+                    out += o["value"];
+                } else {
+                    out +=  p[attr];
+                }
+                out +=  "</div></td></tr>";
+            }
+            out += "</table>";
         }
-        out += "</table>";
-
         if (this.currentPopup) {
             this.map.removePopup(this.currentPopup);
             this.currentPopup.destroy();
@@ -413,7 +430,7 @@ function initMapFunctions(theMap) {
 
     theMap.addKMLLayer = function(name, kmlUrl, canSelect, selectCallback, unselectCallback, argProps) {
         if(argProps) {
-            console.log("map.addKMLLayer:" + argProps);
+            //            console.log("map.addKMLLayer:" + argProps);
         }
         var  props = {
             pointRadius: this.pointRadius,
@@ -429,7 +446,7 @@ function initMapFunctions(theMap) {
             protocol: new OpenLayers.Protocol.HTTP({
                 url: kmlUrl,
                 format: new OpenLayers.Format.KML({
-                        //extractStyles: true, 
+                        extractStyles: true, 
                         extractAttributes: true,
                         maxDepth: 2
                 })
@@ -439,6 +456,7 @@ function initMapFunctions(theMap) {
                     pointRadius: props.pointRadius,
                     fillOpacity: props.fillOpacity,
                     fillColor: props.fillColor,
+                    //                    fillColor: "#ff0000",
                     strokeColor: props.strokeColor,
                     strokeWidth: props.strokeWidth,
                 }),
@@ -452,11 +470,7 @@ function initMapFunctions(theMap) {
             })
         });
         this.map.addLayer(kmlLayer);
-        
         //        console.log(kmlLayer.getDataExtent());
-
-
-
         if (canSelect) {
             select = new OpenLayers.Control.SelectFeature(kmlLayer, {
                  multiple: false, 
@@ -471,6 +485,7 @@ function initMapFunctions(theMap) {
                      highlightOnly: true,
                      renderIntent: "temporary"
                 });
+                highlight.selectStyle = OpenLayers.Feature.Vector.style['temporary'];
             }
             theMap = this;
             theMap.foobar = "foobar";
