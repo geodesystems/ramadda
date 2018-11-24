@@ -4,7 +4,7 @@
 
 
 
-    <type id="shapefil_display" name="Shapefile Display"  values=""        showinhtml="false">
+    <type id="shapefile_display" name="Shapefile Display"  values=""        showinhtml="false">
       <element id="schema_id" name="Schema ID" suffix="Short hand schema id. Default is the entry id"/>
       <element id="balloon_template" name="Balloon Template" rows="10">
       <suffix><![CDATA[
