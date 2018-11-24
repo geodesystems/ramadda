@@ -59,6 +59,7 @@
 
 <wiki>
 +section title={{name}}
+{{description wikify="true"}}
 +row
 +col-md-2
 -col
