@@ -41,7 +41,8 @@ import java.util.List;
  */
 public class ShapefileTypeHandler extends GenericTypeHandler {
 
-    public static int  MAX_POINTS = 500000;
+    /** _more_          */
+    public static int MAX_POINTS = 500000;
 
     /** _more_ */
     private static final int IDX_LON = 0;
@@ -86,6 +87,7 @@ public class ShapefileTypeHandler extends GenericTypeHandler {
             shapefile = new EsriShapefile(entry.getFile().toString());
         } catch (Exception exc) {
             System.err.println("Error opening shapefile:" + exc);
+
             return;
         }
 
@@ -108,6 +110,23 @@ public class ShapefileTypeHandler extends GenericTypeHandler {
         entry.setEast(lonlat[IDX_LON][0]);
 
     }
+
+    /**
+     * _more_
+     *
+     * @param request _more_
+     * @param entry _more_
+     * @param node _more_
+     *
+     * @throws Exception _more_
+     */
+    @Override
+    public void initializeEntryFromXml(Request request, Entry entry,
+                                       Element node)
+            throws Exception {
+        initializeEntryFromForm(request, entry, null, true);
+    }
+
 
     /**
      * _more_
@@ -150,11 +169,12 @@ public class ShapefileTypeHandler extends GenericTypeHandler {
             shapefile = new EsriShapefile(entry.getFile().toString());
         } catch (Exception exc) {
             map.setHeaderMessage("Error opening shapefile:" + exc);
+
             return true;
         }
         List<EsriShapefile.EsriFeature> features =
             (List<EsriShapefile.EsriFeature>) shapefile.getFeatures();
-        int numpoints = 0;
+        int numpoints   = 0;
         int numFeatures = 0;
         for (EsriShapefile.EsriFeature feature : features) {
             numpoints += feature.getNumPoints();
@@ -163,7 +183,8 @@ public class ShapefileTypeHandler extends GenericTypeHandler {
 
         //System.out.println("num points = " + numpoints);
         if (numpoints > MAX_POINTS) {
-            map.setHeaderMessage("Not showing all features because there are too many points");
+            map.setHeaderMessage(
+                "Not showing all features because there are too many points");
             //            return true;
         }
         map.addKmlUrl(
