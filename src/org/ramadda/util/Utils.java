@@ -2590,7 +2590,7 @@ public class Utils {
         return new double[] { centroidX, centroidY };
     }
 
-    /** _more_          */
+    /** _more_ */
     private static List<SimpleDateFormat> dateFormats;
 
     /**
@@ -2685,7 +2685,7 @@ public class Utils {
 
 
 
-    /** _more_          */
+    /** _more_ */
     public static final Hashtable<String, Color> COLORNAMES =
         (Hashtable<String,
                    Color>) getHashtable("lightsalmon",
@@ -2918,5 +2918,41 @@ public class Utils {
             return COLORNAMES.get(value.toLowerCase());
         }
     }
+
+
+
+    /**
+     * _more_
+     *
+     * @param from _more_
+     * @param file _more_
+     *
+     * @return _more_
+     *
+     * @throws IOException _more_
+     */
+    public static long writeTo(URL from, File file) throws IOException {
+        URLConnection    connection = from.openConnection();
+        InputStream is = IOUtil.getInputStream(from.toString(), Utils.class);
+        int              length     = connection.getContentLength();
+        long             numBytes   = -1;
+        FileOutputStream fos        = new FileOutputStream(file);
+        try {
+            long result = IOUtil.writeTo(is, fos);
+            numBytes = result;
+        } finally {
+            IOUtil.close(fos);
+            IOUtil.close(is);
+            if (numBytes <= 0) {
+                try {
+                    file.delete();
+                } catch (Exception exc) {}
+
+            }
+        }
+
+        return numBytes;
+    }
+
 
 }
