@@ -3733,7 +3733,8 @@ public class EntryManager extends RepositoryManager {
                                request.getString(
                                    ARG_CONTRIBUTION_FROMEMAIL, ""));
         String user = fromName;
-        getMetadataManager().addMetadata(entry,
+        getMetadataManager().addMetadata(
+            entry,
             new Metadata(
                 getRepository().getGUID(), entry.getId(),
                 AdminMetadataHandler.TYPE_ANONYMOUS_UPLOAD, false, user,
@@ -4164,7 +4165,9 @@ public class EntryManager extends RepositoryManager {
             result.addHttpHeader("Accept-Ranges", "bytes");
             result.addHttpHeader(HtmlUtils.HTTP_CONTENT_LENGTH, "" + length);
             result.setLastModified(new Date(file.lastModified()));
-            result.setCacheOk(getRepository().getProperty("ramadda.http.cachefile",false));
+            result.setCacheOk(
+                getRepository().getProperty("ramadda.http.cachefile", false));
+
             return result;
         }
 
@@ -4350,10 +4353,13 @@ public class EntryManager extends RepositoryManager {
 
             StringBuilder sb = new StringBuilder();
             if (entries.size() == 1) {
-                getPageHandler().entrySectionOpen(request, entries.get(0), sb, null);
+                getPageHandler().entrySectionOpen(request, entries.get(0),
+                        sb, null);
             }
             if (request.exists(ARG_CONFIRM) && (toEntry == null)) {
-                sb.append(getPageHandler().showDialogWarning("Please select a destination"));
+                sb.append(
+                    getPageHandler().showDialogWarning(
+                        "Please select a destination"));
             }
             request.formPostWithAuthToken(sb, getRepository().URL_ENTRY_COPY);
             if (force != null) {
@@ -4416,15 +4422,16 @@ public class EntryManager extends RepositoryManager {
                                 ICON_FOLDER_OPEN)) + HtmlUtils.space(1)
                                     + msg("Select")
                                     + HtmlUtils.space(
-                                                      1), true, "", parent, false);
+                                        1), true, "", parent, false);
 
-                sb.append(HtmlUtils.hidden(ARG_TO + "_hidden",  parent.getId(),
+                sb.append(HtmlUtils.hidden(ARG_TO + "_hidden",
+                                           parent.getId(),
                                            HtmlUtils.id(ARG_TO + "_hidden")));
 
                 sb.append(select);
                 sb.append(HtmlUtils.space(1));
                 sb.append(HtmlUtils.disabledInput(ARG_TO, parent.getName(),
-                                                  HtmlUtils.SIZE_60 + HtmlUtils.id(ARG_TO)));
+                        HtmlUtils.SIZE_60 + HtmlUtils.id(ARG_TO)));
 
             }
             sb.append(HtmlUtils.close(HtmlUtils.TAG_DIV));
@@ -4447,8 +4454,10 @@ public class EntryManager extends RepositoryManager {
             sb.append(HtmlUtils.sectionClose());
 
             if (entries.size() == 1) {
-                getPageHandler().entrySectionClose(request, entries.get(0), sb);
+                getPageHandler().entrySectionClose(request, entries.get(0),
+                        sb);
             }
+
             return addEntryHeader(request, entries.get(0),
                                   new Result(msg("Entry Move/Copy"), sb));
         }
@@ -5566,9 +5575,10 @@ public class EntryManager extends RepositoryManager {
         }
 
         StringBuilder sb = new StringBuilder();
-        if(parent!=null)
-        getPageHandler().entrySectionOpen(request, parent, sb,
-                                          "Imported Entries", true);
+        if (parent != null) {
+            getPageHandler().entrySectionOpen(request, parent, sb,
+                    "Imported Entries", true);
+        }
 
         sb.append(msgHeader("Imported entries"));
         sb.append("<ul>");
@@ -5579,8 +5589,9 @@ public class EntryManager extends RepositoryManager {
                     parent));
         }
         sb.append("</ul>");
-        if(parent!=null)
+        if (parent != null) {
             getPageHandler().entrySectionClose(request, parent, sb);
+        }
 
 
         if (parent != null) {
@@ -5847,6 +5858,9 @@ public class EntryManager extends RepositoryManager {
                 file = newFile.toString();
             }
         }
+
+
+
         String url = Utils.getAttributeOrTag(node, ATTR_URL, (String) null);
         if (url == null) {
             url = XmlUtil.getGrandChildText(node, ATTR_URL, (String) null);
@@ -5859,6 +5873,22 @@ public class EntryManager extends RepositoryManager {
             }
         }
 
+        if ((url != null)
+                && XmlUtil.getAttribute(node, "download",
+                                        "").equals("true")) {
+            URL u = new URL(url);
+            File f = getStorageManager().getTmpFile(request,
+                         IOUtil.getFileTail(u.getFile()));
+            //            System.err.println("Importing " + u);
+            Utils.writeTo(u, f);
+            //            System.err.println("file:" + f +" " + f.exists());
+            if ( !f.exists()) {
+                throw new IllegalArgumentException("Failed to download URL:"
+                        + u);
+            }
+            file = getStorageManager().moveToStorage(request, f,
+                    f.getName()).toString();
+        }
 
         String localFile = XmlUtil.getAttribute(node, ATTR_LOCALFILE,
                                (String) null);
@@ -5989,9 +6019,11 @@ public class EntryManager extends RepositoryManager {
         for (Element entryChild : (List<Element>) entryChildren) {
             String tag = entryChild.getTagName();
             if (tag.equals("tag")) {
-                getMetadataManager().addMetadata(entry, new Metadata(getRepository().getGUID(),
-                        entry.getId(), "enum_tag", true,
-                        XmlUtil.getChildText(entryChild), "", "", "", ""));
+                getMetadataManager().addMetadata(entry,
+                        new Metadata(getRepository().getGUID(),
+                                     entry.getId(), "enum_tag", true,
+                                     XmlUtil.getChildText(entryChild), "",
+                                     "", "", ""));
 
             } else if (tag.equals(TAG_METADATA)) {
                 getMetadataManager().processMetadataXml(entry, entryChild,
@@ -6415,7 +6447,8 @@ public class EntryManager extends RepositoryManager {
             throws Exception {
         String theFile = getStorageManager().moveToEntryDir(entry,
                              file).getName();
-        getMetadataManager().addMetadata(entry,
+        getMetadataManager().addMetadata(
+            entry,
             new Metadata(
                 getRepository().getGUID(), entry.getId(),
                 ContentMetadataHandler.TYPE_ATTACHMENT, false, theFile, "",
@@ -6503,7 +6536,9 @@ public class EntryManager extends RepositoryManager {
             StringBuilder sb;
             if (link.isType(OutputType.TYPE_VIEW)) {
                 if (htmlSB == null) {
-                    htmlSB = new StringBuilder(HtmlUtils.open(HtmlUtils.TAG_DIV,HtmlUtils.cssClass(CSS_CLASS_MENU_GROUP)));
+                    htmlSB =
+                        new StringBuilder(HtmlUtils.open(HtmlUtils.TAG_DIV,
+                            HtmlUtils.cssClass(CSS_CLASS_MENU_GROUP)));
                     cnt++;
                 }
                 sb = htmlSB;
@@ -6512,25 +6547,33 @@ public class EntryManager extends RepositoryManager {
             } else if (link.isType(OutputType.TYPE_FEEDS)) {
                 if (exportSB == null) {
                     cnt++;
-                    exportSB = new StringBuilder(HtmlUtils.open(HtmlUtils.TAG_DIV,HtmlUtils.cssClass(CSS_CLASS_MENU_GROUP)));
+                    exportSB =
+                        new StringBuilder(HtmlUtils.open(HtmlUtils.TAG_DIV,
+                            HtmlUtils.cssClass(CSS_CLASS_MENU_GROUP)));
                 }
                 sb = exportSB;
             } else if (link.isType(OutputType.TYPE_FILE)) {
                 if (fileSB == null) {
                     cnt++;
-                    fileSB = new StringBuilder(HtmlUtils.open(HtmlUtils.TAG_DIV,HtmlUtils.cssClass(CSS_CLASS_MENU_GROUP)));
+                    fileSB =
+                        new StringBuilder(HtmlUtils.open(HtmlUtils.TAG_DIV,
+                            HtmlUtils.cssClass(CSS_CLASS_MENU_GROUP)));
                 }
                 sb = fileSB;
             } else if (link.isType(OutputType.TYPE_OTHER)) {
                 if (categorySB == null) {
                     cnt++;
-                    categorySB = new StringBuilder(HtmlUtils.open(HtmlUtils.TAG_DIV,HtmlUtils.cssClass(CSS_CLASS_MENU_GROUP)));
+                    categorySB =
+                        new StringBuilder(HtmlUtils.open(HtmlUtils.TAG_DIV,
+                            HtmlUtils.cssClass(CSS_CLASS_MENU_GROUP)));
                 }
                 sb = categorySB;
             } else {
                 if (actionSB == null) {
                     cnt++;
-                    actionSB = new StringBuilder(HtmlUtils.open(HtmlUtils.TAG_DIV,HtmlUtils.cssClass(CSS_CLASS_MENU_GROUP)));
+                    actionSB =
+                        new StringBuilder(HtmlUtils.open(HtmlUtils.TAG_DIV,
+                            HtmlUtils.cssClass(CSS_CLASS_MENU_GROUP)));
                     //                    actionSB.append("<tr><td class=entrymenulink>" + msg("Edit") +"</td></tr>");
                 }
                 sb = actionSB;
@@ -6538,12 +6581,15 @@ public class EntryManager extends RepositoryManager {
             //Only add the hr if we have more things in the list
             if (needToAddHr && (sb.length() > 0)) {
                 sb.append("</div>");
-                
+
                 sb.append(
-                          HtmlUtils.div(
+                    HtmlUtils.div(
                         "",
                         HtmlUtils.cssClass(CSS_CLASS_MENUITEM_SEPARATOR)));
-                sb.append(HtmlUtils.open(HtmlUtils.TAG_DIV,HtmlUtils.cssClass(CSS_CLASS_MENU_GROUP)));
+                sb.append(
+                    HtmlUtils.open(
+                        HtmlUtils.TAG_DIV,
+                        HtmlUtils.cssClass(CSS_CLASS_MENU_GROUP)));
             }
             needToAddHr = link.getHr();
             if (needToAddHr) {
@@ -8145,9 +8191,9 @@ public class EntryManager extends RepositoryManager {
         if ( !parentEntry.isGroup()) {
             return children;
         }
-        List<Entry>  entries = new ArrayList<Entry>();
-        List<String> ids     = getChildIds(request, parentEntry, select);
-        boolean doingOrderBy = request.exists(ARG_ORDERBY);
+        List<Entry>  entries      = new ArrayList<Entry>();
+        List<String> ids          = getChildIds(request, parentEntry, select);
+        boolean      doingOrderBy = request.exists(ARG_ORDERBY);
         for (String id : ids) {
             Entry entry = getEntry(request, id);
             if (entry == null) {
