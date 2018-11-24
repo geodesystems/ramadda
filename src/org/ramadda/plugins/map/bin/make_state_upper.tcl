@@ -1,8 +1,8 @@
 puts "<entries>"
 proc state {url name} {
-    regsub -all { } {_} $name _name
+    regsub -all { } $name  {_}  _name
     set _house "State_Senate";
-    regsub -all $_house _ { } house
+    regsub -all _ $_house  { } house
     set descUrl "<a href=\"https://ballotpedia.org/${_name}_${_house}\">ballotpedia.org</a>"
     set desc "<description><!\[CDATA\[\n+note\nMore information at ${descUrl}\n-note\n\]\]></description>"
     puts "<entry type=\"geo_shapefile\" download=\"true\" url=\"$url\" name=\"$name $house Map\">"

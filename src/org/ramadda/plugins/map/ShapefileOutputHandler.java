@@ -168,7 +168,7 @@ public class ShapefileOutputHandler extends OutputHandler {
         String      schemaId;
 
         List<Metadata> metadataList =
-            getMetadataManager().findMetadata(request, entry, "kml_display",
+            getMetadataManager().findMetadata(request, entry, "shapefile_display",
                 true);
         HashMap props           = new HashMap<String, Object>();
         String  balloonTemplate = null;
