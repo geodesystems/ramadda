@@ -77,6 +77,7 @@ public class ShapefileTypeHandler extends GenericTypeHandler {
     public void initializeEntryFromForm(Request request, Entry entry,
                                         Entry parent, boolean newEntry)
             throws Exception {
+        if(!newEntry) return;
         if ( !entry.isFile()) {
             System.err.println("Shapefile not a file");
 
