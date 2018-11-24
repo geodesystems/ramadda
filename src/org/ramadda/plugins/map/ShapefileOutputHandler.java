@@ -27,6 +27,7 @@ import org.ramadda.repository.output.JsonOutputHandler;
 import org.ramadda.repository.output.KmlOutputHandler;
 import org.ramadda.repository.output.OutputHandler;
 import org.ramadda.repository.output.OutputType;
+import org.ramadda.util.HtmlUtils;
 import org.ramadda.util.Json;
 import org.ramadda.util.KmlUtil;
 import org.ramadda.util.Utils;
@@ -57,11 +58,23 @@ public class ShapefileOutputHandler extends OutputHandler {
         new OutputType("Convert Shapefile to KML", "shapefile.kml",
                        OutputType.TYPE_FILE, "", ICON_KML);
 
+
+
     /** Map output type */
     public static final OutputType OUTPUT_GEOJSON =
         new OutputType("Convert Shapefile to GeoJSON", "geojson.geojson",
                        OutputType.TYPE_FILE, "", ICON_GEOJSON);
 
+
+    /** _more_          */
+    public static final OutputType OUTPUT_FIELDS_LIST =
+        new OutputType("Shapefile Fields", "shapefile.fields_list",
+                       OutputType.TYPE_VIEW, "", ICON_TABLE);
+
+    /** _more_          */
+    public static final OutputType OUTPUT_FIELDS_TABLE =
+        new OutputType("Shapefile Table", "shapefile.fields_table",
+                       OutputType.TYPE_VIEW, "", ICON_TABLE);
 
 
     /**
@@ -76,6 +89,8 @@ public class ShapefileOutputHandler extends OutputHandler {
         super(repository, element);
         addType(OUTPUT_KML);
         addType(OUTPUT_GEOJSON);
+        addType(OUTPUT_FIELDS_LIST);
+        addType(OUTPUT_FIELDS_TABLE);
     }
 
 
@@ -95,6 +110,8 @@ public class ShapefileOutputHandler extends OutputHandler {
                 && state.entry.getTypeHandler().isType("geo_shapefile")) {
             links.add(makeLink(request, state.entry, OUTPUT_KML));
             links.add(makeLink(request, state.entry, OUTPUT_GEOJSON));
+            links.add(makeLink(request, state.entry, OUTPUT_FIELDS_LIST));
+            links.add(makeLink(request, state.entry, OUTPUT_FIELDS_TABLE));
         }
     }
 
@@ -117,6 +134,10 @@ public class ShapefileOutputHandler extends OutputHandler {
             return outputKml(request, entry);
         } else if (outputType.equals(OUTPUT_GEOJSON)) {
             return outputGeoJson(request, entry);
+        } else if (outputType.equals(OUTPUT_FIELDS_LIST)) {
+            return outputFields(request, entry, false);
+        } else if (outputType.equals(OUTPUT_FIELDS_TABLE)) {
+            return outputFields(request, entry, true);
         }
 
         return null;
@@ -152,17 +173,17 @@ public class ShapefileOutputHandler extends OutputHandler {
         HashMap props           = new HashMap<String, Object>();
         String  balloonTemplate = null;
         if ((metadataList != null) && (metadataList.size() > 0)) {
-            Metadata balloon = metadataList.get(0);
-            schemaName      = schemaId = balloon.getAttr1();
-            balloonTemplate = balloon.getAttr2();
+            Metadata kmlDisplay = metadataList.get(0);
+            schemaName      = schemaId = kmlDisplay.getAttr1();
+            balloonTemplate = kmlDisplay.getAttr2();
             if ( !Utils.stringDefined(balloonTemplate)) {
                 balloonTemplate = null;
             }
-            if (Utils.stringDefined(balloon.getAttr3())) {
-                props.put("lineColor", balloon.getAttr3());
+            if (Utils.stringDefined(kmlDisplay.getAttr3())) {
+                props.put("lineColor", kmlDisplay.getAttr3());
             }
-            if (Utils.stringDefined(balloon.getAttr4())) {
-                props.put("fillColor", balloon.getAttr4());
+            if (Utils.stringDefined(kmlDisplay.getAttr4())) {
+                props.put("fillColor", kmlDisplay.getAttr4());
             }
         } else {
             schemaId = schemaName = entry.getId();
@@ -310,6 +331,29 @@ public class ShapefileOutputHandler extends OutputHandler {
     }
 
     /**
+     * _more_
+     *
+     * @param type _more_
+     *
+     * @return _more_
+     */
+    public static String getTypeName(int type) {
+        switch (type) {
+
+          case DbaseData.TYPE_BOOLEAN :
+              return "bool";
+
+          case DbaseData.TYPE_CHAR :
+              return "string";
+
+          case DbaseData.TYPE_NUMERIC :
+              return "double";
+        }
+
+        return "unknown:" + type;
+    }
+
+    /**
      * Output the shapefile entry as KML
      *
      * @param request  the request
@@ -352,6 +396,101 @@ public class ShapefileOutputHandler extends OutputHandler {
             + ".geojson");
 
         return result;
+    }
+
+
+    /**
+     * Output the shapefile entry as GeoJSON
+     *
+     * @param request  the request
+     * @param entry  the entry
+     * @param table _more_
+     *
+     * @return the GeoJSON
+     *
+     * @throws Exception _more_
+     */
+    private Result outputFields(Request request, Entry entry, boolean table)
+            throws Exception {
+        EsriShapefile shapefile =
+            new EsriShapefile(entry.getFile().toString());
+        DbaseFile     dbfile = shapefile.getDbFile();
+        StringBuilder sb     = new StringBuilder();
+        getPageHandler().entrySectionOpen(request, entry, sb, table
+                ? "Shapefile Table"
+                : "Shapefile Fields");
+        if (dbfile == null) {
+            sb.append("No fields");
+            getPageHandler().entrySectionClose(request, entry, sb);
+
+            return new Result("", sb);
+        }
+
+        String[] fieldNames = dbfile.getFieldNames();
+        if (table) {
+            sb.append("<table border=1>");
+            sb.append("<tr>");
+            sb.append(HtmlUtils.td(HtmlUtils.b("Field #"),
+                                   HtmlUtils.style("padding:5px;")));
+            for (int j = 0; j < fieldNames.length; j++) {
+                sb.append(HtmlUtils.td(HtmlUtils.b(fieldNames[j]),
+                                       HtmlUtils.style("padding:5px;")));
+            }
+            sb.append("</tr>");
+        } else {
+            sb.append("<ul>\n");
+        }
+
+
+        List features = shapefile.getFeatures();
+        for (int i = 0; i < features.size(); i++) {
+            if (i > 500) {
+                if (table) {
+                    sb.append("<tr>");
+                    sb.append(HtmlUtils.td("...",
+                                           HtmlUtils.style("padding:5px;")));
+                    sb.append("</tr>");
+                } else {
+                    sb.append("<li>...");
+                }
+
+                break;
+            }
+
+            if (table) {
+                sb.append("<tr>");
+                sb.append(HtmlUtils.td("" + (i + 1),
+                                       HtmlUtils.style("padding:5px;")));
+            } else {
+                sb.append("<li> ");
+                sb.append("Field #" + (i + 1));
+                sb.append("<ul>\n");
+            }
+            for (int j = 0; j < fieldNames.length; j++) {
+                DbaseData field = dbfile.getField(j);
+                if (table) {
+                    sb.append(HtmlUtils.td("" + field.getData(i),
+                                           HtmlUtils.style("padding:5px;")));
+                } else {
+                    sb.append("<li><b>");
+                    sb.append(fieldNames[j]);
+                    sb.append("</b>: ");
+                    sb.append(field.getData(i));
+                }
+            }
+            if (table) {
+                sb.append("</tr>");
+            } else {
+                sb.append("</ul>\n");
+            }
+        }
+        if (table) {
+            sb.append("</table>");
+        } else {
+            sb.append("</ul>");
+        }
+
+        return new Result("", sb);
     }
 
 

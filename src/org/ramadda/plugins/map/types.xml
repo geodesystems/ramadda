@@ -52,7 +52,7 @@
    </type>
 
 
-  <type name="geo_shapefile"  description="Shapefile"   handler="org.ramadda.plugins.map.ShapefileTypeHandler" pattern="(.*\.shp$|.*shp.*\.zip)" metadata="kml_display">
+  <type name="geo_shapefile"  description="Shapefile"   handler="org.ramadda.plugins.map.ShapefileTypeHandler" pattern="(.*\.shp$|.*shp.*\.zip)" xxxmetadata="kml_display">
      <property name="icon" value="/icons/map.png"/>
      <property name="upload.zip" value="true"/>
 

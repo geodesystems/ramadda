@@ -7,7 +7,6 @@
 <entry type="geo_shapefile"  download="true" url="https://www2.census.gov/geo/tiger/GENZ2017/shp/cb_2017_08_sldl_500k.zip" name="Colorado Upper House Map"/>
 <entry type="geo_shapefile"  download="true" url="https://www2.census.gov/geo/tiger/GENZ2017/shp/cb_2017_09_sldl_500k.zip" name="Connecticut Upper House Map"/>
 <entry type="geo_shapefile"  download="true" url="https://www2.census.gov/geo/tiger/GENZ2017/shp/cb_2017_10_sldl_500k.zip" name="Delaware Upper House Map"/>
-<entry type="geo_shapefile"  download="true" url="https://www2.census.gov/geo/tiger/GENZ2017/shp/cb_2017_11_sldl_500k.zip" name="District of Columbia Upper House Map"/>
 <entry type="geo_shapefile"  download="true" url="https://www2.census.gov/geo/tiger/GENZ2017/shp/cb_2017_12_sldl_500k.zip" name="Florida Upper House Map"/>
 <entry type="geo_shapefile"  download="true" url="https://www2.census.gov/geo/tiger/GENZ2017/shp/cb_2017_13_sldl_500k.zip" name="Georgia Upper House Map"/>
 <entry type="geo_shapefile"  download="true" url="https://www2.census.gov/geo/tiger/GENZ2017/shp/cb_2017_15_sldl_500k.zip" name="Hawaii Upper House Map"/>
@@ -26,7 +25,6 @@
 <entry type="geo_shapefile"  download="true" url="https://www2.census.gov/geo/tiger/GENZ2017/shp/cb_2017_28_sldl_500k.zip" name="Mississippi Upper House Map"/>
 <entry type="geo_shapefile"  download="true" url="https://www2.census.gov/geo/tiger/GENZ2017/shp/cb_2017_29_sldl_500k.zip" name="Missouri Upper House Map"/>
 <entry type="geo_shapefile"  download="true" url="https://www2.census.gov/geo/tiger/GENZ2017/shp/cb_2017_30_sldl_500k.zip" name="Montana Upper House Map"/>
-<entry type="geo_shapefile"  download="true" url="https://www2.census.gov/geo/tiger/GENZ2017/shp/cb_2017_31_sldl_500k.zip" name="Nebraska Upper House Map"/>
 <entry type="geo_shapefile"  download="true" url="https://www2.census.gov/geo/tiger/GENZ2017/shp/cb_2017_32_sldl_500k.zip" name="Nevada Upper House Map"/>
 <entry type="geo_shapefile"  download="true" url="https://www2.census.gov/geo/tiger/GENZ2017/shp/cb_2017_33_sldl_500k.zip" name="New Hampshire Upper House Map"/>
 <entry type="geo_shapefile"  download="true" url="https://www2.census.gov/geo/tiger/GENZ2017/shp/cb_2017_34_sldl_500k.zip" name="New Jersey Upper House Map"/>

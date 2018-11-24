@@ -24,9 +24,13 @@ import org.ramadda.repository.map.MapInfo;
 import org.ramadda.repository.output.KmlOutputHandler;
 import org.ramadda.repository.type.GenericTypeHandler;
 
+
 import org.w3c.dom.Element;
 
 import ucar.unidata.gis.GisPart;
+
+import ucar.unidata.gis.shapefile.DbaseData;
+import ucar.unidata.gis.shapefile.DbaseFile;
 import ucar.unidata.gis.shapefile.EsriShapefile;
 import ucar.unidata.gis.shapefile.ProjFile;
 
@@ -41,7 +45,7 @@ import java.util.List;
  */
 public class ShapefileTypeHandler extends GenericTypeHandler {
 
-    /** _more_          */
+    /** _more_ */
     public static int MAX_POINTS = 500000;
 
     /** _more_ */
@@ -77,7 +81,9 @@ public class ShapefileTypeHandler extends GenericTypeHandler {
     public void initializeEntryFromForm(Request request, Entry entry,
                                         Entry parent, boolean newEntry)
             throws Exception {
-        if(!newEntry) return;
+        if ( !newEntry) {
+            return;
+        }
         if ( !entry.isFile()) {
             System.err.println("Shapefile not a file");
 
@@ -147,6 +153,47 @@ public class ShapefileTypeHandler extends GenericTypeHandler {
             initializeEntryFromForm(request, entry, null, true);
         }
     }
+
+    /**
+     * _more_
+     *
+     * @param request _more_
+     * @param entry _more_
+     * @param tabTitles _more_
+     * @param tabContents _more_
+     */
+    public void addToInformationTabs(Request request, Entry entry,
+                                     List<String> tabTitles,
+                                     List<String> tabContents) {
+        super.addToInformationTabs(request, entry, tabTitles, tabContents);
+        try {
+            EsriShapefile shapefile =
+                new EsriShapefile(entry.getFile().toString());
+            DbaseFile dbfile = shapefile.getDbFile();
+            if (dbfile == null) {
+                return;
+            }
+
+            String[]      fieldNames = dbfile.getFieldNames();
+            StringBuilder sb = new StringBuilder("<h2>Fields</h2><ul>");
+            for (int i = 0; i < fieldNames.length; i++) {
+                DbaseData field = dbfile.getField(i);
+                sb.append("<li>");
+                sb.append(fieldNames[i]);
+                sb.append(" (");
+                sb.append(
+                    ShapefileOutputHandler.getTypeName(field.getType()));
+                sb.append(")\n");
+            }
+            sb.append("</ul>");
+            tabTitles.add("Shapefile Fields");
+            tabContents.add(sb.toString());
+        } catch (Exception exc) {
+            tabTitles.add("Shapefile Error");
+            tabContents.add("Error opening shapefile:" + exc);
+        }
+    }
+
 
     /**
      *
