@@ -68,6 +68,9 @@ public class MetadataTypeBase extends RepositoryManager {
     /** _more_ */
     public static final String TAG_TEMPLATE = "template";
 
+    /** _more_          */
+    public static String ATTR_HELP = "help";
+
     /** _more_ */
     public static final String ATTR_FILE = "file";
 
@@ -402,8 +405,8 @@ public class MetadataTypeBase extends RepositoryManager {
     public void init(Element node) throws Exception {
         setName(XmlUtil.getAttribute(node, ATTR_NAME, ""));
         setLabel(XmlUtil.getAttribute(node, ATTR_LABEL, (String) null));
-        setSuffixLabel(XmlUtil.getAttribute(node, ATTR_SUFFIX,
-                                            (String) null));
+        setSuffixLabel(Utils.getAttributeOrTag(node, ATTR_SUFFIX,
+                (String) null));
 
         setShowInHtml(XmlUtil.getAttribute(node, ATTR_SHOWINHTML, true));
         setSearchable(XmlUtil.getAttributeFromTree(node, ATTR_SEARCHABLE,
@@ -426,6 +429,8 @@ public class MetadataTypeBase extends RepositoryManager {
             if (childNode.getTagName().equals(TAG_TEMPLATE)) {
                 processTemplateTag(childNode);
             } else if (childNode.getTagName().equals(TAG_ELEMENT)) {}
+            else if (childNode.getTagName().equals(ATTR_HELP)) {}
+            else if (childNode.getTagName().equals("suffix")) {}
             else {
                 logError("Unknown metadata xml tag:"
                          + XmlUtil.toString(childNode), null);

@@ -62,6 +62,8 @@ public class MetadataHandler extends RepositoryManager {
     /** _more_ */
     public static String ATTR_FORUSER = "foruser";
 
+
+
     /** _more_ */
     public static String ARG_METADATAID = "metadataid";
 
@@ -94,6 +96,8 @@ public class MetadataHandler extends RepositoryManager {
 
     /** _more_ */
     boolean forUser = true;
+
+
 
 
     /**
@@ -188,6 +192,7 @@ public class MetadataHandler extends RepositoryManager {
                                    Hashtable fileMap, boolean internal)
             throws Exception {
         forUser = XmlUtil.getAttribute(node, ATTR_FORUSER, true);
+
         String type = XmlUtil.getAttribute(node, ATTR_TYPE);
         //TODO: Handle the extra attributes
         String extra = XmlUtil.getGrandChildText(node, Metadata.TAG_EXTRA,

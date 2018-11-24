@@ -163,6 +163,7 @@ public class MetadataElement extends MetadataTypeBase implements DataTypes {
     /** _more_ */
     private boolean searchable = false;
 
+
     /** _more_ */
     private int index;
 
@@ -222,6 +223,8 @@ public class MetadataElement extends MetadataTypeBase implements DataTypes {
 
         setGroup(XmlUtil.getAttribute(node, ATTR_GROUP, (String) null));
         setSearchable(XmlUtil.getAttribute(node, ATTR_SEARCHABLE, false));
+
+
         required = XmlUtil.getAttribute(node, ATTR_REQUIRED, false);
         setThumbnail(XmlUtil.getAttribute(node, ATTR_THUMBNAIL, false));
 

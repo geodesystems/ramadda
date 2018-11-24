@@ -73,6 +73,8 @@ public class MetadataType extends MetadataTypeBase {
     /** _more_ */
     public static final String ATTR_METADATATYPE = "metadatatype";
 
+
+
     /** _more_ */
     public static final String ATTR_CLASS = "class";
 
@@ -159,6 +161,9 @@ public class MetadataType extends MetadataTypeBase {
 
     /** _more_ */
     private String entryType = null;
+
+    /** _more_          */
+    private String help = "";
 
     /**
      * _more_
@@ -264,6 +269,11 @@ public class MetadataType extends MetadataTypeBase {
 
                 continue;
             }
+
+            if (node.getTagName().equals(ATTR_HELP)) {
+                continue;
+            }
+
             if ( !node.getTagName().equals(TAG_TYPE)) {
                 manager.logError("Unknown metadata xml tag:"
                                  + XmlUtil.toString(node), null);
@@ -273,10 +283,13 @@ public class MetadataType extends MetadataTypeBase {
                           ATTR_CLASS,
                           "org.ramadda.repository.metadata.MetadataHandler"));
 
+
+
             String          id           = XmlUtil.getAttribute(node,
                                                ATTR_ID);
             MetadataHandler handler      = manager.getHandler(c);
             MetadataType    metadataType = new MetadataType(id, handler);
+            metadataType.help = Utils.getAttributeOrTag(node, ATTR_HELP, "");
             metadataType.init(node);
             handler.addMetadataType(metadataType);
             types.add(metadataType);
@@ -1111,6 +1124,7 @@ public class MetadataType extends MetadataTypeBase {
 
 
         StringBuilder sb     = new StringBuilder();
+        sb.append(help);
 
         if ( !forEdit) {
             //            sb.append(header(msgLabel("Add") + getName()));
@@ -1144,8 +1158,8 @@ public class MetadataType extends MetadataTypeBase {
                     suffixLabel = "";
                 }
 
-                sb.append(HtmlUtils.formEntry(elementLbl,
-                        widget + suffixLabel));
+                sb.append(HtmlUtils.formEntryTop(elementLbl, widget,
+                        suffixLabel));
             }
         }
 
