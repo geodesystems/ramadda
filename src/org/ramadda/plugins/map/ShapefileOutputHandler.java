@@ -483,15 +483,17 @@ public class ShapefileOutputHandler extends OutputHandler {
             for (int j = 0; j < fieldNames.length; j++) {
                 DbaseData field = dbfile.getField(j);
                 String    value;
+                String extra = "";
                 if (field.getType() == field.TYPE_NUMERIC) {
                     value = format.format(field.getDouble(i));
+                    extra =" align=right ";
                 } else {
                     value = "" + field.getData(i);
                 }
 
                 if (table) {
                     sb.append(HtmlUtils.td(value,
-                                           HtmlUtils.style("padding:5px;")));
+                                           extra+HtmlUtils.style("padding:5px;")));
                 } else {
                     sb.append("<li><b>");
                     sb.append(fieldNames[j]);
