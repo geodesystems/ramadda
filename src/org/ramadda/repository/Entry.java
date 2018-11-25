@@ -866,6 +866,29 @@ public class Entry implements Cloneable {
     }
 
     /**
+     * _more_
+     *
+     * @param index _more_
+     * @param dflt _more_
+     *
+     * @return _more_
+     */
+    public int getValue(int index, int dflt) {
+        String sValue = getValue(index, "");
+        if (sValue.length() == 0) {
+            return dflt;
+        }
+        int retval = dflt;
+        try {
+            retval = new Integer(sValue);
+        } catch (Exception e) {
+            retval = dflt;
+        }
+
+        return retval;
+    }
+
+    /**
      * Get the indexed value as a double
      *
      * @param index  index in getValues array;
@@ -914,10 +937,13 @@ public class Entry implements Cloneable {
         return name + " id:" + id + "  type:" + getTypeHandler();
     }
 
+    /**
+     * _more_
+     */
     public void printMe() {
         System.err.println(this.toString());
-        if(values!=null) {
-            for(Object obj: values) {
+        if (values != null) {
+            for (Object obj : values) {
                 System.err.println("\tvalue:" + obj);
             }
         }

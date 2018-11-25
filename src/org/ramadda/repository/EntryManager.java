@@ -4178,6 +4178,19 @@ public class EntryManager extends RepositoryManager {
      * _more_
      *
      * @param entry _more_
+     * @param filename _more_
+     *
+     * @return _more_
+     */
+    public File getCacheFile(Entry entry, String filename) {
+        return getStorageManager().getCacheFile(entry.getId() + "_"
+                + entry.getChangeDate() + "_" + filename);
+    }
+
+    /**
+     * _more_
+     *
+     * @param entry _more_
      *
      * @return _more_
      *
