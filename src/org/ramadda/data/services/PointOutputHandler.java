@@ -1939,7 +1939,7 @@ public class PointOutputHandler extends RecordOutputHandler {
             }
         }
 
-        int[][] colorTable =
+        ColorTable colorTable =
             ColorTable.getColorTable(request.getString(ARG_COLORTABLE, ""));
         double[] range =
             ColorTable.getRange(request.getString(ARG_COLORTABLE, ""), min,
@@ -1959,8 +1959,7 @@ public class PointOutputHandler extends RecordOutputHandler {
                 } else {
                     //TODO: Check range for DBZ exception
                     double percent = (value - colorRangeMin) / colorRange;
-                    pixels[index] = ColorTable.getPixelValue(colorTable,
-                            percent);
+                    pixels[index] = colorTable.getPixelValue(percent);
                 }
                 index++;
             }
