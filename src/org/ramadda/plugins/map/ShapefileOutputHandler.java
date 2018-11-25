@@ -41,6 +41,8 @@ import ucar.unidata.gis.shapefile.EsriShapefile;
 import ucar.unidata.util.IOUtil;
 import ucar.unidata.xml.XmlUtil;
 
+import java.text.DecimalFormat;
+
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -423,6 +425,7 @@ public class ShapefileOutputHandler extends OutputHandler {
      */
     private Result outputFields(Request request, Entry entry, boolean table)
             throws Exception {
+        DecimalFormat format = new DecimalFormat("####0.00");
         EsriShapefile shapefile =
             new EsriShapefile(entry.getFile().toString());
         DbaseFile     dbfile = shapefile.getDbFile();
@@ -479,14 +482,21 @@ public class ShapefileOutputHandler extends OutputHandler {
             }
             for (int j = 0; j < fieldNames.length; j++) {
                 DbaseData field = dbfile.getField(j);
+                String    value;
+                if (field.getType() == field.TYPE_NUMERIC) {
+                    value = format.format(field.getDouble(i));
+                } else {
+                    value = "" + field.getData(i);
+                }
+
                 if (table) {
-                    sb.append(HtmlUtils.td("" + field.getData(i),
+                    sb.append(HtmlUtils.td(value,
                                            HtmlUtils.style("padding:5px;")));
                 } else {
                     sb.append("<li><b>");
                     sb.append(fieldNames[j]);
                     sb.append("</b>: ");
-                    sb.append(field.getData(i));
+                    sb.append(value);
                 }
             }
             if (table) {
