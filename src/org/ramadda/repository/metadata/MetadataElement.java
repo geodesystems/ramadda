@@ -21,6 +21,7 @@ import org.ramadda.repository.*;
 import org.ramadda.repository.type.DataTypes;
 
 import org.ramadda.util.HtmlUtils;
+import org.ramadda.util.ColorTable;
 import org.ramadda.util.Utils;
 
 
@@ -856,6 +857,10 @@ public class MetadataElement extends MetadataTypeBase implements DataTypes {
                                        HtmlUtils.attr(HtmlUtils.ATTR_SIZE,
                                            "" + columns));
             }
+        } else if (dataType.equals(DATATYPE_COLORTABLE)) {
+            List<TwoFacedObject> names = ColorTable.getColorTableNames();
+            names.add(0,new TwoFacedObject("--none--",""));
+            return HtmlUtils.select(arg, names,value);
         } else if (dataType.equals(DATATYPE_BOOLEAN)) {
             return HtmlUtils.checkbox(arg, "true",
                                       Misc.equals(value, "true"));
@@ -988,6 +993,7 @@ public class MetadataElement extends MetadataTypeBase implements DataTypes {
                                                    false) + " "
                                                        + msg("delete"));
                     entriesSB.append(HtmlUtils.makeShowHideBlock((groupCnt
+
                             + 1) + ") " + subName
                                  + deleteCbx, groupSB.toString(), true));
                 }

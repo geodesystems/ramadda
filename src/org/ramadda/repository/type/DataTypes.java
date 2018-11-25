@@ -85,6 +85,8 @@ public interface DataTypes {
 
     /** _more_ */
     public static final String DATATYPE_GROUP = "group";
+    public static final String DATATYPE_COLORTABLE = "colortable";
+
 
     /** _more_ */
     public static final String DATATYPE_DATE = "date";
