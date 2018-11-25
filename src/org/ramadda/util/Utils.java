@@ -2955,4 +2955,181 @@ public class Utils {
     }
 
 
+    /**
+     * _more_
+     *
+     * @param x _more_
+     *
+     * @return _more_
+     */
+    public static float square(float x) {
+        return (float) Math.pow(x, 2);
+    }
+
+    /**
+     * _more_
+     *
+     * @param vx _more_
+     * @param vy _more_
+     * @param wx _more_
+     * @param wy _more_
+     *
+     * @return _more_
+     */
+    public static float distanceBetweenPoints(float vx, float vy, float wx,
+            float wy) {
+        return square(vx - wx) + square(vy - wy);
+    }
+
+    /**
+     * _more_
+     *
+     * @param px _more_
+     * @param py _more_
+     * @param vx _more_
+     * @param vy _more_
+     * @param wx _more_
+     * @param wy _more_
+     *
+     * @return _more_
+     */
+    public static float distanceToSegmentSquared(float px, float py,
+            float vx, float vy, float wx, float wy) {
+        float l2 = distanceBetweenPoints(vx, vy, wx, wy);
+        if (l2 == 0) {
+            return distanceBetweenPoints(px, py, vx, vy);
+        }
+        float t = ((px - vx) * (wx - vx) + (py - vy) * (wy - vy)) / l2;
+        if (t < 0) {
+            return distanceBetweenPoints(px, py, vx, vy);
+        }
+        if (t > 1) {
+            return distanceBetweenPoints(px, py, wx, wy);
+        }
+
+        return distanceBetweenPoints(px, py, (vx + t * (wx - vx)),
+                                     (vy + t * (wy - vy)));
+    }
+
+    /**
+     * _more_
+     *
+     * @param px _more_
+     * @param py _more_
+     * @param vx _more_
+     * @param vy _more_
+     * @param wx _more_
+     * @param wy _more_
+     *
+     * @return _more_
+     */
+    public static float perpendicularDistance(float px, float py, float vx,
+            float vy, float wx, float wy) {
+        return (float) Math.sqrt(distanceToSegmentSquared(px, py, vx, vy, wx,
+                wy));
+    }
+
+    /**
+     * _more_
+     *
+     * @param list _more_
+     * @param s _more_
+     * @param e _more_
+     * @param index _more_
+     *
+     * @return _more_
+     */
+    public static float getMaxPerpendicularDistance(List<float[]> list,
+            int s, int e, int[] index) {
+        // Find the point with the maximum distance
+        float dmax = 0;
+        if (index != null) {
+            index[0] = 0;
+        }
+
+        final int start = s;
+        final int end   = e - 1;
+        for (int i = start + 1; i < end; i++) {
+            // Point
+            final float px = list.get(i)[0];
+            final float py = list.get(i)[1];
+            // Start
+            final float vx = list.get(start)[0];
+            final float vy = list.get(start)[1];
+            // End
+            final float wx = list.get(end)[0];
+            final float wy = list.get(end)[1];
+
+            final float d  = perpendicularDistance(px, py, vx, vy, wx, wy);
+            if (d > dmax) {
+                if (index != null) {
+                    index[0] = i;
+                }
+                dmax = d;
+            }
+        }
+
+        return dmax;
+    }
+
+    /**
+     * originally from https://github.com/phishman3579/java-algorithms-implementation/blob/master/src/com/jwetherell/algorithms/mathematics/RamerDouglasPeucker.java
+     * _more_
+     *
+     * @param list _more_
+     * @param s _more_
+     * @param e _more_
+     * @param epsilon _more_
+     * @param resultList _more_
+     */
+    private static void douglasPeucker(List<float[]> list, int s, int e,
+                                       float epsilon,
+                                       List<float[]> resultList) {
+        final int start = s;
+        final int end   = e - 1;
+        // Find the point with the maximum distance
+        int[] index = { 0 };
+        float dmax  = getMaxPerpendicularDistance(list, s, e, index);
+        // If max distance is greater than epsilon, recursively simplify
+        if (dmax > epsilon) {
+            // Recursive call
+            douglasPeucker(list, s, index[0], epsilon, resultList);
+            douglasPeucker(list, index[0], e, epsilon, resultList);
+        } else {
+            if ((end - start) > 0) {
+                resultList.add(list.get(start));
+                resultList.add(list.get(end));
+            } else {
+                resultList.add(list.get(start));
+            }
+        }
+    }
+
+    /**
+     * Given a curve composed of line segments find a similar curve with fewer points.
+     *
+     * @param list List of Float[] points (x,y)
+     *
+     * @param coords _more_
+     * @param epsilon Distance dimension
+     * @return Similar curve with fewer points
+     */
+    public static float[][] douglasPeucker(float[][] coords, float epsilon) {
+        List<float[]> incoming = new ArrayList<float[]>();
+        for (int i = 0; i < coords[0].length; i++) {
+            incoming.add(new float[] { coords[0][i], coords[1][i] });
+        }
+        final List<float[]> result = new ArrayList<float[]>();
+        douglasPeucker(incoming, 0, incoming.size(), epsilon, result);
+        //        System.err.println("incoming:"+ incoming.size() +" result:"+ result.size());
+        float[][] f = new float[result.get(0).length][result.size()];
+        for (int i = 0; i < result.size(); i++) {
+            float[] coord = result.get(i);
+            f[0][i] = coord[0];
+            f[1][i] = coord[1];
+        }
+
+        return f;
+    }
+
 }
