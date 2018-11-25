@@ -23,6 +23,7 @@ import org.ramadda.repository.Request;
 import org.ramadda.repository.map.MapInfo;
 import org.ramadda.repository.output.KmlOutputHandler;
 import org.ramadda.repository.type.GenericTypeHandler;
+import org.ramadda.util.Utils;
 
 
 import org.w3c.dom.Element;
@@ -46,7 +47,7 @@ import java.util.List;
 public class ShapefileTypeHandler extends GenericTypeHandler {
 
     /** _more_ */
-    public static int MAX_POINTS = 500000;
+    public static int MAX_POINTS = 200000;
 
     /** _more_ */
     private static final int IDX_LON = 0;
@@ -211,35 +212,38 @@ public class ShapefileTypeHandler extends GenericTypeHandler {
         if ( !entry.isFile()) {
             return true;
         }
-        //TODO: stream through the shapes
-        EsriShapefile shapefile = null;
-        try {
-            shapefile = new EsriShapefile(entry.getFile().toString());
-        } catch (Exception exc) {
-            map.setHeaderMessage("Error opening shapefile:" + exc);
+        int numPoints = entry.getValue(0, -1);
 
-            return true;
-        }
-        List<EsriShapefile.EsriFeature> features =
-            (List<EsriShapefile.EsriFeature>) shapefile.getFeatures();
-        int numpoints   = 0;
-        int numFeatures = 0;
-        for (EsriShapefile.EsriFeature feature : features) {
-            numpoints += feature.getNumPoints();
-            numFeatures++;
+        if (numPoints < 0) {
+            long t1 = System.currentTimeMillis();
+            //TODO: stream through the shapes
+            EsriShapefile shapefile = null;
+            try {
+                shapefile = new EsriShapefile(entry.getFile().toString());
+            } catch (Exception exc) {
+                map.setHeaderMessage("Error opening shapefile:" + exc);
+
+                return true;
+            }
+            List<EsriShapefile.EsriFeature> features =
+                (List<EsriShapefile.EsriFeature>) shapefile.getFeatures();
+            numPoints = 0;
+            int numFeatures = 0;
+            for (EsriShapefile.EsriFeature feature : features) {
+                numPoints += feature.getNumPoints();
+                numFeatures++;
+            }
+            long t2 = System.currentTimeMillis();
+            getEntryValues(entry)[0] = new Integer(numPoints);
+            getEntryManager().updateEntry(request, entry);
         }
 
-        //System.out.println("num points = " + numpoints);
-        if (numpoints > MAX_POINTS) {
-            map.setHeaderMessage(
-                "Not showing all features because there are too many points");
-            //            return true;
-        }
         map.addKmlUrl(
             entry.getName(),
             request.entryUrl(
                 getRepository().URL_ENTRY_SHOW, entry, ARG_OUTPUT,
-                ShapefileOutputHandler.OUTPUT_KML.toString()), true);
+                ShapefileOutputHandler.OUTPUT_KML.toString(), "formap",
+                "true"), true);
 
         /*  For testing
         map.addGeoJsonUrl(

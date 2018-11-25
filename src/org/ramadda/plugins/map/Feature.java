@@ -19,6 +19,7 @@ package org.ramadda.plugins.map;
 
 import org.ramadda.util.Json;
 import org.ramadda.util.KmlUtil;
+import org.ramadda.util.Utils;
 
 import org.w3c.dom.Element;
 
@@ -41,12 +42,25 @@ public class Feature {
     /** the geometry for this feature */
     private Geometry geometry;
 
+    /** _more_          */
+    private List<float[][]> origCoords;
+
     /** the list of properties */
 
     private HashMap<String, Object> featureProperties;
 
-    /** _more_          */
+    /** _more_ */
     private HashMap allProperties;
+
+    /** _more_          */
+    private int numPoints = -1;
+
+    /** _more_          */
+    private int maxPoints = -1;
+
+    /** _more_          */
+    private int stride = 0;
+
 
     /**
      * Create a Feature
@@ -56,6 +70,7 @@ public class Feature {
     public Feature(String id, Geometry geometry) {
         this(id, geometry, new HashMap<String, Object>(), new HashMap());
     }
+
 
     /**
      * Create a Feature
@@ -74,18 +89,46 @@ public class Feature {
         this.allProperties     = allProperties;
     }
 
+
+    /**
+     * _more_
+     *
+     * @param stride _more_
+     */
+    public void setStride(int stride) {
+        this.stride = stride;
+    }
+
     /**
      * _more_
      *
      * @return _more_
      */
     public int getNumPoints() {
-        int cnt = 0;
-        for (float[][] coord : geometry.getCoordinates()) {
-            cnt += coord[0].length;
+        if (numPoints < 0) {
+            numPoints = 0;
+            for (float[][] coord : geometry.getCoordinates()) {
+                numPoints += coord[0].length;
+            }
+            if (maxPoints < 0) {
+                maxPoints = numPoints;
+            }
         }
 
-        return cnt;
+        return numPoints;
+    }
+
+    /**
+     * _more_
+     *
+     * @return _more_
+     */
+    public int getMaxPoints() {
+        if (maxPoints < 0) {
+            getNumPoints();
+        }
+
+        return maxPoints;
     }
 
     /**
@@ -121,6 +164,52 @@ public class Feature {
     }
 
     /**
+     * _more_
+     *
+     * @return _more_
+     */
+    public float getMaxDistance() {
+        float dmax = -1;
+        if (origCoords == null) {
+            origCoords = geometry.getCoordinates();
+        }
+        List<float[][]> newCoords = new ArrayList<float[][]>();
+        for (float[][] coords : origCoords) {
+            List<float[]> list = new ArrayList<float[]>();
+            for (int i = 0; i < coords[0].length; i++) {
+                list.add(new float[] { coords[0][i], coords[1][i] });
+            }
+            dmax = (float) Math.max(dmax,
+                                    Utils.getMaxPerpendicularDistance(list,
+                                        0, list.size(), null));
+        }
+
+        return dmax;
+    }
+
+
+
+    /**
+     * _more_
+     *
+     * @param epsilon _more_
+     */
+    public void applyEpsilon(float epsilon) {
+        numPoints = -1;
+        if (origCoords == null) {
+            origCoords = geometry.getCoordinates();
+        }
+        List<float[][]> newCoords = new ArrayList<float[][]>();
+        for (float[][] coords : origCoords) {
+            float[][] coords2 = Utils.douglasPeucker(coords, epsilon);
+            //            System.err.println("coords:" + coords[0].length +" new length:" + coords2[0].length);
+            //            if(true) throw new IllegalArgumentException("");
+            newCoords.add(coords2);
+        }
+        geometry.setCoordinates(newCoords);
+    }
+
+    /**
      * Make the Feature element
      * @param parent  the parent to add to
      * @param styleUrl  the style URL
@@ -149,10 +238,11 @@ public class Feature {
             } else {
                 if (type.equals(Geometry.TYPE_LINESTRING)
                         || type.equals(Geometry.TYPE_MULTILINESTRING)) {
-                    KmlUtil.linestring(geom, false, false, coords, true);
+                    KmlUtil.linestring(geom, false, false, coords, true,
+                                       stride);
                 } else if (type.equals(Geometry.TYPE_POLYGON)
                            || type.equals(Geometry.TYPE_MULTIPOLYGON)) {
-                    KmlUtil.polygon(geom, coords, true);
+                    KmlUtil.polygon(geom, coords, true, stride);
                 }
             }
         }

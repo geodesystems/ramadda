@@ -41,6 +41,9 @@ import ucar.unidata.gis.shapefile.EsriShapefile;
 import ucar.unidata.util.IOUtil;
 import ucar.unidata.xml.XmlUtil;
 
+import java.io.File;
+import java.io.FileInputStream;
+
 import java.text.DecimalFormat;
 
 
@@ -377,14 +380,33 @@ public class ShapefileOutputHandler extends OutputHandler {
      * @throws Exception _more_
      */
     private Result outputKml(Request request, Entry entry) throws Exception {
-        FeatureCollection fc   = makeFeatureCollection(request, entry);
-        Element           root = fc.toKml();
-        StringBuffer      sb   = new StringBuffer(XmlUtil.XML_HEADER);
-        sb.append(XmlUtil.toString(root));
-        Result result = new Result("", sb, KmlOutputHandler.MIME_KML);
-        result.setReturnFilename(
+        boolean forMap = request.get("formap", false);
+        String returnFile =
             IOUtil.stripExtension(getStorageManager().getFileTail(entry))
-            + ".kml");
+            + ".kml";
+        File file = getEntryManager().getCacheFile(entry,
+                        forMap + "_" + returnFile);
+        if (file.exists()) {
+            Result result = new Result(new FileInputStream(file),
+                                       KmlOutputHandler.MIME_KML);
+            result.setReturnFilename(returnFile);
+
+            return result;
+        }
+
+
+        FeatureCollection fc   = makeFeatureCollection(request, entry);
+        long              t1   = System.currentTimeMillis();
+        Element           root = fc.toKml(forMap);
+        long              t2   = System.currentTimeMillis();
+        StringBuffer      sb   = new StringBuffer(XmlUtil.XML_HEADER);
+        String            xml  = XmlUtil.toString(root, false);
+        sb.append(xml);
+        IOUtil.writeFile(file, xml);
+        long t3 = System.currentTimeMillis();
+        //        Utils.printTimes("OutputKml time:", t1,t2,t3);
+        Result result = new Result("", sb, KmlOutputHandler.MIME_KML);
+        result.setReturnFilename(returnFile);
 
         return result;
     }
@@ -483,17 +505,18 @@ public class ShapefileOutputHandler extends OutputHandler {
             for (int j = 0; j < fieldNames.length; j++) {
                 DbaseData field = dbfile.getField(j);
                 String    value;
-                String extra = "";
+                String    extra = "";
                 if (field.getType() == field.TYPE_NUMERIC) {
                     value = format.format(field.getDouble(i));
-                    extra =" align=right ";
+                    extra = " align=right ";
                 } else {
                     value = "" + field.getData(i);
                 }
 
                 if (table) {
-                    sb.append(HtmlUtils.td(value,
-                                           extra+HtmlUtils.style("padding:5px;")));
+                    sb.append(
+                        HtmlUtils.td(
+                            value, extra + HtmlUtils.style("padding:5px;")));
                 } else {
                     sb.append("<li><b>");
                     sb.append(fieldNames[j]);

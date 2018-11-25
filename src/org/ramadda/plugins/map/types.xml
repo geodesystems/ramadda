@@ -52,9 +52,10 @@
    </type>
 
 
-  <type name="geo_shapefile"  description="Shapefile"   handler="org.ramadda.plugins.map.ShapefileTypeHandler" pattern="(.*\.shp$|.*shp.*\.zip)" xxxmetadata="kml_display">
+  <type name="geo_shapefile"  description="Shapefile"   handler="org.ramadda.plugins.map.ShapefileTypeHandler" pattern="(.*\.shp$|.*shp.*\.zip)" metadata="shapefile_display">
      <property name="icon" value="/icons/map.png"/>
      <property name="upload.zip" value="true"/>
+     <column name="num_points" label="Number of Points" type="int" canedit="false" showinhtml="false" databaseDefault="-1"/>
 
 
 <wiki>

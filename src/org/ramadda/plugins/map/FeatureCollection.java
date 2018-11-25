@@ -228,11 +228,13 @@ public class FeatureCollection {
     /**
      * Turn this into KML
      *
+     *
+     * @param decimate _more_
      * @return the KML Element
      *
      * @throws Exception _more_
      */
-    public Element toKml() throws Exception {
+    public Element toKml(boolean decimate) throws Exception {
 
         Element root       = KmlUtil.kml(getName());
         Element doc        = KmlUtil.document(root, getName(), true);
@@ -410,19 +412,35 @@ public class FeatureCollection {
                 }
             }
         }
-
         int points = 0;
-        int cnt    = 0;
+        if (decimate) {
+            float epsilon = 0.005f;
+            while (true) {
+                points = 0;
+                if (epsilon > 360.0f) {
+                    break;
+                }
+                for (Feature feature : features) {
+                    points += feature.getNumPoints();
+                }
+                if (points < ShapefileTypeHandler.MAX_POINTS) {
+                    //                    System.err.println("points:" + points);
+                    break;
+                }
+                //                System.err.println("points:" + points +" epsilon:" + epsilon);
+                for (Feature feature2 : features) {
+                    feature2.applyEpsilon(epsilon);
+                }
+                epsilon = epsilon * 2.0f;
+            }
+        }
+        int cnt = 0;
         for (Feature feature : features) {
             String styleUrl = (styleUrls == null)
                               ? styleName
                               : styleUrls.get(cnt);
             feature.makeKmlElement(folder, "#" + styleUrl);
             cnt++;
-            points += feature.getNumPoints();
-            if (points > ShapefileTypeHandler.MAX_POINTS) {
-                break;
-            }
         }
 
         return root;
