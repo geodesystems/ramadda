@@ -66,12 +66,12 @@ public class ShapefileOutputHandler extends OutputHandler {
                        OutputType.TYPE_FILE, "", ICON_GEOJSON);
 
 
-    /** _more_          */
+    /** _more_ */
     public static final OutputType OUTPUT_FIELDS_LIST =
         new OutputType("Shapefile Fields", "shapefile.fields_list",
                        OutputType.TYPE_VIEW, "", ICON_TABLE);
 
-    /** _more_          */
+    /** _more_ */
     public static final OutputType OUTPUT_FIELDS_TABLE =
         new OutputType("Shapefile Table", "shapefile.fields_table",
                        OutputType.TYPE_VIEW, "", ICON_TABLE);
@@ -167,11 +167,22 @@ public class ShapefileOutputHandler extends OutputHandler {
         String      schemaName;
         String      schemaId;
 
+        HashMap     props = new HashMap<String, Object>();
+        props.put("dbfile", dbfile);
+        props.put("shapefile", shapefile);
+        Metadata colorBy = null;
         List<Metadata> metadataList =
-            getMetadataManager().findMetadata(request, entry, "shapefile_display",
-                true);
-        HashMap props           = new HashMap<String, Object>();
-        String  balloonTemplate = null;
+            getMetadataManager().findMetadata(request, entry,
+                "shapefile_color", true);
+        if ((metadataList != null) && (metadataList.size() > 0)) {
+            colorBy = metadataList.get(0);
+            props.put("colorby", colorBy);
+        }
+
+        metadataList = getMetadataManager().findMetadata(request, entry,
+                "shapefile_display", true);
+
+        String balloonTemplate = null;
         if ((metadataList != null) && (metadataList.size() > 0)) {
             Metadata kmlDisplay = metadataList.get(0);
             schemaName      = schemaId = kmlDisplay.getAttr1();

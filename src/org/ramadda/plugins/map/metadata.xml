@@ -1,13 +1,24 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
 <metadata>
-  <handler category="Miscellaneous" >
+    <handler category="Miscellaneous">
+        <type
+       id="shapefile_display"
+       name="Shapefile Display"
+       showinhtml="false"
+       values="">
 
+            <element
+         id="schema_id"
+         name="Schema ID"
+         suffix="Short hand schema id. Default is the entry id"/>
 
+            <element
+         id="balloon_template"
+         name="Balloon Template"
+         rows="10">
 
-    <type id="shapefile_display" name="Shapefile Display"  values=""        showinhtml="false">
-      <element id="schema_id" name="Schema ID" suffix="Short hand schema id. Default is the entry id"/>
-      <element id="balloon_template" name="Balloon Template" rows="10">
-      <suffix><![CDATA[
+              <suffix>
+<![CDATA[
 The balloon template holds any html and macros of the form, e.g.:
 <pre>
 &lt;h2&gt;$[schema_id/field_name]&lt;/h2&gt;
@@ -18,13 +29,75 @@ The balloon template holds any html and macros of the form, e.g.:
 <br>
 Note: all field names are lower case.
 ]]>
-</suffix>
-</element>
-      <element id="line_color" name="Line Color" suffix="e.g., lightgray, red, #ff6600, etc"/>
-      <element id="fill_color" name="Fill Color" suffix="e.g., lightgray, red, #ff6600, etc"/>
-    </type>
+        </suffix>
 
-  </handler>
+      </element>
+            <element
+         id="line_color"
+         name="Line Color"
+         suffix="e.g., lightgray, red, #ff6600, etc"/>
+            <element
+         id="fill_color"
+         name="Fill Color"
+         suffix="e.g., lightgray, red, #ff6600, etc"/>
+        </type>
 
 
+<!--
+shapefile_colorby
+field
+colortable
+min
+max
+
+color_map
+ -->
+
+
+        <type
+       id="shapefile_color"
+       name="Shapefile Color By"
+       showinhtml="false"
+       values="">
+            <element
+         id="field"
+         name="Field"
+         suffix="Field names shown in View&amp;gt;Shape Fields menu"/>
+            <element
+         datatype="colortable"
+         id="colortable"
+         name="Color Table">
+              <suffix>
+<![CDATA[Colortable to map field value to]]>
+              </suffix>
+            </element>
+
+            <element
+         datatype="double"
+         id="colorby_min"
+         name="Color By Min"/>
+
+            <element
+         datatype="double"
+         id="colorby_max"
+         name="Color By Max"/>
+        <element
+         id="enumerated_values"
+         name="Enumerated Values"
+         rows="15">
+              <suffix>
+<![CDATA[
+Holds a mapping of field value to color, e.g.:
+<pre>
+field_value1:red
+field_value2:green
+field_value2:#0000ff
+...
+</pre>
+]]>
+        </suffix>
+      </element>
+        </type>
+
+    </handler>
 </metadata>

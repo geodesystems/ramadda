@@ -17,6 +17,9 @@
 package org.ramadda.plugins.map;
 
 
+import org.ramadda.repository.metadata.Metadata;
+import org.ramadda.util.ColorTable;
+
 import org.ramadda.util.Json;
 import org.ramadda.util.KmlUtil;
 import org.ramadda.util.Utils;
@@ -24,6 +27,8 @@ import org.ramadda.util.Utils;
 import org.w3c.dom.CDATASection;
 import org.w3c.dom.Element;
 
+import ucar.unidata.gis.shapefile.DbaseData;
+import ucar.unidata.gis.shapefile.DbaseFile;
 import ucar.unidata.gis.shapefile.EsriShapefile;
 import ucar.unidata.util.StringUtil;
 import ucar.unidata.xml.XmlUtil;
@@ -33,6 +38,7 @@ import java.awt.Color;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -73,10 +79,10 @@ public class FeatureCollection {
     /** Schema Id property */
     public static final String PROP_SCHEMAID = "SchemaId";
 
-    /** _more_          */
+    /** _more_ */
     public static final String PROP_STYLEID = "StyleId";
 
-    /** _more_          */
+    /** _more_ */
     public static final String PROP_BALLOON_TEMPLATE = "BalloonTemplate";
 
 
@@ -186,11 +192,48 @@ public class FeatureCollection {
     }
 
     /**
+     * _more_
+     *
+     * @param color _more_
+     * @param colorMap _more_
+     * @param folder _more_
+     * @param styleCnt _more_
+     *
+     * @return _more_
+     *
+     * @throws Exception _more_
+     */
+    private String makeFillStyle(Color color,
+                                 Hashtable<Color, String> colorMap,
+                                 Element folder, int[] styleCnt)
+            throws Exception {
+        String styleUrl = colorMap.get(color);
+        if (styleUrl == null) {
+            styleUrl = "#colorStyle" + (styleCnt[0]++);
+            colorMap.put(color, styleUrl);
+            //            System.err.println("making style:" + styleUrl);
+            //make style
+            Element style = KmlUtil.style(folder, styleUrl);
+            Element polystyle = KmlUtil.makeElement(style,
+                                    KmlUtil.TAG_POLYSTYLE);
+            KmlUtil.makeText(polystyle, KmlUtil.TAG_COLOR,
+                             "66"
+                             + KmlUtil.toBGRHexString(color).substring(1));
+            KmlUtil.makeText(polystyle, KmlUtil.TAG_COLORMODE, "normal");
+        }
+
+        return styleUrl;
+    }
+
+    /**
      * Turn this into KML
      *
      * @return the KML Element
+     *
+     * @throws Exception _more_
      */
-    public Element toKml() {
+    public Element toKml() throws Exception {
+
         Element root       = KmlUtil.kml(getName());
         Element doc        = KmlUtil.document(root, getName(), true);
         boolean haveSchema = false;
@@ -201,20 +244,118 @@ public class FeatureCollection {
             makeKmlSchema(doc);
             haveSchema = true;
         }
+        Element folder = KmlUtil.folder(doc, getName(), true);
+        // Apply one style to the entire document
+        String styleName = (String) properties.get(PROP_STYLEID);
+        if (styleName == null) {
+            styleName = "" + (int) (Math.random() * 1000);
+        }
+
+        String        colorByField = null;
+        Metadata      colorBy      = (Metadata) properties.get("colorby");
+        DbaseFile     dbfile       = (DbaseFile) properties.get("dbfile");
+        EsriShapefile shapefile = (EsriShapefile) properties.get("shapefile");
+        //Correspond to the index
+        List<Color>  colors    = null;
+        List<String> styleUrls = null;
+        int[]        styleCnt  = { 0 };
+        if ((colorBy != null) && (dbfile != null)) {
+            Hashtable<Color, String> colorMap = new Hashtable<Color,
+                                                    String>();
+            colorByField = colorBy.getAttr1();
+            String[] fieldNames = dbfile.getFieldNames();
+            colorByField = colorByField.trim();
+            DbaseData dbaseField = null;
+            for (int j = 0; j < fieldNames.length; j++) {
+                if (fieldNames[j].equalsIgnoreCase(colorByField)) {
+                    dbaseField = dbfile.getField(j);
+
+                    break;
+                }
+            }
+            double     min = Double.NaN;
+            double     max = Double.NaN;
+            ColorTable ct  = null;
+            if (Utils.stringDefined(colorBy.getAttr2())) {
+                ct = ColorTable.getColorTable(colorBy.getAttr2().trim());
+            }
+            if (Utils.stringDefined(colorBy.getAttr3())) {
+                min = Double.parseDouble(colorBy.getAttr3());
+            }
+            if (Utils.stringDefined(colorBy.getAttr4())) {
+                max = Double.parseDouble(colorBy.getAttr4());
+            }
+
+
+            List features = shapefile.getFeatures();
+            styleUrls = new ArrayList<String>();
+
+            Hashtable<String, Color> valueMap = new Hashtable<String,
+                                                    Color>();
+            if (ct != null) {
+                boolean needMin = Double.isNaN(min);
+                boolean needMax = Double.isNaN(max);
+                if (needMin || needMax) {
+                    if (needMin) {
+                        min = Double.MAX_VALUE;
+                    }
+                    if (needMax) {
+                        max = Double.MIN_VALUE;
+                    }
+
+                    for (int i = 0; i < features.size(); i++) {
+                        double value = dbaseField.getDouble(i);
+                        if (needMin) {
+                            min = Math.min(min, value);
+                        }
+                        if (needMax) {
+                            max = Math.max(max, value);
+                        }
+                    }
+                }
+            } else {
+                String enums = colorBy.getAttr(5);
+                for (String line :
+                        StringUtil.split(enums, "\n", true, true)) {
+                    List<String> toks = StringUtil.splitUpTo(line, ":", 2);
+                    if (toks.size() > 1) {
+                        Color c = Utils.decodeColor(toks.get(1).trim(),
+                                      (Color) null);
+                        if (c != null) {
+                            valueMap.put(toks.get(0), c);
+                        }
+                    }
+                }
+            }
+
+
+            for (int i = 0; i < features.size(); i++) {
+                Color color = null;
+                if (ct != null) {
+                    double value = dbaseField.getDouble(i);
+                    color = ct.getColor(min, max, value);
+                } else {
+                    String value = "" + dbaseField.getData(i);
+                    color = valueMap.get(value);
+                }
+                if (color != null) {
+                    String styleUrl = makeFillStyle(color, colorMap, folder,
+                                          styleCnt);
+                    styleUrls.add(styleUrl);
+                } else {
+                    styleUrls.add(styleName);
+                }
+            }
+
+        }
+
         String balloonTemplate =
             (String) properties.get(PROP_BALLOON_TEMPLATE);
-        Element folder = KmlUtil.folder(doc, getName(), true);
         KmlUtil.open(folder, false);
         if (getDescription().length() > 0) {
             KmlUtil.description(folder, getDescription());
         }
-        // Apply one style to the entire document
-        String styleName = (String) properties.get(PROP_STYLEID);
 
-
-        if (styleName == null) {
-            styleName = "" + (int) (Math.random() * 1000);
-        }
         // could try to set these dynamically
         Color lineColor =
             Utils.decodeColor((String) properties.get("lineColor"),
@@ -271,8 +412,13 @@ public class FeatureCollection {
         }
 
         int points = 0;
+        int cnt    = 0;
         for (Feature feature : features) {
-            feature.makeKmlElement(folder, "#" + styleName);
+            String styleUrl = (styleUrls == null)
+                              ? styleName
+                              : styleUrls.get(cnt);
+            feature.makeKmlElement(folder, "#" + styleUrl);
+            cnt++;
             points += feature.getNumPoints();
             if (points > ShapefileTypeHandler.MAX_POINTS) {
                 break;
@@ -280,6 +426,7 @@ public class FeatureCollection {
         }
 
         return root;
+
     }
 
 
