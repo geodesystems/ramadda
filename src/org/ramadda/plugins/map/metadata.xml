@@ -6,11 +6,21 @@
        name="Shapefile Display"
        showinhtml="false"
        values="">
+<help>
+<![CDATA[
+<b>Note: after adding or changing shapefile metadata to flush the cache go and edit and save the entry.</b><br>
+]]>
+</help>
 
             <element
          id="schema_id"
-         name="Schema ID"
-         suffix="Short hand schema id. Default is the entry id"/>
+         name="Schema ID">
+<suffix>
+<![CDATA[
+Short hand schema id. Default is the entry id
+]]>
+</suffix>
+</element>
 
             <element
          id="balloon_template"
@@ -59,10 +69,22 @@ color_map
        name="Shapefile Color By"
        showinhtml="false"
        values="">
+<help>
+<![CDATA[
+<b>Note: after adding or changing shapefile metadata to flush the cache go and edit and save the entry.</b><br>
+]]>
+</help>
+
             <element
          id="field"
-         name="Field"
-         suffix="Field names shown in View&amp;gt;Shape Fields menu"/>
+         name="Field">
+<suffix>
+<![CDATA[
+<b>Note: after adding or changing shapefile metadata to flush the cache go and edit and save the entry.</b><br>
+Field names shown in View&amp;gt;Shape Fields menu
+]]>
+</suffix>
+</element>
             <element
          datatype="colortable"
          id="colortable"
