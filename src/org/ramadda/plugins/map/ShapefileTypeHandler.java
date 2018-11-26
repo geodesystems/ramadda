@@ -238,12 +238,14 @@ public class ShapefileTypeHandler extends GenericTypeHandler {
             getEntryManager().updateEntry(request, entry);
         }
 
-        map.addKmlUrl(
-            entry.getName(),
-            request.entryUrl(
+        String bounds = map.getBounds();
+        String kmlUrl = request.entryUrl(
                 getRepository().URL_ENTRY_SHOW, entry, ARG_OUTPUT,
                 ShapefileOutputHandler.OUTPUT_KML.toString(), "formap",
-                "true"), true);
+                "true");
+        if(bounds!=null) kmlUrl+= "&bounds=" +bounds;
+        map.addKmlUrl(
+                      entry.getName(),kmlUrl, true);
 
         /*  For testing
         map.addGeoJsonUrl(

@@ -1092,7 +1092,7 @@ public class MapManager extends RepositoryManager {
      */
     public MapInfo getMap(Request request, List<Entry> entriesToUse,
                           StringBuilder sb, int width, int height,
-                          List<Object[]> mapProps, String... args)
+                          Hashtable mapProps, String... args)
             throws Exception {
         Hashtable props = new Hashtable();
 
@@ -1110,23 +1110,39 @@ public class MapManager extends RepositoryManager {
         boolean search      = Misc.getProperty(props, "showSearch", false);
         boolean cbxOn       = Misc.getProperty(props, "checkboxOn", true);
         String mapVar =      Misc.getProperty(props,"mapVar",(String) null);
+        String boundsArg =      Misc.getProperty(props,"bounds",(String) null);
 
 
         MapInfo map         = createMap(request, width, height, false, null);
         if (map == null) {
             return null;
         }
+        if(boundsArg!=null) {
+            map.setBounds(boundsArg);
+        }
         if(mapVar!=null) {
             map.setMapVar(mapVar);
         }
         if (mapProps != null) {
-            for (Object[] pair : mapProps) {
-                map.addProperty(pair[0].toString(), pair[1]);
-            }
+            map.getMapProps().putAll(mapProps);
         }
         addToMap(request, map, entriesToUse, detailed, true);
 
-        Rectangle2D.Double bounds = getEntryManager().getBounds(entriesToUse);
+        Rectangle2D.Double bounds=null;
+        if(boundsArg!=null) { 
+            List<String> toks = StringUtil.split(boundsArg,",");
+            if(toks.size()==4) {
+                double north = Double.parseDouble(toks.get(0));
+                double west = Double.parseDouble(toks.get(1));
+                double south = Double.parseDouble(toks.get(2));
+                double east = Double.parseDouble(toks.get(3));
+                bounds = new Rectangle2D.Double(west, south,
+                                                east - west, north - south);
+            }
+        } 
+        if(bounds==null) {
+            bounds =getEntryManager().getBounds(entriesToUse);
+        }
         map.centerOn(bounds);
 
 

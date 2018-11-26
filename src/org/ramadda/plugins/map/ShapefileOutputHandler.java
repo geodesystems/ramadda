@@ -34,6 +34,7 @@ import org.ramadda.util.Utils;
 
 import org.w3c.dom.Element;
 
+import ucar.unidata.util.StringUtil;
 import ucar.unidata.gis.GisPart;
 import ucar.unidata.gis.shapefile.DbaseData;
 import ucar.unidata.gis.shapefile.DbaseFile;
@@ -44,6 +45,7 @@ import ucar.unidata.xml.XmlUtil;
 import java.io.File;
 import java.io.FileInputStream;
 
+import java.awt.geom.Rectangle2D;
 import java.text.DecimalFormat;
 
 
@@ -380,12 +382,16 @@ public class ShapefileOutputHandler extends OutputHandler {
      * @throws Exception _more_
      */
     private Result outputKml(Request request, Entry entry) throws Exception {
+        String boundsArg = request.getString("bounds",(String)null);
         boolean forMap = request.get("formap", false);
         String returnFile =
             IOUtil.stripExtension(getStorageManager().getFileTail(entry))
             + ".kml";
+        String filename = forMap + "_" + returnFile;
+        if(boundsArg!=null) filename = boundsArg.replaceAll(",","_") + filename;
         File file = getEntryManager().getCacheFile(entry,
-                        forMap + "_" + returnFile);
+                                                   filename);
+
         if (file.exists()) {
             Result result = new Result(new FileInputStream(file),
                                        KmlOutputHandler.MIME_KML);
@@ -395,9 +401,22 @@ public class ShapefileOutputHandler extends OutputHandler {
         }
 
 
+        Rectangle2D.Double bounds =null;
+        if(boundsArg!=null) {
+            List<String> toks = StringUtil.split(boundsArg,",");
+            if(toks.size()==4) {
+                double north = Double.parseDouble(toks.get(0));
+                double west = Double.parseDouble(toks.get(1));
+                double south = Double.parseDouble(toks.get(2));
+                double east = Double.parseDouble(toks.get(3));
+                bounds = new Rectangle2D.Double(west, south,
+                                                east - west, north - south);
+            }
+        }
+
         FeatureCollection fc   = makeFeatureCollection(request, entry);
         long              t1   = System.currentTimeMillis();
-        Element           root = fc.toKml(forMap);
+        Element           root = fc.toKml(forMap, bounds);
         long              t2   = System.currentTimeMillis();
         StringBuffer      sb   = new StringBuffer(XmlUtil.XML_HEADER);
         String            xml  = XmlUtil.toString(root, false);

@@ -34,6 +34,7 @@ import ucar.unidata.util.StringUtil;
 import ucar.unidata.xml.XmlUtil;
 
 
+import java.awt.geom.Rectangle2D;
 import java.awt.Color;
 
 import java.util.ArrayList;
@@ -234,7 +235,7 @@ public class FeatureCollection {
      *
      * @throws Exception _more_
      */
-    public Element toKml(boolean decimate) throws Exception {
+    public Element toKml(boolean decimate, Rectangle2D.Double bounds) throws Exception {
 
         Element root       = KmlUtil.kml(getName());
         Element doc        = KmlUtil.document(root, getName(), true);
@@ -439,7 +440,7 @@ public class FeatureCollection {
             String styleUrl = (styleUrls == null)
                               ? styleName
                               : styleUrls.get(cnt);
-            feature.makeKmlElement(folder, "#" + styleUrl);
+            feature.makeKmlElement(folder, "#" + styleUrl, bounds);
             cnt++;
         }
 

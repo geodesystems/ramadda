@@ -1481,11 +1481,13 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                                     (String) null))) {
                     newRequest.put(ARG_MAP_ICONSONLY, "true");
                 }
-                List<Object[]> mapProps = new ArrayList<Object[]>();
+                
+                Hashtable mapProps = new Hashtable();
+
 
                 if (layer != null) {
-                    mapProps.add(new Object[] { "defaultMapLayer",
-                            Json.quote(layer) });
+                    mapProps.put("defaultMapLayer",
+                            Json.quote(layer));
                 }
 
                 String[] mapArgs = {
@@ -1495,20 +1497,23 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                 for (String mapArg : mapArgs) {
                     String v = (String) props.get(mapArg);
                     if (v != null) {
-                        mapProps.add(new Object[] { mapArg, Json.quote(v) });
+                        mapProps.put(mapArg, Json.quote(v));
                     }
                 }
                 if (zoom != null) {
-                    mapProps.add(new Object[] { "initialZoom", zoom });
+                    mapProps.put("initialZoom", zoom);
                 }
+
+
                 if (props.get("mapSettings") != null) {
                     String       mapSet = (String) props.get("mapSettings");
                     List<String> msets  = StringUtil.split(mapSet, ",");
                     for (int i = 0; i < msets.size() - 1; i++) {
-                        mapProps.add(new Object[] { msets.get(i),
-                                Json.quote(msets.get(i + 1)) });
+                        mapProps.put(msets.get(i),
+                                Json.quote(msets.get(i + 1)));
                     }
                 }
+
                 String mapVar = Misc.getProperty(props, "mapVar",
                                                  (String) null);
                 MapInfo map = getMapManager().getMap(newRequest, children,
@@ -1519,7 +1524,8 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                                   "" + showCheckbox, "checkboxOn",
                                                      "" + checkboxOn,
                                                      "mapVar", mapVar,
-                                                     "doCategories",doCategories);
+                                                     "doCategories",doCategories,
+                                                     "bounds",(String)props.get("bounds"));
                 if (icon != null) {
                     newRequest.remove(ARG_ICON);
                 }

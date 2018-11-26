@@ -107,6 +107,9 @@ public class MapInfo {
     /** the request */
     private Request request;
 
+    private String bounds;
+
+
     /**
      * Create a MapInfo for the associated repository
      *
@@ -158,6 +161,14 @@ public class MapInfo {
         this.mapVarName = mapVar;
     }
 
+
+    public String getBounds() {
+        return bounds;
+    }
+
+    public void setBounds(String b) {
+        bounds=b;
+    }
 
     /**
      * Shortcut to repository.msg
@@ -425,7 +436,6 @@ public class MapInfo {
 
 
 
-
     /**
      * Add a property for the map
      *
@@ -449,6 +459,9 @@ public class MapInfo {
         return mapProps;
     }
 
+    public Object getProperty(String key) {
+        return getMapProps().get(key);
+    }
 
     /**
      * Format the properties

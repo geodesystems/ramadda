@@ -24,6 +24,7 @@ import org.ramadda.util.Utils;
 import org.w3c.dom.Element;
 
 
+import java.awt.geom.Rectangle2D;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -215,7 +216,7 @@ public class Feature {
      * @param styleUrl  the style URL
      * @return the element
      */
-    public Element makeKmlElement(Element parent, String styleUrl) {
+    public Element makeKmlElement(Element parent, String styleUrl, Rectangle2D.Double bounds) {
         Element placemark = KmlUtil.placemark(parent, getId(), "");
         Element geom      = placemark;
         if (geometry.getCoordinates().size() > 1) {
@@ -231,6 +232,20 @@ public class Feature {
         }
         String type = geometry.getGeometryType();
         for (float[][] coords : geometry.getCoordinates()) {
+            if(bounds!=null) {
+                boolean ok = false;
+                for(int i=1;i<coords[0].length;i++) {
+                    float x1 = coords[0][i-1];
+                    float y1 = coords[1][i-1];
+                    float x2 = coords[0][i];
+                    float y2 = coords[1][i];
+                    if(bounds.intersectsLine((double)x1,(double)y1,(double)x2,(double)y2)) {
+                        ok = true;
+                        break;
+                    }
+                }
+                if(!ok) continue;
+            }
             if (type.equals(Geometry.TYPE_POINT) || (coords[0].length == 1)) {
                 Element point = KmlUtil.makeElement(geom, KmlUtil.TAG_POINT);
                 KmlUtil.makeText(point, KmlUtil.TAG_COORDINATES,
