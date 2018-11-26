@@ -208,6 +208,8 @@ public class FeatureCollection {
      */
     private String makeFillStyle(Color color,
                                  Hashtable<Color, String> colorMap,
+                                 Color lineColor,
+                                 boolean doLine,
                                  Element folder, int[] styleCnt)
             throws Exception {
         String styleUrl = colorMap.get(color);
@@ -224,9 +226,17 @@ public class FeatureCollection {
             KmlUtil.makeText(polystyle, KmlUtil.TAG_COLOR,
                              "66"
                              + KmlUtil.toBGRHexString(color).substring(1));
-            KmlUtil.makeText(linestyle, KmlUtil.TAG_WIDTH,
-                             "1");
             KmlUtil.makeText(polystyle, KmlUtil.TAG_COLORMODE, "normal");
+
+            if(!doLine){
+                KmlUtil.makeText(polystyle, "outline", "0");
+            } else {
+                KmlUtil.makeText(linestyle, KmlUtil.TAG_WIDTH, "1");
+                if(lineColor!=null)  
+                    KmlUtil.makeText(linestyle, KmlUtil.TAG_COLOR,
+                                     "ff"
+                                     + KmlUtil.toBGRHexString(lineColor).substring(1));
+            }
         }
 
         return styleUrl;
@@ -280,7 +290,6 @@ public class FeatureCollection {
             Hashtable<Color, String> colorMap = new Hashtable<Color,
                                                     String>();
             colorByField = colorBy.getAttr1();
-
             colorByField = colorByField.trim();
             DbaseData dbaseField = null;
             for (int j = 0; j < fieldNames.length; j++) {
@@ -296,13 +305,16 @@ public class FeatureCollection {
             if (Utils.stringDefined(colorBy.getAttr2())) {
                 ct = ColorTable.getColorTable(colorBy.getAttr2().trim());
             }
-            if (Utils.stringDefined(colorBy.getAttr3())) {
-                min = Double.parseDouble(colorBy.getAttr3());
-            }
-            if (Utils.stringDefined(colorBy.getAttr4())) {
-                max = Double.parseDouble(colorBy.getAttr4());
-            }
+           
+            String lineColorAttr = colorBy.getAttr3().trim();
+            Color lineColor=(lineColorAttr.length()==0?null:lineColorAttr.equals("none")?null:Utils.decodeColor(lineColorAttr,null));
 
+            if (Utils.stringDefined(colorBy.getAttr(4))) {
+                min = Double.parseDouble(colorBy.getAttr(4));
+            }
+            if (Utils.stringDefined(colorBy.getAttr(5))) {
+                max = Double.parseDouble(colorBy.getAttr(5));
+            }
 
             List features = shapefile.getFeatures();
             styleUrls = new ArrayList<String>();
@@ -356,7 +368,7 @@ public class FeatureCollection {
                     color = valueMap.get(value);
                 }
                 if (color != null) {
-                    String styleUrl = makeFillStyle(color, colorMap, folder,
+                    String styleUrl = makeFillStyle(color, colorMap, lineColor, !lineColorAttr.equals("none"), folder,
                                           styleCnt);
                     styleUrls.add(styleUrl);
                 } else {

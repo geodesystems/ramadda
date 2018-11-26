@@ -93,7 +93,13 @@ Field names shown in View&amp;gt;Shape Fields menu
 <![CDATA[Colortable to map field value to]]>
               </suffix>
             </element>
-
+            <element
+         id="linecolor"
+         name="Line Color">
+              <suffix>
+<![CDATA['none' to not show a line]]>
+              </suffix>
+            </element>
             <element
          datatype="double"
          id="colorby_min"
