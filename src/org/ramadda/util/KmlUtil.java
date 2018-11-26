@@ -109,9 +109,10 @@ public class KmlUtil {
     public static final String TAG_SCREENXY = "screenXY";
     public static final String TAG_SIMPLEDATA = "SimpleData";
     public static final String TAG_SIMPLEFIELD = "SimpleField";
-	private static final String TAG_SIZE = "size";
+    public static final String TAG_SIZE = "size";
     public static final String TAG_SNIPPET = "Snippet";
     public static final String TAG_SOUTH = "south";
+    public static final String TAG_STROKEWIDTH = "strokeWidth";
     public static final String TAG_STYLE = "Style";
     public static final String TAG_STYLEMAP = "StyleMap";
     public static final String TAG_STYLEURL = "styleUrl";

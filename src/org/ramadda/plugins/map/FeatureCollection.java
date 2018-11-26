@@ -222,6 +222,9 @@ public class FeatureCollection {
             KmlUtil.makeText(polystyle, KmlUtil.TAG_COLOR,
                              "66"
                              + KmlUtil.toBGRHexString(color).substring(1));
+            KmlUtil.makeText(polystyle, KmlUtil.TAG_STROKEWIDTH,
+                             "1");
+
             KmlUtil.makeText(polystyle, KmlUtil.TAG_COLORMODE, "normal");
         }
 
