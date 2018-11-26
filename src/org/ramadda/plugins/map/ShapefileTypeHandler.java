@@ -21,8 +21,12 @@ import org.ramadda.repository.Entry;
 import org.ramadda.repository.Repository;
 import org.ramadda.repository.Request;
 import org.ramadda.repository.map.MapInfo;
+        
+import org.ramadda.repository.output.WikiConstants;
 import org.ramadda.repository.output.KmlOutputHandler;
 import org.ramadda.repository.type.GenericTypeHandler;
+
+import org.ramadda.util.HtmlUtils;
 import org.ramadda.util.Utils;
 
 
@@ -44,7 +48,7 @@ import java.util.List;
 
 /**
  */
-public class ShapefileTypeHandler extends GenericTypeHandler {
+public class ShapefileTypeHandler extends GenericTypeHandler implements WikiConstants {
 
     /** _more_ */
     public static int MAX_POINTS = 200000;
@@ -238,12 +242,14 @@ public class ShapefileTypeHandler extends GenericTypeHandler {
             getEntryManager().updateEntry(request, entry);
         }
 
-        String bounds = map.getBounds();
         String kmlUrl = request.entryUrl(
                 getRepository().URL_ENTRY_SHOW, entry, ARG_OUTPUT,
                 ShapefileOutputHandler.OUTPUT_KML.toString(), "formap",
                 "true");
-        if(bounds!=null) kmlUrl+= "&bounds=" +bounds;
+        String fields = request.getString(ATTR_SELECTFIELDS, map.getSelectFields());
+        if(fields!=null) kmlUrl+= "&" + HtmlUtils.arg("selectFields",fields,true);
+        String bounds = map.getSelectBounds();
+        if(bounds!=null) kmlUrl+= "&selectBounds=" +bounds;
         map.addKmlUrl(
                       entry.getName(),kmlUrl, true);
 

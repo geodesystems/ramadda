@@ -23,6 +23,7 @@ import org.ramadda.repository.Repository;
 import org.ramadda.repository.Request;
 import org.ramadda.repository.Result;
 import org.ramadda.repository.metadata.Metadata;
+import org.ramadda.repository.output.WikiConstants;
 import org.ramadda.repository.output.JsonOutputHandler;
 import org.ramadda.repository.output.KmlOutputHandler;
 import org.ramadda.repository.output.OutputHandler;
@@ -51,13 +52,14 @@ import java.text.DecimalFormat;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Hashtable;
 import java.util.List;
 
 
 /**
  * Class to handle the output of shapefiles
  */
-public class ShapefileOutputHandler extends OutputHandler {
+public class ShapefileOutputHandler extends OutputHandler implements WikiConstants {
 
 
     /** Map output type */
@@ -82,6 +84,10 @@ public class ShapefileOutputHandler extends OutputHandler {
     public static final OutputType OUTPUT_FIELDS_TABLE =
         new OutputType("Shapefile Table", "shapefile.fields_table",
                        OutputType.TYPE_VIEW, "", ICON_TABLE);
+
+
+    public static final DecimalFormat decimalFormat = new DecimalFormat("#,##0.#");
+    public static final DecimalFormat intFormat = new DecimalFormat("#,###");
 
 
     /**
@@ -382,13 +388,17 @@ public class ShapefileOutputHandler extends OutputHandler {
      * @throws Exception _more_
      */
     private Result outputKml(Request request, Entry entry) throws Exception {
-        String boundsArg = request.getString("bounds",(String)null);
+        String fieldsArg = request.getString(ATTR_SELECTFIELDS,(String)null);
+        String boundsArg = request.getString(ATTR_SELECTBOUNDS,(String)null);
         boolean forMap = request.get("formap", false);
         String returnFile =
             IOUtil.stripExtension(getStorageManager().getFileTail(entry))
             + ".kml";
         String filename = forMap + "_" + returnFile;
         if(boundsArg!=null) filename = boundsArg.replaceAll(",","_") + filename;
+        if(fieldsArg!=null) {
+            filename = fieldsArg.replaceAll(",","_").replaceAll(":","_").replaceAll("<","_lt_").replaceAll(">","_gt_").replaceAll("=","_eq_").replaceAll("\\.","_dot_") + filename;
+        }
         File file = getEntryManager().getCacheFile(entry,
                                                    filename);
 
@@ -416,7 +426,27 @@ public class ShapefileOutputHandler extends OutputHandler {
 
         FeatureCollection fc   = makeFeatureCollection(request, entry);
         long              t1   = System.currentTimeMillis();
-        Element           root = fc.toKml(forMap, bounds);
+        List<String>fieldValues = null;
+        if(fieldsArg != null) {
+            //selectFields=statefp:=:13,....
+            fieldValues=new ArrayList<String>();
+            List<String> toks = StringUtil.split(fieldsArg,",",true,true);
+            for(String tok: toks) {
+                List<String> expr = StringUtil.splitUpTo(tok,":",3);
+                if(expr.size()>=2) {
+                    fieldValues.add(expr.get(0));
+                    if(expr.size()==2) {
+                        fieldValues.add("=");
+                        fieldValues.add(expr.get(1));
+                    } else {
+                        fieldValues.add(expr.get(1));
+                        fieldValues.add(expr.get(2));
+                    }
+                }
+            }
+        }
+
+        Element           root = fc.toKml(forMap, bounds,fieldValues);
         long              t2   = System.currentTimeMillis();
         StringBuffer      sb   = new StringBuffer(XmlUtil.XML_HEADER);
         String            xml  = XmlUtil.toString(root, false);
@@ -452,6 +482,17 @@ public class ShapefileOutputHandler extends OutputHandler {
         return result;
     }
 
+    public static String format(int v) {
+        return intFormat.format(v);
+    }
+
+
+    public static String format(double v) {
+        if(v ==(int)v)
+            return intFormat.format(v);
+        return 
+            decimalFormat.format(v);
+    }
 
     /**
      * Output the shapefile entry as GeoJSON
@@ -466,7 +507,6 @@ public class ShapefileOutputHandler extends OutputHandler {
      */
     private Result outputFields(Request request, Entry entry, boolean table)
             throws Exception {
-        DecimalFormat format = new DecimalFormat("####0.00");
         EsriShapefile shapefile =
             new EsriShapefile(entry.getFile().toString());
         DbaseFile     dbfile = shapefile.getDbFile();
@@ -480,8 +520,14 @@ public class ShapefileOutputHandler extends OutputHandler {
 
             return new Result("", sb);
         }
+        Hashtable props = getRepository().getPluginProperties();
+
 
         String[] fieldNames = dbfile.getFieldNames();
+        String[] fieldnames = new String[fieldNames.length];
+        for(int i=0;i<fieldNames.length;i++)
+            fieldnames[i] = fieldNames[i].toLowerCase();
+
         if (table) {
             sb.append("<table border=1>");
             sb.append("<tr>");
@@ -521,17 +567,33 @@ public class ShapefileOutputHandler extends OutputHandler {
                 sb.append("Field #" + (i + 1));
                 sb.append("<ul>\n");
             }
+            //            sb.append(HtmlUtils.script("function fieldSelect(
+
+            String baseUrl = request.entryUrl(getRepository().URL_ENTRY_SHOW, entry);
+            
+
             for (int j = 0; j < fieldNames.length; j++) {
                 DbaseData field = dbfile.getField(j);
                 String    value;
                 String    extra = "";
+                String url = null;
+                String key  = fieldnames[j];
                 if (field.getType() == field.TYPE_NUMERIC) {
-                    value = format.format(field.getDouble(i));
+                    value = format(field.getDouble(i));
                     extra = " align=right ";
                 } else {
                     value = "" + field.getData(i);
+                    url = baseUrl +"&"+HtmlUtils.arg(ATTR_SELECTFIELDS,key+":=:" +value);
                 }
 
+                String fromProps = (String) props.get("kml." + key
+                                                      + "." + value);
+                if (fromProps != null) {
+                    value = fromProps +" (" + value+")";
+                }
+
+                if(url!=null)
+                    value = HtmlUtils.href(url,value);
                 if (table) {
                     sb.append(
                         HtmlUtils.td(

@@ -283,15 +283,21 @@ public class Feature {
                 data.entrySet().iterator();
             while (entries.hasNext()) {
                 Map.Entry<String, Object> entry = entries.next();
-                String                    key   =
-                    entry.getKey().toLowerCase();
-                String value = entry.getValue().toString().trim();
-
-
+                String key   =  entry.getKey().toLowerCase();
+                Object obj = entry.getValue();
+                String value;
+                if(obj instanceof Double) {
+                    value =  ShapefileOutputHandler.format(((Double)obj).doubleValue());
+                }   else if(obj instanceof Integer) {
+                    value =  ShapefileOutputHandler.format(((Integer)obj).intValue());
+                } else {
+                    value =  obj.toString().trim();
+                }
+                //System.err.println(key+":" + obj.getClass().getName()+":" + value);
                 String fromProps = (String) allProperties.get("kml." + key
                                        + "." + value);
                 if (fromProps != null) {
-                    value = fromProps;
+                    value = fromProps +" (" + value+")";
                 }
 
                 Element simple = KmlUtil.makeText(schemaData,
