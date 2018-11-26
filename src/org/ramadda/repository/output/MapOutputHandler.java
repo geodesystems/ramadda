@@ -57,7 +57,7 @@ import java.util.zip.*;
  * @author RAMADDA Development Team
  * @version $Revision: 1.3 $
  */
-public class MapOutputHandler extends OutputHandler {
+public class MapOutputHandler extends OutputHandler implements WikiConstants {
 
 
     /** Map output type */
@@ -160,9 +160,11 @@ public class MapOutputHandler extends OutputHandler {
                                    + entry.getName(), sb, new State(entry));
         }
 
+        Hashtable props = new Hashtable();
+        props.put(ATTR_DETAILS, "true");
+        props.put(ATTR_LISTENTRIES, "false");
         MapInfo map = getMapManager().getMap(request, entriesToUse, sb, 700,
-                                             500, null, "detailed", "true",
-                                             "listEntries", "false");
+                                             500, null, props);
 
         getPageHandler().entrySectionClose(request, entry, sb);
 
@@ -217,9 +219,11 @@ public class MapOutputHandler extends OutputHandler {
         }
 
 
+        Hashtable props = new Hashtable();
+        props.put(ATTR_DETAILS, "false");
+        props.put(ATTR_LISTENTRIES, "true");
         MapInfo map = getMapManager().getMap(request, entriesToUse, sb, -100,
-                                             500, null, "detailed", "false",
-                                             "listEntries", "true");
+                                             500, null, props);
 
         getPageHandler().entrySectionClose(request, group, sb);
 

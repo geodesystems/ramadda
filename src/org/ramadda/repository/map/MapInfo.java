@@ -93,6 +93,7 @@ public class MapInfo {
     /** right side of widget */
     private StringBuilder rightSide = new StringBuilder();
 
+    /** _more_ */
     private String headerMessage;
 
     /** the html */
@@ -107,7 +108,11 @@ public class MapInfo {
     /** the request */
     private Request request;
 
-    private String bounds;
+    /** _more_ */
+    private String selectBounds;
+
+    /** _more_          */
+    private String selectFields;
 
 
     /**
@@ -157,17 +162,50 @@ public class MapInfo {
     }
 
 
+    /**
+     * _more_
+     *
+     * @param mapVar _more_
+     */
     public void setMapVar(String mapVar) {
         this.mapVarName = mapVar;
     }
 
 
-    public String getBounds() {
-        return bounds;
+    /**
+     * _more_
+     *
+     * @return _more_
+     */
+    public String getSelectBounds() {
+        return selectBounds;
     }
 
-    public void setBounds(String b) {
-        bounds=b;
+    /**
+     * _more_
+     *
+     * @param b _more_
+     */
+    public void setSelectBounds(String b) {
+        selectBounds = b;
+    }
+
+    /**
+     * _more_
+     *
+     * @return _more_
+     */
+    public String getSelectFields() {
+        return selectFields;
+    }
+
+    /**
+     * _more_
+     *
+     * @param b _more_
+     */
+    public void setSelectFields(String b) {
+        selectFields = b;
     }
 
     /**
@@ -270,11 +308,14 @@ public class MapInfo {
      */
     private String getMapDiv(String contents) {
         StringBuilder result = new StringBuilder();
-        if(headerMessage!=null)
+        if (headerMessage != null) {
             result.append(headerMessage);
-        String        swidth = width==0?"":(" width:" + ((width > 0)
-                                            ? width + "px; "
-                                                         : (-width) + "%;"));
+        }
+        String swidth = (width == 0)
+                        ? ""
+                        : (" width:" + ((width > 0)
+                                        ? width + "px; "
+                                        : (-width) + "%;"));
         String styles =
             "border:1px #888888 solid; background-color:#7391ad; height:"
             + height + "px; " + swidth;
@@ -286,21 +327,23 @@ public class MapInfo {
         result.append(HtmlUtils.div(contents,
                                     HtmlUtils.style(styles) + " "
                                     + HtmlUtils.id(mapVarName)));
-        String url  = request.getUrl();
+        String url = request.getUrl();
         String label;
-        if(request.get("mapdetails", false)) {
-            url = url.replace("mapdetails=true","");
+        if (request.get("mapdetails", false)) {
+            url   = url.replace("mapdetails=true", "");
             label = "Details Off";
         } else {
-            url = url+"&mapdetails=true";
+            url   = url + "&mapdetails=true";
             label = "Details On";
         }
 
-        String  showDetailsLink =(String) getMapProps().get("showDetailsLink");
-        
+        String showDetailsLink =
+            (String) getMapProps().get("showDetailsLink");
+
         result.append("\n");
-        if(Misc.equals(showDetailsLink,"true")) {
-            result.append(HtmlUtils.leftRight(readout, HtmlUtils.href(url, label)));
+        if (Misc.equals(showDetailsLink, "true")) {
+            result.append(HtmlUtils.leftRight(readout,
+                    HtmlUtils.href(url, label)));
         } else {
             result.append(readout);
         }
@@ -459,6 +502,13 @@ public class MapInfo {
         return mapProps;
     }
 
+    /**
+     * _more_
+     *
+     * @param key _more_
+     *
+     * @return _more_
+     */
     public Object getProperty(String key) {
         return getMapProps().get(key);
     }
@@ -524,7 +574,7 @@ public class MapInfo {
      *
      * @param arg  the argument
      * @param popup  true to make a popup
-     * @param nwse  the north, south, east and west ids
+     * @param nwseValues _more_
      * @param extraLeft  extra left text
      * @param extraTop  extra top text
      *
@@ -532,15 +582,31 @@ public class MapInfo {
      *
      * @throws Exception _more_
      */
-    public String makeSelector(String arg, boolean popup, String[] nwseValues,
-                               String extraLeft, String extraTop)
+    public String makeSelector(String arg, boolean popup,
+                               String[] nwseValues, String extraLeft,
+                               String extraTop)
             throws Exception {
-        return makeSelector(arg, popup, nwseValues, nwseValues, extraLeft, extraTop);
+        return makeSelector(arg, popup, nwseValues, nwseValues, extraLeft,
+                            extraTop);
     }
 
 
-    public String makeSelector(String arg, boolean popup, String[] nwseValues,
-                               String[]nwseView,
+    /**
+     * _more_
+     *
+     * @param arg _more_
+     * @param popup _more_
+     * @param nwseValues _more_
+     * @param nwseView _more_
+     * @param extraLeft _more_
+     * @param extraTop _more_
+     *
+     * @return _more_
+     *
+     * @throws Exception _more_
+     */
+    public String makeSelector(String arg, boolean popup,
+                               String[] nwseValues, String[] nwseView,
                                String extraLeft, String extraTop)
             throws Exception {
 
@@ -569,13 +635,18 @@ public class MapInfo {
 
         StringBuilder sb        = new StringBuilder();
         String        clearLink = getSelectorClearLink(msg("Clear"));
-        if(doRegion) {
-            String  msg1   = HtmlUtils.italics(msg("Shift-drag to select region"));
-            String  msg2    = HtmlUtils.italics(msg("Command or Ctrl-drag to move region"));
+        if (doRegion) {
+            String msg1 =
+                HtmlUtils.italics(msg("Shift-drag to select region"));
+            String msg2 =
+                HtmlUtils.italics(msg("Command or Ctrl-drag to move region"));
             sb.append(HtmlUtils.leftRight(msg1, ""));
             sb.append(HtmlUtils.leftRight(msg2, clearLink));
         } else {
-            sb.append(HtmlUtils.leftRight(HtmlUtils.italics(msg("Click to select point")), clearLink));
+            sb.append(
+                HtmlUtils.leftRight(
+                    HtmlUtils.italics(msg("Click to select point")),
+                    clearLink));
         }
 
 
@@ -597,7 +668,8 @@ public class MapInfo {
         if (Utils.stringDefined(nwseView[0])) {
             if (nwseView.length == 4) {
                 addProperty(MapManager.PROP_INITIAL_BOUNDS,
-                            Json.list(nwseView[0], nwseView[1], nwseView[2], nwseView[3]));
+                            Json.list(nwseView[0], nwseView[1], nwseView[2],
+                                      nwseView[3]));
             } else {
                 addProperty(MapManager.PROP_INITIAL_LOCATION,
                             Json.list(nwseView[0], nwseView[1]));
@@ -767,7 +839,7 @@ public class MapInfo {
      */
     public void addBox(Entry entry, MapBoxProperties properties)
             throws Exception {
-        addBox(entry.getId(),entry.getName(),
+        addBox(entry.getId(), entry.getName(),
                repository.getMapManager().makeInfoBubble(request, entry,
                    true), properties, entry.getNorth(), entry.getWest(),
                           entry.getSouth(), entry.getEast());
@@ -777,14 +849,15 @@ public class MapInfo {
      * Add a box to the map
      *
      * @param id  the id
+     * @param boxName _more_
      * @param text _more_
      * @param llr  the bounds
      * @param properties the box properties
      */
-    public void addBox(String id, String boxName, String text, LatLonRect llr,
-                       MapBoxProperties properties) {
-        addBox(id, boxName, text, properties, llr.getLatMax(), llr.getLonMin(),
-               llr.getLatMin(), llr.getLonMax());
+    public void addBox(String id, String boxName, String text,
+                       LatLonRect llr, MapBoxProperties properties) {
+        addBox(id, boxName, text, properties, llr.getLatMax(),
+               llr.getLonMin(), llr.getLatMin(), llr.getLonMax());
     }
 
 
@@ -792,6 +865,7 @@ public class MapInfo {
      * Add a box to the map
      *
      * @param id  the id
+     * @param boxName _more_
      * @param text _more_
      * @param properties the box properties
      * @param north  north value
@@ -799,24 +873,21 @@ public class MapInfo {
      * @param south  south value
      * @param east   east value
      */
-    public void addBox(String id, String boxName, String text, MapBoxProperties properties,
-                       double north, double west, double south, double east) {
+    public void addBox(String id, String boxName, String text,
+                       MapBoxProperties properties, double north,
+                       double west, double south, double east) {
         getJS().append("var mapBoxAttributes = {\"color\":\""
                        + properties.getColor() + "\",\"selectable\": "
                        + properties.getSelectable() + ",\"zoomToExtent\": "
                        + properties.getZoomToExtent() + "};\n");
 
-        getJS().append(mapVarName + ".createBox(" + 
-                       HtmlUtils.comma(
-                                       HtmlUtils.squote(id),
-                                       HtmlUtils.squote(boxName.replaceAll("'", "\\\\'")),
-                                       ""+north,
-                                       ""+ west,
-                                       "" + south,
-                                       "" + east,
-                                       HtmlUtils.squote(text),
-                                       "mapBoxAttributes")
-                       +");\n");
+        getJS().append(
+            mapVarName + ".createBox("
+            + HtmlUtils.comma(
+                HtmlUtils.squote(id),
+                HtmlUtils.squote(boxName.replaceAll("'", "\\\\'")),
+                "" + north, "" + west, "" + south, "" + east,
+                HtmlUtils.squote(text), "mapBoxAttributes") + ");\n");
     }
 
 
@@ -911,13 +982,11 @@ public class MapInfo {
             }
             sb.append("]");
             String name = entry.getName().replaceAll("'", "\\\\'");
-            getJS().append(mapVarName + ".addLines(" + 
-                           HtmlUtils.comma(
-                                           HtmlUtils.squote(id),
-                                           HtmlUtils.squote(name),
-                                           attrs.toString(),   
-                                           sb.toString())
-                           + ");\n");
+            getJS().append(mapVarName + ".addLines("
+                           + HtmlUtils.comma(HtmlUtils.squote(id),
+                                             HtmlUtils.squote(name),
+                                             attrs.toString(),
+                                             sb.toString()) + ");\n");
         }
 
 
@@ -943,16 +1012,12 @@ public class MapInfo {
         entry.getTypeHandler().initMapAttrs(entry, this, attrs);
         attrs.append("}");
         String name = entry.getName().replaceAll("'", "\\\\'");
-        getJS().append(mapVarName + ".addLine(" + 
-                       HtmlUtils.comma(
-                                       HtmlUtils.squote(id),
-                                       HtmlUtils.squote(name), 
-                                       ""+fromLat,
-                                       ""+fromLon,
-                                       ""+toLat,
-                                       ""+toLon,
-                                       attrs.toString())
-                       + ");\n");
+        getJS().append(mapVarName + ".addLine("
+                       + HtmlUtils.comma(HtmlUtils.squote(id),
+                                         HtmlUtils.squote(name),
+                                         "" + fromLat, "" + fromLon,
+                                         "" + toLat, "" + toLon,
+                                         attrs.toString()) + ");\n");
     }
 
     /**
@@ -961,12 +1026,13 @@ public class MapInfo {
      * @param id  the marker id
      * @param pt  the position
      * @param icon  the icon
+     * @param markerName _more_
      * @param info  the associated text
      */
     public void addMarker(String id, LatLonPointImpl pt, String icon,
-                          String markerName,
-                          String info) {
-        addMarker(id, pt.getLatitude(), pt.getLongitude(), icon, markerName, info);
+                          String markerName, String info) {
+        addMarker(id, pt.getLatitude(), pt.getLongitude(), icon, markerName,
+                  info);
     }
 
     /**
@@ -976,24 +1042,40 @@ public class MapInfo {
      * @param lat  the latitude
      * @param lon  the longitude
      * @param icon  the icon
+     * @param markerName _more_
      * @param info  the associated text
      */
     public void addMarker(String id, double lat, double lon, String icon,
-                          String markerName,
-                          String info) {
-        addMarker(id,lat,lon,icon,markerName, info,null);
+                          String markerName, String info) {
+        addMarker(id, lat, lon, icon, markerName, info, null);
     }
 
+    /**
+     * _more_
+     *
+     * @param id _more_
+     * @param lat _more_
+     * @param lon _more_
+     * @param icon _more_
+     * @param markerName _more_
+     * @param info _more_
+     * @param parentId _more_
+     */
     public void addMarker(String id, double lat, double lon, String icon,
                           String markerName, String info, String parentId) {
         getJS().append(mapVarName + ".addMarker(" + HtmlUtils.squote(id)
                        + "," + llp(lat, lon) + "," + ((icon == null)
                 ? "null"
-                : HtmlUtils.squote(icon)) + "," + HtmlUtils.squote(markerName.replaceAll("'", "\\\\'")) +
-                       "," + HtmlUtils.squote(info)
-                       +"," +
-                       (parentId==null?"null":HtmlUtils.squote(parentId))
-                                          + ");\n");
+                : HtmlUtils.squote(icon)) + ","
+                                          + HtmlUtils.squote(
+                                              markerName.replaceAll(
+                                                  "'", "\\\\'")) + ","
+                                                      + HtmlUtils.squote(
+                                                          info) + ","
+                                                              + ((parentId
+                                                                  == null)
+                ? "null"
+                : HtmlUtils.squote(parentId)) + ");\n");
     }
 
 
@@ -1012,7 +1094,7 @@ public class MapInfo {
         addMarker(entry.getId(),
                   new LatLonPointImpl(Math.max(-80,
                       Math.min(80, location[0])), location[1]), icon,
-                  entry.getName(),
+                          entry.getName(),
                           repository.getMapManager().makeInfoBubble(request,
                               entry, true));
     }
@@ -1361,20 +1443,20 @@ public class MapInfo {
     }
 
     /**
-Set the HeaderMessage property.
-
-@param value The new value for HeaderMessage
-    **/
-    public void setHeaderMessage (String value) {
+     * Set the HeaderMessage property.
+     *
+     * @param value The new value for HeaderMessage
+     */
+    public void setHeaderMessage(String value) {
         headerMessage = value;
     }
 
     /**
-Get the HeaderMessage property.
-
-@return The HeaderMessage
-    **/
-    public String getHeaderMessage () {
+     * Get the HeaderMessage property.
+     *
+     * @return The HeaderMessage
+     */
+    public String getHeaderMessage() {
         return headerMessage;
     }
 }

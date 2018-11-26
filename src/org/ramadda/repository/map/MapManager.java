@@ -30,8 +30,8 @@ import org.ramadda.repository.output.OutputHandler;
 import org.ramadda.repository.output.WikiConstants;
 import org.ramadda.repository.output.WikiManager;
 import org.ramadda.util.HtmlUtils;
-import org.ramadda.util.Json;
 import org.ramadda.util.JQuery;
+import org.ramadda.util.Json;
 import org.ramadda.util.Utils;
 
 import ucar.unidata.geoloc.Bearing;
@@ -57,7 +57,7 @@ import java.util.List;
  *
  * @author Jeff McWhirter
  */
-public class MapManager extends RepositoryManager {
+public class MapManager extends RepositoryManager implements WikiConstants {
 
     /** _more_ */
     public static final String PROP_INITIAL_LOCATION = "initialLocation";
@@ -805,8 +805,8 @@ public class MapManager extends RepositoryManager {
 
         String listwidth = request.getString(WikiManager.ATTR_LISTWIDTH,
                                              "20%");
-        layoutMap(request, sb, null, includeList, numEntries, listwidth, height,
-                  categories, catMap, mapSB.toString(), "","");
+        layoutMap(request, sb, null, includeList, numEntries, listwidth,
+                  height, categories, catMap, mapSB.toString(), "", "");
 
         sb.append(HtmlUtils.script(js.toString()));
 
@@ -818,6 +818,7 @@ public class MapManager extends RepositoryManager {
      *
      * @param request _more_
      * @param sb          StringBuilder to append to
+     * @param map _more_
      * @param includeList flag to include the list or not
      * @param numEntries  number of entries
      * @param listwidth   width of list table element
@@ -825,12 +826,12 @@ public class MapManager extends RepositoryManager {
      * @param categories  list of categories
      * @param catMap      category map
      * @param mapHtml     the map html
+     * @param navTop _more_
      * @param extraNav _more_
      *
      * @throws Exception _more_
      */
-    private void layoutMap(Request request, Appendable sb,
-                           MapInfo map,
+    private void layoutMap(Request request, Appendable sb, MapInfo map,
                            boolean includeList, int numEntries,
                            String listwidth, int height,
                            List<String> categories,
@@ -841,30 +842,32 @@ public class MapManager extends RepositoryManager {
         getRepository().getWikiManager().addDisplayImports(request, sb);
         HtmlUtils.open(sb, HtmlUtils.TAG_DIV, HtmlUtils.cssClass("row"));
         int weight = 12;
-        if (includeList || extraNav.length()>0) {
+        if (includeList || (extraNav.length() > 0)) {
             HtmlUtils.open(sb, HtmlUtils.TAG_DIV,
                            HtmlUtils.cssClass("col-md-3"));
             weight -= 3;
             sb.append(
                 HtmlUtils.open(
                     HtmlUtils.TAG_DIV,
-                    HtmlUtils.cssClass(CSS_CLASS_EARTH_ENTRIES +
-                                       (map==null?"":" " + map.getVariableName()))
-                    + HtmlUtils.style(
+                    HtmlUtils.cssClass(
+                        CSS_CLASS_EARTH_ENTRIES + ((map == null)
+                    ? ""
+                    : " " + map.getVariableName())) + HtmlUtils.style(
                         "max-height:" + height + "px; overflow-y: auto;")));
 
-            if(!includeList) {
-                sb.append(extraNav); 
+            if ( !includeList) {
+                sb.append(extraNav);
             } else {
                 sb.append(navTop);
 
-                boolean doToggle = (numEntries > 5) && (categories.size() > 1);
+                boolean doToggle = (numEntries > 5)
+                                   && (categories.size() > 1);
                 for (int catIdx = 0; catIdx < categories.size(); catIdx++) {
                     String        category = categories.get(catIdx);
                     StringBuilder catSB    = catMap.get(category);
                     if (doToggle) {
                         sb.append(HtmlUtils.makeShowHideBlock(category,
-                                                              catSB.toString(), catIdx == 0));
+                                catSB.toString(), catIdx == 0));
                     } else {
                         if (categories.size() > 1) {
                             sb.append(HtmlUtils.b(category));
@@ -929,8 +932,10 @@ public class MapManager extends RepositoryManager {
         String fromEntry = entry.getTypeHandler().getMapInfoBubble(request,
                                entry);
         if (fromEntry != null) {
-            fromEntry = getWikiManager().wikifyEntry(request, entry, fromEntry,
-                                                  false, null, null,new String[]{WikiConstants.WIKI_TAG_MAPENTRY,WikiConstants.WIKI_TAG_MAP});
+            fromEntry = getWikiManager().wikifyEntry(request, entry,
+                    fromEntry, false, null, null,
+                    new String[] { WikiConstants.WIKI_TAG_MAPENTRY,
+                                   WikiConstants.WIKI_TAG_MAP });
 
             return getRepository().translate(request, fromEntry);
         }
@@ -959,7 +964,7 @@ public class MapManager extends RepositoryManager {
             //"slides_image"
             String image =
                 HtmlUtils.img(
-                              getRepository().getHtmlOutputHandler().getImageUrl(
+                    getRepository().getHtmlOutputHandler().getImageUrl(
                         request, entry), "", extra);
             if (request.get(WikiManager.ATTR_LINK, true)) {
                 image = HtmlUtils.href(
@@ -1033,28 +1038,35 @@ public class MapManager extends RepositoryManager {
 
         if (bubble != null) {
             bubble = getWikiManager().wikifyEntry(request, entry, bubble,
-                                                  false, null, null,new String[]{WikiConstants.WIKI_TAG_MAPENTRY,WikiConstants.WIKI_TAG_MAP});
+                    false, null, null,
+                    new String[] { WikiConstants.WIKI_TAG_MAPENTRY,
+                                   WikiConstants.WIKI_TAG_MAP });
 
             return getRepository().translate(request, bubble);
         }
 
 
 
-        String wikiTemplate = getRepository().getHtmlOutputHandler().getWikiText(request, entry);
+        String wikiTemplate =
+            getRepository().getHtmlOutputHandler().getWikiText(request,
+                entry);
         if (wikiTemplate != null) {
             String wiki = getWikiManager().wikifyEntry(request, entry,
-                                                       wikiTemplate, true,null,null,new String[]{WikiConstants.WIKI_TAG_MAPENTRY,WikiConstants.WIKI_TAG_MAP});
+                              wikiTemplate, true, null, null,
+                              new String[] { WikiConstants.WIKI_TAG_MAPENTRY,
+                                             WikiConstants.WIKI_TAG_MAP });
             info.append(wiki);
         } else {
             HtmlUtils.sectionHeader(
-                                    info,
-                                    getPageHandler().getEntryHref(
-                                                                  request, entry, entry.getTypeHandler().getEntryName(entry)));
+                info,
+                getPageHandler().getEntryHref(
+                    request, entry,
+                    entry.getTypeHandler().getEntryName(entry)));
 
             info.append("<table class=\"formtable\">");
             info.append(entry.getTypeHandler().getInnerEntryContent(entry,
-                                                                    request, null, OutputHandler.OUTPUT_HTML, true, false,
-                                                                    false));
+                    request, null, OutputHandler.OUTPUT_HTML, true, false,
+                    false));
 
             List<String> urls = new ArrayList<String>();
             getMetadataManager().getThumbnailUrls(request, entry, urls);
@@ -1081,10 +1093,8 @@ public class MapManager extends RepositoryManager {
      * @param sb            StringBuilder to pass back html
      * @param width         width of the map
      * @param height        height of the map
-     * @param detailed      detailed or not
-     * @param listentries  if true, include the entries on the side
      * @param mapProps _more_
-     * @param args _more_
+     * @param props _more_
      *
      * @return MapInfo (not really used)
      *
@@ -1092,59 +1102,61 @@ public class MapManager extends RepositoryManager {
      */
     public MapInfo getMap(Request request, List<Entry> entriesToUse,
                           StringBuilder sb, int width, int height,
-                          Hashtable mapProps, String... args)
+                          Hashtable mapProps, Hashtable props)
             throws Exception {
-        Hashtable props = new Hashtable();
 
-        for (int i = 0; i < args.length; i += 2) {
-            if(args[i+1] == null)continue;
-            props.put(args[i], args[i + 1]);
+        boolean doCategories = Utils.getProperty(props, "doCategories", true);
+        boolean details = request.get("mapdetails",
+                                      Utils.getProperty(props, "details",
+                                          false));
+        boolean listentries = Utils.getProperty(props, ATTR_LISTENTRIES,
+                                  false);
+        boolean cbx          = Utils.getProperty(props, "showCheckbox",
+                                   false);
+        boolean search       = Utils.getProperty(props, "showSearch", false);
+        boolean cbxOn        = Utils.getProperty(props, "checkboxOn", true);
+        String  mapVar       = Utils.getProperty(props, ATTR_MAPVAR);
+        String  selectFields = Utils.getProperty(props, ATTR_SELECTFIELDS);
+        String  selectBounds = Utils.getProperty(props, ATTR_SELECTBOUNDS);
+        String viewBounds = Utils.getProperty(props, ATTR_VIEWBOUNDS,
+                                selectBounds);
 
-        }
 
-        boolean doCategories = Misc.getProperty(props, "doCategories", true);
-        boolean detailed    = Misc.getProperty(props, "detailed", false);
-        detailed = request.get("mapdetails", detailed);
-        boolean listentries = Misc.getProperty(props, "listEntries", false);
-        boolean cbx         = Misc.getProperty(props, "showCheckbox", false);
-        boolean search      = Misc.getProperty(props, "showSearch", false);
-        boolean cbxOn       = Misc.getProperty(props, "checkboxOn", true);
-        String mapVar =      Misc.getProperty(props,"mapVar",(String) null);
-        String boundsArg =      Misc.getProperty(props,"bounds",(String) null);
-
-
-        MapInfo map         = createMap(request, width, height, false, null);
+        MapInfo map = createMap(request, width, height, false, null);
         if (map == null) {
             return null;
         }
-        if(boundsArg!=null) {
-            map.setBounds(boundsArg);
+        if (selectFields != null) {
+            map.setSelectFields(selectFields);
         }
-        if(mapVar!=null) {
+        if (selectBounds != null) {
+            map.setSelectBounds(selectBounds);
+        }
+
+        if (mapVar != null) {
             map.setMapVar(mapVar);
         }
         if (mapProps != null) {
             map.getMapProps().putAll(mapProps);
         }
-        addToMap(request, map, entriesToUse, detailed, true);
+        addToMap(request, map, entriesToUse, details, true);
 
-        Rectangle2D.Double bounds=null;
-        if(boundsArg!=null) { 
-            List<String> toks = StringUtil.split(boundsArg,",");
-            if(toks.size()==4) {
+        Rectangle2D.Double bounds = null;
+        if (viewBounds != null) {
+            List<String> toks = StringUtil.split(viewBounds, ",");
+            if (toks.size() == 4) {
                 double north = Double.parseDouble(toks.get(0));
-                double west = Double.parseDouble(toks.get(1));
+                double west  = Double.parseDouble(toks.get(1));
                 double south = Double.parseDouble(toks.get(2));
-                double east = Double.parseDouble(toks.get(3));
-                bounds = new Rectangle2D.Double(west, south,
-                                                east - west, north - south);
+                double east  = Double.parseDouble(toks.get(3));
+                bounds = new Rectangle2D.Double(west, south, east - west,
+                        north - south);
             }
-        } 
-        if(bounds==null) {
-            bounds =getEntryManager().getBounds(entriesToUse);
+        }
+        if (bounds == null) {
+            bounds = getEntryManager().getBounds(entriesToUse);
         }
         map.centerOn(bounds);
-
 
         List<String> categories = new ArrayList<String>();
         Hashtable<String, StringBuilder> catMap = new Hashtable<String,
@@ -1157,14 +1169,14 @@ public class MapManager extends RepositoryManager {
             }
 
             String category;
-            if(!doCategories) {
+            if ( !doCategories) {
                 category = "";
             } else {
                 if (Misc.equals(categoryType, "parent")) {
                     category = getEntryDisplayName(entry.getParentEntry());
                 } else {
                     category = entry.getTypeHandler().getCategory(
-                                                                  entry).getLabel().toString();
+                        entry).getLabel().toString();
                 }
             }
 
@@ -1176,8 +1188,8 @@ public class MapManager extends RepositoryManager {
             catSB.append(
                 HtmlUtils.open(
                     HtmlUtils.TAG_DIV,
-                    "data-mapid=\"" + entry.getId() +"\" "+
-                    HtmlUtils.cssClass(CSS_CLASS_EARTH_NAV)));
+                    "data-mapid=\"" + entry.getId() + "\" "
+                    + HtmlUtils.cssClass(CSS_CLASS_EARTH_NAV)));
             String iconUrl = getPageHandler().getIconUrl(request, entry);
 
             String navUrl = "javascript:" + map.getVariableName()
@@ -1196,44 +1208,52 @@ public class MapManager extends RepositoryManager {
                         iconUrl, msg("Click to view entry details"))));
             catSB.append("&nbsp;");
             String label = getEntryDisplayName(entry);
-            catSB.append(HtmlUtils.href(navUrl, label,HtmlUtils.attr(HtmlUtils.ATTR_TITLE,label)));
+            catSB.append(HtmlUtils.href(navUrl, label,
+                                        HtmlUtils.attr(HtmlUtils.ATTR_TITLE,
+                                            label)));
             catSB.append(HtmlUtils.close(HtmlUtils.TAG_DIV));
             numEntries++;
         }
         String listwidth = request.getString(WikiManager.ATTR_LISTWIDTH,
                                              "250");
-        String navTop = "";
+        String navTop   = "";
         String searchId = "";
         if (search) {
             searchId = "search_" + map.getMapId();
-            navTop +=  HtmlUtils.input("tmp", "", 20,
-                                      HtmlUtils.attr("placeholder", msg("Search text")) + 
-                                      HtmlUtils.id(searchId)) + "<br>";
+            navTop += HtmlUtils.input(
+                "tmp", "", 20,
+                HtmlUtils.attr("placeholder", msg("Search text"))
+                + HtmlUtils.id(searchId)) + "<br>";
 
         }
         if (cbx) {
             String cbxId = "visibleall_" + map.getMapId();
             navTop += HtmlUtils.checkbox("tmp", "true", true,
-                                          HtmlUtils.id(cbxId)) + "<br>";
+                                         HtmlUtils.id(cbxId)) + "<br>";
 
         }
 
-        if(map.getHtml().length()==0 && catMap.size()==0) {
-            listentries=false;
+        if ((map.getHtml().length() == 0) && (catMap.size() == 0)) {
+            listentries = false;
         }
         String extra = map.getExtraNav();
-        layoutMap(request, sb, map, listentries, numEntries, listwidth, height,
-                  categories, catMap, map.getHtml(), navTop, extra);
+        layoutMap(request, sb, map, listentries, numEntries, listwidth,
+                  height, categories, catMap, map.getHtml(), navTop, extra);
 
-        String js ="highlightMarkers('." + map.getVariableName() +" .ramadda-earth-nav', " + map.getVariableName() +", '#ffffcc', 'white');";
+        String js = "highlightMarkers('." + map.getVariableName()
+                    + " .ramadda-earth-nav', " + map.getVariableName()
+                    + ", '#ffffcc', 'white');";
 
         if (search) {
-            js+=map.getVariableName() + ".initSearch(" + sqt(searchId) + ");";
+            js += map.getVariableName() + ".initSearch(" + sqt(searchId)
+                  + ");";
         }
 
 
         sb.append(HtmlUtils.script(JQuery.ready(js)));
+
         return map;
+
     }
 
     /**

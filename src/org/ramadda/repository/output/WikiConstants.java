@@ -416,6 +416,18 @@ public interface WikiConstants {
     /** _more_ */
     public static final String ATTR_APPLY_TAG = APPLY_PREFIX + "tag";
 
+    /** _more_          */
+    public static final String ATTR_SELECTFIELDS = "selectFields";
+
+    /** _more_          */
+    public static final String ATTR_SELECTBOUNDS = "selectBounds";
+
+    /** _more_          */
+    public static final String ATTR_VIEWBOUNDS = "viewBounds";
+
+    /** _more_          */
+    public static final String ATTR_MAPVAR = "mapVar";
+
     /** accordian property */
     public static final String WIKI_TAG_ACCORDIAN = "accordian";
 
@@ -448,6 +460,7 @@ public interface WikiConstants {
 
     /** wiki import */
     public static final String WIKI_TAG_MAP = "map";
+
 
     /** wiki import */
     public static final String WIKI_TAG_EARTH = "earth";
