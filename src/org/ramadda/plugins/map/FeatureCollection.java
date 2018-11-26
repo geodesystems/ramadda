@@ -219,12 +219,13 @@ public class FeatureCollection {
             Element style = KmlUtil.style(folder, styleUrl);
             Element polystyle = KmlUtil.makeElement(style,
                                     KmlUtil.TAG_POLYSTYLE);
+            Element linestyle = KmlUtil.makeElement(style,
+                                    KmlUtil.TAG_LINESTYLE);
             KmlUtil.makeText(polystyle, KmlUtil.TAG_COLOR,
                              "66"
                              + KmlUtil.toBGRHexString(color).substring(1));
-            KmlUtil.makeText(polystyle, KmlUtil.TAG_STROKEWIDTH,
+            KmlUtil.makeText(linestyle, KmlUtil.TAG_WIDTH,
                              "1");
-
             KmlUtil.makeText(polystyle, KmlUtil.TAG_COLORMODE, "normal");
         }
 
