@@ -25,6 +25,7 @@ import org.w3c.dom.Element;
 
 
 import java.awt.geom.Rectangle2D;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -43,7 +44,7 @@ public class Feature {
     /** the geometry for this feature */
     private Geometry geometry;
 
-    /** _more_          */
+    /** _more_ */
     private List<float[][]> origCoords;
 
     /** the list of properties */
@@ -53,13 +54,13 @@ public class Feature {
     /** _more_ */
     private HashMap allProperties;
 
-    /** _more_          */
+    /** _more_ */
     private int numPoints = -1;
 
-    /** _more_          */
+    /** _more_ */
     private int maxPoints = -1;
 
-    /** _more_          */
+    /** _more_ */
     private int stride = 0;
 
 
@@ -214,9 +215,11 @@ public class Feature {
      * Make the Feature element
      * @param parent  the parent to add to
      * @param styleUrl  the style URL
+     * @param bounds _more_
      * @return the element
      */
-    public Element makeKmlElement(Element parent, String styleUrl, Rectangle2D.Double bounds) {
+    public Element makeKmlElement(Element parent, String styleUrl,
+                                  Rectangle2D.Double bounds) {
         Element placemark = KmlUtil.placemark(parent, getId(), "");
         Element geom      = placemark;
         if (geometry.getCoordinates().size() > 1) {
@@ -232,19 +235,23 @@ public class Feature {
         }
         String type = geometry.getGeometryType();
         for (float[][] coords : geometry.getCoordinates()) {
-            if(bounds!=null) {
+            if (bounds != null) {
                 boolean ok = false;
-                for(int i=1;i<coords[0].length;i++) {
-                    float x1 = coords[0][i-1];
-                    float y1 = coords[1][i-1];
+                for (int i = 1; i < coords[0].length; i++) {
+                    float x1 = coords[0][i - 1];
+                    float y1 = coords[1][i - 1];
                     float x2 = coords[0][i];
                     float y2 = coords[1][i];
-                    if(bounds.intersectsLine((double)x1,(double)y1,(double)x2,(double)y2)) {
+                    if (bounds.intersectsLine((double) x1, (double) y1,
+                            (double) x2, (double) y2)) {
                         ok = true;
+
                         break;
                     }
                 }
-                if(!ok) continue;
+                if ( !ok) {
+                    continue;
+                }
             }
             if (type.equals(Geometry.TYPE_POINT) || (coords[0].length == 1)) {
                 Element point = KmlUtil.makeElement(geom, KmlUtil.TAG_POINT);
@@ -283,21 +290,24 @@ public class Feature {
                 data.entrySet().iterator();
             while (entries.hasNext()) {
                 Map.Entry<String, Object> entry = entries.next();
-                String key   =  entry.getKey().toLowerCase();
-                Object obj = entry.getValue();
-                String value;
-                if(obj instanceof Double) {
-                    value =  ShapefileOutputHandler.format(((Double)obj).doubleValue());
-                }   else if(obj instanceof Integer) {
-                    value =  ShapefileOutputHandler.format(((Integer)obj).intValue());
+                String                    key   =
+                    entry.getKey().toLowerCase();
+                Object                    obj   = entry.getValue();
+                String                    value;
+                if (obj instanceof Double) {
+                    value = ShapefileOutputHandler.format(
+                        ((Double) obj).doubleValue());
+                } else if (obj instanceof Integer) {
+                    value = ShapefileOutputHandler.format(
+                        ((Integer) obj).intValue());
                 } else {
-                    value =  obj.toString().trim();
+                    value = obj.toString().trim();
                 }
                 //System.err.println(key+":" + obj.getClass().getName()+":" + value);
                 String fromProps = (String) allProperties.get("kml." + key
                                        + "." + value);
                 if (fromProps != null) {
-                    value = fromProps +" (" + value+")";
+                    value = fromProps + " (" + value + ")";
                 }
 
                 Element simple = KmlUtil.makeText(schemaData,

@@ -23,11 +23,11 @@ import org.ramadda.repository.Repository;
 import org.ramadda.repository.Request;
 import org.ramadda.repository.Result;
 import org.ramadda.repository.metadata.Metadata;
-import org.ramadda.repository.output.WikiConstants;
 import org.ramadda.repository.output.JsonOutputHandler;
 import org.ramadda.repository.output.KmlOutputHandler;
 import org.ramadda.repository.output.OutputHandler;
 import org.ramadda.repository.output.OutputType;
+import org.ramadda.repository.output.WikiConstants;
 import org.ramadda.util.HtmlUtils;
 import org.ramadda.util.Json;
 import org.ramadda.util.KmlUtil;
@@ -35,18 +35,20 @@ import org.ramadda.util.Utils;
 
 import org.w3c.dom.Element;
 
-import ucar.unidata.util.StringUtil;
 import ucar.unidata.gis.GisPart;
 import ucar.unidata.gis.shapefile.DbaseData;
 import ucar.unidata.gis.shapefile.DbaseFile;
 import ucar.unidata.gis.shapefile.EsriShapefile;
 import ucar.unidata.util.IOUtil;
+
+import ucar.unidata.util.StringUtil;
 import ucar.unidata.xml.XmlUtil;
+
+import java.awt.geom.Rectangle2D;
 
 import java.io.File;
 import java.io.FileInputStream;
 
-import java.awt.geom.Rectangle2D;
 import java.text.DecimalFormat;
 
 
@@ -86,7 +88,11 @@ public class ShapefileOutputHandler extends OutputHandler implements WikiConstan
                        OutputType.TYPE_VIEW, "", ICON_TABLE);
 
 
-    public static final DecimalFormat decimalFormat = new DecimalFormat("#,##0.#");
+    /** _more_          */
+    public static final DecimalFormat decimalFormat =
+        new DecimalFormat("#,##0.#");
+
+    /** _more_          */
     public static final DecimalFormat intFormat = new DecimalFormat("#,###");
 
 
@@ -388,19 +394,28 @@ public class ShapefileOutputHandler extends OutputHandler implements WikiConstan
      * @throws Exception _more_
      */
     private Result outputKml(Request request, Entry entry) throws Exception {
-        String fieldsArg = request.getString(ATTR_SELECTFIELDS,(String)null);
-        String boundsArg = request.getString(ATTR_SELECTBOUNDS,(String)null);
+        String fieldsArg = request.getString(ATTR_SELECTFIELDS,
+                                             (String) null);
+        String boundsArg = request.getString(ATTR_SELECTBOUNDS,
+                                             (String) null);
         boolean forMap = request.get("formap", false);
         String returnFile =
             IOUtil.stripExtension(getStorageManager().getFileTail(entry))
             + ".kml";
         String filename = forMap + "_" + returnFile;
-        if(boundsArg!=null) filename = boundsArg.replaceAll(",","_") + filename;
-        if(fieldsArg!=null) {
-            filename = fieldsArg.replaceAll(",","_").replaceAll(":","_").replaceAll("<","_lt_").replaceAll(">","_gt_").replaceAll("=","_eq_").replaceAll("\\.","_dot_") + filename;
+        if (boundsArg != null) {
+            filename = boundsArg.replaceAll(",", "_") + filename;
         }
-        File file = getEntryManager().getCacheFile(entry,
-                                                   filename);
+        if (fieldsArg != null) {
+            filename =
+                fieldsArg.replaceAll(",", "_").replaceAll(":",
+                                     "_").replaceAll("<",
+                                         "_lt_").replaceAll(">",
+                                             "_gt_").replaceAll("=",
+                                                 "_eq_").replaceAll("\\.",
+                                                     "_dot_") + filename;
+        }
+        File file = getEntryManager().getCacheFile(entry, filename);
 
         if (file.exists()) {
             Result result = new Result(new FileInputStream(file),
@@ -411,31 +426,31 @@ public class ShapefileOutputHandler extends OutputHandler implements WikiConstan
         }
 
 
-        Rectangle2D.Double bounds =null;
-        if(boundsArg!=null) {
-            List<String> toks = StringUtil.split(boundsArg,",");
-            if(toks.size()==4) {
+        Rectangle2D.Double bounds = null;
+        if (boundsArg != null) {
+            List<String> toks = StringUtil.split(boundsArg, ",");
+            if (toks.size() == 4) {
                 double north = Double.parseDouble(toks.get(0));
-                double west = Double.parseDouble(toks.get(1));
+                double west  = Double.parseDouble(toks.get(1));
                 double south = Double.parseDouble(toks.get(2));
-                double east = Double.parseDouble(toks.get(3));
-                bounds = new Rectangle2D.Double(west, south,
-                                                east - west, north - south);
+                double east  = Double.parseDouble(toks.get(3));
+                bounds = new Rectangle2D.Double(west, south, east - west,
+                        north - south);
             }
         }
 
-        FeatureCollection fc   = makeFeatureCollection(request, entry);
-        long              t1   = System.currentTimeMillis();
-        List<String>fieldValues = null;
-        if(fieldsArg != null) {
+        FeatureCollection fc          = makeFeatureCollection(request, entry);
+        long              t1          = System.currentTimeMillis();
+        List<String>      fieldValues = null;
+        if (fieldsArg != null) {
             //selectFields=statefp:=:13,....
-            fieldValues=new ArrayList<String>();
-            List<String> toks = StringUtil.split(fieldsArg,",",true,true);
-            for(String tok: toks) {
-                List<String> expr = StringUtil.splitUpTo(tok,":",3);
-                if(expr.size()>=2) {
+            fieldValues = new ArrayList<String>();
+            List<String> toks = StringUtil.split(fieldsArg, ",", true, true);
+            for (String tok : toks) {
+                List<String> expr = StringUtil.splitUpTo(tok, ":", 3);
+                if (expr.size() >= 2) {
                     fieldValues.add(expr.get(0));
-                    if(expr.size()==2) {
+                    if (expr.size() == 2) {
                         fieldValues.add("=");
                         fieldValues.add(expr.get(1));
                     } else {
@@ -446,10 +461,10 @@ public class ShapefileOutputHandler extends OutputHandler implements WikiConstan
             }
         }
 
-        Element           root = fc.toKml(forMap, bounds,fieldValues);
-        long              t2   = System.currentTimeMillis();
-        StringBuffer      sb   = new StringBuffer(XmlUtil.XML_HEADER);
-        String            xml  = XmlUtil.toString(root, false);
+        Element      root = fc.toKml(forMap, bounds, fieldValues);
+        long         t2   = System.currentTimeMillis();
+        StringBuffer sb   = new StringBuffer(XmlUtil.XML_HEADER);
+        String       xml  = XmlUtil.toString(root, false);
         sb.append(xml);
         IOUtil.writeFile(file, xml);
         long t3 = System.currentTimeMillis();
@@ -482,16 +497,31 @@ public class ShapefileOutputHandler extends OutputHandler implements WikiConstan
         return result;
     }
 
+    /**
+     * _more_
+     *
+     * @param v _more_
+     *
+     * @return _more_
+     */
     public static String format(int v) {
         return intFormat.format(v);
     }
 
 
+    /**
+     * _more_
+     *
+     * @param v _more_
+     *
+     * @return _more_
+     */
     public static String format(double v) {
-        if(v ==(int)v)
+        if (v == (int) v) {
             return intFormat.format(v);
-        return 
-            decimalFormat.format(v);
+        }
+
+        return decimalFormat.format(v);
     }
 
     /**
@@ -507,6 +537,7 @@ public class ShapefileOutputHandler extends OutputHandler implements WikiConstan
      */
     private Result outputFields(Request request, Entry entry, boolean table)
             throws Exception {
+
         EsriShapefile shapefile =
             new EsriShapefile(entry.getFile().toString());
         DbaseFile     dbfile = shapefile.getDbFile();
@@ -520,13 +551,14 @@ public class ShapefileOutputHandler extends OutputHandler implements WikiConstan
 
             return new Result("", sb);
         }
-        Hashtable props = getRepository().getPluginProperties();
+        Hashtable props      = getRepository().getPluginProperties();
 
 
-        String[] fieldNames = dbfile.getFieldNames();
-        String[] fieldnames = new String[fieldNames.length];
-        for(int i=0;i<fieldNames.length;i++)
+        String[]  fieldNames = dbfile.getFieldNames();
+        String[]  fieldnames = new String[fieldNames.length];
+        for (int i = 0; i < fieldNames.length; i++) {
             fieldnames[i] = fieldNames[i].toLowerCase();
+        }
 
         if (table) {
             sb.append("<table border=1>");
@@ -569,31 +601,35 @@ public class ShapefileOutputHandler extends OutputHandler implements WikiConstan
             }
             //            sb.append(HtmlUtils.script("function fieldSelect(
 
-            String baseUrl = request.entryUrl(getRepository().URL_ENTRY_SHOW, entry);
-            
+            String baseUrl = request.entryUrl(getRepository().URL_ENTRY_SHOW,
+                                 entry);
+
 
             for (int j = 0; j < fieldNames.length; j++) {
                 DbaseData field = dbfile.getField(j);
                 String    value;
                 String    extra = "";
-                String url = null;
-                String key  = fieldnames[j];
+                String    url   = null;
+                String    key   = fieldnames[j];
                 if (field.getType() == field.TYPE_NUMERIC) {
                     value = format(field.getDouble(i));
                     extra = " align=right ";
                 } else {
                     value = "" + field.getData(i);
-                    url = baseUrl +"&"+HtmlUtils.arg(ATTR_SELECTFIELDS,key+":=:" +value);
+                    url = baseUrl + "&"
+                          + HtmlUtils.arg(ATTR_SELECTFIELDS,
+                                          key + ":=:" + value);
                 }
 
-                String fromProps = (String) props.get("kml." + key
-                                                      + "." + value);
+                String fromProps = (String) props.get("kml." + key + "."
+                                       + value);
                 if (fromProps != null) {
-                    value = fromProps +" (" + value+")";
+                    value = fromProps + " (" + value + ")";
                 }
 
-                if(url!=null)
-                    value = HtmlUtils.href(url,value);
+                if (url != null) {
+                    value = HtmlUtils.href(url, value);
+                }
                 if (table) {
                     sb.append(
                         HtmlUtils.td(
@@ -618,6 +654,7 @@ public class ShapefileOutputHandler extends OutputHandler implements WikiConstan
         }
 
         return new Result("", sb);
+
     }
 
 

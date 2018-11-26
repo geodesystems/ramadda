@@ -33,10 +33,11 @@ import ucar.unidata.gis.shapefile.EsriShapefile;
 import ucar.unidata.util.StringUtil;
 import ucar.unidata.xml.XmlUtil;
 
+import java.awt.Color;
+import java.awt.geom.Rectangle2D;
+
 
 import java.text.DecimalFormat;
-import java.awt.geom.Rectangle2D;
-import java.awt.Color;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -232,11 +233,15 @@ public class FeatureCollection {
      *
      *
      * @param decimate _more_
+     * @param bounds _more_
+     * @param fieldValues _more_
      * @return the KML Element
      *
      * @throws Exception _more_
      */
-    public Element toKml(boolean decimate, Rectangle2D.Double bounds, List<String>fieldValues) throws Exception {
+    public Element toKml(boolean decimate, Rectangle2D.Double bounds,
+                         List<String> fieldValues)
+            throws Exception {
 
         Element root       = KmlUtil.kml(getName());
         Element doc        = KmlUtil.document(root, getName(), true);
@@ -260,18 +265,18 @@ public class FeatureCollection {
         DbaseFile     dbfile       = (DbaseFile) properties.get("dbfile");
         EsriShapefile shapefile = (EsriShapefile) properties.get("shapefile");
         //Correspond to the index
-        List<Color>  colors    = null;
-        List<String> styleUrls = null;
-        int[]        styleCnt  = { 0 };
-        String[] fieldNames = null;
-        if(dbfile!=null) {
+        List<Color>  colors     = null;
+        List<String> styleUrls  = null;
+        int[]        styleCnt   = { 0 };
+        String[]     fieldNames = null;
+        if (dbfile != null) {
             fieldNames = dbfile.getFieldNames();
         }
         if ((colorBy != null) && (dbfile != null)) {
             Hashtable<Color, String> colorMap = new Hashtable<Color,
                                                     String>();
             colorByField = colorBy.getAttr1();
-            
+
             colorByField = colorByField.trim();
             DbaseData dbaseField = null;
             for (int j = 0; j < fieldNames.length; j++) {
@@ -442,47 +447,55 @@ public class FeatureCollection {
         }
         int cnt = 0;
         for (Feature feature : features) {
-            String styleUrl = (styleUrls == null)
-                              ? styleName
-                              : styleUrls.get(cnt);
-            boolean ok = true;
-            if(fieldValues!=null && fieldValues.size()>0 && dbfile!=null) {
-                for(int i=0;i<fieldValues.size();i+=3) {
-                    String fieldName = fieldValues.get(i);
-                    String operator = fieldValues.get(i+1);
-                    String fieldValue = fieldValues.get(i+2);
+            String  styleUrl = (styleUrls == null)
+                               ? styleName
+                               : styleUrls.get(cnt);
+            boolean ok       = true;
+            if ((fieldValues != null) && (fieldValues.size() > 0)
+                    && (dbfile != null)) {
+                for (int i = 0; i < fieldValues.size(); i += 3) {
+                    String fieldName  = fieldValues.get(i);
+                    String operator   = fieldValues.get(i + 1);
+                    String fieldValue = fieldValues.get(i + 2);
                     for (int j = 0; j < fieldNames.length; j++) {
                         if (fieldNames[j].equalsIgnoreCase(fieldName)) {
-                            DbaseData dbaseField =  dbfile.getField(j);
-                            Object obj = dbaseField.getData(cnt);
-                            if(obj instanceof Double || obj instanceof Integer) {
+                            DbaseData dbaseField = dbfile.getField(j);
+                            Object    obj        = dbaseField.getData(cnt);
+                            if ((obj instanceof Double)
+                                    || (obj instanceof Integer)) {
                                 double v = Double.parseDouble(fieldValue);
                                 double opValue;
-                                if(obj instanceof Double)
-                                    opValue = ((Double)obj).doubleValue();
-                                else
-                                    opValue = ((Integer)obj).intValue();
-                                if(operator.equals("<")) 
-                                    ok = opValue<v;
-                                else if(operator.equals("<=")) 
-                                    ok = opValue<=v;
-                                else if(operator.equals(">")) 
-                                    ok = opValue>v;
-                                else if(operator.equals(">=")) 
-                                    ok = opValue>=v;
-                                else if(operator.equals("=")) 
-                                    ok = opValue==v;
+                                if (obj instanceof Double) {
+                                    opValue = ((Double) obj).doubleValue();
+                                } else {
+                                    opValue = ((Integer) obj).intValue();
+                                }
+                                if (operator.equals("<")) {
+                                    ok = opValue < v;
+                                } else if (operator.equals("<=")) {
+                                    ok = opValue <= v;
+                                } else if (operator.equals(">")) {
+                                    ok = opValue > v;
+                                } else if (operator.equals(">=")) {
+                                    ok = opValue >= v;
+                                } else if (operator.equals("=")) {
+                                    ok = opValue == v;
+                                }
                             } else {
                                 String value = obj.toString();
                                 ok = value.equals(fieldValue);
                             }
-                            if(!ok) break;
+                            if ( !ok) {
+                                break;
+                            }
                         }
                     }
-                    if(!ok) break;
+                    if ( !ok) {
+                        break;
+                    }
                 }
             }
-            if(ok) {
+            if (ok) {
                 feature.makeKmlElement(folder, "#" + styleUrl, bounds);
             }
             cnt++;

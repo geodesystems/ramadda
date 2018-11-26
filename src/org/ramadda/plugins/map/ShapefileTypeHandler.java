@@ -21,9 +21,9 @@ import org.ramadda.repository.Entry;
 import org.ramadda.repository.Repository;
 import org.ramadda.repository.Request;
 import org.ramadda.repository.map.MapInfo;
-        
-import org.ramadda.repository.output.WikiConstants;
 import org.ramadda.repository.output.KmlOutputHandler;
+
+import org.ramadda.repository.output.WikiConstants;
 import org.ramadda.repository.type.GenericTypeHandler;
 
 import org.ramadda.util.HtmlUtils;
@@ -242,16 +242,21 @@ public class ShapefileTypeHandler extends GenericTypeHandler implements WikiCons
             getEntryManager().updateEntry(request, entry);
         }
 
-        String kmlUrl = request.entryUrl(
-                getRepository().URL_ENTRY_SHOW, entry, ARG_OUTPUT,
-                ShapefileOutputHandler.OUTPUT_KML.toString(), "formap",
-                "true");
-        String fields = request.getString(ATTR_SELECTFIELDS, map.getSelectFields());
-        if(fields!=null) kmlUrl+= "&" + HtmlUtils.arg("selectFields",fields,true);
+        String kmlUrl =
+            request.entryUrl(getRepository().URL_ENTRY_SHOW, entry,
+                             ARG_OUTPUT,
+                             ShapefileOutputHandler.OUTPUT_KML.toString(),
+                             "formap", "true");
+        String fields = request.getString(ATTR_SELECTFIELDS,
+                                          map.getSelectFields());
+        if (fields != null) {
+            kmlUrl += "&" + HtmlUtils.arg("selectFields", fields, true);
+        }
         String bounds = map.getSelectBounds();
-        if(bounds!=null) kmlUrl+= "&selectBounds=" +bounds;
-        map.addKmlUrl(
-                      entry.getName(),kmlUrl, true);
+        if (bounds != null) {
+            kmlUrl += "&selectBounds=" + bounds;
+        }
+        map.addKmlUrl(entry.getName(), kmlUrl, true);
 
         /*  For testing
         map.addGeoJsonUrl(
