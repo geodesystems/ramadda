@@ -470,8 +470,8 @@ function initMapFunctions(theMap) {
                 })
             })
         });
-        kmlLayer.events.on({"loadend": function(e){
-                    if(_this.dfltBounds)
+        kmlLayer.events.on({"loadend": function(e) {
+                    if(_this.centerOnMarkersCalled)
                         _this.centerOnMarkers(_this.dfltBound);
                 }});
         this.map.addLayer(kmlLayer);
@@ -1623,6 +1623,7 @@ function initMapFunctions(theMap) {
 
     // bounds are in lat/lon
     theMap.centerOnMarkers = function(dfltBounds) {
+        this.centerOnMarkersCalled = true;
         this.dfltBounds = dfltBounds;
         now = Date.now();
         //        console.log("center on markers:" + ((now-this.startTime)/1000));
