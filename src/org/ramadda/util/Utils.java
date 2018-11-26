@@ -1582,19 +1582,75 @@ public class Utils {
      *
      * @param props _more_
      * @param key _more_
+     *
+     * @return _more_
+     */
+    public static String getProperty(Hashtable props, String key) {
+        return getProperty(props, key, (String) null);
+    }
+
+
+    /**
+     * _more_
+     *
+     * @param props _more_
+     * @param key _more_
      * @param dflt _more_
      *
      * @return _more_
      */
-    public static double getProperty(Hashtable props, String key,
-                                     double dflt) {
-        String s = Misc.getProperty(props, key, (String) null);
-        if (stringUndefined(s)) {
+    public static String getProperty(Hashtable props, String key,
+                                     String dflt) {
+        String s = (String) props.get(key);
+        if (s == null) {
+            s = (String) props.get(key.toLowerCase());
+        }
+        if (s == null) {
             return dflt;
         }
 
-        return Double.parseDouble(s);
+        return s;
     }
+
+
+
+    /**
+     * _more_
+     *
+     * @param props _more_
+     * @param key _more_
+     * @param dflt _more_
+     *
+     * @return _more_
+     */
+    public static boolean getProperty(Hashtable props, String key,
+                                      boolean dflt) {
+        String s = Utils.getProperty(props, key, (String) null);
+        if (s == null) {
+            return dflt;
+        }
+
+        return new Boolean(s).booleanValue();
+    }
+
+    /**
+     * _more_
+     *
+     * @param props _more_
+     * @param key _more_
+     * @param dflt _more_
+     *
+     * @return _more_
+     */
+    public static int getProperty(Hashtable props, String key, int dflt) {
+        String s = Utils.getProperty(props, key, (String) null);
+        if (s == null) {
+            return dflt;
+        }
+
+        return new Integer(s).intValue();
+    }
+
 
     /**
      * _more_
@@ -3108,8 +3164,7 @@ public class Utils {
     /**
      * Given a curve composed of line segments find a similar curve with fewer points.
      *
-     * @param list List of Float[] points (x,y)
-     *
+     * originally from https://github.com/phishman3579/java-algorithms-implementation/blob/master/src/com/jwetherell/algorithms/mathematics/RamerDouglasPeucker.java
      * @param coords _more_
      * @param epsilon Distance dimension
      * @return Similar curve with fewer points
