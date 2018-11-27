@@ -27,9 +27,7 @@ import org.ramadda.util.Utils;
 import org.w3c.dom.CDATASection;
 import org.w3c.dom.Element;
 
-import ucar.unidata.gis.shapefile.DbaseData;
-import ucar.unidata.gis.shapefile.DbaseFile;
-import ucar.unidata.gis.shapefile.EsriShapefile;
+import ucar.unidata.gis.shapefile.*;
 import ucar.unidata.util.StringUtil;
 import ucar.unidata.xml.XmlUtil;
 
@@ -45,6 +43,7 @@ import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
 
 
 /**
@@ -88,6 +87,12 @@ public class FeatureCollection {
     /** _more_ */
     public static final String PROP_BALLOON_TEMPLATE = "BalloonTemplate";
 
+    /** _more_          */
+    private Properties fieldProperties;
+
+    /** _more_          */
+    private List<DbaseDataWrapper> fieldDatum;
+
 
     /**
      * Create a FeatureCollection
@@ -103,7 +108,7 @@ public class FeatureCollection {
      * @param description the description
      */
     public FeatureCollection(String name, String description) {
-        this(name, description, new HashMap<String, Object>());
+        this(name, description, new HashMap<String, Object>(), null);
         this.name        = name;
         this.description = description;
     }
@@ -114,13 +119,18 @@ public class FeatureCollection {
      * @param name   the name
      * @param description  the description
      * @param properties  the properties
+     * @param fieldDatum _more_
      */
     public FeatureCollection(String name, String description,
-                             HashMap<String, Object> properties) {
+                             HashMap<String, Object> properties,
+                             List<DbaseDataWrapper> fieldDatum) {
         this.name        = name;
         this.description = description;
         this.properties  = properties;
+        this.fieldDatum  = fieldDatum;
     }
+
+
 
     /**
      * Set the name
@@ -199,6 +209,8 @@ public class FeatureCollection {
      *
      * @param color _more_
      * @param colorMap _more_
+     * @param lineColor _more_
+     * @param doLine _more_
      * @param folder _more_
      * @param styleCnt _more_
      *
@@ -208,8 +220,7 @@ public class FeatureCollection {
      */
     private String makeFillStyle(Color color,
                                  Hashtable<Color, String> colorMap,
-                                 Color lineColor,
-                                 boolean doLine,
+                                 Color lineColor, boolean doLine,
                                  Element folder, int[] styleCnt)
             throws Exception {
         String styleUrl = colorMap.get(color);
@@ -228,14 +239,16 @@ public class FeatureCollection {
                              + KmlUtil.toBGRHexString(color).substring(1));
             KmlUtil.makeText(polystyle, KmlUtil.TAG_COLORMODE, "normal");
 
-            if(!doLine){
+            if ( !doLine) {
                 KmlUtil.makeText(polystyle, "outline", "0");
             } else {
                 KmlUtil.makeText(linestyle, KmlUtil.TAG_WIDTH, "1");
-                if(lineColor!=null)  
-                    KmlUtil.makeText(linestyle, KmlUtil.TAG_COLOR,
-                                     "ff"
-                                     + KmlUtil.toBGRHexString(lineColor).substring(1));
+                if (lineColor != null) {
+                    KmlUtil.makeText(
+                        linestyle, KmlUtil.TAG_COLOR,
+                        "ff"
+                        + KmlUtil.toBGRHexString(lineColor).substring(1));
+                }
             }
         }
 
@@ -279,22 +292,19 @@ public class FeatureCollection {
         DbaseFile     dbfile       = (DbaseFile) properties.get("dbfile");
         EsriShapefile shapefile = (EsriShapefile) properties.get("shapefile");
         //Correspond to the index
-        List<Color>  colors     = null;
-        List<String> styleUrls  = null;
-        int[]        styleCnt   = { 0 };
-        String[]     fieldNames = null;
-        if (dbfile != null) {
-            fieldNames = dbfile.getFieldNames();
-        }
+        List<Color>  colors    = null;
+        List<String> styleUrls = null;
+        int[]        styleCnt  = { 0 };
+
         if ((colorBy != null) && (dbfile != null)) {
             Hashtable<Color, String> colorMap = new Hashtable<Color,
                                                     String>();
-            colorByField = colorBy.getAttr1();
-            colorByField = colorByField.trim();
-            DbaseData dbaseField = null;
-            for (int j = 0; j < fieldNames.length; j++) {
-                if (fieldNames[j].equalsIgnoreCase(colorByField)) {
-                    dbaseField = dbfile.getField(j);
+            colorByField = colorBy.getAttr1().trim();
+            DbaseDataWrapper dbaseField = null;
+            for (int j = 0; j < fieldDatum.size(); j++) {
+                if (fieldDatum.get(j).getName().equalsIgnoreCase(
+                        colorByField)) {
+                    dbaseField = fieldDatum.get(j);
 
                     break;
                 }
@@ -305,9 +315,14 @@ public class FeatureCollection {
             if (Utils.stringDefined(colorBy.getAttr2())) {
                 ct = ColorTable.getColorTable(colorBy.getAttr2().trim());
             }
-           
+
             String lineColorAttr = colorBy.getAttr3().trim();
-            Color lineColor=(lineColorAttr.length()==0?null:lineColorAttr.equals("none")?null:Utils.decodeColor(lineColorAttr,null));
+            Color  lineColor     = ((lineColorAttr.length() == 0)
+                                    ? null
+                                    : lineColorAttr.equals("none")
+                                      ? null
+                                      : Utils.decodeColor(lineColorAttr,
+                                          null));
 
             if (Utils.stringDefined(colorBy.getAttr(4))) {
                 min = Double.parseDouble(colorBy.getAttr(4));
@@ -343,7 +358,7 @@ public class FeatureCollection {
                     }
                 }
             } else {
-                String enums = colorBy.getAttr(5);
+                String enums = colorBy.getAttr(6);
                 for (String line :
                         StringUtil.split(enums, "\n", true, true)) {
                     List<String> toks = StringUtil.splitUpTo(line, ":", 2);
@@ -352,11 +367,12 @@ public class FeatureCollection {
                                       (Color) null);
                         if (c != null) {
                             valueMap.put(toks.get(0), c);
+                        } else {
+                            System.err.println("Bad color:" + toks.get(1));
                         }
                     }
                 }
             }
-
 
             for (int i = 0; i < features.size(); i++) {
                 Color color = null;
@@ -366,10 +382,13 @@ public class FeatureCollection {
                 } else {
                     String value = "" + dbaseField.getData(i);
                     color = valueMap.get(value);
+                    //                    System.err.println("value:" + value+ " color:" + color);
                 }
                 if (color != null) {
-                    String styleUrl = makeFillStyle(color, colorMap, lineColor, !lineColorAttr.equals("none"), folder,
-                                          styleCnt);
+                    String styleUrl = makeFillStyle(color, colorMap,
+                                          lineColor,
+                                          !lineColorAttr.equals("none"),
+                                          folder, styleCnt);
                     styleUrls.add(styleUrl);
                 } else {
                     styleUrls.add(styleName);
@@ -473,10 +492,9 @@ public class FeatureCollection {
                     String fieldName  = fieldValues.get(i);
                     String operator   = fieldValues.get(i + 1);
                     String fieldValue = fieldValues.get(i + 2);
-                    for (int j = 0; j < fieldNames.length; j++) {
-                        if (fieldNames[j].equalsIgnoreCase(fieldName)) {
-                            DbaseData dbaseField = dbfile.getField(j);
-                            Object    obj        = dbaseField.getData(cnt);
+                    for (DbaseDataWrapper wrapper : fieldDatum) {
+                        if (wrapper.getName().equalsIgnoreCase(fieldName)) {
+                            Object obj = wrapper.getData(cnt);
                             if ((obj instanceof Double)
                                     || (obj instanceof Integer)) {
                                 double v = Double.parseDouble(fieldValue);
@@ -518,7 +536,6 @@ public class FeatureCollection {
         }
 
         return root;
-
     }
 
 

@@ -22,7 +22,7 @@ import org.ramadda.repository.Link;
 import org.ramadda.repository.Repository;
 import org.ramadda.repository.Request;
 import org.ramadda.repository.Result;
-import org.ramadda.repository.metadata.Metadata;
+import org.ramadda.repository.metadata.*;
 import org.ramadda.repository.output.JsonOutputHandler;
 import org.ramadda.repository.output.KmlOutputHandler;
 import org.ramadda.repository.output.OutputHandler;
@@ -56,6 +56,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.List;
+import java.util.Properties;
 
 
 /**
@@ -88,11 +89,11 @@ public class ShapefileOutputHandler extends OutputHandler implements WikiConstan
                        OutputType.TYPE_VIEW, "", ICON_TABLE);
 
 
-    /** _more_          */
+    /** _more_ */
     public static final DecimalFormat decimalFormat =
         new DecimalFormat("#,##0.#");
 
-    /** _more_          */
+    /** _more_ */
     public static final DecimalFormat intFormat = new DecimalFormat("#,###");
 
 
@@ -178,20 +179,40 @@ public class ShapefileOutputHandler extends OutputHandler implements WikiConstan
 
         EsriShapefile shapefile =
             new EsriShapefile(entry.getFile().toString());
-        DbaseFile   dbfile     = shapefile.getDbFile();
-        String      nameField  = null;
-        DbaseData[] dbd        = null;
-        String[]    fieldNames = null;
-
-        String      schemaName;
-        String      schemaId;
-
-        HashMap     props = new HashMap<String, Object>();
+        DbaseFile              dbfile    = shapefile.getDbFile();
+        DbaseDataWrapper       nameField = null;
+        String                 schemaName;
+        String                 schemaId;
+        List<DbaseDataWrapper> fieldDatum = null;
+        HashMap                props      = new HashMap<String, Object>();
         props.put("dbfile", dbfile);
         props.put("shapefile", shapefile);
-        Metadata colorBy = null;
-        List<Metadata> metadataList =
-            getMetadataManager().findMetadata(request, entry,
+        Metadata         colorBy = null;
+        List<Metadata>   metadataList;
+
+        Properties       properties  = null;
+        List<String>     extraFields = null;
+        String           extraKey    = null;
+        DbaseDataWrapper keyWrapper  = null;
+        metadataList = getMetadataManager().findMetadata(request, entry,
+                "shapefile_properties", true);
+        if ((metadataList != null) && (metadataList.size() > 0)) {
+            properties = new Properties();
+            Metadata        metadata = metadataList.get(0);
+            MetadataType    type     = getMetadataManager().getType(metadata);
+            MetadataElement element  = type.getChildren().get(0);
+            File            f        = type.getFile(entry, metadata, element);
+            getRepository().loadProperties(properties, f.toString());
+            String fields = (String) properties.get("fields");
+            if (fields != null) {
+                extraFields = StringUtil.split(fields, ",");
+            }
+            extraKey = (String) properties.get("key");
+        }
+
+
+
+        metadataList = getMetadataManager().findMetadata(request, entry,
                 "shapefile_color", true);
         if ((metadataList != null) && (metadataList.size() > 0)) {
             colorBy = metadataList.get(0);
@@ -224,27 +245,42 @@ public class ShapefileOutputHandler extends OutputHandler implements WikiConstan
                 + "_" + (int) (Math.random() * 1000);
             */
         }
+
+
         if (dbfile != null) {
-            fieldNames = dbfile.getFieldNames();
-            int nfld = fieldNames.length;
-            // look for a field with "NAME in it
-            dbd = new DbaseData[nfld];
+            String[] fieldNames = dbfile.getFieldNames();
+            fieldDatum = new ArrayList<DbaseDataWrapper>();
+            for (int j = 0; j < fieldNames.length; j++) {
+                DbaseDataWrapper dbd = new DbaseDataWrapper(fieldNames[j],
+                                           dbfile.getField(j));
+                if ((extraKey != null)
+                        && dbd.getName().equalsIgnoreCase(extraKey)) {
+                    keyWrapper = dbd;
+                }
+                fieldDatum.add(dbd);
+            }
+            if (extraFields != null) {
+                for (String extraField : extraFields) {
+                    fieldDatum.add(new DbaseDataWrapper(extraField,
+                            keyWrapper, properties));
+                }
+            }
             int firstChar = -1;
-            for (int field = 0; field < nfld; field++) {
-                dbd[field] = dbfile.getField(field);
-                if (dbd[field].getType() == DbaseData.TYPE_CHAR) {
+            for (int i = 0; i < fieldDatum.size(); i++) {
+                DbaseDataWrapper dbd = fieldDatum.get(i);
+                if (dbd.getType() == DbaseData.TYPE_CHAR) {
                     if (firstChar < 0) {
-                        firstChar = field;
+                        firstChar = i;
                     }
-                    if (fieldNames[field].indexOf("NAME") >= 0) {
+                    if (dbd.getName().toLowerCase().indexOf("name") >= 0) {
                         if (nameField == null) {
-                            nameField = fieldNames[field];
+                            nameField = dbd;
                         }
                     }
                 }
             }
             if ((nameField == null) && (firstChar >= 0)) {
-                nameField = fieldNames[firstChar];
+                nameField = fieldDatum.get(firstChar);
             }
         }
 
@@ -262,11 +298,10 @@ public class ShapefileOutputHandler extends OutputHandler implements WikiConstan
             }
             HashMap<String, String[]> schema = new HashMap<String,
                                                    String[]>();
-            for (int i = 0; i < dbd.length; i++) {
-                DbaseData data  = dbd[i];
-                String[]  attrs = new String[4];
-                String    dtype = null;
-                switch (data.getType()) {
+            for (DbaseDataWrapper dbd : fieldDatum) {
+                String[] attrs = new String[4];
+                String   dtype = null;
+                switch (dbd.getType()) {
 
                   case DbaseData.TYPE_BOOLEAN :
                       dtype = "bool";
@@ -286,14 +321,16 @@ public class ShapefileOutputHandler extends OutputHandler implements WikiConstan
                 attrs[0] = KmlUtil.ATTR_TYPE;
                 attrs[1] = dtype;
                 attrs[2] = KmlUtil.ATTR_NAME;
-                attrs[3] = fieldNames[i];
-                schema.put(fieldNames[i], attrs);
+                attrs[3] = dbd.getName();
+                schema.put(dbd.getName(), attrs);
             }
             props.put(FeatureCollection.PROP_SCHEMA, schema);
         }
         FeatureCollection fc = new FeatureCollection(entry.getName(),
                                    entry.getDescription(),
-                                   (HashMap<String, Object>) props);
+                                   (HashMap<String, Object>) props,
+                                   fieldDatum);
+        //        fc.setFieldProperties(properties);
 
         List          features   = shapefile.getFeatures();
         List<Feature> fcfeatures = new ArrayList<Feature>(features.size());
@@ -327,7 +364,7 @@ public class ShapefileOutputHandler extends OutputHandler implements WikiConstan
             String   name = "";
             if (dbfile != null) {
                 if (nameField != null) {
-                    name = dbfile.getField(nameField).getString(i).trim();
+                    name = nameField.getString(i).trim();
                 }
             }
             HashMap<String, Object> fprops = new HashMap<String, Object>();
@@ -335,18 +372,18 @@ public class ShapefileOutputHandler extends OutputHandler implements WikiConstan
                 fprops.put(FeatureCollection.PROP_SCHEMANAME, schemaName);
                 fprops.put(FeatureCollection.PROP_SCHEMAID, schemaId);
                 HashMap<String, Object> schemaData =
-                    new HashMap<String, Object>(fieldNames.length);
-                for (int j = 0; j < fieldNames.length; j++) {
+                    new HashMap<String, Object>(fieldDatum.size());
+                for (int j = 0; j < fieldDatum.size(); j++) {
                     // since shapefile parser makes no distinction between ints & doubles,
                     // this hack will fix that.
-                    Object data = dbd[j].getData(i);
+                    Object data = fieldDatum.get(j).getData(i);
                     if (data instanceof Double) {
                         double d = ((Double) data).doubleValue();
                         if ((int) d == d) {
                             data = new Integer((int) d);
                         }
                     }
-                    schemaData.put(fieldNames[j], data);
+                    schemaData.put(fieldDatum.get(j).getName(), data);
                 }
                 fprops.put(FeatureCollection.PROP_SCHEMADATA, schemaData);
             }
@@ -417,7 +454,8 @@ public class ShapefileOutputHandler extends OutputHandler implements WikiConstan
         }
         File file = getEntryManager().getCacheFile(entry, filename);
 
-        if (file.exists()) {
+
+        if (false && file.exists()) {
             Result result = new Result(new FileInputStream(file),
                                        KmlOutputHandler.MIME_KML);
             result.setReturnFilename(returnFile);
@@ -552,8 +590,6 @@ public class ShapefileOutputHandler extends OutputHandler implements WikiConstan
             return new Result("", sb);
         }
         Hashtable props      = getRepository().getPluginProperties();
-
-
         String[]  fieldNames = dbfile.getFieldNames();
         String[]  fieldnames = new String[fieldNames.length];
         for (int i = 0; i < fieldNames.length; i++) {
@@ -603,7 +639,6 @@ public class ShapefileOutputHandler extends OutputHandler implements WikiConstan
 
             String baseUrl = request.entryUrl(getRepository().URL_ENTRY_SHOW,
                                  entry);
-
 
             for (int j = 0; j < fieldNames.length; j++) {
                 DbaseData field = dbfile.getField(j);

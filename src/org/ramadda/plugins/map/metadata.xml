@@ -127,5 +127,12 @@ field_value2:#0000ff
       </element>
         </type>
 
+    <type
+       name="Shapefile Extra Properties"
+       id="shapefile_properties">
+      <element name="Property File" datatype="file" thumbnail="false"/>
+    </type>
+
+
     </handler>
 </metadata>
