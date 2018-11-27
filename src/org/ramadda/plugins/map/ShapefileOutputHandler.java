@@ -164,6 +164,87 @@ public class ShapefileOutputHandler extends OutputHandler implements WikiConstan
     }
 
     /**
+     * _more_
+     *
+     * @param request _more_
+     * @param entry _more_
+     *
+     * @return _more_
+     *
+     * @throws Exception _more_
+     */
+    public Properties getExtraProperties(Request request, Entry entry)
+            throws Exception {
+        List<Metadata> metadataList =
+            getMetadataManager().findMetadata(request, entry,
+                "shapefile_properties", true);
+        if ((metadataList != null) && (metadataList.size() > 0)) {
+            Properties      properties = new Properties();
+            Metadata        metadata   = metadataList.get(0);
+            MetadataType    type = getMetadataManager().getType(metadata);
+            MetadataElement element    = type.getChildren().get(0);
+            File            f = type.getFile(entry, metadata, element);
+            getRepository().loadProperties(properties, f.toString());
+
+            return properties;
+        }
+
+        return null;
+    }
+
+    /**
+     * _more_
+     *
+     * @param request _more_
+     * @param entry _more_
+     * @param dbfile _more_
+     *
+     * @return _more_
+     *
+     * @throws Exception _more_
+     */
+    public List<DbaseDataWrapper> getDatum(Request request, Entry entry,
+                                           DbaseFile dbfile)
+            throws Exception {
+        Properties             properties = getExtraProperties(request,
+                                                entry);
+        List<DbaseDataWrapper> fieldDatum = null;
+        if (dbfile != null) {
+            List<String> extraFields = null;
+            String       extraKey    = (properties != null)
+                                       ? (String) properties.get("key")
+                                       : null;
+            if (properties != null) {
+                String fields = (String) properties.get("fields");
+                if (fields != null) {
+                    extraFields = StringUtil.split(fields, ",");
+                }
+            }
+            DbaseDataWrapper keyWrapper = null;
+            String[]         fieldNames = dbfile.getFieldNames();
+            fieldDatum = new ArrayList<DbaseDataWrapper>();
+            for (int j = 0; j < fieldNames.length; j++) {
+                DbaseDataWrapper dbd = new DbaseDataWrapper(fieldNames[j],
+                                           dbfile.getField(j));
+                if ((extraKey != null)
+                        && dbd.getName().equalsIgnoreCase(extraKey)) {
+                    keyWrapper = dbd;
+                }
+                fieldDatum.add(dbd);
+            }
+            if (extraFields != null) {
+                for (String extraField : extraFields) {
+                    fieldDatum.add(new DbaseDataWrapper(extraField,
+                            keyWrapper, properties));
+                }
+            }
+        }
+
+        return fieldDatum;
+    }
+
+
+    /**
      * Make a FeatureCollection from the entry
      *
      * @param request  the Request
@@ -187,31 +268,8 @@ public class ShapefileOutputHandler extends OutputHandler implements WikiConstan
         HashMap                props      = new HashMap<String, Object>();
         props.put("dbfile", dbfile);
         props.put("shapefile", shapefile);
-        Metadata         colorBy = null;
-        List<Metadata>   metadataList;
-
-        Properties       properties  = null;
-        List<String>     extraFields = null;
-        String           extraKey    = null;
-        DbaseDataWrapper keyWrapper  = null;
-        metadataList = getMetadataManager().findMetadata(request, entry,
-                "shapefile_properties", true);
-        if ((metadataList != null) && (metadataList.size() > 0)) {
-            properties = new Properties();
-            Metadata        metadata = metadataList.get(0);
-            MetadataType    type     = getMetadataManager().getType(metadata);
-            MetadataElement element  = type.getChildren().get(0);
-            File            f        = type.getFile(entry, metadata, element);
-            getRepository().loadProperties(properties, f.toString());
-            String fields = (String) properties.get("fields");
-            if (fields != null) {
-                extraFields = StringUtil.split(fields, ",");
-            }
-            extraKey = (String) properties.get("key");
-        }
-
-
-
+        Metadata       colorBy = null;
+        List<Metadata> metadataList;
         metadataList = getMetadataManager().findMetadata(request, entry,
                 "shapefile_color", true);
         if ((metadataList != null) && (metadataList.size() > 0)) {
@@ -241,23 +299,7 @@ public class ShapefileOutputHandler extends OutputHandler implements WikiConstan
 
 
         if (dbfile != null) {
-            String[] fieldNames = dbfile.getFieldNames();
-            fieldDatum = new ArrayList<DbaseDataWrapper>();
-            for (int j = 0; j < fieldNames.length; j++) {
-                DbaseDataWrapper dbd = new DbaseDataWrapper(fieldNames[j],
-                                           dbfile.getField(j));
-                if ((extraKey != null)
-                        && dbd.getName().equalsIgnoreCase(extraKey)) {
-                    keyWrapper = dbd;
-                }
-                fieldDatum.add(dbd);
-            }
-            if (extraFields != null) {
-                for (String extraField : extraFields) {
-                    fieldDatum.add(new DbaseDataWrapper(extraField,
-                            keyWrapper, properties));
-                }
-            }
+            fieldDatum = getDatum(request, entry, dbfile);
             int firstChar = -1;
             for (int i = 0; i < fieldDatum.size(); i++) {
                 DbaseDataWrapper dbd = fieldDatum.get(i);
@@ -323,7 +365,6 @@ public class ShapefileOutputHandler extends OutputHandler implements WikiConstan
                                    entry.getDescription(),
                                    (HashMap<String, Object>) props,
                                    fieldDatum);
-        //        fc.setFieldProperties(properties);
 
         List          features   = shapefile.getFeatures();
         List<Feature> fcfeatures = new ArrayList<Feature>(features.size());
@@ -582,20 +623,18 @@ public class ShapefileOutputHandler extends OutputHandler implements WikiConstan
 
             return new Result("", sb);
         }
-        Hashtable props      = getRepository().getPluginProperties();
-        String[]  fieldNames = dbfile.getFieldNames();
-        String[]  fieldnames = new String[fieldNames.length];
-        for (int i = 0; i < fieldNames.length; i++) {
-            fieldnames[i] = fieldNames[i].toLowerCase();
-        }
+        Hashtable              props = getRepository().getPluginProperties();
+
+        List<DbaseDataWrapper> fieldDatum = getDatum(request, entry, dbfile);
+
 
         if (table) {
             sb.append("<table border=1>");
             sb.append("<tr>");
-            sb.append(HtmlUtils.td(HtmlUtils.b("Field #"),
+            sb.append(HtmlUtils.td(HtmlUtils.b("Field&nbsp;#"),
                                    HtmlUtils.style("padding:5px;")));
-            for (int j = 0; j < fieldNames.length; j++) {
-                sb.append(HtmlUtils.td(HtmlUtils.b(fieldNames[j]),
+            for (DbaseDataWrapper dbd : fieldDatum) {
+                sb.append(HtmlUtils.td(HtmlUtils.b(dbd.getLabel()),
                                        HtmlUtils.style("padding:5px;")));
             }
             sb.append("</tr>");
@@ -625,7 +664,7 @@ public class ShapefileOutputHandler extends OutputHandler implements WikiConstan
                                        HtmlUtils.style("padding:5px;")));
             } else {
                 sb.append("<li> ");
-                sb.append("Field #" + (i + 1));
+                sb.append("Field&nbsp;#" + (i + 1));
                 sb.append("<ul>\n");
             }
             //            sb.append(HtmlUtils.script("function fieldSelect(
@@ -633,17 +672,16 @@ public class ShapefileOutputHandler extends OutputHandler implements WikiConstan
             String baseUrl = request.entryUrl(getRepository().URL_ENTRY_SHOW,
                                  entry);
 
-            for (int j = 0; j < fieldNames.length; j++) {
-                DbaseData field = dbfile.getField(j);
-                String    value;
-                String    extra = "";
-                String    url   = null;
-                String    key   = fieldnames[j];
-                if (field.getType() == field.TYPE_NUMERIC) {
-                    value = format(field.getDouble(i));
+            for (DbaseDataWrapper dbd : fieldDatum) {
+                String value;
+                String extra = "";
+                String url   = null;
+                String key   = dbd.getLowerCaseName();
+                if (dbd.getType() == DbaseData.TYPE_NUMERIC) {
+                    value = format(dbd.getDouble(i));
                     extra = " align=right ";
                 } else {
-                    value = "" + field.getData(i);
+                    value = "" + dbd.getData(i);
                     url = baseUrl + "&"
                           + HtmlUtils.arg(ATTR_SELECTFIELDS,
                                           key + ":=:" + value);
@@ -664,7 +702,7 @@ public class ShapefileOutputHandler extends OutputHandler implements WikiConstan
                             value, extra + HtmlUtils.style("padding:5px;")));
                 } else {
                     sb.append("<li><b>");
-                    sb.append(fieldNames[j]);
+                    sb.append(dbd.getLabel());
                     sb.append("</b>: ");
                     sb.append(value);
                 }

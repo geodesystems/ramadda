@@ -51,20 +51,26 @@ import java.util.Properties;
  *
  *
  * @version        $version$, Mon, Nov 26, '18
- * @author         Enter your name here...    
+ * @author         Enter your name here...
  */
 public class DbaseDataWrapper {
 
-    /** _more_          */
+    /** _more_ */
     DbaseData data;
 
-    /** _more_          */
+    /** _more_ */
     String name;
 
     /** _more_          */
-    DbaseDataWrapper keyWrapper;
+    String lcname;
 
     /** _more_          */
+    String label;
+
+    /** _more_ */
+    DbaseDataWrapper keyWrapper;
+
+    /** _more_ */
     Properties properties;
 
     /**
@@ -99,6 +105,32 @@ public class DbaseDataWrapper {
      */
     public String getName() {
         return name;
+    }
+
+    /**
+     * _more_
+     *
+     * @return _more_
+     */
+    public String getLowerCaseName() {
+        if (lcname == null) {
+            lcname = name.toLowerCase();
+        }
+
+        return lcname;
+    }
+
+    /**
+     * _more_
+     *
+     * @return _more_
+     */
+    public String getLabel() {
+        if (label == null) {
+            label = Utils.makeLabel(name);
+        }
+
+        return label;
     }
 
     /**
