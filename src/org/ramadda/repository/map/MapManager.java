@@ -1107,7 +1107,7 @@ public class MapManager extends RepositoryManager implements WikiConstants {
 
         boolean doCategories = Utils.getProperty(props, "doCategories", true);
         boolean details = request.get("mapdetails",
-                                      Utils.getProperty(props, "details",
+                                      Utils.getProperty(props, ATTR_DETAILS,
                                           false));
         boolean listentries = Utils.getProperty(props, ATTR_LISTENTRIES,
                                   false);
