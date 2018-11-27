@@ -119,7 +119,7 @@
 
 -->
 
-  <type name="geo_shapefile_fips"  description="Shapefile with FIPS Code"   super="geo_shapefile"  metadata="shapefile_display,shapefile_color">
+  <type name="geo_shapefile_fips"  description="Shapefile with FIPS Code"   super="geo_shapefile"  metadata="shapefile_display,shapefile_color" handler="org.ramadda.repository.type.GenericTypeHandler">
      <column name="fips" label="FIPS Code" canedit="true" showinhtml="true"/>
 </type>
 
