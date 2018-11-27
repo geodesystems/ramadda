@@ -119,6 +119,10 @@
 
 -->
 
+  <type name="geo_shapefile_fips"  description="Shapefile with FIPS Code"   super="geo_shapefile"  metadata="shapefile_display,shapefile_color">
+     <column name="fips" label="FIPS Code" canedit="true" showinhtml="true"/>
+</type>
+
   <type name="map_googlemap"  
         description="Google Map URL" 
         handler="org.ramadda.plugins.map.GoogleMapsTypeHandler" 
