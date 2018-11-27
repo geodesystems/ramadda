@@ -1,4 +1,63 @@
-set html {
+set blocks {
+<option value= "https://www2.census.gov/geo/tiger/GENZ2017/shp/cb_2017_01_bg_500k.zip">Alabama</option>
+  <option value= "https://www2.census.gov/geo/tiger/GENZ2017/shp/cb_2017_02_bg_500k.zip">Alaska</option>
+  <option value= "https://www2.census.gov/geo/tiger/GENZ2017/shp/cb_2017_04_bg_500k.zip"> Arizona</option>
+  <option value= "https://www2.census.gov/geo/tiger/GENZ2017/shp/cb_2017_05_bg_500k.zip"> Arkansas</option>
+  <option value= "https://www2.census.gov/geo/tiger/GENZ2017/shp/cb_2017_06_bg_500k.zip"> California</option>
+  <option value= "https://www2.census.gov/geo/tiger/GENZ2017/shp/cb_2017_08_bg_500k.zip"> Colorado</option>
+  <option value= "https://www2.census.gov/geo/tiger/GENZ2017/shp/cb_2017_09_bg_500k.zip"> Connecticut</option>
+  <option value= "https://www2.census.gov/geo/tiger/GENZ2017/shp/cb_2017_10_bg_500k.zip"> Delaware</option>
+  <option value= "https://www2.census.gov/geo/tiger/GENZ2017/shp/cb_2017_11_bg_500k.zip"> District of Columbia</option>
+  <option value= "https://www2.census.gov/geo/tiger/GENZ2017/shp/cb_2017_12_bg_500k.zip"> Florida</option>
+  <option value= "https://www2.census.gov/geo/tiger/GENZ2017/shp/cb_2017_13_bg_500k.zip"> Georgia</option>
+  <option value= "https://www2.census.gov/geo/tiger/GENZ2017/shp/cb_2017_15_bg_500k.zip"> Hawaii</option>
+  <option value= "https://www2.census.gov/geo/tiger/GENZ2017/shp/cb_2017_16_bg_500k.zip"> Idaho</option>
+  <option value= "https://www2.census.gov/geo/tiger/GENZ2017/shp/cb_2017_17_bg_500k.zip"> Illinois</option>
+  <option value= "https://www2.census.gov/geo/tiger/GENZ2017/shp/cb_2017_18_bg_500k.zip"> Indiana</option>
+  <option value= "https://www2.census.gov/geo/tiger/GENZ2017/shp/cb_2017_19_bg_500k.zip"> Iowa</option>
+  <option value= "https://www2.census.gov/geo/tiger/GENZ2017/shp/cb_2017_20_bg_500k.zip"> Kansas</option>
+  <option value= "https://www2.census.gov/geo/tiger/GENZ2017/shp/cb_2017_21_bg_500k.zip"> Kentucky</option>
+  <option value= "https://www2.census.gov/geo/tiger/GENZ2017/shp/cb_2017_22_bg_500k.zip"> Louisiana</option>
+  <option value= "https://www2.census.gov/geo/tiger/GENZ2017/shp/cb_2017_23_bg_500k.zip"> Maine</option>
+  <option value= "https://www2.census.gov/geo/tiger/GENZ2017/shp/cb_2017_24_bg_500k.zip"> Maryland</option>
+  <option value= "https://www2.census.gov/geo/tiger/GENZ2017/shp/cb_2017_25_bg_500k.zip"> Massachusetts</option>
+  <option value= "https://www2.census.gov/geo/tiger/GENZ2017/shp/cb_2017_26_bg_500k.zip"> Michigan</option>
+  <option value= "https://www2.census.gov/geo/tiger/GENZ2017/shp/cb_2017_27_bg_500k.zip"> Minnesota</option>
+  <option value= "https://www2.census.gov/geo/tiger/GENZ2017/shp/cb_2017_28_bg_500k.zip"> Mississippi</option>
+  <option value= "https://www2.census.gov/geo/tiger/GENZ2017/shp/cb_2017_29_bg_500k.zip"> Missouri</option>
+  <option value= "https://www2.census.gov/geo/tiger/GENZ2017/shp/cb_2017_30_bg_500k.zip"> Montana</option>
+  <option value= "https://www2.census.gov/geo/tiger/GENZ2017/shp/cb_2017_31_bg_500k.zip"> Nebraska</option>
+  <option value= "https://www2.census.gov/geo/tiger/GENZ2017/shp/cb_2017_32_bg_500k.zip"> Nevada</option>
+  <option value= "https://www2.census.gov/geo/tiger/GENZ2017/shp/cb_2017_33_bg_500k.zip"> New Hampshire</option>
+  <option value= "https://www2.census.gov/geo/tiger/GENZ2017/shp/cb_2017_34_bg_500k.zip"> New Jersey</option>
+  <option value= "https://www2.census.gov/geo/tiger/GENZ2017/shp/cb_2017_35_bg_500k.zip"> New Mexico</option>
+  <option value= "https://www2.census.gov/geo/tiger/GENZ2017/shp/cb_2017_36_bg_500k.zip"> New York</option>
+  <option value= "https://www2.census.gov/geo/tiger/GENZ2017/shp/cb_2017_37_bg_500k.zip"> North Carolina</option>
+  <option value= "https://www2.census.gov/geo/tiger/GENZ2017/shp/cb_2017_38_bg_500k.zip"> North Dakota</option>
+  <option value= "https://www2.census.gov/geo/tiger/GENZ2017/shp/cb_2017_39_bg_500k.zip"> Ohio</option>
+  <option value= "https://www2.census.gov/geo/tiger/GENZ2017/shp/cb_2017_40_bg_500k.zip"> Oklahoma</option>
+  <option value= "https://www2.census.gov/geo/tiger/GENZ2017/shp/cb_2017_41_bg_500k.zip"> Oregon</option>
+  <option value= "https://www2.census.gov/geo/tiger/GENZ2017/shp/cb_2017_42_bg_500k.zip"> Pennsylvania</option>
+  <option value= "https://www2.census.gov/geo/tiger/GENZ2017/shp/cb_2017_44_bg_500k.zip"> Rhode Island</option>
+  <option value= "https://www2.census.gov/geo/tiger/GENZ2017/shp/cb_2017_45_bg_500k.zip"> South Carolina</option>
+  <option value= "https://www2.census.gov/geo/tiger/GENZ2017/shp/cb_2017_46_bg_500k.zip"> South Dakota</option>
+  <option value= "https://www2.census.gov/geo/tiger/GENZ2017/shp/cb_2017_47_bg_500k.zip"> Tennessee</option>
+  <option value= "https://www2.census.gov/geo/tiger/GENZ2017/shp/cb_2017_48_bg_500k.zip"> Texas</option>
+  <option value= "https://www2.census.gov/geo/tiger/GENZ2017/shp/cb_2017_49_bg_500k.zip"> Utah</option>
+  <option value= "https://www2.census.gov/geo/tiger/GENZ2017/shp/cb_2017_50_bg_500k.zip"> Vermont</option>
+  <option value= "https://www2.census.gov/geo/tiger/GENZ2017/shp/cb_2017_51_bg_500k.zip"> Virginia</option>
+  <option value= "https://www2.census.gov/geo/tiger/GENZ2017/shp/cb_2017_53_bg_500k.zip"> Washington</option>
+  <option value= "https://www2.census.gov/geo/tiger/GENZ2017/shp/cb_2017_54_bg_500k.zip"> West Virginia</option>
+  <option value= "https://www2.census.gov/geo/tiger/GENZ2017/shp/cb_2017_55_bg_500k.zip">Wisconsin</option>
+  <option value= "https://www2.census.gov/geo/tiger/GENZ2017/shp/cb_2017_56_bg_500k.zip"> Wyoming</option>
+    <option value= "https://www2.census.gov/geo/tiger/GENZ2017/shp/cb_2017_60_bg_500k.zip"> American Samoa</option> 
+      <option value= "https://www2.census.gov/geo/tiger/GENZ2017/shp/cb_2017_66_bg_500k.zip"> Guam</option> 
+        <option value= "https://www2.census.gov/geo/tiger/GENZ2017/shp/cb_2017_69_bg_500k.zip"> Commonwealth of the Northern Mariana Islands</option> 
+  <option value= "https://www2.census.gov/geo/tiger/GENZ2017/shp/cb_2017_72_bg_500k.zip"> Puerto Rico</option>  
+    <option value= "https://www2.census.gov/geo/tiger/GENZ2017/shp/cb_2017_78_bg_500k.zip"> U.S. Virgin Islands</option> 
+    </select>}
+
+set tracts {
 <option value= "http://www2.census.gov/geo/tiger/GENZ2017/shp/cb_2017_01_tract_500k.zip">Alabama</option>
   <option value= "http://www2.census.gov/geo/tiger/GENZ2017/shp/cb_2017_02_tract_500k.zip">Alaska</option>
   <option value= "http://www2.census.gov/geo/tiger/GENZ2017/shp/cb_2017_04_tract_500k.zip"> Arizona</option>
@@ -61,13 +120,20 @@ proc state {abbr name fips lat lon} {
 }
 source dict.states.tcl
 source ~/bin/lib.tcl
-puts "<entries>"
-while {[regexp {.*?<option\s+value\s*=\s*"([^"]+?)">\s*([^<]+?)<(.*)$} $html match url name html]} {
-    regexp {.*cb_2017_([^_]+)_} $url match fips
-set c [xmlTag fips $fips [list]]
-puts [xmlTag entry $c [list type geo_shapefile_fips download true url $url name "$name Census Tracts"]]
+
+proc processHtml {html suffix} {
+    puts "<entries>"
+    while {[regexp {.*?<option\s+value\s*=\s*"([^"]+?)">\s*([^<]+?)<(.*)$} $html match url name html]} {
+        regexp {.*cb_2017_([^_]+)_} $url match fips
+        regsub http: $url https url
+         set c [xmlTag fips $fips [list encoded false]]
+         puts [xmlTag entry $c [list type geo_shapefile_fips download true url $url name "$name $suffix"]]
+     }
+     puts "</entries>"
 }
 
-puts "</entries>"
+
+#processHtml $tracts {Census Tracts}
+processHtml $blocks {Census Blocks}
 
 
