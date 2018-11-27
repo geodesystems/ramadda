@@ -61,14 +61,17 @@ public class DbaseDataWrapper {
     /** _more_ */
     String name;
 
-    /** _more_          */
+    /** _more_ */
     String lcname;
 
-    /** _more_          */
+    /** _more_ */
     String label;
 
     /** _more_ */
     DbaseDataWrapper keyWrapper;
+
+    /** _more_          */
+    List<DbaseDataWrapper> combine;
 
     /** _more_ */
     Properties properties;
@@ -78,10 +81,16 @@ public class DbaseDataWrapper {
      *
      * @param name _more_
      * @param data _more_
+     * @param properties _more_
      */
-    public DbaseDataWrapper(String name, DbaseData data) {
-        this.name = name;
-        this.data = data;
+    public DbaseDataWrapper(String name, DbaseData data,
+                            Properties properties) {
+        this.name       = name;
+        this.data       = data;
+        this.properties = properties;
+        if (properties != null) {
+            this.label = (String) properties.get(name + ".label");
+        }
     }
 
     /**
@@ -96,6 +105,27 @@ public class DbaseDataWrapper {
         this.name       = name;
         this.keyWrapper = keyWrapper;
         this.properties = properties;
+        if (properties != null) {
+            this.label = (String) properties.get(name + ".label");
+        }
+    }
+
+    /**
+     * _more_
+     *
+     * @return _more_
+     */
+    public String toString() {
+        return name;
+    }
+
+    /**
+     * _more_
+     *
+     * @param c _more_
+     */
+    public void setCombine(List<DbaseDataWrapper> c) {
+        this.combine = c;
     }
 
     /**
@@ -118,6 +148,15 @@ public class DbaseDataWrapper {
         }
 
         return lcname;
+    }
+
+    /**
+     * _more_
+     *
+     * @param l _more_
+     */
+    public void setLabel(String l) {
+        this.label = l;
     }
 
     /**
@@ -181,6 +220,13 @@ public class DbaseDataWrapper {
                 if (v != null) {
                     return v;
                 }
+            } else if (combine != null) {
+                StringBuilder sb = new StringBuilder();
+                for (DbaseDataWrapper dbd : combine) {
+                    sb.append(dbd.getString(index));
+                }
+
+                return sb.toString();
             }
 
             return "NA";

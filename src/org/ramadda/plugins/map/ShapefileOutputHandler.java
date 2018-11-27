@@ -41,6 +41,7 @@ import ucar.unidata.gis.shapefile.DbaseFile;
 import ucar.unidata.gis.shapefile.EsriShapefile;
 import ucar.unidata.util.IOUtil;
 
+import ucar.unidata.util.Misc;
 import ucar.unidata.util.StringUtil;
 import ucar.unidata.xml.XmlUtil;
 
@@ -155,9 +156,9 @@ public class ShapefileOutputHandler extends OutputHandler implements WikiConstan
         } else if (outputType.equals(OUTPUT_GEOJSON)) {
             return outputGeoJson(request, entry);
         } else if (outputType.equals(OUTPUT_FIELDS_LIST)) {
-            return outputFields(request, entry, false);
+            return outputFields(request, entry, false, OUTPUT_FIELDS_LIST);
         } else if (outputType.equals(OUTPUT_FIELDS_TABLE)) {
-            return outputFields(request, entry, true);
+            return outputFields(request, entry, true, OUTPUT_FIELDS_TABLE);
         }
 
         return null;
@@ -179,12 +180,13 @@ public class ShapefileOutputHandler extends OutputHandler implements WikiConstan
             getMetadataManager().findMetadata(request, entry,
                 "shapefile_properties", true);
         if ((metadataList != null) && (metadataList.size() > 0)) {
-            Properties      properties = new Properties();
-            Metadata        metadata   = metadataList.get(0);
-            MetadataType    type = getMetadataManager().getType(metadata);
-            MetadataElement element    = type.getChildren().get(0);
-            File            f = type.getFile(entry, metadata, element);
-            getRepository().loadProperties(properties, f.toString());
+            Properties properties = new Properties();
+            for (Metadata metadata : metadataList) {
+                MetadataType    type = getMetadataManager().getType(metadata);
+                MetadataElement element = type.getChildren().get(0);
+                File            f = type.getFile(entry, metadata, element);
+                getRepository().loadProperties(properties, f.toString());
+            }
 
             return properties;
         }
@@ -223,19 +225,43 @@ public class ShapefileOutputHandler extends OutputHandler implements WikiConstan
             DbaseDataWrapper keyWrapper = null;
             String[]         fieldNames = dbfile.getFieldNames();
             fieldDatum = new ArrayList<DbaseDataWrapper>();
+            Hashtable<String, DbaseDataWrapper> wrapperMap =
+                new Hashtable<String, DbaseDataWrapper>();
             for (int j = 0; j < fieldNames.length; j++) {
-                DbaseDataWrapper dbd = new DbaseDataWrapper(fieldNames[j],
-                                           dbfile.getField(j));
-                if ((extraKey != null)
-                        && dbd.getName().equalsIgnoreCase(extraKey)) {
-                    keyWrapper = dbd;
+                DbaseDataWrapper dbd =
+                    new DbaseDataWrapper(fieldNames[j].toLowerCase(),
+                                         dbfile.getField(j), properties);
+                wrapperMap.put(dbd.getName(), dbd);
+                if (properties != null) {
+                    if (Misc.equals((String) properties.get(dbd.getName()
+                            + ".drop"), "true")) {
+                        continue;
+                    }
                 }
                 fieldDatum.add(dbd);
             }
             if (extraFields != null) {
+                if (extraKey != null) {
+                    keyWrapper = wrapperMap.get(extraKey);
+                }
                 for (String extraField : extraFields) {
-                    fieldDatum.add(new DbaseDataWrapper(extraField,
-                            keyWrapper, properties));
+                    DbaseDataWrapper dbd = new DbaseDataWrapper(extraField,
+                                               keyWrapper, properties);
+                    String combine = (String) properties.get(extraField
+                                         + ".combine");
+                    if (combine != null) {
+                        List<DbaseDataWrapper> combineList = new ArrayList();
+                        for (String id :
+                                StringUtil.split(combine, ",", true, true)) {
+                            DbaseDataWrapper other = wrapperMap.get(id);
+                            if (other != null) {
+                                combineList.add(other);
+                            }
+                        }
+                        dbd.setCombine(combineList);
+                    }
+                    fieldDatum.add(dbd);
+                    wrapperMap.put(dbd.getName(), dbd);
                 }
             }
         }
@@ -602,12 +628,14 @@ public class ShapefileOutputHandler extends OutputHandler implements WikiConstan
      * @param request  the request
      * @param entry  the entry
      * @param table _more_
+     * @param output _more_
      *
      * @return the GeoJSON
      *
      * @throws Exception _more_
      */
-    private Result outputFields(Request request, Entry entry, boolean table)
+    private Result outputFields(Request request, Entry entry, boolean table,
+                                OutputType output)
             throws Exception {
 
         EsriShapefile shapefile =
@@ -627,6 +655,67 @@ public class ShapefileOutputHandler extends OutputHandler implements WikiConstan
 
         List<DbaseDataWrapper> fieldDatum = getDatum(request, entry, dbfile);
 
+        String searchFieldId = request.getString("searchfield",
+                                   (String) null);
+        String searchText = request.getString("searchtext", (String) null);
+        String searchtext = null;
+        //        System.err.println("search:" + searchFieldId +"=" + searchText);
+        String baseUrl = request.entryUrl(getRepository().URL_ENTRY_SHOW,
+                                          entry) + "&output=" + output;
+        String           stepUrl     = baseUrl;
+        DbaseDataWrapper searchField = null;
+        if ((searchFieldId != null) && (searchText != null)) {
+            stepUrl += "&" + HtmlUtils.arg("searchfield", searchFieldId)
+                       + "&" + HtmlUtils.arg("searchtext", searchText);
+            searchtext = searchText.toLowerCase();
+            for (DbaseDataWrapper dbd : fieldDatum) {
+                if (dbd.getName().equals(searchFieldId)) {
+                    searchField = dbd;
+
+                    break;
+                }
+            }
+        }
+        if (searchField != null) {
+            sb.append("Searching for " + searchField.getLabel()
+                      + " contains " + searchText);
+            sb.append("<br>");
+        }
+
+        int  start    = request.get("start", 0);
+        int  i        = start;
+        List features = shapefile.getFeatures();
+        int  max      = request.get("max", 100);
+        HtmlUtils.open(sb, "div", HtmlUtils.cssClass("black_href"));
+        sb.append(features.size() + " Features&nbsp;&nbsp;");
+        if (start > 0) {
+            int prevStart = Math.max(0, start - max);
+            HtmlUtils.href(
+                sb, stepUrl + "&"
+                + HtmlUtils.args(
+                    "start", "" + prevStart, "max", ""
+                    + max), "Previous", HtmlUtils.style("color:#000000;"));
+            sb.append("&nbsp;&nbsp;");
+        }
+        if (i + max < features.size()) {
+            int nextStart = start + max;
+            HtmlUtils.href(
+                sb, stepUrl + "&"
+                + HtmlUtils.args(
+                    "start", "" + (nextStart), "max", ""
+                    + max), "Next", HtmlUtils.style("color:#000000;"));
+        }
+
+
+        String searchUrl = baseUrl + "&"
+                           + HtmlUtils.args("start", "" + start, "max",
+                                            "" + max);
+        sb.append(
+            HtmlUtils.script(
+                "\nfunction shapefileSearch(field) {\nvar shapefileSearchUrl='"
+                + searchUrl
+                + "';\nvar text=prompt('Search for');\nif(text) window.location.href=shapefileSearchUrl+'&' + HtmlUtil.urlArg('searchfield',field)+'&' +HtmlUtil.urlArg('searchtext',text);}\n"));
+        //        System.err.println(sb);
 
         if (table) {
             sb.append("<table border=1>");
@@ -634,27 +723,43 @@ public class ShapefileOutputHandler extends OutputHandler implements WikiConstan
             sb.append(HtmlUtils.td(HtmlUtils.b("Field&nbsp;#"),
                                    HtmlUtils.style("padding:5px;")));
             for (DbaseDataWrapper dbd : fieldDatum) {
-                sb.append(HtmlUtils.td(HtmlUtils.b(dbd.getLabel()),
-                                       HtmlUtils.style("padding:5px;")));
+                String label = HtmlUtils.mouseClickHref("shapefileSearch('"
+                                   + dbd.getName() + "')", dbd.getLabel());
+                sb.append(HtmlUtils
+                    .td(HtmlUtils
+                        .div(label, HtmlUtils
+                            .attr("title", "id:" + dbd.getName()) + HtmlUtils
+                            .style("font-weight:bold;padding:5px;text-align:center;")), HtmlUtils
+                                .attr("align", "center")));
             }
             sb.append("</tr>");
         } else {
             sb.append("<ul>\n");
         }
 
-
-        List features = shapefile.getFeatures();
-        for (int i = 0; i < features.size(); i++) {
-            if (i > 500) {
-                if (table) {
-                    sb.append("<tr>");
-                    sb.append(HtmlUtils.td("...",
-                                           HtmlUtils.style("padding:5px;")));
-                    sb.append("</tr>");
-                } else {
-                    sb.append("<li>...");
+        int    cnt       = 0;
+        String searchKey = (searchField != null)
+                           ? searchField.getLowerCaseName()
+                           : null;
+        for (; i < features.size(); i++) {
+            if (searchField != null) {
+                String value = searchField.getString(i).toLowerCase();
+                String fromProps = (String) props.get("kml." + searchKey
+                                       + "." + value);
+                if (fromProps != null) {
+                    value = fromProps + " (" + value + ")";
+                    value = value.toLowerCase();
                 }
+                if ((value.indexOf(searchText) >= 0)
+                        || (value.indexOf(searchtext) >= 0)) {
+                    //OK
+                } else {
+                    continue;
+                }
+            }
 
+            cnt++;
+            if (cnt > max) {
                 break;
             }
 
@@ -669,8 +774,8 @@ public class ShapefileOutputHandler extends OutputHandler implements WikiConstan
             }
             //            sb.append(HtmlUtils.script("function fieldSelect(
 
-            String baseUrl = request.entryUrl(getRepository().URL_ENTRY_SHOW,
-                                 entry);
+            String displayUrl =
+                request.entryUrl(getRepository().URL_ENTRY_SHOW, entry);
 
             for (DbaseDataWrapper dbd : fieldDatum) {
                 String value;
@@ -682,7 +787,7 @@ public class ShapefileOutputHandler extends OutputHandler implements WikiConstan
                     extra = " align=right ";
                 } else {
                     value = "" + dbd.getData(i);
-                    url = baseUrl + "&"
+                    url = displayUrl + "&"
                           + HtmlUtils.arg(ATTR_SELECTFIELDS,
                                           key + ":=:" + value);
                 }
@@ -693,17 +798,28 @@ public class ShapefileOutputHandler extends OutputHandler implements WikiConstan
                     value = fromProps + " (" + value + ")";
                 }
 
+                String rawValue = value;
                 if (url != null) {
-                    value = HtmlUtils.href(url, value);
+                    value = HtmlUtils.href(url, value,
+                                           HtmlUtils.attr("title",
+                                               "Show in map"));
                 }
                 if (table) {
-                    sb.append(
-                        HtmlUtils.td(
-                            value, extra + HtmlUtils.style("padding:5px;")));
+                    sb.append(HtmlUtils.td(HtmlUtils.div(value,
+                            HtmlUtils.style("padding:5px;")), extra));
                 } else {
-                    sb.append("<li><b>");
-                    sb.append(dbd.getLabel());
-                    sb.append("</b>: ");
+                    sb.append("<li>");
+                    String label = HtmlUtils.href(searchUrl + "&"
+                                       + HtmlUtils.args("searchfield",
+                                           dbd.getName(), "searchtext",
+                                           rawValue), dbd.getLabel(),
+                                               HtmlUtils.attr("title",
+                                                   "Search for value"));
+                    sb.append(
+                        HtmlUtils.span(
+                            label + ": ",
+                            HtmlUtils.attr("title", "id:" + dbd.getName())
+                            + HtmlUtils.style("font-weight:bold;")));
                     sb.append(value);
                 }
             }
@@ -718,6 +834,7 @@ public class ShapefileOutputHandler extends OutputHandler implements WikiConstan
         } else {
             sb.append("</ul>");
         }
+        HtmlUtils.close(sb, "div");
 
         return new Result("", sb);
 
