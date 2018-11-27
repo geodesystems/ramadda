@@ -938,6 +938,9 @@ public class TypeHandler extends RepositoryManager {
      */
     public boolean addToMap(Request request, Entry entry, MapInfo map)
             throws Exception {
+        if (parent != null) {
+            return parent.addToMap(request, entry, map);
+        }
         return true;
     }
 
