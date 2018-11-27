@@ -455,7 +455,7 @@ public class ShapefileOutputHandler extends OutputHandler implements WikiConstan
         File file = getEntryManager().getCacheFile(entry, filename);
 
 
-        if (false && file.exists()) {
+        if (file.exists()) {
             Result result = new Result(new FileInputStream(file),
                                        KmlOutputHandler.MIME_KML);
             result.setReturnFilename(returnFile);
