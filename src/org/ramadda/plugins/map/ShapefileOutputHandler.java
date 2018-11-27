@@ -219,10 +219,9 @@ public class ShapefileOutputHandler extends OutputHandler implements WikiConstan
             props.put("colorby", colorBy);
         }
 
+        String balloonTemplate = null;
         metadataList = getMetadataManager().findMetadata(request, entry,
                 "shapefile_display", true);
-
-        String balloonTemplate = null;
         if ((metadataList != null) && (metadataList.size() > 0)) {
             Metadata kmlDisplay = metadataList.get(0);
             schemaName      = schemaId = kmlDisplay.getAttr1();
@@ -238,12 +237,6 @@ public class ShapefileOutputHandler extends OutputHandler implements WikiConstan
             }
         } else {
             schemaId = schemaName = entry.getId();
-            /*IOUtil.getFileTail(
-                                            IOUtil.stripExtension(
-                                                                  entry.getResource().getPath()));
-            schemaId = "S_" + schemaName + System.currentTimeMillis()
-                + "_" + (int) (Math.random() * 1000);
-            */
         }
 
 

@@ -87,10 +87,10 @@ public class FeatureCollection {
     /** _more_ */
     public static final String PROP_BALLOON_TEMPLATE = "BalloonTemplate";
 
-    /** _more_          */
+    /** _more_ */
     private Properties fieldProperties;
 
-    /** _more_          */
+    /** _more_ */
     private List<DbaseDataWrapper> fieldDatum;
 
 
@@ -213,6 +213,8 @@ public class FeatureCollection {
      * @param doLine _more_
      * @param folder _more_
      * @param styleCnt _more_
+     * @param balloonSchema _more_
+     * @param balloonTemplate _more_
      *
      * @return _more_
      *
@@ -221,15 +223,21 @@ public class FeatureCollection {
     private String makeFillStyle(Color color,
                                  Hashtable<Color, String> colorMap,
                                  Color lineColor, boolean doLine,
-                                 Element folder, int[] styleCnt)
+                                 Element folder, int[] styleCnt,
+                                 String balloonSchema, String balloonTemplate)
             throws Exception {
         String styleUrl = colorMap.get(color);
         if (styleUrl == null) {
-            styleUrl = "#colorStyle" + (styleCnt[0]++);
+            styleUrl = "colorStyle" + (styleCnt[0]++);
             colorMap.put(color, styleUrl);
             //            System.err.println("making style:" + styleUrl);
             //make style
             Element style = KmlUtil.style(folder, styleUrl);
+            if (Utils.stringDefined(balloonTemplate)) {
+                balloonTemplate = balloonTemplate.replaceAll("\\["
+                        + balloonSchema + "/", "[" + styleUrl + "/");
+                makeBalloonForDB(style, balloonTemplate);
+            }
             Element polystyle = KmlUtil.makeElement(style,
                                     KmlUtil.TAG_POLYSTYLE);
             Element linestyle = KmlUtil.makeElement(style,
@@ -287,6 +295,7 @@ public class FeatureCollection {
             styleName = "" + (int) (Math.random() * 1000);
         }
 
+
         String        colorByField = null;
         Metadata      colorBy      = (Metadata) properties.get("colorby");
         DbaseFile     dbfile       = (DbaseFile) properties.get("dbfile");
@@ -295,6 +304,8 @@ public class FeatureCollection {
         List<Color>  colors    = null;
         List<String> styleUrls = null;
         int[]        styleCnt  = { 0 };
+        String balloonTemplate =
+            (String) properties.get(PROP_BALLOON_TEMPLATE);
 
         if ((colorBy != null) && (dbfile != null)) {
             Hashtable<Color, String> colorMap = new Hashtable<Color,
@@ -388,7 +399,8 @@ public class FeatureCollection {
                     String styleUrl = makeFillStyle(color, colorMap,
                                           lineColor,
                                           !lineColorAttr.equals("none"),
-                                          folder, styleCnt);
+                                          folder, styleCnt, styleName,
+                                          balloonTemplate);
                     styleUrls.add(styleUrl);
                 } else {
                     styleUrls.add(styleName);
@@ -397,8 +409,6 @@ public class FeatureCollection {
 
         }
 
-        String balloonTemplate =
-            (String) properties.get(PROP_BALLOON_TEMPLATE);
         KmlUtil.open(folder, false);
         if (getDescription().length() > 0) {
             KmlUtil.description(folder, getDescription());
