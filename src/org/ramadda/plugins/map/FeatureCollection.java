@@ -661,16 +661,15 @@ public class FeatureCollection {
             sb.append(template);
         } else {
             sb.append("<table cellpadding=\"5\" border=\"0\">\n");
-            HashMap<String, String[]> schema =
-                (HashMap<String, String[]>) properties.get(PROP_SCHEMA);
-            for (String fieldName : schema.keySet()) {
+            //            HashMap<String, String[]> schema =   (HashMap<String, String[]>) properties.get(PROP_SCHEMA);
+            for (DbaseDataWrapper dbd : fieldDatum) {
                 //            String label = props.get
                 sb.append("<tr><td align=right><b>");
-                sb.append(Utils.makeLabel(fieldName));
+                sb.append(dbd.getLabel());
                 sb.append(":</b>&nbsp;&nbsp;</td><td>$[");
                 sb.append(properties.get(PROP_SCHEMANAME));
                 sb.append("/");
-                sb.append(fieldName.toLowerCase());
+                sb.append(dbd.getName());
                 sb.append("]</td></tr>\n");
             }
             sb.append("</table>");
