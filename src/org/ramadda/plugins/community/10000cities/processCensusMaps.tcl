@@ -125,7 +125,7 @@ proc processHtml {html suffix} {
     puts "<entries>"
     while {[regexp {.*?<option\s+value\s*=\s*"([^"]+?)">\s*([^<]+?)<(.*)$} $html match url name html]} {
         regexp {.*cb_2017_([^_]+)_} $url match fips
-        regsub http: $url https url
+        regsub http: $url https: url
          set c [xmlTag fips $fips [list encoded false]]
          puts [xmlTag entry $c [list type geo_shapefile_fips download true url $url name "$name $suffix"]]
      }
