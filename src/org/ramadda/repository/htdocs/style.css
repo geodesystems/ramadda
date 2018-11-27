@@ -23,6 +23,10 @@ a.btn:link {color: #ffffFF;}
 .row {margin-right:0px;margin-left:0px;}
 h2 a,   h2 a:visited, h2 a:link  {color: black;}
 
+.black_href a, .black_href a:visited, .black_href a:link {
+      color:black;
+}
+
 .ramadda-page-title  {
   font-size:200%;
   text-align:center;
