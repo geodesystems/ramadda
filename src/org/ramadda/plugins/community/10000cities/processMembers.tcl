@@ -26,8 +26,8 @@ foreach member [$root selectNodes //member] {
         continue
     }
     set fips $::abbrToFips($abbr)
-    puts "${fips}$num.party=$party"
-    puts "${fips}$num.member=$name"
+    puts "map.${fips}$num.party=$party"
+    puts "map.${fips}$num.member=$name"
 }
 
 
