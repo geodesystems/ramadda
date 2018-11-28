@@ -352,7 +352,9 @@ function initMapFunctions(theMap) {
         });
         this.map.addLayer(geoJsonLayer);
         
+        theMap.showLoadingImage();
         geoJsonLayer.events.on({"loadend": function(e) {
+                    theMap.hideLoadingImage();
                     if(_this.centerOnMarkersCalled)
                         _this.centerOnMarkers(_this.dfltBounds,_this.centerOnMarkersForce);
                 }});
@@ -494,7 +496,9 @@ function initMapFunctions(theMap) {
                 })
             })
         });
+        theMap.showLoadingImage();
         kmlLayer.events.on({"loadend": function(e) {
+                    _this.hideLoadingImage();
                     if(_this.centerOnMarkersCalled) {
                         _this.centerOnMarkers(_this.dfltBounds,_this.centerOnMarkersForce);
                     }
@@ -1646,6 +1650,29 @@ function initMapFunctions(theMap) {
         this.map.setCenter(mymarker.lonlat);
         this.showMarkerPopup(mymarker);
     }
+
+                                           
+    theMap.hideLoadingImage = function() {
+        if(this.loadingImage) {
+            this.loadingImage.style.visibility="hidden";
+        }
+    }
+
+    theMap.showLoadingImage = function() {
+        sz = new OpenLayers.Size();
+        sz.h = 50;
+        sz.w = 50;
+        width = this.map.viewPortDiv.offsetWidth;
+        height = this.map.viewPortDiv.offsetHeight;
+        position = new OpenLayers.Pixel(width/2-sz.w/2,height/2-sz.h/2);
+        this.loadingImage  = OpenLayers.Util.createImage("loadingimage",
+                                          position,
+                                          sz,
+                                          ramaddaBaseUrl + '/icons/progress.gif');
+        this.loadingImage.style.zIndex = 1000;
+        this.map.viewPortDiv.appendChild(this.loadingImage);
+    }
+
 
     // bounds are in lat/lon
     theMap.centerOnMarkers = function(dfltBounds, force) {
