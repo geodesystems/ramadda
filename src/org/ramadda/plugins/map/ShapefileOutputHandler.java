@@ -209,7 +209,8 @@ public class ShapefileOutputHandler extends OutputHandler implements WikiConstan
                                            DbaseFile dbfile)
             throws Exception {
         Properties             properties = getExtraProperties(request,
-                                                entry);
+                                                               entry);
+        Properties pluginProperties = getRepository().getPluginProperties();
         List<DbaseDataWrapper> fieldDatum = null;
         if (dbfile != null) {
             List<String> extraFields = null;
@@ -230,7 +231,7 @@ public class ShapefileOutputHandler extends OutputHandler implements WikiConstan
             for (int j = 0; j < fieldNames.length; j++) {
                 DbaseDataWrapper dbd =
                     new DbaseDataWrapper(fieldNames[j].toLowerCase(),
-                                         dbfile.getField(j), properties);
+                                         dbfile.getField(j), properties, pluginProperties);
                 wrapperMap.put(dbd.getName(), dbd);
                 if (properties != null) {
                     if (Misc.equals((String) properties.get("map." + dbd.getName()
@@ -246,7 +247,7 @@ public class ShapefileOutputHandler extends OutputHandler implements WikiConstan
                 }
                 for (String extraField : extraFields) {
                     DbaseDataWrapper dbd = new DbaseDataWrapper(extraField,
-                                               keyWrapper, properties);
+                                                                keyWrapper, properties, pluginProperties);
                     String combine = (String) properties.get("map." + extraField
                                          + ".combine");
                     if (combine != null) {

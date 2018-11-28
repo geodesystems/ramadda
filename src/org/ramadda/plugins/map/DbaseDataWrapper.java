@@ -84,13 +84,18 @@ public class DbaseDataWrapper {
      * @param properties _more_
      */
     public DbaseDataWrapper(String name, DbaseData data,
-                            Properties properties) {
+                            Properties properties, Properties pluginProperties) {
         this.name       = name;
         this.data       = data;
         this.properties = properties;
         if (properties != null) {
             this.label = (String) properties.get("map." + name.toLowerCase() + ".label");
         }
+        if(this.label == null && pluginProperties!=null) {
+            this.label = (String) pluginProperties.get("map." + name.toLowerCase() + ".label");
+        }
+            
+
     }
 
     /**
@@ -101,12 +106,15 @@ public class DbaseDataWrapper {
      * @param properties _more_
      */
     public DbaseDataWrapper(String name, DbaseDataWrapper keyWrapper,
-                            Properties properties) {
+                            Properties properties, Properties pluginProperties) {
         this.name       = name;
         this.keyWrapper = keyWrapper;
         this.properties = properties;
         if (properties != null) {
             this.label = (String) properties.get("map." + name.toLowerCase() + ".label");
+        }
+        if(this.label == null && pluginProperties!=null) {
+            this.label = (String) pluginProperties.get("map." + name.toLowerCase() + ".label");
         }
     }
 
