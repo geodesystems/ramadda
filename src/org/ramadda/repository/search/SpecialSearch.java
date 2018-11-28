@@ -468,7 +468,7 @@ public class SpecialSearch extends RepositoryManager implements RequestHandler {
                             + "0";
         map.addJS(map.getVariableName() + ".setSelection(" + initParams
                   + ");\n");
-        map.centerOn(bounds);
+        map.centerOn(bounds, true);
 
 
         List<String> tabsToUse = tabs;
