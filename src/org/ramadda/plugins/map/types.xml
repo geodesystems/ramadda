@@ -139,6 +139,22 @@
 </type>
 
 
+  <type name="geo_geojson"  description="GeoJson File"   handler="org.ramadda.plugins.map.GeoJsonTypeHandler" pattern="(.*\.geojson$)" metadata="map_style">
+     <property name="icon" value="/icons/map.png"/>
+<wiki>
++section title={{name}}
+{{description wikify="true"}}
++row
++col-md-2
+-col
++col-md-8
+{{map width="100%" height="450" details="true"}}
+-col
+-row
+{{information}}
+-section
+</wiki>
+   </type>
 
 
 </types>

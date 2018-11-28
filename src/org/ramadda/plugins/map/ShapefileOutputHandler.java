@@ -304,6 +304,7 @@ public class ShapefileOutputHandler extends OutputHandler implements WikiConstan
         }
 
         String balloonTemplate = null;
+
         metadataList = getMetadataManager().findMetadata(request, entry,
                 "shapefile_display", true);
         if ((metadataList != null) && (metadataList.size() > 0)) {
@@ -312,12 +313,6 @@ public class ShapefileOutputHandler extends OutputHandler implements WikiConstan
             balloonTemplate = kmlDisplay.getAttr2();
             if ( !Utils.stringDefined(balloonTemplate)) {
                 balloonTemplate = null;
-            }
-            if (Utils.stringDefined(kmlDisplay.getAttr3())) {
-                props.put("lineColor", kmlDisplay.getAttr3());
-            }
-            if (Utils.stringDefined(kmlDisplay.getAttr4())) {
-                props.put("fillColor", kmlDisplay.getAttr4());
             }
         } else {
             schemaId = schemaName = entry.getId();
@@ -916,4 +911,37 @@ public class ShapefileOutputHandler extends OutputHandler implements WikiConstan
 
         return tag;
     }
+
+
+    public static String makeMapStyle(Request request, Entry entry) throws Exception {
+        List<Metadata> metadataList = request.getRepository().getMetadataManager().findMetadata(request, entry, "map_style", true);
+        List<String> values = new ArrayList<String>();
+        if ((metadataList != null) && (metadataList.size() > 0)) {
+            Metadata kmlDisplay = metadataList.get(0);
+            if (Utils.stringDefined(kmlDisplay.getAttr1())) {
+                values.add("strokeColor");
+                values.add(kmlDisplay.getAttr1());
+            }
+            if (Utils.stringDefined(kmlDisplay.getAttr2())) {
+                values.add("fillColor");
+                values.add(kmlDisplay.getAttr2());
+            }
+            if (Utils.stringDefined(kmlDisplay.getAttr3())) {
+                values.add("select_strokeColor");
+                values.add(kmlDisplay.getAttr3());
+            }
+            if (Utils.stringDefined(kmlDisplay.getAttr4())) {
+                values.add("select_fillColor");
+                values.add(kmlDisplay.getAttr4());
+            }
+            if (Utils.stringDefined(kmlDisplay.getAttr(5))) {
+                values.add("strokeWidth");
+                values.add(kmlDisplay.getAttr(5));
+            }
+        }
+        return Json.mapAndQuote(values);
+    }
+
+
+
 }

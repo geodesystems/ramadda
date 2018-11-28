@@ -42,14 +42,6 @@ Note: all field names are lower case.
         </suffix>
 
       </element>
-            <element
-         id="line_color"
-         name="Line Color"
-         suffix="e.g., lightgray, red, #ff6600, etc"/>
-            <element
-         id="fill_color"
-         name="Fill Color"
-         suffix="e.g., lightgray, red, #ff6600, etc"/>
         </type>
 
 
@@ -132,6 +124,34 @@ field_value2:#0000ff
        id="shapefile_properties">
       <element name="Property File" datatype="file" thumbnail="false"/>
     </type>
+
+    <type
+       id="map_style"
+       name="Map Style"
+       showinhtml="false"
+       values="">
+            <element
+         id="line_color"
+         name="Line Color"
+         suffix="e.g., lightgray, red, #ff6600, etc"/>
+            <element
+         id="fill_color"
+         name="Fill Color"
+         suffix="e.g., lightgray, red, #ff6600, etc"/>
+            <element
+         id="select_line_color"
+         name="Select Line Color"
+         suffix="e.g., lightgray, red, #ff6600, etc"/>
+            <element
+         id="select_fill_color"
+         name="Select Fill Color"
+         suffix="e.g., lightgray, red, #ff6600, etc"/>
+            <element
+         id="line_width"
+         name="Line Width"
+         suffix=""/>
+        </type>
+
 
 
     </handler>

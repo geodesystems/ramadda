@@ -373,7 +373,7 @@ public class KmlTypeHandler extends GenericTypeHandler {
             throws Exception {
         map.addKmlUrl(entry.getName(),
                       getEntryManager().getEntryResourceUrl(request, entry,
-                          false), true);
+                                                            false), true,null);
 
         return false;
     }
