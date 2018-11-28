@@ -1124,6 +1124,9 @@ public class MapManager extends RepositoryManager implements WikiConstants {
         if(viewBounds!=null && viewBounds.equals("<bounds>")) {
             viewBounds = mainEntry.getBoundsString();
         }
+        if(request.get("mapsubset",false)) {
+            viewBounds = null;
+        }
 
         MapInfo map = createMap(request, width, height, false, null);
         if (map == null) {

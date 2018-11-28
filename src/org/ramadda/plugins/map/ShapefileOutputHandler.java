@@ -784,8 +784,10 @@ public class ShapefileOutputHandler extends OutputHandler implements WikiConstan
                 } else {
                     value = "" + dbd.getData(i);
                     url = displayUrl + "&"
-                          + HtmlUtils.arg(ATTR_SELECTFIELDS,
-                                          key + ":=:" + value);
+                        + HtmlUtils.arg("mapsubset","true")
+                        +"&"
+                        + HtmlUtils.arg(ATTR_SELECTFIELDS,
+                                        key + ":=:" + value);
                 }
 
                 String fromProps = (String) props.get("map." + key + "."
