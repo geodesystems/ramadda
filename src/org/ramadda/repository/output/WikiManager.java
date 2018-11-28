@@ -1490,7 +1490,8 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                                      Json.quote(msets.get(i + 1)));
                     }
                 }
-                MapInfo map = getMapManager().getMap(newRequest, children,
+
+                MapInfo map = getMapManager().getMap(newRequest, entry, children,
                                   sb, width, height, mapProps, props);
 
                 if (icon != null) {

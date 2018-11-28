@@ -12,8 +12,8 @@ proc getText {textNode} {
     return [$textNode nodeValue]
 }
 
-puts "fields=party,member"
-puts "key=geoid"
+puts "map.fields=party,member"
+puts "map.key=geoid"
 
 foreach member [$root selectNodes //member] {
     set district [getText [$member selectNodes {statedistrict/text()}]]

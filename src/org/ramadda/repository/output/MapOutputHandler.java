@@ -163,7 +163,7 @@ public class MapOutputHandler extends OutputHandler implements WikiConstants {
         Hashtable props = new Hashtable();
         props.put(ATTR_DETAILS, "true");
         props.put(ATTR_LISTENTRIES, "false");
-        MapInfo map = getMapManager().getMap(request, entriesToUse, sb, 700,
+        MapInfo map = getMapManager().getMap(request, entry, entriesToUse, sb, 700,
                                              500, null, props);
 
         getPageHandler().entrySectionClose(request, entry, sb);
@@ -222,7 +222,7 @@ public class MapOutputHandler extends OutputHandler implements WikiConstants {
         Hashtable props = new Hashtable();
         props.put(ATTR_DETAILS, "false");
         props.put(ATTR_LISTENTRIES, "true");
-        MapInfo map = getMapManager().getMap(request, entriesToUse, sb, -100,
+        MapInfo map = getMapManager().getMap(request, group,entriesToUse, sb, -100,
                                              500, null, props);
 
         getPageHandler().entrySectionClose(request, group, sb);

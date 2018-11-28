@@ -478,6 +478,13 @@ public class Entry implements Cloneable {
         return Math.max(Math.min(lon, 180), -180);
     }
 
+    public String getBoundsString() {
+        if(!hasAreaDefined()) {
+            return null;
+        }
+        return north+","+ west+","+south+","+ east;
+    }
+
     /**
      * Get the geographic bounds
      *

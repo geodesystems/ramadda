@@ -1100,7 +1100,7 @@ public class MapManager extends RepositoryManager implements WikiConstants {
      *
      * @throws Exception  problem creating map
      */
-    public MapInfo getMap(Request request, List<Entry> entriesToUse,
+    public MapInfo getMap(Request request, Entry mainEntry, List<Entry> entriesToUse,
                           StringBuilder sb, int width, int height,
                           Hashtable mapProps, Hashtable props)
             throws Exception {
@@ -1119,8 +1119,11 @@ public class MapManager extends RepositoryManager implements WikiConstants {
         String  selectFields = Utils.getProperty(props, ATTR_SELECTFIELDS);
         String  selectBounds = Utils.getProperty(props, ATTR_SELECTBOUNDS);
         String viewBounds = Utils.getProperty(props, ATTR_VIEWBOUNDS,
-                                selectBounds);
+                                              selectBounds);
 
+        if(viewBounds!=null && viewBounds.equals("<bounds>")) {
+            viewBounds = mainEntry.getBoundsString();
+        }
 
         MapInfo map = createMap(request, width, height, false, null);
         if (map == null) {

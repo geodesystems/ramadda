@@ -354,7 +354,7 @@ function initMapFunctions(theMap) {
         
         geoJsonLayer.events.on({"loadend": function(e) {
                     if(_this.centerOnMarkersCalled)
-                        _this.centerOnMarkers(_this.dfltBound);
+                        _this.centerOnMarkers(_this.dfltBounds,_this.centerOnMarkersForce);
                 }});
 
 
@@ -495,8 +495,9 @@ function initMapFunctions(theMap) {
             })
         });
         kmlLayer.events.on({"loadend": function(e) {
-                    if(_this.centerOnMarkersCalled)
-                        _this.centerOnMarkers(_this.dfltBound);
+                    if(_this.centerOnMarkersCalled) {
+                        _this.centerOnMarkers(_this.dfltBounds,_this.centerOnMarkersForce);
+                    }
                 }});
         this.map.addLayer(kmlLayer);
         if (canSelect) {
@@ -1647,8 +1648,9 @@ function initMapFunctions(theMap) {
     }
 
     // bounds are in lat/lon
-    theMap.centerOnMarkers = function(dfltBounds) {
+    theMap.centerOnMarkers = function(dfltBounds, force) {
         this.centerOnMarkersCalled = true;
+        this.centerOnMarkersForce = force;
         this.dfltBounds = dfltBounds;
         now = Date.now();
         //        console.log("center on markers:" + ((now-this.startTime)/1000));
@@ -1661,30 +1663,32 @@ function initMapFunctions(theMap) {
             }
         }
         //        if (!bounds) {
-        if (this.markers) {
-            // markers are in projection coordinates
-            var dataBounds = this.markers.getDataExtent();
-            bounds = this.transformProjBounds(dataBounds);
-        }
-        if(this.lines) {
-            var dataBounds = this.lines.getDataExtent();
-            var fromLine = this.transformProjBounds(dataBounds);
-            if(bounds)
-                bounds.extend(fromLine);
-            else
-                bounds = fromLine;
-        }
-        for(var layer in this.map.layers) {
-            layer = this.map.layers[layer];
-            if(!layer.getDataExtent) continue;
-            if(layer.isBaseLayer || !layer.getVisibility()) continue;
-            var dataBounds = layer.getDataExtent();
-            if(dataBounds) {
-                var latlon= this.transformProjBounds(dataBounds);
+        if(!force) {
+            if (this.markers) {
+                // markers are in projection coordinates
+                var dataBounds = this.markers.getDataExtent();
+                bounds = this.transformProjBounds(dataBounds);
+            }
+            if(this.lines) {
+                var dataBounds = this.lines.getDataExtent();
+                var fromLine = this.transformProjBounds(dataBounds);
                 if(bounds)
-                    bounds.extend(latlon);
+                    bounds.extend(fromLine);
                 else
-                    bounds = latlon;
+                    bounds = fromLine;
+            }
+            for(var layer in this.map.layers) {
+                layer = this.map.layers[layer];
+                if(!layer.getDataExtent) continue;
+                if(layer.isBaseLayer || !layer.getVisibility()) continue;
+                var dataBounds = layer.getDataExtent();
+                if(dataBounds) {
+                    var latlon= this.transformProjBounds(dataBounds);
+                    if(bounds)
+                        bounds.extend(latlon);
+                    else
+                        bounds = latlon;
+                }
             }
         }
 
@@ -1694,17 +1698,6 @@ function initMapFunctions(theMap) {
         if(!bounds) {
             bounds  = dfltBounds;
         }
-        /*
-        if(bounds!=null) {
-            if(bounds.left==-9999 ||bounds.right==-9999 || bounds.bottom==-9999 || bounds.top==-9999) {
-                console.log("bad bounds:" +  bounds);
-                return;
-            }
-        }
-        */
-
-        //        console.log("bounds:" +  bounds);
-
         if (!bounds) {
             return;
         }

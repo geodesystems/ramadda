@@ -1230,7 +1230,7 @@ public class MapInfo {
                            + bounds.getX() + "," + bounds.getY() + ","
                            + (bounds.getX() + bounds.getWidth()) + ","
                            + (bounds.getY() + bounds.getHeight()) + ");\n");
-            getJS().append(mapVarName + ".centerOnMarkers(bounds);\n");
+            getJS().append(mapVarName + ".centerOnMarkers(bounds, true);\n");
         } else {
             center();
         }
