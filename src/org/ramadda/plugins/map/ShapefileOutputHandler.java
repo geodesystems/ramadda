@@ -214,10 +214,10 @@ public class ShapefileOutputHandler extends OutputHandler implements WikiConstan
         if (dbfile != null) {
             List<String> extraFields = null;
             String       extraKey    = (properties != null)
-                                       ? (String) properties.get("key")
+                                       ? (String) properties.get("map.key")
                                        : null;
             if (properties != null) {
-                String fields = (String) properties.get("fields");
+                String fields = (String) properties.get("map.fields");
                 if (fields != null) {
                     extraFields = StringUtil.split(fields, ",");
                 }
@@ -233,7 +233,7 @@ public class ShapefileOutputHandler extends OutputHandler implements WikiConstan
                                          dbfile.getField(j), properties);
                 wrapperMap.put(dbd.getName(), dbd);
                 if (properties != null) {
-                    if (Misc.equals((String) properties.get(dbd.getName()
+                    if (Misc.equals((String) properties.get("map." + dbd.getName()
                             + ".drop"), "true")) {
                         continue;
                     }
@@ -247,7 +247,7 @@ public class ShapefileOutputHandler extends OutputHandler implements WikiConstan
                 for (String extraField : extraFields) {
                     DbaseDataWrapper dbd = new DbaseDataWrapper(extraField,
                                                keyWrapper, properties);
-                    String combine = (String) properties.get(extraField
+                    String combine = (String) properties.get("map." + extraField
                                          + ".combine");
                     if (combine != null) {
                         List<DbaseDataWrapper> combineList = new ArrayList();
@@ -739,7 +739,7 @@ public class ShapefileOutputHandler extends OutputHandler implements WikiConstan
         for (; i < features.size(); i++) {
             if (searchField != null) {
                 String value = searchField.getString(i).toLowerCase();
-                String fromProps = (String) props.get("kml." + searchKey
+                String fromProps = (String) props.get("map." + searchKey
                                        + "." + value);
                 if (fromProps != null) {
                     value = fromProps + " (" + value + ")";
@@ -787,7 +787,7 @@ public class ShapefileOutputHandler extends OutputHandler implements WikiConstan
                                           key + ":=:" + value);
                 }
 
-                String fromProps = (String) props.get("kml." + key + "."
+                String fromProps = (String) props.get("map." + key + "."
                                        + value);
                 if (fromProps != null) {
                     value = fromProps + " (" + value + ")";

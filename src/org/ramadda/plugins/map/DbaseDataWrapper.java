@@ -89,7 +89,7 @@ public class DbaseDataWrapper {
         this.data       = data;
         this.properties = properties;
         if (properties != null) {
-            this.label = (String) properties.get(name + ".label");
+            this.label = (String) properties.get("map." + name + ".label");
         }
     }
 
@@ -106,7 +106,7 @@ public class DbaseDataWrapper {
         this.keyWrapper = keyWrapper;
         this.properties = properties;
         if (properties != null) {
-            this.label = (String) properties.get(name + ".label");
+            this.label = (String) properties.get("map." + name + ".label");
         }
     }
 
@@ -216,7 +216,7 @@ public class DbaseDataWrapper {
         if (data == null) {
             if (keyWrapper != null) {
                 String key = keyWrapper.getData(index).toString();
-                String v   = (String) properties.get(key + "." + name);
+                String v   = (String) properties.get("map." + key + "." + name);
                 if (v != null) {
                     return v;
                 }

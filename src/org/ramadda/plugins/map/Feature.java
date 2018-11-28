@@ -304,7 +304,7 @@ public class Feature {
                     value = obj.toString().trim();
                 }
                 //System.err.println(key+":" + obj.getClass().getName()+":" + value);
-                String fromProps = (String) allProperties.get("kml." + key
+                String fromProps = (String) allProperties.get("map." + key
                                        + "." + value);
                 if (fromProps != null) {
                     value = fromProps + " (" + value + ")";
