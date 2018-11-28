@@ -59,6 +59,7 @@
 
 
 <wiki>
+<![CDATA[
 +section title={{name}}
 {{description wikify="true"}}
 +row
@@ -70,6 +71,7 @@
 -row
 {{information}}
 -section
+]]>
 </wiki>
    </type>
 
@@ -142,6 +144,7 @@
   <type name="geo_geojson"  description="GeoJson File"   handler="org.ramadda.plugins.map.GeoJsonTypeHandler" pattern="(.*\.geojson$)" metadata="map_style">
      <property name="icon" value="/icons/map.png"/>
 <wiki>
+<![CDATA[
 +section title={{name}}
 {{description wikify="true"}}
 +row
@@ -153,6 +156,7 @@
 -row
 {{information}}
 -section
+]]>
 </wiki>
    </type>
 
