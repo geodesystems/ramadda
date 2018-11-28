@@ -309,7 +309,23 @@ function initMapFunctions(theMap) {
         }
     }
 
-    theMap.addGeoJsonLayer = function(name, geoJsonUrl, canSelect, selectCallback, unselectCallback) {
+    theMap.addGeoJsonLayer = function(name, geoJsonUrl, canSelect, selectCallback, unselectCallback, args) {
+        var _this=this;
+        var  dflt = {
+            fillColor: "#e6e6e6",
+            strokeColor: "#777777",
+            strokeWidth: 1,
+            select_fillColor: "#66cccc",
+            select_strokeColor: "#222222",
+            select_strokeWidth: 1
+        };
+        if (!args) {
+            args = {};
+        }
+        $.extend(dflt, args);
+
+
+
         var geoJsonLayer = new OpenLayers.Layer.Vector(name, {
             projection: this.displayProjection,
             strategies: [new OpenLayers.Strategy.Fixed()],
@@ -321,21 +337,26 @@ function initMapFunctions(theMap) {
                 "default": new OpenLayers.Style({
                     pointRadius: 3,
                     fillOpacity: 0.6,
-                    fillColor: "#e6e6e6",
-                    strokeColor: "#777777",
-                    strokeWidth: 1
+                    fillColor: dflt.fillColor,
+                    strokeColor: dflt.strokeColor,
+                    strokeWidth: dflt.strokeWidth
                 }),
                 "select": new OpenLayers.Style({
                     pointRadius: 3,
-                    fillOpacity: 0.95,
-                    fillColor: "#555555",
-                    strokeColor: "#222222",
-                    strokeWidth: 1
+                    fillOpacity: 0.6,
+                    fillColor: dflt.select_fillColor,
+                    strokeColor: dflt.select_strokeColor,
+                    strokeWidth: dflt.select_strokeWidth
                 })
             })
         });
         this.map.addLayer(geoJsonLayer);
         
+        geoJsonLayer.events.on({"loadend": function(e) {
+                    if(_this.centerOnMarkersCalled)
+                        _this.centerOnMarkers(_this.dfltBound);
+                }});
+
 
 
         if (canSelect) {
@@ -348,8 +369,8 @@ function initMapFunctions(theMap) {
 
 
             theMap = this;
-            if(!Utils.isDefined(selectCallback)) selectCallback = function(layer){theMap.onFeatureSelect(layer)};
-            if(!Utils.isDefined(unselectCallback)) unselectCallback = this.onFeatureUnselect;
+            if(selectCallback==null||!Utils.isDefined(selectCallback)) selectCallback = function(layer){theMap.onFeatureSelect(layer)};
+            if(unselectCallback==null||!Utils.isDefined(unselectCallback)) unselectCallback = this.onFeatureUnselect;
 
             geoJsonLayer.events.on({ 
                 "featureselected": selectCallback,
@@ -394,8 +415,9 @@ function initMapFunctions(theMap) {
             for (var attr in p) {
                 var label = attr.replace("_"," ");
                 out += "<tr><td align=right><div style=\"margin-right:5px;margin-bottom:3px;\"><b>" + label + ":</b></div></td><td><div style=\"margin-right:5px;margin-bottom:3px;\">";
-                if (typeof p[attr] == 'object' || typeof p[attr] == 'Object') {
+                if (p[attr]!=null && (typeof p[attr] == 'object' || typeof p[attr] == 'Object')) {
                     var o = p[attr];
+                    console.log("o=" + o);
                     out += o["value"];
                 } else {
                     out +=  p[attr];
@@ -430,17 +452,19 @@ function initMapFunctions(theMap) {
 
     theMap.addKMLLayer = function(name, kmlUrl, canSelect, selectCallback, unselectCallback, argProps) {
         var _this = this;
-        if(argProps) {
-            //            console.log("map.addKMLLayer:" + argProps);
-        }
         var  props = {
             pointRadius: this.pointRadius,
             fillOpacity:this.fillOpacity,
             fillColor:this.fillColor,
             strokeColor:this.strokeColor,
             strokeWidth:this.strokeWidth,
+            select_fillColor: "#666",
+            select_strokeColor: "#222222",
+            select_strokeWidth: 1
         };
         if (argProps) RamaddaUtil.inherit(props, argProps);
+
+
         var kmlLayer = new OpenLayers.Layer.Vector(name, {
             projection: this.displayProjection,
             strategies: [new OpenLayers.Strategy.Fixed()],
@@ -464,8 +488,8 @@ function initMapFunctions(theMap) {
                 "select": new OpenLayers.Style({
                     pointRadius: 3,
                     fillOpacity: 0.95,
-                    fillColor: "#666",
-                    strokeColor: "#222222",
+                    fillColor: props.select_fillColor,
+                    strokeColor: props.select_strokeColor,
                     strokeWidth: 1
                 })
             })
@@ -492,9 +516,8 @@ function initMapFunctions(theMap) {
                 highlight.selectStyle = OpenLayers.Feature.Vector.style['temporary'];
             }
             theMap = this;
-            theMap.foobar = "foobar";
-            if(!Utils.isDefined(selectCallback)) selectCallback = function(layer){theMap.onFeatureSelect(layer)};
-            if(!Utils.isDefined(unselectCallback)) unselectCallback = this.onFeatureUnselect;
+            if(selectCallback==null||!Utils.isDefined(selectCallback)) selectCallback = function(layer){theMap.onFeatureSelect(layer)};
+            if(unselectCallback==null || !Utils.isDefined(unselectCallback)) unselectCallback = this.onFeatureUnselect;
 
             kmlLayer.events.on({ 
                 "featureselected": selectCallback,
@@ -1161,6 +1184,8 @@ function initMapFunctions(theMap) {
     theMap.setSelectionBox = function(north, west, south, east) {
         if (north == "" || west == "" || south == "" || east == "")
             return;
+        var bounds = createBounds(west, Math.max(south,
+                                                 -maxLatValue), east, Math.min(north, maxLatValue));
         if (!this.selectorBox) {
             var args = {
                 "color" : "red",
@@ -1168,11 +1193,11 @@ function initMapFunctions(theMap) {
             };
             this.selectorBox = this.createBox("", "Selector box",north, west, south, east, "", args);
         } else {
-            var bounds = createBounds(west, Math.max(south,
-                    -maxLatValue), east, Math.min(north, maxLatValue));
             this.selectorBox.bounds = this.transformLLBounds(bounds);
             // this.selectorBox.bounds = bounds;
         }
+        this.setViewToBounds(bounds)
+
         if(this.boxes) {
             this.boxes.redraw();
         }
@@ -1692,6 +1717,10 @@ function initMapFunctions(theMap) {
             bounds.top = 80;
             bounds.bottom=-80;
         }
+        this.setViewToBounds(bounds);
+    }
+
+    theMap.setViewToBounds = function(bounds) {
         projBounds = this.transformLLBounds(bounds);
         if(projBounds.getWidth() ==0) {
             this.map.zoomTo(this.initialZoom);
@@ -1699,6 +1728,7 @@ function initMapFunctions(theMap) {
             this.map.zoomToExtent(projBounds);
         }
         this.map.setCenter(projBounds.getCenterLonLat());
+
     }
 
     theMap.setCenter = function(latLonPoint) {

@@ -63,7 +63,7 @@ var Utils = {
         return date;
     },
     isDefined: function(v) {
-        return  !(typeof v=== 'undefined');
+        return   !(typeof v=== 'undefined');
     },
     stringDefined: function(v) {
         if(!Utils.isDefined(v)) return false;
