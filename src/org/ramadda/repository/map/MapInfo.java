@@ -1224,13 +1224,13 @@ public class MapInfo {
      *
      * @param bounds  the bounds
      */
-    public void centerOn(Rectangle2D.Double bounds) {
+    public void centerOn(Rectangle2D.Double bounds, boolean force) {
         if (bounds != null) {
             getJS().append("var bounds = new OpenLayers.Bounds("
                            + bounds.getX() + "," + bounds.getY() + ","
                            + (bounds.getX() + bounds.getWidth()) + ","
                            + (bounds.getY() + bounds.getHeight()) + ");\n");
-            getJS().append(mapVarName + ".centerOnMarkers(bounds, true);\n");
+            getJS().append(mapVarName + ".centerOnMarkers(bounds, " + force+");\n");
         } else {
             center();
         }

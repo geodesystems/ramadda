@@ -1118,6 +1118,7 @@ public class MapManager extends RepositoryManager implements WikiConstants {
         String  mapVar       = Utils.getProperty(props, ATTR_MAPVAR);
         String  selectFields = Utils.getProperty(props, ATTR_SELECTFIELDS);
         String  selectBounds = Utils.getProperty(props, ATTR_SELECTBOUNDS);
+        boolean forceBounds  = true;
         String viewBounds = Utils.getProperty(props, ATTR_VIEWBOUNDS,
                                               selectBounds);
 
@@ -1125,7 +1126,7 @@ public class MapManager extends RepositoryManager implements WikiConstants {
             viewBounds = mainEntry.getBoundsString();
         }
         if(request.get("mapsubset",false)) {
-            viewBounds = null;
+            forceBounds  = false;
         }
 
         MapInfo map = createMap(request, width, height, false, null);
@@ -1162,7 +1163,7 @@ public class MapManager extends RepositoryManager implements WikiConstants {
         if (bounds == null) {
             bounds = getEntryManager().getBounds(entriesToUse);
         }
-        map.centerOn(bounds);
+        map.centerOn(bounds, forceBounds);
 
         List<String> categories = new ArrayList<String>();
         Hashtable<String, StringBuilder> catMap = new Hashtable<String,
