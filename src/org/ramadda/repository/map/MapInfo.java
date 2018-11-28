@@ -1195,10 +1195,11 @@ public class MapInfo {
      * @param url  the URL
      * @param canSelect _more_
      */
-    public void addKmlUrl(String name, String url, boolean canSelect) {
+    public void addKmlUrl(String name, String url, boolean canSelect, String args) {
         getJS().append(mapVarName + ".addKMLLayer(" + HtmlUtils.squote(name)
-                       + "," + HtmlUtils.squote(url) + "," + canSelect
-                       + ");\n");
+                       + "," + HtmlUtils.squote(url)
+                       + "," + canSelect + ",null,null," + args+");\n");
+
     }
 
     /**
@@ -1209,10 +1210,10 @@ public class MapInfo {
      * @param url  the URL
      * @param canSelect _more_
      */
-    public void addGeoJsonUrl(String name, String url, boolean canSelect) {
+    public void addGeoJsonUrl(String name, String url, boolean canSelect,String args) {
         getJS().append(mapVarName + ".addGeoJsonLayer("
                        + HtmlUtils.squote(name) + "," + HtmlUtils.squote(url)
-                       + "," + canSelect + ");\n");
+                       + "," + canSelect + ",null,null," + args+");\n");
     }
 
 
