@@ -160,7 +160,15 @@ function DisplayManager(argId,argProperties) {
                 var values = this.getRecordHtml(record,fields);
 
 
-                this.notifyEvent("handleEventRecordSelection", source, {index:index, record:record, html:values});
+                if(source.recordSelectionCallback) {
+                    var func = source.recordSelectionCallback;
+                    if((typeof  func) == "string") {
+                        func = window[func];
+                    }
+                    func({display:source, pointData: pointData, index:index, pointRecord:record});
+                }
+                var params =  {index:index, record:record, html:values};
+                this.notifyEvent("handleEventRecordSelection", source,params);
                 var entries  =source.getEntries();
                 if(entries!=null && entries.length>0) {
                     this.handleEventEntrySelection(source, {entry:entries[0], selected:true});
