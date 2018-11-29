@@ -8054,7 +8054,7 @@ public class EntryManager extends RepositoryManager {
      *
      * @return _more_
      */
-    public String getEntryResourceUrl(Request request, Entry entry) throws Exception {
+    public String getEntryResourceUrl(Request request, Entry entry) {
         return getEntryResourceUrl(request, entry, false);
     }
 
@@ -8069,7 +8069,7 @@ public class EntryManager extends RepositoryManager {
      * @return _more_
      */
     public String getEntryResourceUrl(Request request, Entry entry,
-                                      boolean full) throws Exception {
+                                      boolean full)  {
         //false - don't show the entry path
         return getEntryResourceUrl(request, entry, full, false);
     }
@@ -8087,9 +8087,13 @@ public class EntryManager extends RepositoryManager {
      * @return _more_
      */
     public String getEntryResourceUrl(Request request, Entry entry,
-                                      boolean full, boolean addPath) throws Exception {
+                                      boolean full, boolean addPath)  {
         if (entry.getResource().isUrl()) {
-            return entry.getTypeHandler().getPathForEntry(request, entry);
+            try {
+                return entry.getTypeHandler().getPathForEntry(request, entry);
+            } catch(Exception exc) {
+                return "Error:" + exc;
+            }
         }
 
         String fileTail = getStorageManager().getFileTail(entry);
