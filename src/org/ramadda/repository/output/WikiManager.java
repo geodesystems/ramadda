@@ -1485,7 +1485,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                                     (String) null);
                 if (mapSet != null) {
                     List<String> msets = StringUtil.split(mapSet, ",");
-                    for (int i = 0; i < msets.size() - 1; i++) {
+                    for (int i = 0; i < msets.size() - 1; i+=2) {
                         mapProps.put(msets.get(i),
                                      Json.quote(msets.get(i + 1)));
                     }
