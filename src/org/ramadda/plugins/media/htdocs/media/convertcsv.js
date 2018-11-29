@@ -36,7 +36,7 @@ function csvCall(cmds,args) {
         HtmlUtil.onClick("csvStop()","Stop",[]);
     csvOutput("<pre>\nProcessing...\n" + stop +"</pre>");
 
-    doExplode = cmds.indexOf("-explode")>=0;
+    doExplode = cmds.indexOf("-explode")>=0 && !cmds.indexOf("$-explode")>=0;
     var rawInput = csvGetInput();
 
     if(!args.download && !doExplode) {
