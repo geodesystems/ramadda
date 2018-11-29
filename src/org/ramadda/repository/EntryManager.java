@@ -6331,8 +6331,14 @@ public class EntryManager extends RepositoryManager {
         }
         String imgUrl = null;
         if (entry.getResource().isUrl()) {
-            imgUrl = entry.getTypeHandler().getPathForEntry(request, entry);
-            imgText.append(msg("Click to view URL"));
+            try {
+                imgUrl = entry.getTypeHandler().getPathForEntry(request, entry);
+                imgText.append(msg("Click to view URL"));
+            } catch(Exception exc) {
+                imgUrl = "bad image";
+                imgText.append("Error:" + exc);
+            }
+
         } else if (entry.getResource().isFile()) {
             if (getAccessManager().canDownload(request, entry)) {
                 imgUrl = entry.getTypeHandler().getEntryResourceUrl(request,
@@ -8048,7 +8054,7 @@ public class EntryManager extends RepositoryManager {
      *
      * @return _more_
      */
-    public String getEntryResourceUrl(Request request, Entry entry) {
+    public String getEntryResourceUrl(Request request, Entry entry) throws Exception {
         return getEntryResourceUrl(request, entry, false);
     }
 
@@ -8063,10 +8069,11 @@ public class EntryManager extends RepositoryManager {
      * @return _more_
      */
     public String getEntryResourceUrl(Request request, Entry entry,
-                                      boolean full) {
+                                      boolean full) throws Exception {
         //false - don't show the entry path
         return getEntryResourceUrl(request, entry, full, false);
     }
+
 
 
     /**
@@ -8080,9 +8087,9 @@ public class EntryManager extends RepositoryManager {
      * @return _more_
      */
     public String getEntryResourceUrl(Request request, Entry entry,
-                                      boolean full, boolean addPath) {
+                                      boolean full, boolean addPath) throws Exception {
         if (entry.getResource().isUrl()) {
-            return entry.getResource().getPath();
+            return entry.getTypeHandler().getPathForEntry(request, entry);
         }
 
         String fileTail = getStorageManager().getFileTail(entry);

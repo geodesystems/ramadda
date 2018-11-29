@@ -1920,7 +1920,7 @@ public class OutputHandler extends RepositoryManager {
      *
      * @return _more_
      */
-    public String getImageUrl(Request request, Entry entry) {
+    public String getImageUrl(Request request, Entry entry) throws Exception {
         return getImageUrl(request, entry, false);
     }
 
@@ -1938,7 +1938,7 @@ public class OutputHandler extends RepositoryManager {
      * @return _more_
      */
     public String getImageUrl(Request request, Entry entry,
-                              boolean addVersion) {
+                              boolean addVersion) throws Exception {
         if ( !entry.isImage()) {
             if (true) {
                 return null;
@@ -1958,7 +1958,7 @@ public class OutputHandler extends RepositoryManager {
 
         String url = entry.getResource().getPath();
         if (entry.getResource().isUrl()) {
-            return url;
+            return entry.getTypeHandler().getPathForEntry(request, entry);
         }
         if (url != null) {
             if (url.startsWith("ftp:") || url.startsWith("http:")) {

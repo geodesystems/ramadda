@@ -2864,8 +2864,14 @@ public class TypeHandler extends RepositoryManager {
                     imgUrl = getEntryResourceUrl(request, entry);
                     img    = HtmlUtils.img(imgUrl, "", "width=" + width);
                 } else if (entry.getResource().isUrl()) {
-                    imgUrl = entry.getResource().getPath();
-                    img    = HtmlUtils.img(imgUrl, "", "width=" + width);
+                    try {
+                        imgUrl = getPathForEntry(request, entry);
+                        img    = HtmlUtils.img(imgUrl, "", "width=" + width);
+                    } catch(Exception exc) {
+                        sb.append("Error getting path:" +  entry.getResource() +" " + exc);
+                    }
+                    //                    imgUrl = entry.getResource().getPath();
+
                 }
                 if (img != null) {
                     String outer = HtmlUtils.href(imgUrl, img,
@@ -2892,8 +2898,12 @@ public class TypeHandler extends RepositoryManager {
             resourceLabel = msgLabel(resourceLabel);
             if (resourceLink.length() > 0) {
                 if (entry.getResource().isUrl()) {
-                    resourceLink = getPathForEntry(request, entry);
-                    resourceLink = HtmlUtils.href(resourceLink, resourceLink);
+                    try {
+                        resourceLink = getPathForEntry(request, entry);
+                        resourceLink = HtmlUtils.href(resourceLink, resourceLink);
+                    } catch(Exception exc) {
+                        sb.append("Error:" + exc);
+                    }
                 } else if (entry.getResource().isFile()) {
                     resourceLink =
                         getStorageManager().getFileTail(resourceLink);
@@ -6042,7 +6052,12 @@ public class TypeHandler extends RepositoryManager {
 
                 return searchUrl;
             }
-            String path  = getPathForEntry(request, entry);
+            String path ="";
+            try {
+                path  = getPathForEntry(request, entry);
+            } catch(Exception exc) {
+                return "Error:" + exc;
+            }
             String label = getLabelFromPath(path);
             String url   = getUrlFromPath(path);
 
