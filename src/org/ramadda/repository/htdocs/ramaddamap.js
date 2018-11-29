@@ -352,9 +352,9 @@ function initMapFunctions(theMap) {
         });
         this.map.addLayer(geoJsonLayer);
         
-        theMap.showLoadingImage();
+        var loadingImage = theMap.showLoadingImage();
         geoJsonLayer.events.on({"loadend": function(e) {
-                    theMap.hideLoadingImage();
+                    theMap.hideLoadingImage(loadingImage);
                     if(_this.centerOnMarkersCalled)
                         _this.centerOnMarkers(_this.dfltBounds,_this.centerOnMarkersForce);
                 }});
@@ -491,14 +491,15 @@ function initMapFunctions(theMap) {
                     pointRadius: 3,
                     fillOpacity: 0.95,
                     fillColor: props.select_fillColor,
+                    //fillColor:"red",
                     strokeColor: props.select_strokeColor,
                     strokeWidth: 1
                 })
             })
         });
-        theMap.showLoadingImage();
+        var loadingImage = theMap.showLoadingImage();
         kmlLayer.events.on({"loadend": function(e) {
-                    _this.hideLoadingImage();
+                    _this.hideLoadingImage(loadingImage);
                     if(_this.centerOnMarkersCalled) {
                         _this.centerOnMarkers(_this.dfltBounds,_this.centerOnMarkersForce);
                     }
@@ -1652,9 +1653,10 @@ function initMapFunctions(theMap) {
     }
 
                                            
-    theMap.hideLoadingImage = function() {
-        if(this.loadingImage) {
-            this.loadingImage.style.visibility="hidden";
+    theMap.hideLoadingImage = function(image) {
+        if(!image) image = this.loadingImage;
+        if(image) {
+            image.style.visibility="hidden";
         }
     }
 
@@ -1668,9 +1670,10 @@ function initMapFunctions(theMap) {
         this.loadingImage  = OpenLayers.Util.createImage("loadingimage",
                                           position,
                                           sz,
-                                          ramaddaBaseUrl + '/icons/progress.gif');
+                                          ramaddaBaseUrl + '/icons/mapprogress.gif');
         this.loadingImage.style.zIndex = 1000;
         this.map.viewPortDiv.appendChild(this.loadingImage);
+        return this.loadingImage;
     }
 
 

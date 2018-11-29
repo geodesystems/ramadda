@@ -39567,8 +39567,19 @@ OpenLayers.StyleMap = OpenLayers.Class({
         if(this.extendDefault && intent != "default") {
             defaultSymbolizer = this.styles["default"].createSymbolizer(feature);
         }
+        if(intent == "select") {
+            //xxxxx
+            //            var err = new Error();
+            //            console.log(err.stack);
+        }
+        //        console.log("createSymbolizer:" + intent +" " +this.styles[intent]);
+
+        if(this.styles[intent]) {
+            //            for(a in this.styles[intent].defaultStyle) 
+            //                console.log(" " + a +"=" + this.styles[intent].defaultStyle[a]);
+        } 
         return OpenLayers.Util.extend(defaultSymbolizer,
-            this.styles[intent].createSymbolizer(feature));
+                                      this.styles[intent].createSymbolizer(feature));
     },
     
     /**
@@ -40410,9 +40421,10 @@ OpenLayers.Layer.Vector = OpenLayers.Class(OpenLayers.Layer, {
             }
             var renderIntent = style || feature.renderIntent;
             style = feature.style || this.style;
-            if (!style) {
+            //jeffmc: create the symbolizer if we are select-ing
+            if (!style || renderIntent=="select") {
                 style = this.styleMap.createSymbolizer(feature, renderIntent);
-            }
+            } 
         }
         
         var drawn = this.renderer.drawFeature(feature, style);
@@ -46598,7 +46610,6 @@ OpenLayers.Format.KML = OpenLayers.Class(OpenLayers.Format.XML, {
             var style = this.parseStyle(nodes[i]);
             if(style) {
                 var styleName = (options.styleBaseUrl || "") + "#" + style.id;
-                
                 this.styles[styleName] = style;
             }
         }

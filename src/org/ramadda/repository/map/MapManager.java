@@ -326,7 +326,7 @@ public class MapManager extends RepositoryManager implements WikiConstants {
             sb.append(
                 HtmlUtils.importJS(
                     getRepository().htdocsUrl(
-                        OPENLAYERS_BASE_V2 + "/OpenLayers.debug.js")));
+                        OPENLAYERS_BASE_V2 + "/OpenLayers.js")));
         } else {
             /*
             sb.append(
