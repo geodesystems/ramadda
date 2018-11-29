@@ -32,6 +32,7 @@ import org.ramadda.util.HtmlUtils;
 import org.ramadda.util.Json;
 import org.ramadda.util.KmlUtil;
 import org.ramadda.util.Utils;
+import org.ramadda.util.text.CsvUtil;
 
 import org.w3c.dom.Element;
 
@@ -80,6 +81,11 @@ public class ShapefileOutputHandler extends OutputHandler implements WikiConstan
 
 
     /** _more_ */
+    public static final OutputType OUTPUT_CSV =
+        new OutputType("Convert Shapefile to CSV", "shapefile.csv",
+                       OutputType.TYPE_FILE, "", ICON_CSV);
+
+    /** _more_ */
     public static final OutputType OUTPUT_FIELDS_LIST =
         new OutputType("Shapefile Fields", "shapefile.fields_list",
                        OutputType.TYPE_VIEW, "", ICON_TABLE);
@@ -90,6 +96,8 @@ public class ShapefileOutputHandler extends OutputHandler implements WikiConstan
                        OutputType.TYPE_VIEW, "", ICON_TABLE);
 
 
+
+
     /** _more_ */
     public static final DecimalFormat decimalFormat =
         new DecimalFormat("#,##0.#");
@@ -97,6 +105,9 @@ public class ShapefileOutputHandler extends OutputHandler implements WikiConstan
     /** _more_ */
     public static final DecimalFormat intFormat = new DecimalFormat("#,###");
 
+    /** _more_ */
+    public static final DecimalFormat plainFormat =
+        new DecimalFormat("####.#");
 
     /**
      * Create a ShapefileOutputHandler
@@ -110,6 +121,7 @@ public class ShapefileOutputHandler extends OutputHandler implements WikiConstan
         super(repository, element);
         addType(OUTPUT_KML);
         addType(OUTPUT_GEOJSON);
+        addType(OUTPUT_CSV);
         addType(OUTPUT_FIELDS_LIST);
         addType(OUTPUT_FIELDS_TABLE);
     }
@@ -129,10 +141,11 @@ public class ShapefileOutputHandler extends OutputHandler implements WikiConstan
             throws Exception {
         if ((state.entry != null)
                 && state.entry.getTypeHandler().isType("geo_shapefile")) {
-            links.add(makeLink(request, state.entry, OUTPUT_KML));
-            links.add(makeLink(request, state.entry, OUTPUT_GEOJSON));
             links.add(makeLink(request, state.entry, OUTPUT_FIELDS_LIST));
             links.add(makeLink(request, state.entry, OUTPUT_FIELDS_TABLE));
+            links.add(makeLink(request, state.entry, OUTPUT_KML));
+            links.add(makeLink(request, state.entry, OUTPUT_GEOJSON));
+            links.add(makeLink(request, state.entry, OUTPUT_CSV));
         }
     }
 
@@ -155,6 +168,8 @@ public class ShapefileOutputHandler extends OutputHandler implements WikiConstan
             return outputKml(request, entry);
         } else if (outputType.equals(OUTPUT_GEOJSON)) {
             return outputGeoJson(request, entry);
+        } else if (outputType.equals(OUTPUT_CSV)) {
+            return outputCsv(request, entry);
         } else if (outputType.equals(OUTPUT_FIELDS_LIST)) {
             return outputFields(request, entry, false, OUTPUT_FIELDS_LIST);
         } else if (outputType.equals(OUTPUT_FIELDS_TABLE)) {
@@ -209,7 +224,7 @@ public class ShapefileOutputHandler extends OutputHandler implements WikiConstan
                                            DbaseFile dbfile)
             throws Exception {
         Properties             properties = getExtraProperties(request,
-                                                               entry);
+                                                entry);
         Properties pluginProperties = getRepository().getPluginProperties();
         List<DbaseDataWrapper> fieldDatum = null;
         if (dbfile != null) {
@@ -231,11 +246,12 @@ public class ShapefileOutputHandler extends OutputHandler implements WikiConstan
             for (int j = 0; j < fieldNames.length; j++) {
                 DbaseDataWrapper dbd =
                     new DbaseDataWrapper(fieldNames[j].toLowerCase(),
-                                         dbfile.getField(j), properties, pluginProperties);
+                                         dbfile.getField(j), properties,
+                                         pluginProperties);
                 wrapperMap.put(dbd.getName(), dbd);
                 if (properties != null) {
-                    if (Misc.equals((String) properties.get("map." + dbd.getName()
-                            + ".drop"), "true")) {
+                    if (Misc.equals((String) properties.get("map."
+                            + dbd.getName() + ".drop"), "true")) {
                         continue;
                     }
                 }
@@ -247,9 +263,10 @@ public class ShapefileOutputHandler extends OutputHandler implements WikiConstan
                 }
                 for (String extraField : extraFields) {
                     DbaseDataWrapper dbd = new DbaseDataWrapper(extraField,
-                                                                keyWrapper, properties, pluginProperties);
-                    String combine = (String) properties.get("map." + extraField
-                                         + ".combine");
+                                               keyWrapper, properties,
+                                               pluginProperties);
+                    String combine = (String) properties.get("map."
+                                         + extraField + ".combine");
                     if (combine != null) {
                         List<DbaseDataWrapper> combineList = new ArrayList();
                         for (String id :
@@ -623,10 +640,90 @@ public class ShapefileOutputHandler extends OutputHandler implements WikiConstan
      *
      * @param request  the request
      * @param entry  the entry
-     * @param table _more_
      * @param output _more_
      *
      * @return the GeoJSON
+     *
+     * @throws Exception _more_
+     */
+    private Result outputCsv(Request request, Entry entry) throws Exception {
+        Result result = getCsvResult(request, entry);
+        result.setReturnFilename(
+            IOUtil.stripExtension(getStorageManager().getFileTail(entry))
+            + ".csv");
+        result.setMimeType("text/csv");
+
+        return result;
+    }
+
+    /**
+     * _more_
+     *
+     * @param request _more_
+     * @param entry _more_
+     *
+     * @return _more_
+     *
+     * @throws Exception _more_
+     */
+    private Result getCsvResult(Request request, Entry entry)
+            throws Exception {
+
+        EsriShapefile shapefile =
+            new EsriShapefile(entry.getFile().toString());
+        DbaseFile     dbfile   = shapefile.getDbFile();
+        List          features = shapefile.getFeatures();
+        StringBuilder sb       = new StringBuilder();
+        if (dbfile == null) {
+            sb.append("#No fields");
+            getPageHandler().entrySectionClose(request, entry, sb);
+
+            return new Result("", sb);
+        }
+        Hashtable              props = getRepository().getPluginProperties();
+        List<DbaseDataWrapper> fieldDatum = getDatum(request, entry, dbfile);
+        int                    colCnt     = 0;
+        for (DbaseDataWrapper dbd : fieldDatum) {
+            if (colCnt++ > 0) {
+                sb.append(",");
+            }
+            sb.append(dbd.getName());
+        }
+        sb.append("\n");
+        int cnt = 0;
+        int i   = 0;
+        for (; i < features.size(); i++) {
+            cnt++;
+            colCnt = 0;
+            for (DbaseDataWrapper dbd : fieldDatum) {
+                String value;
+                if (dbd.getType() == DbaseData.TYPE_NUMERIC) {
+                    value = plainFormat.format(dbd.getDouble(i));
+                } else {
+                    value = "" + dbd.getData(i);
+                    value = value.trim();
+                }
+                if (colCnt++ > 0) {
+                    sb.append(",");
+                }
+                sb.append(CsvUtil.cleanColumnValue(value));
+            }
+            sb.append("\n");
+        }
+
+        return new Result("", sb);
+    }
+
+
+    /**
+     * _more_
+     *
+     * @param request _more_
+     * @param entry _more_
+     * @param table _more_
+     * @param output _more_
+     *
+     * @return _more_
      *
      * @throws Exception _more_
      */
@@ -784,10 +881,9 @@ public class ShapefileOutputHandler extends OutputHandler implements WikiConstan
                 } else {
                     value = "" + dbd.getData(i);
                     url = displayUrl + "&"
-                        + HtmlUtils.arg("mapsubset","true")
-                        +"&"
-                        + HtmlUtils.arg(ATTR_SELECTFIELDS,
-                                        key + ":=:" + value);
+                          + HtmlUtils.arg("mapsubset", "true") + "&"
+                          + HtmlUtils.arg(ATTR_SELECTFIELDS,
+                                          key + ":=:" + value);
                 }
 
                 String fromProps = (String) props.get("map." + key + "."
@@ -916,8 +1012,21 @@ public class ShapefileOutputHandler extends OutputHandler implements WikiConstan
     }
 
 
-    public static String makeMapStyle(Request request, Entry entry) throws Exception {
-        List<Metadata> metadataList = request.getRepository().getMetadataManager().findMetadata(request, entry, "map_style", true);
+    /**
+     * _more_
+     *
+     * @param request _more_
+     * @param entry _more_
+     *
+     * @return _more_
+     *
+     * @throws Exception _more_
+     */
+    public static String makeMapStyle(Request request, Entry entry)
+            throws Exception {
+        List<Metadata> metadataList =
+            request.getRepository().getMetadataManager().findMetadata(
+                request, entry, "map_style", true);
         List<String> values = new ArrayList<String>();
         if ((metadataList != null) && (metadataList.size() > 0)) {
             Metadata kmlDisplay = metadataList.get(0);
@@ -942,6 +1051,7 @@ public class ShapefileOutputHandler extends OutputHandler implements WikiConstan
                 values.add(kmlDisplay.getAttr(5));
             }
         }
+
         return Json.mapAndQuote(values);
     }
 

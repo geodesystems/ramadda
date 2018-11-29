@@ -704,6 +704,28 @@ public class CsvUtil {
     }
 
 
+    public static String cleanColumnValue(String s) {
+        return cleanColumnValue(s,",");
+    }
+
+    public static String cleanColumnValue(String s, String delimiter) {
+        boolean needToQuote = false;
+        if (s.indexOf("\n") >= 0) {
+            needToQuote = true;
+        } else if (s.indexOf(delimiter) >= 0) {
+            needToQuote = true;
+        }
+        
+        if (s.indexOf("\"") >= 0) {
+            s           = s.replaceAll("\"", "\"\"");
+            needToQuote = true;
+        }
+
+        if (needToQuote) {
+            return '"' + s +'"';
+        } 
+        return s;
+    }
 
 
     /**
