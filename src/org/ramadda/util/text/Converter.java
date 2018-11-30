@@ -275,17 +275,23 @@ public abstract class Converter extends Processor {
                     attrs.append("unit=\"" + unit + "\" ");
 
                 }
+                System.err.println("col:" + col);
                 String id =
                     col.replaceAll("\\([^\\)]+\\)", "").replaceAll("-",
                                    "_").trim().toLowerCase().replaceAll(" ",
                                        "_").replaceAll(":", "_");
+                System.err.println("\tid1:" + id);
                 id = id.replaceAll("\"", "_");
+                System.err.println("\tid2:" + id);
                 id = id.replaceAll("\'", "_");
                 id = id.replaceAll("/+", "_");
                 id = id.replaceAll("\\.", "_");
                 id = id.replaceAll("_+_", "_");
+                System.err.println("\tid3:" + id);
                 id = id.replaceAll("_+$", "");
+                System.err.println("\tid4:" + id);
                 id = id.replaceAll("^_+", "");
+                System.err.println("\tid5:" + id);
 
 
                 String format = null;
