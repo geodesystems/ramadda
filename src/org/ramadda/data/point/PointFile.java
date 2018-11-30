@@ -859,7 +859,11 @@ public abstract class PointFile extends RecordFile implements Cloneable,
 
     /** _more_ */
     public static final String ATTR_OFFSET = "offset";
+
+    /** _more_          */
     public static final String ATTR_OFFSET1 = "offset1";
+
+    /** _more_          */
     public static final String ATTR_OFFSET2 = "offset2";
 
     /** _more_ */
@@ -911,7 +915,12 @@ public abstract class PointFile extends RecordFile implements Cloneable,
                 attrs = attrs.substring(0, attrs.length() - 1);
             }
             Hashtable properties = parseAttributes(attrs);
-            //            System.err.println ("props:" + properties);
+            /*
+            if(name.equals("latitude")) {
+                System.err.println ("attrs:" + attrs);
+                System.err.println ("props:" + properties);
+            }
+            */
             RecordField field = new RecordField(name, name, "", paramId++,
                                     getProperty(properties, ATTR_UNIT, ""));
 
@@ -921,12 +930,14 @@ public abstract class PointFile extends RecordFile implements Cloneable,
                     "index", "-1")).intValue());
             field.setScale(Double.parseDouble(getProperty(field, properties,
                     ATTR_SCALE, "1.0")));
-            field.setOffset1(Double.parseDouble(getProperty(field, properties, ATTR_OFFSET1, "0.0")));
-            field.setOffset2(Double.parseDouble(getProperty(field, properties, ATTR_OFFSET2, "0.0")));
-            String offset = getProperty(field, properties,
-                                        ATTR_OFFSET, (String) null);
+            field.setOffset1(Double.parseDouble(getProperty(field,
+                    properties, ATTR_OFFSET1, "0.0")));
+            field.setOffset2(Double.parseDouble(getProperty(field,
+                    properties, ATTR_OFFSET2, "0.0")));
+            String offset = getProperty(field, properties, ATTR_OFFSET,
+                                        (String) null);
 
-            if(offset!=null) {
+            if (offset != null) {
                 field.setOffset2(Double.parseDouble(offset));
             }
 
@@ -1036,9 +1047,12 @@ public abstract class PointFile extends RecordFile implements Cloneable,
                     field.setDefaultDoubleValue(Double.parseDouble(value));
                 }
             }
-            if (getProperty(field, properties, "chartable",
-                            "false").equals("true")) {
+            String chartable = getProperty(field, properties, "chartable",
+                                           "NA");
+            if (chartable.equals("true")) {
                 field.setChartable(true);
+            } else if (chartable.equals("false")) {
+                field.setChartable(false);
             }
             if (getProperty(field, properties, "skip",
                             "false").equals("true")) {
