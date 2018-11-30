@@ -304,12 +304,15 @@ public abstract class Converter extends Processor {
                 type   = CsvUtil.getDbProp(props, id, "type", type);
                 format = CsvUtil.getDbProp(props, id, "format", format);
 
-
                 if (format != null) {
                     attrs.append(" format=\"" + format + "\" ");
                 }
-                if(chartable && (type.equals("double") || type.equals("integer"))) {
-                    attrs.append(" chartable=\"" + "true" + "\" ");
+                if(type.equals("double") || type.equals("integer")) {
+                    if(chartable) {
+                        attrs.append(" chartable=\"" + "true" + "\" ");
+                    } else {
+                        attrs.append(" chartable=\"" + "false" + "\" ");
+                    }
                 }
                 attrs.append(" type=\"" + type + "\"");
                 String field = id + "[" + attrs + "] ";
