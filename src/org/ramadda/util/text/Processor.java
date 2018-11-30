@@ -940,8 +940,9 @@ public abstract class Processor extends CsvOperator {
          */
         private void handleRow(PrintWriter writer, Row row) throws Exception {
 
-            String theTemplate = template;
-            List   values      = row.getValues();
+            String  theTemplate   = template;
+            List    values        = row.getValues();
+            boolean escapeColumns = true;
             for (int colIdx = 0; colIdx < values.size(); colIdx++) {
                 Object v = values.get(colIdx);
                 if (theTemplate == null) {
@@ -953,14 +954,20 @@ public abstract class Processor extends CsvOperator {
                         if (trim) {
                             sv = sv.trim();
                         }
-                        boolean addQuote = (sv.indexOf(",") >= 0)
-                                           || (sv.indexOf("\n") >= 0);
-                        if (sv.indexOf("\"") >= 0) {
-                            addQuote = true;
-                            sv       = sv.replaceAll("\"", "\"\"");
+                        if ((colIdx == 0) && sv.startsWith("#")) {
+                            escapeColumns = false;
                         }
-                        if (addQuote) {
-                            writer.print("\"");
+                        boolean addQuote = false;
+                        if (escapeColumns) {
+                            addQuote = (sv.indexOf(",") >= 0)
+                                       || (sv.indexOf("\n") >= 0);
+                            if (sv.indexOf("\"") >= 0) {
+                                addQuote = true;
+                                sv       = sv.replaceAll("\"", "\"\"");
+                            }
+                            if (addQuote) {
+                                writer.print("\"");
+                            }
                         }
                         writer.print(sv);
                         if (addQuote) {
@@ -1030,11 +1037,6 @@ public abstract class Processor extends CsvOperator {
 
         /**
          * _more_
-         *
-         *
-         * @param col _more_
-         * @param delimiter _more_
-         *
          * @param prefix _more_
          */
         public TclWrapper(String prefix) {
@@ -1047,7 +1049,6 @@ public abstract class Processor extends CsvOperator {
          *
          *
          * @param info _more_
-         * @param row _more_
          * @param rows _more_
          *
          * @return _more_
@@ -1104,6 +1105,7 @@ public abstract class Processor extends CsvOperator {
 
         /**
          * _more_
+         *
          *
          * @param info _more_
          * @param rows _more_
@@ -1186,6 +1188,7 @@ public abstract class Processor extends CsvOperator {
         /** _more_ */
         private Row row1;
 
+        /** _more_ */
         private String tableId;
 
 
@@ -1200,20 +1203,17 @@ public abstract class Processor extends CsvOperator {
 
 
         /**
-Get the TableId property.
-
-@return The TableId
-        **/
-        public String getTableId () {
+         * Get the TableId property.
+         *
+         * @return The TableId
+         */
+        public String getTableId() {
             return tableId;
         }
 
 
         /**
          * _more_
-         *
-         *
-         * @param info _more_
          *
          * @param reader _more_
          * @param row _more_
@@ -1244,13 +1244,14 @@ Get the TableId property.
             name = CsvUtil.getDbProp(props, "table", "name", name);
 
             String label = Utils.makeLabel(name);
-            label = CsvUtil.getDbProp(props, "table", "label", label);
-            label = label.replaceAll("\n", " ").replaceAll("\r", " ");
+            label   = CsvUtil.getDbProp(props, "table", "label", label);
+            label   = label.replaceAll("\n", " ").replaceAll("\r", " ");
             tableId = Utils.makeLabel(name).toLowerCase().replaceAll(" ",
-                                                                     "_");
+                                      "_");
             tableId = CsvUtil.getDbProp(props, "table", "id", tableId);
 
-            String labels = CsvUtil.getDbProp(props, "table", "labelColumns", "");
+            String labels = CsvUtil.getDbProp(props, "table", "labelColumns",
+                                "");
 
             File output = reader.getOutputFile();
             if (output != null) {
@@ -1270,8 +1271,7 @@ Get the TableId property.
                 XmlUtil.openTag(
                     "table",
                     XmlUtil.attrs(
-                        "id", tableId, "name", label, 
-                        "labelColumns", labels,
+                        "id", tableId, "name", label, "labelColumns", labels,
                         "icon",
                         CsvUtil.getDbProp(
                             props, "table", "icon", "/db/database.png"))));
@@ -1320,7 +1320,7 @@ Get the TableId property.
                     continue;
                 }
 
-                
+
 
                 boolean isNumber = isNumeric[colIdx];
                 String  type     = "string";
@@ -1373,38 +1373,33 @@ Get the TableId property.
                 }
 
                 StringBuffer inner = new StringBuffer();
-                if (CsvUtil.getDbProp(props, colId, "dostats",
-                                      false)) {
+                if (CsvUtil.getDbProp(props, colId, "dostats", false)) {
                     inner.append(XmlUtil.tag("property",
                                              XmlUtil.attrs(new String[] {
                                                  "name",
                             "dostats", "value", "true" })));
                 }
-                if (CsvUtil.getDbProp(props, colId, "iscategory",
-                                      false)) {
+                if (CsvUtil.getDbProp(props, colId, "iscategory", false)) {
                     inner.append(XmlUtil.tag("property",
                                              XmlUtil.attrs(new String[] {
                                                  "name",
                             "iscategory", "value", "true" })));
                 }
-                if (CsvUtil.getDbProp(props, colId, "formap",
-                                      false)) {
+                if (CsvUtil.getDbProp(props, colId, "formap", false)) {
                     inner.append(XmlUtil.tag("property",
                                              XmlUtil.attrs(new String[] {
                                                  "name",
                             "formap", "value", "true" })));
                 }
 
-                if (CsvUtil.getDbProp(props, colId, "islabel",
-                                      false)) {
+                if (CsvUtil.getDbProp(props, colId, "islabel", false)) {
                     inner.append(XmlUtil.tag("property",
                                              XmlUtil.attrs(new String[] {
                                                  "name",
                             "label", "value", "true" })));
                 }
 
-                if (CsvUtil.getDbProp(props, colId, "dostats",
-                                      false)) {
+                if (CsvUtil.getDbProp(props, colId, "dostats", false)) {
                     inner.append(XmlUtil.tag("property",
                                              XmlUtil.attrs(new String[] {
                                                  "name",

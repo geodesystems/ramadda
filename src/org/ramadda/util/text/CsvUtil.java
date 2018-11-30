@@ -71,8 +71,10 @@ public class CsvUtil {
     /** _more_ */
     private boolean installPlugin = false;
 
+    /** _more_ */
     private boolean nukeDb = false;
 
+    /** _more_ */
     private Processor.DbXml dbXml;
 
     /** _more_ */
@@ -170,6 +172,7 @@ public class CsvUtil {
      */
     public File getDestDir() {
         destDir.mkdir();
+
         return destDir;
     }
 
@@ -399,7 +402,6 @@ public class CsvUtil {
      * _more_
      *
      * @param files _more_
-     * @param out _more_
      * @param info _more_
      * @param asPoint _more_
      *
@@ -478,9 +480,7 @@ public class CsvUtil {
      *     _more_
      *
      *     @param files _more_
-     *     @param out _more_
      *     @param info _more_
-     *     @param asPoint _more_
      *
      *     @throws Exception _more_
      */
@@ -548,12 +548,23 @@ public class CsvUtil {
     }
 
 
+    /**
+     * _more_
+     *
+     * @param props _more_
+     * @param colId _more_
+     * @param prop _more_
+     * @param dflt _more_
+     *
+     * @return _more_
+     */
     public static boolean getDbProp(Hashtable<String, String> props,
-                                   String colId, String prop, boolean dflt) {
-        String value = getDbProp(props, colId, prop, (String)null);
+                                    String colId, String prop, boolean dflt) {
+        String value = getDbProp(props, colId, prop, (String) null);
         if (value == null) {
             return dflt;
         }
+
         return value.equals("true");
     }
 
@@ -704,10 +715,25 @@ public class CsvUtil {
     }
 
 
+    /**
+     * _more_
+     *
+     * @param s _more_
+     *
+     * @return _more_
+     */
     public static String cleanColumnValue(String s) {
-        return cleanColumnValue(s,",");
+        return cleanColumnValue(s, ",");
     }
 
+    /**
+     * _more_
+     *
+     * @param s _more_
+     * @param delimiter _more_
+     *
+     * @return _more_
+     */
     public static String cleanColumnValue(String s, String delimiter) {
         boolean needToQuote = false;
         if (s.indexOf("\n") >= 0) {
@@ -715,15 +741,16 @@ public class CsvUtil {
         } else if (s.indexOf(delimiter) >= 0) {
             needToQuote = true;
         }
-        
+
         if (s.indexOf("\"") >= 0) {
             s           = s.replaceAll("\"", "\"\"");
             needToQuote = true;
         }
 
         if (needToQuote) {
-            return '"' + s +'"';
-        } 
+            return '"' + s + '"';
+        }
+
         return s;
     }
 
@@ -750,8 +777,8 @@ public class CsvUtil {
             + "\n\t-explode <col #>   make separate files based on value of column"
             + "\n\t-unfurl <col to get new column header#> <col with value> <unique col>  <other columns>   unfurl"
             + "\n\t-decimate <skip factor>   only include every <skip factor> row"
-            + "\n\t-copy <col #> <name>"
-            + "\n\t-delete <col #>" + "\n\t-add <col #> <value>"
+            + "\n\t-copy <col #> <name>" + "\n\t-delete <col #>"
+            + "\n\t-add <col #> <value>"
             + "\n\t-insert <col #> <comma separated values> "
             + "\n\t-case <lower|upper|camel> <col #> "
             + "\n\t-addcell <row #>  <col #>  <value> "
@@ -760,7 +787,7 @@ public class CsvUtil {
             + "\n\t-tolower <col #> "
             + "\n\t-prepend  <text> add the text to the beginning of the file. use _nl_ to insert newlines"
             + "\n\t-pad <col #> <pad string> pad out or cut columns to achieve the count"
-            + "\n\t-change <col #> <pattern> <substitution string>"
+            + "\n\t-change <col #s> <pattern> <substitution string>"
             + "\n\t-map <col #> \"new columns name\" \"value newvalue ...\" change values in column to new values"
             + "\n\t-combine \"col #s\" <delimiter> <new column name> (combine columns with the delimiter. deleting columns)"
             + "\n\t-combineinplace \"col #s\" <delimiter> <new column name> (combine columns with the delimiter.)"
@@ -787,11 +814,7 @@ public class CsvUtil {
             + "\n\t-addheader (add the RAMADDA point properties)"
             + "\n\t-db <props> (generate the RAMADDA db xml from the header)"
             + "\n\tdb props are a set of name value pairs:"
-            + "\n\t\ttable.id new_id table.name new_name table.cansearch <true|false> (dflt can search) table.canlist <true|false> (dflt can list) <column name>.type <string|enumeration|double|int|date> <column name>.format <yyyy mm dd format for dates> "
-            + "\n\t\t<column name>.id <new id for column> <column name>.label <new label> "
-            + "\n\t\t<column name>.canlist <true|false> <column name>.cansearch <true|false> "
-            + "\n\t\t-install <true|false> (install the new db table) -nukedb <true|false> (delete any prior created dbs>"
-            + "\n\t-run <name of process directory>");
+            + "\n\t\ttable.id new_id table.name new_name table.cansearch <true|false> (dflt can search) table.canlist <true|false> (dflt can list) <column name>.type <string|enumeration|double|int|date> <column name>.format <yyyy mm dd format for dates> " + "\n\t\t<column name>.id <new id for column> <column name>.label <new label> " + "\n\t\t<column name>.canlist <true|false> <column name>.cansearch <true|false> " + "\n\t\t-install <true|false> (install the new db table) -nukedb <true|false> (delete any prior created dbs>" + "\n\t-run <name of process directory>");
         pw.flush();
     }
 
@@ -892,9 +915,11 @@ public class CsvUtil {
                 Hashtable<String, String> props = parseProps(args.get(++i));
                 this.installPlugin = Misc.equals(props.get("-install"),
                         "true") || Misc.equals(props.get("install"), "true");
-                this.nukeDb = Misc.equals(props.get("-nukedb"),
-                        "true") || Misc.equals(props.get("nukedb"), "true");
-                info.getProcessor().addProcessor(dbXml=new Processor.DbXml(props));
+                this.nukeDb = Misc.equals(props.get("-nukedb"), "true")
+                              || Misc.equals(props.get("nukedb"), "true");
+                info.getProcessor().addProcessor(dbXml =
+                    new Processor.DbXml(props));
+
                 continue;
             }
 
@@ -1181,9 +1206,10 @@ public class CsvUtil {
             }
 
             if (arg.equals("-geocodeaddress")) {
-                List<String> cols = getCols(args.get(++i));
-                String suffix = args.get(++i);
-                info.getProcessor().addProcessor(new Converter.Geocoder(cols, suffix));
+                List<String> cols   = getCols(args.get(++i));
+                String       suffix = args.get(++i);
+                info.getProcessor().addProcessor(new Converter.Geocoder(cols,
+                        suffix));
 
                 continue;
             }
@@ -1418,6 +1444,19 @@ public class CsvUtil {
 
                 continue;
             }
+            if (arg.equals("-quit")) {
+                String last = args.get(args.size() - 1);
+                System.err.println(args);
+                if (last.equals("-print")) {
+                    info.getProcessor().addProcessor(
+                        new Processor.Printer(printFields, trim));
+
+                } else if (last.equals("-table")) {
+                    info.getProcessor().addProcessor(new Processor.Html());
+                }
+
+                break;
+            }
             if (arg.startsWith("-")) {
                 throw new IllegalArgumentException("Unknown arg:" + arg);
             }
@@ -1551,11 +1590,21 @@ public class CsvUtil {
     public boolean getInstallPlugin() {
         return installPlugin;
     }
- 
-   public boolean getNukeDb() {
+
+    /**
+     * _more_
+     *
+     * @return _more_
+     */
+    public boolean getNukeDb() {
         return nukeDb;
     }
 
+    /**
+     * _more_
+     *
+     * @return _more_
+     */
     public String getDbId() {
         return dbXml.getTableId();
     }

@@ -4342,7 +4342,7 @@ public class EntryManager extends RepositoryManager {
         }
 
         if ( !(isCopy || isMove || isLink)) {
-            isCopy = true;
+            isMove = true;
         }
         Entry  toEntry = null;
 
@@ -6332,9 +6332,10 @@ public class EntryManager extends RepositoryManager {
         String imgUrl = null;
         if (entry.getResource().isUrl()) {
             try {
-                imgUrl = entry.getTypeHandler().getPathForEntry(request, entry);
+                imgUrl = entry.getTypeHandler().getPathForEntry(request,
+                        entry);
                 imgText.append(msg("Click to view URL"));
-            } catch(Exception exc) {
+            } catch (Exception exc) {
                 imgUrl = "bad image";
                 imgText.append("Error:" + exc);
             }
@@ -8069,7 +8070,7 @@ public class EntryManager extends RepositoryManager {
      * @return _more_
      */
     public String getEntryResourceUrl(Request request, Entry entry,
-                                      boolean full)  {
+                                      boolean full) {
         //false - don't show the entry path
         return getEntryResourceUrl(request, entry, full, false);
     }
@@ -8087,11 +8088,11 @@ public class EntryManager extends RepositoryManager {
      * @return _more_
      */
     public String getEntryResourceUrl(Request request, Entry entry,
-                                      boolean full, boolean addPath)  {
+                                      boolean full, boolean addPath) {
         if (entry.getResource().isUrl()) {
             try {
                 return entry.getTypeHandler().getPathForEntry(request, entry);
-            } catch(Exception exc) {
+            } catch (Exception exc) {
                 return "Error:" + exc;
             }
         }

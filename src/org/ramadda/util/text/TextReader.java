@@ -141,7 +141,7 @@ public class TextReader implements Cloneable {
     /** _more_ */
     private List<String> headerLines = new ArrayList<String>();
 
-    /** _more_          */
+    /** _more_ */
     private List header;
 
 
@@ -272,6 +272,7 @@ public class TextReader implements Cloneable {
      */
     public File getDestDir() {
         destDir.mkdir();
+
         return destDir;
     }
 
@@ -818,8 +819,10 @@ public class TextReader implements Cloneable {
      */
     public File getOutputFile() {
         //This forces the mkdir
-        if(outputFile!=null)
+        if (outputFile != null) {
             getDestDir();
+        }
+
         return outputFile;
     }
 

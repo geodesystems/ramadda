@@ -1,4 +1,4 @@
-/**
+/*
 * Copyright (c) 2008-2018 Geode Systems LLC
 *
 * Licensed under the Apache License, Version 2.0 (the "License");
@@ -173,7 +173,6 @@ public abstract class Converter extends Processor {
         /**
          * _more_
          *
-         * @param cols _more_
          *
          * @param count _more_
          * @param s _more_
@@ -225,17 +224,20 @@ public abstract class Converter extends Processor {
         /** _more_ */
         Hashtable<String, String> props;
 
+        /** _more_ */
+        String defaultType = "double";
+
         /**
          * _more_
          *
-         * @param cols _more_
          *
          * @param props _more_
          *
-         * @param s _more_
          */
         public HeaderMaker(Hashtable<String, String> props) {
             this.props = props;
+            defaultType = CsvUtil.getDbProp(props, "default", "type",
+                                            defaultType);
         }
 
 
@@ -285,7 +287,7 @@ public abstract class Converter extends Processor {
 
 
                 String format = null;
-                String type   = "double";
+                String type   = defaultType;
 
                 if (id.indexOf("date") >= 0) {
                     type = "date";
@@ -329,8 +331,6 @@ public abstract class Converter extends Processor {
          *
          * @param cols _more_
          *
-         * @param count _more_
-         * @param s _more_
          */
         public ColumnPercenter(List<String> cols) {
             super(cols);
@@ -509,14 +509,14 @@ public abstract class Converter extends Processor {
      *
      *
      * @version        $version$, Sat, Feb 10, '18
-     * @author         Enter your name here...    
+     * @author         Enter your name here...
      */
     public static class ColumnMapper extends Converter {
 
         /** _more_ */
         private String name;
 
-        /** _more_          */
+        /** _more_ */
         private Hashtable<String, String> map = new Hashtable();
 
 
@@ -524,8 +524,6 @@ public abstract class Converter extends Processor {
          * _more_
          *
          * @param cols _more_
-         * @param pattern _more_
-         * @param value _more_
          * @param name _more_
          * @param toks _more_
          */
@@ -653,14 +651,13 @@ public abstract class Converter extends Processor {
         /** _more_ */
         private String name;
 
-        /** _more_          */
+        /** _more_ */
         private boolean inPlace;
 
         /**
          * _more_
          *
          *
-         * @param col _more_
          * @param name _more_
          * @param inPlace _more_
          *
@@ -762,6 +759,7 @@ public abstract class Converter extends Processor {
         /** _more_ */
         private boolean doAddress = false;
 
+        /** _more_ */
         private String suffix;
 
 
@@ -794,13 +792,14 @@ public abstract class Converter extends Processor {
         /**
          * _more_
          *
-         * @param col _more_
+         * @param cols _more_
+         * @param suffix _more_
          *
          * @throws Exception _more_
          */
         public Geocoder(List<String> cols, String suffix) throws Exception {
             super(cols);
-            this.suffix = suffix;
+            this.suffix     = suffix;
             this.writeForDb = false;
             doAddress       = true;
         }
@@ -881,26 +880,28 @@ public abstract class Converter extends Processor {
             }
 
             List<Integer> indices = getIndices(info);
-            StringBuilder key = new StringBuilder();
-            for(int i:indices) {
+            StringBuilder key     = new StringBuilder();
+            for (int i : indices) {
                 Object value = values.get(i);
-                if(key.length()>0) key.append(", ");
+                if (key.length() > 0) {
+                    key.append(", ");
+                }
                 key.append(value);
             }
-            if(suffix!=null) {
+            if (suffix != null) {
                 key.append(" ");
                 key.append(suffix);
             }
-                
+
             double lat = Double.NaN;
             double lon = Double.NaN;
             if (key != null) {
                 double[] bounds = null;
                 if (doAddress) {
                     bounds = GeoUtils.getLocationFromAddress(key.toString());
-                    System.err.println("key:" + key +" b:" + bounds);
+                    System.err.println("key:" + key + " b:" + bounds);
                 } else {
-                    String tok  = key.toString();
+                    String tok = key.toString();
                     bounds = map.get(tok);
                     if (bounds == null) {
                         bounds = map.get(tok.replaceAll("-.*$", ""));
@@ -974,8 +975,6 @@ public abstract class Converter extends Processor {
          *
          * @param filename _more_
          *
-         * @return _more_
-         *
          * @throws Exception _more_
          */
         private void makeMap(String filename) throws Exception {
@@ -1039,7 +1038,6 @@ public abstract class Converter extends Processor {
         /**
          * _more_
          *
-         * @param col _more_
          *
          * @param indices _more_
          */
@@ -1114,6 +1112,13 @@ public abstract class Converter extends Processor {
     }
 
 
+    /**
+     * Class description
+     *
+     *
+     * @version        $version$, Thu, Nov 29, '18
+     * @author         Enter your name here...
+     */
     public static class ColumnCopier extends Converter {
 
         /** _more_ */
@@ -1147,10 +1152,11 @@ public abstract class Converter extends Processor {
             if ((index < 0) || (index >= row.size())) {
                 return row;
             }
-            if(rowCnt++==0)
-                row.add(index+1, name);
-            else
-                row.add(index+1, row.getValues().get(index));
+            if (rowCnt++ == 0) {
+                row.add(index + 1, name);
+            } else {
+                row.add(index + 1, row.getValues().get(index));
+            }
 
             return row;
         }
@@ -1175,9 +1181,6 @@ public abstract class Converter extends Processor {
 
         /**
          * _more_
-         *
-         * @param col _more_
-         * @param value _more_
          *
          * @param indices _more_
          * @param delimiter _more_
@@ -1240,8 +1243,6 @@ public abstract class Converter extends Processor {
         /**
          * _more_
          *
-         * @param col _more_
-         * @param value _more_
          * @param op _more_
          *
          * @param indices _more_
@@ -1324,8 +1325,6 @@ public abstract class Converter extends Processor {
         /**
          * _more_
          *
-         * @param col _more_
-         * @param value _more_
          * @param action _more_
          *
          * @param indices _more_
@@ -1392,7 +1391,6 @@ public abstract class Converter extends Processor {
          *
          * @param col _more_
          *
-         * @param label _more_
          * @param value _more_
          */
         public ColumnInserter(int col, String value) {
@@ -1460,7 +1458,6 @@ public abstract class Converter extends Processor {
          * @param row _more_
          * @param col _more_
          *
-         * @param label _more_
          * @param value _more_
          */
         public ColumnNudger(int row, int col, String value) {
@@ -1517,13 +1514,9 @@ public abstract class Converter extends Processor {
         /**
          * _more_
          *
-         * @param col _more_
          *
          * @param row _more_
          * @param cols _more_
-         *
-         * @param label _more_
-         * @param value _more_
          */
         public ColumnUnNudger(int row, List<String> cols) {
             this.cols   = Utils.toInt(cols);
@@ -1584,12 +1577,9 @@ public abstract class Converter extends Processor {
         /**
          * _more_
          *
-         * @param col _more_
-         *
          * @param cols _more_
          * @param rows _more_
          *
-         * @param label _more_
          * @param value _more_
          */
         public ColumnSetter(List<String> cols, List<String> rows,

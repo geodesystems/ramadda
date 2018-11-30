@@ -135,8 +135,11 @@ public class Row {
         if (index >= values.size()) {
             System.err.println("Row error:" + index + " " + values);
         }
+        Object o = values.get(index);
 
-        return values.get(index).toString();
+        return (o == null)
+               ? ""
+               : o.toString();
     }
 
     /**

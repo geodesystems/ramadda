@@ -26,33 +26,45 @@ function csvDisplay(what, download) {
         csvCall(command, {download:download, csvoutput:what});
 }
 
-
 function csvCall(cmds,args) {
     if (!args)  {
         args = {};
     }
-
     stop = 
         HtmlUtil.onClick("csvStop()","Stop",[]);
     csvOutput("<pre>\nProcessing...\n" + stop +"</pre>");
 
-    doExplode = cmds.indexOf("-explode")>=0 && !cmds.indexOf("#-explode")>=0;
+    var cleanCmds = "";
+    var lines = cmds.split("\n");
+    //Strip out the comments and anything after -quit
+    for(var i=0;i<lines.length;i++) {
+        var line = lines[i].trim();
+        if(line.startsWith("#")) continue;
+        if(line.startsWith("-quit")) break;
+        cleanCmds+=line+"\n";
+    }
+    cmds = cleanCmds;
+
+    doExplode = cmds.indexOf("-explode")>=0 && !(cmds.indexOf("#-explode")>=0);
+    if( cmds.indexOf("-quit")>=0 && !(cmds.indexOf("#-quit")>=0)) {
+        //        doExplode =
+    }
     var rawInput = csvGetInput();
 
     if(!args.download && !doExplode) {
         //        maxRows = args.maxRows;
         //        if(!Utils.isDefined(maxRows))
-            maxRows = $("#convertcsv_maxrows").val().trim();
+        maxRows = $("#convertcsv_maxrows").val().trim();
         if (maxRows != "") {
             cmds = "-maxrows " + maxRows +" " + cmds;
         }
     }
+
     haveOutput = Utils.isDefined(args.csvoutput);
-    if(!doExplode && cmds.indexOf("-explode")<0 &&  cmds.indexOf("-count")<0  && cmds.indexOf("-db") <0 && !haveOutput)  
+    if(!doExplode &&  cmds.indexOf("-count")<0  && cmds.indexOf("-db") <0 && !haveOutput)  
         args.csvoutput = "-print";
 
     var showHtml = args.csvoutput == ("-table");
-    //    console.log(showHtml + " " + cmds);
     var url = ramaddaBaseUrl + "/entry/show?output=csv_convert_process&entryid=" + convertCsvEntry+"&commands=" + encodeURIComponent(cmds)
         +"&lastinput=" + encodeURIComponent(rawInput);
     if(args.download)
@@ -60,6 +72,7 @@ function csvCall(cmds,args) {
     if($("#csvsave").is(':checked')) {
         url += "&save=true";        
     }
+
     if(args.csvoutput) {
         url += "&csvoutput=" + args.csvoutput;
     }

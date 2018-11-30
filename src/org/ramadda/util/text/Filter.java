@@ -398,10 +398,6 @@ public class Filter extends Converter {
 
         /**
          * _more_
-         *
-         * @param col _more_
-         * @param pattern _more_
-         *
          * @param skip _more_
          */
         public Decimate(int skip) {
@@ -596,11 +592,6 @@ public class Filter extends Converter {
 
         /**
          * _more_
-         *
-         *
-         * @param start _more_
-         * @param end _more_
-         *
          * @param toks _more_
          */
         public Cutter(List<String> toks) {
@@ -609,9 +600,6 @@ public class Filter extends Converter {
 
         /**
          * _more_
-         *
-         * @param start _more_
-         * @param end _more_
          *
          * @param toks _more_
          * @param cut _more_
@@ -681,10 +669,6 @@ public class Filter extends Converter {
 
         /**
          * _more_
-         *
-         *
-         * @param start _more_
-         * @param end _more_
          *
          * @param toks _more_
          */

@@ -68,11 +68,11 @@ public abstract class CsvOperator {
     /** _more_ */
     List<Integer> indices;
 
-    /** _more_          */
+    /** _more_ */
     HashSet<Integer> indexMap;
 
 
-    /** _more_          */
+    /** _more_ */
     private List header;
 
     /** _more_ */
