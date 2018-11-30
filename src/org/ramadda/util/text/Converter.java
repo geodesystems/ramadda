@@ -308,7 +308,7 @@ public abstract class Converter extends Processor {
                 if (format != null) {
                     attrs.append(" format=\"" + format + "\" ");
                 }
-                if(chartable && (type.equals("double") || type.equals("int"))) {
+                if(chartable && (type.equals("double") || type.equals("integer"))) {
                     attrs.append(" chartable=\"" + "true" + "\" ");
                 }
                 attrs.append(" type=\"" + type + "\"");
