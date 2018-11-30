@@ -10,7 +10,7 @@ function csvGetInput(force) {
     return val.trim();
 }
 
-function csvDisplay(what, download) {
+function csvDisplay(what, download,html) {
     var command ="";
     lines = csvGetInput().split("\n");
     for(var i=0;i<lines.length;i++){
@@ -21,9 +21,9 @@ function csvDisplay(what, download) {
     }
     command = command.trim();
     if(what == null)
-        csvCall(command  +" ", {download:download});
+        csvCall(command  +" ", {download:download,html:html});
     else
-        csvCall(command, {download:download, csvoutput:what});
+        csvCall(command, {download:download, csvoutput:what,html:html});
 }
 
 function csvCall(cmds,args) {
@@ -36,22 +36,21 @@ function csvCall(cmds,args) {
 
     var cleanCmds = "";
     var lines = cmds.split("\n");
+    var doExplode = false;
     //Strip out the comments and anything after -quit
     for(var i=0;i<lines.length;i++) {
         var line = lines[i].trim();
         if(line.startsWith("#")) continue;
         if(line.startsWith("-quit")) break;
+        if(line.startsWith("-explode")) {
+            doExplode = true;
+        }
         cleanCmds+=line+"\n";
     }
     cmds = cleanCmds;
-
-    doExplode = cmds.indexOf("-explode")>=0 && !(cmds.indexOf("#-explode")>=0);
-    if( cmds.indexOf("-quit")>=0 && !(cmds.indexOf("#-quit")>=0)) {
-        //        doExplode =
-    }
+    console.log("commands:" + cmds);
     var rawInput = csvGetInput();
-
-    if(!args.download && !doExplode) {
+    if((!args.download && !doExplode) || args.html) {
         //        maxRows = args.maxRows;
         //        if(!Utils.isDefined(maxRows))
         maxRows = $("#convertcsv_maxrows").val().trim();
@@ -218,7 +217,7 @@ html += "<form>";
 html += form;
 html += "<p>"
 html+=HtmlUtil.href("javascript:csvCall('-header')","Header",["class","convert_button"])+" ";
-html+=HtmlUtil.href("javascript:csvDisplay('-table')","Table",["class","convert_button"])+" ";
+html+=HtmlUtil.href("javascript:csvDisplay('-table',null,true)","Table",["class","convert_button"])+" ";
 html+=HtmlUtil.href("javascript:csvDisplay('-record')","Records",["class","convert_button"])+" ";
 html+=HtmlUtil.href("javascript:csvDisplay('-print')","CSV",["class","convert_button"])+" ";
 html+=HtmlUtil.href("javascript:csvDisplay('-raw')","Raw",["class","convert_button"])+" ";

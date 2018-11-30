@@ -288,17 +288,25 @@ public abstract class Converter extends Processor {
 
                 String format = null;
                 String type   = defaultType;
+                boolean isGeo = false;
 
+                boolean chartable = CsvUtil.getDbProp(props, id, "chartable", true);
                 if (id.indexOf("date") >= 0) {
                     type = "date";
+                } else if(id.equals("latitude") || id.equals("longitude")) {
+                    type = "double";
+                    isGeo = true;
+                    chartable = false;
                 }
+
                 type   = CsvUtil.getDbProp(props, id, "type", type);
                 format = CsvUtil.getDbProp(props, id, "format", format);
+
 
                 if (format != null) {
                     attrs.append(" format=\"" + format + "\" ");
                 }
-                if(type.equals("double") || type.equals("int")) {
+                if(chartable && (type.equals("double") || type.equals("int"))) {
                     attrs.append(" chartable=\"" + "true" + "\" ");
                 }
                 attrs.append(" type=\"" + type + "\"");
