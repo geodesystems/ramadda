@@ -590,14 +590,23 @@ public class Json {
      * @throws Exception _more_
      */
     public static void main(String[] args) throws Exception {
-        //        toCsv(args[0], System.out);
-        convertCameras(args);
+        toCsv(args[0], System.out, args.length>1?args[1]:null);
+        //        convertCameras(args);
     }
 
-    public static void toCsv(String file, PrintStream pw) throws Exception {
+    public static void toCsv(String file, PrintStream pw, String colString) throws Exception {
         BufferedReader br = new BufferedReader(
                                 new InputStreamReader(
                                                       new FileInputStream(file)));
+
+        HashSet cols = null;
+        if(colString!=null) {
+            cols=new HashSet();
+            for(String tok: StringUtil.split(colString,",",true,true))
+                cols.add(tok);
+            
+        }
+
         StringBuilder json = new StringBuilder();
         String        input;
         while ((input = br.readLine()) != null) {
@@ -606,15 +615,18 @@ public class Json {
         }
         JSONObject obj      = new JSONObject(json.toString());
         JSONArray  features = readArray(obj, "features");
-        String[]names = null;
+        List<String> names=null;
         for (int i = 0; i < features.length(); i++) {
             //            if((i%100)==0) System.err.println("cnt:" + i);
             JSONObject feature = features.getJSONObject(i);
             JSONObject     props   = feature.getJSONObject("properties");
             if(names == null) {
-                names= JSONObject.getNames(props);
-                Arrays.sort(names);
-                for(String name: names) {
+                names = new ArrayList<String>();
+                String[]allNames= JSONObject.getNames(props);
+                Arrays.sort(allNames);
+                for(String name: allNames) {
+                    if(cols!=null && !cols.contains(name)) continue;
+                    names.add(name);
                     pw.print(name);
                     pw.print(",");
                 }
