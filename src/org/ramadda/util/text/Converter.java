@@ -298,6 +298,9 @@ public abstract class Converter extends Processor {
                 if (format != null) {
                     attrs.append(" format=\"" + format + "\" ");
                 }
+                if(type.equals("double") || type.equals("int")) {
+                    attrs.append(" chartable=\"" + "true" + "\" ");
+                }
                 attrs.append(" type=\"" + type + "\"");
                 String field = id + "[" + attrs + "] ";
                 if (i == 0) {
