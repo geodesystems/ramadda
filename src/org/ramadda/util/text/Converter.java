@@ -226,6 +226,7 @@ public abstract class Converter extends Processor {
 
         /** _more_ */
         String defaultType = "double";
+        boolean defaultChartable = true;
 
         /**
          * _more_
@@ -238,6 +239,7 @@ public abstract class Converter extends Processor {
             this.props = props;
             defaultType = CsvUtil.getDbProp(props, "default", "type",
                                             defaultType);
+            defaultChartable = CsvUtil.getDbProp(props, "default", "chartable", true);
         }
 
 
@@ -290,7 +292,7 @@ public abstract class Converter extends Processor {
                 String type   = defaultType;
                 boolean isGeo = false;
 
-                boolean chartable = CsvUtil.getDbProp(props, id, "chartable", true);
+                boolean chartable = CsvUtil.getDbProp(props, id, "chartable", defaultChartable);
                 if (id.indexOf("date") >= 0) {
                     type = "date";
                 } else if(id.equals("latitude") || id.equals("longitude")) {
