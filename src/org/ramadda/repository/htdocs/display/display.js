@@ -2173,7 +2173,57 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
                     this.jsonUrl = null;
                 }
             },
+            getDateFormatter: function() {
+                var date_formatter = null;
+                if (this.googleLoaded()) {
+                    var df = this.getProperty("dateFormat",null);
+                    if (df) {
+                        var tz = 0;
+                        this.timezone = this.getProperty("timezone");
+                        if(Utils.isDefined(this.timezone)) {
+                            tz=parseFloat(this.timezone);
+                        }
+                        date_formatter = new google.visualization.DateFormat({ 
+                                pattern: df,
+                                timeZone: tz
+                            }); 
+                    }
+                }
+                return date_formatter;
+            },
+            getHasDate: function(records) {
+                var lastDate = null;
+                this.hasDate = false;
+                for(j=0;j<records.length;j++) { 
+                    var record = records[j];
+                    var date = record.getDate();
+                    if(date==null) {
+                        continue;
+                    }
+                    if(lastDate!=null && lastDate.getTime()!=date.getTime()) {
+                        this.hasDate = true;
+                        break
+                    }
+                    lastDate = date;
+                }
+                return this.hasDate;
+            },
+            dateInRange: function(date) {
+                if(date!=null) {
+                    if(this.minDateObj!=null && date.getTime()< minDate) {
+                        return false;
+                    }
+                    if(this.maxDateObj!=null && date.getTime()> maxDate) {
+                        return false;
+                    }
+                }
+                return true;
+            },
+
             //get an array of arrays of data 
+               
+
+
             getStandardData : function(fields, props) {
                 var pointData = this.dataCollection.getList()[0];
                 var excludeZero = this.getProperty(PROP_EXCLUDE_ZERO,false);
@@ -2246,62 +2296,20 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
                 var nonNullRecords = 0;
                 var indexField = this.indexField;
                 var records = pointData.getRecords();
+                var allFields = pointData.getRecordFields();
 
                 //Check if there are dates and if they are different
-                this.hasDate = false;
-                var lastDate = null;
-                for(j=0;j<records.length;j++) { 
-                    var record = records[j];
-                    var date = record.getDate();
-                    if(date==null) {
-                        continue;
-                    }
-                    if(lastDate!=null && lastDate.getTime()!=date.getTime()) {
-                        this.hasDate = true;
-                        break
-                    }
-                    lastDate = date;
-                }
-
-
-
+                this.hasDate = this.getHasDate(records);
+                var date_formatter = this.getDateFormatter();
                 var rowCnt = -1;
-                var date_formatter;
-                if (this.googleLoaded()) {
-                    var df = this.getProperty("dateFormat",null);
-                    if (df) {
-                        var tz = 0;
-                        this.timezone = this.getProperty("timezone");
-                        if(Utils.isDefined(this.timezone)) {
-                            tz=parseFloat(this.timezone);
-                        }
-                        date_formatter = new google.visualization.DateFormat({ 
-                                pattern: df,
-                                timeZone: tz
-                            }); 
-                    }
-                }
                 for(j=0;j<records.length;j++) { 
                     var record = records[j];
                     var date = record.getDate();
-                    if(date!=null) {
-                        if(this.minDateObj!=null && date.getTime()< minDate) {
-                            //                            console.log("skipping min:" + date +"  -- " + date.getTime() +" -- " + minDate);
-                            continue;
-                        }
-                        if(this.maxDateObj!=null && date.getTime()> maxDate) {
-                            //                            console.log("skipping max:" + date);
-                            continue;
-                        }
-                    }
-
+                    if(!this.dateInRange(date)) continue;
                     rowCnt++;
-
-
                     var values = [];
-                    if(props.includeIndex || props.includeIndexIfDate) {
+                    if(props && (props.includeIndex || props.includeIndexIfDate)) {
                         var indexName = null;
-                        var date = record.getDate();
                         if(indexField>=0) {
                             var field = allFields[indexField];
                             values.push(record.getValue(indexField)+offset);
