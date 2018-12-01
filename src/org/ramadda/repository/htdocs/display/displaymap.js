@@ -525,6 +525,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
                         index:-1,
                     };
 
+                    
                     var sizeBy = {
                         id:this.getDisplayProp(source,"sizeBy",null),
                         minValue:0,
@@ -532,8 +533,6 @@ function RamaddaMapDisplay(displayManager, id, properties) {
                         field: null,
                         index:-1,
                     };
-
-                    var sizeByField = null;
 
                     for(var i=0;i<fields.length;i++) {
                         var field = fields[i];
@@ -544,6 +543,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
                             sizeBy.field = field;
                         }
                     }
+
 
                     sizeBy.index = sizeBy.field!=null?sizeBy.field.getIndex():-1;
                     colorBy.index = colorBy.field!=null?colorBy.field.getIndex():-1;
