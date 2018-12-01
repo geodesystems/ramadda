@@ -38,7 +38,9 @@ function RamaddaMapDisplay(displayManager, id, properties) {
                     showPercent: false,
                     percentFields: null,
                     kmlLayer:null,
-                    kmlLayerName:""
+                    kmlLayerName:"",
+                    geojsonLayer:null,
+                    geojsonLayerName:"",
             });
 	RamaddaUtil.inherit(this, SUPER = new RamaddaDisplay(displayManager, id,
 			DISPLAY_MAP, properties));
@@ -111,6 +113,10 @@ function RamaddaMapDisplay(displayManager, id, properties) {
                         if(this.kmlLayer!=null) {
                             url = this.getRamadda().getEntryDownloadUrl(this.kmlLayer);
                             this.map.addKMLLayer(this.kmlLayerName,url,false);
+                        }
+                        if(this.geojsonLayer!=null) {
+                            url = this.getRamadda().getEntryDownloadUrl(this.geojsonLayer);
+                            this.map.addGeoJsonLayer(this.geojsonLayerName,url,false);
                         }
                         
                         this.map.addRegionSelectorControl(function(bounds) {
