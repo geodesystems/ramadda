@@ -173,6 +173,8 @@ function RepositoryMap(mapId, params) {
             div:this.mapDivId,
             eventListeners: {
                 featureover: function(e) { 
+                    layer = e.feature.layer;
+                    if(layer.canSelect === false || !(layer.isMapLayer=== true)) return;
                     if(!e.feature.isSelected) {
                         e.feature.originalStyle = e.feature.style;
                         e.feature.style = null;
@@ -180,13 +182,16 @@ function RepositoryMap(mapId, params) {
                     }
                 },
                 featureout: function(e) { 
+                    layer = e.feature.layer;
+                    if(layer.canSelect === false || !(layer.isMapLayer=== true)) return;
                     e.feature.style = e.feature.originalStyle;
                     if(!e.feature.isSelected) {
-                        e.feature.layer.drawFeature(e.feature,e.feature.style ||"default"); 
+                        layer.drawFeature(e.feature,e.feature.style ||"default"); 
                     }
                 },
                 nofeatureclick: function(e) { 
                     layer = e.layer;
+                    if(layer.canSelect === false) return;
                     if(layer && layer.selectedFeature) {
                         theMap.unselectFeature(layer.selectedFeature);
                     }
@@ -195,6 +200,7 @@ function RepositoryMap(mapId, params) {
                     layer = e.layer;
                     if(!layer)
                         layer = e.feature.layer;
+                    if(layer.canSelect === false || !(layer.isMapLayer=== true)) return;
                     if(layer.selectedFeature) {
                         layer.drawFeature(layer.selectedFeature,layer.selectedFeature.style ||"default");
                         layer.selectedFeature.isSelected = false;
@@ -382,7 +388,7 @@ function initMapFunctions(theMap) {
                 fillOpacity: props.fillOpacity,
                 strokeWidth: props.strokeWidth,
                     strokeColor: props.strokeColor,
-                }
+                    }
             );
         var selectStyle = OpenLayers.Util.extend( {},  OpenLayers.Feature.Vector.style["select"]);
         $.extend(selectStyle, {
@@ -497,6 +503,8 @@ function initMapFunctions(theMap) {
     theMap.initMapVectorLayer = function(layer, canSelect, selectCallback, unselectCallback, loadCallback) {
         var _this=this;
         var loadingImage = this.showLoadingImage();
+        layer.isMapLayer = true;
+        layer.canSelect = canSelect;
         layer.events.on({"loadend": function(e) {
                     _this.hideLoadingImage(loadingImage);
                     if(_this.centerOnMarkersCalled) {
@@ -1053,7 +1061,6 @@ function initMapFunctions(theMap) {
     theMap.addVectorLayer = function(layer,canSelect) {
         this.addLayer(layer);
         if (this.getCanSelect(canSelect)) {
-            console.log("adding layer to featureSelect");
             this.vectorLayers.push(layer);
             var _this = this;
             if(!this.map.featureSelect) {
@@ -1064,10 +1071,26 @@ function initMapFunctions(theMap) {
                             _this.showMarkerPopup(feature, true);
                         }
                     });
+                /*
+                if (this.highlightOnHover) {
+                    this.map.highlightSelect = new OpenLayers.Control.SelectFeature(layer, {
+                            multiple: false, 
+                            hover: true,
+                            highlightOnly: true,
+                            renderIntent: "temporary"
+                        });
+                    this.map.addControl(this.map.highlightSelect);
+                    this.map.highlightSelect.activate();   
+                    }*/
                 this.map.addControl(this.map.featureSelect);
                 this.map.featureSelect.activate();
             } else {
                 this.map.featureSelect.setLayer(this.vectorLayers);
+                /*
+                  if(this.map.highlightSelect) {
+                    this.map.highlightSelect.setLayer(this.vectorLayers);
+                }
+                */
             }
         }
     }
