@@ -499,6 +499,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
                     }
                     this.vectorMapApplied = true;
                     var features = this.vectorLayer.features.slice();
+                    console.log("starting:" + features.length);
                     var circles = this.points;
                     for (var i = 0; i < circles.length; i++) {
                         var circle = circles[i];
@@ -543,7 +544,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
                             }
                        }
                        if(matchedFeature) {
-                           features.slice(index,1);
+                           features.splice(index,1);
                            style = matchedFeature.style;
                            if(!style) style = {
                                    "stylename": "from display"
@@ -551,8 +552,11 @@ function RamaddaMapDisplay(displayManager, id, properties) {
                            $.extend(style, circle.style);
                            matchedFeature.style = style;
                            matchedFeature.popupText = circle.text;
-                           matchedFeature.myname = "MAP FEATURE";
                        } 
+                    }
+
+                    if((""+this.getProperty("pruneFeatures","")) == "true") {
+                        this.vectorLayer.removeFeatures(features);
                     }
                     this.vectorLayer.redraw();
                 },
