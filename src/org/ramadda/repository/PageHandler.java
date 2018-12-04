@@ -1020,7 +1020,7 @@ public class PageHandler extends RepositoryManager {
 
             imports = applyBaseMacros(imports);
             imports = imports.replace("${htdocs_version}",
-                                      RepositoryUtil.HTDOCS_VERSION);
+                                      RepositoryUtil.getHtdocsVersion());
 
             theTemplates = new ArrayList<HtmlTemplate>();
 

@@ -2,6 +2,7 @@
  * Copyright (c) 2008-2015 Geode Systems LLC
  */
 
+var globalDebug  = false;
 
 
 // google maps
@@ -85,6 +86,8 @@ function ramaddaAddMap(map) {
     ramaddaMaps.push(map);
 }
 
+
+
 function RepositoryMap(mapId, params) {
     ramaddaMapMap[mapId] = this;
     if(!params) params = {};
@@ -93,7 +96,6 @@ function RepositoryMap(mapId, params) {
     if (mapId == null) {
         mapId = "map";
     }
-
 
     $.extend(this, {
             sourceProjection:sourceProjection,
@@ -111,6 +113,7 @@ function RepositoryMap(mapId, params) {
                 latlonReadout : latlonReadoutID,
                 map: null,
                 defaultMapLayer: map_default_layer,
+                defaultCanSelect:true,
                 haveAddedDefaultLayer: false,
                 layer: null,
                 markers: null,
@@ -132,7 +135,7 @@ function RepositoryMap(mapId, params) {
 
         var  dflt = {
             pointRadius: 3,
-            fillOpacity: 0.6,
+            fillOpacity: 0.8,
             fillColor: "#e6e6e6",
             strokeColor: "#999",
             strokeWidth: 1,
@@ -146,7 +149,7 @@ function RepositoryMap(mapId, params) {
         $.extend(this, params);
 
         this.default = {};
-
+        var theMap = this;
 
         if(Utils.isDefined(params.onSelect)) {
             this.onSelect = params.onSelect;
@@ -166,7 +169,47 @@ function RepositoryMap(mapId, params) {
             units : "m",
             controls: [],
             maxResolution : 156543.0339,
-            maxExtent : maxExtent
+            maxExtent : maxExtent,
+            div:this.mapDivId,
+            eventListeners: {
+                featureover: function(e) { 
+                    if(!e.feature.isSelected) {
+                        e.feature.originalStyle = e.feature.style;
+                        e.feature.style = null;
+                        e.feature.layer.drawFeature(e.feature,"temporary");
+                    }
+                },
+                featureout: function(e) { 
+                    e.feature.style = e.feature.originalStyle;
+                    if(!e.feature.isSelected) {
+                        e.feature.layer.drawFeature(e.feature,e.feature.style ||"default"); 
+                    }
+                },
+                nofeatureclick: function(e) { 
+                    layer = e.layer;
+                    if(layer && layer.selectedFeature) {
+                        theMap.unselectFeature(layer.selectedFeature);
+                    }
+                },
+                featureclick: function(e) { 
+                    layer = e.layer;
+                    if(!layer)
+                        layer = e.feature.layer;
+                    if(layer.selectedFeature) {
+                        layer.drawFeature(layer.selectedFeature,layer.selectedFeature.style ||"default");
+                        layer.selectedFeature.isSelected = false;
+                        theMap.onPopupClose();
+                    }
+                    theMap.selectedFeature = e.feature;
+                    layer.selectedFeature = e.feature;
+                    layer.selectedFeature.isSelected =true;
+                    layer.drawFeature(layer.selectedFeature,"select"); 
+                    if(layer.selectCallback) {
+                        layer.feature= layer.selectedFeature;
+                        layer.selectCallback(layer);
+                    }
+                }
+            }
             
         };
         this.map = new OpenLayers.Map(this.mapDivId,options);
@@ -182,21 +225,40 @@ function RepositoryMap(mapId, params) {
 }
 
 function initMapFunctions(theMap) {
-
-
     RamaddaUtil.defineMembers(theMap,  {
+            unselectFeature: function(feature) {
+                if(!feature) return;
+                layer = feature.layer;
+                layer.drawFeature(layer.selectedFeature,layer.selectedFeature.style ||"default");
+                layer.selectedFeature.isSelected = false;
+                layer.selectedFeature = null;
+                this.selectedFeature = null;
+                this.onPopupClose();
+            },
             addLayer: function(layer) {
                 if(this.map!=null) {
                     this.map.addLayer(layer);
+                    this.checkLayerOrder();
                 } else {
                     this.initialLayers.push(layer);
                 }
             },
+            checkLayerOrder: function() {
+                if(this.circles) {
+                    this.map.setLayerIndex(this.circles, this.map.layers.length-1);
+                    this.map.raiseLayer(this.circles, this.map.layers.length-1);
+                    this.circles.redraw();
+                }
+                if(this.markers) {
+                    this.map.setLayerIndex(this.markers, this.map.layers.length-1);
+                    this.map.raiseLayer(this.markers, this.map.layers.length-1);
+                }
+                this.map.resetLayersZIndex();
+            }
         });
 
     theMap.addImageLayer = function(layerId, name, desc, url, visible, north,west,south,east, width,height,args) {
         var _this = this;
-
         var theArgs = {
             forSelect: false,
             addBox: true
@@ -204,8 +266,6 @@ function initMapFunctions(theMap) {
         };
         if(args)
             OpenLayers.Util.extend(theArgs, args);
-
-
 
         //Things go blooeey with lat up to 90
         if(north>88) north = 88;
@@ -234,15 +294,11 @@ function initMapFunctions(theMap) {
         image.text = this.getPopupText(desc);
         image.ramaddaId = layerId;
         image.ramaddaName = name;
-        this.map.addLayer(image);
+        this.addLayer(image);
         image.north = north;
         image.west =  west;
         image.south =  south;
         image.east =  east;
-        if(visible)  {
-            //            image.box = this.createBox(layerId, "", north, west, south, east, desc, {});
-        } 
-
         if(!this.imageLayers) this.imageLayers = {}
         this.imageLayers[layerId] = image;
 
@@ -268,12 +324,10 @@ function initMapFunctions(theMap) {
             layer.visibility = true;
         }
 
-
         //If we have this here we get this error: 
         //http://lists.osgeo.org/pipermail/openlayers-users//2012-August/026025.html
         //        layer.reproject = true;
-
-        this.map.addLayer(layer);
+        this.addLayer(layer);
     }
 
 
@@ -301,7 +355,7 @@ function initMapFunctions(theMap) {
             layer.isBaseLayer = false;
         layer.visibility = false;
         layer.reproject = true;
-        this.map.addLayer(layer);
+        this.addLayer(layer);
         if(isDefault) {
             this.haveAddedDefaultLayer = true;
             this.map.setLayerIndex(layer, 0);
@@ -309,78 +363,47 @@ function initMapFunctions(theMap) {
         }
     }
 
-    theMap.addGeoJsonLayer = function(name, geoJsonUrl, canSelect, selectCallback, unselectCallback, args) {
-        var _this=this;
-        var  dflt = {
-            fillColor: "#e6e6e6",
-            strokeColor: "#777777",
-            strokeWidth: 1,
-            select_fillColor: "#66cccc",
-            select_strokeColor: "#222222",
-            select_strokeWidth: 1
+    theMap.getVectorLayerStyleMap = function(layer,args) {
+        var  props = {
+            pointRadius: this.pointRadius,
+            fillOpacity:this.fillOpacity,
+            fillColor:this.fillColor,
+            strokeColor:this.strokeColor,
+            strokeWidth:this.strokeWidth,
+            select_fillOpacity: this.fillOpacity,
+            select_fillColor: "#666",
+            select_strokeColor:"#666",
+            select_strokeWidth:1
         };
-        if (!args) {
-            args = {};
-        }
-        $.extend(dflt, args);
-
-
-
-        var geoJsonLayer = new OpenLayers.Layer.Vector(name, {
-            projection: this.displayProjection,
-            strategies: [new OpenLayers.Strategy.Fixed()],
-            protocol: new OpenLayers.Protocol.HTTP({
-                url: geoJsonUrl,
-                format: new OpenLayers.Format.GeoJSON()
-            }),
-            styleMap: new OpenLayers.StyleMap({
-                "default": new OpenLayers.Style({
-                    pointRadius: 3,
-                    fillOpacity: 0.6,
-                    fillColor: dflt.fillColor,
-                    strokeColor: dflt.strokeColor,
-                    strokeWidth: dflt.strokeWidth
-                }),
-                "select": new OpenLayers.Style({
-                    pointRadius: 3,
-                    fillOpacity: 0.6,
-                    fillColor: dflt.select_fillColor,
-                    strokeColor: dflt.select_strokeColor,
-                    strokeWidth: dflt.select_strokeWidth
-                })
-            })
-        });
-        this.map.addLayer(geoJsonLayer);
+        if (args) RamaddaUtil.inherit(props, args);
+        var temporaryStyle = OpenLayers.Util.extend( {},  OpenLayers.Feature.Vector.style["temporary"]);
+        $.extend(temporaryStyle, {
+                pointRadius: props.pointRadius,
+                fillOpacity: props.fillOpacity,
+                strokeWidth: props.strokeWidth,
+                    strokeColor: props.strokeColor,
+                }
+            );
+        var selectStyle = OpenLayers.Util.extend( {},  OpenLayers.Feature.Vector.style["select"]);
+        $.extend(selectStyle, {
+                pointRadius: 3,
+                    fillOpacity: props.select_fillOpacity,
+                    fillColor: props.select_fillColor,
+                    strokeColor: props.select_strokeColor,
+                    strokeWidth: props.select_strokeWidth});
         
-        var loadingImage = theMap.showLoadingImage();
-        geoJsonLayer.events.on({"loadend": function(e) {
-                    theMap.hideLoadingImage(loadingImage);
-                    if(_this.centerOnMarkersCalled)
-                        _this.centerOnMarkers(_this.dfltBounds,_this.centerOnMarkersForce);
-                }});
-
-
-
-        if (canSelect) {
-            select = new OpenLayers.Control.SelectFeature(geoJsonLayer, {
-                 multiple: false, 
-                 hover: this.selectOnHover,
-                 //highlightOnly: true,
-                 renderIntent: "select",
-            });
-
-
-            theMap = this;
-            if(selectCallback==null||!Utils.isDefined(selectCallback)) selectCallback = function(layer){theMap.onFeatureSelect(layer)};
-            if(unselectCallback==null||!Utils.isDefined(unselectCallback)) unselectCallback = this.onFeatureUnselect;
-
-            geoJsonLayer.events.on({ 
-                "featureselected": selectCallback,
-                "featureunselected": unselectCallback
-            });
-            this.map.addControl(select);
-            select.activate();   
-        }
+        var defaultStyle = OpenLayers.Util.extend( {},  OpenLayers.Feature.Vector.style["default"]);
+        $.extend(defaultStyle, {
+                pointRadius: props.pointRadius,
+                    fillOpacity: props.fillOpacity,
+                    fillColor: props.fillColor,
+                    strokeColor: props.strokeColor,
+                    strokeWidth: props.strokeWidth});
+        map= new OpenLayers.StyleMap({
+                "temporary": temporaryStyle,
+                "default": defaultStyle,
+                "select":  selectStyle});
+        return map;
     }
 
 
@@ -390,43 +413,51 @@ function initMapFunctions(theMap) {
             func(this, layer);
             return;
         }
-
-
         var format = new OpenLayers.Format.GeoJSON();
         var feature = layer.feature;
         var style = feature.style;
         var json = format.write(feature);
         var p = feature.attributes;
-        var out = "";
-        if(style && style["balloonStyle"]) {
-            out = style["balloonStyle"];
-            for (var attr in p) {
-                //$[styleid/attr]
-                var label = attr.replace("_"," ");
-                var value = "";
-                if (typeof p[attr] == 'object' || typeof p[attr] == 'Object') {
-                    var o = p[attr];
-                    value =  o["value"];
-                } else {
-                    value =   p[attr];
-                }
-                out = out.replace("${" +style.id+"/" + attr+"}", value);
+        var out = feature.popupText;
+        //        console.log("out:" + (typeof out) + " " + out);
+        if((typeof out) == "object") {
+            console.log("out:" + (typeof out) + " " + out);
+            for(a in out) {
+                console.log("   " + a+"=" +out[a]);
             }
-        } else {
-            out = "<table>";
-            for (var attr in p) {
-                var label = attr.replace("_"," ");
-                out += "<tr><td align=right><div style=\"margin-right:5px;margin-bottom:3px;\"><b>" + label + ":</b></div></td><td><div style=\"margin-right:5px;margin-bottom:3px;\">";
-                if (p[attr]!=null && (typeof p[attr] == 'object' || typeof p[attr] == 'Object')) {
-                    var o = p[attr];
-                    console.log("o=" + o);
-                    out += o["value"];
-                } else {
-                    out +=  p[attr];
+
+        }
+        if(!out) {
+            if(style && style["balloonStyle"]) {
+                out = style["balloonStyle"];
+                for (var attr in p) {
+                    //$[styleid/attr]
+                    var label = attr.replace("_"," ");
+                    var value = "";
+                    if (typeof p[attr] == 'object' || typeof p[attr] == 'Object') {
+                        var o = p[attr];
+                        value =  o["value"];
+                    } else {
+                        value =   p[attr];
+                    }
+                    out = out.replace("${" +style.id+"/" + attr+"}", value);
                 }
-                out +=  "</div></td></tr>";
+            } else {
+                out = "<table>";
+                for (var attr in p) {
+                    var label = attr.replace("_"," ");
+                    out += "<tr><td align=right><div style=\"margin-right:5px;margin-bottom:3px;\"><b>" + label + ":</b></div></td><td><div style=\"margin-right:5px;margin-bottom:3px;\">";
+                    if (p[attr]!=null && (typeof p[attr] == 'object' || typeof p[attr] == 'Object')) {
+                        var o = p[attr];
+                        console.log("o=" + o);
+                        out += o["value"];
+                    } else {
+                        out +=  p[attr];
+                    }
+                    out +=  "</div></td></tr>";
+                }
+                out += "</table>";
             }
-            out += "</table>";
         }
         if (this.currentPopup) {
             this.map.removePopup(this.currentPopup);
@@ -445,98 +476,110 @@ function initMapFunctions(theMap) {
     }
 
     theMap.onFeatureUnselect = function(layer) {
-       theMap.onPopupClose();
+        this.onPopupClose();
     }
 
     theMap.removeKMLLayer = function(layer) {
         this.map.removeLayer(layer);
     }
 
-    theMap.addKMLLayer = function(name, kmlUrl, canSelect, selectCallback, unselectCallback, argProps) {
-        var _this = this;
-        var  props = {
-            pointRadius: this.pointRadius,
-            fillOpacity:this.fillOpacity,
-            fillColor:this.fillColor,
-            strokeColor:this.strokeColor,
-            strokeWidth:this.strokeWidth,
-            select_fillColor: "#666",
-            select_strokeColor: "#222222",
-            select_strokeWidth: 1
-        };
-        if (argProps) RamaddaUtil.inherit(props, argProps);
+    theMap.setDefaultCanSelect = function(canSelect) {
+        this.defaultCanSelect = canSelect;
+    }
 
+    theMap.getCanSelect = function(canSelect) {
+        if(((typeof canSelect) =="undefined") || (canSelect == null)) {
+            return this.defaultCanSelect;
+        }
+        return canSelect;
+    }
 
-        var kmlLayer = new OpenLayers.Layer.Vector(name, {
+    theMap.initMapVectorLayer = function(layer, canSelect, selectCallback, unselectCallback, loadCallback) {
+        var _this=this;
+        var loadingImage = this.showLoadingImage();
+        layer.events.on({"loadend": function(e) {
+                    _this.hideLoadingImage(loadingImage);
+                    if(_this.centerOnMarkersCalled) {
+                        _this.centerOnMarkers(_this.dfltBounds,_this.centerOnMarkersForce);
+                    }
+                    if(loadCallback) {
+                        loadCallback(_this, layer);
+                    }
+                }});
+        this.addLayer(layer);
+        var doit = false;
+        if (this.getCanSelect(canSelect)) {
+            /** don't add listeners here. We do it up at the main map level
+                select = new OpenLayers.Control.SelectFeature(layer, {
+                multiple: false, 
+                hover: this.selectOnHover,
+                //highlightOnly: true,
+                renderIntent: "select",
+                });
+                if (this.highlightOnHover) {
+                highlight = new OpenLayers.Control.SelectFeature(layer, {
+                multiple: false, 
+                hover: true,
+                highlightOnly: true,
+                renderIntent: "temporary"
+                });
+                }
+                //                highlight.selectStyle = OpenLayers.Feature.Vector.style['temporary'];
+                */
+            if(selectCallback==null||!Utils.isDefined(selectCallback)) selectCallback = function(layer){_this.onFeatureSelect(layer)};
+            if(unselectCallback==null || !Utils.isDefined(unselectCallback)) unselectCallback = function(layer){_this.onFeatureUnselect()};
+            layer.selectCallback  = selectCallback;
+            layer.unselectCallback  = selectCallback;
+            /**
+               layer.events.on({ 
+               "featureselected": selectCallback,
+               "featureunselected": unselectCallback,
+               });
+
+               if (this.highlightOnHover) {
+               this.map.addControl(highlight);
+               highlight.activate();   
+               }
+               this.map.addControl(select);
+               select.activate();   
+            */
+        }
+    }
+
+    theMap.addGeoJsonLayer = function(name, url, canSelect, selectCallback, unselectCallback, args, loadCallback) {
+        var layer = new OpenLayers.Layer.Vector(name, {
             projection: this.displayProjection,
             strategies: [new OpenLayers.Strategy.Fixed()],
             protocol: new OpenLayers.Protocol.HTTP({
-                url: kmlUrl,
+                url: url,
+                format: new OpenLayers.Format.GeoJSON({
+                    })
+                }),
+            //xxstyleMap: this.getVectorLayerStyleMap(args)
+            });
+        layer.styleMap = this.getVectorLayerStyleMap(layer, args);
+        this.initMapVectorLayer(layer, canSelect, selectCallback, unselectCallback, loadCallback);
+        return layer;
+    }
+
+    theMap.addKMLLayer = function(name, url, canSelect, selectCallback, unselectCallback, args, loadCallback) {
+        var layer = new OpenLayers.Layer.Vector(name, {
+            projection: this.displayProjection,
+            strategies: [new OpenLayers.Strategy.Fixed()],
+            protocol: new OpenLayers.Protocol.HTTP({
+                url: url,
                 format: new OpenLayers.Format.KML({
                         extractStyles: true, 
                         extractAttributes: true,
                         maxDepth: 2
                 })
             }),
-            styleMap: new OpenLayers.StyleMap({
-                "default": new OpenLayers.Style({
-                    pointRadius: props.pointRadius,
-                    fillOpacity: props.fillOpacity,
-                    fillColor: props.fillColor,
-                    //                    fillColor: "#ff0000",
-                    strokeColor: props.strokeColor,
-                    strokeWidth: props.strokeWidth,
-                }),
-                "select": new OpenLayers.Style({
-                    pointRadius: 3,
-                    fillOpacity: 0.95,
-                    fillColor: props.select_fillColor,
-                    //fillColor:"red",
-                    strokeColor: props.select_strokeColor,
-                    strokeWidth: 1
-                })
-            })
-        });
-        var loadingImage = theMap.showLoadingImage();
-        kmlLayer.events.on({"loadend": function(e) {
-                    _this.hideLoadingImage(loadingImage);
-                    if(_this.centerOnMarkersCalled) {
-                        _this.centerOnMarkers(_this.dfltBounds,_this.centerOnMarkersForce);
-                    }
-                }});
-        this.map.addLayer(kmlLayer);
-        if (canSelect) {
-            select = new OpenLayers.Control.SelectFeature(kmlLayer, {
-                 multiple: false, 
-                 hover: this.selectOnHover,
-                 //highlightOnly: true,
-                 renderIntent: "select",
-            });
-            if (this.highlightOnHover) {
-                highlight = new OpenLayers.Control.SelectFeature(kmlLayer, {
-                     multiple: false, 
-                     hover: true,
-                     highlightOnly: true,
-                     renderIntent: "temporary"
-                });
-                highlight.selectStyle = OpenLayers.Feature.Vector.style['temporary'];
+            //            xxstyleMap: this.getVectorLayerStyleMap(args)
             }
-            theMap = this;
-            if(selectCallback==null||!Utils.isDefined(selectCallback)) selectCallback = function(layer){theMap.onFeatureSelect(layer)};
-            if(unselectCallback==null || !Utils.isDefined(unselectCallback)) unselectCallback = this.onFeatureUnselect;
-
-            kmlLayer.events.on({ 
-                "featureselected": selectCallback,
-                "featureunselected": unselectCallback
-            });
-            if (this.highlightOnHover) {
-                this.map.addControl(highlight);
-                highlight.activate();   
-            }
-            this.map.addControl(select);
-            select.activate();   
-        }
-        return kmlLayer;
+            );
+        layer.styleMap = this.getVectorLayerStyleMap(layer,args);
+        this.initMapVectorLayer(layer,canSelect, selectCallback, unselectCallback, loadCallback);
+        return layer;
     }
 
     theMap.addBaseLayers = function() {
@@ -757,7 +800,7 @@ function initMapFunctions(theMap) {
                 if(mapLayer == this.defaultMapLayer) {
                     this.defaultOLMapLayer = newLayer;
                 }
-                this.map.addLayer(newLayer);
+                this.addLayer(newLayer);
             }
 
         }
@@ -868,7 +911,7 @@ function initMapFunctions(theMap) {
 
 
         //this.vectors = new OpenLayers.Layer.Vector("Drawing");
-        //this.map.addLayer(this.vectors);
+        //this.addLayer(this.vectors);
 
         if (this.enableDragPan) {
           this.map.addControl(new OpenLayers.Control.Navigation({
@@ -976,16 +1019,8 @@ function initMapFunctions(theMap) {
             this.map.zoomToMaxExtent(); 
         }
 
-        if (this.markers) {
-            this.addVectorLayer(this.markers);
-        }
-
-        if (this.circles) {
-            this.addVectorLayer(this.circles);
-        }
-
         for(var i=0;i<this.initialLayers.length;i++) {
-            this.map.addLayer(this.initialLayers[i]);
+            this.addLayer(this.initialLayers[i]);
         }
         this.initialLayers = [];
 
@@ -1015,23 +1050,25 @@ function initMapFunctions(theMap) {
     }
 
 
-
-    theMap.addVectorLayer = function(layer) {
-        this.map.addLayer(layer);
-        this.vectorLayers.push(layer);
-        var _this = this;
-        if(!this.map.featureSelect) {
-            this.map.featureSelect = new OpenLayers.Control.SelectFeature(layer, {
-                    multiple: false,
-                    hover: this.selectOnHover,
-                    onSelect: function(feature) { 
-                        _this.showMarkerPopup(feature, true);
-                    }
-                });
-            this.map.addControl(this.map.featureSelect);
-            this.map.featureSelect.activate();
-        } else {
-            this.map.featureSelect.setLayer(this.vectorLayers);
+    theMap.addVectorLayer = function(layer,canSelect) {
+        this.addLayer(layer);
+        if (this.getCanSelect(canSelect)) {
+            console.log("adding layer to featureSelect");
+            this.vectorLayers.push(layer);
+            var _this = this;
+            if(!this.map.featureSelect) {
+                this.map.featureSelect = new OpenLayers.Control.SelectFeature(layer, {
+                        multiple: false,
+                        hover: this.selectOnHover,
+                        onSelect: function(feature) { 
+                            _this.showMarkerPopup(feature, true);
+                        }
+                    });
+                this.map.addControl(this.map.featureSelect);
+                this.map.featureSelect.activate();
+            } else {
+                this.map.featureSelect.setLayer(this.vectorLayers);
+            }
         }
     }
 
@@ -1046,25 +1083,22 @@ function initMapFunctions(theMap) {
     theMap.initForDrawing = function() {
         var theMap = this;
         if (!theMap.drawingLayer) {
-            theMap.drawingLayer = new OpenLayers.Layer.Vector("Drawing");
-            theMap.map.addLayer(theMap.drawingLayer);
+            this.drawingLayer = new OpenLayers.Layer.Vector("Drawing");
+            this.addLayer(theMap.drawingLayer);
         }
-        theMap.drawControl = new OpenLayers.Control.DrawFeature(
+        this.drawControl = new OpenLayers.Control.DrawFeature(
                 theMap.drawingLayer, OpenLayers.Handler.Point);
         // theMap.drawControl.activate();
-        theMap.map.addControl(theMap.drawControl);
+        this.map.addControl(theMap.drawControl);
     }
 
     theMap.drawingFeatureAdded = function(feature) {
         // alert(feature);
     }
 
-
     theMap.addClickHandler = function(lonfld, latfld, zoomfld, object) {
-
         this.lonFldId = lonfld;
         this.latFldId = latfld;
-
         if (this.clickHandler)
             return;
         if (!this.map)
@@ -1242,6 +1276,8 @@ function initMapFunctions(theMap) {
             $("#" +this.lonFldId).val(formatLocationValue(lon));
             $("#" +this.latFldId).val(formatLocationValue(lat));
         }
+
+        console.log("selectionMarker");
 
         var lonlat = new createLonLat(lon,lat);
         if (this.selectorMarker == null) {
@@ -1526,6 +1562,9 @@ function initMapFunctions(theMap) {
             this.currentPopup.destroy();
             this.currentPopup = null;
             this.hiliteBox('');
+            if(this.selectedFeature) {
+                this.unselectFeature(this.selectedFeature);
+            }
         }
     }
 
@@ -1671,7 +1710,7 @@ function initMapFunctions(theMap) {
                                           position,
                                           sz,
                                           ramaddaBaseUrl + '/icons/mapprogress.gif');
-        this.loadingImage.style.zIndex = 1000;
+        this.loadingImage.style.zIndex = 1010;
         this.map.viewPortDiv.appendChild(this.loadingImage);
         return this.loadingImage;
     }
@@ -1801,47 +1840,29 @@ function initMapFunctions(theMap) {
 
     theMap.seenMarkers = {};
 
-    theMap.addMarker = function(id, location, iconUrl, markerName, text, parentId, size, voffset) {
+    theMap.addMarker = function(id, location, iconUrl, markerName, text, parentId, size, voffset, canSelect) {
         if(size == null) size = 16;
         if(voffset ==null) voffset = 0;
         
         if (!this.markers) {
-            this.markers = new OpenLayers.Layer.Markers("Markers");
             this.markers = new OpenLayers.Layer.Vector("Markers");
-
-            // Added this because I was getting an unknown method error
-            /*
-            this.markers.getFeatureFromEvent = function(evt) {
-                console.log("feature:" + evt);
-                return null;
-            };
-            this.markers.renderer = {moveRoot: function(root){}}
-            */
-
-            if (this.map) {
-                this.addVectorLayer(this.markers);
-            }
+            this.addVectorLayer(this.markers, canSelect);
         }
         if (!iconUrl) {
             iconUrl = ramaddaBaseUrl + '/icons/marker.png';
         }
         var sz = new OpenLayers.Size(size, size);
         var calculateOffset = function(size) {
-            //            return new OpenLayers.Pixel(-(size.w / 2), -size.h);
             return new OpenLayers.Pixel(-(size.w / 2), -(size.h/2)-voffset);
         };
 
         var icon = new OpenLayers.Icon(iconUrl, sz, null, calculateOffset);
         var projPoint = this.transformLLPoint(location);
         var marker = new OpenLayers.Marker(projPoint, icon);
-
-
-
         var feature = new OpenLayers.Feature.Vector(
                                                     new OpenLayers.Geometry.Point( location.lon,location.lat ).transform(this.displayProjection, this.sourceProjection),
     {description:''} ,
     {externalGraphic: iconUrl, graphicHeight: size, graphicWidth: size, graphicXOffset:-size/2, graphicYOffset:-size/2  });
-
 
         feature.ramaddaId = id;
         feature.parentId = parentId;
@@ -1883,15 +1904,6 @@ function initMapFunctions(theMap) {
 
         feature.what = "marker";
         this.markers.addFeatures( [ feature ]);
-
-        /*
-        this.markers.addMarker(marker);
-        if(this.selectorMarker!=null && this.selectorMarker!=marker) {
-            this.markers.removeMarker(this.selectorMarker);
-            this.markers.addMarker(this.selectorMarker);
-            }
-        return marker;
-        */
         return feature;
     }
 
@@ -1901,7 +1913,7 @@ function initMapFunctions(theMap) {
         if (!this.map) {
             // alert('whoa, no map');
         }
-        this.map.addLayer(theBoxes);
+        this.addLayer(theBoxes);
         // Added this because I was getting an unknown method error
         theBoxes.getFeatureFromEvent = function(evt) {
             return null;
@@ -1975,7 +1987,6 @@ function initMapFunctions(theMap) {
             fillColor: "red",
             fillOpacity:1.0,
             pointRadius : 5, 
-            zIndex: 20,
         };
 
         if (args["zoomToExtent"]) {
@@ -2008,7 +2019,7 @@ function initMapFunctions(theMap) {
             this.circles.removeFeatures( [feature]);
     }
 
-    theMap.addPoint = function(id, point, attrs, text) {
+    theMap.addPoint = function(id, point, attrs, text, notReally) {
         //Check if we have a LonLat instead of a Point
         var location = point;
         if(typeof point.x  ==='undefined') {
@@ -2018,48 +2029,18 @@ function initMapFunctions(theMap) {
         }
 
         var _this = this;
-        if(this.circles == null) {
-            this.circles =  new OpenLayers.Layer.Vector("Circles Layer");
-            /*
-            this.circles.events.on({
-                    'featureselected': function(feature) {
-                        feature  = feature.feature;
-                        _this.showMarkerPopup(feature);
-                    },
-                   'featureunselected': function(feature) {
-                   }
-                   });*/
-            if(this.map) {
-                this.addVectorLayer(this.circles);
-                /*
-                this.map.addLayer(this.circles);
-                var sf = new OpenLayers.Control.SelectFeature(this.circles,{
-                        clickout: false, 
-                        toggle: false,
-                        multiple: false, 
-                        hover: false,
-                        toggleKey: "ctrlKey", 
-                        multipleKey: "shiftKey", 
-                        box: false
-                    });
-
-                this.map.addControl(sf);
-                sf.activate();
-                */
-            }
-        }
-
 
         var cstyle = OpenLayers.Util.extend( {},  OpenLayers.Feature.Vector.style['default']);
         $.extend(cstyle, {
                 pointRadius : 5, 
-                stroke: true,
-                strokeColor : "red",
-                strokeWidth : 0,
-                strokeOpacity: 0.75,
-                fill: true,
-                fillColor: "blue",
-                fillOpacity: 0.75}
+                    stroke: true,
+                    strokeColor : "red",
+                    strokeWidth : 0,
+                    strokeOpacity: 0.75,
+                    fill: true,
+                    fillColor: "blue",
+                    fillOpacity: 0.75,
+                    }
             );
         if (attrs) {
             $.extend(cstyle, attrs);
@@ -2076,16 +2057,49 @@ function initMapFunctions(theMap) {
         center.transform(this.displayProjection, this.sourceProjection);
         var feature = new OpenLayers.Feature.Vector(center, null, cstyle);
 
+        feature.center = center;
         feature.ramaddaId = id;
         feature.text = this.getPopupText(text, feature);
         feature.location =  location;
         this.features[id] = feature;
-        this.circles.addFeatures( [feature]);
+        if(!notReally) {
+            if(this.circles == null) {
+                this.circles =  new OpenLayers.Layer.Vector("Circles Layer");
+                /*
+                  this.circles.events.on({
+                  'featureselected': function(feature) {
+                  feature  = feature.feature;
+                  _this.showMarkerPopup(feature);
+                  },
+                  'featureunselected': function(feature) {
+                  }
+                  });*/
+                this.addVectorLayer(this.circles);
+                /*
+                  this.addLayer(this.circles);
+                  var sf = new OpenLayers.Control.SelectFeature(this.circles,{
+                  clickout: false, 
+                  toggle: false,
+                  multiple: false, 
+                  hover: false,
+                  toggleKey: "ctrlKey", 
+                  multipleKey: "shiftKey", 
+                  box: false
+                  });
+
+                  this.map.addControl(sf);
+                  sf.activate();
+                */
+            }
+
+            this.circles.addFeatures( [feature]);
+        }
         return feature;
     }
 
     theMap.removePoint = function(point){
-        this.circles.removeFeatures( [point]);
+        if(this.circles)
+            this.circles.removeFeatures( [point]);
     }
 
     theMap.addRectangle = function(id, north, west, south, east, attrs,info) {
@@ -2161,7 +2175,6 @@ function initMapFunctions(theMap) {
             line.style.display = 'none';
         }
 
-
         this.lines.addFeatures( [ line ]);
         return line;
     }
@@ -2229,7 +2242,7 @@ function initMapFunctions(theMap) {
             popup.minSize =  new OpenLayers.Size(marker.inputProps.minSizeX, marker.inputProps.minSizeY);
         }
 
-        marker.popup = popup;
+        marker.popupText = popup;
         popup.marker = marker;
         this.map.addPopup(popup);
         this.currentPopup = popup;
@@ -2328,7 +2341,7 @@ function formatLocationValue(value) {
                 if (zoomFld) {
                     zoomFld.obj.value = this.theMap.getMap().getZoom();
                 }
-                this.theMap.setSelectionMarker(lonlat.lon, lonlat.lat);
+                //                this.theMap.setSelectionMarker(lonlat.lon, lonlat.lat);
 
                 if(this.clickListener!=null) {
                     this.clickListener.handleClick(this, lonlat.lon,lonlat.lat);

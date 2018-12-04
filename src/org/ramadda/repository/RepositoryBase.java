@@ -638,7 +638,7 @@ public class RepositoryBase implements Constants, RepositorySource {
      * @return _more_
      */
     public String htdocsUrl(String f) {
-        return fileUrl(RepositoryUtil.HTDOCS_VERSION_SLASH + f);
+        return fileUrl(RepositoryUtil.getHtdocsVersionSlash() + f);
     }
 
     /**
