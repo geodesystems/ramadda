@@ -468,9 +468,68 @@ getChartType: function() {
 
 
                 var dataHasIndex = props.includeIndex;
-                var dataList = this.getStandardData(fieldsToSelect, props);
+                var dataList = this.computedData;
+                if(this.function && this.computedData==null) {
+                    var pointData =   this.dataCollection.getList()[0];
+                    var allFields = pointData.getRecordFields();
+                    var records = pointData.getRecords();
+                    var indexField = this.indexField;
+                    var chartableFields =this.getFieldsToSelect(pointData);
+                    this.hasDate = this.getHasDate(records);
+                    var date_formatter = this.getDateFormatter();
+                    var setVars = "";
+                    for(var i=0;i<chartableFields.length;i++) {
+                        var field = chartableFields[i];
+                        setVars+="\tvar " + field.getId() +"=args." + field.getId()+";\n";
+                    }
+                    var code = "function displayChartEval(args) {\n" + setVars +"\treturn  " + this.function+"\n}";
+                    eval(code);
+                    var newList = [];
+                    var fieldNames = null;
+                    var rowCnt = -1;
+                    var indexField = this.indexField;
+                    for(var rowIdx=0;rowIdx<records.length;rowIdx++)  {
+                        var record = records[rowIdx];
+                        var row = record.getData();
+                        var date = record.getDate();
+                        if(!this.dateInRange(date)) continue;
+                        rowCnt++;
+                        var values = [];
+                        var indexName = null;
+                        if(indexField>=0) {
+                            var field = allFields[indexField];
+                            values.push(record.getValue(indexField)+offset);
+                            indexName =  field.getLabel();
+                        } else {
+                            if(this.hasDate) {
+                                values.push(this.getDateValue(date, date_formatter));
+                                indexName = "Date";
+                            } else {
+                                values.push(rowIdx);
+                                indexName = "Index";
+                            }
+                        }
+                        if(fieldNames==null) {
+                            fieldNames = [indexName, this.functionName?this.functionName:"value"];
+                            newList.push(fieldNames);
+                        }
+                        var args = {};
+                        for(var j=0;j<chartableFields.length;j++) {
+                            var field = chartableFields[j];
+                            var value = row[field.getIndex()];
+                            args[field.getId()] = value;
+                        }
+                        var value = displayChartEval(args);
+                        values.push(value);
+                        newList.push(values);
+                    }
+                    dataList = newList;
+                }
 
-                
+                if(dataList == null) {
+                    dataList = this.getStandardData(fieldsToSelect, props);
+                }
+                this.computedData= dataList;
 
                 if(this.rotateTable && dataList.length) {
                     var header = dataList[0];
@@ -503,6 +562,7 @@ getChartType: function() {
                                                   "No data available"));
                     return;
                 }
+
 
 
                 if(this.showPercent) {

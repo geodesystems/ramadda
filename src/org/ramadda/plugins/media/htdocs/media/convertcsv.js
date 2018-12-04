@@ -180,7 +180,7 @@ function csvFlipInput(text) {
         html=HtmlUtil.input("",val,["size","120", "id","convertcsv_input"]) +" " + HtmlUtil.onClick("csvFlipInput()","Expand",[]);
         csvInputType = "input";
     } else {
-        html=HtmlUtil.textarea("",val,["cols","140", "id","convertcsv_input", "rows", "7"]);
+        html=HtmlUtil.textarea("",val,["cols","140", "id","convertcsv_input", "rows", "7", "style", "font-size:14px;"]);
         csvInputType = "textarea";
     }
     $("#convertcsv_input_container").html(html);

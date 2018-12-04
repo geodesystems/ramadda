@@ -49,10 +49,10 @@ public class RepositoryUtil {
     //Make sure to change the fields in the top-level build.properties
 
     /** _more_ */
-    public static final double MAJOR_VERSION = 2.2;
+    public static final  double MAJOR_VERSION = 2.2;
 
     /** _more_ */
-    public static final int MINOR_VERSION = 31;
+    public static final  int MINOR_VERSION = 33;
 
 
     //When we make any real change to the css or javascript change this version
@@ -68,6 +68,16 @@ public class RepositoryUtil {
 
     /** _more_ */
     public static final String HTDOCS_VERSION_SLASH = "/" + HTDOCS_VERSION;
+
+
+    public static String getHtdocsVersion() {
+        return HTDOCS_VERSION;
+    }
+
+    public static String getHtdocsVersionSlash() {
+        return HTDOCS_VERSION_SLASH;
+    }
+
 
     /** timezone */
     public static final TimeZone TIMEZONE_DEFAULT =
