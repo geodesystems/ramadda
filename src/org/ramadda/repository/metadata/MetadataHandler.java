@@ -692,7 +692,7 @@ public class MetadataHandler extends RepositoryManager {
         }
         String suffix = "";
         if (metadata.getId().length() > 0) {
-            suffix = "." + metadata.getId();
+            suffix = "_" + metadata.getId();
         }
 
         return type.getForm(this, request, entry, metadata, suffix, forEdit);
@@ -745,9 +745,9 @@ public class MetadataHandler extends RepositoryManager {
     public String getSearchUrl(Request request, MetadataType type,
                                String value) {
         List args = new ArrayList();
-        //        args.add(ARG_METADATA_TYPE + "." + type.getId());
+        //        args.add(ARG_METADATA_TYPE + "_" + type.getId());
         //        args.add(type.toString());
-        args.add(ARG_METADATA_ATTR1 + "." + type.getId());
+        args.add(ARG_METADATA_ATTR1 + "_" + type.getId());
         args.add(value);
 
         return HtmlUtils.url(
@@ -787,7 +787,7 @@ public class MetadataHandler extends RepositoryManager {
                                 MetadataType type)
             throws Exception {
         boolean doSelect = true;
-        String  argName  = ARG_METADATA_ATTR1 + "." + type;
+        String  argName  = ARG_METADATA_ATTR1 + "_" + type;
         if (doSelect) {
             String[] values = getMetadataManager().getDistinctValues(request,
                                   this, type);
@@ -875,9 +875,9 @@ public class MetadataHandler extends RepositoryManager {
         int rowNum = 1;
         for (int i = 0; i < values.length; i++) {
             String browseUrl = HtmlUtils.url(url,
-                                             ARG_METADATA_TYPE + "."
+                                             ARG_METADATA_TYPE + "_"
                                              + type.getId(), type.getId(),
-                                                 ARG_METADATA_ATTR1 + "."
+                                                 ARG_METADATA_ATTR1 + "_"
                                                  + type.getId(), values[i]);
             String value = values[i].trim();
             if (value.length() == 0) {
@@ -945,19 +945,34 @@ public class MetadataHandler extends RepositoryManager {
         if (html == null) {
             return;
         }
+        
+
 
         if (entry != null) {
             request.uploadFormWithAuthToken(
                 sb, getMetadataManager().URL_METADATA_ADD);
+            sb.append("\n");
             sb.append(HtmlUtils.hidden(ARG_ENTRYID, entry.getId()));
+            sb.append("\n");
+            sb.append(HtmlUtils.formTable());
+            sb.append("\n");
         } else {
+            sb.append("\n");
+            sb.append(HtmlUtils.formTable());
+            sb.append("\n");
             sb.append(HtmlUtils.row(HtmlUtils.colspan(header(html[0]), 2)));
         }
 
+        sb.append("\n");
         sb.append(html[1]);
+        sb.append("\n");
+        sb.append("\n");
+        sb.append(HtmlUtils.formTableClose());
+        sb.append("\n");
 
         if (entry != null) {
             sb.append(HtmlUtils.formClose());
+            sb.append("\n");
         }
     }
 
@@ -1015,11 +1030,11 @@ public class MetadataHandler extends RepositoryManager {
         Hashtable args = request.getArgs();
         for (Enumeration keys = args.keys(); keys.hasMoreElements(); ) {
             String arg = (String) keys.nextElement();
-            if ( !arg.startsWith(ARG_METADATAID + ".")) {
+            if ( !arg.startsWith(ARG_METADATAID + "_")) {
                 continue;
             }
             String id     = request.getString(arg, "");
-            String suffix = "." + id;
+            String suffix = "_" + id;
             handleForm(request, entry, id, suffix, existingMetadata,
                        metadataList, false);
         }

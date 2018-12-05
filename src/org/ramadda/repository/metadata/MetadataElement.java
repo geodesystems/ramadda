@@ -70,7 +70,7 @@ public class MetadataElement extends MetadataTypeBase implements DataTypes {
 
     /** _more_ */
     public static final String ARG_THUMBNAIL_SCALEDOWN =
-        "metadata.thumbnail.scaledown";
+        "metadata_thumbnail_scaledown";
 
     /** _more_ */
     public static final String ATTR_REQUIRED = "required";
@@ -477,6 +477,16 @@ public class MetadataElement extends MetadataTypeBase implements DataTypes {
                    || dataType.equals(DATATYPE_ENUMERATIONPLUS)) {
             String label = getLabel(value);
             html = label;
+        } else if (dataType.equals(DATATYPE_ENTRY)) {
+            html = "";
+            if (value.length() > 0) {
+                Entry theEntry =
+                    getRepository().getEntryManager().getEntry(request,
+                                                               value);
+                if(theEntry!=null) {
+                    html =  theEntry.getName();
+                }
+            } 
         } else if (dataType.equals(DATATYPE_EMAIL)) {
             html = HtmlUtils.href("mailto:" + value, value);
         } else if (dataType.equals(DATATYPE_URL)) {
@@ -665,22 +675,25 @@ public class MetadataElement extends MetadataTypeBase implements DataTypes {
             return "" + value;
         }
 
+        if (getDataType().equals(DATATYPE_ENTRY)) {
+            return request.getString(arg+"_hidden","");
+        }
 
         if (getDataType().equals(DATATYPE_GROUP)) {
             List<Hashtable<Integer, String>> entries =
                 new ArrayList<Hashtable<Integer, String>>();
             int groupCnt = 0;
             while (true) {
-                String subArg = arg + ".group" + groupCnt + ".";
+                String subArg = arg + "_group" + groupCnt + "_";
                 groupCnt++;
-                if ( !request.exists(subArg + ".group")) {
+                if ( !request.exists(subArg + "_group")) {
                     break;
                 }
-                if (request.get(subArg + ".delete", false)) {
+                if (request.get(subArg + "_delete", false)) {
                     continue;
                 }
-                if (request.get(subArg + ".lastone", false)) {
-                    if ( !request.get(subArg + ".new", false)) {
+                if (request.get(subArg + "_lastone", false)) {
+                    if ( !request.get(subArg + "_new", false)) {
                         continue;
                     }
                 }
@@ -702,11 +715,11 @@ public class MetadataElement extends MetadataTypeBase implements DataTypes {
 
 
         String attr = request.getString(arg, "");
-        if (request.defined(arg + ".select")) {
-            attr = request.getString(arg + ".select", "");
+        if (request.defined(arg + "_select")) {
+            attr = request.getString(arg + "_select", "");
         }
-        if (request.defined(arg + ".input")) {
-            attr = request.getString(arg + ".input", "");
+        if (request.defined(arg + "_input")) {
+            attr = request.getString(arg + "_input", "");
         }
 
         //        newMetadata.setAttr(getIndex(), attr);
@@ -722,7 +735,7 @@ public class MetadataElement extends MetadataTypeBase implements DataTypes {
                            : oldMetadata.getAttr(getIndex()));
 
 
-        String url      = request.getString(arg + ".url", "");
+        String url      = request.getString(arg + "_url", "");
         String theFile  = null;
         if (url.length() > 0) {
             String        tail       = IOUtil.getFileTail(url);
@@ -864,6 +877,8 @@ public class MetadataElement extends MetadataTypeBase implements DataTypes {
         } else if (dataType.equals(DATATYPE_BOOLEAN)) {
             return HtmlUtils.checkbox(arg, "true",
                                       Misc.equals(value, "true"));
+        } else if (dataType.equals(DATATYPE_ENTRY)) {
+            return  getRepository().getEntryManager().getEntryFormSelect(request,  entry, arg, value);
         } else if (dataType.equals(DATATYPE_INT)) {
             return HtmlUtils.input(arg, value, HtmlUtils.SIZE_10);
         } else if (dataType.equals(DATATYPE_DOUBLE)) {
@@ -894,7 +909,7 @@ public class MetadataElement extends MetadataTypeBase implements DataTypes {
 
             return HtmlUtils.select(arg, values, value) + HtmlUtils.space(2)
                    + msgLabel("Or")
-                   + HtmlUtils.input(arg + ".input", (contains
+                   + HtmlUtils.input(arg + "_input", (contains
                     ? ""
                     : value), HtmlUtils.SIZE_30);
         } else if (dataType.equals(DATATYPE_FILE)) {
@@ -919,7 +934,7 @@ public class MetadataElement extends MetadataTypeBase implements DataTypes {
             return HtmlUtils.fileInput(arg, HtmlUtils.SIZE_70) + image
                    + "<br>" + msgLabel("Or download URL")
                    + HtmlUtils.space(1)
-                   + HtmlUtils.input(arg + ".url", "", HtmlUtils.SIZE_70)
+                   + HtmlUtils.input(arg + "_url", "", HtmlUtils.SIZE_70)
                    + extra;
         } else if (dataType.equals(DATATYPE_GROUP)) {
             StringBuffer   sb            = new StringBuffer();
@@ -932,17 +947,17 @@ public class MetadataElement extends MetadataTypeBase implements DataTypes {
             for (Metadata subMetadata : groupMetadata) {
                 StringBuffer groupSB = new StringBuffer();
                 groupSB.append(HtmlUtils.formTable());
-                String subArg = arg + ".group" + groupCnt + ".";
+                String subArg = arg + "_group" + groupCnt + "_";
                 boolean lastOne = ((groupMetadata.size() > 1)
                                    && (groupCnt == groupMetadata.size() - 1));
                 if (lastOne) {
                     String newCbx =
-                        HtmlUtils.checkbox(subArg + ".new", "true", false)
+                        HtmlUtils.checkbox(subArg + "_new", "true", false)
                         + " " + msg("Click here to add a new record")
-                        + HtmlUtils.hidden(subArg + ".lastone", "true");
+                        + HtmlUtils.hidden(subArg + "_lastone", "true");
                     //                    groupSB.append(HtmlUtils.formEntry("",newCbx));
                 } else if (hadAny) {
-                    //                    groupSB.append(HtmlUtils.formEntry(msgLabel("Delete"),HtmlUtils.checkbox(subArg+".delete","true",false)));
+                    //                    groupSB.append(HtmlUtils.formEntry(msgLabel("Delete"),HtmlUtils.checkbox(subArg+"_delete","true",false)));
                 }
 
                 for (MetadataElement element : getChildren()) {
@@ -968,7 +983,7 @@ public class MetadataElement extends MetadataTypeBase implements DataTypes {
                         continue;
                     }
                     groupSB.append(HtmlUtils.formEntry(elementLbl, widget));
-                    groupSB.append(HtmlUtils.hidden(subArg + ".group",
+                    groupSB.append(HtmlUtils.hidden(subArg + "_group",
                             "true"));
                 }
 
@@ -976,10 +991,10 @@ public class MetadataElement extends MetadataTypeBase implements DataTypes {
                 groupSB.append(HtmlUtils.formTableClose());
 
                 if (lastOne) {
-                    String newCbx = HtmlUtils.checkbox(subArg + ".new",
+                    String newCbx = HtmlUtils.checkbox(subArg + "_new",
                                         "true",
                                         false) + HtmlUtils.hidden(subArg
-                                        + ".lastone", "true");
+                                        + "_lastone", "true");
 
                     entriesSB.append(HtmlUtils.makeShowHideBlock(newCbx
                             + " Add New " + subName, groupSB.toString(),
@@ -989,7 +1004,7 @@ public class MetadataElement extends MetadataTypeBase implements DataTypes {
                                          ? ""
                                          : " - "
                                            + HtmlUtils.checkbox(subArg
-                                               + ".delete", "true",
+                                               + "_delete", "true",
                                                    false) + " "
                                                        + msg("delete"));
                     entriesSB.append(HtmlUtils.makeShowHideBlock((groupCnt

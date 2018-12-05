@@ -1093,6 +1093,10 @@ public class MetadataType extends MetadataTypeBase {
         return template;
     }
 
+    public String getHelp() {
+        return help;
+    }
+
 
     /**
      * _more_
@@ -1121,10 +1125,9 @@ public class MetadataType extends MetadataTypeBase {
         String submit = HtmlUtils.submit(msg("Add") + HtmlUtils.space(1)
                                          + getName());
         String        cancel = HtmlUtils.submit(msg("Cancel"), ARG_CANCEL);
-
-
         StringBuilder sb     = new StringBuilder();
-        sb.append(help);
+        sb.append(HtmlUtils.row(HtmlUtils.colspan(help, 2)));
+        sb.append("\n");
 
         if ( !forEdit) {
             //            sb.append(header(msgLabel("Add") + getName()));
@@ -1157,12 +1160,11 @@ public class MetadataType extends MetadataTypeBase {
                 if (suffixLabel == null) {
                     suffixLabel = "";
                 }
-
-                sb.append(HtmlUtils.formEntryTop(elementLbl, widget,
-                        suffixLabel));
+                sb.append(HtmlUtils.formEntryTop(elementLbl, "\n" +widget, suffixLabel));
             }
         }
 
+        sb.append("\n");
         sb.append(
             HtmlUtils.formEntry(
                 msgLabel("Inherited"),
@@ -1178,6 +1180,7 @@ public class MetadataType extends MetadataTypeBase {
                   + HtmlUtils.hidden(argid, metadata.getId()));
 
         if ( !forEdit && (entry != null)) {
+            sb.append("\n");
             sb.append(HtmlUtils.formEntry("",
                                           submit + HtmlUtils.buttonSpace()
                                           + cancel));

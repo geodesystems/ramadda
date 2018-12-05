@@ -1233,6 +1233,8 @@ public class MetadataManager extends RepositoryManager {
         boolean                   doJson     = request.responseAsJson();
         MetadataHandler           handler = findMetadataHandler(metadataType);
         MetadataType              type       = handler.findType(metadataType);
+        if(type == null) return;
+        if(type.getChildren()==null) return;
         MetadataElement           element    = type.getChildren().get(0);
         List<TwoFacedObject>      enumValues = element.getValues();
         Hashtable<String, String> labels     = new Hashtable<String,
@@ -1422,8 +1424,11 @@ public class MetadataManager extends RepositoryManager {
             sb.append(msgLabel("Add new property"));
             makeAddList(request, entry, sb);
         } else {
+            sb.append("\n");
             request.uploadFormWithAuthToken(sb, URL_METADATA_CHANGE);
+            sb.append("\n");
             sb.append(HtmlUtils.hidden(ARG_ENTRYID, entry.getId()));
+            sb.append("\n");
             String buttons = HtmlUtils.buttons(
                                  HtmlUtils.submit(msg("Change")),
                                  HtmlUtils.submit(
@@ -1432,6 +1437,7 @@ public class MetadataManager extends RepositoryManager {
                                          msg("Copy selected to clipboard"),
                                          ARG_METADATA_CLIPBOARD_COPY));
             sb.append(buttons);
+            sb.append("\n");
             List<String> titles   = new ArrayList<String>();
             List<String> contents = new ArrayList<String>();
             for (Metadata metadata : metadataList) {
@@ -1442,7 +1448,7 @@ public class MetadataManager extends RepositoryManager {
                     continue;
                 }
                 String[] html = metadataHandler.getForm(request, entry,
-                                    metadata, true);
+                                                        metadata, true);
                 if (html == null) {
                     continue;
                 }
@@ -1465,11 +1471,16 @@ public class MetadataManager extends RepositoryManager {
                                         HtmlUtils.squote(cbxId)))));
 
                 StringBuilder metadataEntry = new StringBuilder();
-                metadataEntry.append(HtmlUtils.formTable());
+                metadataEntry.append(HtmlUtils.comment("Metadata part begin"));
                 metadataEntry.append(HtmlUtils.formEntry("",
                         cbx + HtmlUtils.space(2) + msg("Select")));
+                metadataEntry.append("\n");
+                metadataEntry.append(HtmlUtils.formTable());
+                metadataEntry.append("\n");
                 metadataEntry.append(html[1]);
+                metadataEntry.append(HtmlUtils.comment("Metadata form table close"));
                 metadataEntry.append(HtmlUtils.formTableClose());
+                metadataEntry.append(HtmlUtils.comment("Metadata part end"));
                 titles.add(html[0]);
                 String content = HtmlUtils.div(
                                      metadataEntry.toString(),
@@ -1478,10 +1489,15 @@ public class MetadataManager extends RepositoryManager {
                 contents.add(content);
             }
             sb.append(HtmlUtils.beginInset(10, 10, 10, 10));
+            sb.append(HtmlUtils.comment("Metadata accordian begin"));
             HtmlUtils.makeAccordian(sb, titles, contents);
+            sb.append(HtmlUtils.comment("Metadata accordian end"));
             sb.append(HtmlUtils.endInset());
             sb.append(buttons);
+            sb.append("\n");
+            sb.append(HtmlUtils.comment("Metadata form end"));
             sb.append(HtmlUtils.formClose());
+            sb.append("\n");
         }
 
         getPageHandler().entrySectionClose(request, entry, sb);
@@ -1544,10 +1560,8 @@ public class MetadataManager extends RepositoryManager {
                     getPageHandler().entrySectionOpen(request, entry, sb,
                             msgLabel("Add Property")
                             + metadataType.getLabel());
-                    sb.append(HtmlUtils.formTable());
-                    handler.makeAddForm(request, entry, metadataType, sb);
-                    sb.append(HtmlUtils.formTableClose());
 
+                    handler.makeAddForm(request, entry, metadataType, sb);
                     break;
                 }
             }
