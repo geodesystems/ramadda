@@ -119,6 +119,12 @@ function RepositoryMap(mapId, params) {
                 markers: null,
                 vectors: null,
                 boxes: null,
+                kmlLayer: null,
+                kmlLayerName: null,
+                geojsonlLayer: null,
+                geojsonLayerName: null,
+
+
                 vectorLayers:[],
                 features:{},
                 lines: null,
@@ -220,6 +226,14 @@ function RepositoryMap(mapId, params) {
         };
         this.map = new OpenLayers.Map(this.mapDivId,options);
         this.addBaseLayers();
+        if(this.kmlLayer) {
+            var url = ramaddaBaseUrl + "/entry/show?output=shapefile.kml&entryid=" + this.kmlLayer;
+            this.addKMLLayer(this.kmlLayerName,url,false,null,null,null,null);
+        }
+        if(this.geojsonLayer) {
+            var url = getRamadda().getEntryDownloadUrl(this.geojsonLayer);
+            this.addGeoJsonLayer(this.geojsonLayerName,url,false,null,null,null,null);
+        }
 
 
     jQuery(document).ready(function($) {
@@ -571,6 +585,7 @@ function initMapFunctions(theMap) {
     }
 
     theMap.addKMLLayer = function(name, url, canSelect, selectCallback, unselectCallback, args, loadCallback) {
+        console.log("url:" + url);
         var layer = new OpenLayers.Layer.Vector(name, {
             projection: this.displayProjection,
             strategies: [new OpenLayers.Strategy.Fixed()],

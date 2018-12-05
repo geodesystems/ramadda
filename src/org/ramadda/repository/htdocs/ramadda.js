@@ -754,9 +754,10 @@ function Selector(event, selectorId, elementId, allEntries, selecttype, localeId
         var srcId = this.id+'_selectlink';
         this.div = GuiUtils.getDomObject('ramadda-selectdiv');
         hidePopupObject();
-        $("#ramadda-selectdiv").show();
+        var selectDiv = $("#ramadda-selectdiv");
+        selectDiv.show();
         var src = $( "#" + srcId );
-        $("#ramadda-selectdiv").position({
+        selectDiv.position({
                 of: src,
                 my: "left top",
                 at: "left bottom",
