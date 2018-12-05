@@ -115,7 +115,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 
 			this.map.initMap(false);
                         if(this.kmlLayer!=null) {
-                            url = this.getRamadda().getEntryDownloadUrl(this.kmlLayer);
+                            var url = ramaddaBaseUrl + "/entry/show?output=shapefile.kml&entryid=" + this.kmlLayer;
                             this.map.addKMLLayer(this.kmlLayerName,url,this.doDisplayMap(),null,null,null,
                                                  function(map,layer) {
                                                      theDisplay.vectorLoad(layer);
@@ -182,7 +182,6 @@ function RamaddaMapDisplay(displayManager, id, properties) {
                     this.applyVectorMap();
                 },
                 handleLayerSelect: function(layer) {
-                    
                     var args = this.layerSelectArgs;
                     if(!this.layerSelectPath) {
                         if(!args) {
@@ -554,9 +553,11 @@ function RamaddaMapDisplay(displayManager, id, properties) {
                            matchedFeature.popupText = circle.text;
                        } 
                     }
-
                     if((""+this.getProperty("pruneFeatures","")) == "true") {
                         this.vectorLayer.removeFeatures(features);
+                        var dataBounds = this.vectorLayer.getDataExtent();
+                        bounds = this.map.transformProjBounds(dataBounds);
+                        this.map.centerOnMarkers(bounds,true);
                     }
                     this.vectorLayer.redraw();
                 },

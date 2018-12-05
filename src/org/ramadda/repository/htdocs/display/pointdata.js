@@ -613,7 +613,7 @@ function makePointData(json, derived,source) {
                     for(var i=0;i<funcParams.length;i++) {
                         code += "var v" +  (i+1) +"=args[" + i +"];\n";
                     }
-                    var tmp = d.function;
+                    var tmp = d["function"];
                     if(tmp.indexOf("return")<0) tmp = "return " + tmp;
                     code += tmp +"\n";
                     d.compiledFunction = new Function("args",code);
@@ -652,7 +652,7 @@ function makePointData(json, derived,source) {
                     //                    console.log("in:" + result +" out: " + result);
                     values.push(result);
                 } catch(e) {
-                    console.log("Error evaluating function:" + d.function+"\n"+e);
+                    console.log("Error evaluating function:" + d["function"] + "\n"+e);
                     values.push(NaN);            
                 }
             }
@@ -667,7 +667,7 @@ function makePointData(json, derived,source) {
     for(var dIdx=0;dIdx<derived.length;dIdx++) {
         var d = derived[dIdx];
         if(!d.isColumn) continue;
-        var f = d.function;
+        var f = d["function"];
         var funcParams = [];
         //TODO: allow for no columns and choose all
         var params = d.columns.split(",");
@@ -690,7 +690,7 @@ function makePointData(json, derived,source) {
         }
         var columnData = RecordUtil.slice(rows, index);
         //        var newData = A.movingAverage(columnData,{step:100});
-        var daFunk =  new Function(funcParams, d.function);
+        var daFunk =  new Function(funcParams, d["function"]);
         console.log("daFunk - "  + daFunk);
         var newData = daFunk(columnData);
         console.log("got new:"+ newData + " " +(typeof newData));

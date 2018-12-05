@@ -469,7 +469,7 @@ getChartType: function() {
 
                 var dataHasIndex = props.includeIndex;
                 var dataList = this.computedData;
-                if(this.function && this.computedData==null) {
+                if(this["function"] && this.computedData==null) {
                     var pointData =   this.dataCollection.getList()[0];
                     var allFields = pointData.getRecordFields();
                     var records = pointData.getRecords();
@@ -482,7 +482,7 @@ getChartType: function() {
                         var field = chartableFields[i];
                         setVars+="\tvar " + field.getId() +"=args." + field.getId()+";\n";
                     }
-                    var code = "function displayChartEval(args) {\n" + setVars +"\treturn  " + this.function+"\n}";
+                    var code = "function displayChartEval(args) {\n" + setVars +"\treturn  " + this["function"]+"\n}";
                     eval(code);
                     var newList = [];
                     var fieldNames = null;

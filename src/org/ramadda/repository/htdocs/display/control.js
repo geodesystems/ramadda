@@ -152,14 +152,14 @@ function RamaddaLabelDisplay(displayManager, id, properties) {
     else     if(properties.label) this.text = properties.label;
     else     if(properties.html) this.text = properties.html;
     else     if(properties.title) this.text = properties.title;
-    if(properties.class) this.class = properties.class;
-    else this.class="display-text";
+    if(properties["class"]) this["class"] = properties["class"];
+    else this["class"]="display-text";
 
     RamaddaUtil.defineMembers(this, {
             initDisplay: function() {
                 var theDisplay = this;
                 this.initUI();
-                var textClass = this.class;
+                var textClass = this["class"];
                 if(this.editMode) {
                     textClass += " display-text-edit ";
                 }
@@ -254,7 +254,7 @@ function RamaddaShellDisplay(displayManager, id, properties) {
 
                     });
             },
-            writeStatusMessage(v) {
+            writeStatusMessage: function(v) {
                 var msg  = this.jq(ID_MESSAGE);
                 if(!v) {
                     msg.hide();
