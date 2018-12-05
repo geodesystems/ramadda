@@ -3976,8 +3976,9 @@ Time:14625 cnt:7000
      * @return _more_
      */
     public String applyBaseMacros(String s) {
+        String mini = getRepository().getProperty("ramadda.minified",true)?".mini":"";
         return s.replace(MACRO_URLROOT, getRepository().getUrlBase()).replace(
-            "${baseentry}", getEntryManager().getRootEntry().getId());
+                                                                              "${baseentry}", getEntryManager().getRootEntry().getId()).replace("${mini}",mini);
     }
 
     /**

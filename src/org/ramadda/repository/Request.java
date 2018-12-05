@@ -647,6 +647,11 @@ public class Request implements Constants, Cloneable {
     public void uploadFormWithAuthToken(Appendable sb, RequestUrl theUrl,
                                         String extra) {
         Utils.append(sb, HtmlUtils.uploadForm(makeUrl(theUrl), extra));
+        try {
+            sb.append("\n");
+        } catch (Exception exc) {
+            throw new IllegalArgumentException(exc);
+        }
         repository.addAuthToken(this, sb);
     }
 
@@ -812,12 +817,11 @@ public class Request implements Constants, Cloneable {
                           : "http";
         if ((httpServletRequest != null) && !alwaysHttps) {
             String scheme = httpServletRequest.getScheme();
-            if(scheme!=null) {
-                List<String> toks = StringUtil.split(scheme, "/",
-                                                     true, true);
-                if(toks.size()>0) {
+            if (scheme != null) {
+                List<String> toks = StringUtil.split(scheme, "/", true, true);
+                if (toks.size() > 0) {
                     protocol = toks.get(0);
-                } 
+                }
             }
         }
         //        System.err.println("Request.getAbsoluteUrl:" + protocol +" port:" + port);
@@ -1497,16 +1501,16 @@ public class Request implements Constants, Cloneable {
      * _more_
      */
     public void ensureAuthToken() {
-        String authToken   = getString(ARG_AUTHTOKEN, (String) null);
-        String mySessionId = getSessionId();
+        String authToken    = getString(ARG_AUTHTOKEN, (String) null);
+        String mySessionId  = getSessionId();
         String argSessionId = getString(ARG_SESSIONID, (String) null);
         if (mySessionId == null) {
             mySessionId = argSessionId;
         }
 
         //        System.err.println("ensureAuthToken authToken:" + authToken +" arg session:"+ argSessionId +" session id:"+ mySessionId);
-        if(authToken == null && argSessionId!=null) {
-            if(argSessionId.equals(mySessionId)) {
+        if ((authToken == null) && (argSessionId != null)) {
+            if (argSessionId.equals(mySessionId)) {
                 //                System.err.println("ensureAuthToken arg session id == session id");
                 return;
             }
@@ -1557,11 +1561,23 @@ public class Request implements Constants, Cloneable {
         return false;
     }
 
-    public String getEnum(String arg, String dflt, String...values) {
-        String value = getString(arg,"");
-        for(String enumValue:values) {
-            if(value.equals(enumValue)) return value;
+    /**
+     * _more_
+     *
+     * @param arg _more_
+     * @param dflt _more_
+     * @param values _more_
+     *
+     * @return _more_
+     */
+    public String getEnum(String arg, String dflt, String... values) {
+        String value = getString(arg, "");
+        for (String enumValue : values) {
+            if (value.equals(enumValue)) {
+                return value;
+            }
         }
+
         return dflt;
     }
 
@@ -2134,6 +2150,33 @@ public class Request implements Constants, Cloneable {
     public Hashtable getHttpHeaderArgs() {
         return httpHeaderArgs;
     }
+
+    /**
+     * _more_
+     *
+     * @return _more_
+     */
+    public boolean canAcceptGzip() {
+        String accept = (String) httpHeaderArgs.get("Accept-Encoding");
+        if (accept == null) {
+            System.err.println("no accept:" + httpHeaderArgs);
+
+            return false;
+        }
+        List<String> toks = StringUtil.split(accept, ",", true, true);
+        for (String tok : toks) {
+            if ( !tok.startsWith("gzip")) {
+                continue;
+            }
+            if (StringUtil.splitUpTo(tok, ";",
+                                     2).get(0).trim().equals("gzip")) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
 
     /**
      * _more_

@@ -3657,6 +3657,29 @@ public class Repository extends RepositoryBase implements RequestHandler,
          */
     }
 
+    public Result makeResult(Request request, String path, InputStream inputStream, String mimeType, boolean cacheOk) throws Exception {
+        String tail = IOUtil.getFileTail(path);
+        //        boolean acceptGzip = request.canAcceptGzip();
+        //        acceptGzip =  false;
+        //        if(acceptGzip) {
+            //            OutputStream outputStream = new ByteArrayOutputStream();
+            //            inputStream = new GZIPInputStream(inputStream);
+            //            new GZIPOutputStream(inputStream);
+        //        }
+        Result result = new Result(tail,
+                                   inputStream,
+                                   mimeType);
+        //        if(acceptGzip) {
+        //            result.addHttpHeader("Content-Encoding","gzip");
+        //        }
+        if(tail.length()>0) {
+            result.setReturnFilename(tail);
+        }
+        result.setCacheOk(cacheOk);
+        return result;
+    }
+
+
     /**
      * _more_
      *
@@ -3668,6 +3691,8 @@ public class Repository extends RepositoryBase implements RequestHandler,
      */
     protected Result getHtdocsFile(Request request) throws Exception {
 
+
+        
         String path    = request.getRequestPath().replaceAll("//", "/");
         String urlBase = getUrlBase();
         if (path.startsWith(urlBase)) {
@@ -3695,16 +3720,11 @@ public class Repository extends RepositoryBase implements RequestHandler,
             decorate = false;
         }
 
-
         byte[] bytes = htdocsCache.get(path);
         if (bytes != null) {
-            //            System.err.println("in cache:" + path);
-            Result result = new Result(BLANK,
-                                       new ByteArrayInputStream(bytes),
-                                       mimeType);
-            result.setCacheOk(true);
-
-            return result;
+            System.err.println("in cache:" + path);
+            InputStream inputStream = new ByteArrayInputStream(bytes);
+            return makeResult(request, path, inputStream, mimeType, true);
         }
 
 
@@ -3748,22 +3768,15 @@ public class Repository extends RepositoryBase implements RequestHandler,
                     Result result = new Result(BLANK,
                                         new StringBuilder(html));
 
-                    System.err.println("decorate:" + decorate);
-                    System.err.println("html:" + html);
+
                     if (decorate) {
                         return getEntryManager().addHeaderToAncillaryPage(
                             request, result);
                     }
                     result.setShouldDecorate(false);
-                    System.err.println("returning result:"
-                                       + result.getStringContent());
-
                     return result;
                 }
-                Result result = new Result(BLANK, inputStream, mimeType);
-                result.setCacheOk(true);
-
-                return result;
+                return makeResult(request, path, inputStream, mimeType, true);
             } catch (IOException fnfe) {
                 //noop
             }
@@ -3795,10 +3808,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
                 return getEntryManager().addHeaderToAncillaryPage(request,
                         new Result(BLANK, new StringBuilder(html)));
             }
-            Result result = new Result(BLANK, inputStream, mimeType);
-            result.setCacheOk(true);
-
-            return result;
+            return makeResult(request, path, inputStream, mimeType, true);
         }
 
 

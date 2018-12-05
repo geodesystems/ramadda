@@ -154,7 +154,7 @@ function RepositoryMap(mapId, params) {
         $.extend(this, dflt);
         $.extend(this, params);
 
-        this.default = {};
+        this.defaults = {};
         var theMap = this;
 
         if(Utils.isDefined(params.onSelect)) {
@@ -2217,7 +2217,7 @@ function initMapFunctions(theMap) {
         return line;
     }
 
-    theMap.showMarkerPopup = function(marker, fromClick=false) {
+    theMap.showMarkerPopup = function(marker, fromClick) {
         if(this.entryClickHandler && window[this.entryClickHandler]) {
             if(!window[this.entryClickHandler](this,marker)) {
                 return;

@@ -1465,7 +1465,8 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                 String[]  mapArgs  = {
                     "strokeColor", "fillColor", "fillOpacity", "scrollToZoom",
                     "selectOnHover", "onSelect", "showDetailsLink",
-                    "zoom:initialZoom", "layer:defaultMapLayer"
+                    "zoom:initialZoom", "layer:defaultMapLayer",
+                    "kmlLayer","kmlLayerName"
                 };
                 for (String mapArg : mapArgs) {
                     String key = mapArg;
@@ -4697,13 +4698,8 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
 
         this.addDisplayImports(request, sb);
         List<String>  topProps = new ArrayList<String>();
-
-
         List<String>  propList = new ArrayList<String>();
-
-
         StringBuilder js       = new StringBuilder();
-
 
         for (String showArg : new String[] { ATTR_SHOWMAP, ATTR_SHOWMENU }) {
             topProps.add(showArg);
@@ -5007,6 +5003,56 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                          + pointProps + ")");
         }
 
+        if(displayType.equals("map")) {
+            List<Metadata> metadataList =
+                getMetadataManager().findMetadata(request, entry, "map_displaymap", true);
+            if ((metadataList != null) && (metadataList.size() > 0)) {
+                String kmlIds = null;
+                String geojsonIds = null;
+                String kmlNames = null;
+                String geojsonNames = null;
+
+                for(Metadata metadata: metadataList) {
+                    if (Utils.stringDefined(metadata.getAttr1())) {
+                        Entry mapEntry =  (Entry) getEntryManager().getEntry(request, metadata.getAttr1());
+                        if(mapEntry!=null && (mapEntry.getTypeHandler().isType("geo_shapefile") ||
+                                              mapEntry.getTypeHandler().isType("geo_geojson"))) {
+                            if(mapEntry.getTypeHandler().isType("geo_shapefile")) {
+                                if(kmlIds==null) {
+                                    kmlIds  = mapEntry.getId();
+                                    kmlNames = mapEntry.getName().replaceAll(","," ");
+                                }   else {
+                                    kmlIds += "," +mapEntry.getId();
+                                    kmlNames += "," + mapEntry.getName().replaceAll(","," ");
+                                }
+                            } else {
+                                if(geojsonIds==null) {
+                                    geojsonIds  = mapEntry.getId();
+                                    geojsonNames = mapEntry.getName().replaceAll(","," ");
+                                }   else {
+                                    geojsonIds += "," +mapEntry.getId();
+                                    geojsonNames += "," + mapEntry.getName().replaceAll(","," ");
+                                }
+                            }
+                        }
+                        if(kmlIds!=null) {
+                            propList.add("kmlLayer");
+                            propList.add(Json.quote(kmlIds));
+                            propList.add("kmlLayerName");
+                            propList.add(Json.quote(kmlNames));
+                        }
+                        if(geojsonIds!=null) {
+                            propList.add("geojsonLayer");
+                            propList.add(Json.quote(geojsonIds));
+                            propList.add("geojsonLayerName");
+                            propList.add(Json.quote(geojsonNames));
+                        }
+                    }
+                }
+            }
+        }
+
+
         js.append("displayManager.createDisplay("
                   + HtmlUtils.quote(displayType) + ","
                   + Json.map(propList, false) + ");\n");
@@ -5028,75 +5074,49 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
      */
     public void addDisplayImports(Request request, Appendable sb)
             throws Exception {
-
         getMapManager().addMapImports(request, sb);
-
         if (request.getExtraProperty("initchart") == null) {
             request.putExtraProperty("initchart", "added");
-            //            getPageHandler().addGoogleJSImport(request, sb);
-            sb.append(
-                HtmlUtils.importJS(
-                    "https://www.gstatic.com/charts/loader.js"));
-
-            sb.append(HtmlUtils.script(
+            HtmlUtils.importJS(sb,  "https://www.gstatic.com/charts/loader.js");
             //                    "google.load(\"visualization\", \"1\", {packages:['corechart','table','bar']});\n"));
-            "google.charts.load(\"43\", {packages:['corechart','table','bar']});\n"));
-            sb.append(HtmlUtils.importJS(htdocsUrl("/lib/d3/d3.min.js")));
-
-            sb.append(
-                HtmlUtils.importJS(
-                    htdocsUrl("/lib/jquery.handsontable.full.min.js")));
-            sb.append(
-                HtmlUtils.cssLink(
-                    htdocsUrl("/lib/jquery.handsontable.full.min.css")));
-
+            HtmlUtils.script(sb,   "google.charts.load(\"43\", {packages:['corechart','table','bar']});\n");
+            HtmlUtils.importJS(sb, htdocsUrl("/lib/d3/d3.min.js"));
+            HtmlUtils.importJS(sb, htdocsUrl("/lib/jquery.handsontable.full.min.js"));
+            HtmlUtils.cssLink(sb,  htdocsUrl("/lib/jquery.handsontable.full.min.css"));
 
             //Put this here after the google load
-            sb.append(HtmlUtils.cssLink(htdocsUrl("/display.css")));
-
-
-            /*
-
-            sb.append(HtmlUtils.cssLink(htdocsUrl("/lib/timelinejs/css/timeline.css")));
-            sb.append(HtmlUtils.importJS(htdocsUrl("/lib/timelinejs/js/timeline.js")));
-            sb.append(HtmlUtils.importJS(htdocsUrl("/lib/timelinejs/js/storyjs-embed.js")));
-            */
+            HtmlUtils.cssLink(sb, htdocsUrl("/display.css"));
             HtmlUtils.importJS(sb, htdocsUrl("/db/dom-drag.js"));
-            sb.append(HtmlUtils.importJS(htdocsUrl("/db/dom-drag.js")));
+            HtmlUtils.importJS(sb, htdocsUrl("/db/dom-drag.js"));
 
-            sb.append(HtmlUtils.importJS(htdocsUrl("/display/pointdata.js")));
-            sb.append(HtmlUtils.importJS(htdocsUrl("/display/utils.js")));
-            sb.append(
-                HtmlUtils.importJS(htdocsUrl("/display/displaymanager.js")));
-            sb.append(HtmlUtils.importJS(htdocsUrl("/display/display.js")));
-            sb.append(
-                HtmlUtils.importJS(htdocsUrl("/display/displayentry.js")));
-
-            sb.append(
-                HtmlUtils.importJS(htdocsUrl("/display/displaymap.js")));
-            sb.append(
-                HtmlUtils.importJS(htdocsUrl("/display/displaychart.js")));
-            sb.append(
-                HtmlUtils.importJS(htdocsUrl("/display/displaytable.js")));
-            sb.append(HtmlUtils.importJS(htdocsUrl("/display/control.js")));
-            sb.append(HtmlUtils.importJS(htdocsUrl("/display/displayd3.js")));
-            sb.append(
-                HtmlUtils.importJS(htdocsUrl("/display/displayext.js")));
-            sb.append(HtmlUtils.importJS(htdocsUrl("/repositories.js")));
-
-
+            if(getRepository().getProperty("ramadda.minified",true)) {
+                HtmlUtils.importJS(sb, htdocsUrl("/display/display_all_mini.js"));
+            } else {
+                HtmlUtils.importJS(sb, htdocsUrl("/display/pointdata.js"));
+                HtmlUtils.importJS(sb, htdocsUrl("/display/utils.js"));
+                HtmlUtils.importJS(sb, htdocsUrl("/display/displaymanager.js"));
+                HtmlUtils.importJS(sb, htdocsUrl("/display/display.js"));
+                HtmlUtils.importJS(sb, htdocsUrl("/display/displayentry.js"));
+                HtmlUtils.importJS(sb, htdocsUrl("/display/displaymap.js"));
+                HtmlUtils.importJS(sb, htdocsUrl("/display/displaychart.js"));
+                HtmlUtils.importJS(sb, htdocsUrl("/display/displaytable.js"));
+                HtmlUtils.importJS(sb, htdocsUrl("/display/control.js"));
+                HtmlUtils.importJS(sb, htdocsUrl("/display/displayd3.js"));
+                HtmlUtils.importJS(sb, htdocsUrl("/display/displayext.js"));
+            }
+            HtmlUtils.importJS(sb, htdocsUrl("/repositories.js"));
 
             String includes =
                 getRepository().getProperty("ramadda.display.includes",
-                                            (String) null);
+                                        (String) null);
             if (includes != null) {
                 for (String include :
-                        StringUtil.split(includes, ",", true, true)) {
-                    sb.append(HtmlUtils.importJS(fileUrl(include)));
-                }
+                         StringUtil.split(includes, ",", true, true)) {
+                    HtmlUtils.importJS(sb, fileUrl(include));
             }
         }
     }
+}
 
 
 
@@ -5108,8 +5128,14 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
      *
      * @return  the attribute string
      */
-    private static String attr(String name, String value) {
-        return " " + name + "=" + value + " ";
+    private static void attr(StringBuilder sb, String name, String value) {
+        sb.append(" ");
+        sb.append(name);
+        sb.append("=");
+        sb.append("&quote;");
+        sb.append(value);
+        sb.append("&quote;");
+        sb.append(" ");
     }
 
     /**
@@ -5121,12 +5147,9 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
      */
     private static String attrs(String... attrs) {
         StringBuilder sb = new StringBuilder();
-        String        qt = "&quote;";
-
         for (int i = 0; i < attrs.length; i += 2) {
-            sb.append(attr(attrs[i], qt + attrs[i + 1] + qt));
+            attr(sb, attrs[i], attrs[i + 1]);
         }
-
         return sb.toString();
     }
 

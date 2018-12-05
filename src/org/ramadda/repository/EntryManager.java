@@ -5290,11 +5290,6 @@ public class EntryManager extends RepositoryManager {
                                           + HtmlUtils.id(ARG_TO))));
 
 
-
-
-
-
-
         sb.append(HtmlUtils.formTableClose());
         sb.append(HtmlUtils.formClose());
 
@@ -10305,6 +10300,29 @@ public class EntryManager extends RepositoryManager {
         return parent;
     }
 
+
+    public String getEntryFormSelect(Request request, Entry entry, String baseArg, String value) throws Exception {
+        Entry theEntry = null;
+        if (value.length() > 0) {
+            theEntry =
+                getRepository().getEntryManager().getEntry(request,
+                                                           value);
+        }
+        StringBuffer sb = new StringBuffer();
+        String select =
+            getRepository().getHtmlOutputHandler().getSelect(request,
+                                                             baseArg, "Select", true, null, entry);
+        sb.append("\n");
+        sb.append(HtmlUtils.hidden(baseArg + "_hidden", value,
+                                       HtmlUtils.id(baseArg + "_hidden")));
+        sb.append("\n");
+        sb.append(HtmlUtils.disabledInput(baseArg, ((theEntry != null)
+                                                    ? theEntry.getFullName()
+                                                    : ""), HtmlUtils.id(baseArg)
+                                          + HtmlUtils.SIZE_60) + select);
+        sb.append("\n");
+        return  sb.toString();
+    }
 
 
 

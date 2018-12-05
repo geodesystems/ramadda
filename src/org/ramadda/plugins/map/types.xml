@@ -52,7 +52,7 @@
    </type>
 
 
-  <type name="geo_shapefile"  description="Shapefile"   handler="org.ramadda.plugins.map.ShapefileTypeHandler" pattern="(.*\.shp$|.*shp.*\.zip)" metadata="shapefile_display,shapefile_color">
+  <type name="geo_shapefile"  description="Shapefile"   handler="org.ramadda.plugins.map.ShapefileTypeHandler" pattern="(.*\.shp$|.*shp.*\.zip)" metadata="shapefile_display,shapefile_color,map_displaymap">
      <property name="icon" value="/icons/map.png"/>
      <property name="upload.zip" value="true"/>
      <column name="num_points" label="Number of Points" type="int" canedit="false" showinhtml="false" databaseDefault="-1"/>
@@ -121,7 +121,7 @@
 
 -->
 
-  <type name="geo_shapefile_fips"  description="Shapefile with FIPS Code"   super="geo_shapefile"  metadata="shapefile_display,shapefile_color" handler="org.ramadda.repository.type.GenericTypeHandler">
+  <type name="geo_shapefile_fips"  description="Shapefile with FIPS Code"   super="geo_shapefile"  metadata="shapefile_display,shapefile_color,map_displaymap" handler="org.ramadda.repository.type.GenericTypeHandler">
      <column name="fips" label="FIPS Code" canedit="true" showinhtml="true"/>
 </type>
 

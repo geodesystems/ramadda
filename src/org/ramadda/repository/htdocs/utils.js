@@ -893,7 +893,7 @@ var RamaddaUtil = {
     //this.super.<method>.call(this,...);
     inherit: function(object, parent) {
         $.extend(object, parent);
-        object.super = parent;
+        object.mysuper = parent;
         return object;
     },
     //Just a wrapper around extend. We use this so it is easy to find 

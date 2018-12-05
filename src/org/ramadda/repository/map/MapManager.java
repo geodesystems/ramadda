@@ -33,6 +33,7 @@ import org.ramadda.util.HtmlUtils;
 import org.ramadda.util.JQuery;
 import org.ramadda.util.Json;
 import org.ramadda.util.Utils;
+import org.ramadda.plugins.map.ShapefileOutputHandler;
 
 import ucar.unidata.geoloc.Bearing;
 import ucar.unidata.geoloc.LatLonPointImpl;
@@ -121,7 +122,7 @@ public class MapManager extends RepositoryManager implements WikiConstants {
      * @return a map information holder
      */
     public MapInfo createMap(Request request, boolean forSelection,
-                             Hashtable<String, String> props) {
+                             Hashtable<String, String> props) throws Exception {
         return createMap(request, MapInfo.DFLT_WIDTH, MapInfo.DFLT_HEIGHT,
                          forSelection, props);
     }
@@ -223,7 +224,7 @@ public class MapManager extends RepositoryManager implements WikiConstants {
      */
     public MapInfo createMap(Request request, int width, int height,
                              boolean forSelection,
-                             Hashtable<String, String> props) {
+                             Hashtable<String, String> props) throws Exception {
 
         //        System.err.println("MapManager.createMap: " + width + " " + height);
         MapInfo mapInfo = new MapInfo(request, getRepository(), width,
@@ -316,17 +317,17 @@ public class MapManager extends RepositoryManager implements WikiConstants {
      *
      * @return  the imports
      */
-    private String getHtmlImports(Request request) {
+    private String getHtmlImports(Request request) throws Exception {
         StringBuilder sb = new StringBuilder();
+        boolean minified = getRepository().getProperty("ramadda.minified",true);
         if (OPENLAYERS_VERSION == OPENLAYERS_V2) {
-            sb.append(
-                HtmlUtils.cssLink(
-                    getRepository().htdocsUrl(
-                        OPENLAYERS_BASE_V2 + "/theme/default/style.tidy.css")));
-            sb.append(
-                HtmlUtils.importJS(
-                    getRepository().htdocsUrl(
-                        OPENLAYERS_BASE_V2 + "/OpenLayers.debug.js")));
+            if(minified) {
+                HtmlUtils.cssLink(sb, getRepository().htdocsUrl(OPENLAYERS_BASE_V2 + "/theme/default/style.tidy.css"));
+                HtmlUtils.importJS(sb, getRepository().htdocsUrl(OPENLAYERS_BASE_V2 + "/OpenLayers.mini.js"));
+            } else {
+                HtmlUtils.cssLink(sb, getRepository().htdocsUrl(OPENLAYERS_BASE_V2 + "/theme/default/style.css"));
+                HtmlUtils.importJS(sb, getRepository().htdocsUrl(OPENLAYERS_BASE_V2 + "/OpenLayers.debug.js"));
+            }
         } else {
             /*
             sb.append(
@@ -344,22 +345,19 @@ public class MapManager extends RepositoryManager implements WikiConstants {
             sb.append(
                 HtmlUtils.importJS(
                     "https://cdnjs.cloudflare.com/ajax/libs/openlayers/4.6.4/ol-debug.js"));
-
         }
 
         //        addGoogleMapsApi(request, sb);
         if (OPENLAYERS_VERSION == OPENLAYERS_V2) {
-            sb.append(
-                HtmlUtils.importJS(
-                    getRepository().htdocsUrl("/ramaddamap.js")));
+            if(minified) {
+                HtmlUtils.importJS(sb, getRepository().htdocsUrl("/ramaddamap.mini.js"));
+            } else  {
+                HtmlUtils.importJS(sb, getRepository().htdocsUrl("/ramaddamap.js"));
+            }
         } else {
-            sb.append(
-                HtmlUtils.importJS(
-                    getRepository().htdocsUrl("/ramaddamap3.js")));
+            HtmlUtils.importJS(sb, getRepository().htdocsUrl("/ramaddamap3.js"));
         }
-        sb.append(
-            HtmlUtils.cssLink(getRepository().htdocsUrl("/ramaddamap.css")));
-
+        HtmlUtils.cssLink(sb, getRepository().htdocsUrl("/ramaddamap.css"));
         return sb.toString();
     }
 
@@ -1278,6 +1276,26 @@ public class MapManager extends RepositoryManager implements WikiConstants {
                          List<Entry> entriesToUse, boolean detailed,
                          boolean screenBigRects)
             throws Exception {
+        if(entriesToUse.size()==1 && detailed) {
+            List<Metadata> metadataList =
+                getMetadataManager().findMetadata(request, entriesToUse.get(0),
+                                                  "map_displaymap", true);
+            if ((metadataList != null) && (metadataList.size() > 0)) {
+                for(Metadata metadata: metadataList) {
+                    if (Utils.stringDefined(metadata.getAttr1())) {
+                        Entry mapEntry =  (Entry) getEntryManager().getEntry(request, metadata.getAttr1());
+                        if(mapEntry!=null && (mapEntry.getTypeHandler().isType("geo_shapefile") ||
+                                              mapEntry.getTypeHandler().isType("geo_geojson"))) {
+                            String kmlUrl =
+                                request.entryUrl(getRepository().URL_ENTRY_SHOW, mapEntry,
+                                                 ARG_OUTPUT,
+                                                 ShapefileOutputHandler.OUTPUT_KML.toString(), "formap", "true");
+                            map.addKmlUrl(mapEntry.getName(), kmlUrl, true,ShapefileOutputHandler.makeMapStyle(request,  mapEntry));
+                        }
+                    }
+                }
+            }
+        }
         screenBigRects = false;
         int cnt = 0;
         for (Entry entry : entriesToUse) {
