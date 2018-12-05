@@ -97,7 +97,9 @@ public class JettyServer implements Constants {
         server  = new Server(port);
         context = new ServletContextHandler(ServletContextHandler.SESSIONS);
         context.setContextPath("/");
-        context.setGzipHandler(new GzipHandler());
+        GzipHandler gzipHandler = new GzipHandler();
+        gzipHandler.addIncludedMimeTypes("application/vnd.google-earth.kml+xml","application/vnd.google-earth.kmz","application/json");
+        context.setGzipHandler(gzipHandler);
         server.setHandler(context);
         baseServlet = addServlet();
         context.addServlet(new ServletHolder(baseServlet), "/");
