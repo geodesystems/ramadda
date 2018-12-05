@@ -2149,25 +2149,7 @@ public class Column implements DataTypes, Constants {
             if (values != null) {
                 value = toString(values, offset);
             }
-
-            Entry theEntry = null;
-            if (value.length() > 0) {
-                theEntry =
-                    getRepository().getEntryManager().getEntry(request,
-                        value);
-            }
-            StringBuffer sb = new StringBuffer();
-            String select =
-                getRepository().getHtmlOutputHandler().getSelect(request,
-                    urlArg, "Select", true, null, entry);
-            sb.append(HtmlUtils.hidden(urlArg + "_hidden", value,
-                                       HtmlUtils.id(urlArg + "_hidden")));
-            sb.append(HtmlUtils.disabledInput(urlArg, ((theEntry != null)
-                    ? theEntry.getFullName()
-                    : ""), HtmlUtils.id(urlArg)
-                           + HtmlUtils.SIZE_60) + select);
-
-            widget = sb.toString();
+            widget = getRepository().getEntryManager().getEntryFormSelect(request,  entry, urlArg, value);
         } else {
             String value = ((dflt != null)
                             ? dflt
