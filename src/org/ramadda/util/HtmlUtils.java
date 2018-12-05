@@ -405,6 +405,8 @@ public class HtmlUtils {
     /** _more_ */
 
     public static final String CLASS_FORMLABEL = "formlabel";
+
+    /** _more_          */
     public static final String CLASS_FORMCONTENTS = "formcontents";
 
     /** _more_ */
@@ -1177,7 +1179,7 @@ public class HtmlUtils {
     public static Appendable quote(Appendable sb, String s) {
         try {
             sb.append("\"");
-            s = s.replaceAll("\"","\\\"");
+            s = s.replaceAll("\"", "\\\"");
             sb.append(s);
             sb.append("\"");
         } catch (IOException ioe) {
@@ -1693,8 +1695,15 @@ public class HtmlUtils {
     }
 
 
+    /**
+     * _more_
+     *
+     * @param content _more_
+     *
+     * @return _more_
+     */
     public static String td(String content) {
-        return td(content,"");
+        return td(content, "");
     }
 
     /**
@@ -3443,8 +3452,8 @@ public class HtmlUtils {
      */
     public static String leftRight(String left, String right, String attrs) {
         return tag(TAG_TABLE,
-                   attrs(ATTR_CLASS,"left_right_table", ATTR_WIDTH, "100%", ATTR_CELLPADDING, "0",
-                         ATTR_CELLSPACING,
+                   attrs(ATTR_CLASS, "left_right_table", ATTR_WIDTH, "100%",
+                         ATTR_CELLPADDING, "0", ATTR_CELLSPACING,
                          "0") + attrs, row(col(left)
                          + col(right,
                                attr(ATTR_ALIGN,
@@ -3675,10 +3684,11 @@ public class HtmlUtils {
         return tag(TAG_TR, "",
                    tag(TAG_TD,
                        attrs(ATTR_ALIGN, VALUE_RIGHT, ATTR_CLASS,
-                             CLASS_FORMLABEL), left) + tag(TAG_TD, attrs(ATTR_CLASS,CLASS_FORMCONTENTS),
+                             CLASS_FORMLABEL), left) + tag(TAG_TD,
+                                 attrs(ATTR_CLASS, CLASS_FORMCONTENTS),
                                  right)) + "\n";
 
-        
+
     }
 
 
@@ -3734,7 +3744,7 @@ public class HtmlUtils {
         sb.append(tag(TAG_TD,
                       attrs(ATTR_ALIGN, VALUE_RIGHT, ATTR_CLASS,
                             CLASS_FORMLABEL), left));
-        String clazz =attrs(ATTR_CLASS,CLASS_FORMCONTENTS);
+        String clazz = attrs(ATTR_CLASS, CLASS_FORMCONTENTS);
         for (String col : cols) {
             sb.append(tag(TAG_TD, clazz, col));
         }
@@ -3789,11 +3799,14 @@ public class HtmlUtils {
      */
     public static String formEntryTop(String label, String col1,
                                       String col2) {
-        return tag(TAG_TR, attrs(ATTR_VALIGN, VALUE_TOP),
-                col(label,
-                    attrs(ATTR_ALIGN, VALUE_RIGHT, ATTR_CLASS,
-                        CLASS_FORMLABEL_TOP)) + col(col1,
-                            "" /*attrs(ATTR_ALIGN, VALUE_RIGHT, ATTR_CLASS, CLASS_FORMLABEL_TOP)*/) + col(col2));
+        return tag(
+            TAG_TR, attrs(ATTR_VALIGN, VALUE_TOP),
+            col(
+            label,
+            attrs(ATTR_ALIGN, VALUE_RIGHT, ATTR_CLASS,
+                CLASS_FORMLABEL_TOP)) + "\n"
+                    + col(col1,
+                        "" /*attrs(ATTR_ALIGN, VALUE_RIGHT, ATTR_CLASS, CLASS_FORMLABEL_TOP)*/) + "\n" + col(col2));
     }
 
 
@@ -4246,6 +4259,20 @@ public class HtmlUtils {
         return tag(TAG_LINK,
                    attrs(ATTR_HREF, url, ATTR_REL, "stylesheet", ATTR_TYPE,
                          "text/css"));
+    }
+
+    /**
+     * _more_
+     *
+     * @param sb _more_
+     * @param url _more_
+     *
+     * @throws Exception _more_
+     */
+    public static void cssLink(Appendable sb, String url) throws Exception {
+        tag(sb, TAG_LINK,
+            attrs(ATTR_HREF, url, ATTR_REL, "stylesheet", ATTR_TYPE,
+                  "text/css"));
     }
 
 
@@ -5114,7 +5141,7 @@ public class HtmlUtils {
             try {
                 URL newUrl = new URL(url, href);
                 links.add(new Link(newUrl, label));
-            } catch(Exception exc) {}
+            } catch (Exception exc) {}
         }
 
         return links;
