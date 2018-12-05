@@ -442,9 +442,20 @@ public class Repository extends RepositoryBase implements RequestHandler,
     /** _more_ */
     private List<String> htdocRoots = new ArrayList<String>();
 
+    /** _more_          */
+    private int htdocsCacheSize = 0;
+
+    /** _more_          */
+    private final int htdocsCacheLimit = 5000000;
+
     /** _more_ */
     private Hashtable<String, byte[]> htdocsCache = new Hashtable<String,
                                                         byte[]>();
+
+
+    /** _more_          */
+    private Hashtable<String, String> htdocsPathCache = new Hashtable<String,
+                                                            String>();
 
 
 
@@ -467,7 +478,8 @@ public class Repository extends RepositoryBase implements RequestHandler,
     private boolean doCache = true;
 
 
-
+    /** _more_          */
+    private boolean cacheResources = true;
 
     /**
      * _more_
@@ -1354,6 +1366,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
             GeoUtils.setCacheDir(getStorageManager().getRepositoryDir());
         }
 
+        cacheResources = getProperty(PROP_CACHERESOURCES, true);
 
         /**
          *    Test for processdir
@@ -3648,34 +3661,49 @@ public class Repository extends RepositoryBase implements RequestHandler,
      * @param bytes _more_
      */
     private void putHtdocsCache(String path, byte[] bytes) {
-
-        /**
-         * Do not do this for now - maybe check the length and only cache small blobs
-         * if (cacheResources()) {
-         *   htdocsCache.put(path, bytes);
-         * }
-         */
+        if (htdocsCacheSize > htdocsCacheLimit) {
+            return;
+        }
+        if (cacheResources()) {
+            htdocsCacheSize += bytes.length;
+            htdocsCache.put(path, bytes);
+        }
     }
 
-    public Result makeResult(Request request, String path, InputStream inputStream, String mimeType, boolean cacheOk) throws Exception {
+    /**
+     * _more_
+     *
+     * @param request _more_
+     * @param path _more_
+     * @param inputStream _more_
+     * @param mimeType _more_
+     * @param cacheOk _more_
+     *
+     * @return _more_
+     *
+     * @throws Exception _more_
+     */
+    public Result makeResult(Request request, String path,
+                             InputStream inputStream, String mimeType,
+                             boolean cacheOk)
+            throws Exception {
         String tail = IOUtil.getFileTail(path);
         //        boolean acceptGzip = request.canAcceptGzip();
         //        acceptGzip =  false;
         //        if(acceptGzip) {
-            //            OutputStream outputStream = new ByteArrayOutputStream();
-            //            inputStream = new GZIPInputStream(inputStream);
-            //            new GZIPOutputStream(inputStream);
+        //            OutputStream outputStream = new ByteArrayOutputStream();
+        //            inputStream = new GZIPInputStream(inputStream);
+        //            new GZIPOutputStream(inputStream);
         //        }
-        Result result = new Result(tail,
-                                   inputStream,
-                                   mimeType);
+        Result result = new Result(tail, inputStream, mimeType);
         //        if(acceptGzip) {
         //            result.addHttpHeader("Content-Encoding","gzip");
         //        }
-        if(tail.length()>0) {
+        if (tail.length() > 0) {
             result.setReturnFilename(tail);
         }
         result.setCacheOk(cacheOk);
+
         return result;
     }
 
@@ -3692,7 +3720,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
     protected Result getHtdocsFile(Request request) throws Exception {
 
 
-        
+
         String path    = request.getRequestPath().replaceAll("//", "/");
         String urlBase = getUrlBase();
         if (path.startsWith(urlBase)) {
@@ -3709,9 +3737,6 @@ public class Repository extends RepositoryBase implements RequestHandler,
                 RepositoryUtil.HTDOCS_VERSION_SLASH.length());
         }
 
-
-
-
         String mimeType =
             getMimeTypeFromSuffix(IOUtil.getFileExtension(path));
         boolean decorate = true;
@@ -3722,25 +3747,31 @@ public class Repository extends RepositoryBase implements RequestHandler,
 
         byte[] bytes = htdocsCache.get(path);
         if (bytes != null) {
-            System.err.println("in cache:" + path);
             InputStream inputStream = new ByteArrayInputStream(bytes);
+
             return makeResult(request, path, inputStream, mimeType, true);
         }
 
 
+        String cachePath = htdocsPathCache.get(path);
+
         //Go through all of the htdoc roots
         for (String root : htdocRoots) {
-            String fullPath = root + path;
+            String fullPath = null;
+            if (cachePath != null) {
+                fullPath  = cachePath;
+                cachePath = null;
+            } else {
+                fullPath = root + path;
+            }
             try {
                 InputStream inputStream =
                     getStorageManager().getInputStream(fullPath);
-
+                htdocsPathCache.put(path, fullPath);
                 //If its just sitting on the server then don't decorate
                 if (new File(fullPath).exists()) {
                     decorate = false;
                 }
-
-
                 if (path.endsWith(".js") || path.endsWith(".css")
                         || path.endsWith(".json")) {
                     String js = IOUtil.readInputStream(inputStream);
@@ -3752,7 +3783,9 @@ public class Repository extends RepositoryBase implements RequestHandler,
                     bytes = js.getBytes();
                     putHtdocsCache(path, bytes);
                     inputStream = new ByteArrayInputStream(bytes);
-                } else if (path.endsWith(".png") || path.endsWith(".gif")) {
+                } else if (path.endsWith(".png") || path.endsWith(".gif")
+                           || path.endsWith(".jpg")
+                           || path.endsWith(".jpeg")) {
                     bytes = IOUtil.readBytes(inputStream);
                     putHtdocsCache(path, bytes);
                     inputStream = new ByteArrayInputStream(bytes);
@@ -3774,8 +3807,10 @@ public class Repository extends RepositoryBase implements RequestHandler,
                             request, result);
                     }
                     result.setShouldDecorate(false);
+
                     return result;
                 }
+
                 return makeResult(request, path, inputStream, mimeType, true);
             } catch (IOException fnfe) {
                 //noop
@@ -3796,7 +3831,8 @@ public class Repository extends RepositoryBase implements RequestHandler,
                 bytes = js.getBytes();
                 putHtdocsCache(path, bytes);
                 inputStream = new ByteArrayInputStream(bytes);
-            } else if (path.endsWith(".png") || path.endsWith(".gif")) {
+            } else if (path.endsWith(".png") || path.endsWith(".gif")
+                       || path.endsWith(".jpg") || path.endsWith(".jpeg")) {
                 bytes = IOUtil.readBytes(inputStream);
                 putHtdocsCache(path, bytes);
                 inputStream = new ByteArrayInputStream(bytes);
@@ -3808,6 +3844,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
                 return getEntryManager().addHeaderToAncillaryPage(request,
                         new Result(BLANK, new StringBuilder(html)));
             }
+
             return makeResult(request, path, inputStream, mimeType, true);
         }
 
@@ -3893,7 +3930,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
      * @return _more_
      */
     public boolean cacheResources() {
-        return getProperty(PROP_CACHERESOURCES, true);
+        return cacheResources;
     }
 
 
