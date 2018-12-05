@@ -97,11 +97,10 @@ public class JettyServer implements Constants {
         server  = new Server(port);
         context = new ServletContextHandler(ServletContextHandler.SESSIONS);
         context.setContextPath("/");
-        ///        context.setGzipHandler(new GzipHandler());
+        context.setGzipHandler(new GzipHandler());
         server.setHandler(context);
         baseServlet = addServlet();
         context.addServlet(new ServletHolder(baseServlet), "/");
-        //        context.addFilter(GzipFilter.class, "/*", EnumSet.of(DispatcherType.INCLUDE,DispatcherType.REQUEST));
         try {
             initSsl(server, baseServlet.getRepository());
         } catch (Throwable exc) {
