@@ -1004,32 +1004,32 @@ public interface Constants {
         "metadata.clipboard.paste";
 
     /** _more_ */
-    public static final String ARG_METADATA_ATTR = "metadata.attr";
+    public static final String ARG_METADATA_ATTR = "metadata_attr";
 
 
     /** _more_ */
-    public static final String ARG_METADATA_ATTR1 = "metadata.attr1";
+    public static final String ARG_METADATA_ATTR1 = "metadata_attr1";
 
     /** _more_ */
-    public static final String ARG_METADATA_ATTR2 = "metadata.attr2";
+    public static final String ARG_METADATA_ATTR2 = "metadata_attr2";
 
     /** _more_ */
-    public static final String ARG_METADATA_ATTR3 = "metadata.attr3";
+    public static final String ARG_METADATA_ATTR3 = "metadata_attr3";
 
     /** _more_ */
-    public static final String ARG_METADATA_ATTR4 = "metadata.attr4";
+    public static final String ARG_METADATA_ATTR4 = "metadata_attr4";
 
     /** _more_ */
-    public static final String ARG_METADATA_DELETE = "metadata.delete";
+    public static final String ARG_METADATA_DELETE = "metadata_delete";
 
     /** _more_ */
-    public static final String ARG_METADATA_ID = "metadata.id";
+    public static final String ARG_METADATA_ID = "metadata_id";
 
     /** _more_ */
-    public static final String ARG_METADATA_INHERITED = "metadata.inherited";
+    public static final String ARG_METADATA_INHERITED = "metadata_inherited";
 
     /** _more_ */
-    public static final String ARG_METADATA_TYPE = "metadata.type";
+    public static final String ARG_METADATA_TYPE = "metadata_type";
 
     /** _more_ */
     public static final String ARG_MINLAT = "minlat";
