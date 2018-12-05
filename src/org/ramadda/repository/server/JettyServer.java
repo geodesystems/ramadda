@@ -25,14 +25,15 @@ import org.eclipse.jetty.server.HttpConfiguration;
 import org.eclipse.jetty.server.HttpConnectionFactory;
 import org.eclipse.jetty.server.SecureRequestCustomizer;
 
-
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.ServerConnector;
 import org.eclipse.jetty.server.ServerConnector;
 import org.eclipse.jetty.server.SslConnectionFactory;
 import org.eclipse.jetty.server.SslConnectionFactory;
+import org.eclipse.jetty.server.handler.gzip.GzipHandler;
 import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.servlet.ServletHolder;
+import org.eclipse.jetty.servlets.GzipFilter;
 import org.eclipse.jetty.util.ssl.SslContextFactory;
 
 
@@ -96,9 +97,11 @@ public class JettyServer implements Constants {
         server  = new Server(port);
         context = new ServletContextHandler(ServletContextHandler.SESSIONS);
         context.setContextPath("/");
+        ///        context.setGzipHandler(new GzipHandler());
         server.setHandler(context);
         baseServlet = addServlet();
         context.addServlet(new ServletHolder(baseServlet), "/");
+        //        context.addFilter(GzipFilter.class, "/*", EnumSet.of(DispatcherType.INCLUDE,DispatcherType.REQUEST));
         try {
             initSsl(server, baseServlet.getRepository());
         } catch (Throwable exc) {
@@ -189,8 +192,8 @@ public class JettyServer implements Constants {
         if ( !keystore.exists()) {
             keystore =
                 new File(repository.getPropertyValue(PROP_SSL_KEYSTORE,
-                                                     repository.getStorageManager().getRepositoryDir()
-                                                     + "/keystore", false));
+                    repository.getStorageManager().getRepositoryDir()
+                    + "/keystore", false));
         }
 
 
