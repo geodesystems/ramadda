@@ -6830,24 +6830,27 @@ function RamaddaSearcher(displayManager, id, type, properties) {
     var SUPER;
     RamaddaUtil.inherit(this, SUPER = new RamaddaEntryDisplay(displayManager, id, type, properties));
 
-    var metadataTypesAttr= this.getProperty("metadataTypes","enum_tag:Tag");
-    //look for type:value:label, or type:label,
-    var toks  = metadataTypesAttr.split(",");
-    for(var i=0;i<toks.length;i++) {
-        var type = toks[i];
-        var label = type;
-        var value = null;
-        var subToks  = type.split(":");
-        if(subToks.length>1) {
-            type = subToks[0];
-            if(subToks.length>=3) {
-                value = subToks[1];
-                label  = subToks[2];
-            } else {
-                label  = subToks[1];
+    
+    if(this.showMetadata && this.showSearchSettings) {
+        var metadataTypesAttr= this.getProperty("metadataTypes","enum_tag:Tag");
+        //look for type:value:label, or type:label,
+        var toks  = metadataTypesAttr.split(",");
+        for(var i=0;i<toks.length;i++) {
+            var type = toks[i];
+            var label = type;
+            var value = null;
+            var subToks  = type.split(":");
+            if(subToks.length>1) {
+                type = subToks[0];
+                if(subToks.length>=3) {
+                    value = subToks[1];
+                    label  = subToks[2];
+                } else {
+                    label  = subToks[1];
+                }
             }
+            this.metadataTypeList.push(new MetadataType(type, label,value));
         }
-        this.metadataTypeList.push(new MetadataType(type, label,value));
     }
 
     RamaddaUtil.defineMembers(this, {
@@ -7281,8 +7284,6 @@ function RamaddaSearcher(displayManager, id, type, properties) {
                     form += searchButton +" " + HtmlUtil.join(topItems," ");
                 }
 
-
-
                 if(this.showDate) {
                     this.dateRangeWidget  = new DateRangeWidget(this);
                     extra += HtmlUtil.formEntry("Date Range:",this.dateRangeWidget.getHtml());
@@ -7458,8 +7459,6 @@ function RamaddaSearcher(displayManager, id, type, properties) {
                 //                this.writeHtml(ID_TYPE_FIELD, "# " + entryTypes.length);
                 //                this.writeHtml(ID_TYPE_FIELD, select);
                 this.writeHtml(ID_TYPE_DIV, select);
-
-
                 this.jq(ID_TYPE_FIELD).selectBoxIt({});
                 this.addExtraForm();
            },
@@ -8314,7 +8313,7 @@ function RamaddaRepositoriesDisplay(displayManager, id, properties) {
                 html += HtmlUtil.openTag(TAG_TABLE, [ATTR_CLASS, "display-repositories-table",ATTR_WIDTH,"100%",ATTR_BORDER,"1","cellspacing","0","cellpadding","5"]);
                 for(var i=0;i<this.ramaddas.length;i++) {
                     var ramadda = this.ramaddas[i]; 
-                   var types = ramadda.getEntryTypes();
+                    var types = ramadda.getEntryTypes();
                     for(var typeIdx=0;typeIdx<types.length;typeIdx++) {
                         var type = types[typeIdx];
                         if(typeMap[type.getId()] == null) {

@@ -256,8 +256,8 @@ function Ramadda(repositoryRoot) {
                 entryTypeCallPending: false,
                 entryTypeCallbacks: null,
             getEntryTypes: function(callback) {
-                //                err = new Error();
-                //                console.log("getEntryTypes:" + err.stackTrace);
+                err = new Error();
+                console.log("getEntryTypes:" + err.stackTrace);
 
                 if(this.entryTypes != null) {
                     return this.entryTypes;
@@ -342,7 +342,7 @@ function Ramadda(repositoryRoot) {
                 this.metadataCacheCallbacks[key] = null;
                 this.metadataCachePending[key] = true;
 
-               var url  = this.repositoryRoot +"/metadata/list?metadata.type=" + type.getType() +"&response=json";
+               var url  = this.repositoryRoot +"/metadata/list?metadata_type=" + type.getType() +"&response=json";
                 //                console.log("getMetadata:" + type.getType() + " URL:" + url);
                 var _this = this;
                 var jqxhr = $.getJSON(url, function(data) {

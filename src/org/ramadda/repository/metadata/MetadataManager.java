@@ -1168,8 +1168,6 @@ public class MetadataManager extends RepositoryManager {
      * @throws Exception On badness
      */
     public Result processMetadataList(Request request) throws Exception {
-
-
         boolean doCloud = request.getString(ARG_TYPE, "list").equals("cloud");
         String  header;
         if (doCloud) {
@@ -1233,8 +1231,13 @@ public class MetadataManager extends RepositoryManager {
         boolean                   doJson     = request.responseAsJson();
         MetadataHandler           handler = findMetadataHandler(metadataType);
         MetadataType              type       = handler.findType(metadataType);
-        if(type == null) return;
-        if(type.getChildren()==null) return;
+        System.err.println("type:" + metadataType+": type obj:" + type);
+        if(type == null || type.getChildren()==null) {
+            if(doJson) {
+                sb.append(Json.list(new ArrayList<String>()));
+            }
+            return;
+        }
         MetadataElement           element    = type.getChildren().get(0);
         List<TwoFacedObject>      enumValues = element.getValues();
         Hashtable<String, String> labels     = new Hashtable<String,
