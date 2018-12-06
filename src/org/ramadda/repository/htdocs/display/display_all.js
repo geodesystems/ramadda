@@ -7392,6 +7392,9 @@ function RamaddaSearcher(displayManager, id, type, properties) {
                 return null;
             },
             addTypes: function(newTypes) {
+                if(!this.showType) {
+                    return;
+                }
                 if(newTypes == null) {
                     var theDisplay = this;
                     newTypes = this.getRamadda().getEntryTypes(function(ramadda, types) {theDisplay.addTypes(types);});

@@ -193,8 +193,6 @@ function RepositoryContainer(id, name) {
                 this.children.push(repository);
             },
             getEntryTypes: function(callback) {
-                err = new Error();
-                console.log(" x getEntryTypes:" + err.stack);
                 if(this.entryTypes != null) {
                     return this.entryTypes;
                 }
@@ -256,9 +254,6 @@ function Ramadda(repositoryRoot) {
                 entryTypeCallPending: false,
                 entryTypeCallbacks: null,
             getEntryTypes: function(callback) {
-                err = new Error();
-                console.log(" getEntryTypes:" + err.stack);
-
                 if(this.entryTypes != null) {
                     return this.entryTypes;
                 }
