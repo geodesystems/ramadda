@@ -193,6 +193,8 @@ function RepositoryContainer(id, name) {
                 this.children.push(repository);
             },
             getEntryTypes: function(callback) {
+                err = new Error();
+                console.log("types:" + err.stackTrace);
                 if(this.entryTypes != null) {
                     return this.entryTypes;
                 }
