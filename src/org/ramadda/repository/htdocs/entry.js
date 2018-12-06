@@ -254,6 +254,8 @@ function Ramadda(repositoryRoot) {
                 entryTypeCallPending: false,
                 entryTypeCallbacks: null,
             getEntryTypes: function(callback) {
+                //                err = new Error();
+                //                console.log("getEntryTypes:" + err.stackTrace);
 
                 if(this.entryTypes != null) {
                     return this.entryTypes;
@@ -485,8 +487,10 @@ function Ramadda(repositoryRoot) {
             }
         });
 
+
     //    this.getEntryTypes();
 }
+
 
 /**
 This creates a list of Entry objects from the given JSON data. 
