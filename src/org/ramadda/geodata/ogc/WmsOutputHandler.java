@@ -142,7 +142,7 @@ public class WmsOutputHandler extends OutputHandler {
         StringBuffer sb = new StringBuffer();
 
         //Include the javascript library
-        sb.append(HtmlUtils.importJS(fileUrl("/wms/wms.js")));
+        sb.append(HtmlUtils.importJS(getFileUrl("/wms/wms.js")));
 
 
         //Get the DOM

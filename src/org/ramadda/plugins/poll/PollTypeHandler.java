@@ -397,7 +397,7 @@ public class PollTypeHandler extends BlobTypeHandler {
                             getEntryManager().getEntryURL(
                                 request, entry, ACTION_DELETERESPONSE,
                                 response.getId()), HtmlUtils.img(
-                                    getRepository().iconUrl(ICON_DELETE)));
+                                    getRepository().getIconUrl(ICON_DELETE)));
 
                     sb.append(HtmlUtils.col(deleteHref));
                 }

@@ -416,7 +416,7 @@ public class RepositoryBase implements Constants, RepositorySource {
      */
     public String absoluteUrl(String url) {
         int port = getPort();
-        if (port == 80 || port == 0) {
+        if ((port == 80) || (port == 0)) {
             return getHttpProtocol() + "://" + getHostname() + url;
         } else {
             return getHttpProtocol() + "://" + getHostname() + ":" + port
@@ -603,12 +603,12 @@ public class RepositoryBase implements Constants, RepositorySource {
     public String getMessage(String h, String icon, boolean showClose) {
         String html =
             HtmlUtils.jsLink(HtmlUtils.onMouseClick("hide('messageblock')"),
-                             HtmlUtils.img(iconUrl(Constants.ICON_CLOSE)));
+                             HtmlUtils.img(getIconUrl(Constants.ICON_CLOSE)));
         if ( !showClose) {
             html = "&nbsp;";
         }
         h = "<div class=\"innernote\"><table cellspacing=\"0\" cellpadding=\"0\" border=\"0\"><tr><td valign=\"top\">"
-            + HtmlUtils.img(iconUrl(icon)) + HtmlUtils.space(2)
+            + HtmlUtils.img(getIconUrl(icon)) + HtmlUtils.space(2)
             + "</td><td valign=\"bottom\"><span class=\"notetext\">" + h
             + "</span></td></tr></table></div>";
 
@@ -626,7 +626,7 @@ public class RepositoryBase implements Constants, RepositorySource {
      *
      * @return _more_
      */
-    public String fileUrl(String f) {
+    public String getFileUrl(String f) {
         return HtmlUtils.concat(urlBase, f);
     }
 
@@ -637,8 +637,8 @@ public class RepositoryBase implements Constants, RepositorySource {
      *
      * @return _more_
      */
-    public String htdocsUrl(String f) {
-        return fileUrl(RepositoryUtil.getHtdocsVersionSlash() + f);
+    public String getHtdocsUrl(String f) {
+        return getFileUrl(RepositoryUtil.getHtdocsVersionSlash() + f);
     }
 
     /**
@@ -648,13 +648,12 @@ public class RepositoryBase implements Constants, RepositorySource {
      *
      * @return _more_
      */
-    public String iconUrl(String f) {
+    public String getIconUrl(String f) {
         if (f == null) {
             return null;
         }
-        String path = getProperty(f, f);
 
-        return urlBase + path;
+        return urlBase + f;
     }
 
 

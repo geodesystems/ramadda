@@ -1839,7 +1839,7 @@ public class DbTypeHandler extends PointTypeHandler /* BlobTypeHandler*/ {
                         }
                         iconSB.append(HtmlUtils.radio(iconArg, icon,
                                 currentIcon.equals(icon)));
-                        iconSB.append(HtmlUtils.img(getIconUrl(icon),
+                        iconSB.append(HtmlUtils.img(getDbIconUrl(icon),
                                 IOUtil.getFileTail(icon)));
                     }
                     formBuffer.append(HtmlUtils.formEntry(msgLabel("Value"),
@@ -1849,7 +1849,7 @@ public class DbTypeHandler extends PointTypeHandler /* BlobTypeHandler*/ {
                             msgLabel("Color"), colorSB.toString()));
                     String iconMsg = "";
                     if (currentIcon.length() > 0) {
-                        iconMsg = HtmlUtils.img(getIconUrl(currentIcon));
+                        iconMsg = HtmlUtils.img(getDbIconUrl(currentIcon));
                     }
                     formBuffer.append(
                         HtmlUtils.formEntryTop(
@@ -1872,7 +1872,7 @@ public class DbTypeHandler extends PointTypeHandler /* BlobTypeHandler*/ {
      *
      * @return _more_
      */
-    private String getIconUrl(String icon) {
+    private String getDbIconUrl(String icon) {
         if (icon.startsWith("http:")) {
             return icon;
         }
@@ -3117,7 +3117,7 @@ public class DbTypeHandler extends PointTypeHandler /* BlobTypeHandler*/ {
                      HtmlUtils.cssLink(getRepository().getUrlBase()
                                        + "/db/dbstyle.css"));
         Utils.append(
-            sb, HtmlUtils.importJS(getRepository().fileUrl("/db/db.js")));
+            sb, HtmlUtils.importJS(getRepository().getFileUrl("/db/db.js")));
     }
 
     /**
@@ -3219,17 +3219,17 @@ public class DbTypeHandler extends PointTypeHandler /* BlobTypeHandler*/ {
                     if (asc) {
                         extra = " "
                                 + HtmlUtils.img(
-                                    getRepository().iconUrl(ICON_UPDART));
+                                    getRepository().getIconUrl(ICON_UPDART));
                     } else {
                         extra = " "
                                 + HtmlUtils.img(
-                                    getRepository().iconUrl(ICON_DOWNDART));
+                                    getRepository().getIconUrl(ICON_DOWNDART));
                     }
                     asc = !asc;
                 } else {
                     extra =
                         " "
-                        + HtmlUtils.img(getRepository().iconUrl(ICON_BLANK),
+                        + HtmlUtils.img(getRepository().getIconUrl(ICON_BLANK),
                                         "", HtmlUtils.attr("width", "10"));
                 }
 
@@ -3364,7 +3364,7 @@ public class DbTypeHandler extends PointTypeHandler /* BlobTypeHandler*/ {
                             String icon = iconMap.get(value);
                             if (icon != null) {
                                 prefix.append(
-                                    HtmlUtils.img(getIconUrl(icon)));
+                                    HtmlUtils.img(getDbIconUrl(icon)));
                                 prefix.append(" ");
 
                             }
@@ -3850,7 +3850,7 @@ public class DbTypeHandler extends PointTypeHandler /* BlobTypeHandler*/ {
             String iconToUse = icon;
             String attrIcon  = getIconFor(entry, entryProps, values);
             if (attrIcon != null) {
-                iconToUse = getIconUrl(attrIcon);
+                iconToUse = getDbIconUrl(attrIcon);
                 //                theSB.append(HtmlUtils.img(iconToUse,"", "width=16"));
             }
             if (false && canEdit) {
@@ -4840,7 +4840,7 @@ public class DbTypeHandler extends PointTypeHandler /* BlobTypeHandler*/ {
         int cnt    = 0;
         int poscnt = 0;
         sb.append(
-            HtmlUtils.importJS(getRepository().fileUrl("/db/dom-drag.js")));
+            HtmlUtils.importJS(getRepository().getFileUrl("/db/dom-drag.js")));
         SimpleDateFormat sdf = getDateFormat(entry);
         for (Object[] values : valueList) {
             Hashtable props = getProps(values);

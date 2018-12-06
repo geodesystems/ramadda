@@ -346,8 +346,7 @@ public class RepositoryServlet extends HttpServlet implements Constants {
                         //                                           "Tue, 20 Jan 2010 01:45:54 GMT");
                     }
                 } else {
-                    response.setHeader("Cache-Control",
-                                       "no-cache");
+                    response.setHeader("Cache-Control", "no-cache");
                 }
 
                 if (isHeadRequest) {

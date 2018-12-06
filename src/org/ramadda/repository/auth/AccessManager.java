@@ -598,7 +598,7 @@ public class AccessManager extends RepositoryManager {
      */
     public boolean canDownload(Request request, Entry entry)
             throws Exception {
-        if ( !getRepository().getProperty(PROP_DOWNLOAD_OK, false)) {
+        if ( !getRepository().getDownloadOk()) {
             return false;
         }
         entry = filterEntry(request, entry);
@@ -1025,9 +1025,11 @@ public class AccessManager extends RepositoryManager {
                 HtmlUtils.href(
                     getRepository().getUrlBase() + "/userguide/access.html#"
                     + action, HtmlUtils.img(
-                        getRepository().iconUrl(ICON_HELP)), HtmlUtils.attr(
-                        HtmlUtils.ATTR_TARGET, "_help")) + HtmlUtils.space(1)
-                            + msg(actionName);
+                        getRepository().getIconUrl(
+                            ICON_HELP)), HtmlUtils.attr(
+                                HtmlUtils.ATTR_TARGET,
+                                "_help")) + HtmlUtils.space(1)
+                                          + msg(actionName);
 
             String message = "";
             //If there isn't a none defined here and there are roles then
@@ -1095,23 +1097,72 @@ public class AccessManager extends RepositoryManager {
 
     }
 
+    /** _more_          */
     private TwoFactorAuthenticator twoFactorAuthenticator;
 
+    /**
+     * _more_
+     *
+     * @param tfa _more_
+     */
     public void setTwoFactorAuthenticator(TwoFactorAuthenticator tfa) {
-        twoFactorAuthenticator  = tfa;
+        twoFactorAuthenticator = tfa;
     }
 
+    /**
+     * _more_
+     *
+     * @return _more_
+     */
     public TwoFactorAuthenticator getTwoFactorAuthenticator() {
         return twoFactorAuthenticator;
     }
 
+    /**
+     * Class description
+     *
+     *
+     * @version        $version$, Thu, Dec 6, '18
+     * @author         Enter your name here...    
+     */
     public static class TwoFactorAuthenticator {
-        public void addAuthForm(Request request, User user, Appendable sb) throws Exception  {
-        }
 
-        public boolean userHasBeenAuthenticated(Request request, User user, Appendable sb) throws Exception  {
+        /**
+         * _more_
+         *
+         * @param request _more_
+         * @param user _more_
+         * @param sb _more_
+         *
+         * @throws Exception _more_
+         */
+        public void addAuthForm(Request request, User user, Appendable sb)
+                throws Exception {}
+
+        /**
+         * _more_
+         *
+         * @param request _more_
+         * @param user _more_
+         * @param sb _more_
+         *
+         * @return _more_
+         *
+         * @throws Exception _more_
+         */
+        public boolean userHasBeenAuthenticated(Request request, User user,
+                Appendable sb)
+                throws Exception {
             return true;
         }
+
+        /**
+         * _more_
+         *
+         * @param user _more_
+         *
+         * @return _more_
+         */
         public boolean userCanBeAuthenticated(User user) {
             return false;
         }

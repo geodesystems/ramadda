@@ -142,7 +142,7 @@ public class UserTypeHandler extends ExtensibleGroupTypeHandler {
                         .entryUrlWithArg(getRepository().URL_ENTRY_FORM, group,
                             ARG_GROUP), ARG_TYPE,
                          FaqEntryTypeHandler.TYPE_FAQENTRY), HtmlUtils
-                      .img(getRepository().iconUrl(ICON_NEW),
+                      .img(getRepository().getIconUrl(ICON_NEW),
                            msg("New Note"))));
             */
         }
@@ -154,7 +154,7 @@ public class UserTypeHandler extends ExtensibleGroupTypeHandler {
                               request.entryUrl(
                                   getRepository().URL_ENTRY_SHOW,
                                   entry), HtmlUtils.img(
-                                      getRepository().iconUrl(ICON_ENTRY),
+                                      getRepository().getIconUrl(ICON_ENTRY),
                                       msg("View entry details")));
             sb.append("<a name=" + entry.getId() + "></a>");
             sb.append("<li>");

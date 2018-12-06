@@ -259,7 +259,7 @@ public class CatalogOutputHandler extends OutputHandler {
                 OutputType outputType = OUTPUT_CATALOG;
                 link = new Link(url, (outputType.getIcon() == null)
                                      ? null
-                                     : iconUrl(outputType
+                                     : getIconUrl(outputType
                                          .getIcon()), outputType.getLabel(),
                                              outputType);
                 */
@@ -304,14 +304,11 @@ public class CatalogOutputHandler extends OutputHandler {
         List<MetadataHandler> metadataHandlers =
             repository.getMetadataManager().getMetadataHandlers();
         for (Metadata metadata : metadataList) {
-            for (MetadataHandler metadataHandler : metadataHandlers) {
-                if (metadataHandler.canHandle(metadata)) {
-                    metadataHandler.addMetadataToXml(request,
-                            MetadataTypeBase.TEMPLATETYPE_THREDDS, entry,
-                            metadata, catalogInfo.doc, datasetNode);
-
-                    break;
-                }
+            MetadataHandler metadataHandler =getMetadataManager().findMetadataHandler(metadata);
+            if (metadataHandler !=null) {
+                metadataHandler.addMetadataToXml(request,
+                                                 MetadataTypeBase.TEMPLATETYPE_THREDDS, entry,
+                                                 metadata, catalogInfo.doc, datasetNode);
             }
         }
 
@@ -445,7 +442,7 @@ public class CatalogOutputHandler extends OutputHandler {
                                new String[] { CatalogUtil.ATTR_NAME,
                         "icon", CatalogUtil.ATTR_VALUE,
                         request.getAbsoluteUrl(
-                            getRepository().iconUrl(ICON_OPENDAP)) });
+                            getRepository().getIconUrl(ICON_OPENDAP)) });
 
 
                 topDataset.insertBefore(latestDataset, firstChild);
@@ -720,7 +717,7 @@ public class CatalogOutputHandler extends OutputHandler {
                            subDataset, new String[] { CatalogUtil.ATTR_NAME,
                     "icon", CatalogUtil.ATTR_VALUE,
                     request.getAbsoluteUrl(
-                        getRepository().iconUrl(ICON_FILE)) });
+                        getRepository().getIconUrl(ICON_FILE)) });
 
         }
 
@@ -817,14 +814,14 @@ public class CatalogOutputHandler extends OutputHandler {
                                          new String[] { CatalogUtil.ATTR_NAME,
                 entryName });
 
-        String iconUrl =
+        String getIconUrl =
             request.getAbsoluteUrl(getPageHandler().getIconUrl(request,
                 entry));
 
         XmlUtil.create(catalogInfo.doc, CatalogUtil.TAG_PROPERTY, dataset,
                        new String[] { CatalogUtil.ATTR_NAME,
                                       "icon", CatalogUtil.ATTR_VALUE,
-                                      iconUrl });
+                                      getIconUrl });
 
 
         XmlUtil.create(catalogInfo.doc, CatalogUtil.TAG_PROPERTY, dataset,

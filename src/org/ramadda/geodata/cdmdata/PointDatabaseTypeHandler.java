@@ -2471,7 +2471,7 @@ public class PointDatabaseTypeHandler extends BlobTypeHandler {
             throws Exception {
         StringBuffer sb = new StringBuffer();
         sb.append(getHeader(request, entry));
-        String icon = iconUrl("/icons/pointdata.gif");
+        String icon = getIconUrl("/icons/pointdata.gif");
         MapInfo map = getRepository().getMapManager().createMap(request,
                           request.get(ARG_WIDTH, 800),
                           request.get(ARG_HEIGHT, 500), false, null);

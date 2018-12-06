@@ -78,6 +78,16 @@ public class TestSearchProvider extends SearchProvider {
      *
      * @return _more_
      */
+    @Override
+    public String getSearchProviderIconUrl() {
+        return "${root}/favicon.png";
+    }
+
+    /**
+     * _more_
+     *
+     * @return _more_
+     */
     public String toString() {
         if (name != null) {
             return name;

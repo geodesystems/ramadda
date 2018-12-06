@@ -181,7 +181,7 @@ public class Column implements DataTypes, Constants {
     /** _more_ */
     public static final String ATTR_CANSEARCH = "cansearch";
 
-    /** _more_          */
+    /** _more_ */
     public static final String ATTR_CANSEARCHTEXT = "cansearchtext";
 
     /** _more_ */
@@ -297,7 +297,7 @@ public class Column implements DataTypes, Constants {
     /** _more_ */
     private boolean canSearch;
 
-    /** _more_          */
+    /** _more_ */
     private boolean canSearchText;
 
 
@@ -2149,7 +2149,9 @@ public class Column implements DataTypes, Constants {
             if (values != null) {
                 value = toString(values, offset);
             }
-            widget = getRepository().getEntryManager().getEntryFormSelect(request,  entry, urlArg, value);
+            widget =
+                getRepository().getEntryManager().getEntryFormSelect(request,
+                    entry, urlArg, value);
         } else {
             String value = ((dflt != null)
                             ? dflt
@@ -2697,17 +2699,16 @@ public class Column implements DataTypes, Constants {
                                  dateSelectValue,
                                  HtmlUtils.cssClass("search-select"));
 
-            widget =
-                getRepository().getPageHandler().makeDateInput(
-                    request, searchArg + "_fromdate", "searchform", null,
-                    null, isType(DATATYPE_DATETIME)) + HtmlUtils.space(1)
-                        + HtmlUtils.img(getRepository().iconUrl(ICON_RANGE))
-                        + HtmlUtils.space(1)
-                        + getRepository().getPageHandler().makeDateInput(
-                            request, searchArg + "_todate", "searchform",
-                            null, null,
-                            isType(DATATYPE_DATETIME)) + HtmlUtils.space(4)
-                                + msgLabel("Or") + dateSelectInput;
+            widget = getRepository().getPageHandler().makeDateInput(
+                request, searchArg + "_fromdate", "searchform", null, null,
+                isType(DATATYPE_DATETIME)) + HtmlUtils.space(1)
+                    + HtmlUtils.img(getRepository().getIconUrl(ICON_RANGE))
+                    + HtmlUtils.space(1)
+                    + getRepository().getPageHandler().makeDateInput(
+                        request, searchArg + "_todate", "searchform", null,
+                            null, isType(
+                                DATATYPE_DATETIME)) + HtmlUtils.space(4)
+                                    + msgLabel("Or") + dateSelectInput;
         } else if (isType(DATATYPE_BOOLEAN)) {
             widget = HtmlUtils.select(
                 searchArg,

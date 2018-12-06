@@ -662,7 +662,7 @@ public class MonitorManager extends RepositoryManager implements EntryChecker {
                     HtmlUtils.url(
                         getRepositoryBase().URL_USER_MONITORS.toString(),
                         ARG_MONITOR_ID, monitor.getId()), HtmlUtils.img(
-                            iconUrl(ICON_EDIT))));
+                            getIconUrl(ICON_EDIT))));
             sb.append(HtmlUtils.space(1));
             sb.append(
                 HtmlUtils.href(
@@ -670,7 +670,7 @@ public class MonitorManager extends RepositoryManager implements EntryChecker {
                         getRepositoryBase().URL_USER_MONITORS.toString(),
                         ARG_MONITOR_DELETE, "true", ARG_MONITOR_ID,
                         monitor.getId()), HtmlUtils.img(
-                            iconUrl(ICON_DELETE))));
+                            getIconUrl(ICON_DELETE))));
             if ( !monitor.isActive()) {
                 sb.append(HtmlUtils.space(1));
                 sb.append(msg("not active"));

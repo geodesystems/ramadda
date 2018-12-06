@@ -396,7 +396,7 @@ public class SlackTeamTypeHandler extends ExtensibleGroupTypeHandler {
                 slackUser.getImage48();
         } else {
             values[SlackMessageTypeHandler.IDX_USER_IMAGE] =
-                getRepository().iconUrl("/slack/slack.png");
+                getRepository().getIconUrl("/slack/slack.png");
         }
 
 

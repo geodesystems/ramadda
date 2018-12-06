@@ -149,16 +149,16 @@ public class LocationTypeHandler extends ExtensibleGroupTypeHandler {
      * @throws Exception _more_
      */
     @Override
-    public String getIconUrl(Request request, Entry entry) throws Exception {
+    public String getEntryIconUrl(Request request, Entry entry) throws Exception {
         double depth = entry.getValue(4, 0.0);
         if (depth == 0) {
-            return iconUrl("/incident/flag_green.png");
+            return getIconUrl("/incident/flag_green.png");
         }
         if (depth <= 2) {
-            return iconUrl("/incident/flag_blue.png");
+            return getIconUrl("/incident/flag_blue.png");
         }
 
-        return iconUrl("/incident/flag_red.png");
+        return getIconUrl("/incident/flag_red.png");
     }
 
 

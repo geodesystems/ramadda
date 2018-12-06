@@ -143,14 +143,6 @@ public class PageHandler extends RepositoryManager {
     private List<MapRegion> mapRegions = new ArrayList<MapRegion>();
 
 
-    /** _more_ */
-    public static final String PROP_LANGUAGE_DEFAULT =
-        "ramadda.language.default";
-
-    /** _more_ */
-    public static final String PROP_ENTRY_TABLE_SHOW_CREATEDATE =
-        "ramadda.entry.table.show.createdate";
-
 
     /** _more_ */
     public static final String MSG_PREFIX = "<msg ";
@@ -288,7 +280,7 @@ public class PageHandler extends RepositoryManager {
      */
     public String getHeaderIcon() {
         if (headerIcon == null) {
-            headerIcon = iconUrl(ICON_HEADER);
+            headerIcon = getIconUrl(ICON_HEADER);
         }
 
         return headerIcon;
@@ -366,10 +358,10 @@ public class PageHandler extends RepositoryManager {
         }
 
         String registerMessage = "";
-        if (!getAdmin().isRegistered()
-                 &&
-            getAdmin().getInstallationComplete()) {
-            if(!getRepository().getProperty("ramadda.hidepoweredby",false)) {
+        if ( !getAdmin().isRegistered()
+                && getAdmin().getInstallationComplete()) {
+            if ( !getRepository().getProperty("ramadda.hidepoweredby",
+                    false)) {
                 if ( !htmlTemplate.hasMacro(MACRO_REGISTER)) {
                     contents.append(REGISTER_MESSAGE);
                 } else {
@@ -399,8 +391,7 @@ public class PageHandler extends RepositoryManager {
 
         String pageTitle = (String) result.getProperty(PROP_REPOSITORY_NAME);
         if (pageTitle == null) {
-            pageTitle = repository.getProperty(PROP_REPOSITORY_NAME,
-                    "Repository");
+            pageTitle = repository.getRepositoryName();
         }
 
         if (pageTitle.equals("none")) {
@@ -431,7 +422,7 @@ public class PageHandler extends RepositoryManager {
         allLinks.addAll(userLinks);
 
         String popupImage =
-            HtmlUtils.img(iconUrl(ICON_USERLINKS),
+            HtmlUtils.img(getIconUrl(ICON_USERLINKS),
                           msg("Login, user settings, help"),
                           HtmlUtils.cssClass("ramadda-user-menu-image"));
 
@@ -449,15 +440,15 @@ public class PageHandler extends RepositoryManager {
             MACRO_LOGO_URL, logoUrl, MACRO_LOGO_IMAGE, logoImage,
             MACRO_HEADER_IMAGE, getHeaderIcon(), MACRO_HEADER_TITLE,
             pageTitle, MACRO_LINKS, menuHtml, MACRO_REPOSITORY_NAME,
-            repository.getProperty(PROP_REPOSITORY_NAME, "Repository"),
-            MACRO_FOOTER, repository.getProperty(PROP_HTML_FOOTER, BLANK),
-            MACRO_TITLE, result.getTitle(), MACRO_BOTTOM,
-            result.getBottomHtml(), MACRO_SEARCH_URL,
-            getSearchManager().getSearchUrl(request), MACRO_CONTENT, content,
-            MACRO_ENTRY_HEADER, entryHeader, MACRO_HEADER, header,
-            MACRO_ENTRY_FOOTER, entryFooter, MACRO_ENTRY_BREADCRUMBS,
-            entryBreadcrumbs, MACRO_REGISTER, registerMessage,
-            MACRO_HEADFINAL, head, MACRO_ROOT, repository.getUrlBase(), "", ""
+            repository.getRepositoryName(), MACRO_FOOTER,
+            repository.getProperty(PROP_HTML_FOOTER, BLANK), MACRO_TITLE,
+            result.getTitle(), MACRO_BOTTOM, result.getBottomHtml(),
+            MACRO_SEARCH_URL, getSearchManager().getSearchUrl(request),
+            MACRO_CONTENT, content, MACRO_ENTRY_HEADER, entryHeader,
+            MACRO_HEADER, header, MACRO_ENTRY_FOOTER, entryFooter,
+            MACRO_ENTRY_BREADCRUMBS, entryBreadcrumbs, MACRO_REGISTER,
+            registerMessage, MACRO_HEADFINAL, head, MACRO_ROOT,
+            repository.getUrlBase(), "", ""
         };
 
         //        System.err.println(htmlTemplate.getName() +" " + htmlTemplate.getTemplate());
@@ -604,7 +595,7 @@ public class PageHandler extends RepositoryManager {
             logoImage = (String) result.getProperty(PROP_LOGO_IMAGE);
         }
         if (logoImage == null) {
-            logoImage = getRepository().getProperty(PROP_LOGO_IMAGE, null);
+            logoImage = myLogoImage;
         }
         if (logoImage == null) {
             logoImage = "${root}/images/logo.png";
@@ -714,13 +705,12 @@ public class PageHandler extends RepositoryManager {
         String     language = request.getLanguage();
         Properties tmpMap;
         Properties map = (Properties) languageMap.get(
-                             getRepository().getProperty(
-                                 PROP_LANGUAGE_DEFAULT, "default"));
+                             getRepository().getLanguageDefault());
+
         if (map == null) {
             map = new Properties();
         }
-        tmpMap = (Properties) languageMap.get(
-            getRepository().getProperty(PROP_LANGUAGE, BLANK));
+        tmpMap = (Properties) languageMap.get(getRepository().getLanguage());
         if (tmpMap != null) {
             map.putAll(tmpMap);
         }
@@ -984,7 +974,7 @@ public class PageHandler extends RepositoryManager {
      * @return _more_
      */
     public HtmlTemplate getMobileTemplate() {
-        if ( !getRepository().cacheResources()) {
+        if ( !getRepository().getCacheResources()) {
             mobileTemplate = null;
         }
         if (mobileTemplate == null) {
@@ -1096,7 +1086,7 @@ public class PageHandler extends RepositoryManager {
                     //noop
                 }
             }
-            if (getRepository().cacheResources()) {
+            if (getRepository().getCacheResources()) {
                 htmlTemplates = theTemplates;
             }
         }
@@ -1977,7 +1967,7 @@ public class PageHandler extends RepositoryManager {
                                HtmlUtils.call(
                                    "hideElementById",
                                    HtmlUtils.squote(compId))), HtmlUtils.img(
-                                       iconUrl(ICON_CLOSE), "Close",
+                                       getIconUrl(ICON_CLOSE), "Close",
                                        HtmlUtils.cssClass(
                                            "ramadda-popup-close")), "");
         contents = cLink + HtmlUtils.br() + contents;
@@ -2008,7 +1998,7 @@ public class PageHandler extends RepositoryManager {
             String cLink = HtmlUtils.jsLink(
                                HtmlUtils.onMouseClick("hidePopupObject();"),
                                HtmlUtils.img(
-                                   iconUrl(ICON_CLOSE), "Close",
+                                   getIconUrl(ICON_CLOSE), "Close",
                                    HtmlUtils.cssClass(
                                        "ramadda-popup-close")), "");
             contents = cLink + HtmlUtils.br() + contents;
@@ -2235,9 +2225,7 @@ public class PageHandler extends RepositoryManager {
             return BLANK;
         }
 
-        String fmt = getRepository().getProperty(PROP_DATE_SHORTFORMAT,
-                         DEFAULT_TIME_SHORTFORMAT);
-        SimpleDateFormat sdf      = getSDF(fmt, timezone);
+        SimpleDateFormat sdf      = getSDF(getShortDateFormat(), timezone);
 
 
 
@@ -2359,29 +2347,29 @@ public class PageHandler extends RepositoryManager {
                 }
 
                 urls.add(url);
-                labels.add(HtmlUtils.img(iconUrl("/icons/connect.png")) + " "
-                           + msg("Login"));
+                labels.add(HtmlUtils.img(getIconUrl("/icons/connect.png"))
+                           + " " + msg("Login"));
                 tips.add(msg("Login"));
             }
 
             if (getUserManager().isCartEnabled()) {
                 extras.add("");
                 urls.add(request.makeUrl(getRepositoryBase().URL_USER_CART));
-                //        labels.add(HtmlUtils.img(getRepository().iconUrl(ICON_CART),
+                //        labels.add(HtmlUtils.img(getRepository().getIconUrl(ICON_CART),
                 //                                msg("Data Cart")));
-                labels.add(HtmlUtils.img(iconUrl("/icons/cart.png")) + " "
+                labels.add(HtmlUtils.img(getIconUrl("/icons/cart.png")) + " "
                            + msg("Data Cart"));
                 tips.add(msg("View data cart"));
             }
         } else {
             extras.add("");
             urls.add(request.makeUrl(getRepositoryBase().URL_USER_LOGOUT));
-            labels.add(HtmlUtils.img(iconUrl("/icons/disconnect.png")) + " "
-                       + msg("Logout"));
+            labels.add(HtmlUtils.img(getIconUrl("/icons/disconnect.png"))
+                       + " " + msg("Logout"));
             tips.add(msg("Logout"));
 
             String label = user.getLabel().replace(" ", "&nbsp;");
-            String userIcon = HtmlUtils.img(iconUrl("/icons/user.png"),
+            String userIcon = HtmlUtils.img(getIconUrl("/icons/user.png"),
                                             "Settings for " + label);
             String settingsUrl =
                 request.makeUrl(getRepositoryBase().URL_USER_HOME);
@@ -2406,7 +2394,7 @@ public class PageHandler extends RepositoryManager {
                         .getPluginManager().getDocUrls().size() > 0)) {
             urls.add(request.makeUrl(getRepositoryBase().URL_HELP));
             extras.add("");
-            labels.add(HtmlUtils.img(iconUrl("/icons/help.png")) + " "
+            labels.add(HtmlUtils.img(getIconUrl("/icons/help.png")) + " "
                        + msg("Help"));
             tips.add(msg("View Help"));
         }
@@ -2459,13 +2447,13 @@ public class PageHandler extends RepositoryManager {
             String icon  = apiMethod.getIcon();
             String url;
             if (apiMethod == homeApi) {
-                url = fileUrl(apiMethod.getRequest());
+                url = getFileUrl(apiMethod.getRequest());
             } else {
                 url = request.makeUrl(apiMethod.getUrl());
             }
 
             if (icon != null) {
-                label = HtmlUtils.img(iconUrl(icon)) + " " + label;
+                label = HtmlUtils.img(getIconUrl(icon)) + " " + label;
             }
 
             String html = template.replace("${url}", url);
@@ -2632,14 +2620,14 @@ public class PageHandler extends RepositoryManager {
         String html = showClose
                       ? HtmlUtils.jsLink(
                           HtmlUtils.onMouseClick("hide('messageblock')"),
-                          HtmlUtils.img(iconUrl(Constants.ICON_CLOSE)))
+                          HtmlUtils.img(getIconUrl(Constants.ICON_CLOSE)))
                       : "&nbsp;";
         StringBuilder sb = new StringBuilder();
         sb.append(HtmlUtils.open(HtmlUtils.TAG_DIV, "class",
                                  "ramadda-message", "id", "messageblock"));
         sb.append(
             "<table><tr valign=top><td><div class=\"ramadda-message-link\">");
-        sb.append(HtmlUtils.img(iconUrl(icon)));
+        sb.append(HtmlUtils.img(getIconUrl(icon)));
         sb.append("</div></td><td><div class=\"ramadda-message-inner\">");
         sb.append(h);
         sb.append("</div></td>");
@@ -3075,7 +3063,7 @@ public class PageHandler extends RepositoryManager {
                                   getRepository().URL_ENTRY_SHOW, entry,
                                   ARG_OUTPUT,
                                   output.toString()), HtmlUtils.img(
-                                      iconUrl(output.getIcon()),
+                                      getIconUrl(output.getIcon()),
                                       output.getLabel()));
 
 
@@ -3316,17 +3304,17 @@ public class PageHandler extends RepositoryManager {
             throws Exception {
 
         if (entry.getIcon() != null) {
-            return iconUrl(entry.getIcon());
+            return getIconUrl(entry.getIcon());
         }
         if (getEntryManager().isAnonymousUpload(entry)) {
-            return iconUrl(ICON_ENTRY_UPLOAD);
+            return getIconUrl(ICON_ENTRY_UPLOAD);
         }
         if (request.defined(ARG_ICON)) {
-            return iconUrl(request.getString(ARG_ICON, ""));
+            return getIconUrl(request.getString(ARG_ICON, ""));
         }
 
 
-        return entry.getTypeHandler().getIconUrl(request, entry);
+        return entry.getTypeHandler().getEntryIconUrl(request, entry);
     }
 
 
@@ -3387,7 +3375,7 @@ public class PageHandler extends RepositoryManager {
             Link link = new Link(
                             request.entryUrl(
                                 getRepository().URL_COMMENTS_SHOW,
-                                entry), getRepository().iconUrl(
+                                entry), getRepository().getIconUrl(
                                     ICON_COMMENTS), "Add/View Comments",
                                         OutputType.TYPE_TOOLBAR);
 
@@ -3507,7 +3495,7 @@ public class PageHandler extends RepositoryManager {
                                       entry.getId(), ARG_AUTHTOKEN,
                                       getRepository().getAuthToken(request.getSessionId()),
                                       ARG_COMMENT_ID,
-                                      comment.getId()), HtmlUtils.img(iconUrl(ICON_DELETE),
+                                      comment.getId()), HtmlUtils.img(getIconUrl(ICON_DELETE),
                                           msg("Delete comment"))));
             if (canEdit) {
                 //                sb.append(HtmlUtils.formEntry(BLANK, deleteLink));
@@ -3667,14 +3655,61 @@ public class PageHandler extends RepositoryManager {
         }
     }
 
+    /** _more_          */
+    private boolean showCreateDate = false;
+
+    /** _more_          */
+    private String shortDateFormat = "";
+
+    /** _more_          */
+    private String createdDisplayMode = "none";
+
+    /** _more_          */
+    private String myLogoImage = null;
+
+    /**
+     * _more_
+     */
+    @Override
+    public void initAttributes() {
+        super.initAttributes();
+        showCreateDate =
+            getRepository().getProperty(PROP_ENTRY_TABLE_SHOW_CREATEDATE,
+                                        false);
+        shortDateFormat = getRepository().getProperty(PROP_DATE_SHORTFORMAT,
+                DEFAULT_TIME_SHORTFORMAT);
+        createdDisplayMode =
+            getRepository().getProperty(PROP_CREATED_DISPLAY_MODE,
+                                        "none").trim();
+
+        myLogoImage = getRepository().getProperty(PROP_LOGO_IMAGE, null);
+    }
+
+    /**
+     * _more_
+     *
+     * @return _more_
+     */
+    public String getCreatedDisplayMode() {
+        return createdDisplayMode;
+    }
+
+    /**
+     * _more_
+     *
+     * @return _more_
+     */
+    public String getShortDateFormat() {
+        return shortDateFormat;
+    }
+
     /**
      * _more_
      *
      * @return _more_
      */
     public boolean showEntryTableCreateDate() {
-        return getRepository().getProperty(PROP_ENTRY_TABLE_SHOW_CREATEDATE,
-                                           false);
+        return showCreateDate;
     }
 
 
@@ -3731,8 +3766,9 @@ public class PageHandler extends RepositoryManager {
 
         mapInfo.addRightSide(
             getPageHandler().makeStickyPopup(
-                HtmlUtils.img(getRepository().fileUrl("/icons/map_go.png")),
-                rightSide.toString(), null));
+                HtmlUtils.img(
+                    getRepository().getFileUrl(
+                        "/icons/map_go.png")), rightSide.toString(), null));
         //        mapInfo.addRightSide(HtmlUtils.makeShowHideBlock("", rightSide.toString(),false));
         //        mapInfo.addRightSide(HtmlUtils.makeShowHideBlock("", rightSide.toString(),false));
 
@@ -3976,9 +4012,13 @@ Time:14625 cnt:7000
      * @return _more_
      */
     public String applyBaseMacros(String s) {
-        String mini = getRepository().getProperty("ramadda.minified",true)?".mini":"";
+        String mini = getRepository().getMinifiedOk()
+                      ? ".mini"
+                      : "";
+
         return s.replace(MACRO_URLROOT, getRepository().getUrlBase()).replace(
-                                                                              "${baseentry}", getEntryManager().getRootEntry().getId()).replace("${mini}",mini);
+            "${baseentry}", getEntryManager().getRootEntry().getId()).replace(
+            "${mini}", mini);
     }
 
     /**
@@ -4039,6 +4079,7 @@ Time:14625 cnt:7000
         }
         */
         String url = request.entryUrl(getRepository().URL_ENTRY_SHOW, entry);
+
         return HtmlUtils.href(url, (args.length > 0)
                                    ? args[0]
                                    : entry.getLabel());

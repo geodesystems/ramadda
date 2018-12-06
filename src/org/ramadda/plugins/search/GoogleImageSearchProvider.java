@@ -88,7 +88,7 @@ public class GoogleImageSearchProvider extends SearchProvider {
      * @return _more_
      */
     @Override
-    public String getIconUrl() {
+    public String getSearchProviderIconUrl() {
         return "${root}/search/google-icon.png";
     }
 

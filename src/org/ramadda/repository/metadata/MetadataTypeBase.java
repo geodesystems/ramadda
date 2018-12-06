@@ -68,7 +68,7 @@ public class MetadataTypeBase extends RepositoryManager {
     /** _more_ */
     public static final String TAG_TEMPLATE = "template";
 
-    /** _more_          */
+    /** _more_ */
     public static String ATTR_HELP = "help";
 
     /** _more_ */

@@ -690,9 +690,9 @@ public class JobManager extends RepositoryManager {
 
             String img = "";
             if (service.getIcon() != null) {
-                img = HtmlUtils.img(iconUrl(service.getIcon()));
+                img = HtmlUtils.img(getIconUrl(service.getIcon()));
             } else {
-                img = HtmlUtils.img(iconUrl("/icons/cog.png"));
+                img = HtmlUtils.img(getIconUrl("/icons/cog.png"));
             }
             StringBuffer serviceSB = new StringBuffer();
 
@@ -710,7 +710,7 @@ public class JobManager extends RepositoryManager {
 
             /*
             String xmlUrl = HtmlUtils.href(HtmlUtils.url(
-                                                         urlBase +"/services/view",ARG_SERVICEID, service.getId(),ARG_OUTPUT,"xml"),HtmlUtils.img(iconUrl(ICON_XML)));
+                                                         urlBase +"/services/view",ARG_SERVICEID, service.getId(),ARG_OUTPUT,"xml"),HtmlUtils.img(getIconUrl(ICON_XML)));
 
             serviceSB.append(xmlUrl);
             */

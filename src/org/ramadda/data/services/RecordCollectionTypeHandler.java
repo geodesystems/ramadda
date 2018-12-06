@@ -275,8 +275,8 @@ public abstract class RecordCollectionTypeHandler extends ExtensibleGroupTypeHan
      *
      * @return url
      */
-    public String getIconUrl(Request request, String icon) {
-        return request.getAbsoluteUrl(getRepository().iconUrl(icon));
+    public String getAbsoluteIconUrl(Request request, String icon) {
+        return request.getAbsoluteUrl(getRepository().getIconUrl(icon));
     }
 
 

@@ -108,9 +108,11 @@ public class LocalFileTypeHandler extends ExtensibleGroupTypeHandler {
      *
      * @throws Exception _more_
      */
-    public String getIconUrl(Request request, Entry entry) throws Exception {
+    @Override
+    public String getEntryIconUrl(Request request, Entry entry)
+            throws Exception {
         if (entry.isGroup()) {
-            return iconUrl(ICON_SYNTH_FILE);
+            return getIconUrl(ICON_SYNTH_FILE);
         }
 
         return super.getIconUrl(request, entry);

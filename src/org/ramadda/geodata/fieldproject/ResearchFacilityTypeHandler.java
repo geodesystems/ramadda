@@ -57,7 +57,7 @@ public class ResearchFacilityTypeHandler extends ExtensibleGroupTypeHandler {
                   new Link(
                            request.entryUrl(
                                             getRepository().URL_ENTRY_ACCESS, entry, "type",
-                                            "kml"), getRepository().iconUrl(ICON_KML),
+                                            "kml"), getRepository().getIconUrl(ICON_KML),
                            "Convert GPX to KML", OutputType.TYPE_FILE));
     }
 

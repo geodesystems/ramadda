@@ -1625,7 +1625,7 @@ public class Service extends RepositoryManager {
         String rightSide = HtmlUtils.href(
                                getRepository().getJobManager().getServiceUrl(
                                    request, this), HtmlUtils.img(
-                                   iconUrl("/icons/application_form.png"),
+                                   getIconUrl("/icons/application_form.png"),
                                    msg("View top-level form")));
 
         rightSide =
@@ -1634,7 +1634,7 @@ public class Service extends RepositoryManager {
         sb.append(
             HtmlUtils.div(
                 HtmlUtils.leftRight(
-                    HtmlUtils.img(iconUrl(getIcon())) + " " + label,
+                    HtmlUtils.img(getIconUrl(getIcon())) + " " + label,
                     rightSide), HtmlUtils.cssClass("service-form-header")));
 
 

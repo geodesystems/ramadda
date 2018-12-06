@@ -271,8 +271,8 @@ public class RepositoryManager implements RepositorySource, Constants,
      *
      * @return _more_
      */
-    public String fileUrl(String url) {
-        return getRepository().fileUrl(url);
+    public String getFileUrl(String url) {
+        return getRepository().getFileUrl(url);
     }
 
     /**
@@ -282,8 +282,8 @@ public class RepositoryManager implements RepositorySource, Constants,
      *
      * @return _more_
      */
-    public String htdocsUrl(String url) {
-        return getRepository().htdocsUrl(url);
+    public String getHtdocsUrl(String url) {
+        return getRepository().getHtdocsUrl(url);
     }
 
     /**
@@ -293,8 +293,8 @@ public class RepositoryManager implements RepositorySource, Constants,
      *
      * @return _more_
      */
-    public String iconUrl(String url) {
-        return getRepository().iconUrl(url);
+    public String getIconUrl(String url) {
+        return getRepository().getIconUrl(url);
     }
 
 
@@ -449,9 +449,9 @@ public class RepositoryManager implements RepositorySource, Constants,
      */
     public String subHeaderLink(String url, String label, boolean toggle) {
         //        if(true) return "x";
-        String img = HtmlUtils.img(iconUrl(toggle
-                                           ? ICON_MINUS
-                                           : ICON_PLUS));
+        String img = HtmlUtils.img(getIconUrl(toggle
+                ? ICON_MINUS
+                : ICON_PLUS));
         label = img + HtmlUtils.space(1) + label;
         String html =
             HtmlUtils.href(url, label,
@@ -810,7 +810,7 @@ public class RepositoryManager implements RepositorySource, Constants,
         String onSubmit = " onsubmit=\"return submitEntryForm('#" + id
                           + "');\" ";
         String loadingImage =
-            HtmlUtils.img(getRepository().iconUrl(ICON_PROGRESS));
+            HtmlUtils.img(getRepository().getIconUrl(ICON_PROGRESS));
         Utils.append(sb,
                      "<div style=\"display:none;\" id=\"" + id + "\">"
                      + loadingImage + " " + message + "</div>");
@@ -833,7 +833,7 @@ public class RepositoryManager implements RepositorySource, Constants,
         String onSubmit = " onclick=\"return submitEntryForm('#" + id
                           + "');\" ";
         String loadingImage =
-            HtmlUtils.img(getRepository().iconUrl(ICON_PROGRESS));
+            HtmlUtils.img(getRepository().getIconUrl(ICON_PROGRESS));
         Utils.append(sb,
                      "<div style=\"display:none;\" id=\"" + id + "\">"
                      + loadingImage + " " + message + "</div>");
@@ -866,6 +866,11 @@ public class RepositoryManager implements RepositorySource, Constants,
      * _more_
      */
     public void clearCache() {}
+
+    /**
+     * _more_
+     */
+    public void initAttributes() {}
 
     /**
      * A method to find out if a radio button should be selected based on the request arguments

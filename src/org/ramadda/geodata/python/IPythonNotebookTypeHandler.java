@@ -173,7 +173,7 @@ public class IPythonNotebookTypeHandler extends TypeHandler {
 
 
         StringBuilder sb = new StringBuilder();
-        HtmlUtils.importJS(sb, getRepository().fileUrl("/lib/require.js"));
+        HtmlUtils.importJS(sb, getRepository().getFileUrl("/lib/require.js"));
 
         sb.append(
             HtmlUtils.cssLink(
@@ -196,13 +196,13 @@ public class IPythonNotebookTypeHandler extends TypeHandler {
 
 
         sb.append(
-            HtmlUtils.cssLink(getRepository().fileUrl("/python/python.css")));
+            HtmlUtils.cssLink(getRepository().getFileUrl("/python/python.css")));
         sb.append(
             HtmlUtils.importJS(
-                getRepository().htdocsUrl("/lib/prettify/prettify.js")));
+                getRepository().getHtdocsUrl("/lib/prettify/prettify.js")));
         sb.append(
             HtmlUtils.cssLink(
-                getRepository().htdocsUrl("/lib/prettify/prettify.css")));
+                getRepository().getHtdocsUrl("/lib/prettify/prettify.css")));
 
 
         //        getPageHandler().entrySectionOpen(request, entry, sb, "IPython Notebook", true);

@@ -176,7 +176,7 @@ public class RecordFormHandler extends RepositoryManager implements RecordConsta
         if (t.getIcon() != null) {
             return new HtmlUtils.Selector(
                 t.getLabel(), t.getId(),
-                getRepository().iconUrl(t.getIcon()));
+                getRepository().getIconUrl(t.getIcon()));
         }
 
         return new HtmlUtils.Selector(t.getLabel(), t.getId(), null);

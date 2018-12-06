@@ -216,9 +216,20 @@ public class User {
         return properties.get(key);
     }
 
+    /**
+     * _more_
+     *
+     * @param key _more_
+     * @param dflt _more_
+     *
+     * @return _more_
+     */
     public Object getProperty(String key, Object dflt) {
-        Object o  =  properties.get(key);
-        if(o==null) return dflt;
+        Object o = properties.get(key);
+        if (o == null) {
+            return dflt;
+        }
+
         return o;
     }
 

@@ -127,7 +127,7 @@ public class SocrataSearchProvider extends SearchProvider {
      * @return _more_
      */
     @Override
-    public String getIconUrl() {
+    public String getSearchProviderIconUrl() {
         return "${root}/socrata/socrata.png";
     }
 
@@ -218,9 +218,9 @@ public class SocrataSearchProvider extends SearchProvider {
                 String mimeType = StringUtil.splitUpTo(Json.readValue(item,
                                       "blobMimeType", ";"), ";",
                                           2).get(0).trim();
-                String fileUrl = "https://" + hostname + "/download/" + id
+                String getFileUrl = "https://" + hostname + "/download/" + id
                                  + "/" + mimeType;
-                resource = new Resource(new URL(fileUrl));
+                resource = new Resource(new URL(getFileUrl));
                 desc.append(HtmlUtils.br());
                 desc.append(HtmlUtils.href(itemUrl, "View file at Socrata"));
             }
@@ -388,9 +388,9 @@ public class SocrataSearchProvider extends SearchProvider {
             String mimeType = StringUtil.splitUpTo(Json.readValue(item,
                                   "blobMimeType", ";"), ";",
                                       2).get(0).trim();
-            String fileUrl = "https://" + domain + "/download/" + id
+            String getFileUrl = "https://" + domain + "/download/" + id
                              + "/" + mimeType;
-            resource = new Resource(new URL(fileUrl));
+            resource = new Resource(new URL(getFileUrl));
             //            https://www.opendatanyc.com/download/ewq6-p8b6/application/pdf
             desc.append(HtmlUtils.br());
             desc.append(HtmlUtils.href(itemUrl, "View file at Socrata"));

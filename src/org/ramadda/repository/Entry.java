@@ -478,11 +478,17 @@ public class Entry implements Cloneable {
         return Math.max(Math.min(lon, 180), -180);
     }
 
+    /**
+     * _more_
+     *
+     * @return _more_
+     */
     public String getBoundsString() {
-        if(!hasAreaDefined()) {
+        if ( !hasAreaDefined()) {
             return null;
         }
-        return north+","+ west+","+south+","+ east;
+
+        return north + "," + west + "," + south + "," + east;
     }
 
     /**

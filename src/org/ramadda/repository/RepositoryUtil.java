@@ -49,10 +49,10 @@ public class RepositoryUtil {
     //Make sure to change the fields in the top-level build.properties
 
     /** _more_ */
-    public static final  double MAJOR_VERSION = 2.2;
+    public static final double MAJOR_VERSION = 2.2;
 
     /** _more_ */
-    public static final  int MINOR_VERSION = 35;
+    public static final int MINOR_VERSION = 35;
 
 
     //When we make any real change to the css or javascript change this version
@@ -70,10 +70,20 @@ public class RepositoryUtil {
     public static final String HTDOCS_VERSION_SLASH = "/" + HTDOCS_VERSION;
 
 
+    /**
+     * _more_
+     *
+     * @return _more_
+     */
     public static String getHtdocsVersion() {
         return HTDOCS_VERSION;
     }
 
+    /**
+     * _more_
+     *
+     * @return _more_
+     */
     public static String getHtdocsVersionSlash() {
         return HTDOCS_VERSION_SLASH;
     }

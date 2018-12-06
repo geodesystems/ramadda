@@ -84,12 +84,9 @@ public class MapOutputHandler extends OutputHandler implements WikiConstants {
     public MapOutputHandler(Repository repository, Element element)
             throws Exception {
         super(repository, element);
-        if (getMapManager().showMaps()) {
-            addType(OUTPUT_MAP);
-            addType(OUTPUT_GEMAP);
-        }
+        addType(OUTPUT_MAP);
+        addType(OUTPUT_GEMAP);
     }
-
 
 
     /**
@@ -163,8 +160,8 @@ public class MapOutputHandler extends OutputHandler implements WikiConstants {
         Hashtable props = new Hashtable();
         props.put(ATTR_DETAILS, "true");
         props.put(ATTR_LISTENTRIES, "false");
-        MapInfo map = getMapManager().getMap(request, entry, entriesToUse, sb, 700,
-                                             500, null, props);
+        MapInfo map = getMapManager().getMap(request, entry, entriesToUse,
+                                             sb, 700, 500, null, props);
 
         getPageHandler().entrySectionClose(request, entry, sb);
 
@@ -222,8 +219,8 @@ public class MapOutputHandler extends OutputHandler implements WikiConstants {
         Hashtable props = new Hashtable();
         props.put(ATTR_DETAILS, "false");
         props.put(ATTR_LISTENTRIES, "true");
-        MapInfo map = getMapManager().getMap(request, group,entriesToUse, sb, -100,
-                                             500, null, props);
+        MapInfo map = getMapManager().getMap(request, group, entriesToUse,
+                                             sb, -100, 500, null, props);
 
         getPageHandler().entrySectionClose(request, group, sb);
 

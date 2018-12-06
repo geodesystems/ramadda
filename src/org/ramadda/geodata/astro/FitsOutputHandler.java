@@ -205,12 +205,12 @@ public class FitsOutputHandler extends OutputHandler {
             throws Exception {
 
         StringBuffer sb = new StringBuffer();
-        String fileUrl = getEntryManager().getEntryResourceUrl(request,
+        String getFileUrl = getEntryManager().getEntryResourceUrl(request,
                              entry, false);
         //TODO: set the path right
         sb.append(
             "<applet archive=\"/repository/fits/fits1.3.jar\" code=\"eap.fitsbrowser.BrowserApplet\" width=700 height=700 ><param name=\"FILE\" value=\""
-            + fileUrl
+            + getFileUrl
             + "\">Your browser is ignoring the applet tag</applet>");
 
         return new Result("", sb);

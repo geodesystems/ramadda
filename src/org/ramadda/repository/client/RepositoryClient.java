@@ -252,10 +252,20 @@ public class RepositoryClient extends RepositoryBase {
         return sslPort;
     }
 
+    /**
+     * _more_
+     *
+     * @return _more_
+     */
     public boolean useSsl() {
-        return sslPort>0;
+        return sslPort > 0;
     }
 
+    /**
+     * _more_
+     *
+     * @param port _more_
+     */
     public void setHttpsPort(int port) {
         sslPort = port;
         boolean useSsl = sslPort > 0;
@@ -470,7 +480,7 @@ public class RepositoryClient extends RepositoryBase {
                                           bos.toByteArray()));
 
         RequestUrl URL_ENTRY_XMLCREATE = new RequestUrl(this,
-                                                        "/entry/xmlcreate",  useSsl());
+                                             "/entry/xmlcreate", useSsl());
         String[] result = doPost(URL_ENTRY_XMLCREATE, postEntries);
         if (result[0] != null) {
             throw new EntryErrorException(result[0]);
@@ -579,7 +589,7 @@ public class RepositoryClient extends RepositoryBase {
                                           bos.toByteArray()));
 
         RequestUrl URL_ENTRY_XMLCREATE = new RequestUrl(this,
-                                                        "/entry/xmlcreate", useSsl());
+                                             "/entry/xmlcreate", useSsl());
         String[] result = doPost(URL_ENTRY_XMLCREATE, postEntries);
 
         if (result[0] != null) {
@@ -1690,7 +1700,7 @@ public class RepositoryClient extends RepositoryBase {
      */
     private void xxxdoSearch() throws Exception {
         RequestUrl URL_ENTRY_SEARCH = new RequestUrl(this, "/search/do",
-                                                     useSsl());
+                                          useSsl());
         List<String> argList = new ArrayList<String>();
         String       output  = "xml.xml";
         for (String[] args : searchArgs) {

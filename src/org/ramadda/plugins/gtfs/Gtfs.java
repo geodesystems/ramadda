@@ -579,9 +579,9 @@ public class Gtfs implements Constants {
                                 .toString(), false, HtmlUtils
                                 .cssClass("entry-toggleblock-label"), "", request
                                 .getRepository()
-                                .iconUrl("ramadda.icon.togglearrowdown"), request
+                                .getIconUrl("ramadda.icon.togglearrowdown"), request
                                 .getRepository()
-                                .iconUrl("ramadda.icon.togglearrowright"));
+                                .getIconUrl("ramadda.icon.togglearrowright"));
 
                     nextTripSB.append(HtmlUtils.div(stopsHtml,
                             HtmlUtils.cssClass("gtfs-stops")));
@@ -684,7 +684,7 @@ public class Gtfs implements Constants {
                 String headsign= (String) tripInfo.entry.getValue(GtfsTripTypeHandler.IDX_HEADSIGN,(String) null);
                 String label = (Utils.stringDefined(headsign)?"To " + headsign +" - ":"")+ Gtfs.getTimeRange(tripInfo.entry);
                 HtmlUtils.div(
-                              tmp, entry.getTypeHandler().getPageHandler().getEntryHref(request, tripInfo.entry, HtmlUtils.img(request.getRepository().iconUrl("/icons/link.png"))),
+                              tmp, entry.getTypeHandler().getPageHandler().getEntryHref(request, tripInfo.entry, HtmlUtils.img(request.getRepository().getIconUrl("/icons/link.png"))),
                               "");
                 tmp.append(tripInfo.entry.getTypeHandler().getWikiInclude(new WikiUtil(), request,
                                                                            tripInfo.entry, tripInfo.entry,"gtfs.trip.list",new Hashtable()));

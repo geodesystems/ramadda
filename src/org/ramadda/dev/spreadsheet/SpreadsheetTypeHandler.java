@@ -92,7 +92,7 @@ public class SpreadsheetTypeHandler extends GenericTypeHandler {
                 request.url(
                     getRepository().URL_ENTRY_SHOW, ARG_ENTRYID,
                     entry.getId(), ARG_SLIDESHOW_SHOW,
-                    "true"), getRepository().iconUrl(ICON_SLIDESHOW),
+                    "true"), getRepository().getIconUrl(ICON_SLIDESHOW),
                              "View Slideshow", OutputType.TYPE_VIEW));
         */
     }

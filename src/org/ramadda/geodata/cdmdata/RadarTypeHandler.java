@@ -111,7 +111,7 @@ public class RadarTypeHandler extends GenericTypeHandler {
                     HtmlUtils.url(
                         "http://radar.weather.gov/radar.php", "rid",
                         (String) entry.getValues()[0], "product",
-                        (String) entry.getValues()[1]), iconUrl(
+                        (String) entry.getValues()[1]), getIconUrl(
                             "/icons/radar.gif"), "Show NWS Radar Site"));
         }
         */

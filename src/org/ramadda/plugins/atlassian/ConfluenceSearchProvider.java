@@ -118,7 +118,7 @@ public class ConfluenceSearchProvider extends SearchProvider {
      * @return _more_
      */
     @Override
-    public String getIconUrl() {
+    public String getSearchProviderIconUrl() {
         return "${root}/atlassian/confluence.png";
     }
 

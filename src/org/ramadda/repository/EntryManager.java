@@ -105,10 +105,6 @@ public class EntryManager extends RepositoryManager {
 
 
     /** _more_ */
-    public static final String PROP_ENABLE_HOSTNAME_MAPPING =
-        "ramadda.enable_hostname_mapping";
-
-    /** _more_ */
     private EntryUtil entryUtil;
 
 
@@ -232,11 +228,10 @@ public class EntryManager extends RepositoryManager {
                 topEntry = initTopEntry();
             }
 
-            //If no path then check if the hostname maps to an alias
-            boolean enableHostnameMapping =
-                getRepository().getProperty(PROP_ENABLE_HOSTNAME_MAPPING,
-                                            false);
-            if (enableHostnameMapping && (request != null)) {
+
+
+            if (getRepository().getEnableHostnameMapping()
+                    && (request != null)) {
                 Entry fromHostname = getEntryFromAlias(request,
                                          "http://"
                                          + request.getRequestHostname());
@@ -3880,11 +3875,11 @@ public class EntryManager extends RepositoryManager {
             String img;
             if (icon == null) {
                 icon = ICON_BLANK;
-                img = HtmlUtils.img(typeHandler.iconUrl(icon), "",
+                img = HtmlUtils.img(typeHandler.getIconUrl(icon), "",
                                     HtmlUtils.attr(HtmlUtils.ATTR_WIDTH,
                                         "16"));
             } else {
-                img = HtmlUtils.img(typeHandler.iconUrl(icon));
+                img = HtmlUtils.img(typeHandler.getIconUrl(icon));
             }
 
 
@@ -4431,7 +4426,7 @@ public class EntryManager extends RepositoryManager {
                 String select =
                     getRepository().getHtmlOutputHandler().getSelect(
                         request, ARG_TO, HtmlUtils.img(
-                            getRepository().iconUrl(
+                            getRepository().getIconUrl(
                                 ICON_FOLDER_OPEN)) + HtmlUtils.space(1)
                                     + msg("Select")
                                     + HtmlUtils.space(
@@ -4630,7 +4625,7 @@ public class EntryManager extends RepositoryManager {
                 entry = changeType(request, entry, newTypeHandler);
                 String icon = newTypeHandler.getIconProperty(null);
                 if (icon != null) {
-                    icon = newTypeHandler.iconUrl(icon);
+                    icon = newTypeHandler.getIconUrl(icon);
                 }
                 sb.append(HtmlUtils.href(getEntryURL(request, entry),
                                          HtmlUtils.img(icon) + " "
@@ -5270,7 +5265,7 @@ public class EntryManager extends RepositoryManager {
 
         String select = getRepository().getHtmlOutputHandler().getSelect(
                             request, ARG_TO, HtmlUtils.img(
-                                getRepository().iconUrl(
+                                getRepository().getIconUrl(
                                     ICON_FOLDER_OPEN)) + HtmlUtils.space(1)
                                         + msg("Select")
                                         + HtmlUtils.space(
@@ -10242,7 +10237,8 @@ public class EntryManager extends RepositoryManager {
      */
     public String getRightArrowIcon() {
         if (rightArrowIcon == null) {
-            rightArrowIcon = getRepository().iconUrl(ICON_TOGGLEARROWRIGHT);
+            rightArrowIcon =
+                getRepository().getIconUrl(ICON_TOGGLEARROWRIGHT);
         }
 
         return rightArrowIcon;
@@ -10256,7 +10252,7 @@ public class EntryManager extends RepositoryManager {
      */
     public String getDownArrowIcon() {
         if (downArrowIcon == null) {
-            downArrowIcon = getRepository().iconUrl(ICON_TOGGLEARROWDOWN);
+            downArrowIcon = getRepository().getIconUrl(ICON_TOGGLEARROWDOWN);
         }
 
         return downArrowIcon;
@@ -10301,27 +10297,40 @@ public class EntryManager extends RepositoryManager {
     }
 
 
-    public String getEntryFormSelect(Request request, Entry entry, String baseArg, String value) throws Exception {
+    /**
+     * _more_
+     *
+     * @param request _more_
+     * @param entry _more_
+     * @param baseArg _more_
+     * @param value _more_
+     *
+     * @return _more_
+     *
+     * @throws Exception _more_
+     */
+    public String getEntryFormSelect(Request request, Entry entry,
+                                     String baseArg, String value)
+            throws Exception {
         Entry theEntry = null;
         if (value.length() > 0) {
-            theEntry =
-                getRepository().getEntryManager().getEntry(request,
-                                                           value);
+            theEntry = getRepository().getEntryManager().getEntry(request,
+                    value);
         }
         StringBuffer sb = new StringBuffer();
         String select =
             getRepository().getHtmlOutputHandler().getSelect(request,
-                                                             baseArg, "Select", true, null, entry);
+                baseArg, "Select", true, null, entry);
         sb.append("\n");
         sb.append(HtmlUtils.hidden(baseArg + "_hidden", value,
-                                       HtmlUtils.id(baseArg + "_hidden")));
+                                   HtmlUtils.id(baseArg + "_hidden")));
         sb.append("\n");
         sb.append(HtmlUtils.disabledInput(baseArg, ((theEntry != null)
-                                                    ? theEntry.getFullName()
-                                                    : ""), HtmlUtils.id(baseArg)
-                                          + HtmlUtils.SIZE_60) + select);
+                ? theEntry.getFullName()
+                : ""), HtmlUtils.id(baseArg) + HtmlUtils.SIZE_60) + select);
         sb.append("\n");
-        return  sb.toString();
+
+        return sb.toString();
     }
 
 

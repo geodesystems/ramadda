@@ -142,7 +142,6 @@ public class ServiceOutputHandler extends OutputHandler {
 
         }
 
-
         if (service == null) {
             NodeList children = XmlUtil.getElements(element,
                                     Service.TAG_SERVICE);
@@ -168,12 +167,13 @@ public class ServiceOutputHandler extends OutputHandler {
             OutputType.TYPE_OTHER | OutputType.TYPE_IMPORTANT, "",
             XmlUtil.getAttribute(element, ATTR_ICON, service.getIcon()));
         addType(outputType);
-        groupOutputType = new OutputType(XmlUtil.getAttribute(element,
-                ATTR_LABEL,
-                service.getLabel()), XmlUtil.getAttribute(element, ATTR_ID,
-                    service.getId()), OutputType.TYPE_OTHER, "",
-                                      XmlUtil.getAttribute(element,
-                                          ATTR_ICON, service.getIcon()));
+        groupOutputType = new OutputType(XmlUtil
+            .getAttribute(element, ATTR_LABEL, service.getLabel()), "group_"
+                + XmlUtil
+                    .getAttribute(element, ATTR_ID, service
+                        .getId()), OutputType.TYPE_OTHER, "", XmlUtil
+                            .getAttribute(element, ATTR_ICON, service
+                                .getIcon()));
         addType(groupOutputType);
 
 

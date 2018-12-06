@@ -1723,6 +1723,14 @@ public class Admin extends RepositoryManager {
 
     /**
      * _more_
+     */
+    @Override
+    public void initAttributes() {
+        super.initAttributes();
+    }
+
+    /**
+     * _more_
      *
      * @param request _more_
      *
@@ -1800,6 +1808,7 @@ public class Admin extends RepositoryManager {
         */
 
         getRepository().setLocalFilePaths();
+        getRepository().initAttributes();
         getRepository().clearCache();
 
 

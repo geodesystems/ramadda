@@ -105,7 +105,7 @@ public class ServiceLinkTypeHandler extends ServiceTypeHandler {
         for (Service service : services) {
             items.add(new HtmlUtils.Selector(service.getLabel(),
                                              service.getId(),
-                                             iconUrl(service.getIcon())));
+                                             getIconUrl(service.getIcon())));
         }
 
         formBuffer.append(HtmlUtils.formEntry(msgLabel("Service"),

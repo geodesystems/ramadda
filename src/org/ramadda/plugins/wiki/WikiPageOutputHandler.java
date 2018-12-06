@@ -121,7 +121,7 @@ public class WikiPageOutputHandler extends HtmlOutputHandler {
      */
     public WikiPageOutputHandler(Repository repository, Element element)
             throws Exception {
-        super(repository, element);
+        super(repository, element,true);
         addType(OUTPUT_WIKI);
         addType(OUTPUT_WIKI_HISTORY);
         addType(OUTPUT_WIKI_DETAILS);
@@ -402,7 +402,7 @@ public class WikiPageOutputHandler extends HtmlOutputHandler {
                         .getEntryURL(
                             request, entry, ARG_WIKI_EDITWITH,
                             wph.getDate().getTime() + ""), HtmlUtils
-                                .img(getRepository().iconUrl(ICON_EDIT),
+                                .img(getRepository().getIconUrl(ICON_EDIT),
                                      msg("Edit with this version")));
             }
             String view = HtmlUtils.href(
@@ -411,7 +411,7 @@ public class WikiPageOutputHandler extends HtmlOutputHandler {
                                   ARG_WIKI_VERSION,
                                   wph.getDate().getTime()
                                   + ""), HtmlUtils.img(
-                                      getRepository().iconUrl(ICON_WIKI),
+                                      getRepository().getIconUrl(ICON_WIKI),
                                       msg("View this page")));
             String btns =
                 HtmlUtils.radio(ARG_WIKI_COMPARE1,

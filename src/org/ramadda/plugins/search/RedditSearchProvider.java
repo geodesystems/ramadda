@@ -81,7 +81,7 @@ public class RedditSearchProvider extends SearchProvider {
      * @return _more_
      */
     @Override
-    public String getIconUrl() {
+    public String getSearchProviderIconUrl() {
         return "${root}/search/reddit.png";
     }
 

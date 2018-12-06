@@ -84,6 +84,14 @@ public class LdmOutputHandler extends OutputHandler {
     }
 
 
+    private boolean enabled = false;
+    private String pqinsert;
+    @Override
+    public void initAttributes() {
+        super.initAttributes();
+        pqinsert = getRepository().getProperty(LdmAction.PROP_LDM_PQINSERT,(String) null);
+        enabled = pqinsert!=null;
+    }
 
     /**
      * _more_
@@ -99,8 +107,7 @@ public class LdmOutputHandler extends OutputHandler {
             throws Exception {
 
         //Are we configured to do the LDM
-        if (getRepository().getProperty(LdmAction.PROP_LDM_PQINSERT,
-                                        "").length() == 0) {
+        if (!enabled) {
             return;
         }
         if (getRepository().getProperty(LdmAction.PROP_LDM_QUEUE,
@@ -264,8 +271,6 @@ public class LdmOutputHandler extends OutputHandler {
         } else {
             String queue =
                 getRepository().getProperty(LdmAction.PROP_LDM_QUEUE, "");
-            String pqinsert =
-                getRepository().getProperty(LdmAction.PROP_LDM_PQINSERT, "");
             for (Entry entry : fileEntries) {
                 String id =
                     getRepository().getEntryManager().replaceMacros(entry,

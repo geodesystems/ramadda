@@ -595,7 +595,7 @@ public class RecordJobManager extends JobManager implements RecordConstants {
                     productSB.append("<table>");
                 }
                 fileCnt++;
-                String fileUrl = HtmlUtils.url(getRepository().URL_ENTRY_SHOW
+                String getFileUrl = HtmlUtils.url(getRepository().URL_ENTRY_SHOW
                                      + "/" + f.getName(), new String[] {
                     ARG_ENTRYID, entry.getId(), ARG_OUTPUT,
                     getOutputResults().getId(), ARG_JOB_ID, jobId,
@@ -603,10 +603,10 @@ public class RecordJobManager extends JobManager implements RecordConstants {
                 });
                 //                xml.append(XmlUtil.openTag(TAG_URL));
                 xml.append("<" + TAG_URL + ">");
-                XmlUtil.appendCdata(xml, request.getAbsoluteUrl(fileUrl));
+                XmlUtil.appendCdata(xml, request.getAbsoluteUrl(getFileUrl));
                 xml.append(XmlUtil.closeTag(TAG_URL));
                 productSB.append("<tr><td>");
-                productSB.append(HtmlUtils.href(fileUrl, f.getName()));
+                productSB.append(HtmlUtils.href(getFileUrl, f.getName()));
                 productSB.append("</td><td align=right>");
                 productSB.append(
                     getRecordFormHandler().formatFileSize(f.length()));
@@ -617,14 +617,14 @@ public class RecordJobManager extends JobManager implements RecordConstants {
 
             xml.append(XmlUtil.closeTag(TAG_PRODUCTS));
             if (fileCnt > 1) {
-                String fileUrl = HtmlUtils.url(getRepository().URL_ENTRY_SHOW
+                String getFileUrl = HtmlUtils.url(getRepository().URL_ENTRY_SHOW
                                      + "/all.zip", new String[] {
                     ARG_ENTRYID, entry.getId(), ARG_OUTPUT,
                     getOutputResults().getId(), ARG_JOB_ID, jobId,
                     ARG_POINT_PRODUCT, "zip"
                 });
                 productSB.append("<tr><td>");
-                productSB.append(HtmlUtils.href(fileUrl, "Zip products"));
+                productSB.append(HtmlUtils.href(getFileUrl, "Zip products"));
                 productSB.append("</td></tr>");
             }
 

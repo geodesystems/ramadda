@@ -38,6 +38,8 @@ import ucar.unidata.util.Misc;
 import ucar.unidata.util.StringUtil;
 import ucar.unidata.xml.XmlUtil;
 
+import java.awt.Color;
+
 import java.awt.Image;
 import java.awt.image.*;
 
@@ -51,8 +53,6 @@ import java.net.*;
 
 
 import java.text.SimpleDateFormat;
-
-import java.awt.Color;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -114,7 +114,8 @@ public class ImageOutputHandler extends OutputHandler {
     public static final String ARG_IMAGE_EDIT_REDEYE = "image.edit.redeye";
 
     /** _more_ */
-    public static final String ARG_IMAGE_EDIT_TRANSPARENT = "image.edit.transparent";
+    public static final String ARG_IMAGE_EDIT_TRANSPARENT =
+        "image.edit.transparent";
 
 
     /** _more_ */
@@ -463,11 +464,11 @@ public class ImageOutputHandler extends OutputHandler {
 
 
         sb.append(HtmlUtils.space(2));
-        sb.append(HtmlUtils.submitImage(iconUrl(ICON_ANTIROTATE),
+        sb.append(HtmlUtils.submitImage(getIconUrl(ICON_ANTIROTATE),
                                         ARG_IMAGE_EDIT_ROTATE_LEFT,
                                         msg("Rotate Left"), ""));
         sb.append(HtmlUtils.space(2));
-        sb.append(HtmlUtils.submitImage(iconUrl(ICON_ROTATE),
+        sb.append(HtmlUtils.submitImage(getIconUrl(ICON_ROTATE),
                                         ARG_IMAGE_EDIT_ROTATE_RIGHT,
                                         msg("Rotate Right"), ""));
         File entryDir = getStorageManager().getEntryDir(entry.getId(), false);
@@ -496,13 +497,14 @@ public class ImageOutputHandler extends OutputHandler {
                               HtmlUtils.squote(ARG_IMAGE_CROPY2));
 
         sb.append(
-            HtmlUtils.importJS(getRepository().fileUrl("/editimage.js")));
+            HtmlUtils.importJS(getRepository().getFileUrl("/editimage.js")));
 
         String call = HtmlUtils.onMouseClick(HtmlUtils.call("editImageClick",
                           clickParams));
         sb.append(HtmlUtils.img(url, "", HtmlUtils.id("imgid") + call));
 
         getPageHandler().entrySectionClose(request, entry, sb);
+
         return new Result("Image Edit", sb);
 
     }
@@ -635,14 +637,15 @@ public class ImageOutputHandler extends OutputHandler {
                 newImage = ImageUtils.removeRedeye(image, x1, y1, x2, y2);
             }
         } else if (request.exists(ARG_IMAGE_EDIT_TRANSPARENT)) {
-            BufferedImage bi = ImageUtils.toBufferedImage(image);
-            int x = request.get(ARG_IMAGE_CROPX1, 0);
-            int y = request.get(ARG_IMAGE_CROPY1, 0);
-            int clr=  bi.getRGB(x,y); 
-            int  red   = (clr & 0x00ff0000) >> 16;
-            int  green = (clr & 0x0000ff00) >> 8;
-            int  blue  =  clr & 0x000000ff;
-            newImage = ImageUtils.makeColorTransparent(bi,new Color(red,green, blue));
+            BufferedImage bi    = ImageUtils.toBufferedImage(image);
+            int           x     = request.get(ARG_IMAGE_CROPX1, 0);
+            int           y     = request.get(ARG_IMAGE_CROPY1, 0);
+            int           clr   = bi.getRGB(x, y);
+            int           red   = (clr & 0x00ff0000) >> 16;
+            int           green = (clr & 0x0000ff00) >> 8;
+            int           blue  = clr & 0x000000ff;
+            newImage = ImageUtils.makeColorTransparent(bi,
+                    new Color(red, green, blue));
 
         } else if (request.exists(ARG_IMAGE_EDIT_CROP)) {
             int x1 = request.get(ARG_IMAGE_CROPX1, 0);
@@ -999,7 +1002,7 @@ public class ImageOutputHandler extends OutputHandler {
      *       entries = getEntryUtil().sortEntriesOnDate(entries, true);
      *   }
      *   finalSB.append(
-     *       HtmlUtils.importJS(getRepository().fileUrl("/lib/slides/js/slides.min.jquery.js")));
+     *       HtmlUtils.importJS(getRepository().getFileUrl("/lib/slides/js/slides.min.jquery.js")));
      *   String slidesTemplate = repository.getResource("ramadda.html.slides");
      *   System.out.println(slidesTemplate);
      *   finalSB.append(slidesTemplate);

@@ -150,7 +150,7 @@ public class TripTypeHandler extends ExtensibleGroupTypeHandler {
                                     getRepository().URL_ENTRY_FORM, entry,
                                     ARG_GROUP), ARG_TYPE,
                                         types[i]), HtmlUtils.img(
-                                            getRepository().iconUrl(
+                                            getRepository().getIconUrl(
                                                 icons[i]), msg(names[i]))));
                 }
 

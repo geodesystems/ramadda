@@ -109,7 +109,7 @@ public class PasteitCollectionTypeHandler extends ExtensibleGroupTypeHandler {
                         .entryUrl(getRepository().URL_ENTRY_FORM, group,
                             ARG_GROUP), ARG_TYPE,
                          FaqEntryTypeHandler.TYPE_FAQENTRY), HtmlUtils
-                      .img(getRepository().iconUrl(ICON_NEW),
+                      .img(getRepository().getIconUrl(ICON_NEW),
                            msg("New FAQ Question"))));
             */
         }

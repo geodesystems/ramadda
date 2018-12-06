@@ -103,7 +103,15 @@ public class OpenSearchProvider extends SearchProvider {
         return CATEGORY_SCIENCE;
     }
 
-
+    /**
+     * _more_
+     *
+     * @return _more_
+     */
+    @Override
+    public String getSearchProviderIconUrl() {
+        return "${root}/favicon.png";
+    }
 
 
 

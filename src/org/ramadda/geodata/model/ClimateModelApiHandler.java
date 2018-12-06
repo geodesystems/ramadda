@@ -775,7 +775,7 @@ public class ClimateModelApiHandler extends RepositoryManager implements Request
 
         String formId = "selectform" + HtmlUtils.blockCnt++;
         sb.append(HtmlUtils.comment("collection form"));
-        sb.append(HtmlUtils.importJS(fileUrl("/model/compare.js")));
+        sb.append(HtmlUtils.importJS(getFileUrl("/model/compare.js")));
         sb.append(HtmlUtils.cssLink(getRepository().getUrlBase()
                                     + "/model/model.css"));
 
@@ -1238,7 +1238,7 @@ public class ClimateModelApiHandler extends RepositoryManager implements Request
                 if (help != null) {
                     StringBuilder hsb = new StringBuilder();
                     hsb.append(HtmlUtils.space(1));
-                    HtmlUtils.tooltip(hsb, iconUrl("/icons/help.png"), help);
+                    HtmlUtils.tooltip(hsb, getIconUrl("/icons/help.png"), help);
                     titleString += hsb.toString();
                 }
                 sb.append(HtmlUtils.div(titleString, HtmlUtils.id("title")));
@@ -1246,7 +1246,7 @@ public class ClimateModelApiHandler extends RepositoryManager implements Request
                 /*
                 if(help!=null) {
                     sb.append("<div class=\"service-help-link\">\n");
-                    HtmlUtils.tooltip(sb,iconUrl("/icons/help.png"), help);
+                    HtmlUtils.tooltip(sb,getIconUrl("/icons/help.png"), help);
                     sb.append("</div>\n");
                 }
                 */
@@ -1892,7 +1892,7 @@ public class ClimateModelApiHandler extends RepositoryManager implements Request
         try {
             String helpText =
                 getStorageManager().readSystemResource(helpFile);
-            HtmlUtils.tooltip(sb, iconUrl("/icons/help.png"), helpText);
+            HtmlUtils.tooltip(sb, getIconUrl("/icons/help.png"), helpText);
         } catch (Exception excp) {}
     }
 

@@ -19,9 +19,9 @@ package org.ramadda.repository.metadata;
 
 import org.ramadda.repository.*;
 import org.ramadda.repository.type.DataTypes;
+import org.ramadda.util.ColorTable;
 
 import org.ramadda.util.HtmlUtils;
-import org.ramadda.util.ColorTable;
 import org.ramadda.util.Utils;
 
 
@@ -482,11 +482,11 @@ public class MetadataElement extends MetadataTypeBase implements DataTypes {
             if (value.length() > 0) {
                 Entry theEntry =
                     getRepository().getEntryManager().getEntry(request,
-                                                               value);
-                if(theEntry!=null) {
-                    html =  theEntry.getName();
+                        value);
+                if (theEntry != null) {
+                    html = theEntry.getName();
                 }
-            } 
+            }
         } else if (dataType.equals(DATATYPE_EMAIL)) {
             html = HtmlUtils.href("mailto:" + value, value);
         } else if (dataType.equals(DATATYPE_URL)) {
@@ -676,7 +676,7 @@ public class MetadataElement extends MetadataTypeBase implements DataTypes {
         }
 
         if (getDataType().equals(DATATYPE_ENTRY)) {
-            return request.getString(arg+"_hidden","");
+            return request.getString(arg + "_hidden", "");
         }
 
         if (getDataType().equals(DATATYPE_GROUP)) {
@@ -872,13 +872,15 @@ public class MetadataElement extends MetadataTypeBase implements DataTypes {
             }
         } else if (dataType.equals(DATATYPE_COLORTABLE)) {
             List<TwoFacedObject> names = ColorTable.getColorTableNames();
-            names.add(0,new TwoFacedObject("--none--",""));
-            return HtmlUtils.select(arg, names,value);
+            names.add(0, new TwoFacedObject("--none--", ""));
+
+            return HtmlUtils.select(arg, names, value);
         } else if (dataType.equals(DATATYPE_BOOLEAN)) {
             return HtmlUtils.checkbox(arg, "true",
                                       Misc.equals(value, "true"));
         } else if (dataType.equals(DATATYPE_ENTRY)) {
-            return  getRepository().getEntryManager().getEntryFormSelect(request,  entry, arg, value);
+            return getRepository().getEntryManager().getEntryFormSelect(
+                request, entry, arg, value);
         } else if (dataType.equals(DATATYPE_INT)) {
             return HtmlUtils.input(arg, value, HtmlUtils.SIZE_10);
         } else if (dataType.equals(DATATYPE_DOUBLE)) {
@@ -1008,7 +1010,6 @@ public class MetadataElement extends MetadataTypeBase implements DataTypes {
                                                    false) + " "
                                                        + msg("delete"));
                     entriesSB.append(HtmlUtils.makeShowHideBlock((groupCnt
-
                             + 1) + ") " + subName
                                  + deleteCbx, groupSB.toString(), true));
                 }

@@ -802,7 +802,7 @@ public class PointFormHandler extends RecordFormHandler {
         gridsCol.append(HtmlUtils.p());
         for (int i = 0; i < GRID_ARGS.length; i++) {
             String helpImg =
-                HtmlUtils.img(getRepository().iconUrl(ICON_HELP),
+                HtmlUtils.img(getRepository().getIconUrl(ICON_HELP),
                               GRID_HELP[i]);
             gridsCol.append(helpImg);
             gridsCol.append(HtmlUtils.checkbox(GRID_ARGS[i], "true", false));
@@ -825,7 +825,7 @@ public class PointFormHandler extends RecordFormHandler {
                 formats.append(
                     HtmlUtils.col(
                         HtmlUtils.img(
-                            getRepository().fileUrl(
+                            getRepository().getFileUrl(
                                 "/icons/blank.gif")), HtmlUtils.style(
                                     "border-left:1px #000000 solid")));
                 formats.append(HtmlUtils.col(HtmlUtils.space(4)));
@@ -833,7 +833,7 @@ public class PointFormHandler extends RecordFormHandler {
                 String middle =
                     "<br><br><br>&nbsp;&nbsp;&nbsp;to make&nbsp;&nbsp;&nbsp;<br>"
                     + HtmlUtils.img(
-                        getRepository().fileUrl("/point/rightarrow.jpg"));
+                        getRepository().getFileUrl("/point/rightarrow.jpg"));
                 formats.append(
                     HtmlUtils.col(
                         middle,
@@ -896,7 +896,7 @@ public class PointFormHandler extends RecordFormHandler {
         if (recordEntry != null) {
             String help = "Probablity a point will be included 0.-1.0";
             String probHelpImg =
-                HtmlUtils.img(getRepository().iconUrl(ICON_HELP), help);
+                HtmlUtils.img(getRepository().getIconUrl(ICON_HELP), help);
             String prob =
                 HtmlUtils.space(3) + msgLabel("Or use probability") + " "
                 + HtmlUtils.input(ARG_PROBABILITY,
@@ -911,7 +911,7 @@ public class PointFormHandler extends RecordFormHandler {
                         getPageHandler().makeDateInput(
                             request, ARG_FROMDATE, "entryform", null, null,
                             showTime) + HtmlUtils.space(1)
-                                      + HtmlUtils.img(iconUrl(ICON_RANGE))
+                                      + HtmlUtils.img(getIconUrl(ICON_RANGE))
                                       + HtmlUtils.space(1)
                                       + getPageHandler().makeDateInput(
                                           request, ARG_TODATE, "entryform",
@@ -1300,9 +1300,7 @@ public class PointFormHandler extends RecordFormHandler {
                                    + "\";\n"));
 
         StringBuffer mapSB = new StringBuffer();
-        boolean showMap = pointEntry.isCapable(PointFile.ACTION_MAPINCHART)
-                          && request.get(ARG_MAP_SHOW, true)
-                          && getRepository().getMapManager().shouldShowMaps();
+        boolean showMap = pointEntry.isCapable(PointFile.ACTION_MAPINCHART)  && request.get(ARG_MAP_SHOW, true);
         MapInfo map = getRepository().getMapManager().createMap(request, 500,
                           300, false, null);
         if (showMap) {

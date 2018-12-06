@@ -111,7 +111,7 @@ public class FlickrSearchProvider extends SearchProvider {
      * @return _more_
      */
     @Override
-    public String getIconUrl() {
+    public String getSearchProviderIconUrl() {
         return "${root}/search/flickr.png";
     }
 

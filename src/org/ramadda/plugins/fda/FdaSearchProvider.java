@@ -97,7 +97,7 @@ public class FdaSearchProvider extends SearchProvider {
      * @return _more_
      */
     @Override
-    public String getIconUrl() {
+    public String getSearchProviderIconUrl() {
         return "${root}/fda/fda.png";
     }
 

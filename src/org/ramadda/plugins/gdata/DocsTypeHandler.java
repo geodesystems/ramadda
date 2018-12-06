@@ -348,28 +348,29 @@ public class DocsTypeHandler extends GdataTypeHandler {
      *
      * @throws Exception _more_
      */
-    public String getIconUrl(Request request, Entry entry) throws Exception {
+    @Override
+    public String getEntryIconUrl(Request request, Entry entry) throws Exception {
         String id = entry.getId();
         if ( !getEntryManager().isSynthEntry(id)) {
             return super.getIconUrl(request, entry);
         }
         if (id.indexOf(TYPE_FOLDER) >= 0) {
-            return iconUrl("/icons/folder.png");
+            return getIconUrl("/icons/folder.png");
         }
         if (id.indexOf(TYPE_DOCUMENT) >= 0) {
-            return iconUrl("/gdata/document.gif");
+            return getIconUrl("/gdata/document.gif");
         }
         if (id.indexOf(TYPE_PRESENTATION) >= 0) {
-            return iconUrl("/gdata/presentation.gif");
+            return getIconUrl("/gdata/presentation.gif");
         }
         if (id.indexOf(TYPE_DRAWING) >= 0) {
-            return iconUrl("/gdata/drawing.gif");
+            return getIconUrl("/gdata/drawing.gif");
         }
         if (id.indexOf(TYPE_SPREADSHEET) >= 0) {
-            return iconUrl("/gdata/spreadsheet.gif");
+            return getIconUrl("/gdata/spreadsheet.gif");
         }
         if (id.indexOf(TYPE_PDF) >= 0) {
-            return iconUrl("/icons/pdf.png");
+            return getIconUrl("/icons/pdf.png");
         }
 
         return super.getIconUrl(request, entry);

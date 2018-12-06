@@ -154,6 +154,15 @@ public class OutputHandler extends RepositoryManager {
         this.name = name;
     }
 
+    /**
+     * _more_
+     *
+     * @return _more_
+     */
+    public String toString() {
+        return name;
+    }
+
 
     /**
      * Shutdown
@@ -228,6 +237,7 @@ public class OutputHandler extends RepositoryManager {
      * @param type  the OutputType
      */
     public void addType(OutputType type) {
+        getRepository().setOutputTypeOK(type);
         type.setGroupName(name);
         types.add(type);
         typeMap.put(type.getId(), type);
@@ -666,7 +676,7 @@ public class OutputHandler extends RepositoryManager {
 
         return new Link(url, (outputType.getIcon() == null)
                              ? null
-                             : iconUrl(outputType.getIcon()), outputType
+                             : getIconUrl(outputType.getIcon()), outputType
                                  .getLabel(), outputType);
 
     }
@@ -689,7 +699,7 @@ public class OutputHandler extends RepositoryManager {
             new Link(
                 request.entryUrl(
                     getRepository().URL_ENTRY_SHOW, entry, ARG_OUTPUT,
-                    type.toString()), iconUrl(type.getIcon()),
+                    type.toString()), getIconUrl(type.getIcon()),
                                       type.getLabel(), type));
 
     }
@@ -975,10 +985,10 @@ public class OutputHandler extends RepositoryManager {
         boolean showArrow = true;
         String  prefix    = ( !showArrow
                               ? HtmlUtils.img(
-                                  getRepository().iconUrl(ICON_BLANK), "",
+                                  getRepository().getIconUrl(ICON_BLANK), "",
                                   HtmlUtils.attr(HtmlUtils.ATTR_WIDTH, "10"))
                               : HtmlUtils.img(
-                                  getRepository().iconUrl(
+                                  getRepository().getIconUrl(
                                       ICON_TOGGLEARROWRIGHT), msg(message),
                                           HtmlUtils.id("img_" + uid)
                                           + HtmlUtils.onMouseClick(
@@ -988,7 +998,7 @@ public class OutputHandler extends RepositoryManager {
                                                       HtmlUtils.squote(uid),
                                                       HtmlUtils.squote(
                                                           folderClickUrl), HtmlUtils.squote(
-                                                          iconUrl(
+                                                          getIconUrl(
                                                               ICON_TOGGLEARROWDOWN)))))));
 
 
@@ -1061,7 +1071,7 @@ public class OutputHandler extends RepositoryManager {
         link = new Link(request.entryUrl(getRepository().URL_ENTRY_SHOW,
                                          entry, ARG_OUTPUT,
                                          output.toString(), ARG_PREVIOUS,
-                                         "true"), iconUrl(ICON_LEFT),
+                                         "true"), getIconUrl(ICON_LEFT),
                                              "View Previous Entry");
 
         //        link.setLinkType(OutputType.TYPE_TOOLBAR);
@@ -1070,7 +1080,7 @@ public class OutputHandler extends RepositoryManager {
         link = new Link(request.entryUrl(getRepository().URL_ENTRY_SHOW,
                                          entry, ARG_OUTPUT,
                                          output.toString(), ARG_NEXT,
-                                         "true"), iconUrl(ICON_RIGHT),
+                                         "true"), getIconUrl(ICON_RIGHT),
                                              "View Next Entry");
         link.setLinkType(OutputType.TYPE_VIEW);
         //        link.setLinkType(OutputType.TYPE_TOOLBAR);
@@ -1119,16 +1129,16 @@ public class OutputHandler extends RepositoryManager {
 
         //J--
         String[] order = {
-            SORTBY_NAME, "true", msg("Name") + HtmlUtils.img(getRepository().iconUrl(ICON_UPARROW)),  "Sort by name A-Z", 
-            SORTBY_NAME, "false", msg("Name")  + HtmlUtils.img(getRepository().iconUrl(ICON_DOWNARROW)), "Sort by name Z-A", 
-            SORTBY_FROMDATE, "false", msg("Date")  + HtmlUtils.img(getRepository().iconUrl(ICON_UPARROW)),"Sort by date newer to older", 
-            SORTBY_FROMDATE, "true",   msg("Date") + HtmlUtils.img(getRepository().iconUrl(ICON_DOWNARROW)),   "Sort by date older to newer", 
-            SORTBY_CREATEDATE, "true",   msg("Created") + HtmlUtils.img(getRepository().iconUrl(ICON_UPARROW)),  "Sort by created date older to newer", 
-            SORTBY_CREATEDATE, "false",  msg("Created")            + HtmlUtils.img(getRepository().iconUrl(ICON_DOWNARROW)),   "Sort by created date newer to older", 
-            SORTBY_SIZE, "true",  msg("Size") + HtmlUtils.img(getRepository().iconUrl(ICON_UPARROW)),"Sort by size smallest to largest", 
-            SORTBY_SIZE, "false",  msg("Size") + HtmlUtils.img(getRepository().iconUrl(ICON_DOWNARROW)),  "Sort by size largest to smallest",
-            SORTBY_TYPE, "true",  msg("Type") + HtmlUtils.img(getRepository().iconUrl(ICON_UPARROW)),"Sort by type A-Z", 
-            SORTBY_TYPE, "false",  msg("Type") + HtmlUtils.img(getRepository().iconUrl(ICON_DOWNARROW)),  "Sort by type Z-A",
+            SORTBY_NAME, "true", msg("Name") + HtmlUtils.img(getRepository().getIconUrl(ICON_UPARROW)),  "Sort by name A-Z", 
+            SORTBY_NAME, "false", msg("Name")  + HtmlUtils.img(getRepository().getIconUrl(ICON_DOWNARROW)), "Sort by name Z-A", 
+            SORTBY_FROMDATE, "false", msg("Date")  + HtmlUtils.img(getRepository().getIconUrl(ICON_UPARROW)),"Sort by date newer to older", 
+            SORTBY_FROMDATE, "true",   msg("Date") + HtmlUtils.img(getRepository().getIconUrl(ICON_DOWNARROW)),   "Sort by date older to newer", 
+            SORTBY_CREATEDATE, "true",   msg("Created") + HtmlUtils.img(getRepository().getIconUrl(ICON_UPARROW)),  "Sort by created date older to newer", 
+            SORTBY_CREATEDATE, "false",  msg("Created")            + HtmlUtils.img(getRepository().getIconUrl(ICON_DOWNARROW)),   "Sort by created date newer to older", 
+            SORTBY_SIZE, "true",  msg("Size") + HtmlUtils.img(getRepository().getIconUrl(ICON_UPARROW)),"Sort by size smallest to largest", 
+            SORTBY_SIZE, "false",  msg("Size") + HtmlUtils.img(getRepository().getIconUrl(ICON_DOWNARROW)),  "Sort by size largest to smallest",
+            SORTBY_TYPE, "true",  msg("Type") + HtmlUtils.img(getRepository().getIconUrl(ICON_UPARROW)),"Sort by type A-Z", 
+            SORTBY_TYPE, "false",  msg("Type") + HtmlUtils.img(getRepository().getIconUrl(ICON_DOWNARROW)),  "Sort by type Z-A",
         };
         //J++
 
@@ -1213,7 +1223,7 @@ public class OutputHandler extends RepositoryManager {
         //        formSB.append(request.formPost(getRepository().URL_ENTRY_GETENTRIES,
         //                                   HtmlUtils.id(formId)));
         formSB.append(request.formPost(getRepository().URL_ENTRY_GETENTRIES,
-                                   HtmlUtils.id(formId)));
+                                       HtmlUtils.id(formId)));
 
 
         long t1 = System.currentTimeMillis();
@@ -1261,7 +1271,7 @@ public class OutputHandler extends RepositoryManager {
 
             String icon = link.getIcon();
             if (icon == null) {
-                icon = getRepository().iconUrl(ICON_BLANK);
+                icon = getRepository().getIconUrl(ICON_BLANK);
             }
             linksForCategory.add(
                 new HtmlUtils.Selector(
@@ -1317,9 +1327,9 @@ public class OutputHandler extends RepositoryManager {
 
 
         String arrowImg = HtmlUtils.img(hideIt
-                                        ? getRepository().iconUrl(
+                                        ? getRepository().getIconUrl(
                                             "/icons/application_side_expand.png")
-                                        : getRepository().iconUrl(
+                                        : getRepository().getIconUrl(
                                             "/icons/application_side_contract.png"), msg(
                                                 "Show/Hide Form"), HtmlUtils.id(
                                                 base + "img"));
@@ -1782,7 +1792,8 @@ public class OutputHandler extends RepositoryManager {
             sb.append("  ");
             HtmlUtils.div(
                 sb, HtmlUtils.img(
-                    getRepository().iconUrl(ICON_BLANK), "", HtmlUtils.attr(
+                    getRepository().getIconUrl(
+                        ICON_BLANK), "", HtmlUtils.attr(
                         HtmlUtils.ATTR_WIDTH, "10") + HtmlUtils.id(
                         "entrymenuarrow_" + rowId)), HtmlUtils.cssClass(
                             "entrymenuarrow"));
@@ -1919,6 +1930,8 @@ public class OutputHandler extends RepositoryManager {
      * @param entry _more_
      *
      * @return _more_
+     *
+     * @throws Exception _more_
      */
     public String getImageUrl(Request request, Entry entry) throws Exception {
         return getImageUrl(request, entry, false);
@@ -1936,9 +1949,12 @@ public class OutputHandler extends RepositoryManager {
      * @param addVersion _more_
      *
      * @return _more_
+     *
+     * @throws Exception _more_
      */
     public String getImageUrl(Request request, Entry entry,
-                              boolean addVersion) throws Exception {
+                              boolean addVersion)
+            throws Exception {
         if ( !entry.isImage()) {
             if (true) {
                 return null;

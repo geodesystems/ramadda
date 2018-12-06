@@ -146,7 +146,7 @@ public class SlackChannelTypeHandler extends ExtensibleGroupTypeHandler {
             String icon = HtmlUtils.href(
                               entryUrl,
                               HtmlUtils.img(
-                                  getRepository().iconUrl(
+                                  getRepository().getIconUrl(
                                       "/slack/slack.png")));
 
             SlackUser slackUser = slackTeamTypeHandler.getSlackUser(token,

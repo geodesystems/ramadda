@@ -819,8 +819,8 @@ public class RecordOutputHandler extends OutputHandler implements RecordConstant
      *
      * @return _more_
      */
-    public String getIconUrl(Request request, String icon) {
-        return request.getAbsoluteUrl(getRepository().iconUrl(icon));
+    public String getAbsoluteIconUrl(Request request, String icon) {
+        return request.getAbsoluteUrl(getRepository().getIconUrl(icon));
     }
 
 

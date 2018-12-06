@@ -404,6 +404,7 @@ public interface WikiConstants {
     /** wiki import */
     public static final String WIKI_TAG_TABS = "tabs";
 
+    /** _more_          */
     public static final String WIKI_TAG_BOUNDS = "bounds";
 
     /** _more_ */
@@ -418,16 +419,16 @@ public interface WikiConstants {
     /** _more_ */
     public static final String ATTR_APPLY_TAG = APPLY_PREFIX + "tag";
 
-    /** _more_          */
+    /** _more_ */
     public static final String ATTR_SELECTFIELDS = "selectFields";
 
-    /** _more_          */
+    /** _more_ */
     public static final String ATTR_SELECTBOUNDS = "selectBounds";
 
-    /** _more_          */
+    /** _more_ */
     public static final String ATTR_VIEWBOUNDS = "viewBounds";
 
-    /** _more_          */
+    /** _more_ */
     public static final String ATTR_MAPVAR = "mapVar";
 
     /** accordian property */

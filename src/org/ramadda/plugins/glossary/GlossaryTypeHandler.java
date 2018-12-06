@@ -189,7 +189,7 @@ public class GlossaryTypeHandler extends ExtensibleGroupTypeHandler {
         /*
         if (canAdd) {
             String label =
-                HtmlUtils.img(getRepository().iconUrl(ICON_NEW),
+                HtmlUtils.img(getRepository().getIconUrl(ICON_NEW),
                               msg("New Glossary Question")) + " "
                                   + msg("Create new glossary entry");
             sb.append(HtmlUtils

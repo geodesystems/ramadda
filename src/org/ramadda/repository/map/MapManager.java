@@ -17,6 +17,9 @@
 package org.ramadda.repository.map;
 
 
+import org.ramadda.plugins.map.ShapefileOutputHandler;
+
+
 import org.ramadda.repository.Entry;
 import org.ramadda.repository.Repository;
 import org.ramadda.repository.RepositoryManager;
@@ -33,7 +36,6 @@ import org.ramadda.util.HtmlUtils;
 import org.ramadda.util.JQuery;
 import org.ramadda.util.Json;
 import org.ramadda.util.Utils;
-import org.ramadda.plugins.map.ShapefileOutputHandler;
 
 import ucar.unidata.geoloc.Bearing;
 import ucar.unidata.geoloc.LatLonPointImpl;
@@ -90,29 +92,6 @@ public class MapManager extends RepositoryManager implements WikiConstants {
 
 
     /**
-     * Should maps be shown?
-     *
-     * @return  true if okay to show maps
-     * @deprecated
-     */
-    public boolean shouldShowMaps() {
-        return showMaps();
-    }
-
-    /**
-     * Should maps be shown?
-     *
-     * @return the show maps property value
-     */
-    public boolean showMaps() {
-        return getRepository().getProperty(PROP_SHOWMAP, true);
-    }
-
-
-
-
-
-    /**
      * Create a map
      *
      * @param request      the Request
@@ -120,9 +99,12 @@ public class MapManager extends RepositoryManager implements WikiConstants {
      * @param props _more_
      *
      * @return a map information holder
+     *
+     * @throws Exception _more_
      */
     public MapInfo createMap(Request request, boolean forSelection,
-                             Hashtable<String, String> props) throws Exception {
+                             Hashtable<String, String> props)
+            throws Exception {
         return createMap(request, MapInfo.DFLT_WIDTH, MapInfo.DFLT_HEIGHT,
                          forSelection, props);
     }
@@ -210,6 +192,40 @@ public class MapManager extends RepositoryManager implements WikiConstants {
         return props;
     }
 
+    /** _more_          */
+    private String defaultMapLayer = "";
+
+    /** _more_          */
+    private String mapLayers = "";
+
+    /**
+     * _more_
+     */
+    @Override
+    public void initAttributes() {
+        super.initAttributes();
+        defaultMapLayer = getRepository().getProperty(PROP_MAP_DEFAULTLAYER,
+                "osm");
+        mapLayers = getRepository().getProperty(PROP_MAP_LAYERS, null);
+    }
+
+    /**
+     * _more_
+     *
+     * @return _more_
+     */
+    public String getDefaultMapLayer() {
+        return defaultMapLayer;
+    }
+
+    /**
+     * _more_
+     *
+     * @return _more_
+     */
+    public String getMapLayers() {
+        return mapLayers;
+    }
 
     /**
      * Create a map
@@ -221,19 +237,21 @@ public class MapManager extends RepositoryManager implements WikiConstants {
      * @param props _more_
      *
      * @return a map information holder
+     *
+     * @throws Exception _more_
      */
     public MapInfo createMap(Request request, int width, int height,
                              boolean forSelection,
-                             Hashtable<String, String> props) throws Exception {
+                             Hashtable<String, String> props)
+            throws Exception {
 
         //        System.err.println("MapManager.createMap: " + width + " " + height);
         MapInfo mapInfo = new MapInfo(request, getRepository(), width,
                                       height, forSelection);
 
-        String maplayers = getRepository().getProperty(PROP_MAP_LAYERS, null);
-        if (maplayers != null) {
+        if (mapLayers != null) {
             mapInfo.addProperty("mapLayers",
-                                StringUtil.split(maplayers, ";", true, true));
+                                StringUtil.split(mapLayers, ";", true, true));
         }
 
 
@@ -247,15 +265,8 @@ public class MapManager extends RepositoryManager implements WikiConstants {
         }
 
 
-        mapInfo.addProperty(
-            "defaultMapLayer",
-            Json.quote(
-                getRepository().getProperty(
-                    PROP_MAP_DEFAULTLAYER, "google.hybrid")));
-
-        if ( !showMaps()) {
-            return mapInfo;
-        }
+        mapInfo.addProperty("defaultMapLayer",
+                            Json.quote(getDefaultMapLayer()));
 
         String key = KEY2;
         if (request.getExtraProperty(key) == null) {
@@ -316,27 +327,42 @@ public class MapManager extends RepositoryManager implements WikiConstants {
      * @param request the Request
      *
      * @return  the imports
+     *
+     * @throws Exception _more_
      */
     private String getHtmlImports(Request request) throws Exception {
-        StringBuilder sb = new StringBuilder();
-        boolean minified = getRepository().getProperty("ramadda.minified",true);
+        StringBuilder sb       = new StringBuilder();
+        boolean       minified = getRepository().getMinifiedOk();
         if (OPENLAYERS_VERSION == OPENLAYERS_V2) {
-            if(minified) {
-                HtmlUtils.cssLink(sb, getRepository().htdocsUrl(OPENLAYERS_BASE_V2 + "/theme/default/style.mini.css"));
-                HtmlUtils.importJS(sb, getRepository().htdocsUrl(OPENLAYERS_BASE_V2 + "/OpenLayers.mini.js"));
+            if (minified) {
+                HtmlUtils.cssLink(
+                    sb,
+                    getRepository().getHtdocsUrl(
+                        OPENLAYERS_BASE_V2
+                        + "/theme/default/style.mini.css"));
+                HtmlUtils.importJS(
+                    sb,
+                    getRepository().getHtdocsUrl(
+                        OPENLAYERS_BASE_V2 + "/OpenLayers.mini.js"));
             } else {
-                HtmlUtils.cssLink(sb, getRepository().htdocsUrl(OPENLAYERS_BASE_V2 + "/theme/default/style.css"));
-                HtmlUtils.importJS(sb, getRepository().htdocsUrl(OPENLAYERS_BASE_V2 + "/OpenLayers.debug.js"));
+                HtmlUtils.cssLink(
+                    sb,
+                    getRepository().getHtdocsUrl(
+                        OPENLAYERS_BASE_V2 + "/theme/default/style.css"));
+                HtmlUtils.importJS(
+                    sb,
+                    getRepository().getHtdocsUrl(
+                        OPENLAYERS_BASE_V2 + "/OpenLayers.debug.js"));
             }
         } else {
             /*
             sb.append(
                 HtmlUtils.cssLink(
-                    getRepository().htdocsUrl(
+                    getRepository().getHtdocsUrl(
                         OPENLAYERS_BASE_V3 + "/ol.css")));
             sb.append(
                 HtmlUtils.importJS(
-                    getRepository().htdocsUrl(
+                    getRepository().getHtdocsUrl(
                         OPENLAYERS_BASE_V3 + "/ol.js")));
 */
             sb.append(
@@ -349,15 +375,20 @@ public class MapManager extends RepositoryManager implements WikiConstants {
 
         //        addGoogleMapsApi(request, sb);
         if (OPENLAYERS_VERSION == OPENLAYERS_V2) {
-            if(minified) {
-                HtmlUtils.importJS(sb, getRepository().htdocsUrl("/ramaddamap.mini.js"));
-            } else  {
-                HtmlUtils.importJS(sb, getRepository().htdocsUrl("/ramaddamap.js"));
+            if (minified) {
+                HtmlUtils.importJS(
+                    sb, getRepository().getHtdocsUrl("/ramaddamap.mini.js"));
+            } else {
+                HtmlUtils.importJS(
+                    sb, getRepository().getHtdocsUrl("/ramaddamap.js"));
             }
         } else {
-            HtmlUtils.importJS(sb, getRepository().htdocsUrl("/ramaddamap3.js"));
+            HtmlUtils.importJS(
+                sb, getRepository().getHtdocsUrl("/ramaddamap3.js"));
         }
-        HtmlUtils.cssLink(sb, getRepository().htdocsUrl("/ramaddamap.css"));
+        HtmlUtils.cssLink(sb,
+                          getRepository().getHtdocsUrl("/ramaddamap.css"));
+
         return sb.toString();
     }
 
@@ -368,7 +399,6 @@ public class MapManager extends RepositoryManager implements WikiConstants {
      * @param sb  the html
      */
     private void addGoogleMapsApi(Request request, StringBuilder sb) {
-        String mapLayers = getRepository().getProperty(PROP_MAP_LAYERS, null);
         if ((mapLayers != null)
                 && (mapLayers.toLowerCase().indexOf("google") < 0)) {
             return;
@@ -582,10 +612,10 @@ public class MapManager extends RepositoryManager implements WikiConstants {
             getPageHandler().addGoogleJSImport(request, sb);
             sb.append(
                 HtmlUtils.importJS(
-                    getRepository().htdocsUrl("/google/googleearth.js")));
+                    getRepository().getHtdocsUrl("/google/googleearth.js")));
             sb.append(
                 HtmlUtils.importJS(
-                    getRepository().htdocsUrl(
+                    getRepository().getHtdocsUrl(
                         "/google/extensions-0.2.1.pack.js")));
         }
 
@@ -667,13 +697,13 @@ public class MapManager extends RepositoryManager implements WikiConstants {
                     + HtmlUtils.onMouseClick(id + ".togglePlacemarkVisible("
                         + HtmlUtils.squote(entry.getId()) + ")")));
 
-            String navUrl  = "javascript:" + call;
-            String iconUrl = getPageHandler().getIconUrl(request, entry);
+            String navUrl     = "javascript:" + call;
+            String getIconUrl = getPageHandler().getIconUrl(request, entry);
             catSB.append(
                 HtmlUtils.href(
                     getEntryManager().getEntryURL(request, entry),
                     HtmlUtils.img(
-                        iconUrl, msg("Click to view entry details"))));
+                        getIconUrl, msg("Click to view entry details"))));
             catSB.append("&nbsp;");
             catSB.append(HtmlUtils.href(navUrl, getEntryDisplayName(entry)));
             //            catSB.append("</td>");
@@ -683,7 +713,7 @@ public class MapManager extends RepositoryManager implements WikiConstants {
                 HtmlUtils.href(
                     navUrl,
                     HtmlUtils.img(
-                        getRepository().iconUrl(ICON_MAP_NAV),
+                        getRepository().getIconUrl(ICON_MAP_NAV),
                         "View entry"), HtmlUtils.cssClass(
                             CSS_CLASS_EARTH_LINK)));
             catSB.append("</td>");
@@ -746,7 +776,7 @@ public class MapManager extends RepositoryManager implements WikiConstants {
             name = name.replace("\"", "\\\"");
             name = name.replace("'", "\\'");
 
-            String desc = HtmlUtils.img(iconUrl)
+            String desc = HtmlUtils.img(getIconUrl)
                           + getEntryManager().getEntryLink(request, entry);
             desc = desc.replace("\r", " ");
             desc = desc.replace("\n", " ");
@@ -789,7 +819,7 @@ public class MapManager extends RepositoryManager implements WikiConstants {
                                 + lon) + "," + HtmlUtils.squote(detailsUrl)
                                     + "," + HtmlUtils.squote(
                                         request.getAbsoluteUrl(
-                                            iconUrl)) + "," + pointsString
+                                            getIconUrl)) + "," + pointsString
                                                 + "," + kmlUrl + ","
                                                     + fromTime + ","
                                                         + toTime));
@@ -1087,6 +1117,7 @@ public class MapManager extends RepositoryManager implements WikiConstants {
      * Get the map information
      *
      * @param request       the Request
+     * @param mainEntry _more_
      * @param entriesToUse  the list of Entrys
      * @param sb            StringBuilder to pass back html
      * @param width         width of the map
@@ -1098,9 +1129,10 @@ public class MapManager extends RepositoryManager implements WikiConstants {
      *
      * @throws Exception  problem creating map
      */
-    public MapInfo getMap(Request request, Entry mainEntry, List<Entry> entriesToUse,
-                          StringBuilder sb, int width, int height,
-                          Hashtable mapProps, Hashtable props)
+    public MapInfo getMap(Request request, Entry mainEntry,
+                          List<Entry> entriesToUse, StringBuilder sb,
+                          int width, int height, Hashtable mapProps,
+                          Hashtable props)
             throws Exception {
 
         boolean doCategories = Utils.getProperty(props, "doCategories", true);
@@ -1118,13 +1150,13 @@ public class MapManager extends RepositoryManager implements WikiConstants {
         String  selectBounds = Utils.getProperty(props, ATTR_SELECTBOUNDS);
         boolean forceBounds  = true;
         String viewBounds = Utils.getProperty(props, ATTR_VIEWBOUNDS,
-                                              selectBounds);
+                                selectBounds);
 
-        if(viewBounds!=null && viewBounds.equals("<bounds>")) {
+        if ((viewBounds != null) && viewBounds.equals("<bounds>")) {
             viewBounds = mainEntry.getBoundsString();
         }
-        if(request.get("mapsubset",false)) {
-            forceBounds  = false;
+        if (request.get("mapsubset", false)) {
+            forceBounds = false;
         }
 
         MapInfo map = createMap(request, width, height, false, null);
@@ -1195,7 +1227,7 @@ public class MapManager extends RepositoryManager implements WikiConstants {
                     HtmlUtils.TAG_DIV,
                     "data-mapid=\"" + entry.getId() + "\" "
                     + HtmlUtils.cssClass(CSS_CLASS_EARTH_NAV)));
-            String iconUrl = getPageHandler().getIconUrl(request, entry);
+            String getIconUrl = getPageHandler().getIconUrl(request, entry);
 
             String navUrl = "javascript:" + map.getVariableName()
                             + ".hiliteMarker(" + sqt(entry.getId()) + ");";
@@ -1210,7 +1242,7 @@ public class MapManager extends RepositoryManager implements WikiConstants {
                 HtmlUtils.href(
                     getEntryManager().getEntryURL(request, entry),
                     HtmlUtils.img(
-                        iconUrl, msg("Click to view entry details"))));
+                        getIconUrl, msg("Click to view entry details"))));
             catSB.append("&nbsp;");
             String label = getEntryDisplayName(entry);
             catSB.append(HtmlUtils.href(navUrl, label,
@@ -1276,21 +1308,31 @@ public class MapManager extends RepositoryManager implements WikiConstants {
                          List<Entry> entriesToUse, boolean detailed,
                          boolean screenBigRects)
             throws Exception {
-        if(entriesToUse.size()==1 && detailed) {
+
+        if ((entriesToUse.size() == 1) && detailed) {
             List<Metadata> metadataList =
-                getMetadataManager().findMetadata(request, entriesToUse.get(0),
-                                                  "map_displaymap", true);
+                getMetadataManager().findMetadata(request,
+                    entriesToUse.get(0), "map_displaymap", true);
             if ((metadataList != null) && (metadataList.size() > 0)) {
-                for(Metadata metadata: metadataList) {
+                for (Metadata metadata : metadataList) {
                     if (Utils.stringDefined(metadata.getAttr1())) {
-                        Entry mapEntry =  (Entry) getEntryManager().getEntry(request, metadata.getAttr1());
-                        if(mapEntry!=null && (mapEntry.getTypeHandler().isType("geo_shapefile") ||
-                                              mapEntry.getTypeHandler().isType("geo_geojson"))) {
+                        Entry mapEntry =
+                            (Entry) getEntryManager().getEntry(request,
+                                metadata.getAttr1());
+                        if ((mapEntry != null)
+                                && (mapEntry.getTypeHandler()
+                                    .isType("geo_shapefile") || mapEntry
+                                    .getTypeHandler()
+                                    .isType("geo_geojson"))) {
                             String kmlUrl =
-                                request.entryUrl(getRepository().URL_ENTRY_SHOW, mapEntry,
-                                                 ARG_OUTPUT,
-                                                 ShapefileOutputHandler.OUTPUT_KML.toString(), "formap", "true");
-                            map.addKmlUrl(mapEntry.getName(), kmlUrl, true,ShapefileOutputHandler.makeMapStyle(request,  mapEntry));
+                                request.entryUrl(getRepository()
+                                    .URL_ENTRY_SHOW, mapEntry, ARG_OUTPUT,
+                                        ShapefileOutputHandler.OUTPUT_KML
+                                            .toString(), "formap", "true");
+                            map.addKmlUrl(
+                                mapEntry.getName(), kmlUrl, true,
+                                ShapefileOutputHandler.makeMapStyle(
+                                    request, mapEntry));
                         }
                     }
                 }
@@ -1375,6 +1417,7 @@ public class MapManager extends RepositoryManager implements WikiConstants {
                 }
             }
         }
+
 
 
 

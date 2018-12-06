@@ -530,7 +530,7 @@ public class GpxTypeHandler extends PointTypeHandler {
             new Link(
                 request.entryUrl(
                     getRepository().URL_ENTRY_ACCESS, entry, "type",
-                    "kml"), getRepository().iconUrl(ICON_KML),
+                    "kml"), getRepository().getIconUrl(ICON_KML),
                             "Convert GPX to KML", OutputType.TYPE_FILE));
     }
 
@@ -661,7 +661,7 @@ public class GpxTypeHandler extends PointTypeHandler {
             List<TwoFacedObject> tfos  = new ArrayList<TwoFacedObject>();
             StringBuilder        extra = new StringBuilder();
             String icon =
-                HtmlUtils.img(repository.iconUrl("/icons/marker.png"));
+                HtmlUtils.img(repository.getIconUrl("/icons/marker.png"));
 
 
             int markerCnt = 0;

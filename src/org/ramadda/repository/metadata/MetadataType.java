@@ -162,7 +162,7 @@ public class MetadataType extends MetadataTypeBase {
     /** _more_ */
     private String entryType = null;
 
-    /** _more_          */
+    /** _more_ */
     private String help = "";
 
     /**
@@ -1093,6 +1093,11 @@ public class MetadataType extends MetadataTypeBase {
         return template;
     }
 
+    /**
+     * _more_
+     *
+     * @return _more_
+     */
     public String getHelp() {
         return help;
     }
@@ -1160,7 +1165,8 @@ public class MetadataType extends MetadataTypeBase {
                 if (suffixLabel == null) {
                     suffixLabel = "";
                 }
-                sb.append(HtmlUtils.formEntryTop(elementLbl, "\n" +widget, suffixLabel));
+                sb.append(HtmlUtils.formEntryTop(elementLbl, "\n" + widget,
+                        suffixLabel));
             }
         }
 

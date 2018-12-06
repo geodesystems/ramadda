@@ -492,7 +492,7 @@ public class SpecialSearch extends RepositoryManager implements RequestHandler {
         getRepository().getCalendarOutputHandler().makeTimeline(request, null,  //Pass null for the main entry
                 allEntries, timelineSB,
                 "width:" + contentsWidth + "px; height: " + contentsHeight
-                                                                + "px;",new Hashtable());
+                + "px;", new Hashtable());
 
 
         StringBuffer mapSB = new StringBuffer(
@@ -527,20 +527,21 @@ public class SpecialSearch extends RepositoryManager implements RequestHandler {
                         tabContents.add(HtmlUtils.div(listSB.toString(),
                                 HtmlUtils.style("min-width:" + minWidth
                                     + "px")));
-                        tabTitles.add(HtmlUtils.img(iconUrl(ICON_LIST)) + " "
-                                      + msg("List"));
+                        tabTitles.add(HtmlUtils.img(getIconUrl(ICON_LIST))
+                                      + " " + msg("List"));
                     } else if (tab.equals(TAB_MAP)) {
                         tabContents.add(HtmlUtils.div(mapSB.toString(),
                                 HtmlUtils.style("min-width:" + minWidth
                                     + "px")));
-                        tabTitles.add(HtmlUtils.img(iconUrl(ICON_MAP)) + " "
-                                      + msg("Map"));
+                        tabTitles.add(HtmlUtils.img(getIconUrl(ICON_MAP))
+                                      + " " + msg("Map"));
                     } else if (tab.equals(TAB_TIMELINE)) {
                         tabContents.add(HtmlUtils.div(timelineSB.toString(),
                                 HtmlUtils.style("min-width:" + minWidth
                                     + "px")));
-                        tabTitles.add(HtmlUtils.img(iconUrl(ICON_TIMELINE))
-                                      + " " + msg("Timeline"));
+                        tabTitles.add(
+                            HtmlUtils.img(getIconUrl(ICON_TIMELINE)) + " "
+                            + msg("Timeline"));
                     } else if (tab.equals(TAB_EARTH)
                                && getMapManager().isGoogleEarthEnabled(
                                    request)) {
@@ -553,7 +554,7 @@ public class SpecialSearch extends RepositoryManager implements RequestHandler {
                                 HtmlUtils.style("min-width:" + minWidth
                                     + "px")));
                         tabTitles.add(
-                            HtmlUtils.img(iconUrl(ICON_GOOGLEEARTH)) + " "
+                            HtmlUtils.img(getIconUrl(ICON_GOOGLEEARTH)) + " "
                             + msg("Earth"));
                     }
                 }
@@ -733,7 +734,7 @@ public class SpecialSearch extends RepositoryManager implements RequestHandler {
             }) {
                 if (outputType.getIcon() != null) {
                     links.append(
-                        HtmlUtils.img(iconUrl(outputType.getIcon())));
+                        HtmlUtils.img(getIconUrl(outputType.getIcon())));
                     links.append(" ");
                 }
 

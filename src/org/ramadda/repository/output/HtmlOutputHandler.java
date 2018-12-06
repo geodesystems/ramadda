@@ -191,6 +191,20 @@ public class HtmlOutputHandler extends OutputHandler {
     }
 
 
+    /**
+     * _more_
+     *
+     * @param repository _more_
+     * @param element _more_
+     * @param fromChildClass _more_
+     *
+     * @throws Exception _more_
+     */
+    public HtmlOutputHandler(Repository repository, Element element,
+                             boolean fromChildClass)
+            throws Exception {
+        super(repository, element);
+    }
 
 
     /**
@@ -254,7 +268,7 @@ public class HtmlOutputHandler extends OutputHandler {
                                   getRepository().URL_ENTRY_SHOW, entry,
                                   ARG_OUTPUT,
                                   output.toString()), HtmlUtils.img(
-                                      iconUrl(output.getIcon()),
+                                      getIconUrl(output.getIcon()),
                                       output.getLabel()));
             sb.append("<td align=center>");
             if (output.getId().equals(selected)) {
@@ -302,11 +316,6 @@ public class HtmlOutputHandler extends OutputHandler {
 
 
 
-    public Result getMapInfo(Request request, Entry entry) throws Exception {
-        return getMapInfo(request, entry, true);
-    }
-
-
     /**
      * _more_
      *
@@ -317,7 +326,24 @@ public class HtmlOutputHandler extends OutputHandler {
      *
      * @throws Exception _more_
      */
-    public Result getMapInfo(Request request, Entry entry, boolean asXml) throws Exception {
+    public Result getMapInfo(Request request, Entry entry) throws Exception {
+        return getMapInfo(request, entry, true);
+    }
+
+
+    /**
+     * _more_
+     *
+     * @param request _more_
+     * @param entry _more_
+     * @param asXml _more_
+     *
+     * @return _more_
+     *
+     * @throws Exception _more_
+     */
+    public Result getMapInfo(Request request, Entry entry, boolean asXml)
+            throws Exception {
         String html = null;
         Result typeResult = entry.getTypeHandler().getHtmlDisplay(request,
                                 entry);
@@ -340,13 +366,13 @@ public class HtmlOutputHandler extends OutputHandler {
         }
         html = getRepository().translate(request, html);
 
-        if(asXml) {
-        StringBuffer xml = new StringBuffer(XmlUtil.XML_HEADER);
-        xml.append("\n<content>\n");
-        XmlUtil.appendCdata(xml, html);
-        xml.append("\n</content>");
+        if (asXml) {
+            StringBuffer xml = new StringBuffer(XmlUtil.XML_HEADER);
+            xml.append("\n<content>\n");
+            XmlUtil.appendCdata(xml, html);
+            xml.append("\n</content>");
 
-        return new Result("", xml, "text/xml");
+            return new Result("", xml, "text/xml");
         } else {
             return new Result("", html);
         }
@@ -403,7 +429,7 @@ public class HtmlOutputHandler extends OutputHandler {
         StringBuffer inner = new StringBuffer();
         String cLink =
             HtmlUtils.jsLink(HtmlUtils.onMouseClick("hidePopupObject();"),
-                             HtmlUtils.img(iconUrl(ICON_CLOSE)), "");
+                             HtmlUtils.img(getIconUrl(ICON_CLOSE)), "");
         inner.append(cLink);
         inner.append(HtmlUtils.br());
         inner.append(links);
@@ -531,7 +557,8 @@ public class HtmlOutputHandler extends OutputHandler {
         StringBuilder sb        = new StringBuilder();
         boolean       doingInfo = outputType.equals(OUTPUT_INFO);
         if (doingInfo) {
-            getPageHandler().entrySectionOpen(request, entry, sb, "Entry Information");
+            getPageHandler().entrySectionOpen(request, entry, sb,
+                    "Entry Information");
             StringBuilder suffix = new StringBuilder();
             addDescription(request, entry, sb, true, suffix);
             String informationBlock = getInformationTabs(request, entry,
@@ -846,7 +873,7 @@ public class HtmlOutputHandler extends OutputHandler {
                                  List<Entry> subGroups, List<Entry> entries)
             throws Exception {
         StringBuffer sb         = new StringBuffer();
-        String       folder     = iconUrl(ICON_FOLDER_CLOSED);
+        String       folder     = getIconUrl(ICON_FOLDER_CLOSED);
         boolean      showUrl    = request.get(ARG_DISPLAYLINK, true);
         boolean      onlyGroups = request.get(ARG_ONLYGROUPS, false);
 
@@ -1372,7 +1399,7 @@ public class HtmlOutputHandler extends OutputHandler {
         sb.append(HtmlUtils.submit("submit", "Submit"));
 
         sb.append(HtmlUtils.hr());
-        sb.append(HtmlUtils.img(iconUrl("/icons/arrow.gif"), "",
+        sb.append(HtmlUtils.img(getIconUrl("/icons/arrow.gif"), "",
                                 HtmlUtils.attr("id", formId + "_image")));
 
         sb.append(HtmlUtils.script(js.toString()));
@@ -1534,8 +1561,9 @@ public class HtmlOutputHandler extends OutputHandler {
             if (firstLink == null) {
                 firstLink = HtmlUtils.href(
                     url,
-                    HtmlUtils.img(getRepository().iconUrl("/icons/link.png"))
-                    + " " + label);
+                    HtmlUtils.img(
+                        getRepository().getIconUrl("/icons/link.png")) + " "
+                            + label);
             }
 
             url = HtmlUtils.concat("javascript:",
@@ -1543,11 +1571,11 @@ public class HtmlOutputHandler extends OutputHandler {
                                        HtmlUtils.jsMakeArgs(true,
                                            child.getId(), url, label)));
             HtmlUtils.open(listSB, HtmlUtils.TAG_DIV,
-                                         HtmlUtils.attrs(new String[] {
-                                             "class",
-                                             "ramadda-treeview-entry" }));
-            HtmlUtils.href(listSB, url, leftLabel,HtmlUtils.attr("title","Click to view " + label));
-            HtmlUtils.close(listSB,HtmlUtils.TAG_DIV);
+                           HtmlUtils.attrs(new String[] { "class",
+                    "ramadda-treeview-entry" }));
+            HtmlUtils.href(listSB, url, leftLabel,
+                           HtmlUtils.attr("title", "Click to view " + label));
+            HtmlUtils.close(listSB, HtmlUtils.TAG_DIV);
             listSB.append("\n");
         }
 
@@ -1711,9 +1739,9 @@ public class HtmlOutputHandler extends OutputHandler {
             tableSB.append("</thead>");
             tableSB.append("<tbody>");
 
-            String  blank =
-                HtmlUtils.img(getRepository().iconUrl(ICON_BLANK));
-            boolean odd   = true;
+            String blank =
+                HtmlUtils.img(getRepository().getIconUrl(ICON_BLANK));
+            boolean odd = true;
             for (Entry entry : entries) {
                 tableSB.append(HtmlUtils.open(HtmlUtils.TAG_TR,
                         HtmlUtils.attrs(new String[] { "class", odd
@@ -1739,7 +1767,8 @@ public class HtmlOutputHandler extends OutputHandler {
                         HtmlUtils.href(
                             entry.getTypeHandler().getEntryResourceUrl(
                                 request, entry), HtmlUtils.img(
-                                iconUrl(ICON_DOWNLOAD), msg("Download"), ""));
+                                getIconUrl(ICON_DOWNLOAD), msg("Download"),
+                                ""));
 
                     if (entry.isFile()) {
                         tableSB.append(HtmlUtils
@@ -2025,8 +2054,7 @@ public class HtmlOutputHandler extends OutputHandler {
      *
      * @throws Exception _more_
      */
-    public String getWikiText(Request request, Entry entry)
-            throws Exception {
+    public String getWikiText(Request request, Entry entry) throws Exception {
         String description = entry.getDescription();
 
         String wikiInner   = null;

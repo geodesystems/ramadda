@@ -428,7 +428,7 @@ public class Hipchat {
             sb.append(" ");
             String linkIcon =
                 request.getAbsoluteUrl(
-                    request.getRepository().getPageHandler().iconUrl(
+                    request.getRepository().getPageHandler().getIconUrl(
                         "/icons/link.png"));
             sb.append(HtmlUtils.href(entry.getResource().getPath(),
                                      HtmlUtils.img(linkIcon, "Download")));

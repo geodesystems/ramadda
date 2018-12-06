@@ -85,7 +85,7 @@ public class ArxivSearchProvider extends SearchProvider {
      * @return _more_
      */
     @Override
-    public String getIconUrl() {
+    public String getSearchProviderIconUrl() {
         return "${root}/search/arxiv.png";
     }
 

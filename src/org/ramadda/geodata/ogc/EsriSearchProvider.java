@@ -98,7 +98,7 @@ public class EsriSearchProvider extends SearchProvider {
      * @return _more_
      */
     @Override
-    public String getIconUrl() {
+    public String getSearchProviderIconUrl() {
         return "${root}/ogc/esri.png";
     }
 

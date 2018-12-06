@@ -135,13 +135,15 @@ public class FtpTypeHandler extends ExtensibleGroupTypeHandler {
      *
      * @throws Exception _more_
      */
-    public String getIconUrl(Request request, Entry entry) throws Exception {
+    @Override
+    public String getEntryIconUrl(Request request, Entry entry)
+            throws Exception {
         if (entry.isGroup()) {
             if ( !getEntryManager().isSynthEntry(entry.getId())) {
-                return iconUrl(ICON_FTP);
+                return getIconUrl(ICON_FTP);
             }
 
-            return iconUrl(ICON_FTP);
+            return getIconUrl(ICON_FTP);
         }
 
         return super.getIconUrl(request, entry);

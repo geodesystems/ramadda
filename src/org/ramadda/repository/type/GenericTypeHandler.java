@@ -129,22 +129,6 @@ public class GenericTypeHandler extends TypeHandler {
     }
 
 
-    /**
-     * _more_
-     *
-     *
-     * @param request _more_
-     * @param entry _more_
-     *
-     * @return _more_
-     *
-     * @throws Exception on badness
-     */
-    public String xxxgetIconUrl(Request request, Entry entry)
-            throws Exception {
-        return super.getIconUrl(request, entry);
-    }
-
 
     /**
      * _more_
@@ -775,12 +759,14 @@ public class GenericTypeHandler extends TypeHandler {
 
         int originalSize = where.size();
         for (Column column : getMyColumns()) {
+
             /**
-               For now always check every column as cansearch is used to not show the search field to the user
-               but may be used internally
-            if ( !column.getCanSearch()) {
-                continue;
-                }**/
+             *  For now always check every column as cansearch is used to not show the search field to the user
+             *  but may be used internally
+             * if ( !column.getCanSearch()) {
+             *   continue;
+             *   }*
+             */
             column.assembleWhereClause(request, where, searchCriteria);
         }
         //If I added any here then also add a join on the column "id"

@@ -813,7 +813,7 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 
         //Put in an empty submit button so when the user presses return 
         //it acts like a regular submit (not a submit to change the type)
-        sb.append(HtmlUtils.submitImage(iconUrl(ICON_BLANK),
+        sb.append(HtmlUtils.submitImage(getIconUrl(ICON_BLANK),
                                         ARG_SEARCH_SUBMIT, "",
                                         " style=\"display: none;\" "));
 
@@ -1043,8 +1043,8 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
                 if (type.getIsForSearch()) {
                     tfos.add(new HtmlUtils.Selector(type.getLabel(),
                             type.getId(),
-                            getRepository().iconUrl(type.getIcon()), 3, 20,
-                            false));
+                            getRepository().getIconUrl(type.getIcon()), 3,
+                            20, false));
                 }
             }
         }
@@ -1119,11 +1119,11 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
             String img;
             if (icon == null) {
                 icon = ICON_BLANK;
-                img = HtmlUtils.img(typeHandler.iconUrl(icon), "",
+                img = HtmlUtils.img(typeHandler.getIconUrl(icon), "",
                                     HtmlUtils.attr(HtmlUtils.ATTR_WIDTH,
                                         "16"));
             } else {
-                img = HtmlUtils.img(typeHandler.iconUrl(icon));
+                img = HtmlUtils.img(typeHandler.getIconUrl(icon));
             }
             StringBuffer buff = new StringBuffer();
 

@@ -933,8 +933,8 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
 
             return HtmlUtils.makeShowHideBlock(blockTitle, sb.toString(),
                     blockOpen, HtmlUtils.cssClass("entry-toggleblock-label"),
-                    "", iconUrl("ramadda.icon.togglearrowdown"),
-                    iconUrl("ramadda.icon.togglearrowright"));
+                    "", getIconUrl(ICON_TOGGLEARROWDOWN),
+                    getIconUrl(ICON_TOGGLEARROWRIGHT));
 
         }
 
@@ -1060,7 +1060,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
             boolean includeIcon = Utils.getProperty(props, ATTR_INCLUDEICON,
                                       false);
             if (includeIcon) {
-                label = HtmlUtils.img(iconUrl("/icons/download.png"))
+                label = HtmlUtils.img(getIconUrl("/icons/download.png"))
                         + HtmlUtils.space(2) + label;
 
                 return HtmlUtils.div(HtmlUtils.href(url, label,
@@ -1103,11 +1103,11 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                 String icon = typeHandler.getIconProperty(null);
                 if (icon == null) {
                     icon = ICON_BLANK;
-                    img = HtmlUtils.img(typeHandler.iconUrl(icon), "",
+                    img = HtmlUtils.img(typeHandler.getIconUrl(icon), "",
                                         HtmlUtils.attr(HtmlUtils.ATTR_WIDTH,
                                             "16"));
                 } else {
-                    img = HtmlUtils.img(typeHandler.iconUrl(icon));
+                    img = HtmlUtils.img(typeHandler.getIconUrl(icon));
                 }
             }
 
@@ -1465,8 +1465,8 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                 String[]  mapArgs  = {
                     "strokeColor", "fillColor", "fillOpacity", "scrollToZoom",
                     "selectOnHover", "onSelect", "showDetailsLink",
-                    "zoom:initialZoom", "layer:defaultMapLayer",
-                    "kmlLayer","kmlLayerName"
+                    "zoom:initialZoom", "layer:defaultMapLayer", "kmlLayer",
+                    "kmlLayerName"
                 };
                 for (String mapArg : mapArgs) {
                     String key = mapArg;
@@ -1486,14 +1486,15 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                                     (String) null);
                 if (mapSet != null) {
                     List<String> msets = StringUtil.split(mapSet, ",");
-                    for (int i = 0; i < msets.size() - 1; i+=2) {
+                    for (int i = 0; i < msets.size() - 1; i += 2) {
                         mapProps.put(msets.get(i),
                                      Json.quote(msets.get(i + 1)));
                     }
                 }
 
-                MapInfo map = getMapManager().getMap(newRequest, entry, children,
-                                  sb, width, height, mapProps, props);
+                MapInfo map = getMapManager().getMap(newRequest, entry,
+                                  children, sb, width, height, mapProps,
+                                  props);
 
                 if (icon != null) {
                     newRequest.remove(ARG_ICON);
@@ -1536,7 +1537,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                 StringBuilder popup = new StringBuilder();
                 String menuLinkImg =
                     HtmlUtils.img(
-                        getRepository().iconUrl("/icons/menu_arrow.gif"),
+                        getRepository().getIconUrl("/icons/menu_arrow.gif"),
                         msg("Click to show menu"),
                         HtmlUtils.cssClass("ramadda-breadcrumbs-menu-img"));
                 String menuLink = getPageHandler().makePopupLink(menuLinkImg,
@@ -2042,7 +2043,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                 sb.append("</style>\n\n");
                 sb.append("<link rel=\"stylesheet\" href=\"");
                 sb.append(
-                    getRepository().htdocsUrl("/lib/slides/paginate.css"));
+                    getRepository().getHtdocsUrl("/lib/slides/paginate.css"));
                 sb.append("\" type=\"text/css\" media=\"screen\" />");
                 sb.append("\n");
 
@@ -2054,7 +2055,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                 String slideParams =
                     "preload: false, preloadImage: "
                     + HtmlUtils.squote(
-                        getRepository().htdocsUrl(
+                        getRepository().getHtdocsUrl(
                             "/lib/slides/img/loading.gif")) + ", play: "
                                 + startSpeed + ", width: \"" + width + "\""
                                 + ", pause: 2500, hoverPause: true"
@@ -2073,7 +2074,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                     HtmlUtils.href(
                         "#",
                         HtmlUtils.img(
-                            getRepository().htdocsUrl(
+                            getRepository().getHtdocsUrl(
                                 "/lib/slides/img/arrow-prev.png"), "Prev",
                                     " width=18 "), HtmlUtils.cssClass(
                                         "prev"));
@@ -2082,7 +2083,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                     HtmlUtils.href(
                         "#",
                         HtmlUtils.img(
-                            getRepository().htdocsUrl(
+                            getRepository().getHtdocsUrl(
                                 "/lib/slides/img/arrow-next.png"), "Next",
                                     " width=18 "), HtmlUtils.cssClass(
                                         "next"));
@@ -2114,7 +2115,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
 
                 sb.append(
                     HtmlUtils.importJS(
-                        getRepository().htdocsUrl(
+                        getRepository().getHtdocsUrl(
                             "/lib/slides/slides.min.jquery.js")));
 
                 HtmlUtils.script(sb, js.toString());
@@ -3808,8 +3809,8 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
 
                 return HtmlUtils.makeShowHideBlock(title, content, open,
                         HtmlUtils.cssClass(CSS_CLASS_HEADING_2), "",
-                        iconUrl("ramadda.icon.togglearrowdown"),
-                        iconUrl("ramadda.icon.togglearrowright"));
+                        getIconUrl("ramadda.icon.togglearrowdown"),
+                        getIconUrl("ramadda.icon.togglearrowright"));
             }
 
             return content;
@@ -4055,7 +4056,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
 
 
         String importMenuLabel = msg("Add property");
-        //            HtmlUtils.img(iconUrl("/icons/wiki/button_import.png"),
+        //            HtmlUtils.img(getIconUrl("/icons/wiki/button_import.png"),
         //                         "Import Entry Property");
         String importButton = getPageHandler().makePopupLink(importMenuLabel,
                                   HtmlUtils.hbox(importMenu.toString(),
@@ -4116,8 +4117,8 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
         }
 
         return HtmlUtils.href(js,
-                              HtmlUtils.img(iconUrl("/icons/wiki/" + icon),
-                                            label));
+                              HtmlUtils.img(getIconUrl("/icons/wiki/"
+                                  + icon), label));
 
     }
 
@@ -4647,9 +4648,8 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
         if (entry.isGeoreferenced()
         /*|| getEntryManager().isSynthEntry(entry.getId())*/
         ) {
-            String mapLayers = getRepository().getProperty(PROP_MAP_LAYERS,
-                                   null);
-            String layerVar = "";
+            String mapLayers = getMapManager().getMapLayers();
+            String layerVar  = "";
             if (mapLayers != null) {
                 mapLayers = mapLayers.replaceAll(";", ",");
                 layerVar  = "mapLayers=\"" + mapLayers + "\"";
@@ -4770,7 +4770,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                         }
 
                         if (include) {
-                            String icon = provider.getIconUrl();
+                            String icon = provider.getSearchProviderIconUrl();
                             if (icon == null) {
                                 icon = "${root}/icons/magnifier.png";
                             }
@@ -4803,7 +4803,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
 
                 }
                 String id   = searchProvider.getId();
-                String icon = searchProvider.getIconUrl();
+                String icon = searchProvider.getSearchProviderIconUrl();
                 if (icon == null) {
                     icon = "${root}/icons/magnifier.png";
                 }
@@ -4877,11 +4877,8 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
         props.remove("layoutColumns");
 
         //Always add the default map layer to the displaymanager properties so any new maps pick it up
-        String defaultLayer = Utils.getProperty(
-                                  props, "defaultMapLayer",
-                                  getRepository().getProperty(
-                                      "ramadda.map.defaultlayer",
-                                      "google.terrain"));
+        String defaultLayer = Utils.getProperty(props, "defaultMapLayer",
+                                  getMapManager().getDefaultMapLayer());
 
         topProps.add("defaultMapLayer");
         topProps.add(Json.quote(defaultLayer));
@@ -5003,45 +5000,62 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                          + pointProps + ")");
         }
 
-        if(displayType.equals("map")) {
+        if (displayType.equals("map")) {
             List<Metadata> metadataList =
-                getMetadataManager().findMetadata(request, entry, "map_displaymap", true);
+                getMetadataManager().findMetadata(request, entry,
+                    "map_displaymap", true);
             if ((metadataList != null) && (metadataList.size() > 0)) {
-                String kmlIds = null;
-                String geojsonIds = null;
-                String kmlNames = null;
+                String kmlIds       = null;
+                String geojsonIds   = null;
+                String kmlNames     = null;
                 String geojsonNames = null;
 
-                for(Metadata metadata: metadataList) {
+                for (Metadata metadata : metadataList) {
                     if (Utils.stringDefined(metadata.getAttr1())) {
-                        Entry mapEntry =  (Entry) getEntryManager().getEntry(request, metadata.getAttr1());
-                        if(mapEntry!=null && (mapEntry.getTypeHandler().isType("geo_shapefile") ||
-                                              mapEntry.getTypeHandler().isType("geo_geojson"))) {
-                            if(mapEntry.getTypeHandler().isType("geo_shapefile")) {
-                                if(kmlIds==null) {
-                                    kmlIds  = mapEntry.getId();
-                                    kmlNames = mapEntry.getName().replaceAll(","," ");
-                                }   else {
-                                    kmlIds += "," +mapEntry.getId();
-                                    kmlNames += "," + mapEntry.getName().replaceAll(","," ");
+                        Entry mapEntry =
+                            (Entry) getEntryManager().getEntry(request,
+                                metadata.getAttr1());
+                        if ((mapEntry != null)
+                                && (mapEntry.getTypeHandler()
+                                    .isType("geo_shapefile") || mapEntry
+                                    .getTypeHandler()
+                                    .isType("geo_geojson"))) {
+                            if (mapEntry.getTypeHandler().isType(
+                                    "geo_shapefile")) {
+                                if (kmlIds == null) {
+                                    kmlIds = mapEntry.getId();
+                                    kmlNames =
+                                        mapEntry.getName().replaceAll(",",
+                                            " ");
+                                } else {
+                                    kmlIds += "," + mapEntry.getId();
+                                    kmlNames +=
+                                        ","
+                                        + mapEntry.getName().replaceAll(",",
+                                            " ");
                                 }
                             } else {
-                                if(geojsonIds==null) {
-                                    geojsonIds  = mapEntry.getId();
-                                    geojsonNames = mapEntry.getName().replaceAll(","," ");
-                                }   else {
-                                    geojsonIds += "," +mapEntry.getId();
-                                    geojsonNames += "," + mapEntry.getName().replaceAll(","," ");
+                                if (geojsonIds == null) {
+                                    geojsonIds = mapEntry.getId();
+                                    geojsonNames =
+                                        mapEntry.getName().replaceAll(",",
+                                            " ");
+                                } else {
+                                    geojsonIds += "," + mapEntry.getId();
+                                    geojsonNames +=
+                                        ","
+                                        + mapEntry.getName().replaceAll(",",
+                                            " ");
                                 }
                             }
                         }
-                        if(kmlIds!=null) {
+                        if (kmlIds != null) {
                             propList.add("kmlLayer");
                             propList.add(Json.quote(kmlIds));
                             propList.add("kmlLayerName");
                             propList.add(Json.quote(kmlNames));
                         }
-                        if(geojsonIds!=null) {
+                        if (geojsonIds != null) {
                             propList.add("geojsonLayer");
                             propList.add(Json.quote(geojsonIds));
                             propList.add("geojsonLayerName");
@@ -5077,53 +5091,67 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
         getMapManager().addMapImports(request, sb);
         if (request.getExtraProperty("initchart") == null) {
             request.putExtraProperty("initchart", "added");
-            HtmlUtils.importJS(sb,  "https://www.gstatic.com/charts/loader.js");
+            HtmlUtils.importJS(sb,
+                               "https://www.gstatic.com/charts/loader.js");
             //                    "google.load(\"visualization\", \"1\", {packages:['corechart','table','bar']});\n"));
-            HtmlUtils.script(sb,   "google.charts.load(\"43\", {packages:['corechart','table','bar']});\n");
-            HtmlUtils.importJS(sb, htdocsUrl("/lib/d3/d3.min.js"));
-            HtmlUtils.importJS(sb, htdocsUrl("/lib/jquery.handsontable.full.min.js"));
-            HtmlUtils.cssLink(sb,  htdocsUrl("/lib/jquery.handsontable.full.min.css"));
+            HtmlUtils.script(
+                sb,
+                "google.charts.load(\"43\", {packages:['corechart','table','bar']});\n");
+            HtmlUtils.importJS(sb, getHtdocsUrl("/lib/d3/d3.min.js"));
+            HtmlUtils.importJS(
+                sb, getHtdocsUrl("/lib/jquery.handsontable.full.min.js"));
+            HtmlUtils.cssLink(
+                sb, getHtdocsUrl("/lib/jquery.handsontable.full.min.css"));
 
             //Put this here after the google load
-            HtmlUtils.importJS(sb, htdocsUrl("/db/dom-drag.js"));
-            HtmlUtils.importJS(sb, htdocsUrl("/db/dom-drag.js"));
+            HtmlUtils.importJS(sb, getHtdocsUrl("/db/dom-drag.js"));
+            HtmlUtils.importJS(sb, getHtdocsUrl("/db/dom-drag.js"));
 
-            if(getRepository().getProperty("ramadda.minified",true)) {
-                HtmlUtils.importJS(sb, htdocsUrl("/display/display_all_mini.js"));
-                HtmlUtils.cssLink(sb, htdocsUrl("/display.mini.css"));
+            if (getRepository().getMinifiedOk()) {
+                HtmlUtils.importJS(
+                    sb, getHtdocsUrl("/display/display_all_mini.js"));
+                HtmlUtils.cssLink(sb, getHtdocsUrl("/display.mini.css"));
             } else {
-                HtmlUtils.cssLink(sb, htdocsUrl("/display.css"));
-                HtmlUtils.importJS(sb, htdocsUrl("/display/pointdata.js"));
-                HtmlUtils.importJS(sb, htdocsUrl("/display/utils.js"));
-                HtmlUtils.importJS(sb, htdocsUrl("/display/displaymanager.js"));
-                HtmlUtils.importJS(sb, htdocsUrl("/display/display.js"));
-                HtmlUtils.importJS(sb, htdocsUrl("/display/displayentry.js"));
-                HtmlUtils.importJS(sb, htdocsUrl("/display/displaymap.js"));
-                HtmlUtils.importJS(sb, htdocsUrl("/display/displaychart.js"));
-                HtmlUtils.importJS(sb, htdocsUrl("/display/displaytable.js"));
-                HtmlUtils.importJS(sb, htdocsUrl("/display/control.js"));
-                HtmlUtils.importJS(sb, htdocsUrl("/display/displayd3.js"));
-                HtmlUtils.importJS(sb, htdocsUrl("/display/displayext.js"));
+                HtmlUtils.cssLink(sb, getHtdocsUrl("/display.css"));
+                HtmlUtils.importJS(sb, getHtdocsUrl("/display/pointdata.js"));
+                HtmlUtils.importJS(sb, getHtdocsUrl("/display/utils.js"));
+                HtmlUtils.importJS(
+                    sb, getHtdocsUrl("/display/displaymanager.js"));
+                HtmlUtils.importJS(sb, getHtdocsUrl("/display/display.js"));
+                HtmlUtils.importJS(sb,
+                                   getHtdocsUrl("/display/displayentry.js"));
+                HtmlUtils.importJS(sb,
+                                   getHtdocsUrl("/display/displaymap.js"));
+                HtmlUtils.importJS(sb,
+                                   getHtdocsUrl("/display/displaychart.js"));
+                HtmlUtils.importJS(sb,
+                                   getHtdocsUrl("/display/displaytable.js"));
+                HtmlUtils.importJS(sb, getHtdocsUrl("/display/control.js"));
+                HtmlUtils.importJS(sb, getHtdocsUrl("/display/displayd3.js"));
+                HtmlUtils.importJS(sb,
+                                   getHtdocsUrl("/display/displayext.js"));
             }
-            HtmlUtils.importJS(sb, htdocsUrl("/repositories.js"));
+            HtmlUtils.importJS(sb, getHtdocsUrl("/repositories.js"));
 
             String includes =
                 getRepository().getProperty("ramadda.display.includes",
-                                        (String) null);
+                                            (String) null);
             if (includes != null) {
                 for (String include :
-                         StringUtil.split(includes, ",", true, true)) {
-                    HtmlUtils.importJS(sb, fileUrl(include));
+                        StringUtil.split(includes, ",", true, true)) {
+                    HtmlUtils.importJS(sb, getFileUrl(include));
+                }
             }
         }
     }
-}
 
 
 
     /**
      * Create an attribute with the name and value
      *
+     *
+     * @param sb _more_
      * @param name  attribute name
      * @param value  value
      *
@@ -5151,6 +5179,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
         for (int i = 0; i < attrs.length; i += 2) {
             attr(sb, attrs[i], attrs[i + 1]);
         }
+
         return sb.toString();
     }
 

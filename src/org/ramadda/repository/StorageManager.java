@@ -792,9 +792,12 @@ public class StorageManager extends RepositoryManager {
     }
 
 
+    /**
+     * _more_
+     */
     @Override
     public void clearCache() {
-        for(File file: cacheDir.listFiles()) {
+        for (File file : cacheDir.listFiles()) {
             file.delete();
         }
     }

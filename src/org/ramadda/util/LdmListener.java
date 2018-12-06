@@ -111,7 +111,7 @@ public class LdmListener {
 
 
     /** _more_ */
-    private String fileUrlTemplate =
+    private String getFileUrlTemplate =
         "http://localhost:8080/repository/harvester/processfile?file=${file}&type=${type}";
 
     /** _more_ */
@@ -350,7 +350,7 @@ public class LdmListener {
                 }
             }
 
-            String urlString = fileUrlTemplate.replace("${file}",
+            String urlString = getFileUrlTemplate.replace("${file}",
                                    f.toString());
             urlString = urlString.replace("${type}", type);
             try {

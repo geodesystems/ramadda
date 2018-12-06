@@ -92,7 +92,7 @@ public class AudioTypeHandler extends GenericTypeHandler {
 
 
 
-        String fileUrl = entry.getTypeHandler().getEntryResourceUrl(request,
+        String getFileUrl = entry.getTypeHandler().getEntryResourceUrl(request,
                              entry);
         String mime = "audio/wav";
         String ext = IOUtil.getFileExtension(
@@ -109,7 +109,7 @@ public class AudioTypeHandler extends GenericTypeHandler {
             mime = "audio/mp4";
         }
 
-        html = html.replace("${url}", fileUrl);
+        html = html.replace("${url}", getFileUrl);
         html = html.replace("${mime}", mime);
         sb.append(html);
 

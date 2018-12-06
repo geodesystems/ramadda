@@ -2174,7 +2174,7 @@ public class PointOutputHandler extends RecordOutputHandler {
             { OUTPUT_LATLONALTCSV.toString(), "Lat/Lon/Alt CSV", ".csv",
               ICON_POINTS }, { lasProduct, "LAS 1.2", ".las", ICON_POINTS },
             { OUTPUT_KMZ.toString(), ".kmz", "Google Earth KMZ",
-              getIconUrl(request, ICON_KML) }
+              getAbsoluteIconUrl(request, ICON_KML) }
         };
 
 

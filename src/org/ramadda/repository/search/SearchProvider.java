@@ -226,8 +226,8 @@ public abstract class SearchProvider extends GenericTypeHandler {
      *
      * @return _more_
      */
-    public String getIconUrl() {
-        return null;
+    public String getSearchProviderIconUrl() {
+        return "${root}/favicon.png";
     }
 
 
@@ -310,7 +310,7 @@ public abstract class SearchProvider extends GenericTypeHandler {
          * @return _more_
          */
         @Override
-        public String getIconUrl() {
+        public String getSearchProviderIconUrl() {
             return "${root}/favicon.png";
         }
 
@@ -412,7 +412,7 @@ public abstract class SearchProvider extends GenericTypeHandler {
          * @return _more_
          */
         @Override
-        public String getIconUrl() {
+        public String getSearchProviderIconUrl() {
             return "${root}/favicon.png";
         }
 

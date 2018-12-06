@@ -252,7 +252,7 @@ public class WolframSearchProvider extends SearchProvider {
      * @return _more_
      */
     @Override
-    public String getIconUrl() {
+    public String getSearchProviderIconUrl() {
         return "${root}/search/wolfram.png";
     }
 

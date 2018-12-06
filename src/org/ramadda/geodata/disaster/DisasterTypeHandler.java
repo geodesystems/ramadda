@@ -64,7 +64,8 @@ public class DisasterTypeHandler extends ExtensibleGroupTypeHandler {
      *
      * @throws Exception _more_
      */
-    public String getIconUrl(Request request, Entry entry) throws Exception {
+    @Override
+    public String getEntryIconUrl(Request request, Entry entry) throws Exception {
         String disaster = entry.getValue(0, (String) null);
         if (disaster == null) {
             return super.getIconUrl(request, entry);
@@ -75,7 +76,7 @@ public class DisasterTypeHandler extends ExtensibleGroupTypeHandler {
             return super.getIconUrl(request, entry);
         }
 
-        return iconUrl(icon);
+        return getIconUrl(icon);
     }
 
 

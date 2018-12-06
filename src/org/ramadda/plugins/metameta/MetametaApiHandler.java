@@ -79,7 +79,7 @@ public class MetametaApiHandler extends RepositoryManager implements RequestHand
             StringBuilder buff = new StringBuilder();
             String icon = typeHandler.getTypeProperty("icon", (String) null);
             if (icon != null) {
-                buff.append(HtmlUtils.img(getRepository().iconUrl(icon)));
+                buff.append(HtmlUtils.img(getRepository().getIconUrl(icon)));
                 buff.append(HtmlUtils.space(1));
             }
             buff.append(

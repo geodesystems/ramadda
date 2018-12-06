@@ -247,7 +247,8 @@ public class CalendarOutputHandler extends OutputHandler {
             List allEntries = new ArrayList(entries);
             allEntries.addAll(subGroups);
             //            makeTimeline(request, allEntries, sb, "height: 300px;");
-            makeTimeline(request, group, allEntries, sb, "height: 300px;", new Hashtable());
+            makeTimeline(request, group, allEntries, sb, "height: 300px;",
+                         new Hashtable());
             getPageHandler().entrySectionClose(request, group, sb);
             result = makeLinksResult(request,
                                      msg("Timeline") + " - "
@@ -311,11 +312,13 @@ public class CalendarOutputHandler extends OutputHandler {
             }
             sb.append(XmlUtil.openTag(TAG_EVENT, attrs.toString()));
             if (entry.getDescription().length() > 0) {
-                String infoHtml =
-                    getMapManager().cleanupInfo(request,
-                                                getMapManager().makeInfoBubble(request, entry,
-                                                                               false));
-                infoHtml = HtmlUtils.div(infoHtml,HtmlUtils.style("max-height: 350px;      overflow-y:auto;"));
+                String infoHtml = getMapManager().cleanupInfo(request,
+                                      getMapManager().makeInfoBubble(request,
+                                          entry, false));
+                infoHtml = HtmlUtils.div(
+                    infoHtml,
+                    HtmlUtils.style(
+                        "max-height: 350px;      overflow-y:auto;"));
                 sb.append(XmlUtil.getCdata(infoHtml));
             }
             sb.append(XmlUtil.closeTag(TAG_EVENT));
@@ -336,12 +339,14 @@ public class CalendarOutputHandler extends OutputHandler {
      * @param entries _more_
      * @param sb _more_
      * @param style _more_
+     * @param props _more_
      *
      *
      * @throws Exception _more_
      */
     public void makeTimeline(Request request, Entry mainEntry,
-                             List<Entry> entries, Appendable sb, String style, Hashtable props)
+                             List<Entry> entries, Appendable sb,
+                             String style, Hashtable props)
             throws Exception {
         SimpleDateFormat sdf = new SimpleDateFormat("MMM d yyyy HH:mm:ss Z");
         long             minDate = 0;
@@ -386,7 +391,9 @@ public class CalendarOutputHandler extends OutputHandler {
             timelineTemplate);
         timelineTemplate = timelineTemplate.replace("${timelineurl}", url);
         String mapVar = (String) props.get("mapVar");
-        if(mapVar == null) mapVar = "null";
+        if (mapVar == null) {
+            mapVar = "null";
+        }
         timelineTemplate = timelineTemplate.replace("${mapvar}", mapVar);
         timelineTemplate = timelineTemplate.replace("${basedate}",
                 sdf.format(new Date(minDate)));
@@ -494,6 +501,7 @@ public class CalendarOutputHandler extends OutputHandler {
         sb.append("</table>");
 
         getPageHandler().entrySectionClose(request, group, sb);
+
         return new Result(msg("Date Grid"), sb);
 
     }
@@ -820,7 +828,7 @@ public class CalendarOutputHandler extends OutputHandler {
 
         for (int i = 0; i < navLabels.length; i++) {
             navList.add(HtmlUtils.href(navUrls.get(i),
-                                       HtmlUtils.img(iconUrl(navIcons[i]),
+                                       HtmlUtils.img(getIconUrl(navIcons[i]),
                                            navLabels[i], " border=\"0\"")));
         }
 
@@ -1216,7 +1224,7 @@ public class CalendarOutputHandler extends OutputHandler {
 
         for (int i = 0; i < navLabels.length; i++) {
             navList.add(HtmlUtils.href(navUrls.get(i),
-                                       HtmlUtils.img(iconUrl(navIcons[i]),
+                                       HtmlUtils.img(getIconUrl(navIcons[i]),
                                            navLabels[i], " border=\"0\"")));
         }
 

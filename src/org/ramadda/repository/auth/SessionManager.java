@@ -883,7 +883,7 @@ public class SessionManager extends RepositoryManager {
                                          ARG_REMOVESESSIONID,
                                          session.getId());
             sessionHtml.append(HtmlUtils.row(HtmlUtils.cols(HtmlUtils.href(url,
-                    HtmlUtils.img(iconUrl(ICON_DELETE))) + " "
+                    HtmlUtils.img(getIconUrl(ICON_DELETE))) + " "
                         + session.getUser().getLabel(), formatDate(request,
                             session.getCreateDate()), formatDate(request,
                                 session.getLastActivity()), session.getId())));

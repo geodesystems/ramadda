@@ -721,8 +721,7 @@ public class UserManager extends RepositoryManager {
      */
     public boolean isRequestOk(Request request) {
         User user = request.getUser();
-        if (getRepository().getProperty(PROP_ACCESS_ADMINONLY, false)
-                && !user.getAdmin()) {
+        if (getRepository().getAdminOnly() && !user.getAdmin()) {
             getRepository().debugSession("isRequestOK: Admin only");
             if ( !request.getRequestPath().startsWith(
                     getRepository().getUrlBase() + "/user/")) {
@@ -730,8 +729,7 @@ public class UserManager extends RepositoryManager {
             }
         }
 
-        if (getRepository().getProperty(PROP_ACCESS_REQUIRELOGIN, false)
-                && user.getAnonymous()) {
+        if (getRepository().getRequireLogin() && user.getAnonymous()) {
             if ( !request.getRequestPath().startsWith(
                     getRepository().getUrlBase() + "/user/")) {
                 getRepository().debugSession(
@@ -799,7 +797,9 @@ public class UserManager extends RepositoryManager {
         if (userAgree != null) {
             sb.append(formEntry(request, "",
                                 HtmlUtils.checkbox(ARG_USERAGREE, "true",
-                                                   request.get(ARG_USERAGREE,false)) + HtmlUtils.space(2) + userAgree));
+                                    request.get(ARG_USERAGREE,
+                                        false)) + HtmlUtils.space(2)
+                                            + userAgree));
         }
         sb.append(extra);
 
@@ -1154,8 +1154,9 @@ public class UserManager extends RepositoryManager {
         if (doAdmin) {
             applyAdminState(request, user);
         }
-        String phone = request.getString("phone", (String) user.getProperty("phone"));
-        if(phone!=null) {
+        String phone = request.getString("phone",
+                                         (String) user.getProperty("phone"));
+        if (phone != null) {
             user.putProperty("phone", phone);
         }
 
@@ -1362,7 +1363,8 @@ public class UserManager extends RepositoryManager {
                                     user.getEmail(), HtmlUtils.SIZE_40)));
             sb.append(formEntry(request, msgLabel("Phone"),
                                 HtmlUtils.input("phone",
-                                                (String) user.getProperty("phone",""), HtmlUtils.SIZE_40)));
+                                    (String) user.getProperty("phone", ""),
+                                    HtmlUtils.SIZE_40)));
         }
 
         List<TwoFacedObject> templates =
@@ -1964,7 +1966,7 @@ public class UserManager extends RepositoryManager {
                                           getRepositoryBase().URL_USER_EDIT,
                                           ARG_USER_ID,
                                           user.getId()), HtmlUtils.img(
-                                              iconUrl(ICON_EDIT),
+                                              getIconUrl(ICON_EDIT),
                                               msg("Edit user")));
 
             String userProfileLink =
@@ -1979,7 +1981,7 @@ public class UserManager extends RepositoryManager {
                     request.makeUrl(
                         getRepositoryBase().URL_USER_ACTIVITY, ARG_USER_ID,
                         user.getId()), HtmlUtils.img(
-                            getRepository().iconUrl(ICON_LOG),
+                            getRepository().getIconUrl(ICON_LOG),
                             msg("View user log")));
 
             String userCbx = HtmlUtils.checkbox("user_" + user.getId(),
@@ -2305,7 +2307,7 @@ public class UserManager extends RepositoryManager {
                                 getRepository().URL_ASSOCIATION_ADD,
                                 ARG_FROM, request.getString(ARG_FROM, ""),
                                 ARG_TO, entry.getId()), HtmlUtils.img(
-                                    getRepository().iconUrl(
+                                    getRepository().getIconUrl(
                                         ICON_ASSOCIATION), msg(
                                         "Create an association")) + HtmlUtils.space(
                                             1) + entry.getLabel()));
@@ -2341,7 +2343,7 @@ public class UserManager extends RepositoryManager {
                             request.makeUrl(
                                 getRepositoryBase().URL_USER_CART, ARG_FROM,
                                 entry.getId()), HtmlUtils.img(
-                                    getRepository().iconUrl(
+                                    getRepository().getIconUrl(
                                         ICON_ASSOCIATION), msg(
                                         "Create an association"))));
 
@@ -2409,9 +2411,20 @@ public class UserManager extends RepositoryManager {
      * @return _more_
      */
     public boolean isCartEnabled() {
-        return getRepository().getProperty(PROP_SHOW_CART, true);
+        return showCart;
     }
 
+    /** _more_          */
+    private boolean showCart = true;
+
+    /**
+     * _more_
+     */
+    @Override
+    public void initAttributes() {
+        super.initAttributes();
+        showCart = getRepository().getProperty(PROP_SHOW_CART, true);
+    }
 
 
     /**
@@ -2563,7 +2576,7 @@ public class UserManager extends RepositoryManager {
                         getRepositoryBase().URL_USER_FAVORITE,
                         ARG_FAVORITE_ID, favorite.getId(),
                         ARG_FAVORITE_DELETE, "true"), HtmlUtils.img(
-                            getRepository().iconUrl(ICON_DELETE),
+                            getRepository().getIconUrl(ICON_DELETE),
                             msg("Delete this favorite")));
             sb.append(removeLink);
             sb.append(HtmlUtils.space(1));
@@ -2577,7 +2590,7 @@ public class UserManager extends RepositoryManager {
             sb.append(
                 getPageHandler().showDialogNote(
                     "You have no favorite entries defined.<br>When you see an  entry or folder just click on the "
-                    + HtmlUtils.img(iconUrl(ICON_FAVORITE))
+                    + HtmlUtils.img(getIconUrl(ICON_FAVORITE))
                     + " icon to add it to your list of favorites"));
         }
         sb.append(HtmlUtils.sectionClose());
@@ -2619,7 +2632,7 @@ public class UserManager extends RepositoryManager {
                                 .URL_ENTRY_SEARCH), ARG_USER_ID,
                                     user.getId()), HtmlUtils
                                         .img(getRepository()
-                                            .iconUrl(ICON_SEARCH), msg(
+                                            .getIconUrl(ICON_SEARCH), msg(
                                                 "Search for entries created by this user")));
 
         sb.append(HtmlUtils.formTable());
@@ -2760,7 +2773,7 @@ public class UserManager extends RepositoryManager {
 
         String key = request.getString(ARG_USER_PASSWORDKEY, (String) null);
         PasswordReset resetInfo = null;
-        StringBuilder  sb        = new StringBuilder();
+        StringBuilder sb        = new StringBuilder();
         if (key != null) {
             resetInfo = passwordResets.get(key);
             if (resetInfo != null) {
@@ -2976,13 +2989,14 @@ public class UserManager extends RepositoryManager {
                         msg("Login is not allowed"))));
         }
 
-        boolean      responseAsData = request.responseAsData();
-        StringBuilder sb             = new StringBuilder();
-        User         user           = null;
-        String       output         = request.getString(ARG_OUTPUT, "");
+        boolean responseAsData      = request.responseAsData();
+        StringBuilder sb            = new StringBuilder();
+        User          user          = null;
+        String output = request.getString(ARG_OUTPUT, "");
         StringBuffer loginFormExtra = new StringBuffer();
 
-        AccessManager.TwoFactorAuthenticator tfa = getAccessManager().getTwoFactorAuthenticator();
+        AccessManager.TwoFactorAuthenticator tfa =
+            getAccessManager().getTwoFactorAuthenticator();
         tfa = null;
 
         if (request.exists(ARG_USER_ID)) {
@@ -2992,17 +3006,18 @@ public class UserManager extends RepositoryManager {
             }
 
             boolean keepChecking = true;
-            if(tfa !=null) {
+            if (tfa != null) {
                 user = findUser(request.getString(ARG_USER_ID, ""), false);
-                if(user!=null) {
-                    if(!tfa.userHasBeenAuthenticated(request, user, sb)) {
+                if (user != null) {
+                    if ( !tfa.userHasBeenAuthenticated(request, user, sb)) {
                         user = null;
                     }
                 }
             }
-            String  loginExtra   = "";
-            if(user==null) {
-                String password = request.getString(ARG_USER_PASSWORD, "").trim();
+            String loginExtra = "";
+            if (user == null) {
+                String password = request.getString(ARG_USER_PASSWORD,
+                                      "").trim();
 
                 if ((name.length() > 0) && (password.length() > 0)) {
                     user = authenticateUser(request, name, password,
@@ -3015,11 +3030,11 @@ public class UserManager extends RepositoryManager {
                         keepChecking = false;
                         if (responseAsData) {
                             return getRepository().makeErrorResult(request,
-                                                                   "You must agree to the terms");
+                                    "You must agree to the terms");
                         }
                         sb.append(
-                                  getPageHandler().showDialogWarning(
-                                                                     msg("You must agree to the terms")));
+                            getPageHandler().showDialogWarning(
+                                msg("You must agree to the terms")));
                     } else {
                         loginExtra = "User agreed to terms and conditions";
                     }
@@ -3027,7 +3042,7 @@ public class UserManager extends RepositoryManager {
             }
 
             if (user != null) {
-                if(tfa!=null && tfa.userCanBeAuthenticated(user)) {
+                if ((tfa != null) && tfa.userCanBeAuthenticated(user)) {
                     tfa.addAuthForm(request, user, sb);
                     keepChecking = false;
                 }
@@ -3866,7 +3881,7 @@ public class UserManager extends RepositoryManager {
                             request.makeUrl(
                                 getRepositoryBase().URL_USER_ACTIVITY,
                                 ARG_USER_ID, user.getId()), HtmlUtils.img(
-                                    getRepository().iconUrl(ICON_LOG),
+                                    getRepository().getIconUrl(ICON_LOG),
                                     msg("View user log")) + " "
                                         + user.getLabel());
                 }

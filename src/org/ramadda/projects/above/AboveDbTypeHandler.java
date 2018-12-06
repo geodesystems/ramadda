@@ -103,9 +103,9 @@ public class AboveDbTypeHandler extends DbTypeHandler {
             return super.getIconFor(entry, entryProps, values);
         }
         if (value.equals("Fluxtower")) {
-            return fileUrl("/above/tower.png");
+            return getFileUrl("/above/tower.png");
         } else {
-            return fileUrl("/icons/add.png");
+            return getFileUrl("/icons/add.png");
         }
     }
 

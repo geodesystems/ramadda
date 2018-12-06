@@ -89,7 +89,7 @@ public class FaqTypeHandler extends ExtensibleGroupTypeHandler {
                         .entryUrlWithArg(getRepository().URL_ENTRY_FORM,
                             group, ARG_GROUP), ARG_TYPE,
                                 FaqEntryTypeHandler.TYPE_FAQENTRY), HtmlUtils
-                                    .img(getRepository().iconUrl(ICON_NEW),
+                                    .img(getRepository().getIconUrl(ICON_NEW),
                                         msg("New FAQ Question"))));
         }
 
@@ -129,7 +129,7 @@ public class FaqTypeHandler extends ExtensibleGroupTypeHandler {
                 String link = HtmlUtils.href(
                                   getEntryManager().getEntryURL(
                                       request, entry), HtmlUtils.img(
-                                      getRepository().iconUrl(ICON_ENTRY),
+                                      getRepository().getIconUrl(ICON_ENTRY),
                                       msg("View entry details")));
                 //            catQuestionSB.append(" ");
                 catQuestionSB.append(link);

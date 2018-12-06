@@ -148,6 +148,9 @@ public class OutputType {
     private Counter numberOfCalls = new Counter();
 
 
+    /** _more_          */
+    private boolean okToUse = true;
+
     /**
      * _more_
      *
@@ -232,6 +235,26 @@ public class OutputType {
         this(that);
         this.suffix = suffix;
     }
+
+    /**
+     *  Set the OkToUse property.
+     *
+     *  @param value The new value for OkToUse
+     */
+    public void setOkToUse(boolean value) {
+        okToUse = value;
+    }
+
+    /**
+     *  Get the OkToUse property.
+     *
+     *  @return The OkToUse
+     */
+    public boolean getOkToUse() {
+        return okToUse;
+    }
+
+
 
     /**
      * _more_

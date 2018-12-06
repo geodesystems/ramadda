@@ -193,7 +193,7 @@ public class WeblogOutputHandler extends OutputHandler {
                     "\n:title " + group.getName() + "\n"
                     + HtmlUtils.div(
                         HtmlUtils.img(
-                            getRepository().fileUrl(
+                            getRepository().getFileUrl(
                                 "/blog/header.png")), HtmlUtils.attrs(
                                     "style",
                                     "text-align:center;")) + "\n<p>\n";
@@ -216,7 +216,7 @@ public class WeblogOutputHandler extends OutputHandler {
                                         BlogEntryTypeHandler
                                             .TYPE_BLOGENTRY), HtmlUtils
                                                 .img(getRepository()
-                                                    .iconUrl(ICON_NEW), msg(
+                                                    .getIconUrl(ICON_NEW), msg(
                                                         "New Weblog Entry"))));
             }
         }
@@ -238,7 +238,7 @@ public class WeblogOutputHandler extends OutputHandler {
             links.add(
                 HtmlUtils.href(
                     rssLink,
-                    HtmlUtils.img(iconUrl(RssOutputHandler.ICON_RSS))));
+                    HtmlUtils.img(getIconUrl(RssOutputHandler.ICON_RSS))));
 
 
             sb.append(StringUtil.join(" ", links));

@@ -91,7 +91,7 @@ public class DuckDuckGoSearchProvider extends SearchProvider {
      * @return _more_
      */
     @Override
-    public String getIconUrl() {
+    public String getSearchProviderIconUrl() {
         return "${root}/search/duckduckgo.png";
     }
 

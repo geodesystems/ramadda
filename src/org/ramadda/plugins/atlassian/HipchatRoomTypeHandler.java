@@ -151,7 +151,7 @@ public class HipchatRoomTypeHandler extends ExtensibleGroupTypeHandler {
             String icon = HtmlUtils.href(
                               entryUrl,
                               HtmlUtils.img(
-                                  getRepository().iconUrl(
+                                  getRepository().getIconUrl(
                                       "/hipchat/hipchat.png")));
 
             sb.append(

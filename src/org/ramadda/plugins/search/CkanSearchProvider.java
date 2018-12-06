@@ -132,7 +132,7 @@ public class CkanSearchProvider extends SearchProvider {
      * @return _more_
      */
     @Override
-    public String getIconUrl() {
+    public String getSearchProviderIconUrl() {
         return "${root}/search/ckan.png";
     }
 

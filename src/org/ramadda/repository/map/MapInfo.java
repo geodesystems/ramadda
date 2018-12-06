@@ -111,7 +111,7 @@ public class MapInfo {
     /** _more_ */
     private String selectBounds;
 
-    /** _more_          */
+    /** _more_ */
     private String selectFields;
 
 
@@ -229,15 +229,6 @@ public class MapInfo {
      */
     public String msgLabel(String s) {
         return repository.msgLabel(s);
-    }
-
-    /**
-     * Show the maps
-     *
-     * @return  true if successful
-     */
-    public boolean showMaps() {
-        return repository.getMapManager().showMaps();
     }
 
 
@@ -359,10 +350,6 @@ public class MapInfo {
      * @return  the HTML
      */
     public String getHtml() {
-        if ( !showMaps()) {
-            return getMapDiv("&nbsp;Maps not available");
-        }
-
         repository.getPageHandler().addToMap(request, this);
         for (PageDecorator pageDecorator :
                 repository.getPluginManager().getPageDecorators()) {
@@ -627,12 +614,6 @@ public class MapInfo {
             regions = getRegionSelectorWidget(arg);
         }
         widget.append(getSelectorWidget(arg, nwseValues));
-        if ( !showMaps()) {
-            return widget.toString();
-        }
-
-
-
         StringBuilder sb        = new StringBuilder();
         String        clearLink = getSelectorClearLink(msg("Clear"));
         if (doRegion) {
@@ -682,7 +663,7 @@ public class MapInfo {
             String popupLabel = (selectionLabel != null)
                                 ? selectionLabel
                                 : HtmlUtils.img(
-                                    repository.iconUrl("/icons/map.png"),
+                                    repository.getIconUrl("/icons/map.png"),
                                     msg("Show Map"));
 
 
@@ -1194,11 +1175,13 @@ public class MapInfo {
      * @param name _more_
      * @param url  the URL
      * @param canSelect _more_
+     * @param args _more_
      */
-    public void addKmlUrl(String name, String url, boolean canSelect, String args) {
+    public void addKmlUrl(String name, String url, boolean canSelect,
+                          String args) {
         getJS().append(mapVarName + ".addKMLLayer(" + HtmlUtils.squote(name)
-                       + "," + HtmlUtils.squote(url)
-                       + "," + canSelect + ",null,null," + args+");\n");
+                       + "," + HtmlUtils.squote(url) + "," + canSelect
+                       + ",null,null," + args + ");\n");
 
     }
 
@@ -1209,11 +1192,13 @@ public class MapInfo {
      * @param name _more_
      * @param url  the URL
      * @param canSelect _more_
+     * @param args _more_
      */
-    public void addGeoJsonUrl(String name, String url, boolean canSelect,String args) {
+    public void addGeoJsonUrl(String name, String url, boolean canSelect,
+                              String args) {
         getJS().append(mapVarName + ".addGeoJsonLayer("
                        + HtmlUtils.squote(name) + "," + HtmlUtils.squote(url)
-                       + "," + canSelect + ",null,null," + args+");\n");
+                       + "," + canSelect + ",null,null," + args + ");\n");
     }
 
 
@@ -1223,6 +1208,7 @@ public class MapInfo {
      * Center the map on the bounds
      *
      * @param bounds  the bounds
+     * @param force _more_
      */
     public void centerOn(Rectangle2D.Double bounds, boolean force) {
         if (bounds != null) {
@@ -1230,7 +1216,8 @@ public class MapInfo {
                            + bounds.getX() + "," + bounds.getY() + ","
                            + (bounds.getX() + bounds.getWidth()) + ","
                            + (bounds.getY() + bounds.getHeight()) + ");\n");
-            getJS().append(mapVarName + ".centerOnMarkers(bounds, " + force+");\n");
+            getJS().append(mapVarName + ".centerOnMarkers(bounds, " + force
+                           + ");\n");
         } else {
             center();
         }

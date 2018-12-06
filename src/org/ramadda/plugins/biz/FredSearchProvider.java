@@ -94,7 +94,7 @@ public class FredSearchProvider extends SearchProvider {
      * @return _more_
      */
     @Override
-    public String getIconUrl() {
+    public String getSearchProviderIconUrl() {
         return "${root}/biz/fred.png";
     }
 

@@ -586,30 +586,6 @@ public class MetadataHandler extends RepositoryManager {
                                      datasetNode);
     }
 
-
-    /**
-     * _more_
-     *
-     * @param metadata _more_
-     *
-     * @return _more_
-     */
-    public boolean canHandle(Metadata metadata) {
-        return canHandle(metadata.getType());
-    }
-
-    /**
-     * _more_
-     *
-     * @param type _more_
-     *
-     * @return _more_
-     */
-    public boolean canHandle(String type) {
-        return typeMap.get(type) != null;
-    }
-
-
     /**
      * _more_
      *
@@ -769,7 +745,7 @@ public class MetadataHandler extends RepositoryManager {
         return HtmlUtils.href(
             getSearchUrl(request, metadata),
             HtmlUtils.img(
-                getRepository().iconUrl(ICON_SEARCH_SMALL),
+                getRepository().getIconUrl(ICON_SEARCH_SMALL),
                 "Search for entries with this metadata", " border=0 "));
     }
 
@@ -853,7 +829,8 @@ public class MetadataHandler extends RepositoryManager {
                 request.makeUrl(
                     getRepository().getMetadataManager().URL_METADATA_LIST,
                     ARG_METADATA_TYPE, type.toString()), HtmlUtils.img(
-                        getRepository().iconUrl(ICON_LIST), "View Listing"));
+                        getRepository().getIconUrl(ICON_LIST),
+                        "View Listing"));
 
         cloudLink = HtmlUtils.href(
             request.makeUrl(
@@ -945,7 +922,7 @@ public class MetadataHandler extends RepositoryManager {
         if (html == null) {
             return;
         }
-        
+
 
 
         if (entry != null) {
@@ -1051,6 +1028,19 @@ public class MetadataHandler extends RepositoryManager {
     public String getEnumerationValues(MetadataElement element) {
         return "";
     }
+
+    /**
+     * _more_
+     *
+     * @param type _more_
+     *
+     * @return _more_
+     */
+    public boolean canHandle(String type) {
+        return typeMap.get(type) != null;
+    }
+
+
 
 
     /**

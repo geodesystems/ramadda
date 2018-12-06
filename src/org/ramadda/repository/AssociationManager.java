@@ -230,7 +230,7 @@ public class AssociationManager extends RepositoryManager {
         sb.append(associations.get(0).getName());
         sb.append(HtmlUtils.br());
         sb.append(fromEntry.getLabel());
-        sb.append(HtmlUtils.pad(HtmlUtils.img(iconUrl(ICON_ARROW))));
+        sb.append(HtmlUtils.pad(HtmlUtils.img(getIconUrl(ICON_ARROW))));
         sb.append(toEntry.getLabel());
 
         getPageHandler().entrySectionClose(request, fromEntry, sb);
@@ -436,7 +436,8 @@ public class AssociationManager extends RepositoryManager {
                     getRepository().getSearchManager().URL_SEARCH_FORM,
                     ARG_ASSOCIATION,
                     HtmlUtils.urlEncode(association)), HtmlUtils.img(
-                        iconUrl(ICON_SEARCH), msg("Search in association")));
+                        getIconUrl(ICON_SEARCH),
+                        msg("Search in association")));
 
         return search;
     }
@@ -817,7 +818,7 @@ public class AssociationManager extends RepositoryManager {
                                 getRepository().URL_ASSOCIATION_DELETE,
                                 ARG_ASSOCIATION,
                                 association.getId()), HtmlUtils.img(
-                                    getRepository().iconUrl(ICON_DELETE),
+                                    getRepository().getIconUrl(ICON_DELETE),
                                     msg("Delete association")))) + "&nbsp;");
             } else {
                 cols.add("");
@@ -850,7 +851,7 @@ public class AssociationManager extends RepositoryManager {
                     fromEntry)) + HtmlUtils.pad(fromLabel));
             cols.add("&nbsp;&nbsp;" + association.getType() + "&nbsp;&nbsp;");
             //            cols.add(association.getLabel());
-            cols.add(HtmlUtils.img(getRepository().iconUrl(ICON_ARROW)));
+            cols.add(HtmlUtils.img(getRepository().getIconUrl(ICON_ARROW)));
             cols.add(HtmlUtils.img(getPageHandler().getIconUrl(request,
                     toEntry)) + HtmlUtils.pad(toLabel));
         }

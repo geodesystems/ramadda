@@ -175,7 +175,7 @@ public class CopyAction extends MonitorAction {
                 monitor.getRepository().getHtmlOutputHandler().getSelect(
                     null, inputId,
                     HtmlUtils.img(
-                        monitor.getRepository().iconUrl(
+                        monitor.getRepository().getIconUrl(
                             ICON_FOLDER_OPEN)) + HtmlUtils.space(1)
                                 + monitor.getRepository().msg(
                                     "Select"), false, "");

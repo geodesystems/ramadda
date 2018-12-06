@@ -90,7 +90,7 @@ public class NationalArchivesSearchProvider extends SearchProvider {
      * @return _more_
      */
     @Override
-    public String getIconUrl() {
+    public String getSearchProviderIconUrl() {
         return "${root}/search/nationalarchives.png";
     }
 

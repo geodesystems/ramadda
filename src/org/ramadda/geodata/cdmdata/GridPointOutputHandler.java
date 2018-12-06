@@ -1072,7 +1072,7 @@ public class GridPointOutputHandler extends OutputHandler implements CdmConstant
                 HtmlUtils.formEntry(
                     msgLabel("Time Range"),
                     HtmlUtils.select(ARG_FROMDATE, formattedDates, fromDate)
-                    + HtmlUtils.img(iconUrl(ICON_ARROW))
+                    + HtmlUtils.img(getIconUrl(ICON_ARROW))
                     + HtmlUtils.select(ARG_TODATE, formattedDates, toDate)));
         }
         //System.err.println("Times took "

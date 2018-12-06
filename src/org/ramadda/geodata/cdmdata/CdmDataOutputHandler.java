@@ -357,7 +357,7 @@ public class CdmDataOutputHandler extends OutputHandler implements CdmConstants 
         Object oldOutput = request.getOutput();
         request.put(ARG_OUTPUT, OUTPUT_OPENDAP);
         String opendapUrl = getOpendapUrl(entry);
-        links.add(new Link(opendapUrl, getRepository().iconUrl(ICON_OPENDAP),
+        links.add(new Link(opendapUrl, getRepository().getIconUrl(ICON_OPENDAP),
                            "OPeNDAP", OUTPUT_OPENDAP));
         request.put(ARG_OUTPUT, oldOutput);
 
@@ -1121,7 +1121,7 @@ public class CdmDataOutputHandler extends OutputHandler implements CdmConstants 
                 HtmlUtils.formEntry(
                     msgLabel("Time Range"),
                     HtmlUtils.select(ARG_FROMDATE, formattedDates, fromDate)
-                    + HtmlUtils.img(iconUrl(ICON_ARROW))
+                    + HtmlUtils.img(getIconUrl(ICON_ARROW))
                     + HtmlUtils.select(ARG_TODATE, formattedDates, toDate)));
         }
         //System.err.println("Times took "
@@ -1241,7 +1241,7 @@ public class CdmDataOutputHandler extends OutputHandler implements CdmConstants 
 
         int                  cnt            = 0;
         int                  total          = 0;
-        String               icon           = iconUrl("/icons/pointdata.gif");
+        String               icon           = getIconUrl("/icons/pointdata.gif");
 
         PointFeatureIterator dataIterator   = getPointIterator(pod);
 
@@ -1578,14 +1578,14 @@ public class CdmDataOutputHandler extends OutputHandler implements CdmConstants 
                     "grid.point.json",
                     "Point time series - " + entry.getName(),
                     request.getAbsoluteUrl(url),
-                    request.getAbsoluteUrl(iconUrl("/icons/chart.png"))));
+                    request.getAbsoluteUrl(getIconUrl("/icons/chart.png"))));
         }
 
         String url = getAbsoluteOpendapUrl(request, entry);
         services.add(
             new ServiceInfo(
                 "opendap", "OPeNDAP Link", url,
-                request.getAbsoluteUrl(iconUrl(ICON_OPENDAP))));
+                request.getAbsoluteUrl(getIconUrl(ICON_OPENDAP))));
     }
 
 

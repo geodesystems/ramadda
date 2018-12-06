@@ -152,7 +152,7 @@ public class TripOutputHandler extends OutputHandler {
                 HtmlUtils.href(
                     request.getUrl(),
                     HtmlUtils.img(
-                        getRepository().iconUrl("/icons/printer.png"))));
+                        getRepository().getIconUrl("/icons/printer.png"))));
             sb.append(" ");
             sb.append(handler.getWikiInclude(null, request, group, group,
                                              "newheader", null));

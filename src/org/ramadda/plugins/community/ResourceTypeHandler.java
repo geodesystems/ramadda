@@ -58,36 +58,36 @@ public class ResourceTypeHandler extends ExtensibleGroupTypeHandler {
      * @throws Exception _more_
      */
     @Override
-    public String getIconUrl(Request request, Entry entry) throws Exception {
+    public String getEntryIconUrl(Request request, Entry entry) throws Exception {
         String type = entry.getValue(0, "");
         if (type.equals("civic")) {
-            return iconUrl("/community/group.png");
+            return getIconUrl("/community/group.png");
         }
         if (type.equals("service_provider")) {
-            return iconUrl("/community/lifebuoy.png");
+            return getIconUrl("/community/lifebuoy.png");
         }
 
         if (type.equals("church")) {
-            return iconUrl("/community/building.png");
+            return getIconUrl("/community/building.png");
         }
 
         if (type.equals("educational_facility")) {
-            return iconUrl("/community/building.png");
+            return getIconUrl("/community/building.png");
         }
 
         if (type.equals("daycare")) {
-            return iconUrl("/community/home.png");
+            return getIconUrl("/community/home.png");
         }
 
         if (type.equals("biking")) {
-            return iconUrl("/icons/bike.png");
+            return getIconUrl("/icons/bike.png");
         }
         if (type.equals("camping")) {
-            return iconUrl("/community/tent.png");
+            return getIconUrl("/community/tent.png");
         }
 
         if (type.equals("marijuana_facility")) {
-            return iconUrl("/community/cookies.png");
+            return getIconUrl("/community/cookies.png");
         }
 
 

@@ -560,8 +560,8 @@ public abstract class RecordTypeHandler extends BlobTypeHandler implements Recor
      *
      * @return _more_
      */
-    public String getIconUrl(Request request, String icon) {
-        return request.getAbsoluteUrl(getRepository().iconUrl(icon));
+    public String getAbsoluteIconUrl(Request request, String icon) {
+        return request.getAbsoluteUrl(getRepository().getIconUrl(icon));
     }
 
 
