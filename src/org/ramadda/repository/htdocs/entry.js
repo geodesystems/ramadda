@@ -257,7 +257,7 @@ function Ramadda(repositoryRoot) {
                 entryTypeCallbacks: null,
             getEntryTypes: function(callback) {
                 err = new Error();
-                console.log("getEntryTypes:" + err.stackTrace);
+                console.log(" getEntryTypes:" + err.stack);
 
                 if(this.entryTypes != null) {
                     return this.entryTypes;
