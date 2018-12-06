@@ -254,6 +254,7 @@ function Ramadda(repositoryRoot) {
                 entryTypeCallPending: false,
                 entryTypeCallbacks: null,
             getEntryTypes: function(callback) {
+
                 if(this.entryTypes != null) {
                     return this.entryTypes;
                 }
@@ -484,7 +485,7 @@ function Ramadda(repositoryRoot) {
             }
         });
 
-    this.getEntryTypes();
+    //    this.getEntryTypes();
 }
 
 /**
