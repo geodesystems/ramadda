@@ -196,7 +196,7 @@ public class MapManager extends RepositoryManager implements WikiConstants {
     private String defaultMapLayer = "";
 
     /** _more_          */
-    private String mapLayers = "";
+    private String mapLayers = null;
 
     /**
      * _more_

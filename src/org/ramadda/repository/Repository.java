@@ -1806,7 +1806,9 @@ public class Repository extends RepositoryBase implements RequestHandler,
      * @param repositoryManager _more_
      */
     public void addRepositoryManager(RepositoryManager repositoryManager) {
-        repositoryManagers.add(repositoryManager);
+        synchronized (repositoryManagers) {
+            repositoryManagers.add(repositoryManager);
+        }
     }
 
     /**
@@ -4061,8 +4063,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
             }
         }
         synchronized (outputHandlers) {
-            for (OutputHandler outputHandler :
-                    new ArrayList<OutputHandler>(outputHandlers)) {
+            for (OutputHandler outputHandler :outputHandlers) {
                 outputHandler.initAttributes();
             }
         }
@@ -4729,7 +4730,9 @@ public class Repository extends RepositoryBase implements RequestHandler,
      * @return _more_
      */
     public boolean addOutputHandler(OutputHandler outputHandler) {
-        outputHandlers.add(outputHandler);
+        synchronized (outputHandlers) {
+            outputHandlers.add(outputHandler);
+        }
         boolean ok   = true;
         HashSet seen = new HashSet();
         for (OutputType type : outputHandler.getTypes()) {
