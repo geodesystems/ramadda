@@ -77,6 +77,7 @@ public class FramesTypeHandler extends GenericTypeHandler {
     public Result getHtmlDisplay(Request request, Entry entry)
             throws Exception {
         StringBuffer sb       = new StringBuffer();
+        getPageHandler().entrySectionOpen(request, entry, sb,null);
         String       urls     = entry.getValue(0, "");
         String       height   = entry.getValue(1, "300");
         String       layout   = entry.getValue(2, LAYOUT_TABLE);
@@ -152,6 +153,7 @@ public class FramesTypeHandler extends GenericTypeHandler {
 
         sb.append("</div>");
 
+        getPageHandler().entrySectionClose(request, entry, sb);
         return new Result(msg("Frames"), sb);
     }
 
