@@ -170,6 +170,10 @@ function RamaddaMultiChart(displayManager, id, properties) {
                 this.initUI();
                 this.updateUI();
             },
+            clearCachedData: function() {
+                SUPER.clearCachedData();
+                this.computedData = null;
+            },
             updateUI: function() {
                 SUPER.updateUI.call(this);
                 this.displayData();

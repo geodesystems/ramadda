@@ -350,11 +350,14 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             addEntry: function(entry) {
                 this.entries.push(entry);
             },
+            clearCachedData: function() {
+            },
             setEntry: function(entry) {
                 this.entries = [];
                 this.addEntry(entry);
                 this.entry = entry;
                 this.entryId = entry.getId();
+                this.clearCachedData();
                 if(this.properties.data) {
                     this.dataCollection = new DataCollection();
                     this.properties.data= this.data= new PointData(entry.getName(), null, null, this.getRamadda().getRoot()+"/entry/show?entryid=" + entry.getId() +"&output=points.product&product=points.json&numpoints=5000",{entryId:this.entryId});
@@ -564,37 +567,37 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
                             var hasValues  = (flags?flags[field.getIndex()]:true);
                             //                            console.log(tupleIdx + " field: " + field.getId() + "has values:" + hasValues);
                             if(argFields!= null) {
+                                //                                console.log("argFields:" + argFields);
                                 for(var fIdx=0;fIdx<argFields.length;fIdx++) {
                                     if(argFields[fIdx].getId() == field.getId()) {
-                                        //                                        console.log(" > Override:" + field.getId());
                                         on = true;
+                                        //                                        console.log("argField:"+ argFields[fIdx].getId()+ " field.id:" + field.getId() +" on:" +on);
                                         this.overrideFields.push(field.getId());
                                         break;
                                     }
                                 }
+                            }   else if(selectedIds.length>0) {
+                                on = selectedIds.indexOf(field.getId())>=0;
+                                //                                console.log("selected ids   on:" + on +" " + field.getId());
                             } else if(fixedFields!=null) {
                                 on = (fixedFields.indexOf(field.getId())>=0);
                                 if(!on) {
                                     on = (fixedFields.indexOf("#" + (tupleIdx+1))>=0);
                                 }
-                                //                                if(on)
-                                //                                    console.log(" > fixed:" + field.getId());
+                                //                                console.log("fixed fields  on:" + on +" " + field.getId());
                             } else if(this.overrideFields!=null) {
                                 on = this.overrideFields.indexOf(field.getId())>=0;
                                 if(!on) {
                                     on = (this.overrideFields.indexOf("#" + (tupleIdx+1))>=0);
                                 }
+                                //                                console.log("override fields  on:" + on +" " + field.getId());
                             } else {
-                                //                                console.log("Field:" +  field.getId());
-                                if(selectedIds.length>0) {
-                                    on = selectedIds.indexOf(field.getId())>=0;
-                                } else {
-                                    if(this.selectedCbx.indexOf(field.getId())>=0) {
-                                        on = true;
-                                    }  else if(this.selectedCbx.length==0) {
-                                        on = (i==0);
-                                    }
+                                if(this.selectedCbx.indexOf(field.getId())>=0) {
+                                    on = true;
+                                }  else if(this.selectedCbx.length==0) {
+                                    on = (i==0);
                                 }
+                                //                                console.log("cbx fields:" + on + " " + field.getId());
                             }
                             var label = field.getLabel();
                             if(seenLabels[label]) {
@@ -649,6 +652,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             },
             fieldSelectionChanged: function() {
                 if(this.displayData) {
+                    this.clearCachedData();
                     this.displayData();
                 }
             },
@@ -656,6 +660,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
                 return false;
             },
             setSelectedFields: function(fields) {
+                this.clearCachedData();
                 this.selectedFields = fields;
                 this.addFieldsCheckboxes(fields);
             },
