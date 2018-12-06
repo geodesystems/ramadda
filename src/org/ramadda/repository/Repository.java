@@ -3687,6 +3687,13 @@ public class Repository extends RepositoryBase implements RequestHandler,
                              InputStream inputStream, String mimeType,
                              boolean cacheOk)
             throws Exception {
+        return makeResult(request, path, inputStream, mimeType, cacheOk, false);
+    }
+
+    public Result makeResult(Request request, String path,
+                             InputStream inputStream, String mimeType,
+                             boolean cacheOk, boolean gzipIt)
+            throws Exception {
         String tail = IOUtil.getFileTail(path);
         //        boolean acceptGzip = request.canAcceptGzip();
         //        acceptGzip =  false;
@@ -3748,7 +3755,6 @@ public class Repository extends RepositoryBase implements RequestHandler,
         byte[] bytes = htdocsCache.get(path);
         if (bytes != null) {
             InputStream inputStream = new ByteArrayInputStream(bytes);
-
             return makeResult(request, path, inputStream, mimeType, true);
         }
 
