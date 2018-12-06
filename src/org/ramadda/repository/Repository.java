@@ -497,7 +497,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
     private boolean sslIgnore = false;
 
     /** _more_          */
-    private boolean cacheResources = true;
+    private boolean cacheResources = false;
 
     /** _more_          */
     private String repositoryName = "Repository";
@@ -4072,7 +4072,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
         requireLogin          = getProperty(PROP_ACCESS_REQUIRELOGIN, false);
         allSsl                = getProperty(PROP_ACCESS_ALLSSL, false);
         sslIgnore             = getProperty(PROP_SSL_IGNORE, false);
-        cacheResources        = getProperty(PROP_CACHERESOURCES, true);
+        cacheResources        = getProperty(PROP_CACHERESOURCES, false);
         repositoryName = getProperty(PROP_REPOSITORY_NAME, repositoryName);
         repositoryDescription = getProperty(PROP_REPOSITORY_DESCRIPTION, "");
         language              = getProperty(PROP_LANGUAGE, "");
