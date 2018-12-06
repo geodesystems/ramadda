@@ -5085,13 +5085,14 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
             HtmlUtils.cssLink(sb,  htdocsUrl("/lib/jquery.handsontable.full.min.css"));
 
             //Put this here after the google load
-            HtmlUtils.cssLink(sb, htdocsUrl("/display.css"));
             HtmlUtils.importJS(sb, htdocsUrl("/db/dom-drag.js"));
             HtmlUtils.importJS(sb, htdocsUrl("/db/dom-drag.js"));
 
             if(getRepository().getProperty("ramadda.minified",true)) {
                 HtmlUtils.importJS(sb, htdocsUrl("/display/display_all_mini.js"));
+                HtmlUtils.cssLink(sb, htdocsUrl("/display.mini.css"));
             } else {
+                HtmlUtils.cssLink(sb, htdocsUrl("/display.css"));
                 HtmlUtils.importJS(sb, htdocsUrl("/display/pointdata.js"));
                 HtmlUtils.importJS(sb, htdocsUrl("/display/utils.js"));
                 HtmlUtils.importJS(sb, htdocsUrl("/display/displaymanager.js"));

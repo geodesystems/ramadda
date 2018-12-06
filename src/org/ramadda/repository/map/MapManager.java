@@ -322,7 +322,7 @@ public class MapManager extends RepositoryManager implements WikiConstants {
         boolean minified = getRepository().getProperty("ramadda.minified",true);
         if (OPENLAYERS_VERSION == OPENLAYERS_V2) {
             if(minified) {
-                HtmlUtils.cssLink(sb, getRepository().htdocsUrl(OPENLAYERS_BASE_V2 + "/theme/default/style.tidy.css"));
+                HtmlUtils.cssLink(sb, getRepository().htdocsUrl(OPENLAYERS_BASE_V2 + "/theme/default/style.mini.css"));
                 HtmlUtils.importJS(sb, getRepository().htdocsUrl(OPENLAYERS_BASE_V2 + "/OpenLayers.mini.js"));
             } else {
                 HtmlUtils.cssLink(sb, getRepository().htdocsUrl(OPENLAYERS_BASE_V2 + "/theme/default/style.css"));
