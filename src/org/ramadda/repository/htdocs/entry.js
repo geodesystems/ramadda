@@ -194,7 +194,7 @@ function RepositoryContainer(id, name) {
             },
             getEntryTypes: function(callback) {
                 err = new Error();
-                console.log("types:" + err.stackTrace);
+                console.log("types:" + err.stack);
                 if(this.entryTypes != null) {
                     return this.entryTypes;
                 }
