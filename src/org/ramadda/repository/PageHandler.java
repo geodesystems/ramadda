@@ -3656,16 +3656,16 @@ public class PageHandler extends RepositoryManager {
     }
 
     /** _more_          */
-    private boolean showCreateDate = false;
+    private boolean showCreateDate;
 
     /** _more_          */
-    private String shortDateFormat = "";
+    private String shortDateFormat;
 
     /** _more_          */
-    private String createdDisplayMode = "none";
+    private String createdDisplayMode;
 
     /** _more_          */
-    private String myLogoImage = null;
+    private String myLogoImage;
 
     /**
      * _more_

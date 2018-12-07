@@ -2415,7 +2415,7 @@ public class UserManager extends RepositoryManager {
     }
 
     /** _more_          */
-    private boolean showCart = true;
+    private boolean showCart;
 
     /**
      * _more_

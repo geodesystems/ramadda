@@ -1720,15 +1720,6 @@ public class Admin extends RepositoryManager {
                 contents, bcc, asHtml);
     }
 
-
-    /**
-     * _more_
-     */
-    @Override
-    public void initAttributes() {
-        super.initAttributes();
-    }
-
     /**
      * _more_
      *

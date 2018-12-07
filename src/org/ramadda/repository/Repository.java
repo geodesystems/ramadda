@@ -1403,6 +1403,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
             GeoUtils.setCacheDir(getStorageManager().getRepositoryDir());
         }
 
+
         initAttributes();
         initIcons();
 
@@ -1807,6 +1808,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
      */
     public void addRepositoryManager(RepositoryManager repositoryManager) {
         synchronized (repositoryManagers) {
+            repositoryManager.initAttributes();
             repositoryManagers.add(repositoryManager);
         }
     }
