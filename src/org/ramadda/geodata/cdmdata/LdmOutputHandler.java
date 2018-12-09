@@ -84,13 +84,21 @@ public class LdmOutputHandler extends OutputHandler {
     }
 
 
+    /** _more_          */
     private boolean enabled = false;
+
+    /** _more_          */
     private String pqinsert;
+
+    /**
+     * _more_
+     */
     @Override
     public void initAttributes() {
         super.initAttributes();
-        pqinsert = getRepository().getProperty(LdmAction.PROP_LDM_PQINSERT,(String) null);
-        enabled = pqinsert!=null;
+        pqinsert = getRepository().getProperty(LdmAction.PROP_LDM_PQINSERT,
+                (String) null);
+        enabled = pqinsert != null;
     }
 
     /**
@@ -107,7 +115,7 @@ public class LdmOutputHandler extends OutputHandler {
             throws Exception {
 
         //Are we configured to do the LDM
-        if (!enabled) {
+        if ( !enabled) {
             return;
         }
         if (getRepository().getProperty(LdmAction.PROP_LDM_QUEUE,

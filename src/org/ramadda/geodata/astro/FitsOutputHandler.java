@@ -206,7 +206,7 @@ public class FitsOutputHandler extends OutputHandler {
 
         StringBuffer sb = new StringBuffer();
         String getFileUrl = getEntryManager().getEntryResourceUrl(request,
-                             entry, false);
+                                entry, false);
         //TODO: set the path right
         sb.append(
             "<applet archive=\"/repository/fits/fits1.3.jar\" code=\"eap.fitsbrowser.BrowserApplet\" width=700 height=700 ><param name=\"FILE\" value=\""

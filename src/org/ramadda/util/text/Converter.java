@@ -226,6 +226,8 @@ public abstract class Converter extends Processor {
 
         /** _more_ */
         String defaultType = "double";
+
+        /** _more_          */
         boolean defaultChartable = true;
 
         /**
@@ -239,7 +241,8 @@ public abstract class Converter extends Processor {
             this.props = props;
             defaultType = CsvUtil.getDbProp(props, "default", "type",
                                             defaultType);
-            defaultChartable = CsvUtil.getDbProp(props, "default", "chartable", true);
+            defaultChartable = CsvUtil.getDbProp(props, "default",
+                    "chartable", true);
         }
 
 
@@ -288,16 +291,17 @@ public abstract class Converter extends Processor {
                 id = id.replaceAll("^_+", "");
 
 
-                String format = null;
-                String type   = defaultType;
-                boolean isGeo = false;
+                String  format = null;
+                String  type   = defaultType;
+                boolean isGeo  = false;
 
-                boolean chartable = CsvUtil.getDbProp(props, id, "chartable", defaultChartable);
+                boolean chartable = CsvUtil.getDbProp(props, id, "chartable",
+                                        defaultChartable);
                 if (id.indexOf("date") >= 0) {
                     type = "date";
-                } else if(id.equals("latitude") || id.equals("longitude")) {
-                    type = "double";
-                    isGeo = true;
+                } else if (id.equals("latitude") || id.equals("longitude")) {
+                    type      = "double";
+                    isGeo     = true;
                     chartable = false;
                 }
 
@@ -307,8 +311,8 @@ public abstract class Converter extends Processor {
                 if (format != null) {
                     attrs.append(" format=\"" + format + "\" ");
                 }
-                if(type.equals("double") || type.equals("integer")) {
-                    if(chartable) {
+                if (type.equals("double") || type.equals("integer")) {
+                    if (chartable) {
                         attrs.append(" chartable=\"" + "true" + "\" ");
                     } else {
                         attrs.append(" chartable=\"" + "false" + "\" ");
@@ -927,11 +931,11 @@ public abstract class Converter extends Processor {
                         bounds = map.get(tok.replaceAll("-.*$", ""));
                     }
                     if (bounds == null) {
-                        List<String> toks = StringUtil.splitUpTo(tok,",",2);
+                        List<String> toks = StringUtil.splitUpTo(tok, ",", 2);
                         bounds = map.get(toks.get(0));
                     }
                     if (bounds == null) {
-                        List<String> toks = StringUtil.splitUpTo(tok," ",2);
+                        List<String> toks = StringUtil.splitUpTo(tok, " ", 2);
                         bounds = map.get(toks.get(0));
                     }
                     if (bounds == null) {

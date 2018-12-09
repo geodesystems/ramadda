@@ -78,8 +78,15 @@ public class PointTypeHandler extends RecordTypeHandler {
     /** _more_ */
     public static final String ARG_PROPERTIES_FILE = "properties.file";
 
+    /**
+     * _more_
+     *
+     * @param repository _more_
+     * @param type _more_
+     * @param description _more_
+     */
     public PointTypeHandler(Repository repository, String type,
-                              String description) {
+                            String description) {
         super(repository, type, description);
     }
 
@@ -422,11 +429,13 @@ public class PointTypeHandler extends RecordTypeHandler {
      * @param request _more_
      * @param entry _more_
      * @param tag _more_
+     * @param props _more_
      *
      * @return _more_
      */
     @Override
-     public String getUrlForWiki(Request request, Entry entry, String tag, Hashtable props) {
+    public String getUrlForWiki(Request request, Entry entry, String tag,
+                                Hashtable props) {
         if (tag.equals(WikiConstants.WIKI_TAG_CHART)
                 || tag.equals(WikiConstants.WIKI_TAG_DISPLAY)) {
             try {
@@ -499,7 +508,8 @@ public class PointTypeHandler extends RecordTypeHandler {
                                  DFLT_INHERITED, sb[0].toString(),
                                  sb[1].toString(), sb[2].toString(),
                                  sb[3].toString(), Metadata.DFLT_EXTRA);
-                getMetadataManager().addMetadata(entry, polygonMetadata, false);
+                getMetadataManager().addMetadata(entry, polygonMetadata,
+                        false);
             }
         }
 
@@ -570,20 +580,33 @@ public class PointTypeHandler extends RecordTypeHandler {
 
 
 
+    /**
+     * _more_
+     *
+     * @param entry _more_
+     * @param name _more_
+     * @param dflt _more_
+     *
+     * @return _more_
+     */
     public String getProperty(Entry entry, String name, String dflt) {
         try {
-        if(name.equals("chart.wiki.map")) {
-            Hashtable props = getRecordProperties(entry);
-            if(props!=null) {
-                String prop = (String) props.get(name);
-                if(prop!=null) return prop;
+            if (name.equals("chart.wiki.map")) {
+                Hashtable props = getRecordProperties(entry);
+                if (props != null) {
+                    String prop = (String) props.get(name);
+                    if (prop != null) {
+                        return prop;
+                    }
+                }
             }
-        }
-        return super.getProperty(entry,name, dflt);
-        } catch(Exception exc) {
+
+            return super.getProperty(entry, name, dflt);
+        } catch (Exception exc) {
             return dflt;
         }
     }
+
     /**
      * _more_
      *

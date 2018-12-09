@@ -233,8 +233,8 @@ public class GtfsImportHandler extends ImportHandler {
                       new FileInputStream(new File(dir, "routes.txt")));
         entries.addAll(routes);
 
-        processTrips(request, entries, agencyMap, routeMap, pts, services, stopsMap,
-                     stopTimes,
+        processTrips(request, entries, agencyMap, routeMap, pts, services,
+                     stopsMap, stopTimes,
                      new FileInputStream(new File(dir, "trips.txt")));
 
         for (Entry route : routes) {
@@ -243,11 +243,10 @@ public class GtfsImportHandler extends ImportHandler {
             Object   names  = route.getProperty("stop_names");
             if (names != null) {
                 String s = names.toString();
-                if(s.length()>30000) {
-                    s = s.substring(0,29999);
+                if (s.length() > 30000) {
+                    s = s.substring(0, 29999);
                 }
-                values[GtfsRouteTypeHandler.IDX_STOP_NAMES] =
-                    s;
+                values[GtfsRouteTypeHandler.IDX_STOP_NAMES] = s;
             }
         }
         if (routes.size() > 0) {
@@ -863,12 +862,14 @@ public class GtfsImportHandler extends ImportHandler {
                     values[GtfsAgencyTypeHandler.IDX_TIMEZONE]  = timezone;
                     values[GtfsAgencyTypeHandler.IDX_LANGUAGE]  = lang;
 
-                    if(Utils.stringDefined(timezone)) {
-                        getMetadataManager().addMetadata(entry, new Metadata(request.getRepository().getGUID(),
-                                                       entry.getId(),
-                                                       ContentMetadataHandler.TYPE_TIMEZONE,
-                                                       true, timezone, null,
-                                                       null, null, null));
+                    if (Utils.stringDefined(timezone)) {
+                        getMetadataManager().addMetadata(
+                            entry,
+                            new Metadata(
+                                request.getRepository().getGUID(),
+                                entry.getId(),
+                                ContentMetadataHandler.TYPE_TIMEZONE, true,
+                                timezone, null, null, null, null));
                     }
                     agencies.add(entry);
                     Gtfs.addHostAlias(request, entry,
@@ -939,6 +940,7 @@ public class GtfsImportHandler extends ImportHandler {
      *
      * @param request _more_
      * @param entries _more_
+     * @param agencyMap _more_
      * @param routeMap _more_
      * @param pts _more_
      * @param services _more_
@@ -1043,11 +1045,11 @@ public class GtfsImportHandler extends ImportHandler {
                     if (stops == null) {
                         stops = new ArrayList<String[]>();
                     }
-                    StringBuilder stopIds = new StringBuilder();
+                    StringBuilder stopIds     = new StringBuilder();
                     String agencyId = (String) route.getProperty("agencyid");
-                    Entry    agencyEntry = agencyMap.get(agencyId);
+                    Entry         agencyEntry = agencyMap.get(agencyId);
 
-                    if(agencyEntry!=null) {
+                    if (agencyEntry != null) {
                         values[GtfsTripTypeHandler.IDX_AGENCY_ID] =
                             agencyEntry.getId();
                     }
@@ -1062,11 +1064,14 @@ public class GtfsImportHandler extends ImportHandler {
 
                         Entry stop = stopsMap.get(stopId);
                         if (stop != null) {
-                            String routes = (String)stop.getValue(GtfsStopTypeHandler.IDX_ROUTES,"");
-                            if(routes.indexOf(route.getId())<0) {
+                            String routes =
+                                (String) stop.getValue(
+                                    GtfsStopTypeHandler.IDX_ROUTES, "");
+                            if (routes.indexOf(route.getId()) < 0) {
                                 routes += route.getId();
                                 routes += ",";
-                                stop.setValue(GtfsStopTypeHandler.IDX_ROUTES,routes);
+                                stop.setValue(GtfsStopTypeHandler.IDX_ROUTES,
+                                        routes);
                             }
                             HashSet seen =
                                 (HashSet) route.getProperty("seen_stops");
@@ -1093,12 +1098,13 @@ public class GtfsImportHandler extends ImportHandler {
                     }
 
                     String s = stopIds.toString();
-                    if(s2.length()>30000 || s.length()>30000) {
-                        System.err.println("err:" + stops.size()+" " + s2.length() +" " + s.length()+" " + 
-                                           s.substring(0,200));
-                        
+                    if ((s2.length() > 30000) || (s.length() > 30000)) {
+                        System.err.println("err:" + stops.size() + " "
+                                           + s2.length() + " " + s.length()
+                                           + " " + s.substring(0, 200));
+
                     }
-                    values[GtfsTripTypeHandler.IDX_STOPS] = s2;
+                    values[GtfsTripTypeHandler.IDX_STOPS]    = s2;
                     values[GtfsTripTypeHandler.IDX_STOP_IDS] = s;
                     String startTime = null;
                     String endTime   = null;
@@ -1196,14 +1202,14 @@ public class GtfsImportHandler extends ImportHandler {
 
             return;
         }
-        int skipEvery=0;
-        while(true) {
+        int skipEvery = 0;
+        while (true) {
             StringBuilder all     = new StringBuilder();
             int           idx     = 0;
             float         north   = 0,
-                south   = 0,
-                west    = 0,
-                east    = 0;
+                          south   = 0,
+                          west    = 0,
+                          east    = 0;
             float         lastLat = Float.NaN;
             float         lastLon = Float.NaN;
             int           numPts  = 0;
@@ -1213,11 +1219,13 @@ public class GtfsImportHandler extends ImportHandler {
                 float lon = point[1];
                 if ((lat == lastLat) && (lon == lastLon)) {
                     skipped++;
+
                     continue;
                 }
                 numPts++;
-                if(skipEvery>0 && (numPts%skipEvery)==0) {
+                if ((skipEvery > 0) && (numPts % skipEvery) == 0) {
                     skipped++;
+
                     continue;
                 }
 
@@ -1229,17 +1237,17 @@ public class GtfsImportHandler extends ImportHandler {
                 all.append(";");
 
                 north = (idx == 0)
-                    ? lat
-                    : Math.max(north, lat);
+                        ? lat
+                        : Math.max(north, lat);
                 south = (idx == 0)
-                    ? lat
-                    : Math.min(south, lat);
+                        ? lat
+                        : Math.min(south, lat);
                 west  = (idx == 0)
-                    ? lon
-                    : Math.min(west, lon);
+                        ? lon
+                        : Math.min(west, lon);
                 east  = (idx == 0)
-                    ? lon
-                    : Math.max(east, lon);
+                        ? lon
+                        : Math.max(east, lon);
 
                 idx++;
             }
@@ -1254,15 +1262,22 @@ public class GtfsImportHandler extends ImportHandler {
                   + compressed2.length());
                 */
             }
-            if(compressed.length()>35000) {
+            if (compressed.length() > 35000) {
                 /*
                 System.out.println("Points:" + numPts + " skipevery:" + skipEvery+" skipped:" + skipped
                                    + " text length:" + all.length() + " compressed:"
                                    + compressed.length());
                 */
-                if(skipEvery==0) skipEvery=10;
-                else skipEvery--;
-                if(skipEvery<0) throw new IllegalArgumentException("Too many points in polygon:" + poly.size());
+                if (skipEvery == 0) {
+                    skipEvery = 10;
+                } else {
+                    skipEvery--;
+                }
+                if (skipEvery < 0) {
+                    throw new IllegalArgumentException(
+                        "Too many points in polygon:" + poly.size());
+                }
+
                 continue;
             }
             Object[] values = entry.getTypeHandler().getEntryValues(entry);
@@ -1273,6 +1288,7 @@ public class GtfsImportHandler extends ImportHandler {
                 entry.setSouth(south);
                 entry.setEast(east);
             }
+
             break;
         }
     }

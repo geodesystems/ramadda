@@ -187,27 +187,22 @@ public class NCLModelPlotDataService extends NCLDataService {
         //        String space1 = HtmlUtils.space(1);
         //        String space2 = HtmlUtils.space(2);
 
-        if ((input.getOperands().size() > 1)
-                && !handleMultiple
+        if ((input.getOperands().size() > 1) && !handleMultiple
                 && !isCorrelation) {
             StringBuilder buttons = new StringBuilder();
-            buttons.append(HtmlUtils.radio(ARG_NCL_OUTPUT,
-                                           "diff",
-                                           RepositoryManager.getShouldButtonBeSelected(
-                                           request,
-                                           ARG_NCL_OUTPUT,
-                                           "diff",
-                                           true)));
+            buttons.append(
+                HtmlUtils.radio(
+                    ARG_NCL_OUTPUT, "diff",
+                    RepositoryManager.getShouldButtonBeSelected(
+                        request, ARG_NCL_OUTPUT, "diff", true)));
             buttons.append(space1);
             buttons.append(Repository.msg("Difference"));
             buttons.append(space2);
-            buttons.append(HtmlUtils.radio(ARG_NCL_OUTPUT,
-                                           "comp",
-                                           RepositoryManager.getShouldButtonBeSelected(
-                                           request,
-                                           ARG_NCL_OUTPUT,
-                                           "comp",
-                                           false)));
+            buttons.append(
+                HtmlUtils.radio(
+                    ARG_NCL_OUTPUT, "comp",
+                    RepositoryManager.getShouldButtonBeSelected(
+                        request, ARG_NCL_OUTPUT, "comp", false)));
             buttons.append(space1);
             buttons.append(Repository.msg("Separate Plots"));
 
@@ -215,23 +210,19 @@ public class NCLModelPlotDataService extends NCLDataService {
                                           buttons.toString()));
         } else if (isCorrelation) {
             StringBuilder buttons = new StringBuilder();
-            buttons.append(HtmlUtils.radio(ARG_NCL_OUTPUT,
-                                           "correlation",
-                                           RepositoryManager.getShouldButtonBeSelected(
-                                           request,
-                                           ARG_NCL_OUTPUT,
-                                           "correlation",
-                                           true)));
+            buttons.append(
+                HtmlUtils.radio(
+                    ARG_NCL_OUTPUT, "correlation",
+                    RepositoryManager.getShouldButtonBeSelected(
+                        request, ARG_NCL_OUTPUT, "correlation", true)));
             buttons.append(space1);
             buttons.append(Repository.msg("Correlation"));
             buttons.append(space2);
-            buttons.append(HtmlUtils.radio(ARG_NCL_OUTPUT,
-                                           "regression",
-                                           RepositoryManager.getShouldButtonBeSelected(
-                                           request,
-                                           ARG_NCL_OUTPUT,
-                                           "regression",
-                                           false)));
+            buttons.append(
+                HtmlUtils.radio(
+                    ARG_NCL_OUTPUT, "regression",
+                    RepositoryManager.getShouldButtonBeSelected(
+                        request, ARG_NCL_OUTPUT, "regression", false)));
             buttons.append(space1);
             buttons.append(Repository.msg("Regression"));
 
@@ -252,36 +243,29 @@ public class NCLModelPlotDataService extends NCLDataService {
             if (type.equals(ClimateModelApiHandler.ARG_ACTION_ENS_COMPARE)) {
                 StringBuilder plotTypes = new StringBuilder();
                 plotTypes.append(
-                    HtmlUtils.radio(NCLOutputHandler.ARG_NCL_PLOTTYPE,
-                                    "pdf",
-                                    RepositoryManager.getShouldButtonBeSelected(
-                                        request,
-                                        NCLOutputHandler.ARG_NCL_PLOTTYPE,
-                                        "pdf",
-                                        true)));
+                    HtmlUtils.radio(
+                        NCLOutputHandler.ARG_NCL_PLOTTYPE, "pdf",
+                        RepositoryManager.getShouldButtonBeSelected(
+                            request, NCLOutputHandler.ARG_NCL_PLOTTYPE,
+                            "pdf", true)));
                 plotTypes.append(space1);
                 plotTypes.append(Repository.msg("PDF"));
                 plotTypes.append(space2);
                 plotTypes.append(
-                    HtmlUtils.radio(NCLOutputHandler.ARG_NCL_PLOTTYPE,
-                                    "image",
-                                    RepositoryManager.getShouldButtonBeSelected(
-                                        request,
-                                        NCLOutputHandler.ARG_NCL_PLOTTYPE,
-                                        "image",
-                                        false)));
+                    HtmlUtils.radio(
+                        NCLOutputHandler.ARG_NCL_PLOTTYPE, "image",
+                        RepositoryManager.getShouldButtonBeSelected(
+                            request, NCLOutputHandler.ARG_NCL_PLOTTYPE,
+                            "image", false)));
                 plotTypes.append(space1);
                 plotTypes.append(Repository.msg("Maps"));
 
                 StringBuilder yearsSB = new StringBuilder();
                 yearsSB.append(Repository.msgLabel("Plot"));
                 yearsSB.append(HtmlUtils.space(1));
-                yearsSB.append(HtmlUtils.radio(ARG_TIME_AVERAGE,
-                        "true",
+                yearsSB.append(HtmlUtils.radio(ARG_TIME_AVERAGE, "true",
                         RepositoryManager.getShouldButtonBeSelected(request,
-                                ARG_TIME_AVERAGE,
-                                "true",
-                                true)));
+                            ARG_TIME_AVERAGE, "true", true)));
                 yearsSB.append(HtmlUtils.space(1));
                 yearsSB.append(Repository.msg("Average"));
                 yearsSB.append(HtmlUtils.space(2));
@@ -298,8 +282,9 @@ public class NCLModelPlotDataService extends NCLDataService {
                         HtmlUtils.id("comp-years")));
 
                 sb.append(
-                    HtmlUtils.formEntry(Repository.msgLabel("Plot Type"),
-                                        plotTypes.toString()));
+                    HtmlUtils.formEntry(
+                        Repository.msgLabel("Plot Type"),
+                        plotTypes.toString()));
             } else {
                 sb.append(HtmlUtils.hidden(NCLOutputHandler.ARG_NCL_PLOTTYPE,
                                            "image"));
@@ -321,20 +306,14 @@ public class NCLModelPlotDataService extends NCLDataService {
         // be valid if variable changes.
         // Contour options
         StringBuilder contourOpts = new StringBuilder();
-        contourOpts.append(HtmlUtils.labeledCheckbox(ARG_NCL_CFILL,
-                "true",
-                request.get(ARG_NCL_CFILL, true),
-                "Color-fill"));
+        contourOpts.append(HtmlUtils.labeledCheckbox(ARG_NCL_CFILL, "true",
+                request.get(ARG_NCL_CFILL, true), "Color-fill"));
         contourOpts.append(HtmlUtils.space(3));
-        contourOpts.append(HtmlUtils.labeledCheckbox(ARG_NCL_CLINES,
-                "true",
-                request.get(ARG_NCL_CLINES, false),
-                "Lines"));
+        contourOpts.append(HtmlUtils.labeledCheckbox(ARG_NCL_CLINES, "true",
+                request.get(ARG_NCL_CLINES, false), "Lines"));
         contourOpts.append(HtmlUtils.space(3));
-        contourOpts.append(HtmlUtils.labeledCheckbox(ARG_NCL_CLABELS,
-                "true",
-                request.get(ARG_NCL_CLABELS, false),
-                "Labels"));
+        contourOpts.append(HtmlUtils.labeledCheckbox(ARG_NCL_CLABELS, "true",
+                request.get(ARG_NCL_CLABELS, false), "Labels"));
         // Contour interval
         //StringBuilder contourSB = new StringBuilder();
         //contourOpts.append("</p>");
@@ -345,19 +324,16 @@ public class NCLModelPlotDataService extends NCLDataService {
         contourOpts.append("<br>");
         contourOpts.append(Repository.msg("Interval: "));
         contourOpts.append(HtmlUtils.makeLatLonInput(ARG_NCL_CINT,
-                ARG_NCL_CINT,
-                ""));
+                ARG_NCL_CINT, ""));
         //request.getString(ARG_NCL_CINT, "")));
         contourOpts.append("<br/>");
         contourOpts.append(Repository.msg("Range: Low"));
         contourOpts.append(HtmlUtils.makeLatLonInput(ARG_NCL_CMIN,
-                ARG_NCL_CMIN,
-                ""));
+                ARG_NCL_CMIN, ""));
         //request.getString(ARG_NCL_CMIN, "")));
         contourOpts.append(Repository.msg("High"));
         contourOpts.append(HtmlUtils.makeLatLonInput(ARG_NCL_CMAX,
-                ARG_NCL_CMAX,
-                ""));
+                ARG_NCL_CMAX, ""));
         //request.getString(ARG_NCL_CMAX, "")));
         /*
         sb.append(
@@ -371,16 +347,14 @@ public class NCLModelPlotDataService extends NCLDataService {
         // colormaps
         List          cmaps    = getColorMaps();
         StringBuilder cmapOpts = new StringBuilder();
-        cmapOpts.append(HtmlUtils.select(ARG_NCL_COLORMAP,
-                                         cmaps,
-                                         request.getString(ARG_NCL_COLORMAP,
-                                                 "default"),
-                                         HtmlUtils.cssClass(
-                                             "ramadda-pulldown-with-icons")));
+        cmapOpts.append(
+            HtmlUtils.select(
+                ARG_NCL_COLORMAP, cmaps,
+                request.getString(ARG_NCL_COLORMAP, "default"),
+                HtmlUtils.cssClass("ramadda-pulldown-with-icons")));
         cmapOpts.append("<br/>");
         cmapOpts.append(HtmlUtils.labeledCheckbox(ARG_NCL_REVERSE_CMAP,
-                "true",
-                request.get(ARG_NCL_REVERSE_CMAP, false),
+                "true", request.get(ARG_NCL_REVERSE_CMAP, false),
                 Repository.msg("Reverse Colormap")));
         plotOpts.append(HtmlUtils.formEntry(Repository.msgLabel("Colormap"),
                                             cmapOpts.toString()));
@@ -398,64 +372,57 @@ public class NCLModelPlotDataService extends NCLDataService {
             StringBuilder xaxisOpts = new StringBuilder();
             xaxisOpts.append(Repository.msgLabel("Min"));
             xaxisOpts.append(HtmlUtils.makeLatLonInput(ARG_NCL_XMIN,
-                    ARG_NCL_XMIN,
-                    ""));
+                    ARG_NCL_XMIN, ""));
             xaxisOpts.append(HtmlUtils.space(2));
             xaxisOpts.append(Repository.msgLabel("Max"));
             xaxisOpts.append(HtmlUtils.makeLatLonInput(ARG_NCL_XMAX,
-                    ARG_NCL_XMAX,
-                    ""));
+                    ARG_NCL_XMAX, ""));
             chartOpts.append(
-                HtmlUtils.formEntry(Repository.msgLabel("X-Axis Range"),
-                                    xaxisOpts.toString()));
+                HtmlUtils.formEntry(
+                    Repository.msgLabel("X-Axis Range"),
+                    xaxisOpts.toString()));
 
             StringBuilder yaxisOpts = new StringBuilder();
             yaxisOpts.append(Repository.msgLabel("Min"));
             yaxisOpts.append(HtmlUtils.makeLatLonInput(ARG_NCL_YMIN,
-                    ARG_NCL_YMIN,
-                    ""));
+                    ARG_NCL_YMIN, ""));
             yaxisOpts.append(HtmlUtils.space(2));
             yaxisOpts.append(Repository.msgLabel("Max"));
             yaxisOpts.append(HtmlUtils.makeLatLonInput(ARG_NCL_YMAX,
-                    ARG_NCL_YMAX,
-                    ""));
+                    ARG_NCL_YMAX, ""));
             chartOpts.append(
-                HtmlUtils.formEntry(Repository.msgLabel("Y-Axis Range"),
-                                    yaxisOpts.toString()));
+                HtmlUtils.formEntry(
+                    Repository.msgLabel("Y-Axis Range"),
+                    yaxisOpts.toString()));
 
             StringBuilder statOpts = new StringBuilder();
-            statOpts.append(HtmlUtils.radio(ARG_INCLUDE_STAT,
-                                            "none",
-                                            RepositoryManager.getShouldButtonBeSelected(
-                                            request,
-                                            ARG_INCLUDE_STAT,
-                                            "none",
-                                            true)));
+            statOpts.append(
+                HtmlUtils.radio(
+                    ARG_INCLUDE_STAT, "none",
+                    RepositoryManager.getShouldButtonBeSelected(
+                        request, ARG_INCLUDE_STAT, "none", true)));
             statOpts.append(space1);
             statOpts.append(Repository.msg("None"));
             statOpts.append(space2);
-            statOpts.append(HtmlUtils.radio(ARG_INCLUDE_STAT,
-                                            "mean",
-                                            RepositoryManager.getShouldButtonBeSelected(
-                                            request,
-                                            ARG_INCLUDE_STAT,
-                                            "mean",
-                                            false)));
+            statOpts.append(
+                HtmlUtils.radio(
+                    ARG_INCLUDE_STAT, "mean",
+                    RepositoryManager.getShouldButtonBeSelected(
+                        request, ARG_INCLUDE_STAT, "mean", false)));
             statOpts.append(space1);
             statOpts.append(Repository.msg("Mean"));
             statOpts.append(space2);
-            statOpts.append(HtmlUtils.radio(ARG_INCLUDE_STAT,
-                                            "median",
-                                            RepositoryManager.getShouldButtonBeSelected(
-                                            request,
-                                            ARG_INCLUDE_STAT,
-                                            "median",
-                                            false)));
+            statOpts.append(
+                HtmlUtils.radio(
+                    ARG_INCLUDE_STAT, "median",
+                    RepositoryManager.getShouldButtonBeSelected(
+                        request, ARG_INCLUDE_STAT, "median", false)));
             statOpts.append(space1);
             statOpts.append(Repository.msg("Median"));
             chartOpts.append(
-                HtmlUtils.formEntry(Repository.msgLabel("Show Statistic"),
-                                    statOpts.toString()));
+                HtmlUtils.formEntry(
+                    Repository.msgLabel("Show Statistic"),
+                    statOpts.toString()));
             chartOpts.append(HtmlUtils.formTableClose());
 
             sb.append(HtmlUtils.div(chartOpts.toString(),
@@ -499,10 +466,7 @@ public class NCLModelPlotDataService extends NCLDataService {
                 colormaps.add(new HtmlUtils.Selector(toks.get(1),
                         toks.get(0),
                         getRepository().getUrlBase() + "/model/images/"
-                        + toks.get(2),
-                        3,
-                        130,
-                        false));
+                        + toks.get(2), 3, 130, false));
             }
         }
 
@@ -644,15 +608,14 @@ public class NCLModelPlotDataService extends NCLDataService {
             String imageFormat = request.getString(ARG_NCL_IMAGEFORMAT,
                                      "gif");
             String suffix = plotType;
-            if (plotType.equals("timeseries")
-                    || plotType.equals("pdf")
+            if (plotType.equals("timeseries") || plotType.equals("pdf")
                     || plotType.equals("image")) {
                 suffix = imageFormat;
             }
             String outputType = request.getString(ARG_NCL_OUTPUT, "comp");
             String maskType   = request.getString(ARG_NCL_MASKTYPE, "none");
             File outFile = new File(IOUtil.joinDir(input.getProcessDir(),
-                                                   wksName) + "." + suffix);
+                               wksName) + "." + suffix);
             CdmDataOutputHandler dataOutputHandler =
                 nclOutputHandler.getDataOutputHandler();
             GridDataset dataset =
@@ -666,12 +629,12 @@ public class NCLModelPlotDataService extends NCLDataService {
             List<String>  commands      = new ArrayList<String>();
             String        ncargRoot     = nclOutputHandler.getNcargRootDir();
             commands.add(IOUtil.joinDir(ncargRoot, "bin/ncl"));
-            commands.add(
-                IOUtil.joinDir(
-                    IOUtil.joinDir(
-                        nclOutputHandler.getStorageManager().getResourceDir(),
-                        "ncl"),
-                    NCLOutputHandler.SCRIPT_MAPPLOT));
+            commands
+                .add(IOUtil
+                    .joinDir(IOUtil
+                        .joinDir(nclOutputHandler.getStorageManager()
+                            .getResourceDir(), "ncl"), NCLOutputHandler
+                                .SCRIPT_MAPPLOT));
             Map<String, String> envMap = new HashMap<String, String>();
             nclOutputHandler.addGlobalEnvVars(envMap);
             envMap.put("wks_name", wksName);
@@ -754,7 +717,7 @@ public class NCLModelPlotDataService extends NCLDataService {
             for (String spatialArg : NCLOutputHandler.NCL_SPATIALARGS) {
                 if ( !Misc.equals(request.getString(spatialArg, ""),
                                   request.getString(spatialArg + ".original",
-                                          ""))) {
+                                      ""))) {
                     haveOriginalBounds = false;
 
                     break;
@@ -823,8 +786,7 @@ public class NCLModelPlotDataService extends NCLDataService {
                     ClimateModelApiHandler.DEFAULT_CLIMATE_END_YEAR);
             envMap.put("climyears",
                        ModelUtil.buildClimateYearsString(climstartYear,
-                               climendYear,
-                               "-"));
+                           climendYear, "-"));
 
             if (type.equals(ClimateModelApiHandler.ARG_ACTION_COMPARE)
                     || type.equals(
@@ -844,8 +806,7 @@ public class NCLModelPlotDataService extends NCLDataService {
             //!(anomType.equals("stdanom") || anomType.equals("pctanom"));
             String outUnits = request.getString(ARG_NCL_UNITS, null);
             //System.out.println("Out units = "+outUnits);
-            if ((outUnits != null)
-                    && !outUnits.isEmpty()
+            if ((outUnits != null) && !outUnits.isEmpty()
                     && shouldConvertUnits) {
                 envMap.put("units", outUnits);
             }
@@ -862,19 +823,18 @@ public class NCLModelPlotDataService extends NCLDataService {
             envMap.put("colormap", colormap);
             envMap.put("reverse_cmap",
                        Boolean.toString(request.get(ARG_NCL_REVERSE_CMAP,
-                               false)));
-            envMap.put("clines", Boolean.toString(request.get(ARG_NCL_CLINES,
-                    true)));
+                           false)));
+            envMap.put("clines",
+                       Boolean.toString(request.get(ARG_NCL_CLINES, true)));
             envMap.put("clabels",
-                       Boolean.toString(request.get(ARG_NCL_CLABELS,
-                               false)));
-            envMap.put("cfill", Boolean.toString(request.get(ARG_NCL_CFILL,
-                    false)));
+                       Boolean.toString(request.get(ARG_NCL_CLABELS, false)));
+            envMap.put("cfill",
+                       Boolean.toString(request.get(ARG_NCL_CFILL, false)));
             envMap.put("anom", Boolean.toString(haveAnom || isCorrelation));
             envMap.put(
                 "annotation",
-                getRepository().getProperty(Constants.PROP_REPOSITORY_NAME,
-                                            ""));
+                getRepository().getProperty(
+                    Constants.PROP_REPOSITORY_NAME, ""));
             String logo =
                 getRepository().getProperty(Constants.PROP_LOGO_IMAGE, "");
             if ( !logo.isEmpty()) {
@@ -909,8 +869,7 @@ public class NCLModelPlotDataService extends NCLDataService {
             }
         }
         ServiceOutput dpo = new ServiceOutput(new ServiceOperand("Plot of "
-                                + nameList,
-                                                                 outputEntries));
+                                + nameList, outputEntries));
 
         return dpo;
 
@@ -995,7 +954,7 @@ public class NCLModelPlotDataService extends NCLDataService {
         String  outputType  = request.getString(ARG_NCL_OUTPUT, "enscomp");
         String  maskType    = request.getString(ARG_NCL_MASKTYPE, "none");
         File outFile = new File(IOUtil.joinDir(input.getProcessDir(),
-                                               wksName) + "." + suffix);
+                           wksName) + "." + suffix);
         CdmDataOutputHandler dataOutputHandler =
             nclOutputHandler.getDataOutputHandler();
         GridDataset dataset = dataOutputHandler.getCdmManager().createGrid(
@@ -1011,8 +970,7 @@ public class NCLModelPlotDataService extends NCLDataService {
             IOUtil.joinDir(
                 IOUtil.joinDir(
                     nclOutputHandler.getStorageManager().getResourceDir(),
-                    "ncl"),
-                NCLOutputHandler.SCRIPT_MAPPLOT));
+                    "ncl"), NCLOutputHandler.SCRIPT_MAPPLOT));
         Map<String, String> envMap = new HashMap<String, String>();
         nclOutputHandler.addGlobalEnvVars(envMap);
         envMap.put("wks_name", wksName);
@@ -1128,8 +1086,7 @@ public class NCLModelPlotDataService extends NCLDataService {
                 ClimateModelApiHandler.DEFAULT_CLIMATE_END_YEAR);
         envMap.put("climyears",
                    ModelUtil.buildClimateYearsString(climstartYear,
-                           climendYear,
-                           "-"));
+                       climendYear, "-"));
 
         int climNumber =
             request.get(CDODataService.ARG_CLIMATE_DATASET_NUMBER, 0);
@@ -1149,9 +1106,9 @@ public class NCLModelPlotDataService extends NCLDataService {
         }
 
         envMap.put("anom", Boolean.toString(haveAnom));
-        envMap.put("annotation",
-                   getRepository().getProperty(Constants.PROP_REPOSITORY_NAME,
-                           ""));
+        envMap.put(
+            "annotation",
+            getRepository().getProperty(Constants.PROP_REPOSITORY_NAME, ""));
         String logo = getRepository().getProperty(Constants.PROP_LOGO_IMAGE,
                           "");
         if ( !logo.isEmpty()) {
@@ -1181,8 +1138,7 @@ public class NCLModelPlotDataService extends NCLDataService {
                 outputEntry);
         outputEntries.add(outputEntry);
         ServiceOutput dpo = new ServiceOutput(new ServiceOperand("Plot of "
-                                + nameList,
-                                                                 outputEntries));
+                                + nameList, outputEntries));
         if (dataset != null) {
             dataset.close();
         }
@@ -1224,8 +1180,7 @@ public class NCLModelPlotDataService extends NCLDataService {
         }
         for (int i = 0; i < numcollections; i++) {
             List<Entry> ops =
-                opMap.get(ModelUtil.getModelExperimentString(request,
-                                                             i + 1));
+                opMap.get(ModelUtil.getModelExperimentString(request, i + 1));
             if (ops != null) {
                 sortedList.add(ops);
             }

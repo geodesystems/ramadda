@@ -298,7 +298,8 @@ public class BloggerTypeHandler extends GdataTypeHandler {
      * @throws Exception _more_
      */
     @Override
-    public String getEntryIconUrl(Request request, Entry entry) throws Exception {
+    public String getEntryIconUrl(Request request, Entry entry)
+            throws Exception {
         String id = entry.getId();
         if ( !getEntryManager().isSynthEntry(id)) {
             return super.getIconUrl(request, entry);

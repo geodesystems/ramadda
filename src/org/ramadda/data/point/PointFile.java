@@ -860,10 +860,10 @@ public abstract class PointFile extends RecordFile implements Cloneable,
     /** _more_ */
     public static final String ATTR_OFFSET = "offset";
 
-    /** _more_          */
+    /** _more_ */
     public static final String ATTR_OFFSET1 = "offset1";
 
-    /** _more_          */
+    /** _more_ */
     public static final String ATTR_OFFSET2 = "offset2";
 
     /** _more_ */

@@ -62,7 +62,7 @@ public class LatLonImageTypeHandler extends GenericTypeHandler {
     public boolean addToMap(Request request, Entry entry, MapInfo map)
             throws Exception {
         try {
-            if (entry == null ||  !entry.hasAreaDefined()) {
+            if ((entry == null) || !entry.hasAreaDefined()) {
                 return false;
             }
 
@@ -114,28 +114,42 @@ public class LatLonImageTypeHandler extends GenericTypeHandler {
 
 
 
+    /**
+     * _more_
+     *
+     * @param request _more_
+     * @param entry _more_
+     * @param map _more_
+     *
+     * @return _more_
+     *
+     * @throws Exception _more_
+     */
     @Override
     public boolean addToMapSelector(Request request, Entry entry, MapInfo map)
-        throws Exception {
-        if(entry == null) return false;
+            throws Exception {
+        if (entry == null) {
+            return false;
+        }
         if (entry.hasAreaDefined()) {
             String url =
                 getRepository().getHtmlOutputHandler().getImageUrl(request,
-                                                                   entry);
+                    entry);
             map.addJS(HtmlUtils.call("theMap.addImageLayer",
                                      HtmlUtils.jsMakeArgs(false,
-                                                          HtmlUtils.squote(entry.getId()),
-                                                          HtmlUtils.squote(entry.getName()),
-                                                          HtmlUtils.squote(""),
-                                                          HtmlUtils.squote(url), "true",
-                                                          "" + entry.getNorth(),
-                                                          "" + entry.getWest(),
-                                                          "" + entry.getSouth(),
-                                                          "" + entry.getEast(), "400",
-                                                          "400","{forSelect:true}")));
+                                         HtmlUtils.squote(entry.getId()),
+                                         HtmlUtils.squote(entry.getName()),
+                                         HtmlUtils.squote(""),
+                                         HtmlUtils.squote(url), "true",
+                                         "" + entry.getNorth(),
+                                         "" + entry.getWest(),
+                                         "" + entry.getSouth(),
+                                         "" + entry.getEast(), "400", "400",
+                                         "{forSelect:true}")));
 
             map.addJS("\n");
         }
+
         return super.addToMapSelector(request, entry, map);
     }
 

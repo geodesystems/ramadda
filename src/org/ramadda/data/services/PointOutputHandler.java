@@ -876,8 +876,7 @@ public class PointOutputHandler extends RecordOutputHandler {
         return request.entryUrl(getRepository().URL_ENTRY_SHOW, entry,
                                 ARG_OUTPUT, OUTPUT_PRODUCT.getId(),
                                 ARG_PRODUCT, OUTPUT_JSON.toString()) + "&"
-                                    + RecordFormHandler.ARG_MAX
-                                    + "=5000";
+                                    + RecordFormHandler.ARG_MAX + "=5000";
 
     }
 
@@ -945,12 +944,12 @@ public class PointOutputHandler extends RecordOutputHandler {
             return outputEntryBounds(request, group);
         }
 
-        for(Entry entry: subGroups) {
-            if(entry.getTypeHandler().isType("type_point")) {
+        for (Entry entry : subGroups) {
+            if (entry.getTypeHandler().isType("type_point")) {
                 entries.add(entry);
             }
         }
-        if(group.getTypeHandler().isType("type_point")) {
+        if (group.getTypeHandler().isType("type_point")) {
             entries.clear();
             entries.add(group);
         }
@@ -980,7 +979,7 @@ public class PointOutputHandler extends RecordOutputHandler {
         //        System.err.println("record entries:" + makeRecordEntries(request, entries, true));
         final List<PointEntry> pointEntries =
             PointEntry.toPointEntryList(doSubsetEntries(request,
-                                                        makeRecordEntries(request, entries, true)));
+                makeRecordEntries(request, entries, true)));
 
         boolean asynchronous = request.get(ARG_ASYNCH, false);
         if ( !doingPointCount && (pointEntries.size() == 0) && asynchronous) {

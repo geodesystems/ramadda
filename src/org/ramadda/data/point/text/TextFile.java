@@ -145,10 +145,11 @@ public abstract class TextFile extends PointFile {
      */
     public RecordIO doMakeInputIO(boolean buffered) throws IOException {
         String file = getFilename();
-        if (file!=null && file.endsWith(".xls")) {
+        if ((file != null) && file.endsWith(".xls")) {
             return new RecordIO(
                 new BufferedReader(new StringReader(XlsUtil.xlsToCsv(file))));
         }
+
         return super.doMakeInputIO(buffered);
     }
 

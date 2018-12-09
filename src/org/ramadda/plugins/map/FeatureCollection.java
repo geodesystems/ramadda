@@ -297,8 +297,8 @@ public class FeatureCollection {
 
 
 
-        Metadata      colorBy      = (Metadata) properties.get("colorby");
-        DbaseFile     dbfile       = (DbaseFile) properties.get("dbfile");
+        Metadata      colorBy   = (Metadata) properties.get("colorby");
+        DbaseFile     dbfile    = (DbaseFile) properties.get("dbfile");
         EsriShapefile shapefile = (EsriShapefile) properties.get("shapefile");
         //Correspond to the index
         List<Color>  colors    = null;
@@ -310,13 +310,14 @@ public class FeatureCollection {
         if ((colorBy != null) && (dbfile != null)) {
             Hashtable<Color, String> colorMap = new Hashtable<Color,
                                                     String>();
-            
-            String colorByFieldAttr = colorBy.getAttr1().trim();
-            DbaseDataWrapper colorByField = null;
+
+            String           colorByFieldAttr = colorBy.getAttr1().trim();
+            DbaseDataWrapper colorByField     = null;
             for (int j = 0; j < fieldDatum.size(); j++) {
                 if (fieldDatum.get(j).getName().equalsIgnoreCase(
                         colorByFieldAttr)) {
                     colorByField = fieldDatum.get(j);
+
                     break;
                 }
             }
@@ -347,7 +348,7 @@ public class FeatureCollection {
 
             Hashtable<String, Color> valueMap = new Hashtable<String,
                                                     Color>();
-            if (ct != null && colorByField!=null) {
+            if ((ct != null) && (colorByField != null)) {
                 boolean needMin = Double.isNaN(min);
                 boolean needMax = Double.isNaN(max);
                 if (needMin || needMax) {
@@ -390,7 +391,7 @@ public class FeatureCollection {
                 if (ct != null) {
                     double value = colorByField.getDouble(i);
                     color = ct.getColor(min, max, value);
-                } else if(colorByField!=null) {
+                } else if (colorByField != null) {
                     String value = "" + colorByField.getData(i);
                     color = valueMap.get(value);
                     //                    System.err.println("value:" + value+ " color:" + color);

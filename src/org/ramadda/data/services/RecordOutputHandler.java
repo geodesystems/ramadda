@@ -179,6 +179,7 @@ public class RecordOutputHandler extends OutputHandler implements RecordConstant
 
     public boolean isEntryOk(Entry entry) {
         System.err.println("ROH.canhandle");
+
         return false;
     }
 

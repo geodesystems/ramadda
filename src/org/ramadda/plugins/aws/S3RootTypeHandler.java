@@ -133,7 +133,6 @@ public class S3RootTypeHandler extends ExtensibleGroupTypeHandler {
      *
      *
      * @param rootEntry _more_
-     * @param path _more_
      * @param info _more_
      * @return _more_
      *

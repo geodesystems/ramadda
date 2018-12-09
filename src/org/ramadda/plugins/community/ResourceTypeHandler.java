@@ -58,7 +58,8 @@ public class ResourceTypeHandler extends ExtensibleGroupTypeHandler {
      * @throws Exception _more_
      */
     @Override
-    public String getEntryIconUrl(Request request, Entry entry) throws Exception {
+    public String getEntryIconUrl(Request request, Entry entry)
+            throws Exception {
         String type = entry.getValue(0, "");
         if (type.equals("civic")) {
             return getIconUrl("/community/group.png");

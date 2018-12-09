@@ -131,7 +131,7 @@ public class IdvPointFile extends CsvFile {
     public VisitInfo prepareToVisit(VisitInfo visitInfo) throws Exception {
         super.prepareToVisit(visitInfo);
         List<String> headerLines = getHeaderLines();
-        if (headerLines.size() !=3) {
+        if (headerLines.size() != 3) {
             throw new IllegalArgumentException("Bad number of header lines:"
                     + headerLines.size());
         }

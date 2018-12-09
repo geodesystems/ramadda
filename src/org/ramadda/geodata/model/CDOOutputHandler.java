@@ -1220,7 +1220,7 @@ public class CDOOutputHandler extends OutputHandler implements ServiceProvider {
                         dataUnit = zAxis.getUnitsString();
                         levelUnit = request.getString(levelArg + "_unit",
                                 dataUnit);
-                    } else { // no level for this parameter
+                    } else {  // no level for this parameter
                         return;
                     }
                     if ( !Misc.equals(levelUnit, dataUnit)

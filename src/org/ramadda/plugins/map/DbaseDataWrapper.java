@@ -70,7 +70,7 @@ public class DbaseDataWrapper {
     /** _more_ */
     DbaseDataWrapper keyWrapper;
 
-    /** _more_          */
+    /** _more_ */
     List<DbaseDataWrapper> combine;
 
     /** _more_ */
@@ -82,19 +82,23 @@ public class DbaseDataWrapper {
      * @param name _more_
      * @param data _more_
      * @param properties _more_
+     * @param pluginProperties _more_
      */
     public DbaseDataWrapper(String name, DbaseData data,
-                            Properties properties, Properties pluginProperties) {
+                            Properties properties,
+                            Properties pluginProperties) {
         this.name       = name;
         this.data       = data;
         this.properties = properties;
         if (properties != null) {
-            this.label = (String) properties.get("map." + name.toLowerCase() + ".label");
+            this.label = (String) properties.get("map." + name.toLowerCase()
+                    + ".label");
         }
-        if(this.label == null && pluginProperties!=null) {
-            this.label = (String) pluginProperties.get("map." + name.toLowerCase() + ".label");
+        if ((this.label == null) && (pluginProperties != null)) {
+            this.label = (String) pluginProperties.get("map."
+                    + name.toLowerCase() + ".label");
         }
-            
+
 
     }
 
@@ -104,17 +108,21 @@ public class DbaseDataWrapper {
      * @param name _more_
      * @param keyWrapper _more_
      * @param properties _more_
+     * @param pluginProperties _more_
      */
     public DbaseDataWrapper(String name, DbaseDataWrapper keyWrapper,
-                            Properties properties, Properties pluginProperties) {
+                            Properties properties,
+                            Properties pluginProperties) {
         this.name       = name;
         this.keyWrapper = keyWrapper;
         this.properties = properties;
         if (properties != null) {
-            this.label = (String) properties.get("map." + name.toLowerCase() + ".label");
+            this.label = (String) properties.get("map." + name.toLowerCase()
+                    + ".label");
         }
-        if(this.label == null && pluginProperties!=null) {
-            this.label = (String) pluginProperties.get("map." + name.toLowerCase() + ".label");
+        if ((this.label == null) && (pluginProperties != null)) {
+            this.label = (String) pluginProperties.get("map."
+                    + name.toLowerCase() + ".label");
         }
     }
 
@@ -224,7 +232,7 @@ public class DbaseDataWrapper {
         if (data == null) {
             if (keyWrapper != null) {
                 String key = keyWrapper.getData(index).toString();
-                String v   = (String) properties.get("map." + key + "." + name);
+                String v = (String) properties.get("map." + key + "." + name);
                 if (v != null) {
                     return v;
                 }

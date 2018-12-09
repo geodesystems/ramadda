@@ -242,7 +242,6 @@ public class SwaggerApiHandler extends RepositoryManager implements RequestHandl
      * _more_
      *
      * @param request _more_
-     * @param typeHandler _more_
      * @param service _more_
      *
      * @return _more_

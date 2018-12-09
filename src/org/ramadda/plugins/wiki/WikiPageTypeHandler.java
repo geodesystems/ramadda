@@ -153,14 +153,30 @@ public class WikiPageTypeHandler extends ExtensibleGroupTypeHandler {
     }
 
 
+    /**
+     * _more_
+     *
+     * @param wikiUtil _more_
+     * @param request _more_
+     * @param originalEntry _more_
+     * @param entry _more_
+     * @param tag _more_
+     * @param props _more_
+     *
+     * @return _more_
+     *
+     * @throws Exception _more_
+     */
     public String getWikiInclude(WikiUtil wikiUtil, Request request,
                                  Entry originalEntry, Entry entry,
                                  String tag, Hashtable props)
             throws Exception {
         if (tag.equals("wikitext")) {
-            return (String) entry.getValue(0,"");
+            return (String) entry.getValue(0, "");
         }
-        return super.getWikiInclude(wikiUtil, request, originalEntry, entry, tag, props);
+
+        return super.getWikiInclude(wikiUtil, request, originalEntry, entry,
+                                    tag, props);
     }
 
 
@@ -257,7 +273,7 @@ public class WikiPageTypeHandler extends ExtensibleGroupTypeHandler {
 
 
             getRepository().getWikiManager().wikifyEntry(request, entry,
-                                                         wikiUtil, newText, true, null, null,null);
+                    wikiUtil, newText, true, null, null, null);
 
             List categories = (List) wikiUtil.getProperty("wikicategories");
             if (categories == null) {

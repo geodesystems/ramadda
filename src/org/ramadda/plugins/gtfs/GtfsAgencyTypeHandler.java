@@ -66,8 +66,13 @@ public class GtfsAgencyTypeHandler extends ExtensibleGroupTypeHandler {
     public static final int IDX_LANGUAGE = 4;
 
 
+    /** _more_ */
     public static final int IDX_RT_URL = 5;
+
+    /** _more_ */
     public static final int IDX_RT_ID = 6;
+
+    /** _more_ */
     public static final int IDX_RT_PASSWORD = 7;
 
     /** _more_ */

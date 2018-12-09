@@ -307,9 +307,11 @@ public class CalendarTypeHandler extends GdataTypeHandler {
 
 
             for (EventWho who : event.getParticipants()) {
-                getMetadataManager().addMetadata(newEntry, new Metadata(getRepository().getGUID(),
-                        newEntry.getId(), "gdata.participant", false,
-                        who.getValueString(), who.getEmail(), "", "", ""));
+                getMetadataManager().addMetadata(newEntry,
+                        new Metadata(getRepository().getGUID(),
+                                     newEntry.getId(), "gdata.participant",
+                                     false, who.getValueString(),
+                                     who.getEmail(), "", "", ""));
 
             }
 
@@ -318,9 +320,10 @@ public class CalendarTypeHandler extends GdataTypeHandler {
                 if ((s == null) || (s.length() == 0)) {
                     continue;
                 }
-                getMetadataManager().addMetadata(newEntry, new Metadata(getRepository().getGUID(),
-                        newEntry.getId(), "gdata.location", false, s, "", "",
-                        "", ""));
+                getMetadataManager().addMetadata(newEntry,
+                        new Metadata(getRepository().getGUID(),
+                                     newEntry.getId(), "gdata.location",
+                                     false, s, "", "", "", ""));
             }
 
             Resource resource = new Resource(event.getHtmlLink().getHref());
@@ -424,7 +427,8 @@ public class CalendarTypeHandler extends GdataTypeHandler {
      * @throws Exception _more_
      */
     @Override
-    public String getEntryIconUrl(Request request, Entry entry) throws Exception {
+    public String getEntryIconUrl(Request request, Entry entry)
+            throws Exception {
         if (entry.getId().indexOf(TYPE_EVENT) >= 0) {
             return getIconUrl("/icons/calendar_view_day.png");
         }

@@ -448,7 +448,7 @@ public class RamaddaPublisher extends ucar.unidata.idv.publish
                 JComponent extra;
                 if (ImageUtils.isImage(contentFile)) {
                     isImage = true;
-                    extra = doThumbnailCbx;
+                    extra   = doThumbnailCbx;
                 } else {
                     extra = GuiUtils.filler(1, 1);
                 }
@@ -707,7 +707,9 @@ public class RamaddaPublisher extends ucar.unidata.idv.publish
                                     bundleId, "uses bundle");
                         }
                     }
-                    System.err.println("isImage:" + isImage +" " + contentFile +" " + (node!=null)+" " + doThumbnailCbx.isSelected());
+                    System.err.println("isImage:" + isImage + " "
+                                       + contentFile + " " + (node != null)
+                                       + " " + doThumbnailCbx.isSelected());
 
                     if ((contentFile != null) && (node != null)) {
                         if (isImage && doThumbnailCbx.isSelected()) {
@@ -913,6 +915,7 @@ public class RamaddaPublisher extends ucar.unidata.idv.publish
             //            System.err.println("\t if 1 " + super.toString() + "  (connected)");
             return getName() + "  (connected)";
         }
+
         return getName();
     }
 

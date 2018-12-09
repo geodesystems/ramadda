@@ -79,9 +79,11 @@ public class GtfsStopTypeHandler extends GenericTypeHandler {
     /** _more_ */
     public static final int IDX_WHEELCHAIR_BOARDING = IDX++;
 
-    public static final int IDX_ROUTES= IDX++;
+    /** _more_ */
+    public static final int IDX_ROUTES = IDX++;
 
-    public static final int IDX_AGENCY_ID= IDX++;
+    /** _more_ */
+    public static final int IDX_AGENCY_ID = IDX++;
 
 
 
@@ -129,7 +131,7 @@ public class GtfsStopTypeHandler extends GenericTypeHandler {
         }
 
         List<Entry>   trips = Gtfs.getTripsForStop(request, entry);
-        StringBuilder sb = new StringBuilder();
+        StringBuilder sb    = new StringBuilder();
         sb.append(HtmlUtils.cssLink(getRepository().getUrlBase()
                                     + "/gtfs/gtfs.css"));
 
@@ -175,10 +177,11 @@ public class GtfsStopTypeHandler extends GenericTypeHandler {
         super.addToMap(request, entry, map);
 
         Entry agency = entry.getAncestor(GtfsAgencyTypeHandler.TYPE_AGENCY);
-        List<Entry> vehicles = Gtfs.getVehiclesForStop(request, agency, entry);
-        getRepository().getMapManager().addToMap(request,  map,
-                                                 vehicles, true, true);
-        for(Entry vehicle: vehicles) {
+        List<Entry> vehicles = Gtfs.getVehiclesForStop(request, agency,
+                                   entry);
+        getRepository().getMapManager().addToMap(request, map, vehicles,
+                true, true);
+        for (Entry vehicle : vehicles) {
             map.addMarker(request, vehicle);
         }
 

@@ -216,8 +216,9 @@ public class WeblogOutputHandler extends OutputHandler {
                                         BlogEntryTypeHandler
                                             .TYPE_BLOGENTRY), HtmlUtils
                                                 .img(getRepository()
-                                                    .getIconUrl(ICON_NEW), msg(
-                                                        "New Weblog Entry"))));
+                                                    .getIconUrl(
+                                                        ICON_NEW), msg(
+                                                            "New Weblog Entry"))));
             }
         }
 
@@ -287,12 +288,12 @@ public class WeblogOutputHandler extends OutputHandler {
             //            subject = HtmlUtils.div(entry.getLabel(),
             //                                    HtmlUtils.cssClass("blog-subject"));
             subject = HtmlUtils.div(
-                    HtmlUtils.href(
+                HtmlUtils.href(
                     entryUrl, entry.getLabel(), HtmlUtils.cssClass(
                         "blog-subject")), HtmlUtils.cssClass("blog-subject"));
         } else {
             subject = HtmlUtils.div(
-                    HtmlUtils.href(
+                HtmlUtils.href(
                     entryUrl, entry.getLabel(), HtmlUtils.cssClass(
                         "blog-subject")), HtmlUtils.cssClass("blog-subject"));
         }

@@ -159,6 +159,16 @@ public class BlogEntryTypeHandler extends ExtensibleGroupTypeHandler {
     }
 
 
+    /**
+     * _more_
+     *
+     * @param request _more_
+     * @param entry _more_
+     *
+     * @return _more_
+     *
+     * @throws Exception _more_
+     */
     @Override
     public String getWikiTemplate(Request request, Entry entry)
             throws Exception {

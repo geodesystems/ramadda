@@ -112,7 +112,8 @@ public class CatalogTypeHandler extends ExtensibleGroupTypeHandler {
      * @throws Exception _more_
      */
     @Override
-    public String getEntryIconUrl(Request request, Entry entry) throws Exception {
+    public String getEntryIconUrl(Request request, Entry entry)
+            throws Exception {
         if (entry.isGroup()) {
             return getIconUrl(ICON_FOLDER_CLOSED);
         }

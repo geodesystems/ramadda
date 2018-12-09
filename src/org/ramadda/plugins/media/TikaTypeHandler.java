@@ -134,20 +134,24 @@ public class TikaTypeHandler extends GenericTypeHandler {
         String author =
             (String) entry.getTransientProperty(Office.AUTHOR.getName());
         if (Utils.stringDefined(author)) {
-            getMetadataManager().addMetadata(entry, new Metadata(getRepository().getGUID(),
-                                           entry.getId(), "metadata_author",
-                                           false, author, null, null, null,
-                                           null));
+            getMetadataManager().addMetadata(
+                entry,
+                new Metadata(
+                    getRepository().getGUID(), entry.getId(),
+                    "metadata_author", false, author, null, null, null,
+                    null));
         }
 
         String lastAuthor =
             (String) entry.getTransientProperty(Office.LAST_AUTHOR.getName());
         if (Utils.stringDefined(lastAuthor)
                 && !Misc.equals(author, lastAuthor)) {
-            getMetadataManager().addMetadata(entry, new Metadata(getRepository().getGUID(),
-                                           entry.getId(), "metadata_author",
-                                           false, lastAuthor, null, null,
-                                           null, null));
+            getMetadataManager().addMetadata(
+                entry,
+                new Metadata(
+                    getRepository().getGUID(), entry.getId(),
+                    "metadata_author", false, lastAuthor, null, null, null,
+                    null));
         }
 
         String publisher = (String) entry.getTransientProperty(
@@ -157,11 +161,12 @@ public class TikaTypeHandler extends GenericTypeHandler {
                 DublinCore.PUBLISHER.getName());
         }
         if (Utils.stringDefined(publisher)) {
-            getMetadataManager().addMetadata(entry, new Metadata(getRepository().getGUID(),
-                                           entry.getId(),
-                                           "metadata_publisher", false,
-                                           publisher, null, null, null,
-                                           null));
+            getMetadataManager().addMetadata(
+                entry,
+                new Metadata(
+                    getRepository().getGUID(), entry.getId(),
+                    "metadata_publisher", false, publisher, null, null, null,
+                    null));
         }
 
 

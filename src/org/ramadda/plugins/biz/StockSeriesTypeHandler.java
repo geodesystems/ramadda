@@ -88,11 +88,11 @@ public class StockSeriesTypeHandler extends PointTypeHandler {
                                     tag, props);
     }
 
-    /** _more_          */
+    /** _more_ */
     public static final String PROPERTIES =
         "skiplines=1\nfields=Timestamp[type=date format=yyyy-MM-dd HH:mm:ss],Open[chartable=true],High[chartable=true],Low[chartable=true],Close[chartable=true],Volume[chartable=true]";
 
-    /** _more_          */
+    /** _more_ */
     public static final String PROPERTIES_ADJUSTED =
         "skiplines=1\nfields=Timestamp[type=date format=yyyy-MM-dd HH:mm:ss],Open[chartable=true],High[chartable=true],Low[chartable=true],Close[chartable=true],Adjusted_Close[chartable=true]Volume[chartable=true],Dividend_Amount[chartable=true],Split_Coefficient[chartable=true]";
 

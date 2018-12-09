@@ -397,37 +397,39 @@ public class TabularOutputHandler extends OutputHandler {
             String processEntryId =
                 getStorageManager().getProcessDirEntryId(destDir.getName());
 
-            List<String> newFiles      = new ArrayList<String>();
-            String       lastResult    = "";
-            Entry        theEntry      = entry;
-            String       commandString = request.getString("commands", "");
+            List<String>        newFiles   = new ArrayList<String>();
+            String              lastResult = "";
+            Entry               theEntry   = entry;
+            String commandString           = request.getString("commands",
+                                                 "");
 
-            List<StringBuilder> lines = new ArrayList<StringBuilder>();
-            List<String> toks = StringUtil.split(commandString, "\n", true, true);
+            List<StringBuilder> lines      = new ArrayList<StringBuilder>();
+            List<String> toks = StringUtil.split(commandString, "\n", true,
+                                    true);
             boolean priorLineContinues = false;
-            for (int i=0;i<toks.size();i++) {
-                String line = toks.get(i);
-                boolean appendNext =false;
-                if(line.endsWith("\\")) {
+            for (int i = 0; i < toks.size(); i++) {
+                String  line       = toks.get(i);
+                boolean appendNext = false;
+                if (line.endsWith("\\")) {
                     appendNext = true;
-                    line = line.substring(0,line.length()-1);
+                    line       = line.substring(0, line.length() - 1);
                 } else {
                     appendNext = false;
                 }
-                if(priorLineContinues) {
-                    lines.get(lines.size()-1).append(" ");
-                    lines.get(lines.size()-1).append(line);
+                if (priorLineContinues) {
+                    lines.get(lines.size() - 1).append(" ");
+                    lines.get(lines.size() - 1).append(line);
                 } else {
                     lines.add(new StringBuilder(line));
                 }
-               priorLineContinues = appendNext;
+                priorLineContinues = appendNext;
             }
 
 
 
             if ( !download) {
                 StringBuilder sb = new StringBuilder();
-                for (StringBuilder  lineSB : lines) {
+                for (StringBuilder lineSB : lines) {
                     String line = lineSB.toString();
                     if (line.startsWith("#")) {
                         continue;
@@ -437,15 +439,16 @@ public class TabularOutputHandler extends OutputHandler {
                 }
                 lines = new ArrayList<StringBuilder>();
                 lines.add(sb);
-            } 
+            }
 
-            if(lines.size()==0) {
+            if (lines.size() == 0) {
                 lines.add(new StringBuilder());
             }
-            if(request.defined("csvoutput")) {
-                lines.get(lines.size()-1).append(" " +request.getString("csvoutput"));
+            if (request.defined("csvoutput")) {
+                lines.get(lines.size() - 1).append(" "
+                          + request.getString("csvoutput"));
             }
-            for (StringBuilder  lineSB : lines) {
+            for (StringBuilder lineSB : lines) {
                 String line = lineSB.toString();
                 if (line.startsWith("#")) {
                     continue;
@@ -455,7 +458,7 @@ public class TabularOutputHandler extends OutputHandler {
                 if (line.startsWith("-stop")) {
                     break;
                 }
-                String       runDirPrefix  = request.getString("rundir", "run");
+                String runDirPrefix = request.getString("rundir", "run");
                 //                System.err.println("line:"+ line);
                 //                System.err.println("args:"+ args1);
                 List<String> args = new ArrayList<String>();
@@ -476,6 +479,7 @@ public class TabularOutputHandler extends OutputHandler {
                         arg = fileEntry.getFile().toString();
                     } else if (arg.equals("-run")) {
                         runDirPrefix = args1.get(++i);
+
                         continue;
                     }
                     args.add(arg);
@@ -647,7 +651,7 @@ public class TabularOutputHandler extends OutputHandler {
                 String sql = "drop table db_" + csvUtil.getDbId();
                 try {
                     getRepository().getDatabaseManager().executeAndClose(sql);
-                } catch(Exception exc){}
+                } catch (Exception exc) {}
             }
 
             if (csvUtil.getInstallPlugin()) {
@@ -1179,7 +1183,8 @@ public class TabularOutputHandler extends OutputHandler {
      *
      * @throws Exception _more_
      */
-    private static Workbook makeWorkbook(String suffix, InputStream inputStream)
+    private static Workbook makeWorkbook(String suffix,
+                                         InputStream inputStream)
             throws Exception {
         return (suffix.equals(".xls")
                 ? new HSSFWorkbook(inputStream)
@@ -1435,7 +1440,7 @@ public class TabularOutputHandler extends OutputHandler {
 
 
         getRepository().getWikiManager().addDisplayImports(request, sb);
-        
+
         getPageHandler().entrySectionOpen(request, entry, sb,
                                           entry.getName(), true);
 
@@ -1456,6 +1461,7 @@ public class TabularOutputHandler extends OutputHandler {
         sb.append(HtmlUtils.script(js.toString()));
 
         getPageHandler().entrySectionClose(request, entry, sb);
+
         return sb.toString();
 
 
@@ -1645,19 +1651,22 @@ public class TabularOutputHandler extends OutputHandler {
      * @throws Exception _more_
      */
     public static void main(String[] args) throws Exception {
-        Workbook wb = makeWorkbook(IOUtil.getFileExtension(args[0]),new FileInputStream(args[0]));
+        Workbook wb = makeWorkbook(IOUtil.getFileExtension(args[0]),
+                                   new FileInputStream(args[0]));
         for (int sheetIdx = 0; sheetIdx < wb.getNumberOfSheets();
                 sheetIdx++) {
             Sheet sheet = wb.getSheetAt(sheetIdx);
             System.err.println(sheet.getSheetName());
-            for (int rowIdx = sheet.getFirstRowNum();rowIdx <= sheet.getLastRowNum();rowIdx++) {
+            for (int rowIdx = sheet.getFirstRowNum();
+                    rowIdx <= sheet.getLastRowNum(); rowIdx++) {
                 Row row = sheet.getRow(rowIdx);
                 if (row == null) {
                     continue;
                 }
-                short        firstCol = row.getFirstCellNum();
-                int colCnt=0;
-                for (short col = firstCol;col < row.getLastCellNum();col++) {
+                short firstCol = row.getFirstCellNum();
+                int   colCnt   = 0;
+                for (short col = firstCol; col < row.getLastCellNum();
+                        col++) {
                     Cell cell = row.getCell(col);
                     if (cell == null) {
                         break;
@@ -1677,8 +1686,9 @@ public class TabularOutputHandler extends OutputHandler {
                     } else {
                         value = cell.getStringCellValue();
                     }
-                    if(colCnt++>0)
+                    if (colCnt++ > 0) {
                         System.out.print(",");
+                    }
                     System.out.print(value);
                 }
                 System.out.println("");

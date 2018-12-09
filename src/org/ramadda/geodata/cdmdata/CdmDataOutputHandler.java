@@ -341,7 +341,8 @@ public class CdmDataOutputHandler extends OutputHandler implements CdmConstants 
         }
 
         //        System.err.println("cdm.getlinks-can load as grid:" + getCdmManager().canLoadAsGrid(entry) + " " + getCdmManager().canLoadAsCdmGrid(entry));
-        if (getCdmManager().canLoadAsGrid(entry) || getCdmManager().canLoadAsCdmGrid(entry) ) {
+        if (getCdmManager().canLoadAsGrid(entry)
+                || getCdmManager().canLoadAsCdmGrid(entry)) {
             addOutputLink(request, entry, links, OUTPUT_GRIDSUBSET_FORM);
             addOutputLink(request, entry, links,
                           GridPointOutputHandler.OUTPUT_GRIDASPOINT_FORM);
@@ -357,7 +358,8 @@ public class CdmDataOutputHandler extends OutputHandler implements CdmConstants 
         Object oldOutput = request.getOutput();
         request.put(ARG_OUTPUT, OUTPUT_OPENDAP);
         String opendapUrl = getOpendapUrl(entry);
-        links.add(new Link(opendapUrl, getRepository().getIconUrl(ICON_OPENDAP),
+        links.add(new Link(opendapUrl,
+                           getRepository().getIconUrl(ICON_OPENDAP),
                            "OPeNDAP", OUTPUT_OPENDAP));
         request.put(ARG_OUTPUT, oldOutput);
 
@@ -1241,7 +1243,7 @@ public class CdmDataOutputHandler extends OutputHandler implements CdmConstants 
 
         int                  cnt            = 0;
         int                  total          = 0;
-        String               icon           = getIconUrl("/icons/pointdata.gif");
+        String               icon = getIconUrl("/icons/pointdata.gif");
 
         PointFeatureIterator dataIterator   = getPointIterator(pod);
 
@@ -1298,7 +1300,7 @@ public class CdmDataOutputHandler extends OutputHandler implements CdmConstants 
                                + "}\n");
             map.addMarker("",
                           new LatLonPointImpl(el.getLatitude(),
-                                              el.getLongitude()), icon, "", info.toString());
+                              el.getLongitude()), icon, "", info.toString());
         }
 
 
@@ -1459,14 +1461,14 @@ public class CdmDataOutputHandler extends OutputHandler implements CdmConstants 
                 float lon = lons[ptIdx];
                 if (ptIdx > 0) {
                     if (ptIdx + stride >= lats.length) {
-                        map.addMarker("", lat, lon, null,
-                                      "", "End time:" + todt.getEndDate());
+                        map.addMarker("", lat, lon, null, "",
+                                      "End time:" + todt.getEndDate());
                     }
                     //#FF0000
                     map.addLine(entry, "", lastLat, lastLon, lat, lon, null);
                 } else {
-                    map.addMarker("", lat, lon, null,
-                                  "", "Start time:" + todt.getEndDate());
+                    map.addMarker("", lat, lon, null, "",
+                                  "Start time:" + todt.getEndDate());
                 }
                 lastLat = lat;
                 lastLon = lon;

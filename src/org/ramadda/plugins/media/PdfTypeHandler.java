@@ -125,10 +125,12 @@ public class PdfTypeHandler extends GenericTypeHandler {
         String author =
             (String) entry.getTransientProperty(Office.AUTHOR.getName());
         if (Utils.stringDefined(author)) {
-            getMetadataManager().addMetadata(entry, new Metadata(getRepository().getGUID(),
-                                           entry.getId(), "metadata_author",
-                                           false, author, null, null, null,
-                                           null));
+            getMetadataManager().addMetadata(
+                entry,
+                new Metadata(
+                    getRepository().getGUID(), entry.getId(),
+                    "metadata_author", false, author, null, null, null,
+                    null));
         }
         String results =
             IOUtil.readContents(serviceEntry.getFile().toString(),

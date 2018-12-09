@@ -21,9 +21,9 @@ import org.ramadda.repository.*;
 import org.ramadda.repository.map.*;
 import org.ramadda.repository.metadata.*;
 import org.ramadda.repository.type.*;
+import org.ramadda.util.HtmlUtils;
 
 import org.ramadda.util.JQuery;
-import org.ramadda.util.HtmlUtils;
 import org.ramadda.util.Utils;
 import org.ramadda.util.WikiUtil;
 
@@ -109,7 +109,8 @@ public class GtfsTripTypeHandler extends GenericTypeHandler {
     /** _more_ */
     public static final int IDX_POINTS = IDX++;
 
-    public static final int IDX_AGENCY_ID= IDX++;
+    /** _more_ */
+    public static final int IDX_AGENCY_ID = IDX++;
 
 
 
@@ -157,7 +158,9 @@ public class GtfsTripTypeHandler extends GenericTypeHandler {
             }
 
 
-            String headsign= (String) entry.getValue(GtfsTripTypeHandler.IDX_HEADSIGN,(String) null);
+            String headsign =
+                (String) entry.getValue(GtfsTripTypeHandler.IDX_HEADSIGN,
+                                        (String) null);
             String sked = Gtfs.getWeekString(
                               (boolean[]) getRepository().decodeObject(
                                   entry.getValue(IDX_WEEK, "")));
@@ -165,7 +168,9 @@ public class GtfsTripTypeHandler extends GenericTypeHandler {
                 sked = "No scheduled days";
             }
 
-            String label = (Utils.stringDefined(headsign)?"To " + headsign +" - ":"")+ sked + " - " + Gtfs.getTimeRange(entry);
+            String label = (Utils.stringDefined(headsign)
+                            ? "To " + headsign + " - "
+                            : "") + sked + " - " + Gtfs.getTimeRange(entry);
             HtmlUtils.div(
                 sb, getPageHandler().getEntryHref(request, entry, label),
                 HtmlUtils.cssClass("ramadda-page-heading"));
@@ -195,9 +200,9 @@ public class GtfsTripTypeHandler extends GenericTypeHandler {
             return sb.toString();
         }
 
-        if(tag.equals("gtfs.trip.schedule")) {
-            StringBuilder sb = new StringBuilder();
-            String suffix = "";
+        if (tag.equals("gtfs.trip.schedule")) {
+            StringBuilder sb     = new StringBuilder();
+            String        suffix = "";
             if (entry.hasDate()) {
                 Date now = new Date();
                 String dttm = getRepository().formatYYYYMMDD(
@@ -218,15 +223,21 @@ public class GtfsTripTypeHandler extends GenericTypeHandler {
 
             sb.append("\n:heading Schedule" + suffix + "\n");
             showSchedule(request, sb, entry);
+
             return sb.toString();
         }
 
         if (tag.equals("gtfs.trip.list")) {
-            Entry agency = entry.getAncestor(GtfsAgencyTypeHandler.TYPE_AGENCY);
-            List<Entry> vehicles = Gtfs.getVehiclesForTrip(request, agency, entry);
-            Hashtable<String,Entry> vehicleMap = new Hashtable<String,Entry>();
-            for(Entry vehicle: vehicles) {
-                vehicleMap.put((String)vehicle.getValue(GtfsVehicleTypeHandler.IDX_STOP_ID,""), vehicle);
+            Entry agency =
+                entry.getAncestor(GtfsAgencyTypeHandler.TYPE_AGENCY);
+            List<Entry> vehicles = Gtfs.getVehiclesForTrip(request, agency,
+                                       entry);
+            Hashtable<String, Entry> vehicleMap = new Hashtable<String,
+                                                      Entry>();
+            for (Entry vehicle : vehicles) {
+                vehicleMap.put(
+                    (String) vehicle.getValue(
+                        GtfsVehicleTypeHandler.IDX_STOP_ID, ""), vehicle);
             }
 
             StringBuilder tmp = new StringBuilder();
@@ -237,9 +248,11 @@ public class GtfsTripTypeHandler extends GenericTypeHandler {
                                         + "/gtfs/gtfs.css"));
 
             if ((stops != null) && (stops.size() > 0)) {
-                sb.append("<div style=\"max-height:400px; overflow-y:auto; border-bottom: 1px #cccccc solid; border-top: 1px #cccccc solid;\" >");
                 sb.append(
-                    "<table id=\"gtfs-stops-list-" + entry.getId()+"\" class=\"gtfs-table gtfs-stops-list\" width=\"100%\">\n");
+                    "<div style=\"max-height:400px; overflow-y:auto; border-bottom: 1px #cccccc solid; border-top: 1px #cccccc solid;\" >");
+                sb.append(
+                    "<table id=\"gtfs-stops-list-" + entry.getId()
+                    + "\" class=\"gtfs-table gtfs-stops-list\" width=\"100%\">\n");
                 sb.append("<tr>");
                 sb.append(HtmlUtils.col("Stop",
                                         HtmlUtils.cssClass("gtfs-header")));
@@ -252,43 +265,62 @@ public class GtfsTripTypeHandler extends GenericTypeHandler {
                 sb.append("</tr>");
                 Entry myRoute = entry.getParentEntry();
                 for (Gtfs.StopTime stopTime : stops) {
-                    String stopId = (String) stopTime.entry.getValue(GtfsStopTypeHandler.IDX_STOP_ID,"");
+                    String stopId = (String) stopTime.entry.getValue(
+                                        GtfsStopTypeHandler.IDX_STOP_ID, "");
                     Entry vehicle = vehicleMap.get(stopId);
                     String lbl =
                         HtmlUtils.href(
                             request.entryUrl(
                                 getRepository().URL_ENTRY_SHOW,
                                 stopTime.entry), stopTime.entry.getLabel());
-                    if(vehicle!=null) {
-                        lbl = getPageHandler().getEntryHref(request, vehicle,
-                                                            HtmlUtils.img(vehicle.getTypeHandler().getTypeIconUrl())+
-                                                            " " + vehicle.getName() +" " +
-                                                            vehicle.getValue(GtfsVehicleTypeHandler.IDX_STATUS,"")) +"<br>"
-                            +lbl;
+                    if (vehicle != null) {
+                        lbl = getPageHandler()
+                            .getEntryHref(request, vehicle, HtmlUtils
+                                .img(vehicle.getTypeHandler()
+                                    .getTypeIconUrl()) + " "
+                                        + vehicle.getName() + " "
+                                        + vehicle
+                                            .getValue(GtfsVehicleTypeHandler
+                                                .IDX_STATUS, "")) + "<br>"
+                                                    + lbl;
                     }
                     String arrival   = Gtfs.formatTime(stopTime.startTime);
                     String departure = Gtfs.formatTime(stopTime.endTime);
-                    List<Entry> routes = Gtfs.getRoutesForStop(request, stopTime.entry);
+                    List<Entry> routes = Gtfs.getRoutesForStop(request,
+                                             stopTime.entry);
                     //                    StringBuilder routesSB = new StringBuilder("<div style=\"max-width:100%;overflow-x:auto;\"><table cellspacing=0 cellpadding=0><tr style=\"border-bottom:0px;\">");
                     StringBuilder routesSB = new StringBuilder("");
-                    for(Entry route: routes) {
-                        if(route.getId().equals(myRoute.getId())) continue;
+                    for (Entry route : routes) {
+                        if (route.getId().equals(myRoute.getId())) {
+                            continue;
+                        }
                         //                        routesSB.append("<td style=\"padding:0px;\" >");
-                        routesSB.append(Gtfs.getRouteTitle(request, route, true, false));
+                        routesSB.append(Gtfs.getRouteTitle(request, route,
+                                true, false));
                         //                        routesSB.append("</td>");
                     }
                     //                    routesSB.append("</tr></table></div>");
-                    sb.append(HtmlUtils.row(HtmlUtils.cols(lbl, arrival,
-                                                           departure, routesSB.toString())," valign=top " + 
-                                            HtmlUtils.attr("data-mapid",stopTime.entry.getId()) +
-                                            HtmlUtils.attr("data-latitude",""+stopTime.entry.getLatitude()) +
-                                            HtmlUtils.attr("data-longitude",""+stopTime.entry.getLongitude())
-                                            ));
+                    sb.append(HtmlUtils
+                        .row(HtmlUtils
+                            .cols(lbl, arrival, departure, routesSB
+                                .toString()), " valign=top "
+                                    + HtmlUtils
+                                        .attr("data-mapid", stopTime.entry
+                                            .getId()) + HtmlUtils
+                                                .attr("data-latitude", ""
+                                                    + stopTime.entry
+                                                        .getLatitude()) + HtmlUtils
+                                                            .attr("data-longitude", ""
+                                                                + stopTime
+                                                                    .entry.getLongitude())));
                 }
                 sb.append("</table>");
                 sb.append("</div>");
 
-                String js ="highlightMarkers('#gtfs-stops-list-" + entry.getId()+"  tr', gtfsTripMap, '#ffffcc', 'white', '" + entry.getId()+"');";
+                String js = "highlightMarkers('#gtfs-stops-list-"
+                            + entry.getId()
+                            + "  tr', gtfsTripMap, '#ffffcc', 'white', '"
+                            + entry.getId() + "');";
                 sb.append(HtmlUtils.script(JQuery.ready(js)));
             }
 
@@ -411,13 +443,14 @@ public class GtfsTripTypeHandler extends GenericTypeHandler {
             }
         }
 
-        Entry route = entry.getAncestor("type_gtfs_route");
+        Entry       route    = entry.getAncestor("type_gtfs_route");
         Entry agency = entry.getAncestor(GtfsAgencyTypeHandler.TYPE_AGENCY);
-        List<Entry> vehicles = Gtfs.getVehiclesForTrip(request, agency, entry);
-        getRepository().getMapManager().addToMap(request,  map,
-                                                 vehicles, true, true);
+        List<Entry> vehicles = Gtfs.getVehiclesForTrip(request, agency,
+                                   entry);
+        getRepository().getMapManager().addToMap(request, map, vehicles,
+                true, true);
 
-        for(Entry vehicle: vehicles) {
+        for (Entry vehicle : vehicles) {
             map.addMarker(request, vehicle);
         }
         map.addMarker(request, entry);

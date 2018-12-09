@@ -83,14 +83,19 @@ public class FaqTypeHandler extends ExtensibleGroupTypeHandler {
                              Permission.ACTION_NEW);
 
         if (canAdd) {
-            sb.append(HtmlUtils
-                .href(HtmlUtils
-                    .url(request
-                        .entryUrlWithArg(getRepository().URL_ENTRY_FORM,
-                            group, ARG_GROUP), ARG_TYPE,
-                                FaqEntryTypeHandler.TYPE_FAQENTRY), HtmlUtils
-                                    .img(getRepository().getIconUrl(ICON_NEW),
-                                        msg("New FAQ Question"))));
+            sb.append(
+                HtmlUtils
+                    .href(HtmlUtils
+                        .url(request
+                            .entryUrlWithArg(
+                                getRepository().URL_ENTRY_FORM, group,
+                                    ARG_GROUP), ARG_TYPE,
+                                        FaqEntryTypeHandler
+                                            .TYPE_FAQENTRY), HtmlUtils
+                                                .img(getRepository()
+                                                    .getIconUrl(
+                                                        ICON_NEW), msg(
+                                                            "New FAQ Question"))));
         }
 
 

@@ -175,9 +175,11 @@ public class AcsTypeHandler extends PointTypeHandler {
                                   HtmlUtils.id("acs_get_text")
                                   + HtmlUtils.attr("placeholder", "Search")));
         sb.append(
-            HtmlUtils.importJS(getRepository().getFileUrl("/census/census.js")));
+            HtmlUtils.importJS(
+                getRepository().getFileUrl("/census/census.js")));
         sb.append(
-            HtmlUtils.cssLink(getRepository().getFileUrl("/census/census.css")));
+            HtmlUtils.cssLink(
+                getRepository().getFileUrl("/census/census.css")));
 
         sb.append(HtmlUtils.href(getRepository().getUrlBase()
                                  + "/census/index.html", "Help",

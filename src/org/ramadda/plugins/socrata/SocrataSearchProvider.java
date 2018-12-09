@@ -219,7 +219,7 @@ public class SocrataSearchProvider extends SearchProvider {
                                       "blobMimeType", ";"), ";",
                                           2).get(0).trim();
                 String getFileUrl = "https://" + hostname + "/download/" + id
-                                 + "/" + mimeType;
+                                    + "/" + mimeType;
                 resource = new Resource(new URL(getFileUrl));
                 desc.append(HtmlUtils.br());
                 desc.append(HtmlUtils.href(itemUrl, "View file at Socrata"));

@@ -144,22 +144,23 @@ public class EiaSearchProvider extends SearchProvider {
         TypeHandler typeHandler =
             getRepository().getTypeHandler("type_eia_series");
         for (int i = 0; i < docs.length(); i++) {
-            JSONObject item      = docs.getJSONObject(i);
-            String     id        = item.getString("series_id");
-            String     name      = "name";
+            JSONObject item = docs.getJSONObject(i);
+            String     id   = item.getString("series_id");
+            String     name = "name";
             try {
-                JSONArray tmp =  item.getJSONArray("name");
+                JSONArray tmp = item.getJSONArray("name");
                 name = tmp.getString(0);
-            } catch(Exception exc) {
-                name       = item.getString("name");
+            } catch (Exception exc) {
+                name = item.getString("name");
             }
-            String     units     = item.getString("units");
-            String     frequency = item.getString("frequency");
-            String     desc      = "";
-            Date       dttm      = new Date();
-            Date       fromDate  = dttm,
-                       toDate    = dttm;
-            String entryUrl = "http://www.eia.gov/beta/api/qb.cfm?sdid=" + id;
+            String units     = item.getString("units");
+            String frequency = item.getString("frequency");
+            String desc      = "";
+            Date   dttm      = new Date();
+            Date   fromDate  = dttm,
+                   toDate    = dttm;
+            String entryUrl  = "http://www.eia.gov/beta/api/qb.cfm?sdid="
+                               + id;
             Entry newEntry = new Entry(Repository.ID_PREFIX_SYNTH + getId()
                                        + ":" + id, typeHandler);
             Object[] values = typeHandler.makeEntryValues(null);

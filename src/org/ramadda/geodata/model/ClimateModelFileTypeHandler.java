@@ -164,11 +164,13 @@ public class ClimateModelFileTypeHandler extends GranuleTypeHandler {
      * @param request The request
      * @param entry The entry
      * @param tag The wiki tag being used
+     * @param props _more_
      *
      * @return The point time series url
      */
     @Override
-        public String getUrlForWiki(Request request, Entry entry, String tag, Hashtable props) {
+    public String getUrlForWiki(Request request, Entry entry, String tag,
+                                Hashtable props) {
         try {
             TypeHandler gridType = getRepository().getTypeHandler("cdm_grid");
             if (gridType != null) {

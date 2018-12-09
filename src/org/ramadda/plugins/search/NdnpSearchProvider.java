@@ -76,10 +76,15 @@ public class NdnpSearchProvider extends OpenSearchProvider {
     }
 
 
-        @Override
-        public String getSearchProviderIconUrl() {
-            return "${root}/favicon.png";
-        }
+    /**
+     * _more_
+     *
+     * @return _more_
+     */
+    @Override
+    public String getSearchProviderIconUrl() {
+        return "${root}/favicon.png";
+    }
 
     /**
      * _more_

@@ -131,10 +131,13 @@ public class DataRecord extends PointRecord {
      *
      * @param fields _more_
      */
-@Override
+    @Override
     public void initFields(List<RecordField> fields) {
-       super.initFields(fields);
-       if(values!=null) return;
+
+        super.initFields(fields);
+        if (values != null) {
+            return;
+        }
         numDataFields = 0;
         String timeField = (String) getRecordFile().getProperty("field.time");
         String timeFormat =
@@ -294,6 +297,7 @@ public class DataRecord extends PointRecord {
             }
         }
         checkIndices();
+
     }
 
 
@@ -398,8 +402,9 @@ public class DataRecord extends PointRecord {
      */
     protected void addFields(List<RecordField> fields) {
         super.addFields(fields);
-        if(fields.size()==0)
+        if (fields.size() == 0) {
             fields.addAll(this.fields);
+        }
     }
 
 

@@ -256,7 +256,8 @@ public class ShapefileTypeHandler extends GenericTypeHandler implements WikiCons
         if (bounds != null) {
             kmlUrl += "&selectBounds=" + bounds;
         }
-        map.addKmlUrl(entry.getName(), kmlUrl, true,ShapefileOutputHandler.makeMapStyle(request,  entry));
+        map.addKmlUrl(entry.getName(), kmlUrl, true,
+                      ShapefileOutputHandler.makeMapStyle(request, entry));
 
         /*  For testing
         map.addGeoJsonUrl(
@@ -313,7 +314,7 @@ public class ShapefileTypeHandler extends GenericTypeHandler implements WikiCons
      *               }
      *               totalPoints += points.size();
      *               if (points.size() > 1) {
-
+     *
      *                   map.addLines(entry, "", points,null);
      *               } else if (points.size() == 1) {
      *                   map.addMarker("id", points.get(0)[0],

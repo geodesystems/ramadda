@@ -119,28 +119,37 @@ public class GdataBaseTypeHandler extends ExtensibleGroupTypeHandler {
             if (category.getLabel() == null) {
                 continue;
             }
-            getMetadataManager().addMetadata(newEntry, new Metadata(getRepository().getGUID(),
-                    newEntry.getId(), "enum_tag", false, category.getLabel(),
-                    "", "", "", ""));
+            getMetadataManager().addMetadata(
+                newEntry,
+                new Metadata(
+                    getRepository().getGUID(), newEntry.getId(), "enum_tag",
+                    false, category.getLabel(), "", "", "", ""));
         }
 
         for (Person person : (List<Person>) baseEntry.getAuthors()) {
-            getMetadataManager().addMetadata(newEntry, new Metadata(getRepository().getGUID(),
-                    newEntry.getId(), "gdata.author", false,
-                    person.getName(), person.getEmail(), "", "", ""));
+            getMetadataManager().addMetadata(
+                newEntry,
+                new Metadata(
+                    getRepository().getGUID(), newEntry.getId(),
+                    "gdata.author", false, person.getName(),
+                    person.getEmail(), "", "", ""));
         }
         for (Person person : (List<Person>) baseEntry.getContributors()) {
-            getMetadataManager().addMetadata(newEntry, new Metadata(getRepository().getGUID(),
-                    newEntry.getId(), "gdata.contributor", false,
-                    person.getName(), person.getEmail(), "", "", ""));
+            getMetadataManager().addMetadata(
+                newEntry,
+                new Metadata(
+                    getRepository().getGUID(), newEntry.getId(),
+                    "gdata.contributor", false, person.getName(),
+                    person.getEmail(), "", "", ""));
         }
 
         if (baseEntry.getRights() != null) {
             String rights = baseEntry.getRights().getPlainText();
             if ((rights != null) && (rights.length() > 0)) {
-                getMetadataManager().addMetadata(newEntry, new Metadata(getRepository().getGUID(),
-                        newEntry.getId(), "gdata.rights", false, rights, "",
-                        "", "", ""));
+                getMetadataManager().addMetadata(newEntry,
+                        new Metadata(getRepository().getGUID(),
+                                     newEntry.getId(), "gdata.rights", false,
+                                     rights, "", "", "", ""));
 
             }
         }

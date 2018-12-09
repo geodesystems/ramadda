@@ -223,11 +223,10 @@ public class DspaceSearchProvider extends SearchProvider {
                 for (int tagIdx = 0; tagIdx < tags.length(); tagIdx++) {
                     JSONObject tag = tags.getJSONObject(tagIdx);
                     getMetadataManager().addMetadata(newEntry,
-                        new Metadata(
-                            getRepository().getGUID(), newEntry.getId(),
-                            "enum_tag", false,
-                            Json.readValue(tag, "display_name", ""), null,
-                            null, null, null));
+                            new Metadata(getRepository().getGUID(),
+                                         newEntry.getId(), "enum_tag", false,
+                                         Json.readValue(tag, "display_name",
+                                             ""), null, null, null, null));
                 }
             }
 

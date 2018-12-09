@@ -770,7 +770,8 @@ public class GridPointOutputHandler extends OutputHandler implements CdmConstant
         }
         MapInfo map = getRepository().getMapManager().createMap(request,
                           true, null);
-        map.addBox("","", "", llr, new MapBoxProperties("blue", false, true));
+        map.addBox("", "", "", llr,
+                   new MapBoxProperties("blue", false, true));
         String llb = map.makeSelector(ARG_LOCATION, true, new String[] { lat,
                 lon });
         sb.append(HtmlUtils.formEntryTop(msgLabel("Location"), llb));

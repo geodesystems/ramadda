@@ -283,8 +283,8 @@ public class CDOTimeSeriesService extends CDODataService {
                                      dateRange.getEnd()).formattedString(
                                      "yyyyMM",
                                      CalendarDateTime.DEFAULT_TIMEZONE));
-        int lastDataYear  = lastDataYearMM / 100;
-        int lastDataMonth = lastDataYearMM % 100;
+        int    lastDataYear  = lastDataYearMM / 100;
+        int    lastDataMonth = lastDataYearMM % 100;
         String varname = ((GridDatatype) dataset.getGrids().get(0)).getName();
         dataset.close();
 

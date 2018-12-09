@@ -368,10 +368,11 @@ public class EchoPublisher extends Harvester {
         List<MetadataHandler> metadataHandlers =
             repository.getMetadataManager().getMetadataHandlers();
         for (Metadata metadata : metadataList) {
-            MetadataHandler metadataHandler= getMetadataManager().findMetadataHandler(metadata);
-            if (metadataHandler !=null) {
-                metadataHandler.addMetadataToXml(getRequest(), "echo",
-                                                 entry, metadata, doc, collectionNode);
+            MetadataHandler metadataHandler =
+                getMetadataManager().findMetadataHandler(metadata);
+            if (metadataHandler != null) {
+                metadataHandler.addMetadataToXml(getRequest(), "echo", entry,
+                        metadata, doc, collectionNode);
 
             }
         }

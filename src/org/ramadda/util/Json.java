@@ -35,10 +35,11 @@ import java.io.*;
 import java.text.StringCharacterIterator;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.List;
-import java.util.Arrays;
+
 
 /**
  * JSON Utility class
@@ -590,21 +591,34 @@ public class Json {
      * @throws Exception _more_
      */
     public static void main(String[] args) throws Exception {
-        toCsv(args[0], System.out, args.length>1?args[1]:null);
+        toCsv(args[0], System.out, (args.length > 1)
+                                   ? args[1]
+                                   : null);
         //        convertCameras(args);
     }
 
-    public static void toCsv(String file, PrintStream pw, String colString) throws Exception {
+    /**
+     * _more_
+     *
+     * @param file _more_
+     * @param pw _more_
+     * @param colString _more_
+     *
+     * @throws Exception _more_
+     */
+    public static void toCsv(String file, PrintStream pw, String colString)
+            throws Exception {
         BufferedReader br = new BufferedReader(
                                 new InputStreamReader(
-                                                      new FileInputStream(file)));
+                                    new FileInputStream(file)));
 
         HashSet cols = null;
-        if(colString!=null) {
-            cols=new HashSet();
-            for(String tok: StringUtil.split(colString,",",true,true))
+        if (colString != null) {
+            cols = new HashSet();
+            for (String tok : StringUtil.split(colString, ",", true, true)) {
                 cols.add(tok);
-            
+            }
+
         }
 
         StringBuilder json = new StringBuilder();
@@ -613,19 +627,21 @@ public class Json {
             json.append(input);
             json.append("\n");
         }
-        JSONObject obj      = new JSONObject(json.toString());
-        JSONArray  features = readArray(obj, "features");
-        List<String> names=null;
+        JSONObject   obj      = new JSONObject(json.toString());
+        JSONArray    features = readArray(obj, "features");
+        List<String> names    = null;
         for (int i = 0; i < features.length(); i++) {
             //            if((i%100)==0) System.err.println("cnt:" + i);
             JSONObject feature = features.getJSONObject(i);
-            JSONObject     props   = feature.getJSONObject("properties");
-            if(names == null) {
+            JSONObject props   = feature.getJSONObject("properties");
+            if (names == null) {
                 names = new ArrayList<String>();
-                String[]allNames= JSONObject.getNames(props);
+                String[] allNames = JSONObject.getNames(props);
                 Arrays.sort(allNames);
-                for(String name: allNames) {
-                    if(cols!=null && !cols.contains(name)) continue;
+                for (String name : allNames) {
+                    if ((cols != null) && !cols.contains(name)) {
+                        continue;
+                    }
                     names.add(name);
                     pw.print(name);
                     pw.print(",");
@@ -634,16 +650,16 @@ public class Json {
             }
 
 
-            JSONArray  geom    = readArray(feature, "geometry.coordinates");
-            String     type    = readValue(feature, "geometry.type", "NULL");
-            double[] centroid=null;
+            JSONArray geom     = readArray(feature, "geometry.coordinates");
+            String    type     = readValue(feature, "geometry.type", "NULL");
+            double[]  centroid = null;
             if (type.equals("MultiPolygon") || type.equals("Polygon")) {
-                JSONArray  points  = geom.getJSONArray(0);
+                JSONArray points = geom.getJSONArray(0);
                 if (type.equals("MultiPolygon")) {
                     points = points.getJSONArray(0);
                 }
 
-                List<double[]> pts     = new ArrayList<double[]>();
+                List<double[]> pts = new ArrayList<double[]>();
                 for (int j = 0; j < points.length(); j++) {
                     JSONArray tuple = points.getJSONArray(j);
                     double    v0    = tuple.getDouble(0);
@@ -652,18 +668,18 @@ public class Json {
                 }
                 centroid = Utils.calculateCentroid(pts);
             } else {
-                centroid = new double[]{
-                    geom.getDouble(0), geom.getDouble(1)
-                };
+                centroid = new double[] { geom.getDouble(0),
+                                          geom.getDouble(1) };
             }
-            for(String name: names) {
-                String value = props.optString(name,"");
-                if(value.indexOf(",")>=0) value = "\"" + value +"\"";
+            for (String name : names) {
+                String value = props.optString(name, "");
+                if (value.indexOf(",") >= 0) {
+                    value = "\"" + value + "\"";
+                }
                 pw.print(value);
                 pw.print(",");
             }
-            pw.println(centroid[1] + ","
-                               + centroid[0]);
+            pw.println(centroid[1] + "," + centroid[0]);
         }
     }
 
@@ -692,8 +708,10 @@ public class Json {
         for (int i = 0; i < cameras.length(); i++) {
             JSONObject camera = cameras.getJSONObject(i);
 
-            String tourId = readValue(camera, "CameraTourId", null);
-            if(tourId!=null) continue;
+            String     tourId = readValue(camera, "CameraTourId", null);
+            if (tourId != null) {
+                continue;
+            }
             double lat = Double.parseDouble(readValue(camera,
                              "Location.Latitude", "0.0"));
             double lon = Double.parseDouble(readValue(camera,
@@ -721,37 +739,39 @@ public class Json {
                 //                System.out.println (cameraName);
                 desc.append("Mile marker:  "
                             + readValue(view, "MileMarker", "NA") + "<br>");
-                String name = "CDOT Camera - " + cameraName;
-                String inner = "";
+                String name    = "CDOT Camera - " + cameraName;
+                String inner   = "";
                 String dirName = readValue(view, "Direction", "");
-                String dir = null;
-                if(dirName.equals( "North")) {
+                String dir     = null;
+                if (dirName.equals("North")) {
                     dir = "0";
-                } else if(dirName.equals( "Northeast")) {
+                } else if (dirName.equals("Northeast")) {
                     dir = "45";
-                } else if(dirName.equals( "East")) {
+                } else if (dirName.equals("East")) {
                     dir = "90";
-                } else if(dirName.equals( "Southeast")) {
+                } else if (dirName.equals("Southeast")) {
                     dir = "135";
-                } else if(dirName.equals( "South")) {
+                } else if (dirName.equals("South")) {
                     dir = "180";
-                } else if(dirName.equals( "Southwest")) {
+                } else if (dirName.equals("Southwest")) {
                     dir = "225";
-                } else if(dirName.equals( "West")) {
+                } else if (dirName.equals("West")) {
                     dir = "270";
-                } else if(dirName.equals( "Northwest")) {
+                } else if (dirName.equals("Northwest")) {
                     dir = "315";
                 }
-                if(dir!=null) {
-                    desc.append("Camera Direction:  " + dirName+"<br>");
-                    inner += "<metadata inherited=\"false\" type=\"camera.direction\"><attr encoded=\"false\" index=\"1\">" + dir +"</attr></metadata>\n";
+                if (dir != null) {
+                    desc.append("Camera Direction:  " + dirName + "<br>");
+                    inner +=
+                        "<metadata inherited=\"false\" type=\"camera.direction\"><attr encoded=\"false\" index=\"1\">"
+                        + dir + "</attr></metadata>\n";
                 }
                 inner += HtmlUtils.tag("description", "",
                                        "<![CDATA[" + desc + "]]>");
                 System.out.println(XmlUtil.tag("entry",
                         XmlUtil.attrs(new String[] {
-                    "type", "type_image_webcam", "url", url, "latitude", lat + "",
-                    "longitude", "" + lon, "name", name
+                    "type", "type_image_webcam", "url", url, "latitude",
+                    lat + "", "longitude", "" + lon, "name", name
                 }), inner));
 
             }

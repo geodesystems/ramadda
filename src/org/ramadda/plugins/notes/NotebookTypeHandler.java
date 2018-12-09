@@ -170,9 +170,9 @@ public class NotebookTypeHandler extends ExtensibleGroupTypeHandler {
                              Permission.ACTION_NEW);
 
         if (canAdd) {
-            String label = HtmlUtils.img(getRepository().getIconUrl(ICON_NEW),
-                                         msg("New Note")) + " "
-                                             + msg("Create new note");
+            String label =
+                HtmlUtils.img(getRepository().getIconUrl(ICON_NEW),
+                              msg("New Note")) + " " + msg("Create new note");
             sb.append(
                 HtmlUtils.href(
                     HtmlUtils.url(

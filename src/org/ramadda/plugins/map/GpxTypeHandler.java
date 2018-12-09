@@ -17,28 +17,35 @@
 package org.ramadda.plugins.map;
 
 
+import org.ramadda.data.point.text.*;
+import org.ramadda.data.record.*;
+import org.ramadda.data.record.*;
+
+
+import org.ramadda.data.services.PointTypeHandler;
+import org.ramadda.data.services.RecordTypeHandler;
+
+
 import org.ramadda.repository.*;
 import org.ramadda.repository.map.*;
 import org.ramadda.repository.metadata.*;
 import org.ramadda.repository.output.*;
 import org.ramadda.repository.type.*;
 import org.ramadda.util.HtmlUtils;
-import org.ramadda.util.WikiUtil;
 import org.ramadda.util.JQuery;
-import org.ramadda.data.record.*;
-import org.ramadda.data.point.text.*;
-import org.ramadda.data.record.*;
 
 import org.ramadda.util.KmlUtil;
 import org.ramadda.util.Utils;
+import org.ramadda.util.WikiUtil;
 
 
 import org.w3c.dom.*;
 
+import ucar.unidata.geoloc.Bearing;
+
 import ucar.unidata.util.DateUtil;
 import ucar.unidata.util.IOUtil;
 import ucar.unidata.util.Misc;
-import ucar.unidata.geoloc.Bearing;
 
 import ucar.unidata.util.StringUtil;
 import ucar.unidata.util.TwoFacedObject;
@@ -51,13 +58,9 @@ import java.io.*;
 import java.text.SimpleDateFormat;
 
 import java.util.ArrayList;
-import java.util.Hashtable;
 import java.util.Date;
+import java.util.Hashtable;
 import java.util.List;
-
-
-import org.ramadda.data.services.PointTypeHandler;
-import org.ramadda.data.services.RecordTypeHandler;
 
 
 /**
@@ -65,22 +68,32 @@ import org.ramadda.data.services.RecordTypeHandler;
 public class GpxTypeHandler extends PointTypeHandler {
 
 
+    /** _more_ */
     private SimpleDateFormat hoursSdf = new SimpleDateFormat("HH:mm:ss");
-    private static int IDX=RecordTypeHandler.IDX_LAST+1;
 
-    private static int IDX_DISTANCE=IDX++;
+    /** _more_ */
+    private static int IDX = RecordTypeHandler.IDX_LAST + 1;
 
-    private static int IDX_TOTAL_TIME=IDX++;
-    private static int IDX_MOVING_TIME=IDX++;
+    /** _more_ */
+    private static int IDX_DISTANCE = IDX++;
 
-    private static int IDX_SPEED=IDX++;
+    /** _more_ */
+    private static int IDX_TOTAL_TIME = IDX++;
 
-    private static int IDX_GAIN=IDX++;
+    /** _more_ */
+    private static int IDX_MOVING_TIME = IDX++;
 
-    private static int IDX_LOSS=IDX++;
+    /** _more_ */
+    private static int IDX_SPEED = IDX++;
+
+    /** _more_ */
+    private static int IDX_GAIN = IDX++;
+
+    /** _more_ */
+    private static int IDX_LOSS = IDX++;
 
 
-    
+
 
     /**
      * _more_
@@ -94,13 +107,26 @@ public class GpxTypeHandler extends PointTypeHandler {
         super(repository, node);
     }
 
+    /**
+     * _more_
+     *
+     * @return _more_
+     */
     public boolean isGroup() {
         return true;
     }
 
+    /**
+     * _more_
+     *
+     * @param request _more_
+     * @param entry _more_
+     *
+     * @return _more_
+     */
     @Override
     public String getMapInfoBubble(Request request, Entry entry) {
-       return null;
+        return null;
     }
 
     /**
@@ -117,6 +143,20 @@ public class GpxTypeHandler extends PointTypeHandler {
             getStorageManager().readSystemResource(entry.getFile()));
     }
 
+    /**
+     * _more_
+     *
+     * @param wikiUtil _more_
+     * @param request _more_
+     * @param originalEntry _more_
+     * @param entry _more_
+     * @param tag _more_
+     * @param props _more_
+     *
+     * @return _more_
+     *
+     * @throws Exception _more_
+     */
     @Override
     public String getWikiInclude(WikiUtil wikiUtil, Request request,
                                  Entry originalEntry, Entry entry,
@@ -127,48 +167,65 @@ public class GpxTypeHandler extends PointTypeHandler {
             StringBuilder sb = new StringBuilder();
             //            initializeNewEntry(request, entry);
             //            getEntryManager().updateEntry(request, entry);
-            double distance=(Double) entry.getValue(IDX_DISTANCE, new Double(0));
-            double totalTime=(Double) entry.getValue(IDX_TOTAL_TIME, new Double(0));
-            double movingTime=(Double) entry.getValue(IDX_MOVING_TIME, new Double(0));
-            double speed=(Double) entry.getValue(IDX_SPEED, new Double(0));
-            double gain=(Double) entry.getValue(IDX_GAIN, new Double(0));
-            double loss=(Double) entry.getValue(IDX_LOSS, new Double(0));
+            double distance = (Double) entry.getValue(IDX_DISTANCE,
+                                  new Double(0));
+            double totalTime = (Double) entry.getValue(IDX_TOTAL_TIME,
+                                   new Double(0));
+            double movingTime = (Double) entry.getValue(IDX_MOVING_TIME,
+                                    new Double(0));
+            double speed = (Double) entry.getValue(IDX_SPEED, new Double(0));
+            double gain  = (Double) entry.getValue(IDX_GAIN, new Double(0));
+            double loss  = (Double) entry.getValue(IDX_LOSS, new Double(0));
             //            System.err.println("distance:" + distance +" totalTime:" + totalTime );
-            if(Double.isNaN(distance) || distance == -1 || totalTime==-1) {
+            if (Double.isNaN(distance) || (distance == -1)
+                    || (totalTime == -1)) {
                 initializeNewEntry(request, entry);
-                distance=(Double) entry.getValue(IDX_DISTANCE, new Double(0));
-                totalTime=(Double) entry.getValue(IDX_TOTAL_TIME, new Double(0));
-                movingTime=(Double) entry.getValue(IDX_MOVING_TIME, new Double(0));
-                speed=(Double) entry.getValue(IDX_SPEED, new Double(0));
-                gain=(Double) entry.getValue(IDX_GAIN, new Double(0));
-                loss=(Double) entry.getValue(IDX_LOSS, new Double(0));
-                if(distance!=-1) {
+                distance = (Double) entry.getValue(IDX_DISTANCE,
+                        new Double(0));
+                totalTime = (Double) entry.getValue(IDX_TOTAL_TIME,
+                        new Double(0));
+                movingTime = (Double) entry.getValue(IDX_MOVING_TIME,
+                        new Double(0));
+                speed = (Double) entry.getValue(IDX_SPEED, new Double(0));
+                gain  = (Double) entry.getValue(IDX_GAIN, new Double(0));
+                loss  = (Double) entry.getValue(IDX_LOSS, new Double(0));
+                if (distance != -1) {
                     try {
                         getEntryManager().updateEntry(request, entry);
-                    } catch (Exception exc){}
+                    } catch (Exception exc) {}
                 }
 
             }
-            if(distance == 0) return "";
-
-            
-            String totalFmt = hoursSdf.format((long)(totalTime*60*60*1000));
-            String movingFmt = hoursSdf.format((long)(movingTime*60*60*1000));
+            if (distance == 0) {
+                return "";
+            }
 
 
-            sb.append(HtmlUtils.importCss(".gpx-stats td {padding-left:7px; padding-right:7px;}\n.gpx-stats .gpx-stats-data {font-size:150%;    font-weight: bold;}\n.gpx-stats .gpx-stats-labels td {color: gray;}"));
+            String totalFmt = hoursSdf.format((long) (totalTime * 60 * 60
+                                  * 1000));
+            String movingFmt = hoursSdf.format((long) (movingTime * 60 * 60
+                                   * 1000));
+
+
+            sb.append(
+                HtmlUtils.importCss(
+                    ".gpx-stats td {padding-left:7px; padding-right:7px;}\n.gpx-stats .gpx-stats-data {font-size:150%;    font-weight: bold;}\n.gpx-stats .gpx-stats-labels td {color: gray;}"));
             sb.append("<table class=\"gpx-stats\">");
-            sb.append(HtmlUtils.row(HtmlUtils.cols(distance+" miles",
-                                                 gain +" ft",
-                                                   speed +" mph", totalFmt, movingFmt),"class=gpx-stats-data"));
-            sb.append(HtmlUtils.row(HtmlUtils.cols("Distance", "Elevation", "Avg. Speed","Total Time", "Moving Time"),"class=gpx-stats-labels"));
+            sb.append(HtmlUtils.row(HtmlUtils.cols(distance + " miles",
+                    gain + " ft", speed + " mph", totalFmt,
+                    movingFmt), "class=gpx-stats-data"));
+            sb.append(HtmlUtils.row(HtmlUtils.cols("Distance", "Elevation",
+                    "Avg. Speed", "Total Time",
+                    "Moving Time"), "class=gpx-stats-labels"));
             sb.append("</table>");
-                                                 
+
 
 
             return sb.toString();
         }
-        return super.getWikiInclude(wikiUtil, request, originalEntry, entry, tag, props);
+
+        return super.getWikiInclude(wikiUtil, request, originalEntry, entry,
+                                    tag, props);
     }
 
 
@@ -188,6 +245,15 @@ public class GpxTypeHandler extends PointTypeHandler {
         extractInfo(request, entry, true);
     }
 
+    /**
+     * _more_
+     *
+     * @param request _more_
+     * @param entry _more_
+     * @param isNew _more_
+     *
+     * @throws Exception _more_
+     */
     public void extractInfo(Request request, Entry entry, boolean isNew)
             throws Exception {
 
@@ -211,30 +277,30 @@ public class GpxTypeHandler extends PointTypeHandler {
             entry.setNorth(XmlUtil.getAttribute(bounds, GpxUtil.ATTR_MAXLAT,
                     Entry.NONGEO));
             entry.setSouth(XmlUtil.getAttribute(bounds, GpxUtil.ATTR_MINLAT,
-                                                Entry.NONGEO));
+                    Entry.NONGEO));
             entry.setWest(XmlUtil.getAttribute(bounds, GpxUtil.ATTR_MINLON,
-                                               Entry.NONGEO));
+                    Entry.NONGEO));
             entry.setEast(XmlUtil.getAttribute(bounds, GpxUtil.ATTR_MAXLON,
-                                               Entry.NONGEO));
+                    Entry.NONGEO));
         }
 
-        if(isNew) {
+        if (isNew) {
             String name = XmlUtil.getGrandChildText(root, GpxUtil.TAG_NAME,
-                                                    (String) null);
+                              (String) null);
             if ((name == null) && (metadata != null)) {
                 name = XmlUtil.getGrandChildText(metadata, GpxUtil.TAG_NAME,
-                                                 entry.getName());
+                        entry.getName());
 
             }
             if (name != null) {
                 entry.setName(name);
             }
             if (entry.getDescription().length() == 0) {
-                String desc = XmlUtil.getGrandChildText(root, GpxUtil.TAG_DESC,
-                                                        (String) null);
+                String desc = XmlUtil.getGrandChildText(root,
+                                  GpxUtil.TAG_DESC, (String) null);
                 if ((desc == null) && (metadata != null)) {
-                    desc = XmlUtil.getGrandChildText(metadata, GpxUtil.TAG_DESC,
-                                                     "");
+                    desc = XmlUtil.getGrandChildText(metadata,
+                            GpxUtil.TAG_DESC, "");
 
                 }
                 if (desc != null) {
@@ -243,45 +309,51 @@ public class GpxTypeHandler extends PointTypeHandler {
             }
 
             String keywords = XmlUtil.getGrandChildText(root,
-                                                        GpxUtil.TAG_KEYWORDS, null);
+                                  GpxUtil.TAG_KEYWORDS, null);
             if (keywords != null) {
-                for (String word : StringUtil.split(keywords, ",", true, true)) {
-                    getMetadataManager().addMetadata(entry, new Metadata(getRepository().getGUID(),
-                                                   entry.getId(), ContentMetadataHandler.TYPE_KEYWORD,
-                                                   false, word, "", "", "", ""));
+                for (String word :
+                        StringUtil.split(keywords, ",", true, true)) {
+                    getMetadataManager().addMetadata(entry,
+                            new Metadata(getRepository().getGUID(),
+                                         entry.getId(),
+                                         ContentMetadataHandler.TYPE_KEYWORD,
+                                         false, word, "", "", "", ""));
                 }
             }
 
-            String url = XmlUtil.getGrandChildText(root, GpxUtil.TAG_URL, null);
-            String urlName = XmlUtil.getGrandChildText(root, GpxUtil.TAG_URLNAME,
-                                                       "");
+            String url = XmlUtil.getGrandChildText(root, GpxUtil.TAG_URL,
+                             null);
+            String urlName = XmlUtil.getGrandChildText(root,
+                                 GpxUtil.TAG_URLNAME, "");
             if (url != null) {
-                getMetadataManager().addMetadata(entry, new Metadata(getRepository().getGUID(),
-                                               entry.getId(),
-                                               ContentMetadataHandler.TYPE_URL,
-                                               false, url, urlName, "", "", ""));
+                getMetadataManager().addMetadata(entry,
+                        new Metadata(getRepository().getGUID(),
+                                     entry.getId(),
+                                     ContentMetadataHandler.TYPE_URL, false,
+                                     url, urlName, "", "", ""));
 
             }
 
-            String author = XmlUtil.getGrandChildText(root, GpxUtil.TAG_AUTHOR,
-                                                      null);
+            String author = XmlUtil.getGrandChildText(root,
+                                GpxUtil.TAG_AUTHOR, null);
             if (author != null) {
-                getMetadataManager().addMetadata(entry, 
-                                  new Metadata(
-                                               getRepository().getGUID(), entry.getId(),
-                                               ContentMetadataHandler.TYPE_AUTHOR, false, author, "",
-                                               "", "", ""));
+                getMetadataManager().addMetadata(entry,
+                        new Metadata(getRepository().getGUID(),
+                                     entry.getId(),
+                                     ContentMetadataHandler.TYPE_AUTHOR,
+                                     false, author, "", "", "", ""));
 
             }
 
 
             String email = XmlUtil.getGrandChildText(root, GpxUtil.TAG_EMAIL,
-                                                     null);
+                               null);
             if (email != null) {
-                getMetadataManager().addMetadata(entry, new Metadata(getRepository().getGUID(),
-                                               entry.getId(),
-                                               ContentMetadataHandler.TYPE_EMAIL,
-                                               false, email, "", "", "", ""));
+                getMetadataManager().addMetadata(entry,
+                        new Metadata(getRepository().getGUID(),
+                                     entry.getId(),
+                                     ContentMetadataHandler.TYPE_EMAIL,
+                                     false, email, "", "", "", ""));
 
             }
         }
@@ -411,91 +483,111 @@ public class GpxTypeHandler extends PointTypeHandler {
         }
 
 
-        Bearing   bearing = new Bearing();
-        double totalDistance = 0;
-        double elevationGain = 0;
-        double elevationLoss = 0;
-        double movingTime=0;
+        Bearing bearing       = new Bearing();
+        double  totalDistance = 0;
+        double  elevationGain = 0;
+        double  elevationLoss = 0;
+        double  movingTime    = 0;
         for (Element track :
-                 ((List<Element>) XmlUtil.findChildren(root,
-                                                       GpxUtil.TAG_TRK))) {
-            double lastLat = 0;
-            double lastLon = 0;
-            long lastTime = 0;
+                ((List<Element>) XmlUtil.findChildren(root,
+                    GpxUtil.TAG_TRK))) {
+            double lastLat       = 0;
+            double lastLon       = 0;
+            long   lastTime      = 0;
             double lastElevation = 0;
             for (Element trackSeg :
-                     ((List<Element>) XmlUtil.findChildren(track,
-                                                           GpxUtil.TAG_TRKSEG))) {
+                    ((List<Element>) XmlUtil.findChildren(track,
+                        GpxUtil.TAG_TRKSEG))) {
                 for (Element trackPoint :
-                         ((List<Element>) XmlUtil.findChildren(trackSeg,
-                                                               GpxUtil.TAG_TRKPT))) {
+                        ((List<Element>) XmlUtil.findChildren(trackSeg,
+                            GpxUtil.TAG_TRKPT))) {
                     double lat = XmlUtil.getAttribute(trackPoint,
-                                                      GpxUtil.ATTR_LAT, 0.0);
+                                     GpxUtil.ATTR_LAT, 0.0);
                     double lon = XmlUtil.getAttribute(trackPoint,
-                                                      GpxUtil.ATTR_LON, 0.0);
-                    String ele = XmlUtil.getGrandChildText(trackPoint,"ele","0");
+                                     GpxUtil.ATTR_LON, 0.0);
+                    String ele = XmlUtil.getGrandChildText(trackPoint, "ele",
+                                     "0");
                     double elevation = Double.parseDouble(ele);
-                    if(lastElevation==0) {
+                    if (lastElevation == 0) {
                         lastElevation = elevation;
                     } else {
-                        double delta = Math.abs(lastElevation-elevation);
-                        if(delta>5) {
-                            if(elevation>lastElevation)
-                                elevationGain+= (elevation-lastElevation);
-                            else 
-                                elevationLoss+= (lastElevation-elevation);
+                        double delta = Math.abs(lastElevation - elevation);
+                        if (delta > 5) {
+                            if (elevation > lastElevation) {
+                                elevationGain += (elevation - lastElevation);
+                            } else {
+                                elevationLoss += (lastElevation - elevation);
+                            }
                             lastElevation = elevation;
                         }
                     }
 
                     double speed = 0;
-                    if(ele !=null) {
-                        ele = ""+(new Double(ele).doubleValue()*3.28084);
+                    if (ele != null) {
+                        ele = "" + (new Double(ele).doubleValue() * 3.28084);
                     }
-                    String time = XmlUtil.getGrandChildText(trackPoint,"time","");
-                    Date dttm = sdf.parse(time);
+                    String time = XmlUtil.getGrandChildText(trackPoint,
+                                      "time", "");
+                    Date dttm     = sdf.parse(time);
                     long thisTime = dttm.getTime();
-                    if(lastLat!=0) {
-                        bearing = Bearing.calculateBearing(lastLat, lastLon, lat, lon, bearing);
-                        double distance  = 0.621371*bearing.getDistance();
-                        totalDistance+= distance;
-                        double hours = (thisTime-lastTime)/1000.0/60/60;
-                        if(hours !=0)
-                            speed = distance/hours;
-                        if(speed>0.01) {
-                            movingTime+=hours;
+                    if (lastLat != 0) {
+                        bearing = Bearing.calculateBearing(lastLat, lastLon,
+                                lat, lon, bearing);
+                        double distance = 0.621371 * bearing.getDistance();
+                        totalDistance += distance;
+                        double hours = (thisTime - lastTime) / 1000.0 / 60
+                                       / 60;
+                        if (hours != 0) {
+                            speed = distance / hours;
+                        }
+                        if (speed > 0.01) {
+                            movingTime += hours;
                         }
                     }
-                    lastLat = lat;
-                    lastLon = lon;
+                    lastLat  = lat;
+                    lastLon  = lon;
                     lastTime = thisTime;
                 }
             }
         }
 
-        double hours = 0;
-        double averageSpeed =0;
+        double hours        = 0;
+        double averageSpeed = 0;
         if (movingTime > 0) {
-            averageSpeed = totalDistance/movingTime;
+            averageSpeed = totalDistance / movingTime;
         }
 
-        entry.setValue(IDX_DISTANCE, new Double(Math.round(100.0*totalDistance)/100.0));
-        entry.setValue(IDX_TOTAL_TIME, new Double ((maxTime-minTime)/1000.0/60/60));
-        entry.setValue(IDX_MOVING_TIME, new Double (movingTime));
-        entry.setValue(IDX_SPEED, new Double(Math.round(100*averageSpeed)/100.0));
-        entry.setValue(IDX_GAIN, new Double((int)(3.28084*elevationGain)));
-        entry.setValue(IDX_LOSS, new Double((int)(3.28084*elevationLoss)));
+        entry.setValue(IDX_DISTANCE,
+                       new Double(Math.round(100.0 * totalDistance) / 100.0));
+        entry.setValue(IDX_TOTAL_TIME,
+                       new Double((maxTime - minTime) / 1000.0 / 60 / 60));
+        entry.setValue(IDX_MOVING_TIME, new Double(movingTime));
+        entry.setValue(IDX_SPEED,
+                       new Double(Math.round(100 * averageSpeed) / 100.0));
+        entry.setValue(IDX_GAIN, new Double((int) (3.28084 * elevationGain)));
+        entry.setValue(IDX_LOSS, new Double((int) (3.28084 * elevationLoss)));
 
     }
 
 
+    /**
+     * _more_
+     *
+     * @param request _more_
+     * @param entry _more_
+     * @param parent _more_
+     * @param newEntry _more_
+     *
+     * @throws Exception _more_
+     */
     public void initializeEntryFromForm(Request request, Entry entry,
                                         Entry parent, boolean newEntry)
             throws Exception {
 
-        super.initializeEntryFromForm(request, entry,
-                                      parent,  newEntry);
-        if(newEntry) return;
+        super.initializeEntryFromForm(request, entry, parent, newEntry);
+        if (newEntry) {
+            return;
+        }
         extractInfo(request, entry, false);
     }
 
@@ -726,20 +818,25 @@ public class GpxTypeHandler extends PointTypeHandler {
                 map.addMarker(id, lat, lon, null, name, sinfo, entry.getId());
                 String navUrl = "javascript:" + map.getVariableName()
                                 + ".hiliteMarker(" + sqt(id) + ");";
-                tfos.add(new TwoFacedObject(name,
-                                            new String[]{id,HtmlUtils.href(navUrl,
-                                                                           icon + " " + name)}));
+                tfos.add(new TwoFacedObject(name, new String[] { id,
+                        HtmlUtils.href(navUrl, icon + " " + name) }));
             }
 
             //            TwoFacedObject.sort(tfos);
             extra.append("<div class=\"gpx-map-links\">");
             for (TwoFacedObject tfo : tfos) {
-                String[] tuple = (String[])tfo.getId(); 
-                extra.append(HtmlUtils.div(tuple[1],"data-mapid=\"" + tuple[0]+"\" " + HtmlUtils.cssClass("gpx-map-link")));
+                String[] tuple = (String[]) tfo.getId();
+                extra.append(
+                    HtmlUtils.div(
+                        tuple[1],
+                        "data-mapid=\"" + tuple[0] + "\" "
+                        + HtmlUtils.cssClass("gpx-map-link")));
             }
             extra.append("</div>");
-            if(tfos.size()>0) {
-                String js ="highlightMarkers('.gpx-map-links .gpx-map-link', " + map.getVariableName() +", '#ffffcc', 'white');";
+            if (tfos.size() > 0) {
+                String js =
+                    "highlightMarkers('.gpx-map-links .gpx-map-link', "
+                    + map.getVariableName() + ", '#ffffcc', 'white');";
                 extra.append(HtmlUtils.script(JQuery.ready(js)));
                 map.appendExtraNav(extra.toString());
             }
@@ -791,6 +888,13 @@ public class GpxTypeHandler extends PointTypeHandler {
 
     }
 
+    /**
+     * _more_
+     *
+     * @param entry _more_
+     * @param mapInfo _more_
+     * @param sb _more_
+     */
     @Override
     public void initMapAttrs(Entry entry, MapInfo mapInfo, StringBuilder sb) {
         super.initMapAttrs(entry, mapInfo, sb);
@@ -798,96 +902,153 @@ public class GpxTypeHandler extends PointTypeHandler {
         sb.append("'strokeColor':'" + color + "','strokeWidth':2");
     }
 
-   @Override
+    /**
+     * _more_
+     *
+     * @param request _more_
+     * @param entry _more_
+     *
+     * @return _more_
+     *
+     * @throws Exception _more_
+     */
+    @Override
     public RecordFile doMakeRecordFile(Request request, Entry entry)
             throws Exception {
-       return new GpxRecordFile(entry.getResource().getPath());
+        return new GpxRecordFile(entry.getResource().getPath());
     }
 
 
+    /**
+     * Class description
+     *
+     *
+     * @version        $version$, Sat, Dec 8, '18
+     * @author         Enter your name here...
+     */
     public static class GpxRecordFile extends CsvFile {
 
 
+        /**
+         * _more_
+         *
+         * @param filename _more_
+         *
+         * @throws IOException _more_
+         */
         public GpxRecordFile(String filename) throws IOException {
             super(filename);
         }
 
-       @Override
-       public InputStream doMakeInputStream(boolean buffered)
-            throws IOException {
+        /**
+         * _more_
+         *
+         * @param buffered _more_
+         *
+         * @return _more_
+         *
+         * @throws IOException _more_
+         */
+        @Override
+        public InputStream doMakeInputStream(boolean buffered)
+                throws IOException {
+
             try {
-                InputStream source = super.doMakeInputStream(buffered);
-                Element     root   = XmlUtil.getRoot(source);
-                StringBuilder s     = new StringBuilder("#converted stream\n");
-                Bearing   bearing = new Bearing();
+                InputStream   source  = super.doMakeInputStream(buffered);
+                Element       root    = XmlUtil.getRoot(source);
+                StringBuilder s = new StringBuilder("#converted stream\n");
+                Bearing       bearing = new Bearing();
                 for (Element track :
-                         ((List<Element>) XmlUtil.findChildren(root,
-                                                               GpxUtil.TAG_TRK))) {
-                    double lastLat = 0;
-                    double lastLon = 0;
-                    long lastTime = 0;
-                    SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
+                        ((List<Element>) XmlUtil.findChildren(root,
+                            GpxUtil.TAG_TRK))) {
+                    double lastLat  = 0;
+                    double lastLon  = 0;
+                    long   lastTime = 0;
+                    SimpleDateFormat sdf =
+                        new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
                     double totalDistance = 0;
                     double elevationGain = 0;
                     double elevationLoss = 0;
                     double lastElevation = 0;
                     for (Element trackSeg :
-                             ((List<Element>) XmlUtil.findChildren(track,
-                                                                   GpxUtil.TAG_TRKSEG))) {
+                            ((List<Element>) XmlUtil.findChildren(track,
+                                GpxUtil.TAG_TRKSEG))) {
 
 
                         List<Double> speedWindow = new ArrayList<Double>();
                         List<Double> gradeWindow = new ArrayList<Double>();
                         for (Element trackPoint :
-                                 ((List<Element>) XmlUtil.findChildren(trackSeg,
-                                                                       GpxUtil.TAG_TRKPT))) {
+                                ((List<Element>) XmlUtil.findChildren(
+                                    trackSeg, GpxUtil.TAG_TRKPT))) {
                             double lat = XmlUtil.getAttribute(trackPoint,
-                                                              GpxUtil.ATTR_LAT, 0.0);
+                                             GpxUtil.ATTR_LAT, 0.0);
                             double lon = XmlUtil.getAttribute(trackPoint,
-                                                              GpxUtil.ATTR_LON, 0.0);
-                            String ele = XmlUtil.getGrandChildText(trackPoint,"ele","0");
+                                             GpxUtil.ATTR_LON, 0.0);
+                            String ele =
+                                XmlUtil.getGrandChildText(trackPoint, "ele",
+                                    "0");
                             double elevation = Double.parseDouble(ele);
-                            if(lastElevation!=0) {
-                                if(elevation>lastElevation)
-                                    elevationGain+= (elevation-lastElevation);
-                                else 
-                                    elevationLoss+= (lastElevation-elevation);
+                            if (lastElevation != 0) {
+                                if (elevation > lastElevation) {
+                                    elevationGain += (elevation
+                                            - lastElevation);
+                                } else {
+                                    elevationLoss += (lastElevation
+                                            - elevation);
+                                }
                             }
                             double speed = 0;
                             double grade = 0;
-                            if(ele !=null) {
-                                ele = ""+(new Double(ele).doubleValue()*3.28084);
+                            if (ele != null) {
+                                ele = "" + (new Double(ele).doubleValue()
+                                            * 3.28084);
                             }
-                            String time = XmlUtil.getGrandChildText(trackPoint,"time","");
+                            String time =
+                                XmlUtil.getGrandChildText(trackPoint, "time",
+                                    "");
                             Date dttm = sdf.parse(time);
-                            if(lastLat!=0) {
-                                bearing = Bearing.calculateBearing(lastLat, lastLon, lat, lon, bearing);
-                                double distance  = 0.621371*bearing.getDistance();
-                                if(distance>0) 
-                                    grade = (elevation-lastElevation)/(distance*5280);
-                                else
-                                    grade=0;
-                                totalDistance+= distance;
-                                double hours = (dttm.getTime()-lastTime)/1000.0/60/60;
-                                if(hours !=0)
-                                    speed = distance/hours;
-                                if(speedWindow.size()>6) speedWindow.remove(0);
+                            if (lastLat != 0) {
+                                bearing = Bearing.calculateBearing(lastLat,
+                                        lastLon, lat, lon, bearing);
+                                double distance = 0.621371
+                                                  * bearing.getDistance();
+                                if (distance > 0) {
+                                    grade = (elevation - lastElevation)
+                                            / (distance * 5280);
+                                } else {
+                                    grade = 0;
+                                }
+                                totalDistance += distance;
+                                double hours = (dttm.getTime() - lastTime)
+                                               / 1000.0 / 60 / 60;
+                                if (hours != 0) {
+                                    speed = distance / hours;
+                                }
+                                if (speedWindow.size() > 6) {
+                                    speedWindow.remove(0);
+                                }
                                 speedWindow.add(speed);
-                                if(gradeWindow.size()>6) gradeWindow.remove(0);
+                                if (gradeWindow.size() > 6) {
+                                    gradeWindow.remove(0);
+                                }
                                 gradeWindow.add(grade);
                             }
                             lastElevation = elevation;
                             double avgSpeed = 0;
-                            for(double v:speedWindow) 
-                                avgSpeed+= v;
+                            for (double v : speedWindow) {
+                                avgSpeed += v;
+                            }
                             double tmp = 0;
-                            for(double v:gradeWindow) 
-                                tmp+= v;
-                            grade = tmp/gradeWindow.size();
-                            avgSpeed = avgSpeed/speedWindow.size();
-                            if(speed < 0.05) avgSpeed = 0;
-                            lastLat = lat;
-                            lastLon = lon;
+                            for (double v : gradeWindow) {
+                                tmp += v;
+                            }
+                            grade    = tmp / gradeWindow.size();
+                            avgSpeed = avgSpeed / speedWindow.size();
+                            if (speed < 0.05) {
+                                avgSpeed = 0;
+                            }
+                            lastLat  = lat;
+                            lastLon  = lon;
                             lastTime = dttm.getTime();
 
                             s.append(time);
@@ -900,9 +1061,9 @@ public class GpxTypeHandler extends PointTypeHandler {
                             s.append(",");
                             s.append(elevationLoss);
                             s.append(",");
-                            s.append(Math.round(100*avgSpeed)/100.0);
+                            s.append(Math.round(100 * avgSpeed) / 100.0);
                             s.append(",");
-                            s.append(Math.round(100*totalDistance)/100.0);
+                            s.append(Math.round(100 * totalDistance) / 100.0);
                             s.append(",");
                             s.append(lat);
                             s.append(",");
@@ -914,50 +1075,54 @@ public class GpxTypeHandler extends PointTypeHandler {
                 //                System.err.println(s);
                 ByteArrayInputStream bais =
                     new ByteArrayInputStream(s.toString().getBytes());
+
                 return bais;
-            } catch(Exception exc) {
+            } catch (Exception exc) {
                 throw new RuntimeException(exc);
             }
+
         }
 
-    public VisitInfo prepareToVisit(VisitInfo visitInfo) throws Exception {
-        super.prepareToVisit(visitInfo);
+        /**
+         * _more_
+         *
+         * @param visitInfo _more_
+         *
+         * @return _more_
+         *
+         * @throws Exception _more_
+         */
+        public VisitInfo prepareToVisit(VisitInfo visitInfo)
+                throws Exception {
+            super.prepareToVisit(visitInfo);
 
-        putFields(new String[] {
-            makeField(FIELD_DATE,  attrType("date"),
-                      attrFormat("yyyy-MM-dd'T'HH:mm:ss")),
-            makeField("point_altitude", attrType("double"),
-                      attrChartable(),
-                      attrUnit("feet"),
-                      attrLabel("Elevation")),
-            makeField("grade", attrType("double"),
-                      attrChartable(),
-                      attrUnit("%"),
-                      attrLabel("Grade")),
-            makeField("elevation_gain", attrType("double"),
-                      attrChartable(),
-                      attrUnit("feet"),
-                      attrLabel("Elevation Gain")),
-            makeField("elevation_loss", attrType("double"),
-                      attrChartable(),
-                      attrUnit("feet"),
-                      attrLabel("Elevation Loss")),
-            makeField("speed", attrType("double"),
-                      attrChartable(),
-                      attrUnit("m/h"),
-                      attrLabel("Speed")),
-            makeField("total_distance", attrType("double"),
-                      attrChartable(),
-                      attrUnit("miles"),
-                      attrLabel("Total Distance")),
-            makeField("latitude", attrType("double"),
-                      attrLabel("Latitude")),
-            makeField("longitude", attrType("double"),
-                      attrLabel("Longitude")),
-
+            putFields(new String[] {
+                makeField(FIELD_DATE, attrType("date"),
+                          attrFormat("yyyy-MM-dd'T'HH:mm:ss")),
+                makeField("point_altitude", attrType("double"),
+                          attrChartable(), attrUnit("feet"),
+                          attrLabel("Elevation")),
+                makeField("grade", attrType("double"), attrChartable(),
+                          attrUnit("%"), attrLabel("Grade")),
+                makeField("elevation_gain", attrType("double"),
+                          attrChartable(), attrUnit("feet"),
+                          attrLabel("Elevation Gain")),
+                makeField("elevation_loss", attrType("double"),
+                          attrChartable(), attrUnit("feet"),
+                          attrLabel("Elevation Loss")),
+                makeField("speed", attrType("double"), attrChartable(),
+                          attrUnit("m/h"), attrLabel("Speed")),
+                makeField("total_distance", attrType("double"),
+                          attrChartable(), attrUnit("miles"),
+                          attrLabel("Total Distance")),
+                makeField("latitude", attrType("double"),
+                          attrLabel("Latitude")),
+                makeField("longitude", attrType("double"),
+                          attrLabel("Longitude")),
             });
-        return visitInfo;
-    }
+
+            return visitInfo;
+        }
 
 
 

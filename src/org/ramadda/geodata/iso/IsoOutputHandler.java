@@ -195,11 +195,12 @@ public class IsoOutputHandler extends OutputHandler {
         List<MetadataHandler> metadataHandlers =
             repository.getMetadataManager().getMetadataHandlers();
         for (Metadata metadata : metadataList) {
-            MetadataHandler metadataHandler= getMetadataManager().findMetadataHandler(metadata);
-            if (metadataHandler !=null) {
+            MetadataHandler metadataHandler =
+                getMetadataManager().findMetadataHandler(metadata);
+            if (metadataHandler != null) {
                 metadataHandler.addMetadataToXml(request,
-                                                 MetadataTypeBase.TEMPLATETYPE_ISO, entry,
-                                                 metadata, doc, root);
+                        MetadataTypeBase.TEMPLATETYPE_ISO, entry, metadata,
+                        doc, root);
             }
         }
 

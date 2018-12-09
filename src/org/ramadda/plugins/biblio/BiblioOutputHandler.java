@@ -122,9 +122,6 @@ public class BiblioOutputHandler extends OutputHandler implements BiblioConstant
      *
      * @param request _more_
      * @param outputType _more_
-     * @param group _more_
-     * @param subGroups _more_
-     * @param entries _more_
      * @param entry _more_
      *
      * @return _more_

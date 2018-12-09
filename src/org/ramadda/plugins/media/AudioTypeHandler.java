@@ -92,8 +92,8 @@ public class AudioTypeHandler extends GenericTypeHandler {
 
 
 
-        String getFileUrl = entry.getTypeHandler().getEntryResourceUrl(request,
-                             entry);
+        String getFileUrl =
+            entry.getTypeHandler().getEntryResourceUrl(request, entry);
         String mime = "audio/wav";
         String ext = IOUtil.getFileExtension(
                          entry.getResource().getPath()).toLowerCase();

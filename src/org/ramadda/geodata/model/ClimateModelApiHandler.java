@@ -1238,7 +1238,8 @@ public class ClimateModelApiHandler extends RepositoryManager implements Request
                 if (help != null) {
                     StringBuilder hsb = new StringBuilder();
                     hsb.append(HtmlUtils.space(1));
-                    HtmlUtils.tooltip(hsb, getIconUrl("/icons/help.png"), help);
+                    HtmlUtils.tooltip(hsb, getIconUrl("/icons/help.png"),
+                                      help);
                     titleString += hsb.toString();
                 }
                 sb.append(HtmlUtils.div(titleString, HtmlUtils.id("title")));

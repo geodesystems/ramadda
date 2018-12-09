@@ -90,7 +90,8 @@ public class GtfsRouteTypeHandler extends ExtensibleGroupTypeHandler {
     /** _more_ */
     public static final int IDX_STOP_NAMES = IDX++;
 
-    public static final int IDX_AGENCY_ID= IDX++;
+    /** _more_ */
+    public static final int IDX_AGENCY_ID = IDX++;
 
 
 
@@ -306,8 +307,8 @@ public class GtfsRouteTypeHandler extends ExtensibleGroupTypeHandler {
     public boolean addToMap(Request request, Entry entry, MapInfo map)
             throws Exception {
         super.addToMap(request, entry, map);
-        Entry agency = entry.getAncestor(GtfsAgencyTypeHandler.TYPE_AGENCY);
-        String s = entry.getValue(IDX_POINTS, "");
+        Entry  agency = entry.getAncestor(GtfsAgencyTypeHandler.TYPE_AGENCY);
+        String s      = entry.getValue(IDX_POINTS, "");
         if (Utils.stringDefined(s)) {
             s = Utils.uncompress(s);
             List<double[]> points = new ArrayList<double[]>();
@@ -318,20 +319,22 @@ public class GtfsRouteTypeHandler extends ExtensibleGroupTypeHandler {
         //Find one trip and get its stops
         Date now = new Date();
         List<Entry> children = getEntryManager().getChildren(request, entry);
-        List<Gtfs.TripInfo> trips = Gtfs.sortTrips(request, children,
-                                                       now, false, false, true);
+        List<Gtfs.TripInfo> trips = Gtfs.sortTrips(request, children, now,
+                                        false, false, true);
 
         List<Gtfs.StopTime> stops = null;
         for (Gtfs.TripInfo tripInfo : trips) {
-            if(tripInfo.getRunningNow()) {
+            if (tripInfo.getRunningNow()) {
                 Entry tripEntry = tripInfo.getEntry();
                 stops = Gtfs.getStopsForTrip(request, tripEntry, null);
+
                 break;
             }
         }
 
-        if(stops == null && trips.size()>0) {
-            stops = Gtfs.getStopsForTrip(request, trips.get(0).getEntry(), null);
+        if ((stops == null) && (trips.size() > 0)) {
+            stops = Gtfs.getStopsForTrip(request, trips.get(0).getEntry(),
+                                         null);
         }
 
         for (Entry child : children) {
@@ -347,10 +350,11 @@ public class GtfsRouteTypeHandler extends ExtensibleGroupTypeHandler {
                 map.addMarker(request, stopTime.entry);
             }
         }
-       List<Entry> vehicles = Gtfs.getVehiclesForRoute(request, agency, entry);
-        getRepository().getMapManager().addToMap(request,  map,
-                                                 vehicles, true, true);
-        for(Entry vehicle: vehicles) {
+        List<Entry> vehicles = Gtfs.getVehiclesForRoute(request, agency,
+                                   entry);
+        getRepository().getMapManager().addToMap(request, map, vehicles,
+                true, true);
+        for (Entry vehicle : vehicles) {
             map.addMarker(request, vehicle);
         }
         map.addMarker(request, entry);

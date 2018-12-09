@@ -304,11 +304,12 @@ public class CatalogOutputHandler extends OutputHandler {
         List<MetadataHandler> metadataHandlers =
             repository.getMetadataManager().getMetadataHandlers();
         for (Metadata metadata : metadataList) {
-            MetadataHandler metadataHandler =getMetadataManager().findMetadataHandler(metadata);
-            if (metadataHandler !=null) {
+            MetadataHandler metadataHandler =
+                getMetadataManager().findMetadataHandler(metadata);
+            if (metadataHandler != null) {
                 metadataHandler.addMetadataToXml(request,
-                                                 MetadataTypeBase.TEMPLATETYPE_THREDDS, entry,
-                                                 metadata, catalogInfo.doc, datasetNode);
+                        MetadataTypeBase.TEMPLATETYPE_THREDDS, entry,
+                        metadata, catalogInfo.doc, datasetNode);
             }
         }
 

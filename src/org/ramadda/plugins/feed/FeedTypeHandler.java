@@ -521,7 +521,8 @@ public class FeedTypeHandler extends ExtensibleGroupTypeHandler {
      * @throws Exception _more_
      */
     @Override
-    public String getEntryIconUrl(Request request, Entry entry) throws Exception {
+    public String getEntryIconUrl(Request request, Entry entry)
+            throws Exception {
         return getIconUrl("/feed/blog_icon.png");
     }
 

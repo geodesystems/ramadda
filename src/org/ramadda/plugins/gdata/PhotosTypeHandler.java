@@ -387,7 +387,8 @@ public class PhotosTypeHandler extends GdataTypeHandler {
      * @throws Exception _more_
      */
     @Override
-    public String getEntryIconUrl(Request request, Entry entry) throws Exception {
+    public String getEntryIconUrl(Request request, Entry entry)
+            throws Exception {
         if (entry.getId().indexOf(TYPE_PHOTO) >= 0) {
             return getIconUrl("/icons/jpg.png");
         }

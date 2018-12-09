@@ -112,8 +112,8 @@ public class YouTubeVideoTypeHandler extends GenericTypeHandler {
         getPageHandler().entrySectionOpen(request, entry, sb, "");
 
 
-        sb.append(getRepository().getWikiManager().wikifyEntry(request, entry,
-                                                               entry.getDescription()));
+        sb.append(getRepository().getWikiManager().wikifyEntry(request,
+                entry, entry.getDescription()));
         String url = entry.getResource().getPath();
         String id  = entry.getValue(IDX_ID, (String) null);
         //For legacy entries
@@ -269,9 +269,11 @@ public class YouTubeVideoTypeHandler extends GenericTypeHandler {
                 try {
                     IOUtil.writeTo(is, fos);
                     f = getStorageManager().moveToEntryDir(entry, f);
-                    
-                    getMetadataManager().addMetadata(entry,new Metadata(getRepository().getGUID(),
-                            entry.getId(),
+
+                    getMetadataManager().addMetadata(
+                        entry,
+                        new Metadata(
+                            getRepository().getGUID(), entry.getId(),
                             ContentMetadataHandler.TYPE_THUMBNAIL, false,
                             f.getName(), null, null, null, null));
 
@@ -314,8 +316,8 @@ public class YouTubeVideoTypeHandler extends GenericTypeHandler {
      * @param args _more_
      */
     public static void main(String[] args) {
-        String         pattern="^(http|https)://www.youtube.com/(watch\\?v=|v/).*";
-        String url = "https://www.youtube.com/v/q2H_fLuGZgo";
+        String pattern = "^(http|https)://www.youtube.com/(watch\\?v=|v/).*";
+        String url     = "https://www.youtube.com/v/q2H_fLuGZgo";
         //            "http://www.youtube.com/watch?v=sOU2WXaDEs0&feature=g-vrec";
         System.err.println(url.matches(pattern));
     }

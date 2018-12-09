@@ -146,6 +146,7 @@ public class RecordField {
     /** _more_ */
     private double offset1 = 0.0;
 
+    /** _more_          */
     private double offset2 = 0.0;
 
     /** _more_ */
@@ -799,7 +800,7 @@ public class RecordField {
      */
     public double convertValue(double v) {
         //TODO: or is this the other way around
-        return (v+offset1) * scale + offset2;
+        return (v + offset1) * scale + offset2;
     }
 
 

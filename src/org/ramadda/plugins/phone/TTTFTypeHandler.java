@@ -51,9 +51,14 @@ public class TTTFTypeHandler extends GenericTypeHandler {
     }
 
 
-@Override
+    /**
+     * _more_
+     *
+     * @return _more_
+     */
+    @Override
     public boolean getForUser() {
-    return true;
+        return true;
     }
 
 }

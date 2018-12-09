@@ -260,8 +260,11 @@ public class DocsTypeHandler extends GdataTypeHandler {
             newEntries.add(newEntry);
             //            System.err.println("ID:" + newEntry.getId());
             entryMap.put(newEntry.getId(), newEntry);
-            getMetadataManager().addMetadata(newEntry, new Metadata(getRepository().getGUID(),
-                    newEntry.getId(), "gdata.lastmodifiedby", false,
+            getMetadataManager().addMetadata(
+                newEntry,
+                new Metadata(
+                    getRepository().getGUID(), newEntry.getId(),
+                    "gdata.lastmodifiedby", false,
                     docListEntry.getLastModifiedBy().getName(),
                     docListEntry.getLastModifiedBy().getEmail(), "", "", ""));
 
@@ -349,7 +352,8 @@ public class DocsTypeHandler extends GdataTypeHandler {
      * @throws Exception _more_
      */
     @Override
-    public String getEntryIconUrl(Request request, Entry entry) throws Exception {
+    public String getEntryIconUrl(Request request, Entry entry)
+            throws Exception {
         String id = entry.getId();
         if ( !getEntryManager().isSynthEntry(id)) {
             return super.getIconUrl(request, entry);

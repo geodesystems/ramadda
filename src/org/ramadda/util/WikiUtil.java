@@ -196,11 +196,12 @@ public class WikiUtil {
          *
          * @param wikiUtil _more_
          * @param property _more_
+         * @param notTags _more_
          *
          * @return _more_
          */
         public String getWikiPropertyValue(WikiUtil wikiUtil,
-                                           String property, String[]notTags);
+                                           String property, String[] notTags);
     }
 
     /**
@@ -333,16 +334,34 @@ public class WikiUtil {
         return wikify(text, handler, null);
     }
 
+    /** _more_          */
     private String[] notTags;
+
+    /**
+     * _more_
+     *
+     * @return _more_
+     */
     public String[] getNotTags() {
         return notTags;
     }
-    
-    public String wikify(String text, WikiPageHandler handler, String[]notTags) {
+
+    /**
+     * _more_
+     *
+     * @param text _more_
+     * @param handler _more_
+     * @param notTags _more_
+     *
+     * @return _more_
+     */
+    public String wikify(String text, WikiPageHandler handler,
+                         String[] notTags) {
         try {
             this.notTags = notTags;
             StringBuffer mainBuffer = new StringBuffer();
-            wikify(mainBuffer, text, handler,notTags);
+            wikify(mainBuffer, text, handler, notTags);
+
             return mainBuffer.toString();
         } catch (IOException ioe) {
             throw new RuntimeException(ioe);
@@ -363,9 +382,19 @@ public class WikiUtil {
     public void wikify(Appendable mainBuffer, String text,
                        WikiPageHandler handler)
             throws IOException {
-        wikify(mainBuffer, text,handler,new String[]{});
+        wikify(mainBuffer, text, handler, new String[] {});
     }
 
+    /**
+     * _more_
+     *
+     * @param mainBuffer _more_
+     * @param text _more_
+     * @param handler _more_
+     * @param notTags _more_
+     *
+     * @throws IOException _more_
+     */
     public void wikify(Appendable mainBuffer, String text,
                        WikiPageHandler handler, String[] notTags)
             throws IOException {
@@ -392,10 +421,12 @@ public class WikiUtil {
      *
      * @param s _more_
      * @param handler _more_
+     * @param notTags _more_
      *
      * @return _more_
      */
-    private String wikifyInner(String s, WikiPageHandler handler, String[] notTags) {
+    private String wikifyInner(String s, WikiPageHandler handler,
+                               String[] notTags) {
 
         s = s.replace("\\\\[", "_BRACKETOPEN_");
 
@@ -821,7 +852,9 @@ public class WikiUtil {
                     }
                     clazz = clazz + " " + getAttribute(attrs, "class", "");
                 }
-                if(clazz.matches("col-[0-9]+")) clazz=clazz.replace("col-","col-md-");
+                if (clazz.matches("col-[0-9]+")) {
+                    clazz = clazz.replace("col-", "col-md-");
+                }
                 buff.append(HtmlUtils.open("div",
                                            HtmlUtils.cssClass(clazz)
                                            + extra));
@@ -951,7 +984,8 @@ public class WikiUtil {
             } else {
                 String value = null;
                 if (handler != null) {
-                    value = handler.getWikiPropertyValue(this, property,notTags);
+                    value = handler.getWikiPropertyValue(this, property,
+                            notTags);
                 }
                 if (value == null) {
                     value = "Unknown property:" + property;
@@ -985,12 +1019,11 @@ public class WikiUtil {
             Hashtable props = StringUtil.parseHtmlProperties(attrs);
             sb.append(first);
 
-            String before =(String) props.get("before");
-            String after = (String) props.get("after");
-            String show = Misc.getProperty(props, ATTR_SHOW,
-                                           (String) null);
+            String  before     = (String) props.get("before");
+            String  after      = (String) props.get("after");
+            String  show = Misc.getProperty(props, ATTR_SHOW, (String) null);
             boolean shouldShow = true;
-            
+
 
             if (show != null) {
                 if (show.equals("mobile")) {
@@ -1011,26 +1044,30 @@ public class WikiUtil {
                     }
                 }
             }
-            
-    
 
-            if(shouldShow) {
-                if(before!=null) {
+
+
+            if (shouldShow) {
+                if (before != null) {
                     Date dttm = Utils.parseDate(before);
-                    if(dttm == null) {
+                    if (dttm == null) {
                         inner = "before Bad date format:" + before;
                     } else {
                         Date now = new Date();
-                        if(now.getDate()>dttm.getDate()) shouldShow = false;
+                        if (now.getDate() > dttm.getDate()) {
+                            shouldShow = false;
+                        }
                     }
                 }
-                if(after!=null) {
+                if (after != null) {
                     Date dttm = Utils.parseDate(after);
-                    if(dttm == null) {
+                    if (dttm == null) {
                         inner = "Bad date format:" + after;
                     } else {
                         Date now = new Date();
-                        if(now.getDate()<dttm.getDate()) shouldShow = false; 
+                        if (now.getDate() < dttm.getDate()) {
+                            shouldShow = false;
+                        }
                     }
                 }
             }
@@ -1040,7 +1077,7 @@ public class WikiUtil {
             } else {
                 boolean open = Misc.getProperty(props, ATTR_OPEN, true);
                 boolean decorate = Misc.getProperty(props, ATTR_DECORATE,
-                                                    false);
+                                       false);
                 String title = Misc.getProperty(props, ATTR_TITLE, "");
                 //<block show="ismobile"
 

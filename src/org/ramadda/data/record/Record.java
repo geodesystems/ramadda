@@ -240,8 +240,12 @@ public abstract class Record implements Cloneable {
      */
     protected void addFields(List<RecordField> fields) {}
 
-    public void initFields(List<RecordField> fields) {
-    }
+    /**
+     * _more_
+     *
+     * @param fields _more_
+     */
+    public void initFields(List<RecordField> fields) {}
 
     /**
      * _more_

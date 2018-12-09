@@ -701,17 +701,17 @@ public class CDOArealStatisticsService extends CDODataService {
                               GridDataset dataset, String varname, int opNum)
             throws Exception {
 
-        long              millis      = System.currentTimeMillis();
-        long              submillis   = System.currentTimeMillis();
-        String            opStr       = (opNum == 0)
-                                        ? ""
-                                        : "" + (opNum + 1);
+        long    millis      = System.currentTimeMillis();
+        long    submillis   = System.currentTimeMillis();
+        String  opStr       = (opNum == 0)
+                              ? ""
+                              : "" + (opNum + 1);
 
-        Request           timeRequest = handleNamedTimePeriod(request, opStr);
+        Request timeRequest = handleNamedTimePeriod(request, opStr);
         if ((dataset == null) || dataset.getGrids().isEmpty()) {
             throw new Exception("No grids found");
         }
-        CalendarDateRange dateRange   = dataset.getCalendarDateRange();
+        CalendarDateRange dateRange = dataset.getCalendarDateRange();
         int firstDataYearMM = Integer.parseInt(
                                   new CalendarDateTime(
                                       dateRange.getStart()).formattedString(
@@ -724,8 +724,8 @@ public class CDOArealStatisticsService extends CDODataService {
                                      dateRange.getEnd()).formattedString(
                                      "yyyyMM",
                                      CalendarDateTime.DEFAULT_TIMEZONE));
-        int lastDataYear  = lastDataYearMM / 100;
-        int lastDataMonth = lastDataYearMM % 100;
+        int          lastDataYear  = lastDataYearMM / 100;
+        int          lastDataMonth = lastDataYearMM % 100;
         boolean      collapseTimes = request.get(ARG_TIME_AVERAGE, false);
         List<String> commands      = initCDOService();
         // Select order (left to right) - operations go right to left:
@@ -907,7 +907,7 @@ public class CDOArealStatisticsService extends CDODataService {
 
         } else {
             submillis = System.currentTimeMillis();
-            if (!collapseTimes) {
+            if ( !collapseTimes) {
                 commands.add("-timselmean," + numMonths);
             }
             getOutputHandler().addDateSelectServices(timeRequest, sample,

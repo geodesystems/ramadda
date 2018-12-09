@@ -90,9 +90,15 @@ public class GtfsVehicleTypeHandler extends GenericTypeHandler {
     }
 
 
+    /**
+     * _more_
+     *
+     * @param entry _more_
+     * @param mapInfo _more_
+     * @param sb _more_
+     */
     @Override
-    public void initMapAttrs(Entry entry, MapInfo mapInfo,
-                             StringBuilder sb) {
+    public void initMapAttrs(Entry entry, MapInfo mapInfo, StringBuilder sb) {
         sb.append("strokeWidth:2");
     }
 
@@ -111,10 +117,25 @@ public class GtfsVehicleTypeHandler extends GenericTypeHandler {
     public boolean addToMap(Request request, Entry entry, MapInfo map)
             throws Exception {
         super.addToMap(request, entry, map);
+
         //        map.addMarker(request, entry);
         return false;
     }
 
+    /**
+     * _more_
+     *
+     * @param wikiUtil _more_
+     * @param request _more_
+     * @param originalEntry _more_
+     * @param entry _more_
+     * @param tag _more_
+     * @param props _more_
+     *
+     * @return _more_
+     *
+     * @throws Exception _more_
+     */
     @Override
     public String getWikiInclude(WikiUtil wikiUtil, Request request,
                                  Entry originalEntry, Entry entry,
@@ -122,33 +143,45 @@ public class GtfsVehicleTypeHandler extends GenericTypeHandler {
             throws Exception {
 
         if (tag.equals("gtfs.stop.link")) {
-            String stopId =  (String) entry.getValue(IDX_STOP_ID);
-            Entry stop = Gtfs.getStop(request, entry, stopId);
-            if(stop == null) {
-                if(stopId==null) return "No stop defined";
+            String stopId = (String) entry.getValue(IDX_STOP_ID);
+            Entry  stop   = Gtfs.getStop(request, entry, stopId);
+            if (stop == null) {
+                if (stopId == null) {
+                    return "No stop defined";
+                }
+
                 return stopId;
             }
+
             return getPageHandler().getEntryHref(request, stop);
         }
 
         if (tag.equals("gtfs.trip.link")) {
-            String tripId =  (String) entry.getValue(IDX_TRIP_ID);
+            String tripId = (String) entry.getValue(IDX_TRIP_ID);
             //            System.err.println("calling gettrip trip id:" + tripId);
             Entry trip = Gtfs.getTrip(request, entry, tripId);
-            if(trip == null) {
-                if(tripId==null) return "No trip defined";
+            if (trip == null) {
+                if (tripId == null) {
+                    return "No trip defined";
+                }
+
                 return tripId;
             }
+
             return getPageHandler().getEntryHref(request, trip);
         }
 
         if (tag.equals("gtfs.route.link")) {
-            String routeId =  (String) entry.getValue(IDX_ROUTE_ID);
-            Entry route = Gtfs.getRoute(request, entry, routeId);
-            if(route == null) {
-                if(routeId==null) return "No route defined";
+            String routeId = (String) entry.getValue(IDX_ROUTE_ID);
+            Entry  route   = Gtfs.getRoute(request, entry, routeId);
+            if (route == null) {
+                if (routeId == null) {
+                    return "No route defined";
+                }
+
                 return routeId;
             }
+
             return Gtfs.getRouteTitle(request, route, true);
         }
 

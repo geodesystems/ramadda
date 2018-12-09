@@ -201,11 +201,12 @@ public class DifOutputHandler extends OutputHandler {
         List<MetadataHandler> metadataHandlers =
             repository.getMetadataManager().getMetadataHandlers();
         for (Metadata metadata : metadataList) {
-            MetadataHandler metadataHandler =getMetadataManager().findMetadataHandler(metadata);
-            if (metadataHandler !=null) {
+            MetadataHandler metadataHandler =
+                getMetadataManager().findMetadataHandler(metadata);
+            if (metadataHandler != null) {
                 metadataHandler.addMetadataToXml(request,
-                                                 MetadataTypeBase.TEMPLATETYPE_DIF, entry,
-                                                 metadata, doc, root);
+                        MetadataTypeBase.TEMPLATETYPE_DIF, entry, metadata,
+                        doc, root);
 
             }
         }

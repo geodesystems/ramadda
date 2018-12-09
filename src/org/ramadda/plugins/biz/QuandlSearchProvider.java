@@ -56,7 +56,6 @@ public class QuandlSearchProvider extends SearchProvider {
      * _more_
      *
      * @param repository _more_
-     * @param args _more_
      */
     public QuandlSearchProvider(Repository repository) {
         super(repository, "quandl", "Quandl Data");

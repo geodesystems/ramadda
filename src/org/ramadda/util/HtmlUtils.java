@@ -406,7 +406,7 @@ public class HtmlUtils {
 
     public static final String CLASS_FORMLABEL = "formlabel";
 
-    /** _more_          */
+    /** _more_ */
     public static final String CLASS_FORMCONTENTS = "formcontents";
 
     /** _more_ */

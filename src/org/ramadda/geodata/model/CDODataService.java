@@ -811,7 +811,8 @@ public abstract class CDODataService extends Service {
      *
      * @throws Exception  problem reading the data
      */
-    protected static boolean doMonthsSpanYearEnd(Request request, Entry oneOfThem)
+    protected static boolean doMonthsSpanYearEnd(Request request,
+            Entry oneOfThem)
             throws Exception {
         if (request.defined(CDOOutputHandler.ARG_CDO_MONTHS)
                 && request.getString(

@@ -1300,7 +1300,8 @@ public class PointFormHandler extends RecordFormHandler {
                                    + "\";\n"));
 
         StringBuffer mapSB = new StringBuffer();
-        boolean showMap = pointEntry.isCapable(PointFile.ACTION_MAPINCHART)  && request.get(ARG_MAP_SHOW, true);
+        boolean showMap = pointEntry.isCapable(PointFile.ACTION_MAPINCHART)
+                          && request.get(ARG_MAP_SHOW, true);
         MapInfo map = getRepository().getMapManager().createMap(request, 500,
                           300, false, null);
         if (showMap) {

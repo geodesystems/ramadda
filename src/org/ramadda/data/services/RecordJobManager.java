@@ -595,8 +595,9 @@ public class RecordJobManager extends JobManager implements RecordConstants {
                     productSB.append("<table>");
                 }
                 fileCnt++;
-                String getFileUrl = HtmlUtils.url(getRepository().URL_ENTRY_SHOW
-                                     + "/" + f.getName(), new String[] {
+                String getFileUrl =
+                    HtmlUtils.url(getRepository().URL_ENTRY_SHOW + "/"
+                                  + f.getName(), new String[] {
                     ARG_ENTRYID, entry.getId(), ARG_OUTPUT,
                     getOutputResults().getId(), ARG_JOB_ID, jobId,
                     ARG_POINT_PRODUCT, f.getName()
@@ -617,8 +618,9 @@ public class RecordJobManager extends JobManager implements RecordConstants {
 
             xml.append(XmlUtil.closeTag(TAG_PRODUCTS));
             if (fileCnt > 1) {
-                String getFileUrl = HtmlUtils.url(getRepository().URL_ENTRY_SHOW
-                                     + "/all.zip", new String[] {
+                String getFileUrl =
+                    HtmlUtils.url(getRepository().URL_ENTRY_SHOW
+                                  + "/all.zip", new String[] {
                     ARG_ENTRYID, entry.getId(), ARG_OUTPUT,
                     getOutputResults().getId(), ARG_JOB_ID, jobId,
                     ARG_POINT_PRODUCT, "zip"

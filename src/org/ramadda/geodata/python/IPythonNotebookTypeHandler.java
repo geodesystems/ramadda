@@ -27,6 +27,8 @@ import org.ramadda.repository.output.WikiConstants;
 import org.ramadda.repository.type.*;
 import org.ramadda.util.HtmlUtils;
 import org.ramadda.util.Json;
+
+import org.ramadda.util.ProcessRunner;
 import org.ramadda.util.WikiUtil;
 
 import org.w3c.dom.*;
@@ -52,8 +54,6 @@ import java.util.Enumeration;
 import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.List;
-
-import org.ramadda.util.ProcessRunner;
 
 
 /**
@@ -138,36 +138,64 @@ public class IPythonNotebookTypeHandler extends TypeHandler {
      */
     private String getHtmlDisplayInner(Request request, Entry entry)
             throws Exception {
-        String jupyterPath = getRepository().getProperty("ramadda.jupyter.path",(String)null);
-        if(jupyterPath!=null) {
+        String jupyterPath =
+            getRepository().getProperty("ramadda.jupyter.path",
+                                        (String) null);
+        if (jupyterPath != null) {
             //            System.err.println(jupyterPath);
             return renderNotebookWithJupyter(request, entry, jupyterPath);
         } else {
-            return renderNotebook(request,  entry);
+            return renderNotebook(request, entry);
         }
     }
 
 
-    private String renderNotebookWithJupyter(Request request, Entry entry, String path)
+    /**
+     * _more_
+     *
+     * @param request _more_
+     * @param entry _more_
+     * @param path _more_
+     *
+     * @return _more_
+     *
+     * @throws Exception _more_
+     */
+    private String renderNotebookWithJupyter(Request request, Entry entry,
+                                             String path)
             throws Exception {
         List<String> commands = new ArrayList<String>();
         commands.add(path);
         commands.add("nbconvert");
-        commands.add("--to"); 
+        commands.add("--to");
         commands.add("html");
-        commands.add("--stdout"); 
-        commands.add(entry.getFile().toString()); 
+        commands.add("--stdout");
+        commands.add(entry.getFile().toString());
         ProcessBuilder pb = new ProcessBuilder(commands);
         pb.redirectErrorStream(true);
-        Process process = pb.start();
-        InputStream is = process.getInputStream();
-        String html = new String(IOUtil.readBytes(is));
-        html = html.replaceAll("<script src=\"https://cdnjs.cloudflare.com/ajax/libs/jquery/2.0.3/jquery.min.js\"></script>","");
-        html  = html.replaceAll("\\[NbConvertApp\\] Converting notebook .* to html","");
+        Process     process = pb.start();
+        InputStream is      = process.getInputStream();
+        String      html    = new String(IOUtil.readBytes(is));
+        html = html.replaceAll(
+            "<script src=\"https://cdnjs.cloudflare.com/ajax/libs/jquery/2.0.3/jquery.min.js\"></script>",
+            "");
+        html = html.replaceAll(
+            "\\[NbConvertApp\\] Converting notebook .* to html", "");
+
         return html;
     }
 
 
+    /**
+     * _more_
+     *
+     * @param request _more_
+     * @param entry _more_
+     *
+     * @return _more_
+     *
+     * @throws Exception _more_
+     */
     private String renderNotebook(Request request, Entry entry)
             throws Exception {
 
@@ -196,7 +224,8 @@ public class IPythonNotebookTypeHandler extends TypeHandler {
 
 
         sb.append(
-            HtmlUtils.cssLink(getRepository().getFileUrl("/python/python.css")));
+            HtmlUtils.cssLink(
+                getRepository().getFileUrl("/python/python.css")));
         sb.append(
             HtmlUtils.importJS(
                 getRepository().getHtdocsUrl("/lib/prettify/prettify.js")));

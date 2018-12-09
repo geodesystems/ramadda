@@ -1063,9 +1063,8 @@ public class CdmManager extends RepositoryManager {
             return true;
         }
         String type = entry.getTypeHandler().getType();
-        if(type.indexOf("trajectory")>=0 ||
-           type.indexOf("point")>=0 ||
-           type.indexOf("track")>=0) {
+        if ((type.indexOf("trajectory") >= 0) || (type.indexOf("point") >= 0)
+                || (type.indexOf("track") >= 0)) {
             return false;
         }
 

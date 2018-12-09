@@ -372,8 +372,9 @@ public class ParisFile extends org.ramadda.data.point.text.TextFile {
         @Override
         protected void addFields(List<RecordField> fields) {
             super.addFields(fields);
-            if(fields.size()==0)
+            if (fields.size() == 0) {
                 fields.addAll(FIELDS);
+            }
         }
 
 

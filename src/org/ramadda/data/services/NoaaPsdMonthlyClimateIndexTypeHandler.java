@@ -88,8 +88,18 @@ public class NoaaPsdMonthlyClimateIndexTypeHandler extends PointTypeHandler {
         }
     }
 
+    /**
+     * _more_
+     *
+     * @param loc _more_
+     *
+     * @return _more_
+     */
     private String fixUrl(String loc) {
-        if(loc.startsWith("http:")) loc = loc.replace("http:","https:");
+        if (loc.startsWith("http:")) {
+            loc = loc.replace("http:", "https:");
+        }
+
         return loc;
     }
 

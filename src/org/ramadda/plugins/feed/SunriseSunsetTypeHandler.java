@@ -17,12 +17,16 @@
 package org.ramadda.plugins.feed;
 
 
+import org.json.*;
+
+
 
 import org.ramadda.repository.*;
 import org.ramadda.repository.metadata.*;
 import org.ramadda.repository.type.*;
 import org.ramadda.util.AtomUtil;
 import org.ramadda.util.HtmlUtils;
+import org.ramadda.util.Json;
 import org.ramadda.util.RssUtil;
 import org.ramadda.util.TTLCache;
 import org.ramadda.util.Utils;
@@ -38,7 +42,6 @@ import ucar.unidata.xml.XmlUtil;
 
 import java.net.URL;
 
-import java.util.TimeZone;
 import java.text.SimpleDateFormat;
 
 
@@ -49,8 +52,7 @@ import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.List;
 
-import org.json.*;
-import org.ramadda.util.Json;
+import java.util.TimeZone;
 
 
 
@@ -58,15 +60,17 @@ import org.ramadda.util.Json;
  */
 public class SunriseSunsetTypeHandler extends GenericTypeHandler {
 
-    /** _more_          */
+    /** _more_ */
     private TTLCache<String, Appendable> cache = new TTLCache<String,
-        Appendable>(60*60*1000);
+                                                     Appendable>(60 * 60
+                                                         * 1000);
 
 
 
 
-    /** _more_          */
-    private static final String URL ="https://api.sunrise-sunset.org/json?lat=${lat}&lng=${lon}&formatted=0";
+    /** _more_ */
+    private static final String URL =
+        "https://api.sunrise-sunset.org/json?lat=${lat}&lng=${lon}&formatted=0";
 
 
     /**
@@ -104,53 +108,65 @@ public class SunriseSunsetTypeHandler extends GenericTypeHandler {
             throws Exception {
 
 
-        if(tag.equals("sunrisesunset")) {
+        if (tag.equals("sunrisesunset")) {
 
-            if(!entry.hasLocationDefined()) {
+            if ( !entry.hasLocationDefined()) {
                 return "No location defined";
             }
-            String key = entry.getLatitude()+"-" + entry.getLongitude();
-            Appendable sb = cache.get(key);
-            TimeZone timeZone = getTimeZone(request, entry, 0);
-            if(sb==null) {
+            String     key = entry.getLatitude() + "-" + entry.getLongitude();
+            Appendable sb       = cache.get(key);
+            TimeZone   timeZone = getTimeZone(request, entry, 0);
+            if (sb == null) {
                 String url =
                     URL.replace("${lat}",
                                 "" + entry.getLatitude()).replace("${lon}",
-                                                                  "" + entry.getLongitude());
-                String    json = IOUtil.readContents(url, this.getClass());
-                JSONObject jsonObject  = new JSONObject(new JSONTokener(json));
-                if(!Misc.equals(jsonObject.optString("status",""),"OK")) {
-                    return "Failed to read data: status=" +jsonObject.optString("status","");
+                                    "" + entry.getLongitude());
+                String     json = IOUtil.readContents(url, this.getClass());
+                JSONObject jsonObject = new JSONObject(new JSONTokener(json));
+                if ( !Misc.equals(jsonObject.optString("status", ""), "OK")) {
+                    return "Failed to read data: status="
+                           + jsonObject.optString("status", "");
                 }
                 sb = new StringBuilder();
                 cache.put(key, sb);
                 sb.append(HtmlUtils.cssBlock(""));
-                JSONObject results = jsonObject.getJSONObject("results");
+                JSONObject       results =
+                    jsonObject.getJSONObject("results");
                 SimpleDateFormat dateFormat = new SimpleDateFormat();
 
                 dateFormat.setTimeZone(timeZone);
                 dateFormat.applyPattern("h:mm a z");
 
 
-                Date sunrise = DateUtil.parse(results.optString("sunrise","NA"));
-                Date sunset = DateUtil.parse(results.optString("sunset","NA"));
-                int length = results.optInt("day_length",0);
-                int hours  = length/3600;
-                int minutes = (length-hours*3600)/60;
-                int seconds = (length-hours*3600-minutes*60);
+                Date sunrise = DateUtil.parse(results.optString("sunrise",
+                                   "NA"));
+                Date sunset = DateUtil.parse(results.optString("sunset",
+                                  "NA"));
+                int length  = results.optInt("day_length", 0);
+                int hours   = length / 3600;
+                int minutes = (length - hours * 3600) / 60;
+                int seconds = (length - hours * 3600 - minutes * 60);
                 sb.append(HtmlUtils.formTable());
-                sb.append(HtmlUtils.formEntry("Current Time:","${now}"));
-                sb.append(HtmlUtils.formEntry("Sunrise/Sunset:",dateFormat.format(sunrise) +" - " +dateFormat.format(sunset)));
-                String kudos = "(From " + HtmlUtils.href("https://sunrise-sunset.org","Sunrise-Sunset.org") +")";
-                sb.append(HtmlUtils.formEntry("Day Length:",hours+":" +minutes+":"+seconds +"  " + kudos));
+                sb.append(HtmlUtils.formEntry("Current Time:", "${now}"));
+                sb.append(HtmlUtils.formEntry("Sunrise/Sunset:",
+                        dateFormat.format(sunrise) + " - "
+                        + dateFormat.format(sunset)));
+                String kudos = "(From "
+                               + HtmlUtils.href("https://sunrise-sunset.org",
+                                   "Sunrise-Sunset.org") + ")";
+                sb.append(HtmlUtils.formEntry("Day Length:",
+                        hours + ":" + minutes + ":" + seconds + "  "
+                        + kudos));
                 sb.append(HtmlUtils.formTableClose());
 
-            } 
+            }
 
             SimpleDateFormat dateFormat2 = new SimpleDateFormat();
             dateFormat2.setTimeZone(timeZone);
             dateFormat2.applyPattern("MMM d, yyyy h:mm a z");
-            return sb.toString().replace("${now}",dateFormat2.format(new Date()));
+
+            return sb.toString().replace("${now}",
+                                         dateFormat2.format(new Date()));
         } else {
             return super.getWikiInclude(wikiUtil, request, originalEntry,
                                         entry, tag, props);
@@ -169,7 +185,7 @@ public class SunriseSunsetTypeHandler extends GenericTypeHandler {
     public static void main(String[] args) throws Exception {
         String url =
             "https://forecast.weather.gov/MapClick.php?lat=40.0157&lon=-105.2792&unit=0&lg=english&FcstType=dwml";
-        String  xml  = Utils.readUrl(url);
+        String xml = Utils.readUrl(url);
     }
 
 }

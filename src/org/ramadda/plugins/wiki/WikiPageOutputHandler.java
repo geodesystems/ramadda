@@ -20,8 +20,6 @@ package org.ramadda.plugins.wiki;
 import org.incava.util.diff.Diff;
 import org.incava.util.diff.Difference;
 
-import org.ramadda.repository.metadata.*;
-
 import org.ramadda.repository.Association;
 import org.ramadda.repository.Entry;
 import org.ramadda.repository.Link;
@@ -29,6 +27,8 @@ import org.ramadda.repository.Repository;
 import org.ramadda.repository.Request;
 import org.ramadda.repository.Result;
 import org.ramadda.repository.auth.AccessException;
+
+import org.ramadda.repository.metadata.*;
 import org.ramadda.repository.output.HtmlOutputHandler;
 import org.ramadda.repository.output.OutputHandler;
 import org.ramadda.repository.output.OutputType;
@@ -121,7 +121,7 @@ public class WikiPageOutputHandler extends HtmlOutputHandler {
      */
     public WikiPageOutputHandler(Repository repository, Element element)
             throws Exception {
-        super(repository, element,true);
+        super(repository, element, true);
         addType(OUTPUT_WIKI);
         addType(OUTPUT_WIKI_HISTORY);
         addType(OUTPUT_WIKI_DETAILS);
@@ -248,34 +248,39 @@ public class WikiPageOutputHandler extends HtmlOutputHandler {
 
         List<Metadata> metadataList =
             getMetadataManager().findMetadata(request, entry,
-                                              ContentMetadataHandler.TYPE_PAGESTYLE, true);
+                ContentMetadataHandler.TYPE_PAGESTYLE, true);
         String template = null;
-        if (metadataList != null && (metadataList.size() > 0)) {
+        if ((metadataList != null) && (metadataList.size() > 0)) {
             for (Metadata metadata : metadataList) {
                 if (Misc.equals(metadata.getAttr(7), "false")) {
                     if (metadata.getEntryId().equals(entry.getId())) {
                         continue;
                     }
                 }
-                String types = metadata.getAttr(6);
+                String  types  = metadata.getAttr(6);
 
                 boolean typeOk = true;
-                if(types!=null && types.trim().length()>0) {
+                if ((types != null) && (types.trim().length() > 0)) {
                     typeOk = false;
-                    for (String type : StringUtil.split(types, ",", true, true)) {
+                    for (String type :
+                            StringUtil.split(types, ",", true, true)) {
                         if (entry.getTypeHandler().isType(type)) {
                             typeOk = true;
+
                             break;
                         }
                     }
                 }
 
 
-                if(!typeOk) continue;
+                if ( !typeOk) {
+                    continue;
+                }
 
                 if ((metadata.getAttr(8) != null)
-                    && (metadata.getAttr(8).trim().length() > 0)) {
+                        && (metadata.getAttr(8).trim().length() > 0)) {
                     template = metadata.getAttr(8);
+
                     break;
                 }
             }
@@ -290,7 +295,9 @@ public class WikiPageOutputHandler extends HtmlOutputHandler {
         StringBuffer sb = new StringBuffer();
         sb.append(header);
         sb.append(getRepository().getWikiManager().wikifyEntry(request,
-                                                               entry, wikiUtil, template!=null?template:wikiText, true, null, null,null));
+                entry, wikiUtil, (template != null)
+                                 ? template
+                                 : wikiText, true, null, null, null));
         Hashtable links = (Hashtable) wikiUtil.getProperty("wikilinks");
         if (links != null) {
             List<Association> associations =
