@@ -5011,57 +5011,60 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                 String geojsonNames = null;
 
                 for (Metadata metadata : metadataList) {
-                    if (Utils.stringDefined(metadata.getAttr1())) {
-                        Entry mapEntry =
-                            (Entry) getEntryManager().getEntry(request,
-                                metadata.getAttr1());
-                        if ((mapEntry != null)
-                                && (mapEntry.getTypeHandler()
-                                    .isType("geo_shapefile") || mapEntry
-                                    .getTypeHandler()
-                                    .isType("geo_geojson"))) {
-                            if (mapEntry.getTypeHandler().isType(
-                                    "geo_shapefile")) {
-                                if (kmlIds == null) {
-                                    kmlIds = mapEntry.getId();
-                                    kmlNames =
-                                        mapEntry.getName().replaceAll(",",
-                                            " ");
-                                } else {
-                                    kmlIds += "," + mapEntry.getId();
-                                    kmlNames +=
-                                        ","
-                                        + mapEntry.getName().replaceAll(",",
-                                            " ");
-                                }
-                            } else {
-                                if (geojsonIds == null) {
-                                    geojsonIds = mapEntry.getId();
-                                    geojsonNames =
-                                        mapEntry.getName().replaceAll(",",
-                                            " ");
-                                } else {
-                                    geojsonIds += "," + mapEntry.getId();
-                                    geojsonNames +=
-                                        ","
-                                        + mapEntry.getName().replaceAll(",",
-                                            " ");
-                                }
-                            }
+                    if (!Utils.stringDefined(metadata.getAttr1())) {
+                        continue;
+                    }
+                    Entry mapEntry =
+                        (Entry) getEntryManager().getEntry(request,
+                                                           metadata.getAttr1());
+                    if(mapEntry == null || !(mapEntry.getTypeHandler()
+                            .isType("geo_shapefile") || mapEntry
+                            .getTypeHandler()
+                                             .isType("geo_geojson"))) {
+                        continue;
+                    }
+                    if (mapEntry.getTypeHandler().isType("geo_shapefile")) {
+                        if (kmlIds == null) {
+                            kmlIds = mapEntry.getId();
+                            kmlNames = mapEntry.getName().replaceAll(",", " ");
+                        } else {
+                            kmlIds += "," + mapEntry.getId();
+                            kmlNames += "," + mapEntry.getName().replaceAll(",",   " ");
                         }
-                        if (kmlIds != null) {
-                            propList.add("kmlLayer");
-                            propList.add(Json.quote(kmlIds));
-                            propList.add("kmlLayerName");
-                            propList.add(Json.quote(kmlNames));
-                        }
-                        if (geojsonIds != null) {
-                            propList.add("geojsonLayer");
-                            propList.add(Json.quote(geojsonIds));
-                            propList.add("geojsonLayerName");
-                            propList.add(Json.quote(geojsonNames));
+                    } else {
+                        if (geojsonIds == null) {
+                            geojsonIds = mapEntry.getId();
+                            geojsonNames =
+                                mapEntry.getName().replaceAll(",",
+                                                              " ");
+                        } else {
+                            geojsonIds += "," + mapEntry.getId();
+                            geojsonNames +=
+                                ","
+                                + mapEntry.getName().replaceAll(",",
+                                                                " ");
                         }
                     }
+                    if(Misc.equals(metadata.getAttr2(),"true")) {
+                        propList.add("displayAsMap");
+                        propList.add("true");
+                        propList.add("pruneFeatures");
+                        propList.add("true");
+                    }
+
+                    if (kmlIds != null) {
+                        propList.add("kmlLayer");
+                        propList.add(Json.quote(kmlIds));
+                        propList.add("kmlLayerName");
+                        propList.add(Json.quote(kmlNames));
+                    }
+                    if (geojsonIds != null) {
+                        propList.add("geojsonLayer");
+                        propList.add(Json.quote(geojsonIds));
+                        propList.add("geojsonLayerName");
+                        propList.add(Json.quote(geojsonNames));
+                    }
+
                 }
             }
         }

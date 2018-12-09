@@ -876,7 +876,7 @@ public class PointOutputHandler extends RecordOutputHandler {
         return request.entryUrl(getRepository().URL_ENTRY_SHOW, entry,
                                 ARG_OUTPUT, OUTPUT_PRODUCT.getId(),
                                 ARG_PRODUCT, OUTPUT_JSON.toString()) + "&"
-                                    + RecordFormHandler.ARG_NUMPOINTS
+                                    + RecordFormHandler.ARG_MAX
                                     + "=5000";
 
     }

@@ -16,7 +16,6 @@ var map_esri_topo = "esri.topo";
 var map_esri_street = "esri.street";
 var map_esri_worldimagery = "esri.worldimagery";
 var map_opentopo = "opentopo";
-
 var map_usgs_topo = "usgs.topo";
 var map_usgs_imagery = "usgs.imagery";
 var map_usgs_relief = "usgs.relief";
@@ -27,6 +26,7 @@ var map_ms_hybrid = "ms.hybrid";
 var map_ms_aerial = "ms.aerial";
 
 var map_osm = "osm";
+
 
 
 // doesn't support EPSG:900913
@@ -439,14 +439,6 @@ function initMapFunctions(theMap) {
         var json = format.write(feature);
         var p = feature.attributes;
         var out = feature.popupText;
-        //        console.log("out:" + (typeof out) + " " + out);
-        if((typeof out) == "object") {
-            console.log("out:" + (typeof out) + " " + out);
-            for(a in out) {
-                console.log("   " + a+"=" +out[a]);
-            }
-
-        }
         if(!out) {
             if(style && style["balloonStyle"]) {
                 out = style["balloonStyle"];
@@ -469,7 +461,6 @@ function initMapFunctions(theMap) {
                     out += "<tr><td align=right><div style=\"margin-right:5px;margin-bottom:3px;\"><b>" + label + ":</b></div></td><td><div style=\"margin-right:5px;margin-bottom:3px;\">";
                     if (p[attr]!=null && (typeof p[attr] == 'object' || typeof p[attr] == 'Object')) {
                         var o = p[attr];
-                        console.log("o=" + o);
                         out += o["value"];
                     } else {
                         out +=  p[attr];
@@ -514,22 +505,8 @@ function initMapFunctions(theMap) {
         return canSelect;
     }
 
-    theMap.initMapVectorLayer = function(layer, canSelect, selectCallback, unselectCallback, loadCallback) {
-        var _this=this;
-        var loadingImage = this.showLoadingImage();
-        layer.isMapLayer = true;
-        layer.canSelect = canSelect;
-        layer.events.on({"loadend": function(e) {
-                    _this.hideLoadingImage(loadingImage);
-                    if(_this.centerOnMarkersCalled) {
-                        _this.centerOnMarkers(_this.dfltBounds,_this.centerOnMarkersForce);
-                    }
-                    if(loadCallback) {
-                        loadCallback(_this, layer);
-                    }
-                }});
-        this.addLayer(layer);
-        var doit = false;
+    theMap.addSelectCallback = function(layer, canSelect, selectCallback, unselectCallback) {
+        var _this = this;
         if (this.getCanSelect(canSelect)) {
             /** don't add listeners here. We do it up at the main map level
                 select = new OpenLayers.Control.SelectFeature(layer, {
@@ -548,8 +525,10 @@ function initMapFunctions(theMap) {
                 }
                 //                highlight.selectStyle = OpenLayers.Feature.Vector.style['temporary'];
                 */
-            if(selectCallback==null||!Utils.isDefined(selectCallback)) selectCallback = function(layer){_this.onFeatureSelect(layer)};
-            if(unselectCallback==null || !Utils.isDefined(unselectCallback)) unselectCallback = function(layer){_this.onFeatureUnselect()};
+            if(selectCallback==null||!Utils.isDefined(selectCallback)) 
+                selectCallback = function(layer){_this.onFeatureSelect(layer)};
+            if(unselectCallback==null || !Utils.isDefined(unselectCallback)) 
+                unselectCallback = function(layer){_this.onFeatureUnselect()};
             layer.selectCallback  = selectCallback;
             layer.unselectCallback  = selectCallback;
             /**
@@ -566,6 +545,25 @@ function initMapFunctions(theMap) {
                select.activate();   
             */
         }
+    };
+
+    theMap.initMapVectorLayer = function(layer, canSelect, selectCallback, unselectCallback, loadCallback) {
+        var _this=this;
+        this.showLoadingImage();
+        layer.isMapLayer = true;
+        layer.canSelect = canSelect;
+        layer.events.on({"loadend": function(e) {
+                    _this.hideLoadingImage();
+                    if(_this.centerOnMarkersCalled) {
+                        _this.centerOnMarkers(_this.dfltBounds,_this.centerOnMarkersForce);
+                    }
+                    if(loadCallback) {
+                        loadCallback(_this, layer);
+                    }
+                }});
+        this.addLayer(layer);
+        var doit = false;
+        this.addSelectCallback(layer, canSelect,selectCallback, unselectCallback);
     }
 
     theMap.addGeoJsonLayer = function(name, url, canSelect, selectCallback, unselectCallback, args, loadCallback) {
@@ -585,7 +583,6 @@ function initMapFunctions(theMap) {
     }
 
     theMap.addKMLLayer = function(name, url, canSelect, selectCallback, unselectCallback, args, loadCallback) {
-        console.log("url:" + url);
         var layer = new OpenLayers.Layer.Vector(name, {
             projection: this.displayProjection,
             strategies: [new OpenLayers.Strategy.Fixed()],
@@ -597,7 +594,7 @@ function initMapFunctions(theMap) {
                         maxDepth: 2
                 })
             }),
-            //            xxstyleMap: this.getVectorLayerStyleMap(args)
+            //styleMap: this.getVectorLayerStyleMap(args)
             }
             );
         layer.styleMap = this.getVectorLayerStyleMap(layer,args);
@@ -610,6 +607,7 @@ function initMapFunctions(theMap) {
             this.mapLayers = [ 
                               map_osm,
                               map_esri_topo,
+                              map_esri_street,
                               map_opentopo,
                               map_usgs_topo,
                               map_usgs_imagery,
@@ -745,7 +743,7 @@ function initMapFunctions(theMap) {
                 //Not working
                 var layerURL = "https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}";
                 newLayer  =  new OpenLayers.Layer.XYZ(
-                        "ESRI - World Imagery", layerURL, {
+                        "ESRI World Imagery", layerURL, {
                             sphericalMercator : sphericalMercatorDefault,
                             numZoomLevels : zoomLevelsDefault,
                             wrapDateLine : wrapDatelineDefault
@@ -785,7 +783,7 @@ function initMapFunctions(theMap) {
             } else if (mapLayer == map_esri_topo) {
                 var layerURL = "//server.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer/tile/${z}/${y}/${x}";
                 newLayer  =  new OpenLayers.Layer.XYZ(
-                        "ESRI - Topo", layerURL, {
+                        "ESRI Topo", layerURL, {
                             sphericalMercator : sphericalMercatorDefault,
                             numZoomLevels : zoomLevelsDefault,
                             wrapDateLine : wrapDatelineDefault
@@ -793,7 +791,7 @@ function initMapFunctions(theMap) {
             } else if (mapLayer == map_esri_street) {
                 var layerURL = "//server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/${z}/${y}/${x}";
                 newLayer  =  new OpenLayers.Layer.XYZ(
-                        "ESRI - Streets", layerURL, {
+                        "ESRI Streets", layerURL, {
                             sphericalMercator : sphericalMercatorDefault,
                             numZoomLevels : zoomLevelsDefault,
                             wrapDateLine : wrapDatelineDefault
@@ -801,7 +799,7 @@ function initMapFunctions(theMap) {
             } else if (/\/tile\//.exec(mapLayer)) {
                 var layerURL = mapLayer;
                 newLayer  =  new OpenLayers.Layer.XYZ(
-                                                           "ESRI - China Map", layerURL, {
+                                                           "ESRI China Map", layerURL, {
                             sphericalMercator : sphericalMercatorDefault,
                             numZoomLevels : zoomLevelsDefault,
                             wrapDateLine : wrapDatelineDefault
@@ -1730,14 +1728,17 @@ function initMapFunctions(theMap) {
     }
 
                                            
-    theMap.hideLoadingImage = function(image) {
-        if(!image) image = this.loadingImage;
-        if(image) {
-            image.style.visibility="hidden";
+    theMap.hideLoadingImage = function() {
+        if(this.loadingImage) {
+            this.loadingImage.style.visibility="hidden";
         }
     }
 
     theMap.showLoadingImage = function() {
+        if(this.loadingImage) {
+            this.loadingImage.style.visibility="inline";
+            return;
+        }
         sz = new OpenLayers.Size();
         sz.h = 50;
         sz.w = 50;
@@ -1750,7 +1751,6 @@ function initMapFunctions(theMap) {
                                           ramaddaBaseUrl + '/icons/mapprogress.gif');
         this.loadingImage.style.zIndex = 1010;
         this.map.viewPortDiv.appendChild(this.loadingImage);
-        return this.loadingImage;
     }
 
 

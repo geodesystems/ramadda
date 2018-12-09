@@ -156,7 +156,9 @@ function DisplayManager(argId,argProperties) {
                     return;
                  }
 
+
                 var record = records[index];
+                if(record == null) return;
                 var values = this.getRecordHtml(record,fields);
 
 

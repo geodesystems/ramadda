@@ -160,7 +160,9 @@ field_value2:#0000ff
 <![CDATA[Either GeoJson or KML Entry to display as a base layer in any map display ]]>
 </help>
       <element name="Map Entry" datatype="entry" suffix="KML or GeoJSON Entry"/>
+      <element name="Display data in map" datatype="boolean" suffix="Should the map color by settings be displayed in the map sections" default="true"/>
     </type>
+
 
 
     </handler>

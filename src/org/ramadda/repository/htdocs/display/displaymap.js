@@ -7,12 +7,14 @@ var DISPLAY_MAP = "map";
 
 var displayMapMarkers = ["marker.png", "marker-blue.png","marker-gold.png","marker-green.png"];
 
-var currentMarker =-1;
+var displayMapCurrentMarker =-1;
+var displayMapUrlToVectorListeners = {};
+var displayMapMarkerIcons = {};
 
-function getMapMarker() {
-    currentMarker++;
-    if(currentMarker>= displayMapMarkers.length)  currentMarker = 0;
-    return  ramaddaBaseUrl + "/lib/openlayers/v2/img/" + displayMapMarkers[currentMarker];
+function displayMapGetMarkerIcon() {
+    displayMapCurrentMarker++;
+    if(displayMapCurrentMarker>= displayMapMarkers.length)  displayMapCurrentMarker = 0;
+    return  ramaddaBaseUrl + "/lib/openlayers/v2/img/" + displayMapMarkers[displayMapCurrentMarker];
 }
 
 addGlobalDisplayType({
@@ -26,6 +28,9 @@ function MapFeature(source, points) {
 		points : points
 	});
 }
+
+
+
 
 function RamaddaMapDisplay(displayManager, id, properties) {
 	var ID_LATFIELD = "latfield";
@@ -116,17 +121,11 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 			this.map.initMap(false);
                         if(this.kmlLayer!=null) {
                             var url = ramaddaBaseUrl + "/entry/show?output=shapefile.kml&entryid=" + this.kmlLayer;
-                            this.map.addKMLLayer(this.kmlLayerName,url,this.doDisplayMap(),null,null,null,
-                                                 function(map,layer) {
-                                                     theDisplay.vectorLoad(layer);
-                                                 });
+                            this.addBaseMapLayer(url, true);
                         }
                         if(this.geojsonLayer!=null) {
                             url = this.getRamadda().getEntryDownloadUrl(this.geojsonLayer);
-                            this.map.addGeoJsonLayer(this.geojsonLayerName,url,this.doDisplayMap(),null,null,null,
-                                                     function(map,layer) {
-                                                         theDisplay.vectorLoad(layer);
-                                                     });
+                            this.addBaseMapLayer(url, false);
                         }
                         
                         this.map.addRegionSelectorControl(function(bounds) {
@@ -173,13 +172,84 @@ function RamaddaMapDisplay(displayManager, id, properties) {
                             }
                         }
 		},
+                addBaseMapLayer: function(url, isKml) {
+                    var theDisplay = this;
+                    mapLoadInfo = displayMapUrlToVectorListeners[url];
+                    if(mapLoadInfo == null) {
+                        mapLoadInfo = {otherMaps:[], layer:null};
+                        //                        displayMapUrlToVectorListeners[url] = mapLoadInfo;
+                        selectFunc  = function(layer) {
+                            theDisplay.mapFeatureSelected(layer);
+                        }
+                        if(isKml)
+                            this.map.addKMLLayer(this.kmlLayerName,url,this.doDisplayMap(),selectFunc,null,null,
+                                                 function(map,layer) {theDisplay.baseMapLoaded(layer,url);});
+                        else
+                           this.map.addGeoJsonLayer(this.geojsonLayerName,url,this.doDisplayMap(),selectFunc,null,null,
+                                                     function(map,layer) {
+                                                         theDisplay.baseMapLoaded(layer,url);
+                                                     });
+                    } else if(mapLoadInfo.layer) {
+                        this.cloneLayer(mapLoadInfo.layer);
+                    } else {
+                        this.map.showLoadingImage();
+                        mapLoadInfo.otherMaps.push(this);
+                    }
+                },
+                mapFeatureSelected: function(layer) {
+                    if(!this.pointData) {
+                        //                        console.log("no point data");
+                        return;
+                    }
+                    this.map.onFeatureSelect(layer);
+                    if(!Utils.isDefined(layer.feature.dataIndex)) {
+                        return;
+                    }
+                    //                    console.log("map index:" + layer.feature.dataIndex);
+                    this.getDisplayManager().handleEventRecordSelection(this,this.pointData,layer.feature.dataIndex);
+                },
                doDisplayMap:  function() {
                     var v = (this.kmlLayer!=null || this.geojsonLayer!=null) && ((""+this.getProperty("displayAsMap","")) == "true");
+//                    console.log("doDisplayMap:" + v +" " +this.getProperty("displayAsMap",""));
                     return  v;
                 },
-                vectorLoad: function(layer) {
+                cloneLayer: function(layer) {
+                    var theDisplay  = this;
+                    this.map.hideLoadingImage();
+                    layer = layer.clone();
+                    var features = layer.features;
+                    var clonedFeatures = [];
+                    for (var j = 0; j < features.length; j++) {
+                        feature = features[j];
+                        feature = feature.clone();
+                        if(feature.style) {
+                            oldStyle = feature.style;
+                            feature.style={};
+                            for(var a in oldStyle) {
+                                feature.style[a] = oldStyle[a];
+                            }
+                        } 
+                        feature.layer = layer;
+                        clonedFeatures.push(feature);
+                    }
+                    layer.removeAllFeatures();
+                    this.map.map.addLayer(layer);
+                    layer.addFeatures(clonedFeatures);
                     this.vectorLayer = layer;
                     this.applyVectorMap();
+                    this.map.addSelectCallback(layer,this.doDisplayMap(),function(layer) {theDisplay.mapFeatureSelected(layer);});
+                },
+                baseMapLoaded: function(layer, url) {
+                    this.vectorLayer = layer;
+                    this.applyVectorMap();
+                    mapLoadInfo = displayMapUrlToVectorListeners[url];
+                    if(mapLoadInfo) {
+                        mapLoadInfo.layer = layer;
+                        for(var i=0;i<mapLoadInfo.otherMaps.length;i++) {
+                            mapLoadInfo.otherMaps[i].cloneLayer(layer);
+                        }
+                        mapLoadInfo.otherMaps =[];
+                    }
                 },
                 handleLayerSelect: function(layer) {
                     var args = this.layerSelectArgs;
@@ -298,27 +368,30 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 			this.getDisplayManager().handleEventMapBoundsChanged(this, bounds);
 		},
 		addFeature : function(feature) {
-			this.features.push(feature);
-			feature.line = this.map.addPolygon("lines_"
-					+ feature.source.getId(), RecordUtil
-					.clonePoints(feature.points), null);
+                    this.features.push(feature);
+                    feature.line = this.map.addPolygon("lines_"
+                                                       + feature.source.getId(), RecordUtil
+                                                       .clonePoints(feature.points), null);
 		},
-		loadInitialData : function() {
-			if (this.getDisplayManager().getData().length > 0) {
-				this.handleEventPointDataLoaded(this, this.getDisplayManager()
-						.getData()[0]);
-			}
+		xloadInitialData : function() {
+                    if (this.getDisplayManager().getData().length > 0) {
+                        this.handleEventPointDataLoaded(this, this.getDisplayManager()
+                                                        .getData()[0]);
+                    }
 		},
 
 		getContentsDiv : function() {
-			return HtmlUtil.div([ ATTR_CLASS, "display-contents", ATTR_ID,
-					this.getDomId(ID_DISPLAY_CONTENTS) ], "");
+                    return HtmlUtil.div([ ATTR_CLASS, "display-contents", ATTR_ID,
+                                          this.getDomId(ID_DISPLAY_CONTENTS) ], "");
 		},
                 handleEventAreaClear:  function() {
                     this.map.clearRegionSelector();
                 },
 		handleClick : function(theMap, lon, lat) {
-			this.getDisplayManager().handleEventMapClick(this, lon, lat);
+                    if(this.doDisplayMap()) {
+                        return;
+                    }
+                    this.getDisplayManager().handleEventMapClick(this, lon, lat);
 		},
 
 		getPosition : function() {
@@ -486,25 +559,30 @@ function RamaddaMapDisplay(displayManager, id, properties) {
                     return source.getProperty(prop, dflt);
                 },
                 applyVectorMap: function() {
-                    if(!this.doDisplayMap()) {
-                        return;
-                    }
-                    if(!this.vectorLayer || !this.points) {
-                        return;
-                    }
-
                     if(this.vectorMapApplied) {
                         return;
                     }
+                    if(!this.doDisplayMap()) {
+                        return;
+                    }
+                    if(!this.vectorLayer) {
+                        //                        console.log("applyVectorMap-no vector yet");
+                        return;
+                    }
+                    if(!this.points) {
+                        //                        console.log("applyVectorMap-no points yet");
+                        return;
+                    }
+                    //                    console.log("applyVectorMap");
                     this.vectorMapApplied = true;
                     var features = this.vectorLayer.features.slice();
-                    console.log("starting:" + features.length);
                     var circles = this.points;
                     for (var i = 0; i < circles.length; i++) {
                         var circle = circles[i];
                         var center = circle.center;
                         var matchedFeature = null;
                         var index = -1;
+
                         for (var j = 0; j < features.length; j++) {
                             var feature = features[j];
                             var geometry = feature.geometry;
@@ -550,7 +628,8 @@ function RamaddaMapDisplay(displayManager, id, properties) {
                                };
                            $.extend(style, circle.style);
                            matchedFeature.style = style;
-                           matchedFeature.popupText = circle.text;
+                           matchedFeature.popupText =  circle.text;
+                           matchedFeature.dataIndex = i;
                        } 
                     }
                     if((""+this.getProperty("pruneFeatures","")) == "true") {
@@ -558,32 +637,53 @@ function RamaddaMapDisplay(displayManager, id, properties) {
                         var dataBounds = this.vectorLayer.getDataExtent();
                         bounds = this.map.transformProjBounds(dataBounds);
                         this.map.centerOnMarkers(bounds,true);
-                    }
+                    } 
                     this.vectorLayer.redraw();
                 },
-		handleEventPointDataLoaded : function(source, pointData) {
-                    this.pointData = pointData;
-                    if(source && Utils.isDefined(source["map-display"]) && !source["map-display"]) {
+                needsData:function() {
+                    return true;
+                },
+               updateUI: function(pointData) {
+                    SUPER.updateUI.call(this,pointData);
+                    //                    console.log("map.updateUI:" + this.hasData());
+                    if(!this.hasData()) {
                         return;
                     }
+                    //		handleEventPointDataLoaded : function(source, pointData) {
+                    this.pointData = pointData;
+                    //                    console.log("map-handleEventPointDataLoaded");
+                    //                    if(source && Utils.isDefined(source["map-display"]) && !source["map-display"]) {
+                        //                        console.log("return 1");
+                        //                        return;
+                        //                    }
 
                     var bounds = [ NaN, NaN, NaN, NaN ];
                     var records = pointData.getRecords();
+                    if(records == null) {
+                        err = new Error();
+                        console.log("null records:" + err.stack);
+                        return;
+                    }
                     var fields = pointData.getRecordFields();
                     var points = RecordUtil.getPoints(records, bounds);
                     if (isNaN(bounds[0])) {
+                        console.log("return 2:" + records.length +" " + bounds);
                         return;
                     }
 
                     this.initBounds = bounds;
                     this.setInitMapBounds(bounds[0], bounds[1], bounds[2],
                                           bounds[3]);
-                    if (this.map == null) return;
-                    if(points.length ==0) return;
+                    if (this.map == null) {
+                        console.log("return 3");
+                        return;
+                    }
+                    if(points.length ==0) {
+                        console.log("return 4");
+                        return;
+                    }
 
-
-
-
+                    source = this;
                     var radius = parseFloat(this.getDisplayProp(source,"radius",8));
                     var strokeWidth = parseFloat(this.getDisplayProp(source,"strokeWidth","1"));
                     var strokeColor = this.getDisplayProp(source, "strokeColor", "#000");
@@ -770,13 +870,10 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 				if (marker != null) {
                                     this.map.removeMarker(marker);
 				}
-                                if(this.markerIcons == null) {
-                                    this.markerIcons = {};
-                                }
-                                var icon = this.markerIcons[source];
+                                var icon = displayMapMarkerIcons[source];
                                 if(icon == null) {
-                                    icon =  getMapMarker();
-                                    this.markerIcons[source] = icon;
+                                    icon =  displayMapGetMarkerIcon();
+                                    displayMapMarkerIcons[source] = icon;
                                 }
 				this.myMarkers[source] = this.map.addMarker(source.getId(), point, icon, "", args.html,null,24);
 			}

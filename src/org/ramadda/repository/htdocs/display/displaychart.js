@@ -346,6 +346,7 @@ getChartType: function() {
                 if(source==this) {
                     return;
                 }
+                //                console.log("chart index="+ args.index);
                 this.setChartSelection(args.index);
             },
             getFieldsToSelect: function(pointData) {
@@ -647,7 +648,7 @@ getChartType: function() {
                     dataList = newList;
                 }
 
-                this.makeChart(chartType, dataList, selectedFields);
+                this.makeChart(chartType, dataList, props, selectedFields);
 
                 var d = this.jq(ID_CHART);
                 if(d.width() == 0) {
@@ -693,7 +694,67 @@ getChartType: function() {
             tableHeaderMouseover: function(i,tooltip) {
                 //alert("new:" + tooltip);
             },
-            makeGoogleChart: function(chartType, dataList, selectedFields) {
+            makeDataTable:function(chartType,dataList,props,selectedFields) {
+                if(dataList.length==1 || this.chartType == DISPLAY_TABLE) {
+                    return  google.visualization.arrayToDataTable(dataList);
+                }
+                var dataTable = new google.visualization.DataTable();
+                var header = dataList[0];
+                var sample = dataList[1];
+                for(var j=0;j<header.length;j++) {
+                    var value = sample[j];
+                    if(j==0 && props.includeIndex) {
+                        //This might be a number or a date
+                        if((typeof value) == "object") {
+                            //assume its a date
+                            dataTable.addColumn('date', header[j]);
+                        } else {
+                            dataTable.addColumn((typeof value), header[j]);
+                        }
+                    } else {
+                        //Assume all remaining fields are numbers
+                        dataTable.addColumn('number', header[j]);
+                        dataTable.addColumn({type: 'string', role: 'tooltip','p': {'html': true}});
+                    }
+                }
+                var justData= [];
+                var begin = props.includeIndex?1:0;
+                for(var i=1;i<dataList.length;i++) {
+                    var row = dataList[i];
+                    row  = row.slice(0);
+                    var tooltip = "<div style='padding:8px;'>";
+                    for(var j=0;j<row.length;j++) {
+                        if(j>0)
+                            tooltip+="<br>";
+                        label = header[j].replace(/ /g,"&nbsp;");
+                        value = row[j];
+                        if(!value) value ="NA";
+                        if(value && (typeof value) =="object") {
+                            if(value.f) value = value.f;
+                        }
+                        value = ""+value;
+                        value = value.replace(/ /g,"&nbsp;");
+                        tooltip+="<b>" +label+"</b>:&nbsp;" +value;
+                    }
+                    tooltip+="</div>";
+                    newRow = [];
+                    for(var j=0;j<row.length;j++) {
+                        var value = row[j];
+                        newRow.push(value);
+                        if(j==0 && props.includeIndex) {
+                            //is the index so don't add a tooltip
+                        } else {
+                            newRow.push(tooltip);
+                        }
+                    }
+                    justData.push(newRow);
+                }
+                dataTable.addRows(justData);
+                return dataTable;
+            },
+
+            makeGoogleChart: function(chartType, dataList, props, selectedFields) {
+                //                console.log("makeGoogleChart:" + chartType);
                 if(typeof google == 'undefined') {
                     this.setContents("No google");
                     return;
@@ -712,16 +773,23 @@ getChartType: function() {
                     */
                 }
 
-                var dataTable = google.visualization.arrayToDataTable(dataList);
+                var dataTable = this.makeDataTable(chartType, dataList, props,selectedFields);
+
+
+
+                /*
                 for(var i=1;i<dataList.length;i++) {
                     var row = dataList[i];
                     var s = "";
+                    //                    row.push("index:" + i);
                     for(var j=0;j<row.length;j++) {
                         s  = s +" -  "  + row[j];
                     }
                 }
-
-                var   chartOptions = {};
+                */
+                var   chartOptions = {
+                    tooltip: {isHtml: true},
+                };
                 $.extend(chartOptions, {
                         lineWidth: 1,
                         colors: this.colors,
@@ -853,7 +921,7 @@ getChartType: function() {
                         }
                     }
                     
-                    var   chartOptions =  {
+                    $.extend(chartOptions, {
                         title: "the title",
                         bars: 'horizontal',
                         colors: this.colors,
@@ -863,7 +931,7 @@ getChartType: function() {
                         bars: 'horizontal',
                         tooltip: {showColorCode: true},
                         legend: { position: 'none' },
-                    };
+                                });
 
                     if(Utils.isDefined(this.isStacked)) {
                         chartOptions.isStacked = this.isStacked;                        
@@ -900,9 +968,10 @@ getChartType: function() {
                     $("#" + chartId).css("height",height);
                     chartOptions = {
                         title: '',
+                        tooltip: {isHtml: true},
                         legend: 'none',
                         chartArea: {left:"10%", top:10, height:"80%",width:"90%"}
-                    };
+                        };
 
                     if(this.getShowTitle()) {
                         chartOptions.title =  this.getTitle(true);

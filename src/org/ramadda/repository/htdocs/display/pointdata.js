@@ -192,6 +192,7 @@ function PointData(name, recordFields, records, url, properties) {
                 this.loadPointJson(jsonUrl, display, reload);
             },
             loadPointJson: function(url, display, reload) {
+                //                url = url.replace("5000","10");
                 var pointData = this;
                 this.startLoading();
                 var _this = this;

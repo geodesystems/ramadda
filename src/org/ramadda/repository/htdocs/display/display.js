@@ -360,7 +360,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
                 this.clearCachedData();
                 if(this.properties.data) {
                     this.dataCollection = new DataCollection();
-                    this.properties.data= this.data= new PointData(entry.getName(), null, null, this.getRamadda().getRoot()+"/entry/show?entryid=" + entry.getId() +"&output=points.product&product=points.json&numpoints=5000",{entryId:this.entryId});
+                    this.properties.data= this.data= new PointData(entry.getName(), null, null, this.getRamadda().getRoot()+"/entry/show?entryid=" + entry.getId() +"&output=points.product&product=points.json&max=5000",{entryId:this.entryId});
                     this.data.loadData(this);
                 }
                 this.updateUI();
