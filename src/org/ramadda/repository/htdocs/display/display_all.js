@@ -506,7 +506,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
                 this.clearCachedData();
                 if(this.properties.data) {
                     this.dataCollection = new DataCollection();
-                    this.properties.data= this.data= new PointData(entry.getName(), null, null, this.getRamadda().getRoot()+"/entry/show?entryid=" + entry.getId() +"&output=points.product&product=points.json&numpoints=5000",{entryId:this.entryId});
+                    this.properties.data= this.data= new PointData(entry.getName(), null, null, this.getRamadda().getRoot()+"/entry/show?entryid=" + entry.getId() +"&output=points.product&product=points.json&max=5000",{entryId:this.entryId});
                     this.data.loadData(this);
                 }
                 this.updateUI();
@@ -3293,6 +3293,7 @@ function PointData(name, recordFields, records, url, properties) {
                 this.loadPointJson(jsonUrl, display, reload);
             },
             loadPointJson: function(url, display, reload) {
+                //                url = url.replace("5000","10");
                 var pointData = this;
                 this.startLoading();
                 var _this = this;
@@ -4848,13 +4849,37 @@ function RamaddaMultiChart(displayManager, id, properties) {
     var _this = this;
     //A hack  so charts are displayed OK in a tabs or accordian
     //When the doc is done wait 5 seconds then display (or re-display) the data
+    var redisplayFunc = function() {
+        _this.displayData();
+    };
     $(document).ready(function(){
-            var cb = function() {
-                _this.displayData();
-            };
-            //            setTimeout(cb,8000);
-        });
+	setTimeout(redisplayFunc,5000);
+    });
 
+    _this.redisplayPending = false;
+    _this.redisplayPendingCnt = 0;
+
+    //Another hack to redraw the chart after the window is resized
+    $(window).resize(function() {
+	//This handles multiple resize events but keeps only having one timeout pending at a time
+	if(_this.redisplayPending) {
+	    _this.redisplayPendingCnt++;
+	    return;
+	}
+	var timeoutFunc = function(myCnt){
+            if(myCnt == _this.redisplayPendingCnt) {
+		//Ready to redisplay
+		_this.redisplayPending = false;
+		_this.redisplayPendingCnt=0;
+		_this.displayData();
+            } else {
+		//Had a resize event during the previous timeout
+		setTimeout(timeoutFunc.bind(null,_this.redisplayPendingCnt),1000);
+	    }
+	}
+	_this.redisplayPending = true;
+        setTimeout(timeoutFunc.bind(null,_this.redisplayPendingCnt),1000);
+    });
 
     //Init the defaults first
     $.extend(this, {
@@ -5059,6 +5084,7 @@ getChartType: function() {
                 if(source==this) {
                     return;
                 }
+                //                console.log("chart index="+ args.index);
                 this.setChartSelection(args.index);
             },
             getFieldsToSelect: function(pointData) {
@@ -5360,7 +5386,7 @@ getChartType: function() {
                     dataList = newList;
                 }
 
-                this.makeChart(chartType, dataList, selectedFields);
+                this.makeChart(chartType, dataList, props, selectedFields);
 
                 var d = this.jq(ID_CHART);
                 if(d.width() == 0) {
@@ -5406,7 +5432,67 @@ getChartType: function() {
             tableHeaderMouseover: function(i,tooltip) {
                 //alert("new:" + tooltip);
             },
-            makeGoogleChart: function(chartType, dataList, selectedFields) {
+            makeDataTable:function(chartType,dataList,props,selectedFields) {
+                if(dataList.length==1 || this.chartType == DISPLAY_TABLE) {
+                    return  google.visualization.arrayToDataTable(dataList);
+                }
+                var dataTable = new google.visualization.DataTable();
+                var header = dataList[0];
+                var sample = dataList[1];
+                for(var j=0;j<header.length;j++) {
+                    var value = sample[j];
+                    if(j==0 && props.includeIndex) {
+                        //This might be a number or a date
+                        if((typeof value) == "object") {
+                            //assume its a date
+                            dataTable.addColumn('date', header[j]);
+                        } else {
+                            dataTable.addColumn((typeof value), header[j]);
+                        }
+                    } else {
+                        //Assume all remaining fields are numbers
+                        dataTable.addColumn('number', header[j]);
+                        dataTable.addColumn({type: 'string', role: 'tooltip','p': {'html': true}});
+                    }
+                }
+                var justData= [];
+                var begin = props.includeIndex?1:0;
+                for(var i=1;i<dataList.length;i++) {
+                    var row = dataList[i];
+                    row  = row.slice(0);
+                    var tooltip = "<div style='padding:8px;'>";
+                    for(var j=0;j<row.length;j++) {
+                        if(j>0)
+                            tooltip+="<br>";
+                        label = header[j].replace(/ /g,"&nbsp;");
+                        value = row[j];
+                        if(!value) value ="NA";
+                        if(value && (typeof value) =="object") {
+                            if(value.f) value = value.f;
+                        }
+                        value = ""+value;
+                        value = value.replace(/ /g,"&nbsp;");
+                        tooltip+="<b>" +label+"</b>:&nbsp;" +value;
+                    }
+                    tooltip+="</div>";
+                    newRow = [];
+                    for(var j=0;j<row.length;j++) {
+                        var value = row[j];
+                        newRow.push(value);
+                        if(j==0 && props.includeIndex) {
+                            //is the index so don't add a tooltip
+                        } else {
+                            newRow.push(tooltip);
+                        }
+                    }
+                    justData.push(newRow);
+                }
+                dataTable.addRows(justData);
+                return dataTable;
+            },
+
+            makeGoogleChart: function(chartType, dataList, props, selectedFields) {
+                //                console.log("makeGoogleChart:" + chartType);
                 if(typeof google == 'undefined') {
                     this.setContents("No google");
                     return;
@@ -5425,16 +5511,23 @@ getChartType: function() {
                     */
                 }
 
-                var dataTable = google.visualization.arrayToDataTable(dataList);
+                var dataTable = this.makeDataTable(chartType, dataList, props,selectedFields);
+
+
+
+                /*
                 for(var i=1;i<dataList.length;i++) {
                     var row = dataList[i];
                     var s = "";
+                    //                    row.push("index:" + i);
                     for(var j=0;j<row.length;j++) {
                         s  = s +" -  "  + row[j];
                     }
                 }
-
-                var   chartOptions = {};
+                */
+                var   chartOptions = {
+                    tooltip: {isHtml: true},
+                };
                 $.extend(chartOptions, {
                         lineWidth: 1,
                         colors: this.colors,
@@ -5566,7 +5659,7 @@ getChartType: function() {
                         }
                     }
                     
-                    var   chartOptions =  {
+                    $.extend(chartOptions, {
                         title: "the title",
                         bars: 'horizontal',
                         colors: this.colors,
@@ -5576,7 +5669,7 @@ getChartType: function() {
                         bars: 'horizontal',
                         tooltip: {showColorCode: true},
                         legend: { position: 'none' },
-                    };
+                                });
 
                     if(Utils.isDefined(this.isStacked)) {
                         chartOptions.isStacked = this.isStacked;                        
@@ -5613,9 +5706,10 @@ getChartType: function() {
                     $("#" + chartId).css("height",height);
                     chartOptions = {
                         title: '',
+                        tooltip: {isHtml: true},
                         legend: 'none',
                         chartArea: {left:"10%", top:10, height:"80%",width:"90%"}
-                    };
+                        };
 
                     if(this.getShowTitle()) {
                         chartOptions.title =  this.getTitle(true);
@@ -8656,7 +8750,9 @@ function DisplayManager(argId,argProperties) {
                     return;
                  }
 
+
                 var record = records[index];
+                if(record == null) return;
                 var values = this.getRecordHtml(record,fields);
 
 
@@ -8982,12 +9078,14 @@ var DISPLAY_MAP = "map";
 
 var displayMapMarkers = ["marker.png", "marker-blue.png","marker-gold.png","marker-green.png"];
 
-var currentMarker =-1;
+var displayMapCurrentMarker =-1;
+var displayMapUrlToVectorListeners = {};
+var displayMapMarkerIcons = {};
 
-function getMapMarker() {
-    currentMarker++;
-    if(currentMarker>= displayMapMarkers.length)  currentMarker = 0;
-    return  ramaddaBaseUrl + "/lib/openlayers/v2/img/" + displayMapMarkers[currentMarker];
+function displayMapGetMarkerIcon() {
+    displayMapCurrentMarker++;
+    if(displayMapCurrentMarker>= displayMapMarkers.length)  displayMapCurrentMarker = 0;
+    return  ramaddaBaseUrl + "/lib/openlayers/v2/img/" + displayMapMarkers[displayMapCurrentMarker];
 }
 
 addGlobalDisplayType({
@@ -9001,6 +9099,9 @@ function MapFeature(source, points) {
 		points : points
 	});
 }
+
+
+
 
 function RamaddaMapDisplay(displayManager, id, properties) {
 	var ID_LATFIELD = "latfield";
@@ -9091,17 +9192,11 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 			this.map.initMap(false);
                         if(this.kmlLayer!=null) {
                             var url = ramaddaBaseUrl + "/entry/show?output=shapefile.kml&entryid=" + this.kmlLayer;
-                            this.map.addKMLLayer(this.kmlLayerName,url,this.doDisplayMap(),null,null,null,
-                                                 function(map,layer) {
-                                                     theDisplay.vectorLoad(layer);
-                                                 });
+                            this.addBaseMapLayer(url, true);
                         }
                         if(this.geojsonLayer!=null) {
                             url = this.getRamadda().getEntryDownloadUrl(this.geojsonLayer);
-                            this.map.addGeoJsonLayer(this.geojsonLayerName,url,this.doDisplayMap(),null,null,null,
-                                                     function(map,layer) {
-                                                         theDisplay.vectorLoad(layer);
-                                                     });
+                            this.addBaseMapLayer(url, false);
                         }
                         
                         this.map.addRegionSelectorControl(function(bounds) {
@@ -9148,13 +9243,84 @@ function RamaddaMapDisplay(displayManager, id, properties) {
                             }
                         }
 		},
+                addBaseMapLayer: function(url, isKml) {
+                    var theDisplay = this;
+                    mapLoadInfo = displayMapUrlToVectorListeners[url];
+                    if(mapLoadInfo == null) {
+                        mapLoadInfo = {otherMaps:[], layer:null};
+                        //                        displayMapUrlToVectorListeners[url] = mapLoadInfo;
+                        selectFunc  = function(layer) {
+                            theDisplay.mapFeatureSelected(layer);
+                        }
+                        if(isKml)
+                            this.map.addKMLLayer(this.kmlLayerName,url,this.doDisplayMap(),selectFunc,null,null,
+                                                 function(map,layer) {theDisplay.baseMapLoaded(layer,url);});
+                        else
+                           this.map.addGeoJsonLayer(this.geojsonLayerName,url,this.doDisplayMap(),selectFunc,null,null,
+                                                     function(map,layer) {
+                                                         theDisplay.baseMapLoaded(layer,url);
+                                                     });
+                    } else if(mapLoadInfo.layer) {
+                        this.cloneLayer(mapLoadInfo.layer);
+                    } else {
+                        this.map.showLoadingImage();
+                        mapLoadInfo.otherMaps.push(this);
+                    }
+                },
+                mapFeatureSelected: function(layer) {
+                    if(!this.pointData) {
+                        //                        console.log("no point data");
+                        return;
+                    }
+                    this.map.onFeatureSelect(layer);
+                    if(!Utils.isDefined(layer.feature.dataIndex)) {
+                        return;
+                    }
+                    //                    console.log("map index:" + layer.feature.dataIndex);
+                    this.getDisplayManager().handleEventRecordSelection(this,this.pointData,layer.feature.dataIndex);
+                },
                doDisplayMap:  function() {
                     var v = (this.kmlLayer!=null || this.geojsonLayer!=null) && ((""+this.getProperty("displayAsMap","")) == "true");
+//                    console.log("doDisplayMap:" + v +" " +this.getProperty("displayAsMap",""));
                     return  v;
                 },
-                vectorLoad: function(layer) {
+                cloneLayer: function(layer) {
+                    var theDisplay  = this;
+                    this.map.hideLoadingImage();
+                    layer = layer.clone();
+                    var features = layer.features;
+                    var clonedFeatures = [];
+                    for (var j = 0; j < features.length; j++) {
+                        feature = features[j];
+                        feature = feature.clone();
+                        if(feature.style) {
+                            oldStyle = feature.style;
+                            feature.style={};
+                            for(var a in oldStyle) {
+                                feature.style[a] = oldStyle[a];
+                            }
+                        } 
+                        feature.layer = layer;
+                        clonedFeatures.push(feature);
+                    }
+                    layer.removeAllFeatures();
+                    this.map.map.addLayer(layer);
+                    layer.addFeatures(clonedFeatures);
                     this.vectorLayer = layer;
                     this.applyVectorMap();
+                    this.map.addSelectCallback(layer,this.doDisplayMap(),function(layer) {theDisplay.mapFeatureSelected(layer);});
+                },
+                baseMapLoaded: function(layer, url) {
+                    this.vectorLayer = layer;
+                    this.applyVectorMap();
+                    mapLoadInfo = displayMapUrlToVectorListeners[url];
+                    if(mapLoadInfo) {
+                        mapLoadInfo.layer = layer;
+                        for(var i=0;i<mapLoadInfo.otherMaps.length;i++) {
+                            mapLoadInfo.otherMaps[i].cloneLayer(layer);
+                        }
+                        mapLoadInfo.otherMaps =[];
+                    }
                 },
                 handleLayerSelect: function(layer) {
                     var args = this.layerSelectArgs;
@@ -9273,27 +9439,30 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 			this.getDisplayManager().handleEventMapBoundsChanged(this, bounds);
 		},
 		addFeature : function(feature) {
-			this.features.push(feature);
-			feature.line = this.map.addPolygon("lines_"
-					+ feature.source.getId(), RecordUtil
-					.clonePoints(feature.points), null);
+                    this.features.push(feature);
+                    feature.line = this.map.addPolygon("lines_"
+                                                       + feature.source.getId(), RecordUtil
+                                                       .clonePoints(feature.points), null);
 		},
-		loadInitialData : function() {
-			if (this.getDisplayManager().getData().length > 0) {
-				this.handleEventPointDataLoaded(this, this.getDisplayManager()
-						.getData()[0]);
-			}
+		xloadInitialData : function() {
+                    if (this.getDisplayManager().getData().length > 0) {
+                        this.handleEventPointDataLoaded(this, this.getDisplayManager()
+                                                        .getData()[0]);
+                    }
 		},
 
 		getContentsDiv : function() {
-			return HtmlUtil.div([ ATTR_CLASS, "display-contents", ATTR_ID,
-					this.getDomId(ID_DISPLAY_CONTENTS) ], "");
+                    return HtmlUtil.div([ ATTR_CLASS, "display-contents", ATTR_ID,
+                                          this.getDomId(ID_DISPLAY_CONTENTS) ], "");
 		},
                 handleEventAreaClear:  function() {
                     this.map.clearRegionSelector();
                 },
 		handleClick : function(theMap, lon, lat) {
-			this.getDisplayManager().handleEventMapClick(this, lon, lat);
+                    if(this.doDisplayMap()) {
+                        return;
+                    }
+                    this.getDisplayManager().handleEventMapClick(this, lon, lat);
 		},
 
 		getPosition : function() {
@@ -9461,25 +9630,30 @@ function RamaddaMapDisplay(displayManager, id, properties) {
                     return source.getProperty(prop, dflt);
                 },
                 applyVectorMap: function() {
-                    if(!this.doDisplayMap()) {
-                        return;
-                    }
-                    if(!this.vectorLayer || !this.points) {
-                        return;
-                    }
-
                     if(this.vectorMapApplied) {
                         return;
                     }
+                    if(!this.doDisplayMap()) {
+                        return;
+                    }
+                    if(!this.vectorLayer) {
+                        //                        console.log("applyVectorMap-no vector yet");
+                        return;
+                    }
+                    if(!this.points) {
+                        //                        console.log("applyVectorMap-no points yet");
+                        return;
+                    }
+                    //                    console.log("applyVectorMap");
                     this.vectorMapApplied = true;
                     var features = this.vectorLayer.features.slice();
-                    console.log("starting:" + features.length);
                     var circles = this.points;
                     for (var i = 0; i < circles.length; i++) {
                         var circle = circles[i];
                         var center = circle.center;
                         var matchedFeature = null;
                         var index = -1;
+
                         for (var j = 0; j < features.length; j++) {
                             var feature = features[j];
                             var geometry = feature.geometry;
@@ -9525,7 +9699,8 @@ function RamaddaMapDisplay(displayManager, id, properties) {
                                };
                            $.extend(style, circle.style);
                            matchedFeature.style = style;
-                           matchedFeature.popupText = circle.text;
+                           matchedFeature.popupText =  circle.text;
+                           matchedFeature.dataIndex = i;
                        } 
                     }
                     if((""+this.getProperty("pruneFeatures","")) == "true") {
@@ -9533,32 +9708,53 @@ function RamaddaMapDisplay(displayManager, id, properties) {
                         var dataBounds = this.vectorLayer.getDataExtent();
                         bounds = this.map.transformProjBounds(dataBounds);
                         this.map.centerOnMarkers(bounds,true);
-                    }
+                    } 
                     this.vectorLayer.redraw();
                 },
-		handleEventPointDataLoaded : function(source, pointData) {
-                    this.pointData = pointData;
-                    if(source && Utils.isDefined(source["map-display"]) && !source["map-display"]) {
+                needsData:function() {
+                    return true;
+                },
+               updateUI: function(pointData) {
+                    SUPER.updateUI.call(this,pointData);
+                    //                    console.log("map.updateUI:" + this.hasData());
+                    if(!this.hasData()) {
                         return;
                     }
+                    //		handleEventPointDataLoaded : function(source, pointData) {
+                    this.pointData = pointData;
+                    //                    console.log("map-handleEventPointDataLoaded");
+                    //                    if(source && Utils.isDefined(source["map-display"]) && !source["map-display"]) {
+                        //                        console.log("return 1");
+                        //                        return;
+                        //                    }
 
                     var bounds = [ NaN, NaN, NaN, NaN ];
                     var records = pointData.getRecords();
+                    if(records == null) {
+                        err = new Error();
+                        console.log("null records:" + err.stack);
+                        return;
+                    }
                     var fields = pointData.getRecordFields();
                     var points = RecordUtil.getPoints(records, bounds);
                     if (isNaN(bounds[0])) {
+                        console.log("return 2:" + records.length +" " + bounds);
                         return;
                     }
 
                     this.initBounds = bounds;
                     this.setInitMapBounds(bounds[0], bounds[1], bounds[2],
                                           bounds[3]);
-                    if (this.map == null) return;
-                    if(points.length ==0) return;
+                    if (this.map == null) {
+                        console.log("return 3");
+                        return;
+                    }
+                    if(points.length ==0) {
+                        console.log("return 4");
+                        return;
+                    }
 
-
-
-
+                    source = this;
                     var radius = parseFloat(this.getDisplayProp(source,"radius",8));
                     var strokeWidth = parseFloat(this.getDisplayProp(source,"strokeWidth","1"));
                     var strokeColor = this.getDisplayProp(source, "strokeColor", "#000");
@@ -9745,13 +9941,10 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 				if (marker != null) {
                                     this.map.removeMarker(marker);
 				}
-                                if(this.markerIcons == null) {
-                                    this.markerIcons = {};
-                                }
-                                var icon = this.markerIcons[source];
+                                var icon = displayMapMarkerIcons[source];
                                 if(icon == null) {
-                                    icon =  getMapMarker();
-                                    this.markerIcons[source] = icon;
+                                    icon =  displayMapGetMarkerIcon();
+                                    displayMapMarkerIcons[source] = icon;
                                 }
 				this.myMarkers[source] = this.map.addMarker(source.getId(), point, icon, "", args.html,null,24);
 			}

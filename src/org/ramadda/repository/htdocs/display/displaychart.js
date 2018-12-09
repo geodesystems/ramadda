@@ -135,13 +135,37 @@ function RamaddaMultiChart(displayManager, id, properties) {
     var _this = this;
     //A hack  so charts are displayed OK in a tabs or accordian
     //When the doc is done wait 5 seconds then display (or re-display) the data
+    var redisplayFunc = function() {
+        _this.displayData();
+    };
     $(document).ready(function(){
-            var cb = function() {
-                _this.displayData();
-            };
-            //            setTimeout(cb,8000);
-        });
+	setTimeout(redisplayFunc,5000);
+    });
 
+    _this.redisplayPending = false;
+    _this.redisplayPendingCnt = 0;
+
+    //Another hack to redraw the chart after the window is resized
+    $(window).resize(function() {
+	//This handles multiple resize events but keeps only having one timeout pending at a time
+	if(_this.redisplayPending) {
+	    _this.redisplayPendingCnt++;
+	    return;
+	}
+	var timeoutFunc = function(myCnt){
+            if(myCnt == _this.redisplayPendingCnt) {
+		//Ready to redisplay
+		_this.redisplayPending = false;
+		_this.redisplayPendingCnt=0;
+		_this.displayData();
+            } else {
+		//Had a resize event during the previous timeout
+		setTimeout(timeoutFunc.bind(null,_this.redisplayPendingCnt),1000);
+	    }
+	}
+	_this.redisplayPending = true;
+        setTimeout(timeoutFunc.bind(null,_this.redisplayPendingCnt),1000);
+    });
 
     //Init the defaults first
     $.extend(this, {
