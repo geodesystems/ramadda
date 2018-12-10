@@ -1018,8 +1018,8 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
             String id   = Utils.getProperty(props, ATTR_ID, (String) null);
             if (id != null) {
                 for (Metadata metadata :
-                        getMetadataManager().getMetadata(entry,
-                            "wiki_label")) {
+                         getMetadataManager().findMetadata(request, entry,
+                                                           "wiki_label", true)) {
                     if (Misc.equals(id, metadata.getAttr1())) {
                         text = metadata.getAttr2();
 
