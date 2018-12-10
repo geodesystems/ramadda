@@ -1625,7 +1625,7 @@ public class OutputHandler extends RepositoryManager {
                 crumbs = getPageHandler().getBreadCrumbs(request,
                         entry.getParentEntry(), null, null, 60);
                 crumbs = HtmlUtils.makeToggleInline("",
-                        HtmlUtils.concat(crumbs, BREADCRUMB_SEPARATOR_PAD),
+                        Utils.concatString(crumbs, BREADCRUMB_SEPARATOR_PAD),
                         false);
             }
 

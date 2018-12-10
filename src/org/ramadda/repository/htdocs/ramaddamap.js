@@ -89,14 +89,11 @@ function ramaddaAddMap(map) {
 
 
 function RepositoryMap(mapId, params) {
+    mapId = mapId ||"map";
     ramaddaMapMap[mapId] = this;
     if(!params) params = {};
     ramaddaAddMap(this);
     var theMap = this;
-    if (mapId == null) {
-        mapId = "map";
-    }
-
     $.extend(this, {
             sourceProjection:sourceProjection,
                 displayProjection: displayProjection,
@@ -123,8 +120,6 @@ function RepositoryMap(mapId, params) {
                 kmlLayerName: null,
                 geojsonlLayer: null,
                 geojsonLayerName: null,
-
-
                 vectorLayers:[],
                 features:{},
                 lines: null,
@@ -179,50 +174,18 @@ function RepositoryMap(mapId, params) {
             div:this.mapDivId,
             eventListeners: {
                 featureover: function(e) { 
-                    layer = e.feature.layer;
-                    if(layer.canSelect === false || !(layer.isMapLayer=== true)) return;
-                    if(!e.feature.isSelected) {
-                        e.feature.originalStyle = e.feature.style;
-                        e.feature.style = null;
-                        e.feature.layer.drawFeature(e.feature,"temporary");
-                    }
+                    theMap.handleFeatureover(e.feature);
                 },
                 featureout: function(e) { 
-                    layer = e.feature.layer;
-                    if(layer.canSelect === false || !(layer.isMapLayer=== true)) return;
-                    e.feature.style = e.feature.originalStyle;
-                    if(!e.feature.isSelected) {
-                        layer.drawFeature(e.feature,e.feature.style ||"default"); 
-                    }
+                    theMap.handleFeatureout(e.feature);
                 },
                 nofeatureclick: function(e) { 
-                    layer = e.layer;
-                    if(layer.canSelect === false) return;
-                    if(layer && layer.selectedFeature) {
-                        theMap.unselectFeature(layer.selectedFeature);
-                    }
+                    theMap.handleNofeatureclick(e.layer);
                 },
                 featureclick: function(e) { 
-                    layer = e.layer;
-                    if(!layer)
-                        layer = e.feature.layer;
-                    if(layer.canSelect === false || !(layer.isMapLayer=== true)) return;
-                    if(layer.selectedFeature) {
-                        layer.drawFeature(layer.selectedFeature,layer.selectedFeature.style ||"default");
-                        layer.selectedFeature.isSelected = false;
-                        theMap.onPopupClose();
-                    }
-                    theMap.selectedFeature = e.feature;
-                    layer.selectedFeature = e.feature;
-                    layer.selectedFeature.isSelected =true;
-                    layer.drawFeature(layer.selectedFeature,"select"); 
-                    if(layer.selectCallback) {
-                        layer.feature= layer.selectedFeature;
-                        layer.selectCallback(layer);
-                    }
+                    theMap.handleFeatureclick(e.layer,e.feature);
                 }
             }
-            
         };
         this.map = new OpenLayers.Map(this.mapDivId,options);
         this.addBaseLayers();
@@ -246,6 +209,47 @@ function RepositoryMap(mapId, params) {
 
 function initMapFunctions(theMap) {
     RamaddaUtil.defineMembers(theMap,  {
+            handleFeatureover: function(feature) { 
+                layer = feature.layer;
+                if(layer.canSelect === false || !(layer.isMapLayer=== true)) return;
+                if(!feature.isSelected) {
+                    feature.originalStyle = feature.style;
+                    feature.style = null;
+                    feature.layer.drawFeature(feature,"temporary");
+                }
+            },
+            handleFeatureout: function(feature) { 
+                layer = feature.layer;
+                if(layer.canSelect === false || !(layer.isMapLayer=== true)) return;
+                feature.style = feature.originalStyle;
+                if(!feature.isSelected) {
+                    layer.drawFeature(feature,feature.style ||"default"); 
+                }
+            },
+            handleNofeatureclick: function(layer) { 
+                if(layer.canSelect === false) return;
+                if(layer && layer.selectedFeature) {
+                    theMap.unselectFeature(layer.selectedFeature);
+                }
+            },
+            handleFeatureclick: function(layer, feature) { 
+                if(!layer)
+                    layer = feature.layer;
+                if(layer.canSelect === false || !(layer.isMapLayer=== true)) return;
+                if(layer.selectedFeature) {
+                    layer.drawFeature(layer.selectedFeature,layer.selectedFeature.style ||"default");
+                    layer.selectedFeature.isSelected = false;
+                    theMap.onPopupClose();
+                }
+                theMap.selectedFeature = feature;
+                layer.selectedFeature = feature;
+                layer.selectedFeature.isSelected =true;
+                layer.drawFeature(layer.selectedFeature,"select"); 
+                if(layer.selectCallback) {
+                    layer.feature= layer.selectedFeature;
+                    layer.selectCallback(layer);
+                }
+            },
             unselectFeature: function(feature) {
                 if(!feature) return;
                 layer = feature.layer;

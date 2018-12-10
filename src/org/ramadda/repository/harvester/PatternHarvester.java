@@ -1132,14 +1132,14 @@ public class PatternHarvester extends Harvester /*implements EntryInitializer*/ 
             }
             if (makeGroup && (parentGroup != null)) {
                 String groupPath =
-                    HtmlUtils.concat(parentGroup.getFullName(),
+                    Utils.concatString(parentGroup.getFullName(),
                                      Entry.PATHDELIMITER, name);
                 Entry group = getEntryManager().findGroupFromName(request,
                                   groupPath, getUser(), false);
 
                 if ((group == null) && (name.indexOf("_") >= 0)) {
                     String blankName = name.replaceAll("_", " ");
-                    groupPath = HtmlUtils.concat(parentGroup.getFullName(),
+                    groupPath = Utils.concatString(parentGroup.getFullName(),
                             Entry.PATHDELIMITER, blankName);
                     group = getEntryManager().findGroupFromName(request,
                             groupPath, getUser(), false);

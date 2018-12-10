@@ -1421,7 +1421,7 @@ public class Gtfs implements Constants {
         if (full) {
             label = "Route " + routeTag;
             if ( !routeId.equals(entry.getLabel())) {
-                label = HtmlUtils.concat(label, "&nbsp;", entry.getLabel());
+                label = Utils.concatString(label, "&nbsp;", entry.getLabel());
             }
         }
         if ( !doLink) {

@@ -155,10 +155,19 @@ public class MapInfo {
         this.request      = request;
         this.repository   = repository;
 
-        this.mapVarName   = "ramaddaMap" + (cnt++);
+        this.mapVarName   = makeMapVar();
         this.width        = width;
         this.height       = height;
         this.forSelection = forSelection;
+    }
+
+    /**
+     * _more_
+     *
+     * @return _more_
+     */
+    public static final String makeMapVar() {
+        return "ramaddaMap" + (cnt++);
     }
 
 
@@ -315,9 +324,9 @@ public class MapInfo {
                           HtmlUtils.id("ramadda-map-latlonreadout")
                           + HtmlUtils.style("font-style:italic; " + swidth));
 
-        result.append(HtmlUtils.div(contents,
-                                    HtmlUtils.style(styles) + " "
-                                    + HtmlUtils.id(mapVarName)));
+        HtmlUtils.div(result, contents,
+                      HtmlUtils.style(styles) + " "
+                      + HtmlUtils.id(mapVarName));
         String url = request.getUrl();
         String label;
         if (request.get("mapdetails", false)) {
@@ -359,7 +368,6 @@ public class MapInfo {
         StringBuilder sb = new StringBuilder();
         sb.append(html);
 
-
         /*
         String extra = getExtraNav();
         if (extra.length() > 0) {
@@ -388,7 +396,6 @@ public class MapInfo {
         }
         */
 
-
         sb.append(getMapDiv(""));
 
         /*
@@ -405,7 +412,7 @@ public class MapInfo {
         }
         */
 
-        sb.append(HtmlUtils.script(getFinalJS().toString()));
+        HtmlUtils.script(sb, getFinalJS());
         sb.append("\n");
 
         return sb.toString();
@@ -448,20 +455,24 @@ public class MapInfo {
      *
      * @return _more_
      */
-    private StringBuilder getFinalJS() {
-        StringBuilder js = new StringBuilder();
-        js.append("\n//mapjs\n");
-        js.append("var params = " + formatProps() + ";\n");
-        js.append("var " + mapVarName + " = new RepositoryMap("
-                  + HtmlUtils.squote(mapVarName) + ", params);\n");
-        js.append("var theMap = " + mapVarName + ";\n");
-        // TODO: why is this here?
-        if ( !forSelection) {
-            js.append("theMap.initMap(" + forSelection + ");\n");
-        }
-        js.append(getJS());
+    private String getFinalJS() {
+        try {
+            Appendable js = Utils.makeAppendable();
+            js.append("\n//map javascript\n");
+            Utils.append(js, "var params = ", formatProps(), ";\n");
+            Utils.append(js, "var ", mapVarName, " = new RepositoryMap(",
+                         HtmlUtils.squote(mapVarName), ", params);\n");
+            Utils.append(js, "var theMap = ", mapVarName, ";\n");
+            // TODO: why is this here?
+            if ( !forSelection) {
+                Utils.append(js, "theMap.initMap(", forSelection, ");\n");
+            }
+            js.append(getJS());
 
-        return js;
+            return js.toString();
+        } catch (Exception exc) {
+            throw new IllegalArgumentException(exc);
+        }
     }
 
 
@@ -1212,12 +1223,12 @@ public class MapInfo {
      */
     public void centerOn(Rectangle2D.Double bounds, boolean force) {
         if (bounds != null) {
-            getJS().append("var bounds = new OpenLayers.Bounds("
-                           + bounds.getX() + "," + bounds.getY() + ","
-                           + (bounds.getX() + bounds.getWidth()) + ","
-                           + (bounds.getY() + bounds.getHeight()) + ");\n");
-            getJS().append(mapVarName + ".centerOnMarkers(bounds, " + force
-                           + ");\n");
+            Utils.append(getJS(), "var bounds = new OpenLayers.Bounds(",
+                         bounds.getX(), ",", bounds.getY(), ",",
+                         (bounds.getX() + bounds.getWidth()), ",",
+                         (bounds.getY() + bounds.getHeight()), ");\n");
+            Utils.append(getJS(), mapVarName, ".centerOnMarkers(bounds, ",
+                         force, ");\n");
         } else {
             center();
         }
@@ -1229,7 +1240,7 @@ public class MapInfo {
      * Center the map
      */
     public void center() {
-        getJS().append(mapVarName + ".centerOnMarkers(null);\n");
+        Utils.append(getJS(), mapVarName, ".centerOnMarkers(null);\n");
     }
 
     /**
@@ -1262,9 +1273,9 @@ public class MapInfo {
      */
     public void centerOn(double north, double west, double south,
                          double east) {
-        getJS().append("var bounds = new OpenLayers.Bounds(" + west + ","
-                       + south + "," + east + "," + north + ");\n");
-        getJS().append(mapVarName + ".centerOnMarkers(bounds);\n");
+        Utils.append(getJS(), "var bounds = new OpenLayers.Bounds(", west,
+                     ",", south, ",", east, ",", north, ");\n");
+        Utils.append(getJS(), mapVarName, ".centerOnMarkers(bounds);\n");
     }
 
 

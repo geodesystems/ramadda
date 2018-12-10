@@ -125,7 +125,8 @@ map-colorBar="blue_white_red"
 map-strokeColor="black"
 map-sizeBy="B01001_001E"
 }}
-:note Blue - smaller values. Red - larger values.
+{{label id="census.children.label" wikify="true" text=":note Blue - smaller values. Red - larger values."}}
+
 +row
 +col-md-6
 :heading Under 6 living with two parents
@@ -187,7 +188,7 @@ Median income
 <wiki><![CDATA[
 +section title={{name}} #
 {{group showMenu="true" layoutColumns="2" layoutType="table" showTitle="false" }}
-:note Colored by percentage race from blue (higher) to white (lower). Sized by median income.
+{{label id="census.race.label" wikify="true" text=":note Colored by percentage race from blue (higher) to white (lower). Sized by median income."}}
 +row
 +col-md-4
 {{display type="map" layoutHere="true"   height="400" colorBy="B01001A_001E"  title="% White" showTitle="true"   sizeBy="B06011_001E" colorBar="blues" }}

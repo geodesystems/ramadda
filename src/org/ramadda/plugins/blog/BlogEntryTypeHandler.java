@@ -31,6 +31,7 @@ import org.ramadda.sql.SqlUtil;
 import org.ramadda.sql.SqlUtil;
 
 import org.ramadda.util.HtmlUtils;
+import org.ramadda.util.Utils;
 
 
 import org.w3c.dom.*;
@@ -100,7 +101,7 @@ public class BlogEntryTypeHandler extends ExtensibleGroupTypeHandler {
         if ((values != null) && (values.length > 0) && (values[0] != null)) {
             String extra = ((String) values[0]).trim();
 
-            return HtmlUtils.concat(entry.getDescription(), extra);
+            return Utils.concatString(entry.getDescription(), extra);
         }
 
         return entry.getDescription();

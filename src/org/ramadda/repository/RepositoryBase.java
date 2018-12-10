@@ -18,6 +18,7 @@ package org.ramadda.repository;
 
 
 import org.ramadda.util.HtmlUtils;
+import org.ramadda.util.Utils;
 
 import java.text.SimpleDateFormat;
 
@@ -627,7 +628,7 @@ public class RepositoryBase implements Constants, RepositorySource {
      * @return _more_
      */
     public String getFileUrl(String f) {
-        return HtmlUtils.concat(urlBase, f);
+        return Utils.concatString(urlBase, f);
     }
 
     /**

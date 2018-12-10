@@ -5128,10 +5128,10 @@ public class EntryManager extends RepositoryManager {
                         : "");
             } else {
                 if (textFromUser.startsWith("<wiki>")) {
-                    textFromUser = HtmlUtils.concat("<wiki>", extraDesc,
+                    textFromUser = Utils.concatString("<wiki>", extraDesc,
                             textFromUser.substring("<wiki>".length()));
                 } else {
-                    textFromUser = HtmlUtils.concat(extraDesc, textFromUser);
+                    textFromUser = Utils.concatString(extraDesc, textFromUser);
                 }
             }
         } else {
@@ -6220,7 +6220,7 @@ public class EntryManager extends RepositoryManager {
         if (forTreeView) {
             String label = getEntryListName(request, entry);
             label = label.replace("'", "\\'");
-            url = HtmlUtils.concat("javascript:",
+            url = Utils.concatString("javascript:",
                                    HtmlUtils.call("treeViewClick",
                                        HtmlUtils.jsMakeArgs(true,
                                            entry.getId(), url, label)));
@@ -6261,11 +6261,11 @@ public class EntryManager extends RepositoryManager {
                                     HtmlUtils.squote(getDownArrowIcon()))));
 
 
-            prefix = HtmlUtils.concat(HtmlUtils.open(HtmlUtils.TAG_SPAN,
+            prefix = Utils.concatString(HtmlUtils.open(HtmlUtils.TAG_SPAN,
                     "class",
                     "entry-arrow"), HtmlUtils.img(getRightArrowIcon(),
                         msg(message),
-                        HtmlUtils.concat(HtmlUtils.id("img_" + uid),
+                                                  Utils.concatString(HtmlUtils.id("img_" + uid),
                                          imgClick)), HtmlUtils.close("span"));
         }
 
@@ -6339,7 +6339,7 @@ public class EntryManager extends RepositoryManager {
         }
 
         String img = HtmlUtils.img(entryIcon, imgText.toString(),
-                                   HtmlUtils.concat(HtmlUtils.id(iconId),
+                                   Utils.concatString(HtmlUtils.id(iconId),
                                        sourceEvent.toString()));
 
         StringBuilder sb = new StringBuilder();
@@ -6365,7 +6365,7 @@ public class EntryManager extends RepositoryManager {
         } else {
             HtmlUtils.span(
                 sb, linkText,
-                HtmlUtils.concat(
+                Utils.concatString(
                     targetEvent.toString(),
                     HtmlUtils.cssClass("entry-link")));
         }

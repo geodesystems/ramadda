@@ -88,6 +88,9 @@ public class Entry implements Cloneable {
     /** the description */
     private String description = "";
 
+    /** _more_          */
+    private String snippet;
+
     /** the parent entry */
     private Entry parentEntry;
 
@@ -1859,6 +1862,27 @@ public class Entry implements Cloneable {
     public String getDescription() {
         return description;
     }
+
+    /**
+     * Set the Snippet property.
+     *
+     * @param value The new value for Snippet
+     */
+    public void setSnippet(String value) {
+        snippet = value;
+    }
+
+    /**
+     * Get the Snippet property.
+     *
+     * @return The Snippet
+     */
+    public String getSnippet() {
+        return snippet;
+    }
+
+
+
 
     /**
      * Set the Id property.

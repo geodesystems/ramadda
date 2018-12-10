@@ -370,8 +370,7 @@ public class PageHandler extends RepositoryManager {
             }
         }
 
-        contents.append(result.getStringContent());
-        contents.append(jsContent);
+        Utils.append(contents, result.getStringContent(), jsContent);
         String content = contents.toString();
 
         String head    = (String) result.getProperty(PROP_HTML_HEAD);
@@ -440,8 +439,7 @@ public class PageHandler extends RepositoryManager {
             MACRO_LOGO_URL, logoUrl, MACRO_LOGO_IMAGE, logoImage,
             MACRO_HEADER_IMAGE, getHeaderIcon(), MACRO_HEADER_TITLE,
             pageTitle, MACRO_LINKS, menuHtml, MACRO_REPOSITORY_NAME,
-            repository.getRepositoryName(), MACRO_FOOTER,
-            repository.getProperty(PROP_HTML_FOOTER, BLANK), MACRO_TITLE,
+            repository.getRepositoryName(), MACRO_FOOTER, footer, MACRO_TITLE,
             result.getTitle(), MACRO_BOTTOM, result.getBottomHtml(),
             MACRO_SEARCH_URL, getSearchManager().getSearchUrl(request),
             MACRO_CONTENT, content, MACRO_ENTRY_HEADER, entryHeader,
@@ -460,15 +458,13 @@ public class PageHandler extends RepositoryManager {
             values.put(macros[i], macros[i + 1]);
         }
         for (String property : htmlTemplate.getPropertyIds()) {
-            values.put("${" + property + "}",
+            values.put(Utils.concatString("${", property, "}"),
                        getRepository().getProperty(property, ""));
         }
 
         if (htmlTemplate.hasMacro(MACRO_FAVORITES)) {
             values.put(MACRO_FAVORITES, getFavorites(request, htmlTemplate));
         }
-
-
 
         StringBuilder sb = new StringBuilder();
         //Toks are [html,macro,html,macro,...,html]
@@ -1522,7 +1518,7 @@ public class PageHandler extends RepositoryManager {
 
         }
 
-        return HtmlUtils.concat(MSG_PREFIX, msg, MSG_SUFFIX);
+        return Utils.concatString(MSG_PREFIX, msg, MSG_SUFFIX);
     }
 
     /**
@@ -1540,7 +1536,7 @@ public class PageHandler extends RepositoryManager {
             return msg;
         }
 
-        return HtmlUtils.concat(msg(msg), ":", HtmlUtils.space(1));
+        return Utils.concatString(msg(msg), ":", HtmlUtils.space(1));
     }
 
     /**
@@ -3655,17 +3651,20 @@ public class PageHandler extends RepositoryManager {
         }
     }
 
-    /** _more_          */
+    /** _more_ */
     private boolean showCreateDate;
 
-    /** _more_          */
+    /** _more_ */
     private String shortDateFormat;
 
-    /** _more_          */
+    /** _more_ */
     private String createdDisplayMode;
 
-    /** _more_          */
+    /** _more_ */
     private String myLogoImage;
+
+    /** _more_          */
+    private String footer;
 
     /**
      * _more_
@@ -3681,7 +3680,7 @@ public class PageHandler extends RepositoryManager {
         createdDisplayMode =
             getRepository().getProperty(PROP_CREATED_DISPLAY_MODE,
                                         "none").trim();
-
+        footer      = repository.getProperty(PROP_HTML_FOOTER, BLANK);
         myLogoImage = getRepository().getProperty(PROP_LOGO_IMAGE, null);
     }
 

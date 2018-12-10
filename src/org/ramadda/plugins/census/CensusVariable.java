@@ -110,7 +110,7 @@ public class CensusVariable implements Comparable, Cloneable {
             conceptsSeen.add(conceptId);
             concepts.add(conceptId);
         }
-        corpus = HtmlUtils.concat(id, "-", label, "-", concept).toLowerCase();
+        corpus = Utils.concatString(id, "-", label, "-", concept).toLowerCase();
     }
 
     /**

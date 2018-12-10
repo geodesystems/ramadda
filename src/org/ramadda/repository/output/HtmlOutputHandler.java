@@ -1566,7 +1566,7 @@ public class HtmlOutputHandler extends OutputHandler {
                             + label);
             }
 
-            url = HtmlUtils.concat("javascript:",
+            url = Utils.concatString("javascript:",
                                    HtmlUtils.call("treeViewClick",
                                        HtmlUtils.jsMakeArgs(true,
                                            child.getId(), url, label)));

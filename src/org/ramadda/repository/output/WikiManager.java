@@ -94,6 +94,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                             new WikiTag(WIKI_TAG_DATE_CREATE,attrs(ATTR_FORMAT,RepositoryBase.DEFAULT_TIME_FORMAT)), 
                             new WikiTag(WIKI_TAG_DATE_CHANGE,attrs(ATTR_FORMAT,RepositoryBase.DEFAULT_TIME_FORMAT)), 
 
+                            new WikiTag(WIKI_TAG_LABEL, attrs(ATTR_TEXT,"",ATTR_ID,"arbitrary id to match with property")),
                             new WikiTag(WIKI_TAG_LINK, attrs(ATTR_TITLE,"","button","false")),
                             new WikiTag(WIKI_TAG_HTML),
                             new WikiTag(WIKI_TAG_SIMPLE, attrs(ATTR_TEXTPOSITION, POS_LEFT)),
@@ -266,6 +267,13 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
         super(repository);
     }
 
+    private String displayImports;
+
+    @Override
+    public void initAttributes() {
+        super.initAttributes();
+        displayImports = makeDisplayImports();
+    }
 
 
     /**
@@ -1005,6 +1013,26 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
             getPageHandler().makeBreadcrumbs(request, breadcrumbs, sb);
 
             return sb.toString();
+        } else if (theTag.equals(WIKI_TAG_LABEL)) {
+            String text = Utils.getProperty(props, ATTR_TEXT, "");
+            String id   = Utils.getProperty(props, ATTR_ID, (String) null);
+            if (id != null) {
+                for (Metadata metadata :
+                        getMetadataManager().getMetadata(entry,
+                            "wiki_label")) {
+                    if (Misc.equals(id, metadata.getAttr1())) {
+                        text = metadata.getAttr2();
+
+                        break;
+                    }
+                }
+                if (wikify) {
+                    text = wikifyEntry(request, entry, text, false, null,
+                                       null, wikiUtil.getNotTags());
+                }
+            }
+
+            return text;
         } else if (theTag.equals(WIKI_TAG_LINK)) {
             boolean linkResource = Utils.getProperty(props,
                                        ATTR_LINKRESOURCE, false);
@@ -1346,14 +1374,14 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                             props);
                 }
             }
-            getEntryDisplay(request, entry, theTag, entry.getName(), jsonUrl,
-                            sb, props);
+            getEntryDisplay(request, entry, originalEntry, theTag,
+                            entry.getName(), jsonUrl, sb, props);
 
             return sb.toString();
         } else if (theTag.equals(WIKI_TAG_GROUP)
                    || theTag.equals(WIKI_TAG_GROUP_OLD)) {
-            getEntryDisplay(request, entry, theTag, entry.getName(), null,
-                            sb, props);
+            getEntryDisplay(request, entry, originalEntry, theTag,
+                            entry.getName(), null, sb, props);
 
             return sb.toString();
         } else if (theTag.equals(WIKI_TAG_GRAPH)) {
@@ -1370,7 +1398,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
             List<Entry> children = getEntries(request, originalEntry,
                                        mainEntry, props);
             int    height = Utils.getProperty(props, ATTR_HEIGHT, 150);
-            String style  = "height: " + height + "px;";
+            String style  = Utils.concatString("height: ", height, "px;");
             getCalendarOutputHandler().makeTimeline(request, mainEntry,
                     children, sb, style, props);
 
@@ -1378,129 +1406,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
         } else if (theTag.equals(WIKI_TAG_MAP)
                    || theTag.equals(WIKI_TAG_EARTH)
                    || theTag.equals(WIKI_TAG_MAPENTRY)) {
-            int     width      = getDimension(props, ATTR_WIDTH, -100);
-            int     height     = getDimension(props, ATTR_HEIGHT, 300);
-            boolean justPoints = Utils.getProperty(props, "justpoints",
-                                     false);
-            boolean listEntries = Utils.getProperty(props, ATTR_LISTENTRIES,
-                                      false);
-            boolean showCheckbox = Utils.getProperty(props, "showCheckbox",
-                                       false);
-            boolean showSearch = Utils.getProperty(props, "showSearch",
-                                     false);
-            boolean checkboxOn = Utils.getProperty(props, "checkboxOn", true);
-            boolean googleEarth =
-                theTag.equals(WIKI_TAG_EARTH)
-                && getMapManager().isGoogleEarthEnabled(request);
-
-            List<Entry> children;
-            if (theTag.equals(WIKI_TAG_MAPENTRY)) {
-                children = new ArrayList<Entry>();
-                children.add(entry);
-            } else {
-                children = getEntries(request, originalEntry, entry, props,
-                                      false, "");
-                if (children.isEmpty()) {
-                    children.add(entry);
-                }
-            }
-
-
-
-
-
-
-            if (children.size() == 0) {
-                String message = Utils.getProperty(props, ATTR_MESSAGE,
-                                     (String) null);
-                if (message != null) {
-                    return message;
-                }
-            } else {
-                boolean anyHaveLatLon = false;
-                for (Entry child : children) {
-                    if (child.hasLocationDefined()
-                            || child.hasAreaDefined()) {
-                        anyHaveLatLon = true;
-
-                        break;
-                    }
-                }
-                if ( !anyHaveLatLon) {
-                    String message = Utils.getProperty(props, ATTR_MESSAGE,
-                                         (String) null);
-                    if (message != null) {
-                        return message;
-                    }
-                }
-            }
-
-            checkHeading(request, props, sb);
-            Request newRequest = makeRequest(request, props);
-            if (googleEarth) {
-                getMapManager().getGoogleEarth(newRequest, children, sb,
-                        Utils.getProperty(props, ATTR_WIDTH, -1),
-                        Utils.getProperty(props, ATTR_HEIGHT, -1),
-                        listEntries, justPoints);
-            } else {
-                MapOutputHandler mapOutputHandler =
-                    (MapOutputHandler) getRepository().getOutputHandler(
-                        MapOutputHandler.OUTPUT_MAP);
-                if (mapOutputHandler == null) {
-                    return "No maps";
-                }
-
-                String icon = Utils.getProperty(props, ATTR_ICON);
-                if ((icon != null) && icon.startsWith("#")) {
-                    icon = null;
-                }
-                if (icon != null) {
-                    newRequest.put(ARG_ICON, icon);
-                }
-                if (Utils.getProperty(props, ARG_MAP_ICONSONLY, false)) {
-                    newRequest.put(ARG_MAP_ICONSONLY, "true");
-                }
-
-                Hashtable mapProps = new Hashtable();
-                String[]  mapArgs  = {
-                    "strokeColor", "fillColor", "fillOpacity", "scrollToZoom",
-                    "selectOnHover", "onSelect", "showDetailsLink",
-                    "zoom:initialZoom", "layer:defaultMapLayer", "kmlLayer",
-                    "kmlLayerName"
-                };
-                for (String mapArg : mapArgs) {
-                    String key = mapArg;
-                    if (mapArg.indexOf(":") >= 0) {
-                        List<String> toks = StringUtil.splitUpTo(mapArg, ":",
-                                                2);
-                        mapArg = toks.get(0);
-                        key    = toks.get(1);
-                    }
-                    String v = Utils.getProperty(props, key);
-                    if (v != null) {
-                        mapProps.put(mapArg, Json.quote(v));
-                    }
-                }
-
-                String mapSet = Utils.getProperty(props, "mapSettings",
-                                    (String) null);
-                if (mapSet != null) {
-                    List<String> msets = StringUtil.split(mapSet, ",");
-                    for (int i = 0; i < msets.size() - 1; i += 2) {
-                        mapProps.put(msets.get(i),
-                                     Json.quote(msets.get(i + 1)));
-                    }
-                }
-
-                MapInfo map = getMapManager().getMap(newRequest, entry,
-                                  children, sb, width, height, mapProps,
-                                  props);
-
-                if (icon != null) {
-                    newRequest.remove(ARG_ICON);
-                }
-                newRequest.remove(ARG_MAP_ICONSONLY);
-            }
+            handleMapTag(request, entry, originalEntry, theTag, props, sb);
 
             return sb.toString();
         } else if (theTag.equals(WIKI_TAG_TOOLS)) {
@@ -1623,30 +1529,30 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                                      APPLY_PREFIX + ATTR_BORDERCOLOR, "#000");
 
             if (border > 0) {
-                style.append(" border: " + border + "px solid " + bordercolor
-                             + "; ");
+                Utils.append(style, " border: ", border, "px solid ",
+                             bordercolor, "; ");
             }
 
             if (padding > 0) {
-                style.append(" padding: " + padding + "px; ");
+                Utils.append(style, " padding: ", padding, "px; ");
             }
 
             if (margin > 0) {
-                style.append(" margin: " + margin + "px; ");
+                Utils.append(style, " margin: ", margin, "px; ");
             }
 
 
             int maxHeight = Utils.getProperty(props,
                                 APPLY_PREFIX + "maxheight", -1);
             if (maxHeight > 0) {
-                style.append(" max-height: " + maxHeight
-                             + "px;  overflow-y: auto; ");
+                Utils.append(style, " max-height: ", maxHeight,
+                             "px;  overflow-y: auto; ");
             }
 
             int minHeight = Utils.getProperty(props,
                                 APPLY_PREFIX + "minheight", -1);
             if (minHeight > 0) {
-                style.append(" min-height: " + minHeight + "px; ");
+                Utils.append(style, " min-height: ", minHeight, "px; ");
             }
 
 
@@ -1698,7 +1604,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                 includeLinkAfter = true;
             }
 
-            String divExtra = HtmlUtils.concat(HtmlUtils.cssClass(divClass),
+            String divExtra = Utils.concatString(HtmlUtils.cssClass(divClass),
                                   HtmlUtils.style(style.toString()));
             int colCnt = 0;
 
@@ -1899,7 +1805,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                             ? getEntryDisplayName(child)
                             : linklabel);
 
-                    content.append(HtmlUtils.br());
+                    //                    content.append(HtmlUtils.br());
                     content.append(HtmlUtils.leftRight("", href));
                 }
                 contents.add(content.toString());
@@ -1937,17 +1843,17 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
 
                 StringBuilder innerStyle = new StringBuilder();
                 if (innerHeight > 0) {
-                    HtmlUtils.concat(innerStyle, "height:",
+                    Utils.concatBuff(innerStyle, "height:",
                                      innerHeight + "px;");
                     innerStyle.append("overflow-y: auto;");
                 }
                 if (minHeight > 0) {
-                    HtmlUtils.concat(innerStyle, "min-height:",
+                    Utils.concatBuff(innerStyle, "min-height:",
                                      minHeight + "px;");
                     innerStyle.append("overflow-y: auto;");
                 }
                 if (maxHeight > 0) {
-                    HtmlUtils.concat(innerStyle, "max-height:",
+                    Utils.concatBuff(innerStyle, "max-height:",
                                      maxHeight + "px;");
                     innerStyle.append("overflow-y: auto;");
                 }
@@ -1996,7 +1902,6 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                         displayHtml = snippet += displayHtml;
                     }
 
-
                     HtmlUtils.div(sb, displayHtml,
                                   HtmlUtils.cssClass("bs-inner")
                                   + HtmlUtils.attr("style",
@@ -2028,7 +1933,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                 HtmlUtils.open(sb, "style",
                                HtmlUtils.attr("type", "text/css"));
                 // need to set the height of the div to include the nav bar
-                HtmlUtils.concat(sb, "#", slideId, " { width: ",
+                Utils.concatBuff(sb, "#", slideId, " { width: ",
                                  width + "; height: " + (height + 30), "}\n");
 
 
@@ -2467,6 +2372,156 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
      * _more_
      *
      * @param request _more_
+     * @param entry _more_
+     * @param originalEntry _more_
+     * @param theTag _more_
+     * @param props _more_
+     * @param sb _more_
+     *
+     * @return _more_
+     *
+     * @throws Exception _more_
+     */
+    public MapInfo handleMapTag(Request request, Entry entry,
+                                Entry originalEntry, String theTag,
+                                Hashtable props, Appendable sb)
+            throws Exception {
+
+        int     width      = getDimension(props, ATTR_WIDTH, -100);
+        int     height     = getDimension(props, ATTR_HEIGHT, 300);
+        boolean justPoints = Utils.getProperty(props, "justpoints", false);
+        boolean listEntries = Utils.getProperty(props, ATTR_LISTENTRIES,
+                                  false);
+        boolean showCheckbox = Utils.getProperty(props, "showCheckbox",
+                                   false);
+        boolean showSearch = Utils.getProperty(props, "showSearch", false);
+        boolean checkboxOn = Utils.getProperty(props, "checkboxOn", true);
+        boolean googleEarth =
+            theTag.equals(WIKI_TAG_EARTH)
+            && getMapManager().isGoogleEarthEnabled(request);
+
+        List<Entry> children;
+        if (theTag.equals(WIKI_TAG_MAPENTRY)) {
+            children = new ArrayList<Entry>();
+            children.add(entry);
+        } else {
+            children = getEntries(request, originalEntry, entry, props,
+                                  false, "");
+            if (children.isEmpty()) {
+                children.add(entry);
+            }
+        }
+
+
+
+
+
+
+        if (children.size() == 0) {
+            String message = Utils.getProperty(props, ATTR_MESSAGE,
+                                 (String) null);
+            if (message != null) {
+                sb.append(message);
+
+                return null;
+            }
+        } else {
+            boolean anyHaveLatLon = false;
+            for (Entry child : children) {
+                if (child.hasLocationDefined() || child.hasAreaDefined()) {
+                    anyHaveLatLon = true;
+
+                    break;
+                }
+            }
+            if ( !anyHaveLatLon) {
+                String message = Utils.getProperty(props, ATTR_MESSAGE,
+                                     (String) null);
+                if (message != null) {
+                    sb.append(message);
+
+                    return null;
+                }
+            }
+        }
+
+        checkHeading(request, props, sb);
+        Request newRequest = makeRequest(request, props);
+        if (googleEarth) {
+            getMapManager().getGoogleEarth(
+                newRequest, children, sb,
+                Utils.getProperty(props, ATTR_WIDTH, -1),
+                Utils.getProperty(props, ATTR_HEIGHT, -1), listEntries,
+                justPoints);
+        } else {
+            MapOutputHandler mapOutputHandler =
+                (MapOutputHandler) getRepository().getOutputHandler(
+                    MapOutputHandler.OUTPUT_MAP);
+            if (mapOutputHandler == null) {
+                sb.append("No maps");
+
+                return null;
+            }
+
+            String icon = Utils.getProperty(props, ATTR_ICON);
+            if ((icon != null) && icon.startsWith("#")) {
+                icon = null;
+            }
+            if (icon != null) {
+                newRequest.put(ARG_ICON, icon);
+            }
+            if (Utils.getProperty(props, ARG_MAP_ICONSONLY, false)) {
+                newRequest.put(ARG_MAP_ICONSONLY, "true");
+            }
+
+            Hashtable mapProps = new Hashtable();
+            String[]  mapArgs  = {
+                "strokeColor", "fillColor", "fillOpacity", "scrollToZoom",
+                "selectOnHover", "onSelect", "showDetailsLink",
+                "zoom:initialZoom", "layer:defaultMapLayer", "kmlLayer",
+                "kmlLayerName"
+            };
+            for (String mapArg : mapArgs) {
+                String key = mapArg;
+                if (mapArg.indexOf(":") >= 0) {
+                    List<String> toks = StringUtil.splitUpTo(mapArg, ":", 2);
+                    mapArg = toks.get(0);
+                    key    = toks.get(1);
+                }
+                String v = Utils.getProperty(props, key);
+                if (v != null) {
+                    mapProps.put(mapArg, Json.quote(v));
+                }
+            }
+
+            String mapSet = Utils.getProperty(props, "mapSettings",
+                                (String) null);
+            if (mapSet != null) {
+                List<String> msets = StringUtil.split(mapSet, ",");
+                for (int i = 0; i < msets.size() - 1; i += 2) {
+                    mapProps.put(msets.get(i), Json.quote(msets.get(i + 1)));
+                }
+            }
+
+            MapInfo map = getMapManager().getMap(newRequest, entry, children,
+                              sb, width, height, mapProps, props);
+
+            if (icon != null) {
+                newRequest.remove(ARG_ICON);
+            }
+            newRequest.remove(ARG_MAP_ICONSONLY);
+
+            return map;
+        }
+
+        return null;
+
+    }
+
+    /**
+     * _more_
+     *
+     * @param request _more_
      * @param props _more_
      * @param sb _more_
      *
@@ -2492,9 +2547,13 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
      * @return _more_
      */
     public String getSnippet(Request request, Entry child) {
-        String snippet = StringUtil.findPattern(child.getDescription(),
-                             "(?s)<snippet>(.*)</snippet>");
+        String snippet = child.getSnippet();
+        if (snippet != null) {
+            return snippet;
+        }
 
+        snippet = StringUtil.findPattern(child.getDescription(),
+                                         "(?s)<snippet>(.*)</snippet>");
 
         if (snippet == null) {
             snippet = StringUtil.findPattern(child.getDescription(),
@@ -2506,6 +2565,8 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
         } else {
             snippet = "";
         }
+
+        child.setSnippet(snippet);
 
         return snippet;
     }
@@ -4683,6 +4744,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
      *
      * @param request _more_
      * @param entry _more_
+     * @param originalEntry _more_
      * @param tag _more_
      * @param name _more_
      * @param url _more_
@@ -4691,9 +4753,9 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
      *
      * @throws Exception _more_
      */
-    public void getEntryDisplay(Request request, Entry entry, String tag,
-                                String name, String url, StringBuilder sb,
-                                Hashtable props)
+    public void getEntryDisplay(Request request, Entry entry,
+                                Entry originalEntry, String tag, String name,
+                                String url, StringBuilder sb, Hashtable props)
             throws Exception {
 
         this.addDisplayImports(request, sb);
@@ -4930,15 +4992,13 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
         String  anotherDivId = (String) props.get("divid");
         boolean layoutHere   = Utils.getProperty(props, "layoutHere", true);
         if ((anotherDivId != null) || layoutHere) {
-            propList.add("layoutHere");
-            propList.add("true");
+            Utils.add(propList, "layoutHere", "true");
             if (anotherDivId == null) {
                 anotherDivId = HtmlUtils.getUniqueId("displaydiv");
             }
             anotherDivId = anotherDivId.replace("$entryid", entry.getId());
             sb.append(HtmlUtils.div("", HtmlUtils.id(anotherDivId)));
-            propList.add("divid");
-            propList.add(Json.quote(anotherDivId));
+            Utils.add(propList, "divid", Json.quote(anotherDivId));
         }
         props.remove("layoutHere");
 
@@ -4952,8 +5012,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
         }) {
             String value = Utils.getProperty(props, arg, (String) null);
             if (value != null) {
-                propList.add(arg);
-                propList.add(Json.quote(value));
+                Utils.add(propList, arg, Json.quote(value));
             }
             props.remove(arg);
         }
@@ -4963,41 +5022,45 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
         defaultLayer = Utils.getProperty(props, "defaultLayer",
                                          (String) null);
         if (defaultLayer != null) {
-            propList.add("defaultMapLayer");
-            propList.add(Json.quote(defaultLayer));
+            Utils.add(propList, "defaultMapLayer", Json.quote(defaultLayer));
             props.remove("defaultLayer");
         }
 
         String displayType = Utils.getProperty(props, "type", "linechart");
         props.remove("type");
-
-
         for (Enumeration keys = props.keys(); keys.hasMoreElements(); ) {
             Object key   = keys.nextElement();
             Object value = props.get(key);
-            propList.add(key.toString());
-            propList.add(Json.quote(value.toString()));
+            Utils.add(propList, key, Json.quote(value.toString()));
         }
 
 
 
+        boolean isMap = displayType.equals("map");
+        if (false && isMap) {
+            String mapVar = Utils.getProperty(props, ATTR_MAPVAR);
+            if (mapVar == null) {
+                mapVar = MapInfo.makeMapVar();
+                props.put(ATTR_MAPVAR, mapVar);
+            }
+            Utils.add(propList, "map", mapVar);
+            MapInfo mapInfo = handleMapTag(request, entry, originalEntry,
+                                           "map", props, sb);
+        }
 
-        js.append(
-            "\n//This gets the global display manager or creates it if not created\n");
-        js.append("var displayManager = getOrCreateDisplayManager("
-                  + HtmlUtils.quote(mainDivId) + ","
-                  + Json.map(topProps, false) + ");\n");
-
-        propList.add("entryId");
-        propList.add(HtmlUtils.quote(entry.getId()));
-
-
+        HtmlUtils.commentJS(
+            js,
+            "This gets the global display manager or creates it if not created");
+        Utils.concatBuff(js, "var displayManager = getOrCreateDisplayManager(",
+                     HtmlUtils.quote(mainDivId), ",",
+                     Json.map(topProps, false), ");\n");
+        Utils.add(propList, "entryId", HtmlUtils.quote(entry.getId()));
         if ((url != null) && Utils.getProperty(props, "includeData", true)) {
-            String pointProps = "{entryId:'" + entry.getId() + "'}";
-            propList.add("data");
-            propList.add("new  PointData(" + HtmlUtils.quote(name)
-                         + ",  null,null," + HtmlUtils.quote(url) + ","
-                         + pointProps + ")");
+            Utils.add(propList, "data",
+                      Utils.concatString("new  PointData(", HtmlUtils.quote(name),
+                                   ",  null,null,", HtmlUtils.quote(url),
+                                   ",", "{entryId:'", entry.getId(), "'}",
+                                   ")"));
         }
 
         if (displayType.equals("map")) {
@@ -5011,60 +5074,54 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                 String geojsonNames = null;
 
                 for (Metadata metadata : metadataList) {
-                    if (!Utils.stringDefined(metadata.getAttr1())) {
+                    if ( !Utils.stringDefined(metadata.getAttr1())) {
                         continue;
                     }
                     Entry mapEntry =
                         (Entry) getEntryManager().getEntry(request,
-                                                           metadata.getAttr1());
-                    if(mapEntry == null || !(mapEntry.getTypeHandler()
-                            .isType("geo_shapefile") || mapEntry
-                            .getTypeHandler()
-                                             .isType("geo_geojson"))) {
+                            metadata.getAttr1());
+                    if ((mapEntry == null)
+                            || !(mapEntry.getTypeHandler()
+                                .isType("geo_shapefile") || mapEntry
+                                .getTypeHandler().isType("geo_geojson"))) {
                         continue;
                     }
                     if (mapEntry.getTypeHandler().isType("geo_shapefile")) {
                         if (kmlIds == null) {
-                            kmlIds = mapEntry.getId();
-                            kmlNames = mapEntry.getName().replaceAll(",", " ");
+                            kmlIds   = mapEntry.getId();
+                            kmlNames = mapEntry.getName().replaceAll(",",
+                                    " ");
                         } else {
                             kmlIds += "," + mapEntry.getId();
-                            kmlNames += "," + mapEntry.getName().replaceAll(",",   " ");
+                            kmlNames += ","
+                                        + mapEntry.getName().replaceAll(",",
+                                            " ");
                         }
                     } else {
                         if (geojsonIds == null) {
                             geojsonIds = mapEntry.getId();
-                            geojsonNames =
-                                mapEntry.getName().replaceAll(",",
-                                                              " ");
+                            geojsonNames = mapEntry.getName().replaceAll(",",
+                                    " ");
                         } else {
                             geojsonIds += "," + mapEntry.getId();
                             geojsonNames +=
-                                ","
-                                + mapEntry.getName().replaceAll(",",
-                                                                " ");
+                                "," + mapEntry.getName().replaceAll(",", " ");
                         }
                     }
-                    if(Misc.equals(metadata.getAttr2(),"true")) {
-                        propList.add("displayAsMap");
-                        propList.add("true");
-                        propList.add("pruneFeatures");
-                        propList.add("true");
+                    if (Misc.equals(metadata.getAttr2(), "true")) {
+                        Utils.add(propList, "displayAsMap", "true",
+                                  "pruneFeatures", "true");
                     }
 
                     if (kmlIds != null) {
-                        propList.add("kmlLayer");
-                        propList.add(Json.quote(kmlIds));
-                        propList.add("kmlLayerName");
-                        propList.add(Json.quote(kmlNames));
+                        Utils.add(propList, "kmlLayer", Json.quote(kmlIds),
+                                  "kmlLayerName", Json.quote(kmlNames));
                     }
                     if (geojsonIds != null) {
-                        propList.add("geojsonLayer");
-                        propList.add(Json.quote(geojsonIds));
-                        propList.add("geojsonLayerName");
-                        propList.add(Json.quote(geojsonNames));
+                        Utils.add(propList, "geojsonLayer",
+                                  Json.quote(geojsonIds), "geojsonLayerName",
+                                  Json.quote(geojsonNames));
                     }
-
                 }
             }
         }
@@ -5094,28 +5151,31 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
         getMapManager().addMapImports(request, sb);
         if (request.getExtraProperty("initchart") == null) {
             request.putExtraProperty("initchart", "added");
-            HtmlUtils.importJS(sb,
-                               "https://www.gstatic.com/charts/loader.js");
+            sb.append(displayImports);
+        }
+    }
+
+    private String makeDisplayImports()  {
+        try {
+        Appendable sb = Utils.makeAppendable();
+        HtmlUtils.importJS(sb,"https://www.gstatic.com/charts/loader.js");
             //                    "google.load(\"visualization\", \"1\", {packages:['corechart','table','bar']});\n"));
-            HtmlUtils.script(
-                sb,
-                "google.charts.load(\"43\", {packages:['corechart','table','bar']});\n");
-            HtmlUtils.importJS(sb, getHtdocsUrl("/lib/d3/d3.min.js"));
+        HtmlUtils.script(sb, "google.charts.load(\"43\", {packages:['corechart','table','bar']});\n");
+        HtmlUtils.importJS(sb, getHtdocsUrl("/lib/d3/d3.min.js"));
+        HtmlUtils.importJS(
+                           sb, getHtdocsUrl("/lib/jquery.handsontable.full.min.js"));
+        HtmlUtils.cssLink(
+                          sb, getHtdocsUrl("/lib/jquery.handsontable.full.min.css"));
+
+        //Put this here after the google load
+        HtmlUtils.importJS(sb, getHtdocsUrl("/db/dom-drag.js"));
+        HtmlUtils.importJS(sb, getHtdocsUrl("/db/dom-drag.js"));
+        if (getRepository().getMinifiedOk()) {
             HtmlUtils.importJS(
-                sb, getHtdocsUrl("/lib/jquery.handsontable.full.min.js"));
-            HtmlUtils.cssLink(
-                sb, getHtdocsUrl("/lib/jquery.handsontable.full.min.css"));
-
-            //Put this here after the google load
-            HtmlUtils.importJS(sb, getHtdocsUrl("/db/dom-drag.js"));
-            HtmlUtils.importJS(sb, getHtdocsUrl("/db/dom-drag.js"));
-
-            if (getRepository().getMinifiedOk()) {
-                HtmlUtils.importJS(
-                    sb, getHtdocsUrl("/display/display_all_mini.js"));
-                HtmlUtils.cssLink(sb, getHtdocsUrl("/display.mini.css"));
-            } else {
-                HtmlUtils.cssLink(sb, getHtdocsUrl("/display.css"));
+                               sb, getHtdocsUrl("/display/display_all_mini.js"));
+            HtmlUtils.cssLink(sb, getHtdocsUrl("/display.mini.css"));
+        } else {
+            HtmlUtils.cssLink(sb, getHtdocsUrl("/display.css"));
                 HtmlUtils.importJS(sb, getHtdocsUrl("/display/pointdata.js"));
                 HtmlUtils.importJS(sb, getHtdocsUrl("/display/utils.js"));
                 HtmlUtils.importJS(
@@ -5145,6 +5205,9 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                     HtmlUtils.importJS(sb, getFileUrl(include));
                 }
             }
+            return sb.toString();
+        } catch (Exception exc) {
+            throw new IllegalArgumentException(exc);
         }
     }
 
@@ -5153,21 +5216,13 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
     /**
      * Create an attribute with the name and value
      *
-     *
      * @param sb _more_
      * @param name  attribute name
      * @param value  value
      *
-     * @return  the attribute string
      */
     private static void attr(StringBuilder sb, String name, String value) {
-        sb.append(" ");
-        sb.append(name);
-        sb.append("=");
-        sb.append("&quote;");
-        sb.append(value);
-        sb.append("&quote;");
-        sb.append(" ");
+        Utils.append(sb, " ",name,"=","&quote;",value,"&quote;"," ");
     }
 
     /**
@@ -5182,7 +5237,6 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
         for (int i = 0; i < attrs.length; i += 2) {
             attr(sb, attrs[i], attrs[i + 1]);
         }
-
         return sb.toString();
     }
 
@@ -5195,7 +5249,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
      * @return  the property string
      */
     private static String prop(String prop, String args) {
-        return prop + PROP_DELIM + args;
+        return Utils.concatString(prop, PROP_DELIM ,args);
     }
 
 

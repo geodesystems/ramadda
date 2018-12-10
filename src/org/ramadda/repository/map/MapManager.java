@@ -192,10 +192,10 @@ public class MapManager extends RepositoryManager implements WikiConstants {
         return props;
     }
 
-    /** _more_          */
+    /** _more_ */
     private String defaultMapLayer;
 
-    /** _more_          */
+    /** _more_ */
     private String mapLayers;
 
     /**
@@ -1130,9 +1130,8 @@ public class MapManager extends RepositoryManager implements WikiConstants {
      * @throws Exception  problem creating map
      */
     public MapInfo getMap(Request request, Entry mainEntry,
-                          List<Entry> entriesToUse, StringBuilder sb,
-                          int width, int height, Hashtable mapProps,
-                          Hashtable props)
+                          List<Entry> entriesToUse, Appendable sb, int width,
+                          int height, Hashtable mapProps, Hashtable props)
             throws Exception {
 
         boolean doCategories = Utils.getProperty(props, "doCategories", true);

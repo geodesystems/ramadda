@@ -211,6 +211,7 @@ public class WikiPageTypeHandler extends ExtensibleGroupTypeHandler {
     @Override
     public boolean convertIdsFromImport(Entry newEntry,
                                         List<String[]> idList) {
+        System.err.println("WikiPage.convertIds:" + idList);
         boolean  changed = super.convertIdsFromImport(newEntry, idList);
         Object[] values  = newEntry.getValues();
         if (values != null) {

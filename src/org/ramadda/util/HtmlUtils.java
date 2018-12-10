@@ -2367,7 +2367,7 @@ public class HtmlUtils {
      */
     public static String labeledRadio(String name, String value,
                                       boolean checked, String label) {
-        return concat(tag(TAG_INPUT,
+        return Utils.concatString(tag(TAG_INPUT,
                           attrs( /*ATTR_CLASS, CLASS_RADIO,*/ATTR_TYPE,
                               TYPE_RADIO, ATTR_NAME, name, ATTR_VALUE,
                               value) + (checked
@@ -2571,7 +2571,7 @@ public class HtmlUtils {
      * @return _more_
      */
     public static String href(String url, String label, String extra) {
-        return tag(TAG_A, concat(attrs(ATTR_HREF, url), extra), label);
+        return tag(TAG_A, Utils.concatString(attrs(ATTR_HREF, url), extra), label);
     }
 
 
@@ -2585,7 +2585,7 @@ public class HtmlUtils {
      */
     public static void href(Appendable sb, String url, String label,
                             String extra) {
-        tag(sb, TAG_A, concat(attrs(ATTR_HREF, url), extra), label);
+        tag(sb, TAG_A, Utils.concatString(attrs(ATTR_HREF, url), extra), label);
     }
 
 
@@ -3846,39 +3846,6 @@ public class HtmlUtils {
     }
 
 
-
-    /**
-     * _more_
-     *
-     * @param args _more_
-     *
-     * @return _more_
-     */
-    public static String concat(String... args) {
-        //        if(args.length ==2) return args[0]+args[1];
-        StringBuilder sb = new StringBuilder("");
-        concat(sb, args);
-
-        return sb.toString();
-    }
-
-    /**
-     * _more_
-     *
-     * @param sb _more_
-     * @param args _more_
-     */
-    public static void concat(Appendable sb, String... args) {
-        try {
-            for (String s : args) {
-                sb.append(s);
-            }
-        } catch (IOException ioe) {
-            throw new RuntimeException(ioe);
-        }
-    }
-
-
     /**
      *  Return a String with n1=&quot;v1&quot n2=&quot;v2&quot.
      *
@@ -4144,6 +4111,32 @@ public class HtmlUtils {
     }
 
 
+    /**
+     * _more_
+     *
+     * @param js _more_
+     * @param args _more_
+     */
+    public static void commentJS(Appendable js, String... args) {
+        try {
+            js.append("\n");
+            if (args.length == 1) {
+                Utils.append(js, "//", args[0]);
+            } else {
+                js.append("/*");
+                for (String s : args) {
+                    Utils.append(js, "*", s, "\n");
+                }
+                js.append("*/");
+            }
+            js.append("\n");
+        } catch (IOException ioe) {
+            throw new RuntimeException(ioe);
+        }
+
+    }
+
+
 
 
 
@@ -4201,7 +4194,7 @@ public class HtmlUtils {
      * @return _more_
      */
     public static String callln(String function, String args) {
-        return concat(function, "(", args, ");\n");
+        return Utils.concatString(function, "(", args, ");\n");
     }
 
 
@@ -4213,7 +4206,7 @@ public class HtmlUtils {
      * @param args _more_
      */
     public static void callln(Appendable sb, String function, String args) {
-        concat(sb, function, "(", args, ");\n");
+        Utils.concatBuff(sb, function, "(", args, ");\n");
     }
 
     /**
@@ -4542,7 +4535,7 @@ public class HtmlUtils {
         StringBuilder sb  = contentSB;
         String        img = "";
         String js = HtmlUtils.onMouseClick(call("toggleBlockVisibility",
-                        concat(squote(id), ",", squote(id + "img"), ",",
+                                                Utils.concatString(squote(id), ",", squote(id + "img"), ",",
                                squote(""), ",", squote(""))));
 
         open(sb, TAG_DIV, HtmlUtils.cssClass("hideshowblock"),
@@ -4611,7 +4604,7 @@ public class HtmlUtils {
             }
             String link = HtmlUtils.jsLink(
                               HtmlUtils.onMouseClick(
-                                  concat("toggleInlineVisibility('", id,
+                                                     Utils.concatString("toggleInlineVisibility('", id,
                                          "','", id, "img','", hideImg, "','",
                                          showImg, "')")), img + label,
                                              HtmlUtils.cssClass(
@@ -5028,10 +5021,20 @@ public class HtmlUtils {
      * @return _more_
      */
     public static String comment(String s) {
-        s = s.replaceAll("\n", " ");
-
-        return "\n<!-- " + s + " -->\n";
+        Appendable sb = Utils.makeAppendable();
+        comment(sb, s);
+        return sb.toString();
     }
+
+    public static void comment(Appendable sb, String s) {
+        try {
+            s = s.replaceAll("\n", " ");
+            Utils.concatBuff(sb, "\n<!-- ", s ," -->\n");
+        } catch(Exception exc) {
+            throw new IllegalArgumentException(exc);
+        }
+    }
+
 
     /**
      * This takes the  given String and tries to convert it to a color.

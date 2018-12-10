@@ -171,16 +171,106 @@ public class Utils {
     /**
      * _more_
      *
-     * @param sb _more_
-     * @param s _more_
+     * @return _more_
+     */
+    public static Appendable makeAppendable() {
+        return new StringBuilder();
+    }
+
+    /**
+     * _more_
+     *
+     * @param list _more_
+     * @param args _more_
      *
      * @return _more_
      */
-    public static Appendable append(Appendable sb, String s) {
+    public static List add(List list, Object... args) {
+        for (Object s : args) {
+            if (s != null) {
+                list.add(s);
+            }
+        }
+
+        return list;
+    }
+
+    /**
+     * _more_
+     *
+     * @param map _more_
+     * @param args _more_
+     *
+     * @return _more_
+     */
+    public static Hashtable put(Hashtable map, Object... args) {
+        for (int i = 0; i < args.length; i += 2) {
+            map.put(args[i], args[i + 1]);
+        }
+
+        return map;
+    }
+
+    /**
+     * _more_
+     *
+     * @param sb _more_
+     * @param args _more_
+     *
+     * @return _more_
+     */
+    public static Appendable append(Appendable sb, Object... args) {
         try {
-            sb.append(s);
+            for (Object s : args) {
+                if (s != null) {
+                    sb.append(s.toString());
+                } else {
+                    sb.append("null");
+                }
+            }
 
             return sb;
+        } catch (java.io.IOException ioe) {
+            throw new RuntimeException(ioe);
+        }
+    }
+
+    /**
+     * _more_
+     *
+     * @param args _more_
+     *
+     * @return _more_
+     */
+    public static String concatString(Object... args) {
+        try {
+            Appendable sb = makeAppendable();
+            for (Object s : args) {
+                sb.append((s != null)
+                          ? s.toString()
+                          : (String) null);
+            }
+
+            return sb.toString();
+        } catch (java.io.IOException ioe) {
+            throw new RuntimeException(ioe);
+        }
+    }
+
+
+    /**
+     * _more_
+     *
+     * @param sb _more_
+     * @param args _more_
+     */
+    public static void concatBuff(Appendable sb, Object... args) {
+        try {
+            for (Object s : args) {
+                sb.append((s != null)
+                          ? s.toString()
+                          : (String) null);
+            }
         } catch (java.io.IOException ioe) {
             throw new RuntimeException(ioe);
         }

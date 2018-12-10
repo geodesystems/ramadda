@@ -617,8 +617,7 @@ public class MetadataTypeBase extends RepositoryManager {
                         : "");
         String tail  = getStorageManager().getFileTail(f.toString());
         String path =
-            HtmlUtils
-                .concat(handler.getRepository().getMetadataManager()
+            Utils.concatString(handler.getRepository().getMetadataManager()
                     .URL_METADATA_VIEW.toString(), "/", tail);
 
 
@@ -646,7 +645,7 @@ public class MetadataTypeBase extends RepositoryManager {
                 img = handler.getPageHandler().makePopupLink(img, bigimg,
                         true, false);
             } else {
-                img = HtmlUtils.concat(img, "\n<br>\n<b>", tail, "</b>\n");
+                img = Utils.concatString(img, "\n<br>\n<b>", tail, "</b>\n");
             }
 
             return img;

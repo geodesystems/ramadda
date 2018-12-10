@@ -23,7 +23,10 @@
     <target name="release" depends="init">
       <antcall target="purge"/>
       <antcall target="plugins"/>
+<!--
+    dont build pointtools for now
       <antcall target="pointtools"/>
+-->
 
       <copy overwrite="true" file="${dist_plugins}/coreplugins.jar"  todir="${src_dir}/org/ramadda/repository/resources/plugins"/>
       <copy overwrite="true" file="${dist_plugins}/geoplugins.jar"  todir="${src_dir}/org/ramadda/repository/resources/plugins"/>
@@ -48,6 +51,7 @@
       <ant antfile="${src_dir}/org/ramadda/geodata/build.xml" inheritAll="false"/>
       <ant antfile="${src_dir}/org/ramadda/bio/build.xml" inheritAll="false"/>
       <ant antfile="${src_dir}/org/ramadda/projects/build.xml" inheritAll="false"/>
+      <ant antfile="${src_dir}/gov/noaa/esrl/psd/repository/build.xml" inheritAll="false"/>
 
       <ant target="plugins.zip" antfile="${basedir}/build.xml" inheritAll="false">
         <property name="plugins_target" value="coreplugins"/>

@@ -1931,7 +1931,7 @@ public class CommandHarvester extends Harvester {
                           repository.getPageHandler().getIconUrl(
                               request.getRequest(), entry));
 
-        return HtmlUtils.concat(
+        return Utils.concatString(
             HtmlUtils.img(icon), " ",
             HtmlUtils.b(
                 HtmlUtils.href(
@@ -1968,7 +1968,7 @@ public class CommandHarvester extends Harvester {
         for (List<Object> row : rows) {
             StringBuffer rowSB = new StringBuffer("<tr>");
             for (Object value : row) {
-                String s = HtmlUtils.concat("&nbsp;", ((value == null)
+                String s = Utils.concatString("&nbsp;", ((value == null)
                         ? ""
                         : value.toString()), "&nbsp;");
                 if (rowCnt == 0) {

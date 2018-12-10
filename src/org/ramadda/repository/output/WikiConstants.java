@@ -236,6 +236,7 @@ public interface WikiConstants {
     /** attribute in import tag */
     public static final String ATTR_FOLDERS = "folders";
 
+
     /** images only attribute */
     public static final String ATTR_IMAGES = "images";
 
@@ -404,7 +405,7 @@ public interface WikiConstants {
     /** wiki import */
     public static final String WIKI_TAG_TABS = "tabs";
 
-    /** _more_          */
+    /** _more_ */
     public static final String WIKI_TAG_BOUNDS = "bounds";
 
     /** _more_ */
@@ -482,6 +483,10 @@ public interface WikiConstants {
 
     /** wiki import */
     public static final String WIKI_TAG_PROPERTIES = "properties";
+
+    /** _more_          */
+    public static final String WIKI_TAG_LABEL = "label";
+
 
     /** wiki import */
     public static final String WIKI_TAG_LINKS = "links";
@@ -577,6 +582,9 @@ public interface WikiConstants {
 
     /** _more_ */
     public static final String ATTR_SHOWFORM = "showForm";
+
+    /** _more_          */
+    public static final String ATTR_TEXT = "text";
 
     /** _more_ */
     public static final String ATTR_FORMOPEN = "formOpen";
