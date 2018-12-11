@@ -1641,10 +1641,11 @@ public class TypeHandler extends RepositoryManager {
             }
             String newId = tuple[1];
             //Make sure we only replace GUIDs
+            /*
             if ( !oldId.matches(pattern)) {
                 System.err.println("convertIdsFromImport: Not an id");
                 continue;
-            }
+                }*/
             s = s.replaceAll(oldId, newId);
         }
 
