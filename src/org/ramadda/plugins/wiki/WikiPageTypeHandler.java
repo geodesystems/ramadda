@@ -211,24 +211,21 @@ public class WikiPageTypeHandler extends ExtensibleGroupTypeHandler {
     @Override
     public boolean convertIdsFromImport(Entry newEntry,
                                         List<String[]> idList) {
-        System.err.println("WikiPage.convertIds:" + idList);
-        for(String[]tuple:idList) {
-            System.err.println("   " + tuple[0] +" " + tuple[1]);
-        }
 
         boolean  changed = super.convertIdsFromImport(newEntry, idList);
         Object[] values  = newEntry.getValues();
         if (values != null) {
             String wikiText = (String) values[0];
+            for(String[]tuple:idList) {
+                System.err.println("   " + tuple[0] +" " + tuple[1]);
+            }
+
             if (wikiText != null) {
                 String converted = convertIdsFromImport(wikiText, idList);
                 if ( !converted.equals(wikiText)) {
                     values[0] = converted;
-                    System.err.println("wiki text is not the same");
                     changed = true;
-                } else {
-                    System.err.println("wiki text is the same");
-                }
+                } 
             }
         }
 
