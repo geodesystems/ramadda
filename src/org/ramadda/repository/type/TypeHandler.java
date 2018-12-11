@@ -1627,20 +1627,22 @@ public class TypeHandler extends RepositoryManager {
         }
         //c20a3623-5249-4801-b0a9-f14a6b977372
         String pattern = "[^-]+-[^-]+-[^-]+-[^-]+-[^-]+";
+        /*
         //Only convert if we need to
         if ( !s.matches(".*" + pattern + ".*")) {
+            System.err.println("string does not match pattern");
             return s;
         }
+        */
         for (String[] tuple : idList) {
-            String oldId = tuple[1];
+            String oldId = tuple[0];
             if ((oldId == null) || (oldId.length() == 0)) {
                 continue;
             }
-            String newId = tuple[0];
+            String newId = tuple[1];
             //Make sure we only replace GUIDs
             if ( !oldId.matches(pattern)) {
                 System.err.println("convertIdsFromImport: Not an id");
-
                 continue;
             }
             s = s.replaceAll(oldId, newId);
