@@ -2499,3 +2499,39 @@ function highlightMarkers(selector, mapVar, background1, background2,id) {
                                mapVar.uncircleMarker($(this).data('mapid'));
                            });
 }
+
+
+function ramaddaFindFeature(layer, point) {
+    for (var j = 0; j < layer.features.length; j++) {
+        var feature = layer.features[j];
+        var geometry = feature.geometry;
+        if(!geometry) {
+            continue;
+        }
+        bounds = geometry.getBounds();
+        if(!bounds.contains(point.x,point.y)) {
+            continue;
+        }
+        if(geometry.components) {
+            for(var sub=0;sub<geometry.components.length;sub++) {
+                comp = geometry.components[sub];
+                bounds = comp.getBounds();
+                if(!bounds.contains(point.x,point.y)) {
+                    continue;
+                }
+                if(comp.containsPoint && comp.containsPoint(point)) {
+                    return {feature: feature,index:j};
+                }
+            }
+        } else {
+            if(!geometry.containsPoint) {
+                console.log("unknown geometry:" + geometry.CLASS_NAME);
+                continue;
+            }
+            if(geometry.containsPoint(point)) {
+                return {feature: feature,index:j};
+            }
+        }
+    }
+    return null;
+}
