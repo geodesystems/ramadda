@@ -44,7 +44,7 @@ public class ClimateModelFileTypeHandler extends GranuleTypeHandler {
 
     /** the default file regex */
     public static final String FILE_REGEX =
-        "([^_]+)_([^_]+)_(.*)_(ens..|mean|sprd|clim)(_([^_]+))?.nc";
+        "([^_]+)_([^_]+)_(.*)_(ens\\d{2,3}|mean|sprd|clim)(_([^_]+))?.nc";
 
     /** local regex */
     private String myRegex = null;

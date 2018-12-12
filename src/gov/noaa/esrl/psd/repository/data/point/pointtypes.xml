@@ -42,7 +42,7 @@
    </type>
 -->
 
-  <type name="type_extremes"  description="NOAA Extremes Data"  super="type_point"> 
+  <type name="type_extremes"  description="NOAA Extremes Data"  category="Climate Data" super="type_point"> 
      <column name="region" type="enumeration"  label="US Climate Region"  values="northeast:Northeast,southeast:Southeast,ohio:Ohio Valley,midwest:Upper Midwest,south:South,nrockies:Northern Rockies and Plains,southwest:Southwest,west:West,northwest:Northwest,conus:Continental U.S." showinhtml="true" showinform="true" cansearch="true"/>
      <column name="variable" type="enumeration"  label="Variable"  values="dly_ppt:Daily Precipitation" showinhtml="true" showinform="true" cansearch="true"/>
      <property name="record.file.class" value="org.ramadda.data.point.text.CsvFile"/>
@@ -67,5 +67,10 @@
  </wiki>
   </type>
 
+  <type name="type_extremes_maps"  description="NOAA Extremes Maps"  super="type_image" category="Climate Data" > 
+     <column name="variable" type="enumeration"  label="Variable"  values="dly_ppt:Daily Precipitation" showinhtml="true" showinform="true" cansearch="true"/>
+     <column name="season" type="enumeration"  label="Season"  values="annual:Annual,jan_feb:January-February,mar_apr:March-April,may_jun:May-June,jul_aug:July-August,sep_oct:September-October,nov_dec:November-December" showinhtml="true" showinform="true" cansearch="true"/>
+     <column name="validyear" type="int" label="Year" showinhtml="true" showinform="true" cansearch="true"/>
+  </type>
 
 </types>
