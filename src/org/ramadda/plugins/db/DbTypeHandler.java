@@ -1246,14 +1246,19 @@ public class DbTypeHandler extends PointTypeHandler /* BlobTypeHandler*/ {
 
         List<Metadata> savedSearch = getMetadataManager().getMetadata(entry,
                                          "db_saved_search");
+
         if (savedSearch.size() > 0) {
+            String savedArg = request.getString("saved_search","");
             headerToks = new ArrayList<String>();
             for (Metadata m : savedSearch) {
                 StringBuilder link = new StringBuilder();
-                headerToks.add(HtmlUtils.href(baseUrl + "&" + ARG_DB_SEARCH
-                        + "=" + "true" + "&"
-                        + HtmlUtils.arg("saved_search",
-                                        m.getId()), m.getAttr1()));
+                if(m.getId().equals(savedArg))
+                    headerToks.add(HtmlUtils.b(m.getAttr1()));
+                else
+                    headerToks.add(HtmlUtils.href(baseUrl + "&" + ARG_DB_SEARCH
+                                                  + "=" + "true" + "&"
+                                                  + HtmlUtils.arg("saved_search",
+                                                                  m.getId()), m.getAttr1()));
             }
             sb.append(HtmlUtils.div(StringUtil.join("&nbsp;|&nbsp;",
                     headerToks), HtmlUtils.cssClass("dbheader")));
@@ -1271,10 +1276,6 @@ public class DbTypeHandler extends PointTypeHandler /* BlobTypeHandler*/ {
             sb.append(HtmlUtils.div(extraLinks,
                                     HtmlUtils.cssClass("dbheader")));
         }
-
-
-
-
 
         if (request.defined("searchname")) {
             HtmlUtils.sectionHeader(sb, request.getString("searchname", ""));
@@ -2223,6 +2224,7 @@ public class DbTypeHandler extends PointTypeHandler /* BlobTypeHandler*/ {
         }
 
 
+
         if (request.exists("saved_search")) {
             List<Metadata> savedSearch =
                 getMetadataManager().getMetadata(entry, "db_saved_search");
@@ -2230,6 +2232,7 @@ public class DbTypeHandler extends PointTypeHandler /* BlobTypeHandler*/ {
             for (Metadata m : savedSearch) {
                 if (m.getId().equals(id)) {
                     Request r = request.cloneMe();
+                    r.remove("searchname");
                     r.clearUrlArgs();
                     r.put(ARG_ENTRYID, entry.getId());
                     String[] toks = m.getAttr2().split("&");
@@ -2243,7 +2246,6 @@ public class DbTypeHandler extends PointTypeHandler /* BlobTypeHandler*/ {
                         r.put(pair.get(0), value);
                     }
                     request = r;
-
                     break;
                 }
             }
