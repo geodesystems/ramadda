@@ -1,0 +1,12 @@
+<types supercategory="Geoscience">
+
+  <type name="type_point_openaq"  description="Open AQ Air Quality" super="type_point" category="Point Data" foruser="true" handler="org.ramadda.geodata.point.OpenAQTypeHandler">
+     <property name="icon" value="/point/openaq.png"/>
+     <column  name="location"  label="Location" cansearch="true"/>
+     <column  name="country"  label="Country" cansearch="true"/>
+     <column  name="city"  label="City" cansearch="true"/>
+     <column  name="hours_offset"  label="Offset Hours" type="int" default="24" cansearch="true"/>
+  </type>
+
+
+</types>
