@@ -325,7 +325,6 @@ public class DwmlFeedTypeHandler extends GenericTypeHandler {
         }
         if ( !vertical) {
             sb.append("<table><tr><td>");
-            sb.append("<table><tr><td>");
             HtmlUtils.open(sb, "div", " class=\"row\" ");
             HtmlUtils.open(sb, "div", " class=\"col-md-6\" ");
         }
