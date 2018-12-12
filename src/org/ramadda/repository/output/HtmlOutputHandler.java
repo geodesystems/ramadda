@@ -2056,10 +2056,8 @@ public class HtmlOutputHandler extends OutputHandler {
      */
     public String getWikiText(Request request, Entry entry) throws Exception {
         String description = entry.getDescription();
-
         String wikiInner   = null;
         //If it begins with <wiki> then it overrides anything else
-
         if (TypeHandler.isWikiText(description)) {
             if (description.startsWith("<wiki_inner>")) {
                 wikiInner = description;

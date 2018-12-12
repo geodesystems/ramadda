@@ -20,6 +20,7 @@ package org.ramadda.repository.map;
 import org.ramadda.plugins.map.ShapefileOutputHandler;
 
 
+import org.ramadda.repository.type.TypeHandler;
 import org.ramadda.repository.Entry;
 import org.ramadda.repository.Repository;
 import org.ramadda.repository.RepositoryManager;
@@ -1073,11 +1074,14 @@ public class MapManager extends RepositoryManager implements WikiConstants {
             return getRepository().translate(request, bubble);
         }
 
+        String wikiTemplate = null;
+        //            getRepository().getHtmlOutputHandler().getWikiText(request,   entry);
 
+        String description = entry.getDescription();
+        if (TypeHandler.isWikiText(description)) {
+            wikiTemplate = description;
+        }
 
-        String wikiTemplate =
-            getRepository().getHtmlOutputHandler().getWikiText(request,
-                entry);
         if (wikiTemplate != null) {
             String wiki = getWikiManager().wikifyEntry(request, entry,
                               wikiTemplate, true, null, null,
