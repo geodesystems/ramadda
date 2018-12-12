@@ -6,7 +6,7 @@ source ~/bin/utils.tcl
 puts "<entries>"
 proc process {country state city location lat lon} {
     if {![info exists ::states($state)]} {
-        puts "<entry id=\"$state\" type=\"folder\" name=\"$state\"/>"
+        puts "<entry id=\"$state\" type=\"group\" name=\"$state\"/>"
         set ::states($state) 1
     }
     set inner  "\n"
