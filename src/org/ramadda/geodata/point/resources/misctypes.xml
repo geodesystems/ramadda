@@ -6,6 +6,30 @@
      <column  name="country"  label="Country" cansearch="true"/>
      <column  name="city"  label="City" cansearch="true"/>
      <column  name="hours_offset"  label="Offset Hours" type="int" default="24" cansearch="true"/>
+<wiki>
+<![CDATA[
++section  title="Air Quality Station: {{name}}"
+{{description}}
+----
++row
++col-md-8
+{{group showMenu="true" layoutType="table" layoutColumns="1" showTitle="false"}}
+{{display type="linechart" showTitle="false" layoutHere="false" vAxisMinValue="0"}}
+{{resource  message="" title="Download Data"}}
+-col
++col-md-4
+{{map}}
+<table class="formtable">
+     {{field name="location"  row.label="Location:"}}
+     {{field name="city"  row.label="City:"}}
+     {{field name="country"  row.label="Country:"}}
+</table>
+-col
+-row
+]]>
+
+</wiki>
+
   </type>
 
 

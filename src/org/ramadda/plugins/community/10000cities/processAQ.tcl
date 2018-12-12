@@ -4,9 +4,11 @@ source ~/bin/utils.tcl
 
 
 puts "<entries>"
+puts "<entry id=\"US\" type=\"group\" name=\"US Air Quality Stations\"/>"
 proc process {country state city location lat lon} {
+#    if {$state!="Nebraska"} return;
     if {![info exists ::states($state)]} {
-        puts "<entry id=\"$state\" type=\"group\" name=\"$state\"/>"
+        puts "<entry id=\"$state\" parent=\"US\" type=\"group\" name=\"$state\"/>"
         set ::states($state) 1
     }
     set inner  "\n"
@@ -15,10 +17,8 @@ proc process {country state city location lat lon} {
     append inner [xmlTag city [xmlCdata $city] {}] 
     append inner [xmlTag location [xmlCdata $location] {}] 
     append inner "\n"
-    set attrs [list parent $state type type_point_openaq  lat $lat lon $lon]
+    set attrs [list parent $state type type_point_openaq  latitude $lat longitude $lon]
     puts [xmlTag entry $inner  $attrs]
-    puts "</entries>"
-    exit
 }
 source $::scriptDir/aqstations.tcl
 puts "</entries>"
