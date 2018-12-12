@@ -1062,19 +1062,12 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                 return HtmlUtils.href(url, title);
             }
         } else if (theTag.equals(WIKI_TAG_RESOURCE)) {
-            if ( !entry.getResource().isDefined()) {
-                String message = Utils.getProperty(props, ATTR_MESSAGE,
-                                     (String) null);
-                if (message != null) {
-                    return message;
-                }
-
-                return "";
-            }
-
-            String url;
+            String url = null;
             String label;
-            if (entry.getResource().isFile()) {
+            if ( !entry.getResource().isDefined()) {
+                url = entry.getTypeHandler().getPathForEntry(request, entry);
+                label = Utils.getProperty(props, ATTR_TITLE, url);
+            } else if (entry.getResource().isFile()) {
                 url = entry.getTypeHandler().getEntryResourceUrl(request,
                         entry);
                 label = Utils.getProperty(props, ATTR_TITLE, "Download");
@@ -1085,6 +1078,17 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
             if (Utils.getProperty(props, "url", false)) {
                 return url;
             }
+            if(!Utils.stringDefined(url)) {
+                String message = Utils.getProperty(props, ATTR_MESSAGE,
+                                     (String) null);
+                if (message != null) {
+                    return message;
+                }
+
+                return "";
+            }
+
+
             boolean includeIcon = Utils.getProperty(props, ATTR_INCLUDEICON,
                                       false);
             if (includeIcon) {

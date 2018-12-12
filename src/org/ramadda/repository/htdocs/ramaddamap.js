@@ -853,6 +853,7 @@ function initMapFunctions(theMap) {
 
     theMap.searchMarkers = function(text) {
         text = text.trim();
+        text = text.toLowerCase();
         var all  = text=="";
         var cbxall =   $(':input[id*=\"' + "visibleall_" + this.mapId +'\"]');
         cbxall.prop('checked', all);
@@ -867,7 +868,7 @@ function initMapFunctions(theMap) {
                 else if(!Utils.isDefined(name)) {
                     visible = false;
                 } else {
-                    visible = name.includes(text);
+                    visible = name.toLowerCase().includes(text);
                 }
                 if(visible) {
                     marker.style.display = 'inline';
@@ -888,7 +889,7 @@ function initMapFunctions(theMap) {
                 else if(!Utils.isDefined(name)) {
                     visible = false;
                 } else {
-                    visible = name.includes(text);
+                    visible = name.toLowerCase().includes(text);
                 }
                 marker.display(visible);
             }
@@ -905,7 +906,7 @@ function initMapFunctions(theMap) {
                 else if(!Utils.isDefined(name)) {
                     visible = false;
                 } else {
-                    visible = name.includes(text);
+                    visible = name.toLowerCase().includes(text);
                 }
                 if(visible) {
                     line.style.display = 'inline';

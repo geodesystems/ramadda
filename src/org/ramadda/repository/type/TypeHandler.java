@@ -2705,7 +2705,6 @@ public class TypeHandler extends RepositoryManager {
             throws Exception {
         Resource resource = entry.getResource();
         String   path     = Utils.normalizeTemplateUrl(resource.getPath());
-
         return path;
     }
 
