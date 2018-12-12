@@ -3641,7 +3641,7 @@ public class DbTypeHandler extends PointTypeHandler /* BlobTypeHandler*/ {
                     hb.append("Total");
                 } else {
                     hb.append("<td align=right>");
-                    hb.append(sum[i]);
+                    hb.append(dfmt.format(sum[i]));
                 }
                 hb.append("</td>");
             }   
