@@ -481,7 +481,7 @@ public class DbTypeHandler extends PointTypeHandler /* BlobTypeHandler*/ {
     private DecimalFormat ifmt = new DecimalFormat("#0");
 
     /** _more_ */
-    private DecimalFormat dfmt = new DecimalFormat("#0.00");
+    private DecimalFormat dfmt = new DecimalFormat("#0.#");
 
 
     /** _more_ */
@@ -3566,39 +3566,86 @@ public class DbTypeHandler extends PointTypeHandler /* BlobTypeHandler*/ {
             hb.append(
                 "<table class=\"dbtable\"  border=1 cellspacing=\"0\" cellpadding=\"0\" >");
         }
-
+        double [] sum = null;
+        StringBuilder cb = new StringBuilder();
         for (int cnt = 0; cnt < valueList.size(); cnt++) {
             Object[] values = valueList.get(cnt);
-            hb.append(
-                HtmlUtils.open(
-                    HtmlUtils.TAG_TR,
-                    HtmlUtils.attrs(HtmlUtils.ATTR_VALIGN, "top")
-                    + HtmlUtils.cssClass("dbrow")));
+            if(sum == null) {
+                sum = new double[values.length];
+                for(int i=0;i<sum.length;i++)
+                    sum[i] = Double.NaN;
+            }
+
+
 
             if (cnt == 0) {
+                hb.append(
+                          HtmlUtils.open(
+                                         HtmlUtils.TAG_TR,
+                                         HtmlUtils.attrs(HtmlUtils.ATTR_VALIGN, "top")
+                                         + HtmlUtils.cssClass("dbrow")));
                 for (Object obj : values) {
                     hb.append("<td class=dbtableheader>");
                     hb.append(obj);
                     hb.append("</td>");
                 }
+                hb.append("</tr>");
             } else {
+                cb.append(
+                          HtmlUtils.open(
+                                         HtmlUtils.TAG_TR,
+                                         HtmlUtils.attrs(HtmlUtils.ATTR_VALIGN, "top")
+                                         + HtmlUtils.cssClass("dbrow")));
+                int col=0;
                 for (Object obj : values) {
                     if (obj instanceof Double) {
-                        hb.append("<td align=right>");
-                        hb.append(dfmt.format((Double) obj));
+                        cb.append("<td align=right>");
+                        double d = (Double) obj;
+                        if(Double.isNaN(sum[col]))
+                            sum[col] = d;
+                        else
+                            sum[col]+=d;
+                        cb.append(dfmt.format((Double) obj));
                     } else if (obj instanceof Integer) {
-                        hb.append("<td align=right>");
-                        hb.append(obj);
+                        int d = (Integer) obj;
+                        if(Double.isNaN(sum[col]))
+                            sum[col] = d;
+                        else
+                            sum[col]+=d;
+
+                        cb.append("<td align=right>");
+                        cb.append(obj);
                     } else {
-                        hb.append("<td>");
-                        hb.append(obj);
+                        cb.append("<td>");
+                        String s = ""+obj;
+                        if(s.length()==0) s = "&lt;blank&gt;";
+                        cb.append(s);
                     }
-                    hb.append("</td>");
+                    col++;
+                    cb.append("</td>");
                 }
+                cb.append("</tr>");
             }
-            hb.append("</tr>");
+
         }
+
         if (valueList.size() > 0) {
+            hb.append(
+                HtmlUtils.open(
+                    HtmlUtils.TAG_TR,
+                    HtmlUtils.attrs(HtmlUtils.ATTR_VALIGN, "top")
+                    + HtmlUtils.cssClass("dbrow")));
+            for(int i=0;i<sum.length;i++) {
+                if(i==0) {
+                    hb.append("<td>");
+                    hb.append("Total");
+                } else {
+                    hb.append("<td align=right>");
+                    hb.append(sum[i]);
+                }
+                hb.append("</td>");
+            }   
+            hb.append(cb);
             hb.append("</table>\n");
         } else {
             hb.append(getPageHandler().showDialogNote(msg("Nothing found")));
