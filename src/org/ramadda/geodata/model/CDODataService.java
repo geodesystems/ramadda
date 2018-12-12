@@ -422,7 +422,7 @@ public abstract class CDODataService extends Service {
                                File outFile)
             throws Exception {
 
-        System.out.println(commands);
+        //System.out.println(commands);
 
         long millis = System.currentTimeMillis();
         JobManager.CommandResults results =
