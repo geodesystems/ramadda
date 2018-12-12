@@ -59,6 +59,8 @@ public class CsvUtil {
     /** _more_ */
     private OutputStream outputStream = System.out;
 
+    private InputStream inputStream;
+
     /** _more_ */
     private File destDir = new File(".");
 
@@ -135,6 +137,17 @@ public class CsvUtil {
         this.outputStream = out;
     }
 
+    public CsvUtil(String[] args, OutputStream out, File destDir)
+            throws Exception {
+        this(args);
+        this.destDir = destDir;
+        this.outputStream = out;
+    }
+
+
+    public void setInputStream(InputStream inputStream) {
+        this.inputStream = inputStream;
+    }
 
     /**
      * _more_
@@ -320,15 +333,23 @@ public class CsvUtil {
                 }
                 for (String file : files) {
                     textReader.getProcessor().reset();
-                    InputStream is;
-                    if (file.equals("stdin")) {
-                        is = System.in;
+                    InputStream is=null;
+                    if(this.inputStream!=null) {
+                        is = this.inputStream;
                     } else {
-                        is = new BufferedInputStream(
-                            new FileInputStream(file));
+                        if (file.equals("stdin")) {
+                            is = System.in;
+                        } else {
+                            is = new BufferedInputStream(
+                                                         new FileInputStream(file));
+                        }
                     }
                     process(textReader.cloneMe(is, file, outputFile,
                             outputStream));
+                    if(this.inputStream!=null) {
+                        IOUtil.close(this.inputStream);
+                        break;
+                    }
                 }
             }
         }
@@ -369,6 +390,7 @@ public class CsvUtil {
             for (int i = 0; i < readers.size(); i++) {
                 BufferedReader br   = readers.get(i);
                 String         line = br.readLine();
+                System.err.println("line:" + line);
                 if (line == null) {
                     nullCnt++;
 
@@ -470,6 +492,7 @@ public class CsvUtil {
                 writer.println("");
             }
         }
+        System.err.println("CsvUtil.done");
         writer.flush();
         writer.close();
     }
@@ -589,6 +612,7 @@ public class CsvUtil {
         int cnt         = 0;
         while (okToRun) {
             String line = textReader.readLine();
+            //            System.err.println("line:" + line);
             if (line == null) {
                 break;
             }
@@ -667,6 +691,7 @@ public class CsvUtil {
             }
         }
         textReader.flush();
+        textReader.close();
     }
 
 

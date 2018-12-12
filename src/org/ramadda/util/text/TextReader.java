@@ -650,6 +650,11 @@ public class TextReader implements Cloneable {
         }
     }
 
+    public void close() {
+        if(output!=null) {
+            IOUtil.close(output);
+        }
+    }
 
     /**
      * _more_

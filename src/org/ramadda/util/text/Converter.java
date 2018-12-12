@@ -266,9 +266,20 @@ public abstract class Converter extends Processor {
             List values = new ArrayList<String>();
             for (int i = 0; i < row.getValues().size(); i++) {
                 String col = (String) row.getValues().get(i);
-                col = col.replaceAll("\n", " ");
-                String label =
-                    Utils.makeLabel(col.replaceAll("\\([^\\)]+\\)", ""));
+                col = col.replaceAll("\u00B5","u").replaceAll("\u00B3","^3").replaceAll("\n", " ");
+                String id =
+                    col.replaceAll("\\([^\\)]+\\)", "").replaceAll("-",
+                                   "_").trim().toLowerCase().replaceAll(" ",
+                                       "_").replaceAll(":", "_");
+
+                id = id.replaceAll("\"", "_").replaceAll("\'", "_").replaceAll("/+", "_").replaceAll("\\.", "_").replaceAll("_+_", "_").replaceAll("_+$", "").replaceAll("^_+", "").replaceAll("\\^","_");
+
+                id   = CsvUtil.getDbProp(props, id, "id", id);
+
+
+                String label =  CsvUtil.getDbProp(props, id, "label", (String) null);
+                if(label == null)
+                    label = Utils.makeLabel(col.replaceAll("\\([^\\)]+\\)", ""));
                 String unit = StringUtil.findPattern(col,
                                   ".*?\\(([^\\)]+)\\).*");
                 //                    System.err.println ("COL:" + col +" unit: " + unit);
@@ -278,19 +289,6 @@ public abstract class Converter extends Processor {
                     attrs.append("unit=\"" + unit + "\" ");
 
                 }
-                String id =
-                    col.replaceAll("\\([^\\)]+\\)", "").replaceAll("-",
-                                   "_").trim().toLowerCase().replaceAll(" ",
-                                       "_").replaceAll(":", "_");
-                id = id.replaceAll("\"", "_");
-                id = id.replaceAll("\'", "_");
-                id = id.replaceAll("/+", "_");
-                id = id.replaceAll("\\.", "_");
-                id = id.replaceAll("_+_", "_");
-                id = id.replaceAll("_+$", "");
-                id = id.replaceAll("^_+", "");
-
-
                 String  format = null;
                 String  type   = defaultType;
                 boolean isGeo  = false;
