@@ -77,7 +77,7 @@ public class RssOutputHandler extends OutputHandler {
 
 
     /** _more_ */
-    public static final String ICON_RSS = "ramadda.icon.rss";
+    public static final String ICON_RSS = "/icons/rss.png";
 
     /** _more_ */
     public static String MIME_RSS = "application/rss+xml";
