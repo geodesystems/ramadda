@@ -1819,7 +1819,7 @@ public class Column implements DataTypes, Constants {
         } else if (value.startsWith("!")) {
             value = value.substring(1);
             if(value.length()==0) {
-                where.add(Clause.eq(getFullName(), ""));
+                where.add(Clause.neq(getFullName(), ""));
             } else {
                 where.add(Clause.notLike(getFullName(), "%" + value + "%"));
             }
