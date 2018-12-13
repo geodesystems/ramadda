@@ -987,6 +987,10 @@ public class PageHandler extends RepositoryManager {
     }
 
 
+    public String makeHtdocsUrl(String url) {
+        return getRepository().getUrlBase() +"/" +  RepositoryUtil.getHtdocsVersion() +"/" + url;
+    }
+
     /**
      * _more_
      *

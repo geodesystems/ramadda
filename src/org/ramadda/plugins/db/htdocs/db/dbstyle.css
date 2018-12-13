@@ -8,6 +8,11 @@
   padding-right:5px;
   text-align:center;
 }
+.dbtableheader_inner {
+  color: #000;
+  font-weight: bold;
+  text-align:center;
+}
 
 
 

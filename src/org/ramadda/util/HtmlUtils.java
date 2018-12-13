@@ -580,16 +580,15 @@ public class HtmlUtils {
      * _more_
      *
      * @param sb _more_
-     * @param comp _more_
      * @param attrs _more_
      *
      * @return _more_
      */
-    public static Appendable open(Appendable sb, String comp,
+    public static Appendable open(Appendable sb, String tag,
                                   String... attrs) {
         try {
             sb.append("<");
-            sb.append(comp);
+            sb.append(tag);
             if (attrs.length == 1) {
                 sb.append(" ");
                 sb.append(attrs[0]);
@@ -642,10 +641,10 @@ public class HtmlUtils {
      *
      * @return _more_
      */
-    public static String close(String comp) {
+    public static String close(String... args) {
         StringBuilder sb = new StringBuilder();
-        close(sb, comp);
-
+        for(String comp:args) 
+            close(sb, comp);
         return sb.toString();
     }
 
@@ -657,11 +656,13 @@ public class HtmlUtils {
      *
      * @return _more_
      */
-    public static Appendable close(Appendable sb, String comp) {
+    public static Appendable close(Appendable sb, String ...args) {
         try {
-            sb.append("</");
-            sb.append(comp);
-            sb.append(">");
+            for(String comp:args) {
+                sb.append("</");
+                sb.append(comp);
+                sb.append(">");
+            }
         } catch (IOException ioe) {
             throw new RuntimeException(ioe);
         }
@@ -693,10 +694,10 @@ public class HtmlUtils {
      *
      * @return _more_
      */
-    public static Appendable tag(Appendable sb, String comp) {
+    public static Appendable tag(Appendable sb, String tag) {
         try {
             sb.append("<");
-            sb.append(comp);
+            sb.append(tag);
             sb.append("/>");
         } catch (IOException ioe) {
             throw new RuntimeException(ioe);

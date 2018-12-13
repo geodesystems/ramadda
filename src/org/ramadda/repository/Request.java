@@ -1216,7 +1216,19 @@ public class Request implements Constants, Cloneable {
      * @param value _more_
      */
     public void put(Object key, Object value) {
-        parameters.put(key, value);
+        Object existing = parameters.get(key);
+        if(existing!=null) {
+            if(existing instanceof List) 
+                ((List)existing).add(value);
+            else  {
+                List newList = new ArrayList();
+                newList.add(existing);
+                newList.add(value);
+                parameters.put(key,newList);
+            }
+        } else {
+            parameters.put(key, value);
+        }
     }
 
 
