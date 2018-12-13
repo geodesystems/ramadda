@@ -1813,9 +1813,16 @@ public class Column implements DataTypes, Constants {
      * @param where _more_
      */
     public void addTextSearch(String value, List<Clause> where) {
-        if (value.startsWith("!")) {
+        value  = value.trim();
+        if(value.equals("<blank>")) {
+            where.add(Clause.eq(getFullName(), ""));
+        } else if (value.startsWith("!")) {
             value = value.substring(1);
-            where.add(Clause.notLike(getFullName(), "%" + value + "%"));
+            if(value.length()==0) {
+                where.add(Clause.eq(getFullName(), ""));
+            } else {
+                where.add(Clause.notLike(getFullName(), "%" + value + "%"));
+            }
         } else if (value.startsWith("=")) {
             value = value.substring(1);
             where.add(Clause.eq(getFullName(), value));
