@@ -619,10 +619,7 @@ public class MetadataManager extends RepositoryManager {
         }
         List<Metadata> metadataList = entry.getMetadata();
         if (metadataList != null) {
-            //            debug("METADATA:getMetadata entry:" + entry.getName()
-            //                  + " metadata:" + metadataList);
-
-            return metadataList;
+            return getMetadata(metadataList,type);
         }
 
         final List<Metadata> finalMetadataList = new ArrayList();
@@ -637,10 +634,7 @@ public class MetadataManager extends RepositoryManager {
                 int             col     = 1;
                 String          type    = results.getString(3);
                 MetadataHandler handler = findMetadataHandler(type);
-
                 DatabaseManager dbm     = getDatabaseManager();
-
-
                 finalMetadataList.add(
                     handler.makeMetadata(
                         dbm.getString(results, col++),
