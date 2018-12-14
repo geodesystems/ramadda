@@ -412,7 +412,7 @@ Median income
 {{group showMenu="true" layoutColumns="2" layoutType="table" showTitle="false"}}
 {{display type="table" layoutHere="false" skipFields="latitude,longitude" }}
 {{display type="map" layoutHere="false" 
-showTitle="title" 
+showTitle="true" 
 titleId="census.commuting.label"
 title="Sized by total number of workers. Darker blue shows more workers that drove alone."
 colorBy="B08006_003E"

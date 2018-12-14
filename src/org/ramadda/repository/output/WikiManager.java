@@ -1021,11 +1021,13 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
             String text = Utils.getProperty(props, ATTR_TEXT, "");
             String id   = Utils.getProperty(props, ATTR_ID, (String) null);
             if (id != null) {
-                text = getWikiMetadataLabel(request, entry, id, text, (wikify
-                        ? wikiUtil
-                        : null));
+                text = getWikiMetadataLabel(request, entry, id, text);
             }
+            if(wikify) {
+                text = wikifyEntry(request, entry, text, false, null,
+                                   null, wikiUtil.getNotTags());
 
+            }
             return text;
         } else if (theTag.equals(WIKI_TAG_LINK)) {
             boolean linkResource = Utils.getProperty(props,
@@ -2382,19 +2384,13 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
      * @throws Exception _more_
      */
     public String getWikiMetadataLabel(Request request, Entry entry,
-                                       String id, String text,
-                                       WikiUtil wikiUtil)
+                                       String id, String text)
             throws Exception {
         for (Metadata metadata :
                 getMetadataManager().findMetadata(request, entry,
                     "wiki_label", true)) {
             if (Misc.equals(id, metadata.getAttr1())) {
                 text = metadata.getAttr2();
-                if (wikiUtil != null) {
-                    text = wikifyEntry(request, entry, text, false, null,
-                                       null, wikiUtil.getNotTags());
-                }
-
                 break;
             }
         }
@@ -4959,8 +4955,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
         String title   = Utils.getProperty(props, ATTR_TITLE, (String) null);
         String titleId = Utils.getProperty(props, "titleId", (String) null);
         if (titleId != null) {
-            title = getWikiMetadataLabel(request, entry, titleId, title,
-                                         null);
+            title = getWikiMetadataLabel(request, entry, titleId, title);
         }
         props.remove(ATTR_TITLE);
         if (title != null) {
