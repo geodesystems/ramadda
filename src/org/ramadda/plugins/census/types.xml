@@ -121,7 +121,6 @@ Median income
 {{group showMenu="true" layoutColumns="2"  layoutType="table" showTitle="false"}}
 {{display type="table" layoutHere="true" skipFields="latitude,longitude" chartHeight="350"}}
 {{label id="census.children.label" wikify="true" text=":note Blue - smaller values. Red - larger values."}}
-
 +row
 +col-md-6
 :heading Under 6 living with two parents
@@ -274,7 +273,8 @@ Median income
 +section title={{name}} #
 {{group showMenu=true layoutColumns=2 layoutType=table showTitle="false"}}
 {{display type=table layoutHere=false skipFields="latitude,longitude" column=0 }}
-{{display type=map layoutHere=false column=1 showTitle="true" title="Sized by population. Colored by percent non-citizens from light blue (low) to dark blue (high)"
+{{label id="census.nationality.label" wikify="true" text="Sized by population. Colored by percent non-citizens from light blue (low) to dark blue (high)"}}
+{{display type=map layoutHere=false column=1 showTitle="true" 
 colorBy="B05001_006E"
 colorBar="blues"
 strokeColor="magenta"
@@ -311,7 +311,8 @@ Median income
 +section title={{name}} #
 {{group showMenu=true layoutColumns=2 layoutType=table showTitle="false"}}
 {{display type=table layoutHere=false skipFields="latitude,longitude" column=0 }}
-{{display type="map" layoutHere="false" showTitle="true" title="Sized by number of housing units. Darker blue shows more renters."
+{{label id="census.housing.label" wikify="true" text="Sized by number of housing units. Darker blue shows more renters."}}
+{{display type="map" layoutHere="false" showTitle="true" 
 colorBy="B25003_003E"
 colorBar="blues"
 strokeColor="magenta"
@@ -355,7 +356,8 @@ Median income
 +section title={{name}} #
 {{group showMenu=true layoutColumns=2 layoutType="table" showTitle="false"}}
 {{display type=table layoutHere=false skipFields="latitude,longitude" }}
-{{display type=map layoutHere=false showTitle="true" title="Sized by median income. Colored by percent bachelors degree holders."
+{{label id="census.education.label" wikify="true" text="Sized by median income. Colored by percent bachelors degree holders."}}
+{{display type=map layoutHere=false showTitle="true" 
 colorBy="B15003_022E"
 colorBar="blues"
 strokeColor="magenta"
@@ -402,7 +404,8 @@ Median income
 +section title={{name}} #
 {{group showMenu="true" layoutColumns="2" layoutType="table" showTitle="false"}}
 {{display type="table" layoutHere="false" skipFields="latitude,longitude" }}
-{{display type="map" layoutHere="false" showTitle="true" title="Sized by total number of workers. Darker blue shows more workers that drove alone."
+{{label id="census.commuting.label" wikify="true" text="Sized by total number of workers. Darker blue shows more workers that drove alone."}}
+{{display type="map" layoutHere="false" showTitle="true" 
 colorBy="B08006_003E"
 colorBar="blues"
 strokeColor="black"
