@@ -267,8 +267,12 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
         super(repository);
     }
 
+    /** _more_          */
     private String displayImports;
 
+    /**
+     * _more_
+     */
     @Override
     public void initAttributes() {
         super.initAttributes();
@@ -1017,19 +1021,9 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
             String text = Utils.getProperty(props, ATTR_TEXT, "");
             String id   = Utils.getProperty(props, ATTR_ID, (String) null);
             if (id != null) {
-                for (Metadata metadata :
-                         getMetadataManager().findMetadata(request, entry,
-                                                           "wiki_label", true)) {
-                    if (Misc.equals(id, metadata.getAttr1())) {
-                        text = metadata.getAttr2();
-
-                        break;
-                    }
-                }
-                if (wikify) {
-                    text = wikifyEntry(request, entry, text, false, null,
-                                       null, wikiUtil.getNotTags());
-                }
+                text = getWikiMetadataLabel(request, entry, id, text, (wikify
+                        ? wikiUtil
+                        : null));
             }
 
             return text;
@@ -1065,7 +1059,8 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
             String url = null;
             String label;
             if ( !entry.getResource().isDefined()) {
-                url = entry.getTypeHandler().getPathForEntry(request, entry);
+                url   = entry.getTypeHandler().getPathForEntry(request,
+                        entry);
                 label = Utils.getProperty(props, ATTR_TITLE, url);
             } else if (entry.getResource().isFile()) {
                 url = entry.getTypeHandler().getEntryResourceUrl(request,
@@ -1078,7 +1073,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
             if (Utils.getProperty(props, "url", false)) {
                 return url;
             }
-            if(!Utils.stringDefined(url)) {
+            if ( !Utils.stringDefined(url)) {
                 String message = Utils.getProperty(props, ATTR_MESSAGE,
                                      (String) null);
                 if (message != null) {
@@ -1608,8 +1603,9 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                 includeLinkAfter = true;
             }
 
-            String divExtra = Utils.concatString(HtmlUtils.cssClass(divClass),
-                                  HtmlUtils.style(style.toString()));
+            String divExtra =
+                Utils.concatString(HtmlUtils.cssClass(divClass),
+                                   HtmlUtils.style(style.toString()));
             int colCnt = 0;
 
             for (Entry child : children) {
@@ -2369,6 +2365,41 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
             return null;
         }
 
+    }
+
+
+    /**
+     * _more_
+     *
+     * @param request _more_
+     * @param entry _more_
+     * @param id _more_
+     * @param text _more_
+     * @param wikiUtil _more_
+     *
+     * @return _more_
+     *
+     * @throws Exception _more_
+     */
+    public String getWikiMetadataLabel(Request request, Entry entry,
+                                       String id, String text,
+                                       WikiUtil wikiUtil)
+            throws Exception {
+        for (Metadata metadata :
+                getMetadataManager().findMetadata(request, entry,
+                    "wiki_label", true)) {
+            if (Misc.equals(id, metadata.getAttr1())) {
+                text = metadata.getAttr2();
+                if (wikiUtil != null) {
+                    text = wikifyEntry(request, entry, text, false, null,
+                                       null, wikiUtil.getNotTags());
+                }
+
+                break;
+            }
+        }
+
+        return text;
     }
 
 
@@ -4925,8 +4956,13 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
             props.remove(ATTR_SHOWTITLE);
         }
 
-
-        String title = Utils.getProperty(props, ATTR_TITLE, (String) null);
+        String title   = Utils.getProperty(props, ATTR_TITLE, (String) null);
+        String titleId = Utils.getProperty(props, "titleId", (String) null);
+        if (titleId != null) {
+            title = getWikiMetadataLabel(request, entry, titleId, title,
+                                         null);
+        }
+        props.remove(ATTR_TITLE);
         if (title != null) {
             propList.add(ATTR_TITLE);
             propList.add(Json.quote(title));
@@ -5055,16 +5091,19 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
         HtmlUtils.commentJS(
             js,
             "This gets the global display manager or creates it if not created");
-        Utils.concatBuff(js, "var displayManager = getOrCreateDisplayManager(",
-                     HtmlUtils.quote(mainDivId), ",",
-                     Json.map(topProps, false), ");\n");
+        Utils.concatBuff(js,
+                         "var displayManager = getOrCreateDisplayManager(",
+                         HtmlUtils.quote(mainDivId), ",",
+                         Json.map(topProps, false), ");\n");
         Utils.add(propList, "entryId", HtmlUtils.quote(entry.getId()));
         if ((url != null) && Utils.getProperty(props, "includeData", true)) {
             Utils.add(propList, "data",
-                      Utils.concatString("new  PointData(", HtmlUtils.quote(name),
-                                   ",  null,null,", HtmlUtils.quote(url),
-                                   ",", "{entryId:'", entry.getId(), "'}",
-                                   ")"));
+                      Utils.concatString("new  PointData(",
+                                         HtmlUtils.quote(name),
+                                         ",  null,null,",
+                                         HtmlUtils.quote(url), ",",
+                                         "{entryId:'", entry.getId(), "'}",
+                                         ")"));
         }
 
         if (displayType.equals("map")) {
@@ -5159,27 +5198,35 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
         }
     }
 
-    private String makeDisplayImports()  {
+    /**
+     * _more_
+     *
+     * @return _more_
+     */
+    private String makeDisplayImports() {
         try {
-        Appendable sb = Utils.makeAppendable();
-        HtmlUtils.importJS(sb,"https://www.gstatic.com/charts/loader.js");
+            Appendable sb = Utils.makeAppendable();
+            HtmlUtils.importJS(sb,
+                               "https://www.gstatic.com/charts/loader.js");
             //                    "google.load(\"visualization\", \"1\", {packages:['corechart','table','bar']});\n"));
-        HtmlUtils.script(sb, "google.charts.load(\"43\", {packages:['corechart','table','bar']});\n");
-        HtmlUtils.importJS(sb, getHtdocsUrl("/lib/d3/d3.min.js"));
-        HtmlUtils.importJS(
-                           sb, getHtdocsUrl("/lib/jquery.handsontable.full.min.js"));
-        HtmlUtils.cssLink(
-                          sb, getHtdocsUrl("/lib/jquery.handsontable.full.min.css"));
-
-        //Put this here after the google load
-        HtmlUtils.importJS(sb, getHtdocsUrl("/db/dom-drag.js"));
-        HtmlUtils.importJS(sb, getHtdocsUrl("/db/dom-drag.js"));
-        if (getRepository().getMinifiedOk()) {
+            HtmlUtils.script(
+                sb,
+                "google.charts.load(\"43\", {packages:['corechart','table','bar']});\n");
+            HtmlUtils.importJS(sb, getHtdocsUrl("/lib/d3/d3.min.js"));
             HtmlUtils.importJS(
-                               sb, getHtdocsUrl("/display/display_all_mini.js"));
-            HtmlUtils.cssLink(sb, getHtdocsUrl("/display.mini.css"));
-        } else {
-            HtmlUtils.cssLink(sb, getHtdocsUrl("/display.css"));
+                sb, getHtdocsUrl("/lib/jquery.handsontable.full.min.js"));
+            HtmlUtils.cssLink(
+                sb, getHtdocsUrl("/lib/jquery.handsontable.full.min.css"));
+
+            //Put this here after the google load
+            HtmlUtils.importJS(sb, getHtdocsUrl("/db/dom-drag.js"));
+            HtmlUtils.importJS(sb, getHtdocsUrl("/db/dom-drag.js"));
+            if (getRepository().getMinifiedOk()) {
+                HtmlUtils.importJS(
+                    sb, getHtdocsUrl("/display/display_all_mini.js"));
+                HtmlUtils.cssLink(sb, getHtdocsUrl("/display.mini.css"));
+            } else {
+                HtmlUtils.cssLink(sb, getHtdocsUrl("/display.css"));
                 HtmlUtils.importJS(sb, getHtdocsUrl("/display/pointdata.js"));
                 HtmlUtils.importJS(sb, getHtdocsUrl("/display/utils.js"));
                 HtmlUtils.importJS(
@@ -5209,6 +5256,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                     HtmlUtils.importJS(sb, getFileUrl(include));
                 }
             }
+
             return sb.toString();
         } catch (Exception exc) {
             throw new IllegalArgumentException(exc);
@@ -5226,7 +5274,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
      *
      */
     private static void attr(StringBuilder sb, String name, String value) {
-        Utils.append(sb, " ",name,"=","&quote;",value,"&quote;"," ");
+        Utils.append(sb, " ", name, "=", "&quote;", value, "&quote;", " ");
     }
 
     /**
@@ -5241,6 +5289,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
         for (int i = 0; i < attrs.length; i += 2) {
             attr(sb, attrs[i], attrs[i + 1]);
         }
+
         return sb.toString();
     }
 
@@ -5253,7 +5302,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
      * @return  the property string
      */
     private static String prop(String prop, String args) {
-        return Utils.concatString(prop, PROP_DELIM ,args);
+        return Utils.concatString(prop, PROP_DELIM, args);
     }
 
 
