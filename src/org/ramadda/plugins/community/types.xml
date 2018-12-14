@@ -10,7 +10,8 @@
      <property name="form.altitude.top.show" value="false"/>
      <property name="search.tabs" value="earth,list,timeline"/>
      <property name="search.metadatatypes" value="project_person"/>
-     <column name="status"  type="enumerationplus"  values="active:Active,inactive:Inactive" label="Status" cansearch="true"/>
+     <column name="status"  type="enumerationplus"  values="active:Active,inactive:Inactive" label="Status" cansearch="true" 
+             xxdisplayTemplate="Type:${value}" xxdisplayPatternFrom=".*([0-9]+).*" xxdisplayPatternTo="Should be a number:$1"/>
      <column name="project_type"  type="enumerationplus"  label="Project Type" cansearch="true" values="undp_aap:UNDP African Adaptation Program,100cities:Rockefeller 100 Cities Project"/>
     <column name="country" type="enumerationplus" label="Country" values="file:/org/ramadda/plugins/community/resources/countries.txt" showinhtml="true" cansearch="true"/>
 

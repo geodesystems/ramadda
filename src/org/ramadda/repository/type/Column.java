@@ -270,6 +270,12 @@ public class Column implements DataTypes, Constants {
     /** _more_ */
     private String htmlTemplate;
 
+    private String displayTemplate;
+
+    private String displayPatternFrom;
+
+    private String displayPatternTo;
+
     /** _more_ */
     private String type;
 
@@ -449,6 +455,14 @@ public class Column implements DataTypes, Constants {
         }
 
         description = getAttributeOrTag(element, ATTR_DESCRIPTION, label);
+
+        displayPatternFrom= Utils.getAttributeOrTag(element, "displayPatternFrom",
+                (String) null);
+        displayPatternTo= Utils.getAttributeOrTag(element, "displayPatternTo",
+                (String) null);
+
+        displayTemplate= Utils.getAttributeOrTag(element, "displayTemplate",
+                (String) null);
 
         htmlTemplate = Utils.getAttributeOrTag(element, "htmlTemplate",
                 (String) null);
@@ -1122,7 +1136,7 @@ public class Column implements DataTypes, Constants {
                     getRepository().getTmpRequest(), entry, s, false, null,
                     null);
             } else if (isEnumeration() && !csv) {
-                String label = enumMap.get(s);
+                String label = getEnumLabel(s);
                 if (label != null) {
                     s = label;
                 }
@@ -1150,18 +1164,31 @@ public class Column implements DataTypes, Constants {
 
 
     /**
-     * _more_
+     * Gets the string to display for enumeration values
      *
      * @param value _more_
      *
      * @return _more_
      */
     public String getEnumLabel(String value) {
+        if(value == null) return "null";
+        //enumMap is from the values field in the types.xml column specifier
         String label = enumMap.get(value);
         if (label == null) {
+            //If we don't have a label in the enumMap then see if we have a displayTemplate (from types.xml)
+            //<column name="status"  type="enumerationplus"  values="active:Active,inactive:Inactive" label="Status" cansearch="true" 
+            //displayTemplate="Type:${value}" />
+            if(displayTemplate!=null) {
+                return displayTemplate.replace("${value}",value);
+            }
+            //If we don't have a displayTemplate then check for a displayPattern. This is in types.xml as, e.g.:
+            // <column name="status"  type="enumerationplus"  values="active:Active,inactive:Inactive" label="Status" cansearch="true" 
+            // displayPatternFrom=".*([0-9]+).*" displayPatternTo="Should be a number:$1"/>
+            if(displayPatternFrom !=null && displayPatternTo!=null) {
+                return value.replaceAll(displayPatternFrom, displayPatternTo);
+            }
             return value;
         }
-
         return label;
     }
 
@@ -2731,18 +2758,17 @@ public class Column implements DataTypes, Constants {
             List tmpValues = Misc.newList(TypeHandler.ALL_OBJECT);
             List<TwoFacedObject> values = typeHandler.getEnumValues(request,
                                               this, entry);
-            if (enumValues != null) {
-                for (TwoFacedObject o : values) {
-                    TwoFacedObject tfo = TwoFacedObject.findId(o.getId(),
-                                             enumValues);
-                    if (tfo != null) {
-                        tmpValues.add(tfo);
-                    } else {
-                        tmpValues.add(o);
-                    }
+            for (TwoFacedObject o : values) {
+                TwoFacedObject tfo = null;
+                if(enumValues!=null) {
+                    tfo = TwoFacedObject.findId(o.getId(), enumValues);
                 }
-            } else {
-                tmpValues.addAll(values);
+                if (tfo != null) {
+                    tmpValues.add(tfo);
+                } else {
+                    String label = getEnumLabel(""+o);
+                    tmpValues.add(new TwoFacedObject(label,o));
+                }
             }
             widget = HtmlUtils.select(searchArg, tmpValues,
                                       request.getString(searchArg),
