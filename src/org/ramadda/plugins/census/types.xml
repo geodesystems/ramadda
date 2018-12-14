@@ -78,13 +78,12 @@ This allows you to do a subsequent selection, e.g. set this to "county" and the 
 <wiki><![CDATA[
 +section title={{name}} #
 {{group showMenu="true" layoutColumns="2"  layoutType="table" showTitle="false"}}
-{{display type="table" layoutHere="false" skipFields="latitude,longitude" chartHeight="600"
-map-colorBy="B01002_001E"
-map-colorBar="blue_white_red"
-map-strokeColor="black"
-xxx-map-sizeBy="B01001_001E"
+{{display type="table" layoutHere="false" skipFields="latitude,longitude" chartHeight="600"}}
+{{display type="map" layoutHere="false"  height="600" showTitle="true" title="Colored by median age from blue (younger), to white (middle) to red (older)"
+colorBy="B01002_001E"
+colorBar="blue_white_red"
+strokeColor="black"
 }}
-{{display type="map" layoutHere="false"  height="600" showTitle="true" title="Colored by median age from blue (younger), to white (middle) to red (older)"}}
 {{display type="stats" layoutHere="false" showTitle="true" title="Summary Statistics"}}
 {{display type="text" layoutHere="false" showTitle="true" title="Details"}}
 -section
@@ -120,11 +119,7 @@ Median income
 <wiki><![CDATA[
 +section title={{name}} #
 {{group showMenu="true" layoutColumns="2"  layoutType="table" showTitle="false"}}
-{{display type="table" layoutHere="true" skipFields="latitude,longitude" chartHeight="350"
-map-colorBar="blue_white_red"
-map-strokeColor="black"
-map-sizeBy="B01001_001E"
-}}
+{{display type="table" layoutHere="true" skipFields="latitude,longitude" chartHeight="350"}}
 {{label id="census.children.label" wikify="true" text=":note Blue - smaller values. Red - larger values."}}
 
 +row
@@ -246,12 +241,12 @@ Median income
   <type name="type_census_poverty"  super="type_census_acs"  description="US Census ACS Data - Poverty" foruser="false">
 <wiki><![CDATA[+section title={{name}} #
 {{group showMenu="true" layoutColumns="2"  layoutType="table" showTitle="false"}}
-{{display type="table" layoutHere="false" skipFields="latitude,longitude" chartHeight="600" 
-map-colorBy="B07012_002E"
-map-colorBar="blue_white_red"
-map-strokeColor="black"
+{{display type="table" layoutHere="false" skipFields="latitude,longitude" chartHeight="600" }}
+{{display type="map" layoutHere="false"  height="600" showTitle="true" title="Colored by poverty levels from blue (lower) to white (middle) to red (higher)"
+colorBy="B07012_002E"
+colorBar="blue_white_red"
+strokeColor="black"
 }}
-{{display type="map" layoutHere="false"  height="600" showTitle="true" title="Colored by poverty levels from blue (lower) to white (middle) to red (higher)"}}
 {{display type="stats" layoutHere="false" showTitle="true" title="Summary Statistics"}}
 {{display type="text" layoutHere="false" showTitle="true" title="Details"}}
 -section
@@ -278,13 +273,13 @@ Median income
 <wiki><![CDATA[
 +section title={{name}} #
 {{group showMenu=true layoutColumns=2 layoutType=table showTitle="false"}}
-{{display type=table layoutHere=false skipFields="latitude,longitude" column=0 
-map-colorBy="B05001_006E"
-map-colorBar="blues"
-map-strokeColor="magenta"
-map-sizeBy="B05001_001E"
+{{display type=table layoutHere=false skipFields="latitude,longitude" column=0 }}
+{{display type=map layoutHere=false column=1 showTitle="true" title="Sized by population. Colored by percent non-citizens from light blue (low) to dark blue (high)"
+colorBy="B05001_006E"
+colorBar="blues"
+strokeColor="magenta"
+sizeBy="B05001_001E"
 }}
-{{display type=map layoutHere=false column=1 showTitle="true" title="Sized by population. Colored by percent non-citizens from light blue (low) to dark blue (high)"}}
 {{display type=scatterplot layoutHere=false column=1 fields="B06011_001E,B05001_006E" map-display="false" chartWidth="600"}}
 {{display type="stats" layoutHere="false"  showTitle="true" title="Summary Statistics"}}
 {{display type="text" layoutHere=false column=1 showTitle="true" title="Details"}}
@@ -315,13 +310,12 @@ Median income
 <wiki><![CDATA[
 +section title={{name}} #
 {{group showMenu=true layoutColumns=2 layoutType=table showTitle="false"}}
-{{display type=table layoutHere=false skipFields="latitude,longitude" column=0 
-map-colorBy="B25003_003E"
-map-colorBar="blues"
-map-strokeColor="magenta"
-map-sizeBy="B25001_001E"
-}}
-{{display type="map" layoutHere="false" showTitle="true" title="Sized by number of housing units. Darker blue shows more renters."}}
+{{display type=table layoutHere=false skipFields="latitude,longitude" column=0 }}
+{{display type="map" layoutHere="false" showTitle="true" title="Sized by number of housing units. Darker blue shows more renters."
+colorBy="B25003_003E"
+colorBar="blues"
+strokeColor="magenta"
+sizeBy="B25001_001E"}}
 {{display type="scatterplot" layoutHere="false" fields="B06011_001E,B25003_002E" map-display="false" showTitle="true" title="Owner Occupied"}}
 {{display type="scatterplot" layoutHere="false" fields="B06011_001E,B25003_003E" map-display="false" showTitle="true" title="Renter Occupied"}}
 {{display type="scatterplot" layoutHere="false" fields="B06011_001E,B25027_002E" map-display="false" showTitle="true" title="Housing units with a mortgage"}}
@@ -360,13 +354,13 @@ Median income
 <wiki><![CDATA[
 +section title={{name}} #
 {{group showMenu=true layoutColumns=2 layoutType="table" showTitle="false"}}
-{{display type=table layoutHere=false skipFields="latitude,longitude" 
-map-colorBy="B15003_022E"
-map-colorBar="blues"
-map-strokeColor="magenta"
-map-sizeBy="B06011_001E"
+{{display type=table layoutHere=false skipFields="latitude,longitude" }}
+{{display type=map layoutHere=false showTitle="true" title="Sized by median income. Colored by percent bachelors degree holders."
+colorBy="B15003_022E"
+colorBar="blues"
+strokeColor="magenta"
+sizeBy="B06011_001E"
 }}
-{{display type=map layoutHere=false showTitle="true" title="Sized by median income. Colored by percent bachelors degree holders."}}
 {{display type=scatterplot layoutHere=false map-display="false" fields="B06011_001E,B15003_017E" title="High School Diploma" showTitle="true"  }}
 {{display type=scatterplot layoutHere=false  map-display="false" fields="B06011_001E,B15003_022E" title="Bachelor's Degree"  showTitle="true" }}
 {{display type=scatterplot layoutHere=false  map-display="false" fields="B06011_001E,B15003_024E" title="Professional Degree"  showTitle="true" }}
@@ -407,14 +401,13 @@ Median income
 <wiki><![CDATA[
 +section title={{name}} #
 {{group showMenu="true" layoutColumns="2" layoutType="table" showTitle="false"}}
-{{display type="table" layoutHere="false" skipFields="latitude,longitude" 
-map-colorBy="B08006_003E"
-xxxmap-colorByMin="60"
-map-colorBar="blues"
-map-strokeColor="black"
-map-sizeBy="B08006_001E"
+{{display type="table" layoutHere="false" skipFields="latitude,longitude" }}
+{{display type="map" layoutHere="false" showTitle="true" title="Sized by total number of workers. Darker blue shows more workers that drove alone."
+colorBy="B08006_003E"
+colorBar="blues"
+strokeColor="black"
+sizeBy="B08006_001E"
 }}
-{{display type="map" layoutHere="false" showTitle="true" title="Sized by total number of workers. Darker blue shows more workers that drove alone."}}
 {{display type="scatterplot" layoutHere="false" fields="B06011_001E,B08006_003E" map-display="false" chartWidth="600" showTitle="true" title="Drove Alone"}}
 {{display type="scatterplot" layoutHere="false" fields="B06011_001E,B08006_004E" map-display="false" chartWidth="600" showTitle="true" title="Car Pooled"}}
 {{display type="scatterplot" layoutHere="false" fields="B06011_001E,B08006_008E" map-display="false" chartWidth="600" showTitle="true" title="Public Transportation"}}
