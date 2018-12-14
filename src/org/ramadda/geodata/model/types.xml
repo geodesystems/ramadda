@@ -32,7 +32,7 @@
      <column name="collection_id" type="string"  label="Collection ID" showinhtml="false" showinform="false"/>
      <column name="model" type="enumerationplus"  label="Model"  showinhtml="true" xxxxvalues="file:/org/ramadda/data/model/models.txt"/>
      <column name="experiment" type="enumerationplus"  label="Experiment" xxxxvalues="file:/org/ramadda/data/model/experiments.txt" showinhtml="true" />
-     <column name="ensemble" type="enumerationplus"  label="Ensemble Member"/>
+     <column name="ensemble" type="enumerationplus"  displayPatternFrom="ens(\d{2,3})" displayPatternTo="Member $1" label="Ensemble Member"/>
      <column name="variable" type="enumerationplus"  label="Variable"  xxxxxvalues="file:/org/ramadda/data/model/vars.txt"/>
    </type>
 
