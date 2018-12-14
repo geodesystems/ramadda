@@ -1,0 +1,19 @@
+
+To build this USNA page template you will need to have Java (1.8) installed as well as apache ANT:
+
+https://ant.apache.org/
+
+From the command line change directory to this usna directory and run:
+ant
+
+This builds a usna.plugin.jar jar and copies it to your local plugins directory:
+~/.ramadda/plugins
+
+Copy this file to your RAMADDA server plugins directory and restart your server.
+
+An alternative way to build the usna.plugin.jar without using ANT (since nothing is being compiled) 
+is to zip or jar up this directory from the top level src directory. 
+You zip/jar file should have the following paths:
+org/ramadda/projects/usna/htdocs/usna/app.css
+org/ramadda/projects/usna/htdocs/usna/edmapsbannerlogo.png
+org/ramadda/projects/usna/usnatemplate.html
