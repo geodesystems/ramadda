@@ -430,7 +430,10 @@ public class CollectionTypeHandler extends ExtensibleGroupTypeHandler {
         for (String value : (List<String>) values) {
             String label = (String) map.get(value);
             if (label == null) {
-                label = value;
+                label = column.getEnumLabel(value);
+                if (label == null) {
+                   label = value;
+                }
             }
             tfos.add(new TwoFacedObject(label.trim(), value));
         }
