@@ -1185,7 +1185,10 @@ public class Column implements DataTypes, Constants {
             // <column name="status"  type="enumerationplus"  values="active:Active,inactive:Inactive" label="Status" cansearch="true" 
             // displayPatternFrom=".*([0-9]+).*" displayPatternTo="Should be a number:$1"/>
             if(displayPatternFrom !=null && displayPatternTo!=null) {
-                return value.replaceAll(displayPatternFrom, displayPatternTo);
+                //only do this if it matches the pattern
+                if(value.matches(displayPatternFrom)) {
+                    return value.replaceAll(displayPatternFrom, displayPatternTo);
+                }
             }
             return value;
         }
