@@ -179,6 +179,12 @@ function DisplayManager(argId,argProperties) {
             handleEventEntrySelection: function(source,  props) {
                this.notifyEvent("handleEventEntrySelection", source, props);
             },
+            handleEventEntryMouseover: function(source,  props) {
+               this.notifyEvent("handleEventEntryMouseover", source, props);
+            },
+            handleEventEntryMouseout: function(source,  props) {
+               this.notifyEvent("handleEventEntryMouseout", source, props);
+            },
             handleEventPointDataLoaded: function(source, pointData) {
                 this.notifyEvent("handleEventPointDataLoaded", source, pointData);
             },

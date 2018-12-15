@@ -244,6 +244,8 @@ myLocationOffset="0.008"
      <column name="bikes_allowed"  type="enumeration" values="0:Unknown,1:Yes,2:No" cansearch="true"  label="Bikes Allowed"/>
      <column name="points"  type="clob"  size="35000" showinhtml="false" editable="false"   label="Points" changetype="true"/>
      <column name="agency_id"  type="string"  label="Agency ID" canedit="false" cansearch="false"/>
+     <column name="start_stop"  type="entry"  label="Start Stop" canedit="false" cansearch="false"/>
+     <column name="last_stop"  type="entry"  label="Last Stop" canedit="false" cansearch="false"/>
 
      <wiki><![CDATA[
 {{gtfs.trip.title}}

@@ -2080,11 +2080,12 @@ function initMapFunctions(theMap) {
                     strokeColor : "red",
                     strokeWidth : 0,
                     strokeOpacity: 0.75,
-                    fill: true,
+                    fill: false,
                     fillColor: "blue",
                     fillOpacity: 0.75,
                     }
             );
+
         if (attrs) {
             $.extend(cstyle, attrs);
             if(cstyle.pointRadius<=0)  cstyle.pointRadius = 1;
@@ -2171,7 +2172,7 @@ function initMapFunctions(theMap) {
 
     theMap.removePolygon = function(line) {
         if (this.lines) {
-            this.lines.removeAllFeatures();
+            //            this.lines.removeAllFeatures();
             this.lines.removeFeatures([line]);
         }
     }
@@ -2180,7 +2181,6 @@ function initMapFunctions(theMap) {
 
     theMap.addPolygon = function(id, name, points, attrs,marker) {
         var _this = this;
-
         for(var i =0;i<points.length;i++) {
             points[i].transform(this.displayProjection, this.sourceProjection);
         }
@@ -2469,7 +2469,12 @@ function highlightMarkers(selector, mapVar, background1, background2,id) {
                                    $(this).css('background',background1); 
                                if(!$(this).data('mapid')) 
                                    return;
-                               if(mapVar.circleMarker($(this).data('mapid'),{strokeColor:'blue'})) {
+                               if(mapVar.circleMarker($(this).data('mapid'),{
+                                           strokeColor:'black',
+                                               strokeWidth:1,
+                                               fill:true,
+                                               fillOpacity:0.5,
+                                               fillColor:'red'})) {
                                    return;
                                }
                                if(id == null)

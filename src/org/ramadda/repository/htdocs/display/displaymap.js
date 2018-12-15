@@ -384,6 +384,29 @@ function RamaddaMapDisplay(displayManager, id, properties) {
                     return HtmlUtil.div([ ATTR_CLASS, "display-contents", ATTR_ID,
                                           this.getDomId(ID_DISPLAY_CONTENTS) ], "");
 		},
+                handleEventEntryMouseover: function(source, args) {
+                    id = args.entry.getId() +"_mouseover";
+                    attrs = {
+                        lineColor:"red",
+                        fillColor:"red",
+                        fillOpacity:0.5,
+                        lineOpacity:0.5,
+                        doCircle:true,
+                        lineWidth:1,
+                        fill: true,
+                        circle: {
+                            lineColor: "black"
+                        },
+                        polygon: {
+                            lineWidth:4,
+                        }
+                    }
+                    this.addOrRemoveEntryMarker(id, args.entry, true, attrs);
+                },
+                handleEventEntryMouseout: function(source, args) {
+                    id = args.entry.getId() +"_mouseover";
+                    this.addOrRemoveEntryMarker(id, args.entry, false);
+                },
                 handleEventAreaClear:  function() {
                     this.map.clearRegionSelector();
                 },
@@ -412,13 +435,12 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		sourceToEntries : {},
 		handleEventEntriesChanged : function(source, entries) {
                     //                    console.log("handleEventEntriesChanged");
-			if (source == this.lastSource) {
-                            this.map.clearSelectionMarker();
-			}
-
-                        if((typeof source.forMap)!="undefined" && !source.forMap) {
-                            return;
-                        }
+                    if (source == this.lastSource) {
+                        this.map.clearSelectionMarker();
+                    }
+                    if((typeof source.forMap)!="undefined" && !source.forMap) {
+                        return;
+                    }
 			var oldEntries = this.sourceToEntries[source.getId()];
 			if (oldEntries != null) {
 				for ( var i = 0; i < oldEntries.length; i++) {
@@ -483,57 +505,96 @@ function RamaddaMapDisplay(displayManager, id, properties) {
                     }
                     */
 		},
-                addOrRemoveEntryMarker : function(id, entry, add) {
-                    console.log("addOrRemoveEntryMarker");
-			var mapEntryInfo = this.mapEntryInfos[id];
-			if (!add) {
-				if (mapEntryInfo != null) {
-					mapEntryInfo.removeFromMap(this.map);
-					this.mapEntryInfos[id] = null;
-				}
-			} else  {
-				if (mapEntryInfo == null) {
-					mapEntryInfo = new MapEntryInfo(entry);
-					if (entry.hasBounds() && this.showBoxes) {
-						var attrs = {};
-						mapEntryInfo.rectangle = this.map.addRectangle(id,
-								entry.getNorth(), entry.getWest(), entry
-										.getSouth(), entry.getEast(), attrs);
-					}
+                addOrRemoveEntryMarker : function(id, entry, add, args) {
+                    if(!args) {
+                        args = {};
+                    }
+                    var dflt = {
+                        lineColor: entry.lineColor,
+                        fillColor: entry.lineColor,
+                        lineWidth: entry.lineWidth,
+                        doCircle:false,
+                        doRectangle: this.showBoxes,
+                        fill:false,
+                        fillOpacity: 0.75,
+                        pointRadius : 12,
+                        polygon: {},
+                        circle:{}
+                    }
+                    dfltPolygon = {
+                    }
+                    dfltCircle = {
+                    }
+                    $.extend(dflt, args);
+                    if(!dflt.lineColor) dflt.lineColor = "blue";
 
-					var latitude = entry.getLatitude();
-					var longitude = entry.getLongitude();
-                                        if(latitude<-90 || latitude>90 || longitude<-180 || longitude>180) return;
-					var point = new OpenLayers.LonLat(longitude, latitude);
-					mapEntryInfo.marker = this.map.addMarker(id, point, entry.getIconUrl(), "", this.getEntryHtml(entry));
-					mapEntryInfo.lineColor = entry.lineColor;
-                                        if(entry.polygon) {
-                                            var points = []
-                                            for(var i=0;i<entry.polygon.length;i+=2) { 
-                                                points.push(new OpenLayers.Geometry.Point(entry.polygon[i+1],entry.polygon[i]));
-                                            }
-                                            var attrs = {
-                                                strokeColor:Utils.isDefined(entry.lineColor)?entry.lineColor:"blue",
-                                                strokeWidth:Utils.isDefined(entry.lineWidth)?entry.lineWidth:3
-                                            };
-                                            mapEntryInfo.polygon =  this.map.addPolygon(id, points, attrs, mapEntryInfo.marker);
-                                        }
+                    $.extend(dfltPolygon, dflt);
+                    if(args.polygon)
+                        $.extend(dfltPolygon, args.polygon);
+                    $.extend(dfltCircle, dflt);
+                    if(args.circle)
+                        $.extend(dfltCircle, args.circle);
 
-
-
-					var theDisplay = this;
-					mapEntryInfo.marker.entry = entry;
-					mapEntryInfo.marker.ramaddaClickHandler = function(marker) {
-						theDisplay.handleMapClick(marker);
-					};
-					this.mapEntryInfos[id] = mapEntryInfo;
-					if (this.handledMarkers == null) {
-						this.map.centerToMarkers();
-						this.handledMarkers = true;
-					}
-				}
-			}
+                    //                    console.log("addOrRemoveEntryMarker");
+                    var mapEntryInfo = this.mapEntryInfos[id];
+                    if (!add) {
+                        if (mapEntryInfo != null) {
+                            mapEntryInfo.removeFromMap(this.map);
+                            this.mapEntryInfos[id] = null;
+                        }
+                    } else  {
+                        if (mapEntryInfo == null) {
+                            mapEntryInfo = new MapEntryInfo(entry);
+                            this.mapEntryInfos[id] = mapEntryInfo;
+                            if (entry.hasBounds() && dflt.doRectangle) {
+                                var attrs = {};
+                                mapEntryInfo.rectangle = this.map.addRectangle(id,
+                                                                               entry.getNorth(), entry.getWest(), entry
+                                                                               .getSouth(), entry.getEast(), attrs);
+                            }
+                            var latitude = entry.getLatitude();
+                            var longitude = entry.getLongitude();
+                            if(latitude<-90 || latitude>90 || longitude<-180 || longitude>180) {
+                                return;
+                            }
+                            var point = new OpenLayers.LonLat(longitude, latitude);
+                            if(dflt.doCircle) {
+                                attrs = {pointRadius : dfltCircle.pointRadius, 
+                                         stroke: true,
+                                         strokeColor : dfltCircle.lineColor,
+                                         strokeWidth : dfltCircle.lineWidth,
+                                         fillColor: dfltCircle.fillColor,
+                                         fillOpacity: dfltCircle.fillOpacity,
+                                         fill: dfltCircle.fill,};
+                                mapEntryInfo.circle = this.map.addPoint(id, point,attrs);
+                            } else {
+                                mapEntryInfo.marker = this.map.addMarker(id, point, entry.getIconUrl(), "", this.getEntryHtml(entry));
+                            }
+                            if(entry.polygon) {
+                                var points = []
+                                    for(var i=0;i<entry.polygon.length;i+=2) { 
+                                        points.push(new OpenLayers.Geometry.Point(entry.polygon[i+1],entry.polygon[i]));
+                                    }
+                                var attrs = {
+                                    strokeColor:dfltPolygon.lineColor,
+                                    strokeWidth:Utils.isDefined(dfltPolygon.lineWidth)?dfltPolygon.lineWidth:2
+                                };
+                                mapEntryInfo.polygon =  this.map.addPolygon(id, entry.getName(), points, attrs, mapEntryInfo.marker);
+                            }
+                            var theDisplay = this;
+                            if(mapEntryInfo.marker) {
+                                mapEntryInfo.marker.entry = entry;
+                                mapEntryInfo.marker.ramaddaClickHandler = function(marker) {
+                                    theDisplay.handleMapClick(marker);
+                                };
+                                if (this.handledMarkers == null) {
+                                    this.map.centerToMarkers();
+                                    this.handledMarkers = true;
+                                }
+                            }
+                        }
                         return mapEntryInfo;
+                    }
 		},
 		handleMapClick : function(marker) {
 			if (this.selectedMarker != null) {
@@ -895,6 +956,9 @@ function MapEntryInfo(entry) {
 			}
                         if(this.polygon!=null) {
 				map.removePolygon(this.polygon);
+                        }
+                        if(this.circle!=null) {
+                            map.removePoint(this.circle);
                         }
 		}
 

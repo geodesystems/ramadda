@@ -389,6 +389,10 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             areaClear:  function() {
                 this.getDisplayManager().notifyEvent("handleEventAreaClear", this);
             },
+            handleEventEntryMouseover: function(source, args) {
+            },
+            handleEventEntryMouseout: function(source, args) {
+            },
             handleEventEntrySelection: function(source, args) {
                 var containsEntry = this.getEntries().indexOf(args.entry) >=0;
                 if(!containsEntry) {
@@ -1103,9 +1107,12 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
                 var html = "";
                 var rowClass = "entryrow_" + this.getId();
                 var even = true;
+                if(this.entriesMap==null) 
+                    this.entriesMap = {};
                 for(var i=0;i<entries.length;i++) {
                     even = !even;
                     var entry = entries[i];
+                    this.entriesMap[entry.getId()] = entry;
                     var toolbar = this.makeEntryToolbar(entry);
                     var entryName = entry.getDisplayName();
                     if(entryName.length>100) {
@@ -1161,8 +1168,16 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
                 entryRows.unbind();
                 entryRows.mouseover(function(event){
                         //TOOLBAR
-                        if(true) return;
                         var entryId = $( this ).attr(ATTR_ENTRYID);
+                        entry = theDisplay.getEntry(entryId);
+                        if(!entry) {
+                            console.log("no entry:" + entryId);
+                            return;
+                        }
+                        theDisplay.getDisplayManager().handleEventEntryMouseover(theDisplay, {entry:entry});
+
+
+                        if(true) return;
                         var domEntryId  =Utils.cleanId(entryId);
                         var toolbarId = theDisplay.getEntryToolbarId(domEntryId);
 
@@ -1181,6 +1196,9 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
                     });
                 entryRows.mouseout(function(event){
                         var entryId = $( this ).attr(ATTR_ENTRYID);
+                        entry = theDisplay.getEntry(entryId);
+                        if(!entry) return;
+                        theDisplay.getDisplayManager().handleEventEntryMouseout(theDisplay, {entry:entry});
                         var domEntryId  =Utils.cleanId(entryId);
                         var toolbarId = theDisplay.getEntryToolbarId(entryId);
                         var toolbar = $("#" + toolbarId);
@@ -1230,6 +1248,8 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 
             },
             getEntriesTable:function (entries, columns, columnNames) {
+                if(this.entriesMap==null) 
+                    this.entriesMap = {};
                 var columnWidths = this.getProperty("columnWidths",null);
                 if(columnWidths!=null) {
                     columnWidths  = columnWidths.split(",");
@@ -1244,6 +1264,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
                 for(var i=0;i<entries.length;i++) {
                     html += HtmlUtil.openTag(TAG_TR,["valign","top"]);
                     var entry = entries[i];
+                    this.entriesMap[entry.getId()] = entry;
                     for(var j=0;j<columns.length;j++) {
                         var columnWidth = null;
                         if(columnWidths!=null) {
@@ -1489,6 +1510,9 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
                 return getGlobalRamadda();
         },
        getEntry: function(entryId, callback) {
+                if(this.entriesMap && this.entriesMap[entryId])
+                    return this.entriesMap[entryId];
+
                 var ramadda = this.getRamadda();
                 var toks = entryId.split(",");
                 if(toks.length==2) {

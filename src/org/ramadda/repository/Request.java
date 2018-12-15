@@ -1216,7 +1216,11 @@ public class Request implements Constants, Cloneable {
      * @param value _more_
      */
     public void put(Object key, Object value) {
-        Object existing = parameters.get(key);
+        put(key, value, true);
+    }
+
+    public void put(Object key, Object value, boolean singular) {
+        Object existing = singular?null:parameters.get(key);
         if(existing!=null) {
             if(existing instanceof List) 
                 ((List)existing).add(value);

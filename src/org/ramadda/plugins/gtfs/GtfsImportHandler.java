@@ -1054,6 +1054,8 @@ public class GtfsImportHandler extends ImportHandler {
                             agencyEntry.getId();
                     }
 
+                    Entry firstStop = null;
+                    Entry lastStop = null;
                     for (String[] tuple : stops) {
                         stopIds.append("[");
                         stopIds.append(agencyId);
@@ -1063,6 +1065,8 @@ public class GtfsImportHandler extends ImportHandler {
                         stopIds.append("]");
 
                         Entry stop = stopsMap.get(stopId);
+                        if(firstStop == null) firstStop = stop;
+                        lastStop = stop;
                         if (stop != null) {
                             String routes =
                                 (String) stop.getValue(
@@ -1106,6 +1110,12 @@ public class GtfsImportHandler extends ImportHandler {
                     }
                     values[GtfsTripTypeHandler.IDX_STOPS]    = s2;
                     values[GtfsTripTypeHandler.IDX_STOP_IDS] = s;
+
+                    if(firstStop!=null)
+                        values[GtfsTripTypeHandler.IDX_FIRST_STOP]    = firstStop.getId();
+                    if(lastStop!=null)
+                        values[GtfsTripTypeHandler.IDX_LAST_STOP]    = lastStop.getId();
+
                     String startTime = null;
                     String endTime   = null;
                     for (String[] tuple : stops) {

@@ -2229,9 +2229,8 @@ public class DbTypeHandler extends PointTypeHandler /* BlobTypeHandler*/ {
             Metadata metadata = new Metadata(
                     getRepository().getGUID(), entry.getId(),
                     METADATA_SAVEDSEARCH, false, name, args, null, null, null);
-            getMetadataManager().addMetadata(
-                entry,metadata);
-           request.put(ARG_DB_SEARCHID, metadata.getId());
+            getMetadataManager().addMetadata(entry,metadata);
+            request.put(ARG_DB_SEARCHID, metadata.getId());
             getEntryManager().updateEntry(request, entry);
         }
 
@@ -5126,7 +5125,6 @@ public class DbTypeHandler extends PointTypeHandler /* BlobTypeHandler*/ {
                                          makeClause(entry, id)));
             }
             request.put(ARG_DBIDS, ids);
-
             return result;
         }
 

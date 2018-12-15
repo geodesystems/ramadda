@@ -441,7 +441,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                 request = request.cloneMe();
                 request.put(ARG_TYPE, tok);
                 List<Entry> children = getEntryManager().getChildren(request,
-                                           entry);
+                                                                     entry);
                 if (children.size() > 0) {
                     return children.get(0);
                 }

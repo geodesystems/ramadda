@@ -1719,6 +1719,10 @@ public class HtmlUtils {
         return tag(TAG_TD, extra, content);
     }
 
+    public static Appendable td(Appendable sb, String content) {
+        return td(sb, content,"");
+    }
+
     /**
      * _more_
      *
@@ -1730,7 +1734,6 @@ public class HtmlUtils {
      */
     public static Appendable td(Appendable sb, String content, String extra) {
         tag(sb, TAG_TD, extra, content);
-
         return sb;
     }
 

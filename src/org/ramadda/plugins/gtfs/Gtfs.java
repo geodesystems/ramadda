@@ -385,7 +385,6 @@ public class Gtfs implements Constants {
             Entry route     = showRoute
                               ? tripEntry.getAncestor("type_gtfs_route")
                               : null;
-
             String dir =
                 tripEntry.getValue(GtfsTripTypeHandler.IDX_DIRECTION, "0");
 
@@ -394,7 +393,6 @@ public class Gtfs implements Constants {
                     || (now.getTime() > tripEntry.getEndDate())) {
                 inService = false;
             }
-
 
 
             boolean active = inService && tripInfo.getScheduleOk();
@@ -465,32 +463,32 @@ public class Gtfs implements Constants {
             Appendable buff = tripInfo.getInPast()
                               ? blob.buff1
                               : blob.buff2;
-            buff.append(HtmlUtils.open("tr",
+            HtmlUtils.open(buff, "tr",
                                        HtmlUtils.attr("valign", "top")
                                        + HtmlUtils.cssClass(inService
                     ? tripInfo.getCssClass()
-                    : "gtfs-trip-list-oos")));
+                    : "gtfs-trip-list-oos"));
 
             String tripLabel1 = HtmlUtils.div(tripInfo.getStartTimeLabel(),
                                     HtmlUtils.cssClass("gtfs-timerange"));
             String tripLabel2 = HtmlUtils.div(tripInfo.getEndTimeLabel(),
                                     HtmlUtils.cssClass("gtfs-timerange"));
-            buff.append(HtmlUtils.td(pageHandler.getEntryHref(request,
-                    tripEntry, tripLabel1), HtmlUtils.attr("width", "10")));
-            buff.append(HtmlUtils.td(pageHandler.getEntryHref(request,
-                    tripEntry, tripLabel2), HtmlUtils.attr("width", "10")));
+            HtmlUtils.td(buff, pageHandler.getEntryHref(request,
+                                                        tripEntry, tripLabel1));
+            HtmlUtils.td(buff, pageHandler.getEntryHref(request,
+                                                        tripEntry, tripLabel2));
 
             if (showRoute && (route != null)) {
-                buff.append(HtmlUtils.td(getRouteTitle(request, route, true),
-                                         ""));
+                HtmlUtils.td(buff, getRouteTitle(request, route, true),
+                                         "");
             } else {
-                buff.append(HtmlUtils.td("", ""));
+                HtmlUtils.td(buff, "", "");
             }
             if (inService && active && (blob.nextTrip == null)
                     && !tripInfo.getInPast()) {
                 blob.nextTrip = tripInfo;
             }
-            buff.append(HtmlUtils.td("", ""));
+            HtmlUtils.td(buff, "", "");
             buff.append("</tr>\n");
         }
 
@@ -525,6 +523,11 @@ public class Gtfs implements Constants {
 
             String startLabel = "Start";
             String endLabel   = "End";
+            if(blob.tripInfo.getFirstStop()!=null)
+                startLabel  = blob.tripInfo.getFirstStop().getName();
+            if(blob.tripInfo.getLastStop()!=null)
+                endLabel  = blob.tripInfo.getLastStop().getName();
+
             if (blob.nextTrip != null) {
                 TripInfo tripInfo  = blob.nextTrip;
                 Entry    tripEntry = blob.nextTrip.entry;
@@ -546,7 +549,7 @@ public class Gtfs implements Constants {
                         tripEntry, tripLabel));
 
                 List<StopTime> stops = getStopsForTrip(request, tripEntry,
-                                           stopMap);
+                                                       stopMap);
                 if (stops.size() > 0) {
                     startLabel = stops.get(0).entry.getName();
                     endLabel   = stops.get(stops.size() - 1).entry.getName();
@@ -600,30 +603,10 @@ public class Gtfs implements Constants {
 
             Appendable buff = new StringBuilder();
             buff.append(blob.header);
-
-
-            //            List<StopTime> stops = getStopsForTrip(request, tripEntry, stopMap);
-            //            if (stops.size() > 0) {
-            //            }
-
-            buff.append(
-                HtmlUtils.open(
-                    "table",
-                    HtmlUtils.cssClass("gtfs-table gtfs-trips-list")));
-            int w1 = startLabel.length();
-            if (w1 > 20) {
-                startLabel = startLabel.substring(0, 19) + "...";
-                w1         = startLabel.length();
-            }
-            int w2 = endLabel.length();
-            if (w2 > 20) {
-                endLabel = endLabel.substring(0, 19) + "...";
-                w2       = endLabel.length();
-            }
+            HtmlUtils.open(buff, "table","class","gtfs-table gtfs-trips-list");
             HtmlUtils.open(buff, "tr", HtmlUtils.cssClass("gtfs-header"));
-            HtmlUtils.col(buff, startLabel,
-                          HtmlUtils.attr("width", w1 + "em"));
-            HtmlUtils.col(buff, endLabel, HtmlUtils.attr("width", w2 + "em"));
+            HtmlUtils.col(buff, HtmlUtils.tag("div", "style=\"width:100%;overflow-x:auto\"",startLabel));
+            HtmlUtils.col(buff, HtmlUtils.tag("div", "style=\"width:100%;overflow-x:auto\"",endLabel));
             HtmlUtils.col(buff, "&nbsp;");
             HtmlUtils.col(buff, "&nbsp;");
             HtmlUtils.close(buff, "tr");
@@ -634,9 +617,7 @@ public class Gtfs implements Constants {
                 buff.append(blob.buff1);
                 buff.append(blob.buff2);
             }
-
-
-            buff.append("</table>\n");
+            HtmlUtils.close(buff,"table");
             buff.append("<p>");
             if (blob.tripInfo.getScheduleOk() && blob.inService) {
                 firstTitles.add(title);
@@ -1154,6 +1135,15 @@ public class Gtfs implements Constants {
             int stop = Utils.hhmmssToSeconds(
                            child.getValue(
                                GtfsTripTypeHandler.IDX_ENDTIME, ""));
+            Entry firstStop = null;
+            Entry lastStop = null;
+            if(Utils.stringDefined(child.getValue(GtfsTripTypeHandler.IDX_FIRST_STOP,(String)null))) {
+                firstStop = request.getRepository().getEntryManager().getEntry(request,child.getValue(GtfsTripTypeHandler.IDX_FIRST_STOP,""));
+            }
+            if(Utils.stringDefined(child.getValue(GtfsTripTypeHandler.IDX_LAST_STOP,(String)null))) {
+                lastStop = request.getRepository().getEntryManager().getEntry(request,child.getValue(GtfsTripTypeHandler.IDX_LAST_STOP,""));
+            }
+
             boolean[] week = (boolean[]) request.getRepository().decodeObject(
                                  child.getValue(
                                      GtfsTripTypeHandler.IDX_WEEK, ""));
@@ -1184,8 +1174,10 @@ public class Gtfs implements Constants {
             if (onlyFuture && inThePast) {
                 continue;
             }
+
+
             tripInfos.add(new TripInfo(child, week, scheduleOk, runningNow,
-                                       inThePast, now));
+                                       inThePast, now, firstStop, lastStop));
         }
 
         tripInfos.addAll(extra);
@@ -1229,6 +1221,10 @@ public class Gtfs implements Constants {
         /** _more_ */
         private String endTimeLabel = "";
 
+        private Entry firstStop;
+
+        private Entry lastStop;
+
         /**
          * _more_
          *
@@ -1250,7 +1246,7 @@ public class Gtfs implements Constants {
          * @param now _more_
          */
         public TripInfo(Entry entry, boolean[] week, boolean scheduleOk,
-                        boolean runningNow, boolean inPast, Date now) {
+                        boolean runningNow, boolean inPast, Date now, Entry firstStop, Entry lastStop) {
             this.entry          = entry;
             this.timeLabel      = getTimeRange(entry);
             this.startTimeLabel = Gtfs.formatStartTime(entry);
@@ -1265,6 +1261,8 @@ public class Gtfs implements Constants {
             } else {
                 this.inService = true;
             }
+            this.firstStop = firstStop;
+            this.lastStop = lastStop;
         }
 
         /**
@@ -1274,6 +1272,14 @@ public class Gtfs implements Constants {
          */
         public Entry getEntry() {
             return entry;
+        }
+
+        public Entry getFirstStop() {
+            return firstStop;
+        }
+
+        public Entry getLastStop() {
+            return lastStop;
         }
 
 

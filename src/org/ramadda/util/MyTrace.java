@@ -63,6 +63,8 @@ public class MyTrace {
     /** _more_ */
     public static boolean displayMsg = false;
 
+    public static boolean showThreadLabel = false;
+
     /** _more_ */
     private static boolean showLineNumber = false;
 
@@ -506,7 +508,8 @@ public class MyTrace {
         Thread t              = Thread.currentThread();
         String crntThreadName = t.getName();
         if ( !crntThreadName.equals(lastThreadName)) {
-            System.out.println("Thread:" + crntThreadName);
+            if(showThreadLabel)
+                System.out.println("Thread:" + crntThreadName);
             lastThreadName = crntThreadName;
         }
         //      StringBuffer sb = getBuffer ();
