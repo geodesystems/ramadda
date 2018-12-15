@@ -358,8 +358,7 @@ public class GtfsImportHandler extends ImportHandler {
                     String agencyId =
                         agencyEntry.getValue(
                             GtfsAgencyTypeHandler.IDX_AGENCY_ID, "");
-                    Gtfs.addAlias(request, entry,
-                                  "stop-" + id + "." + agencyId);
+                    Gtfs.addAlias(request, entry, "gtfs." +agencyId +".stop." + id);
                     stops.add(entry);
                     stopsMap.put(id, entry);
                 } catch (Exception exc) {
@@ -749,9 +748,8 @@ public class GtfsImportHandler extends ImportHandler {
                     entries.add(entry);
                     entry.putProperty("agencyid", agencyId);
 
-                    Gtfs.addHostAlias(request, entry, props.get("host"),
-                                      id + "." + agencyId);
-                    Gtfs.addAlias(request, entry, id + "." + agencyId);
+                    //Gtfs.addHostAlias(request, entry, props.get("host"),     "gtfs." + agencyId +"." + id);
+                    Gtfs.addAlias(request, entry, "gtfs." +agencyId +".route." + id);
 
 
                     routeMap.put(id, entry);
@@ -872,9 +870,8 @@ public class GtfsImportHandler extends ImportHandler {
                                 timezone, null, null, null, null));
                     }
                     agencies.add(entry);
-                    Gtfs.addHostAlias(request, entry,
-                                      (String) props.get("host"), agencyId);
-                    Gtfs.addAlias(request, entry, agencyId);
+                    //Gtfs.addHostAlias(request, entry,(String) props.get("host"), agencyId);
+                    Gtfs.addAlias(request, entry, "gtfs." + agencyId);
 
                     Resource resource = Utils.stringDefined(url)
                                         ? new Resource(new URL(url))
