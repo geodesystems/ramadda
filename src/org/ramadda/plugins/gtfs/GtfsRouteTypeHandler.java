@@ -352,13 +352,7 @@ public class GtfsRouteTypeHandler extends ExtensibleGroupTypeHandler {
         }
         List<Entry> vehicles = Gtfs.getVehiclesForRoute(request, agency,
                                    entry);
-        getRepository().getMapManager().addToMap(request, map, vehicles,
-                true, true);
-        for (Entry vehicle : vehicles) {
-            map.addMarker(request, vehicle);
-        }
-        map.addMarker(request, entry);
-
+        Gtfs.addToMap(request, vehicles, map);
         return false;
     }
 

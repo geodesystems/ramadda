@@ -2106,5 +2106,13 @@ public class Gtfs implements Constants {
     }
 
 
+    public static void addToMap(Request request, List<Entry> vehicles, MapInfo map)
+            throws Exception {
+        request.getRepository().getMapManager().addToMap(request, map, vehicles,
+                true, true);
+        for (Entry vehicle : vehicles) {
+            map.addMarker(request, vehicle);
+        }
+    }
 
 }

@@ -18,6 +18,7 @@ package org.ramadda.plugins.gtfs;
 
 
 import org.ramadda.repository.*;
+import org.ramadda.repository.map.*;
 import org.ramadda.repository.metadata.*;
 import org.ramadda.repository.type.*;
 
@@ -119,5 +120,13 @@ public class GtfsAgencyTypeHandler extends ExtensibleGroupTypeHandler {
         return "The schedule goes here";
     }
 
+
+    @Override
+    public boolean addToMap(Request request, Entry entry, MapInfo map)
+            throws Exception {
+        super.addToMap(request, entry, map);
+        Gtfs.addToMap(request, Gtfs.getVehicles(request, entry), map);
+        return false;
+    }
 
 }
