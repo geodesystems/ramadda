@@ -215,13 +215,12 @@ public class GtfsImportHandler extends ImportHandler {
                              new FileInputStream(new File(dir,
                                                           "stop_times.txt")), stopToTrip);
 
-
         Hashtable<String, List<String>> parentToChild = new Hashtable<String, List<String>>();
         getParentToChild(request, parentToChild, new FileInputStream(new File(dir, "stops.txt")));
 
-
         Hashtable<String, String> tripToRoute = new Hashtable<String, String>();
         getTripToRoute(request, tripToRoute, new FileInputStream(new File(dir, "trips.txt")));
+
         Hashtable<String, String> routeToAgency = new Hashtable<String, String>();
         getRouteToAgency(request, routeToAgency,
                             new FileInputStream(new File(dir, "routes.txt")));
@@ -240,24 +239,37 @@ public class GtfsImportHandler extends ImportHandler {
                         if(tripId!=null) break;
                     }
                 }
+                System.err.println("no trip for stop:" + stopId +" found from children:" + tripId +" " +parentToChild.get(stopId));
+            }
+            if(tripId == null) {
+                throw new IllegalArgumentException("Could not find trip for stop:" + stopId);
             }
             if(debugIt)
                 System.err.println("stop:" + stopId +" trip:" + tripId);
             String routeId = tripToRoute.get(tripId);
             if(debugIt)
                 System.err.println("  route:" + routeId);
-            if(routeId==null) continue;
+            if(routeId==null) {
+                if(true) throw new IllegalArgumentException("Could not find route for stop:" + stopId+" trip:" + tripId);
+                continue;
+            }
             String agencyId = routeToAgency.get(routeId);
             if(debugIt)
                 System.err.println("     agency:" + agencyId);
-            if(agencyId==null) continue;
+            if(agencyId==null) {
+                if(true) throw new IllegalArgumentException("Could not find agencyID for stop:" + stopId +" trip:" + tripId +" route:" + routeId);
+                continue;
+            }
             Entry agency = agencyMap.get(agencyId);
-            if(agency==null)continue;
+            if(agency==null) {
+                if(true) throw new IllegalArgumentException("Could not find agency for stop:" + stopId);
+                continue;
+            }
             if(debugIt)
                 System.err.println("           agency:" + agency.getName());
             stopToAgency.put(stopId, agency);
         }
-
+        if(true) throw new IllegalArgumentException("all good");
         Hashtable<String, List<float[]>> pts = processShapes(request,
                                                    new File(dir,
                                                        "shapes.txt"));
