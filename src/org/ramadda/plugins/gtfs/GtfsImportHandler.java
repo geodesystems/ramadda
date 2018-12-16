@@ -269,7 +269,7 @@ public class GtfsImportHandler extends ImportHandler {
                 System.err.println("           agency:" + agency.getName());
             stopToAgency.put(stopId, agency);
         }
-        if(true) throw new IllegalArgumentException("all good");
+        //        if(true) throw new IllegalArgumentException("all good");
         Hashtable<String, List<float[]>> pts = processShapes(request,
                                                    new File(dir,
                                                        "shapes.txt"));
@@ -400,6 +400,7 @@ public class GtfsImportHandler extends ImportHandler {
                     Entry agencyEntry = stopToAgency.get(id);
                     if(agencyEntry==null) {
                         System.err.println("could not find agency for stop:" + id);
+                        if(true) throw new IllegalArgumentException("could not find agency for stop:" + id);
                         agencyEntry  = dfltAgency;
                     }
 
