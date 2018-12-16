@@ -238,7 +238,9 @@ public class GtfsImportHandler extends ImportHandler {
                         if(tripId!=null) break;
                     }
                 }
-                System.err.println("no trip for stop:" + stopId +" found from children:" + tripId +" " +parentToChild.get(stopId));
+                if(tripId==null) {
+                    System.err.println("no trip for stop:" + stopId +" found from children:" + tripId +" " +parentToChild.get(stopId));
+                }
             }
             if(tripId == null) {
                 throw new IllegalArgumentException("Could not find trip for stop:" + stopId);
