@@ -125,7 +125,9 @@ public class GtfsAgencyTypeHandler extends ExtensibleGroupTypeHandler {
     public boolean addToMap(Request request, Entry entry, MapInfo map)
             throws Exception {
         super.addToMap(request, entry, map);
-        Gtfs.addToMap(request, Gtfs.getVehicles(request, entry), map);
+        List<Entry> vehicles = Gtfs.getVehicles(request, entry);
+        System.err.println("all vehicles: "+ vehicles);
+        Gtfs.addToMap(request,vehicles , map);
         return false;
     }
 
