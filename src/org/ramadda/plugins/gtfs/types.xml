@@ -89,9 +89,7 @@ myLocationOffset="0.008"
 ----
 <p>
 +section title="Agency Information" class="ramadda-section-map"
-+box-yellow
 {{information details="true" showTitle="false"}}
--box-yellow
 -section
 ]]>
 </wiki>
