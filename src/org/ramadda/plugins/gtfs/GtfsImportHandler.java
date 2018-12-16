@@ -215,8 +215,9 @@ public class GtfsImportHandler extends ImportHandler {
                              new FileInputStream(new File(dir,
                                                           "stop_times.txt")), stopToTrip);
 
+        List<String> stopIds = new ArrayList<String>();
         Hashtable<String, List<String>> parentToChild = new Hashtable<String, List<String>>();
-        getParentToChild(request, parentToChild, new FileInputStream(new File(dir, "stops.txt")));
+        getParentToChild(request, parentToChild, stopIds, new FileInputStream(new File(dir, "stops.txt")));
 
         Hashtable<String, String> tripToRoute = new Hashtable<String, String>();
         getTripToRoute(request, tripToRoute, new FileInputStream(new File(dir, "trips.txt")));
@@ -227,10 +228,8 @@ public class GtfsImportHandler extends ImportHandler {
 
         boolean debugIt = false;
         Hashtable<String, Entry> stopToAgency = new Hashtable<String, Entry>();
-        for (Enumeration keys = stopToTrip.keys(); keys.hasMoreElements(); ) {
-            String stopId = (String) keys.nextElement();
-            String tripId = null;
-            tripId = stopToTrip.get(stopId);
+        for(String stopId: stopIds) {
+            String tripId =  stopToTrip.get(stopId);
             if(tripId == null) {
                 List<String> childs = parentToChild.get(stopId);
                 if(childs!=null) {
@@ -1007,6 +1006,7 @@ public class GtfsImportHandler extends ImportHandler {
 
     private void getParentToChild(final Request request,
                                 final Hashtable<String, List<String>> parentToChild,
+                                  final List<String> stopIds,
                                   InputStream is)
             throws Exception {
         TextReader    textReader = new TextReader();
@@ -1024,6 +1024,7 @@ public class GtfsImportHandler extends ImportHandler {
                     List<String> toks = row.getValues();
                     String parentId = getValue("parent_station", map, toks, "");
                     String stopId = getValue("stop_id", map, toks, "");
+                    stopIds.add(stopId);
                     if(parentId.length()>0) {
                         List<String> childs = parentToChild.get(parentId);
                         if(childs==null) {
