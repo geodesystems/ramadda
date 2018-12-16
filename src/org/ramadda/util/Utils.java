@@ -938,8 +938,8 @@ public class Utils {
      *
      * @return _more_
      */
-    public static Hashtable<String, String> makeMap(String... args) {
-        Hashtable<String, String> map = new Hashtable<String, String>();
+    public static Hashtable makeMap(Object... args) {
+        Hashtable map = new Hashtable();
         for (int i = 0; i < args.length; i += 2) {
             map.put(args[i], args[i + 1]);
         }

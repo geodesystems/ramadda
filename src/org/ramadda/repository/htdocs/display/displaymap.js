@@ -46,7 +46,9 @@ function RamaddaMapDisplay(displayManager, id, properties) {
                     kmlLayerName:"",
                     geojsonLayer:null,
                     geojsonLayerName:"",
+                    theMap: null
             });
+
 	RamaddaUtil.inherit(this, SUPER = new RamaddaDisplay(displayManager, id,
 			DISPLAY_MAP, properties));
 	addRamaddaDisplay(this);
@@ -109,16 +111,18 @@ function RamaddaMapDisplay(displayManager, id, properties) {
                         if(mapLayers) {
                             params.mapLayers =  [mapLayers];
                         }
+
+                        this.map =  this.getProperty("theMap",null);
                         if(this.map) {
-                            this.map.map.render(this.getDomId(ID_MAP))
-                            return;
+                            this.map.setMapDiv(this.getDomId(ID_MAP));
+                        } else {
+                            this.map = new RepositoryMap(this.getDomId(ID_MAP), params);
                         }
-                        this.map = new RepositoryMap(this.getDomId(ID_MAP), params);
                         if(this.doDisplayMap()) {
                             this.map.setDefaultCanSelect(false);
                         }
+                        this.map.initMap(false);
 
-			this.map.initMap(false);
                         if(this.kmlLayer!=null) {
                             var url = ramaddaBaseUrl + "/entry/show?output=shapefile.kml&entryid=" + this.kmlLayer;
                             this.addBaseMapLayer(url, true);

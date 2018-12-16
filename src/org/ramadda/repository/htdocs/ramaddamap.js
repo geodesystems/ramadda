@@ -188,6 +188,12 @@ function RepositoryMap(mapId, params) {
             }
         };
         this.map = new OpenLayers.Map(this.mapDivId,options);
+        if(this.mapHidden) {
+            //A hack when we are hidden
+            this.map.size = new OpenLayers.Size(1,1);
+        }
+
+
         this.addBaseLayers();
         if(this.kmlLayer) {
             var url = ramaddaBaseUrl + "/entry/show?output=shapefile.kml&entryid=" + this.kmlLayer;
@@ -200,8 +206,8 @@ function RepositoryMap(mapId, params) {
 
 
     jQuery(document).ready(function($) {
-            if(theMap.map) {
-                theMap.map.updateSize();
+            if(theMap.getMap()) {
+                theMap.getMap().updateSize();
             }
      });
 
@@ -209,6 +215,13 @@ function RepositoryMap(mapId, params) {
 
 function initMapFunctions(theMap) {
     RamaddaUtil.defineMembers(theMap,  {
+            setMapDiv: function(divid) {
+                this.mapHidden  = false;
+                this.mapDivId = divid;
+                theMap.getMap().render(theMap.mapDivId);
+                theMap.getMap().updateSize();
+                theMap.centerOnMarkers(theMap.dfltBounds);
+            },
             handleFeatureover: function(feature) { 
                 layer = feature.layer;
                 if(layer.canSelect === false || !(layer.isMapLayer=== true)) return;
@@ -1789,8 +1802,8 @@ function initMapFunctions(theMap) {
                 else
                     bounds = fromLine;
             }
-            for(var layer in this.map.layers) {
-                layer = this.map.layers[layer];
+            for(var layer in this.getMap().layers) {
+                layer = this.getMap().layers[layer];
                 if(!layer.getDataExtent) continue;
                 if(layer.isBaseLayer || !layer.getVisibility()) continue;
                 var dataBounds = layer.getDataExtent();
@@ -1814,7 +1827,7 @@ function initMapFunctions(theMap) {
             return;
         }
 
-        if (!this.map) {
+        if (!this.getMap()) {
             this.defaultBounds = bounds;
             return;
         }
@@ -1828,17 +1841,17 @@ function initMapFunctions(theMap) {
     theMap.setViewToBounds = function(bounds) {
         projBounds = this.transformLLBounds(bounds);
         if(projBounds.getWidth() ==0) {
-            this.map.zoomTo(this.initialZoom);
+            this.getMap().zoomTo(this.initialZoom);
         } else {
-            this.map.zoomToExtent(projBounds);
+            this.getMap().zoomToExtent(projBounds);
         }
-        this.map.setCenter(projBounds.getCenterLonLat());
+        this.getMap().setCenter(projBounds.getCenterLonLat());
 
     }
 
     theMap.setCenter = function(latLonPoint) {
         var projPoint =  this.transformLLPoint(latLonPoint);
-        this.map.setCenter(projPoint);
+        this.getMap().setCenter(projPoint);
     }
 
 
@@ -1847,15 +1860,15 @@ function initMapFunctions(theMap) {
             return;
         bounds = this.markers.getDataExtent();
         if(bounds == null) return;
-        this.map.setCenter(bounds.getCenterLonLat());
-        this.map.zoomToExtent(bounds);
+        this.getMap().setCenter(bounds.getCenterLonLat());
+        this.getMap().zoomToExtent(bounds);
     }
 
     theMap.centerToMarkers = function() {
         if (!this.markers)
             return;
         bounds = this.markers.getDataExtent();
-        this.map.setCenter(bounds.getCenterLonLat());
+        this.getMap().setCenter(bounds.getCenterLonLat());
     }
 
     theMap.setInitialCenterAndZoom = function(lon, lat, zoomLevel) {
@@ -1953,7 +1966,7 @@ function initMapFunctions(theMap) {
 
 
     theMap.initBoxes = function(theBoxes) {
-        if (!this.map) {
+        if (!this.getMap()) {
             // alert('whoa, no map');
         }
         this.addLayer(theBoxes);
@@ -1962,7 +1975,7 @@ function initMapFunctions(theMap) {
             return null;
         };
         var sf = new OpenLayers.Control.SelectFeature(theBoxes);
-        this.map.addControl(sf);
+        this.getMap().addControl(sf);
         sf.activate();
     }
 
@@ -1978,7 +1991,7 @@ function initMapFunctions(theMap) {
             this.boxes = new OpenLayers.Layer.Boxes("Boxes", {
                             wrapDateLine : wrapDatelineDefault
                         });
-            if (!this.map) {
+            if (!this.getMap()) {
                 this.initialBoxes = this.boxes;
             } else {
                 this.initBoxes(this.boxes);
@@ -2131,7 +2144,7 @@ function initMapFunctions(theMap) {
                   box: false
                   });
 
-                  this.map.addControl(sf);
+                  this.getMap().addControl(sf);
                   sf.activate();
                 */
             }
@@ -2230,7 +2243,7 @@ function initMapFunctions(theMap) {
         }
 
         if (this.currentPopup) {
-            this.map.removePopup(this.currentPopup);
+            this.getMap().removePopup(this.currentPopup);
             this.currentPopup.destroy();
         }
 
@@ -2287,7 +2300,7 @@ function initMapFunctions(theMap) {
 
         marker.popupText = popup;
         popup.marker = marker;
-        this.map.addPopup(popup);
+        this.getMap().addPopup(popup);
         this.currentPopup = popup;
 
 

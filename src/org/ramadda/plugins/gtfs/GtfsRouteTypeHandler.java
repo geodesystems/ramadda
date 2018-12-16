@@ -353,6 +353,7 @@ public class GtfsRouteTypeHandler extends ExtensibleGroupTypeHandler {
         List<Entry> vehicles = Gtfs.getVehiclesForRoute(request, agency,
                                    entry);
         Gtfs.addToMap(request, vehicles, map);
+
         return false;
     }
 

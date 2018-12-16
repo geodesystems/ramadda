@@ -78,6 +78,9 @@ public class MapInfo {
     /** is the map for selection */
     private boolean forSelection = false;
 
+    /** _more_          */
+    private boolean mapHidden = false;
+
     /** list of map regions */
     private List<MapRegion> mapRegions = null;
 
@@ -166,10 +169,28 @@ public class MapInfo {
      *
      * @return _more_
      */
+    public String getMapVar() {
+        return this.mapVarName;
+    }
+
+    /**
+     * _more_
+     *
+     * @return _more_
+     */
     public static final String makeMapVar() {
         return "ramaddaMap" + (cnt++);
     }
 
+
+    /**
+     * _more_
+     *
+     * @param hidden _more_
+     */
+    public void setMapHidden(boolean hidden) {
+        this.mapHidden = hidden;
+    }
 
     /**
      * _more_
@@ -316,9 +337,15 @@ public class MapInfo {
                         : (" width:" + ((width > 0)
                                         ? width + "px; "
                                         : (-width) + "%;"));
-        String styles =
-            "border:1px #888888 solid; background-color:#7391ad; height:"
-            + height + "px; " + swidth;
+        String styles;
+        if (mapHidden) {
+            styles = "display:none;";
+        } else {
+            styles =
+                "border:1px #888888 solid; background-color:#7391ad; height:"
+                + height + "px; " + swidth;
+        }
+
         String readout =
             HtmlUtils.div("&nbsp;",
                           HtmlUtils.id("ramadda-map-latlonreadout")
@@ -545,6 +572,10 @@ public class MapInfo {
                 }
             }
             props.append("\n");
+        }
+        if (mapHidden) {
+            props.append(",");
+            props.append("mapHidden:true");
         }
         props.append("}");
 

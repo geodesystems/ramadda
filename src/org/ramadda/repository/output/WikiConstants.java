@@ -83,6 +83,9 @@ public interface WikiConstants {
     /** show the details attribute */
     public static final String ATTR_DETAILS = "details";
 
+    /** _more_          */
+    public static final String ATTR_MAPDETAILS = "mapDetails";
+
     /** _more_ */
     public static final String ATTR_DECORATE = "decorate";
 
@@ -484,7 +487,7 @@ public interface WikiConstants {
     /** wiki import */
     public static final String WIKI_TAG_PROPERTIES = "properties";
 
-    /** _more_          */
+    /** _more_ */
     public static final String WIKI_TAG_LABEL = "label";
 
 
@@ -583,7 +586,7 @@ public interface WikiConstants {
     /** _more_ */
     public static final String ATTR_SHOWFORM = "showForm";
 
-    /** _more_          */
+    /** _more_ */
     public static final String ATTR_TEXT = "text";
 
     /** _more_ */

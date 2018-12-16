@@ -464,8 +464,8 @@ public class Gtfs implements Constants {
                               ? blob.buff1
                               : blob.buff2;
             HtmlUtils.open(buff, "tr",
-                                       HtmlUtils.attr("valign", "top")
-                                       + HtmlUtils.cssClass(inService
+                           HtmlUtils.attr("valign", "top")
+                           + HtmlUtils.cssClass(inService
                     ? tripInfo.getCssClass()
                     : "gtfs-trip-list-oos"));
 
@@ -473,14 +473,15 @@ public class Gtfs implements Constants {
                                     HtmlUtils.cssClass("gtfs-timerange"));
             String tripLabel2 = HtmlUtils.div(tripInfo.getEndTimeLabel(),
                                     HtmlUtils.cssClass("gtfs-timerange"));
-            HtmlUtils.td(buff, pageHandler.getEntryHref(request,
-                                                        tripEntry, tripLabel1));
-            HtmlUtils.td(buff, pageHandler.getEntryHref(request,
-                                                        tripEntry, tripLabel2));
+            HtmlUtils.td(buff,
+                         pageHandler.getEntryHref(request, tripEntry,
+                             tripLabel1));
+            HtmlUtils.td(buff,
+                         pageHandler.getEntryHref(request, tripEntry,
+                             tripLabel2));
 
             if (showRoute && (route != null)) {
-                HtmlUtils.td(buff, getRouteTitle(request, route, true),
-                                         "");
+                HtmlUtils.td(buff, getRouteTitle(request, route, true), "");
             } else {
                 HtmlUtils.td(buff, "", "");
             }
@@ -523,10 +524,12 @@ public class Gtfs implements Constants {
 
             String startLabel = "Start";
             String endLabel   = "End";
-            if(blob.tripInfo.getFirstStop()!=null)
-                startLabel  = blob.tripInfo.getFirstStop().getName();
-            if(blob.tripInfo.getLastStop()!=null)
-                endLabel  = blob.tripInfo.getLastStop().getName();
+            if (blob.tripInfo.getFirstStop() != null) {
+                startLabel = blob.tripInfo.getFirstStop().getName();
+            }
+            if (blob.tripInfo.getLastStop() != null) {
+                endLabel = blob.tripInfo.getLastStop().getName();
+            }
 
             if (blob.nextTrip != null) {
                 TripInfo tripInfo  = blob.nextTrip;
@@ -549,7 +552,7 @@ public class Gtfs implements Constants {
                         tripEntry, tripLabel));
 
                 List<StopTime> stops = getStopsForTrip(request, tripEntry,
-                                                       stopMap);
+                                           stopMap);
                 if (stops.size() > 0) {
                     startLabel = stops.get(0).entry.getName();
                     endLabel   = stops.get(stops.size() - 1).entry.getName();
@@ -603,10 +606,18 @@ public class Gtfs implements Constants {
 
             Appendable buff = new StringBuilder();
             buff.append(blob.header);
-            HtmlUtils.open(buff, "table","class","gtfs-table gtfs-trips-list");
+            HtmlUtils.open(buff, "table", "class",
+                           "gtfs-table gtfs-trips-list");
             HtmlUtils.open(buff, "tr", HtmlUtils.cssClass("gtfs-header"));
-            HtmlUtils.col(buff, HtmlUtils.tag("div", "style=\"width:100%;overflow-x:auto\"",startLabel));
-            HtmlUtils.col(buff, HtmlUtils.tag("div", "style=\"width:100%;overflow-x:auto\"",endLabel));
+            HtmlUtils.col(
+                buff,
+                HtmlUtils.tag(
+                    "div", "style=\"width:100%;overflow-x:auto\"",
+                    startLabel));
+            HtmlUtils.col(
+                buff,
+                HtmlUtils.tag(
+                    "div", "style=\"width:100%;overflow-x:auto\"", endLabel));
             HtmlUtils.col(buff, "&nbsp;");
             HtmlUtils.col(buff, "&nbsp;");
             HtmlUtils.close(buff, "tr");
@@ -617,7 +628,7 @@ public class Gtfs implements Constants {
                 buff.append(blob.buff1);
                 buff.append(blob.buff2);
             }
-            HtmlUtils.close(buff,"table");
+            HtmlUtils.close(buff, "table");
             buff.append("<p>");
             if (blob.tripInfo.getScheduleOk() && blob.inService) {
                 firstTitles.add(title);
@@ -722,11 +733,8 @@ public class Gtfs implements Constants {
     /**
      * _more_
      *
-     * @param wikiUtil _more_
      * @param request _more_
-     * @param originalEntry _more_
      * @param entry _more_
-     * @param props _more_
      * @param sb _more_
      *
      * @return _more_
@@ -1136,12 +1144,22 @@ public class Gtfs implements Constants {
                            child.getValue(
                                GtfsTripTypeHandler.IDX_ENDTIME, ""));
             Entry firstStop = null;
-            Entry lastStop = null;
-            if(Utils.stringDefined(child.getValue(GtfsTripTypeHandler.IDX_FIRST_STOP,(String)null))) {
-                firstStop = request.getRepository().getEntryManager().getEntry(request,child.getValue(GtfsTripTypeHandler.IDX_FIRST_STOP,""));
+            Entry lastStop  = null;
+            if (Utils.stringDefined(
+                    child.getValue(
+                        GtfsTripTypeHandler.IDX_FIRST_STOP, (String) null))) {
+                firstStop =
+                    request.getRepository().getEntryManager().getEntry(
+                        request,
+                        child.getValue(
+                            GtfsTripTypeHandler.IDX_FIRST_STOP, ""));
             }
-            if(Utils.stringDefined(child.getValue(GtfsTripTypeHandler.IDX_LAST_STOP,(String)null))) {
-                lastStop = request.getRepository().getEntryManager().getEntry(request,child.getValue(GtfsTripTypeHandler.IDX_LAST_STOP,""));
+            if (Utils.stringDefined(
+                    child.getValue(
+                        GtfsTripTypeHandler.IDX_LAST_STOP, (String) null))) {
+                lastStop = request.getRepository().getEntryManager().getEntry(
+                    request,
+                    child.getValue(GtfsTripTypeHandler.IDX_LAST_STOP, ""));
             }
 
             boolean[] week = (boolean[]) request.getRepository().decodeObject(
@@ -1221,8 +1239,10 @@ public class Gtfs implements Constants {
         /** _more_ */
         private String endTimeLabel = "";
 
+        /** _more_ */
         private Entry firstStop;
 
+        /** _more_ */
         private Entry lastStop;
 
         /**
@@ -1244,9 +1264,12 @@ public class Gtfs implements Constants {
          * @param runningNow _more_
          *  @param inPast _more_
          * @param now _more_
+         * @param firstStop _more_
+         * @param lastStop _more_
          */
         public TripInfo(Entry entry, boolean[] week, boolean scheduleOk,
-                        boolean runningNow, boolean inPast, Date now, Entry firstStop, Entry lastStop) {
+                        boolean runningNow, boolean inPast, Date now,
+                        Entry firstStop, Entry lastStop) {
             this.entry          = entry;
             this.timeLabel      = getTimeRange(entry);
             this.startTimeLabel = Gtfs.formatStartTime(entry);
@@ -1262,7 +1285,7 @@ public class Gtfs implements Constants {
                 this.inService = true;
             }
             this.firstStop = firstStop;
-            this.lastStop = lastStop;
+            this.lastStop  = lastStop;
         }
 
         /**
@@ -1274,10 +1297,20 @@ public class Gtfs implements Constants {
             return entry;
         }
 
+        /**
+         * _more_
+         *
+         * @return _more_
+         */
         public Entry getFirstStop() {
             return firstStop;
         }
 
+        /**
+         * _more_
+         *
+         * @return _more_
+         */
         public Entry getLastStop() {
             return lastStop;
         }
@@ -2106,10 +2139,22 @@ public class Gtfs implements Constants {
     }
 
 
-    public static void addToMap(Request request, List<Entry> vehicles, MapInfo map)
+    /**
+     * _more_
+     *
+     * @param request _more_
+     * @param vehicles _more_
+     * @param map _more_
+     *
+     * @throws Exception _more_
+     */
+    public static void addToMap(Request request, List<Entry> vehicles,
+                                MapInfo map)
             throws Exception {
-        request.getRepository().getMapManager().addToMap(request, map, vehicles,
-                true, true);
+        request.getRepository().getMapManager().addToMap(request, map,
+                vehicles,
+                Utils.makeMap(MapManager.PROP_DETAILED, "true",
+                              MapManager.PROP_SCREENBIGRECTS, "true"));
         for (Entry vehicle : vehicles) {
             map.addMarker(request, vehicle);
         }

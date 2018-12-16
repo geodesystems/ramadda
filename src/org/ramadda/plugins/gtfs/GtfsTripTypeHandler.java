@@ -115,6 +115,7 @@ public class GtfsTripTypeHandler extends GenericTypeHandler {
     /** _more_ */
     public static final int IDX_FIRST_STOP = IDX++;
 
+    /** _more_ */
     public static final int IDX_LAST_STOP = IDX++;
 
 
@@ -169,7 +170,7 @@ public class GtfsTripTypeHandler extends GenericTypeHandler {
             String sked = Gtfs.getWeekString(
                               (boolean[]) getRepository().decodeObject(
                                   entry.getValue(IDX_WEEK, "")));
-            if (!Utils.stringDefined(sked)) {
+            if ( !Utils.stringDefined(sked)) {
                 sked = "No scheduled days";
             }
 
@@ -453,6 +454,7 @@ public class GtfsTripTypeHandler extends GenericTypeHandler {
         List<Entry> vehicles = Gtfs.getVehiclesForTrip(request, agency,
                                    entry);
         Gtfs.addToMap(request, vehicles, map);
+
         return false;
     }
 

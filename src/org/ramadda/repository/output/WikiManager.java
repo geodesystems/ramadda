@@ -267,7 +267,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
         super(repository);
     }
 
-    /** _more_          */
+    /** _more_ */
     private String displayImports;
 
     /**
@@ -441,7 +441,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                 request = request.cloneMe();
                 request.put(ARG_TYPE, tok);
                 List<Entry> children = getEntryManager().getChildren(request,
-                                                                     entry);
+                                           entry);
                 if (children.size() > 0) {
                     return children.get(0);
                 }
@@ -1023,11 +1023,12 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
             if (id != null) {
                 text = getWikiMetadataLabel(request, entry, id, text);
             }
-            if(wikify) {
-                text = wikifyEntry(request, entry, text, false, null,
-                                   null, wikiUtil.getNotTags());
+            if (wikify) {
+                text = wikifyEntry(request, entry, text, false, null, null,
+                                   wikiUtil.getNotTags());
 
             }
+
             return text;
         } else if (theTag.equals(WIKI_TAG_LINK)) {
             boolean linkResource = Utils.getProperty(props,
@@ -2377,7 +2378,6 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
      * @param entry _more_
      * @param id _more_
      * @param text _more_
-     * @param wikiUtil _more_
      *
      * @return _more_
      *
@@ -2391,6 +2391,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                     "wiki_label", true)) {
             if (Misc.equals(id, metadata.getAttr1())) {
                 text = metadata.getAttr2();
+
                 break;
             }
         }
@@ -2442,11 +2443,6 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                 children.add(entry);
             }
         }
-
-
-
-
-
 
         if (children.size() == 0) {
             String message = Utils.getProperty(props, ATTR_MESSAGE,
@@ -2533,10 +2529,8 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                     mapProps.put(msets.get(i), Json.quote(msets.get(i + 1)));
                 }
             }
-
             MapInfo map = getMapManager().getMap(newRequest, entry, children,
                               sb, width, height, mapProps, props);
-
             if (icon != null) {
                 newRequest.remove(ARG_ICON);
             }
@@ -4980,7 +4974,6 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
         topProps.add("defaultMapLayer");
         topProps.add(Json.quote(defaultLayer));
 
-
         String mainDivId = (String) props.get("divid");
         if (mainDivId == null) {
             mainDivId = HtmlUtils.getUniqueId("displaydiv");
@@ -5072,16 +5065,18 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
 
 
         boolean isMap = displayType.equals("map");
-        if (false && isMap) {
+        /*
+        if (isMap) {
             String mapVar = Utils.getProperty(props, ATTR_MAPVAR);
             if (mapVar == null) {
                 mapVar = MapInfo.makeMapVar();
                 props.put(ATTR_MAPVAR, mapVar);
             }
-            Utils.add(propList, "map", mapVar);
+            props.put("mapHidden","true");
             MapInfo mapInfo = handleMapTag(request, entry, originalEntry,
-                                           "map", props, sb);
-        }
+                                           WIKI_TAG_MAPENTRY, props, sb);
+            Utils.add(propList, "theMap", mapVar);
+            }*/
 
         HtmlUtils.commentJS(
             js,
@@ -5101,7 +5096,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                                          ")"));
         }
 
-        if (displayType.equals("map")) {
+        if (isMap) {
             List<Metadata> metadataList =
                 getMetadataManager().findMetadata(request, entry,
                     "map_displaymap", true);

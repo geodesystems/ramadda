@@ -30,9 +30,10 @@ import org.ramadda.repository.type.*;
 import org.ramadda.repository.util.DateArgument;
 import org.ramadda.sql.Clause;
 
+
 import org.ramadda.util.HtmlUtils;
 import org.ramadda.util.JQuery;
-
+import org.ramadda.util.Utils;
 
 import org.w3c.dom.*;
 
@@ -436,7 +437,11 @@ public class SpecialSearch extends RepositoryManager implements RequestHandler {
         MapInfo map = getRepository().getMapManager().createMap(request,
                           contentsWidth, contentsHeight, true, null);
 
-        getMapManager().addToMap(request, map, allEntries, false, true);
+
+        getMapManager().addToMap(request, map, allEntries,
+                                 Utils.makeMap(MapManager.PROP_DETAILED,
+                                     "false", MapManager.PROP_SCREENBIGRECTS,
+                                     "true"));
         Rectangle2D.Double bounds = getEntryManager().getBounds(allEntries);
 
 

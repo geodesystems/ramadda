@@ -18,9 +18,6 @@ package org.ramadda.repository.map;
 
 
 import org.ramadda.plugins.map.ShapefileOutputHandler;
-
-
-import org.ramadda.repository.type.TypeHandler;
 import org.ramadda.repository.Entry;
 import org.ramadda.repository.Repository;
 import org.ramadda.repository.RepositoryManager;
@@ -33,6 +30,9 @@ import org.ramadda.repository.output.KmlOutputHandler;
 import org.ramadda.repository.output.OutputHandler;
 import org.ramadda.repository.output.WikiConstants;
 import org.ramadda.repository.output.WikiManager;
+
+
+import org.ramadda.repository.type.TypeHandler;
 import org.ramadda.util.HtmlUtils;
 import org.ramadda.util.JQuery;
 import org.ramadda.util.Json;
@@ -62,6 +62,12 @@ import java.util.List;
  * @author Jeff McWhirter
  */
 public class MapManager extends RepositoryManager implements WikiConstants {
+
+    /** _more_          */
+    public static final String PROP_SCREENBIGRECTS = "screenBigRects";
+
+    /** _more_          */
+    public static final String PROP_DETAILED = "detailed";
 
     /** _more_ */
     public static final String PROP_INITIAL_LOCATION = "initialLocation";
@@ -245,11 +251,35 @@ public class MapManager extends RepositoryManager implements WikiConstants {
                              boolean forSelection,
                              Hashtable<String, String> props)
             throws Exception {
+        return createMap(request, width, height, forSelection, false, props);
+    }
+
+
+    /**
+     * _more_
+     *
+     * @param request _more_
+     * @param width _more_
+     * @param height _more_
+     * @param forSelection _more_
+     * @param hidden _more_
+     * @param props _more_
+     *
+     * @return _more_
+     *
+     * @throws Exception _more_
+     */
+    public MapInfo createMap(Request request, int width, int height,
+                             boolean forSelection, boolean hidden,
+                             Hashtable<String, String> props)
+            throws Exception {
 
         //        System.err.println("MapManager.createMap: " + width + " " + height);
+
         MapInfo mapInfo = new MapInfo(request, getRepository(), width,
                                       height, forSelection);
 
+        mapInfo.setMapHidden(hidden);
         if (mapLayers != null) {
             mapInfo.addProperty("mapLayers",
                                 StringUtil.split(mapLayers, ";", true, true));
@@ -1141,7 +1171,8 @@ public class MapManager extends RepositoryManager implements WikiConstants {
         boolean doCategories = Utils.getProperty(props, "doCategories", true);
         boolean details = request.get("mapdetails",
                                       Utils.getProperty(props, ATTR_DETAILS,
-                                          false));
+                                          Utils.getProperty(props,
+                                              ATTR_MAPDETAILS, false)));
         boolean listentries = Utils.getProperty(props, ATTR_LISTENTRIES,
                                   false);
         boolean cbx          = Utils.getProperty(props, "showCheckbox",
@@ -1162,7 +1193,8 @@ public class MapManager extends RepositoryManager implements WikiConstants {
             forceBounds = false;
         }
 
-        MapInfo map = createMap(request, width, height, false, null);
+        boolean hidden = Misc.equals(props.get("mapHidden"), "true");
+        MapInfo map = createMap(request, width, height, false, hidden, null);
         if (map == null) {
             return null;
         }
@@ -1179,7 +1211,10 @@ public class MapManager extends RepositoryManager implements WikiConstants {
         if (mapProps != null) {
             map.getMapProps().putAll(mapProps);
         }
-        addToMap(request, map, entriesToUse, details, true);
+        Hashtable theProps = Utils.makeMap(PROP_DETAILED, "" + details,
+                                           PROP_SCREENBIGRECTS, "true");
+
+        addToMap(request, map, entriesToUse, theProps);
 
         Rectangle2D.Double bounds = null;
         if (viewBounds != null) {
@@ -1302,15 +1337,17 @@ public class MapManager extends RepositoryManager implements WikiConstants {
      * @param request      The request
      * @param map          the map information
      * @param entriesToUse the Entrys to use
-     * @param detailed     deatiled or not
-     * @param screenBigRects     handle big rectangles
+     * @param props _more_
      *
      * @throws Exception  problem adding entries to map
      */
     public void addToMap(Request request, MapInfo map,
-                         List<Entry> entriesToUse, boolean detailed,
-                         boolean screenBigRects)
+                         List<Entry> entriesToUse, Hashtable props)
             throws Exception {
+
+        boolean detailed = Misc.getProperty(props, PROP_DETAILED, false);
+        boolean screenBigRects = Misc.getProperty(props, PROP_SCREENBIGRECTS,
+                                     false);
 
         if ((entriesToUse.size() == 1) && detailed) {
             List<Metadata> metadataList =
@@ -1353,14 +1390,11 @@ public class MapManager extends RepositoryManager implements WikiConstants {
         boolean          makeRectangles = cnt <= 100;
         MapBoxProperties mapProperties  = new MapBoxProperties("blue", false);
 
-
         if (request.get(ARG_MAP_ICONSONLY, false)) {
             makeRectangles = false;
         }
 
-
         for (Entry entry : entriesToUse) {
-
             boolean addMarker = true;
             String  idBase    = entry.getId();
             List<Metadata> metadataList =
