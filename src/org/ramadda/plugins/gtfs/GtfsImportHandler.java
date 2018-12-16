@@ -243,7 +243,8 @@ public class GtfsImportHandler extends ImportHandler {
                 }
             }
             if(tripId == null) {
-                throw new IllegalArgumentException("Could not find trip for stop:" + stopId);
+                //                throw new IllegalArgumentException("Could not find trip for stop:" + stopId);
+                continue;
             }
             if(debugIt)
                 System.err.println("stop:" + stopId +" trip:" + tripId);
