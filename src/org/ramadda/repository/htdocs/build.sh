@@ -1,3 +1,5 @@
+#!/bin/sh
+
 dir=`dirname $0`
 yui="java -jar ${dir}/../../../../../lib/yuicompressor-2.4.8.jar"
 
