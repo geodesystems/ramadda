@@ -3,15 +3,15 @@
 dir=`dirname $0`
 yui="java -jar ${dir}/../../../../../lib/yuicompressor-2.4.8.jar"
 
-cat display/utils.js display/display.js display/pointdata.js display/control.js display/displaychart.js display/displayd3.js display/displayentry.js display/displayext.js display/displaymanager.js display/displaymap.js display/displaytable.js > display/display_all.js
-${yui} display/display_all.js > display/display_all_mini.js
-${yui} ramadda.js > ramadda.mini.js
-${yui} ramaddamap.js > ramaddamap.mini.js
-${yui} utils.js > utils.mini.js
-${yui} wiki.js > wiki.mini.js
-${yui} repositories.js > repositories.mini.js
-${yui} selectform.js > selectform.mini.js
-${yui} entry.js > entry.mini.js
-${yui} style.css > style.mini.css
-${yui} display.css > display.mini.css
+cat ${dir}/display/utils.js ${dir}/display/display.js ${dir}/display/pointdata.js ${dir}/display/control.js ${dir}/display/displaychart.js ${dir}/display/displayd3.js ${dir}/display/displayentry.js ${dir}/display/displayext.js ${dir}/display/displaymanager.js ${dir}/display/displaymap.js ${dir}/display/displaytable.js > ${dir}/display/display_all.js
+${yui} ${dir}/display/display_all.js > ${dir}/display/display_all_mini.js
+${yui} ${dir}/ramadda.js > ${dir}/ramadda.mini.js
+${yui} ${dir}/ramaddamap.js > ${dir}/ramaddamap.mini.js
+${yui} ${dir}/utils.js > ${dir}/utils.mini.js
+${yui} ${dir}/wiki.js > ${dir}/wiki.mini.js
+${yui} ${dir}/repositories.js > ${dir}/repositories.mini.js
+${yui} ${dir}/selectform.js > ${dir}/selectform.mini.js
+${yui} ${dir}/entry.js > ${dir}/entry.mini.js
+${yui} ${dir}/style.css > ${dir}/style.mini.css
+${yui} ${dir}/display.css > ${dir}/display.mini.css
 

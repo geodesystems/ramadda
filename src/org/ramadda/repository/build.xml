@@ -2,7 +2,7 @@
 
 <project basedir="../../../.." default="all" name="Ramadda">
 
-    <target name="all" depends="ramadda.jar,repository.war,ramadda.zip,installer">
+    <target name="all" depends="ramadda.jar,repository.war,ramadda.zip,installer,htdocs">
     </target>
 
 
@@ -229,6 +229,11 @@
         <exclude name="${ramadda_relpath}/examples/*.java"/>
         </javac>
     </target>
+
+    <target name="htdocs" depends="init">
+        <exec executable="${ramadda_dir}/htdocs/build.sh"/>
+    </target>
+
 
     <target name="ramadda.jar" depends="init,compile">
         <copy overwrite="true" file="LICENSE" tofile="${ramadda_dir}/resources/ramadda_license.txt"/>
