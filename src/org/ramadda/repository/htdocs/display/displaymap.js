@@ -441,46 +441,46 @@ function RamaddaMapDisplay(displayManager, id, properties) {
                     if((typeof source.forMap)!="undefined" && !source.forMap) {
                         return;
                     }
-			var oldEntries = this.sourceToEntries[source.getId()];
-			if (oldEntries != null) {
-				for ( var i = 0; i < oldEntries.length; i++) {
-					var id = source.getId() + "_" + oldEntries[i].getId();
-					this.addOrRemoveEntryMarker(id, oldEntries[i], false);
-				}
-			}
+                    var oldEntries = this.sourceToEntries[source.getId()];
+                    if (oldEntries != null) {
+                        for ( var i = 0; i < oldEntries.length; i++) {
+                            var id = source.getId() + "_" + oldEntries[i].getId();
+                            this.addOrRemoveEntryMarker(id, oldEntries[i], false);
+                        }
+                    }
 
-			this.sourceToEntries[source.getId()] = entries;
+                    this.sourceToEntries[source.getId()] = entries;
 
-                        var markers = new OpenLayers.Layer.Markers("Markers");
-                        var lines = new OpenLayers.Layer.Vector("Lines", {});
-                        var north = -90, west=180,south=90,east = -180;
-                        var didOne = false;
-			for ( var i = 0; i < entries.length; i++) {
-                            var  entry = entries[i];
-                            var id = source.getId() + "_" + entry.getId();
-                            var mapEntryInfo  = this.addOrRemoveEntryMarker(id, entries[i], true);
-                            if (entry.hasBounds()) {
-                                if(entry.getNorth()>90 ||
-                                   entry.getSouth()<-90 ||
-                                   entry.getEast()>180 ||
-                                   entry.getWest()<-180) {
-                                    console.log("bad bounds on entry:" + entry.getName() +" " +
-                                                entry.getNorth() + " " +
-                                                entry.getSouth()+ " " +
-                                                entry.getEast()+ " " +
-                                                entry.getWest());
-                                    continue;
-                                }
-
-                                north = Math.max(north, entry.getNorth());
-                                south = Math.min(south, entry.getSouth());
-                                east = Math.max(east, entry.getEast());
-                                west = Math.min(west, entry.getWest());
-                                didOne = true;
+                    var markers = new OpenLayers.Layer.Markers("Markers");
+                    var lines = new OpenLayers.Layer.Vector("Lines", {});
+                    var north = -90, west=180,south=90,east = -180;
+                    var didOne = false;
+                    for ( var i = 0; i < entries.length; i++) {
+                        var  entry = entries[i];
+                        var id = source.getId() + "_" + entry.getId();
+                        var mapEntryInfo  = this.addOrRemoveEntryMarker(id, entries[i], true);
+                        if (entry.hasBounds()) {
+                            if(entry.getNorth()>90 ||
+                               entry.getSouth()<-90 ||
+                               entry.getEast()>180 ||
+                               entry.getWest()<-180) {
+                                console.log("bad bounds on entry:" + entry.getName() +" " +
+                                            entry.getNorth() + " " +
+                                            entry.getSouth()+ " " +
+                                            entry.getEast()+ " " +
+                                            entry.getWest());
+                                continue;
                             }
-			}
-                        var bounds = (didOne? createBounds(west, south, east, north):null);
-			this.map.centerOnMarkers(bounds);
+
+                            north = Math.max(north, entry.getNorth());
+                            south = Math.min(south, entry.getSouth());
+                            east = Math.max(east, entry.getEast());
+                            west = Math.min(west, entry.getWest());
+                            didOne = true;
+                        }
+                    }
+                    var bounds = (didOne? createBounds(west, south, east, north):null);
+                    this.map.centerOnMarkers(bounds, true);
 		},
 		handleEventEntrySelection : function(source, args) {
                     var _this = this;
