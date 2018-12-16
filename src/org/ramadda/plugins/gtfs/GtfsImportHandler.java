@@ -256,7 +256,7 @@ public class GtfsImportHandler extends ImportHandler {
             sb.append("No agency found for:" + file);
             return;
         }
-        processStops(request, stopToAgency, entries, stopsMap,
+        processStops(request, stopToAgency, agencies.get(0), entries, stopsMap, 
                      new FileInputStream(new File(dir, "stops.txt")));
         List<Entry>              routes   = new ArrayList<Entry>();
         Hashtable<String, Entry> routeMap = new Hashtable<String, Entry>();
@@ -322,7 +322,7 @@ public class GtfsImportHandler extends ImportHandler {
      *
      * @throws Exception _more_
      */
-    private void processStops(final Request request, final Hashtable<String, Entry> stopToAgency,
+    private void processStops(final Request request, final Hashtable<String, Entry> stopToAgency, Entry dfltAgency,
                               final List<Entry> entries,
                               final Hashtable<String, Entry> stopsMap,
                               InputStream is)
@@ -374,6 +374,11 @@ public class GtfsImportHandler extends ImportHandler {
                         getValue("wheelchair_boarding", map, toks, "");
 
                     Entry agencyEntry = stopToAgency.get(id);
+                    if(agencyEntry==null) {
+                        System.err.println("could not find agency for stop:" + id);
+                        agencyEntry  = dfltAgency;
+                    }
+
                     if(agencyEntry==null) {
                         throw new IllegalArgumentException("Could not find agency for stop:" + id);
                     }
