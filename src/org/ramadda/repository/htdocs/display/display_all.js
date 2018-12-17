@@ -4908,7 +4908,7 @@ function RamaddaMultiChart(displayManager, id, properties) {
 
     //Another hack to redraw the chart after the window is resized
     $(window).resize(function() {
-         theDisplay = _this.getThis();
+        var theDisplay = _this.getThis();
          if(!theDisplay.getDisplayReady())  {
              return;
          }
@@ -5154,6 +5154,7 @@ getChartType: function() {
             },
             xcnt:0,
             displayData: function() {
+                var _this =this;
                 if(!this.getDisplayReady()) {
                     return;
                 }
@@ -5162,7 +5163,6 @@ getChartType: function() {
                 }
                 if(!haveGoogleChartsLoaded ()) {
                     //console.log("charts not loaded");
-                    var _this =this;
                     var func = function() {
                         _this.displayData();
                     }
@@ -5445,19 +5445,25 @@ getChartType: function() {
 
                 this.makeChart(chartType, dataList, props, selectedFields);
 
-                var d = this.jq(ID_CHART);
+                var d = _this.jq(ID_CHART);
                 if(d.width() == 0) {
-                    if(!this.calledBackDisplay) this.calledBackDisplay = 0;
-                    this.calledBackDisplay++;
-                    if(this.calledBackDisplay<5) {
-                        var _this = this;
-                        var cb = function() {
-                            _this.displayData();
-                        };
-                        setTimeout(cb,3000);
-                    }
+                    _this.checkWidth(0);
                 }
-
+            },
+           //This keeps checking the width of the chart element if its zero
+           //we do this for displaying in tabs
+            checkWidth: function(cnt) {
+                var _this = this;
+                var d = _this.jq(ID_CHART);
+                if(d.width() ==0) {
+                    var cb = function() {
+                        _this.checkWidth(cnt+1);
+                    };
+                    setTimeout(cb,5000);
+                } else {
+                    //                    console.log("checkWidth:"+ _this.getTitle() +" calling displayData");
+                    _this.displayData();
+                }
             },
             printDataList:function(dataList) {
                 console.log("data list:" + dataList.length);
