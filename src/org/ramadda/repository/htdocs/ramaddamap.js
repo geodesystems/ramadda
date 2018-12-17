@@ -2093,7 +2093,7 @@ function initMapFunctions(theMap) {
                     strokeColor : "red",
                     strokeWidth : 0,
                     strokeOpacity: 0.75,
-                    fill: false,
+                    fill: true,
                     fillColor: "blue",
                     fillOpacity: 0.75,
                     }

@@ -2708,7 +2708,6 @@ function DisplayGroup(argDisplayManager, argId, argProperties) {
                     weights = this.weights.split(",");
                 }
 
-
                 if(this.layout == LAYOUT_TABLE) {
                     if(displaysToLayout.length == 1) {
                         html+=  HtmlUtil.div(["class"," display-wrapper"], 
@@ -2841,8 +2840,6 @@ function DisplayGroup(argDisplayManager, argId, argProperties) {
                 if(this.layout==LAYOUT_TABS) {
                     $("#"+ tabId).tabs({});
                 }
-
-
                 this.initDisplay();
             },
             initDisplay: function() {

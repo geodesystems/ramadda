@@ -2854,7 +2854,6 @@ function DisplayGroup(argDisplayManager, argId, argProperties) {
                     weights = this.weights.split(",");
                 }
 
-
                 if(this.layout == LAYOUT_TABLE) {
                     if(displaysToLayout.length == 1) {
                         html+=  HtmlUtil.div(["class"," display-wrapper"], 
@@ -2987,8 +2986,6 @@ function DisplayGroup(argDisplayManager, argId, argProperties) {
                 if(this.layout==LAYOUT_TABS) {
                     $("#"+ tabId).tabs({});
                 }
-
-
                 this.initDisplay();
             },
             initDisplay: function() {
@@ -9163,120 +9160,126 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		sourceToPoints : {},
 		snarf : true,
 		initDisplay : function() {
-			this.initUI();
-                        var _this = this;
-			var html = "";
-			var extraStyle = "min-height:200px;";
-			var width = this.getWidth();
-
-                        if(Utils.isDefined(width)) {
-                            if (width > 0) {
-                                extraStyle += "width:" + width + "px; ";
-                            } else if(width !="") {
-                                extraStyle += "width:" + width+";";
-                            }
+                    this.initUI();
+                    var _this = this;
+                    var html = "";
+                    var extraStyle = "min-height:200px;";
+                    var width = this.getWidth();
+                    if(Utils.isDefined(width)) {
+                        if (width > 0) {
+                            extraStyle += "width:" + width + "px; ";
+                        } else if(width !="") {
+                            extraStyle += "width:" + width+";";
                         }
+                    }
 
-			var height = this.getProperty("height", 300);
-			// var height = this.getProperty("height",-1);
-			if (height > 0) {
-				extraStyle += " height:" + height + "px; ";
-			}
+                    var height = this.getProperty("height", 300);
+                    // var height = this.getProperty("height",-1);
+                    if (height > 0) {
+                        extraStyle += " height:" + height + "px; ";
+                    }
+                    
+                    html += HtmlUtil.div([ ATTR_CLASS, "display-map-map", "style",
+                                           extraStyle, ATTR_ID, this.getDomId(ID_MAP) ]);
+                    if(this.showLocationReadout) {
+                        html += HtmlUtil.openTag(TAG_DIV, [ ATTR_CLASS,
+                                                            "display-map-latlon" ]);
+                        html += HtmlUtil.openTag("form");
+                        html += "Latitude: "
+                            + HtmlUtil.input(this.getDomId(ID_LATFIELD), "", [ "size",
+                                                                               "7", ATTR_ID, this.getDomId(ID_LATFIELD) ]);
+                        html += "  ";
+                        html += "Longitude: "
+                            + HtmlUtil.input(this.getDomId(ID_LONFIELD), "", [ "size",
+                                                                               "7", ATTR_ID, this.getDomId(ID_LONFIELD) ]);
+                        html += HtmlUtil.closeTag("form");
+                        html += HtmlUtil.closeTag(TAG_DIV);
+                    }
+                    this.setContents(html);
 
-			html += HtmlUtil.div([ ATTR_CLASS, "display-map-map", "style",
-					extraStyle, ATTR_ID, this.getDomId(ID_MAP) ]);
-                        //			html += "";
-                        if(this.showLocationReadout) {
-                            html += HtmlUtil.openTag(TAG_DIV, [ ATTR_CLASS,
-                                                                "display-map-latlon" ]);
-                            html += HtmlUtil.openTag("form");
-                            html += "Latitude: "
-                                + HtmlUtil.input(this.getDomId(ID_LATFIELD), "", [ "size",
-                                                                                   "7", ATTR_ID, this.getDomId(ID_LATFIELD) ]);
-                            html += "  ";
-                            html += "Longitude: "
-                                + HtmlUtil.input(this.getDomId(ID_LONFIELD), "", [ "size",
-                                                                                   "7", ATTR_ID, this.getDomId(ID_LONFIELD) ]);
-                            html += HtmlUtil.closeTag("form");
-                            html += HtmlUtil.closeTag(TAG_DIV);
-                        }
-			this.setContents(html);
-
-			var params = {
-				"defaultMapLayer" : this.getProperty("defaultMapLayer",
-                                                                     map_default_layer),
-                                
-			};
-                        var mapLayers = this.getProperty("mapLayers", null);
-			var theDisplay = this;
-                        if(mapLayers) {
-                            params.mapLayers =  [mapLayers];
-                        }
-
-                        this.map =  this.getProperty("theMap",null);
-                        if(this.map) {
-                            this.map.setMapDiv(this.getDomId(ID_MAP));
-                        } else {
-                            this.map = new RepositoryMap(this.getDomId(ID_MAP), params);
-                        }
-                        if(this.doDisplayMap()) {
-                            this.map.setDefaultCanSelect(false);
-                        }
-                        this.map.initMap(false);
-
-                        if(this.kmlLayer!=null) {
-                            var url = ramaddaBaseUrl + "/entry/show?output=shapefile.kml&entryid=" + this.kmlLayer;
-                            this.addBaseMapLayer(url, true);
-                        }
-                        if(this.geojsonLayer!=null) {
-                            url = this.getRamadda().getEntryDownloadUrl(this.geojsonLayer);
-                            this.addBaseMapLayer(url, false);
-                        }
-                        
-                        this.map.addRegionSelectorControl(function(bounds) {
-                                _this.getDisplayManager().handleEventMapBoundsChanged(this, bounds, true);
-                            });
-			this.map.addClickHandler(this.getDomId(ID_LONFIELD), this
-					.getDomId(ID_LATFIELD), null, this);
-			this.map.map.events.register("zoomend", "", function() {
-				theDisplay.mapBoundsChanged();
-			});
-			this.map.map.events.register("moveend", "", function() {
-				theDisplay.mapBoundsChanged();
-			});
-
-			if (this.initBounds != null) {
-                            var b = this.initBounds;
-                            this.setInitMapBounds(b[0], b[1], b[2], b[3]);
-			}
-
-			var currentFeatures = this.features;
-			this.features = [];
-			for ( var i = 0; i < currentFeatures.length; i++) {
-                            this.addFeature(currentFeatures[i]);
-			}
-			var entries = this.getDisplayManager().collectEntries();
-			for ( var i = 0; i < entries.length; i++) {
-                            var pair = entries[i];
-                            this.handleEventEntriesChanged(pair.source, pair.entries);
-			}
-
-                        if(this.layerEntries) {
-                            var selectCallback = function(layer) {
-                                _this.handleLayerSelect(layer);
-                            }
-                            var unselectCallback = function(layer) {
-                                _this.handleLayerUnselect(layer);
-                            }
-                            var toks = this.layerEntries.split(",");
-                            for(var i=0;i<toks.length;i++) {
-                                var tok = toks[i];
-                                var url = ramaddaBaseUrl + "/entry/show?output=shapefile.kml&entryid=" + tok;
-                                this.map.addKMLLayer("layer", url, true, selectCallback, unselectCallback);
-                                //TODO: Center on the kml
-                            }
-                        }
+                    if(!this.map) {
+                        this.createMap();
+                    } else  {
+                        this.map.setMapDiv(this.getDomId(ID_MAP));
+                    }
 		},
+                createMap: function() {
+                    console.log("creating map");
+                    var params = {
+                        "defaultMapLayer" : this.getProperty("defaultMapLayer",
+                                                             map_default_layer),
+                                
+                    };
+                    var mapLayers = this.getProperty("mapLayers", null);
+                    var theDisplay = this;
+                    if(mapLayers) {
+                        params.mapLayers =  [mapLayers];
+                    }
+
+                    this.map =  this.getProperty("theMap",null);
+                    if(this.map) {
+                        this.map.setMapDiv(this.getDomId(ID_MAP));
+                    } else {
+                        this.map = new RepositoryMap(this.getDomId(ID_MAP), params);
+                    }
+                    if(this.doDisplayMap()) {
+                        this.map.setDefaultCanSelect(false);
+                    }
+                    this.map.initMap(false);
+
+                    if(this.kmlLayer!=null) {
+                        var url = ramaddaBaseUrl + "/entry/show?output=shapefile.kml&entryid=" + this.kmlLayer;
+                        this.addBaseMapLayer(url, true);
+                    }
+                    if(this.geojsonLayer!=null) {
+                        url = this.getRamadda().getEntryDownloadUrl(this.geojsonLayer);
+                        this.addBaseMapLayer(url, false);
+                    }
+                        
+                    this.map.addRegionSelectorControl(function(bounds) {
+                            _this.getDisplayManager().handleEventMapBoundsChanged(this, bounds, true);
+                        });
+                    this.map.addClickHandler(this.getDomId(ID_LONFIELD), this
+                                             .getDomId(ID_LATFIELD), null, this);
+                    this.map.map.events.register("zoomend", "", function() {
+                            theDisplay.mapBoundsChanged();
+                        });
+                    this.map.map.events.register("moveend", "", function() {
+                            theDisplay.mapBoundsChanged();
+                        });
+
+                    if (this.initBounds != null) {
+                        var b = this.initBounds;
+                        this.setInitMapBounds(b[0], b[1], b[2], b[3]);
+                    }
+
+                    var currentFeatures = this.features;
+                    this.features = [];
+                    for ( var i = 0; i < currentFeatures.length; i++) {
+                        this.addFeature(currentFeatures[i]);
+                    }
+                    var entries = this.getDisplayManager().collectEntries();
+                    for ( var i = 0; i < entries.length; i++) {
+                        var pair = entries[i];
+                        this.handleEventEntriesChanged(pair.source, pair.entries);
+                    }
+
+                    if(this.layerEntries) {
+                        var selectCallback = function(layer) {
+                            _this.handleLayerSelect(layer);
+                        }
+                        var unselectCallback = function(layer) {
+                            _this.handleLayerUnselect(layer);
+                        }
+                        var toks = this.layerEntries.split(",");
+                        for(var i=0;i<toks.length;i++) {
+                            var tok = toks[i];
+                            var url = ramaddaBaseUrl + "/entry/show?output=shapefile.kml&entryid=" + tok;
+                            this.map.addKMLLayer("layer", url, true, selectCallback, unselectCallback);
+                            //TODO: Center on the kml
+                        }
+                    }
+                },
                 addBaseMapLayer: function(url, isKml) {
                     var theDisplay = this;
                     mapLoadInfo = displayMapUrlToVectorListeners[url];
