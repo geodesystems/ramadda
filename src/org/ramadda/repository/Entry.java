@@ -512,10 +512,10 @@ public class Entry implements Cloneable {
      * @param rect  the bounds
      */
     public void setBounds(Rectangle2D.Double rect) {
-        west  = cleanLon(rect.getX());
-        south = cleanLat(rect.getY());
-        east  = cleanLon(west + rect.getWidth());
-        north = cleanLat(south + rect.getHeight());
+        setWest(cleanLon(rect.getX()));
+        setSouth(cleanLat(rect.getY()));
+        setEast(cleanLon(west + rect.getWidth()));
+        setNorth(cleanLat(south + rect.getHeight()));
     }
 
 
@@ -1136,10 +1136,10 @@ public class Entry implements Cloneable {
      * @param that  the other Entry
      */
     public void setLocation(Entry that) {
-        this.north          = that.north;
-        this.south          = that.south;
-        this.east           = that.east;
-        this.west           = that.west;
+        setNorth(that.north);
+        setSouth(that.south);
+        setEast(that.east);
+        setWest(that.west);
         this.altitudeTop    = that.altitudeTop;
         this.altitudeBottom = that.altitudeBottom;
     }
@@ -1153,10 +1153,10 @@ public class Entry implements Cloneable {
      * @param alt  the altitude
      */
     public void setLocation(double lat, double lon, double alt) {
-        this.north          = lat;
-        this.south          = lat;
-        this.east           = lon;
-        this.west           = lon;
+        setNorth(lat);
+        setSouth(lat);
+        setEast(lon);
+        setWest(lon);
         this.altitudeTop    = alt;
         this.altitudeBottom = alt;
     }
@@ -1208,8 +1208,8 @@ public class Entry implements Cloneable {
      * @param value the Latitude Property
      */
     public void setLatitude(double value) {
-        north = value;
-        south = value;
+        setNorth(value);
+        setSouth(value);
     }
 
     /**
