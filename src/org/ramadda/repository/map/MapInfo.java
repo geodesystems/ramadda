@@ -78,7 +78,7 @@ public class MapInfo {
     /** is the map for selection */
     private boolean forSelection = false;
 
-    /** _more_          */
+    /** _more_ */
     private boolean mapHidden = false;
 
     /** list of map regions */
@@ -302,17 +302,19 @@ public class MapInfo {
     public boolean addSpatialMetadata(Entry entry,
                                       List<Metadata> metadataList) {
         boolean didone = false;
-        for (Metadata metadata : metadataList) {
-            if (metadata.getType().equals(
-                    MetadataHandler.TYPE_SPATIAL_POLYGON)) {
-                List<double[]> points = new ArrayList<double[]>();
-                Utils.parsePointString(metadata.getAttr1(), points);
-                Utils.parsePointString(metadata.getAttr2(), points);
-                Utils.parsePointString(metadata.getAttr3(), points);
-                Utils.parsePointString(metadata.getAttr4(), points);
-                this.addLines(entry, entry.getId() /* + "_polygon"*/, points,
-                              null);
-                didone = true;
+        if (entry.getTypeHandler().shouldShowPolygonInMap()) {
+            for (Metadata metadata : metadataList) {
+                if (metadata.getType().equals(
+                        MetadataHandler.TYPE_SPATIAL_POLYGON)) {
+                    List<double[]> points = new ArrayList<double[]>();
+                    Utils.parsePointString(metadata.getAttr1(), points);
+                    Utils.parsePointString(metadata.getAttr2(), points);
+                    Utils.parsePointString(metadata.getAttr3(), points);
+                    Utils.parsePointString(metadata.getAttr4(), points);
+                    this.addLines(entry, entry.getId() /* + "_polygon"*/,
+                                  points, null);
+                    didone = true;
+                }
             }
         }
 

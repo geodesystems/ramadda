@@ -210,10 +210,6 @@ public class MetadataElement extends MetadataTypeBase implements DataTypes {
 
         subName = XmlUtil.getAttribute(node, ATTR_SUBNAME, "");
         id      = XmlUtil.getAttribute(node, ATTR_ID, (String) null);
-
-
-
-
         max     = XmlUtil.getAttribute(node, ATTR_MAX, max);
         setRows(XmlUtil.getAttribute(node, ATTR_ROWS, 1));
         setColumns(XmlUtil.getAttribute(node, ATTR_COLUMNS, 60));

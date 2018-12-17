@@ -317,7 +317,6 @@ public class FeatureCollection {
                 if (fieldDatum.get(j).getName().equalsIgnoreCase(
                         colorByFieldAttr)) {
                     colorByField = fieldDatum.get(j);
-
                     break;
                 }
             }

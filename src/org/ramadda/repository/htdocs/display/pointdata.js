@@ -192,7 +192,6 @@ function PointData(name, recordFields, records, url, properties) {
                 this.loadPointJson(jsonUrl, display, reload);
             },
             loadPointJson: function(url, display, reload) {
-                //                url = url.replace("5000","10");
                 var pointData = this;
                 this.startLoading();
                 var _this = this;
@@ -215,7 +214,7 @@ function PointData(name, recordFields, records, url, properties) {
                     //                    console.log("Waiting on callback:" + obj.pending.length +" " + url);
                     return;
                 }
-                console.log("loadPointJson:" + url);
+                console.log("load data:" + url);
                 //                console.log("loading point url:" + url);
                 var jqxhr = $.getJSON( url, function(data) {
                         if(GuiUtils.isJsonError(data)) {

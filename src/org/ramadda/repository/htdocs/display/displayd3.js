@@ -209,7 +209,7 @@ function RamaddaD3Display(displayManager, id, properties) {
                 this.updateUI();
             },
             // onlyZoom is not updating the axis
-            updateUI: function(pointData) {
+            updateUI: function() {
                 //Note: Not sure why onlyZoom was a function param. The pointData gets passes in 
                 //when the json is loaded
                 //            updateUI: function(onlyZoom) {

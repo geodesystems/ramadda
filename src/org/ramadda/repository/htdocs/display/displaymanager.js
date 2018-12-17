@@ -78,6 +78,7 @@ function DisplayManager(argId,argProperties) {
     var ID_MENU_INNER =  "menu_inner";
 
     RamaddaUtil.inherit(this, this.SUPER = new DisplayThing(argId, argProperties));
+    addRamaddaDisplay(this);
 
     RamaddaUtil.initMembers(this, {
                 dataList : [],
@@ -97,6 +98,11 @@ function DisplayManager(argId,argProperties) {
     RamaddaUtil.defineMembers(this, {
            group: new DisplayGroup(this, argId,argProperties),
            showmap : this.getProperty(PROP_SHOW_MAP,null),
+           setDisplayReady: function() {
+                SUPER.setDisplayReadyCall(this);
+                console.log("displaymanager.displayReady");
+                this.getLayoutManager().setDisplayReady();
+           },
            addDisplayType: function(type,label) {
                this.displayTypes.push({type:label});
            },
@@ -428,6 +434,9 @@ function DisplayManager(argId,argProperties) {
                 }
                 this.addDisplay(display);
                 return display;
+            },
+            pageHasLoaded: function(display) {
+                this.getLayoutManager().pageHasLoaded();
             },
             addDisplay: function(display) {
                 display.setDisplayManager(this);

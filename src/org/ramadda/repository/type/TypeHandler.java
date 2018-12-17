@@ -949,6 +949,15 @@ public class TypeHandler extends RepositoryManager {
     /**
      * _more_
      *
+     * @return _more_
+     */
+    public boolean shouldShowPolygonInMap() {
+        return false;
+    }
+
+    /**
+     * _more_
+     *
      * @param request _more_
      * @param entry _more_
      * @param map _more_
@@ -2705,6 +2714,7 @@ public class TypeHandler extends RepositoryManager {
             throws Exception {
         Resource resource = entry.getResource();
         String   path     = Utils.normalizeTemplateUrl(resource.getPath());
+
         return path;
     }
 

@@ -5065,18 +5065,18 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
 
 
         boolean isMap = displayType.equals("map");
-        /*
-        if (isMap) {
+        //Don't do this now
+        if (false && isMap) {
             String mapVar = Utils.getProperty(props, ATTR_MAPVAR);
             if (mapVar == null) {
                 mapVar = MapInfo.makeMapVar();
                 props.put(ATTR_MAPVAR, mapVar);
             }
-            props.put("mapHidden","true");
+            props.put("mapHidden", "true");
             MapInfo mapInfo = handleMapTag(request, entry, originalEntry,
                                            WIKI_TAG_MAPENTRY, props, sb);
             Utils.add(propList, "theMap", mapVar);
-            }*/
+        }
 
         HtmlUtils.commentJS(
             js,

@@ -136,7 +136,7 @@ function RamaddaMultiChart(displayManager, id, properties) {
     //A hack  so charts are displayed OK in a tabs or accordian
     //When the doc is done wait 5 seconds then display (or re-display) the data
     var redisplayFunc = function() {
-        _this.displayData();
+        _this.getThis().displayData();
     };
     $(document).ready(function(){
 	setTimeout(redisplayFunc,5000);
@@ -147,24 +147,28 @@ function RamaddaMultiChart(displayManager, id, properties) {
 
     //Another hack to redraw the chart after the window is resized
     $(window).resize(function() {
+         theDisplay = _this.getThis();
+         if(!theDisplay.getDisplayReady())  {
+             return;
+         }
 	//This handles multiple resize events but keeps only having one timeout pending at a time
-	if(_this.redisplayPending) {
-	    _this.redisplayPendingCnt++;
+	if(theDisplay.redisplayPending) {
+	    theDisplay.redisplayPendingCnt++;
 	    return;
 	}
 	var timeoutFunc = function(myCnt){
-            if(myCnt == _this.redisplayPendingCnt) {
+            if(myCnt == theDisplay.redisplayPendingCnt) {
 		//Ready to redisplay
-		_this.redisplayPending = false;
-		_this.redisplayPendingCnt=0;
-		_this.displayData();
+		theDisplay.redisplayPending = false;
+		theDisplay.redisplayPendingCnt=0;
+		theDisplay.displayData();
             } else {
 		//Had a resize event during the previous timeout
-		setTimeout(timeoutFunc.bind(null,_this.redisplayPendingCnt),1000);
+		setTimeout(timeoutFunc.bind(null,theDisplay.redisplayPendingCnt),1000);
 	    }
 	}
-	_this.redisplayPending = true;
-        setTimeout(timeoutFunc.bind(null,_this.redisplayPendingCnt),1000);
+	theDisplay.redisplayPending = true;
+        setTimeout(timeoutFunc.bind(null,theDisplay.redisplayPendingCnt),1000);
     });
 
     //Init the defaults first
@@ -200,6 +204,9 @@ function RamaddaMultiChart(displayManager, id, properties) {
             },
             updateUI: function() {
                 SUPER.updateUI.call(this);
+                if(!this.getDisplayReady()) {
+                    return;
+                }
                 this.displayData();
             },
             getWikiAttributes: function(attrs) {
@@ -384,8 +391,11 @@ getChartType: function() {
             canDoGroupBy: function() {
                 return this.chartType == DISPLAY_PIECHART || this.chartType == DISPLAY_TABLE;
             },
-                xcnt:0,
+            xcnt:0,
             displayData: function() {
+                if(!this.getDisplayReady()) {
+                    return;
+                }
                 if(this.inError) {
                     return;
                 }
@@ -1267,9 +1277,8 @@ function RamaddaStatsDisplay(displayManager, id, properties) {
             fieldSelectionChanged: function() {
                 this.updateUI();
             },
-            updateUI: function(pointData) {
-                SUPER.updateUI.call(this,pointData);
-                //                console.log("stats.updateUI:" + this.hasData());
+            updateUI: function() {
+                SUPER.updateUI.call(this);
                 if(!this.hasData()) {
                     this.setContents(this.getLoadingMessage());
                     return;

@@ -403,7 +403,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
         new ArrayList<OutputHandler>();
 
 
-    /** _more_          */
+    /** _more_ */
     private Hashtable<String, OutputHandler> outputHandlerMap =
         new Hashtable<String, OutputHandler>();
 
@@ -430,7 +430,6 @@ public class Repository extends RepositoryBase implements RequestHandler,
 
     /** _more_ */
     public static boolean debug = true;
-
 
 
     /** _more_ */
@@ -472,6 +471,8 @@ public class Repository extends RepositoryBase implements RequestHandler,
     /** _more_ */
     private HttpClient httpClient;
 
+    /** _more_          */
+    private boolean repositoryInitialized = false;
 
     /** _more_ */
     private boolean isActive = true;
@@ -487,37 +488,37 @@ public class Repository extends RepositoryBase implements RequestHandler,
     /** _more_ */
     private boolean adminOnly = false;
 
-    /** _more_          */
+    /** _more_ */
     private boolean requireLogin = false;
 
-    /** _more_          */
+    /** _more_ */
     private boolean allSsl = false;
 
-    /** _more_          */
+    /** _more_ */
     private boolean sslIgnore = false;
 
-    /** _more_          */
+    /** _more_ */
     private boolean cacheResources = false;
 
-    /** _more_          */
+    /** _more_ */
     private String repositoryName = "Repository";
 
-    /** _more_          */
+    /** _more_ */
     private String repositoryDescription = "";
 
-    /** _more_          */
+    /** _more_ */
     private boolean downloadOk = true;
 
-    /** _more_          */
+    /** _more_ */
     private boolean minifiedOk = true;
 
-    /** _more_          */
+    /** _more_ */
     private boolean enableHostnameMapping = true;
 
-    /** _more_          */
+    /** _more_ */
     public String language = "";
 
-    /** _more_          */
+    /** _more_ */
     public String languageDefault = "";
 
     /**
@@ -840,6 +841,15 @@ public class Repository extends RepositoryBase implements RequestHandler,
     /**
      * _more_
      *
+     * @return _more_
+     */
+    public boolean getIsInitialized() {
+        return repositoryInitialized;
+    }
+
+    /**
+     * _more_
+     *
      * @param v _more_
      */
     public void setActive(boolean v) {
@@ -896,16 +906,22 @@ public class Repository extends RepositoryBase implements RequestHandler,
                         "RAMADDA: Error shutting down local repository manager: "
                         + thr);
                 }
-                repositoryManagers.remove(localRepositoryManager);
+                synchronized (repositoryManagers) {
+                    repositoryManagers.remove(localRepositoryManager);
+                }
             }
 
-            for (RepositoryManager repositoryManager : repositoryManagers) {
-                try {
-                    repositoryManager.shutdown();
-                } catch (Throwable thr) {
-                    System.err.println(
-                        "RAMADDA: Error shutting down:"
-                        + repositoryManager.getClass().getName() + " " + thr);
+            synchronized (repositoryManagers) {
+                for (RepositoryManager repositoryManager :
+                        repositoryManagers) {
+                    try {
+                        repositoryManager.shutdown();
+                    } catch (Throwable thr) {
+                        System.err.println(
+                            "RAMADDA: Error shutting down:"
+                            + repositoryManager.getClass().getName() + " "
+                            + thr);
+                    }
                 }
             }
             repositoryManagers     = null;
@@ -958,7 +974,6 @@ public class Repository extends RepositoryBase implements RequestHandler,
      * @throws Exception _more_
      */
     public void init(Properties properties) throws Exception {
-
         /*
                 final PrintStream oldErr = System.err;
                 final PrintStream oldOut = System.out;
@@ -977,16 +992,20 @@ public class Repository extends RepositoryBase implements RequestHandler,
         CacheManager.setDoCache(false);
         initProperties(properties);
         initServer();
+        repositoryInitialized = true;
+        //Call this here to load initial properties
+        initAttributes();
+        clearAllCaches();
         StringBuilder statusMsg =
-            new StringBuilder("RAMADDA: repository started");
-        statusMsg.append("  --  Home dir: "
+            new StringBuilder("RAMADDA: repository started:");
+        statusMsg.append("  Home dir: "
                          + getStorageManager().getRepositoryDir());
 
-        statusMsg.append("  --  Version: "
+        statusMsg.append("  Version: "
                          + getProperty(PROP_BUILD_VERSION, "1.0"));
-        statusMsg.append("  --  Build Date: "
+        statusMsg.append("  Build Date: "
                          + getProperty(PROP_BUILD_DATE, "N/A"));
-        statusMsg.append(" -- Java version: "
+        statusMsg.append("  Java version: "
                          + getProperty(PROP_JAVA_VERSION, "N/A"));
         getLogManager().logInfoAndPrint(statusMsg.toString());
     }
@@ -1021,7 +1040,6 @@ public class Repository extends RepositoryBase implements RequestHandler,
      */
     public void initProperties(Properties contextProperties)
             throws Exception {
-
 
         MyTrace.msg("RAMADDA: initializing properties");
         /*
@@ -1131,7 +1149,6 @@ public class Repository extends RepositoryBase implements RequestHandler,
             }
         }
 
-
         //Call the storage manager so it can figure out the home dir
         getStorageManager();
 
@@ -1147,7 +1164,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
         MyTrace.msg("init-3");
         try {
             //Now load in the local properties file
-            //First load lin the repository.properties file
+            //First load in the repository.properties file
             String localPropertyFile =
                 IOUtil.joinDir(getStorageManager().getRepositoryDir(),
                                "repository.properties");
@@ -1191,13 +1208,10 @@ public class Repository extends RepositoryBase implements RequestHandler,
         if ( !doCache) {
             println("RAMADDA: running with no in-memory cache");
         }
-
         setUrlBase(getLocalProperty(PROP_HTML_URLBASE, "/repository"));
         if (getUrlBase() == null) {
             setUrlBase(BLANK);
         }
-
-
         String derbyHome = getLocalProperty(PROP_DB_DERBY_HOME,
                                             (String) null);
         if (derbyHome != null) {
@@ -1215,22 +1229,16 @@ public class Repository extends RepositoryBase implements RequestHandler,
                 //noop
             }
         }
-
         getPageHandler().initDateStuff();
-
-
         for (String s :
                 StringUtil.split(getProperty("ramadda.html.htdocroots",
                                              BLANK), ";", true, true)) {
             htdocRoots.add(getStorageManager().localizePath(s));
         }
-
         initProxy();
-
         if ( !debugSession) {
             debugSession = getProperty("ramadda.debug.session", false);
         }
-
 
     }
 
@@ -1311,7 +1319,6 @@ public class Repository extends RepositoryBase implements RequestHandler,
      * @throws Exception _more_
      */
     protected void initServer() throws Exception {
-
         getDatabaseManager().init();
         initDefaultTypeHandlers();
         boolean loadedRdb = false;
@@ -1329,7 +1336,6 @@ public class Repository extends RepositoryBase implements RequestHandler,
             initSchema();
         }
 
-
         readDatabaseProperties();
         checkVersion();
 
@@ -1338,7 +1344,6 @@ public class Repository extends RepositoryBase implements RequestHandler,
         MyTrace.call2("Repository.loadResources");
 
         initDefaultOutputHandlers();
-
         getRegistryManager().checkApi();
 
         //Load in any other sql files from the command line
@@ -1355,7 +1360,6 @@ public class Repository extends RepositoryBase implements RequestHandler,
 
         //This finds or creates the top-level group
         getEntryManager().initTopEntry();
-
 
         setLocalFilePaths();
 
@@ -1377,16 +1381,12 @@ public class Repository extends RepositoryBase implements RequestHandler,
         if (getAdmin().getInstallationComplete()) {
             getRegistryManager().doFinalInitialization();
         }
-
         getAdmin().doFinalInitialization();
-
         if (loadedRdb) {
             getDatabaseManager().finishRdbLoad();
         }
-
         getHarvesterManager().initHarvesters();
         getLogManager().initLogs();
-
 
         //Do this in a thread because (on macs) it hangs sometimes)
         Misc.run(this, "getFtpManager");
@@ -1402,95 +1402,8 @@ public class Repository extends RepositoryBase implements RequestHandler,
             GeoUtils.setGoogleKey(getProperty("google.key", (String) null));
             GeoUtils.setCacheDir(getStorageManager().getRepositoryDir());
         }
-
-
-        initAttributes();
-        initIcons();
-
-        /**
-         *    Test for processdir
-         * File test = getStorageManager().createProcessDir();
-         * System.err.println("test:" + test);
-         * String processId = test.getName();
-         * String processEntryId =
-         *   getStorageManager().getProcessDirEntryId(processId);
-         * System.err.println("id:" + processEntryId);
-         */
-
     }
 
-    /**
-     * _more_
-     */
-    private void initIcons() {
-        if (true) {
-            return;
-        }
-        String[] icons = new String[] {
-            ICON_ACCESS, "ICON_ACCESS", ICON_ADD, "ICON_ADD ", ICON_ELLIPSIS,
-            "ICON_ELLIPSIS ", ICON_ROTATE, "ICON_ROTATE ", ICON_ANTIROTATE,
-            "ICON_ANTIROTATE ", ICON_ARROW, "ICON_ARROW ", ICON_GOOGLEEARTH,
-            "ICON_GOOGLEEARTH ", ICON_ASSOCIATION, "ICON_ASSOCIATION ",
-            ICON_BLANK, "ICON_BLANK ", ICON_CALENDAR, "ICON_CALENDAR ",
-            ICON_CART, "ICON_CART ", ICON_CART_ADD, "ICON_CART_ADD ",
-            ICON_CART_DELETE, "ICON_CART_DELETE ", ICON_CHAT, "ICON_CHAT ",
-            ICON_CLOCK, "ICON_CLOCK ", ICON_TIMELINE, "ICON_TIMELINE ",
-            ICON_CLOSE, "ICON_CLOSE ", ICON_CLOUD, "ICON_CLOUD ",
-            ICON_COMMENTS, "ICON_COMMENTS ", ICON_FTP, "ICON_FTP ", ICON_CSV,
-            "ICON_CSV ", ICON_DATA, "ICON_DATA ", ICON_DIF, "ICON_DIF ",
-            ICON_DATEGRID, "ICON_DATEGRID ", ICON_DELETE, "ICON_DELETE ",
-            ICON_DOWNARROW, "ICON_DOWNARROW ", ICON_DOWNLOAD,
-            "ICON_DOWNLOAD ", ICON_DOWNDART, "ICON_DOWNDART ", ICON_EDIT,
-            "ICON_EDIT ", ICON_ENTRY, "ICON_ENTRY ", ICON_ENTRY_ADD,
-            "ICON_ENTRY_ADD ", ICON_PUBLISH, "ICON_PUBLISH ", ICON_PLANVIEW,
-            "ICON_PLANVIEW ", ICON_ENTRY_UPLOAD, "ICON_ENTRY_UPLOAD ",
-            ICON_ERROR, "ICON_ERROR ", ICON_FAVORITE, "ICON_FAVORITE ",
-            ICON_FETCH, "ICON_FETCH ", ICON_FILE, "ICON_FILE ",
-            ICON_FILELISTING, "ICON_FILELISTING ", ICON_FOLDER,
-            "ICON_FOLDER ", ICON_FOLDER_ADD, "ICON_FOLDER_ADD ",
-            ICON_FOLDER_CLOSED, "ICON_FOLDER_CLOSED ",
-            ICON_FOLDER_CLOSED_LOCKED, "ICON_FOLDER_CLOSED_LOCKED ",
-            ICON_FOLDER_OPEN, "ICON_FOLDER_OPEN ", ICON_GRAPH, "ICON_GRAPH ",
-            ICON_TABLE, "ICON_TABLE ", ICON_GRAYRECT, "ICON_GRAYRECT ",
-            ICON_GRAYRECTARROW, "ICON_GRAYRECTARROW ", ICON_HOME,
-            "ICON_HOME ", ICON_HEADER, "ICON_HEADER ", ICON_HELP,
-            "ICON_HELP ", ICON_IMAGE, "ICON_IMAGE ", ICON_MOVIE,
-            "ICON_MOVIE ", ICON_IMPORT, "ICON_IMPORT ", ICON_EXPORT,
-            "ICON_EXPORT ", ICON_IMAGES, "ICON_IMAGES ", ICON_INFORMATION,
-            "ICON_INFORMATION ", ICON_TREE, "ICON_TREE ", ICON_KML,
-            "ICON_KML ", ICON_LCURVE, "ICON_LCURVE ", ICON_SYNTH_FILE,
-            "ICON_SYNTH_FILE ", ICON_LEFT, "ICON_LEFT ", ICON_LINK,
-            "ICON_LINK ", ICON_USERLINKS, "ICON_USERLINKS ", ICON_LIST,
-            "ICON_LIST ", ICON_LOG, "ICON_LOG ", ICON_MAP, "ICON_MAP ",
-            ICON_MAP_NAV, "ICON_MAP_NAV ", ICON_METADATA, "ICON_METADATA ",
-            ICON_METADATA_ADD, "ICON_METADATA_ADD ", ICON_METADATA_EDIT,
-            "ICON_METADATA_EDIT ", ICON_MINUS, "ICON_MINUS ", ICON_MOVE,
-            "ICON_MOVE ", ICON_NEW, "ICON_NEW ", ICON_PLUS, "ICON_PLUS ",
-            ICON_PROGRESS, "ICON_PROGRESS ", ICON_QUESTION, "ICON_QUESTION ",
-            ICON_RANGE, "ICON_RANGE ", ICON_RCURVE, "ICON_RCURVE ",
-            ICON_RIGHT, "ICON_RIGHT ", ICON_RIGHTARROW, "ICON_RIGHTARROW ",
-            ICON_RIGHTDART, "ICON_RIGHTDART ", ICON_ATOM, "ICON_ATOM ",
-            ICON_SEARCH, "ICON_SEARCH ", ICON_SEARCH_SMALL,
-            "ICON_SEARCH_SMALL ", ICON_TEXT, "ICON_TEXT ",
-            ICON_TOGGLEARROWDOWN, "ICON_TOGGLEARROWDOWN ",
-            ICON_TOGGLEARROWRIGHT, "ICON_TOGGLEARROWRIGHT ", ICON_TOOLS,
-            "ICON_TOOLS ", ICON_UPARROW, "ICON_UPARROW ", ICON_UPDART,
-            "ICON_UPDART ", ICON_UPLOAD, "ICON_UPLOAD ", ICON_WARNING,
-            "ICON_WARNING ", ICON_WIKI, "ICON_WIKI ", ICON_XML, "ICON_XML ",
-            ICON_JSON, "ICON_JSON ", ICON_GEOJSON, "ICON_GEOJSON ", ICON_ZIP,
-            "ICON_ZIP ", ICON_ZIPTREE, "ICON_ZIPTREE ",
-        };
-        for (int i = 0; i < icons.length; i += 2) {
-            String value = getProperty(icons[i]);
-            if (value == null) {
-                System.err.println("NO ICON:" + icons[i]);
-                value = icons[i];
-            }
-            System.out.println("public static final String "
-                               + icons[i + 1].trim() + "=\"" + value + "\";");
-        }
-
-    }
 
     /**
      * _more_
@@ -1808,7 +1721,11 @@ public class Repository extends RepositoryBase implements RequestHandler,
      */
     public void addRepositoryManager(RepositoryManager repositoryManager) {
         synchronized (repositoryManagers) {
-            repositoryManager.initAttributes();
+            //            System.err.println("adding repo manager:" + repositoryManager.getClass().getName());
+            //Only call this if we've added one after the repo has been initialized
+            if (getIsInitialized()) {
+                repositoryManager.initAttributes();
+            }
             repositoryManagers.add(repositoryManager);
         }
     }
@@ -1821,9 +1738,11 @@ public class Repository extends RepositoryBase implements RequestHandler,
      * @return _more_
      */
     public RepositoryManager getRepositoryManager(Class c) {
-        for (RepositoryManager manager : repositoryManagers) {
-            if (manager.getClass().equals(c)) {
-                return manager;
+        synchronized (repositoryManagers) {
+            for (RepositoryManager manager : repositoryManagers) {
+                if (manager.getClass().equals(c)) {
+                    return manager;
+                }
             }
         }
 
@@ -2623,7 +2542,8 @@ public class Repository extends RepositoryBase implements RequestHandler,
             }
         }
         synchronized (repositoryManagers) {
-            for (RepositoryManager manager : repositoryManagers) {
+            for (RepositoryManager manager :
+                    new ArrayList<RepositoryManager>(repositoryManagers)) {
                 manager.clearCache();
             }
         }
@@ -3165,10 +3085,10 @@ public class Repository extends RepositoryBase implements RequestHandler,
         return result;
     }
 
-    /** _more_          */
+    /** _more_ */
     public boolean propdebug = false;
 
-    /** _more_          */
+    /** _more_ */
     public int propcnt = 0;
 
     /**
@@ -4058,18 +3978,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
     /**
      * _more_
      */
-    public void initAttributes() {
-        synchronized (repositoryManagers) {
-            for (RepositoryManager manager : repositoryManagers) {
-                manager.initAttributes();
-            }
-        }
-        synchronized (outputHandlers) {
-            for (OutputHandler outputHandler :outputHandlers) {
-                outputHandler.initAttributes();
-            }
-        }
-
+    private void initRepositoryAttributes() {
         adminOnly             = getProperty(PROP_ACCESS_ADMINONLY, false);
         requireLogin          = getProperty(PROP_ACCESS_REQUIRELOGIN, false);
         allSsl                = getProperty(PROP_ACCESS_ALLSSL, false);
@@ -4083,6 +3992,23 @@ public class Repository extends RepositoryBase implements RequestHandler,
         minifiedOk            = getProperty("ramadda.minified", true);
         enableHostnameMapping = getProperty(PROP_ENABLE_HOSTNAME_MAPPING,
                                             false);
+    }
+
+    /**
+     * _more_
+     */
+    public void initAttributes() {
+        initRepositoryAttributes();
+        synchronized (repositoryManagers) {
+            for (RepositoryManager manager : repositoryManagers) {
+                manager.initAttributes();
+            }
+        }
+        synchronized (outputHandlers) {
+            for (OutputHandler outputHandler : outputHandlers) {
+                outputHandler.initAttributes();
+            }
+        }
     }
 
 
@@ -5142,9 +5068,11 @@ public class Repository extends RepositoryBase implements RequestHandler,
                 clearAllCaches();
                 readDatabaseProperties();
                 //Tell the other repositoryManagers that the settings changed
-                for (RepositoryManager repositoryManager :
-                        getRepository().getRepositoryManagers()) {
-                    repositoryManager.adminSettingsChanged();
+                synchronized (repositoryManagers) {
+                    for (RepositoryManager repositoryManager :
+                            getRepository().getRepositoryManagers()) {
+                        repositoryManager.adminSettingsChanged();
+                    }
                 }
                 sb.append("OK, state is cleared");
 

@@ -106,14 +106,14 @@ function RamaddaMapDisplay(displayManager, id, properties) {
                     }
 		},
                 createMap: function() {
-                    console.log("creating map");
+                    var theDisplay  =this;
+
                     var params = {
                         "defaultMapLayer" : this.getProperty("defaultMapLayer",
                                                              map_default_layer),
                                 
                     };
                     var mapLayers = this.getProperty("mapLayers", null);
-                    var theDisplay = this;
                     if(mapLayers) {
                         params.mapLayers =  [mapLayers];
                     }
@@ -129,15 +129,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
                     }
                     this.map.initMap(false);
 
-                    if(this.kmlLayer!=null) {
-                        var url = ramaddaBaseUrl + "/entry/show?output=shapefile.kml&entryid=" + this.kmlLayer;
-                        this.addBaseMapLayer(url, true);
-                    }
-                    if(this.geojsonLayer!=null) {
-                        url = this.getRamadda().getEntryDownloadUrl(this.geojsonLayer);
-                        this.addBaseMapLayer(url, false);
-                    }
-                        
+                       
                     this.map.addRegionSelectorControl(function(bounds) {
                             _this.getDisplayManager().handleEventMapBoundsChanged(this, bounds, true);
                         });
@@ -181,13 +173,21 @@ function RamaddaMapDisplay(displayManager, id, properties) {
                             //TODO: Center on the kml
                         }
                     }
+
+                    if(theDisplay.kmlLayer!=null) {
+                        var url = ramaddaBaseUrl + "/entry/show?output=shapefile.kml&entryid=" + theDisplay.kmlLayer;
+                        theDisplay.addBaseMapLayer(url, true);
+                    }
+                    if(theDisplay.geojsonLayer!=null) {
+                        url = theDisplay.getRamadda().getEntryDownloadUrl(theDisplay.geojsonLayer);
+                        theDisplay.addBaseMapLayer(url, false);
+                    }
                 },
                 addBaseMapLayer: function(url, isKml) {
                     var theDisplay = this;
                     mapLoadInfo = displayMapUrlToVectorListeners[url];
                     if(mapLoadInfo == null) {
                         mapLoadInfo = {otherMaps:[], layer:null};
-                        //                        displayMapUrlToVectorListeners[url] = mapLoadInfo;
                         selectFunc  = function(layer) {
                             theDisplay.mapFeatureSelected(layer);
                         }
@@ -207,7 +207,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
                     }
                 },
                 mapFeatureSelected: function(layer) {
-                    if(!this.pointData) {
+                    if(!this.getPointData()) {
                         //                        console.log("no point data");
                         return;
                     }
@@ -216,7 +216,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
                         return;
                     }
                     //                    console.log("map index:" + layer.feature.dataIndex);
-                    this.getDisplayManager().handleEventRecordSelection(this,this.pointData,layer.feature.dataIndex);
+                    this.getDisplayManager().handleEventRecordSelection(this,this.getPointData(),layer.feature.dataIndex);
                 },
                doDisplayMap:  function() {
                     var v = (this.kmlLayer!=null || this.geojsonLayer!=null) && ((""+this.getProperty("displayAsMap","")) == "true");
@@ -714,20 +714,16 @@ function RamaddaMapDisplay(displayManager, id, properties) {
                 needsData:function() {
                     return true;
                 },
-               updateUI: function(pointData) {
-                    SUPER.updateUI.call(this,pointData);
+               updateUI: function() {
+                    SUPER.updateUI.call(this);
+                    if(!this.getDisplayReady()) {
+                        return;
+                    }
                     //                    console.log("map.updateUI:" + this.hasData());
                     if(!this.hasData()) {
                         return;
                     }
-                    //		handleEventPointDataLoaded : function(source, pointData) {
-                    this.pointData = pointData;
-                    //                    console.log("map-handleEventPointDataLoaded");
-                    //                    if(source && Utils.isDefined(source["map-display"]) && !source["map-display"]) {
-                        //                        console.log("return 1");
-                        //                        return;
-                        //                    }
-
+                    var pointData = this.getPointData();
                     var bounds = [ NaN, NaN, NaN, NaN ];
                     var records = pointData.getRecords();
                     if(records == null) {
@@ -738,7 +734,6 @@ function RamaddaMapDisplay(displayManager, id, properties) {
                     var fields = pointData.getRecordFields();
                     var points = RecordUtil.getPoints(records, bounds);
                     if (isNaN(bounds[0])) {
-                        console.log("return 2:" + records.length +" " + bounds);
                         return;
                     }
 
@@ -746,11 +741,9 @@ function RamaddaMapDisplay(displayManager, id, properties) {
                     this.setInitMapBounds(bounds[0], bounds[1], bounds[2],
                                           bounds[3]);
                     if (this.map == null) {
-                        console.log("return 3");
                         return;
                     }
                     if(points.length ==0) {
-                        console.log("return 4");
                         return;
                     }
 

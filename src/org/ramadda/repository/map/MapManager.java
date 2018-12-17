@@ -63,10 +63,10 @@ import java.util.List;
  */
 public class MapManager extends RepositoryManager implements WikiConstants {
 
-    /** _more_          */
+    /** _more_ */
     public static final String PROP_SCREENBIGRECTS = "screenBigRects";
 
-    /** _more_          */
+    /** _more_ */
     public static final String PROP_DETAILED = "detailed";
 
     /** _more_ */
@@ -757,37 +757,36 @@ public class MapManager extends RepositoryManager implements WikiConstants {
             double  lon          = entry.getEast();
             String  pointsString = "null";
             boolean hasPolygon   = false;
-            List<Metadata> metadataList =
-                getMetadataManager().getMetadata(entry);
-            for (Metadata metadata : metadataList) {
-                if ( !metadata.getType().equals(
-                        MetadataHandler.TYPE_SPATIAL_POLYGON)) {
-                    continue;
-                }
-                List<double[]> points   = new ArrayList<double[]>();
-                String         s        = metadata.getAttr1();
-                StringBuilder  pointsSB = new StringBuilder();
-                for (String pair : StringUtil.split(s, ";", true, true)) {
-                    List<String> toks = StringUtil.splitUpTo(pair, ",", 2);
-                    if (toks.size() != 2) {
-                        continue;
-                    }
-                    double polyLat = Utils.decodeLatLon(toks.get(0));
-                    double polyLon = Utils.decodeLatLon(toks.get(1));
-                    if (pointsSB.length() == 0) {
-                        pointsSB.append("new Array(");
-                    } else {
+            if (entry.getTypeHandler().shouldShowPolygonInMap()) {
+                List<Metadata> metadataList =
+                    getMetadataManager().getMetadata(entry,
+                        MetadataHandler.TYPE_SPATIAL_POLYGON);
+                for (Metadata metadata : metadataList) {
+                    List<double[]> points   = new ArrayList<double[]>();
+                    String         s        = metadata.getAttr1();
+                    StringBuilder  pointsSB = new StringBuilder();
+                    for (String pair : StringUtil.split(s, ";", true, true)) {
+                        List<String> toks = StringUtil.splitUpTo(pair, ",",
+                                                2);
+                        if (toks.size() != 2) {
+                            continue;
+                        }
+                        double polyLat = Utils.decodeLatLon(toks.get(0));
+                        double polyLon = Utils.decodeLatLon(toks.get(1));
+                        if (pointsSB.length() == 0) {
+                            pointsSB.append("new Array(");
+                        } else {
+                            pointsSB.append(",");
+                        }
+                        pointsSB.append(polyLat);
                         pointsSB.append(",");
+                        pointsSB.append(polyLon);
                     }
-                    pointsSB.append(polyLat);
-                    pointsSB.append(",");
-                    pointsSB.append(polyLon);
+                    hasPolygon = true;
+                    pointsSB.append(")");
+                    pointsString = pointsSB.toString();
                 }
-                hasPolygon = true;
-                pointsSB.append(")");
-                pointsString = pointsSB.toString();
             }
-
             //            hasPolygon = false;
             if ((kmlUrl == null) && !hasPolygon && entry.hasAreaDefined()
                     && !justPoints) {

@@ -467,6 +467,7 @@ public class PointTypeHandler extends RecordTypeHandler {
         Entry      entry      = pointEntry.getEntry();
 
         //We need to do the polygon thing here so we have the geo bounds to make the grid
+        /** lets not harvest the bounding polygon as this doesn't make sense for most point data 
         if (pointEntry.isCapable(PointFile.ACTION_BOUNDINGPOLYGON)) {
             if ( !entry.hasMetadataOfType(
                     MetadataHandler.TYPE_SPATIAL_POLYGON)) {
@@ -476,12 +477,11 @@ public class PointTypeHandler extends RecordTypeHandler {
                                      metadata.getMinLatitude(),
                                      metadata.getMaxLongitude());
 
-
                 PointMetadataHarvester metadata2 =
                     new PointMetadataHarvester(llg);
                 //                System.err.println("PointTypeHandler: visiting binary file");
                 pointEntry.getBinaryPointFile().visit(metadata2,
-                        new VisitInfo(VisitInfo.QUICKSCAN_NO), null);
+                                                      new VisitInfo(VisitInfo.QUICKSCAN_NO), null);
                 List<double[]> polygon = llg.getBoundingPolygon();
                 StringBuilder[] sb = new StringBuilder[] {
                                          new StringBuilder(),
@@ -512,6 +512,7 @@ public class PointTypeHandler extends RecordTypeHandler {
                         false);
             }
         }
+        */
 
         String descriptionFromFile =
             pointEntry.getRecordFile().getDescriptionFromFile();

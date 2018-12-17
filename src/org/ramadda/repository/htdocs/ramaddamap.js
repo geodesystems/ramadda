@@ -571,6 +571,10 @@ function initMapFunctions(theMap) {
         layer.canSelect = canSelect;
         layer.events.on({"loadend": function(e) {
                     _this.hideLoadingImage();
+                    if(e.response && Utils.isDefined(e.response.code) && e.response.code == OpenLayers.Protocol.Response.FAILURE) {
+                        alert("An error occurred loading the map");
+                        return;
+                    }
                     if(_this.centerOnMarkersCalled) {
                         _this.centerOnMarkers(_this.dfltBounds,_this.centerOnMarkersForce);
                     }
@@ -579,7 +583,6 @@ function initMapFunctions(theMap) {
                     }
                 }});
         this.addLayer(layer);
-        var doit = false;
         this.addSelectCallback(layer, canSelect,selectCallback, unselectCallback);
     }
 

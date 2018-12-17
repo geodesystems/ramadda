@@ -48,10 +48,22 @@ var PROP_WIDTH  = "width";
 
 
 
+var ramaddaPageLoad
+function initRamaddaDisplays() {
+    if(window.globalDisplaysList == null) {
+        return;
+    }
+    for(var i=0;i<window.globalDisplaysList.length;i++) {
+        window.globalDisplaysList[i].pageHasLoaded();
+    }
+}
+
 function addRamaddaDisplay(display) {
     if(window.globalDisplays == null) {
         window.globalDisplays = {};
+        window.globalDisplaysList = [];
     }
+    window.globalDisplaysList.push(display);
     window.globalDisplays[display.getId()] = display;
     if(display.displayId) {
         window.globalDisplays[display.displayId] = display;
@@ -304,16 +316,22 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
                         ]
         */
     }
-                           
     
     RamaddaUtil.defineMembers(this, {
+            displayReady: Utils.getPageLoaded(),
             type: argType,
             displayManager:argDisplayManager,
             filters: [],
             dataCollection: new DataCollection(),
             selectedCbx: [],
             entries: [],
-                wikiAttrs: ["title","showTitle","showDetails","minDate","maxDate"],
+            wikiAttrs: ["title","showTitle","showDetails","minDate","maxDate"],
+            setDisplayReady: function() {
+                this.displayReady = true;
+            },
+            getDisplayReady: function() {
+                return this.displayReady;
+            },
             getDisplayManager: function() {
                return this.displayManager;
             },
@@ -648,7 +666,9 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 
                 $("." + groupByClass).change(function(event) {
                         theDisplay.groupBy = $(this).val();
-                        theDisplay.displayData();
+                        if(theDisplay.displayData) {
+                            theDisplay.displayData();
+                        }
                     });
 
 
@@ -1711,18 +1731,14 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
                 return this.orientation == "horizontal";
             },
             loadInitialData: function() {
-                //                console.log("loadInitialData");
                 if(!this.needsData() || this.properties.data==null) {
-                    //                    console.log(" returning " + this.needsData() );
                     return;
                 } 
                 if(this.properties.data.hasData()) {
-                    //                    console.log(" hasData");
                     this.addData(this.properties.data);
                     return;
                 } 
                 this.properties.data.derived = this.derived;
-                //                console.log("calling loadData");
                 this.properties.data.loadData(this);
             },
             getData: function() {
@@ -1864,11 +1880,13 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             initUI:function() {
                 this.checkFixedLayout();
             },
+            pageHasLoaded:function() {
+            },
             initDisplay:function() {
                 this.initUI();
                 this.setContents("<p>default html<p>");
             },
-            updateUI: function(data) {
+            updateUI: function() {
             },
             getDoBs: function() {
                 if (!(typeof this.dobs === 'undefined')) {
@@ -1909,8 +1927,6 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 
                 html+= HtmlUtil.div([ATTR_CLASS,"ramadda-popup", ATTR_ID, this.getDomId(ID_MENU_OUTER)], "");
                 var menu = HtmlUtil.div([ATTR_CLASS, "display-dialog", ATTR_ID, this.getDomId(ID_DIALOG)], "");
-
-
                 var get = this.getGet();
                 var button = "";
                 if(this.getShowMenu()) {
@@ -2187,19 +2203,22 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 
             //callback from the pointData.loadData call
             pointDataLoaded: function(pointData, url, reload)  {
-                //                console.log("pointDataLoaded  reload:" + reload);
+                //console.log("pointDataLoaded  reload:" + reload);
                 if(!reload) {
                     this.addData(pointData);
-                }
-                this.updateUI(pointData);
-                if(!reload) {
-                    this.lastPointData = pointData;
-                    this.getDisplayManager().handleEventPointDataLoaded(this, pointData);
                 }
                 if(url!=null) {
                     this.jsonUrl = url;
                 } else {
                     this.jsonUrl = null;
+                }
+                if(!this.getDisplayReady()) {
+                    return;
+                }
+                this.updateUI();
+                if(!reload) {
+                    this.lastPointData = pointData;
+                    this.getDisplayManager().handleEventPointDataLoaded(this, pointData);
                 }
             },
             getDateFormatter: function() {
@@ -2249,12 +2268,13 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
                 return true;
             },
 
+            getPointData : function() {
+                if(this.dataCollection.getList().length == 0) return null;
+                return  this.dataCollection.getList()[0];
+            },
             //get an array of arrays of data 
-               
-
-
             getStandardData : function(fields, props) {
-                var pointData = this.dataCollection.getList()[0];
+                var pointData = this.getPointData();
                 var excludeZero = this.getProperty(PROP_EXCLUDE_ZERO,false);
                 if(fields == null) {
                     fields = pointData.getRecordFields();
@@ -2675,14 +2695,22 @@ function DisplayGroup(argDisplayManager, argId, argProperties) {
                 }
                 return result;
             },
+            pageHasLoaded: function(display) {
+                for(var i=0;i<this.displays.length;i++) {
+                    this.displays[i].setDisplayReady(true);
+                }
+                this.doLayout();
+            },
             addDisplay: function(display) {
                 this.displays.push(display);
-                this.doLayout();
+                if(Utils.getPageLoaded()) {
+                    this.doLayout();
+                }
             },
            layoutChanged: function(display) {
                this.doLayout();
            },
-            removeDisplay:function(display) {
+           removeDisplay:function(display) {
                 var index = this.displays.indexOf(display);
                 if(index >= 0) { 
                     this.displays.splice(index, 1);
@@ -2766,7 +2794,6 @@ function DisplayGroup(argDisplayManager, argId, argProperties) {
                             label = label.substring(0,19) +"...";
                         }
                         html += HtmlUtil.tag(TAG_LI, [], HtmlUtil.tag(TAG_A, ["href","#"  + tabId + "-" + cnt],label));
-
                         hidden += HtmlUtil.div(["id", tabId  + "-" + cnt,"class","ui-tabs-hide"], display.getHtml());
                         cnt++;
                     }
@@ -2840,9 +2867,9 @@ function DisplayGroup(argDisplayManager, argId, argProperties) {
                 if(this.layout==LAYOUT_TABS) {
                     $("#"+ tabId).tabs({});
                 }
-                this.initDisplay();
+                this.initDisplays();
             },
-            initDisplay: function() {
+            initDisplays: function() {
                 for(var i=0;i<this.displays.length;i++) {
                     this.displays[i].initDisplay();
                 }

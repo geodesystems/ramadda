@@ -970,7 +970,7 @@ public class PageHandler extends RepositoryManager {
      * @return _more_
      */
     public HtmlTemplate getMobileTemplate() {
-        if ( !getRepository().getCacheResources()) {
+        if (cacheTemplates) {
             mobileTemplate = null;
         }
         if (mobileTemplate == null) {
@@ -987,8 +987,16 @@ public class PageHandler extends RepositoryManager {
     }
 
 
+    /**
+     * _more_
+     *
+     * @param url _more_
+     *
+     * @return _more_
+     */
     public String makeHtdocsUrl(String url) {
-        return getRepository().getUrlBase() +"/" +  RepositoryUtil.getHtdocsVersion() +"/" + url;
+        return getRepository().getUrlBase() + "/"
+               + RepositoryUtil.getHtdocsVersion() + "/" + url;
     }
 
     /**
@@ -998,8 +1006,7 @@ public class PageHandler extends RepositoryManager {
      */
     public List<HtmlTemplate> getTemplates() {
         List<HtmlTemplate> theTemplates = htmlTemplates;
-        if (theTemplates == null) {
-            //            System.err.println ("Loading templates");
+        if ( !cacheTemplates || (theTemplates == null)) {
             String imports = "";
             try {
                 imports = getStorageManager().readSystemResource(
@@ -3560,6 +3567,7 @@ public class PageHandler extends RepositoryManager {
         super.clearCache();
         templateJavascriptContent = null;
         htmlTemplates             = null;
+        mobileTemplate            = null;
         defaultTemplate           = null;
         typeToWikiTemplate        = new Hashtable<String, String>();
     }
@@ -3667,8 +3675,11 @@ public class PageHandler extends RepositoryManager {
     /** _more_ */
     private String myLogoImage;
 
-    /** _more_          */
+    /** _more_ */
     private String footer;
+
+    /** _more_          */
+    private boolean cacheTemplates;
 
     /**
      * _more_
@@ -3676,6 +3687,8 @@ public class PageHandler extends RepositoryManager {
     @Override
     public void initAttributes() {
         super.initAttributes();
+        //Clear out any loaded templates
+        clearCache();
         showCreateDate =
             getRepository().getProperty(PROP_ENTRY_TABLE_SHOW_CREATEDATE,
                                         false);
@@ -3686,6 +3699,8 @@ public class PageHandler extends RepositoryManager {
                                         "none").trim();
         footer      = repository.getProperty(PROP_HTML_FOOTER, BLANK);
         myLogoImage = getRepository().getProperty(PROP_LOGO_IMAGE, null);
+        cacheTemplates =
+            getRepository().getProperty("ramadda.cachetemplates", true);
     }
 
     /**
@@ -4015,10 +4030,12 @@ Time:14625 cnt:7000
      * @return _more_
      */
     public String applyBaseMacros(String s) {
+
         String mini = getRepository().getMinifiedOk()
                       ? ".mini"
                       : "";
 
+        //        System.err.println(mini +" " + getRepository().getMinifiedOk());
         return s.replace(MACRO_URLROOT, getRepository().getUrlBase()).replace(
             "${baseentry}", getEntryManager().getRootEntry().getId()).replace(
             "${mini}", mini);

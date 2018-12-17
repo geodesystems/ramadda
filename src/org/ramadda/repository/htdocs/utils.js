@@ -2,6 +2,7 @@
  * Copyright (c) 2008-2015 Geode Systems LLC
 */
 
+
 var ramaddaBaseUrl = "${urlroot}";
 var ramaddaBaseEntry = "${baseentry}";
 var root = ramaddaBaseUrl;
@@ -28,6 +29,7 @@ var uniqueCnt = 0;
 function noop() {}
 
 var Utils = {
+    pageLoaded: false,
     parseDate: function(s,roundUp, rel) {
         if(s ==null) return null;
         s = s.trim();
@@ -144,7 +146,11 @@ var Utils = {
         }
         return params;
     },
+    getPageLoaded: function() {
+        return this.pageLoaded;
+    },
     initPage: function() {
+        this.pageLoaded = true;
         //Buttonize
         $(':submit').button().click(function(event){});
         //menuize
@@ -153,6 +159,9 @@ var Utils = {
         */
         /* for select menus with icons */
         $(".ramadda-pulldown-with-icons").iconselectmenu().iconselectmenu("menuWidget").addClass( "ui-menu-icons ramadda-select-icon");
+        if(window["initRamaddaDisplays"]) {
+            initRamaddaDisplays();
+        }
     },
     ColorTables: {blues: ["rgb(255,255,255)","rgb(246,246,255)","rgb(237,237,255)","rgb(228,228,255)","rgb(219,219,255)","rgb(211,211,255)","rgb(202,202,255)","rgb(193,193,255)","rgb(184,184,255)","rgb(175,175,255)","rgb(167,167,255)","rgb(158,158,255)","rgb(149,149,255)","rgb(140,140,255)","rgb(131,131,255)","rgb(123,123,255)","rgb(114,114,255)","rgb(105,105,255)","rgb(96,96,255)","rgb(87,87,255)","rgb(79,79,255)","rgb(70,70,255)","rgb(61,61,255)","rgb(52,52,255)","rgb(43,43,255)","rgb(35,35,255)","rgb(26,26,255)","rgb(17,17,255)","rgb(8,8,255)","rgb(0,0,255)",],
                   blue_green_red:["rgb(0,0,255)",
@@ -902,6 +911,12 @@ var RamaddaUtil = {
     //this.super.<method>.call(this,...);
     inherit: function(object, parent) {
         $.extend(object, parent);
+        parent.getThis = function() {
+            return object;
+        }
+        object.getThis = function() {
+            return object;
+        }
         object.mysuper = parent;
         return object;
     },

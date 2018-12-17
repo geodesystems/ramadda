@@ -74,8 +74,6 @@ import java.util.regex.*;
 import java.util.zip.*;
 
 
-
-
 /**
  * This class loads and manages the plugins
  */
