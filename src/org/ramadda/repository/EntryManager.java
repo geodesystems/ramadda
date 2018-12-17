@@ -5966,6 +5966,8 @@ public class EntryManager extends RepositoryManager {
                            ? getPageHandler().parseDate(
                                XmlUtil.getAttribute(node, ATTR_CHANGEDATE))
                            : createDate);
+        //don't use the create and change date from the xml
+        createDate = changeDate = now;
         Date fromDate = (XmlUtil.hasAttribute(node, ATTR_FROMDATE)
                          ? getPageHandler().parseDate(
                              XmlUtil.getAttribute(node, ATTR_FROMDATE))
