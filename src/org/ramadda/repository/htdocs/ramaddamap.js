@@ -228,7 +228,7 @@ function initMapFunctions(theMap) {
                 if(!feature.isSelected) {
                     feature.originalStyle = feature.style;
                     feature.style = null;
-                    feature.layer.drawFeature(feature,"temporary");
+                    layer.drawFeature(feature,"temporary");
                 }
             },
             handleFeatureout: function(feature) { 
@@ -260,6 +260,7 @@ function initMapFunctions(theMap) {
                 layer.drawFeature(layer.selectedFeature,"select"); 
                 if(layer.selectCallback) {
                     layer.feature= layer.selectedFeature;
+                    if(feature.originalStyle) feature.style = feature.originalStyle
                     layer.selectCallback(layer);
                 }
             },
@@ -452,7 +453,7 @@ function initMapFunctions(theMap) {
         }
         var format = new OpenLayers.Format.GeoJSON();
         var feature = layer.feature;
-        var style = feature.style;
+        var style = feature.style || layer.style;
         var json = format.write(feature);
         var p = feature.attributes;
         var out = feature.popupText;
