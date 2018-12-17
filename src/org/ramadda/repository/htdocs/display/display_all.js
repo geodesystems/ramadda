@@ -194,10 +194,22 @@ var PROP_WIDTH  = "width";
 
 
 
+var ramaddaPageLoad
+function initRamaddaDisplays() {
+    if(window.globalDisplaysList == null) {
+        return;
+    }
+    for(var i=0;i<window.globalDisplaysList.length;i++) {
+        window.globalDisplaysList[i].pageHasLoaded();
+    }
+}
+
 function addRamaddaDisplay(display) {
     if(window.globalDisplays == null) {
         window.globalDisplays = {};
+        window.globalDisplaysList = [];
     }
+    window.globalDisplaysList.push(display);
     window.globalDisplays[display.getId()] = display;
     if(display.displayId) {
         window.globalDisplays[display.displayId] = display;
@@ -450,16 +462,22 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
                         ]
         */
     }
-                           
     
     RamaddaUtil.defineMembers(this, {
+            displayReady: Utils.getPageLoaded(),
             type: argType,
             displayManager:argDisplayManager,
             filters: [],
             dataCollection: new DataCollection(),
             selectedCbx: [],
             entries: [],
-                wikiAttrs: ["title","showTitle","showDetails","minDate","maxDate"],
+            wikiAttrs: ["title","showTitle","showDetails","minDate","maxDate"],
+            setDisplayReady: function() {
+                this.displayReady = true;
+            },
+            getDisplayReady: function() {
+                return this.displayReady;
+            },
             getDisplayManager: function() {
                return this.displayManager;
             },
@@ -794,7 +812,9 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 
                 $("." + groupByClass).change(function(event) {
                         theDisplay.groupBy = $(this).val();
-                        theDisplay.displayData();
+                        if(theDisplay.displayData) {
+                            theDisplay.displayData();
+                        }
                     });
 
 
@@ -1857,18 +1877,14 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
                 return this.orientation == "horizontal";
             },
             loadInitialData: function() {
-                //                console.log("loadInitialData");
                 if(!this.needsData() || this.properties.data==null) {
-                    //                    console.log(" returning " + this.needsData() );
                     return;
                 } 
                 if(this.properties.data.hasData()) {
-                    //                    console.log(" hasData");
                     this.addData(this.properties.data);
                     return;
                 } 
                 this.properties.data.derived = this.derived;
-                //                console.log("calling loadData");
                 this.properties.data.loadData(this);
             },
             getData: function() {
@@ -2010,11 +2026,13 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             initUI:function() {
                 this.checkFixedLayout();
             },
+            pageHasLoaded:function() {
+            },
             initDisplay:function() {
                 this.initUI();
                 this.setContents("<p>default html<p>");
             },
-            updateUI: function(data) {
+            updateUI: function() {
             },
             getDoBs: function() {
                 if (!(typeof this.dobs === 'undefined')) {
@@ -2055,8 +2073,6 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 
                 html+= HtmlUtil.div([ATTR_CLASS,"ramadda-popup", ATTR_ID, this.getDomId(ID_MENU_OUTER)], "");
                 var menu = HtmlUtil.div([ATTR_CLASS, "display-dialog", ATTR_ID, this.getDomId(ID_DIALOG)], "");
-
-
                 var get = this.getGet();
                 var button = "";
                 if(this.getShowMenu()) {
@@ -2333,19 +2349,22 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 
             //callback from the pointData.loadData call
             pointDataLoaded: function(pointData, url, reload)  {
-                //                console.log("pointDataLoaded  reload:" + reload);
+                //console.log("pointDataLoaded  reload:" + reload);
                 if(!reload) {
                     this.addData(pointData);
-                }
-                this.updateUI(pointData);
-                if(!reload) {
-                    this.lastPointData = pointData;
-                    this.getDisplayManager().handleEventPointDataLoaded(this, pointData);
                 }
                 if(url!=null) {
                     this.jsonUrl = url;
                 } else {
                     this.jsonUrl = null;
+                }
+                if(!this.getDisplayReady()) {
+                    return;
+                }
+                this.updateUI();
+                if(!reload) {
+                    this.lastPointData = pointData;
+                    this.getDisplayManager().handleEventPointDataLoaded(this, pointData);
                 }
             },
             getDateFormatter: function() {
@@ -2395,12 +2414,13 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
                 return true;
             },
 
+            getPointData : function() {
+                if(this.dataCollection.getList().length == 0) return null;
+                return  this.dataCollection.getList()[0];
+            },
             //get an array of arrays of data 
-               
-
-
             getStandardData : function(fields, props) {
-                var pointData = this.dataCollection.getList()[0];
+                var pointData = this.getPointData();
                 var excludeZero = this.getProperty(PROP_EXCLUDE_ZERO,false);
                 if(fields == null) {
                     fields = pointData.getRecordFields();
@@ -2821,14 +2841,22 @@ function DisplayGroup(argDisplayManager, argId, argProperties) {
                 }
                 return result;
             },
+            pageHasLoaded: function(display) {
+                for(var i=0;i<this.displays.length;i++) {
+                    this.displays[i].setDisplayReady(true);
+                }
+                this.doLayout();
+            },
             addDisplay: function(display) {
                 this.displays.push(display);
-                this.doLayout();
+                if(Utils.getPageLoaded()) {
+                    this.doLayout();
+                }
             },
            layoutChanged: function(display) {
                this.doLayout();
            },
-            removeDisplay:function(display) {
+           removeDisplay:function(display) {
                 var index = this.displays.indexOf(display);
                 if(index >= 0) { 
                     this.displays.splice(index, 1);
@@ -2912,7 +2940,6 @@ function DisplayGroup(argDisplayManager, argId, argProperties) {
                             label = label.substring(0,19) +"...";
                         }
                         html += HtmlUtil.tag(TAG_LI, [], HtmlUtil.tag(TAG_A, ["href","#"  + tabId + "-" + cnt],label));
-
                         hidden += HtmlUtil.div(["id", tabId  + "-" + cnt,"class","ui-tabs-hide"], display.getHtml());
                         cnt++;
                     }
@@ -2986,9 +3013,9 @@ function DisplayGroup(argDisplayManager, argId, argProperties) {
                 if(this.layout==LAYOUT_TABS) {
                     $("#"+ tabId).tabs({});
                 }
-                this.initDisplay();
+                this.initDisplays();
             },
-            initDisplay: function() {
+            initDisplays: function() {
                 for(var i=0;i<this.displays.length;i++) {
                     this.displays[i].initDisplay();
                 }
@@ -3314,7 +3341,6 @@ function PointData(name, recordFields, records, url, properties) {
                 this.loadPointJson(jsonUrl, display, reload);
             },
             loadPointJson: function(url, display, reload) {
-                //                url = url.replace("5000","10");
                 var pointData = this;
                 this.startLoading();
                 var _this = this;
@@ -3337,7 +3363,7 @@ function PointData(name, recordFields, records, url, properties) {
                     //                    console.log("Waiting on callback:" + obj.pending.length +" " + url);
                     return;
                 }
-                console.log("loadPointJson:" + url);
+                console.log("load data:" + url);
                 //                console.log("loading point url:" + url);
                 var jqxhr = $.getJSON( url, function(data) {
                         if(GuiUtils.isJsonError(data)) {
@@ -4871,7 +4897,7 @@ function RamaddaMultiChart(displayManager, id, properties) {
     //A hack  so charts are displayed OK in a tabs or accordian
     //When the doc is done wait 5 seconds then display (or re-display) the data
     var redisplayFunc = function() {
-        _this.displayData();
+        _this.getThis().displayData();
     };
     $(document).ready(function(){
 	setTimeout(redisplayFunc,5000);
@@ -4882,24 +4908,28 @@ function RamaddaMultiChart(displayManager, id, properties) {
 
     //Another hack to redraw the chart after the window is resized
     $(window).resize(function() {
+         theDisplay = _this.getThis();
+         if(!theDisplay.getDisplayReady())  {
+             return;
+         }
 	//This handles multiple resize events but keeps only having one timeout pending at a time
-	if(_this.redisplayPending) {
-	    _this.redisplayPendingCnt++;
+	if(theDisplay.redisplayPending) {
+	    theDisplay.redisplayPendingCnt++;
 	    return;
 	}
 	var timeoutFunc = function(myCnt){
-            if(myCnt == _this.redisplayPendingCnt) {
+            if(myCnt == theDisplay.redisplayPendingCnt) {
 		//Ready to redisplay
-		_this.redisplayPending = false;
-		_this.redisplayPendingCnt=0;
-		_this.displayData();
+		theDisplay.redisplayPending = false;
+		theDisplay.redisplayPendingCnt=0;
+		theDisplay.displayData();
             } else {
 		//Had a resize event during the previous timeout
-		setTimeout(timeoutFunc.bind(null,_this.redisplayPendingCnt),1000);
+		setTimeout(timeoutFunc.bind(null,theDisplay.redisplayPendingCnt),1000);
 	    }
 	}
-	_this.redisplayPending = true;
-        setTimeout(timeoutFunc.bind(null,_this.redisplayPendingCnt),1000);
+	theDisplay.redisplayPending = true;
+        setTimeout(timeoutFunc.bind(null,theDisplay.redisplayPendingCnt),1000);
     });
 
     //Init the defaults first
@@ -4935,6 +4965,9 @@ function RamaddaMultiChart(displayManager, id, properties) {
             },
             updateUI: function() {
                 SUPER.updateUI.call(this);
+                if(!this.getDisplayReady()) {
+                    return;
+                }
                 this.displayData();
             },
             getWikiAttributes: function(attrs) {
@@ -5119,8 +5152,11 @@ getChartType: function() {
             canDoGroupBy: function() {
                 return this.chartType == DISPLAY_PIECHART || this.chartType == DISPLAY_TABLE;
             },
-                xcnt:0,
+            xcnt:0,
             displayData: function() {
+                if(!this.getDisplayReady()) {
+                    return;
+                }
                 if(this.inError) {
                     return;
                 }
@@ -6002,9 +6038,8 @@ function RamaddaStatsDisplay(displayManager, id, properties) {
             fieldSelectionChanged: function() {
                 this.updateUI();
             },
-            updateUI: function(pointData) {
-                SUPER.updateUI.call(this,pointData);
-                //                console.log("stats.updateUI:" + this.hasData());
+            updateUI: function() {
+                SUPER.updateUI.call(this);
                 if(!this.hasData()) {
                     this.setContents(this.getLoadingMessage());
                     return;
@@ -6587,7 +6622,7 @@ function RamaddaD3Display(displayManager, id, properties) {
                 this.updateUI();
             },
             // onlyZoom is not updating the axis
-            updateUI: function(pointData) {
+            updateUI: function() {
                 //Note: Not sure why onlyZoom was a function param. The pointData gets passes in 
                 //when the json is loaded
                 //            updateUI: function(onlyZoom) {
@@ -8693,6 +8728,7 @@ function DisplayManager(argId,argProperties) {
     var ID_MENU_INNER =  "menu_inner";
 
     RamaddaUtil.inherit(this, this.SUPER = new DisplayThing(argId, argProperties));
+    addRamaddaDisplay(this);
 
     RamaddaUtil.initMembers(this, {
                 dataList : [],
@@ -8712,6 +8748,11 @@ function DisplayManager(argId,argProperties) {
     RamaddaUtil.defineMembers(this, {
            group: new DisplayGroup(this, argId,argProperties),
            showmap : this.getProperty(PROP_SHOW_MAP,null),
+           setDisplayReady: function() {
+                SUPER.setDisplayReadyCall(this);
+                console.log("displaymanager.displayReady");
+                this.getLayoutManager().setDisplayReady();
+           },
            addDisplayType: function(type,label) {
                this.displayTypes.push({type:label});
            },
@@ -9044,6 +9085,9 @@ function DisplayManager(argId,argProperties) {
                 this.addDisplay(display);
                 return display;
             },
+            pageHasLoaded: function(display) {
+                this.getLayoutManager().pageHasLoaded();
+            },
             addDisplay: function(display) {
                 display.setDisplayManager(this);
                 display.loadInitialData();
@@ -9204,14 +9248,14 @@ function RamaddaMapDisplay(displayManager, id, properties) {
                     }
 		},
                 createMap: function() {
-                    console.log("creating map");
+                    var theDisplay  =this;
+
                     var params = {
                         "defaultMapLayer" : this.getProperty("defaultMapLayer",
                                                              map_default_layer),
                                 
                     };
                     var mapLayers = this.getProperty("mapLayers", null);
-                    var theDisplay = this;
                     if(mapLayers) {
                         params.mapLayers =  [mapLayers];
                     }
@@ -9227,15 +9271,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
                     }
                     this.map.initMap(false);
 
-                    if(this.kmlLayer!=null) {
-                        var url = ramaddaBaseUrl + "/entry/show?output=shapefile.kml&entryid=" + this.kmlLayer;
-                        this.addBaseMapLayer(url, true);
-                    }
-                    if(this.geojsonLayer!=null) {
-                        url = this.getRamadda().getEntryDownloadUrl(this.geojsonLayer);
-                        this.addBaseMapLayer(url, false);
-                    }
-                        
+                       
                     this.map.addRegionSelectorControl(function(bounds) {
                             _this.getDisplayManager().handleEventMapBoundsChanged(this, bounds, true);
                         });
@@ -9279,13 +9315,21 @@ function RamaddaMapDisplay(displayManager, id, properties) {
                             //TODO: Center on the kml
                         }
                     }
+
+                    if(theDisplay.kmlLayer!=null) {
+                        var url = ramaddaBaseUrl + "/entry/show?output=shapefile.kml&entryid=" + theDisplay.kmlLayer;
+                        theDisplay.addBaseMapLayer(url, true);
+                    }
+                    if(theDisplay.geojsonLayer!=null) {
+                        url = theDisplay.getRamadda().getEntryDownloadUrl(theDisplay.geojsonLayer);
+                        theDisplay.addBaseMapLayer(url, false);
+                    }
                 },
                 addBaseMapLayer: function(url, isKml) {
                     var theDisplay = this;
                     mapLoadInfo = displayMapUrlToVectorListeners[url];
                     if(mapLoadInfo == null) {
                         mapLoadInfo = {otherMaps:[], layer:null};
-                        //                        displayMapUrlToVectorListeners[url] = mapLoadInfo;
                         selectFunc  = function(layer) {
                             theDisplay.mapFeatureSelected(layer);
                         }
@@ -9305,7 +9349,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
                     }
                 },
                 mapFeatureSelected: function(layer) {
-                    if(!this.pointData) {
+                    if(!this.getPointData()) {
                         //                        console.log("no point data");
                         return;
                     }
@@ -9314,7 +9358,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
                         return;
                     }
                     //                    console.log("map index:" + layer.feature.dataIndex);
-                    this.getDisplayManager().handleEventRecordSelection(this,this.pointData,layer.feature.dataIndex);
+                    this.getDisplayManager().handleEventRecordSelection(this,this.getPointData(),layer.feature.dataIndex);
                 },
                doDisplayMap:  function() {
                     var v = (this.kmlLayer!=null || this.geojsonLayer!=null) && ((""+this.getProperty("displayAsMap","")) == "true");
@@ -9812,20 +9856,16 @@ function RamaddaMapDisplay(displayManager, id, properties) {
                 needsData:function() {
                     return true;
                 },
-               updateUI: function(pointData) {
-                    SUPER.updateUI.call(this,pointData);
+               updateUI: function() {
+                    SUPER.updateUI.call(this);
+                    if(!this.getDisplayReady()) {
+                        return;
+                    }
                     //                    console.log("map.updateUI:" + this.hasData());
                     if(!this.hasData()) {
                         return;
                     }
-                    //		handleEventPointDataLoaded : function(source, pointData) {
-                    this.pointData = pointData;
-                    //                    console.log("map-handleEventPointDataLoaded");
-                    //                    if(source && Utils.isDefined(source["map-display"]) && !source["map-display"]) {
-                        //                        console.log("return 1");
-                        //                        return;
-                        //                    }
-
+                    var pointData = this.getPointData();
                     var bounds = [ NaN, NaN, NaN, NaN ];
                     var records = pointData.getRecords();
                     if(records == null) {
@@ -9836,7 +9876,6 @@ function RamaddaMapDisplay(displayManager, id, properties) {
                     var fields = pointData.getRecordFields();
                     var points = RecordUtil.getPoints(records, bounds);
                     if (isNaN(bounds[0])) {
-                        console.log("return 2:" + records.length +" " + bounds);
                         return;
                     }
 
@@ -9844,11 +9883,9 @@ function RamaddaMapDisplay(displayManager, id, properties) {
                     this.setInitMapBounds(bounds[0], bounds[1], bounds[2],
                                           bounds[3]);
                     if (this.map == null) {
-                        console.log("return 3");
                         return;
                     }
                     if(points.length ==0) {
-                        console.log("return 4");
                         return;
                     }
 
