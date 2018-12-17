@@ -123,21 +123,6 @@ public class ShapefileTypeHandler extends GenericTypeHandler implements WikiCons
 
     }
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param entry _more_
-     * @param node _more_
-     *
-     * @throws Exception _more_
-     */
-    @Override
-    public void initializeEntryFromXml(Request request, Entry entry,
-                                       Element node)
-            throws Exception {
-        initializeEntryFromForm(request, entry, null, true);
-    }
 
 
     /**
