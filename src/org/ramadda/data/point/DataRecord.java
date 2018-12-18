@@ -583,12 +583,7 @@ public class DataRecord extends PointRecord {
                 continue;
             }
 
-
-
             double value = values[fieldCnt];
-
-
-
             if (recordField.isTypeInteger()) {
                 int v = (int) value;
                 pw.print(v);
@@ -689,6 +684,12 @@ public class DataRecord extends PointRecord {
         }
     }
 
-
-
+    /**
+     * _more_
+     *
+     * @return _more_
+     */
+    public double[] getValues() {
+        return values;
+    }
 }

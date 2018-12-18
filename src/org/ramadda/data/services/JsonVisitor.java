@@ -18,6 +18,9 @@ package org.ramadda.data.services;
 
 
 import org.ramadda.data.point.PointRecord;
+
+
+import org.ramadda.data.point.text.*;
 import org.ramadda.data.record.Record;
 import org.ramadda.data.record.RecordField;
 import org.ramadda.data.record.RecordFile;
@@ -57,6 +60,12 @@ public class JsonVisitor extends BridgeRecordVisitor {
     /** _more_ */
     private PrintWriter pw;
 
+    /** _more_          */
+    static int _cnt = 0;
+
+    /** _more_          */
+    int mycnt = _cnt++;
+
 
     /**
      * _more_
@@ -87,6 +96,7 @@ public class JsonVisitor extends BridgeRecordVisitor {
                                  Record record)
             throws Exception {
 
+        TextRecord textRecord = (TextRecord) record;
         if ( !getHandler().jobOK(getProcessId())) {
             return false;
         }
@@ -131,6 +141,7 @@ public class JsonVisitor extends BridgeRecordVisitor {
             }
             String      svalue;
             ValueGetter getter = field.getValueGetter();
+            double      d      = 0;
             if (getter == null) {
                 if (field.isTypeString()) {
                     svalue = record.getStringValue(field.getParamId());
@@ -139,16 +150,16 @@ public class JsonVisitor extends BridgeRecordVisitor {
                     svalue = record.getStringValue(field.getParamId());
                     svalue = Json.quote(svalue);
                 } else {
-                    double value = record.getValue(field.getParamId());
-                    svalue = Json.formatNumber(value);
+                    d      = record.getValue(field.getParamId());
+                    svalue = Json.formatNumber(d);
                 }
             } else {
                 if (field.isTypeString() || field.isTypeDate()) {
                     svalue = getter.getStringValue(record, field, visitInfo);
                     svalue = Json.quote(svalue);
                 } else {
-                    svalue = Json.formatNumber(getter.getValue(record, field,
-                            visitInfo));
+                    d      = getter.getValue(record, field, visitInfo);
+                    svalue = Json.formatNumber(d);
                 }
             }
             if (fieldCnt > 0) {

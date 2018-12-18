@@ -172,7 +172,14 @@ public class TextRecord extends DataRecord {
     }
 
 
-
+    /**
+     * _more_
+     *
+     * @return _more_
+     */
+    public String[] getTokens() {
+        return tokens;
+    }
 
     /**
      * _more_
@@ -422,11 +429,12 @@ public class TextRecord extends DataRecord {
                 } else {
                     double dValue;
                     if ((idxX == fieldCnt) || (idxY == fieldCnt)) {
-                        dValue = ucar.unidata.util.Misc.decodeLatLon(tok);
+                        dValue = Utils.decodeLatLon(tok);
                     } else {
                         dValue = textFile.parseValue(this, field, tok);
                     }
-                    values[fieldCnt] = field.convertValue(dValue);
+                    dValue           = field.convertValue(dValue);
+                    values[fieldCnt] = dValue;
                     if (isMissingValue(field, values[fieldCnt])) {
                         values[fieldCnt] = Double.NaN;
                     }
@@ -451,6 +459,7 @@ public class TextRecord extends DataRecord {
 
             throw exc;
         }
+
 
 
     }
