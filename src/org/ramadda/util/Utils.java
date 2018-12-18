@@ -51,7 +51,7 @@ import java.lang.reflect.Constructor;
 import java.net.*;
 
 import java.text.DecimalFormat;
-
+import java.text.ParseException;
 import java.text.ParsePosition;
 
 import java.text.SimpleDateFormat;
@@ -1277,7 +1277,7 @@ public class Utils {
             }
         } else {  //have something like DD.ddd
             try {
-                value = Double.parseDouble(latlon);
+                value = parseNumber(latlon);
             } catch (NumberFormatException nfe) {
                 value = Double.NaN;
             }
@@ -3276,5 +3276,42 @@ public class Utils {
 
         return f;
     }
+
+
+    /** default decimal formatter */
+    private static DecimalFormat formatter = new DecimalFormat();
+
+    /**
+     *  copy and paste from the IDV Misc.java to have the formatter by synchronized
+     *
+     * @param value _more_
+     *
+     * @return _more_
+     *
+     * @throws NumberFormatException _more_
+     */
+    public static double parseNumber(String value)
+            throws NumberFormatException {
+        if (value.equals(MISSING) || value.equals(NaN)) {
+            return Double.NaN;
+        }
+        try {
+            // hack to also accept lower case e for exponent
+            value = value.replace("e", "E");
+            synchronized (formatter) {
+                return formatter.parse(value).doubleValue();
+            }
+        } catch (ParseException pe) {
+            throw new NumberFormatException(pe.getMessage());
+        }
+    }
+
+    /** _more_          */
+    public static final String MISSING = "missing";
+
+    /** NaN string */
+    public static final String NaN = "NaN";
+
+
 
 }
