@@ -48,7 +48,7 @@ var PROP_WIDTH  = "width";
 
 
 
-var ramaddaPageLoad
+
 function initRamaddaDisplays() {
     if(window.globalDisplaysList == null) {
         return;
@@ -70,6 +70,16 @@ function addRamaddaDisplay(display) {
     }
 }
 
+
+function ramaddaDisplayCheckLayout() {
+    for(var i=0;i<window.globalDisplaysList.length;i++) {
+        if(window.globalDisplaysList[i].checkLayout) {
+            window.globalDisplaysList[i].checkLayout();
+        }
+    }
+
+
+}
 
 function getRamaddaDisplay(id) {
     if(window.globalDisplays == null) {
@@ -326,6 +336,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             selectedCbx: [],
             entries: [],
             wikiAttrs: ["title","showTitle","showDetails","minDate","maxDate"],
+
             setDisplayReady: function() {
                 this.displayReady = true;
             },
@@ -1876,6 +1887,8 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
                             });
 
                 $("#" + popupId).draggable();
+            },
+            checkLayout: function() {
             },
             initUI:function() {
                 this.checkFixedLayout();

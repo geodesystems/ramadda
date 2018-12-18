@@ -194,7 +194,7 @@ var PROP_WIDTH  = "width";
 
 
 
-var ramaddaPageLoad
+
 function initRamaddaDisplays() {
     if(window.globalDisplaysList == null) {
         return;
@@ -216,6 +216,16 @@ function addRamaddaDisplay(display) {
     }
 }
 
+
+function ramaddaDisplayCheckLayout() {
+    for(var i=0;i<window.globalDisplaysList.length;i++) {
+        if(window.globalDisplaysList[i].checkLayout) {
+            window.globalDisplaysList[i].checkLayout();
+        }
+    }
+
+
+}
 
 function getRamaddaDisplay(id) {
     if(window.globalDisplays == null) {
@@ -472,6 +482,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             selectedCbx: [],
             entries: [],
             wikiAttrs: ["title","showTitle","showDetails","minDate","maxDate"],
+
             setDisplayReady: function() {
                 this.displayReady = true;
             },
@@ -2022,6 +2033,8 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
                             });
 
                 $("#" + popupId).draggable();
+            },
+            checkLayout: function() {
             },
             initUI:function() {
                 this.checkFixedLayout();
@@ -4194,14 +4207,17 @@ var RecordUtil = {
                         west  = Math.min(west, record.getLongitude());
                         east  = Math.max(east, record.getLongitude());
                     }
+                    if(record.getLongitude()<-180 || record.getLatitude()>90) {
+                        console.log("Bad index=" + j +" " + record.getLatitude() +" " + record.getLongitude());
+                    }
                     points.push(new OpenLayers.Geometry.Point(record.getLongitude(),record.getLatitude()));
                 }
             }
         }
-        bounds[0] = north;
-        bounds[1] = west;
-        bounds[2] = south;
-        bounds[3] = east;
+        bounds.north = north;
+        bounds.west = west;
+        bounds.south = south;
+        bounds.east = east;
         return points;
     },
     findClosest: function(records, lon, lat, indexObj) {
@@ -4894,14 +4910,6 @@ function RamaddaMultiChart(displayManager, id, properties) {
     var ID_COLORS = "colors";
 
     var _this = this;
-    //A hack  so charts are displayed OK in a tabs or accordian
-    //When the doc is done wait 5 seconds then display (or re-display) the data
-    var redisplayFunc = function() {
-        _this.getThis().displayData();
-    };
-    $(document).ready(function(){
-	setTimeout(redisplayFunc,5000);
-    });
 
     _this.redisplayPending = false;
     _this.redisplayPendingCnt = 0;
@@ -5446,15 +5454,22 @@ getChartType: function() {
                 this.makeChart(chartType, dataList, props, selectedFields);
 
                 var d = _this.jq(ID_CHART);
+                this.lastWidth = d.width();
                 if(d.width() == 0) {
-                    _this.checkWidth(0);
+                    //                    _this.checkWidth(0);
                 }
             },
            //This keeps checking the width of the chart element if its zero
            //we do this for displaying in tabs
-            checkWidth: function(cnt) {
+            checkLayout: function() {
                 var _this = this;
                 var d = _this.jq(ID_CHART);
+                //       console.log("checklayout:  widths:" + this.lastWidth +" " + d.width());
+                if(this.lastWidth!=d.width()) {
+                    _this.displayData();
+                }
+                if(true)return;
+
                 if(d.width() ==0) {
                     var cb = function() {
                         _this.checkWidth(cnt+1);
@@ -9292,7 +9307,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 
                     if (this.initBounds != null) {
                         var b = this.initBounds;
-                        this.setInitMapBounds(b[0], b[1], b[2], b[3]);
+                        this.setInitMapBounds(b.north, b.west, b.south, b.east);
                     }
 
                     var currentFeatures = this.features;
@@ -9584,10 +9599,9 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		},
 
 		setInitMapBounds : function(north, west, south, east) {
-			if (!this.map) return;
-                        //                    console.log("centerOMarkers");
-			this.map.centerOnMarkers(new OpenLayers.Bounds(west, south, east,
-					north));
+                    if (!this.map) return;
+                    this.map.centerOnMarkers(new OpenLayers.Bounds(west, south, east,
+                                                                   north));
 		},
 
 		sourceToEntries : {},
@@ -9872,7 +9886,6 @@ function RamaddaMapDisplay(displayManager, id, properties) {
                         return;
                     }
                     var pointData = this.getPointData();
-                    var bounds = [ NaN, NaN, NaN, NaN ];
                     var records = pointData.getRecords();
                     if(records == null) {
                         err = new Error();
@@ -9880,14 +9893,14 @@ function RamaddaMapDisplay(displayManager, id, properties) {
                         return;
                     }
                     var fields = pointData.getRecordFields();
+                    var bounds = {};
                     var points = RecordUtil.getPoints(records, bounds);
-                    if (isNaN(bounds[0])) {
+                    if (isNaN(bounds.north)) {
                         return;
                     }
-
                     this.initBounds = bounds;
-                    this.setInitMapBounds(bounds[0], bounds[1], bounds[2],
-                                          bounds[3]);
+                    this.setInitMapBounds(bounds.north, bounds.west, bounds.south,
+                                          bounds.east);
                     if (this.map == null) {
                         return;
                     }

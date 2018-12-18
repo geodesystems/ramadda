@@ -2152,12 +2152,11 @@ public class OutputHandler extends RepositoryManager {
 
         tabHtml.append(HtmlUtils.close(HtmlUtils.TAG_DIV));
         tabHtml.append("\n");
+        String args = "activate: HtmlUtil.tabLoaded";
+        if(useCookies)
+            args+=",\ncookie: {expires:1}";
         tabHtml.append(HtmlUtils.script("\njQuery(function(){\njQuery('#"
-                                        + tabId + "').tabs(" + (useCookies
-                ? "{cookie: {expires:1}}"
-                : "") + ");\n});\n"));
-        tabHtml.append("\n\n");
-
+                                        + tabId + "').tabs({" + args +"})});\n\n"));
         return tabHtml.toString();
     }
 

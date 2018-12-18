@@ -1780,17 +1780,20 @@ function initMapFunctions(theMap) {
     theMap.centerOnMarkers = function(dfltBounds, force) {
         this.centerOnMarkersCalled = true;
         this.centerOnMarkersForce = force;
-        this.dfltBounds = dfltBounds;
         now = Date.now();
         //        console.log("center on markers:" + ((now-this.startTime)/1000));
         var bounds = null;
         // bounds = this.boxes.getDataExtent();
         if(dfltBounds) {
-            if(dfltBounds.left<-180||dfltBounds.right>180 || dfltBounds.bottom<-90 || dfltBounds.top>90) {
-                console.log("Got bad dfltBounds:" +dfltBounds);
+            if(dfltBounds.left<-180||dfltBounds.left>180||
+               dfltBounds.right<-180|| dfltBounds.right>180 || 
+               dfltBounds.bottom<-90 || dfltBounds.bottom>90 || 
+               dfltBounds.top<-90 || dfltBounds.top>90) { 
+                console.log("Got bad dfltBounds:" +dfltBounds +"\n" + err.stack);
                 dfltBounds = createBounds(-180,-90,180,90);
             }
         }
+        this.dfltBounds = dfltBounds;
         //        if (!bounds) {
         if(!force) {
             if (this.markers) {

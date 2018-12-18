@@ -481,6 +481,11 @@ var ATTR_VALIGN = "valign";
 
 
 var HtmlUtil =  {
+    tabLoaded: function(event, ui) {
+        if(window["ramaddaDisplayCheckLayout"]) {
+            ramaddaDisplayCheckLayout();
+        }
+    },
     makeBreadcrumbs: function(id) {
         jQuery("#"+id).jBreadCrumb({
                 previewWidth: 10, 

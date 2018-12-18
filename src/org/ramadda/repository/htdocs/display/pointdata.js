@@ -1045,14 +1045,17 @@ var RecordUtil = {
                         west  = Math.min(west, record.getLongitude());
                         east  = Math.max(east, record.getLongitude());
                     }
+                    if(record.getLongitude()<-180 || record.getLatitude()>90) {
+                        console.log("Bad index=" + j +" " + record.getLatitude() +" " + record.getLongitude());
+                    }
                     points.push(new OpenLayers.Geometry.Point(record.getLongitude(),record.getLatitude()));
                 }
             }
         }
-        bounds[0] = north;
-        bounds[1] = west;
-        bounds[2] = south;
-        bounds[3] = east;
+        bounds.north = north;
+        bounds.west = west;
+        bounds.south = south;
+        bounds.east = east;
         return points;
     },
     findClosest: function(records, lon, lat, indexObj) {

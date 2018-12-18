@@ -144,7 +144,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 
                     if (this.initBounds != null) {
                         var b = this.initBounds;
-                        this.setInitMapBounds(b[0], b[1], b[2], b[3]);
+                        this.setInitMapBounds(b.north, b.west, b.south, b.east);
                     }
 
                     var currentFeatures = this.features;
@@ -436,10 +436,9 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		},
 
 		setInitMapBounds : function(north, west, south, east) {
-			if (!this.map) return;
-                        //                    console.log("centerOMarkers");
-			this.map.centerOnMarkers(new OpenLayers.Bounds(west, south, east,
-					north));
+                    if (!this.map) return;
+                    this.map.centerOnMarkers(new OpenLayers.Bounds(west, south, east,
+                                                                   north));
 		},
 
 		sourceToEntries : {},
@@ -724,7 +723,6 @@ function RamaddaMapDisplay(displayManager, id, properties) {
                         return;
                     }
                     var pointData = this.getPointData();
-                    var bounds = [ NaN, NaN, NaN, NaN ];
                     var records = pointData.getRecords();
                     if(records == null) {
                         err = new Error();
@@ -732,14 +730,14 @@ function RamaddaMapDisplay(displayManager, id, properties) {
                         return;
                     }
                     var fields = pointData.getRecordFields();
+                    var bounds = {};
                     var points = RecordUtil.getPoints(records, bounds);
-                    if (isNaN(bounds[0])) {
+                    if (isNaN(bounds.north)) {
                         return;
                     }
-
                     this.initBounds = bounds;
-                    this.setInitMapBounds(bounds[0], bounds[1], bounds[2],
-                                          bounds[3]);
+                    this.setInitMapBounds(bounds.north, bounds.west, bounds.south,
+                                          bounds.east);
                     if (this.map == null) {
                         return;
                     }

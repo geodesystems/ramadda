@@ -133,14 +133,6 @@ function RamaddaMultiChart(displayManager, id, properties) {
     var ID_COLORS = "colors";
 
     var _this = this;
-    //A hack  so charts are displayed OK in a tabs or accordian
-    //When the doc is done wait 5 seconds then display (or re-display) the data
-    var redisplayFunc = function() {
-        _this.getThis().displayData();
-    };
-    $(document).ready(function(){
-	setTimeout(redisplayFunc,5000);
-    });
 
     _this.redisplayPending = false;
     _this.redisplayPendingCnt = 0;
@@ -685,15 +677,22 @@ getChartType: function() {
                 this.makeChart(chartType, dataList, props, selectedFields);
 
                 var d = _this.jq(ID_CHART);
+                this.lastWidth = d.width();
                 if(d.width() == 0) {
-                    _this.checkWidth(0);
+                    //                    _this.checkWidth(0);
                 }
             },
            //This keeps checking the width of the chart element if its zero
            //we do this for displaying in tabs
-            checkWidth: function(cnt) {
+            checkLayout: function() {
                 var _this = this;
                 var d = _this.jq(ID_CHART);
+                //       console.log("checklayout:  widths:" + this.lastWidth +" " + d.width());
+                if(this.lastWidth!=d.width()) {
+                    _this.displayData();
+                }
+                if(true)return;
+
                 if(d.width() ==0) {
                     var cb = function() {
                         _this.checkWidth(cnt+1);
