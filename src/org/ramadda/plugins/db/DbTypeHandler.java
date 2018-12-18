@@ -2254,7 +2254,8 @@ public class DbTypeHandler extends PointTypeHandler /* BlobTypeHandler*/ {
                                 ? pair.get(1)
                                 : "");
                         value = value.replaceAll("\\+", " ");
-                        r.put(pair.get(0), value);
+                        //false means not singular
+                        r.put(pair.get(0), value,false);
                     }
                     r.remove(ARG_DB_SEARCHNAME);
                     request = r;
