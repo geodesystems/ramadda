@@ -60,6 +60,9 @@ jetty.jar:
 This is the combination of the following all the jetty modules:
     jetty-<module>-<version>.jar
 
+abom.jar:
+This holds the Barnes analysis code from the IDV release
+
 tika-app-1.4.jar
   The tika-app-1.4.jar  has been modified. I (jeffmc) removed the
   dods, ucar, thredds, org/slf4j, org/apache/http  and  com/drew  tree and org.joda from and com.google.common.cache this because we had too many
