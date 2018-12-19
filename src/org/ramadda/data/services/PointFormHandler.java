@@ -350,8 +350,8 @@ public class PointFormHandler extends RecordFormHandler {
                                   List<Entry> subGroups, List<Entry> entries,
                                   StringBuffer msgSB)
             throws Exception {
-        StringBuilder sb =
-            new StringBuilder(HtmlUtils.sectionOpen("Point Subset"));
+        StringBuilder sb =  new StringBuilder();
+        request.getRepository().getPageHandler().entrySectionOpen(request, group,sb,"Point Subset");
         sb.append(msgSB);
         boolean showUrl = request.get(ARG_SHOWURL, false);
 
@@ -396,6 +396,7 @@ public class PointFormHandler extends RecordFormHandler {
 
             sb.append(HtmlUtils.sectionClose());
 
+            request.getRepository().getPageHandler().entrySectionClose(request, group,sb);
             return new Result("", sb);
         }
 
@@ -427,6 +428,7 @@ public class PointFormHandler extends RecordFormHandler {
 
         sb.append(HtmlUtils.sectionClose());
 
+        request.getRepository().getPageHandler().entrySectionClose(request, group,sb);
         return new Result("", sb);
     }
 
@@ -465,8 +467,8 @@ public class PointFormHandler extends RecordFormHandler {
             throws Exception {
 
 
-        StringBuilder sb =
-            new StringBuilder(HtmlUtils.sectionOpen("Point Subset"));
+        StringBuilder sb =  new StringBuilder();
+        request.getRepository().getPageHandler().entrySectionOpen(request, entry,sb,"Point Subset");
         sb.append(msgSB);
 
         //        System.err.println ( getPointOutputHandler().getCsv(request, entry));
@@ -488,6 +490,7 @@ public class PointFormHandler extends RecordFormHandler {
 
         sb.append(HtmlUtils.sectionClose());
 
+        request.getRepository().getPageHandler().entrySectionClose(request, entry,sb);
         return new Result("", sb);
     }
 
@@ -608,10 +611,10 @@ public class PointFormHandler extends RecordFormHandler {
         params.add(new TwoFacedObject(msg(LABEL_ALTITUDE), ""));
         //        }
         if (recordEntry != null) {
-            for (RecordField attr :
+            for (RecordField field :
                     recordEntry.getRecordFile().getChartableFields()) {
-                params.add(new TwoFacedObject(attr.getLabel(),
-                        "" + attr.getParamId()));
+                params.add(new TwoFacedObject(field.getLabel(),
+                                              "" + field.getParamId()));
             }
         }
 
@@ -624,8 +627,15 @@ public class PointFormHandler extends RecordFormHandler {
                         request.getString(
                             RecordOutputHandler.ARG_PARAMETER,
                             (String) null))));
+            extra.append(
+                HtmlUtils.formEntry(
+                    msgLabel("Divisor"),
+                    HtmlUtils.select(
+                        RecordOutputHandler.ARG_DIVISOR, params,
+                        request.get(
+                                    RecordOutputHandler.ARG_DIVISOR,new ArrayList<String>()),
+                        HtmlUtils.arg(HtmlUtils.ATTR_ROWS,"4") +" multiple ")));
         }
-
 
         extra.append(
             HtmlUtils.formEntry(

@@ -93,6 +93,9 @@ public interface RecordConstants extends Constants {
     public static final String ARG_GRID_IDW = ARG_GRID_PREFIX + "idw";
 
 
+    public static final String ARG_GRID_BARNES = ARG_GRID_PREFIX + "barnes";
+
+
 
     /** url argument */
     public static final String ARG_GRID_RADIUS_DEGREES = ARG_GRID_PREFIX
@@ -222,19 +225,20 @@ public interface RecordConstants extends Constants {
 
     /** defines the different gridding functions the user can choose */
     public static final String[] GRID_ARGS = { ARG_GRID_MIN, ARG_GRID_MAX,
-            ARG_GRID_AVERAGE, ARG_GRID_COUNT, ARG_GRID_IDW, };
+            ARG_GRID_AVERAGE, ARG_GRID_COUNT, ARG_GRID_IDW, ARG_GRID_BARNES};
 
     /** corresponds toe the GRID_ARGS */
     public static final String[] GRID_HELP = { "Each grid cell holds the minimum value of all points within the cell",
             "Each grid cell holds the maximum value of all points within the cell",
             "Each grid cell holds the average value of all points within the cell",
             "Each grid cell holds the number of points within the cell",
-            "Each grid cell Inverse Distance Weighted average of the point values within the radius around the cell", };
+            "Each grid cell Inverse Distance Weighted average of the point values within the radius around the cell", 
+                                               "Do Barnes analysis"};
 
 
     /** corresponds toe the GRID_ARGS */
     public static final String[] GRID_LABELS = { "Minimum value",
-            "Maximum value", "Average value", "Point count", "IDW average", };
+            "Maximum value", "Average value", "Point count", "IDW average", "Barnes Grid"};
 
 
 

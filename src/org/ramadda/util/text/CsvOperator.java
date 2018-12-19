@@ -71,6 +71,7 @@ public abstract class CsvOperator {
     /** _more_ */
     HashSet<Integer> indexMap;
 
+    HashSet<Integer>colsSeen  = new HashSet<Integer>();
 
     /** _more_ */
     private List header;
@@ -155,6 +156,7 @@ public abstract class CsvOperator {
      *
      */
     public void getColumnIndex(List<Integer> indices, String s) {
+        s= s.toLowerCase();
         List<String> toks  = StringUtil.splitUpTo(s, "-", 2);
         int          start = -1;
         int          end   = -1;
@@ -178,7 +180,17 @@ public abstract class CsvOperator {
                 }
             }
             if (toks.size() == 1) {
-                Integer iv = columnMap.get(toks.get(0));
+                String tok = toks.get(0);
+                if(tok.equals("*")) {
+                    for (int i = 0; i < header.size(); i++) {
+                        if(!colsSeen.contains(i)) {
+                            colsSeen.add(i);
+                            indices.add(i);
+                        }
+                    }
+                    return;
+                }
+                Integer iv = columnMap.get(tok);
                 if (iv != null) {
                     start = end = iv;
                 }
@@ -193,6 +205,7 @@ public abstract class CsvOperator {
         }
         if (start >= 0) {
             for (int i = start; i <= end; i++) {
+                colsSeen.add(i);
                 indices.add(i);
             }
         }

@@ -201,7 +201,6 @@ public class AcsFile extends CsvFile {
 
             try {
                 PrintWriter   writer     = new PrintWriter(bbos);
-
                 JSONArray     obj = new JSONArray(new JSONTokener(json));
                 long          t3         = System.currentTimeMillis();
                 JSONArray     headerJson = obj.getJSONArray(0);

@@ -3875,11 +3875,11 @@ public class DbTypeHandler extends PointTypeHandler /* BlobTypeHandler*/ {
         String        leftWidth      = "350";
         String        icon           = getMapIcon(request, entry);
         StringBuilder entryList      = new StringBuilder();
-        entryList.append(
+        sb.append(
             HtmlUtils.cssBlock(
                 "\n.db-map-list-inner {max-height: 500px; overflow-y: auto; overflow-x:auto; }\n\n"));
-        HtmlUtils.open(entryList,"td","class", "db-map-list-outer");
-        HtmlUtils.open(entryList,"td","class","db-map-list-inner");
+        HtmlUtils.open(entryList,"div","class", "db-map-list-outer");
+        HtmlUtils.open(entryList,"div","class","db-map-list-inner");
         SimpleDateFormat  sdf    = getDateFormat(entry);
         Hashtable<String, StringBuilder> catMap = null;
         List<String>                     cats   = null;

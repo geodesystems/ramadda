@@ -45,6 +45,7 @@ import org.ramadda.repository.metadata.Metadata;
 import org.ramadda.repository.metadata.MetadataHandler;
 import org.ramadda.repository.output.OutputType;
 import org.ramadda.repository.type.TypeHandler;
+import org.ramadda.util.Bounds;
 import org.ramadda.util.ColorTable;
 import org.ramadda.util.HtmlUtils;
 import org.ramadda.util.Json;
@@ -55,6 +56,7 @@ import org.ramadda.util.grid.IdwGrid;
 import org.ramadda.util.grid.LatLonGrid;
 
 import org.w3c.dom.Element;
+
 
 import ucar.unidata.ui.ImageUtils;
 import ucar.unidata.util.IOUtil;
@@ -166,6 +168,7 @@ public class PointOutputHandler extends RecordOutputHandler {
     /** _more_ */
     public final OutputType OUTPUT_JSON;
 
+
     /** output type */
     public final OutputType OUTPUT_ASC;
 
@@ -272,7 +275,6 @@ public class PointOutputHandler extends RecordOutputHandler {
         OUTPUT_JSON = new OutputType("JSON", base + ".json",
                                      OutputType.TYPE_OTHER, "json", ICON_CSV,
                                      category);
-
 
         OUTPUT_ASC = new OutputType("ARC ASCII Grid", base + ".asc",
                                     OutputType.TYPE_OTHER, "asc", ICON_DATA,
@@ -667,10 +669,22 @@ public class PointOutputHandler extends RecordOutputHandler {
                         GridVisitor gridVisitor = (GridVisitor) visitor;
                         gridVisitor.finishedWithAllFiles();
                         info.addStatusItem("Generating gridded products");
-                        outputEntryGrid(request, entry,
-                                        gridVisitor.getGrid(), formats,
-                                        jobId);
+                        IdwGrid llg = gridVisitor.getGrid();
+                        pointEntries.get(0).setBounds(llg.getBounds());
+                        outputEntryGrid(request, entry, llg, formats, jobId);
                         memoryCheck("POINT: memory after grid:");
+                    }
+                }
+                for (RecordVisitor visitor : visitors) {
+                    if (visitor instanceof BarnesVisitor) {
+                        BarnesVisitor barnesVisitor = (BarnesVisitor) visitor;
+                        barnesVisitor.finishedWithAllFiles();
+                        IdwGrid llg = barnesVisitor.getGrid();
+                        pointEntries.get(0).setBounds(llg.getBounds());
+                        info.addStatusItem("Generating gridded products");
+                        outputEntryGrid(request, entry,
+                                        barnesVisitor.getGrid(), formats,
+                                        jobId);
                     }
                 }
                 info.addStatusItem("Product processing complete");
@@ -1103,6 +1117,10 @@ public class PointOutputHandler extends RecordOutputHandler {
             visitors.add(makeNetcdfVisitor(request, entry, pointEntries,
                                            jobInfo.getJobId()));
         }
+        if (request.get(ARG_GRID_BARNES, false)) {
+            visitors.add(makeBarnesVisitor(request, pointEntries,
+                                           getBounds(request, pointEntries)));
+        }
         if (formats.contains(OUTPUT_LATLONALTCSV.getId())) {
             visitors.add(makeLatLonAltCsvVisitor(request, entry,
                     pointEntries, jobInfo.getJobId()));
@@ -1284,6 +1302,7 @@ public class PointOutputHandler extends RecordOutputHandler {
 
 
 
+
     /**
      * _more_
      *
@@ -1347,6 +1366,37 @@ public class PointOutputHandler extends RecordOutputHandler {
 
         return visitor;
     }
+
+
+    /**
+     * _more_
+     *
+     * @param request _more_
+     * @param recordEntries _more_
+     * @param bounds _more_
+     *
+     * @return _more_
+     *
+     * @throws Exception _more_
+     */
+    public BarnesVisitor makeBarnesVisitor(
+            Request request, List<? extends PointEntry> recordEntries,
+            Rectangle2D.Double bounds)
+            throws Exception {
+        int imageWidth  = request.get(ARG_WIDTH, DFLT_WIDTH);
+        int imageHeight = request.get(ARG_HEIGHT, DFLT_HEIGHT);
+
+        if ((imageWidth > 2500) || (imageHeight > 2500)) {
+            throw new IllegalArgumentException("Too large image dimension: "
+                    + imageWidth + " X " + imageHeight);
+        }
+        //        System.err.println("Grid BOUNDS: " + bounds);
+
+        return new BarnesVisitor(this, request, imageWidth, imageHeight,
+                                 bounds);
+    }
+
+
 
 
 
@@ -1695,6 +1745,8 @@ public class PointOutputHandler extends RecordOutputHandler {
                 grid = llg.getMinGrid();
             } else if (whatGrid.equals(ARG_GRID_MAX)) {
                 grid = llg.getMaxGrid();
+            } else if (whatGrid.equals(ARG_GRID_BARNES)) {
+                grid = llg.getValueGrid();
             } else if (whatGrid.equals(ARG_GRID_AVERAGE)) {
                 grid = llg.getValueGrid();
             } else if (whatGrid.equals(ARG_GRID_COUNT)) {

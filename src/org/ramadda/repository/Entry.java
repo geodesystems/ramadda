@@ -24,6 +24,7 @@ import org.ramadda.repository.metadata.Metadata;
 import org.ramadda.repository.type.Column;
 import org.ramadda.repository.type.TypeHandler;
 import org.ramadda.repository.util.ServerInfo;
+import org.ramadda.util.Bounds;
 
 import org.ramadda.util.Utils;
 
@@ -88,7 +89,7 @@ public class Entry implements Cloneable {
     /** the description */
     private String description = "";
 
-    /** _more_          */
+    /** _more_ */
     private String snippet;
 
     /** the parent entry */
@@ -1181,6 +1182,24 @@ public class Entry implements Cloneable {
                 ? south
                 : NONGEO);
     }
+
+    /**
+     * Set the Bounds property.
+     *
+     * @param bounds _more_
+     */
+    public void setBounds(Bounds bounds) {
+        if (bounds != null) {
+            setNorth(bounds.getNorth());
+            setWest(bounds.getWest());
+            setSouth(bounds.getSouth());
+            setEast(bounds.getEast());
+
+        }
+    }
+
+
+
 
     /**
      * Set the North property.

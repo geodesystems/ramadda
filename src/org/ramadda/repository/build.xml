@@ -23,6 +23,7 @@
         <property name="jfreechart_jar" value="jfreechart-1.0.19.jar" />
         <property name="unidata_jar" value="idv.jar" />
 
+
         <property name="clientbase" value="ramaddaclient" />
 
         <mkdir dir="${dist_dir}"/>
@@ -357,6 +358,7 @@
         <unjar src="${lib_dir}/h2.jar" dest="${tmpjar_dir}"/>
         <unjar src="${lib_dir}/derby.jar" dest="${tmpjar_dir}"/>
         <unjar src="${lib_dir}/derbytools.jar" dest="${tmpjar_dir}"/>
+        <unjar src="${lib_dir}/abom.jar" dest="${tmpjar_dir}"/>
         <unjar src="${lib_dir}/commons-lang3-3.1.jar" dest="${tmpjar_dir}"/>
         <unjar src="${lib_dir}/commons-net-3.3.jar" dest="${tmpjar_dir}"/>
         <unjar src="${lib_dir}/commons-io-1.4.jar" dest="${tmpjar_dir}"/>

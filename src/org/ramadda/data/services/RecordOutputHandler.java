@@ -65,6 +65,7 @@ public class RecordOutputHandler extends OutputHandler implements RecordConstant
 
     /** _more_ */
     public static final String ARG_PARAMETER = "parameter";
+    public static final String ARG_DIVISOR = "divisor";
 
     /** _more_ */
     public static final String ARG_FIELD_USE = "field_use";

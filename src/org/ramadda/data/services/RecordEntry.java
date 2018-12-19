@@ -24,8 +24,10 @@ import org.ramadda.data.record.filter.*;
 
 
 import org.ramadda.repository.*;
+import org.ramadda.util.Bounds;
 
 import ucar.unidata.util.IOUtil;
+
 
 import java.io.File;
 
@@ -61,6 +63,8 @@ public class RecordEntry implements Runnable, Callable<Boolean> {
     /** the job id */
     private Object processId;
 
+    private Bounds bounds;
+
     /**
      * ctor
      *
@@ -76,6 +80,25 @@ public class RecordEntry implements Runnable, Callable<Boolean> {
         this.entry               = entry;
 
     }
+
+    /**
+       Set the Bounds property.
+
+       @param value The new value for Bounds
+    **/
+    public void setBounds (Bounds value) {
+	bounds = value;
+    }
+
+    /**
+       Get the Bounds property.
+
+       @return The Bounds
+    **/
+    public Bounds getBounds () {
+	return bounds;
+    }
+
 
     /**
      * _more_

@@ -32,6 +32,7 @@ import org.ramadda.repository.job.JobManager;
 import org.ramadda.repository.map.*;
 import org.ramadda.repository.output.*;
 import org.ramadda.repository.type.TypeHandler;
+import org.ramadda.util.Bounds;
 
 
 
@@ -299,9 +300,13 @@ public class RecordJobManager extends JobManager implements RecordConstants {
                         IOUtil.getFileTail(f.toString())) != null) {
                     continue;
                 }
+                String filename = f.getName();
 
+                String destFilename = getRepository().getGUID()
+                                      + StorageManager.FILE_SEPARATOR
+                                      + filename;
                 f = getStorageManager().copyToStorage(request, f,
-                        f.getName());
+                        destFilename);
 
                 String        name = request.getString(ARG_PUBLISH_NAME, "");
                 String        suffix = IOUtil.getFileExtension(f.toString());
@@ -322,22 +327,27 @@ public class RecordJobManager extends JobManager implements RecordConstants {
                     }
                 }
                 if (name.length() == 0) {
-                    name = f.getName();
+                    name = filename;
                 }
+                final Bounds bounds = recordEntries.get(0).getBounds();
 
                 //The initializer gets called by the EntryManager to do any initialization
                 //of the entry before it gets added to the repository
                 EntryInitializer initializer = new EntryInitializer() {
                     public void initEntry(Entry newEntry) {
                         if ( !isPointFile) {
-                            newEntry.setNorth(request.get(ARG_AREA_NORTH,
-                                    entry.getNorth()));
-                            newEntry.setWest(request.get(ARG_AREA_WEST,
-                                    entry.getWest()));
-                            newEntry.setSouth(request.get(ARG_AREA_SOUTH,
-                                    entry.getSouth()));
-                            newEntry.setEast(request.get(ARG_AREA_EAST,
-                                    entry.getEast()));
+                            if (bounds != null) {
+                                newEntry.setBounds(bounds);
+                            } else {
+                                newEntry.setNorth(request.get(ARG_AREA_NORTH,
+                                        entry.getNorth()));
+                                newEntry.setWest(request.get(ARG_AREA_WEST,
+                                        entry.getWest()));
+                                newEntry.setSouth(request.get(ARG_AREA_SOUTH,
+                                        entry.getSouth()));
+                                newEntry.setEast(request.get(ARG_AREA_EAST,
+                                        entry.getEast()));
+                            }
                         }
                     }
                 };
@@ -368,7 +378,6 @@ public class RecordJobManager extends JobManager implements RecordConstants {
         if (status.length() > 0) {
             status.append(HtmlUtils.p());
             status.append("\n");
-            System.err.println("appending status:" + status);
             jobInfo.appendExtraInfo(status.toString());
         }
 

@@ -688,7 +688,6 @@ public abstract class RecordFile {
     public List<RecordField> doMakeFields(boolean failureOk) {
         Record            record = makeRecord(new VisitInfo());
         List<RecordField> fields = record.getFields();
-
         return new ArrayList<RecordField>(fields);
     }
 

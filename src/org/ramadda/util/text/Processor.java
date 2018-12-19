@@ -1399,13 +1399,6 @@ public abstract class Processor extends CsvOperator {
                             "label", "value", "true" })));
                 }
 
-                if (CsvUtil.getDbProp(props, colId, "dostats", false)) {
-                    inner.append(XmlUtil.tag("property",
-                                             XmlUtil.attrs(new String[] {
-                                                 "name",
-                            "dostats", "value", "true" })));
-                }
-
                 if (inner.length() > 0) {
                     writer.println(XmlUtil.tag("column", attrs.toString(),
                             inner.toString()));

@@ -592,9 +592,9 @@ public class Json {
      */
     public static void main(String[] args) throws Exception {
         String json = IOUtil.readContents(args[0],Json.class);
-        JSONObject   obj      = new JSONObject(json.toString());
-        System.out.println(obj.toString(3));
-        if(true) return;
+        //        JSONObject   obj      = new JSONObject(json.toString());
+        //        System.out.println(obj.toString(3));
+        //        if(true) return;
 
         toCsv(args[0], System.out, (args.length > 1)
                                    ? args[1]
@@ -651,7 +651,8 @@ public class Json {
                     pw.print(name);
                     pw.print(",");
                 }
-                pw.println("latitude,longitude");
+                //                pw.println("latitude,longitude");
+                pw.println("location");
             }
 
 
@@ -684,7 +685,8 @@ public class Json {
                 pw.print(value);
                 pw.print(",");
             }
-            pw.println(centroid[1] + "," + centroid[0]);
+            //            pw.println(centroid[1] + "," + centroid[0]);
+            pw.println(centroid[1] + ";" + centroid[0]);
         }
     }
 

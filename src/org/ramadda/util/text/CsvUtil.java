@@ -1145,7 +1145,6 @@ public class CsvUtil {
                 List<String> cols = getCols(args.get(i));
                 info.setSelector(new Converter.ColumnSelector(cols));
                 info.getProcessor().addProcessor(info.getSelector());
-
                 continue;
             }
 
