@@ -40,6 +40,7 @@ import org.ramadda.repository.output.RssOutputHandler;
 import org.ramadda.repository.output.WikiConstants;
 import org.ramadda.repository.type.*;
 import org.ramadda.sql.*;
+import org.ramadda.util.Bounds;
 import org.ramadda.util.FormInfo;
 import org.ramadda.util.GoogleChart;
 
@@ -2501,9 +2502,11 @@ public class DbTypeHandler extends PointTypeHandler /* BlobTypeHandler*/ {
                                    InputStream source)
             throws Exception {
         final ArrayList<Object[]> valueList  = new ArrayList<Object[]>();
-        int                       cnt        = 0;
+        final int[]               cnt        = {0};
         TextReader                textReader = new TextReader();
         final int[]               scnt       = { 0 };
+        final Bounds bounds = new Bounds(Double.NaN,Double.NaN,Double.NaN,Double.NaN);
+
         textReader.setInput(new BufferedInputStream(source));
         textReader.setSkip(1);
         Processor.ProcessorGroup myProcessor =
@@ -2514,6 +2517,18 @@ public class DbTypeHandler extends PointTypeHandler /* BlobTypeHandler*/ {
                     String line) {
                 try {
                     Object[] values = tableHandler.makeEntryValueArray();
+                    if(hasLocation) {
+                        double[] ll = getLocation(values);
+                        double lat = ll[0];
+                        double lon = ll[1];
+                        if(!Double.isNaN(lat) && !Double.isNaN(lon)) {
+                            bounds.setNorth(Double.isNaN(bounds.getNorth())?lat:Math.max(lat,bounds.getNorth()));
+                            bounds.setSouth(Double.isNaN(bounds.getSouth())?lat:Math.min(lat,bounds.getSouth()));
+                            bounds.setWest(Double.isNaN(bounds.getWest())?lon:Math.min(lon,bounds.getWest()));
+                            bounds.setEast(Double.isNaN(bounds.getEast())?lon:Math.max(lon,bounds.getEast()));
+                        }
+                    }
+                    cnt[0]++;
                     initializeValueArray(request, null, values);
 
                     List<String> toks = row.getValues();
@@ -2564,6 +2579,10 @@ public class DbTypeHandler extends PointTypeHandler /* BlobTypeHandler*/ {
                                    + scnt[0]);
             }
             doStore(entry, tuple, true);
+        }
+        if(!entry.hasAreaDefined() && !Double.isNaN(bounds.getNorth())) {
+            entry.setBounds(bounds);
+            getEntryManager().updateEntry(request, entry);
         }
         //Remove these so any links that get made with the request don't point to the BULK upload
         request.remove(ARG_DB_NEWFORM);

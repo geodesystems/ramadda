@@ -672,7 +672,9 @@ public class Json {
                     double    v1    = tuple.getDouble(1);
                     pts.add(new double[] { v0, v1 });
                 }
-                centroid = Utils.calculateCentroid(pts);
+                //For now don't use the centroid as its giving us bad results
+                //                centroid = Utils.calculateCentroid(pts);
+                centroid = pts.get(0);
             } else {
                 centroid = new double[] { geom.getDouble(0),
                                           geom.getDouble(1) };
