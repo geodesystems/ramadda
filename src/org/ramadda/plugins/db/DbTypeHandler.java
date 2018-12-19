@@ -2517,17 +2517,6 @@ public class DbTypeHandler extends PointTypeHandler /* BlobTypeHandler*/ {
                     String line) {
                 try {
                     Object[] values = tableHandler.makeEntryValueArray();
-                    if(hasLocation) {
-                        double[] ll = getLocation(values);
-                        double lat = ll[0];
-                        double lon = ll[1];
-                        if(!Double.isNaN(lat) && !Double.isNaN(lon)) {
-                            bounds.setNorth(Double.isNaN(bounds.getNorth())?lat:Math.max(lat,bounds.getNorth()));
-                            bounds.setSouth(Double.isNaN(bounds.getSouth())?lat:Math.min(lat,bounds.getSouth()));
-                            bounds.setWest(Double.isNaN(bounds.getWest())?lon:Math.min(lon,bounds.getWest()));
-                            bounds.setEast(Double.isNaN(bounds.getEast())?lon:Math.max(lon,bounds.getEast()));
-                        }
-                    }
                     cnt[0]++;
                     initializeValueArray(request, null, values);
 
@@ -2548,6 +2537,21 @@ public class DbTypeHandler extends PointTypeHandler /* BlobTypeHandler*/ {
                         String value  = (String) toks.get(colIdx).trim();
                         column.setValue(entry, values, value);
                     }
+
+                    if(hasLocation) {
+                        double[] ll = getLocation(values);
+                        double lat = ll[0];
+                        double lon = ll[1];
+                        if(!Double.isNaN(lat) && !Double.isNaN(lon)) {
+                            bounds.setNorth(Double.isNaN(bounds.getNorth())?lat:Math.max(lat,bounds.getNorth()));
+                            bounds.setSouth(Double.isNaN(bounds.getSouth())?lat:Math.min(lat,bounds.getSouth()));
+                            bounds.setWest(Double.isNaN(bounds.getWest())?lon:Math.min(lon,bounds.getWest()));
+                            bounds.setEast(Double.isNaN(bounds.getEast())?lon:Math.max(lon,bounds.getEast()));
+                        }
+                    }
+
+
+
                     valueList.add(values);
                     if (valueList.size() > 10000) {
                         for (Object[] tuple : valueList) {
@@ -2583,7 +2587,7 @@ public class DbTypeHandler extends PointTypeHandler /* BlobTypeHandler*/ {
         if(!entry.hasAreaDefined() && !Double.isNaN(bounds.getNorth())) {
             entry.setBounds(bounds);
             getEntryManager().updateEntry(request, entry);
-        }
+       }
         //Remove these so any links that get made with the request don't point to the BULK upload
         request.remove(ARG_DB_NEWFORM);
         request.remove(ARG_DB_BULK_TEXT);
