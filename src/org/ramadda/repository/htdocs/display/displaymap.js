@@ -1,5 +1,5 @@
 /**
-Copyright 2008-2015 Geode Systems LLC
+Copyright 2008-2018 Geode Systems LLC
 */
 
 
@@ -129,9 +129,8 @@ function RamaddaMapDisplay(displayManager, id, properties) {
                     }
                     this.map.initMap(false);
 
-                       
                     this.map.addRegionSelectorControl(function(bounds) {
-                            _this.getDisplayManager().handleEventMapBoundsChanged(this, bounds, true);
+                            theDisplay.getDisplayManager().handleEventMapBoundsChanged(this, bounds, true);
                         });
                     this.map.addClickHandler(this.getDomId(ID_LONFIELD), this
                                              .getDomId(ID_LATFIELD), null, this);

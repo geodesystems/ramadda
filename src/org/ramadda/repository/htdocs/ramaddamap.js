@@ -138,6 +138,7 @@ function RepositoryMap(mapId, params) {
             pointRadius: 3,
             fillOpacity: 0.8,
             fillColor: "#e6e6e6",
+            fill:true,
             strokeColor: "#999",
             strokeWidth: 1,
             scrollToZoom: false,
@@ -406,6 +407,7 @@ function initMapFunctions(theMap) {
             pointRadius: this.pointRadius,
             fillOpacity:this.fillOpacity,
             fillColor:this.fillColor,
+            fill:this.fill,
             strokeColor:this.strokeColor,
             strokeWidth:this.strokeWidth,
             select_fillOpacity: this.fillOpacity,
@@ -435,6 +437,7 @@ function initMapFunctions(theMap) {
                 pointRadius: props.pointRadius,
                     fillOpacity: props.fillOpacity,
                     fillColor: props.fillColor,
+                    fill:props.fill,
                     strokeColor: props.strokeColor,
                     strokeWidth: props.strokeWidth});
         map= new OpenLayers.StyleMap({
