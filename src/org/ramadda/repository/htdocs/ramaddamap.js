@@ -19,6 +19,9 @@ var map_opentopo = "opentopo";
 var map_usgs_topo = "usgs.topo";
 var map_usgs_imagery = "usgs.imagery";
 var map_usgs_relief = "usgs.relief";
+var map_white = "white";
+var map_blue = "blue";
+var map_black = "black";
 
 // Microsoft maps - only work for -180 to 180
 var map_ms_shaded = "ms.shaded";
@@ -300,8 +303,8 @@ function initMapFunctions(theMap) {
         var _this = this;
         var theArgs = {
             forSelect: false,
-            addBox: true
-
+            addBox: true,
+            isBaseLayer:false,
         };
         if(args)
             OpenLayers.Util.extend(theArgs, args);
@@ -316,7 +319,7 @@ function initMapFunctions(theMap) {
                                                     imageBounds,
                                                     new OpenLayers.Size(width, height),
                                                     {numZoomLevels: 3, 
-                                                            isBaseLayer: false,
+                                                            isBaseLayer: args.isBaseLayer,
                                                             resolutions:this.map.layers[0].resolutions,
                                                             maxResolution:this.map.layers[0].resolutions[0]}
                                                     );
@@ -340,7 +343,7 @@ function initMapFunctions(theMap) {
         image.east =  east;
         if(!this.imageLayers) this.imageLayers = {}
         this.imageLayers[layerId] = image;
-
+        return image;
     }
 
 
@@ -636,34 +639,12 @@ function initMapFunctions(theMap) {
                               map_usgs_topo,
                               map_usgs_imagery,
                               map_usgs_relief,
-                              //                              map_esri_worldimagery,
-                              /*                              map_google_hybrid,
-                              map_google_terrain,
-                              map_google_streets, 
-                              map_google_satellite,
-                              */
+                              map_white,
+                              map_blue,
+                              map_black,
             ];
         }
-
-        var needgoogle = false;
-        for (var i=0; i<this.mapLayers.length; i++) {
-            if (this.mapLayers[i].indexOf('google') >= 0) {
-                needgoogle = true;
-                break;
-            }
-        }
-
-        //if (needgoogle && (typeof google.maps === 'undefined')) {
-        if (needgoogle && !(google && google.maps)) {
-            console.log("No google maps");
-            return;
-        }
-
-        var dflt =  this.defaultMapLayer;
-
-        //        dflt =   map_osm;
-
-
+        var dflt =  this.defaultMapLayer||map_osm;
         if(!this.haveAddedDefaultLayer && dflt) {
             var index = this.mapLayers.indexOf(dflt);
             if(index >= 0) { 
@@ -772,6 +753,15 @@ function initMapFunctions(theMap) {
                             numZoomLevels : zoomLevelsDefault,
                             wrapDateLine : wrapDatelineDefault
                         });
+            } else if (mapLayer == map_white) {
+                this.addImageLayer(map_white,"White Background","", ramaddaBaseUrl+"/images/white.png", false, 90,-180,-90,180, 50,50,{isBaseLayer:true});
+                continue;
+            } else if (mapLayer == map_blue) {
+                this.addImageLayer(map_blue,"Blue Background","", ramaddaBaseUrl+"/images/blue.png", false, 90,-180,-90,180, 50,50,{isBaseLayer:true});
+                continue;
+            } else if (mapLayer == map_black) {
+                this.addImageLayer(map_black,"Black Background","", ramaddaBaseUrl+"/images/black.png", false, 90,-180,-90,180, 50,50,{isBaseLayer:true});
+                continue;
             } else if (mapLayer == map_usgs_topo) {
                 newLayer = new OpenLayers.Layer.XYZ(
                                                     "USGS Topo",
