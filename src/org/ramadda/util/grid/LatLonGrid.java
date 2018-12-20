@@ -53,6 +53,8 @@ public class LatLonGrid extends Grid {
     /** The values */
     private double[][] valueGrid;
 
+    private double[][] averageGrid;
+
     /** _more_ */
     private double[][] minGrid;
 
@@ -237,6 +239,13 @@ public class LatLonGrid extends Grid {
         return valueGrid;
     }
 
+    public double[][] getAverageGrid() {
+        if (averageGrid == null) {
+            averageGrid = new double[getHeight()][getWidth()];
+        }
+        return averageGrid;
+    }
+
     /**
      * _more_
      *
@@ -288,7 +297,6 @@ public class LatLonGrid extends Grid {
      */
     public double[][] fillValue(double value) {
         GridUtils.fill(getValueGrid(), value);
-
         return getValueGrid();
     }
 
@@ -564,16 +572,17 @@ public class LatLonGrid extends Grid {
      * _more_
      */
     public void doAverageValues() {
-        double[][] grid      = getValueGrid();
+        double[][] valueGrid      = getValueGrid();
+        double[][] averageGrid    = getAverageGrid();
         int[][]    countGrid = getCountGrid();
         int        height    = getHeight();
         int        width     = getWidth();
         for (int y = 0; y < height; y++) {
             for (int x = 0; x < width; x++) {
-                double value = grid[y][x];
+                double value = valueGrid[y][x];
                 int    count = countGrid[y][x];
                 if (count > 0) {
-                    grid[y][x] = grid[y][x] / count;
+                    averageGrid[y][x] = valueGrid[y][x] / count;
                 }
             }
         }

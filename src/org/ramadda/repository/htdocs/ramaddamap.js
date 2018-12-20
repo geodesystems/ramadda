@@ -1792,7 +1792,6 @@ function initMapFunctions(theMap) {
                dfltBounds.right<-180|| dfltBounds.right>180 || 
                dfltBounds.bottom<-90 || dfltBounds.bottom>90 || 
                dfltBounds.top<-90 || dfltBounds.top>90) { 
-                console.log("Got bad dfltBounds:" +dfltBounds +"\n" + err.stack);
                 dfltBounds = createBounds(-180,-90,180,90);
             }
         }

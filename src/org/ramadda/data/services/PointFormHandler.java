@@ -584,6 +584,13 @@ public class PointFormHandler extends RecordFormHandler {
                 HtmlUtils.checkbox(
                     PointOutputHandler.ARG_FILLMISSING, "true", false)));
 
+        extra.append(
+            HtmlUtils.formEntry(
+                msgLabel("Threshold"),
+                HtmlUtils.input(
+                                RecordConstants.ARG_THRESHOLD, request.getString(RecordConstants.ARG_THRESHOLD,""))));
+
+
 
         extra.append(
             HtmlUtils.formEntry(

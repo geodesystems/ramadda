@@ -1748,6 +1748,8 @@ public class PointOutputHandler extends RecordOutputHandler {
             } else if (whatGrid.equals(ARG_GRID_BARNES)) {
                 grid = llg.getValueGrid();
             } else if (whatGrid.equals(ARG_GRID_AVERAGE)) {
+                grid = llg.getAverageGrid();
+            } else if (whatGrid.equals(ARG_GRID_SUM)) {
                 grid = llg.getValueGrid();
             } else if (whatGrid.equals(ARG_GRID_COUNT)) {
                 isAltitudeValue = false;
@@ -1772,11 +1774,12 @@ public class PointOutputHandler extends RecordOutputHandler {
                                   missingValue, fileSuffix + ".asc");
             }
 
+            double threshold = request.get(ARG_THRESHOLD, Double.NaN);
             if (doImage) {
                 File imageFile =
                     getRepository().getStorageManager().getTmpFile(request,
                         "pointimage.png");
-                writeImage(request, imageFile, llg, grid, missingValue);
+                writeImage(request, imageFile, llg, grid, missingValue, threshold);
                 InputStream imageInputStream =
                     getStorageManager().getFileInputStream(imageFile);
                 OutputStream os = getOutputStream(request, jobId, mainEntry,
@@ -1819,7 +1822,7 @@ public class PointOutputHandler extends RecordOutputHandler {
                             destFileName), new Boolean(false));
                 }
                 writeImage(request, imageFile, hillshadeGrid,
-                           hillshadeGrid.getValueGrid(), missingValue);
+                           hillshadeGrid.getValueGrid(), missingValue, threshold);
                 InputStream imageInputStream =
                     getStorageManager().getFileInputStream(imageFile);
                 OutputStream os = getOutputStream(request, jobId, mainEntry,
@@ -1955,7 +1958,7 @@ public class PointOutputHandler extends RecordOutputHandler {
      * @throws Exception On badness
      */
     public void writeImage(Request request, File imageFile, LatLonGrid llg,
-                           double[][] grid, double missingValue)
+                           double[][] grid, double missingValue, double threshold)
             throws Exception {
         int     imageWidth       = llg.getWidth();
         int     imageHeight      = llg.getHeight();
@@ -2003,7 +2006,7 @@ public class PointOutputHandler extends RecordOutputHandler {
         for (int y = 0; y < imageHeight; y++) {
             for (int x = 0; x < imageWidth; x++) {
                 double value = grid[y][x];
-                if (Double.isNaN(value) || (value == LatLonGrid.GRID_MISSING)
+                if ((!Double.isNaN(threshold) && value<threshold) || Double.isNaN(value) || (value == LatLonGrid.GRID_MISSING)
                         || (haveMissingValue && (value == missingValue))) {
                     //Set missing to transparent
                     pixels[index] = (0x00 << 24);
