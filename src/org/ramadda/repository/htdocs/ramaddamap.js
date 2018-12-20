@@ -22,6 +22,7 @@ var map_usgs_relief = "usgs.relief";
 var map_white = "white";
 var map_blue = "blue";
 var map_black = "black";
+var map_gray = "gray";
 
 // Microsoft maps - only work for -180 to 180
 var map_ms_shaded = "ms.shaded";
@@ -640,6 +641,7 @@ function initMapFunctions(theMap) {
                               map_usgs_imagery,
                               map_usgs_relief,
                               map_white,
+                              map_gray,
                               map_blue,
                               map_black,
             ];
@@ -755,6 +757,9 @@ function initMapFunctions(theMap) {
                         });
             } else if (mapLayer == map_white) {
                 this.addImageLayer(map_white,"White Background","", ramaddaBaseUrl+"/images/white.png", false, 90,-180,-90,180, 50,50,{isBaseLayer:true});
+                continue;
+            } else if (mapLayer == map_gray) {
+                this.addImageLayer(map_gray,"Gray Background","", ramaddaBaseUrl+"/images/gray.png", false, 90,-180,-90,180, 50,50,{isBaseLayer:true});
                 continue;
             } else if (mapLayer == map_blue) {
                 this.addImageLayer(map_blue,"Blue Background","", ramaddaBaseUrl+"/images/blue.png", false, 90,-180,-90,180, 50,50,{isBaseLayer:true});
