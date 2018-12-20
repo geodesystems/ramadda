@@ -319,7 +319,7 @@ function initMapFunctions(theMap) {
                                                     imageBounds,
                                                     new OpenLayers.Size(width, height),
                                                     {numZoomLevels: 3, 
-                                                            isBaseLayer: args.isBaseLayer,
+                                                            isBaseLayer: theArgs.isBaseLayer,
                                                             resolutions:this.map.layers[0].resolutions,
                                                             maxResolution:this.map.layers[0].resolutions[0]}
                                                     );
