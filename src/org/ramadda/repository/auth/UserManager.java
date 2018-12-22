@@ -3151,8 +3151,6 @@ public class UserManager extends RepositoryManager {
                     sb.append(
                         getPageHandler().showDialogWarning(
                             msg("Incorrect user name or password")));
-
-
                 }
             }
         }
