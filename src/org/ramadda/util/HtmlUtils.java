@@ -1084,6 +1084,17 @@ public class HtmlUtils {
     /**
      * _more_
      *
+     * @param html _more_
+     *
+     * @return _more_
+     */
+    public static String button(String html) {
+        return div(html, cssClass("ramadda-button"));
+    }
+
+    /**
+     * _more_
+     *
      * @param args _more_
      *
      * @return _more_
@@ -2384,14 +2395,11 @@ public class HtmlUtils {
      */
     public static String labeledRadio(String name, String value,
                                       boolean checked, String label) {
-        return Utils.concatString(
-            tag(
-            TAG_INPUT,
-            attrs( /*ATTR_CLASS, CLASS_RADIO,*/
-                ATTR_TYPE, TYPE_RADIO, ATTR_NAME, name, ATTR_VALUE,
-                value) + (checked
-                          ? " checked "
-                          : "")), "&nbsp;", label);
+        return Utils.concatString(tag(TAG_INPUT, attrs(  /*ATTR_CLASS, CLASS_RADIO,*/
+            ATTR_TYPE, TYPE_RADIO, ATTR_NAME, name, ATTR_VALUE,
+            value) + (checked
+                      ? " checked "
+                      : "")), "&nbsp;", label);
     }
 
 

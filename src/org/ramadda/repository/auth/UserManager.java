@@ -805,21 +805,29 @@ public class UserManager extends RepositoryManager {
 
         sb.append(formEntry(request, "", HtmlUtils.submit(msg("Login"))));
         sb.append(HtmlUtils.formClose());
-        sb.append(HtmlUtils.formTableClose());
 
         if (getAdmin().isEmailCapable()) {
-            sb.append(HtmlUtils.p());
+            sb.append(HtmlUtils.formEntry("<p>", ""));
             sb.append(
-                HtmlUtils.href(
-                    request.makeUrl(getRepositoryBase().URL_USER_FINDUSERID),
-                    msg("Forget your user ID?")));
-            sb.append(HtmlUtils.p());
+                HtmlUtils.formEntry(
+                    "",
+                    HtmlUtils.button(
+                        HtmlUtils.href(
+                            request.makeUrl(
+                                getRepositoryBase().URL_USER_FINDUSERID), msg(
+                                "Forget your user ID?")))));
+            sb.append(HtmlUtils.space(2));
             sb.append(
-                HtmlUtils.href(
-                    request.makeUrl(
-                        getRepositoryBase().URL_USER_RESETPASSWORD), msg(
-                        "Forget your password?")));
+                HtmlUtils.formEntry(
+                    "",
+                    HtmlUtils.button(
+                        HtmlUtils.href(
+                            request.makeUrl(
+                                getRepositoryBase().URL_USER_RESETPASSWORD), msg(
+                                "Forget your password?")))));
         }
+
+        sb.append(HtmlUtils.formTableClose());
 
         return sb.toString();
     }
@@ -2414,7 +2422,7 @@ public class UserManager extends RepositoryManager {
         return showCart;
     }
 
-    /** _more_          */
+    /** _more_ */
     private boolean showCart;
 
     /**
