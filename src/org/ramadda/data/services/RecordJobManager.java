@@ -37,6 +37,8 @@ import org.ramadda.util.Bounds;
 
 
 import org.ramadda.util.HtmlUtils;
+import org.ramadda.util.JQuery;
+import org.ramadda.util.Utils;
 
 
 import org.w3c.dom.*;
@@ -57,6 +59,7 @@ import java.io.*;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Enumeration;
+import java.util.HashSet;
 
 import java.util.Hashtable;
 import java.util.List;
@@ -358,7 +361,7 @@ public class RecordJobManager extends JobManager implements RecordConstants {
                                      typeHandler, initializer);
 
                 if (status.length() == 0) {
-                    status.append(msgHeader("Published Entries"));
+                    status.append("<b>Published Entries</b><br>");
                 }
                 status.append(
                     HtmlUtils.href(
@@ -425,6 +428,7 @@ public class RecordJobManager extends JobManager implements RecordConstants {
      *
      * @throws Exception On badness
      */
+    @Override
     public Result handleJobStatusRequest(Request request, Entry entry)
             throws Exception {
 
@@ -432,21 +436,20 @@ public class RecordJobManager extends JobManager implements RecordConstants {
         if (parentResult != null) {
             return parentResult;
         }
-        StringBuffer sb  = new StringBuffer();
-        String jobId     = request.getString(ARG_JOB_ID, (String) null);
+        StringBuffer sb    = new StringBuffer();
+        String       jobId = request.getString(ARG_JOB_ID, (String) null);
         String productId = request.getString(ARG_POINT_PRODUCT,
                                              (String) null);
 
-        StringBuffer xml = new StringBuffer();
-        getPageHandler().entrySectionOpen(request, entry, sb,"Point Processing");
-        addHtmlHeader(request, sb);
-        JobInfo jobInfo    = getJobInfo(jobId);
-        File    productDir = getRecordOutputHandler().getProductDir(jobId);
+        StringBuffer xml     = new StringBuffer();
+        JobInfo      jobInfo = getJobInfo(jobId);
+        File productDir      = getRecordOutputHandler().getProductDir(jobId);
         if ( !productDir.exists()) {
             return getRepository().makeErrorResult(request,
                     "The results have expired. Please try your query again");
         }
 
+        openHtmlHeader(request, jobInfo, sb);
         sb.append(jobInfo.getDescription().replaceAll("\n", "<br>"));
 
         if (productId != null) {
@@ -473,6 +476,7 @@ public class RecordJobManager extends JobManager implements RecordConstants {
                 IOUtil.close(zos);
                 Result result = new Result();
                 result.setNeedToWrite(false);
+
                 return result;
             }
 
@@ -508,6 +512,7 @@ public class RecordJobManager extends JobManager implements RecordConstants {
             });
         }
         xml.append(XmlUtil.openTag(TAG_JOB, jobAttrs));
+
         if (jobInfo.isInError()) {
             sb.append(
                 getPageHandler().showDialogError(
@@ -520,9 +525,18 @@ public class RecordJobManager extends JobManager implements RecordConstants {
                 getPageHandler().showDialogNote("Processing is complete"));
         }
         sb.append(HtmlUtils.formTable());
+        sb.append("<tr><td width=20%></a><td width=80%></td></tr>");
+        if ( !jobInfo.isInError() && !stillRunning) {
+            sb.append(
+                HtmlUtils.formEntry(
+                    "",
+                    HtmlUtils.div(
+                        HtmlUtils.href(
+                            jobInfo.getReturnUrl(),
+                            "Return to form"), HtmlUtils.cssClass(
+                                "ramadda-button"))));
+        }
         //set the column width
-        sb.append(
-            "<tr><td width=20%>&nbsp;</a><td width=80%>&nbsp;</td></tr>");
         if (stillRunning) {
             String cancelUrl =
                 request.entryUrl(getRepository().URL_ENTRY_SHOW, entry,
@@ -530,62 +544,13 @@ public class RecordJobManager extends JobManager implements RecordConstants {
                 ARG_OUTPUT, getOutputResults().getId(), ARG_JOB_ID, jobId,
                 ARG_CANCEL, "true"
             });
-            sb.append(HtmlUtils.formEntry("",
-                                          HtmlUtils.href(cancelUrl,
-                                              msg("Cancel job"))));
+            String cancel =
+                HtmlUtils.div(HtmlUtils.href(cancelUrl, msg("Cancel job")),
+                              HtmlUtils.cssClass("ramadda-button"));
+            sb.append(HtmlUtils.formEntry("", cancel));
         }
 
-
-        sb.append(HtmlUtils.formEntry(msgLabel("Job ID"), jobId));
-
-        sb.append(HtmlUtils.formEntry(msgLabel("Job Name"),
-                                      jobInfo.getJobName()));
-
-        if (jobInfo.getJobUrl() != null) {
-            sb.append(HtmlUtils.formEntry(msgLabel("Job URL"),
-                                          jobInfo.getJobUrl()));
-        }
-        sb.append(
-            HtmlUtils.formEntry(
-                msgLabel("Start time"),
-                getRecordFormHandler().formatDate(jobInfo.getStartDate())));
-
-        if ( !stillRunning) {
-            sb.append(
-                HtmlUtils.formEntry(
-                    msgLabel("End time"),
-                    getRecordFormHandler().formatDate(jobInfo.getEndDate())));
-        }
-
-        sb.append(HtmlUtils.formEntry(msgLabel("Run time"),
-                                      ((endTime - startTime) / 1000)
-                                      + " seconds"));
-
-
-        if (stillRunning) {
-            StringBuffer statusSB = new StringBuffer();
-            for (String statusItem : jobInfo.getStatusItems()) {
-                statusSB.append(statusItem);
-                statusSB.append("<br>");
-            }
-            String currentStatus = jobInfo.getCurrentStatus();
-            if (currentStatus != null) {
-                statusSB.append(currentStatus);
-            }
-
-            sb.append("<meta http-equiv=\"refresh\" content=\"1\">");
-            sb.append(HtmlUtils.formEntry(msgLabel("Status"),
-                                          statusSB.toString()));
-
-        }
-
-        if (jobInfo.getNumPoints() != 0) {
-            sb.append(
-                HtmlUtils.formEntry(
-                    msgLabel("Processed"),
-                    getRecordFormHandler().formatPointCount(
-                        jobInfo.getNumPoints()) + " points"));
-        }
+        sb.append(HtmlUtils.formEntry("", jobInfo.getExtraInfo().toString()));
 
         if ( !stillRunning) {
             StringBuffer productSB = new StringBuffer();
@@ -652,8 +617,62 @@ public class RecordJobManager extends JobManager implements RecordConstants {
             }
         }
 
+
+
+        sb.append(HtmlUtils.formEntry(msgLabel("Job ID"), jobId));
+
+        sb.append(HtmlUtils.formEntry(msgLabel("Job Name"),
+                                      jobInfo.getJobName()));
+
+        if (jobInfo.getJobUrl() != null) {
+            sb.append(HtmlUtils.formEntry(msgLabel("Job URL"),
+                                          jobInfo.getJobUrl()));
+        }
+        sb.append(
+            HtmlUtils.formEntry(
+                msgLabel("Start time"),
+                getRecordFormHandler().formatDate(jobInfo.getStartDate())));
+
+        if ( !stillRunning) {
+            sb.append(
+                HtmlUtils.formEntry(
+                    msgLabel("End time"),
+                    getRecordFormHandler().formatDate(jobInfo.getEndDate())));
+        }
+
+        sb.append(HtmlUtils.formEntry(msgLabel("Run time"),
+                                      ((endTime - startTime) / 1000)
+                                      + " seconds"));
+
+
+        if (stillRunning) {
+            StringBuffer statusSB = new StringBuffer();
+            for (String statusItem : jobInfo.getStatusItems()) {
+                statusSB.append(statusItem);
+                statusSB.append("<br>");
+            }
+            String currentStatus = jobInfo.getCurrentStatus();
+            if (currentStatus != null) {
+                statusSB.append(currentStatus);
+            }
+
+            sb.append("<meta http-equiv=\"refresh\" content=\"1\">");
+            sb.append(HtmlUtils.formEntry(msgLabel("Status"),
+                                          statusSB.toString()));
+
+        }
+
+        if (jobInfo.getNumPoints() != 0) {
+            sb.append(
+                HtmlUtils.formEntry(
+                    msgLabel("Processed"),
+                    getRecordFormHandler().formatPointCount(
+                        jobInfo.getNumPoints()) + " points"));
+        }
+
+
+
         xml.append(XmlUtil.closeTag(TAG_JOB));
-        sb.append(HtmlUtils.formEntry("", jobInfo.getExtraInfo().toString()));
         sb.append(HtmlUtils.formTableClose());
 
 
@@ -661,7 +680,8 @@ public class RecordJobManager extends JobManager implements RecordConstants {
             return getRepository().makeOkResult(request, xml.toString());
         }
 
-        getPageHandler().entrySectionClose(request, entry, sb);
+        closeHtmlHeader(request, jobInfo, sb);
+
         return new Result("Products", sb);
 
     }
@@ -676,23 +696,6 @@ public class RecordJobManager extends JobManager implements RecordConstants {
         return getRecordOutputHandler().OUTPUT_RESULTS;
     }
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param sb _more_
-     *
-     * @throws Exception _more_
-     */
-    @Override
-    public void addHtmlHeader(Request request, Appendable sb)
-            throws Exception {
-        try {
-            //            getRecordOutputHandler().makeApiHeader(request, sb);
-        } catch (Exception exc) {
-            throw new RuntimeException(exc);
-        }
-    }
 
     /**
      * _more_
@@ -723,6 +726,7 @@ public class RecordJobManager extends JobManager implements RecordConstants {
             Request request, Entry entry, OutputType outputType,
             List<? extends RecordEntry> pointEntries)
             throws Exception {
+
         checkNewJobOK();
         try {
             return handleAsynchRequestInner(request, entry, outputType,
@@ -754,8 +758,13 @@ public class RecordJobManager extends JobManager implements RecordConstants {
             final List<? extends RecordEntry> recordEntries)
             throws Exception {
 
-        final JobInfo jobInfo = new JobInfo(request, entry.getId(),
-                                            getRepository().getGUID());
+        String formUrl =
+            request.getUrl((HashSet<String>) Utils.makeHashSet(ARG_OUTPUT),
+                           null) + "&" + ARG_OUTPUT + "=points.form";
+        final JobInfo jobInfo = new JobInfo(request, entry,
+                                            getRepository().getGUID(),
+                                            "Point Processing");
+        jobInfo.setReturnUrl(formUrl);
         jobInfo.setType(JOB_TYPE_POINT);
         jobInfo.setJobStatusUrl(getJobUrl(request, entry, jobInfo.getJobId(),
                                           getOutputResults()));

@@ -60,10 +60,10 @@ public class JsonVisitor extends BridgeRecordVisitor {
     /** _more_ */
     private PrintWriter pw;
 
-    /** _more_          */
+    /** _more_ */
     static int _cnt = 0;
 
-    /** _more_          */
+    /** _more_ */
     int mycnt = _cnt++;
 
 

@@ -27,6 +27,10 @@ h2 a,   h2 a:visited, h2 a:link  {color: black;}
       color:black;
 }
 
+.ramadda-button a {
+    color:black;
+}
+
 .ramadda-page-title  {
   font-size:200%;
   text-align:center;

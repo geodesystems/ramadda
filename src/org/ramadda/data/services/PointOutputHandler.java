@@ -71,8 +71,8 @@ import ucar.unidata.xml.XmlUtil;
 import java.awt.Color;
 import java.awt.Image;
 import java.awt.Toolkit;
-import java.awt.image.*;
 import java.awt.geom.Rectangle2D;
+import java.awt.image.*;
 import java.awt.image.MemoryImageSource;
 
 import java.io.ByteArrayOutputStream;
@@ -1780,7 +1780,8 @@ public class PointOutputHandler extends RecordOutputHandler {
                 File imageFile =
                     getRepository().getStorageManager().getTmpFile(request,
                         "pointimage.png");
-                writeImage(request, imageFile, llg, grid, missingValue, threshold);
+                writeImage(request, imageFile, llg, grid, missingValue,
+                           threshold);
                 InputStream imageInputStream =
                     getStorageManager().getFileInputStream(imageFile);
                 OutputStream os = getOutputStream(request, jobId, mainEntry,
@@ -1823,7 +1824,8 @@ public class PointOutputHandler extends RecordOutputHandler {
                             destFileName), new Boolean(false));
                 }
                 writeImage(request, imageFile, hillshadeGrid,
-                           hillshadeGrid.getValueGrid(), missingValue, threshold);
+                           hillshadeGrid.getValueGrid(), missingValue,
+                           threshold);
                 InputStream imageInputStream =
                     getStorageManager().getFileInputStream(imageFile);
                 OutputStream os = getOutputStream(request, jobId, mainEntry,
@@ -1955,11 +1957,13 @@ public class PointOutputHandler extends RecordOutputHandler {
      * @param llg latlongrid
      * @param grid _more_
      * @param missingValue _more_
+     * @param threshold _more_
      *
      * @throws Exception On badness
      */
     public void writeImage(Request request, File imageFile, LatLonGrid llg,
-                           double[][] grid, double missingValue, double threshold)
+                           double[][] grid, double missingValue,
+                           double threshold)
             throws Exception {
         int     imageWidth       = llg.getWidth();
         int     imageHeight      = llg.getHeight();
@@ -2007,7 +2011,9 @@ public class PointOutputHandler extends RecordOutputHandler {
         for (int y = 0; y < imageHeight; y++) {
             for (int x = 0; x < imageWidth; x++) {
                 double value = grid[y][x];
-                if ((!Double.isNaN(threshold) && value<threshold) || Double.isNaN(value) || (value == LatLonGrid.GRID_MISSING)
+                if (( !Double.isNaN(threshold) && (value < threshold))
+                        || Double.isNaN(value)
+                        || (value == LatLonGrid.GRID_MISSING)
                         || (haveMissingValue && (value == missingValue))) {
                     //Set missing to transparent
                     pixels[index] = (0x00 << 24);
@@ -2027,8 +2033,9 @@ public class PointOutputHandler extends RecordOutputHandler {
                                  imageWidth));
 
         float[] matrix = new float[400];
-        for (int i = 0; i < 400; i++)
-            matrix[i] = 1.0f/400.0f;
+        for (int i = 0; i < 400; i++) {
+            matrix[i] = 1.0f / 400.0f;
+        }
 
         //        BufferedImageOp op = new ConvolveOp( new Kernel(20, 20, matrix), ConvolveOp.EDGE_NO_OP, null );
         /*
@@ -2041,11 +2048,19 @@ public class PointOutputHandler extends RecordOutputHandler {
     }
 
 
-    public static void main(String[]args) throws Exception {
+    /**
+     * _more_
+     *
+     * @param args _more_
+     *
+     * @throws Exception _more_
+     */
+    public static void main(String[] args) throws Exception {
         System.err.println("main");
         float[] matrix = new float[400];
-        for (int i = 0; i < 400; i++)
-            matrix[i] = 1.0f/400.0f;
+        for (int i = 0; i < 400; i++) {
+            matrix[i] = 1.0f / 400.0f;
+        }
 
         //        BufferedImage newImage = ImageUtils.toBufferedImage(ImageUtils.readImage(args[0]));
         //        System.err.println("filtering");

@@ -2804,7 +2804,7 @@ public class Utils {
      *
      * @return _more_
      */
-    public static HashSet getHashset(Object... args) {
+    public static HashSet makeHashSet(Object... args) {
         HashSet h = new HashSet();
         for (Object arg : args) {
             h.add(arg);
@@ -3306,7 +3306,7 @@ public class Utils {
         }
     }
 
-    /** _more_          */
+    /** _more_ */
     public static final String MISSING = "missing";
 
     /** NaN string */

@@ -149,6 +149,9 @@ public class JobInfo implements Constants {
     private String jobUrl;
 
     /** _more_ */
+    private String returnUrl;
+
+    /** _more_ */
     private String jobStatusUrl;
 
     /** job description the user gave */
@@ -172,6 +175,12 @@ public class JobInfo implements Constants {
     /** _more_ */
     private StringBuffer extraInfo = new StringBuffer();
 
+    /** _more_ */
+    private Entry entry;
+
+    /** _more_ */
+    private String jobLabel;
+
     /**
      * ctor
      */
@@ -190,11 +199,17 @@ public class JobInfo implements Constants {
      * ctor
      *
      * @param request the request
-     * @param entryId the entry
+     * @param entry _more_
      * @param jobId unique id of the job
+     * @param jobLabel _more_
      */
-    public JobInfo(Request request, String entryId, Object jobId) {
-        this.entryId      = entryId;
+    public JobInfo(Request request, Entry entry, Object jobId,
+                   String jobLabel) {
+        this.entry        = entry;
+        this.jobLabel     = jobLabel;
+        this.entryId      = ((entry != null)
+                             ? entry.getId()
+                             : null);
         this.jobId        = jobId;
         this.urlArguments = new Hashtable(request.getArgs());
         this.ipAddress = request.getEncodedString(ARG_REQUEST_IP,
@@ -206,6 +221,48 @@ public class JobInfo implements Constants {
         this.description = request.getEncodedString(ARG_JOB_DESCRIPTION, "");
 
     }
+
+
+    /**
+     *  Get the Entry property.
+     *  This needs to be a different name than the getEntry getter because we encode this object as xml
+     *
+     * @param entry _more_
+     */
+    public void setTheEntry(Entry entry) {
+        this.entry = entry;
+    }
+
+    /**
+     *  Get the Entry property.
+     *
+     *  @return The Entry
+     */
+    public Entry getEntry() {
+        return entry;
+    }
+
+
+    /**
+     *  Set the JobLabel property.
+     *
+     *  @param value The new value for JobLabel
+     */
+    public void setJobLabel(String value) {
+        jobLabel = value;
+    }
+
+    /**
+     *  Get the JobLabel property.
+     *
+     *  @return The JobLabel
+     */
+    public String getJobLabel() {
+        return jobLabel;
+    }
+
+
+
 
     /**
      * is job cancelled
@@ -661,6 +718,24 @@ public class JobInfo implements Constants {
         return extraInfo.toString();
     }
 
+
+    /**
+     *  Set the ReturnUrl property.
+     *
+     *  @param value The new value for ReturnUrl
+     */
+    public void setReturnUrl(String value) {
+        returnUrl = value;
+    }
+
+    /**
+     *  Get the ReturnUrl property.
+     *
+     *  @return The ReturnUrl
+     */
+    public String getReturnUrl() {
+        return returnUrl;
+    }
 
 
 

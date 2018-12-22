@@ -63,6 +63,7 @@ public class RecordEntry implements Runnable, Callable<Boolean> {
     /** the job id */
     private Object processId;
 
+    /** _more_          */
     private Bounds bounds;
 
     /**
@@ -82,21 +83,21 @@ public class RecordEntry implements Runnable, Callable<Boolean> {
     }
 
     /**
-       Set the Bounds property.
-
-       @param value The new value for Bounds
-    **/
-    public void setBounds (Bounds value) {
-	bounds = value;
+     *  Set the Bounds property.
+     *
+     *  @param value The new value for Bounds
+     */
+    public void setBounds(Bounds value) {
+        bounds = value;
     }
 
     /**
-       Get the Bounds property.
-
-       @return The Bounds
-    **/
-    public Bounds getBounds () {
-	return bounds;
+     *  Get the Bounds property.
+     *
+     *  @return The Bounds
+     */
+    public Bounds getBounds() {
+        return bounds;
     }
 
 

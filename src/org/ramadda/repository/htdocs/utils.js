@@ -153,6 +153,7 @@ var Utils = {
         this.pageLoaded = true;
         //Buttonize
         $(':submit').button().click(function(event){});
+        $('.ramadda-button').button().click(function(event){});
         //menuize
         /*
         $(".ramadda-pulldown").selectBoxIt({});

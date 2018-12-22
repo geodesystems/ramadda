@@ -331,6 +331,11 @@ public class JobManager extends RepositoryManager {
         blob = blob.replaceAll("org.unavco.projects.nlas.ramadda.JobInfo",
                                "org.ramadda.repository.job.JobInfo");
         JobInfo jobInfo = (JobInfo) getRepository().decodeObject(blob);
+        if (jobInfo != null) {
+            jobInfo.setTheEntry(
+                getEntryManager().getEntry(
+                    getRepository().getTmpRequest(), jobInfo.getEntryId()));
+        }
 
         return jobInfo;
     }
@@ -621,12 +626,11 @@ public class JobManager extends RepositoryManager {
     public Result handleJobStatusRequest(Request request, Entry entry)
             throws Exception {
         String jobId = request.getString(JobInfo.ARG_JOB_ID, (String) null);
-        StringBuffer sb  = new StringBuffer();
-        StringBuffer xml = new StringBuffer();
-        addHtmlHeader(request, sb);
-        JobInfo jobInfo = getJobInfo(jobId);
+        StringBuffer sb      = new StringBuffer();
+        StringBuffer xml     = new StringBuffer();
+        JobInfo      jobInfo = getJobInfo(jobId);
         if (jobInfo == null) {
-            return makeRequestErrorResult(request,
+            return makeRequestErrorResult(request, null,
                                           "No job found with id = " + jobId);
         }
 
@@ -637,15 +641,15 @@ public class JobManager extends RepositoryManager {
                                            JobManager.ATTR_STATUS,
                                            STATUS_CANCELLED })));
 
-                return makeRequestOKResult(request, xml.toString());
+                return makeRequestOKResult(request, jobInfo, xml.toString());
             }
 
-            return makeRequestErrorResult(request,
+            return makeRequestErrorResult(request, jobInfo,
                                           "The job has been cancelled.");
         }
 
         if (jobInfo.isInError() && request.responseAsXml()) {
-            return makeRequestErrorResult(request,
+            return makeRequestErrorResult(request, jobInfo,
                                           "An error has occurred:"
                                           + jobInfo.getError());
         }
@@ -656,7 +660,7 @@ public class JobManager extends RepositoryManager {
             jobInfo.setStatus(jobInfo.STATUS_CANCELLED);
             writeJobInfo(jobInfo);
 
-            return makeRequestOKResult(request,
+            return makeRequestOKResult(request, jobInfo,
                                        "The job has been cancelled.");
         }
 
@@ -807,20 +811,28 @@ public class JobManager extends RepositoryManager {
      * _more_
      *
      * @param request _more_
+     * @param jobInfo _more_
      * @param message _more_
      *
      * @return _more_
      *
      * @throws Exception _more_
      */
-    public Result makeRequestErrorResult(Request request, String message)
+    public Result makeRequestErrorResult(Request request, JobInfo jobInfo,
+                                         String message)
             throws Exception {
         if (request.responseAsXml()) {
-            return makeRequestErrorResult(request, message);
+            //TODO            return makeRequestErrorResult(request, null, message);
         }
         StringBuffer sb = new StringBuffer();
-        addHtmlHeader(request, sb);
+        openHtmlHeader(request, jobInfo, sb);
         sb.append(getPageHandler().showDialogNote(message));
+        if (jobInfo.getReturnUrl() != null) {
+            sb.append("<p>");
+            sb.append(HtmlUtils.div(HtmlUtils.href(jobInfo.getReturnUrl(),
+                    "Return to form"), HtmlUtils.cssClass("ramadda-button")));
+        }
+        closeHtmlHeader(request, jobInfo, sb);
 
         return new Result("", sb);
     }
@@ -831,11 +843,16 @@ public class JobManager extends RepositoryManager {
      * then this creates a web page
      *
      * @param request http request
+     * @param jobInfo _more_
      * @param message error message
      *
      * @return xml or html result
+     *
+     * @throws Exception _more_
      */
-    public Result makeRequestOKResult(Request request, String message) {
+    public Result makeRequestOKResult(Request request, JobInfo jobInfo,
+                                      String message)
+            throws Exception {
         if (request.responseAsXml()) {
             return new Result(XmlUtil.tag(TAG_RESPONSE,
                                           XmlUtil.attr(ATTR_CODE, CODE_OK),
@@ -846,7 +863,17 @@ public class JobManager extends RepositoryManager {
             return new Result(message, "text");
         }
 
-        return new Result("", new StringBuffer(message));
+        StringBuilder sb = new StringBuilder();
+        openHtmlHeader(request, jobInfo, sb);
+        sb.append(getPageHandler().showDialogNote(message));
+        sb.append("<p>");
+        if (jobInfo.getReturnUrl() != null) {
+            sb.append(HtmlUtils.div(HtmlUtils.href(jobInfo.getReturnUrl(),
+                    "Return to form"), HtmlUtils.cssClass("ramadda-button")));
+        }
+        closeHtmlHeader(request, jobInfo, sb);
+
+        return new Result("", sb);
     }
 
 
@@ -859,12 +886,37 @@ public class JobManager extends RepositoryManager {
      * _more_
      *
      * @param request _more_
+     * @param jobInfo _more_
      * @param sb _more_
      *
      * @throws Exception _more_
      */
-    public void addHtmlHeader(Request request, Appendable sb)
-            throws Exception {}
+    public void openHtmlHeader(Request request, JobInfo jobInfo,
+                               Appendable sb)
+            throws Exception {
+        if ((jobInfo != null) && (jobInfo.getEntry() != null)) {
+            getPageHandler().entrySectionOpen(request, jobInfo.getEntry(),
+                    sb, jobInfo.getJobLabel());
+        }
+    }
+
+    /**
+     * _more_
+     *
+     * @param request _more_
+     * @param jobInfo _more_
+     * @param sb _more_
+     *
+     * @throws Exception _more_
+     */
+    public void closeHtmlHeader(Request request, JobInfo jobInfo,
+                                Appendable sb)
+            throws Exception {
+        if ((jobInfo != null) && (jobInfo.getEntry() != null)) {
+            getPageHandler().entrySectionClose(request, jobInfo.getEntry(),
+                    sb);
+        }
+    }
 
 
 

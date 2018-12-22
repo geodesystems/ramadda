@@ -2585,7 +2585,6 @@ public class PageHandler extends RepositoryManager {
      */
     public String showDialogError(String h) {
         h = getDialogString(h);
-
         return getMessage(h, Constants.ICON_ERROR, false);
     }
 

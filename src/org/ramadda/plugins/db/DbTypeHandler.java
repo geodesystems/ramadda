@@ -2220,7 +2220,7 @@ public class DbTypeHandler extends PointTypeHandler /* BlobTypeHandler*/ {
         if (canEdit && request.exists(ARG_DB_DOSAVESEARCH)) {
             request.remove(ARG_DB_DOSAVESEARCH);
             String args = request.getUrlArgs(
-                              (HashSet<String>) Utils.getHashset(
+                              (HashSet<String>) Utils.makeHashSet(
                                                                  ARG_ENTRYID, ARG_DB_SEARCH,
                                                                  ARG_DB_DOSAVESEARCH), null, null);
             String name = request.getString(ARG_DB_SEARCHNAME, null);
@@ -4221,7 +4221,7 @@ public class DbTypeHandler extends PointTypeHandler /* BlobTypeHandler*/ {
                         .getJsonUrl(request, entry);
                 url += "&"
                        + request.getUrlArgs(
-                           (HashSet<String>) Utils.getHashset(
+                           (HashSet<String>) Utils.makeHashSet(
                                                               ARG_ENTRYID, ARG_DB_SEARCH, ARG_DB_DOSAVESEARCH), null,
                            null);
             } catch (Exception exc) {

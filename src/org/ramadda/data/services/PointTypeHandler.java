@@ -467,52 +467,54 @@ public class PointTypeHandler extends RecordTypeHandler {
         Entry      entry      = pointEntry.getEntry();
 
         //We need to do the polygon thing here so we have the geo bounds to make the grid
-        /** lets not harvest the bounding polygon as this doesn't make sense for most point data 
-        if (pointEntry.isCapable(PointFile.ACTION_BOUNDINGPOLYGON)) {
-            if ( !entry.hasMetadataOfType(
-                    MetadataHandler.TYPE_SPATIAL_POLYGON)) {
-                LatLonGrid llg = new LatLonGrid(80, 40,
-                                     metadata.getMaxLatitude(),
-                                     metadata.getMinLongitude(),
-                                     metadata.getMinLatitude(),
-                                     metadata.getMaxLongitude());
 
-                PointMetadataHarvester metadata2 =
-                    new PointMetadataHarvester(llg);
-                //                System.err.println("PointTypeHandler: visiting binary file");
-                pointEntry.getBinaryPointFile().visit(metadata2,
-                                                      new VisitInfo(VisitInfo.QUICKSCAN_NO), null);
-                List<double[]> polygon = llg.getBoundingPolygon();
-                StringBuilder[] sb = new StringBuilder[] {
-                                         new StringBuilder(),
-                                         new StringBuilder(),
-                                         new StringBuilder(),
-                                         new StringBuilder() };
-                int idx = 0;
-                for (double[] point : polygon) {
-                    String toAdd = point[0] + "," + point[1] + ";";
-                    if ((sb[idx].length() + toAdd.length())
-                            >= (Metadata.MAX_LENGTH - 100)) {
-                        idx++;
-                        if (idx >= sb.length) {
-                            break;
-                        }
-                    }
-                    sb[idx].append(toAdd);
-                }
-                //                System.err.println ("sb length:" + sb[idx].length() +" " +Metadata.MAX_LENGTH);
-
-                Metadata polygonMetadata =
-                    new Metadata(getRepository().getGUID(), entry.getId(),
-                                 MetadataHandler.TYPE_SPATIAL_POLYGON,
-                                 DFLT_INHERITED, sb[0].toString(),
-                                 sb[1].toString(), sb[2].toString(),
-                                 sb[3].toString(), Metadata.DFLT_EXTRA);
-                getMetadataManager().addMetadata(entry, polygonMetadata,
-                        false);
-            }
-        }
-        */
+        /**
+         * lets not harvest the bounding polygon as this doesn't make sense for most point data
+         * if (pointEntry.isCapable(PointFile.ACTION_BOUNDINGPOLYGON)) {
+         *   if ( !entry.hasMetadataOfType(
+         *           MetadataHandler.TYPE_SPATIAL_POLYGON)) {
+         *       LatLonGrid llg = new LatLonGrid(80, 40,
+         *                            metadata.getMaxLatitude(),
+         *                            metadata.getMinLongitude(),
+         *                            metadata.getMinLatitude(),
+         *                            metadata.getMaxLongitude());
+         *
+         *       PointMetadataHarvester metadata2 =
+         *           new PointMetadataHarvester(llg);
+         *       //                System.err.println("PointTypeHandler: visiting binary file");
+         *       pointEntry.getBinaryPointFile().visit(metadata2,
+         *                                             new VisitInfo(VisitInfo.QUICKSCAN_NO), null);
+         *       List<double[]> polygon = llg.getBoundingPolygon();
+         *       StringBuilder[] sb = new StringBuilder[] {
+         *                                new StringBuilder(),
+         *                                new StringBuilder(),
+         *                                new StringBuilder(),
+         *                                new StringBuilder() };
+         *       int idx = 0;
+         *       for (double[] point : polygon) {
+         *           String toAdd = point[0] + "," + point[1] + ";";
+         *           if ((sb[idx].length() + toAdd.length())
+         *                   >= (Metadata.MAX_LENGTH - 100)) {
+         *               idx++;
+         *               if (idx >= sb.length) {
+         *                   break;
+         *               }
+         *           }
+         *           sb[idx].append(toAdd);
+         *       }
+         *       //                System.err.println ("sb length:" + sb[idx].length() +" " +Metadata.MAX_LENGTH);
+         *
+         *       Metadata polygonMetadata =
+         *           new Metadata(getRepository().getGUID(), entry.getId(),
+         *                        MetadataHandler.TYPE_SPATIAL_POLYGON,
+         *                        DFLT_INHERITED, sb[0].toString(),
+         *                        sb[1].toString(), sb[2].toString(),
+         *                        sb[3].toString(), Metadata.DFLT_EXTRA);
+         *       getMetadataManager().addMetadata(entry, polygonMetadata,
+         *               false);
+         *   }
+         * }
+         */
 
         String descriptionFromFile =
             pointEntry.getRecordFile().getDescriptionFromFile();

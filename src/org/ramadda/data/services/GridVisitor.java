@@ -163,6 +163,8 @@ public class GridVisitor extends BridgeRecordVisitor {
     /**
      * Done. Tell the llg to average its values
      *
+     *
+     * @throws Exception _more_
      */
     public void finishedWithAllFiles() throws Exception {
         llg.doAverageValues();

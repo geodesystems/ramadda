@@ -350,8 +350,9 @@ public class PointFormHandler extends RecordFormHandler {
                                   List<Entry> subGroups, List<Entry> entries,
                                   StringBuffer msgSB)
             throws Exception {
-        StringBuilder sb =  new StringBuilder();
-        request.getRepository().getPageHandler().entrySectionOpen(request, group,sb,"Point Processing");
+        StringBuilder sb = new StringBuilder();
+        request.getRepository().getPageHandler().entrySectionOpen(request,
+                group, sb, "Point Processing");
         sb.append(msgSB);
         boolean showUrl = request.get(ARG_SHOWURL, false);
 
@@ -396,7 +397,9 @@ public class PointFormHandler extends RecordFormHandler {
 
             sb.append(HtmlUtils.sectionClose());
 
-            request.getRepository().getPageHandler().entrySectionClose(request, group,sb);
+            request.getRepository().getPageHandler().entrySectionClose(
+                request, group, sb);
+
             return new Result("", sb);
         }
 
@@ -428,7 +431,9 @@ public class PointFormHandler extends RecordFormHandler {
 
         sb.append(HtmlUtils.sectionClose());
 
-        request.getRepository().getPageHandler().entrySectionClose(request, group,sb);
+        request.getRepository().getPageHandler().entrySectionClose(request,
+                group, sb);
+
         return new Result("", sb);
     }
 
@@ -467,8 +472,9 @@ public class PointFormHandler extends RecordFormHandler {
             throws Exception {
 
 
-        StringBuilder sb =  new StringBuilder();
-        request.getRepository().getPageHandler().entrySectionOpen(request, entry,sb,"Point Processing");
+        StringBuilder sb = new StringBuilder();
+        request.getRepository().getPageHandler().entrySectionOpen(request,
+                entry, sb, "Point Processing");
         sb.append(msgSB);
 
         //        System.err.println ( getPointOutputHandler().getCsv(request, entry));
@@ -490,7 +496,9 @@ public class PointFormHandler extends RecordFormHandler {
 
         sb.append(HtmlUtils.sectionClose());
 
-        request.getRepository().getPageHandler().entrySectionClose(request, entry,sb);
+        request.getRepository().getPageHandler().entrySectionClose(request,
+                entry, sb);
+
         return new Result("", sb);
     }
 
@@ -582,13 +590,15 @@ public class PointFormHandler extends RecordFormHandler {
             HtmlUtils.formEntry(
                 msgLabel("Fill missing"),
                 HtmlUtils.checkbox(
-                    PointOutputHandler.ARG_FILLMISSING, "true", false)));
+                    PointOutputHandler.ARG_FILLMISSING, "true",
+                    request.get(PointOutputHandler.ARG_FILLMISSING, false))));
 
         extra.append(
             HtmlUtils.formEntry(
                 msgLabel("Threshold"),
                 HtmlUtils.input(
-                                RecordConstants.ARG_THRESHOLD, request.getString(RecordConstants.ARG_THRESHOLD,""))));
+                    RecordConstants.ARG_THRESHOLD,
+                    request.getString(RecordConstants.ARG_THRESHOLD, ""))));
 
 
 
@@ -596,9 +606,13 @@ public class PointFormHandler extends RecordFormHandler {
             HtmlUtils.formEntry(
                 msgLabel("Hill shading"),
                 msgLabel("Azimuth")
-                + HtmlUtils.input(ARG_HILLSHADE_AZIMUTH, "315", 4)
-                + HtmlUtils.space(4) + msgLabel("Angle")
-                + HtmlUtils.input(ARG_HILLSHADE_ANGLE, "45", 4)));
+                + HtmlUtils.input(
+                    ARG_HILLSHADE_AZIMUTH,
+                    request.getString(ARG_HILLSHADE_AZIMUTH, "315"),
+                    4) + HtmlUtils.space(4) + msgLabel("Angle")
+                       + HtmlUtils.input(
+                           ARG_HILLSHADE_ANGLE,
+                           request.getString(ARG_HILLSHADE_ANGLE, "45"), 4)));
         extra.append(
             HtmlUtils.formEntry(
                 msgLabel("Image Dimensions"),
@@ -621,7 +635,7 @@ public class PointFormHandler extends RecordFormHandler {
             for (RecordField field :
                     recordEntry.getRecordFile().getChartableFields()) {
                 params.add(new TwoFacedObject(field.getLabel(),
-                                              "" + field.getParamId()));
+                        "" + field.getParamId()));
             }
         }
 
@@ -640,8 +654,9 @@ public class PointFormHandler extends RecordFormHandler {
                     HtmlUtils.select(
                         RecordOutputHandler.ARG_DIVISOR, params,
                         request.get(
-                                    RecordOutputHandler.ARG_DIVISOR,new ArrayList<String>()),
-                        HtmlUtils.arg(HtmlUtils.ATTR_ROWS,"4") +" multiple ")));
+                            RecordOutputHandler.ARG_DIVISOR,
+                            new ArrayList<String>()), HtmlUtils.arg(
+                                HtmlUtils.ATTR_ROWS, "4") + " multiple ")));
         }
 
         extra.append(
@@ -822,7 +837,8 @@ public class PointFormHandler extends RecordFormHandler {
                 HtmlUtils.img(getRepository().getIconUrl(ICON_HELP),
                               GRID_HELP[i]);
             gridsCol.append(helpImg);
-            gridsCol.append(HtmlUtils.checkbox(GRID_ARGS[i], "true", false));
+            gridsCol.append(HtmlUtils.checkbox(GRID_ARGS[i], "true",
+                    request.get(GRID_ARGS[i], false)));
             gridsCol.append(msg(GRID_LABELS[i]));
             gridsCol.append(HtmlUtils.p());
         }
@@ -982,6 +998,8 @@ public class PointFormHandler extends RecordFormHandler {
 
         if (allFields != null) {
             StringBuffer paramSB = null;
+            List<String> selected = (List<String>) request.get(ARG_FIELD_USE,
+                                        new ArrayList<String>());
             for (RecordField attr : allFields) {
 
                 //Skip arrays
@@ -996,9 +1014,13 @@ public class PointFormHandler extends RecordFormHandler {
                 if (attr.getDescription().length() > 0) {
                     label = label + " - " + attr.getDescription();
                 }
-                paramSB.append(HtmlUtils.formEntry("",
-                        HtmlUtils.checkbox(ARG_FIELD_USE, attr.getName(),
-                                           false) + " " + label));
+                paramSB.append(
+                    HtmlUtils.formEntry(
+                        "",
+                        HtmlUtils.checkbox(
+                            ARG_FIELD_USE, attr.getName(),
+                            selected.contains(attr.getName())) + " "
+                                + label));
             }
             if (paramSB != null) {
                 paramSB.append(HtmlUtils.formTableClose());

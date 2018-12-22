@@ -2272,8 +2272,15 @@ public class OutputHandler extends RepositoryManager {
             return;
         }
 
+        String entryId = request.getString(ARG_PUBLISH_ENTRY + "_hidden","");
+        String entryName = "";
+        if(Utils.stringDefined(entryId)) {
+            Entry selectedEntry  = getEntryManager().getEntry(request, entryId);
+            if(selectedEntry!=null)
+                entryName = selectedEntry.getName();
+        }
         StringBuilder publishSB = new StringBuilder();
-        sb.append(HtmlUtils.hidden(ARG_PUBLISH_ENTRY + "_hidden", "",
+        sb.append(HtmlUtils.hidden(ARG_PUBLISH_ENTRY + "_hidden", entryId,
                                    HtmlUtils.id(ARG_PUBLISH_ENTRY
                                        + "_hidden")));
         HtmlUtils.row(sb, HtmlUtils.colspan(header, 2));
@@ -2290,7 +2297,7 @@ public class OutputHandler extends RepositoryManager {
             HtmlUtils.formEntry(
                 msgLabel("Folder"),
                 HtmlUtils.disabledInput(
-                    ARG_PUBLISH_ENTRY, "",
+                    ARG_PUBLISH_ENTRY, entryName,
                     HtmlUtils.id(ARG_PUBLISH_ENTRY)
                     + HtmlUtils.SIZE_60) + select + HtmlUtils.space(2)
                                          + addMetadata));
