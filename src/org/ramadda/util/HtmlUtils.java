@@ -1089,7 +1089,7 @@ public class HtmlUtils {
      * @return _more_
      */
     public static String button(String html) {
-        return div(html, cssClass("ramadda-button"));
+        return span(html, cssClass("ramadda-button"));
     }
 
     /**
