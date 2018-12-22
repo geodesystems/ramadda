@@ -27,8 +27,9 @@ h2 a,   h2 a:visited, h2 a:link  {color: black;}
       color:black;
 }
 
-.ramadda-button a {
-    color:black;
+.ramadda-button a, .ramadda-button a:hover {
+    color:rgb(85, 85, 85);
+    text-decoration:none;
 }
 
 .ramadda-page-title  {

@@ -815,16 +815,15 @@ public class UserManager extends RepositoryManager {
                         HtmlUtils.href(
                             request.makeUrl(
                                 getRepositoryBase().URL_USER_FINDUSERID), msg(
-                                "Forget your user ID?")))));
-            sb.append(HtmlUtils.space(2));
-            sb.append(
-                HtmlUtils.formEntry(
-                    "",
-                    HtmlUtils.button(
-                        HtmlUtils.href(
-                            request.makeUrl(
-                                getRepositoryBase().URL_USER_RESETPASSWORD), msg(
-                                "Forget your password?")))));
+                                                                              "Forget your user ID?"))) +
+                    HtmlUtils.space(2) +
+                    HtmlUtils.formEntry(
+                                        "",
+                                        HtmlUtils.button(
+                                                         HtmlUtils.href(
+                                                                        request.makeUrl(
+                                                                                        getRepositoryBase().URL_USER_RESETPASSWORD), msg(
+                                                                                                                                         "Forget your password?"))))));
         }
 
         sb.append(HtmlUtils.formTableClose());
@@ -2743,14 +2742,15 @@ public class UserManager extends RepositoryManager {
                         "No user is registered with the given email address")));
         }
 
-        sb.append("Please enter your registered email address");
+        sb.append(getPageHandler().showDialogNote("Please enter your registered email address"));
         sb.append(HtmlUtils.p());
         sb.append(request.form(getRepositoryBase().URL_USER_FINDUSERID));
-        sb.append(msgLabel("Your Email"));
-        sb.append(HtmlUtils.space(1));
-        sb.append(HtmlUtils.input(ARG_USER_EMAIL, email, HtmlUtils.SIZE_30));
-        sb.append(HtmlUtils.space(1));
-        sb.append(HtmlUtils.submit("Submit"));
+        sb.append(HtmlUtils.formTable());
+        sb.append(HtmlUtils.formEntry("Your Email:",
+                                      HtmlUtils.input(ARG_USER_EMAIL, email, HtmlUtils.SIZE_30)));
+        sb.append(HtmlUtils.formEntry("",
+                                      HtmlUtils.submit("Submit")));
+        sb.append(HtmlUtils.formTableClose());
         sb.append(HtmlUtils.formClose());
 
         return addHeader(request, sb, title);
@@ -2923,15 +2923,14 @@ public class UserManager extends RepositoryManager {
      */
     private void addPasswordResetForm(Request request, StringBuilder sb,
                                       String name) {
-        sb.append("Please enter your user ID");
-        sb.append(HtmlUtils.p());
+        sb.append(getPageHandler().showDialogNote("Please enter your user ID"));
         request.formPostWithAuthToken(
             sb, getRepositoryBase().URL_USER_RESETPASSWORD);
-        sb.append(msgLabel("User ID"));
-        sb.append(HtmlUtils.space(1));
-        sb.append(HtmlUtils.input(ARG_USER_NAME, name, HtmlUtils.SIZE_20));
-        sb.append(HtmlUtils.space(1));
-        sb.append(HtmlUtils.submit(msg("Reset your password")));
+        sb.append(HtmlUtils.formTable());
+        sb.append(HtmlUtils.formEntry("User ID:",
+                                      HtmlUtils.input(ARG_USER_NAME, name, HtmlUtils.SIZE_20)));
+        sb.append(HtmlUtils.formEntry("", HtmlUtils.submit("Reset your password")));
+        sb.append(HtmlUtils.formTableClose());
         sb.append(HtmlUtils.formClose());
     }
 
