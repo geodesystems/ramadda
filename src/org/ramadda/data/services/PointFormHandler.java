@@ -351,7 +351,7 @@ public class PointFormHandler extends RecordFormHandler {
                                   StringBuffer msgSB)
             throws Exception {
         StringBuilder sb =  new StringBuilder();
-        request.getRepository().getPageHandler().entrySectionOpen(request, group,sb,"Point Subset");
+        request.getRepository().getPageHandler().entrySectionOpen(request, group,sb,"Point Processing");
         sb.append(msgSB);
         boolean showUrl = request.get(ARG_SHOWURL, false);
 
@@ -468,7 +468,7 @@ public class PointFormHandler extends RecordFormHandler {
 
 
         StringBuilder sb =  new StringBuilder();
-        request.getRepository().getPageHandler().entrySectionOpen(request, entry,sb,"Point Subset");
+        request.getRepository().getPageHandler().entrySectionOpen(request, entry,sb,"Point Processing");
         sb.append(msgSB);
 
         //        System.err.println ( getPointOutputHandler().getCsv(request, entry));

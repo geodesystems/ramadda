@@ -432,14 +432,13 @@ public class RecordJobManager extends JobManager implements RecordConstants {
         if (parentResult != null) {
             return parentResult;
         }
-
-
+        StringBuffer sb  = new StringBuffer();
         String jobId     = request.getString(ARG_JOB_ID, (String) null);
         String productId = request.getString(ARG_POINT_PRODUCT,
                                              (String) null);
 
-        StringBuffer sb  = new StringBuffer();
         StringBuffer xml = new StringBuffer();
+        getPageHandler().entrySectionOpen(request, entry, sb,"Point Processing");
         addHtmlHeader(request, sb);
         JobInfo jobInfo    = getJobInfo(jobId);
         File    productDir = getRecordOutputHandler().getProductDir(jobId);
@@ -474,7 +473,6 @@ public class RecordJobManager extends JobManager implements RecordConstants {
                 IOUtil.close(zos);
                 Result result = new Result();
                 result.setNeedToWrite(false);
-
                 return result;
             }
 
@@ -663,6 +661,7 @@ public class RecordJobManager extends JobManager implements RecordConstants {
             return getRepository().makeOkResult(request, xml.toString());
         }
 
+        getPageHandler().entrySectionClose(request, entry, sb);
         return new Result("Products", sb);
 
     }

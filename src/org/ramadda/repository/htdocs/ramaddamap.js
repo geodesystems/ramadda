@@ -30,6 +30,7 @@ var map_ms_hybrid = "ms.hybrid";
 var map_ms_aerial = "ms.aerial";
 
 var map_osm = "osm";
+var map_osm_toner = "osm.toner";
 
 
 
@@ -640,6 +641,7 @@ function initMapFunctions(theMap) {
                               map_usgs_topo,
                               map_usgs_imagery,
                               map_usgs_relief,
+                              map_osm_toner,
                               map_white,
                               map_gray,
                               map_blue,
@@ -704,6 +706,9 @@ function initMapFunctions(theMap) {
                         '//c.tile.openstreetmap.org/${z}/${x}/${y}.png'
                         ];
                 newLayer = new OpenLayers.Layer.OSM("Open Street Map", urls);
+            } else if(mapLayer == map_osm_toner) {
+                urls = ["//a.tile.stamen.com/toner/${z}/${x}/${y}.png"];
+                newLayer = new OpenLayers.Layer.OSM("OSM-Toner", urls);
             } else if (mapLayer == map_ms_shaded) {
                 newLayer  =  new OpenLayers.Layer.VirtualEarth(
                         "Virtual Earth - Shaded", {
