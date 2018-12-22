@@ -162,6 +162,22 @@ var Utils = {
         if(window["initRamaddaDisplays"]) {
             initRamaddaDisplays();
         }
+
+
+        //allow for tabs to be added to text areas
+        $(document).delegate('textarea', 'keydown', function(e) {
+                var keyCode = e.keyCode || e.which;
+                if (keyCode == 9) {
+                    e.preventDefault();
+                    var start = this.selectionStart;
+                    var end = this.selectionEnd;
+                    $(this).val($(this).val().substring(0, start)
+                                + "\t"
+                                + $(this).val().substring(end));
+                    this.selectionStart = this.selectionEnd = start + 1;
+                }
+            });
+
     },
     ColorTables: {blues: ["rgb(255,255,255)","rgb(246,246,255)","rgb(237,237,255)","rgb(228,228,255)","rgb(219,219,255)","rgb(211,211,255)","rgb(202,202,255)","rgb(193,193,255)","rgb(184,184,255)","rgb(175,175,255)","rgb(167,167,255)","rgb(158,158,255)","rgb(149,149,255)","rgb(140,140,255)","rgb(131,131,255)","rgb(123,123,255)","rgb(114,114,255)","rgb(105,105,255)","rgb(96,96,255)","rgb(87,87,255)","rgb(79,79,255)","rgb(70,70,255)","rgb(61,61,255)","rgb(52,52,255)","rgb(43,43,255)","rgb(35,35,255)","rgb(26,26,255)","rgb(17,17,255)","rgb(8,8,255)","rgb(0,0,255)",],
                   blue_green_red:["rgb(0,0,255)",
