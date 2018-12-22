@@ -1408,7 +1408,8 @@ public class EntryManager extends RepositoryManager {
                                           "Extended Edit", true);
 
 
-        sb.append(HtmlUtils.h3("Spatial and Temporal Metadata"));
+        sb.append(formHeader("Spatial and Temporal Metadata"));
+        sb.append(HtmlUtils.openInset(5, 30, 20, 0));
 
         sb.append(HtmlUtils.labeledCheckbox(ARG_EXTEDIT_SPATIAL, "true",
                                             false, "Set spatial metadata"));
@@ -1426,8 +1427,10 @@ public class EntryManager extends RepositoryManager {
 
 
 
+        sb.append(HtmlUtils.closeInset());
 
-        sb.append(HtmlUtils.h3("File Listing"));
+        sb.append(formHeader("File Listing"));
+        sb.append(HtmlUtils.openInset(5, 30, 20, 0));
         sb.append(HtmlUtils.checkbox(ARG_EXTEDIT_REPORT_MISSING, "true",
                                      true) + " " + msg("Show missing files")
                                            + "<p>");
@@ -1441,7 +1444,9 @@ public class EntryManager extends RepositoryManager {
         List<HtmlUtils.Selector> tfos = getTypeHandlerSelectors(request,
                                             true, true, entry);
 
-        sb.append(HtmlUtils.h3("Change Entry Type"));
+        sb.append(HtmlUtils.closeInset());
+        sb.append(formHeader("Change Entry Type"));
+        sb.append(HtmlUtils.openInset(5, 30, 20, 0));
         sb.append(msgLabel("New type"));
         sb.append(HtmlUtils.space(1));
 
@@ -1466,12 +1471,14 @@ public class EntryManager extends RepositoryManager {
         sb.append(HtmlUtils.submit(msg("Change type of this entry"),
                                    ARG_EXTEDIT_CHANGETYPE));
         sb.append(HtmlUtils.formClose());
+        sb.append(HtmlUtils.closeInset());
+
+        sb.append(formHeader("Change Descendents Entry Type"));
         sb.append(request.form(getRepository().URL_ENTRY_EXTEDIT,
                                HtmlUtils.attr("name", "entryform")));
         sb.append(HtmlUtils.hidden(ARG_ENTRYID, entry.getId()));
 
-
-        sb.append(HtmlUtils.h3("Change Descendents Entry Type"));
+        sb.append(HtmlUtils.openInset(5, 30, 20, 0));
         sb.append(HtmlUtils.formTable());
         sb.append(HtmlUtils.formEntry(msgLabel("Old type"),
                                       HtmlUtils.select(ARG_EXTEDIT_OLDTYPE,
@@ -1501,6 +1508,8 @@ public class EntryManager extends RepositoryManager {
                 ARG_EXTEDIT_CHANGETYPE_RECURSE));
 
         sb.append(HtmlUtils.formClose());
+        sb.append(HtmlUtils.closeInset());
+
 
         return makeEntryEditResult(request, entry, "Extended Edit", sb);
 
@@ -5131,7 +5140,8 @@ public class EntryManager extends RepositoryManager {
                     textFromUser = Utils.concatString("<wiki>", extraDesc,
                             textFromUser.substring("<wiki>".length()));
                 } else {
-                    textFromUser = Utils.concatString(extraDesc, textFromUser);
+                    textFromUser = Utils.concatString(extraDesc,
+                            textFromUser);
                 }
             }
         } else {
@@ -5783,8 +5793,8 @@ public class EntryManager extends RepositoryManager {
 
         boolean doAnonymousUpload = false;
 
-        String name = cleanupEntryName(Utils.getAttributeOrTag(node, ATTR_NAME,
-                                                               ""));
+        String name = cleanupEntryName(Utils.getAttributeOrTag(node,
+                          ATTR_NAME, ""));
 
         String originalId = XmlUtil.getAttribute(node, ATTR_ID,
                                 (String) null);
@@ -6220,9 +6230,9 @@ public class EntryManager extends RepositoryManager {
             String label = getEntryListName(request, entry);
             label = label.replace("'", "\\'");
             url = Utils.concatString("javascript:",
-                                   HtmlUtils.call("treeViewClick",
-                                       HtmlUtils.jsMakeArgs(true,
-                                           entry.getId(), url, label)));
+                                     HtmlUtils.call("treeViewClick",
+                                         HtmlUtils.jsMakeArgs(true,
+                                             entry.getId(), url, label)));
             forTreeNavigation = false;
         }
 
@@ -6260,12 +6270,13 @@ public class EntryManager extends RepositoryManager {
                                     HtmlUtils.squote(getDownArrowIcon()))));
 
 
-            prefix = Utils.concatString(HtmlUtils.open(HtmlUtils.TAG_SPAN,
-                    "class",
-                    "entry-arrow"), HtmlUtils.img(getRightArrowIcon(),
-                        msg(message),
-                                                  Utils.concatString(HtmlUtils.id("img_" + uid),
-                                         imgClick)), HtmlUtils.close("span"));
+            prefix = Utils.concatString(
+                HtmlUtils.open(HtmlUtils.TAG_SPAN, "class", "entry-arrow"),
+                HtmlUtils.img(
+                    getRightArrowIcon(), msg(message),
+                    Utils.concatString(
+                        HtmlUtils.id("img_" + uid),
+                        imgClick)), HtmlUtils.close("span"));
         }
 
         //        if(true)
@@ -6362,11 +6373,9 @@ public class EntryManager extends RepositoryManager {
             HtmlUtils.span(sb, getTooltipLink(request, entry, linkText, url),
                            HtmlUtils.cssClass("entry-link"));
         } else {
-            HtmlUtils.span(
-                sb, linkText,
-                Utils.concatString(
-                    targetEvent.toString(),
-                    HtmlUtils.cssClass("entry-link")));
+            HtmlUtils.span(sb, linkText,
+                           Utils.concatString(targetEvent.toString(),
+                               HtmlUtils.cssClass("entry-link")));
         }
 
         HtmlUtils.close(sb, HtmlUtils.TAG_SPAN);

@@ -580,6 +580,7 @@ public class HtmlUtils {
      * _more_
      *
      * @param sb _more_
+     * @param tag _more_
      * @param attrs _more_
      *
      * @return _more_
@@ -637,14 +638,17 @@ public class HtmlUtils {
     /**
      * _more_
      *
-     * @param comp _more_
+     *
+     * @param args _more_
      *
      * @return _more_
      */
     public static String close(String... args) {
         StringBuilder sb = new StringBuilder();
-        for(String comp:args) 
+        for (String comp : args) {
             close(sb, comp);
+        }
+
         return sb.toString();
     }
 
@@ -652,13 +656,13 @@ public class HtmlUtils {
      * _more_
      *
      * @param sb _more_
-     * @param comp _more_
+     * @param args _more_
      *
      * @return _more_
      */
-    public static Appendable close(Appendable sb, String ...args) {
+    public static Appendable close(Appendable sb, String... args) {
         try {
-            for(String comp:args) {
+            for (String comp : args) {
                 sb.append("</");
                 sb.append(comp);
                 sb.append(">");
@@ -690,7 +694,7 @@ public class HtmlUtils {
      * _more_
      *
      * @param sb _more_
-     * @param comp _more_
+     * @param tag _more_
      *
      * @return _more_
      */
@@ -1719,8 +1723,16 @@ public class HtmlUtils {
         return tag(TAG_TD, extra, content);
     }
 
+    /**
+     * _more_
+     *
+     * @param sb _more_
+     * @param content _more_
+     *
+     * @return _more_
+     */
     public static Appendable td(Appendable sb, String content) {
-        return td(sb, content,"");
+        return td(sb, content, "");
     }
 
     /**
@@ -1734,6 +1746,7 @@ public class HtmlUtils {
      */
     public static Appendable td(Appendable sb, String content, String extra) {
         tag(sb, TAG_TD, extra, content);
+
         return sb;
     }
 
@@ -2371,12 +2384,14 @@ public class HtmlUtils {
      */
     public static String labeledRadio(String name, String value,
                                       boolean checked, String label) {
-        return Utils.concatString(tag(TAG_INPUT,
-                          attrs( /*ATTR_CLASS, CLASS_RADIO,*/ATTR_TYPE,
-                              TYPE_RADIO, ATTR_NAME, name, ATTR_VALUE,
-                              value) + (checked
-                                        ? " checked "
-                                        : "")), "&nbsp;", label);
+        return Utils.concatString(
+            tag(
+            TAG_INPUT,
+            attrs( /*ATTR_CLASS, CLASS_RADIO,*/
+                ATTR_TYPE, TYPE_RADIO, ATTR_NAME, name, ATTR_VALUE,
+                value) + (checked
+                          ? " checked "
+                          : "")), "&nbsp;", label);
     }
 
 
@@ -2575,7 +2590,8 @@ public class HtmlUtils {
      * @return _more_
      */
     public static String href(String url, String label, String extra) {
-        return tag(TAG_A, Utils.concatString(attrs(ATTR_HREF, url), extra), label);
+        return tag(TAG_A, Utils.concatString(attrs(ATTR_HREF, url), extra),
+                   label);
     }
 
 
@@ -2589,7 +2605,8 @@ public class HtmlUtils {
      */
     public static void href(Appendable sb, String url, String label,
                             String extra) {
-        tag(sb, TAG_A, Utils.concatString(attrs(ATTR_HREF, url), extra), label);
+        tag(sb, TAG_A, Utils.concatString(attrs(ATTR_HREF, url), extra),
+            label);
     }
 
 
@@ -3279,6 +3296,20 @@ public class HtmlUtils {
     public static String insetDiv(String html, int top, int left, int bottom,
                                   int right) {
         return div(html, style(insetStyle(top, left, bottom, right)));
+    }
+
+    /**
+     * _more_
+     *
+     * @param top _more_
+     * @param left _more_
+     * @param bottom _more_
+     * @param right _more_
+     *
+     * @return _more_
+     */
+    public static String openInset(int top, int left, int bottom, int right) {
+        return open("div", style(insetStyle(top, left, bottom, right)));
     }
 
 
@@ -4539,8 +4570,9 @@ public class HtmlUtils {
         StringBuilder sb  = contentSB;
         String        img = "";
         String js = HtmlUtils.onMouseClick(call("toggleBlockVisibility",
-                                                Utils.concatString(squote(id), ",", squote(id + "img"), ",",
-                               squote(""), ",", squote(""))));
+                        Utils.concatString(squote(id), ",",
+                                           squote(id + "img"), ",",
+                                           squote(""), ",", squote(""))));
 
         open(sb, TAG_DIV, HtmlUtils.cssClass("hideshowblock"),
              HtmlUtils.id(id),
@@ -4608,11 +4640,12 @@ public class HtmlUtils {
             }
             String link = HtmlUtils.jsLink(
                               HtmlUtils.onMouseClick(
-                                                     Utils.concatString("toggleInlineVisibility('", id,
-                                         "','", id, "img','", hideImg, "','",
-                                         showImg, "')")), img + label,
-                                             HtmlUtils.cssClass(
-                                                 "toggleblocklabellink"));
+                                  Utils.concatString(
+                                      "toggleInlineVisibility('", id, "','",
+                                      id, "img','", hideImg, "','", showImg,
+                                      "')")), img + label,
+                                          HtmlUtils.cssClass(
+                                              "toggleblocklabellink"));
 
             //        sb.append(RepositoryManager.tableSubHeader(link));
             sb.append(link);
@@ -5027,14 +5060,21 @@ public class HtmlUtils {
     public static String comment(String s) {
         Appendable sb = Utils.makeAppendable();
         comment(sb, s);
+
         return sb.toString();
     }
 
+    /**
+     * _more_
+     *
+     * @param sb _more_
+     * @param s _more_
+     */
     public static void comment(Appendable sb, String s) {
         try {
             s = s.replaceAll("\n", " ");
-            Utils.concatBuff(sb, "\n<!-- ", s ," -->\n");
-        } catch(Exception exc) {
+            Utils.concatBuff(sb, "\n<!-- ", s, " -->\n");
+        } catch (Exception exc) {
             throw new IllegalArgumentException(exc);
         }
     }
