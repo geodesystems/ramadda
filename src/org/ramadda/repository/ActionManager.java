@@ -114,8 +114,13 @@ public class ActionManager extends RepositoryManager {
         }
 
 
-        sb.append(HtmlUtils.sectionOpen("Action: " + action.getName(),
-                                        false));
+        if (action.getEntry() != null) {
+            getPageHandler().entrySectionOpen(request, action.getEntry(), sb,
+                    "Action: " + action.getName());
+        } else {
+            sb.append(HtmlUtils.sectionOpen("Action: " + action.getName(),
+                                            false));
+        }
         if (request.exists(ARG_CANCEL)) {
             action.setRunning(false);
             actions.remove(id);
@@ -156,7 +161,12 @@ public class ActionManager extends RepositoryManager {
                 sb.append(HtmlUtils.formClose());
             }
         }
-        sb.append(HtmlUtils.sectionClose());
+        if (action.getEntry() != null) {
+            getPageHandler().entrySectionClose(request, action.getEntry(),
+                    sb);
+        } else {
+            sb.append(HtmlUtils.sectionClose());
+        }
         Result result = new Result(msg("Status"), sb);
         if (action.entry != null) {
             return getEntryManager().addEntryHeader(request, action.entry,
@@ -529,6 +539,15 @@ public class ActionManager extends RepositoryManager {
          */
         public String getContinueHtml() {
             return continueHtml;
+        }
+
+        /**
+         * _more_
+         *
+         * @return _more_
+         */
+        public Entry getEntry() {
+            return entry;
         }
 
         /**
