@@ -1,3 +1,0 @@
-<outputhandlers>
-  <outputhandler class="org.ramadda.geodata.echo.EchoOutputHandler" name="ECHO XML"/>
-</outputhandlers>
