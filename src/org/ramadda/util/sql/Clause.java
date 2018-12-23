@@ -14,7 +14,7 @@
 * limitations under the License.
 */
 
-package org.ramadda.sql;
+package org.ramadda.util.sql;
 
 
 import ucar.unidata.util.DateUtil;
