@@ -29,8 +29,8 @@ import org.ramadda.repository.type.*;
 import org.ramadda.repository.util.*;
 import org.ramadda.repository.util.ServerInfo;
 
-import org.ramadda.sql.Clause;
-import org.ramadda.sql.SqlUtil;
+import org.ramadda.util.sql.Clause;
+import org.ramadda.util.sql.SqlUtil;
 
 import org.ramadda.util.HtmlTemplate;
 import org.ramadda.util.HtmlUtils;

@@ -20,7 +20,7 @@ package org.ramadda.repository.harvester;
 import org.ramadda.repository.*;
 import org.ramadda.repository.type.*;
 
-import org.ramadda.sql.SqlUtil;
+import org.ramadda.util.sql.SqlUtil;
 import org.ramadda.util.HtmlUtils;
 
 

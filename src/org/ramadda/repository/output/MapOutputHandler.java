@@ -26,7 +26,7 @@ import org.ramadda.repository.metadata.MetadataHandler;
 import org.ramadda.repository.type.*;
 
 
-import org.ramadda.sql.SqlUtil;
+import org.ramadda.util.sql.SqlUtil;
 import org.ramadda.util.HtmlUtils;
 
 

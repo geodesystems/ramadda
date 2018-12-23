@@ -17,7 +17,7 @@
 package org.ramadda.plugins.wiki;
 
 
-import org.ramadda.sql.SqlUtil;
+import org.ramadda.util.sql.SqlUtil;
 
 
 /**

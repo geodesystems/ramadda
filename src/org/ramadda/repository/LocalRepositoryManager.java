@@ -23,8 +23,8 @@ import org.ramadda.repository.auth.User;
 import org.ramadda.repository.auth.UserManager;
 import org.ramadda.repository.database.DatabaseManager;
 import org.ramadda.repository.database.Tables;
-import org.ramadda.sql.Clause;
-import org.ramadda.sql.SqlUtil;
+import org.ramadda.util.sql.Clause;
+import org.ramadda.util.sql.SqlUtil;
 import org.ramadda.util.HtmlUtils;
 
 

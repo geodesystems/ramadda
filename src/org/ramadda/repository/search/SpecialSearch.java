@@ -28,7 +28,7 @@ import org.ramadda.repository.output.*;
 import org.ramadda.repository.type.*;
 
 import org.ramadda.repository.util.DateArgument;
-import org.ramadda.sql.Clause;
+import org.ramadda.util.sql.Clause;
 
 
 import org.ramadda.util.HtmlUtils;

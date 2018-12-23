@@ -29,7 +29,7 @@ import org.ramadda.repository.output.WikiManager;
 import org.ramadda.repository.search.*;
 
 
-import org.ramadda.sql.SqlUtil;
+import org.ramadda.util.sql.SqlUtil;
 import org.ramadda.util.HtmlUtils;
 import org.ramadda.util.Utils;
 

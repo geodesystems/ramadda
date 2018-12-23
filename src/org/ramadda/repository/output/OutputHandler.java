@@ -25,7 +25,7 @@ import org.ramadda.repository.metadata.*;
 import org.ramadda.repository.type.*;
 
 
-import org.ramadda.sql.SqlUtil;
+import org.ramadda.util.sql.SqlUtil;
 import org.ramadda.util.BufferMapList;
 import org.ramadda.util.CategoryBuffer;
 import org.ramadda.util.HtmlUtils;

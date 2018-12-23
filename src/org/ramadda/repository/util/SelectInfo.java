@@ -17,8 +17,8 @@
 package org.ramadda.repository.util;
 
 
-import org.ramadda.sql.Clause;
-import org.ramadda.sql.SqlUtil;
+import org.ramadda.util.sql.Clause;
+import org.ramadda.util.sql.SqlUtil;
 
 
 

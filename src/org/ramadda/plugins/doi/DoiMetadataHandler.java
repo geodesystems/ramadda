@@ -28,7 +28,7 @@ import org.ramadda.repository.metadata.*;
 
 
 
-import org.ramadda.sql.SqlUtil;
+import org.ramadda.util.sql.SqlUtil;
 import org.ramadda.util.HtmlUtils;
 
 

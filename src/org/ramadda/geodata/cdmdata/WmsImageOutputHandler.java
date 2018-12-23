@@ -21,7 +21,7 @@ import org.ramadda.repository.*;
 import org.ramadda.repository.auth.*;
 import org.ramadda.repository.output.*;
 
-import org.ramadda.sql.SqlUtil;
+import org.ramadda.util.sql.SqlUtil;
 import org.ramadda.util.HtmlUtils;
 
 import org.w3c.dom.*;

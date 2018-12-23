@@ -38,8 +38,8 @@ import org.ramadda.service.Service;
 import org.ramadda.service.ServiceInput;
 import org.ramadda.service.ServiceOutput;
 
-import org.ramadda.sql.Clause;
-import org.ramadda.sql.SqlUtil;
+import org.ramadda.util.sql.Clause;
+import org.ramadda.util.sql.SqlUtil;
 import org.ramadda.util.FileInfo;
 import org.ramadda.util.FormInfo;
 import org.ramadda.util.HtmlUtils;

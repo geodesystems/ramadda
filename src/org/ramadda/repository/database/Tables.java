@@ -19,7 +19,7 @@
 package org.ramadda.repository.database;
 
 
-import org.ramadda.sql.SqlUtil;
+import org.ramadda.util.sql.SqlUtil;
 
 
 //J-

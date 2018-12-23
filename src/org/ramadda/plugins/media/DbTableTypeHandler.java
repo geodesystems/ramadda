@@ -22,7 +22,7 @@ import org.ramadda.repository.*;
 import org.ramadda.repository.database.*;
 import org.ramadda.repository.type.*;
 
-import org.ramadda.sql.*;
+import org.ramadda.util.sql.*;
 import org.ramadda.util.FormInfo;
 import org.ramadda.util.HtmlUtils;
 import org.ramadda.util.Json;

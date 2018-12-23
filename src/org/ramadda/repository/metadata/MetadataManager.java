@@ -25,9 +25,9 @@ import org.ramadda.repository.util.FileWriter;
 
 
 
-import org.ramadda.sql.Clause;
+import org.ramadda.util.sql.Clause;
 
-import org.ramadda.sql.SqlUtil;
+import org.ramadda.util.sql.SqlUtil;
 import org.ramadda.util.HtmlUtils;
 import org.ramadda.util.JQuery;
 import org.ramadda.util.Json;

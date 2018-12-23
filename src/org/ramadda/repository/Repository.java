@@ -70,8 +70,8 @@ import org.ramadda.repository.util.ServerInfo;
 
 
 import org.ramadda.service.Service;
-import org.ramadda.sql.Clause;
-import org.ramadda.sql.SqlUtil;
+import org.ramadda.util.sql.Clause;
+import org.ramadda.util.sql.SqlUtil;
 import org.ramadda.util.CategoryBuffer;
 import org.ramadda.util.GeoUtils;
 import org.ramadda.util.HtmlUtils;

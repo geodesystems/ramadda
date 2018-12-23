@@ -25,11 +25,11 @@ import org.ramadda.repository.output.OutputType;
 import org.ramadda.repository.type.*;
 
 
-import org.ramadda.sql.Clause;
+import org.ramadda.util.sql.Clause;
 
 
-import org.ramadda.sql.SqlUtil;
-import org.ramadda.sql.SqlUtil;
+import org.ramadda.util.sql.SqlUtil;
+import org.ramadda.util.sql.SqlUtil;
 import org.ramadda.util.FormInfo;
 import org.ramadda.util.HtmlUtils;
 

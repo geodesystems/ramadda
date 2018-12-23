@@ -25,9 +25,9 @@ import org.ramadda.repository.metadata.*;
 import org.ramadda.repository.output.*;
 import org.ramadda.repository.type.*;
 
-import org.ramadda.sql.Clause;
+import org.ramadda.util.sql.Clause;
 
-import org.ramadda.sql.SqlUtil;
+import org.ramadda.util.sql.SqlUtil;
 
 import org.ramadda.util.HtmlUtils;
 

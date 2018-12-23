@@ -35,7 +35,7 @@ import org.ramadda.repository.util.RequestArgument;
 import org.ramadda.service.Service;
 import org.ramadda.service.ServiceInput;
 import org.ramadda.service.ServiceOperand;
-import org.ramadda.sql.Clause;
+import org.ramadda.util.sql.Clause;
 import org.ramadda.util.HtmlUtils;
 
 import ucar.nc2.dt.grid.GridDataset;
