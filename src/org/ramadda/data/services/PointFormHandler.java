@@ -588,6 +588,24 @@ public class PointFormHandler extends RecordFormHandler {
 
         extra.append(
             HtmlUtils.formEntry(
+                msgLabel("Power"),
+                HtmlUtils.input(
+                    RecordConstants.ARG_GRID_POWER,
+                    request.getString(
+                        RecordConstants.ARG_GRID_POWER, "1.0")) + " "
+                            + HtmlUtils.href(
+                                "https://gisgeography.com/inverse-distance-weighting-idw-interpolation/",
+                                "More Information")));
+        extra.append(
+            HtmlUtils.formEntry(
+                msgLabel("Minimum # of Points"),
+                HtmlUtils.input(
+                    RecordConstants.ARG_GRID_MINPOINTS,
+                    request.getString(
+                        RecordConstants.ARG_GRID_MINPOINTS, "1"))));
+
+        extra.append(
+            HtmlUtils.formEntry(
                 msgLabel("Fill missing"),
                 HtmlUtils.checkbox(
                     PointOutputHandler.ARG_FILLMISSING, "true",

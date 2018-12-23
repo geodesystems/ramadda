@@ -49,6 +49,9 @@ import java.awt.*;
 
 import java.io.*;
 
+import java.util.ArrayList;
+import java.util.List;
+
 
 
 
@@ -73,6 +76,9 @@ public class GridVisitor extends BridgeRecordVisitor {
 
     /** are we gridding another attribute instead of altitude */
     int valueAttr = -1;
+
+    /** _more_ */
+    private List<Integer> divisors;
 
     /** are we using altitude as the gridded value */
     boolean usingAltitude;
@@ -104,6 +110,13 @@ public class GridVisitor extends BridgeRecordVisitor {
             valueAttr = request.get(RecordOutputHandler.ARG_PARAMETER, -1);
         }
         usingAltitude = valueAttr == -1;
+        divisors      = new ArrayList<Integer>();
+        for (String tok :
+                (List<String>) request.get(RecordOutputHandler.ARG_DIVISOR,
+                                           new ArrayList<String>())) {
+            divisors.add(new Integer(tok));
+        }
+
     }
 
     /**
@@ -145,6 +158,20 @@ public class GridVisitor extends BridgeRecordVisitor {
         } else {
             value = (double) pointRecord.getAltitude();
         }
+        if (divisors.size() > 0) {
+            double values = 0;
+            for (int i : divisors) {
+                values += (double) pointRecord.getValue(i);
+            }
+            double o = value;
+            if (values == 0) {
+                value = Double.NaN;
+            } else {
+                value = value / values;
+            }
+        }
+
+
         double lat = pointRecord.getLatitude();
         double lon = pointRecord.getLongitude();
         synchronized (MUTEX) {

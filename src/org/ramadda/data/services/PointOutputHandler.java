@@ -1332,6 +1332,13 @@ public class PointOutputHandler extends RecordOutputHandler {
                                   bounds.x, bounds.y + bounds.height,
                                   bounds.x + bounds.width);
 
+        if (request.defined(RecordConstants.ARG_GRID_POWER)) {
+            llg.setPower(request.get(RecordConstants.ARG_GRID_POWER, 1.0));
+        }
+        if (request.defined(RecordConstants.ARG_GRID_MINPOINTS)) {
+            llg.setMinPoints(request.get(RecordConstants.ARG_GRID_MINPOINTS,
+                                         1));
+        }
         //llg.fillValue(Double.NaN);
         //If nothing specified then default to 2 grid cells radius
         if ( !request.defined(ARG_GRID_RADIUS_DEGREES)
@@ -1339,20 +1346,22 @@ public class PointOutputHandler extends RecordOutputHandler {
             llg.setRadius(0.0);
             llg.setNumCells(2);
         } else {
-            //If the user did not change the degrees radius then get the default radius from the bounds
-            if (request.getString(ARG_GRID_RADIUS_DEGREES, "").equals(
-                    request.getString(ARG_GRID_RADIUS_DEGREES_ORIG, ""))) {
-                //                System.err.println("getting default:" +
-                //                                   getFormHandler().getDefaultRadiusDegrees(request, bounds));
-                llg.setRadius(
-                    getFormHandler().getDefaultRadiusDegrees(
-                        request, bounds));
+            if (request.defined(ARG_GRID_RADIUS_CELLS)) {
+                llg.setNumCells(request.get(ARG_GRID_RADIUS_CELLS, 0));
             } else {
-                //                System.err.println("using arg:" +
-                //                                   request.get(ARG_GRID_RADIUS_DEGREES, 0.0));
-                llg.setRadius(request.get(ARG_GRID_RADIUS_DEGREES, 0.0));
+                //If the user did not change the degrees radius then get the default radius from the bounds
+                if (request.getString(ARG_GRID_RADIUS_DEGREES, "").equals(
+                        request.getString(
+                            ARG_GRID_RADIUS_DEGREES_ORIG, ""))) {
+                    llg.setRadius(
+                        getFormHandler().getDefaultRadiusDegrees(
+                            request, bounds));
+                } else {
+                    llg.setRadius(request.get(ARG_GRID_RADIUS_DEGREES, 0.0));
+                }
             }
-            llg.setNumCells(request.get(ARG_GRID_RADIUS_CELLS, 0));
+
+
         }
         if (llg.getCellIndexDelta() > 100) {
             System.err.println("POINT: bad grid neighborhood size: "

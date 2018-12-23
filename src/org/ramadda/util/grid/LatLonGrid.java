@@ -53,7 +53,7 @@ public class LatLonGrid extends Grid {
     /** The values */
     private double[][] valueGrid;
 
-    /** _more_          */
+    /** _more_ */
     private double[][] averageGrid;
 
     /** _more_ */
@@ -246,8 +246,20 @@ public class LatLonGrid extends Grid {
      * @return _more_
      */
     public double[][] getAverageGrid() {
+        return getAverageGrid(Double.NaN);
+    }
+
+    /**
+     * _more_
+     *
+     * @param fill _more_
+     *
+     * @return _more_
+     */
+    public double[][] getAverageGrid(double fill) {
         if (averageGrid == null) {
             averageGrid = new double[getHeight()][getWidth()];
+            GridUtils.fill(averageGrid, fill);
         }
 
         return averageGrid;

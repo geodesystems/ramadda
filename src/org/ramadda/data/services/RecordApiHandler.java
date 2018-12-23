@@ -36,11 +36,11 @@ import org.ramadda.repository.map.*;
 import org.ramadda.repository.output.*;
 import org.ramadda.repository.search.*;
 import org.ramadda.repository.type.TypeHandler;
+import org.ramadda.util.HtmlUtils;
 import org.ramadda.util.sql.Clause;
 
 
 import org.ramadda.util.sql.SqlUtil;
-import org.ramadda.util.HtmlUtils;
 
 
 import org.w3c.dom.*;

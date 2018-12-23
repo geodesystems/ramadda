@@ -74,11 +74,19 @@ public interface RecordConstants extends Constants {
     /** url argument */
     public static final String ARG_GRID_PREFIX = "grid.";
 
+
     /** _more_ */
     public static final String ARG_FILLMISSING = "fillmissing";
 
     /** _more_ */
     public static final String ARG_THRESHOLD = "threshold";
+
+    /** _more_          */
+    public static final String ARG_GRID_POWER = ARG_GRID_PREFIX + "power";
+
+    /** _more_          */
+    public static final String ARG_GRID_MINPOINTS = ARG_GRID_PREFIX
+                                                    + "minpoints";
 
     /** _more_ */
     public static final String ARG_GRID_SUM = ARG_GRID_PREFIX + "sum";
@@ -257,10 +265,10 @@ public interface RecordConstants extends Constants {
 
 
     /** _more_ */
-    public static final int DFLT_WIDTH = 1000;
+    public static final int DFLT_WIDTH = 500;
 
     /** _more_ */
-    public static final int DFLT_HEIGHT = 1000;
+    public static final int DFLT_HEIGHT = 500;
 
     /** constants */
     public static final int TIMESERIES_POINTS = 500;

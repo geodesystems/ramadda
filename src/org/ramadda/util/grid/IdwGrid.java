@@ -17,6 +17,9 @@
 package org.ramadda.util.grid;
 
 
+import org.ramadda.util.Utils;
+
+
 
 import java.util.ArrayList;
 import java.util.List;
@@ -43,22 +46,11 @@ public class IdwGrid extends LatLonGrid {
     /** _more_ */
     private int numCells = 0;
 
-    /*
--------------------------------------
-|        |        |        |        |
--------------------------------------
-|        |        |        |        |
--------------------------------------
-|        |        |        |        |
--------------------------------------
-|        |        |        |        |
--------------------------------------
-|        |        |        |        |
--------------------------------------
-|        |        |        |        |
--------------------------------------
-*/
+    /** _more_          */
+    private double power = 1.0;
 
+    /** _more_          */
+    private int minPoints = 1;
 
     /**
      * ctor
@@ -245,40 +237,45 @@ public class IdwGrid extends LatLonGrid {
      * @param lon _more_
      * @param lat _more_
      * @param indices _more_
+     * @param values _more_
      */
-    private void findIndices(double lon, double lat, List<Index> indices) {
+    private void findIndices(double lon, double lat, List<Index> indices,
+                             double[][] values) {
         for (Index i : indices) {
             i.valid = false;
         }
-        int yIndex   = getLatitudeIndex(lat);
-        int xIndex   = getLongitudeIndex(lon);
-        int indexCnt = 0;
-        int width    = getWidth();
-        int height   = getHeight();
-
-        int delta    = getCellIndexDelta();
+        int    xIndex   = getLongitudeIndex(lon);
+        int    yIndex   = getLatitudeIndex(lat);
+        int    indexCnt = 0;
+        int    width    = getWidth();
+        int    height   = getHeight();
+        int    delta    = getCellIndexDelta();
+        double rdy      = lat - getLatitude(yIndex + delta);
+        double radius   = Math.sqrt(rdy * rdy);
         for (int dx = -delta; dx <= delta; dx++) {
+            int nx = xIndex + dx;
             for (int dy = -delta; dy <= delta; dy++) {
-                int nx = xIndex + dx;
                 int ny = yIndex + dy;
-                if ((nx >= 0) && (nx < width) && (ny >= 0) && (ny < height)) {
-                    if (indexCnt >= indices.size()) {
-                        indices.add(new Index(ny, nx, getLatitude(ny),
-                                getLongitude(nx)));
-                        if (indices.size() > 100) {
-                            System.err.println("NLAS: bad index size:"
-                                    + indices.size());
-                            System.err.println("NLAS: grid:" + this);
-
-                            throw new IllegalArgumentException(
-                                "NLAS: bad index size:" + indices.size());
-                        }
-                    } else {
-                        indices.get(indexCnt).init(ny, nx, getLatitude(ny),
-                                    getLongitude(nx));
-                    }
-                    indexCnt++;
+                if ( !((nx >= 0) && (nx < width) && (ny >= 0)
+                        && (ny < height))) {
+                    continue;
                 }
+                if ((values != null) && Double.isNaN(values[ny][nx])) {
+                    continue;
+                }
+                double nlat = getLatitude(ny);
+                double nlon = getLongitude(nx);
+                double distance = Math.sqrt((nlat - lat) * (nlat - lat)
+                                            + (nlon - lon) * (nlon - lon));
+                if (distance > radius) {
+                    continue;
+                }
+                if (indexCnt >= indices.size()) {
+                    indices.add(new Index(ny, nx, nlat, nlon));
+                } else {
+                    indices.get(indexCnt).init(ny, nx, nlat, nlon);
+                }
+                indexCnt++;
             }
         }
     }
@@ -293,10 +290,12 @@ public class IdwGrid extends LatLonGrid {
      */
     public void addValue(double lat, double lon, double value) {
         super.addValue(lat, lon, value);
-        double[][] weights   = getWeightsGrid();
-        double[][] values    = getWeightedValueGrid();
-        int[][]    countGrid = getCountGrid();
-        findIndices(lon, lat, regionIndices);
+        if (true) {
+            return;
+        }
+        double[][] weights = getWeightsGrid();
+        double[][] values  = getWeightedValueGrid();
+        findIndices(lon, lat, regionIndices, null);
         if (cnt < 5) {
             int yIndex = getLatitudeIndex(lat);
             int xIndex = getLongitudeIndex(lon);
@@ -329,25 +328,94 @@ public class IdwGrid extends LatLonGrid {
     @Override
     public void doAverageValues() {
         super.doAverageValues();
-        double[][] weights        = getWeightsGrid();
+        double[][] values         = getAverageGrid(Double.NaN);
         double[][] weightedValues = getWeightedValueGrid();
-        double[][] values         = getValueGrid();
-        int[][]    countGrid      = getCountGrid();
         int        height         = getHeight();
         int        width          = getWidth();
-        //10 20 40 => 70/6 =  11.5
-        //2 2 2  => 35
+        int        cnt            = 0;
         for (int y = 0; y < height; y++) {
+            double lat = getLatitude(y);
             for (int x = 0; x < width; x++) {
-                if (countGrid[y][x] > 0) {
-                    weightedValues[y][x] = values[y][x];
-                } else {
-                    if (weights[y][x] != 0) {
-                        weightedValues[y][x] /= weights[y][x];
-                    }
+                double value = values[y][x];
+                if ( !Double.isNaN(value)) {
+                    weightedValues[y][x] = value;
+
+                    continue;
                 }
+                double lon         = getLongitude(x);
+                double numerator   = 0;
+                double denominator = 0;
+                findIndices(lon, lat, regionIndices, values);
+                int pointCount = 0;
+                for (Index index : regionIndices) {
+                    if ( !index.valid) {
+                        break;
+                    }
+                    pointCount++;
+                }
+                if (pointCount < minPoints) {
+                    continue;
+                }
+                for (Index index : regionIndices) {
+                    if ( !index.valid) {
+                        break;
+                    }
+                    double z = values[index.y][index.x];
+                    if (Double.isNaN(z)) {
+                        continue;
+                    }
+                    double distance = index.distance(lon, lat);
+                    if (distance == 0) {
+                        continue;
+                    }
+                    double weight = Math.pow(distance, power);
+                    numerator   += z / weight;
+                    denominator += 1 / weight;
+                }
+                if (denominator == 0) {
+                    continue;
+                }
+                weightedValues[y][x] = numerator / denominator;
             }
         }
+    }
+
+
+    /**
+     *  Set the MinPoints property.
+     *
+     *  @param value The new value for MinPoints
+     */
+    public void setMinPoints(int value) {
+        minPoints = value;
+    }
+
+    /**
+     *  Get the MinPoints property.
+     *
+     *  @return The MinPoints
+     */
+    public int getMinPoints() {
+        return minPoints;
+    }
+
+
+    /**
+     *  Set the Power property.
+     *
+     *  @param value The new value for Power
+     */
+    public void setPower(double value) {
+        power = value;
+    }
+
+    /**
+     *  Get the Power property.
+     *
+     *  @return The Power
+     */
+    public double getPower() {
+        return power;
     }
 
 

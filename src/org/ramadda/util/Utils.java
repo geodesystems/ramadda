@@ -3306,6 +3306,11 @@ public class Utils {
         }
     }
 
+    public static boolean between(double v, double min, double max) {
+        return v>=min && v<=max;
+    }
+
+
     /** _more_ */
     public static final String MISSING = "missing";
 
