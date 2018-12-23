@@ -1,5 +1,5 @@
 /*
-* Copyright (c) 2008-2018 Geode Systems LLC
+* Copyright (c) 2008-2019 Geode Systems LLC
 *
 * Licensed under the Apache License, Version 2.0 (the "License");
 * you may not use this file except in compliance with the License.
@@ -165,8 +165,8 @@ public class CDOArealStatisticsService extends CDODataService {
                     group = request.getString(
                         ClimateModelApiHandler.ARG_EVENT_GROUP, null);
                     periods =
-                        ((ClimateModelApiHandler) handler).getNamedTimePeriods(
-                            group);
+                        ((ClimateModelApiHandler) handler)
+                            .getNamedTimePeriods(group);
                 }
             }
         }
@@ -185,9 +185,9 @@ public class CDOArealStatisticsService extends CDODataService {
         }
         GridDatatype grid  = dataset.getGrids().get(0);
         String       units = grid.getUnitsString();
-        boolean hasPrecipUnits = (SimpleUnit.isCompatible(units, "kg m-2 s-1")
-                                  || SimpleUnit.isCompatible(units,
-                                      "mm/day"));
+        boolean hasPrecipUnits =
+            (SimpleUnit.isCompatible(units, "kg m-2 s-1")
+             || SimpleUnit.isCompatible(units, "mm/day"));
 
         boolean     isAnom    = first.getValue(3).toString().equals("anom");
         List<Entry> climos    = findClimatology(request, first);
@@ -233,8 +233,8 @@ public class CDOArealStatisticsService extends CDODataService {
         if (dataset != null) {
             llr = dataset.getBoundingBox();
         } else {
-            llr = new LatLonRect(new LatLonPointImpl(90.0,
-                    -180.0), new LatLonPointImpl(-90.0, 180.0));
+            llr = new LatLonRect(new LatLonPointImpl(90.0, -180.0),
+                                 new LatLonPointImpl(-90.0, 180.0));
         }
         getOutputHandler().addMapWidget(request, sb, llr, false);
     }
@@ -336,10 +336,8 @@ public class CDOArealStatisticsService extends CDODataService {
         outputEntry.setValues(newValues);
         // Add in lineage and associations
         outputEntry.addAssociation(new Association(getRepository().getGUID(),
-                "generated product",
-                "product generated from",
-                oneOfThem.getId(),
-                outputEntry.getId()));
+                "generated product", "product generated from",
+                oneOfThem.getId(), outputEntry.getId()));
         getOutputHandler().getEntryManager().writeEntryXmlFile(request,
                 outputEntry);
         ServiceOperand newOp = new ServiceOperand(outputName.toString(),
@@ -451,8 +449,7 @@ public class CDOArealStatisticsService extends CDODataService {
             getOutputHandler().getDataOutputHandler();
         GridDataset dataset =
             dataOutputHandler.getCdmManager().getGridDataset(sample,
-                getPath(request,
-                        sample));
+                getPath(request, sample));
         if ((dataset == null) || dataset.getGrids().isEmpty()) {
             throw new Exception("No grids found");
         }
@@ -518,7 +515,7 @@ public class CDOArealStatisticsService extends CDODataService {
                            + "_clim.nc";
             }
             File climFile = new File(IOUtil.joinDir(dpi.getProcessDir(),
-                                                    climName));
+                                climName));
             if ( !climFile.exists()) {
                 commands = initCDOService();
 
@@ -553,7 +550,7 @@ public class CDOArealStatisticsService extends CDODataService {
             String anomName = IOUtil.stripExtension(tail) + "_" + id + "_"
                               + anomSuffix + ".nc";
             File anomFile = new File(IOUtil.joinDir(dpi.getProcessDir(),
-                                                    anomName));
+                                anomName));
             commands = initCDOService();
             // We use sub instead of ymonsub because there is only one value in each file and
             // CDO sets the time of the merged files to be the last time. 
@@ -581,7 +578,7 @@ public class CDOArealStatisticsService extends CDODataService {
                 String sprdName = IOUtil.stripExtension(tail) + "_" + id
                                   + "_stdanom.nc";
                 File sprdFile = new File(IOUtil.joinDir(dpi.getProcessDir(),
-                                                        sprdName));
+                                    sprdName));
                 commands = initCDOService();
                 commands.add("-setunit, ");
                 commands.add("-div");
@@ -713,17 +710,14 @@ public class CDOArealStatisticsService extends CDODataService {
         outputEntry.setValues(avalues);
         // Add in lineage and associations
         outputEntry.addAssociation(new Association(getRepository().getGUID(),
-                "generated product",
-                "product generated from",
-                sample.getId(),
-                outputEntry.getId()));
+                "generated product", "product generated from",
+                sample.getId(), outputEntry.getId()));
         if (climEntry != null) {
             outputEntry.addAssociation(
-                new Association(getRepository().getGUID(),
-                                "generated product",
-                                "product generated from",
-                                climEntry.getId(),
-                                outputEntry.getId()));
+                new Association(
+                    getRepository().getGUID(), "generated product",
+                    "product generated from", climEntry.getId(),
+                    outputEntry.getId()));
         }
         getOutputHandler().getEntryManager().writeEntryXmlFile(timeRequest,
                 outputEntry);
@@ -827,8 +821,7 @@ public class CDOArealStatisticsService extends CDODataService {
                                             true, true);
                 for (String year : yearList) {
                     int iyear = Integer.parseInt(year);
-                    if ((iyear <= firstDataYear)
-                            || (iyear > lastDataYear)
+                    if ((iyear <= firstDataYear) || (iyear > lastDataYear)
                             || ((iyear == lastDataYear)
                                 && (requestEndMonth > lastDataMonth))) {
                         continue;
@@ -938,8 +931,9 @@ public class CDOArealStatisticsService extends CDODataService {
                 endyearString.append("-");
                 endyearString.append(StringUtil.padZero(requestEndMonth, 2));  // endmonth
                 endyearString.append("-");
-                endyearString.append("" + CDOOutputHandler
-                    .DAYS_PER_MONTH[requestEndMonth - 1]);  // endday
+                endyearString
+                    .append("" + CDOOutputHandler
+                        .DAYS_PER_MONTH[requestEndMonth - 1]);  // endday
                 endyearString.append("T23:59:59");  // endtime
 
                 // update the request to use the date
@@ -1077,13 +1071,15 @@ public class CDOArealStatisticsService extends CDODataService {
                                boolean isAnom, boolean haveClimo, String type)
             throws Exception {
 
-        if ( !(type.equals(ClimateModelApiHandler.ARG_ACTION_MULTI_TIMESERIES)
-                || type.equals(
-                    ClimateModelApiHandler.ARG_ACTION_TIMESERIES))) {
-            sb.append(HtmlUtils.hidden(CDOOutputHandler.ARG_CDO_PERIOD,
-                                       request.getString(
-                                           CDOOutputHandler.ARG_CDO_PERIOD,
-                                           CDOOutputHandler.PERIOD_TIM)));
+        if ( !(type.equals(ClimateModelApiHandler
+                .ARG_ACTION_MULTI_TIMESERIES) || type
+                    .equals(ClimateModelApiHandler.ARG_ACTION_TIMESERIES))) {
+            sb.append(
+                HtmlUtils.hidden(
+                    CDOOutputHandler.ARG_CDO_PERIOD,
+                    request.getString(
+                        CDOOutputHandler.ARG_CDO_PERIOD,
+                        CDOOutputHandler.PERIOD_TIM)));
         }
         super.addStatsWidget(request, sb, usePct, isAnom, haveClimo, si,
                              type);
@@ -1154,11 +1150,11 @@ public class CDOArealStatisticsService extends CDODataService {
         if ((group == null) || group.equals("all")) {
             group = "Events";
         }
-        sb.append(HtmlUtils.formEntry(Repository.msgLabel(group),
-                                      HtmlUtils.select(
-                                          ClimateModelApiHandler.ARG_EVENT,
-                                          values,
-                                          event)));
+        sb.append(
+            HtmlUtils.formEntry(
+                Repository.msgLabel(group),
+                HtmlUtils.select(
+                    ClimateModelApiHandler.ARG_EVENT, values, event)));
 
     }
 
@@ -1291,37 +1287,35 @@ public class CDOArealStatisticsService extends CDODataService {
             StringBuilder yearsWidget = new StringBuilder();
             yearsWidget.append(yrLabel);
             yearsWidget.append(
-                HtmlUtils.select(CDOOutputHandler.ARG_CDO_STARTYEAR + yearNum,
-                                 commonYears,
-                                 request.getString(
-                                     CDOOutputHandler.ARG_CDO_STARTYEAR
-                                     + yearNum,
-                                     request.getString(
-                                         CDOOutputHandler.ARG_CDO_STARTYEAR,
-                                         commonYears.get(0))),
-                                 HtmlUtils.title("Select the starting year")));
+                HtmlUtils.select(
+                    CDOOutputHandler.ARG_CDO_STARTYEAR + yearNum,
+                    commonYears,
+                    request.getString(
+                        CDOOutputHandler.ARG_CDO_STARTYEAR + yearNum,
+                        request.getString(
+                            CDOOutputHandler.ARG_CDO_STARTYEAR,
+                            commonYears.get(0))), HtmlUtils.title(
+                                "Select the starting year")));
             yearsWidget.append(HtmlUtils.space(3));
             yearsWidget.append(Repository.msgLabel("End"));
             yearsWidget.append(
-                HtmlUtils.select(CDOOutputHandler.ARG_CDO_ENDYEAR + yearNum,
-                                 commonYears,
-                                 request.getString(
-                                     CDOOutputHandler.ARG_CDO_ENDYEAR
-                                     + yearNum,
-                                     request.getString(
-                                         CDOOutputHandler.ARG_CDO_ENDYEAR,
-                                         commonYears.get(endIndex))),
-                                 HtmlUtils.title("Select the ending year")));
+                HtmlUtils.select(
+                    CDOOutputHandler.ARG_CDO_ENDYEAR + yearNum, commonYears,
+                    request.getString(
+                        CDOOutputHandler.ARG_CDO_ENDYEAR + yearNum,
+                        request.getString(
+                            CDOOutputHandler.ARG_CDO_ENDYEAR,
+                            commonYears.get(endIndex))), HtmlUtils.title(
+                                "Select the ending year")));
             yearsWidget.append(HtmlUtils.p());
             yearsWidget.append(Repository.msgLabel("or List"));
-            yearsWidget.append(HtmlUtils.input(CDOOutputHandler.ARG_CDO_YEARS
-                    + yearNum,
-                    request.getString(CDOOutputHandler.ARG_CDO_YEARS
-                                      + yearNum,
-                                      ""),
-                    20,
-                    HtmlUtils.title(
-                    "Input a set of years separated by commas (e.g. 1980,1983,2012)")));
+            yearsWidget.append(
+                HtmlUtils.input(
+                    CDOOutputHandler.ARG_CDO_YEARS
+                    + yearNum, request.getString(
+                        CDOOutputHandler.ARG_CDO_YEARS
+                        + yearNum, ""), 20, HtmlUtils.title(
+                            "Input a set of years separated by commas (e.g. 1980,1983,2012)")));
             yearsWidget.append(HtmlUtils.space(2));
             yearsWidget.append(Repository.msg("(comma separated)"));
 

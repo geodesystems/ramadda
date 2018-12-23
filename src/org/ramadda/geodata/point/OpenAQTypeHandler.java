@@ -1,5 +1,5 @@
 /*
-* Copyright (c) 2008-2018 Geode Systems LLC
+* Copyright (c) 2008-2019 Geode Systems LLC
 *
 * Licensed under the Apache License, Version 2.0 (the "License");
 * you may not use this file except in compliance with the License.
@@ -53,11 +53,12 @@ import ucar.unidata.xml.XmlUtil;
 
 import java.io.*;
 
-import java.util.GregorianCalendar;
 import java.text.SimpleDateFormat;
 
 import java.util.ArrayList;
 import java.util.Date;
+
+import java.util.GregorianCalendar;
 import java.util.Hashtable;
 import java.util.List;
 
@@ -75,8 +76,14 @@ public class OpenAQTypeHandler extends PointTypeHandler {
 
     /** _more_ */
     private static int IDX_LOCATION = IDX++;
+
+    /** _more_          */
     private static int IDX_COUNTRY = IDX++;
+
+    /** _more_          */
     private static int IDX_CITY = IDX++;
+
+    /** _more_          */
     private static int IDX_HOURS_OFFSET = IDX++;
 
 
@@ -95,6 +102,16 @@ public class OpenAQTypeHandler extends PointTypeHandler {
     }
 
 
+    /**
+     * _more_
+     *
+     * @param request _more_
+     * @param entry _more_
+     *
+     * @return _more_
+     *
+     * @throws Exception _more_
+     */
     @Override
     public RecordFile doMakeRecordFile(Request request, Entry entry)
             throws Exception {
@@ -102,34 +119,56 @@ public class OpenAQTypeHandler extends PointTypeHandler {
     }
 
 
+    /**
+     * _more_
+     *
+     * @param request _more_
+     * @param entry _more_
+     *
+     * @return _more_
+     *
+     * @throws Exception _more_
+     */
     @Override
     public String getPathForEntry(Request request, Entry entry)
-        throws Exception {
+            throws Exception {
         String location = entry.getValue(IDX_LOCATION, (String) null);
-        if (!Utils.stringDefined(location)) {
+        if ( !Utils.stringDefined(location)) {
             System.err.println("no location");
+
             return null;
         }
         Date now = new Date();
-        Integer hoursOffset = (Integer) entry.getValue(IDX_HOURS_OFFSET,new Integer(24));
-        
+        Integer hoursOffset = (Integer) entry.getValue(IDX_HOURS_OFFSET,
+                                  new Integer(24));
+
         GregorianCalendar cal = new GregorianCalendar();
         cal.setTime(now);
-        if(dateSDF == null) {
-            dateSDF= RepositoryUtil.makeDateFormat("yyyy-MM-dd'T'HH:mm");
+        if (dateSDF == null) {
+            dateSDF = RepositoryUtil.makeDateFormat("yyyy-MM-dd'T'HH:mm");
         }
         cal.add(cal.HOUR_OF_DAY, -hoursOffset.intValue());
-        
+
         String startDate = dateSDF.format(cal.getTime());
-        String url = "https://api.openaq.org/v1/measurements?format=csv&" + HtmlUtils.arg("date_from",startDate)+"&" + HtmlUtils.arg("location",location);
+        String url = "https://api.openaq.org/v1/measurements?format=csv&"
+                     + HtmlUtils.arg("date_from", startDate) + "&"
+                     + HtmlUtils.arg("location", location);
         System.err.println(url);
+
         return url;
     }
 
+    /**
+     * _more_
+     *
+     * @param request _more_
+     * @param entry _more_
+     *
+     * @throws Exception _more_
+     */
     @Override
     public void initializeNewEntry(Request request, Entry entry)
-        throws Exception {
-    }
+            throws Exception {}
 
     /**
      * Class description
@@ -166,16 +205,23 @@ public class OpenAQTypeHandler extends PointTypeHandler {
         public InputStream doMakeInputStream(boolean buffered)
                 throws IOException {
             try {
-                PipedInputStream in = new PipedInputStream();
-                PipedOutputStream out = new PipedOutputStream(in);
-                ByteArrayOutputStream bos = new ByteArrayOutputStream();
-                String[]args = new String[]{"-columns", "3,5,6,7,8,9", "-combineinplace", "1,3", " ", "parameter", "-unfurl", "1", "2", "0", "3,4",
-                                            "-addheader",  "date.type date date.format yyyy-MM-dd'T'HH:mm:ss.SSS date.label \"Date\" utc.id date","-print"};
-                CsvUtil csvUtil = new CsvUtil(args,new BufferedOutputStream(bos),null);
+                PipedInputStream      in   = new PipedInputStream();
+                PipedOutputStream     out  = new PipedOutputStream(in);
+                ByteArrayOutputStream bos  = new ByteArrayOutputStream();
+                String[]              args = new String[] {
+                    "-columns", "3,5,6,7,8,9", "-combineinplace", "1,3", " ",
+                    "parameter", "-unfurl", "1", "2", "0", "3,4",
+                    "-addheader",
+                    "date.type date date.format yyyy-MM-dd'T'HH:mm:ss.SSS date.label \"Date\" utc.id date",
+                    "-print"
+                };
+                CsvUtil csvUtil = new CsvUtil(args,
+                                      new BufferedOutputStream(bos), null);
                 csvUtil.setInputStream(super.doMakeInputStream(buffered));
                 csvUtil.run(null);
-                
-                return new BufferedInputStream(new ByteArrayInputStream(bos.toByteArray()));
+
+                return new BufferedInputStream(
+                    new ByteArrayInputStream(bos.toByteArray()));
             } catch (Exception exc) {
                 throw new RuntimeException(exc);
             }
@@ -197,6 +243,7 @@ public class OpenAQTypeHandler extends PointTypeHandler {
             putProperty(PROP_HEADER_STANDARD, "true");
 
             super.prepareToVisit(visitInfo);
+
             //            utc,co ug/m^3,no2 ug/m^3,o3 ug/m^3,pm10 ug/m^3,so2 ug/m^3
             /*
 
@@ -232,10 +279,19 @@ public class OpenAQTypeHandler extends PointTypeHandler {
 
     }
 
+    /**
+     * _more_
+     *
+     * @param args _more_
+     *
+     * @throws Exception _more_
+     */
     public static void main(String[] args) throws Exception {
         //        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ");
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS");
-        SimpleDateFormat sdf2 = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ");
+        SimpleDateFormat sdf =
+            new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSS");
+        SimpleDateFormat sdf2 =
+            new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSZ");
         //        String value = "2018-11-01T04:45:00.000Z";
         String value = "2018-11-01T04:45:00.000Z";
         System.err.println("date:" + sdf2.format(sdf.parse(value)));

@@ -1,5 +1,5 @@
 /*
-* Copyright (c) 2008-2018 Geode Systems LLC
+* Copyright (c) 2008-2019 Geode Systems LLC
 *
 * Licensed under the Apache License, Version 2.0 (the "License");
 * you may not use this file except in compliance with the License.
@@ -134,9 +134,9 @@ public class CDOTimeSeriesService extends CDODataService {
         }
         GridDatatype grid  = dataset.getGrids().get(0);
         String       units = grid.getUnitsString();
-        boolean hasPrecipUnits = (SimpleUnit.isCompatible(units, "kg m-2 s-1")
-                                  || SimpleUnit.isCompatible(units,
-                                      "mm/day"));
+        boolean hasPrecipUnits =
+            (SimpleUnit.isCompatible(units, "kg m-2 s-1")
+             || SimpleUnit.isCompatible(units, "mm/day"));
 
         boolean     isAnom    = first.getValue(3).toString().equals("anom");
         List<Entry> climos    = findClimatology(request, first);
@@ -162,25 +162,22 @@ public class CDOTimeSeriesService extends CDODataService {
                                              null);
             String east = request.getString(CDOOutputHandler.ARG_AREA_EAST,
                                             null);
-            if ( !(north.isEmpty()
-                    || south.isEmpty()
-                    || west.isEmpty()
+            if ( !(north.isEmpty() || south.isEmpty() || west.isEmpty()
                     || east.isEmpty())) {
                 llr = new LatLonRect(
-                    new LatLonPointImpl(Misc.parseDouble(north),
-                                        Misc.parseDouble(
-                                            west)), new LatLonPointImpl(
-                                                Misc.parseDouble(south),
-                                                        Misc.parseDouble(
-                                                        east)));
+                    new LatLonPointImpl(
+                        Misc.parseDouble(north), Misc.parseDouble(
+                            west)), new LatLonPointImpl(
+                                Misc.parseDouble(south), Misc.parseDouble(
+                                    east)));
             }
         }
         if (llr == null) {
             if (dataset != null) {
                 llr = dataset.getBoundingBox();
             } else {
-                llr = new LatLonRect(new LatLonPointImpl(90.0,
-                        -180.0), new LatLonPointImpl(-90.0, 180.0));
+                llr = new LatLonRect(new LatLonPointImpl(90.0, -180.0),
+                                     new LatLonPointImpl(-90.0, 180.0));
             }
         }
         if (dataset != null) {
@@ -268,8 +265,7 @@ public class CDOTimeSeriesService extends CDODataService {
             getOutputHandler().getDataOutputHandler();
         GridDataset dataset =
             dataOutputHandler.getCdmManager().getGridDataset(sample,
-                getPath(request,
-                        sample));
+                getPath(request, sample));
         //oneOfThem.getResource().getPath());
         if ((dataset == null) || dataset.getGrids().isEmpty()) {
             throw new Exception("No grids found");
@@ -384,8 +380,7 @@ public class CDOTimeSeriesService extends CDODataService {
             int endYear = timeRequest.get(
                               CDOOutputHandler.ARG_CDO_ENDYEAR + opStr,
                               timeRequest.get(
-                                  CDOOutputHandler.ARG_CDO_ENDYEAR,
-                                  1979));
+                                  CDOOutputHandler.ARG_CDO_ENDYEAR, 1979));
             // can't go back before the beginning of data or past the last data
             if (startYear <= firstDataYear) {
                 startYear = firstDataYear + 1;
@@ -463,7 +458,7 @@ public class CDOTimeSeriesService extends CDODataService {
             //    climName = IOUtil.stripExtension(tail) + "_" + id + "_clim.nc";
             //}
             File climFile = new File(IOUtil.joinDir(dpi.getProcessDir(),
-                                                    climName));
+                                climName));
             if ( !climFile.exists()) {
                 commands = initCDOService();
 
@@ -498,7 +493,7 @@ public class CDOTimeSeriesService extends CDODataService {
             String anomName = IOUtil.stripExtension(tail) + "_" + id + "_"
                               + anomSuffix + ".nc";
             File anomFile = new File(IOUtil.joinDir(dpi.getProcessDir(),
-                                                    anomName));
+                                anomName));
             commands = initCDOService();
             //commands.add("-ymonsub");
             // We use sub instead of ymonsub because there is only one value in each file and
@@ -526,7 +521,7 @@ public class CDOTimeSeriesService extends CDODataService {
                 String sprdName = IOUtil.stripExtension(tail) + "_" + id
                                   + "_stdanom.nc";
                 File sprdFile = new File(IOUtil.joinDir(dpi.getProcessDir(),
-                                                        sprdName));
+                                    sprdName));
                 commands = initCDOService();
                 commands.add("-setunit, ");
                 commands.add("-div");

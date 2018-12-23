@@ -1,5 +1,5 @@
 /*
-* Copyright (c) 2008-2018 Geode Systems LLC
+* Copyright (c) 2008-2019 Geode Systems LLC
 *
 * Licensed under the Apache License, Version 2.0 (the "License");
 * you may not use this file except in compliance with the License.
@@ -59,10 +59,10 @@ public class BarnesVisitor extends BridgeRecordVisitor {
     /** are we gridding another attribute instead of altitude */
     private int valueAttr = -1;
 
-    /** _more_          */
+    /** _more_ */
     private List<Integer> divisors;
 
-    /** _more_          */
+    /** _more_ */
     private List<String> divisorToks = new ArrayList<String>();
 
     /** how big an image */
@@ -71,25 +71,25 @@ public class BarnesVisitor extends BridgeRecordVisitor {
     /** how big an image */
     private int imageWidth;
 
-    /** _more_          */
+    /** _more_ */
     private Rectangle2D.Double bounds;
 
-    /** _more_          */
+    /** _more_ */
     private float minLat;
 
-    /** _more_          */
+    /** _more_ */
     private float maxLat;
 
-    /** _more_          */
+    /** _more_ */
     private float minLon;
 
-    /** _more_          */
+    /** _more_ */
     private float maxLon;
 
-    /** _more_          */
+    /** _more_ */
     private List<float[]> points;
 
-    /** _more_          */
+    /** _more_ */
     private IdwGrid grid;
 
     /**

@@ -1,5 +1,5 @@
 /*
-* Copyright (c) 2008-2018 Geode Systems LLC
+* Copyright (c) 2008-2019 Geode Systems LLC
 *
 * Licensed under the Apache License, Version 2.0 (the "License");
 * you may not use this file except in compliance with the License.
@@ -2586,6 +2586,7 @@ public class PageHandler extends RepositoryManager {
      */
     public String showDialogError(String h) {
         h = getDialogString(h);
+
         return getMessage(h, Constants.ICON_ERROR, false);
     }
 
@@ -3678,7 +3679,7 @@ public class PageHandler extends RepositoryManager {
     /** _more_ */
     private String footer;
 
-    /** _more_          */
+    /** _more_ */
     private boolean cacheTemplates;
 
     /**

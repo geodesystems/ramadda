@@ -1,5 +1,5 @@
 /*
-* Copyright (c) 2008-2018 Geode Systems LLC
+* Copyright (c) 2008-2019 Geode Systems LLC
 *
 * Licensed under the Apache License, Version 2.0 (the "License");
 * you may not use this file except in compliance with the License.
@@ -2503,8 +2503,8 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
 
             Hashtable mapProps = new Hashtable();
             String[]  mapArgs  = {
-                "strokeColor", "fillColor", "fillOpacity", "scrollToZoom","fill",
-                "selectOnHover", "onSelect", "showDetailsLink",
+                "strokeColor", "fillColor", "fillOpacity", "scrollToZoom",
+                "fill", "selectOnHover", "onSelect", "showDetailsLink",
                 "zoom:initialZoom", "layer:defaultMapLayer", "kmlLayer",
                 "kmlLayerName"
             };

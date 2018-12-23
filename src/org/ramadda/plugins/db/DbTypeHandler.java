@@ -1,5 +1,5 @@
 /*
-* Copyright (c) 2008-2018 Geode Systems LLC
+* Copyright (c) 2008-2019 Geode Systems LLC
 *
 * Licensed under the Apache License, Version 2.0 (the "License");
 * you may not use this file except in compliance with the License.
@@ -184,10 +184,15 @@ public class DbTypeHandler extends PointTypeHandler /* BlobTypeHandler*/ {
     public static final String VIEW_RSS = "rss";
 
 
+    /** _more_ */
     public static final String CSS_DB_HEADER = "dbheader";
 
+    /** _more_ */
     public static final String CSS_DB_TABLEHEADER = "dbtableheader";
-    public static final String CSS_DB_TABLEHEADER_INNER = "dbtableheader_inner";
+
+    /** _more_ */
+    public static final String CSS_DB_TABLEHEADER_INNER =
+        "dbtableheader_inner";
 
     /** _more_ */
     public static final String ARG_DB_VIEW = "db.view";
@@ -225,12 +230,16 @@ public class DbTypeHandler extends PointTypeHandler /* BlobTypeHandler*/ {
     /** _more_ */
     public static final String ARG_DB_DO = "db.do";
 
+    /** _more_ */
     public static final String ARG_DB_SEARCHNAME = "searchname";
 
+    /** _more_ */
     public static final String ARG_DB_SEARCHID = "searchid";
 
+    /** _more_ */
     public static final String METADATA_SAVEDSEARCH = "db_saved_search";
 
+    /** _more_ */
     public static final String ARG_DB_DOSAVESEARCH = "dosavesearch";
 
 
@@ -1259,17 +1268,20 @@ public class DbTypeHandler extends PointTypeHandler /* BlobTypeHandler*/ {
                     headerToks), HtmlUtils.cssClass(CSS_DB_HEADER)));
         }
 
-        List<Metadata> savedSearchMetadata = getMetadataManager().getMetadata(entry,METADATA_SAVEDSEARCH);
+        List<Metadata> savedSearchMetadata =
+            getMetadataManager().getMetadata(entry, METADATA_SAVEDSEARCH);
         if (savedSearchMetadata.size() > 0) {
-            String searchId = request.getString(ARG_DB_SEARCHID,"");
+            String searchId = request.getString(ARG_DB_SEARCHID, "");
             headerToks = new ArrayList<String>();
             for (Metadata m : savedSearchMetadata) {
                 StringBuilder link = new StringBuilder();
-                if(m.getId().equals(searchId)) {
+                if (m.getId().equals(searchId)) {
                     request.remove(ARG_DB_SEARCHNAME);
                     headerToks.add(HtmlUtils.b(m.getAttr1()));
-                }  else {
-                    String url = baseUrl + "&" + HtmlUtils.args(ARG_DB_SEARCH,"true",ARG_DB_SEARCHID, m.getId());
+                } else {
+                    String url = baseUrl + "&"
+                                 + HtmlUtils.args(ARG_DB_SEARCH, "true",
+                                     ARG_DB_SEARCHID, m.getId());
                     headerToks.add(HtmlUtils.href(url, m.getAttr1()));
                 }
             }
@@ -1290,7 +1302,8 @@ public class DbTypeHandler extends PointTypeHandler /* BlobTypeHandler*/ {
         }
 
         if (request.defined(ARG_DB_SEARCHNAME)) {
-            HtmlUtils.sectionHeader(sb, request.getString(ARG_DB_SEARCHNAME, ""));
+            HtmlUtils.sectionHeader(sb,
+                                    request.getString(ARG_DB_SEARCHNAME, ""));
         }
 
         if (fromSearch) {
@@ -2139,14 +2152,18 @@ public class DbTypeHandler extends PointTypeHandler /* BlobTypeHandler*/ {
                     HtmlUtils.cssClass("search-select")) + HtmlUtils.space(2)
                         + count));
 
-        sb.append(formEntry(request, msgLabel("Search Name"),
-                            HtmlUtils.input(ARG_DB_SEARCHNAME,
-                                            request.getString(ARG_DB_SEARCHNAME,
-                                                ""), HtmlUtils.SIZE_50)));
+        sb.append(
+            formEntry(
+                request, msgLabel("Search Name"),
+                HtmlUtils.input(
+                    ARG_DB_SEARCHNAME,
+                    request.getString(ARG_DB_SEARCHNAME, ""),
+                    HtmlUtils.SIZE_50)));
 
         if (getAccessManager().canEditEntry(request, entry)) {
             sb.append(formEntry(request, "",
-                                HtmlUtils.checkbox(ARG_DB_DOSAVESEARCH, "true",
+                                HtmlUtils.checkbox(ARG_DB_DOSAVESEARCH,
+                                    "true",
                                     request.get(ARG_DB_DOSAVESEARCH,
                                         false)) + " Save Search"));
         }
@@ -2221,16 +2238,17 @@ public class DbTypeHandler extends PointTypeHandler /* BlobTypeHandler*/ {
             request.remove(ARG_DB_DOSAVESEARCH);
             String args = request.getUrlArgs(
                               (HashSet<String>) Utils.makeHashSet(
-                                                                 ARG_ENTRYID, ARG_DB_SEARCH,
-                                                                 ARG_DB_DOSAVESEARCH), null, null);
+                                  ARG_ENTRYID, ARG_DB_SEARCH,
+                                  ARG_DB_DOSAVESEARCH), null, null);
             String name = request.getString(ARG_DB_SEARCHNAME, null);
             if ( !Utils.stringDefined(name)) {
                 name = "Saved Search";
             }
-            Metadata metadata = new Metadata(
-                    getRepository().getGUID(), entry.getId(),
-                    METADATA_SAVEDSEARCH, false, name, args, null, null, null);
-            getMetadataManager().addMetadata(entry,metadata);
+            Metadata metadata = new Metadata(getRepository().getGUID(),
+                                             entry.getId(),
+                                             METADATA_SAVEDSEARCH, false,
+                                             name, args, null, null, null);
+            getMetadataManager().addMetadata(entry, metadata);
             request.put(ARG_DB_SEARCHID, metadata.getId());
             getEntryManager().updateEntry(request, entry);
         }
@@ -2246,7 +2264,7 @@ public class DbTypeHandler extends PointTypeHandler /* BlobTypeHandler*/ {
                     Request r = request.cloneMe();
                     r.clearUrlArgs();
                     r.put(ARG_ENTRYID, entry.getId());
-                    r.put(ARG_DB_SEARCHID,id);
+                    r.put(ARG_DB_SEARCHID, id);
                     String[] toks = m.getAttr2().split("&");
                     for (String tok : toks) {
                         List<String> pair  = StringUtil.splitUpTo(tok, "=",
@@ -2256,10 +2274,11 @@ public class DbTypeHandler extends PointTypeHandler /* BlobTypeHandler*/ {
                                 : "");
                         value = value.replaceAll("\\+", " ");
                         //false means not singular
-                        r.put(pair.get(0), value,false);
+                        r.put(pair.get(0), value, false);
                     }
                     r.remove(ARG_DB_SEARCHNAME);
                     request = r;
+
                     break;
                 }
             }
@@ -2501,11 +2520,13 @@ public class DbTypeHandler extends PointTypeHandler /* BlobTypeHandler*/ {
     public Result handleBulkUpload(final Request request, final Entry entry,
                                    InputStream source)
             throws Exception {
+
         final ArrayList<Object[]> valueList  = new ArrayList<Object[]>();
-        final int[]               cnt        = {0};
+        final int[]               cnt        = { 0 };
         TextReader                textReader = new TextReader();
         final int[]               scnt       = { 0 };
-        final Bounds bounds = new Bounds(Double.NaN,Double.NaN,Double.NaN,Double.NaN);
+        final Bounds bounds = new Bounds(Double.NaN, Double.NaN, Double.NaN,
+                                         Double.NaN);
 
         textReader.setInput(new BufferedInputStream(source));
         textReader.setSkip(1);
@@ -2538,15 +2559,25 @@ public class DbTypeHandler extends PointTypeHandler /* BlobTypeHandler*/ {
                         column.setValue(entry, values, value);
                     }
 
-                    if(hasLocation) {
-                        double[] ll = getLocation(values);
-                        double lat = ll[0];
-                        double lon = ll[1];
-                        if(!Double.isNaN(lat) && !Double.isNaN(lon)) {
-                            bounds.setNorth(Double.isNaN(bounds.getNorth())?lat:Math.max(lat,bounds.getNorth()));
-                            bounds.setSouth(Double.isNaN(bounds.getSouth())?lat:Math.min(lat,bounds.getSouth()));
-                            bounds.setWest(Double.isNaN(bounds.getWest())?lon:Math.min(lon,bounds.getWest()));
-                            bounds.setEast(Double.isNaN(bounds.getEast())?lon:Math.max(lon,bounds.getEast()));
+                    if (hasLocation) {
+                        double[] ll  = getLocation(values);
+                        double   lat = ll[0];
+                        double   lon = ll[1];
+                        if ( !Double.isNaN(lat) && !Double.isNaN(lon)) {
+                            bounds.setNorth(Double.isNaN(bounds.getNorth())
+                                            ? lat
+                                            : Math.max(lat,
+                                            bounds.getNorth()));
+                            bounds.setSouth(Double.isNaN(bounds.getSouth())
+                                            ? lat
+                                            : Math.min(lat,
+                                            bounds.getSouth()));
+                            bounds.setWest(Double.isNaN(bounds.getWest())
+                                           ? lon
+                                           : Math.min(lon, bounds.getWest()));
+                            bounds.setEast(Double.isNaN(bounds.getEast())
+                                           ? lon
+                                           : Math.max(lon, bounds.getEast()));
                         }
                     }
 
@@ -2584,10 +2615,10 @@ public class DbTypeHandler extends PointTypeHandler /* BlobTypeHandler*/ {
             }
             doStore(entry, tuple, true);
         }
-        if(!entry.hasAreaDefined() && !Double.isNaN(bounds.getNorth())) {
+        if ( !entry.hasAreaDefined() && !Double.isNaN(bounds.getNorth())) {
             entry.setBounds(bounds);
             getEntryManager().updateEntry(request, entry);
-       }
+        }
         //Remove these so any links that get made with the request don't point to the BULK upload
         request.remove(ARG_DB_NEWFORM);
         request.remove(ARG_DB_BULK_TEXT);
@@ -2608,6 +2639,7 @@ public class DbTypeHandler extends PointTypeHandler /* BlobTypeHandler*/ {
             return new Result("", sb);
 
         }
+
     }
 
     /**
@@ -3206,20 +3238,37 @@ public class DbTypeHandler extends PointTypeHandler /* BlobTypeHandler*/ {
      * _more_
      *
      * @param sb _more_
+     *
+     * @throws Exception _more_
      */
     private void addStyleSheet(Appendable sb) throws Exception {
-        HtmlUtils.cssLink(sb, getPageHandler().makeHtdocsUrl("/db/dbstyle.css"));
+        HtmlUtils.cssLink(sb,
+                          getPageHandler().makeHtdocsUrl("/db/dbstyle.css"));
         HtmlUtils.importJS(sb, getPageHandler().makeHtdocsUrl("/db/db.js"));
     }
 
-    private void makeTableHeader(Appendable sb, String contents, String...extraAttrs) throws Exception {
+    /**
+     * _more_
+     *
+     * @param sb _more_
+     * @param contents _more_
+     * @param extraAttrs _more_
+     *
+     * @throws Exception _more_
+     */
+    private void makeTableHeader(Appendable sb, String contents,
+                                 String... extraAttrs)
+            throws Exception {
         StringBuilder attrs = new StringBuilder();
         HtmlUtils.cssClass(attrs, CSS_DB_TABLEHEADER);
-        for(String attr:extraAttrs) {
+        for (String attr : extraAttrs) {
             attrs.append(" ");
             attrs.append(attr);
         }
-        HtmlUtils.col(sb, HtmlUtils.div(contents, HtmlUtils.cssClass(CSS_DB_TABLEHEADER_INNER)), attrs.toString());
+        HtmlUtils.col(
+            sb, HtmlUtils.div(
+                contents, HtmlUtils.cssClass(
+                    CSS_DB_TABLEHEADER_INNER)), attrs.toString());
     }
 
     /**
@@ -3288,10 +3337,11 @@ public class DbTypeHandler extends PointTypeHandler /* BlobTypeHandler*/ {
             }
 
             hb.append(HtmlUtils.p());
-            HtmlUtils.open(hb,"table",
-                           "class","dbtable","border","1","cellspacing","0", "cellpadding","0","width","100%");
-            HtmlUtils.open(hb,"tr","valign","top");
-            makeTableHeader(hb,"&nbsp;");
+            HtmlUtils.open(hb, "table", "class", "dbtable", "border", "1",
+                           "cellspacing", "0", "cellpadding", "0", "width",
+                           "100%");
+            HtmlUtils.open(hb, "tr", "valign", "top");
+            makeTableHeader(hb, "&nbsp;");
             for (int i = 0; i < columnsToUse.size(); i++) {
                 Column column = columnsToUse.get(i);
                 if ( !column.getCanList()) {
@@ -3310,6 +3360,7 @@ public class DbTypeHandler extends PointTypeHandler /* BlobTypeHandler*/ {
                 String label = column.getLabel();
                 if ( !showHeaderLinks) {
                     makeTableHeader(hb, label);
+
                     continue;
                 }
                 String sortColumn = column.getName();
@@ -3340,7 +3391,7 @@ public class DbTypeHandler extends PointTypeHandler /* BlobTypeHandler*/ {
                         : "=desc"), label) + extra;
                 makeTableHeader(hb, link);
             }
-            HtmlUtils.close(hb,"tr");
+            HtmlUtils.close(hb, "tr");
         }
 
 
@@ -3365,11 +3416,12 @@ public class DbTypeHandler extends PointTypeHandler /* BlobTypeHandler*/ {
             String   event  = getEventJS(request, entry, values, rowId,
                                          divId);
             hb.append("\n");
-            hb.append(HtmlUtils.open(HtmlUtils.TAG_TR,
-                                     "valign","top","class","dbrow","id",rowId));
+            hb.append(HtmlUtils.open(HtmlUtils.TAG_TR, "valign", "top",
+                                     "class", "dbrow", "id", rowId));
 
-            HtmlUtils.open(hb,"td", "width", "10","style","white-space:nowrap;");
-            HtmlUtils.open(hb, "div","class","ramadda-db-div","id",divId);
+            HtmlUtils.open(hb, "td", "width", "10", "style",
+                           "white-space:nowrap;");
+            HtmlUtils.open(hb, "div", "class", "ramadda-db-div", "id", divId);
             String dbid  = (String) values[IDX_DBID];
             String cbxId = ARG_DBID + (cnt);
 
@@ -3404,7 +3456,7 @@ public class DbTypeHandler extends PointTypeHandler /* BlobTypeHandler*/ {
                         getRepository().getUrlBase() + "/db/database_go.png",
                         msg("View entry"))));
 
-            HtmlUtils.close(hb,"div","td");
+            HtmlUtils.close(hb, "div", "td");
             for (int i = 0; i < columnsToUse.size(); i++) {
                 Column column = columnsToUse.get(i);
                 if ( !column.getCanList()) {
@@ -3428,12 +3480,14 @@ public class DbTypeHandler extends PointTypeHandler /* BlobTypeHandler*/ {
                     }
                 }
                 if (column.isString()) {
-                    HtmlUtils.open(hb,"td", event + HtmlUtils.attr("class","dbtablecell"));
+                    HtmlUtils.open(hb, "td",
+                                   event
+                                   + HtmlUtils.attr("class", "dbtablecell"));
                 } else {
-                    HtmlUtils.open(hb,"td",event);
+                    HtmlUtils.open(hb, "td", event);
                 }
 
-                HtmlUtils.open(hb, HtmlUtils.TAG_DIV,"class", "dbtablecell");
+                HtmlUtils.open(hb, HtmlUtils.TAG_DIV, "class", "dbtablecell");
 
                 if (column.isEnumeration()) {
                     String value = (String) values[column.getOffset()];
@@ -3503,9 +3557,10 @@ public class DbTypeHandler extends PointTypeHandler /* BlobTypeHandler*/ {
 
 
         if (valueList.size() > 0) {
-            HtmlUtils.comment(hb,"summmary");
-            HtmlUtils.open(hb,"tr","valign","top");
-            HtmlUtils.tag(hb,"td", HtmlUtils.attrs("align","right"), "#" + valueList.size());
+            HtmlUtils.comment(hb, "summmary");
+            HtmlUtils.open(hb, "tr", "valign", "top");
+            HtmlUtils.tag(hb, "td", HtmlUtils.attrs("align", "right"),
+                          "#" + valueList.size());
             for (int i = 0; i < columnsToUse.size(); i++) {
                 Column column = columnsToUse.get(i);
                 if ( !column.getCanList()) {
@@ -3514,7 +3569,7 @@ public class DbTypeHandler extends PointTypeHandler /* BlobTypeHandler*/ {
                 if (doStats[i]) {
                     double  avg   = sum[i] / valueList.size();
                     boolean round = column.isInteger();
-                    HtmlUtils.open(hb,"td","class","dbtable-summary");
+                    HtmlUtils.open(hb, "td", "class", "dbtable-summary");
                     hb.append(HtmlUtils.formTable());
                     hb.append(HtmlUtils.formEntry("Average:",
                             format(avg, round)));
@@ -3524,35 +3579,37 @@ public class DbTypeHandler extends PointTypeHandler /* BlobTypeHandler*/ {
                             format(max[i], round)));
                     hb.append(HtmlUtils.formEntry("Total:",
                             format(sum[i], round)));
-                    HtmlUtils.close(hb,"table","td");
+                    HtmlUtils.close(hb, "table", "td");
                 } else if (doUniques[i]) {
                     Hashtable<Object, Integer> numUniques =
                         uniques.get(column.getName());
                     if (numUniques == null) {
                         continue;
                     }
-                    HtmlUtils.open(hb,"td","class","dbtable-summary");
+                    HtmlUtils.open(hb, "td", "class", "dbtable-summary");
                     hb.append(HtmlUtils.formTable());
                     int rowCnt = 0;
                     for (Enumeration keys = numUniques.keys();
                             keys.hasMoreElements(); ) {
                         if (rowCnt++ > 10) {
                             hb.append(HtmlUtils.formEntry("", "..."));
+
                             break;
                         }
                         Object key   = keys.nextElement();
                         Object value = numUniques.get(key);
-                        if(key.toString().length()==0) 
+                        if (key.toString().length() == 0) {
                             key = "&lt;blank&gt;";
+                        }
                         hb.append(HtmlUtils.formEntry(key + ":",
                                 value.toString()));
                     }
-                    HtmlUtils.close(hb,"table","td");
+                    HtmlUtils.close(hb, "table", "td");
                 } else {
-                    HtmlUtils.tag(hb,"td","","&nbsp;");
+                    HtmlUtils.tag(hb, "td", "", "&nbsp;");
                 }
             }
-            HtmlUtils.close(hb,"table");
+            HtmlUtils.close(hb, "table");
         } else {
             if ( !fromSearch) {
                 hb.append(HtmlUtils.br());
@@ -3589,54 +3646,60 @@ public class DbTypeHandler extends PointTypeHandler /* BlobTypeHandler*/ {
         StringBuilder hb = new StringBuilder();
         if (valueList.size() > 0) {
             hb.append(HtmlUtils.p());
-            HtmlUtils.open(hb,"table","class","dbtable" ,"border","1","cellspacing","0","cellpadding","0");
+            HtmlUtils.open(hb, "table", "class", "dbtable", "border", "1",
+                           "cellspacing", "0", "cellpadding", "0");
         }
-        double [] sum = null;
-        StringBuilder cb = new StringBuilder();
+        double[]      sum = null;
+        StringBuilder cb  = new StringBuilder();
         for (int cnt = 0; cnt < valueList.size(); cnt++) {
             Object[] values = valueList.get(cnt);
-            if(sum == null) {
+            if (sum == null) {
                 sum = new double[values.length];
-                for(int i=0;i<sum.length;i++)
+                for (int i = 0; i < sum.length; i++) {
                     sum[i] = Double.NaN;
+                }
             }
 
 
 
             if (cnt == 0) {
-                HtmlUtils.open(hb,"tr", "valign", "top","class","dbrow");
+                HtmlUtils.open(hb, "tr", "valign", "top", "class", "dbrow");
                 for (Object obj : values) {
-                    makeTableHeader(hb, ""+obj);
+                    makeTableHeader(hb, "" + obj);
                 }
-                HtmlUtils.close(hb,"tr");
+                HtmlUtils.close(hb, "tr");
             } else {
-                HtmlUtils.open(cb,"tr","valign","top", "class","dbrow");
-                int col=0;
+                HtmlUtils.open(cb, "tr", "valign", "top", "class", "dbrow");
+                int col = 0;
                 for (Object obj : values) {
                     if (obj instanceof Double) {
-                        HtmlUtils.open(cb,"td","align","right");
+                        HtmlUtils.open(cb, "td", "align", "right");
                         double d = (Double) obj;
-                        if(Double.isNaN(sum[col]))
+                        if (Double.isNaN(sum[col])) {
                             sum[col] = d;
-                        else
-                            sum[col]+=d;
+                        } else {
+                            sum[col] += d;
+                        }
                         cb.append(dfmt.format((Double) obj));
                     } else if (obj instanceof Integer) {
                         int d = (Integer) obj;
-                        if(Double.isNaN(sum[col]))
+                        if (Double.isNaN(sum[col])) {
                             sum[col] = d;
-                        else
-                            sum[col]+=d;
-                        HtmlUtils.open(cb,"td","align","right");
+                        } else {
+                            sum[col] += d;
+                        }
+                        HtmlUtils.open(cb, "td", "align", "right");
                         cb.append(obj);
                     } else {
-                        HtmlUtils.open(cb,"td");
-                        String s = ""+obj;
-                        if(s.length()==0) s = "&lt;blank&gt;";
+                        HtmlUtils.open(cb, "td");
+                        String s = "" + obj;
+                        if (s.length() == 0) {
+                            s = "&lt;blank&gt;";
+                        }
                         cb.append(s);
                     }
                     col++;
-                    HtmlUtils.close(cb,"td");
+                    HtmlUtils.close(cb, "td");
                 }
                 cb.append("</tr>");
             }
@@ -3644,22 +3707,23 @@ public class DbTypeHandler extends PointTypeHandler /* BlobTypeHandler*/ {
         }
 
         if (valueList.size() > 0) {
-            HtmlUtils.open(hb, "tr", "valign","top","class","dbrow");
-            for(int i=0;i<sum.length;i++) {
-                if(i==0) {
+            HtmlUtils.open(hb, "tr", "valign", "top", "class", "dbrow");
+            for (int i = 0; i < sum.length; i++) {
+                if (i == 0) {
                     hb.append("<td>");
                     hb.append("Total");
                 } else {
-                    HtmlUtils.open(hb,"td","align","right");
-                    if(Double.isNaN(sum[i])) 
+                    HtmlUtils.open(hb, "td", "align", "right");
+                    if (Double.isNaN(sum[i])) {
                         hb.append("");
-                    else
+                    } else {
                         hb.append(dfmt.format(sum[i]));
+                    }
                 }
-                HtmlUtils.close(hb,"td");
-            }   
+                HtmlUtils.close(hb, "td");
+            }
             hb.append(cb);
-            HtmlUtils.close(hb,"table");
+            HtmlUtils.close(hb, "table");
         } else {
             hb.append(getPageHandler().showDialogNote(msg("Nothing found")));
         }
@@ -3901,9 +3965,9 @@ public class DbTypeHandler extends PointTypeHandler /* BlobTypeHandler*/ {
         sb.append(
             HtmlUtils.cssBlock(
                 "\n.db-map-list-inner {max-height: 500px; overflow-y: auto; overflow-x:auto; }\n\n"));
-        HtmlUtils.open(entryList,"div","class", "db-map-list-outer");
-        HtmlUtils.open(entryList,"div","class","db-map-list-inner");
-        SimpleDateFormat  sdf    = getDateFormat(entry);
+        HtmlUtils.open(entryList, "div", "class", "db-map-list-outer");
+        HtmlUtils.open(entryList, "div", "class", "db-map-list-inner");
+        SimpleDateFormat                 sdf    = getDateFormat(entry);
         Hashtable<String, StringBuilder> catMap = null;
         List<String>                     cats   = null;
         if (mapCategoryColumn != null) {
@@ -4025,15 +4089,16 @@ public class DbTypeHandler extends PointTypeHandler /* BlobTypeHandler*/ {
         entryList.append(HtmlUtils.close(HtmlUtils.TAG_DIV));
         entryList.append(HtmlUtils.close(HtmlUtils.TAG_DIV));
 
-        HtmlUtils.open(sb,"table","class","db-map-table","cellpadding","0","border","0","width","100%");
-        HtmlUtils.open(sb,"tr","valign","top");
+        HtmlUtils.open(sb, "table", "class", "db-map-table", "cellpadding",
+                       "0", "border", "0", "width", "100%");
+        HtmlUtils.open(sb, "tr", "valign", "top");
         map.center();
         sb.append(HtmlUtils.col(entryList.toString(),
                                 HtmlUtils.attr("width", leftWidth + "px")));
         sb.append(HtmlUtils.col(map.getHtml(),
                                 HtmlUtils.attr(HtmlUtils.ATTR_WIDTH,
                                     "" + width + "px")));
-        HtmlUtils.close(sb,"tr","table");
+        HtmlUtils.close(sb, "tr", "table");
         String js =
             "highlightMarkers('.db-map-list-outer .db-map-list-entry', "
             + map.getVariableName() + ", '#ffffcc', 'white');";
@@ -4222,12 +4287,13 @@ public class DbTypeHandler extends PointTypeHandler /* BlobTypeHandler*/ {
                 url += "&"
                        + request.getUrlArgs(
                            (HashSet<String>) Utils.makeHashSet(
-                                                              ARG_ENTRYID, ARG_DB_SEARCH, ARG_DB_DOSAVESEARCH), null,
-                           null);
+                               ARG_ENTRYID, ARG_DB_SEARCH,
+                               ARG_DB_DOSAVESEARCH), null, null);
             } catch (Exception exc) {
                 throw new RuntimeException(exc);
             }
         }
+
         return super.getUrlForWiki(request, entry, tag, props);
     }
 
@@ -4400,7 +4466,8 @@ public class DbTypeHandler extends PointTypeHandler /* BlobTypeHandler*/ {
             "<table cellspacing=0 cellpadding=0 border=1 width=100% class=\"gridtable\">\n");
         sb.append("<tr>");
         int width = 100 / (enumValues.size() + 1);
-        makeTableHeader(sb, "&nbsp;",HtmlUtils.attr(HtmlUtils.ATTR_WIDTH, width + "%"));
+        makeTableHeader(sb, "&nbsp;",
+                        HtmlUtils.attr(HtmlUtils.ATTR_WIDTH, width + "%"));
         String key = tableHandler.getTableName() + "." + gridColumn.getName();
         for (TwoFacedObject tfo : enumValues) {
             String value = tfo.getId().toString();
@@ -4411,8 +4478,9 @@ public class DbTypeHandler extends PointTypeHandler /* BlobTypeHandler*/ {
                 ARG_ENTRYID, entry.getId(), ARG_DB_SEARCH, "true", key, value
             });
 
-            makeTableHeader(sb,"&nbsp;" + HtmlUtils.href(searchUrl, value),
-                            HtmlUtils.attr(HtmlUtils.ATTR_WIDTH, width + "%"));
+            makeTableHeader(sb, "&nbsp;" + HtmlUtils.href(searchUrl, value),
+                            HtmlUtils.attr(HtmlUtils.ATTR_WIDTH,
+                                           width + "%"));
         }
         for (Object[] valuesArray : valueList) {
             sb.append("<tr>\n");
@@ -4443,8 +4511,9 @@ public class DbTypeHandler extends PointTypeHandler /* BlobTypeHandler*/ {
                 }
             }
         }
-        HtmlUtils.close(sb,"table");
+        HtmlUtils.close(sb, "table");
         addViewFooter(request, entry, sb);
+
         return new Result(getTitle(request, entry), sb);
     }
 
@@ -5149,6 +5218,7 @@ public class DbTypeHandler extends PointTypeHandler /* BlobTypeHandler*/ {
                                          makeClause(entry, id)));
             }
             request.put(ARG_DBIDS, ids);
+
             return result;
         }
 

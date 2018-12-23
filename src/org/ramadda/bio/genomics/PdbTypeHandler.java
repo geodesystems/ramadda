@@ -1,5 +1,5 @@
 /*
-* Copyright (c) 2008-2018 Geode Systems LLC
+* Copyright (c) 2008-2019 Geode Systems LLC
 *
 * Licensed under the Apache License, Version 2.0 (the "License");
 * you may not use this file except in compliance with the License.
@@ -112,9 +112,11 @@ public class PdbTypeHandler extends GenericTypeHandler {
                     remarks.add(remark);
                 }
             } else if (line.startsWith("EXPDATA ")) {
-                getMetadataManager().addMetadata(entry, new Metadata(getRepository().getGUID(),
-                        entry.getId(), "bio_method", true,
-                        line.substring("EXPDATA ".length()), "", "", "", ""));
+                getMetadataManager().addMetadata(entry,
+                        new Metadata(getRepository().getGUID(),
+                                     entry.getId(), "bio_method", true,
+                                     line.substring("EXPDATA ".length()), "",
+                                     "", "", ""));
 
             } else if (line.startsWith("KEYWDS ")) {
                 keywords.addAll(StringUtil.split(read(line, "KEYWDS "), ",",
@@ -142,35 +144,42 @@ public class PdbTypeHandler extends GenericTypeHandler {
 
         for (StringBuilder compound : compounds) {
             Hashtable<String, String> map = getMap(compound);
-            getMetadataManager().addMetadata(entry,new Metadata(getRepository().getGUID(),
-                                           entry.getId(), "bio_pdb_compound",
-                                           true, map.get("MOL_ID"),
-                                           map.get("MOLECULE"),
-                                           map.get("CHAIN"),
-                                           map.get("ENGINEERED"), ""));
+            getMetadataManager().addMetadata(
+                entry,
+                new Metadata(
+                    getRepository().getGUID(), entry.getId(),
+                    "bio_pdb_compound", true, map.get("MOL_ID"),
+                    map.get("MOLECULE"), map.get("CHAIN"),
+                    map.get("ENGINEERED"), ""));
         }
 
         for (StringBuilder source : sources) {
             Hashtable<String, String> map = getMap(source);
-            getMetadataManager().addMetadata(entry, new Metadata(getRepository().getGUID(),
-                                           entry.getId(), "bio_pdb_source",
-                                           true, map.get("MOL_ID"),
-                                           map.get("ORGANISM_SCIENTIFIC"),
-                                           map.get("ORGANISM_COMMON"),
-                                           map.get("ORGANISM_TAXID"), ""));
+            getMetadataManager().addMetadata(
+                entry,
+                new Metadata(
+                    getRepository().getGUID(), entry.getId(),
+                    "bio_pdb_source", true, map.get("MOL_ID"),
+                    map.get("ORGANISM_SCIENTIFIC"),
+                    map.get("ORGANISM_COMMON"), map.get("ORGANISM_TAXID"),
+                    ""));
         }
 
         for (String word : authors) {
-            getMetadataManager().addMetadata(entry, new Metadata(getRepository().getGUID(),
-                                           entry.getId(), "bio_author", true,
-                                           word, "", "", "", ""));
+            getMetadataManager().addMetadata(
+                entry,
+                new Metadata(
+                    getRepository().getGUID(), entry.getId(), "bio_author",
+                    true, word, "", "", "", ""));
         }
 
 
         for (String word : keywords) {
-            getMetadataManager().addMetadata(entry, new Metadata(getRepository().getGUID(),
-                                           entry.getId(), "content.keyword",
-                                           true, word, "", "", "", ""));
+            getMetadataManager().addMetadata(
+                entry,
+                new Metadata(
+                    getRepository().getGUID(), entry.getId(),
+                    "content.keyword", true, word, "", "", "", ""));
         }
         if (titles.size() > 0) {
 

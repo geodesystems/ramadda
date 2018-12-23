@@ -1,5 +1,5 @@
 /*
-* Copyright (c) 2008-2018 Geode Systems LLC
+* Copyright (c) 2008-2019 Geode Systems LLC
 *
 * Licensed under the Apache License, Version 2.0 (the "License");
 * you may not use this file except in compliance with the License.
@@ -227,7 +227,7 @@ public abstract class Converter extends Processor {
         /** _more_ */
         String defaultType = "double";
 
-        /** _more_          */
+        /** _more_ */
         boolean defaultChartable = true;
 
         /**
@@ -266,20 +266,31 @@ public abstract class Converter extends Processor {
             List values = new ArrayList<String>();
             for (int i = 0; i < row.getValues().size(); i++) {
                 String col = (String) row.getValues().get(i);
-                col = col.replaceAll("\u00B5","u").replaceAll("\u00B3","^3").replaceAll("\n", " ");
+                col = col.replaceAll("\u00B5", "u").replaceAll("\u00B3",
+                                     "^3").replaceAll("\n", " ");
                 String id =
                     col.replaceAll("\\([^\\)]+\\)", "").replaceAll("-",
                                    "_").trim().toLowerCase().replaceAll(" ",
                                        "_").replaceAll(":", "_");
 
-                id = id.replaceAll("\"", "_").replaceAll("\'", "_").replaceAll("/+", "_").replaceAll("\\.", "_").replaceAll("_+_", "_").replaceAll("_+$", "").replaceAll("^_+", "").replaceAll("\\^","_");
+                id = id.replaceAll("\"", "_").replaceAll("\'",
+                                   "_").replaceAll("/+",
+                                       "_").replaceAll("\\.",
+                                           "_").replaceAll("_+_",
+                                               "_").replaceAll("_+$",
+                                                   "").replaceAll("^_+",
+                                                       "").replaceAll("\\^",
+                                                           "_");
 
-                id   = CsvUtil.getDbProp(props, id, "id", id);
+                id = CsvUtil.getDbProp(props, id, "id", id);
 
 
-                String label =  CsvUtil.getDbProp(props, id, "label", (String) null);
-                if(label == null)
-                    label = Utils.makeLabel(col.replaceAll("\\([^\\)]+\\)", ""));
+                String label = CsvUtil.getDbProp(props, id, "label",
+                                   (String) null);
+                if (label == null) {
+                    label = Utils.makeLabel(col.replaceAll("\\([^\\)]+\\)",
+                            ""));
+                }
                 String unit = StringUtil.findPattern(col,
                                   ".*?\\(([^\\)]+)\\).*");
                 //                    System.err.println ("COL:" + col +" unit: " + unit);

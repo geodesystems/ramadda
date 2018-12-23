@@ -1,5 +1,5 @@
 /*
-* Copyright (c) 2008-2018 Geode Systems LLC
+* Copyright (c) 2008-2019 Geode Systems LLC
 *
 * Licensed under the Apache License, Version 2.0 (the "License");
 * you may not use this file except in compliance with the License.
@@ -71,7 +71,8 @@ public abstract class CsvOperator {
     /** _more_ */
     HashSet<Integer> indexMap;
 
-    HashSet<Integer>colsSeen  = new HashSet<Integer>();
+    /** _more_          */
+    HashSet<Integer> colsSeen = new HashSet<Integer>();
 
     /** _more_ */
     private List header;
@@ -156,7 +157,7 @@ public abstract class CsvOperator {
      *
      */
     public void getColumnIndex(List<Integer> indices, String s) {
-        s= s.toLowerCase();
+        s = s.toLowerCase();
         List<String> toks  = StringUtil.splitUpTo(s, "-", 2);
         int          start = -1;
         int          end   = -1;
@@ -181,13 +182,14 @@ public abstract class CsvOperator {
             }
             if (toks.size() == 1) {
                 String tok = toks.get(0);
-                if(tok.equals("*")) {
+                if (tok.equals("*")) {
                     for (int i = 0; i < header.size(); i++) {
-                        if(!colsSeen.contains(i)) {
+                        if ( !colsSeen.contains(i)) {
                             colsSeen.add(i);
                             indices.add(i);
                         }
                     }
+
                     return;
                 }
                 Integer iv = columnMap.get(tok);

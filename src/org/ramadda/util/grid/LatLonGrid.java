@@ -1,5 +1,5 @@
 /*
-* Copyright (c) 2008-2018 Geode Systems LLC
+* Copyright (c) 2008-2019 Geode Systems LLC
 *
 * Licensed under the Apache License, Version 2.0 (the "License");
 * you may not use this file except in compliance with the License.
@@ -53,6 +53,7 @@ public class LatLonGrid extends Grid {
     /** The values */
     private double[][] valueGrid;
 
+    /** _more_          */
     private double[][] averageGrid;
 
     /** _more_ */
@@ -239,10 +240,16 @@ public class LatLonGrid extends Grid {
         return valueGrid;
     }
 
+    /**
+     * _more_
+     *
+     * @return _more_
+     */
     public double[][] getAverageGrid() {
         if (averageGrid == null) {
             averageGrid = new double[getHeight()][getWidth()];
         }
+
         return averageGrid;
     }
 
@@ -297,6 +304,7 @@ public class LatLonGrid extends Grid {
      */
     public double[][] fillValue(double value) {
         GridUtils.fill(getValueGrid(), value);
+
         return getValueGrid();
     }
 
@@ -572,11 +580,11 @@ public class LatLonGrid extends Grid {
      * _more_
      */
     public void doAverageValues() {
-        double[][] valueGrid      = getValueGrid();
-        double[][] averageGrid    = getAverageGrid();
-        int[][]    countGrid = getCountGrid();
-        int        height    = getHeight();
-        int        width     = getWidth();
+        double[][] valueGrid   = getValueGrid();
+        double[][] averageGrid = getAverageGrid();
+        int[][]    countGrid   = getCountGrid();
+        int        height      = getHeight();
+        int        width       = getWidth();
         for (int y = 0; y < height; y++) {
             for (int x = 0; x < width; x++) {
                 double value = valueGrid[y][x];

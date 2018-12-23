@@ -1,5 +1,5 @@
 /*
-* Copyright (c) 2008-2018 Geode Systems LLC
+* Copyright (c) 2008-2019 Geode Systems LLC
 *
 * Licensed under the Apache License, Version 2.0 (the "License");
 * you may not use this file except in compliance with the License.
@@ -143,7 +143,8 @@ public class OmeTiffTypeHandler extends GenericTypeHandler {
 
         if (experiment != null) {
             Element ref = XmlUtil.findChild(experiment, "ExperimenterRef");
-            getMetadataManager().addMetadata(entry, 
+            getMetadataManager().addMetadata(
+                entry,
                 new Metadata(
                     getRepository().getGUID(), entry.getId(),
                     "bio_ome_experiment", false,
@@ -162,7 +163,8 @@ public class OmeTiffTypeHandler extends GenericTypeHandler {
 
             //For extra metadata we put it into a hash
             mapToExtra.put(5, XmlUtil.getAttribute(experimenter, "ID", ""));
-            getMetadataManager().addMetadata(entry,
+            getMetadataManager().addMetadata(
+                entry,
                 new Metadata(
                     getRepository().getGUID(), entry.getId(),
                     "bio_ome_experimenter", false,

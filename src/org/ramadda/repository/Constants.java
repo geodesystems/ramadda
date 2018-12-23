@@ -1,5 +1,5 @@
 /*
-* Copyright (c) 2008-2018 Geode Systems LLC
+* Copyright (c) 2008-2019 Geode Systems LLC
 *
 * Licensed under the Apache License, Version 2.0 (the "License");
 * you may not use this file except in compliance with the License.
@@ -27,309 +27,309 @@ public interface Constants {
 
     //j--
 
-    /** _more_          */
+    /** _more_ */
     public static final String ICON_ACCESS = "/icons/door.png";
 
-    /** _more_          */
+    /** _more_ */
     public static final String ICON_ADD = "/icons/add.gif";
 
-    /** _more_          */
+    /** _more_ */
     public static final String ICON_ELLIPSIS = "/icons/ellipsis.gif";
 
-    /** _more_          */
+    /** _more_ */
     public static final String ICON_ROTATE =
         "/icons/arrow_rotate_clockwise.png";
 
-    /** _more_          */
+    /** _more_ */
     public static final String ICON_ANTIROTATE =
         "/icons/arrow_rotate_anticlockwise.png";
 
-    /** _more_          */
+    /** _more_ */
     public static final String ICON_ARROW = "/icons/arrow_right.png";
 
-    /** _more_          */
+    /** _more_ */
     public static final String ICON_GOOGLEEARTH = "/icons/googleearth.gif";
 
-    /** _more_          */
+    /** _more_ */
     public static final String ICON_ASSOCIATION = "/icons/arrow_right.png";
 
-    /** _more_          */
+    /** _more_ */
     public static final String ICON_BLANK = "/icons/blank.gif";
 
-    /** _more_          */
+    /** _more_ */
     public static final String ICON_CALENDAR = "/icons/calendar.png";
 
-    /** _more_          */
+    /** _more_ */
     public static final String ICON_CART = "/icons/cart.png";
 
-    /** _more_          */
+    /** _more_ */
     public static final String ICON_CART_ADD = "/icons/cart_add.png";
 
-    /** _more_          */
+    /** _more_ */
     public static final String ICON_CART_DELETE = "/icons/cart_delete.png";
 
-    /** _more_          */
+    /** _more_ */
     public static final String ICON_CHAT = "/icons/user_comment.png";
 
-    /** _more_          */
+    /** _more_ */
     public static final String ICON_CLOCK = "/icons/clock.png";
 
-    /** _more_          */
+    /** _more_ */
     public static final String ICON_TIMELINE = "/icons/timeline_marker.png";
 
-    /** _more_          */
+    /** _more_ */
     public static final String ICON_CLOSE = "/icons/close.gif";
 
-    /** _more_          */
+    /** _more_ */
     public static final String ICON_CLOUD = "/icons/cloud.gif";
 
-    /** _more_          */
+    /** _more_ */
     public static final String ICON_COMMENTS = "/icons/comment.png";
 
-    /** _more_          */
+    /** _more_ */
     public static final String ICON_FTP = "/icons/server_go.png";
 
-    /** _more_          */
+    /** _more_ */
     public static final String ICON_CSV = "/icons/document-excel-csv.png";
 
-    /** _more_          */
+    /** _more_ */
     public static final String ICON_DATA = "/icons/data.gif";
 
-    /** _more_          */
+    /** _more_ */
     public static final String ICON_DIF = "/icons/metadata.gif";
 
-    /** _more_          */
+    /** _more_ */
     public static final String ICON_DATEGRID = "/icons/dategrid.gif";
 
-    /** _more_          */
+    /** _more_ */
     public static final String ICON_DELETE = "/icons/delete.png";
 
-    /** _more_          */
+    /** _more_ */
     public static final String ICON_DOWNARROW = "/icons/downarrow.gif";
 
-    /** _more_          */
+    /** _more_ */
     public static final String ICON_DOWNLOAD = "/icons/download.png";
 
-    /** _more_          */
+    /** _more_ */
     public static final String ICON_DOWNDART = "/icons/downdart.gif";
 
-    /** _more_          */
+    /** _more_ */
     public static final String ICON_EDIT = "/icons/edit.png";
 
-    /** _more_          */
+    /** _more_ */
     public static final String ICON_ENTRY = "/icons/information.png";
 
-    /** _more_          */
+    /** _more_ */
     public static final String ICON_ENTRY_ADD = "/icons/page_add.png";
 
-    /** _more_          */
+    /** _more_ */
     public static final String ICON_PUBLISH = "/icons/flag_green.png";
 
-    /** _more_          */
+    /** _more_ */
     public static final String ICON_PLANVIEW = "/icons/planviewcontour.png";
 
-    /** _more_          */
+    /** _more_ */
     public static final String ICON_ENTRY_UPLOAD = "/icons/flaggedentry.png";
 
-    /** _more_          */
+    /** _more_ */
     public static final String ICON_ERROR = "/icons/error.png";
 
-    /** _more_          */
+    /** _more_ */
     public static final String ICON_FAVORITE = "/icons/star.png";
 
-    /** _more_          */
+    /** _more_ */
     public static final String ICON_FETCH = "/icons/download.png";
 
-    /** _more_          */
+    /** _more_ */
     public static final String ICON_FILE = "/icons/page.png";
 
-    /** _more_          */
+    /** _more_ */
     public static final String ICON_FILELISTING =
         "/icons/application_view_list.png";
 
-    /** _more_          */
+    /** _more_ */
     public static final String ICON_FOLDER = "/icons/folder.png";
 
-    /** _more_          */
+    /** _more_ */
     public static final String ICON_FOLDER_ADD = "/icons/folder_add.png";
 
-    /** _more_          */
+    /** _more_ */
     public static final String ICON_FOLDER_CLOSED = "/icons/folderclosed.png";
 
-    /** _more_          */
+    /** _more_ */
     public static final String ICON_FOLDER_CLOSED_LOCKED =
         "/icons/folder_key.png";
 
-    /** _more_          */
+    /** _more_ */
     public static final String ICON_FOLDER_OPEN = "/icons/folderopen.png";
 
-    /** _more_          */
+    /** _more_ */
     public static final String ICON_GRAPH = "/icons/vector.png";
 
-    /** _more_          */
+    /** _more_ */
     public static final String ICON_TABLE = "/icons/table.png";
 
-    /** _more_          */
+    /** _more_ */
     public static final String ICON_GRAYRECT = "/icons/grayrect.gif";
 
-    /** _more_          */
+    /** _more_ */
     public static final String ICON_GRAYRECTARROW = "";
 
-    /** _more_          */
+    /** _more_ */
     public static final String ICON_HOME = "/icons/application-home.png";
 
-    /** _more_          */
+    /** _more_ */
     public static final String ICON_HEADER = "/images/header.jpg";
 
-    /** _more_          */
+    /** _more_ */
     public static final String ICON_HELP = "/icons/help.png";
 
-    /** _more_          */
+    /** _more_ */
     public static final String ICON_IMAGE = "/icons/image.gif";
 
-    /** _more_          */
+    /** _more_ */
     public static final String ICON_MOVIE = "/icons/movie.gif";
 
-    /** _more_          */
+    /** _more_ */
     public static final String ICON_IMPORT = "/icons/application_get.png";
 
-    /** _more_          */
+    /** _more_ */
     public static final String ICON_EXPORT = "/icons/application_put.png";
 
-    /** _more_          */
+    /** _more_ */
     public static final String ICON_IMAGES = "/icons/images.png";
 
-    /** _more_          */
+    /** _more_ */
     public static final String ICON_INFORMATION = "/icons/information.png";
 
-    /** _more_          */
+    /** _more_ */
     public static final String ICON_TREE = "/icons/information.png";
 
-    /** _more_          */
+    /** _more_ */
     public static final String ICON_KML = "/icons/kml.png";
 
-    /** _more_          */
+    /** _more_ */
     public static final String ICON_LCURVE = "/icons/blc.gif";
 
-    /** _more_          */
+    /** _more_ */
     public static final String ICON_SYNTH_FILE = "/icons/server_database.png";
 
-    /** _more_          */
+    /** _more_ */
     public static final String ICON_LEFT = "/icons/resultset_previous.png";
 
-    /** _more_          */
+    /** _more_ */
     public static final String ICON_LINK = "/icons/link.png";
 
-    /** _more_          */
+    /** _more_ */
     public static final String ICON_USERLINKS = "/icons/cog.png";
 
-    /** _more_          */
+    /** _more_ */
     public static final String ICON_LIST = "/icons/list.gif";
 
-    /** _more_          */
+    /** _more_ */
     public static final String ICON_LOG = "/icons/log.gif";
 
-    /** _more_          */
+    /** _more_ */
     public static final String ICON_MAP = "/icons/map.png";
 
-    /** _more_          */
+    /** _more_ */
     public static final String ICON_MAP_NAV = "/icons/bullet_go.png";
 
-    /** _more_          */
+    /** _more_ */
     public static final String ICON_METADATA = "/icons/metadata.gif";
 
-    /** _more_          */
+    /** _more_ */
     public static final String ICON_METADATA_ADD = "/icons/database_add.png";
 
-    /** _more_          */
+    /** _more_ */
     public static final String ICON_METADATA_EDIT =
         "/icons/database_edit.png";
 
-    /** _more_          */
+    /** _more_ */
     public static final String ICON_MINUS = "/icons/minus.gif";
 
-    /** _more_          */
+    /** _more_ */
     public static final String ICON_MOVE = "/icons/move.png";
 
-    /** _more_          */
+    /** _more_ */
     public static final String ICON_NEW = "/icons/add.png";
 
-    /** _more_          */
+    /** _more_ */
     public static final String ICON_PLUS = "/icons/plus.gif";
 
-    /** _more_          */
+    /** _more_ */
     public static final String ICON_PROGRESS = "/icons/progress.gif";
 
-    /** _more_          */
+    /** _more_ */
     public static final String ICON_QUESTION = "/icons/question.png";
 
-    /** _more_          */
+    /** _more_ */
     public static final String ICON_RANGE = "/icons/range.gif";
 
-    /** _more_          */
+    /** _more_ */
     public static final String ICON_RCURVE = "/icons/brc.gif";
 
-    /** _more_          */
+    /** _more_ */
     public static final String ICON_RIGHT = "/icons/resultset_next.png";
 
-    /** _more_          */
+    /** _more_ */
     public static final String ICON_RIGHTARROW = "/icons/rightarrow.png";
 
-    /** _more_          */
+    /** _more_ */
     public static final String ICON_RIGHTDART = "/icons/rightdart.gif";
 
-    /** _more_          */
+    /** _more_ */
     public static final String ICON_ATOM = "/icons/atom.gif";
 
-    /** _more_          */
+    /** _more_ */
     public static final String ICON_SEARCH = "/icons/find.png";
 
-    /** _more_          */
+    /** _more_ */
     public static final String ICON_SEARCH_SMALL =
         "/icons/binocular-small.png";
 
-    /** _more_          */
+    /** _more_ */
     public static final String ICON_TEXT = "/icons/text_align_left.png";
 
-    /** _more_          */
+    /** _more_ */
     public static final String ICON_TOGGLEARROWDOWN =
         "/icons/togglearrowdown.gif";
 
-    /** _more_          */
+    /** _more_ */
     public static final String ICON_TOGGLEARROWRIGHT =
         "/icons/togglearrowright.gif";
 
-    /** _more_          */
+    /** _more_ */
     public static final String ICON_TOOLS = "/icons/tools.gif";
 
-    /** _more_          */
+    /** _more_ */
     public static final String ICON_UPARROW = "/icons/uparrow.gif";
 
-    /** _more_          */
+    /** _more_ */
     public static final String ICON_UPDART = "/icons/updart.gif";
 
-    /** _more_          */
+    /** _more_ */
     public static final String ICON_UPLOAD = "/icons/add.png";
 
-    /** _more_          */
+    /** _more_ */
     public static final String ICON_WARNING = "/icons/warning.png";
 
-    /** _more_          */
+    /** _more_ */
     public static final String ICON_WIKI = "/icons/wiki.png";
 
-    /** _more_          */
+    /** _more_ */
     public static final String ICON_XML = "/icons/xml.png";
 
-    /** _more_          */
+    /** _more_ */
     public static final String ICON_JSON = "/icons/json.png";
 
-    /** _more_          */
+    /** _more_ */
     public static final String ICON_GEOJSON = "/icons/geojson.png";
 
-    /** _more_          */
+    /** _more_ */
     public static final String ICON_ZIP = "/icons/zip.png";
 
-    /** _more_          */
+    /** _more_ */
     public static final String ICON_ZIPTREE = "/icons/zip.png";
 
     //j++

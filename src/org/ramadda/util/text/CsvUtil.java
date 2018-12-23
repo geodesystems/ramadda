@@ -1,5 +1,5 @@
 /*
-* Copyright (c) 2008-2018 Geode Systems LLC
+* Copyright (c) 2008-2019 Geode Systems LLC
 *
 * Licensed under the Apache License, Version 2.0 (the "License");
 * you may not use this file except in compliance with the License.
@@ -59,6 +59,7 @@ public class CsvUtil {
     /** _more_ */
     private OutputStream outputStream = System.out;
 
+    /** _more_          */
     private InputStream inputStream;
 
     /** _more_ */
@@ -137,14 +138,28 @@ public class CsvUtil {
         this.outputStream = out;
     }
 
+    /**
+     * _more_
+     *
+     * @param args _more_
+     * @param out _more_
+     * @param destDir _more_
+     *
+     * @throws Exception _more_
+     */
     public CsvUtil(String[] args, OutputStream out, File destDir)
             throws Exception {
         this(args);
-        this.destDir = destDir;
+        this.destDir      = destDir;
         this.outputStream = out;
     }
 
 
+    /**
+     * _more_
+     *
+     * @param inputStream _more_
+     */
     public void setInputStream(InputStream inputStream) {
         this.inputStream = inputStream;
     }
@@ -333,21 +348,22 @@ public class CsvUtil {
                 }
                 for (String file : files) {
                     textReader.getProcessor().reset();
-                    InputStream is=null;
-                    if(this.inputStream!=null) {
+                    InputStream is = null;
+                    if (this.inputStream != null) {
                         is = this.inputStream;
                     } else {
                         if (file.equals("stdin")) {
                             is = System.in;
                         } else {
                             is = new BufferedInputStream(
-                                                         new FileInputStream(file));
+                                new FileInputStream(file));
                         }
                     }
                     process(textReader.cloneMe(is, file, outputFile,
                             outputStream));
-                    if(this.inputStream!=null) {
+                    if (this.inputStream != null) {
                         IOUtil.close(this.inputStream);
+
                         break;
                     }
                 }
@@ -1145,6 +1161,7 @@ public class CsvUtil {
                 List<String> cols = getCols(args.get(i));
                 info.setSelector(new Converter.ColumnSelector(cols));
                 info.getProcessor().addProcessor(info.getSelector());
+
                 continue;
             }
 

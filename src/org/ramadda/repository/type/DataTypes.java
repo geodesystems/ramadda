@@ -1,5 +1,5 @@
 /*
-* Copyright (c) 2008-2018 Geode Systems LLC
+* Copyright (c) 2008-2019 Geode Systems LLC
 *
 * Licensed under the Apache License, Version 2.0 (the "License");
 * you may not use this file except in compliance with the License.
@@ -86,7 +86,7 @@ public interface DataTypes {
     /** _more_ */
     public static final String DATATYPE_GROUP = "group";
 
-    /** _more_          */
+    /** _more_ */
     public static final String DATATYPE_COLORTABLE = "colortable";
 
 

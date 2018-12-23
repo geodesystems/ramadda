@@ -1,5 +1,5 @@
 /*
-* Copyright (c) 2008-2018 Geode Systems LLC
+* Copyright (c) 2008-2019 Geode Systems LLC
 *
 * Licensed under the Apache License, Version 2.0 (the "License");
 * you may not use this file except in compliance with the License.
@@ -1097,7 +1097,7 @@ public class AccessManager extends RepositoryManager {
 
     }
 
-    /** _more_          */
+    /** _more_ */
     private TwoFactorAuthenticator twoFactorAuthenticator;
 
     /**
@@ -1123,7 +1123,7 @@ public class AccessManager extends RepositoryManager {
      *
      *
      * @version        $version$, Thu, Dec 6, '18
-     * @author         Enter your name here...    
+     * @author         Enter your name here...
      */
     public static class TwoFactorAuthenticator {
 

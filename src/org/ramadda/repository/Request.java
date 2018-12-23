@@ -1,5 +1,5 @@
 /*
-* Copyright (c) 2008-2018 Geode Systems LLC
+* Copyright (c) 2008-2019 Geode Systems LLC
 *
 * Licensed under the Apache License, Version 2.0 (the "License");
 * you may not use this file except in compliance with the License.
@@ -1219,16 +1219,25 @@ public class Request implements Constants, Cloneable {
         put(key, value, true);
     }
 
+    /**
+     * _more_
+     *
+     * @param key _more_
+     * @param value _more_
+     * @param singular _more_
+     */
     public void put(Object key, Object value, boolean singular) {
-        Object existing = singular?null:parameters.get(key);
-        if(existing!=null) {
-            if(existing instanceof List) 
-                ((List)existing).add(value);
-            else  {
+        Object existing = singular
+                          ? null
+                          : parameters.get(key);
+        if (existing != null) {
+            if (existing instanceof List) {
+                ((List) existing).add(value);
+            } else {
                 List newList = new ArrayList();
                 newList.add(existing);
                 newList.add(value);
-                parameters.put(key,newList);
+                parameters.put(key, newList);
             }
         } else {
             parameters.put(key, value);

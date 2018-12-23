@@ -1,5 +1,5 @@
 /*
-* Copyright (c) 2008-2018 Geode Systems LLC
+* Copyright (c) 2008-2019 Geode Systems LLC
 *
 * Licensed under the Apache License, Version 2.0 (the "License");
 * you may not use this file except in compliance with the License.
@@ -270,10 +270,13 @@ public class Column implements DataTypes, Constants {
     /** _more_ */
     private String htmlTemplate;
 
+    /** _more_          */
     private String displayTemplate;
 
+    /** _more_          */
     private String displayPatternFrom;
 
+    /** _more_          */
     private String displayPatternTo;
 
     /** _more_ */
@@ -456,12 +459,12 @@ public class Column implements DataTypes, Constants {
 
         description = getAttributeOrTag(element, ATTR_DESCRIPTION, label);
 
-        displayPatternFrom= Utils.getAttributeOrTag(element, "displayPatternFrom",
-                (String) null);
-        displayPatternTo= Utils.getAttributeOrTag(element, "displayPatternTo",
-                (String) null);
+        displayPatternFrom = Utils.getAttributeOrTag(element,
+                "displayPatternFrom", (String) null);
+        displayPatternTo = Utils.getAttributeOrTag(element,
+                "displayPatternTo", (String) null);
 
-        displayTemplate= Utils.getAttributeOrTag(element, "displayTemplate",
+        displayTemplate = Utils.getAttributeOrTag(element, "displayTemplate",
                 (String) null);
 
         htmlTemplate = Utils.getAttributeOrTag(element, "htmlTemplate",
@@ -1171,27 +1174,32 @@ public class Column implements DataTypes, Constants {
      * @return _more_
      */
     public String getEnumLabel(String value) {
-        if(value == null) return "null";
+        if (value == null) {
+            return "null";
+        }
         //enumMap is from the values field in the types.xml column specifier
         String label = enumMap.get(value);
         if (label == null) {
             //If we don't have a label in the enumMap then see if we have a displayTemplate (from types.xml)
             //<column name="status"  type="enumerationplus"  values="active:Active,inactive:Inactive" label="Status" cansearch="true" 
             //displayTemplate="Type:${value}" />
-            if(displayTemplate!=null) {
-                return displayTemplate.replace("${value}",value);
+            if (displayTemplate != null) {
+                return displayTemplate.replace("${value}", value);
             }
             //If we don't have a displayTemplate then check for a displayPattern. This is in types.xml as, e.g.:
             // <column name="status"  type="enumerationplus"  values="active:Active,inactive:Inactive" label="Status" cansearch="true" 
             // displayPatternFrom=".*([0-9]+).*" displayPatternTo="Should be a number:$1"/>
-            if(displayPatternFrom !=null && displayPatternTo!=null) {
+            if ((displayPatternFrom != null) && (displayPatternTo != null)) {
                 //only do this if it matches the pattern
-                if(value.matches(displayPatternFrom)) {
-                    return value.replaceAll(displayPatternFrom, displayPatternTo);
+                if (value.matches(displayPatternFrom)) {
+                    return value.replaceAll(displayPatternFrom,
+                                            displayPatternTo);
                 }
             }
+
             return value;
         }
+
         return label;
     }
 
@@ -1843,12 +1851,12 @@ public class Column implements DataTypes, Constants {
      * @param where _more_
      */
     public void addTextSearch(String value, List<Clause> where) {
-        value  = value.trim();
-        if(value.equals("<blank>")) {
+        value = value.trim();
+        if (value.equals("<blank>")) {
             where.add(Clause.eq(getFullName(), ""));
         } else if (value.startsWith("!")) {
             value = value.substring(1);
-            if(value.length()==0) {
+            if (value.length() == 0) {
                 where.add(Clause.neq(getFullName(), ""));
             } else {
                 where.add(Clause.notLike(getFullName(), "%" + value + "%"));
@@ -2763,14 +2771,14 @@ public class Column implements DataTypes, Constants {
                                               this, entry);
             for (TwoFacedObject o : values) {
                 TwoFacedObject tfo = null;
-                if(enumValues!=null) {
+                if (enumValues != null) {
                     tfo = TwoFacedObject.findId(o.getId(), enumValues);
                 }
                 if (tfo != null) {
                     tmpValues.add(tfo);
                 } else {
-                    String label = getEnumLabel(""+o);
-                    tmpValues.add(new TwoFacedObject(label,o));
+                    String label = getEnumLabel("" + o);
+                    tmpValues.add(new TwoFacedObject(label, o));
                 }
             }
             widget = HtmlUtils.select(searchArg, tmpValues,

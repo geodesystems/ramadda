@@ -1,5 +1,5 @@
 /*
-* Copyright (c) 2008-2018 Geode Systems LLC
+* Copyright (c) 2008-2019 Geode Systems LLC
 *
 * Licensed under the Apache License, Version 2.0 (the "License");
 * you may not use this file except in compliance with the License.
@@ -591,7 +591,7 @@ public class Json {
      * @throws Exception _more_
      */
     public static void main(String[] args) throws Exception {
-        String json = IOUtil.readContents(args[0],Json.class);
+        String json = IOUtil.readContents(args[0], Json.class);
         //        JSONObject   obj      = new JSONObject(json.toString());
         //        System.out.println(obj.toString(3));
         //        if(true) return;

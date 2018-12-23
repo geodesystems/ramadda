@@ -1,5 +1,5 @@
 /*
-* Copyright (c) 2008-2018 Geode Systems LLC
+* Copyright (c) 2008-2019 Geode Systems LLC
 *
 * Licensed under the Apache License, Version 2.0 (the "License");
 * you may not use this file except in compliance with the License.
@@ -63,6 +63,7 @@ public class MyTrace {
     /** _more_ */
     public static boolean displayMsg = false;
 
+    /** _more_          */
     public static boolean showThreadLabel = false;
 
     /** _more_ */
@@ -508,8 +509,9 @@ public class MyTrace {
         Thread t              = Thread.currentThread();
         String crntThreadName = t.getName();
         if ( !crntThreadName.equals(lastThreadName)) {
-            if(showThreadLabel)
+            if (showThreadLabel) {
                 System.out.println("Thread:" + crntThreadName);
+            }
             lastThreadName = crntThreadName;
         }
         //      StringBuffer sb = getBuffer ();

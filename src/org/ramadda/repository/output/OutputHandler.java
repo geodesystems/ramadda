@@ -1,5 +1,5 @@
 /*
-* Copyright (c) 2008-2018 Geode Systems LLC
+* Copyright (c) 2008-2019 Geode Systems LLC
 *
 * Licensed under the Apache License, Version 2.0 (the "License");
 * you may not use this file except in compliance with the License.
@@ -2153,10 +2153,13 @@ public class OutputHandler extends RepositoryManager {
         tabHtml.append(HtmlUtils.close(HtmlUtils.TAG_DIV));
         tabHtml.append("\n");
         String args = "activate: HtmlUtil.tabLoaded";
-        if(useCookies)
-            args+=",\ncookie: {expires:1}";
+        if (useCookies) {
+            args += ",\ncookie: {expires:1}";
+        }
         tabHtml.append(HtmlUtils.script("\njQuery(function(){\njQuery('#"
-                                        + tabId + "').tabs({" + args +"})});\n\n"));
+                                        + tabId + "').tabs({" + args
+                                        + "})});\n\n"));
+
         return tabHtml.toString();
     }
 
@@ -2272,12 +2275,14 @@ public class OutputHandler extends RepositoryManager {
             return;
         }
 
-        String entryId = request.getString(ARG_PUBLISH_ENTRY + "_hidden","");
+        String entryId = request.getString(ARG_PUBLISH_ENTRY + "_hidden", "");
         String entryName = "";
-        if(Utils.stringDefined(entryId)) {
-            Entry selectedEntry  = getEntryManager().getEntry(request, entryId);
-            if(selectedEntry!=null)
+        if (Utils.stringDefined(entryId)) {
+            Entry selectedEntry = getEntryManager().getEntry(request,
+                                      entryId);
+            if (selectedEntry != null) {
                 entryName = selectedEntry.getName();
+            }
         }
         StringBuilder publishSB = new StringBuilder();
         sb.append(HtmlUtils.hidden(ARG_PUBLISH_ENTRY + "_hidden", entryId,

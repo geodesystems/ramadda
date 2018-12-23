@@ -1,5 +1,5 @@
 /*
-* Copyright (c) 2008-2018 Geode Systems LLC
+* Copyright (c) 2008-2019 Geode Systems LLC
 *
 * Licensed under the Apache License, Version 2.0 (the "License");
 * you may not use this file except in compliance with the License.
@@ -77,10 +77,10 @@ public interface RecordConstants extends Constants {
     /** _more_ */
     public static final String ARG_FILLMISSING = "fillmissing";
 
-    /** _more_          */
+    /** _more_ */
     public static final String ARG_THRESHOLD = "threshold";
 
-    /** _more_          */
+    /** _more_ */
     public static final String ARG_GRID_SUM = ARG_GRID_PREFIX + "sum";
 
     /** url argument */
@@ -99,7 +99,7 @@ public interface RecordConstants extends Constants {
     public static final String ARG_GRID_IDW = ARG_GRID_PREFIX + "idw";
 
 
-    /** _more_          */
+    /** _more_ */
     public static final String ARG_GRID_BARNES = ARG_GRID_PREFIX + "barnes";
 
 

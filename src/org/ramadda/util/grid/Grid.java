@@ -1,5 +1,5 @@
 /*
-* Copyright (c) 2008-2018 Geode Systems LLC
+* Copyright (c) 2008-2019 Geode Systems LLC
 *
 * Licensed under the Apache License, Version 2.0 (the "License");
 * you may not use this file except in compliance with the License.
@@ -15,6 +15,7 @@
 */
 
 package org.ramadda.util.grid;
+
 
 import org.ramadda.util.Bounds;
 
@@ -133,12 +134,12 @@ public class Grid {
     }
 
     /**
-       Get the Bounds property.
-
-       @return The Bounds
-    **/
-    public Bounds getBounds () {
-        return new Bounds(north,west,south,east);
+     *  Get the Bounds property.
+     *
+     *  @return The Bounds
+     */
+    public Bounds getBounds() {
+        return new Bounds(north, west, south, east);
     }
 
 

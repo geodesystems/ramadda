@@ -1,5 +1,5 @@
 /*
-* Copyright (c) 2008-2018 Geode Systems LLC
+* Copyright (c) 2008-2019 Geode Systems LLC
 *
 * Licensed under the Apache License, Version 2.0 (the "License");
 * you may not use this file except in compliance with the License.
@@ -197,6 +197,7 @@ public class IdwGrid extends LatLonGrid {
         public double distance(double lon, double lat) {
             double dx = (lon - this.longitude);
             double dy = (lat - this.latitude);
+
             return Math.sqrt(dx * dx + dy * dy);
         }
 
@@ -297,13 +298,15 @@ public class IdwGrid extends LatLonGrid {
         int[][]    countGrid = getCountGrid();
         findIndices(lon, lat, regionIndices);
         if (cnt < 5) {
-            int        yIndex    = getLatitudeIndex(lat);
-            int        xIndex    = getLongitudeIndex(lon);
+            int yIndex = getLatitudeIndex(lat);
+            int xIndex = getLongitudeIndex(lon);
             //            System.err.println (yIndex + " " + xIndex +"  " + regionIndices);
         }
 
         for (Index index : regionIndices) {
-            if(!index.valid) continue;
+            if ( !index.valid) {
+                continue;
+            }
             double weight = index.distance(lon, lat);
             //Check if we have a grid radius
             if (radius != 0) {
@@ -326,19 +329,19 @@ public class IdwGrid extends LatLonGrid {
     @Override
     public void doAverageValues() {
         super.doAverageValues();
-        double[][] weights = getWeightsGrid();
-        double[][] weightedValues  = getWeightedValueGrid();
-        double[][] values  = getValueGrid();
-        int[][] countGrid  = getCountGrid();
-        int        height  = getHeight();
-        int        width   = getWidth();
+        double[][] weights        = getWeightsGrid();
+        double[][] weightedValues = getWeightedValueGrid();
+        double[][] values         = getValueGrid();
+        int[][]    countGrid      = getCountGrid();
+        int        height         = getHeight();
+        int        width          = getWidth();
         //10 20 40 => 70/6 =  11.5
         //2 2 2  => 35
         for (int y = 0; y < height; y++) {
             for (int x = 0; x < width; x++) {
-                if(countGrid[y][x]>0) {
-                    weightedValues[y][x]  = values[y][x];
-                } else  {
+                if (countGrid[y][x] > 0) {
+                    weightedValues[y][x] = values[y][x];
+                } else {
                     if (weights[y][x] != 0) {
                         weightedValues[y][x] /= weights[y][x];
                     }

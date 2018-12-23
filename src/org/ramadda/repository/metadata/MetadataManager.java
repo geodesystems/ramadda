@@ -1,5 +1,5 @@
 /*
-* Copyright (c) 2008-2018 Geode Systems LLC
+* Copyright (c) 2008-2019 Geode Systems LLC
 *
 * Licensed under the Apache License, Version 2.0 (the "License");
 * you may not use this file except in compliance with the License.
@@ -132,7 +132,7 @@ public class MetadataManager extends RepositoryManager {
     protected Hashtable<String, MetadataType> typeMap = new Hashtable<String,
                                                             MetadataType>();
 
-    /** _more_          */
+    /** _more_ */
     protected Hashtable<String, MetadataHandler> handlerMap =
         new Hashtable<String, MetadataHandler>();
 
@@ -619,7 +619,7 @@ public class MetadataManager extends RepositoryManager {
         }
         List<Metadata> metadataList = entry.getMetadata();
         if (metadataList != null) {
-            return getMetadata(metadataList,type);
+            return getMetadata(metadataList, type);
         }
 
         final List<Metadata> finalMetadataList = new ArrayList();
