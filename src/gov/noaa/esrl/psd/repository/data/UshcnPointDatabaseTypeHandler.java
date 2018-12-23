@@ -17,7 +17,7 @@ import org.ramadda.repository.Entry;
 import org.ramadda.repository.Repository;
 import org.ramadda.repository.RepositoryUtil;
 import org.ramadda.repository.Request;
-import org.ramadda.sql.SqlUtil;
+import org.ramadda.util.sql.SqlUtil;
 
 import org.w3c.dom.Element;
 
