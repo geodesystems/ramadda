@@ -2009,6 +2009,8 @@ public class PointOutputHandler extends RecordOutputHandler {
 
         ColorTable colorTable =
             ColorTable.getColorTable(request.getString(ARG_COLORTABLE, ""));
+        min = request.get(RecordConstants.ARG_GRID_RANGE_MIN,min);
+        max = request.get(RecordConstants.ARG_GRID_RANGE_MAX,max);
         double[] range =
             ColorTable.getRange(request.getString(ARG_COLORTABLE, ""), min,
                                 max);

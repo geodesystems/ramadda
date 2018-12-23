@@ -684,7 +684,16 @@ public class PointFormHandler extends RecordFormHandler {
                     ARG_COLORTABLE, ColorTable.getColorTableNames(),
                     request.getString(ARG_COLORTABLE, (String) null))));
 
-
+        extra.append(HtmlUtils.formEntry(
+                                         msgLabel("Color Range"),
+                                         HtmlUtils.input(
+                                                         RecordConstants.ARG_GRID_RANGE_MIN,
+                                                         request.getString(RecordConstants.ARG_GRID_RANGE_MIN, ""),
+                                                         5) +" -- " + 
+                                         HtmlUtils.input(
+                                                         RecordConstants.ARG_GRID_RANGE_MAX,
+                                                         request.getString(RecordConstants.ARG_GRID_RANGE_MAX, ""),
+                                                         5)));
         extra.append(HtmlUtils.formTableClose());
 
         sb.append(
