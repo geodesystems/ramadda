@@ -340,8 +340,6 @@ public class PageHandler extends RepositoryManager {
 
         String       jsContent     = getTemplateJavascriptContent();
 
-
-
         String entryHeader = (String) result.getProperty(PROP_ENTRY_HEADER,
                                  "");
         String entryFooter = (String) result.getProperty(PROP_ENTRY_FOOTER,
@@ -384,6 +382,9 @@ public class PageHandler extends RepositoryManager {
         String logoUrl   = (String) result.getProperty(PROP_LOGO_URL);
         if ( !Utils.stringDefined(logoUrl)) {
             logoUrl = getRepository().getProperty(PROP_LOGO_URL, "");
+        }
+        if ( !Utils.stringDefined(logoUrl)) {
+            logoUrl = getRepository().getUrlBase();
         }
         logoUrl = applyBaseMacros(logoUrl);
 

@@ -791,7 +791,7 @@ public class UserManager extends RepositoryManager {
                 request, msgLabel("User"),
                 HtmlUtils.input(
                     ARG_USER_ID, id,
-                    HtmlUtils.cssClass(CSS_CLASS_USER_FIELD))));
+                    HtmlUtils.cssClass(CSS_CLASS_USER_FIELD)+" autofocus=autofocus")));
         sb.append(formEntry(request, msgLabel("Password"),
                             HtmlUtils.password(ARG_USER_PASSWORD)));
         if (userAgree != null) {
@@ -2747,7 +2747,9 @@ public class UserManager extends RepositoryManager {
         sb.append(request.form(getRepositoryBase().URL_USER_FINDUSERID));
         sb.append(HtmlUtils.formTable());
         sb.append(HtmlUtils.formEntry("Your Email:",
-                                      HtmlUtils.input(ARG_USER_EMAIL, email, HtmlUtils.SIZE_30)));
+                                      HtmlUtils.input(ARG_USER_EMAIL, email, HtmlUtils.SIZE_30+
+                                                      " autofocus=autofocus")));
+
         sb.append(HtmlUtils.formEntry("",
                                       HtmlUtils.submit("Submit")));
         sb.append(HtmlUtils.formTableClose());
@@ -2928,7 +2930,7 @@ public class UserManager extends RepositoryManager {
             sb, getRepositoryBase().URL_USER_RESETPASSWORD);
         sb.append(HtmlUtils.formTable());
         sb.append(HtmlUtils.formEntry("User ID:",
-                                      HtmlUtils.input(ARG_USER_NAME, name, HtmlUtils.SIZE_20)));
+                                      HtmlUtils.input(ARG_USER_NAME, name, HtmlUtils.SIZE_20+HtmlUtils.cssClass(CSS_CLASS_USER_FIELD)+" autofocus=autofocus")));
         sb.append(HtmlUtils.formEntry("", HtmlUtils.submit("Reset your password")));
         sb.append(HtmlUtils.formTableClose());
         sb.append(HtmlUtils.formClose());
