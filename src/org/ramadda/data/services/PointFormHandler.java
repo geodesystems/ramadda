@@ -422,9 +422,11 @@ public class PointFormHandler extends RecordFormHandler {
                 : msgLabel("Files"), files);
 
         addToGroupForm(request, group, sb, recordEntries, extra);
-        sb.append(HtmlUtils.formTableClose());
 
+
+        sb.append("<p>");
         sb.append(HtmlUtils.submit(msg("Get Data"), ARG_GETDATA));
+        sb.append("<p>");
         OutputHandler.addUrlShowingForm(sb, formId,
                                         "[\".*OpenLayers_Control.*\"]");
         sb.append(HtmlUtils.formClose());
@@ -477,8 +479,6 @@ public class PointFormHandler extends RecordFormHandler {
                 entry, sb, "Point Processing");
         sb.append(msgSB);
 
-        //        System.err.println ( getPointOutputHandler().getCsv(request, entry));
-
         RecordEntry recordEntry =
             getPointOutputHandler().doMakeEntry(request, entry);
         String formId = HtmlUtils.getUniqueId("form_");
@@ -486,10 +486,9 @@ public class PointFormHandler extends RecordFormHandler {
                                    HtmlUtils.id(formId)));
         sb.append(HtmlUtils.hidden(ARG_ENTRYID, entry.getId()));
         addToEntryForm(request, entry, sb, recordEntry);
-        sb.append("<tr><td>");
+        sb.append("<p>");
         sb.append(HtmlUtils.submit(msg("Get Data"), ARG_GETDATA));
-        sb.append("</td><td></td></tr>");
-        sb.append(HtmlUtils.formTableClose());
+        sb.append("<p>");
         OutputHandler.addUrlShowingForm(sb, formId,
                                         "[\".*OpenLayers_Control.*\"]");
         sb.append(HtmlUtils.formClose());
@@ -517,6 +516,14 @@ public class PointFormHandler extends RecordFormHandler {
     public void addToEntryForm(Request request, Entry entry, Appendable sb,
                                RecordEntry recordEntry)
             throws Exception {
+
+        sb.append(HtmlUtils.submit(msg("Get Data"), ARG_GETDATA));
+        sb.append("<p>");
+        if (entry.getTypeHandler() instanceof RecordTypeHandler) {
+            ((RecordTypeHandler) entry.getTypeHandler()).addToProcessingForm(
+                request, entry, sb);
+        }
+
         addSelectForm(request, entry, sb, false, recordEntry, "");
         addSettingsForm(request, entry, sb, recordEntry);
 
@@ -538,6 +545,12 @@ public class PointFormHandler extends RecordFormHandler {
                                List<? extends RecordEntry> recordEntries,
                                String extra)
             throws Exception {
+        sb.append(HtmlUtils.submit(msg("Get Data"), ARG_GETDATA));
+        sb.append("<p>");
+        if (group.getTypeHandler() instanceof RecordTypeHandler) {
+            ((RecordTypeHandler) group.getTypeHandler()).addToProcessingForm(
+                request, group, sb);
+        }
         addSelectForm(request, group, sb, true, recordEntries.get(0), extra);
         addSettingsForm(request, group, sb, recordEntries.get(0));
     }
@@ -591,32 +604,35 @@ public class PointFormHandler extends RecordFormHandler {
                 msgLabel("Power"),
                 HtmlUtils.input(
                     RecordConstants.ARG_GRID_POWER,
-                    request.getString(
-                        RecordConstants.ARG_GRID_POWER, "1.0")) + " "
-                            + HtmlUtils.href(
-                                "https://gisgeography.com/inverse-distance-weighting-idw-interpolation/",
-                                "More Information")));
+                    request.getString(RecordConstants.ARG_GRID_POWER, "1.0"),
+                    5) + " "
+                       + HtmlUtils.href(
+                           "https://gisgeography.com/inverse-distance-weighting-idw-interpolation/",
+                           "More Information")));
         extra.append(
             HtmlUtils.formEntry(
                 msgLabel("Minimum # of Points"),
                 HtmlUtils.input(
                     RecordConstants.ARG_GRID_MINPOINTS,
                     request.getString(
-                        RecordConstants.ARG_GRID_MINPOINTS, "1"))));
+                        RecordConstants.ARG_GRID_MINPOINTS, "1"), 5)));
 
+        /*
         extra.append(
             HtmlUtils.formEntry(
                 msgLabel("Fill missing"),
                 HtmlUtils.checkbox(
                     PointOutputHandler.ARG_FILLMISSING, "true",
                     request.get(PointOutputHandler.ARG_FILLMISSING, false))));
+        */
 
         extra.append(
             HtmlUtils.formEntry(
                 msgLabel("Threshold"),
                 HtmlUtils.input(
                     RecordConstants.ARG_THRESHOLD,
-                    request.getString(RecordConstants.ARG_THRESHOLD, ""))));
+                    request.getString(RecordConstants.ARG_THRESHOLD, ""),
+                    5)));
 
 
 
@@ -684,29 +700,21 @@ public class PointFormHandler extends RecordFormHandler {
                     ARG_COLORTABLE, ColorTable.getColorTableNames(),
                     request.getString(ARG_COLORTABLE, (String) null))));
 
-        extra.append(HtmlUtils.formEntry(
-                                         msgLabel("Color Range"),
-                                         HtmlUtils.input(
-                                                         RecordConstants.ARG_GRID_RANGE_MIN,
-                                                         request.getString(RecordConstants.ARG_GRID_RANGE_MIN, ""),
-                                                         5) +" -- " + 
-                                         HtmlUtils.input(
-                                                         RecordConstants.ARG_GRID_RANGE_MAX,
-                                                         request.getString(RecordConstants.ARG_GRID_RANGE_MAX, ""),
-                                                         5)));
+        extra.append(
+            HtmlUtils.formEntry(
+                msgLabel("Color Range"),
+                HtmlUtils.input(
+                    RecordConstants.ARG_GRID_RANGE_MIN,
+                    request.getString(
+                        RecordConstants.ARG_GRID_RANGE_MIN, ""), 5) + " -- "
+                            + HtmlUtils.input(
+                                RecordConstants.ARG_GRID_RANGE_MAX,
+                                request.getString(
+                                    RecordConstants.ARG_GRID_RANGE_MAX,
+                                    ""), 5)));
         extra.append(HtmlUtils.formTableClose());
 
-        sb.append(
-            HtmlUtils.row(
-                HtmlUtils.colspan(formHeader("Advanced Settings"), 2)));
 
-        if (recordEntry.isCapable(PointFile.ACTION_GRID)) {
-            sb.append(
-                HtmlUtils.formEntryTop(
-                    msgLabel("Gridding"),
-                    HtmlUtils.makeShowHideBlock(
-                        msg(""), extra.toString(), showUrl)));
-        }
 
 
         StringBuffer points = new StringBuffer();
@@ -725,13 +733,6 @@ public class PointFormHandler extends RecordFormHandler {
 
 
         points.append(HtmlUtils.formTableClose());
-        sb.append(HtmlUtils.formEntryTop(msgLabel("Points"),
-                                         HtmlUtils.makeShowHideBlock(msg(""),
-                                             points.toString(), false)));
-
-
-
-
         StringBuffer processSB = new StringBuffer();
         processSB.append(HtmlUtils.formTable());
         processSB.append(HtmlUtils.formEntry("",
@@ -765,37 +766,62 @@ public class PointFormHandler extends RecordFormHandler {
         processSB.append(HtmlUtils.formTableClose());
 
 
-        sb.append(HtmlUtils.formEntryTop(msgLabel("Processing"),
-                                         HtmlUtils.makeShowHideBlock(msg(""),
-                                             processSB.toString(), false)));
+        StringBuilder advancedSB = new StringBuilder();
+        if (recordEntry.isCapable(PointFile.ACTION_GRID)) {
+            advancedSB.append(HtmlUtils.makeShowHideBlock(msg("Gridding"),
+                    extra.toString(), showUrl));
+        }
+        advancedSB.append(HtmlUtils.makeShowHideBlock(msg("Points"),
+                points.toString(), false));
+        advancedSB.append(HtmlUtils.makeShowHideBlock(msg("Processing"),
+                processSB.toString(), false));
 
 
-        sb.append(
-            HtmlUtils.row(
-                HtmlUtils.colspan(formHeader("Job Information"), 2)));
-
+        StringBuilder jobSB = new StringBuilder();
+        jobSB.append(HtmlUtils.formTable());
         User user = request.getUser();
         if (getAdmin().isEmailCapable()) {
-            sb.append(HtmlUtils.formEntry(msgLabel("Send email to"),
-                                          HtmlUtils.input(ARG_JOB_EMAIL,
-                                              user.getEmail(), 40)));
+            jobSB.append(HtmlUtils.formEntry(msgLabel("Send email to"),
+                                             HtmlUtils.input(ARG_JOB_EMAIL,
+                                                 user.getEmail(), 40)));
         }
-        sb.append(HtmlUtils.formEntry(msgLabel("Your name"),
-                                      HtmlUtils.input(ARG_JOB_USER,
-                                          user.getName(), 40)));
+        jobSB.append(HtmlUtils.formEntry(msgLabel("Your name"),
+                                         HtmlUtils.input(ARG_JOB_USER,
+                                             user.getName(), 40)));
 
-        sb.append(HtmlUtils.formEntry(msgLabel("Job name"),
-                                      HtmlUtils.input(ARG_JOB_NAME, "", 40)));
+        jobSB.append(HtmlUtils.formEntry(msgLabel("Job name"),
+                                         HtmlUtils.input(ARG_JOB_NAME, "",
+                                             40)));
 
-        sb.append(
+        jobSB.append(
             HtmlUtils.formEntryTop(
                 msgLabel("Description"),
                 HtmlUtils.textArea(ARG_JOB_DESCRIPTION, "", 5, 40)));
 
+        jobSB.append(HtmlUtils.formTableClose());
 
-
+        formGroup(request, sb, "Advanced Settings", advancedSB.toString());
+        formGroup(request, sb, "Job Information",
+                  HtmlUtils.makeShowHideBlock("", jobSB.toString(), false));
     }
 
+
+    /**
+     * _more_
+     *
+     * @param request _more_
+     * @param sb _more_
+     * @param title _more_
+     * @param contents _more_
+     *
+     * @throws Exception _more_
+     */
+    public static void formGroup(Request request, Appendable sb,
+                                 String title, String contents)
+            throws Exception {
+        sb.append(formHeader(title));
+        sb.append(HtmlUtils.insetDiv(contents, 0, 20, 10, 0));
+    }
 
 
     /**
@@ -833,22 +859,8 @@ public class PointFormHandler extends RecordFormHandler {
         formatLists.add(pointFormats);
         formatLists.add(gridFormats);
 
-        sb.append(
-            HtmlUtils.formTable(
-                HtmlUtils.cssClass("formtable")
-                + HtmlUtils.attrs(
-                    HtmlUtils.ATTR_CELLPADDING, "0",
-                    HtmlUtils.ATTR_CELLSPACING, "0", HtmlUtils.ATTR_WIDTH,
-                    "100%")));
-        sb.append("<tr><td width=15%>");
-        sb.append(HtmlUtils.submit(msg("Get Data"), ARG_GETDATA));
-        sb.append("</td><td></td></tr>");
-        sb.append(
-            HtmlUtils.hidden(
-                ARG_OUTPUT, getPointOutputHandler().OUTPUT_PRODUCT.getId()));
-
-
-        StringBuffer    productSB      = new StringBuffer();
+        StringBuffer productSB = new StringBuffer();
+        productSB.append(HtmlUtils.formTable());
         HashSet<String> selectedFormat = getFormats(request);
         StringBuffer formats =
             new StringBuffer(
@@ -919,8 +931,10 @@ public class PointFormHandler extends RecordFormHandler {
         formats.append("</tr></table>");
         productSB.append(HtmlUtils.row(HtmlUtils.colspan(formats.toString(),
                 2)));
+        productSB.append(HtmlUtils.formTableClose());
 
         StringBuffer subsetSB = new StringBuffer();
+        subsetSB.append(HtmlUtils.formTable());
         if (numRecords > 0) {
             subsetSB.append(HtmlUtils.formEntry("# " + msgLabel("Points"),
                     formatPointCount(numRecords)));
@@ -1149,17 +1163,18 @@ public class PointFormHandler extends RecordFormHandler {
 
             }
         }
-
-
-
         subsetSB.append(extraSubset);
-        sb.append(HtmlUtils.row(HtmlUtils.colspan(formHeader("Subset Data"),
-                2)));
-        sb.append(subsetSB);
+        subsetSB.append(HtmlUtils.formTableClose());
+
         sb.append(
-            HtmlUtils.row(
-                HtmlUtils.colspan(formHeader("Select Products"), 2)));
-        sb.append(productSB);
+            HtmlUtils.hidden(
+                ARG_OUTPUT, getPointOutputHandler().OUTPUT_PRODUCT.getId()));
+        formGroup(request, sb, "Subset Data",
+                  HtmlUtils.makeShowHideBlock("", subsetSB.toString(),
+                      false));
+        formGroup(request, sb, "Select Products",
+                  HtmlUtils.makeShowHideBlock("", productSB.toString(),
+                      true));
 
     }
 
@@ -1709,6 +1724,9 @@ ARG_WAVEFORM_DISPLAY, waveformDisplay, ARG_WAVEFORM_NAME, waveformName
                 return true;
             }
         };
+
+
+
 
 
         long t1   = System.currentTimeMillis();

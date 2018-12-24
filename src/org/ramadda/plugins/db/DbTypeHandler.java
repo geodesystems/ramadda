@@ -20,7 +20,6 @@ package org.ramadda.plugins.db;
 import org.ramadda.data.point.text.*;
 
 import org.ramadda.data.record.*;
-import org.ramadda.data.record.*;
 import org.ramadda.data.services.PointOutputHandler;
 import org.ramadda.data.services.PointTypeHandler;
 import org.ramadda.data.services.RecordTypeHandler;
@@ -39,7 +38,6 @@ import org.ramadda.repository.output.OutputType;
 import org.ramadda.repository.output.RssOutputHandler;
 import org.ramadda.repository.output.WikiConstants;
 import org.ramadda.repository.type.*;
-import org.ramadda.util.sql.*;
 import org.ramadda.util.Bounds;
 import org.ramadda.util.FormInfo;
 import org.ramadda.util.GoogleChart;
@@ -55,6 +53,7 @@ import org.ramadda.util.Utils;
 import org.ramadda.util.Utils;
 import org.ramadda.util.XlsUtil;
 import org.ramadda.util.XmlUtils;
+import org.ramadda.util.sql.*;
 
 import org.ramadda.util.text.CsvUtil;
 import org.ramadda.util.text.Filter;
@@ -2022,6 +2021,28 @@ public class DbTypeHandler extends PointTypeHandler /* BlobTypeHandler*/ {
     }
 
 
+    /**
+     * _more_
+     *
+     * @param request _more_
+     * @param entry _more_
+     * @param sb _more_
+     *
+     * @throws Exception _more_
+     */
+    @Override
+    public void addToProcessingForm(Request request, Entry entry,
+                                    Appendable sb)
+            throws Exception {
+        super.addToProcessingForm(request, entry, sb);
+        StringBuilder inner = new StringBuilder();
+        inner.append(HtmlUtils.formTable());
+        getSearchFormInner(request, entry, inner, false);
+        inner.append(HtmlUtils.formTableClose());
+        org.ramadda.data.services.PointFormHandler.formGroup(request, sb,
+                "Database Search",
+                HtmlUtils.makeShowHideBlock("", inner.toString(), false));
+    }
 
     /**
      * _more_
@@ -2037,8 +2058,6 @@ public class DbTypeHandler extends PointTypeHandler /* BlobTypeHandler*/ {
             throws Exception {
 
         StringBuilder sb     = new StringBuilder();
-
-
         String formUrl       =
             request.makeUrl(getRepository().URL_ENTRY_SHOW);
         String        formId = HtmlUtils.getUniqueId("form_");
@@ -2051,9 +2070,40 @@ public class DbTypeHandler extends PointTypeHandler /* BlobTypeHandler*/ {
 
         sb.append(formEntry(request, "", buttons));
 
+
+        getSearchFormInner(request, entry, sb, true);
+        sb.append(formEntry(request, "", buttons));
+        sb.append(HtmlUtils.formTableClose());
+        HtmlUtils.script(sb, "HtmlUtil.initSelect('.search-select')");
+        OutputHandler.addUrlShowingForm(sb, formId,
+                                        "[\".*OpenLayers_Control.*\"]");
+        sb.append(HtmlUtils.formClose());
+
+        return sb;
+    }
+
+
+
+    /**
+     * _more_
+     *
+     * @param request _more_
+     * @param entry _more_
+     * @param sb _more_
+     * @param normalForm _more_
+     *
+     * @throws Exception _more_
+     */
+    private void getSearchFormInner(Request request, Entry entry,
+                                    Appendable sb, boolean normalForm)
+            throws Exception {
+
         StringBuilder advanced = new StringBuilder();
         List<Clause>  where    = new ArrayList<Clause>();
         for (Column column : allColumns) {
+            if ( !normalForm && column.isType(column.DATATYPE_LATLON)) {
+                continue;
+            }
             if (column.getCanSearch()) {
                 if (column.getAdvancedSearch()) {
                     column.addToSearchForm(request, advanced, where, entry);
@@ -2093,37 +2143,42 @@ public class DbTypeHandler extends PointTypeHandler /* BlobTypeHandler*/ {
             }
         }
 
-        sb.append(
-            formEntry(
-                request, msgLabel("Group By"),
-                HtmlUtils.select(
-                    ARG_GROUPBY, tfos,
-                    (List<String>) request.get(ARG_GROUPBY, new ArrayList()),
-                    " multiple size=4 "
-        /*HtmlUtils.cssClass("search-select")*/
-        )));
+        if (normalForm) {
 
-        List<TwoFacedObject> aggTypes = new ArrayList<TwoFacedObject>();
-        aggTypes.add(new TwoFacedObject("Count", "count"));
-        aggTypes.add(new TwoFacedObject("Sum", "sum"));
-        aggTypes.add(new TwoFacedObject("Average", "avg"));
-        aggTypes.add(new TwoFacedObject("Min", "min"));
-        aggTypes.add(new TwoFacedObject("Max", "max"));
+            sb.append(formEntry(request, msgLabel("Group By"),
+                                HtmlUtils.select(ARG_GROUPBY, tfos,
+                                    (List<String>) request.get(ARG_GROUPBY,
+                                        new ArrayList()), " multiple size=4 "
+            /*HtmlUtils.cssClass("search-select")*/
+            )));
 
-        StringBuilder aggSB = new StringBuilder();
-        for (int i = 0; i < 3; i++) {
-            aggSB.append(
-                HtmlUtils.select(
-                    ARG_AGG + i, aggtfos, request.getString(ARG_AGG + i, ""),
-                    HtmlUtils.cssClass("search-select")) + HtmlUtils.space(2)
-                        + HtmlUtils.select(
-                            ARG_AGG_TYPE + i, aggTypes,
-                            request.getString(ARG_AGG_TYPE + i, ""),
-                            HtmlUtils.cssClass("search-select")));
-            aggSB.append("<br>");
+            List<TwoFacedObject> aggTypes = new ArrayList<TwoFacedObject>();
+            aggTypes.add(new TwoFacedObject("Count", "count"));
+            aggTypes.add(new TwoFacedObject("Sum", "sum"));
+            aggTypes.add(new TwoFacedObject("Average", "avg"));
+            aggTypes.add(new TwoFacedObject("Min", "min"));
+            aggTypes.add(new TwoFacedObject("Max", "max"));
+
+            StringBuilder aggSB = new StringBuilder();
+            for (int i = 0; i < 3; i++) {
+                aggSB.append(
+                    HtmlUtils.select(
+                        ARG_AGG
+                        + i, aggtfos, request.getString(
+                            ARG_AGG + i, ""), HtmlUtils.cssClass(
+                            "search-select")) + HtmlUtils.space(2)
+                                + HtmlUtils.select(
+                                    ARG_AGG_TYPE
+                                    + i, aggTypes, request.getString(
+                                        ARG_AGG_TYPE
+                                        + i, ""), HtmlUtils.cssClass(
+                                            "search-select")));
+                aggSB.append("<br>");
+            }
+            sb.append(formEntry(request, msgLabel("Aggregate"),
+                                aggSB.toString()));
+
         }
-        sb.append(formEntry(request, msgLabel("Aggregate"),
-                            aggSB.toString()));
 
         sb.append(
             formEntry(
@@ -2143,29 +2198,27 @@ public class DbTypeHandler extends PointTypeHandler /* BlobTypeHandler*/ {
                                                     "desc")) + " "
                                                         + "Descending"));
 
-        sb.append(
-            formEntry(
-                request, msgLabel("View As"),
-                HtmlUtils.select(
-                    ARG_DB_VIEW, viewList,
-                    request.getString(ARG_DB_VIEW, ""),
-                    HtmlUtils.cssClass("search-select")) + HtmlUtils.space(2)
-                        + count));
+        if (normalForm) {
+            sb.append(
+                formEntry(
+                    request, msgLabel("View As"),
+                    HtmlUtils.select(
+                        ARG_DB_VIEW, viewList,
+                        request.getString(ARG_DB_VIEW, ""),
+                        HtmlUtils.cssClass(
+                            "search-select")) + HtmlUtils.space(2) + count));
+            sb.append(formEntry(request, msgLabel("Search Name"),
+                                HtmlUtils.input(ARG_DB_SEARCHNAME,
+                                    request.getString(ARG_DB_SEARCHNAME, ""),
+                                    HtmlUtils.SIZE_50)));
 
-        sb.append(
-            formEntry(
-                request, msgLabel("Search Name"),
-                HtmlUtils.input(
-                    ARG_DB_SEARCHNAME,
-                    request.getString(ARG_DB_SEARCHNAME, ""),
-                    HtmlUtils.SIZE_50)));
-
-        if (getAccessManager().canEditEntry(request, entry)) {
-            sb.append(formEntry(request, "",
-                                HtmlUtils.checkbox(ARG_DB_DOSAVESEARCH,
-                                    "true",
-                                    request.get(ARG_DB_DOSAVESEARCH,
-                                        false)) + " Save Search"));
+            if (getAccessManager().canEditEntry(request, entry)) {
+                sb.append(formEntry(request, "",
+                                    HtmlUtils.checkbox(ARG_DB_DOSAVESEARCH,
+                                        "true",
+                                        request.get(ARG_DB_DOSAVESEARCH,
+                                            false)) + " Save Search"));
+            }
         }
 
 
@@ -2188,14 +2241,6 @@ public class DbTypeHandler extends PointTypeHandler /* BlobTypeHandler*/ {
         */
 
         sb.append(advanced);
-        sb.append(formEntry(request, "", buttons));
-        sb.append(HtmlUtils.formTableClose());
-        HtmlUtils.script(sb, "HtmlUtil.initSelect('.search-select')");
-        OutputHandler.addUrlShowingForm(sb, formId,
-                                        "[\".*OpenLayers_Control.*\"]");
-
-        return sb;
-
     }
 
 
@@ -2219,6 +2264,8 @@ public class DbTypeHandler extends PointTypeHandler /* BlobTypeHandler*/ {
 
         return new Result(getTitle(request, entry), sb);
     }
+
+
 
 
     /**
@@ -2306,6 +2353,8 @@ public class DbTypeHandler extends PointTypeHandler /* BlobTypeHandler*/ {
 
         return handleList(request, entry, mainClause, "", true);
     }
+
+
 
 
 
@@ -2407,8 +2456,6 @@ public class DbTypeHandler extends PointTypeHandler /* BlobTypeHandler*/ {
                     + HtmlUtils.submit(msg("Cancel"), ARG_DB_LIST)));
             addViewFooter(request, entry, sb);
         }
-
-
 
         sb.append(HtmlUtils.formClose());
 
@@ -4303,7 +4350,6 @@ public class DbTypeHandler extends PointTypeHandler /* BlobTypeHandler*/ {
      *
      * @param request _more_
      * @param entry _more_
-     * @param valueList _more_
      * @param fromSearch _more_
      *
      * @return _more_
@@ -4311,8 +4357,7 @@ public class DbTypeHandler extends PointTypeHandler /* BlobTypeHandler*/ {
      * @throws Exception _more_
      */
     public Result handleListChart(Request request, Entry entry,
-    //                                  List<Object[]> valueList,
-    boolean fromSearch) throws Exception {
+                                  boolean fromSearch) throws Exception {
 
         boolean canEdit  = getAccessManager().canEditEntry(request, entry);
         StringBuilder sb = new StringBuilder();
@@ -5946,10 +5991,18 @@ public class DbTypeHandler extends PointTypeHandler /* BlobTypeHandler*/ {
             try {
                 SimpleDateFormat sdf =
                     RepositoryUtil.makeDateFormat("yyyyMMdd'T'HHmmss");
-                StringBuilder s = new StringBuilder("#converted stream\n");
+                StringBuilder s     =
+                    new StringBuilder("#converted stream\n");
+                List<Clause>  where = new ArrayList<Clause>();
+                where.add(Clause.eq(COL_ID, entry.getId()));
+                StringBuilder searchCriteria = new StringBuilder();
+                for (Column column : allColumns) {
+                    column.assembleWhereClause(request, where,
+                            searchCriteria);
+                }
+
                 List<Object[]> valueList = readValues(request, entry,
-                                               Clause.eq(COL_ID,
-                                                   entry.getId()));
+                                               Clause.and(where));
                 for (Object[] list : valueList) {
                     int cnt = 0;
                     for (int i = IDX_MAX_INTERNAL + 1; i < list.length; i++) {

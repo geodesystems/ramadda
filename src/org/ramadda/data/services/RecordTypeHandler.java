@@ -146,6 +146,9 @@ public abstract class RecordTypeHandler extends BlobTypeHandler implements Recor
     }
 
 
+    public void addToProcessingForm(Request request, Entry entry, Appendable sb) throws Exception {
+    }
+
     /**
      * _more_
      *

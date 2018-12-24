@@ -1695,10 +1695,10 @@ public class Column implements DataTypes, Constants {
         DatabaseManager dbm        = getDatabaseManager();
 
         if (isType(DATATYPE_LATLON)) {
-            double north = request.get(searchArg + "_north", Double.NaN);
-            double south = request.get(searchArg + "_south", Double.NaN);
-            double east  = request.get(searchArg + "_east", Double.NaN);
-            double west  = request.get(searchArg + "_west", Double.NaN);
+            double north = request.get(searchArg + "_north", request.get(ARG_AREA_NORTH, Double.NaN));
+            double south = request.get(searchArg + "_south", request.get(ARG_AREA_SOUTH, Double.NaN));
+            double east  = request.get(searchArg + "_east", request.get(ARG_AREA_EAST, Double.NaN));
+            double west  = request.get(searchArg + "_west", request.get(ARG_AREA_WEST, Double.NaN));
             if (latLonOk(north)) {
                 where.add(Clause.le(columnName + "_lat", north));
             }
