@@ -18,6 +18,7 @@ package org.ramadda.util.text;
 
 
 import org.ramadda.util.Utils;
+import org.ramadda.data.record.RecordField;
 
 
 import ucar.unidata.util.IOUtil;
@@ -143,15 +144,15 @@ public abstract class Processor extends CsvOperator {
         }
         seen.add(id);
 
-        String type = "numeric";
+        String type = RecordField.TYPE_DOUBLE;
         if (id.indexOf("year") >= 0) {
-            type = "date";
+            type = RecordField.TYPE_DATE;
             extra.append(" format=\"yyyy\" ");
         }
 
         boolean hasName = id.indexOf("name") >= 0;
         if (hasName) {
-            type = "string";
+            type = RecordField.TYPE_STRING;
         } else {
             String sampledType = null;
             if (rows != null) {
@@ -163,13 +164,13 @@ public abstract class Processor extends CsvOperator {
                     String exampleString = example.toString();
                     if (exampleString.matches("^[\\d,]+$")) {
                         if (sampledType == null) {
-                            sampledType = "integer";
+                            sampledType = RecordField.TYPE_INT;
                         }
                     } else if (exampleString.matches("^[\\d\\.]+$")) {
-                        sampledType = "numeric";
+                        sampledType = RecordField.TYPE_DOUBLE;
                     } else if (exampleString.length() == 0) {}
                     else {
-                        sampledType = "string";
+                        sampledType = RecordField.TYPE_STRING;
 
                         break;
                     }
@@ -183,13 +184,11 @@ public abstract class Processor extends CsvOperator {
 
         if (id.indexOf("latitude") >= 0) {
             extra.append(" isLatitude=\"true\" ");
-            type = "numeric";
+            type = RecordField.TYPE_DOUBLE;
         } else if (id.indexOf("longitude") >= 0) {
             extra.append(" isLongitude=\"true\" ");
-            type = "numeric";
+            type = RecordField.TYPE_DOUBLE;
         }
-
-
 
         sb.append(id);
         sb.append("[");

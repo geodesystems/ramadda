@@ -215,7 +215,7 @@ public class AcsFile extends CsvFile {
                 for (int i = 0; i < headerJson.length(); i++) {
                     String         value = headerJson.getString(i);
                     CensusVariable var   = getVariable(value);
-                    String         type  = "numeric";
+                    String         type  = RecordField.TYPE_DOUBLE;
                     numeric[i] = true;
                     depends[i] = -1;
                     special[i] = isNameSpecial(value);

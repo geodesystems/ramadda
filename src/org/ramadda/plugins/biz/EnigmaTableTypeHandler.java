@@ -133,7 +133,7 @@ public class EnigmaTableTypeHandler extends PointTypeHandler {
                     myType = RecordField.TYPE_STRING;
                 } else if (type.equals("type_numeric")
                            || type.equals("type_integer")) {
-                    myType = RecordField.TYPE_NUMERIC;
+                    myType = RecordField.TYPE_DOUBLE;
                     extra.append(TextFile.attrChartable());
                 } else if (type.equals("type_date")) {
                     myType = RecordField.TYPE_DATE;

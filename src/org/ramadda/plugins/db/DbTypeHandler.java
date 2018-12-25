@@ -6070,26 +6070,25 @@ public class DbTypeHandler extends PointTypeHandler /* BlobTypeHandler*/ {
                 Column column  = columnsToUse.get(i);
                 String colType = column.getType();
                 String type    = isNumeric[i]
-                                 ? "double"
+                                 ? RecordField.TYPE_DOUBLE
                                  : colType.equals(Column.DATATYPE_DATE)
-                                   ? "date"
-                                   : "string";
+                                   ? RecordField.TYPE_DATE
+                                   : RecordField.TYPE_STRING;
                 String extra   = "";
                 if (isNumeric[i]) {
                     extra += attrChartable();
-                } else if (type.equals("date")) {
-
+                } else if (type.equals(RecordField.TYPE_DATE)) {
                     extra += " " + attrFormat("yyyyMMdd'T'HHmmss");
                 } else if (column.getName().equals("latitude")) {
-                    type = "double";
+                    type = RecordField.TYPE_DOUBLE;
                 } else if (column.getName().equals("longitude")) {
-                    type = "double";
+                    type = RecordField.TYPE_DOUBLE;
                 }
                 if (colType.equals(Column.DATATYPE_LATLON)) {
-                    fields.append(makeField("latitude", attrType("double"),
+                    fields.append(makeField("latitude", attrType(RecordField.TYPE_DOUBLE),
                                             attrLabel("Latitude")));
                     fields.append(",");
-                    fields.append(makeField("longitude", attrType("double"),
+                    fields.append(makeField("longitude", attrType(RecordField.TYPE_DOUBLE),
                                             attrLabel("Longitude")));
                 } else {
                     fields.append(makeField(column.getName(), attrType(type),
@@ -6097,22 +6096,22 @@ public class DbTypeHandler extends PointTypeHandler /* BlobTypeHandler*/ {
                                             extra));
                 }
                 /*
-                makeField("point_altitude", attrType("double"),
+                makeField("point_altitude", attrType(RecordField.TYPE_DOUBLE),
                           attrChartable(),
                           attrUnit("feet"),
                           ("Elevation")),
-                makeField("grade", attrType("double"),
+                makeField("grade", attrType("RecordField.TYPE_DOUBLE),
                           attrChartable(),
                           attrUnit("%"),
                           attrLabel("Grade")),
-                makeField("elevation_gain", attrType("double"),
+                makeField("elevation_gain", attrType(RecordField.TYPE_DOUBLE),
                           attrChartable(),
                           attrUnit("feet"),
                           attrLabel("Elevation Gain")),
                 */
-                //            makeField("latitude", attrType("double"),
+                //            makeField("latitude", attrType(RecordField.TYPE_DOUBLE),
                 //                      attrLabel("Latitude")),
-                //            makeField("longitude", attrType("double"),
+                //            makeField("longitude", attrType(RecordField.TYPE_DOUBLE),
                 //                      attrLabel("Longitude")),
             }
             //        System.err.println(fields);

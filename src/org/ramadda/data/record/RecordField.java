@@ -83,16 +83,15 @@ public class RecordField {
 
 
     /** _more_ */
-    public static final String TYPE_NUMERIC = "numeric";
-
-    /** _more_ */
     public static final String TYPE_STRING = "string";
 
     /** _more_ */
     public static final String TYPE_DATE = "date";
 
+    public static final String TYPE_DOUBLE = "double";
+
     /** _more_ */
-    public static final String TYPE_INTEGER = "integer";
+    public static final String TYPE_INT = "int";
 
     /** _more_ */
     private boolean isTypeNumeric = true;
@@ -198,7 +197,7 @@ public class RecordField {
     private String headerPattern = null;
 
     /** _more_ */
-    private String type = TYPE_NUMERIC;
+    private String type = TYPE_DOUBLE;
 
     /** _more_ */
     private double missingValue = Double.NaN;
@@ -403,9 +402,6 @@ public class RecordField {
     public void addJson(StringBuffer sb, int index) {
         List<String> items    = new ArrayList<String>();
         String       dataType = type;
-        if (type.equals(TYPE_NUMERIC)) {
-            dataType = "double";
-        }
         items.add("index");
         items.add("" + index);
         items.add("id");
@@ -749,7 +745,7 @@ public class RecordField {
      * @return The RawType
      */
     public String getRawType() {
-        return rawType;
+        return rawType!=null?rawType:getTypeName();
     }
 
 
@@ -991,8 +987,8 @@ public class RecordField {
      */
     public void setType(String value) {
         type = value;
-        isTypeNumeric = value.equals(TYPE_NUMERIC)
-                        || value.equals(TYPE_INTEGER);
+        isTypeNumeric = value.equals("numeric") || value.equals("integer")||
+            value.equals(TYPE_DOUBLE)    || value.equals(TYPE_INT);
         isTypeString = value.equals(TYPE_STRING);
         isTypeDate   = value.equals(TYPE_DATE);
     }
@@ -1021,7 +1017,7 @@ public class RecordField {
      * @return _more_
      */
     public boolean isTypeInteger() {
-        return (isTypeNumeric && type.equals(TYPE_INTEGER));
+        return (type.equals(TYPE_INT));
     }
 
     /**
