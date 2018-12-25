@@ -308,11 +308,10 @@ public class RecordFormHandler extends RepositoryManager implements RecordConsta
         sb.append(recordFile.getHtmlDescription());
         List<RecordField> fields = null;
 
-        //Don't do this for now
-        //recordEntry.getRecordFile().getFields(true);
-
+        fields = recordEntry.getRecordFile().getFields(true);
 
         if (fields == null) {
+            sb.append("No metadata available");
             return;
         }
         long numRecords = recordEntry.getNumRecords();
