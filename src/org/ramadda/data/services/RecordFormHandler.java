@@ -228,8 +228,11 @@ public class RecordFormHandler extends RepositoryManager implements RecordConsta
                                       RecordEntry recordEntry)
             throws Exception {
         StringBuffer sb = new StringBuffer();
+        request.getRepository().getPageHandler().entrySectionOpen(request,
+                                                                  recordEntry.getEntry(), sb, "Metadata");
         getEntryMetadata(request, recordEntry, sb);
-
+        request.getRepository().getPageHandler().entrySectionClose(request,
+                recordEntry.getEntry(), sb);
         return new Result("", sb);
     }
 
@@ -373,6 +376,8 @@ public class RecordFormHandler extends RepositoryManager implements RecordConsta
         final StringBuffer sb = new StringBuffer();
         final List<RecordField> fields =
             recordEntry.getRecordFile().getFields();
+        request.getRepository().getPageHandler().entrySectionOpen(request,
+                                                                  recordEntry.getEntry(), sb, "View Data");
         int start = request.get(ARG_START, 0);
         request.put(ARG_START, start + 50);
         int step = 50;
@@ -507,6 +512,8 @@ public class RecordFormHandler extends RepositoryManager implements RecordConsta
                 visitInfo);
 
         sb.append("</table>");
+        request.getRepository().getPageHandler().entrySectionClose(request,
+                                                                   recordEntry.getEntry(), sb);
 
         return new Result("", sb);
 
