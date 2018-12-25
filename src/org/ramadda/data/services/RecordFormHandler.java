@@ -34,6 +34,7 @@ import org.ramadda.repository.map.*;
 import org.ramadda.repository.metadata.Metadata;
 import org.ramadda.repository.output.*;
 import org.ramadda.util.HtmlUtils;
+import org.ramadda.util.Utils;
 
 import ucar.unidata.geoloc.Bearing;
 import ucar.unidata.geoloc.LatLonPointImpl;
@@ -337,13 +338,13 @@ public class RecordFormHandler extends RepositoryManager implements RecordConsta
             if (unit == null) {
                 unit = "";
             }
-
+            String typeLabel = Utils.stringDefined(type)?type:field.getType();
             sb.append(HtmlUtils.rowTop(HtmlUtils.cols(new Object[] {
                 field.getName(),
                 field.getLabel(), field.getDescription(), unit,
-                ((type == null)
+                ((typeLabel == null)
                  ? ""
-                 : type) })));
+                 : typeLabel) })));
         }
         sb.append(HtmlUtils.formTableClose());
 

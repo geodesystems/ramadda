@@ -745,7 +745,7 @@ public class RecordField {
      * @return The RawType
      */
     public String getRawType() {
-        return rawType!=null?rawType:getTypeName();
+        return rawType!=null&&rawType.length()>0?rawType:getTypeName();
     }
 
 

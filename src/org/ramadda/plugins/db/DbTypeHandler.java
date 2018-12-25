@@ -6069,11 +6069,12 @@ public class DbTypeHandler extends PointTypeHandler /* BlobTypeHandler*/ {
                 }
                 Column column  = columnsToUse.get(i);
                 String colType = column.getType();
-                String type    = isNumeric[i]
-                                 ? RecordField.TYPE_DOUBLE
-                                 : colType.equals(Column.DATATYPE_DATE)
-                                   ? RecordField.TYPE_DATE
-                                   : RecordField.TYPE_STRING;
+                String type    =    colType.equals(Column.DATATYPE_INT)?
+                    RecordField.TYPE_INT:
+                    isNumeric[i]?RecordField.TYPE_DOUBLE: 
+                    colType.equals(Column.DATATYPE_DATE)
+                    ? RecordField.TYPE_DATE: 
+                    RecordField.TYPE_STRING;
                 String extra   = "";
                 if (isNumeric[i]) {
                     extra += attrChartable();
@@ -6114,7 +6115,6 @@ public class DbTypeHandler extends PointTypeHandler /* BlobTypeHandler*/ {
                 //            makeField("longitude", attrType(RecordField.TYPE_DOUBLE),
                 //                      attrLabel("Longitude")),
             }
-            //        System.err.println(fields);
             putProperty(PROP_FIELDS, fields.toString());
 
             return visitInfo;
