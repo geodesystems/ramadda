@@ -575,40 +575,43 @@ public class PointFormHandler extends RecordFormHandler {
         boolean      showUrl = request.get(ARG_SHOWURL, false);
         StringBuffer extra   = new StringBuffer();
         extra.append(HtmlUtils.formTable());
-        String initialDegrees = "" + getDefaultRadiusDegrees(request,
-                                    entry.getBounds());
 
-        if (request.defined(ARG_GRID_RADIUS_DEGREES)) {
-            initialDegrees = request.getString(ARG_GRID_RADIUS_DEGREES, "");
+        String paramWidget = null;
+        List   params      = new ArrayList();
+        //TODO: we need a better way to say this is a elevation point cloud
+        //        if(pointEntry.isCapable(PointFile.ACTION_ELEVATION)) {
+        params.add(new TwoFacedObject(msg(LABEL_ALTITUDE), ""));
+        //        }
+        if (recordEntry != null) {
+            for (RecordField field :
+                    recordEntry.getRecordFile().getChartableFields()) {
+                params.add(new TwoFacedObject(field.getLabel(),
+                        "" + field.getParamId()));
+            }
         }
 
-        String initialCells = "0";
-        if (request.defined(ARG_GRID_RADIUS_CELLS)) {
-            initialCells = request.getString(ARG_GRID_RADIUS_CELLS, "");
+        if (params.size() > 1) {
+            extra.append(
+                HtmlUtils.formEntry(
+                    msgLabel("Parameter to grid"),
+                    HtmlUtils.select(
+                        RecordOutputHandler.ARG_PARAMETER, params,
+                        request.getString(
+                            RecordOutputHandler.ARG_PARAMETER,
+                            (String) null))));
+            extra.append(
+                HtmlUtils.formEntry(
+                    msgLabel("Divisor"),
+                    HtmlUtils.select(
+                        RecordOutputHandler.ARG_DIVISOR, params,
+                        request.get(
+                            RecordOutputHandler.ARG_DIVISOR,
+                            new ArrayList<String>()), HtmlUtils.arg(
+                                HtmlUtils.ATTR_ROWS, "4") + " multiple ")));
         }
-        extra.append(HtmlUtils.hidden(ARG_GRID_RADIUS_DEGREES_ORIG,
-                                      initialDegrees));
-        extra.append(
-            HtmlUtils.formEntry(
-                msgLabel("Grid radius for IDW"),
-                msgLabel("Degrees")
-                + HtmlUtils.input(
-                    ARG_GRID_RADIUS_DEGREES, initialDegrees,
-                    12) + HtmlUtils.space(4) + msgLabel("or # of grid cells")
-                        + HtmlUtils.input(
-                            ARG_GRID_RADIUS_CELLS, initialCells, 4)));
 
 
-        extra.append(
-            HtmlUtils.formEntry(
-                msgLabel("Power"),
-                HtmlUtils.input(
-                    RecordConstants.ARG_GRID_POWER,
-                    request.getString(RecordConstants.ARG_GRID_POWER, "1.0"),
-                    5) + " "
-                       + HtmlUtils.href(
-                           "https://gisgeography.com/inverse-distance-weighting-idw-interpolation/",
-                           "More Information")));
+
         extra.append(
             HtmlUtils.formEntry(
                 msgLabel("Minimum # of Points"),
@@ -636,6 +639,37 @@ public class PointFormHandler extends RecordFormHandler {
 
 
 
+        String initialDegrees = "" + getDefaultRadiusDegrees(request,
+                                    entry.getBounds());
+
+        if (request.defined(ARG_GRID_RADIUS_DEGREES)) {
+            initialDegrees = request.getString(ARG_GRID_RADIUS_DEGREES, "");
+        }
+
+        String initialCells =  request.getString(ARG_GRID_RADIUS_CELLS, "5");
+        extra.append(
+            HtmlUtils.formEntry(
+                msgLabel("IDW Grid Radius"),
+                msgLabel("Grid cells")
+                        + HtmlUtils.input(ARG_GRID_RADIUS_CELLS, initialCells, 4)
+                + HtmlUtils.space(4) + 
+                msgLabel("or degrees")
+                + HtmlUtils.input(
+                    ARG_GRID_RADIUS_DEGREES, initialDegrees,
+                    12)));
+
+        extra.append(
+            HtmlUtils.formEntry(
+                msgLabel("IDW Power"),
+                HtmlUtils.input(
+                    RecordConstants.ARG_GRID_POWER,
+                    request.getString(RecordConstants.ARG_GRID_POWER, "1.0"),
+                    5) + " "
+                       + HtmlUtils.href(
+                           "https://gisgeography.com/inverse-distance-weighting-idw-interpolation/",
+                           "More Information")));
+
+
         extra.append(
             HtmlUtils.formEntry(
                 msgLabel("Hill shading"),
@@ -647,6 +681,9 @@ public class PointFormHandler extends RecordFormHandler {
                        + HtmlUtils.input(
                            ARG_HILLSHADE_ANGLE,
                            request.getString(ARG_HILLSHADE_ANGLE, "45"), 4)));
+
+
+
         extra.append(
             HtmlUtils.formEntry(
                 msgLabel("Image Dimensions"),
@@ -658,40 +695,6 @@ public class PointFormHandler extends RecordFormHandler {
                            request.getString(ARG_HEIGHT, "" + DFLT_HEIGHT),
                            5)));
 
-
-        String paramWidget = null;
-        List   params      = new ArrayList();
-        //TODO: we need a better way to say this is a elevation point cloud
-        //        if(pointEntry.isCapable(PointFile.ACTION_ELEVATION)) {
-        params.add(new TwoFacedObject(msg(LABEL_ALTITUDE), ""));
-        //        }
-        if (recordEntry != null) {
-            for (RecordField field :
-                    recordEntry.getRecordFile().getChartableFields()) {
-                params.add(new TwoFacedObject(field.getLabel(),
-                        "" + field.getParamId()));
-            }
-        }
-
-        if (params.size() > 1) {
-            extra.append(
-                HtmlUtils.formEntry(
-                    msgLabel("Parameter for Image and Grid"),
-                    HtmlUtils.select(
-                        RecordOutputHandler.ARG_PARAMETER, params,
-                        request.getString(
-                            RecordOutputHandler.ARG_PARAMETER,
-                            (String) null))));
-            extra.append(
-                HtmlUtils.formEntry(
-                    msgLabel("Divisor"),
-                    HtmlUtils.select(
-                        RecordOutputHandler.ARG_DIVISOR, params,
-                        request.get(
-                            RecordOutputHandler.ARG_DIVISOR,
-                            new ArrayList<String>()), HtmlUtils.arg(
-                                HtmlUtils.ATTR_ROWS, "4") + " multiple ")));
-        }
 
         extra.append(
             HtmlUtils.formEntry(
@@ -771,8 +774,10 @@ public class PointFormHandler extends RecordFormHandler {
             advancedSB.append(HtmlUtils.makeShowHideBlock(msg("Gridding"),
                     extra.toString(), showUrl));
         }
+        /*
         advancedSB.append(HtmlUtils.makeShowHideBlock(msg("Points"),
                 points.toString(), false));
+        */
         advancedSB.append(HtmlUtils.makeShowHideBlock(msg("Processing"),
                 processSB.toString(), false));
 
@@ -992,7 +997,7 @@ public class PointFormHandler extends RecordFormHandler {
                                           null, null, showTime)));
             }
 
-            subsetSB.append(HtmlUtils.formEntry(msgLabel("Max"),
+            subsetSB.append(HtmlUtils.formEntry(msgLabel("Max # Points"),
                     HtmlUtils.input(ARG_MAX, request.getString(ARG_MAX, ""),
                                     4)));
 
