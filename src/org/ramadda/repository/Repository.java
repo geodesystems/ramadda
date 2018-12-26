@@ -5120,24 +5120,24 @@ public class Repository extends RepositoryBase implements RequestHandler,
     public Result processProxy(Request request) throws Exception {
         String url = request.getString(ARG_URL, (String)null);
         if(url!=null) {
-        if ( !url.startsWith("http:") && !url.startsWith("https:")) {
-            throw new IllegalArgumentException("Bad URL:" + url);
-        }
-        //Check the whitelist
-        boolean ok = false;
-        for (String pattern :
-                StringUtil.split(getProperty(PROP_PROXY_WHITELIST, ""), ",",
-                                 true, true)) {
-            //            System.err.println("pattern:" + pattern);
-            if (url.matches(pattern)) {
-                ok = true;
-
-                break;
+            if ( !url.startsWith("http:") && !url.startsWith("https:")) {
+                throw new IllegalArgumentException("Bad URL:" + url);
             }
-        }
-        if ( !ok) {
-            throw new IllegalArgumentException("URL not in whitelist:" + url);
-        }
+            //Check the whitelist
+            boolean ok = false;
+            for (String pattern :
+                     StringUtil.split(getProperty(PROP_PROXY_WHITELIST, ""), ",",
+                                      true, true)) {
+                //            System.err.println("pattern:" + pattern);
+                if (url.matches(pattern)) {
+                    ok = true;
+
+                    break;
+                }
+            }
+            if ( !ok) {
+                throw new IllegalArgumentException("URL not in whitelist:" + url);
+            }
         }
         if(url==null && request.defined(ARG_ENTRYID)) {
             Entry entry = getEntryManager().getEntry(request);
@@ -5148,7 +5148,12 @@ public class Repository extends RepositoryBase implements RequestHandler,
                 throw new IllegalArgumentException("Entry not a URL");
             }
             url = entry.getResource().getPath();
-            if(url.startsWith("//")) url = "http:" + url;
+            if(url.startsWith("//")) {
+                if(request.getUrl().startsWith("https:"))
+                    url = "https:" + url;
+                else
+                    url = "http:" + url;
+            }
         }
 
 
