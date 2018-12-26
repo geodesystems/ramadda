@@ -268,9 +268,11 @@ public class TypeHandler extends RepositoryManager {
 
 
 
+    public static final String ALL = "-all-";
+
     /** _more_ */
     public static final TwoFacedObject ALL_OBJECT =
-        new TwoFacedObject("-all-", "");
+        new TwoFacedObject(ALL,ALL);
 
     /** _more_ */
     public static final TwoFacedObject NONE_OBJECT =
@@ -6346,9 +6348,11 @@ public class TypeHandler extends RepositoryManager {
         tmp.addAll(set);
 
         for (String s : (List<String>) Misc.sort(tmp)) {
-            tfos.add(new TwoFacedObject(s));
+            String label = s;
+            if(s.length()==0)
+                label = "&lt;blank&gt;";
+            tfos.add(new TwoFacedObject(s,label));
         }
-
         return tfos;
     }
 

@@ -181,6 +181,8 @@ public class Column implements DataTypes, Constants {
     /** _more_ */
     public static final String ATTR_CANSEARCH = "cansearch";
 
+    public static final String ATTR_SEARCHROWS = "searchrows";
+
     /** _more_ */
     public static final String ATTR_CANSEARCHTEXT = "cansearchtext";
 
@@ -305,6 +307,8 @@ public class Column implements DataTypes, Constants {
 
     /** _more_ */
     private boolean canSearch;
+
+    private int searchRows;
 
     /** _more_ */
     private boolean canSearchText;
@@ -482,6 +486,7 @@ public class Column implements DataTypes, Constants {
         isWiki     = getAttributeOrTag(element, "iswiki", false);
         isCategory = getAttributeOrTag(element, ATTR_ISCATEGORY, false);
         canSearch  = getAttributeOrTag(element, ATTR_CANSEARCH, false);
+        searchRows  = getAttributeOrTag(element, ATTR_SEARCHROWS, 1);
         canSearchText = getAttributeOrTag(element, ATTR_CANSEARCHTEXT,
                                           canSearch);
         advancedSearch = getAttributeOrTag(element, ATTR_ADVANCED, false);
@@ -685,6 +690,8 @@ public class Column implements DataTypes, Constants {
         col.add("" + getCanShow());
         col.add("cansearch");
         col.add("" + getCanSearch());
+        col.add("searchrows");
+        col.add("" + getSearchRows());
         col.add("cansearchtext");
         col.add("" + getCanSearchText());
         col.add("canlist");
@@ -1174,6 +1181,12 @@ public class Column implements DataTypes, Constants {
      * @return _more_
      */
     public String getEnumLabel(String value) {
+        String label = getEnumLabelInner(value);
+        if(label.length()==0) label = "&lt;blank&gt;";
+        return label;
+    }
+
+    public String getEnumLabelInner(String value) {
         if (value == null) {
             return "null";
         }
@@ -1821,6 +1834,7 @@ public class Column implements DataTypes, Constants {
             if ((values != null) && (values.size() > 0)) {
                 List<Clause> subClauses = new ArrayList<Clause>();
                 for (String value : values) {
+                    if(value.equals(TypeHandler.ALL)) continue;
                     if (value.startsWith("!")) {
                         subClauses.add(Clause.neq(columnName,
                                 value.substring(1)));
@@ -1828,7 +1842,9 @@ public class Column implements DataTypes, Constants {
                         subClauses.add(Clause.eq(columnName, value));
                     }
                 }
-                where.add(Clause.or(subClauses));
+                if(subClauses.size()>0) {
+                    where.add(Clause.or(subClauses));
+                }
             }
         } else {
             String value = getSearchValue(request, null);
@@ -2697,7 +2713,6 @@ public class Column implements DataTypes, Constants {
         }
 
 
-
         String       searchArg  = getSearchArg();
         String       columnName = getFullName();
 
@@ -2766,7 +2781,11 @@ public class Column implements DataTypes, Constants {
             //            widget = HtmlUtils.select(searchArg, tmpValues, request.getString(searchArg));
         } else if (isType(DATATYPE_ENUMERATIONPLUS)
                    || isType(DATATYPE_ENUMERATION)) {
-            List tmpValues = Misc.newList(TypeHandler.ALL_OBJECT);
+            List tmpValues;
+            if(searchRows>1)
+                tmpValues= new ArrayList();
+            else
+                tmpValues = Misc.newList(TypeHandler.ALL_OBJECT);
             List<TwoFacedObject> values = typeHandler.getEnumValues(request,
                                               this, entry);
             for (TwoFacedObject o : values) {
@@ -2781,10 +2800,15 @@ public class Column implements DataTypes, Constants {
                     tmpValues.add(new TwoFacedObject(label, o));
                 }
             }
+            String selectExtra =      HtmlUtils.id(searchArg + "_id");
+            if(searchRows>1)
+                selectExtra +=" multiple rows=\"" + searchRows +"\" ";
+            else
+                selectExtra += HtmlUtils.cssClass("search-select");
             widget = HtmlUtils.select(searchArg, tmpValues,
-                                      request.getString(searchArg),
-                                      HtmlUtils.id(searchArg + "_id")
-                                      + HtmlUtils.cssClass("search-select"));
+                                      request.get(searchArg, new ArrayList<String>()),
+                                      selectExtra);
+                              
         } else if (isNumeric()) {
             String expr =
                 HtmlUtils.select(searchArg + "_expr", EXPR_ITEMS,
@@ -3164,6 +3188,26 @@ public class Column implements DataTypes, Constants {
     public boolean getCanSearch() {
         return canSearch;
     }
+
+/**
+Set the SearchRows property.
+
+@param value The new value for SearchRows
+**/
+public void setSearchRows (int value) {
+	searchRows = value;
+}
+
+/**
+Get the SearchRows property.
+
+@return The SearchRows
+**/
+public int getSearchRows () {
+	return searchRows;
+}
+
+
 
 
     /**
