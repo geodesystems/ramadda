@@ -64,7 +64,6 @@ public class ImageTypeHandler extends GenericTypeHandler {
         boolean  useProxy = entry.getValue(0, false);
         if (useProxy) {
             String tail = IOUtil.getFileTail(path);
-            System.err.println("tail:" + tail);
             path=  getRepository().getUrlBase() + "/proxy/" + tail
                    + "?entryid=" + entry.getId();
         }

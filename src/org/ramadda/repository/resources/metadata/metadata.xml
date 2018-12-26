@@ -168,6 +168,18 @@
       <element name="namepattern" label="Name Pattern" datatype="string" suffix="Only apply to entries that match this pattern"/>
     </type>
 
+    <type
+       name="Map Bubble"
+       showinhtml="false"       
+       id="content.mapbubble">
+      <element name="entrytype" label="Entry Type" datatype="enumerationplus" values="folder:Folder,file:File"
+               suffix="Entry type that this page style is applicable to"/>
+      <element name="apply_to_this" label="Apply to this entry" datatype="boolean" default="true"
+               suffix=""/>
+      <element name="namepattern" label="Name Pattern" datatype="string" suffix="Only apply to entries that match this pattern"/>
+      <element name="wikitemplate" label="Wiki Template" datatype="wiki" rows="20"/>
+    </type>
+
 
     <type
        name="Page Template"

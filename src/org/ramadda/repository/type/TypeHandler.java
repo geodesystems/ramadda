@@ -37,9 +37,6 @@ import org.ramadda.repository.util.SelectInfo;
 import org.ramadda.service.Service;
 import org.ramadda.service.ServiceInput;
 import org.ramadda.service.ServiceOutput;
-
-import org.ramadda.util.sql.Clause;
-import org.ramadda.util.sql.SqlUtil;
 import org.ramadda.util.FileInfo;
 import org.ramadda.util.FormInfo;
 import org.ramadda.util.HtmlUtils;
@@ -48,6 +45,9 @@ import org.ramadda.util.Json;
 import org.ramadda.util.SelectionRectangle;
 import org.ramadda.util.Utils;
 import org.ramadda.util.WikiUtil;
+
+import org.ramadda.util.sql.Clause;
+import org.ramadda.util.sql.SqlUtil;
 
 
 import org.w3c.dom.Element;
@@ -268,11 +268,12 @@ public class TypeHandler extends RepositoryManager {
 
 
 
+    /** _more_          */
     public static final String ALL = "-all-";
 
     /** _more_ */
-    public static final TwoFacedObject ALL_OBJECT =
-        new TwoFacedObject(ALL,ALL);
+    public static final TwoFacedObject ALL_OBJECT = new TwoFacedObject(ALL,
+                                                        ALL);
 
     /** _more_ */
     public static final TwoFacedObject NONE_OBJECT =
@@ -690,6 +691,49 @@ public class TypeHandler extends RepositoryManager {
      */
     public String getBubbleTemplate(Request request, Entry entry)
             throws Exception {
+
+        List<Metadata> metadataList =
+            getMetadataManager().findMetadata(request, entry,
+                "content.mapbubble", true);
+        if (metadataList != null) {
+            //type-1, apply to this-2, name pattern - 3, wiki-4
+            Metadata theMetadata = null;
+            for (Metadata metadata : metadataList) {
+                if (Misc.equals(metadata.getAttr(2), "false")) {
+                    if (metadata.getEntryId().equals(entry.getId())) {
+                        continue;
+                    }
+                }
+                String types = metadata.getAttr(1);
+                if ((types == null) || (types.trim().length() == 0)) {
+                    theMetadata = metadata;
+
+                    break;
+                }
+                for (String type : StringUtil.split(types, ",", true, true)) {
+                    if (type.equals("file") && !entry.isGroup()) {
+                        theMetadata = metadata;
+
+                        break;
+                    }
+                    if (type.equals("folder") && entry.isGroup()) {
+                        theMetadata = metadata;
+
+                        break;
+                    }
+                    if (entry.getTypeHandler().isType(type)) {
+                        theMetadata = metadata;
+
+                        break;
+                    }
+                }
+            }
+
+            if (theMetadata != null) {
+                return theMetadata.getAttr(4);
+            }
+        }
+
         if (bubbleTemplate != null) {
             return bubbleTemplate;
         }
@@ -6349,11 +6393,12 @@ public class TypeHandler extends RepositoryManager {
 
         for (String s : (List<String>) Misc.sort(tmp)) {
             String label = s;
-            if(s.length()==0) {
+            if (s.length() == 0) {
                 label = "&lt;blank&gt;";
             }
-            tfos.add(new TwoFacedObject(s,label));
+            tfos.add(new TwoFacedObject(s, label));
         }
+
         return tfos;
     }
 
