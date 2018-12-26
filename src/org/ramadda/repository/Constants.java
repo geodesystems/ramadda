@@ -622,6 +622,8 @@ public interface Constants {
     /** _more_ */
     public static final String ARG_AREA_MODE = "areamode";
 
+    public static final String VALUE_BLANK = "-blank-";
+
     /** _more_ */
     public static final String VALUE_AREA_CONTAINS = "contains";
 

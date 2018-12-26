@@ -3217,7 +3217,8 @@ public class HtmlUtils {
 
             attrSB.append(selectedAttr);
             attrSB.append(extraAttr);
-            attrSB.append(attrs(ATTR_TITLE, value, ATTR_VALUE, value));
+            //attrs(attrSB, ATTR_TITLE, value, ATTR_VALUE, value);
+            attrs(attrSB, ATTR_VALUE, value);
             sb.append(tag(TAG_OPTION, attrSB.toString(), label));
             sb.append("\n");
         }

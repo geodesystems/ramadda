@@ -1182,7 +1182,9 @@ public class Column implements DataTypes, Constants {
      */
     public String getEnumLabel(String value) {
         String label = getEnumLabelInner(value);
-        if(label.length()==0) label = "&lt;blank&gt;";
+        if(label.length()==0)  {
+            label = "&lt;blank&gt;";
+        }
         return label;
     }
 
@@ -1915,12 +1917,9 @@ public class Column implements DataTypes, Constants {
     private List<String> getSearchValues(Request request) {
         List<String> result    = new ArrayList<String>();
         String       searchArg = getSearchArg();
-        if (request.defined(searchArg)) {
-            for (String arg : (List<String>) request.get(searchArg, result)) {
-                result.addAll(StringUtil.split(arg, ",", true, true));
-            }
+        for (String arg : (List<String>) request.get(searchArg, result)) {
+            result.addAll(StringUtil.split(arg, ",", true));
         }
-
         return result;
     }
 
@@ -2124,22 +2123,14 @@ public class Column implements DataTypes, Constants {
             String value = ((dflt != null)
                             ? dflt
                             : "");
-            if (request.defined(urlArg)) {
-                value = request.getString(urlArg);
-            } else if (values != null) {
-                value = (String) toString(values, offset);
-            }
+            value = request.getString(urlArg,(values != null? (String) toString(values, offset):""));
             widget = HtmlUtils.select(urlArg, enumValues, value,
                                       HtmlUtils.cssClass("column-select"));
         } else if (isType(DATATYPE_ENUMERATIONPLUS)) {
             String value = ((dflt != null)
                             ? dflt
                             : "");
-            if (request.defined(urlArg)) {
-                value = request.getString(urlArg);
-            } else if (values != null) {
-                value = (String) toString(values, offset);
-            }
+            value = request.getString(urlArg,(values != null? (String) toString(values, offset):""));
             List enums = getEnumPlusValues(request, entry);
             widget = HtmlUtils.select(
                 urlArg, enums, value,
@@ -2491,8 +2482,6 @@ public class Column implements DataTypes, Constants {
             }
 
         } else if (isType(DATATYPE_ENUMERATIONPLUS)) {
-
-
             String theValue = "";
             if (request.defined(urlArg + "_plus")) {
                 theValue = request.getAnonymousEncodedString(urlArg
@@ -2787,7 +2776,7 @@ public class Column implements DataTypes, Constants {
             else
                 tmpValues = Misc.newList(TypeHandler.ALL_OBJECT);
             List<TwoFacedObject> values = typeHandler.getEnumValues(request,
-                                              this, entry);
+                                                                    this, entry);
             for (TwoFacedObject o : values) {
                 TwoFacedObject tfo = null;
                 if (enumValues != null) {
@@ -2800,11 +2789,13 @@ public class Column implements DataTypes, Constants {
                     tmpValues.add(new TwoFacedObject(label, o));
                 }
             }
+
             String selectExtra =      HtmlUtils.id(searchArg + "_id");
             if(searchRows>1)
                 selectExtra +=" multiple rows=\"" + searchRows +"\" ";
             else
                 selectExtra += HtmlUtils.cssClass("search-select");
+            System.err.println(getName() +" values=" + tmpValues);
             widget = HtmlUtils.select(searchArg, tmpValues,
                                       request.get(searchArg, new ArrayList<String>()),
                                       selectExtra);

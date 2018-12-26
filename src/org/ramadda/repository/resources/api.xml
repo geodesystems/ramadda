@@ -75,7 +75,7 @@
       <api request="/sslredirect"            method="processSslRedirect"    needs_ssl="true" checkauthmethod="true"/>
       <api request="/dummy"                  method="processDummy"/>
       <api request="/install"                method="processDummy" needs_ssl="true"/>
-      <api request="/proxy"                  method="processProxy"/>
+      <api request="/proxy/*"                method="processProxy"/>
       <api request="/blank"                  method="processBlank"/>
       <api request="/gettmpfile"             method="processGetTmpFile"/>
   </group>

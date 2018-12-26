@@ -283,7 +283,6 @@ public class RepositoryServlet extends HttpServlet implements Constants {
 
         RequestHandler handler          = new RequestHandler(request);
         Result         repositoryResult = null;
-
         boolean        isHeadRequest    = request.getMethod().equals("HEAD");
         try {
             try {

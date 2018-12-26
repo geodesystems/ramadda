@@ -5118,8 +5118,8 @@ public class Repository extends RepositoryBase implements RequestHandler,
      * @throws Exception _more_
      */
     public Result processProxy(Request request) throws Exception {
-        String url = request.getString(ARG_URL, "");
-        getLogManager().logInfo("RAMADDA: processing proxy request:" + url);
+        String url = request.getString(ARG_URL, (String)null);
+        if(url!=null) {
         if ( !url.startsWith("http:") && !url.startsWith("https:")) {
             throw new IllegalArgumentException("Bad URL:" + url);
         }
@@ -5137,6 +5137,23 @@ public class Repository extends RepositoryBase implements RequestHandler,
         }
         if ( !ok) {
             throw new IllegalArgumentException("URL not in whitelist:" + url);
+        }
+        }
+        if(url==null && request.defined(ARG_ENTRYID)) {
+            Entry entry = getEntryManager().getEntry(request);
+            if(entry == null) {
+                throw new IllegalArgumentException("No Entry found:");
+            }
+            if(!entry.getResource().isUrl()) {
+                throw new IllegalArgumentException("Entry not a URL");
+            }
+            url = entry.getResource().getPath();
+            if(url.startsWith("//")) url = "http:" + url;
+        }
+
+
+        if(url==null) {
+            throw new IllegalArgumentException("No URL");
         }
 
         //        System.out.println("proxy: " + url);

@@ -1002,7 +1002,9 @@ public class Request implements Constants, Cloneable {
                     }
                     for (int i = 0; i < l.size(); i++) {
                         String svalue = (String) l.get(i);
-                        if (svalue.length() == 0) {
+                        if(svalue.equals(VALUE_BLANK)) {
+                            svalue = "";
+                        } else if (svalue.length() == 0) {
                             continue;
                         }
                         if (cnt++ > 0) {
@@ -1014,7 +1016,9 @@ public class Request implements Constants, Cloneable {
                     continue;
                 }
                 String svalue = value.toString();
-                if (svalue.length() == 0) {
+                if(svalue.equals(VALUE_BLANK)) {
+                    svalue= "";
+                } else if (svalue.length() == 0) {
                     continue;
                 }
                 if (cnt++ > 0) {
@@ -1349,7 +1353,6 @@ public class Request implements Constants, Cloneable {
         }
         List tmp = new ArrayList();
         tmp.add(result);
-
         return tmp;
     }
 
@@ -1451,42 +1454,6 @@ public class Request implements Constants, Cloneable {
     }
 
 
-    /**
-     * _more_
-     *
-     * @param key _more_
-     * @param dflt _more_
-     * @param pattern _more_
-     *
-     * @return _more_
-     */
-    public String getCheckedString(String key, String dflt, Pattern pattern) {
-        String v = (String) getValue(key, (String) null);
-        if (v == null) {
-            return dflt;
-        }
-
-        //If the user is anonymous then replace all "script" strings with "_script_"
-        //encode < and >
-        if (isAnonymous()) {
-            v = v.replaceAll("([sS][cC][rR][iI][pP][tT])", "_$1_");
-            v = v.replaceAll("<", "&lt;");
-            v = v.replaceAll(">", "&gt;");
-        }
-
-
-        Matcher matcher = pattern.matcher(v);
-        if ( !matcher.find()) {
-            throw new BadInputException("Incorrect input for:" + key
-                                        + " value:" + v + ":");
-        }
-
-        //        v = HtmlUtils.entityEncode(v);
-        //TODO:Check the value
-        return v;
-        //        return repository.getDatabaseManager().escapeString(v);
-    }
-
 
 
     /**
@@ -1502,16 +1469,6 @@ public class Request implements Constants, Cloneable {
 
 
 
-    /**
-     * _more_
-     *
-     * @param key _more_
-     *
-     * @return _more_
-     */
-    public String getString(String key) {
-        return getString(key, "");
-    }
 
     /**
      * _more_
@@ -1609,6 +1566,18 @@ public class Request implements Constants, Cloneable {
     /**
      * _more_
      *
+     * @param key _more_
+     *
+     * @return _more_
+     */
+    public String getString(String key) {
+        return getString(key, "");
+    }
+
+
+    /**
+     * _more_
+     *
      * @param arg _more_
      * @param dflt _more_
      *
@@ -1623,6 +1592,58 @@ public class Request implements Constants, Cloneable {
         }
 
         return dflt;
+    }
+
+
+    /**
+     * _more_
+     *
+     * @param key _more_
+     * @param dflt _more_
+     *
+     * @return _more_
+     */
+    public String getString(String key, String dflt) {
+        if (checker == null) {
+            //Don't run the checker for now
+            //checker =  Pattern.compile(repository.getProperty(PROP_REQUEST_PATTERN));
+        }
+        return getCheckedString(key, dflt, checker);
+    }
+
+    
+    /**
+     * _more_
+     *
+     * @param key _more_
+     * @param dflt _more_
+     * @param pattern _more_
+     *
+     * @return _more_
+     */
+    public String getCheckedString(String key, String dflt, Pattern pattern) {
+        String v = (String) getValue(key, (String) null);
+        if (v == null) {
+            return dflt;
+        }
+
+        //If the user is anonymous then replace all "script" strings with "_script_"
+        //encode < and >
+        if (isAnonymous()) {
+            v = v.replaceAll("([sS][cC][rR][iI][pP][tT])", "_$1_");
+            v = v.replaceAll("<", "&lt;");
+            v = v.replaceAll(">", "&gt;");
+        }
+
+
+        if(pattern!=null) {
+            Matcher matcher = pattern.matcher(v);
+            if ( !matcher.find()) {
+                throw new BadInputException("Incorrect input for:" + key
+                                            + " value:" + v + ":");
+            }
+        }
+        return v;
     }
 
 
@@ -1646,23 +1667,6 @@ public class Request implements Constants, Cloneable {
 
 
 
-
-    /**
-     * _more_
-     *
-     * @param key _more_
-     * @param dflt _more_
-     *
-     * @return _more_
-     */
-    public String getString(String key, String dflt) {
-        if (checker == null) {
-            checker =
-                Pattern.compile(repository.getProperty(PROP_REQUEST_PATTERN));
-        }
-
-        return getCheckedString(key, dflt, checker);
-    }
 
     /**
      * _more_

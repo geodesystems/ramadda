@@ -154,8 +154,9 @@
 </type>
 
 
-  <type name="type_image"  description="Image" foruser="true" category="Documents" pattern="(.*\.png|.*\.gif|.*\.jpg|.*\.jpeg)">
+  <type name="type_image"  description="Image" foruser="true" category="Documents" pattern="(.*\.png|.*\.gif|.*\.jpg|.*\.jpeg)" handler="org.ramadda.plugins.media.ImageTypeHandler">
      <property name="icon" value="/icons/image.gif"/>
+     <column   name="proxy" type="boolean" label="Proxy Image if URL"  showinhtml="false" default="false"/>
 </type>
 
 

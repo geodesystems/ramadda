@@ -6349,8 +6349,9 @@ public class TypeHandler extends RepositoryManager {
 
         for (String s : (List<String>) Misc.sort(tmp)) {
             String label = s;
-            if(s.length()==0)
+            if(s.length()==0) {
                 label = "&lt;blank&gt;";
+            }
             tfos.add(new TwoFacedObject(s,label));
         }
         return tfos;
