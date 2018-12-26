@@ -5149,7 +5149,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
             }
             url = entry.getResource().getPath();
             if(url.startsWith("//")) {
-                if(request.getUrl().startsWith("https:"))
+                if(request.getAbsoluteUrl().startsWith("https:"))
                     url = "https:" + url;
                 else
                     url = "http:" + url;
