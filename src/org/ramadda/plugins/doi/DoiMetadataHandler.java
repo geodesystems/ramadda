@@ -134,7 +134,7 @@ public class DoiMetadataHandler extends MetadataHandler {
 
     //http://n2t.net/ark:/99999/fk47h23wj
     //ark:/99999/fk47h23wj
-    //http://dx.doi.org/
+    //https://doi.org/
 
     /**
      * _more_
@@ -145,7 +145,7 @@ public class DoiMetadataHandler extends MetadataHandler {
      */
     public static String getUrl(String id) {
         if (id.startsWith("doi:")) {
-            return id.replace("doi:", "http://dx.doi.org/");
+            return id.replace("doi:", "https://doi.org/");
         }
 
         return id.replace("ark:", "http://n2t.net/ark:");

@@ -199,7 +199,7 @@ public class BiblioTypeHandler extends GenericTypeHandler {
             if (doi != null) {
                 sb.append(" doi: ");
                 if ( !doi.startsWith("http")) {
-                    doi = "http://dx.doi.org/" + doi;
+                    doi = "https://doi.org/" + doi;
                 }
                 sb.append(HtmlUtils.href(doi, doi));
             }
