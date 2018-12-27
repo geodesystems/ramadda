@@ -28,12 +28,12 @@ import org.ramadda.repository.RepositoryUtil;
 import org.ramadda.repository.Request;
 import org.ramadda.repository.database.DatabaseManager;
 import org.ramadda.repository.map.MapInfo;
-import org.ramadda.util.sql.Clause;
-import org.ramadda.util.sql.SqlUtil;
 import org.ramadda.util.FormInfo;
 import org.ramadda.util.HtmlUtils;
 import org.ramadda.util.Json;
 import org.ramadda.util.Utils;
+import org.ramadda.util.sql.Clause;
+import org.ramadda.util.sql.SqlUtil;
 
 import org.w3c.dom.Element;
 
@@ -181,6 +181,7 @@ public class Column implements DataTypes, Constants {
     /** _more_ */
     public static final String ATTR_CANSEARCH = "cansearch";
 
+    /** _more_          */
     public static final String ATTR_SEARCHROWS = "searchrows";
 
     /** _more_ */
@@ -272,13 +273,13 @@ public class Column implements DataTypes, Constants {
     /** _more_ */
     private String htmlTemplate;
 
-    /** _more_          */
+    /** _more_ */
     private String displayTemplate;
 
-    /** _more_          */
+    /** _more_ */
     private String displayPatternFrom;
 
-    /** _more_          */
+    /** _more_ */
     private String displayPatternTo;
 
     /** _more_ */
@@ -308,6 +309,7 @@ public class Column implements DataTypes, Constants {
     /** _more_ */
     private boolean canSearch;
 
+    /** _more_          */
     private int searchRows;
 
     /** _more_ */
@@ -486,7 +488,7 @@ public class Column implements DataTypes, Constants {
         isWiki     = getAttributeOrTag(element, "iswiki", false);
         isCategory = getAttributeOrTag(element, ATTR_ISCATEGORY, false);
         canSearch  = getAttributeOrTag(element, ATTR_CANSEARCH, false);
-        searchRows  = getAttributeOrTag(element, ATTR_SEARCHROWS, 1);
+        searchRows = getAttributeOrTag(element, ATTR_SEARCHROWS, 1);
         canSearchText = getAttributeOrTag(element, ATTR_CANSEARCHTEXT,
                                           canSearch);
         advancedSearch = getAttributeOrTag(element, ATTR_ADVANCED, false);
@@ -1181,14 +1183,34 @@ public class Column implements DataTypes, Constants {
      * @return _more_
      */
     public String getEnumLabel(String value) {
+        return getEnumLabel(value, true);
+    }
+
+    /**
+     * _more_
+     *
+     * @param value _more_
+     * @param forDisplay _more_
+     *
+     * @return _more_
+     */
+    public String getEnumLabel(String value, boolean forDisplay) {
         String label = getEnumLabelInner(value);
-        if(label.length()==0)  {
+        if ( !forDisplay && (label.length() == 0)) {
             label = "&lt;blank&gt;";
         }
+
         return label;
     }
 
-    public String getEnumLabelInner(String value) {
+    /**
+     * _more_
+     *
+     * @param value _more_
+     *
+     * @return _more_
+     */
+    private String getEnumLabelInner(String value) {
         if (value == null) {
             return "null";
         }
@@ -1710,10 +1732,16 @@ public class Column implements DataTypes, Constants {
         DatabaseManager dbm        = getDatabaseManager();
 
         if (isType(DATATYPE_LATLON)) {
-            double north = request.get(searchArg + "_north", request.get(ARG_AREA_NORTH, Double.NaN));
-            double south = request.get(searchArg + "_south", request.get(ARG_AREA_SOUTH, Double.NaN));
-            double east  = request.get(searchArg + "_east", request.get(ARG_AREA_EAST, Double.NaN));
-            double west  = request.get(searchArg + "_west", request.get(ARG_AREA_WEST, Double.NaN));
+            double north = request.get(searchArg + "_north",
+                                       request.get(ARG_AREA_NORTH,
+                                           Double.NaN));
+            double south = request.get(searchArg + "_south",
+                                       request.get(ARG_AREA_SOUTH,
+                                           Double.NaN));
+            double east = request.get(searchArg + "_east",
+                                      request.get(ARG_AREA_EAST, Double.NaN));
+            double west = request.get(searchArg + "_west",
+                                      request.get(ARG_AREA_WEST, Double.NaN));
             if (latLonOk(north)) {
                 where.add(Clause.le(columnName + "_lat", north));
             }
@@ -1836,7 +1864,9 @@ public class Column implements DataTypes, Constants {
             if ((values != null) && (values.size() > 0)) {
                 List<Clause> subClauses = new ArrayList<Clause>();
                 for (String value : values) {
-                    if(value.equals(TypeHandler.ALL)) continue;
+                    if (value.equals(TypeHandler.ALL)) {
+                        continue;
+                    }
                     if (value.startsWith("!")) {
                         subClauses.add(Clause.neq(columnName,
                                 value.substring(1)));
@@ -1844,7 +1874,7 @@ public class Column implements DataTypes, Constants {
                         subClauses.add(Clause.eq(columnName, value));
                     }
                 }
-                if(subClauses.size()>0) {
+                if (subClauses.size() > 0) {
                     where.add(Clause.or(subClauses));
                 }
             }
@@ -1920,6 +1950,7 @@ public class Column implements DataTypes, Constants {
         for (String arg : (List<String>) request.get(searchArg, result)) {
             result.addAll(StringUtil.split(arg, ",", true));
         }
+
         return result;
     }
 
@@ -2123,14 +2154,18 @@ public class Column implements DataTypes, Constants {
             String value = ((dflt != null)
                             ? dflt
                             : "");
-            value = request.getString(urlArg,(values != null? (String) toString(values, offset):""));
+            value = request.getString(urlArg, ((values != null)
+                    ? (String) toString(values, offset)
+                    : ""));
             widget = HtmlUtils.select(urlArg, enumValues, value,
                                       HtmlUtils.cssClass("column-select"));
         } else if (isType(DATATYPE_ENUMERATIONPLUS)) {
             String value = ((dflt != null)
                             ? dflt
                             : "");
-            value = request.getString(urlArg,(values != null? (String) toString(values, offset):""));
+            value = request.getString(urlArg, ((values != null)
+                    ? (String) toString(values, offset)
+                    : ""));
             List enums = getEnumPlusValues(request, entry);
             widget = HtmlUtils.select(
                 urlArg, enums, value,
@@ -2771,12 +2806,13 @@ public class Column implements DataTypes, Constants {
         } else if (isType(DATATYPE_ENUMERATIONPLUS)
                    || isType(DATATYPE_ENUMERATION)) {
             List tmpValues;
-            if(searchRows>1)
-                tmpValues= new ArrayList();
-            else
+            if (searchRows > 1) {
+                tmpValues = new ArrayList();
+            } else {
                 tmpValues = Misc.newList(TypeHandler.ALL_OBJECT);
+            }
             List<TwoFacedObject> values = typeHandler.getEnumValues(request,
-                                                                    this, entry);
+                                              this, entry);
             for (TwoFacedObject o : values) {
                 TwoFacedObject tfo = null;
                 if (enumValues != null) {
@@ -2785,21 +2821,22 @@ public class Column implements DataTypes, Constants {
                 if (tfo != null) {
                     tmpValues.add(tfo);
                 } else {
-                    String label = getEnumLabel("" + o);
+                    String label = getEnumLabel("" + o, false);
                     tmpValues.add(new TwoFacedObject(label, o));
                 }
             }
 
-            String selectExtra =      HtmlUtils.id(searchArg + "_id");
-            if(searchRows>1)
-                selectExtra +=" multiple rows=\"" + searchRows +"\" ";
-            else
+            String selectExtra = HtmlUtils.id(searchArg + "_id");
+            if (searchRows > 1) {
+                selectExtra += " multiple rows=\"" + searchRows + "\" ";
+            } else {
                 selectExtra += HtmlUtils.cssClass("search-select");
-            System.err.println(getName() +" values=" + tmpValues);
-            widget = HtmlUtils.select(searchArg, tmpValues,
-                                      request.get(searchArg, new ArrayList<String>()),
-                                      selectExtra);
-                              
+            }
+            System.err.println(getName() + " values=" + tmpValues);
+            widget = HtmlUtils.select(
+                searchArg, tmpValues,
+                request.get(searchArg, new ArrayList<String>()), selectExtra);
+
         } else if (isNumeric()) {
             String expr =
                 HtmlUtils.select(searchArg + "_expr", EXPR_ITEMS,
@@ -3180,23 +3217,23 @@ public class Column implements DataTypes, Constants {
         return canSearch;
     }
 
-/**
-Set the SearchRows property.
+    /**
+     * Set the SearchRows property.
+     *
+     * @param value The new value for SearchRows
+     */
+    public void setSearchRows(int value) {
+        searchRows = value;
+    }
 
-@param value The new value for SearchRows
-**/
-public void setSearchRows (int value) {
-	searchRows = value;
-}
-
-/**
-Get the SearchRows property.
-
-@return The SearchRows
-**/
-public int getSearchRows () {
-	return searchRows;
-}
+    /**
+     * Get the SearchRows property.
+     *
+     * @return The SearchRows
+     */
+    public int getSearchRows() {
+        return searchRows;
+    }
 
 
 
