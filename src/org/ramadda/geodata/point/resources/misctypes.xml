@@ -53,8 +53,9 @@
 {{resource  message="" title="Download Data"}}
 -col
 +col-md-4
+<center>
 Data courtesy of <a href="https://daymet.ornl.gov/">ORNL Daymet</a>
-<br>
+</center>
 {{map}}
 -col
 -row
