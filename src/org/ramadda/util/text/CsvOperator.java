@@ -71,7 +71,7 @@ public abstract class CsvOperator {
     /** _more_ */
     HashSet<Integer> indexMap;
 
-    /** _more_          */
+    /** _more_ */
     HashSet<Integer> colsSeen = new HashSet<Integer>();
 
     /** _more_ */

@@ -526,8 +526,6 @@ public class ShapefileOutputHandler extends OutputHandler implements WikiConstan
                                                      "_dot_") + filename;
         }
         File file = getEntryManager().getCacheFile(entry, filename);
-
-
         if (file.exists()) {
             Result result = new Result(new FileInputStream(file),
                                        KmlOutputHandler.MIME_KML);

@@ -59,7 +59,7 @@ public class CsvUtil {
     /** _more_ */
     private OutputStream outputStream = System.out;
 
-    /** _more_          */
+    /** _more_ */
     private InputStream inputStream;
 
     /** _more_ */
@@ -406,7 +406,6 @@ public class CsvUtil {
             for (int i = 0; i < readers.size(); i++) {
                 BufferedReader br   = readers.get(i);
                 String         line = br.readLine();
-                System.err.println("line:" + line);
                 if (line == null) {
                     nullCnt++;
 
@@ -634,7 +633,7 @@ public class CsvUtil {
             }
 
             //            System.out.println("line:" +line);
-            if (line.length() > 1000) {
+            if (line.length() > 2000) {
                 //                System.err.println("Whoa:" +line);
             }
             theLine = line;
@@ -642,7 +641,6 @@ public class CsvUtil {
 
 
             if (rowIdx <= textReader.getSkip()) {
-                System.err.println("CsvUtil.skipping header");
                 textReader.addHeaderLine(line);
 
                 continue;
@@ -817,9 +815,10 @@ public class CsvUtil {
             + "\n\t-include <start row> <end row (-1 for end)>"
             + "\n\t-explode <col #>   make separate files based on value of column"
             + "\n\t-unfurl <col to get new column header#> <col with value> <unique col>  <other columns>   unfurl"
-            + "\n\t-decimate <skip factor>   only include every <skip factor> row"
+            + "\n\t-decimate <# of start rows to include> <skip factor>   only include every <skip factor> row"
             + "\n\t-copy <col #> <name>" + "\n\t-delete <col #>"
             + "\n\t-add <col #> <value>"
+            + "\n\t-scale <col #> <delta1> <scale> <delta2> (value=(value+delta1)*scale+delta2)"
             + "\n\t-insert <col #> <comma separated values> "
             + "\n\t-case <lower|upper|camel> <col #> "
             + "\n\t-addcell <row #>  <col #>  <value> "
@@ -834,7 +833,8 @@ public class CsvUtil {
             + "\n\t-combineinplace \"col #s\" <delimiter> <new column name> (combine columns with the delimiter.)"
             + "\n\t-new \"col #s\"  <delimiter> (create a new column from the given columns)"
             + "\n\t-operator \"col #s\"  \"new col name\" operator (apply the operator (+,-,*,/) to the given columns and create new one)"
-            + "\n\t-format <decimal format, e.g. '#'>\n\t-unique <columns> (pass through unique values)"
+            + "\n\t-format <columns> <decimal format, e.g. '#'>"
+            + "\n\t-unique <columns> (pass through unique values)"
             + "\n\t-percent <columns to add>"
             + "\n\t-geocode <col idx> <csv file> <name idx> <lat idx> <lon idx>"
             + "\n\t-geocodeaddress <col indices> <suffix> "
@@ -901,11 +901,6 @@ public class CsvUtil {
 
         for (int i = 0; i < args.size(); i++) {
             String arg = args.get(i);
-            if (arg.equals("-format")) {
-                info.setFormat(args.get(++i));
-
-                continue;
-            }
 
             if (arg.equals("-skip")) {
                 info.setSkip(Integer.parseInt(args.get(++i)));
@@ -946,8 +941,9 @@ public class CsvUtil {
 
 
             if (arg.equals("-decimate")) {
-                int skip = Integer.parseInt(args.get(++i));
-                info.getFilter().addFilter(new Filter.Decimate(skip));
+                int start = Integer.parseInt(args.get(++i));
+                int skip  = Integer.parseInt(args.get(++i));
+                info.getFilter().addFilter(new Filter.Decimate(start, skip));
 
                 continue;
             }
@@ -1316,6 +1312,26 @@ public class CsvUtil {
             if (arg.equals("-add")) {
                 info.getProcessor().addProcessor(
                     new Converter.ColumnAdder(args.get(++i), args.get(++i)));
+
+                continue;
+            }
+
+            if (arg.equals("-format")) {
+                List<String> cols = getCols(args.get(++i));
+                info.getProcessor().addProcessor(
+                    new Converter.ColumnFormatter(cols, args.get(++i)));
+
+                continue;
+
+            }
+
+
+            if (arg.equals("-scale")) {
+                info.getProcessor().addProcessor(
+                    new Converter.ColumnScaler(
+                        args.get(++i), Double.parseDouble(args.get(++i)),
+                        Double.parseDouble(args.get(++i)),
+                        Double.parseDouble(args.get(++i))));
 
                 continue;
             }

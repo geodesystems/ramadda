@@ -376,7 +376,13 @@ public class TextReader implements Cloneable {
                 }
             }
             if (c == UNDEF) {
-                break;
+                String result = lb.toString();
+                if (result.length() == 0) {
+                    return null;
+                }
+
+                return result;
+                //                break;
             }
 
             if (c == NEWLINE) {
@@ -506,14 +512,11 @@ public class TextReader implements Cloneable {
         }
 
         String line = lb.toString();
-        if (line.length() == 0) {
-            return null;
-        }
 
-
+        //        if (line.length() == 0) {
+        //            return null;
+        //        }
         return line;
-
-
     }
 
 

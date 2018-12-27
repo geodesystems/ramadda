@@ -17,8 +17,10 @@
 package org.ramadda.util.text;
 
 
-import org.ramadda.util.Utils;
 import org.ramadda.data.record.RecordField;
+
+
+import org.ramadda.util.Utils;
 
 
 import ucar.unidata.util.IOUtil;
@@ -1356,8 +1358,8 @@ public abstract class Processor extends CsvOperator {
                 }
 
                 type = CsvUtil.getDbProp(props, colId, "type", type);
-                String  searchRows = CsvUtil.getDbProp(props, colId,
-                                                       "searchrows", "");
+                String searchRows = CsvUtil.getDbProp(props, colId,
+                                        "searchrows", "");
                 canSearch = "true".equals(CsvUtil.getDbProp(props, colId,
                         "cansearch", canSearch + ""));
                 canList = "true".equals(CsvUtil.getDbProp(props, colId,
@@ -1366,8 +1368,9 @@ public abstract class Processor extends CsvOperator {
                     "type", type, "label", label, "cansearch", "" + canSearch,
                     "canlist", "" + canList
                 }));
-                if(searchRows.length()>0) {
-                    attrs.append(XmlUtil.attrs(new String[] {"searchrows", searchRows}));
+                if (searchRows.length() > 0) {
+                    attrs.append(XmlUtil.attrs(new String[] { "searchrows",
+                            searchRows }));
                 }
                 if (type.equals("date")) {
                     attrs.append(XmlUtil.attrs(new String[] { "format",

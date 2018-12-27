@@ -392,18 +392,23 @@ public class Filter extends Converter {
      */
     public static class Decimate extends Filter {
 
+        /** _more_          */
+        private int start;
+
         /** _more_ */
         private int skip;
 
 
         /**
          * _more_
+         *
+         * @param start _more_
          * @param skip _more_
          */
-        public Decimate(int skip) {
-            this.skip = skip;
+        public Decimate(int start, int skip) {
+            this.start = start;
+            this.skip  = skip;
         }
-
 
 
 
@@ -418,6 +423,11 @@ public class Filter extends Converter {
          */
         @Override
         public boolean rowOk(TextReader info, Row row) {
+            if (start > 0) {
+                start--;
+
+                return true;
+            }
             if ((cnt++) % skip == 0) {
                 return true;
             }

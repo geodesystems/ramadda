@@ -19,53 +19,28 @@ package org.ramadda.geodata.point;
 
 import org.ramadda.data.point.text.*;
 import org.ramadda.data.record.*;
-import org.ramadda.data.record.*;
-
-
 import org.ramadda.data.services.PointTypeHandler;
 import org.ramadda.data.services.RecordTypeHandler;
-
-
 import org.ramadda.repository.*;
-import org.ramadda.repository.map.*;
-import org.ramadda.repository.metadata.*;
-import org.ramadda.repository.output.*;
 import org.ramadda.repository.type.*;
-import org.ramadda.util.HtmlUtils;
-
-
 import org.ramadda.util.Utils;
 import org.ramadda.util.text.CsvUtil;
 
-
 import org.w3c.dom.*;
 
-import ucar.unidata.geoloc.Bearing;
-
-import ucar.unidata.util.DateUtil;
 import ucar.unidata.util.IOUtil;
-import ucar.unidata.util.Misc;
-
-import ucar.unidata.util.StringUtil;
-import ucar.unidata.util.TwoFacedObject;
-import ucar.unidata.xml.XmlUtil;
-
 
 import java.io.*;
 
 import java.text.SimpleDateFormat;
 
-import java.util.ArrayList;
 import java.util.Date;
-
 import java.util.GregorianCalendar;
-import java.util.Hashtable;
-import java.util.List;
 
 
 /**
  */
-public class OpenAQTypeHandler extends PointTypeHandler {
+public class DaymetTypeHandler extends PointTypeHandler {
 
 
     /** _more_ */
@@ -73,19 +48,6 @@ public class OpenAQTypeHandler extends PointTypeHandler {
 
     /** _more_ */
     private static int IDX = RecordTypeHandler.IDX_LAST + 1;
-
-    /** _more_ */
-    private static int IDX_LOCATION = IDX++;
-
-    /** _more_          */
-    private static int IDX_COUNTRY = IDX++;
-
-    /** _more_          */
-    private static int IDX_CITY = IDX++;
-
-    /** _more_          */
-    private static int IDX_HOURS_OFFSET = IDX++;
-
 
 
 
@@ -96,7 +58,7 @@ public class OpenAQTypeHandler extends PointTypeHandler {
      * @param node _more_
      * @throws Exception _more_
      */
-    public OpenAQTypeHandler(Repository repository, Element node)
+    public DaymetTypeHandler(Repository repository, Element node)
             throws Exception {
         super(repository, node);
     }
@@ -115,9 +77,14 @@ public class OpenAQTypeHandler extends PointTypeHandler {
     @Override
     public RecordFile doMakeRecordFile(Request request, Entry entry)
             throws Exception {
-        return new OpenAQRecordFile(getPathForEntry(request, entry));
+        return new DaymetRecordFile(getRepository(), entry,
+                                    getPathForEntry(request, entry));
     }
 
+
+    /** _more_ */
+    private static final String URL_TEMPLATE =
+        "https://daymet.ornl.gov/single-pixel/api/data?lat=${lat}&lon=${lon}&vars=dayl,prcp,srad,swe,tmax,tmin,vp&start=${start}&end=${end}";
 
     /**
      * _more_
@@ -132,27 +99,24 @@ public class OpenAQTypeHandler extends PointTypeHandler {
     @Override
     public String getPathForEntry(Request request, Entry entry)
             throws Exception {
-        String location = entry.getValue(IDX_LOCATION, (String) null);
-        if ( !Utils.stringDefined(location)) {
-            System.err.println("no location");
-
-            return null;
-        }
-        Date now = new Date();
-        Integer hoursOffset = (Integer) entry.getValue(IDX_HOURS_OFFSET,
-                                  new Integer(24));
-
+        String url = URL_TEMPLATE;
+        url = url.replace("${lat}", "" + entry.getLatitude());
+        url = url.replace("${lon}", "" + entry.getLongitude());
+        Date              now = new Date();
         GregorianCalendar cal = new GregorianCalendar();
         cal.setTime(now);
         if (dateSDF == null) {
-            dateSDF = RepositoryUtil.makeDateFormat("yyyy-MM-dd'T'HH:mm");
+            dateSDF = RepositoryUtil.makeDateFormat("yyyy-MM-dd");
         }
-        cal.add(cal.HOUR_OF_DAY, -hoursOffset.intValue());
+        String startDate = "2010-01-01";
+        if (entry.getStartDate() < entry.getEndDate()) {
+            startDate = dateSDF.format(new Date(entry.getStartDate()));
+        }
+        url = url.replace("${start}", startDate);
 
-        String startDate = dateSDF.format(cal.getTime());
-        String url = "https://api.openaq.org/v1/measurements?format=csv&"
-                     + HtmlUtils.arg("date_from", startDate) + "&"
-                     + HtmlUtils.arg("location", location);
+        String endDate = dateSDF.format(cal.getTime());
+        url = url.replace("${end}", endDate);
+
         return url;
     }
 
@@ -175,19 +139,31 @@ public class OpenAQTypeHandler extends PointTypeHandler {
      * @version        $version$, Sat, Dec 8, '18
      * @author         Enter your name here...
      */
-    public static class OpenAQRecordFile extends CsvFile {
+    public static class DaymetRecordFile extends CsvFile {
+
+        /** _more_ */
+        Repository repository;
+
+        /** _more_ */
+        Entry entry;
 
         /**
          * _more_
          *
+         *
+         * @param repository _more_
+         * @param entry _more_
          * @param filename _more_
          *
          * @throws IOException _more_
          */
-        public OpenAQRecordFile(String filename) throws IOException {
+        public DaymetRecordFile(Repository repository, Entry entry,
+                                String filename)
+                throws IOException {
             super(filename);
+            this.repository = repository;
+            this.entry      = entry;
         }
-
 
 
         /**
@@ -203,23 +179,29 @@ public class OpenAQTypeHandler extends PointTypeHandler {
         public InputStream doMakeInputStream(boolean buffered)
                 throws IOException {
             try {
-                PipedInputStream      in   = new PipedInputStream();
-                PipedOutputStream     out  = new PipedOutputStream(in);
-                ByteArrayOutputStream bos  = new ByteArrayOutputStream();
-                String[]              args = new String[] {
-                    "-columns", "3,5,6,7,8,9", "-combineinplace", "1,3", " ",
-                    "parameter", "-unfurl", "1", "2", "0", "3,4",
-                    "-addheader",
-                    "date.type date date.format yyyy-MM-dd'T'HH:mm:ss.SSS date.label \"Date\" utc.id date",
-                    "-print"
-                };
-                CsvUtil csvUtil = new CsvUtil(args,
-                                      new BufferedOutputStream(bos), null);
-                csvUtil.setInputStream(super.doMakeInputStream(buffered));
-                csvUtil.run(null);
+                String filename = "daymet_" + entry.getId() + "_"
+                                  + entry.getChangeDate() + ".csv";
+                File file = repository.getEntryManager().getCacheFile(entry,
+                                filename);
+                if ( !file.exists()) {
+                    ByteArrayOutputStream bos  = new ByteArrayOutputStream();
+                    FileOutputStream      fos  = new FileOutputStream(file);
+                    String[]              args = new String[] {
+                        "-skip", "8", "-decimate", "0", "7", "-change", "0",
+                        "\\.0$", "", "-change", "1", "\\.0$", "", "-combine",
+                        "0,1", "-", "", "-scale", "3", "0", "0.0393700787",
+                        "0", "-format", "3", "#0.00", "-columns", "9,2-8",
+                        "-print"
+                    };
+                    CsvUtil csvUtil = new CsvUtil(args,
+                                          new BufferedOutputStream(fos),
+                                          null);
+                    csvUtil.setInputStream(super.doMakeInputStream(buffered));
+                    csvUtil.run(null);
+                    fos.close();
+                }
 
-                return new BufferedInputStream(
-                    new ByteArrayInputStream(bos.toByteArray()));
+                return new BufferedInputStream(new FileInputStream(file));
             } catch (Exception exc) {
                 throw new RuntimeException(exc);
             }
@@ -238,37 +220,32 @@ public class OpenAQTypeHandler extends PointTypeHandler {
         public VisitInfo prepareToVisit(VisitInfo visitInfo)
                 throws Exception {
             //            putProperty(PROP_SKIPLINES, "1");
-            putProperty(PROP_HEADER_STANDARD, "true");
-
+            //            putProperty(PROP_HEADER_STANDARD, "true");
             super.prepareToVisit(visitInfo);
-
             //            utc,co ug/m^3,no2 ug/m^3,o3 ug/m^3,pm10 ug/m^3,so2 ug/m^3
-            /*
-
             putFields(new String[] {
-                makeField(FIELD_DATE, attrType("date"),
-                          attrFormat("yyyy-MM-dd'T'HH:mm:ss")),
-                makeField("latitude", attrType("double"),
-                          attrLabel("Latitude")),
-                makeField("longitude", attrType("double"),
-                          attrLabel("Longitude")),
-                makeField("co", attrType("double"),
-                          attrChartable(), attrUnit("ug/m^3"),
-                          attrLabel("co")),
-                makeField("no2", attrType("double"),
-                          attrChartable(), attrUnit("ug/m^3"),
-                          attrLabel("no2")),
-                makeField("o3", attrType("double"),
-                          attrChartable(), attrUnit("ug/m^3"),
-                          attrLabel("o3")),
-                makeField("pm10", attrType("double"),
-                          attrChartable(), attrUnit("ug/m^3"),
-                          attrLabel("pm10")),
-                makeField("so2", attrType("double"),
-                          attrChartable(), attrUnit("ug/m^3"),
-                          attrLabel("so2"))
+                makeField(FIELD_DATE, attrType("date"), attrFormat("yyyy-D")),
+                makeField("day_length", attrType("double"), attrChartable(),
+                          attrUnit("seconds"), attrLabel("Day Length")),
+                makeField("precipitation", attrType("double"),
+                          attrChartable(), attrUnit("inches"),
+                          attrLabel("Precipitation")),
+                makeField("srad", attrType("double"), attrChartable(),
+                          attrUnit("W/m^2"),
+                          attrLabel("Shortwave Radiation")),
+                makeField("swe", attrType("double"), attrChartable(),
+                          attrUnit("kg/m^2"),
+                          attrLabel("Snow Water Equivalent")),
+                makeField("tmax", attrType("double"), attrChartable(),
+                          attrUnit("degrees C"),
+                          attrLabel("Max Temperature")),
+                makeField("tmin", attrType("double"), attrChartable(),
+                          attrUnit("degrees C"),
+                          attrLabel("Min Temperature")),
+                makeField("vp", attrType("double"), attrChartable(),
+                          attrUnit("Pa"), attrLabel("Pressure"))
             });
-            */
+
             return visitInfo;
         }
 

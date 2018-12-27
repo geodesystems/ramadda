@@ -33,4 +33,33 @@
   </type>
 
 
+  <type name="type_daymet"  description="Daymet Daily Weather" super="type_point" category="Point Data" foruser="true" handler="org.ramadda.geodata.point.DaymetTypeHandler">
+     <property name="icon" value="/point/ornl.png"/>
+     <property name="form.area.show" value="false"/>
+     <property name="form.location.show" value="true"/>
+     <property name="form.resource.show" value="false"/>
+
+<wiki>
+<![CDATA[
++section  title="Daymet Data: {{name}}"
+{{description}}
+----
++row
++col-md-8
+{{group showMenu="true" layoutType="table" layoutColumns="1" showTitle="false"}}
+{{display type="linechart" showTitle="false" layoutHere="false" fields="tmax"}}
+{{display type="barchart" showTitle="false" layoutHere="false" fields="precipitation"}}
+{{resource  message="" title="Download Data"}}
+-col
++col-md-4
+{{map}}
+-col
+-row
+]]>
+
+</wiki>
+
+  </type>
+
+
 </types>

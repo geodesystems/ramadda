@@ -159,6 +159,58 @@ public abstract class Converter extends Processor {
      * Class description
      *
      *
+     * @version        $version$, Thu, Dec 27, '18
+     * @author         Enter your name here...    
+     */
+    public static class ColumnFormatter extends Converter {
+
+        /** _more_          */
+        private DecimalFormat format;
+
+        /**
+         * _more_
+         *
+         * @param cols _more_
+         * @param fmt _more_
+         */
+        public ColumnFormatter(List<String> cols, String fmt) {
+            super(cols);
+            format = new DecimalFormat(fmt);
+        }
+
+
+
+        /**
+         * _more_
+         *
+         *
+         * @param info _more_
+         * @param row _more_
+         * @param line _more_
+         *
+         * @return _more_
+         */
+        @Override
+        public Row processRow(TextReader info, Row row, String line) {
+            List<Integer> indices = getIndices(info);
+            for (int i : indices) {
+                if ((i < 0) || (i >= row.size())) {
+                    continue;
+                }
+                try {
+                    double value = Double.parseDouble(row.get(i).toString());
+                    row.set(i, format.format(value));
+                } catch (NumberFormatException nfe) {}
+            }
+
+            return row;
+        }
+    }
+
+    /**
+     * Class description
+     *
+     *
      * @version        $version$, Wed, Dec 2, '15
      * @author         Enter your name here...
      */
@@ -719,14 +771,18 @@ public abstract class Converter extends Processor {
         public Row processRow(TextReader info, Row row, String line) {
             List<Integer> indices = getIndices(info);
             if (rowCnt++ == 0) {
-                if (inPlace) {
-                    row = filterValues(info, row);
-                    row.add(indices.get(0), name);
-                } else {
-                    row.getValues().add(name);
+                if (name.length() > 0) {
+                    if (inPlace) {
+                        row = filterValues(info, row);
+                        row.add(indices.get(0), name);
+                    } else {
+                        row.getValues().add(name);
+                    }
+
+                    return row;
                 }
 
-                return row;
+                return null;
             }
 
             StringBuilder sb  = new StringBuilder();
@@ -1146,6 +1202,70 @@ public abstract class Converter extends Processor {
                 return row;
             }
             row.add(index, value);
+
+            return row;
+        }
+
+    }
+
+
+    /**
+     * Class description
+     *
+     *
+     * @version        $version$, Thu, Dec 27, '18
+     * @author         Enter your name here...    
+     */
+    public static class ColumnScaler extends Converter {
+
+        /** _more_ */
+        private double delta1;
+
+        /** _more_          */
+        private double delta2;
+
+        /** _more_          */
+        private double scale;
+
+
+        /**
+         * _more_
+         *
+         * @param col _more_
+         * @param delta1 _more_
+         * @param scale _more_
+         * @param delta2 _more_
+         */
+        public ColumnScaler(String col, double delta1, double scale,
+                            double delta2) {
+            super(col);
+            this.delta1 = delta1;
+            this.delta2 = delta2;
+            this.scale  = scale;
+        }
+
+        /**
+         * _more_
+         *
+         *
+         * @param info _more_
+         * @param row _more_
+         * @param line _more_
+         *
+         * @return _more_
+         */
+        @Override
+        public Row processRow(TextReader info, Row row, String line) {
+            int index = getIndex(info);
+            if ((index < 0) || (index >= row.size())) {
+                return row;
+            }
+            try {
+                double value = Double.parseDouble(row.get(index).toString());
+                row.set(index,
+                        new Double((value + delta1) * scale
+                                   + delta2).toString());
+            } catch (NumberFormatException nfe) {}
 
             return row;
         }
