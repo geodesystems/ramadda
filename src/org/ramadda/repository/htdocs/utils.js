@@ -828,8 +828,8 @@ var HtmlUtil =  {
                         return;
                     }
                 } 
-                if(item.attributes && item.attributes.default) {
-                    if(item.attributes.default.value == item.value) {
+                if(item.attributes && item.attributes["default"]) {
+                    if(item.attributes["default"].value == item.value) {
                         return;
                     } 
                 }
