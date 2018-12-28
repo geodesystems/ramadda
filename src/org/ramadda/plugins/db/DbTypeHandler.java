@@ -2124,7 +2124,7 @@ public class DbTypeHandler extends PointTypeHandler /* BlobTypeHandler*/ {
         */
         String count = msgLabel("Count") + " "
                        + HtmlUtils.input(ARG_MAX, getMax(request),
-                                         HtmlUtils.SIZE_5);
+                                         HtmlUtils.SIZE_5+  HtmlUtils.attr("default",""+DEFAULT_MAX));
         List<TwoFacedObject> tfos    = new ArrayList<TwoFacedObject>();
         List<TwoFacedObject> aggtfos = new ArrayList<TwoFacedObject>();
         tfos.add(new TwoFacedObject("----", ""));
@@ -2153,8 +2153,9 @@ public class DbTypeHandler extends PointTypeHandler /* BlobTypeHandler*/ {
             )));
 
             List<TwoFacedObject> aggTypes = new ArrayList<TwoFacedObject>();
-            aggTypes.add(new TwoFacedObject("Count", "count"));
+            aggTypes.add(new TwoFacedObject("----", ""));
             aggTypes.add(new TwoFacedObject("Sum", "sum"));
+            aggTypes.add(new TwoFacedObject("Count", "count"));
             aggTypes.add(new TwoFacedObject("Average", "avg"));
             aggTypes.add(new TwoFacedObject("Min", "min"));
             aggTypes.add(new TwoFacedObject("Max", "max"));
@@ -2190,12 +2191,13 @@ public class DbTypeHandler extends PointTypeHandler /* BlobTypeHandler*/ {
                         + HtmlUtils.radio(
                             ARG_DB_SORTDIR, "asc",
                             request.getString(ARG_DB_SORTDIR, "asc").equals(
-                                "asc")) + " " + "Ascending "
+                                                                            "asc"), " default='asc' ") + " " + "Ascending "
                                         + HtmlUtils.radio(
                                             ARG_DB_SORTDIR, "desc",
                                             request.getString(
                                                 ARG_DB_SORTDIR, "asc").equals(
-                                                    "desc")) + " "
+                                                                              "desc"),
+                                            " default='asc' ") + " "
                                                         + "Descending"));
 
         if (normalForm) {
@@ -2205,6 +2207,7 @@ public class DbTypeHandler extends PointTypeHandler /* BlobTypeHandler*/ {
                     HtmlUtils.select(
                         ARG_DB_VIEW, viewList,
                         request.getString(ARG_DB_VIEW, ""),
+                        HtmlUtils.attr("default",VIEW_TABLE) +
                         HtmlUtils.cssClass(
                             "search-select")) + HtmlUtils.space(2) + count));
             sb.append(formEntry(request, msgLabel("Search Name"),
@@ -4312,6 +4315,11 @@ public class DbTypeHandler extends PointTypeHandler /* BlobTypeHandler*/ {
 
 
 
+    public int getDefaultMax(Request request, Entry entry, String tag, Hashtable props) {
+        return 1000;
+    }
+
+
     /**
      * _more_
      *
@@ -4328,9 +4336,12 @@ public class DbTypeHandler extends PointTypeHandler /* BlobTypeHandler*/ {
         if (tag.equals(WikiConstants.WIKI_TAG_CHART)
                 || tag.equals(WikiConstants.WIKI_TAG_DISPLAY)) {
             try {
+                if(props.get("max")==null) {
+                    props.put("max",""+getDefaultMax(request, entry, tag, props));
+                }
                 String url =
                     ((PointOutputHandler) getRecordOutputHandler())
-                        .getJsonUrl(request, entry);
+                    .getJsonUrl(request, entry, props);
                 url += "&"
                        + request.getUrlArgs(
                            (HashSet<String>) Utils.makeHashSet(
@@ -5392,13 +5403,13 @@ public class DbTypeHandler extends PointTypeHandler /* BlobTypeHandler*/ {
                     aggColumns.add(aggColumn.getName());
                     aggLabels.add(aggColumn.getLabel());
                     aggSelectors.add(request.getEnum(ARG_AGG_TYPE + i,
-                            "count", "sum", "count", "min", "max", "avg"));
+                                                     "sum", "count",   "min", "max", "avg"));
                 }
             }
             if (aggColumns.size() == 0) {
                 aggColumns.add(colNames.get(0));
                 aggLabels.add(labels.get(0));
-                aggSelectors.add("count");
+                aggSelectors.add("sum");
             }
 
             for (int i = 0; i < aggColumns.size(); i++) {
@@ -6126,6 +6137,10 @@ public class DbTypeHandler extends PointTypeHandler /* BlobTypeHandler*/ {
     }
 
 
-
+    @Override
+    public String getChartProperty(Request request, Entry entry, String prop, String dflt) {
+        if(prop.equals("chart.type")) return "table";
+        return getTypeProperty(prop, dflt);
+    }
 
 }

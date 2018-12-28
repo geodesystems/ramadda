@@ -441,17 +441,22 @@ public class PointTypeHandler extends RecordTypeHandler {
         if (tag.equals(WikiConstants.WIKI_TAG_CHART)
                 || tag.equals(WikiConstants.WIKI_TAG_DISPLAY)) {
             try {
+                if(props.get("max")==null) {
+                    props.put("max",""+getDefaultMax(request, entry, tag, props));
+                }
                 return ((PointOutputHandler) getRecordOutputHandler())
-                    .getJsonUrl(request, entry);
+                    .getJsonUrl(request, entry, props);
             } catch (Exception exc) {
                 throw new RuntimeException(exc);
             }
         }
-
         return super.getUrlForWiki(request, entry, tag, props);
     }
 
 
+    public int getDefaultMax(Request request, Entry entry, String tag, Hashtable props) {
+        return 5000;
+    }
 
     /**
      * _more_

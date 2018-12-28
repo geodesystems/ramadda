@@ -2376,8 +2376,12 @@ public class HtmlUtils {
      * @return _more_
      */
     public static String radio(String name, String value, boolean checked) {
+        return radio(name, value, checked,"");
+    }
+
+    public static String radio(String name, String value, boolean checked, String attrs) {
         return tag(TAG_INPUT,
-                   attrs( /*ATTR_CLASS, CLASS_RADIO,*/ATTR_TYPE, TYPE_RADIO,
+                   attrs + attrs( /*ATTR_CLASS, CLASS_RADIO,*/ATTR_TYPE, TYPE_RADIO,
                        ATTR_NAME, name, ATTR_VALUE, value) + (checked
                 ? " checked "
                 : ""));

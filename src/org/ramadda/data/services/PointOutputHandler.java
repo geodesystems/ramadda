@@ -60,6 +60,7 @@ import org.w3c.dom.Element;
 
 import ucar.unidata.ui.ImageUtils;
 import ucar.unidata.util.IOUtil;
+import ucar.unidata.util.StringUtil;
 
 import ucar.unidata.util.LogUtil;
 import ucar.unidata.util.Misc;
@@ -85,6 +86,7 @@ import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Enumeration;
+import java.util.Hashtable;
 import java.util.HashSet;
 import java.util.List;
 import java.util.zip.ZipEntry;
@@ -887,11 +889,29 @@ public class PointOutputHandler extends RecordOutputHandler {
      * @return _more_
      * @throws Exception _more_
      */
-    public String getJsonUrl(Request request, Entry entry) throws Exception {
+    public String getJsonUrl(Request request, Entry entry, Hashtable props) throws Exception {
+        String max = null;
+        PointTypeHandler typeHandler=(PointTypeHandler)entry.getTypeHandler();
+        String extra = "";
+        String extraArgs = (String)props.get("extraArgs");
+        if(extraArgs!=null) {
+            for(String tuple: StringUtil.split(extraArgs,",",true,true)) {
+                List<String> toks = StringUtil.splitUpTo(tuple,":",2);
+                String arg = toks.get(0);
+                String value = (toks.size()>1?toks.get(1):"");
+                extra+="&";
+                extra+=HtmlUtils.arg(arg,value);
+            }
+        }
+        if(props!=null) {
+            max = (String)props.get("max");
+        }
+        if(max == null) max = "5000";
         return request.entryUrl(getRepository().URL_ENTRY_SHOW, entry,
                                 ARG_OUTPUT, OUTPUT_PRODUCT.getId(),
                                 ARG_PRODUCT, OUTPUT_JSON.toString()) + "&"
-                                    + RecordFormHandler.ARG_MAX + "=5000";
+                                    + RecordFormHandler.ARG_MAX + "=" + max+
+            extra;
 
     }
 

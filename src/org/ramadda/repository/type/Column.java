@@ -2832,7 +2832,7 @@ public class Column implements DataTypes, Constants {
             } else {
                 selectExtra += HtmlUtils.cssClass("search-select");
             }
-            System.err.println(getName() + " values=" + tmpValues);
+            //            System.err.println(getName() + " values=" + tmpValues);
             widget = HtmlUtils.select(
                 searchArg, tmpValues,
                 request.get(searchArg, new ArrayList<String>()), selectExtra);

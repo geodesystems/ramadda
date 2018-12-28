@@ -567,5 +567,10 @@ public abstract class RecordTypeHandler extends BlobTypeHandler implements Recor
         return request.getAbsoluteUrl(getRepository().getIconUrl(icon));
     }
 
+    public String getChartProperty(Request request, Entry entry, String prop, String dflt) {
+        return getTypeProperty(prop, dflt);
+    }
+
+
 
 }

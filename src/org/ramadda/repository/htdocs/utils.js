@@ -801,20 +801,44 @@ var HtmlUtil =  {
     },
 
 
-    handleFormChangeShowUrl: function(formId, outputId, skip) {
+    handleFormChangeShowUrl: function(formId, outputId, skip, doDisplay) {
         if(skip == null) {
             skip = [".*OpenLayers_Control.*","authtoken"];
         }
         var url = $("#" + formId).attr("action")+"?";
         var inputs = $("#" + formId +" :input");
         var cnt = 0;
+        var seen = {};
         inputs.each(function (i, item) {
                 if(item.name == "" || item.value == null || item.value == "") return;
+                if(item.value =="-all-") return;
+                if(item.type == "submit") {
+                    if(item.value=="Cancel") {
+                        return
+                    }
+                }
+
                 if(item.type == "checkbox") {
                     if(!item.checked) {
                         return;
                     }
                 } 
+                if(item.type == "radio") {
+                    if(!item.checked) {
+                        return;
+                    }
+                } 
+                if(item.attributes && item.attributes.default) {
+                    if(item.attributes.default.value == item.value) {
+                        return;
+                    } 
+                }
+                if(item.name && seen[item.name]) {
+                    return;
+                }
+                if(item.name)
+                    seen[item.name]  = true;
+                //                console.log("item:"   + item.id +" type:" +item.type + " value:" + item.value);
                 if(skip!=null) {
                     for(var i=0;i<skip.length;i++) {
                         var pattern = skip[i];
@@ -837,11 +861,11 @@ var HtmlUtil =  {
         //        console.log("final:" + url);
         $("#" + outputId).html(HtmlUtil.div(["class","ramadda-form-url"],  HtmlUtil.href(url, HtmlUtil.image(ramaddaBaseUrl +"/icons/link.png")) +" " + url));
     },
-    makeUrlShowingForm: function(formId, outputId, skip) {
+    makeUrlShowingForm: function(formId, outputId, skip, doDisplay) {
         $("#" + formId +" :input").change(function() {
-                HtmlUtil.handleFormChangeShowUrl(formId, outputId, skip);
+                HtmlUtil.handleFormChangeShowUrl(formId, outputId, skip, doDisplay);
             });
-        HtmlUtil.handleFormChangeShowUrl(formId, outputId, skip);
+        HtmlUtil.handleFormChangeShowUrl(formId, outputId, skip,doDisplay);
     },
     input :   function(name, value, attrs) {
         return "<input " + HtmlUtil.attrs(attrs) + HtmlUtil.attrs(["name", name, "value",value]) +">";

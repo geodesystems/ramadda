@@ -40,6 +40,8 @@ import org.ramadda.repository.type.LocalFileTypeHandler;
 import org.ramadda.repository.type.TypeHandler;
 import org.ramadda.repository.util.DateArgument;
 import org.ramadda.repository.util.ServerInfo;
+import org.ramadda.data.services.RecordTypeHandler;
+
 import org.ramadda.util.BufferMapList;
 import org.ramadda.util.HtmlUtils;
 import org.ramadda.util.Json;
@@ -4721,12 +4723,12 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
      */
     public String getStandardChartDisplay(Request request, Entry entry)
             throws Exception {
+        RecordTypeHandler typeHandler = (RecordTypeHandler) entry.getTypeHandler();
         String        name = entry.getName();
         StringBuilder wiki = new StringBuilder();
         wiki.append(
             "{{group  showTitle=\"true\"  showMenu=\"true\"  layoutType=\"columns\"  layoutColumns=\"2\"  }}\n");
-        String chartType =
-            entry.getTypeHandler().getTypeProperty("chart.type", "linechart");
+        String chartType =typeHandler.getChartProperty(request, entry,"chart.type", "linechart");
         wiki.append(
             "{{display  xwidth=\"600\"  height=\"400\"   type=\"" + chartType
             + "\"  name=\"\"  layoutHere=\"false\"  showMenu=\"true\"  showTitle=\"true\"  row=\"0\"  column=\"0\"  }}");
@@ -4740,8 +4742,8 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                 mapLayers = mapLayers.replaceAll(";", ",");
                 layerVar  = "mapLayers=\"" + mapLayers + "\"";
             }
-            String entryAttrs = entry.getTypeHandler().getProperty(entry,
-                                    "chart.wiki.map", "");
+            String entryAttrs = typeHandler.getChartProperty(request, entry,
+                                                             "chart.wiki.map", "");
             if (entry.getTypeHandler().getTypeProperty("isTrajectory", false)
                     || entry.getTypeHandler().getProperty(entry,
                         "isTrajectory", false)) {
@@ -5088,7 +5090,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
         Utils.add(propList, "entryId", HtmlUtils.quote(entry.getId()));
         if ((url != null) && Utils.getProperty(props, "includeData", true)) {
             Utils.add(propList, "data",
-                      Utils.concatString("new  PointData(",
+                      Utils.concatString("new PointData(",
                                          HtmlUtils.quote(name),
                                          ",  null,null,",
                                          HtmlUtils.quote(url), ",",
