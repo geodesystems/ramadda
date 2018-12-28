@@ -838,7 +838,7 @@ var HtmlUtil =  {
                 }
                 if(item.name)
                     seen[item.name]  = true;
-                //                console.log("item:"   + item.id +" type:" +item.type + " value:" + item.value);
+
                 if(skip!=null) {
                     for(var i=0;i<skip.length;i++) {
                         var pattern = skip[i];
@@ -847,10 +847,25 @@ var HtmlUtil =  {
                         }
                     }
                 }
-                if(cnt>0) url += "&";
-                cnt++;
-                url += encodeURIComponent(item.name) + "=" + encodeURIComponent(item.value);
-                //                console.log(item.name +"=" + item.value);
+                //                console.log("item:"   + item.id +" type:" +item.type + " value:" + item.value);
+                var values = [];
+                if(item.type == "select-multiple" && item.selectedOptions) {
+                    for(a in item.selectedOptions) {
+                        option = item.selectedOptions[a];
+                        if(Utils.isDefined(option.value)) {
+                            values.push(option.value);
+                        }
+                    }
+                } else {
+                    values.push(item.value);
+                }
+
+                for(v in values) {
+                    if(cnt>0) url += "&";
+                    cnt++;
+                    value = values[v];
+                    url += encodeURIComponent(item.name) + "=" + encodeURIComponent(value);
+                }
             });
 
         var base = window.location.protocol+ "//" + window.location.host;
