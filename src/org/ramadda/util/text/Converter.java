@@ -711,7 +711,7 @@ public abstract class Converter extends Processor {
             row.remove(index);
             int colOffset = 0;
             for (String tok : StringUtil.split(row.get(index), delimiter)) {
-                row.add(index + (colOffset++), tok);
+                row.insert(index + (colOffset++), tok);
             }
 
             return row;
@@ -774,7 +774,7 @@ public abstract class Converter extends Processor {
                 if (name.length() > 0) {
                     if (inPlace) {
                         row = filterValues(info, row);
-                        row.add(indices.get(0), name);
+                        row.insert(indices.get(0), name);
                     } else {
                         row.getValues().add(name);
                     }
@@ -797,7 +797,7 @@ public abstract class Converter extends Processor {
 
             if (inPlace) {
                 row = filterValues(info, row);
-                row.add(indices.get(0), sb.toString());
+                row.insert(indices.get(0), sb.toString());
             } else {
                 row.getValues().add(sb.toString());
             }
@@ -1161,53 +1161,6 @@ public abstract class Converter extends Processor {
     }
 
 
-    /**
-     * Class description
-     *
-     *
-     * @version        $version$, Fri, Jan 16, '15
-     * @author         Enter your name here...
-     */
-    public static class ColumnInserter extends Converter {
-
-        /** _more_ */
-        private String value;
-
-
-        /**
-         * _more_
-         *
-         * @param col _more_
-         * @param value _more_
-         */
-        public ColumnInserter(String col, String value) {
-            super(col);
-            this.value = value;
-        }
-
-        /**
-         * _more_
-         *
-         *
-         * @param info _more_
-         * @param row _more_
-         * @param line _more_
-         *
-         * @return _more_
-         */
-        @Override
-        public Row processRow(TextReader info, Row row, String line) {
-            int index = getIndex(info);
-            if ((index < 0) || (index >= row.size())) {
-                return row;
-            }
-            row.insert(index, value);
-
-            return row;
-        }
-
-    }
-
 
     /**
      * Class description
@@ -1314,9 +1267,9 @@ public abstract class Converter extends Processor {
                 return row;
             }
             if (rowCnt++ == 0) {
-                row.add(index + 1, name);
+                row.insert(index + 1, name);
             } else {
-                row.add(index + 1, row.getValues().get(index));
+                row.insert(index + 1, row.getValues().get(index));
             }
 
             return row;
@@ -1583,11 +1536,8 @@ public abstract class Converter extends Processor {
             } else {
                 row.getValues().add(col, v);
             }
-
             return row;
-
         }
-
     }
 
 

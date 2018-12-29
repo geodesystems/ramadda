@@ -1324,10 +1324,11 @@ public class CsvUtil {
 
             if (arg.equals("-insert")) {
                 info.getProcessor().addProcessor(
-                    new Converter.ColumnInserter(args.get(++i), args.get(++i)));
+                                                 new Converter.ColumnInserter(Integer.parseInt(args.get(++i)), args.get(++i)));
 
                 continue;
             }
+
 
             if (arg.equals("-format")) {
                 List<String> cols = getCols(args.get(++i));
@@ -1379,15 +1380,6 @@ public class CsvUtil {
                 List<String> idxs   = getCols(args.get(++i));
                 info.getProcessor().addProcessor(new Converter.Case(idxs,
                         action));
-
-                continue;
-            }
-
-
-            if (arg.equals("-insert")) {
-                int col = Integer.parseInt(args.get(++i));
-                info.getProcessor().addProcessor(
-                    new Converter.ColumnInserter(col, args.get(++i)));
 
                 continue;
             }
