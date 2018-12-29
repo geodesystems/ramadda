@@ -1168,7 +1168,7 @@ public abstract class Converter extends Processor {
      * @version        $version$, Fri, Jan 16, '15
      * @author         Enter your name here...
      */
-    public static class ColumnAdder extends Converter {
+    public static class ColumnInserter extends Converter {
 
         /** _more_ */
         private String value;
@@ -1180,7 +1180,7 @@ public abstract class Converter extends Processor {
          * @param col _more_
          * @param value _more_
          */
-        public ColumnAdder(String col, String value) {
+        public ColumnInserter(String col, String value) {
             super(col);
             this.value = value;
         }
@@ -1201,7 +1201,7 @@ public abstract class Converter extends Processor {
             if ((index < 0) || (index >= row.size())) {
                 return row;
             }
-            row.add(index, value);
+            row.insert(index, value);
 
             return row;
         }

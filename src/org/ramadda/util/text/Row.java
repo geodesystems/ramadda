@@ -157,7 +157,7 @@ public class Row {
      *
      * @param object _more_
      */
-    public void add(Object object) {
+    public void insert(Object object) {
         values.add(object);
     }
 
@@ -167,7 +167,7 @@ public class Row {
      * @param index _more_
      * @param object _more_
      */
-    public void add(int index, Object object) {
+    public void insert(int index, Object object) {
         values.add(index, object);
     }
 

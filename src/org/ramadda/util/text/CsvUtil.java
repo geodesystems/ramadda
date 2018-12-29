@@ -275,14 +275,17 @@ public class CsvUtil {
             String arg = args.get(i);
 
             if (arg.equals("-help")) {
-                usage("");
-
+                usage("",null);
                 return;
             }
 
-            if (arg.equals("-concat")) {
-                doConcat = true;
+            if (arg.startsWith("-help:")) {
+                usage("",arg.substring("-help:".length()));
+                return;
+            }
 
+            if (arg.equals("-cat")) {
+                doConcat = true;
                 continue;
             }
 
@@ -793,6 +796,61 @@ public class CsvUtil {
         return s;
     }
 
+    private static final String[] commands = {
+        "-help  or -help:<topic search string> (print this help)",
+        "-columns <comma separated list of columns #s or column range, 0-based, e.g., 0,1,2,7-10,12>",
+        "-skip <how many lines to skip>",
+        "-cut <one or more rows. -1 to the end>",
+        "-include <start row> <end row (-1 for end)>",
+        "-pattern <col #> <regexp pattern> (extract rows that match the pattern)",
+        "<column>=~<value> (same as -pattern)",
+        "<-gt|-ge|-lt|-le> <col #> <value> (extract rows that pass the expression)",
+        "-decimate <# of start rows to include> <skip factor>   only include every <skip factor> row",
+        "-copy <col #> <name>", 
+        "-delete <col #> (remove the columns)",
+        "-insert <col #> <value> (insert a new column value)",
+        "-scale <col #> <delta1> <scale> <delta2> (set value=(value+delta1)*scale+delta2)",
+        "-insert <col #> <comma separated values> ",
+        "-addcell <row #>  <col #>  <value> ",
+        "-deletecell <row #> <col #>  ",
+        "-set <col #s> <row #s> <value> write the value into the cells",
+        "-case <lower|upper|camel> <col #> (change case of column)",
+        "-prepend  <text> add the text to the beginning of the file. use _nl_ to insert newlines",
+        "-pad <col #> <pad string> pad out or cut columns to achieve the count",
+        "-change <col #s> <pattern> <substitution string>",
+        "-map <col #> \"new columns name\" \"value newvalue ...\" change values in column to new values",
+        "-combine \"col #s\" <delimiter> <new column name> (combine columns with the delimiter. deleting columns)",
+        "-combineinplace \"col #s\" <delimiter> <new column name> (combine columns with the delimiter.)",
+        "-concat \"col #s\"  <delimiter> (create a new column from the given columns)",
+        "-operator \"col #s\"  \"new col name\" operator (apply the operator (+,-,*,/) to the given columns and create new one)",
+        "-format <columns> <decimal format, e.g. '#'>",
+        "-unique <columns> (pass through unique values)",
+        "-percent <columns to add>",
+        "-explode <col #>   make separate files based on value of column",
+        "-unfurl <col to get new column header#> <col with value> <unique col>  <other columns>  (make columns from data values)",
+        "-geocode <col idx> <csv file> <name idx> <lat idx> <lon idx>",
+        "-geocodeaddress <col indices> <suffix> ",
+        "-denormalize <col idx>  <csv file>  read the id,value from file and substitute the value in the dest file col idx",
+        "-count (show count)" ,
+        "-maxrows <max rows to print>",
+        "-skipline <pattern> (skip any line that matches the pattern)",
+        "-changeline <from> <to> (change the line))",
+        "-prune <number of leading bytes to remove>",
+        "-strict (be strict on columns. any rows that are not the size of the other rows are dropped)",
+        "-flag (be strict on columns. any rows that are not the size of the other rows are shown)",
+        "-delimiter (specify an alternative delimiter)",
+        "-print (print to stdout)",
+        "-raw (print the file raw)" ,
+        "-record (print records)",
+        "-rotate" ,
+        "-flip",
+        "-cat *.csv - one or more csv files",
+        "-header (print the first line)",
+        "-pointheader (generate the RAMADDA point properties)",
+        "-addheader (add the RAMADDA point properties)",
+        "-run <name of process directory>",
+        "-db \"props\" generate the RAMADDA db xml from the header, props are a set of name value pairs:\n\ttable.id <new id> table.name <new name> table.cansearch <true|false> table.canlist <true|false> table.icon <icon> (e.g., /db/database.png)\n\t<column name>.id <new id for column> <column name>.label <new label>\n\t<column name>.type <string|enumeration|double|int|date>\n\t<column name>.format <yyyy MM dd HH mm ss format for dates>\n\t<column name>.canlist <true|false> <column name>.cansearch <true|false>\n\tinstall <true|false> (install the new db table)\n\tnukedb <true|false> (careful! this deletes any prior created dbs)"
+    };
 
     /**
      * _more_
@@ -801,61 +859,16 @@ public class CsvUtil {
      *
      * @throws Exception _more_
      */
-    public void usage(String msg) throws Exception {
+    public void usage(String msg, String match) throws Exception {
         PrintWriter pw = new PrintWriter(getOutputStream());
         if (msg.length() > 0) {
             pw.println(msg);
         }
-        pw.println(
-            "CsvUtil"
-            + "\n\t-columns <comma separated list of columns #s. 0-based>"
-            + "\n\t-pattern <col #> <regexp pattern>\n\t\"<column=~<value>\" pattern search"
-            + "\n\t<-gt|-ge|-lt|-le> <col #> <value>\n\t-skip <how many lines to skip>"
-            + "\n\t-cut <one or more rows. -1 to the end>"
-            + "\n\t-include <start row> <end row (-1 for end)>"
-            + "\n\t-explode <col #>   make separate files based on value of column"
-            + "\n\t-unfurl <col to get new column header#> <col with value> <unique col>  <other columns>   unfurl"
-            + "\n\t-decimate <# of start rows to include> <skip factor>   only include every <skip factor> row"
-            + "\n\t-copy <col #> <name>" + "\n\t-delete <col #>"
-            + "\n\t-add <col #> <value>"
-            + "\n\t-scale <col #> <delta1> <scale> <delta2> (value=(value+delta1)*scale+delta2)"
-            + "\n\t-insert <col #> <comma separated values> "
-            + "\n\t-case <lower|upper|camel> <col #> "
-            + "\n\t-addcell <row #>  <col #>  <value> "
-            + "\n\t-deletecell <row #> <col #>  "
-            + "\n\t-setwrite <col #s> <row #s> <value> write the value into the cell"
-            + "\n\t-tolower <col #> "
-            + "\n\t-prepend  <text> add the text to the beginning of the file. use _nl_ to insert newlines"
-            + "\n\t-pad <col #> <pad string> pad out or cut columns to achieve the count"
-            + "\n\t-change <col #s> <pattern> <substitution string>"
-            + "\n\t-map <col #> \"new columns name\" \"value newvalue ...\" change values in column to new values"
-            + "\n\t-combine \"col #s\" <delimiter> <new column name> (combine columns with the delimiter. deleting columns)"
-            + "\n\t-combineinplace \"col #s\" <delimiter> <new column name> (combine columns with the delimiter.)"
-            + "\n\t-new \"col #s\"  <delimiter> (create a new column from the given columns)"
-            + "\n\t-operator \"col #s\"  \"new col name\" operator (apply the operator (+,-,*,/) to the given columns and create new one)"
-            + "\n\t-format <columns> <decimal format, e.g. '#'>"
-            + "\n\t-unique <columns> (pass through unique values)"
-            + "\n\t-percent <columns to add>"
-            + "\n\t-geocode <col idx> <csv file> <name idx> <lat idx> <lon idx>"
-            + "\n\t-geocodeaddress <col indices> <suffix> "
-            + "\n\t-denormalize <col idx>  <csv file>  read the id,value from file and substitute the value in the dest file col idx"
-            + "\n\t-count (show count)" + "\n\t-maxrows <max rows to print>"
-            + "\n\t-skipline <pattern> (skip any line that matches the pattern)"
-            + "\n\t-changeline <from> <to> (change the line))"
-            + "\n\t-prune <number of leading bytes to remove>"
-            + "\n\t-strict (be strict on columns. any rows that are not the size of the other rows are dropped)"
-            + "\n\t-flag (be strict on columns. any rows that are not the size of the other rows are shown)"
-            + "\n\t-delimiter (specify an alternative delimiter)"
-            + "\n\t-print (print to stdout)"
-            + "\n\t-raw (print the file raw)" + "\n\t-record (print records)"
-            + "\n\t-rotate" + "\n\t-flip"
-            + "\n\t-concat\n\t*.csv - one or more csv files"
-            + "\n\t-header (print the first line)"
-            + "\n\t-pointheader (generate the RAMADDA point properties)"
-            + "\n\t-addheader (add the RAMADDA point properties)"
-            + "\n\t-db <props> (generate the RAMADDA db xml from the header)"
-            + "\n\tdb props are a set of name value pairs:"
-            + "\n\t\ttable.id new_id table.name new_name table.cansearch <true|false> (dflt can search) table.canlist <true|false> (dflt can list) <column name>.type <string|enumeration|double|int|date> <column name>.format <yyyy mm dd format for dates> " + "\n\t\t<column name>.id <new id for column> <column name>.label <new label> " + "\n\t\t<column name>.canlist <true|false> <column name>.cansearch <true|false> " + "\n\t\t-install <true|false> (install the new db table) -nukedb <true|false> (delete any prior created dbs>" + "\n\t-run <name of process directory>");
+        pw.println("CsvUtil");
+        for(String cmd: commands) {
+            if(match !=null &&cmd.indexOf(match)<0) continue;
+            pw.println(cmd);
+        }
         pw.flush();
     }
 
@@ -1309,9 +1322,9 @@ public class CsvUtil {
                 continue;
             }
 
-            if (arg.equals("-add")) {
+            if (arg.equals("-insert")) {
                 info.getProcessor().addProcessor(
-                    new Converter.ColumnAdder(args.get(++i), args.get(++i)));
+                    new Converter.ColumnInserter(args.get(++i), args.get(++i)));
 
                 continue;
             }
@@ -1343,7 +1356,7 @@ public class CsvUtil {
                 continue;
             }
 
-            if (arg.equals("-new")) {
+            if (arg.equals("-concat")) {
                 List<String> idxs = getCols(args.get(++i));
                 info.getProcessor().addProcessor(
                     new Converter.ColumnNewer(idxs, args.get(++i)));

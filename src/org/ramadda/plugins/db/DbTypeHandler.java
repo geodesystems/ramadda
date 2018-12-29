@@ -1550,7 +1550,6 @@ public class DbTypeHandler extends PointTypeHandler /* BlobTypeHandler*/ {
         }
 
 
-
         List<Object[]> valueList;
 
         if ((dateColumns.size() > 0) && request.defined(ARG_YEAR)
@@ -3012,7 +3011,13 @@ public class DbTypeHandler extends PointTypeHandler /* BlobTypeHandler*/ {
             sb.append("\n");
         }
 
-        return new Result("", sb, "text/csv");
+        Result result =  new Result("", sb, "text/csv");
+        if(request.defined(ARG_DB_SEARCHNAME)) {
+            result.setReturnFilename(request.getString(ARG_DB_SEARCHNAME)+".csv");
+        } else {
+            result.setReturnFilename(entry.getName()+".csv");
+        }
+        return result;
     }
 
 
@@ -3709,7 +3714,6 @@ public class DbTypeHandler extends PointTypeHandler /* BlobTypeHandler*/ {
                     sum[i] = Double.NaN;
                 }
             }
-
 
 
             if (cnt == 0) {
