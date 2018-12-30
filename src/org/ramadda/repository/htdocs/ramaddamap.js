@@ -1801,8 +1801,8 @@ function initMapFunctions(theMap) {
             return;
         }
         sz = new OpenLayers.Size();
-        sz.h = 50;
-        sz.w = 50;
+        sz.h = 120;
+        sz.w = 120;
         width = this.map.viewPortDiv.offsetWidth;
         height = this.map.viewPortDiv.offsetHeight;
         position = new OpenLayers.Pixel(width/2-sz.w/2,height/2-sz.h/2);
