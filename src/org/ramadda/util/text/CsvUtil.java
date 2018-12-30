@@ -252,12 +252,12 @@ public class CsvUtil {
         if (files == null) {
             files = new ArrayList<String>();
         }
-        boolean   doConcat = false;
-        boolean   doHeader = false;
-        boolean   doRaw    = false;
-        Hashtable dbProps  = new Hashtable<String, String>();
-        boolean   doPoint  = false;
-        String    iterateColumn = null;
+        boolean      doConcat      = false;
+        boolean      doHeader      = false;
+        boolean      doRaw         = false;
+        Hashtable    dbProps       = new Hashtable<String, String>();
+        boolean      doPoint       = false;
+        String       iterateColumn = null;
         List<String> iterateValues = new ArrayList<String>();
 
         String       prepend       = null;
@@ -267,33 +267,40 @@ public class CsvUtil {
         for (int i = 0; i < args.size(); i++) {
             String arg = args.get(i);
             if (arg.equals("-help")) {
-                usage("",null);
+                usage("", null);
+
                 return;
             }
             if (arg.startsWith("-help:")) {
-                usage("",arg.substring("-help:".length()));
+                usage("", arg.substring("-help:".length()));
+
                 return;
             }
             if (arg.equals("-cat")) {
                 doConcat = true;
+
                 continue;
             }
             if (arg.equals("-header")) {
                 doHeader = true;
+
                 continue;
             }
             if (arg.equals("-raw")) {
                 doRaw = true;
+
                 continue;
             }
             if (arg.equals("-pointheader")) {
                 doHeader = true;
                 doPoint  = true;
+
                 continue;
             }
             if (arg.startsWith("-iter")) {
                 iterateColumn = args.get(++i);
                 iterateValues = StringUtil.split(args.get(++i), ",");
+
                 continue;
             }
             extra.add(arg);
@@ -325,14 +332,14 @@ public class CsvUtil {
                 }
                 for (String file : files) {
                     textReader.getProcessor().reset();
-                    InputStream is = null;
-                    boolean closeIS = true;
+                    InputStream is      = null;
+                    boolean     closeIS = true;
                     if (this.inputStream != null) {
                         is = this.inputStream;
                     } else {
                         if (file.equals("stdin")) {
                             closeIS = false;
-                            is = System.in;
+                            is      = System.in;
                         } else {
                             is = new BufferedInputStream(
                                 new FileInputStream(file));
@@ -386,6 +393,7 @@ public class CsvUtil {
                 String         line = br.readLine();
                 if (line == null) {
                     nullCnt++;
+
                     continue;
                 }
                 if (i > 0) {
@@ -608,6 +616,7 @@ public class CsvUtil {
             rowIdx++;
             if (rowIdx <= textReader.getSkip()) {
                 textReader.addHeaderLine(line);
+
                 continue;
             }
 
@@ -748,6 +757,7 @@ public class CsvUtil {
         return s;
     }
 
+    /** _more_          */
     private static final String[] commands = {
         "-help  or -help:<topic search string> (print this help)",
         "-columns <comma separated list of columns #s or column range, 0-based, e.g., 0,1,2,7-10,12>",
@@ -758,8 +768,7 @@ public class CsvUtil {
         "<column>=~<value> (same as -pattern)",
         "<-gt|-ge|-lt|-le> <col #> <value> (extract rows that pass the expression)",
         "-decimate <# of start rows to include> <skip factor>   only include every <skip factor> row",
-        "-copy <col #> <name>", 
-        "-delete <col #> (remove the columns)",
+        "-copy <col #> <name>", "-delete <col #> (remove the columns)",
         "-insert <col #> <value> (insert a new column value)",
         "-scale <col #> <delta1> <scale> <delta2> (set value=(value+delta1)*scale+delta2)",
         "-insert <col #> <comma separated values> ",
@@ -779,23 +788,19 @@ public class CsvUtil {
         "-unique <columns> (pass through unique values)",
         "-percent <columns to add>",
         "-explode <col #>   make separate files based on value of column",
-        "-unfurl <col to get new column header#> <col with value> <unique col>  <other columns>  (make columns from data values)",
+        "-unfurl <col to get new column header#> <value columns> <unique col>  <other columns>  (make columns from data values)",
         "-geocode <col idx> <csv file> <name idx> <lat idx> <lon idx>",
         "-geocodeaddress <col indices> <suffix> ",
         "-denormalize <col idx>  <csv file>  read the id,value from file and substitute the value in the dest file col idx",
-        "-count (show count)" ,
-        "-maxrows <max rows to print>",
+        "-count (show count)", "-maxrows <max rows to print>",
         "-skipline <pattern> (skip any line that matches the pattern)",
         "-changeline <from> <to> (change the line))",
         "-prune <number of leading bytes to remove>",
         "-strict (be strict on columns. any rows that are not the size of the other rows are dropped)",
         "-flag (be strict on columns. any rows that are not the size of the other rows are shown)",
         "-delimiter (specify an alternative delimiter)",
-        "-print (print to stdout)",
-        "-raw (print the file raw)" ,
-        "-record (print records)",
-        "-rotate" ,
-        "-flip",
+        "-print (print to stdout)", "-raw (print the file raw)",
+        "-record (print records)", "-rotate", "-flip",
         "-cat *.csv - one or more csv files",
         "-header (print the first line)",
         "-pointheader (generate the RAMADDA point properties)",
@@ -808,6 +813,7 @@ public class CsvUtil {
      * _more_
      *
      * @param msg _more_
+     * @param match _more_
      *
      * @throws Exception _more_
      */
@@ -817,8 +823,10 @@ public class CsvUtil {
             pw.println(msg);
         }
         pw.println("CsvUtil");
-        for(String cmd: commands) {
-            if(match !=null &&cmd.indexOf(match)<0) continue;
+        for (String cmd : commands) {
+            if ((match != null) && (cmd.indexOf(match) < 0)) {
+                continue;
+            }
             pw.println(cmd);
         }
         pw.flush();
@@ -927,12 +935,13 @@ public class CsvUtil {
 
 
             if (arg.equals("-unfurl")) {
-                int          idx1 = Integer.parseInt(args.get(++i));
-                int          idx2 = Integer.parseInt(args.get(++i));
-                int          idx3 = Integer.parseInt(args.get(++i));
-                List<String> cols = getCols(args.get(++i));
+                int          idx1      = Integer.parseInt(args.get(++i));
+                List<String> valueCols = getCols(args.get(++i));
+                //                int          idx2 = Integer.parseInt(args.get(++i));
+                int          idx3      = Integer.parseInt(args.get(++i));
+                List<String> extraCols = getCols(args.get(++i));
                 info.getProcessor().addProcessor(new Processor.Unfurler(idx1,
-                        idx2, idx3, cols));
+                        valueCols, idx3, extraCols));
 
                 continue;
             }
@@ -1276,7 +1285,8 @@ public class CsvUtil {
 
             if (arg.equals("-insert")) {
                 info.getProcessor().addProcessor(
-                                                 new Converter.ColumnInserter(Integer.parseInt(args.get(++i)), args.get(++i)));
+                    new Converter.ColumnInserter(
+                        Integer.parseInt(args.get(++i)), args.get(++i)));
 
                 continue;
             }

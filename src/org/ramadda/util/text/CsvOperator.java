@@ -63,7 +63,7 @@ public abstract class CsvOperator {
     protected int index = -1;
 
     /** _more_ */
-    List<String> sindices;
+    protected List<String> sindices;
 
     /** _more_ */
     List<Integer> indices;
@@ -233,10 +233,23 @@ public abstract class CsvOperator {
      */
     public List<Integer> getIndices(TextReader info) {
         if (indices == null) {
-            indices = new ArrayList<Integer>();
-            for (String s : sindices) {
-                getColumnIndex(indices, s);
-            }
+            indices = getIndices(sindices);
+        }
+
+        return indices;
+    }
+
+    /**
+     * _more_
+     *
+     * @param cols _more_
+     *
+     * @return _more_
+     */
+    public List<Integer> getIndices(List<String> cols) {
+        List<Integer> indices = new ArrayList<Integer>();
+        for (String s : cols) {
+            getColumnIndex(indices, s);
         }
 
         return indices;

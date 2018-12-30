@@ -392,7 +392,7 @@ public class Filter extends Converter {
      */
     public static class Decimate extends Filter {
 
-        /** _more_          */
+        /** _more_ */
         private int start;
 
         /** _more_ */

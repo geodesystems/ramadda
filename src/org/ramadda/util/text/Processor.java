@@ -1866,7 +1866,12 @@ public abstract class Processor extends CsvOperator {
         private int uniqueIndex;
 
         /** _more_ */
-        private int valueIndex;
+        //        private int valueIndex;
+
+        private List<Integer> valueIndices;
+
+        /** _more_          */
+        private List<String> valueCols;
 
         /** _more_ */
         private int unitIndex = -1;
@@ -1879,15 +1884,19 @@ public abstract class Processor extends CsvOperator {
          *
          *
          * @param unfurlIndex _more_
+         * @param valueCols _more_
          * @param uniqueIndex _more_
          * @param valueIndex _more_
          * @param cols _more_
+         * @param extraCols _more_
          */
-        public Unfurler(int unfurlIndex, int valueIndex, int uniqueIndex,
-                        List<String> cols) {
-            super(cols);
+        public Unfurler(int unfurlIndex,
+                        List<String> valueCols, /*int valueIndex,*/
+                        int uniqueIndex, List<String> extraCols) {
+            super(extraCols);
             this.unfurlIndex = unfurlIndex;
-            this.valueIndex  = valueIndex;
+            this.valueCols   = valueCols;
+            //            this.valueIndex  = valueIndex;
             this.uniqueIndex = uniqueIndex;
         }
 
@@ -1915,6 +1924,8 @@ public abstract class Processor extends CsvOperator {
         public List<Row> finish(TextReader info, List<Row> rows)
                 throws Exception {
 
+            valueIndices = getIndices(valueCols);
+
             List<Integer>   includes     = getIndices(info);
             HashSet<String> seen         = new HashSet<String>();
             int             rowIndex     = 0;
@@ -1939,7 +1950,15 @@ public abstract class Processor extends CsvOperator {
                 }
                 if ( !newColumnMap.contains(unfurlValue)) {
                     newColumnMap.add(unfurlValue);
-                    newColumns.add(unfurlValue);
+                    if (valueIndices.size() > 1) {
+                        for (int valueIdx : valueIndices) {
+                            String label = unfurlValue + " - "
+                                           + headerRow.get(valueIdx);
+                            newColumns.add(label);
+                        }
+                    } else {
+                        newColumns.add(unfurlValue);
+                    }
                 }
 
                 String    uniqueValue = values.get(uniqueIndex).toString();
@@ -1975,8 +1994,8 @@ public abstract class Processor extends CsvOperator {
                 //                System.err.println(" -- " + i + " " + newColumns);
                 cnt++;
             }
-            //            System.err.println(newColumns);
             String[] array = new String[newColumns.size()];
+
 
             for (String u : uniques) {
                 for (int i = 0; i < array.length; i++) {
@@ -1993,13 +2012,28 @@ public abstract class Processor extends CsvOperator {
                         firstRow = rowValues;
                     }
 
-                    String  colname = rowValues.get(unfurlIndex).toString();
-                    Integer idx     = indexMap.get(colname);
-                    if (idx == null) {
-                        continue;
+                    String colname = rowValues.get(unfurlIndex).toString();
+                    if (valueIndices.size() > 1) {
+                        for (int valueIndex : valueIndices) {
+                            String label = colname + " - "
+                                           + headerRow.get(valueIndex);
+                            Integer idx = indexMap.get(label);
+                            if (idx == null) {
+                                continue;
+                            }
+                            String value =
+                                rowValues.get(valueIndex).toString();
+                            array[1 + includes.size() + idx] = value;
+                        }
+                    } else {
+                        Integer idx = indexMap.get(colname);
+                        if (idx == null) {
+                            continue;
+                        }
+                        int    valueIndex = valueIndices.get(0);
+                        String value = rowValues.get(valueIndex).toString();
+                        array[1 + includes.size() + idx] = value;
                     }
-                    String value = rowValues.get(valueIndex).toString();
-                    array[1 + includes.size() + idx] = value;
                     cnt++;
                 }
                 for (int i : includes) {
@@ -2018,6 +2052,7 @@ public abstract class Processor extends CsvOperator {
             }
 
             return newRows;
+
 
         }
     }

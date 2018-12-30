@@ -160,11 +160,11 @@ public abstract class Converter extends Processor {
      *
      *
      * @version        $version$, Thu, Dec 27, '18
-     * @author         Enter your name here...    
+     * @author         Enter your name here...
      */
     public static class ColumnFormatter extends Converter {
 
-        /** _more_          */
+        /** _more_ */
         private DecimalFormat format;
 
         /**
@@ -1167,17 +1167,17 @@ public abstract class Converter extends Processor {
      *
      *
      * @version        $version$, Thu, Dec 27, '18
-     * @author         Enter your name here...    
+     * @author         Enter your name here...
      */
     public static class ColumnScaler extends Converter {
 
         /** _more_ */
         private double delta1;
 
-        /** _more_          */
+        /** _more_ */
         private double delta2;
 
-        /** _more_          */
+        /** _more_ */
         private double scale;
 
 
@@ -1536,6 +1536,7 @@ public abstract class Converter extends Processor {
             } else {
                 row.getValues().add(col, v);
             }
+
             return row;
         }
     }
@@ -1733,6 +1734,17 @@ public abstract class Converter extends Processor {
 
         }
 
+    }
+
+    /**
+     * _more_
+     *
+     * @param args _more_
+     */
+    public static void main(String[] args) {
+        String s = "hello (there) and (here) end";
+        s = s.replaceAll("\\(.*?\\)", "");
+        System.err.println(s);
     }
 
 
