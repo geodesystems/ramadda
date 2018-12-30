@@ -162,7 +162,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                                               "left|center|right")), 
                             new WikiTag(WIKI_TAG_GALLERY,
                                         attrs(ATTR_WIDTH, "-100", ATTR_COLUMNS, "3",
-                                              ATTR_POPUP, "true", ATTR_THUMBNAIL, "true",
+                                              ATTR_POPUP, "true", ATTR_THUMBNAIL, "false",
                                               ATTR_CAPTION, "Figure ${count}: ${name}",
                                               ATTR_POPUPCAPTION,
                                               "over")), 
@@ -3650,7 +3650,6 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
         boolean random       = Utils.getProperty(props, ATTR_RANDOM, false);
         boolean popup        = Utils.getProperty(props, ATTR_POPUP, true);
         boolean thumbnail    = Utils.getProperty(props, ATTR_THUMBNAIL, false);
-        System.err.println("thumbnail:" + thumbnail);
         String  caption = Utils.getProperty(props, ATTR_CAPTION, "${name}");
         String captionPos = Utils.getProperty(props, ATTR_POPUPCAPTION,
                                 "none");
