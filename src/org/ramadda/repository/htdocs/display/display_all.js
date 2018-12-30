@@ -9276,6 +9276,10 @@ function RamaddaMapDisplay(displayManager, id, properties) {
                                                              map_default_layer),
                                 
                     };
+                    var displayDiv = this.getProperty("displayDiv", null);
+                    if(displayDiv) {
+                        params.displayDiv = displayDiv;
+                    }
                     var mapLayers = this.getProperty("mapLayers", null);
                     if(mapLayers) {
                         params.mapLayers =  [mapLayers];
