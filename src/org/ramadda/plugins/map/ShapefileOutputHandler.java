@@ -1048,6 +1048,10 @@ public class ShapefileOutputHandler extends OutputHandler implements WikiConstan
                 values.add("strokeWidth");
                 values.add(kmlDisplay.getAttr(5));
             }
+            if (Utils.stringDefined(kmlDisplay.getAttr(6))) {
+                values.add("pointRadius");
+                values.add(kmlDisplay.getAttr(6));
+            }
         }
 
         return Json.mapAndQuote(values);

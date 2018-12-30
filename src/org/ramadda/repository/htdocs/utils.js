@@ -76,6 +76,19 @@ var Utils = {
     isDefined: function(v) {
         return   !(typeof v=== 'undefined');
     },
+    camelCase: function(s) {
+        var r = "";
+        toks = s.split(" ");
+        for(var i=0;i<toks.length;i++) {
+            tok = toks[i];
+            converted = tok.substring(0,1).toUpperCase();
+            if(tok.length>1)
+                converted+= tok.substring(1).toLowerCase();
+            if(r !="") r +=" ";
+            r +=converted;
+        }
+        return r;
+    },
     stringDefined: function(v) {
         if(!Utils.isDefined(v)) return false;
         if(v == null || v =="") return false;

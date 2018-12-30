@@ -2992,7 +2992,6 @@ public class DbTypeHandler extends PointTypeHandler /* BlobTypeHandler*/ {
                     sb.append(s);
                 }
                 sb.append("\n");
-
                 continue;
             }
 

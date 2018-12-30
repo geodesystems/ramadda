@@ -474,23 +474,36 @@ function initMapFunctions(theMap) {
                     var value = "";
                     if (typeof p[attr] == 'object' || typeof p[attr] == 'Object') {
                         var o = p[attr];
-                        value =  o["value"];
+                        value =  ""+o["value"];
                     } else {
-                        value =   p[attr];
+                        value =   ""+p[attr];
+                    }
+                    if(value.startsWith("http:") || value.startsWith("https:")) {
+                        value  = "<a href='" + value+"'>" + value +"</a>";
                     }
                     out = out.replace("${" +style.id+"/" + attr+"}", value);
                 }
             } else {
                 out = "<table>";
                 for (var attr in p) {
-                    var label = attr.replace("_"," ");
-                    out += "<tr><td align=right><div style=\"margin-right:5px;margin-bottom:3px;\"><b>" + label + ":</b></div></td><td><div style=\"margin-right:5px;margin-bottom:3px;\">";
+                    var label = attr;
+                    if(label.toLowerCase() == "objectid") continue;
+                    if(label.toLowerCase() == "feature_type") continue;
+                    label = label.replace("_"," ");
+                    label = Utils.camelCase(label);
+                    out += "<tr valign=top><td align=right><div style=\"margin-right:5px;margin-bottom:3px;\"><b>" + label + ":</b></div></td><td><div style=\"margin-right:5px;margin-bottom:3px;\">";
+                    var value;
                     if (p[attr]!=null && (typeof p[attr] == 'object' || typeof p[attr] == 'Object')) {
                         var o = p[attr];
-                        out += o["value"];
+                        value = ""+o["value"];
                     } else {
-                        out +=  p[attr];
+                        value=  ""+p[attr];
                     }
+                    if(value.startsWith("http:") || value.startsWith("https:")) {
+                        value  = "<a href='" + value+"'>" + value +"</a>";
+                    }
+                    if(value == "null") continue;
+                    out +=value;
                     out +=  "</div></td></tr>";
                 }
                 out += "</table>";

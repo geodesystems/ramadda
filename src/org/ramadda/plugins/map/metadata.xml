@@ -150,6 +150,10 @@ field_value2:#0000ff
          id="line_width"
          name="Line Width"
          suffix=""/>
+            <element
+         id="point_radius"
+         name="Point Radius"
+         suffix=""/>
         </type>
 
 

@@ -252,70 +252,48 @@ public class CsvUtil {
         if (files == null) {
             files = new ArrayList<String>();
         }
-        for (String arg : args) {
-            //            System.err.println("arg:" + arg);
-        }
         boolean   doConcat = false;
         boolean   doHeader = false;
         boolean   doRaw    = false;
         Hashtable dbProps  = new Hashtable<String, String>();
-
-        //        boolean      doPoint       = true;
-        boolean      doPoint       = false;
-
-        String       iterateColumn = null;
+        boolean   doPoint  = false;
+        String    iterateColumn = null;
         List<String> iterateValues = new ArrayList<String>();
 
         String       prepend       = null;
-        //        System.err.println("file:" + outputFile +" out:" + outputStream + " " + System.out);
         textReader = new TextReader(destDir, outputFile, outputStream);
 
         List<String> extra = new ArrayList<String>();
         for (int i = 0; i < args.size(); i++) {
             String arg = args.get(i);
-
             if (arg.equals("-help")) {
                 usage("",null);
                 return;
             }
-
             if (arg.startsWith("-help:")) {
                 usage("",arg.substring("-help:".length()));
                 return;
             }
-
             if (arg.equals("-cat")) {
                 doConcat = true;
                 continue;
             }
-
-
-
             if (arg.equals("-header")) {
                 doHeader = true;
-
                 continue;
             }
-
-
             if (arg.equals("-raw")) {
                 doRaw = true;
-
-
                 continue;
             }
-
             if (arg.equals("-pointheader")) {
                 doHeader = true;
                 doPoint  = true;
-
                 continue;
             }
-
             if (arg.startsWith("-iter")) {
                 iterateColumn = args.get(++i);
                 iterateValues = StringUtil.split(args.get(++i), ",");
-
                 continue;
             }
             extra.add(arg);
@@ -326,7 +304,6 @@ public class CsvUtil {
         if (doConcat) {
             concat(files, getOutputStream());
         } else if (doHeader) {
-            //            System.err.println("files:" + files + " os:" + outputStream.getClass());
             header(files, textReader, doPoint);
         } else if (doRaw) {
             raw(files, textReader);
@@ -334,7 +311,6 @@ public class CsvUtil {
             if (files.size() == 0) {
                 files.add("stdin");
             }
-
             Filter.PatternFilter iteratePattern = null;
             if (iterateColumn == null) {
                 iterateValues.add("dummy");
@@ -342,8 +318,6 @@ public class CsvUtil {
                 iteratePattern = new Filter.PatternFilter(iterateColumn, "");
                 textReader.getFilter().addFilter(iteratePattern);
             }
-
-
             for (int i = 0; i < iterateValues.size(); i++) {
                 String pattern = iterateValues.get(i);
                 if (iteratePattern != null) {
@@ -352,10 +326,12 @@ public class CsvUtil {
                 for (String file : files) {
                     textReader.getProcessor().reset();
                     InputStream is = null;
+                    boolean closeIS = true;
                     if (this.inputStream != null) {
                         is = this.inputStream;
                     } else {
                         if (file.equals("stdin")) {
+                            closeIS = false;
                             is = System.in;
                         } else {
                             is = new BufferedInputStream(
@@ -364,16 +340,15 @@ public class CsvUtil {
                     }
                     process(textReader.cloneMe(is, file, outputFile,
                             outputStream));
+                    if (closeIS) {
+                        IOUtil.close(is);
+                    }
                     if (this.inputStream != null) {
-                        IOUtil.close(this.inputStream);
-
                         break;
                     }
                 }
             }
         }
-
-
     }
 
 
@@ -411,7 +386,6 @@ public class CsvUtil {
                 String         line = br.readLine();
                 if (line == null) {
                     nullCnt++;
-
                     continue;
                 }
                 if (i > 0) {
@@ -609,14 +583,6 @@ public class CsvUtil {
         return value.equals("true");
     }
 
-
-
-
-
-
-
-
-
     /**
      * Run through the csv file in the TextReader
      *
@@ -635,23 +601,18 @@ public class CsvUtil {
                 break;
             }
 
-            //            System.out.println("line:" +line);
             if (line.length() > 2000) {
                 //                System.err.println("Whoa:" +line);
             }
             theLine = line;
             rowIdx++;
-
-
             if (rowIdx <= textReader.getSkip()) {
                 textReader.addHeaderLine(line);
-
                 continue;
             }
 
             if ((textReader.getFilter() != null)
                     && !textReader.getFilter().lineOk(textReader, line)) {
-                //                System.err.println("CsvUtil.filter not ok");
                 continue;
             }
 
@@ -679,26 +640,20 @@ public class CsvUtil {
             if (visitedRows == 0) {
                 textReader.setHeader(row.getValues());
             }
-
             visitedRows++;
             if ((textReader.getMaxRows() >= 0)
                     && (visitedRows > textReader.getMaxRows())) {
-                //                System.err.println("CsvUtil.maxed out");
                 break;
             }
-
             if (textReader.getProcessor() != null) {
-                //                System.err.println("CsvUtil.calling processor");
                 row = textReader.getProcessor().processRow(textReader, row,
                         line);
             } else {
-                System.err.println("CsvUtil.calling writing ***** ");
                 textReader.getWriter().println(
                     columnsToString(
                         row.getValues(), textReader.getOutputDelimiter()));
                 textReader.getWriter().flush();
             }
-
             textReader.incrRow();
         }
 
@@ -711,9 +666,6 @@ public class CsvUtil {
         textReader.close();
     }
 
-
-    /** _more_ */
-    static int xcnt = 0;
 
 
     /**
