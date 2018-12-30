@@ -987,7 +987,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
             Request myRequest = request.cloneMe();
             myRequest.put(ATTR_SHOWTITLE,
                           "" + Utils.getProperty(props, ATTR_SHOWTITLE,
-                              true));
+                                                 false));
             boolean details = Utils.getProperty(props, ATTR_DETAILS, false);
             if ( !details) {
                 return entry.getTypeHandler().getEntryContent(myRequest,
@@ -2508,7 +2508,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                 "strokeColor", "fillColor", "fillOpacity", "scrollToZoom",
                 "fill", "selectOnHover", "onSelect", "showDetailsLink",
                 "zoom:initialZoom", "layer:defaultMapLayer", "kmlLayer",
-                "kmlLayerName"
+                "kmlLayerName","displayDiv"
             };
             for (String mapArg : mapArgs) {
                 String key = mapArg;

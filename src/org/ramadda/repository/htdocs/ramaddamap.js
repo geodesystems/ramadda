@@ -235,6 +235,10 @@ function initMapFunctions(theMap) {
                     feature.originalStyle = feature.style;
                     feature.style = null;
                     layer.drawFeature(feature,"temporary");
+                    if(this.displayDiv) {
+                        $("#" + this.displayDiv).html(this.getFeatureText(layer, feature));
+                    }
+
                 }
             },
             handleFeatureout: function(feature) { 
@@ -243,6 +247,9 @@ function initMapFunctions(theMap) {
                 feature.style = feature.originalStyle;
                 if(!feature.isSelected) {
                     layer.drawFeature(feature,feature.style ||"default"); 
+                }
+                if(this.displayDiv) {
+                    $("#" + this.displayDiv).html("");
                 }
             },
             handleNofeatureclick: function(layer) { 
@@ -453,16 +460,8 @@ function initMapFunctions(theMap) {
     }
 
 
-    theMap.onFeatureSelect = function(layer) {
-        if( this.onSelect) {
-            func = window[this.onSelect];
-            func(this, layer);
-            return;
-        }
-        var format = new OpenLayers.Format.GeoJSON();
-        var feature = layer.feature;
+    theMap.getFeatureText = function(layer, feature) {
         var style = feature.style || layer.style;
-        var json = format.write(feature);
         var p = feature.attributes;
         var out = feature.popupText;
         if(!out) {
@@ -509,6 +508,19 @@ function initMapFunctions(theMap) {
                 out += "</table>";
             }
         }
+        return out;
+    }
+
+    theMap.onFeatureSelect = function(layer) {
+        if( this.onSelect) {
+            func = window[this.onSelect];
+            func(this, layer);
+            return;
+        }
+        //        var format = new OpenLayers.Format.GeoJSON();
+        //        var json = format.write(feature);
+        feature = layer.feature;
+        var out  = this.getFeatureText(layer, feature);
         if (this.currentPopup) {
             this.map.removePopup(this.currentPopup);
             this.currentPopup.destroy();
