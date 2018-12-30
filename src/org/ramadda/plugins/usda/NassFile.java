@@ -65,7 +65,9 @@ public class NassFile extends UsdaFile {
      * @return _more_
      */
     public Processor.Unfurler doMakeUnfurler() {
-        Processor.Unfurler unfurler = new Processor.Unfurler(7, 30, 37,
+        List<String> cols = new ArrayList<String>();
+        cols.add("30");
+        Processor.Unfurler unfurler = new Processor.Unfurler(7, cols, 37,
                                           new ArrayList<String>());
         unfurler.setUnitIndex(8);
 

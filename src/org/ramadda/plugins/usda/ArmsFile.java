@@ -66,7 +66,9 @@ public class ArmsFile extends UsdaFile {
      */
     @Override
     public Processor.Unfurler doMakeUnfurler() {
-        Processor.Unfurler unfurler = new Processor.Unfurler(15, 3, 10,
+        List<String> cols = new ArrayList<String>();
+        cols.add("3");
+        Processor.Unfurler unfurler = new Processor.Unfurler(15, cols, 10,
                                           new ArrayList<String>());
         unfurler.setUnitIndex(16);
 
