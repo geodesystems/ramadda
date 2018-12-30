@@ -2519,6 +2519,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                 }
                 String v = Utils.getProperty(props, key);
                 if (v != null) {
+                    v = v.replace("${entryid}",entry.getId());
                     mapProps.put(mapArg, Json.quote(v));
                 }
             }
@@ -4975,6 +4976,13 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
 
         topProps.add("defaultMapLayer");
         topProps.add(Json.quote(defaultLayer));
+
+        String displayDiv = (String) props.get("displayDiv");
+        if(displayDiv!=null) {
+            displayDiv = displayDiv.replace("${entryid}", entry.getId());
+            Utils.add(propList, "displayDiv",Json.quote(displayDiv));
+            props.remove("displayDiv");
+        }
 
         String mainDivId = (String) props.get("divid");
         if (mainDivId == null) {
