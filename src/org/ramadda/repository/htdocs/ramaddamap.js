@@ -496,7 +496,7 @@ function initMapFunctions(theMap) {
                        lclabel=="shapelen") continue;
                     if(lclabel == "startdate") label = "Start Date";
                     else if(lclabel == "enddate") label = "End Date";
-                    label = label.replace("_"," ");
+                    label = label.replace(/_/g," ");
                     label = Utils.camelCase(label);
                     out += "<tr valign=top><td align=right><div style=\"margin-right:5px;margin-bottom:3px;\"><b>" + label + ":</b></div></td><td><div style=\"margin-right:5px;margin-bottom:3px;\">";
                     var value;
