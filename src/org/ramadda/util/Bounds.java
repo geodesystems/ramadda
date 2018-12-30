@@ -57,11 +57,27 @@ public class Bounds {
 
 
 
+    /**
+     * _more_
+     *
+     * @return _more_
+     */
+    public String toString() {
+        return "north:" + north + " west:" + west + " south:" + south
+               + " east:" + east;
+    }
+
+    /**
+     * _more_
+     *
+     * @param lat _more_
+     * @param lon _more_
+     */
     public void expand(double lat, double lon) {
-        this.north = Math.max(this.north, lat);    
-        this.south = Math.min(this.south, lat);    
-        this.west = Math.min(this.west, lon);
-        this.east = Math.max(this.east, lon);
+        this.north = Math.max(this.north, lat);
+        this.south = Math.min(this.south, lat);
+        this.west  = Math.min(this.west, lon);
+        this.east  = Math.max(this.east, lon);
     }
 
     /**

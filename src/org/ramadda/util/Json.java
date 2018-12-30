@@ -583,24 +583,6 @@ public class Json {
 
 
 
-    /**
-     * _more_
-     *
-     * @param args _more_
-     *
-     * @throws Exception _more_
-     */
-    public static void main(String[] args) throws Exception {
-        String json = IOUtil.readContents(args[0], Json.class);
-        //        JSONObject   obj      = new JSONObject(json.toString());
-        //        System.out.println(obj.toString(3));
-        //        if(true) return;
-
-        toCsv(args[0], System.out, (args.length > 1)
-                                   ? args[1]
-                                   : null);
-        //        convertCameras(args);
-    }
 
     /**
      * _more_
@@ -693,13 +675,44 @@ public class Json {
     }
 
 
+    /**
+     * _more_
+     *
+     * @param points _more_
+     * @param bounds _more_
+     *
+     * @return _more_
+     */
+    private static Bounds getBounds(JSONArray points, Bounds bounds) {
+        for (int j = 0; j < points.length(); j++) {
+            JSONArray tuple = points.getJSONArray(j);
+            double    lon   = tuple.getDouble(0);
+            double    lat   = tuple.getDouble(1);
+            if (bounds == null) {
+                bounds = new Bounds(lat, lon, lat, lon);
+            } else {
+                bounds.expand(lat, lon);
+            }
+        }
 
-    public static Bounds getBounds(String file)
-            throws Exception {
+        return bounds;
+    }
+
+
+    /**
+     * _more_
+     *
+     * @param file _more_
+     *
+     * @return _more_
+     *
+     * @throws Exception _more_
+     */
+    public static Bounds getBounds(String file) throws Exception {
         Bounds bounds = null;
         BufferedReader br = new BufferedReader(
                                 new InputStreamReader(
-                                                      IOUtil.getInputStream(file,Json.class)));
+                                    IOUtil.getInputStream(file, Json.class)));
         StringBuilder json = new StringBuilder();
         String        input;
         while ((input = br.readLine()) != null) {
@@ -713,35 +726,34 @@ public class Json {
             //            if((i%100)==0) System.err.println("cnt:" + i);
             JSONObject feature = features.getJSONObject(i);
             JSONObject props   = feature.getJSONObject("properties");
-            JSONArray geom     = readArray(feature, "geometry.coordinates");
-            String    type     = readValue(feature, "geometry.type", "NULL");
-            if (type.equals("MultiPolygon") || type.equals("Polygon")) {
-                JSONArray points = geom.getJSONArray(0);
-                if (type.equals("MultiPolygon")) {
-                    points = points.getJSONArray(0);
+            JSONArray  coords1 = readArray(feature, "geometry.coordinates");
+            String     type    = readValue(feature, "geometry.type", "NULL");
+            if (type.equals("Polygon")) {
+                for (int idx1 = 0; idx1 < coords1.length(); idx1++) {
+                    JSONArray coords2 = coords1.getJSONArray(idx1);
+                    bounds = getBounds(coords2, bounds);
                 }
-
-                List<double[]> pts = new ArrayList<double[]>();
-                for (int j = 0; j < points.length(); j++) {
-                    JSONArray tuple = points.getJSONArray(j);
-                    double    lon    = tuple.getDouble(0);
-                    double    lat    = tuple.getDouble(1);
-                    if(bounds==null)  {
-                        bounds = new Bounds(lat,lon,lat,lon);
-                    } else {
-                        bounds.expand(lat,lon);
+            } else if (type.equals("MultiPolygon")) {
+                for (int idx1 = 0; idx1 < coords1.length(); idx1++) {
+                    JSONArray coords2 = coords1.getJSONArray(idx1);
+                    for (int idx2 = 0; idx2 < coords2.length(); idx2++) {
+                        JSONArray coords3 = coords2.getJSONArray(idx2);
+                        bounds = getBounds(coords3, bounds);
                     }
                 }
+            } else if (type.equals("LineString")) {
+                bounds = getBounds(coords1, bounds);
             } else {
-                double    lon    = geom.getDouble(0);
-                double    lat    = geom.getDouble(1);
-                if(bounds==null)  {
-                    bounds = new Bounds(lat,lon,lat,lon);
+                double lon = coords1.getDouble(0);
+                double lat = coords1.getDouble(1);
+                if (bounds == null) {
+                    bounds = new Bounds(lat, lon, lat, lon);
                 } else {
-                    bounds.expand(lat,lon);
+                    bounds.expand(lat, lon);
                 }
             }
         }
+
         return bounds;
     }
 
@@ -1028,6 +1040,31 @@ public class Json {
 
         return new JSONObject(new JSONTokener(json));
     }
+
+
+    /**
+     * _more_
+     *
+     * @param args _more_
+     *
+     * @throws Exception _more_
+     */
+    public static void main(String[] args) throws Exception {
+        System.err.println(getBounds(args[0]));
+        if (true) {
+            return;
+        }
+        String json = IOUtil.readContents(args[0], Json.class);
+        //        JSONObject   obj      = new JSONObject(json.toString());
+        //        System.out.println(obj.toString(3));
+        //        if(true) return;
+
+        toCsv(args[0], System.out, (args.length > 1)
+                                   ? args[1]
+                                   : null);
+        //        convertCameras(args);
+    }
+
 
 
 }
