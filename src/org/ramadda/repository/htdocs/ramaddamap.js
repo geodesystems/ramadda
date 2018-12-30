@@ -236,6 +236,7 @@ function initMapFunctions(theMap) {
                     feature.style = null;
                     layer.drawFeature(feature,"temporary");
                     if(this.displayDiv) {
+                        this.displayedFeature = feature;
                         $("#" + this.displayDiv).html(this.getFeatureText(layer, feature));
                     }
 
@@ -249,7 +250,9 @@ function initMapFunctions(theMap) {
                     layer.drawFeature(feature,feature.style ||"default"); 
                 }
                 if(this.displayDiv) {
-                    $("#" + this.displayDiv).html("");
+                    if(this.displayedFeature == feature) {
+                        $("#" + this.displayDiv).html("");
+                    }
                 }
             },
             handleNofeatureclick: function(layer) { 

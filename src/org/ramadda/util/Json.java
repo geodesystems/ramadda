@@ -694,6 +694,59 @@ public class Json {
 
 
 
+    public static Bounds getBounds(String file)
+            throws Exception {
+        Bounds bounds = null;
+        BufferedReader br = new BufferedReader(
+                                new InputStreamReader(
+                                                      IOUtil.getInputStream(file,Json.class)));
+        StringBuilder json = new StringBuilder();
+        String        input;
+        while ((input = br.readLine()) != null) {
+            json.append(input);
+            json.append("\n");
+        }
+        JSONObject   obj      = new JSONObject(json.toString());
+        JSONArray    features = readArray(obj, "features");
+        List<String> names    = null;
+        for (int i = 0; i < features.length(); i++) {
+            //            if((i%100)==0) System.err.println("cnt:" + i);
+            JSONObject feature = features.getJSONObject(i);
+            JSONObject props   = feature.getJSONObject("properties");
+            JSONArray geom     = readArray(feature, "geometry.coordinates");
+            String    type     = readValue(feature, "geometry.type", "NULL");
+            if (type.equals("MultiPolygon") || type.equals("Polygon")) {
+                JSONArray points = geom.getJSONArray(0);
+                if (type.equals("MultiPolygon")) {
+                    points = points.getJSONArray(0);
+                }
+
+                List<double[]> pts = new ArrayList<double[]>();
+                for (int j = 0; j < points.length(); j++) {
+                    JSONArray tuple = points.getJSONArray(j);
+                    double    lon    = tuple.getDouble(0);
+                    double    lat    = tuple.getDouble(1);
+                    if(bounds==null)  {
+                        bounds = new Bounds(lat,lon,lat,lon);
+                    } else {
+                        bounds.expand(lat,lon);
+                    }
+                }
+            } else {
+                double    lon    = geom.getDouble(0);
+                double    lat    = geom.getDouble(1);
+                if(bounds==null)  {
+                    bounds = new Bounds(lat,lon,lat,lon);
+                } else {
+                    bounds.expand(lat,lon);
+                }
+            }
+        }
+        return bounds;
+    }
+
+
+
 
     /**
      * _more_

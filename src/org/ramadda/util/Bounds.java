@@ -57,6 +57,13 @@ public class Bounds {
 
 
 
+    public void expand(double lat, double lon) {
+        this.north = Math.max(this.north, lat);    
+        this.south = Math.min(this.south, lat);    
+        this.west = Math.min(this.west, lon);
+        this.east = Math.max(this.east, lon);
+    }
+
     /**
      * Set the North property.
      *
