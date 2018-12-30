@@ -3649,7 +3649,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
         int     columns      = Utils.getProperty(props, ATTR_COLUMNS, 3);
         boolean random       = Utils.getProperty(props, ATTR_RANDOM, false);
         boolean popup        = Utils.getProperty(props, ATTR_POPUP, true);
-        boolean thumbnail    = Utils.getProperty(props, ATTR_THUMBNAIL, true);
+        boolean thumbnail    = Utils.getProperty(props, ATTR_THUMBNAIL, false);
         String  caption = Utils.getProperty(props, ATTR_CAPTION, "${name}");
         String captionPos = Utils.getProperty(props, ATTR_POPUPCAPTION,
                                 "none");
