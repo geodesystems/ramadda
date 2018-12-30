@@ -493,9 +493,12 @@ function initMapFunctions(theMap) {
                     if(lclabel == "objectid" ||
                        lclabel == "feature_type" ||
                        lclabel=="shapearea" ||
+                       lclabel=="styleurl" ||
                        lclabel=="shapelen") continue;
                     if(lclabel == "startdate") label = "Start Date";
                     else if(lclabel == "enddate") label = "End Date";
+                    else if(lclabel == "aland") label = "Land Area";
+                    else if(lclabel == "awater") label = "Water Area";
                     label = label.replace(/_/g," ");
                     label = Utils.camelCase(label);
                     out += "<tr valign=top><td align=right><div style=\"margin-right:5px;margin-bottom:3px;\"><b>" + label + ":</b></div></td><td><div style=\"margin-right:5px;margin-bottom:3px;\">";
