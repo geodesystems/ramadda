@@ -486,8 +486,13 @@ function initMapFunctions(theMap) {
                 out = "<table>";
                 for (var attr in p) {
                     var label = attr;
-                    if(label.toLowerCase() == "objectid") continue;
-                    if(label.toLowerCase() == "feature_type") continue;
+                    lclabel = label.toLowerCase() ;
+                    if(lclabel == "objectid" ||
+                       lclabel == "feature_type" ||
+                       lclabel=="shapearea" ||
+                       lclabel=="shapelen") continue;
+                    if(lclabel == "startdate") label = "Start Date";
+                    else if(lclabel == "enddate") label = "End Date";
                     label = label.replace("_"," ");
                     label = Utils.camelCase(label);
                     out += "<tr valign=top><td align=right><div style=\"margin-right:5px;margin-bottom:3px;\"><b>" + label + ":</b></div></td><td><div style=\"margin-right:5px;margin-bottom:3px;\">";
