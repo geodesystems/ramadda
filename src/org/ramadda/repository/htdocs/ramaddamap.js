@@ -231,15 +231,21 @@ function initMapFunctions(theMap) {
                 theMap.centerOnMarkers(theMap.dfltBounds);
             },
             handleFeatureover: function(feature) { 
-                layer = feature.layer;
+                var layer = feature.layer;
                 if(layer.canSelect === false || !(layer.isMapLayer=== true)) return;
+                var _this = this;
                 if(!feature.isSelected) {
                     feature.originalStyle = feature.style;
                     feature.style = null;
                     layer.drawFeature(feature,"temporary");
                     if(this.displayDiv) {
                         this.displayedFeature = feature;
-                        $("#" + this.displayDiv).html(this.getFeatureText(layer, feature));
+                        var callback = function() {
+                            if(_this.displayedFeature == feature) {
+                                $("#" + _this.displayDiv).html(_this.getFeatureText(layer, feature));
+                            }
+                        }
+                        setTimeout(callback,1000);
                     }
 
                 }
@@ -278,7 +284,9 @@ function initMapFunctions(theMap) {
                 layer.drawFeature(layer.selectedFeature,"select"); 
                 if(layer.selectCallback) {
                     layer.feature= layer.selectedFeature;
-                    if(feature.originalStyle) feature.style = feature.originalStyle
+                    if(feature.originalStyle) {
+                        feature.style = feature.originalStyle;
+                    }
                     layer.selectCallback(layer);
                 }
             },
@@ -466,7 +474,7 @@ function initMapFunctions(theMap) {
 
 
     theMap.getFeatureText = function(layer, feature) {
-        var style = feature.style || layer.style;
+        var style = feature.style || feature.originalStyle  || layer.style;
         var p = feature.attributes;
         var out = feature.popupText;
         if(!out) {
@@ -747,7 +755,7 @@ function initMapFunctions(theMap) {
                         ];
                 newLayer = new OpenLayers.Layer.OSM("Open Street Map", urls);
             } else if(mapLayer == map_osm_toner) {
-                urls = ["//a.tile.stamen.com/toner/${z}/${x}/${y}.png"];
+                urls = ["http://a.tile.stamen.com/toner/${z}/${x}/${y}.png"];
                 newLayer = new OpenLayers.Layer.OSM("OSM-Toner", urls);
             } else if (mapLayer == map_ms_shaded) {
                 newLayer  =  new OpenLayers.Layer.VirtualEarth(
