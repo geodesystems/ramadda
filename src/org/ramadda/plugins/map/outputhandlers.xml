@@ -1,4 +1,5 @@
 <outputhandlers>
   <outputhandler class="org.ramadda.plugins.map.ShapefileOutputHandler" name="Shapefile"/>
+  <outputhandler class="org.ramadda.plugins.map.GeoJsonOutputHandler" name="GeoJson"/>
   <outputhandler class="org.ramadda.plugins.map.KmlEntryOutputHandler" name="KML Output"/>
 </outputhandlers>

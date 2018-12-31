@@ -1808,6 +1808,7 @@ public abstract class Processor extends CsvOperator {
 
             if (cnt == 0) {
                 info.getWriter().println("<thead>");
+                info.getWriter().println("<tr valign=top>");
                 open  = "<th>";
                 close = "</th>";
             } else {
@@ -1831,17 +1832,41 @@ public abstract class Processor extends CsvOperator {
                 }
                 info.getWriter().print(open);
                 if (cnt == 0) {
-                    info.getWriter().print("#" + i + " ");
+                    info.getWriter().print("#" + i + "&nbsp;");
+                    String label = Utils.makeLabel(""
+                                       + values.get(i)).replaceAll(" ",
+                                           "&nbsp;");
+                    info.getWriter().print(label);
+                } else {
+                    info.getWriter().print("" + values.get(i));
                 }
-                info.getWriter().print("" + values.get(i));
                 info.getWriter().print(close);
             }
             if (cnt == 0) {
-                info.getWriter().println("</th>");
+                info.getWriter().println("</tr>");
+                info.getWriter().println("</thead>");
             } else {
                 info.getWriter().println("</tr>");
             }
             cnt++;
+        }
+
+        /**
+         * _more_
+         *
+         * @param info _more_
+         * @param rows _more_
+         *
+         * @return _more_
+         *
+         * @throws Exception _more_
+         */
+        @Override
+        public List<Row> finish(TextReader info, List<Row> rows)
+                throws Exception {
+            info.getWriter().print("</table>");
+
+            return rows;
         }
 
 
@@ -1870,7 +1895,7 @@ public abstract class Processor extends CsvOperator {
 
         private List<Integer> valueIndices;
 
-        /** _more_          */
+        /** _more_ */
         private List<String> valueCols;
 
         /** _more_ */
@@ -1886,17 +1911,13 @@ public abstract class Processor extends CsvOperator {
          * @param unfurlIndex _more_
          * @param valueCols _more_
          * @param uniqueIndex _more_
-         * @param valueIndex _more_
-         * @param cols _more_
          * @param extraCols _more_
          */
-        public Unfurler(int unfurlIndex,
-                        List<String> valueCols, /*int valueIndex,*/
+        public Unfurler(int unfurlIndex, List<String> valueCols,
                         int uniqueIndex, List<String> extraCols) {
             super(extraCols);
             this.unfurlIndex = unfurlIndex;
             this.valueCols   = valueCols;
-            //            this.valueIndex  = valueIndex;
             this.uniqueIndex = uniqueIndex;
         }
 

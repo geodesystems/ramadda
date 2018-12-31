@@ -757,7 +757,7 @@ public class CsvUtil {
         return s;
     }
 
-    /** _more_          */
+    /** _more_ */
     private static final String[] commands = {
         "-help  or -help:<topic search string> (print this help)",
         "-columns <comma separated list of columns #s or column range, 0-based, e.g., 0,1,2,7-10,12>",
