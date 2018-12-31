@@ -11,6 +11,8 @@ var map_google_streets = "google.streets";
 var map_google_hybrid = "google.hybrid";
 var map_google_satellite = "google.satellite";
 
+var map_usfs_ownership = "usfs.ownership";
+
 // ESRI Maps
 var map_esri_topo = "esri.topo";
 var map_esri_street = "esri.street";
@@ -674,6 +676,7 @@ function initMapFunctions(theMap) {
                               map_esri_topo,
                               map_esri_street,
                               map_opentopo,
+                              map_usfs_ownership,
                               map_usgs_topo,
                               map_usgs_imagery,
                               map_usgs_relief,
@@ -681,7 +684,8 @@ function initMapFunctions(theMap) {
                               map_white,
                               map_gray,
                               map_blue,
-                              map_black,
+                              map_black
+
             ];
         }
         var dflt =  this.defaultMapLayer||map_osm;
@@ -846,7 +850,15 @@ function initMapFunctions(theMap) {
                         "ESRI Topo", layerURL, {
                             sphericalMercator : sphericalMercatorDefault,
                             numZoomLevels : zoomLevelsDefault,
-                            wrapDateLine : wrapDatelineDefault
+                            wrapDateLine : wrapDatelineDefault,
+                        });
+            } else if (mapLayer == map_usfs_ownership) {
+                var layerURL  = "https://apps.fs.usda.gov/arcx/rest/services/wo_nfs_gstc/GSTC_TravelAccessBasemap_01/MapServer/tile/${z}/${y}/${x}"
+                newLayer  =  new OpenLayers.Layer.XYZ(
+                        "USFS Ownership", layerURL, {
+                            sphericalMercator : sphericalMercatorDefault,
+                            numZoomLevels : zoomLevelsDefault,
+                            wrapDateLine : wrapDatelineDefault,
                         });
             } else if (mapLayer == map_esri_street) {
                 var layerURL = "//server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/${z}/${y}/${x}";
@@ -2034,8 +2046,8 @@ function initMapFunctions(theMap) {
     theMap.addBox = function(box) {
         if (!this.boxes) {
             this.boxes = new OpenLayers.Layer.Boxes("Boxes", {
-                            wrapDateLine : wrapDatelineDefault
-                        });
+                    wrapDateLine : wrapDatelineDefault,
+                });
             if (!this.getMap()) {
                 this.initialBoxes = this.boxes;
             } else {
