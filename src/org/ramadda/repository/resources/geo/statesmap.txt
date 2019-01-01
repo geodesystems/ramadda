@@ -9,6 +9,7 @@ CT:Connecticut
 DE:Delaware
 DC:District of Columbia
 FL:Florida
+GU:Guam
 GA:Georgia
 HI:Hawaii
 ID:Idaho
@@ -46,6 +47,7 @@ TX:Texas
 UT:Utah
 VT:Vermont
 VA:Virginia
+VI:US Virgin Islands
 WA:Washington
 WV:West Virginia
 WI:Wisconsin

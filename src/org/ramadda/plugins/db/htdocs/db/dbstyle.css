@@ -56,6 +56,11 @@
 //      border:  1px #888888 solid;
 }
 
+.db-map-list-entry {
+  margin-left:3px;
+  margin-top:2px;
+}
+
 .db-map-table { 
       border:  1px #888888 solid;
 }
