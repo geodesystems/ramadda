@@ -276,10 +276,20 @@ public class MapManager extends RepositoryManager implements WikiConstants {
 
         //        System.err.println("MapManager.createMap: " + width + " " + height);
 
+        String style = (props != null)
+                       ? props.get("style")
+                       : null;
+        if (props != null) {
+            props.remove("style");
+        }
         MapInfo mapInfo = new MapInfo(request, getRepository(), width,
                                       height, forSelection);
 
+        if (style != null) {
+            mapInfo.setStyle(style);
+        }
         mapInfo.setMapHidden(hidden);
+
         if (mapLayers != null) {
             mapInfo.addProperty("mapLayers",
                                 StringUtil.split(mapLayers, ";", true, true));

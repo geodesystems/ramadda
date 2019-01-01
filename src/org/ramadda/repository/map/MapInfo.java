@@ -69,6 +69,9 @@ public class MapInfo {
     /** the map variable name */
     private String mapVarName;
 
+    /** _more_          */
+    private String mapStyle;
+
     /** the width */
     private int width = DFLT_WIDTH;
 
@@ -162,6 +165,15 @@ public class MapInfo {
         this.width        = width;
         this.height       = height;
         this.forSelection = forSelection;
+    }
+
+    /**
+     * _more_
+     *
+     * @param s _more_
+     */
+    public void setStyle(String s) {
+        mapStyle = s;
     }
 
     /**
@@ -343,9 +355,13 @@ public class MapInfo {
         if (mapHidden) {
             styles = "display:none;";
         } else {
-            styles =
-                "border:1px #888888 solid; background-color:#7391ad; height:"
-                + height + "px; " + swidth;
+            styles = mapStyle;
+            if (styles == null) {
+                styles =
+                    "border:1px #888888 solid; background-color:#7391ad; height:"
+                    + height + "px; " + swidth;
+            }
+            styles += " height:" + height + "px; " + swidth;
         }
 
         String readout =
@@ -354,7 +370,8 @@ public class MapInfo {
                           + HtmlUtils.style("font-style:italic; " + swidth));
 
         HtmlUtils.div(result, contents,
-                      HtmlUtils.style(styles) + " "
+                      HtmlUtils.cssClass("ramadda-map")
+                      + HtmlUtils.style(styles) + " "
                       + HtmlUtils.id(mapVarName));
         String url = request.getUrl();
         String label;

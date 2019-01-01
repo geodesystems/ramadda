@@ -50,7 +50,6 @@ import org.ramadda.util.Json;
 import org.ramadda.util.KmlUtil;
 import org.ramadda.util.RssUtil;
 import org.ramadda.util.Utils;
-import org.ramadda.util.Utils;
 import org.ramadda.util.XlsUtil;
 import org.ramadda.util.XmlUtils;
 import org.ramadda.util.sql.*;
@@ -4034,19 +4033,21 @@ public class DbTypeHandler extends PointTypeHandler /* BlobTypeHandler*/ {
             throw new IllegalStateException("No geodata data found");
         }
 
-
         int width  = 0;
         int height = 500;
+        Hashtable props = Utils.getHashtable("displayDiv", "mapDisplay",
+                                             "style", "");
         MapInfo map = getRepository().getMapManager().createMap(request,
-                          width, height, false, null);
+                          width, height, false, props);
         boolean       makeRectangles = valueList.size() <= 20;
 
-        String        leftWidth      = "350";
+        String        leftWidth      = "300";
         String        icon           = getMapIcon(request, entry);
         StringBuilder entryList      = new StringBuilder();
         sb.append(
             HtmlUtils.cssBlock(
-                "\n.db-map-list-inner {max-height: 500px; overflow-y: auto; overflow-x:auto; }\n\n"));
+                "\n.db-map-list-inner {max-height: " + height
+                + "px; overflow-y: auto; overflow-x:auto; }\n\n"));
         HtmlUtils.open(entryList, "div", "class", "db-map-list-outer");
         HtmlUtils.open(entryList, "div", "class", "db-map-list-inner");
         SimpleDateFormat                 sdf    = getDateFormat(entry);
@@ -4176,10 +4177,16 @@ public class DbTypeHandler extends PointTypeHandler /* BlobTypeHandler*/ {
         HtmlUtils.open(sb, "tr", "valign", "top");
         map.center();
         sb.append(HtmlUtils.col(entryList.toString(),
-                                HtmlUtils.attr("width", leftWidth + "px")));
-        sb.append(HtmlUtils.col(map.getHtml(),
-                                HtmlUtils.attr(HtmlUtils.ATTR_WIDTH,
-                                    "" + width + "px")));
+                                " class=\"db-map-column\" "
+                                + HtmlUtils.attr("width",
+                                    "250" /*leftWidth + "px"*/)));
+        sb.append(HtmlUtils.col(map.getHtml(), "  class=\"db-map-column\" "  //HtmlUtils.attr(HtmlUtils.ATTR_WIDTH, "60%")
+            ));
+        sb.append(
+            HtmlUtils.col(
+                "<div id=\"mapDisplay\" style=\"width:250px;max-width:250px;overflow-x:hidden;max-height:"
+                + height + "px; overflow-y:hidden;\"></div>", " class=\"db-map-column\"  width=250"));
+        //HtmlUtils.attr(HtmlUtils.ATTR_WIDTH,"" + width + "px")));
         HtmlUtils.close(sb, "tr", "table");
         String js =
             "highlightMarkers('.db-map-list-outer .db-map-list-entry', "

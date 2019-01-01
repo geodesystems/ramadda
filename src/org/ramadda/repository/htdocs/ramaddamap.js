@@ -2131,13 +2131,27 @@ function initMapFunctions(theMap) {
         if(!marker) {
             return null;
         }
+        var _this = this;
+        if(marker.text && this.displayDiv) {
+            this.circledMarker = marker;
+            var callback = function() {
+                if(_this.circledMarker == marker) {
+                    $("#" + _this.displayDiv).html(_this.circledMarker.text);
+                }
+            }
+            setTimeout(callback,500);
+        }
         return this.addPoint(id,marker.location, myattrs);
     }
 
     theMap.uncircleMarker = function(id) {
         feature = this.features[id];
-        if(feature)
+        if(feature) {
             this.circles.removeFeatures( [feature]);
+        }
+        if(this.displayDiv) {
+            $("#" + this.displayDiv).html("");
+        }
     }
 
     theMap.addPoint = function(id, point, attrs, text, notReally) {

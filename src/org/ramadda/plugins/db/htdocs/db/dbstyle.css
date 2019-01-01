@@ -62,7 +62,13 @@
 }
 
 .db-map-table { 
-      border:  1px #888888 solid;
+//    border:  1px #888888 solid;
+//    border:  1px #ccc solid;
+}
+
+.db-map-column { 
+//    border:  1px #888888 solid;
+    border:  1px #ccc solid;
 }
 
 .db-map-table #ramadda-map-latlonreadout {
