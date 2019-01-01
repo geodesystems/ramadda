@@ -74,10 +74,18 @@ public class Bounds {
      * @param lon _more_
      */
     public void expand(double lat, double lon) {
-        this.north = Math.max(this.north, lat);
-        this.south = Math.min(this.south, lat);
-        this.west  = Math.min(this.west, lon);
-        this.east  = Math.max(this.east, lon);
+        this.north = Double.isNaN(north)
+                     ? lat
+                     : Math.max(this.north, lat);
+        this.south = Double.isNaN(south)
+                     ? lat
+                     : Math.min(this.south, lat);
+        this.west  = Double.isNaN(west)
+                     ? lon
+                     : Math.min(this.west, lon);
+        this.east  = Double.isNaN(east)
+                     ? lon
+                     : Math.max(this.east, lon);
     }
 
     /**

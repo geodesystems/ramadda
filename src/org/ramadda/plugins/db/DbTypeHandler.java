@@ -2123,7 +2123,9 @@ public class DbTypeHandler extends PointTypeHandler /* BlobTypeHandler*/ {
         */
         String count = msgLabel("Count") + " "
                        + HtmlUtils.input(ARG_MAX, getMax(request),
-                                         HtmlUtils.SIZE_5+  HtmlUtils.attr("default",""+DEFAULT_MAX));
+                                         HtmlUtils.SIZE_5
+                                         + HtmlUtils.attr("default",
+                                             "" + DEFAULT_MAX));
         List<TwoFacedObject> tfos    = new ArrayList<TwoFacedObject>();
         List<TwoFacedObject> aggtfos = new ArrayList<TwoFacedObject>();
         tfos.add(new TwoFacedObject("----", ""));
@@ -2190,14 +2192,14 @@ public class DbTypeHandler extends PointTypeHandler /* BlobTypeHandler*/ {
                         + HtmlUtils.radio(
                             ARG_DB_SORTDIR, "asc",
                             request.getString(ARG_DB_SORTDIR, "asc").equals(
-                                                                            "asc"), " default='asc' ") + " " + "Ascending "
-                                        + HtmlUtils.radio(
-                                            ARG_DB_SORTDIR, "desc",
-                                            request.getString(
-                                                ARG_DB_SORTDIR, "asc").equals(
-                                                                              "desc"),
-                                            " default='asc' ") + " "
-                                                        + "Descending"));
+                                "asc"), " default='asc' ") + " "
+                                    + "Ascending "
+                                    + HtmlUtils.radio(
+                                        ARG_DB_SORTDIR, "desc",
+                                        request.getString(
+                                            ARG_DB_SORTDIR, "asc").equals(
+                                            "desc"), " default='asc' ") + " "
+                                                + "Descending"));
 
         if (normalForm) {
             sb.append(
@@ -2206,8 +2208,8 @@ public class DbTypeHandler extends PointTypeHandler /* BlobTypeHandler*/ {
                     HtmlUtils.select(
                         ARG_DB_VIEW, viewList,
                         request.getString(ARG_DB_VIEW, ""),
-                        HtmlUtils.attr("default",VIEW_TABLE) +
-                        HtmlUtils.cssClass(
+                        HtmlUtils.attr("default", VIEW_TABLE)
+                        + HtmlUtils.cssClass(
                             "search-select")) + HtmlUtils.space(2) + count));
             sb.append(formEntry(request, msgLabel("Search Name"),
                                 HtmlUtils.input(ARG_DB_SEARCHNAME,
@@ -2613,35 +2615,28 @@ public class DbTypeHandler extends PointTypeHandler /* BlobTypeHandler*/ {
                         double   lat = ll[0];
                         double   lon = ll[1];
                         if ( !Double.isNaN(lat) && !Double.isNaN(lon)) {
-                            bounds.setNorth(Double.isNaN(bounds.getNorth())
-                                            ? lat
-                                            : Math.max(lat,
-                                            bounds.getNorth()));
-                            bounds.setSouth(Double.isNaN(bounds.getSouth())
-                                            ? lat
-                                            : Math.min(lat,
-                                            bounds.getSouth()));
-                            bounds.setWest(Double.isNaN(bounds.getWest())
-                                           ? lon
-                                           : Math.min(lon, bounds.getWest()));
-                            bounds.setEast(Double.isNaN(bounds.getEast())
-                                           ? lon
-                                           : Math.max(lon, bounds.getEast()));
+                            bounds.expand(lat, lon);
                         }
                     }
 
-
-
                     valueList.add(values);
                     if (valueList.size() > 10000) {
-                        for (Object[] tuple : valueList) {
-                            scnt[0]++;
-                            if ((scnt[0] % 1000) == 0) {
-                                System.err.println(
-                                    "DbTypeHandler.bulkUpload: stored: "
-                                    + scnt[0]);
+                        if (false) {
+                            for (Object[] tuple : valueList) {
+                                scnt[0]++;
+                                if ((scnt[0] % 1000) == 0) {
+                                    System.err.println(
+                                        "DbTypeHandler.bulkUpload: stored: "
+                                        + scnt[0]);
+                                }
+                                doStore(entry, tuple, true);
                             }
-                            doStore(entry, tuple, true);
+                        } else {
+                            scnt[0] += valueList.size();
+                            doStore(entry, valueList, true);
+                            System.err.println(
+                                "DbTypeHandler.bulkUpload: stored: "
+                                + scnt[0]);
                         }
                         valueList.clear();
                     }
@@ -2656,14 +2651,22 @@ public class DbTypeHandler extends PointTypeHandler /* BlobTypeHandler*/ {
         CsvUtil csvUtil = new CsvUtil(new ArrayList<String>());
         csvUtil.process(textReader);
 
-        for (Object[] tuple : valueList) {
-            scnt[0]++;
-            if ((scnt[0] % 1000) == 0) {
-                System.err.println("DbTypeHandler.bulkUpload: stored: "
-                                   + scnt[0]);
+        if (false) {
+            for (Object[] tuple : valueList) {
+                scnt[0]++;
+                if ((scnt[0] % 1000) == 0) {
+                    System.err.println("DbTypeHandler.bulkUpload: stored: "
+                                       + scnt[0]);
+                }
+                doStore(entry, tuple, true);
             }
-            doStore(entry, tuple, true);
+        } else {
+            scnt[0] += valueList.size();
+            doStore(entry, valueList, true);
+            System.err.println("DbTypeHandler.bulkUpload: stored: "
+                               + scnt[0]);
         }
+
         if ( !entry.hasAreaDefined() && !Double.isNaN(bounds.getNorth())) {
             entry.setBounds(bounds);
             getEntryManager().updateEntry(request, entry);
@@ -2826,25 +2829,48 @@ public class DbTypeHandler extends PointTypeHandler /* BlobTypeHandler*/ {
      */
     protected void doStore(Entry entry, Object[] values, boolean isNew)
             throws Exception {
-        String dbid = (String) values[IDX_DBID];
+        List valueList = new ArrayList<Object[]>();
+        valueList.add(values);
+        doStore(entry, valueList, isNew);
+    }
+
+    /**
+     * _more_
+     *
+     * @param entry _more_
+     * @param valueList _more_
+     * @param isNew _more_
+     *
+     * @throws Exception _more_
+     */
+    protected void doStore(Entry entry, List<Object[]> valueList,
+                           boolean isNew)
+            throws Exception {
+        if (valueList.size() == 0) {
+            return;
+        }
+        String dbid = (String) valueList.get(0)[IDX_DBID];
         String sql  = makeInsertOrUpdateSql(entry, (isNew
                 ? null
                 : dbid));
         PreparedStatement stmt =
             getRepository().getDatabaseManager().getPreparedStatement(sql);
         try {
-            int stmtIdx = tableHandler.setStatement(entry, values, stmt,
-                              isNew);
-            if ( !isNew) {
-                stmt.setString(stmtIdx, dbid);
+            for (Object[] values : valueList) {
+                int stmtIdx = tableHandler.setStatement(entry, values, stmt,
+                                  isNew);
+                if ( !isNew) {
+                    stmt.setString(stmtIdx, dbid);
+                }
+                stmt.execute();
             }
-            stmt.execute();
         } finally {
             getRepository().getDatabaseManager().closeAndReleaseConnection(
                 stmt);
         }
 
     }
+
 
     /** _more_ */
     private String[] namesArray;
@@ -2992,6 +3018,7 @@ public class DbTypeHandler extends PointTypeHandler /* BlobTypeHandler*/ {
                     sb.append(s);
                 }
                 sb.append("\n");
+
                 continue;
             }
 
@@ -3010,12 +3037,14 @@ public class DbTypeHandler extends PointTypeHandler /* BlobTypeHandler*/ {
             sb.append("\n");
         }
 
-        Result result =  new Result("", sb, "text/csv");
-        if(request.defined(ARG_DB_SEARCHNAME)) {
-            result.setReturnFilename(request.getString(ARG_DB_SEARCHNAME)+".csv");
+        Result result = new Result("", sb, "text/csv");
+        if (request.defined(ARG_DB_SEARCHNAME)) {
+            result.setReturnFilename(request.getString(ARG_DB_SEARCHNAME)
+                                     + ".csv");
         } else {
-            result.setReturnFilename(entry.getName()+".csv");
+            result.setReturnFilename(entry.getName() + ".csv");
         }
+
         return result;
     }
 
@@ -4318,7 +4347,18 @@ public class DbTypeHandler extends PointTypeHandler /* BlobTypeHandler*/ {
 
 
 
-    public int getDefaultMax(Request request, Entry entry, String tag, Hashtable props) {
+    /**
+     * _more_
+     *
+     * @param request _more_
+     * @param entry _more_
+     * @param tag _more_
+     * @param props _more_
+     *
+     * @return _more_
+     */
+    public int getDefaultMax(Request request, Entry entry, String tag,
+                             Hashtable props) {
         return 1000;
     }
 
@@ -4339,12 +4379,13 @@ public class DbTypeHandler extends PointTypeHandler /* BlobTypeHandler*/ {
         if (tag.equals(WikiConstants.WIKI_TAG_CHART)
                 || tag.equals(WikiConstants.WIKI_TAG_DISPLAY)) {
             try {
-                if(props.get("max")==null) {
-                    props.put("max",""+getDefaultMax(request, entry, tag, props));
+                if (props.get("max") == null) {
+                    props.put("max",
+                              "" + getDefaultMax(request, entry, tag, props));
                 }
                 String url =
                     ((PointOutputHandler) getRecordOutputHandler())
-                    .getJsonUrl(request, entry, props);
+                        .getJsonUrl(request, entry, props);
                 url += "&"
                        + request.getUrlArgs(
                            (HashSet<String>) Utils.makeHashSet(
@@ -4371,7 +4412,8 @@ public class DbTypeHandler extends PointTypeHandler /* BlobTypeHandler*/ {
      * @throws Exception _more_
      */
     public Result handleListChart(Request request, Entry entry,
-                                  boolean fromSearch) throws Exception {
+                                  boolean fromSearch)
+            throws Exception {
 
         boolean canEdit  = getAccessManager().canEditEntry(request, entry);
         StringBuilder sb = new StringBuilder();
@@ -5405,8 +5447,8 @@ public class DbTypeHandler extends PointTypeHandler /* BlobTypeHandler*/ {
                 if (aggColumn != null) {
                     aggColumns.add(aggColumn.getName());
                     aggLabels.add(aggColumn.getLabel());
-                    aggSelectors.add(request.getEnum(ARG_AGG_TYPE + i,
-                                                     "sum", "count",   "min", "max", "avg"));
+                    aggSelectors.add(request.getEnum(ARG_AGG_TYPE + i, "sum",
+                            "count", "min", "max", "avg"));
                 }
             }
             if (aggColumns.size() == 0) {
@@ -6083,12 +6125,13 @@ public class DbTypeHandler extends PointTypeHandler /* BlobTypeHandler*/ {
                 }
                 Column column  = columnsToUse.get(i);
                 String colType = column.getType();
-                String type    =    colType.equals(Column.DATATYPE_INT)?
-                    RecordField.TYPE_INT:
-                    isNumeric[i]?RecordField.TYPE_DOUBLE: 
-                    colType.equals(Column.DATATYPE_DATE)
-                    ? RecordField.TYPE_DATE: 
-                    RecordField.TYPE_STRING;
+                String type    = colType.equals(Column.DATATYPE_INT)
+                                 ? RecordField.TYPE_INT
+                                 : isNumeric[i]
+                                   ? RecordField.TYPE_DOUBLE
+                                   : colType.equals(Column.DATATYPE_DATE)
+                                     ? RecordField.TYPE_DATE
+                                     : RecordField.TYPE_STRING;
                 String extra   = "";
                 if (isNumeric[i]) {
                     extra += attrChartable();
@@ -6100,11 +6143,15 @@ public class DbTypeHandler extends PointTypeHandler /* BlobTypeHandler*/ {
                     type = RecordField.TYPE_DOUBLE;
                 }
                 if (colType.equals(Column.DATATYPE_LATLON)) {
-                    fields.append(makeField("latitude", attrType(RecordField.TYPE_DOUBLE),
-                                            attrLabel("Latitude")));
+                    fields.append(
+                        makeField(
+                            "latitude", attrType(RecordField.TYPE_DOUBLE),
+                            attrLabel("Latitude")));
                     fields.append(",");
-                    fields.append(makeField("longitude", attrType(RecordField.TYPE_DOUBLE),
-                                            attrLabel("Longitude")));
+                    fields.append(
+                        makeField(
+                            "longitude", attrType(RecordField.TYPE_DOUBLE),
+                            attrLabel("Longitude")));
                 } else {
                     fields.append(makeField(column.getName(), attrType(type),
                                             attrLabel(column.getLabel()),
@@ -6140,9 +6187,23 @@ public class DbTypeHandler extends PointTypeHandler /* BlobTypeHandler*/ {
     }
 
 
+    /**
+     * _more_
+     *
+     * @param request _more_
+     * @param entry _more_
+     * @param prop _more_
+     * @param dflt _more_
+     *
+     * @return _more_
+     */
     @Override
-    public String getChartProperty(Request request, Entry entry, String prop, String dflt) {
-        if(prop.equals("chart.type")) return "table";
+    public String getChartProperty(Request request, Entry entry, String prop,
+                                   String dflt) {
+        if (prop.equals("chart.type")) {
+            return "table";
+        }
+
         return getTypeProperty(prop, dflt);
     }
 
