@@ -232,6 +232,13 @@ function initMapFunctions(theMap) {
             },
             handleFeatureover: function(feature) { 
                 var layer = feature.layer;
+                if(!(layer.isMapLayer=== true)) {
+                    if(feature.text) {
+                        this.showFeatureText(feature);
+                    }
+                    return;
+                }
+
                 if(layer.canSelect === false || !(layer.isMapLayer=== true)) return;
                 var _this = this;
                 if(!feature.isSelected) {
@@ -252,7 +259,13 @@ function initMapFunctions(theMap) {
             },
             handleFeatureout: function(feature) { 
                 layer = feature.layer;
-                if(layer.canSelect === false || !(layer.isMapLayer=== true)) return;
+                if(!(layer.isMapLayer=== true)) {
+                    if(feature.text) {
+                        this.hideFeatureText(feature);
+                    }
+                    return;
+                }
+                if(layer.canSelect === false) return;
                 feature.style = feature.originalStyle;
                 if(!feature.isSelected) {
                     layer.drawFeature(feature,feature.style ||"default"); 
@@ -1394,7 +1407,6 @@ function initMapFunctions(theMap) {
             $("#" +this.latFldId).val(formatLocationValue(lat));
         }
 
-        console.log("selectionMarker");
 
         var lonlat = new createLonLat(lon,lat);
         if (this.selectorMarker == null) {
@@ -2132,27 +2144,39 @@ function initMapFunctions(theMap) {
             return null;
         }
         var _this = this;
-        if(marker.text && this.displayDiv) {
-            this.circledMarker = marker;
-            var callback = function() {
-                if(_this.circledMarker == marker) {
-                    $("#" + _this.displayDiv).html(_this.circledMarker.text);
-                }
-            }
-            setTimeout(callback,500);
-        }
+        this.showFeatureText(marker);
         return this.addPoint(id,marker.location, myattrs);
     }
 
+
     theMap.uncircleMarker = function(id) {
+        marker = this.findMarker(id);
         feature = this.features[id];
         if(feature) {
             this.circles.removeFeatures( [feature]);
         }
-        if(this.displayDiv) {
+        this.hideFeatureText(marker);
+    }
+
+    theMap.showFeatureText = function (feature) {
+        var _this = this;
+        if(feature.text && this.displayDiv) {
+            this.textFeature = feature;
+            var callback = function() {
+                if(_this.textFeature == feature) {
+                    $("#" + _this.displayDiv).html(_this.textFeature.text);
+                }
+            }
+            setTimeout(callback,500);
+        }
+    },
+
+    theMap.hideFeatureText = function (feature) {
+        if(!feature || this.textFeature == feature) {
             $("#" + this.displayDiv).html("");
         }
-    }
+    },
+
 
     theMap.addPoint = function(id, point, attrs, text, notReally) {
         //Check if we have a LonLat instead of a Point
