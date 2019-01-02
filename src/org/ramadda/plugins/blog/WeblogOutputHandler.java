@@ -187,7 +187,6 @@ public class WeblogOutputHandler extends OutputHandler {
         List<String> links = new ArrayList<String>();
         if (group != null) {
             String headerValue = group.getValue(0, "");
-            System.err.println("group:" + group.getName() +" " + headerValue);
             if (headerValue.length() == 0) {
                 headerValue =
                     "\n:title " + group.getName() + "\n"
