@@ -41,6 +41,7 @@ import org.ramadda.repository.type.*;
 import org.ramadda.util.Bounds;
 import org.ramadda.util.FormInfo;
 import org.ramadda.util.GoogleChart;
+import org.ramadda.util.WikiUtil;
 
 import org.ramadda.util.HtmlUtils;
 import org.ramadda.util.JQuery;
@@ -194,6 +195,8 @@ public class DbTypeHandler extends PointTypeHandler /* BlobTypeHandler*/ {
 
     /** _more_ */
     public static final String ARG_DB_VIEW = "db.view";
+
+    public static final String ARG_DB_SHOWHEADER = "db.showheader";
 
     /** _more_ */
     public static final String ARG_VIEW = "view";
@@ -968,6 +971,7 @@ public class DbTypeHandler extends PointTypeHandler /* BlobTypeHandler*/ {
         makeTable(request, entry, valueList, false, sb, false, true);
 
 
+        /*
         if (showInHeader(VIEW_RSS)) {
             sb.append(getHref(request, entry, VIEW_RSS, msg("RSS"),
                               "/" + entry.getName() + ".rss"));
@@ -980,6 +984,7 @@ public class DbTypeHandler extends PointTypeHandler /* BlobTypeHandler*/ {
             sb.append(getHref(request, entry, VIEW_JSON, msg("JSON"),
                               "/" + entry.getName() + ".json"));
         }
+        */
 
         return sb.toString();
     }
@@ -1224,13 +1229,13 @@ public class DbTypeHandler extends PointTypeHandler /* BlobTypeHandler*/ {
                               String extraLinks)
             throws Exception {
 
+        if(!request.get(ARG_DB_SHOWHEADER,true)) return;
         Hashtable props = getProperties(entry);
         boolean doAnonForm = Misc.getProperty(props, PROP_ANONFORM_ENABLED,
                                  false);
         if (doAnonForm) {
             if ( !getAccessManager().canEditEntry(request, entry)) {
                 addStyleSheet(sb);
-
                 return;
             }
         }
@@ -1519,7 +1524,7 @@ public class DbTypeHandler extends PointTypeHandler /* BlobTypeHandler*/ {
      *
      * @throws Exception _more_
      */
-    public Result handleList(Request request, Entry entry, String action)
+    private Result handleList(Request request, Entry entry, String action)
             throws Exception {
         return handleList(request, entry, Clause.eq(COL_ID, entry.getId()),
                           action, false);
@@ -1540,14 +1545,13 @@ public class DbTypeHandler extends PointTypeHandler /* BlobTypeHandler*/ {
      *
      * @throws Exception _more_
      */
-    public Result handleList(Request request, Entry entry, Clause clause,
+    private Result handleList(Request request, Entry entry, Clause clause,
                              String action, boolean fromSearch)
             throws Exception {
         String view = getWhatToShow(request);
         if (view.equals(VIEW_CHART)) {
             return handleListChart(request, entry, fromSearch);
         }
-
 
         List<Object[]> valueList;
 
@@ -2072,9 +2076,11 @@ public class DbTypeHandler extends PointTypeHandler /* BlobTypeHandler*/ {
         getSearchFormInner(request, entry, sb, true);
         sb.append(formEntry(request, "", buttons));
         sb.append(HtmlUtils.formTableClose());
-        HtmlUtils.script(sb, "HtmlUtil.initSelect('.search-select')");
-        OutputHandler.addUrlShowingForm(sb, formId,
-                                        "[\".*OpenLayers_Control.*\"]");
+        StringBuilder js = new StringBuilder();
+        js.append("HtmlUtil.initSelect('.search-select');\n");
+        HtmlUtils.script(sb, js.toString());
+        OutputHandler.addUrlShowingForm(sb, entry, formId,
+                                        "[\".*OpenLayers_Control.*\"]","dbAddUrlShowingForm");
         sb.append(HtmlUtils.formClose());
 
         return sb;
@@ -4522,6 +4528,43 @@ public class DbTypeHandler extends PointTypeHandler /* BlobTypeHandler*/ {
 
         return new Result(getTitle(request, entry), sb);
 
+    }
+
+
+    public String getWikiInclude(WikiUtil wikiUtil, Request request,
+                                 Entry originalEntry, Entry entry,
+                                 String tag, Hashtable props)
+            throws Exception {
+        if(!tag.equals("db")) {
+            return super.getWikiInclude(wikiUtil,  request,
+                                        originalEntry, entry,
+                                        tag, props);
+        }
+        //        {{db entry="e6a54dbb-c310-47ae-8f49-597f32aa9f4d" args="search.db_bolder_rental_housing.propaddr1:illini,Boxes:Boxes,db.view:map,searchname:Name" }}
+        String args  = (String)props.get("args");
+        if(args==null) args="";
+        Hashtable newArgs = new Hashtable();
+        newArgs.put(ARG_ENTRYID, entry.getId());
+        newArgs.put(ARG_DB_SEARCH, "true");
+        Request newRequest = request.cloneMe(request.getRepository());
+        newRequest.clearUrlArgs();
+        for(String pair: StringUtil.split(args,",",true,true)) {
+            List<String> toks  = StringUtil.splitUpTo(pair,":",2);
+            //false-> not singular
+            newRequest.put(toks.get(0),toks.get(1), false);
+        }
+        newRequest.putAll(newArgs);
+        newRequest.put(ARG_DB_SHOWHEADER,"false");
+        newRequest.put(ARG_EMBEDDED,"true");
+        StringBuilder sb = new StringBuilder();
+        addStyleSheet(sb);
+        if (newRequest.defined(ARG_DB_SEARCHNAME)) {
+            HtmlUtils.sectionHeader(sb,
+                                    newRequest.getString(ARG_DB_SEARCHNAME, ""));
+        }
+        Result result = handleSearch(newRequest, entry);
+        sb.append(result.getStringContent());
+        return sb.toString();
     }
 
 

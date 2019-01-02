@@ -814,7 +814,7 @@ var HtmlUtil =  {
     },
 
 
-    handleFormChangeShowUrl: function(formId, outputId, skip, doDisplay) {
+    handleFormChangeShowUrl: function(entryid, formId, outputId, skip, hook) {
         if(skip == null) {
             skip = [".*OpenLayers_Control.*","authtoken"];
         }
@@ -822,6 +822,7 @@ var HtmlUtil =  {
         var inputs = $("#" + formId +" :input");
         var cnt = 0;
         var seen = {};
+        var pairs = [];
         inputs.each(function (i, item) {
                 if(item.name == "" || item.value == null || item.value == "") return;
                 if(item.value =="-all-") return;
@@ -849,8 +850,9 @@ var HtmlUtil =  {
                 if(item.name && seen[item.name]) {
                     return;
                 }
-                if(item.name)
+                if(item.name) {
                     seen[item.name]  = true;
+                }
 
                 if(skip!=null) {
                     for(var i=0;i<skip.length;i++) {
@@ -877,23 +879,24 @@ var HtmlUtil =  {
                     if(cnt>0) url += "&";
                     cnt++;
                     value = values[v];
+                    pairs.push({item:item, value:value});
                     url += encodeURIComponent(item.name) + "=" + encodeURIComponent(value);
                 }
             });
 
         var base = window.location.protocol+ "//" + window.location.host;
-        //        console.log("protocol:" + window.location.protocol);
-        //        console.log("base:" + base);
-        //        console.log("url:" + url);
         url = base + url;                        
-        //        console.log("final:" + url);
-        $("#" + outputId).html(HtmlUtil.div(["class","ramadda-form-url"],  HtmlUtil.href(url, HtmlUtil.image(ramaddaBaseUrl +"/icons/link.png")) +" " + url));
+        var html  = HtmlUtil.div(["class","ramadda-form-url"],  HtmlUtil.href(url, HtmlUtil.image(ramaddaBaseUrl +"/icons/link.png")) +" " + url);
+        if(hook) {
+            html+= hook({entryId: entryid,formId:formId,inputs:inputs,itemValuePairs:pairs});
+        }
+        $("#" + outputId).html(html);
     },
-    makeUrlShowingForm: function(formId, outputId, skip, doDisplay) {
+    makeUrlShowingForm: function(entryId, formId, outputId, skip, hook) {
         $("#" + formId +" :input").change(function() {
-                HtmlUtil.handleFormChangeShowUrl(formId, outputId, skip, doDisplay);
+                HtmlUtil.handleFormChangeShowUrl(entryId, formId, outputId, skip,hook);
             });
-        HtmlUtil.handleFormChangeShowUrl(formId, outputId, skip,doDisplay);
+        HtmlUtil.handleFormChangeShowUrl(entryId, formId, outputId, skip,hook);
     },
     input :   function(name, value, attrs) {
         return "<input " + HtmlUtil.attrs(attrs) + HtmlUtil.attrs(["name", name, "value",value]) +">";

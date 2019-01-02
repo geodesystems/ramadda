@@ -886,15 +886,23 @@ public class OutputHandler extends RepositoryManager {
     public static void addUrlShowingForm(Appendable sb, String formId,
                                          String skipList)
             throws Exception {
+        addUrlShowingForm(sb, null, formId,  skipList, null);
+    }
+
+    public static void addUrlShowingForm(Appendable sb, Entry entry, String formId,
+                                          String skipList, String hook)
+            throws Exception {
         String outputId = HtmlUtils.getUniqueId("output_");
         HtmlUtils.div(sb, "", HtmlUtils.id(outputId));
         HtmlUtils.script(sb,
                          HtmlUtils.call("HtmlUtil.makeUrlShowingForm",
+                                        entry==null?"null":HtmlUtils.quote(entry.getId()),
                                         HtmlUtils.quote(formId),
                                         HtmlUtils.quote(outputId),
                                         (skipList != null)
                                         ? skipList
-                                        : "null"));
+                                        : "null",
+                                        ""+hook));
     }
 
 

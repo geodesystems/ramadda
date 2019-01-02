@@ -16,6 +16,26 @@ function dbRowClick(event, divId, popupId, url) {
 }
 
 
+function  dbAddUrlShowingForm(args) {
+    var html = "<b>Wiki Embed:</b> {{db entry=\""+ args.entryId +"\" ";
+    var attrs = "";
+    for(i in args.itemValuePairs) {
+        var tuple = args.itemValuePairs[i];
+        var item = tuple.item;
+        var value = tuple.value;
+        if(item.type == "hidden") continue;
+        if(item.name == "db.search"  || item.name == "Boxes" || item.name == "group_by" || item.name.match("group_agg.*") ) {
+            continue;
+        }
+        if(attrs!="") attrs+=",";
+        attrs+=item.name+":" + value;
+    }
+    html+=" args=\"" + attrs +"\" ";
+    html+=" }}";
+    return HtmlUtil.div(["class","ramadda-form-url"],  html);
+
+}
+
 function dbHidePopup(popupId) {
     $("#" +popupId).hide();
 }
