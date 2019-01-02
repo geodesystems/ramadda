@@ -285,7 +285,8 @@ function initMapFunctions(theMap) {
             handleFeatureclick: function(layer, feature) { 
                 if(!layer)
                     layer = feature.layer;
-                if(layer.canSelect === false || !(layer.isMapLayer=== true)) return;
+                if(layer.canSelect === false) return;
+                //                if(layer.canSelect === false || !(layer.isMapLayer=== true)) return;
                 if(layer.selectedFeature) {
                     layer.drawFeature(layer.selectedFeature,layer.selectedFeature.style ||"default");
                     layer.selectedFeature.isSelected = false;
@@ -301,6 +302,8 @@ function initMapFunctions(theMap) {
                         feature.style = feature.originalStyle;
                     }
                     layer.selectCallback(layer);
+                } else {
+                    this.showMarkerPopup(feature, true);
                 }
             },
             unselectFeature: function(feature) {
@@ -551,6 +554,7 @@ function initMapFunctions(theMap) {
             func(this, layer);
             return;
         }
+        console.log("select:" + layer.feature);
         //        var format = new OpenLayers.Format.GeoJSON();
         //        var json = format.write(feature);
         feature = layer.feature;
@@ -1189,8 +1193,10 @@ function initMapFunctions(theMap) {
                     this.map.addControl(this.map.highlightSelect);
                     this.map.highlightSelect.activate();   
                     }*/
-                this.map.addControl(this.map.featureSelect);
-                this.map.featureSelect.activate();
+
+                //for now
+                //this.map.addControl(this.map.featureSelect);
+                //                this.map.featureSelect.activate();
             } else {
                 this.map.featureSelect.setLayer(this.vectorLayers);
                 /*
