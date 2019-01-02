@@ -4041,7 +4041,9 @@ public class DbTypeHandler extends PointTypeHandler /* BlobTypeHandler*/ {
 
         int width  = 0;
         int height = 500;
-        Hashtable props = Utils.getHashtable("displayDiv", "mapDisplay" + entry.getId(),
+        String mapDisplayId = "mapDisplay_" + Utils.getGuid();
+
+        Hashtable props = Utils.getHashtable("displayDiv", mapDisplayId,
                                              "style", "");
         MapInfo map = getRepository().getMapManager().createMap(request,
                           width, height, false, props);
@@ -4190,7 +4192,7 @@ public class DbTypeHandler extends PointTypeHandler /* BlobTypeHandler*/ {
             ));
         sb.append(
             HtmlUtils.col(
-                          "<div id=\"mapDisplay" + entry.getId() +"\" style=\"width:250px;max-width:250px;overflow-x:hidden;max-height:"
+                          "<div id=\"" + mapDisplayId +"\" style=\"width:250px;max-width:250px;overflow-x:hidden;max-height:"
                 + height + "px; overflow-y:hidden;\"></div>", " class=\"db-map-column\"  width=250"));
         //HtmlUtils.attr(HtmlUtils.ATTR_WIDTH,"" + width + "px")));
         HtmlUtils.close(sb, "tr", "table");
