@@ -276,12 +276,9 @@ public class MapManager extends RepositoryManager implements WikiConstants {
 
         //        System.err.println("MapManager.createMap: " + width + " " + height);
 
-        String style = (props != null)
-                       ? props.get("style")
-                       : null;
-        if (props != null) {
-            props.remove("style");
-        }
+        if(props == null) props = new Hashtable<String,String>();
+        String style = props.get("style");
+        props.remove("style");
         MapInfo mapInfo = new MapInfo(request, getRepository(), width,
                                       height, forSelection);
 
@@ -297,12 +294,10 @@ public class MapManager extends RepositoryManager implements WikiConstants {
 
 
 
-        if (props != null) {
-            for (Enumeration keys = props.keys(); keys.hasMoreElements(); ) {
-                String key   = (String) keys.nextElement();
-                String value = props.get(key);
-                mapInfo.addProperty(key, Json.quote(value));
-            }
+        for (Enumeration keys = props.keys(); keys.hasMoreElements(); ) {
+            String key   = (String) keys.nextElement();
+            String value = props.get(key);
+            mapInfo.addProperty(key, Json.quote(value));
         }
 
 
