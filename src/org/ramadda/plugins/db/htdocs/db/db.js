@@ -17,7 +17,7 @@ function dbRowClick(event, divId, popupId, url) {
 
 
 function  dbAddUrlShowingForm(args) {
-    var html = "<b>Wiki Embed:</b> {{db entry=\""+ args.entryId +"\" ";
+    var embed = "{{db entry=\""+ args.entryId +"\" ";
     var attrs = "";
     for(i in args.itemValuePairs) {
         var tuple = args.itemValuePairs[i];
@@ -30,8 +30,10 @@ function  dbAddUrlShowingForm(args) {
         if(attrs!="") attrs+=",";
         attrs+=item.name+":" + value;
     }
-    html+=" args=\"" + attrs +"\" ";
-    html+=" }}";
+    embed+=" args=\"" + attrs +"\" ";
+    embed+=" }}";
+    embed = embed.replace(/\"/g,"&quot;");
+    var html = "<b>Wiki Embed:</b> <input id=dbwikiembed size=80 value=\"" +embed +"\"/>";
     return HtmlUtil.div(["class","ramadda-form-url"],  html);
 
 }
