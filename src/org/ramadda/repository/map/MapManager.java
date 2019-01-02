@@ -306,8 +306,11 @@ public class MapManager extends RepositoryManager implements WikiConstants {
         }
 
 
+        String mapLayer = (String) props.get("defaultMapLayer");
+        if(mapLayer == null) 
+            mapLayer = getDefaultMapLayer();
         mapInfo.addProperty("defaultMapLayer",
-                            Json.quote(getDefaultMapLayer()));
+                            Json.quote(mapLayer));
 
         String key = KEY2;
         if (request.getExtraProperty(key) == null) {

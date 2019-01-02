@@ -2079,9 +2079,10 @@ public class DbTypeHandler extends PointTypeHandler /* BlobTypeHandler*/ {
         StringBuilder js = new StringBuilder();
         js.append("HtmlUtil.initSelect('.search-select');\n");
         HtmlUtils.script(sb, js.toString());
-        OutputHandler.addUrlShowingForm(sb, entry, formId,
-                                        "[\".*OpenLayers_Control.*\"]","dbAddUrlShowingForm");
         sb.append(HtmlUtils.formClose());
+        OutputHandler.addUrlShowingForm(sb, entry, formId,
+                                        "[\".*OpenLayers_Control.*\"]",request.isAnonymous()?null:"dbAddUrlShowingForm");
+
 
         return sb;
     }
@@ -4045,6 +4046,10 @@ public class DbTypeHandler extends PointTypeHandler /* BlobTypeHandler*/ {
 
         Hashtable props = Utils.getHashtable("displayDiv", mapDisplayId,
                                              "style", "");
+        if(request.defined("mapLayer")) {
+            props.put("defaultMapLayer",request.getString("mapLayer",""));
+        }
+        
         MapInfo map = getRepository().getMapManager().createMap(request,
                           width, height, false, props);
         boolean       makeRectangles = valueList.size() <= 20;
@@ -4560,6 +4565,8 @@ public class DbTypeHandler extends PointTypeHandler /* BlobTypeHandler*/ {
         newRequest.put(ARG_EMBEDDED,"true");
         StringBuilder sb = new StringBuilder();
         addStyleSheet(sb);
+        String layer = (String) props.get("layer");
+        if(layer!=null) newRequest.put("mapLayer",layer);
         if (newRequest.defined(ARG_DB_SEARCHNAME)) {
             HtmlUtils.sectionHeader(sb,
                                     newRequest.getString(ARG_DB_SEARCHNAME, ""));
