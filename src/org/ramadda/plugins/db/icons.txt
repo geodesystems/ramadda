@@ -67,6 +67,7 @@ br
 /db/icons/coffeehouse.png
 /db/icons/snack_bar.png
 /db/icons/drinking_water.png
+/db/icons/envelope.png
 br
 /db/icons/snowflake_simple.png
 /db/icons/rainy.png
