@@ -1831,6 +1831,9 @@ public class DbTypeHandler extends PointTypeHandler /* BlobTypeHandler*/ {
         icons = StringUtil.split(
             getRepository().getResource("/org/ramadda/plugins/db/icons.txt"),
             "\n", true, true);
+        
+        HashSet baseIcons = Utils.makeHashSet(icons);
+
         //        }
 
         for (Column col : enumColumns) {
@@ -1848,12 +1851,12 @@ public class DbTypeHandler extends PointTypeHandler /* BlobTypeHandler*/ {
             }
             StringBuilder        sb   = new StringBuilder("");
             List<TwoFacedObject> tfos = getEnumValues(request, entry, col);
-            if ((tfos != null) && (tfos.size() < 50) && (tfos.size() > 0)) {
+            if ((tfos != null) && (tfos.size() < 150) && (tfos.size() > 0)) {
                 formBuffer.append(
                     HtmlUtils.row(
                         HtmlUtils.colspan(
                             HtmlUtils.div(
-                                msg("Settings for") + " " + col.getName(),
+                                msg("Settings for") + " " + col.getLabel(),
                                 HtmlUtils.cssClass("formgroupheader")), 2)));
 
                 for (TwoFacedObject tfo : tfos) {
@@ -1886,20 +1889,24 @@ public class DbTypeHandler extends PointTypeHandler /* BlobTypeHandler*/ {
                     iconSB.append(HtmlUtils.radio(iconArg, "",
                             currentIcon.equals("")));
                     iconSB.append(msg("None"));
+                    iconSB.append("  ");
+                    iconSB.append(msg("Custom:"));
                     iconSB.append(" ");
+                    iconSB.append(HtmlUtils.input(iconArg+"_custom",baseIcons.contains(currentIcon)?"":currentIcon,20));
+                    iconSB.append("<br>");
                     for (String icon : icons) {
                         if (icon.startsWith("#")) {
                             continue;
                         }
                         if (icon.equals("br")) {
                             iconSB.append("<br>");
-
                             continue;
                         }
                         iconSB.append(HtmlUtils.radio(iconArg, icon,
                                 currentIcon.equals(icon)));
                         iconSB.append(HtmlUtils.img(getDbIconUrl(icon),
-                                IOUtil.getFileTail(icon)));
+                                                    IOUtil.getFileTail(icon),"width=24"));
+                        iconSB.append(" ");
                     }
                     formBuffer.append(HtmlUtils.formEntry(msgLabel("Value"),
                             value));
@@ -1908,7 +1915,7 @@ public class DbTypeHandler extends PointTypeHandler /* BlobTypeHandler*/ {
                             msgLabel("Color"), colorSB.toString()));
                     String iconMsg = "";
                     if (currentIcon.length() > 0) {
-                        iconMsg = HtmlUtils.img(getDbIconUrl(currentIcon));
+                        iconMsg = HtmlUtils.img(getDbIconUrl(currentIcon), currentIcon,"width=16");
                     }
                     formBuffer.append(
                         HtmlUtils.formEntryTop(
@@ -1941,7 +1948,12 @@ public class DbTypeHandler extends PointTypeHandler /* BlobTypeHandler*/ {
             return icon;
         }
 
-        return getRepository().getUrlBase() + "/db/icons/" + icon;
+        String path  = icon;
+        if(!path.startsWith("/")) {
+            path = "/" + path;
+            
+        }
+        return getRepository().getUrlBase() + path;
     }
 
 
@@ -1993,7 +2005,7 @@ public class DbTypeHandler extends PointTypeHandler /* BlobTypeHandler*/ {
                 for (TwoFacedObject tfo : enumValues) {
                     String value     = tfo.getId().toString();
                     String iconArg   = iconID + "." + value;
-                    String iconValue = request.getString(iconArg, "");
+                    String iconValue = request.defined(iconArg+"_custom")?request.getString(iconArg+"_custom",""):request.getString(iconArg, "");
                     if (iconValue.equals("")) {
                         iconMap.remove(value);
                     } else {
@@ -4044,7 +4056,7 @@ public class DbTypeHandler extends PointTypeHandler /* BlobTypeHandler*/ {
         int height = 500;
         String mapDisplayId = "mapDisplay_" + Utils.getGuid();
 
-        Hashtable props = Utils.getHashtable("displayDiv", mapDisplayId,
+        Hashtable props = Utils.makeHashtable("displayDiv", mapDisplayId,
                                              "style", "");
         if(request.defined("mapLayer")) {
             props.put("defaultMapLayer",request.getString("mapLayer",""));

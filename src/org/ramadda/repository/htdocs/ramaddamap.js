@@ -43,6 +43,13 @@ var map_ol_openstreetmap = "ol.openstreetmap";
 var map_default_layer =  map_osm;
 
 
+var ramaddaCircleHiliteAttrs = {
+    strokeColor:'black',
+    strokeWidth:1,
+    fill:true,
+    fillOpacity:0.5,
+    fillColor:'red'};
+
 function createLonLat(lon,lat) {
     lon = parseFloat(lon);
     lat = parseFloat(lat);
@@ -233,6 +240,14 @@ function initMapFunctions(theMap) {
             handleFeatureover: function(feature) { 
                 var layer = feature.layer;
                 if(!(layer.isMapLayer=== true)) {
+                    /*
+                    if(feature.ramaddaId) {
+                        marker = this.findMarker(feature.ramaddaId);
+                        if(marker) {
+                            this.circleMarker(feature.ramaddaId,ramaddaCircleHiliteAttrs);
+                            return;
+                        }
+                        }*/
                     if(feature.text) {
                         this.showFeatureText(feature);
                     }
@@ -259,13 +274,22 @@ function initMapFunctions(theMap) {
             },
             handleFeatureout: function(feature) { 
                 layer = feature.layer;
-                if(!(layer.isMapLayer=== true)) {
+                if(layer && !(layer.isMapLayer=== true)) {
+                    /*
+                    if(feature.ramaddaId) {
+                        marker = this.findMarker(feature.ramaddaId);
+                        if(marker) {
+                            this.uncircleMarker(feature.ramaddaId);
+                            return;
+                        }
+                    }
+                    */
                     if(feature.text) {
                         this.hideFeatureText(feature);
                     }
                     return;
                 }
-                if(layer.canSelect === false) return;
+                if(layer == null || layer.canSelect === false) return;
                 feature.style = feature.originalStyle;
                 if(!feature.isSelected) {
                     layer.drawFeature(feature,feature.style ||"default"); 
@@ -2137,6 +2161,10 @@ function initMapFunctions(theMap) {
 
 
     theMap.circleMarker = function(id, attrs) {
+        marker = this.findMarker(id);
+        if(!marker) {
+            return null;
+        }
         myattrs = {pointRadius : 12, 
                    stroke: true,
                    strokeColor : "red",
@@ -2145,19 +2173,15 @@ function initMapFunctions(theMap) {
 
         if(attrs)
             $.extend(myattrs, attrs);
-        marker = this.findMarker(id);
-        if(!marker) {
-            return null;
-        }
         var _this = this;
         this.showFeatureText(marker);
-        return this.addPoint(id,marker.location, myattrs);
+        return this.addPoint(id+"_circle",marker.location, myattrs);
     }
 
 
     theMap.uncircleMarker = function(id) {
-        marker = this.findMarker(id);
-        feature = this.features[id];
+        feature = this.features[id+"_circle"];
+        console.log("id: " +feature + " " + id);
         if(feature) {
             this.circles.removeFeatures( [feature]);
         }
@@ -2591,12 +2615,7 @@ function highlightMarkers(selector, mapVar, background1, background2,id) {
                                    $(this).css('background',background1); 
                                if(!$(this).data('mapid')) 
                                    return;
-                               if(mapVar.circleMarker($(this).data('mapid'),{
-                                           strokeColor:'black',
-                                               strokeWidth:1,
-                                               fill:true,
-                                               fillOpacity:0.5,
-                                               fillColor:'red'})) {
+                               if(mapVar.circleMarker($(this).data('mapid'),ramaddaCircleHiliteAttrs)) {
                                    return;
                                }
                                if(id == null)

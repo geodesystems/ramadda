@@ -2813,6 +2813,15 @@ public class Utils {
         return h;
     }
 
+    public static HashSet makeHashSet(List<String> args) {
+        HashSet h = new HashSet();
+        for (Object arg : args) {
+            h.add(arg);
+        }
+
+        return h;
+    }
+
     /**
      * _more_
      *
@@ -2820,7 +2829,7 @@ public class Utils {
      *
      * @return _more_
      */
-    public static Hashtable getHashtable(Object... args) {
+    public static Hashtable makeHashtable(Object... args) {
         Hashtable h = new Hashtable();
         for (int i = 0; i < args.length; i += 2) {
             h.put(args[i], args[i + 1]);
@@ -2834,7 +2843,7 @@ public class Utils {
     /** _more_ */
     public static final Hashtable<String, Color> COLORNAMES =
         (Hashtable<String,
-                   Color>) getHashtable("lightsalmon",
+                   Color>) makeHashtable("lightsalmon",
                                         new Color(255, 160, 122), "salmon",
                                         new Color(250, 128, 114),
                                         "darksalmon",
