@@ -79,7 +79,6 @@ Data courtesy of the <a href="{{resource  url=true}}">Federal Reserve Economic D
 <br>
 
 {{description wikify="true"}}
-
 {{tree details="false"}}
 
 
@@ -135,6 +134,70 @@ Data courtesy of the <a href="{{resource  url=true}}">Energy Information Adminis
 </wiki_inner>
 
   </type>
+
+  <type name="type_bls_survey"  description="BLS Survey"  foruser="true" handler="org.ramadda.repository.type.ExtensibleGroupTypeHandler" >
+     <property name="icon" value="/biz/bls.png"/>
+  </type>
+
+  <type name="type_bls_series"  description="BLS Series" super="type_point"  foruser="true" handler="org.ramadda.plugins.biz.BlsSeriesTypeHandler" mefirst="true">
+     <property name="icon" value="/biz/bls.png"/>
+     <property name="form.resource.show" value="false"/>
+     <property name="form.properties.show" value="false"/>
+     <property name="point.initialize" value="false"/>
+
+     <property name="record.properties">
+     </property>
+
+<!--
+     <property name="html.date.show" value="false"/>
+-->
+     <property name="html.type.show" value="false"/>
+     <property name="html.owner.show" value="false"/>
+     <property name="html.numberofpoints.show" value="false"/>
+     <column name="series_id"  type="string"  label="Series ID"    />
+     <column name="survey_name" type="enumeration" label="Survey Name"/>
+     <column name="measure_data_type" type="enumeration" label="Measure Data Type"/>
+     <column name="industry" type="enumeration" label="Industry"/>
+     <column name="sector" type="enumeration" label="Sector"/>
+     <column name="area" type="enumeration" label="Area"/>
+     <column name="item" label="Item"/>
+     <column name="seasonality"  type="enumeration" label="Seasonality"/>
+     <wiki><![CDATA[
++section # title={{name}}
+<br>
+{{group showMenu="true"}}
+{{display type="linechart" title=""  height="200" width="-100" column="0" layoutHere="true" showMenu="true"}}
+{{display type="table" title=""  height="200" width="-100" column="0" layoutHere="true" showMenu="true"}}
+----
+<p>
+{{description wikify="true"}}
+{{information showTitle="false"}}
+-section
++section #
+<p>
++row
++col-md-4
+Data courtesy of  <a href="https://beta.bls.gov/dataViewer/view/timeseries/{{field name=series_id}}">Bureau of Labor Statistics</a>.
+-col
++col-md-4
+<center><a href="https://www.bls.gov/home.htm"><img src="{{root}}/biz/blslogo.png" border="0"></a></center>
+-col
++col-md-4
+<div style="text-align:right;">
+<a class="btn btn-primary" role="button" href="{{root}}/entry/show?entryid={{entryid}}&output=points.product&product=points.csv&asynch=false">Download CSV</a>
+</div>
+-col
+-row
+<p>
+-section
+
+]]>
+
+</wiki>
+
+  </type>
+
+
 
 
   <type name="type_biz_stockseries"  super="type_point" description="Stock Ticker Data"  handler="org.ramadda.plugins.biz.StockSeriesTypeHandler" mefirst="true">
