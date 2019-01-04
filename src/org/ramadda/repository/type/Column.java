@@ -1861,6 +1861,7 @@ public class Column implements DataTypes, Constants {
             }
         } else if (isEnumeration()) {
             List<String> values = getSearchValues(request);
+            System.err.println("values:" + values);
             if ((values != null) && (values.size() > 0)) {
                 List<Clause> subClauses = new ArrayList<Clause>();
                 for (String value : values) {
@@ -1871,6 +1872,7 @@ public class Column implements DataTypes, Constants {
                         subClauses.add(Clause.neq(columnName,
                                 value.substring(1)));
                     } else {
+                        System.err.println("   " + columnName +"=" +value);
                         subClauses.add(Clause.eq(columnName, value));
                     }
                 }
