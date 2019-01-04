@@ -243,6 +243,10 @@ public class BlsSeriesTypeHandler extends PointTypeHandler {
                                                 "Apr").replace("Qtr3",
                                                     "Jul").replace("Qtr4",
                                                         "Oct");
+                        //Check for just a year
+                        if(time.matches("^\\d\\d\\d\\d$")) {
+                            time = "Jan " + time;
+                        }
                         times.add(time);
                     }
                     for (int i = 0; i < times.size(); i++) {
@@ -313,6 +317,7 @@ public class BlsSeriesTypeHandler extends PointTypeHandler {
             time = time.replace("\"", "").replace("Qtr1",
                                 "Jan").replace("Qtr2", "Apr").replace("Qtr3",
                                     "Jul").replace("Qtr4", "Oct");
+
             times.add(time);
             Date dttm = sdf.parse(time);
             System.err.println("dttm:" + dttm);
