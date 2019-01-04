@@ -168,6 +168,7 @@ Data courtesy of the <a href="{{resource  url=true}}">Energy Information Adminis
 {{group showMenu="true"}}
 {{display type="linechart" title=""  height="200" width="-100" column="0" layoutHere="true" showMenu="true"}}
 {{display type="table" title=""  height="200" width="-100" column="0" layoutHere="true" showMenu="true"}}
+<p>
 ----
 <p>
 {{description wikify="true"}}
