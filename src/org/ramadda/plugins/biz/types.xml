@@ -155,13 +155,13 @@ Data courtesy of the <a href="{{resource  url=true}}">Energy Information Adminis
      <property name="html.owner.show" value="false"/>
      <property name="html.numberofpoints.show" value="false"/>
      <column name="series_id"  type="string"  label="Series ID"     />
-     <column name="survey_name" type="enumeration" label="Survey Name" cansearch="true"/>
-     <column name="measure_data_type" type="enumeration" label="Measure Data Type" cansearch="true"/>
-     <column name="industry" type="enumeration" label="Industry" cansearch="true"/>
-     <column name="sector" type="enumeration" label="Sector" cansearch="true"/>
-     <column name="area" type="enumeration" label="Area" cansearch="true"/>
-     <column name="item" label="Item" cansearch="true"/>
-     <column name="seasonality"  type="enumeration" label="Seasonality" cansearch="true"/>
+     <column name="survey_name" type="enumerationplus" label="Survey Name" cansearch="true"/>
+     <column name="measure_data_type" type="enumerationplus" label="Measure Data Type" cansearch="true"/>
+     <column name="industry" type="enumerationplus" label="Industry" cansearch="true"/>
+     <column name="sector" type="enumerationplus" label="Sector" cansearch="true"/>
+     <column name="area" type="enumerationplus" label="Area" cansearch="true"/>
+     <column name="item" type="enumerationplus" label="Item" cansearch="true"/>
+     <column name="seasonality"  type="enumerationplus" label="Seasonality" cansearch="true"/>
      <wiki><![CDATA[
 +section # title={{name}}
 <br>
