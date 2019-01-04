@@ -1861,7 +1861,6 @@ public class Column implements DataTypes, Constants {
             }
         } else if (isEnumeration()) {
             List<String> values = getSearchValues(request);
-            System.err.println("values:" + values);
             if ((values != null) && (values.size() > 0)) {
                 List<Clause> subClauses = new ArrayList<Clause>();
                 for (String value : values) {
@@ -1872,7 +1871,6 @@ public class Column implements DataTypes, Constants {
                         subClauses.add(Clause.neq(columnName,
                                 value.substring(1)));
                     } else {
-                        System.err.println("   " + columnName +"=" +value);
                         subClauses.add(Clause.eq(columnName, value));
                     }
                 }
@@ -1950,7 +1948,8 @@ public class Column implements DataTypes, Constants {
         List<String> result    = new ArrayList<String>();
         String       searchArg = getSearchArg();
         for (String arg : (List<String>) request.get(searchArg, result)) {
-            result.addAll(StringUtil.split(arg, ",", true));
+            //            result.addAll(StringUtil.split(arg, ",", true));
+            result.add(arg);
         }
 
         return result;
