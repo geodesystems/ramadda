@@ -241,7 +241,7 @@ public class ShapefileTypeHandler extends GenericTypeHandler implements WikiCons
         String fields = request.getString(ATTR_SELECTFIELDS,
                                           map.getSelectFields());
         if (fields != null) {
-            kmlUrl += "&" + HtmlUtils.arg("selectFields", fields, true);
+            kmlUrl += "&mapsubset=true&" + HtmlUtils.arg("selectFields", fields, false);
         }
         String bounds = map.getSelectBounds();
         if (bounds != null) {
