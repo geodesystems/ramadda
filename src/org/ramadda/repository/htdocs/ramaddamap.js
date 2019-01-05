@@ -530,9 +530,9 @@ function initMapFunctions(theMap) {
                     } else {
                         value =   ""+p[attr];
                     }
-                    if(value.startsWith("http:") || value.startsWith("https:")) {
-                        value  = "<a href='" + value+"'>" + value +"</a>";
-                    }
+                    //                    if(value.startsWith("http:") || value.startsWith("https:")) {
+                    //                        value  = "<a href='" + value+"'>" + value +"</a>";
+                    //                    }
                     out = out.replace("${" +style.id+"/" + attr+"}", value);
                 }
             } else {
