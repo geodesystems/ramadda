@@ -498,9 +498,9 @@ function makePointData(json, derived,source) {
         var recordField = new RecordField(field);
         lastField = recordField;
         fields.push(recordField);
+        //        console.log("field:" + recordField.getId());
         if(recordField.isFieldLatitude()) {
             latitudeIdx = recordField.getIndex();
-            //            console.log("Latitude idx:" + latitudeIdx);
         } else if(recordField.isFieldLongitude()) {
             longitudeIdx = recordField.getIndex();
             //            console.log("Longitude idx:" + longitudeIdx);

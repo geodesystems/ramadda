@@ -287,6 +287,20 @@ public abstract class TextFile extends PointFile {
      * _more_
      *
      * @param record _more_
+     * @param toks _more_
+     * @param header _more_
+     *
+     * @return _more_
+     */
+    public List<String> processTokens(TextRecord record, List<String> toks,
+                                      boolean header) {
+        return toks;
+    }
+
+    /**
+     * _more_
+     *
+     * @param record _more_
      * @param field _more_
      * @param tok _more_
      *

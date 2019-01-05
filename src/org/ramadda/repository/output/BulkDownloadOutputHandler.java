@@ -59,7 +59,7 @@ public class BulkDownloadOutputHandler extends OutputHandler {
 
     /** _more_ */
     public static final OutputType OUTPUT_WGET =
-        new OutputType("Bulk Download Script", "bulk.wget",
+        new OutputType("Wget Download Script", "bulk.wget",
                        OutputType.TYPE_FILE, "", ICON_FETCH);
 
 
@@ -95,9 +95,8 @@ public class BulkDownloadOutputHandler extends OutputHandler {
             throws Exception {
         super(repository, element);
         addType(OUTPUT_CURL);
+        addType(OUTPUT_WGET);
     }
-
-
 
 
     /**
@@ -125,11 +124,7 @@ public class BulkDownloadOutputHandler extends OutputHandler {
         if (state.entry != null) {
             if (state.entry.getResource().isUrl()
                     || getAccessManager().canDownload(request, state.entry)) {
-                links.add(
-                    makeLink(
-                        request, state.entry, OUTPUT_CURL,
-                        "/" + IOUtil.stripExtension(state.entry.getName())
-                        + "_download.sh"));
+                links.add(makeLink(request, state.entry, OUTPUT_CURL));
             }
         } else {
             boolean ok = false;
@@ -150,11 +145,11 @@ public class BulkDownloadOutputHandler extends OutputHandler {
             }
 
 
-
             if (ok) {
                 //Maybe don't put this for the top level entries. 
                 //Somebody will invariably come along and try to fetch everything
                 if (state.group != null) {
+                    links.add(makeLink(request, state.group, OUTPUT_WGET));
                     if ( !state.group.isTopEntry()) {
                         links.add(
                             makeLink(
@@ -164,6 +159,7 @@ public class BulkDownloadOutputHandler extends OutputHandler {
                                     state.group.getName()) + "_download.sh"));
                     }
                 } else {
+                    links.add(makeLink(request, state.group, OUTPUT_WGET));
                     links.add(makeLink(request, state.group, OUTPUT_CURL));
                 }
             }
@@ -187,8 +183,7 @@ public class BulkDownloadOutputHandler extends OutputHandler {
     public Result outputEntry(Request request, OutputType outputType,
                               Entry entry)
             throws Exception {
-        request.setReturnFilename(IOUtil.stripExtension(entry.getName())
-                                  + "_download.sh");
+        request.setReturnFilename("download.sh");
 
         return outputGroup(request, outputType, null, new ArrayList<Entry>(),
                            (List<Entry>) Misc.newList(entry));
@@ -217,16 +212,16 @@ public class BulkDownloadOutputHandler extends OutputHandler {
         if ( !request.defined(ARG_MAX)) {
             request.put(ARG_MAX, "20000");
         }
-        if ((group != null) && group.isDummy()) {
-            request.setReturnFilename("Search_Results_download.sh");
-        }
+        boolean wget = outputType.equals(OUTPUT_WGET);
+
+        request.setReturnFilename("download.sh");
 
         StringBuilder sb = new StringBuilder();
         subGroups.addAll(entries);
         boolean recurse   = request.get(ARG_RECURSE, true);
         boolean overwrite = request.get(ARG_OVERWRITE, false);
         process(request, sb, group, subGroups, recurse, overwrite,
-                new HashSet<String>());
+                new HashSet<String>(), wget);
 
         return new Result("", sb, getMimeType(OUTPUT_CURL));
     }
@@ -242,12 +237,13 @@ public class BulkDownloadOutputHandler extends OutputHandler {
      * @param recurse _more_
      * @param overwrite _more_
      * @param seen _more_
+     * @param wget _more_
      *
      * @throws Exception _more_
      */
     public void process(Request request, StringBuilder sb, Entry group,
                         List<Entry> entries, boolean recurse,
-                        boolean overwrite, HashSet<String> seen)
+                        boolean overwrite, HashSet<String> seen, boolean wget)
             throws Exception {
 
 
@@ -265,16 +261,16 @@ public class BulkDownloadOutputHandler extends OutputHandler {
             }
         }
 
-        CurlCommand command = new CurlCommand(request);
-
+        CurlCommand command = new CurlCommand(request, wget);
+        command.init(sb);
 
         if (request.get(ARG_INCLUDEPARENT, false)) {
             writeGroupScript(request, group, sb, command, outputPairs,
-                             includeGroupOutputs);
+                             includeGroupOutputs, wget);
         }
 
         process(request, sb, group, entries, recurse, overwrite, command,
-                outputPairs, includeGroupOutputs, seen);
+                outputPairs, includeGroupOutputs, seen, wget);
         if (request.get(ARG_INCLUDEPARENT, false)) {
             sb.append(cmd("cd .."));
         }
@@ -294,6 +290,7 @@ public class BulkDownloadOutputHandler extends OutputHandler {
      * @param outputPairs _more_
      * @param includeGroupOutputs _more_
      * @param seen _more_
+     * @param wget _more_
      *
      * @throws Exception _more_
      */
@@ -301,7 +298,8 @@ public class BulkDownloadOutputHandler extends OutputHandler {
                         List<Entry> entries, boolean recurse,
                         boolean overwrite, CurlCommand command,
                         List<List<String>> outputPairs,
-                        boolean includeGroupOutputs, HashSet<String> seen)
+                        boolean includeGroupOutputs, HashSet<String> seen,
+                        boolean wget)
             throws Exception {
 
         HashSet seenFiles = new HashSet();
@@ -316,8 +314,10 @@ public class BulkDownloadOutputHandler extends OutputHandler {
                 }
             }
             seen.add(entry.getId());
-            if (getEntryManager().isSynthEntry(entry.getId())) {
-                continue;
+            if ( !wget) {
+                if (getEntryManager().isSynthEntry(entry.getId())) {
+                    continue;
+                }
             }
             boolean wroteEntryXml = false;
 
@@ -332,10 +332,10 @@ public class BulkDownloadOutputHandler extends OutputHandler {
                 if (includeGroupOutputs || (subEntries.size() > 0)) {
                     wroteEntryXml = true;
                     writeGroupScript(request, entry, sb, command,
-                                     outputPairs, includeGroupOutputs);
+                                     outputPairs, includeGroupOutputs, wget);
                     process(request, sb, entry, subEntries, recurse,
                             overwrite, command, outputPairs,
-                            includeGroupOutputs, seen);
+                            includeGroupOutputs, seen, wget);
                     sb.append(cmd("cd .."));
                 }
             }
@@ -425,13 +425,14 @@ public class BulkDownloadOutputHandler extends OutputHandler {
      * @param command _more_
      * @param outputPairs _more_
      * @param includeGroupOutputs _more_
+     * @param wget _more_
      *
      * @throws Exception _more_
      */
     private void writeGroupScript(Request request, Entry entry,
                                   StringBuilder sb, CurlCommand command,
                                   List<List<String>> outputPairs,
-                                  boolean includeGroupOutputs)
+                                  boolean includeGroupOutputs, boolean wget)
             throws Exception {
         String dirName = IOUtil.cleanFileName(entry.getName());
         if (dirName.length() == 0) {
@@ -443,7 +444,9 @@ public class BulkDownloadOutputHandler extends OutputHandler {
         sb.append(cmd("cd " + qt(dirName)));
         if (includeGroupOutputs) {
             //Make a .placeholder file so we force the harvest of the directory
-            sb.append(cmd("touch " + qt(Harvester.FILE_PLACEHOLDER)));
+            if ( !wget) {
+                sb.append(cmd("touch " + qt(Harvester.FILE_PLACEHOLDER)));
+            }
             for (List<String> pair : outputPairs) {
                 String output = pair.get(0);
                 String suffix = output;
@@ -465,7 +468,6 @@ public class BulkDownloadOutputHandler extends OutputHandler {
                     message = "downloading metadata for " + dirName;
                 }
                 sb.append(cmd("echo " + qt(message)));
-
                 command.append(sb, destOutputFile, extraUrl);
             }
         }
@@ -547,9 +549,12 @@ public class BulkDownloadOutputHandler extends OutputHandler {
          * _more_
          *
          * @param request _more_
+         * @param wget _more_
          */
-        public CurlCommand(Request request) {
-            command   = request.getString(ARG_COMMAND, COMMAND_CURL);
+        public CurlCommand(Request request, boolean wget) {
+            command   = request.getString(ARG_COMMAND, wget
+                    ? COMMAND_WGET
+                    : COMMAND_CURL);
             args      = command.equals(COMMAND_WGET)
                         ? ""
                         : " --progress-bar -k ";
@@ -564,12 +569,21 @@ public class BulkDownloadOutputHandler extends OutputHandler {
          * _more_
          *
          * @param sb _more_
+         */
+        public void init(StringBuilder sb) {
+            sb.append(cmd("export DOWNLOAD_COMMAND=" + command));
+        }
+
+        /**
+         * _more_
+         *
+         * @param sb _more_
          * @param filename _more_
          * @param url _more_
          */
         public void append(StringBuilder sb, String filename, String url) {
-            sb.append(cmd(command + args + " " + outputArg + " "
-                          + qt(filename) + " " + qt(url)));
+            sb.append(cmd("${DOWNLOAD_COMMAND} " + args + " " + outputArg
+                          + " " + qt(filename) + " " + qt(url)));
         }
 
 

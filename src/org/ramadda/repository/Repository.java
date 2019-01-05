@@ -70,8 +70,6 @@ import org.ramadda.repository.util.ServerInfo;
 
 
 import org.ramadda.service.Service;
-import org.ramadda.util.sql.Clause;
-import org.ramadda.util.sql.SqlUtil;
 import org.ramadda.util.CategoryBuffer;
 import org.ramadda.util.GeoUtils;
 import org.ramadda.util.HtmlUtils;
@@ -84,6 +82,8 @@ import org.ramadda.util.PropertyProvider;
 import org.ramadda.util.StreamEater;
 import org.ramadda.util.TTLObject;
 import org.ramadda.util.Utils;
+import org.ramadda.util.sql.Clause;
+import org.ramadda.util.sql.SqlUtil;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -2970,6 +2970,10 @@ public class Repository extends RepositoryBase implements RequestHandler,
             }
 
             private boolean fileListingOK(Request request) {
+                if (true) {
+                    return true;
+                }
+
                 return request.getUser().getAdmin()
                        || ( !request.getUser().getAnonymous()
                             && getProperty(PROP_ENABLE_FILE_LISTING, false));
@@ -2997,8 +3001,11 @@ public class Repository extends RepositoryBase implements RequestHandler,
                     throw new AccessException("File listing not enabled",
                             request);
                 }
-                StringBuilder sb     = new StringBuilder();
-                boolean       didOne = false;
+                StringBuilder sb = new StringBuilder();
+                getPageHandler().entrySectionOpen(request, entry, sb,
+                        "File Listing");
+                boolean       didOne   = false;
+                StringBuilder forAdmin = new StringBuilder();
                 for (Entry child : entries) {
                     Resource resource = child.getResource();
                     if (resource == null) {
@@ -3007,15 +3014,27 @@ public class Repository extends RepositoryBase implements RequestHandler,
                     if ( !resource.isFile()) {
                         continue;
                     }
-                    sb.append(resource.getTheFile().toString());
+                    forAdmin.append(resource.getTheFile().toString());
+                    forAdmin.append(HtmlUtils.br());
+
+                    sb.append(
+                        child.getTypeHandler().getEntryResourceHref(
+                            request, child));
                     sb.append(HtmlUtils.br());
                     didOne = true;
+                }
+                if (request.getUser().getAdmin()) {
+                    sb.append("<hr>");
+                    sb.append(getPageHandler().msgHeader("File Paths"));
+                    sb.append(forAdmin);
                 }
                 if ( !didOne) {
                     sb.append(
                         getPageHandler().showDialogNote(
                             "No files available"));
                 }
+
+                getPageHandler().entrySectionClose(request, entry, sb);
 
                 return makeLinksResult(request, msg("File Listing"), sb,
                                        new State(entry));
@@ -5118,16 +5137,16 @@ public class Repository extends RepositoryBase implements RequestHandler,
      * @throws Exception _more_
      */
     public Result processProxy(Request request) throws Exception {
-        String url = request.getString(ARG_URL, (String)null);
-        if(url!=null) {
+        String url = request.getString(ARG_URL, (String) null);
+        if (url != null) {
             if ( !url.startsWith("http:") && !url.startsWith("https:")) {
                 throw new IllegalArgumentException("Bad URL:" + url);
             }
             //Check the whitelist
             boolean ok = false;
             for (String pattern :
-                     StringUtil.split(getProperty(PROP_PROXY_WHITELIST, ""), ",",
-                                      true, true)) {
+                    StringUtil.split(getProperty(PROP_PROXY_WHITELIST, ""),
+                                     ",", true, true)) {
                 //            System.err.println("pattern:" + pattern);
                 if (url.matches(pattern)) {
                     ok = true;
@@ -5136,28 +5155,30 @@ public class Repository extends RepositoryBase implements RequestHandler,
                 }
             }
             if ( !ok) {
-                throw new IllegalArgumentException("URL not in whitelist:" + url);
+                throw new IllegalArgumentException("URL not in whitelist:"
+                        + url);
             }
         }
-        if(url==null && request.defined(ARG_ENTRYID)) {
+        if ((url == null) && request.defined(ARG_ENTRYID)) {
             Entry entry = getEntryManager().getEntry(request);
-            if(entry == null) {
+            if (entry == null) {
                 throw new IllegalArgumentException("No Entry found:");
             }
-            if(!entry.getResource().isUrl()) {
+            if ( !entry.getResource().isUrl()) {
                 throw new IllegalArgumentException("Entry not a URL");
             }
             url = entry.getResource().getPath();
-            if(url.startsWith("//")) {
-                if(request.getAbsoluteUrl().startsWith("https:"))
+            if (url.startsWith("//")) {
+                if (request.getAbsoluteUrl().startsWith("https:")) {
                     url = "https:" + url;
-                else
+                } else {
                     url = "http:" + url;
+                }
             }
         }
 
 
-        if(url==null) {
+        if (url == null) {
             throw new IllegalArgumentException("No URL");
         }
 

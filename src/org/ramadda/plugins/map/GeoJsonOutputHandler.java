@@ -83,18 +83,16 @@ public class GeoJsonOutputHandler extends OutputHandler {
      * @throws Exception  problem creating links
      */
     public void getEntryLinks(Request request, State state, List<Link> links)
-            throws Exception {
-        for (Entry entry : state.getAllEntries()) {
-            if (entry.getTypeHandler().isType("geo_geojson")) {
-                links.add(makeLink(request, state.getEntry(),
-                                   OUTPUT_GEOJSONTABLE));
-                links.add(makeLink(request, state.getEntry(),
-                                   OUTPUT_GEOJSONCSV));
+        throws Exception {
+        if(state.getEntry()!=null && state.getEntry().getTypeHandler().isType("geo_geojson")) {
+            links.add(makeLink(request, state.getEntry(),
+                               OUTPUT_GEOJSONTABLE));
+            links.add(makeLink(request, state.getEntry(),
+                               OUTPUT_GEOJSONCSV));
 
-                break;
-            }
         }
     }
+
 
 
     /**

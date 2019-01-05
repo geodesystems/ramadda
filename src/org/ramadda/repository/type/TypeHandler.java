@@ -268,7 +268,7 @@ public class TypeHandler extends RepositoryManager {
 
 
 
-    /** _more_          */
+    /** _more_ */
     public static final String ALL = "-all-";
 
     /** _more_ */
@@ -2796,6 +2796,23 @@ public class TypeHandler extends RepositoryManager {
      */
     public Link getEntryDownloadLink(Request request, Entry entry)
             throws Exception {
+        return getEntryDownloadLink(request, entry, "Download File");
+    }
+
+    /**
+     * _more_
+     *
+     * @param request _more_
+     * @param entry _more_
+     * @param label _more_
+     *
+     * @return _more_
+     *
+     * @throws Exception _more_
+     */
+    public Link getEntryDownloadLink(Request request, Entry entry,
+                                     String label)
+            throws Exception {
         if ( !getAccessManager().canDownload(request, entry)) {
             /*
             if(!entry.isGroup() && !seenIt.contains(entry.getId())) {
@@ -2820,7 +2837,7 @@ public class TypeHandler extends RepositoryManager {
 
         return new Link(getEntryManager().getEntryResourceUrl(request,
                 entry), getRepository().getIconUrl(ICON_FETCH),
-                        msg("Download File") + size,
+                        msg(label) + size,
                         OutputType.TYPE_FILE | OutputType.TYPE_IMPORTANT);
     }
 
@@ -3232,6 +3249,45 @@ public class TypeHandler extends RepositoryManager {
     }
 
 
+    /**
+     * _more_
+     *
+     * @param request _more_
+     * @param entry _more_
+     *
+     * @return _more_
+     *
+     * @throws Exception _more_
+     */
+    public String getEntryResourceHref(Request request, Entry entry)
+            throws Exception {
+        if ( !getAccessManager().canDownload(request, entry)) {
+            /*
+            if(!entry.isGroup() && !seenIt.contains(entry.getId())) {
+                seenIt.add(entry.getId());
+                getLogManager().logInfoAndPrint("cannot download:" + entry);
+                Resource resource = entry.getResource();
+                getLogManager().logInfoAndPrint("\tresource:" + resource +
+                " type:" + resource.getType() +
+                " exists:" +  resource.getTheFile().exists() +
+                " the file:" + resource.getTheFile());
+
+            }
+            */
+            return null;
+        }
+        String size = " ("
+                      + formatFileLength(entry.getResource().getFileSize())
+                      + ")";
+
+        String fileTail = getStorageManager().getFileTail(entry);
+        fileTail = HtmlUtils.urlEncodeExceptSpace(fileTail);
+
+        return HtmlUtils.href(
+            getEntryManager().getEntryResourceUrl(request, entry),
+            HtmlUtils.img(getRepository().getIconUrl(ICON_FETCH)) + " "
+            + fileTail);
+    }
 
 
 

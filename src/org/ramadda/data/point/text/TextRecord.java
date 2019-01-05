@@ -236,8 +236,6 @@ public class TextRecord extends DataRecord {
      *
      * @return _more_
      *
-     * @throws IOException _more_
-     *
      * @throws Exception _more_
      */
     public String readNextLine(RecordIO recordIO) throws Exception {
@@ -257,14 +255,17 @@ public class TextRecord extends DataRecord {
                 }
             }
             if (currentLine == null) {
+                //                System.err.println("TextRecord: currentLine is null");
                 return null;
             }
             //Don't trim the line as there might be a tab delimiter at the end
             //            currentLine = currentLine.trim();
             if ( !lineOk(currentLine)) {
+                //                System.err.println("TextRecord: currentLine not ok:" + currentLine);
                 continue;
             }
 
+            //            System.err.println("TextRecord: currentLine:" + currentLine);
             return currentLine;
         }
     }
@@ -305,22 +306,22 @@ public class TextRecord extends DataRecord {
                 if (matchUpColumns && (rawOK == null)) {
                     List<String> toks = Utils.tokenizeColumns(line,
                                             delimiter);
+                    toks = ((TextFile) getRecordFile()).processTokens(this,
+                            toks, true);
                     rawOK = new boolean[toks.size()];
                     HashSet<String> seen = new HashSet<String>();
                     for (RecordField field : fields) {
                         seen.add(field.getName());
+                        seen.add(field.getLabel());
                     }
-                    //                    System.err.println("match up");
+                    System.err.println("seen:" + seen);
                     for (int idx = 0; idx < toks.size(); idx++) {
                         rawOK[idx] = seen.contains(toks.get(idx));
-                        //                        System.err.println(toks.get(idx) +" " + rawOK[idx]);
+                        System.err.println(toks.get(idx) + " " + rawOK[idx]);
                     }
 
                     continue;
                 }
-
-
-
                 if (isLineValidData(line)) {
                     break;
                 }
@@ -332,11 +333,14 @@ public class TextRecord extends DataRecord {
 
             if (delimiterIsSpace || (fixedWidth != null)) {
                 if ( !split(recordIO, line, fields)) {
+                    //                    System.err.println("Could not tokenize line:" + line);
                     //throw new IllegalArgumentException("Could not tokenize line:" + line);
                     return ReadStatus.SKIP;
                 }
             } else {
                 List<String> toks = Utils.tokenizeColumns(line, delimiter);
+                toks = ((TextFile) getRecordFile()).processTokens(this, toks,
+                        false);
                 if (bePickyAboutTokens && (toks.size() != tokens.length)) {
                     StringBuilder msg = new StringBuilder("Bad token count:"
                                             + tokens.length + " toks:"
@@ -361,9 +365,11 @@ public class TextRecord extends DataRecord {
                 }
                 int targetIdx = 0;
 
+                //                System.err.println("toks:" + toks);
                 for (int i = 0; (i < toks.size()) && (i < tokens.length);
                         i++) {
                     if ((rawOK != null) && !rawOK[i]) {
+                        //                        System.err.println(" raw not ok");
                         continue;
                     }
                     tokens[targetIdx++] = toks.get(i);

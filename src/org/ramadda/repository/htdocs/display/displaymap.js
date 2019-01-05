@@ -104,6 +104,13 @@ function RamaddaMapDisplay(displayManager, id, properties) {
                     } else  {
                         this.map.setMapDiv(this.getDomId(ID_MAP));
                     }
+
+                    if(!this.haveCalledUpdateUI) {
+                        var callback  = function() {
+                            _this.updateUI();
+                        }
+                        setTimeout(callback,1);
+                    }
 		},
                 createMap: function() {
                     var theDisplay  =this;
@@ -717,11 +724,13 @@ function RamaddaMapDisplay(displayManager, id, properties) {
                     return true;
                 },
                updateUI: function() {
+                    this.haveCalledUpdateUI = true;
                     SUPER.updateUI.call(this);
                     if(!this.getDisplayReady()) {
+                        console.log("not ready");
                         return;
                     }
-                    //                    console.log("map.updateUI:" + this.hasData());
+                    
                     if(!this.hasData()) {
                         return;
                     }
@@ -736,8 +745,10 @@ function RamaddaMapDisplay(displayManager, id, properties) {
                     var bounds = {};
                     var points = RecordUtil.getPoints(records, bounds);
                     if (isNaN(bounds.north)) {
+                        console.log("no bounds:" + bounds);
                         return;
                     }
+                    //console.log("bounds:" + bounds.north +" " + bounds.west +" " + bounds.south +" " + bounds.east);
                     this.initBounds = bounds;
                     this.setInitMapBounds(bounds.north, bounds.west, bounds.south,
                                           bounds.east);
@@ -745,6 +756,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
                         return;
                     }
                     if(points.length ==0) {
+                        console.log("points.legnth==0");
                         return;
                     }
 

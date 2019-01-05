@@ -23,9 +23,6 @@ import org.ramadda.repository.map.*;
 
 import org.ramadda.repository.metadata.*;
 import org.ramadda.repository.type.*;
-
-
-import org.ramadda.util.sql.SqlUtil;
 import org.ramadda.util.BufferMapList;
 import org.ramadda.util.CategoryBuffer;
 import org.ramadda.util.HtmlUtils;
@@ -36,6 +33,9 @@ import org.ramadda.util.Utils;
 
 import org.ramadda.util.WikiUtil;
 import org.ramadda.util.XmlUtils;
+
+
+import org.ramadda.util.sql.SqlUtil;
 
 import org.w3c.dom.Element;
 
@@ -886,23 +886,37 @@ public class OutputHandler extends RepositoryManager {
     public static void addUrlShowingForm(Appendable sb, String formId,
                                          String skipList)
             throws Exception {
-        addUrlShowingForm(sb, null, formId,  skipList, null);
+        addUrlShowingForm(sb, null, formId, skipList, null);
     }
 
-    public static void addUrlShowingForm(Appendable sb, Entry entry, String formId,
-                                          String skipList, String hook)
+    /**
+     * _more_
+     *
+     * @param sb _more_
+     * @param entry _more_
+     * @param formId _more_
+     * @param skipList _more_
+     * @param hook _more_
+     *
+     * @throws Exception _more_
+     */
+    public static void addUrlShowingForm(Appendable sb, Entry entry,
+                                         String formId, String skipList,
+                                         String hook)
             throws Exception {
         String outputId = HtmlUtils.getUniqueId("output_");
         HtmlUtils.div(sb, "", HtmlUtils.id(outputId));
         HtmlUtils.script(sb,
                          HtmlUtils.call("HtmlUtil.makeUrlShowingForm",
-                                        entry==null?"null":HtmlUtils.quote(entry.getId()),
-                                        HtmlUtils.quote(formId),
-                                        HtmlUtils.quote(outputId),
-                                        (skipList != null)
-                                        ? skipList
-                                        : "null",
-                                        ""+hook));
+                                        (entry == null)
+                                        ? "null"
+                                        : HtmlUtils.quote(
+                                            entry.getId()), HtmlUtils.quote(
+                                                formId), HtmlUtils.quote(
+                                                    outputId), (skipList
+                                                        != null)
+                ? skipList
+                : "null", "" + hook));
     }
 
 
@@ -1286,7 +1300,6 @@ public class OutputHandler extends RepositoryManager {
                     outputType.getLabel(), outputType.getId(), icon, 20));
         }
 
-
         ArrayList<HtmlUtils.Selector> tfos =
             new ArrayList<HtmlUtils.Selector>();
         //        selectSB.append(msgLabel("Apply action"));
@@ -1303,9 +1316,7 @@ public class OutputHandler extends RepositoryManager {
 
 
         StringBuilder selectSB  = new StringBuilder();
-
         StringBuilder actionsSB = new StringBuilder();
-
 
         actionsSB.append(
             HtmlUtils.select(

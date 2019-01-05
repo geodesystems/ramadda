@@ -3090,6 +3090,10 @@ public class HtmlUtils {
         }
 
 
+        public String toString() {
+            return this.label;
+        }
+
         /**
          * _more_
          *

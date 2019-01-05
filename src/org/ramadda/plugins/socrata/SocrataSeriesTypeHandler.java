@@ -20,6 +20,7 @@ package org.ramadda.plugins.socrata;
 import org.json.*;
 
 import org.ramadda.data.point.text.CsvFile;
+import org.ramadda.data.point.text.TextRecord;
 
 import org.ramadda.data.record.*;
 import org.ramadda.data.services.PointTypeHandler;
@@ -46,6 +47,7 @@ import ucar.unidata.xml.XmlUtil;
 
 import java.net.URL;
 
+import java.io.*;
 import java.text.SimpleDateFormat;
 
 import java.util.ArrayList;
@@ -67,7 +69,9 @@ public class SocrataSeriesTypeHandler extends PointTypeHandler {
 
     /** _more_ */
     public static final String URL_CSV =
-        "https://${hostname}/resource/${series_id}.csv?$limit=${limit}&$offset=${offset}";
+        //        "https://${hostname}/resource/${series_id}.csv?$limit=${limit}&$offset=${offset}";
+    "https://${hostname}/api/views/${series_id}/rows.csv?accessType=DOWNLOAD&limit=${limit}&offset=${offset}";
+
 
 
     /** _more_ */
@@ -128,9 +132,13 @@ public class SocrataSeriesTypeHandler extends PointTypeHandler {
                                          seriesId).replace("${limit}",
                                              "" + max).replace("${offset}",
                                                  "0");
-        //        System.err.println("Socrata data URL: " + url);
-        CsvFile file   = new CsvFile(url);
+        System.err.println("Socrata data URL: " + url);
+        SimpleSocrataFile file   = new SimpleSocrataFile(url);
         String  fields = (String) entry.getProperty("socrata.fields");
+        Integer locationIndex = (Integer)entry.getProperty("socrata.locationIndex");
+        if(locationIndex!=null)
+            file.locationIndex = locationIndex.intValue();
+        
         if (fields == null) {
             String metadataUrl = URL_METADATA.replace("${hostname}",
                                      repository).replace("${series_id}",
@@ -143,18 +151,23 @@ public class SocrataSeriesTypeHandler extends PointTypeHandler {
             List<String> types     = new ArrayList<String>();
             List<String> fieldList = new ArrayList<String>();
             List<String> names     = new ArrayList<String>();
+            Hashtable<String, Integer> indexMap = new Hashtable<String,
+                                                      Integer>();
+            int fieldCnt =0;
             for (int i = 0; i < cols.length(); i++) {
                 JSONObject col = cols.getJSONObject(i);
                 String     id  = col.get("fieldName").toString();
                 names.add(id);
+                if (!id.startsWith(":")) {
+                    indexMap.put(id,new Integer(col.optInt("position",-1)));
+                    fieldCnt++;
+                }
             }
-
-            Hashtable<String, Integer> indexMap = new Hashtable<String,
-                                                      Integer>();
-
+            System.err.println("indexMap:" + indexMap);
+            //RecordField []fieldArray = new RecordField[fieldCnt];
 
 
-
+            /*
             int idx = 0;
             idx = 0;
             for (String name : (List<String>) Misc.sort(names)) {
@@ -165,7 +178,9 @@ public class SocrataSeriesTypeHandler extends PointTypeHandler {
                 indexMap.put(name, new Integer(idx));
                 idx++;
             }
+            */
 
+            boolean didLocation = false;
             for (int i = 0; i < cols.length(); i++) {
                 JSONObject col = cols.getJSONObject(i);
                 String     id  = col.get("fieldName").toString();
@@ -173,10 +188,10 @@ public class SocrataSeriesTypeHandler extends PointTypeHandler {
                     continue;
                 }
 
-                String name = col.get("name").toString();
+                String name = col.get("name").toString().trim();
                 name = name.replaceAll(",", " ");
                 name = name.replaceAll("\"", "'");
-                Integer index = indexMap.get(id);
+
 
                 String  type  = col.get("dataTypeName").toString();
                 if (type.equals("meta_data")) {
@@ -184,12 +199,18 @@ public class SocrataSeriesTypeHandler extends PointTypeHandler {
                 }
                 types.add(type);
 
-                StringBuilder sb = new StringBuilder();
-                if (false && type.equals("location")) {
-                    //not now
-                    sb.append(
-                        "latitude[label=Latitude],longitude[label=Longitude]");
+                Integer index = indexMap.get(id);
+                System.err.println(id +" index=" + index);
+                if (index!=null && !didLocation && type.equals("location")) {
+                    didLocation= true;
+                    file.locationIndex=index.intValue()-1;
+                    entry.putProperty("socrata.locationIndex", new Integer(file.locationIndex));
+                    System.err.println("setting location index:" +file.locationIndex);
+                    Utils.add(fieldList,"location[label=Location type=string]",
+                              "latitude[label=Latitude type=double islatitude=true]",
+                              "longitude[label=Longitude type=double islongitude=true]");
                 } else {
+                    StringBuilder sb = new StringBuilder();
                     sb.append(id);
                     sb.append("[");
                     sb.append(file.attrLabel(name));
@@ -217,19 +238,15 @@ public class SocrataSeriesTypeHandler extends PointTypeHandler {
                         sb.append(file.attrType(file.TYPE_STRING));
                     }
                     sb.append("]");
+                    fieldList.add(sb.toString());
                 }
-                //                System.err.println("Field:" + sb);
-                fieldList.add(sb.toString());
+
             }
-            //            System.err.println("Fields:" + fieldList);
+            System.err.println("Fields:" + fieldList);
             fields = file.makeFields(fieldList);
             entry.putProperty("socrata.fields", fields);
         }
-
-        //fieldToIndex
-
-
-        //        System.err.println("Fields:" + fields);
+        System.err.println("Fields:" + fields);
         file.putProperty("fields", fields);
         file.putProperty("picky", "false");
         //        file.putProperty("skiplines", "1");
@@ -243,5 +260,64 @@ public class SocrataSeriesTypeHandler extends PointTypeHandler {
     }
 
 
+    private static class SimpleSocrataFile extends CsvFile {
+        int locationIndex = -1;
+
+        /**
+         * ctor
+         *
+         * @param filename _more_
+         *
+         * @throws IOException _more_
+         */
+        public SimpleSocrataFile(String filename) throws IOException {
+            super(filename);
+        }
+
+        @Override
+        public List<String> processTokens(TextRecord record, List<String> toks,boolean header) {
+            if(locationIndex<0) return super.processTokens(record,toks,header);
+            List<String> newToks = new ArrayList<String>();
+            for(int i=0;i<toks.size();i++) {
+                if(i!=locationIndex) {
+                    newToks.add(toks.get(i));
+                } else  {
+                    if(header) {
+                        newToks.add("location");
+                        newToks.add("latitude");
+                        newToks.add("longitude");
+                        continue;
+                    } 
+
+                    String tok = toks.get(i);
+                    int index = tok.indexOf("(");
+                    if(index<0) {
+                        newToks.add(tok);
+                        newToks.add("NaN");
+                        newToks.add("NaN");
+                        //                        System.err.println("bad index1:" + tok);
+                        continue;
+                    }
+                    String location = tok.substring(0,index-1).trim();
+                    newToks.add(location);
+                    int index2 = tok.indexOf(",",index);
+                    if(index<0) {
+                        newToks.add("NaN");
+                        newToks.add("NaN");
+                        //                        System.err.println("bad index2:" + tok);
+                        continue;
+                    }
+                    int index3 = tok.indexOf(")",index2);
+                    String lat = tok.substring(index+1, index2-1);
+                    String lon = tok.substring(index2+1, index3-1);
+                    newToks.add(lat);
+                    newToks.add(lon);
+                }
+            }
+            System.err.println("new toks:" + newToks);
+            return newToks;
+        }
+
+    }
 
 }
