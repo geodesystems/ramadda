@@ -284,7 +284,7 @@ function initMapFunctions(theMap) {
                         }
                     }
                     */
-                    if(feature.text) {
+                    if(feature.text && !_this.fixedText) {
                         this.hideFeatureText(feature);
                     }
                     return;
@@ -295,7 +295,7 @@ function initMapFunctions(theMap) {
                     layer.drawFeature(feature,feature.style ||"default"); 
                 }
                 if(this.displayDiv) {
-                    if(this.displayedFeature == feature) {
+                    if(this.displayedFeature == feature  && !_this.fixedText) {
                         $("#" + this.displayDiv).html("");
                     }
                 }
@@ -678,6 +678,7 @@ function initMapFunctions(theMap) {
                         loadCallback(_this, layer);
                     }
                     if(layer.features.length==1 && _this.displayDiv) {
+                        _this.fixedText = true;
                         $("#" + _this.displayDiv).html(_this.getFeatureText(layer, layer.features[0]));
                     }
                 }});
