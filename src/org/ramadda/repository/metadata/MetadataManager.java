@@ -1177,7 +1177,8 @@ public class MetadataManager extends RepositoryManager {
                         }
                     }
                     parent.setMetadata(null);
-
+                    parent.getTypeHandler().metadataChanged(request, parent);
+                    
                     return new Result(request.makeUrl(URL_METADATA_FORM,
                             ARG_ENTRYID, parent.getId(), ARG_MESSAGE,
                             cnt + " "
@@ -1195,6 +1196,7 @@ public class MetadataManager extends RepositoryManager {
                 }
             }
             entry.setMetadata(null);
+            entry.getTypeHandler().metadataChanged(request, entry);
             Misc.run(getRepository(), "checkModifiedEntries",
                      Misc.newList(entry));
 

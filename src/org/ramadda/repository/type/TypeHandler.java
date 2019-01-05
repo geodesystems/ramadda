@@ -1040,6 +1040,9 @@ public class TypeHandler extends RepositoryManager {
     public void childEntryChanged(Entry entry, boolean isNew)
             throws Exception {}
 
+    public void metadataChanged(Request request, Entry entry)  throws Exception {
+    }
+
     /**
      * _more_
      *

@@ -144,6 +144,12 @@ public class ShapefileTypeHandler extends GenericTypeHandler implements WikiCons
         }
     }
 
+@Override
+    public void metadataChanged(Request request, Entry entry)  throws Exception {
+        super.metadataChanged(request, entry) ;
+        getEntryManager().updateEntry(request, entry);
+    }
+
     /**
      * _more_
      *
