@@ -48,10 +48,10 @@ public class GeoJsonOutputHandler extends OutputHandler {
 
     /** Map output type */
     public static final OutputType OUTPUT_GEOJSONTABLE =
-        new OutputType("GeoJson TABLE", "geojsontable", OutputType.TYPE_VIEW,
+        new OutputType("Map TABLE", "geojsontable", OutputType.TYPE_VIEW,
                        "", ICON_TABLE);
 
-    /** _more_          */
+    /** Map output type */
     public static final OutputType OUTPUT_GEOJSONCSV =
         new OutputType("GeoJson CSV", "geojsoncsv", OutputType.TYPE_FILE, "",
                        ICON_CSV);
@@ -133,7 +133,7 @@ public class GeoJsonOutputHandler extends OutputHandler {
         csvUtil.run(null);
         sb = new StringBuilder();
         getPageHandler().entrySectionOpen(request, entry, sb,
-                                          "GeoJson Table");
+                                          "Map Table");
         sb.append("\n");
         sb.append(new String(bos2.toByteArray()));
         sb.append("\n");

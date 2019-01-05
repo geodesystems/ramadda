@@ -637,30 +637,10 @@ public class Json {
                 pw.println("location");
             }
 
-
+            Bounds bounds = getFeatureBounds(feature, null);
             JSONArray geom     = readArray(feature, "geometry.coordinates");
             String    type     = readValue(feature, "geometry.type", "NULL");
-            double[]  centroid = null;
-            if (type.equals("MultiPolygon") || type.equals("Polygon")) {
-                JSONArray points = geom.getJSONArray(0);
-                if (type.equals("MultiPolygon")) {
-                    points = points.getJSONArray(0);
-                }
-
-                List<double[]> pts = new ArrayList<double[]>();
-                for (int j = 0; j < points.length(); j++) {
-                    JSONArray tuple = points.getJSONArray(j);
-                    double    v0    = tuple.getDouble(0);
-                    double    v1    = tuple.getDouble(1);
-                    pts.add(new double[] { v0, v1 });
-                }
-                //For now don't use the centroid as its giving us bad results
-                //                centroid = Utils.calculateCentroid(pts);
-                centroid = pts.get(0);
-            } else {
-                centroid = new double[] { geom.getDouble(0),
-                                          geom.getDouble(1) };
-            }
+            double[]  centroid = bounds.getCenter();
             for (String name : names) {
                 String value = props.optString(name, "");
                 if (value.indexOf(",") >= 0) {
@@ -725,35 +705,39 @@ public class Json {
         for (int i = 0; i < features.length(); i++) {
             //            if((i%100)==0) System.err.println("cnt:" + i);
             JSONObject feature = features.getJSONObject(i);
-            JSONObject props   = feature.getJSONObject("properties");
-            JSONArray  coords1 = readArray(feature, "geometry.coordinates");
-            String     type    = readValue(feature, "geometry.type", "NULL");
-            if (type.equals("Polygon")) {
-                for (int idx1 = 0; idx1 < coords1.length(); idx1++) {
-                    JSONArray coords2 = coords1.getJSONArray(idx1);
-                    bounds = getBounds(coords2, bounds);
-                }
-            } else if (type.equals("MultiPolygon")) {
-                for (int idx1 = 0; idx1 < coords1.length(); idx1++) {
-                    JSONArray coords2 = coords1.getJSONArray(idx1);
-                    for (int idx2 = 0; idx2 < coords2.length(); idx2++) {
-                        JSONArray coords3 = coords2.getJSONArray(idx2);
-                        bounds = getBounds(coords3, bounds);
-                    }
-                }
-            } else if (type.equals("LineString")) {
-                bounds = getBounds(coords1, bounds);
-            } else {
-                double lon = coords1.getDouble(0);
-                double lat = coords1.getDouble(1);
-                if (bounds == null) {
-                    bounds = new Bounds(lat, lon, lat, lon);
-                } else {
-                    bounds.expand(lat, lon);
-                }
-            }
+            bounds = getFeatureBounds(feature, bounds);
         }
 
+        return bounds;
+    }
+
+    public static Bounds getFeatureBounds(JSONObject feature, Bounds bounds) throws Exception {
+        JSONArray  coords1 = readArray(feature, "geometry.coordinates");
+        String     type    = readValue(feature, "geometry.type", "NULL");
+        if (type.equals("Polygon") || type.equals("MultiLineString")) {
+            for (int idx1 = 0; idx1 < coords1.length(); idx1++) {
+                JSONArray coords2 = coords1.getJSONArray(idx1);
+                bounds = getBounds(coords2, bounds);
+            }
+        } else if (type.equals("MultiPolygon")) {
+            for (int idx1 = 0; idx1 < coords1.length(); idx1++) {
+                JSONArray coords2 = coords1.getJSONArray(idx1);
+                for (int idx2 = 0; idx2 < coords2.length(); idx2++) {
+                    JSONArray coords3 = coords2.getJSONArray(idx2);
+                    bounds = getBounds(coords3, bounds);
+                }
+            }
+        } else if (type.equals("LineString")) {
+            bounds = getBounds(coords1, bounds);
+        } else {
+            double lon = coords1.getDouble(0);
+            double lat = coords1.getDouble(1);
+            if (bounds == null) {
+                bounds = new Bounds(lat, lon, lat, lon);
+            } else {
+                bounds.expand(lat, lon);
+            }
+        }
         return bounds;
     }
 

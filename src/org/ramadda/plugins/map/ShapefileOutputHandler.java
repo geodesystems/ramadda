@@ -87,12 +87,12 @@ public class ShapefileOutputHandler extends OutputHandler implements WikiConstan
 
     /** _more_ */
     public static final OutputType OUTPUT_FIELDS_LIST =
-        new OutputType("Shapefile Fields", "shapefile.fields_list",
+        new OutputType("Map Fields", "shapefile.fields_list",
                        OutputType.TYPE_VIEW, "", ICON_TABLE);
 
     /** _more_ */
     public static final OutputType OUTPUT_FIELDS_TABLE =
-        new OutputType("Shapefile Table", "shapefile.fields_table",
+        new OutputType("Map Table", "shapefile.fields_table",
                        OutputType.TYPE_VIEW, "", ICON_TABLE);
 
 
@@ -122,8 +122,9 @@ public class ShapefileOutputHandler extends OutputHandler implements WikiConstan
         addType(OUTPUT_KML);
         addType(OUTPUT_GEOJSON);
         addType(OUTPUT_CSV);
-        addType(OUTPUT_FIELDS_LIST);
         addType(OUTPUT_FIELDS_TABLE);
+        addType(OUTPUT_FIELDS_LIST);
+
     }
 
 
@@ -141,8 +142,8 @@ public class ShapefileOutputHandler extends OutputHandler implements WikiConstan
             throws Exception {
         if ((state.entry != null)
                 && state.entry.getTypeHandler().isType("geo_shapefile")) {
-            links.add(makeLink(request, state.entry, OUTPUT_FIELDS_LIST));
             links.add(makeLink(request, state.entry, OUTPUT_FIELDS_TABLE));
+            links.add(makeLink(request, state.entry, OUTPUT_FIELDS_LIST));
             links.add(makeLink(request, state.entry, OUTPUT_KML));
             links.add(makeLink(request, state.entry, OUTPUT_GEOJSON));
             links.add(makeLink(request, state.entry, OUTPUT_CSV));
@@ -175,7 +176,6 @@ public class ShapefileOutputHandler extends OutputHandler implements WikiConstan
         } else if (outputType.equals(OUTPUT_FIELDS_TABLE)) {
             return outputFields(request, entry, true, OUTPUT_FIELDS_TABLE);
         }
-
         return null;
     }
 

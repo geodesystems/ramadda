@@ -140,6 +140,7 @@ function RepositoryMap(mapId, params) {
                 selectorBox: null,
                 selectorMarker: null,
                 listeners: [],
+                fixedText:false,
                 initialLayers: [],
                 imageLayers:{
                 },
@@ -267,7 +268,7 @@ function initMapFunctions(theMap) {
                                 $("#" + _this.displayDiv).html(_this.getFeatureText(layer, feature));
                             }
                         }
-                        setTimeout(callback,1000);
+                        setTimeout(callback,500);
                     }
 
                 }
@@ -284,7 +285,7 @@ function initMapFunctions(theMap) {
                         }
                     }
                     */
-                    if(feature.text && !_this.fixedText) {
+                    if(feature.text && !this.fixedText) {
                         this.hideFeatureText(feature);
                     }
                     return;
@@ -295,7 +296,7 @@ function initMapFunctions(theMap) {
                     layer.drawFeature(feature,feature.style ||"default"); 
                 }
                 if(this.displayDiv) {
-                    if(this.displayedFeature == feature  && !_this.fixedText) {
+                    if(this.displayedFeature == feature  && !this.fixedText) {
                         $("#" + this.displayDiv).html("");
                     }
                 }

@@ -57,6 +57,12 @@ public class Bounds {
 
 
 
+    public double[] getCenter() {
+        return new double[]{
+            south+(north-south)/2,
+            west+(east-west)/2};
+    }
+
     /**
      * _more_
      *
