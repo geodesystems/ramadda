@@ -314,7 +314,6 @@ public class SocrataSeriesTypeHandler extends PointTypeHandler {
                     newToks.add(lon);
                 }
             }
-            System.err.println("new toks:" + newToks);
             return newToks;
         }
 

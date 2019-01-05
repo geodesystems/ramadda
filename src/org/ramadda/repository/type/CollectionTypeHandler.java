@@ -682,7 +682,7 @@ public class CollectionTypeHandler extends ExtensibleGroupTypeHandler {
         BulkDownloadOutputHandler bdoh = getBulkDownloadOutputHandler();
         bdoh.process(request, sb, getEntryManager().getDummyGroup(),
                      processSearch(request, entry, true), false, true,
-                     new HashSet<String>());
+                     new HashSet<String>(),false);
 
         return new Result(
             "", sb, bdoh.getMimeType(BulkDownloadOutputHandler.OUTPUT_CURL));
