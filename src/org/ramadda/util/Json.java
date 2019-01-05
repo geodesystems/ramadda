@@ -616,20 +616,18 @@ public class Json {
         }
         JSONObject   obj      = new JSONObject(json.toString());
         JSONArray    features = readArray(obj, "features");
-        List<String> names    = null;
+        //        List<String> names    = null;
+        String[] names = null;
         for (int i = 0; i < features.length(); i++) {
             //            if((i%100)==0) System.err.println("cnt:" + i);
             JSONObject feature = features.getJSONObject(i);
             JSONObject props   = feature.getJSONObject("properties");
             if (names == null) {
-                names = new ArrayList<String>();
-                String[] allNames = JSONObject.getNames(props);
-                Arrays.sort(allNames);
-                for (String name : allNames) {
+                names = JSONObject.getNames(props);
+                for (String name : names) {
                     if ((cols != null) && !cols.contains(name)) {
                         continue;
                     }
-                    names.add(name);
                     pw.print(name);
                     pw.print(",");
                 }

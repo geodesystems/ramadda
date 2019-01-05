@@ -48,7 +48,7 @@ public class GeoJsonOutputHandler extends OutputHandler {
 
     /** Map output type */
     public static final OutputType OUTPUT_GEOJSONTABLE =
-        new OutputType("Map TABLE", "geojsontable", OutputType.TYPE_VIEW,
+        new OutputType("Map Table", "geojsontable", OutputType.TYPE_VIEW,
                        "", ICON_TABLE);
 
     /** Map output type */
