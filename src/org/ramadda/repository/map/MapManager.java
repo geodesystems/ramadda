@@ -906,9 +906,9 @@ public class MapManager extends RepositoryManager implements WikiConstants {
             throws Exception {
 
         getRepository().getWikiManager().addDisplayImports(request, sb);
-        HtmlUtils.open(sb, HtmlUtils.TAG_DIV, HtmlUtils.cssClass("row"));
         int weight = 12;
         if (includeList || (extraNav.length() > 0)) {
+            HtmlUtils.open(sb, HtmlUtils.TAG_DIV, HtmlUtils.cssClass("row"));
             HtmlUtils.open(sb, HtmlUtils.TAG_DIV,
                            HtmlUtils.cssClass("col-md-3"));
             weight -= 3;
@@ -947,12 +947,15 @@ public class MapManager extends RepositoryManager implements WikiConstants {
             sb.append(HtmlUtils.close(HtmlUtils.TAG_DIV));
             //            sb.append("</td>");
             //            sb.append("<td align=left>");
+            HtmlUtils.open(sb, HtmlUtils.TAG_DIV,
+                           HtmlUtils.cssClass("col-md-" + weight));
         }
-        HtmlUtils.open(sb, HtmlUtils.TAG_DIV,
-                       HtmlUtils.cssClass("col-md-" + weight));
+
         sb.append(mapHtml);
-        sb.append(HtmlUtils.close(HtmlUtils.TAG_DIV));
-        sb.append(HtmlUtils.close(HtmlUtils.TAG_DIV));
+        if(weight!=12) {
+            sb.append(HtmlUtils.close(HtmlUtils.TAG_DIV));
+            sb.append(HtmlUtils.close(HtmlUtils.TAG_DIV));
+        }
         if (includeList) {
             //            sb.append("</td></tr></table>");
         }
