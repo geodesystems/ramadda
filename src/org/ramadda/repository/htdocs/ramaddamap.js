@@ -678,7 +678,7 @@ function initMapFunctions(theMap) {
                         loadCallback(_this, layer);
                     }
                     console.log(layer.features.length);
-                    if(layer.features.length==1) {
+                    if(layer.features.length==1 && _this.displayDiv) {
                         $("#" + _this.displayDiv).html(_this.getFeatureText(layer, layer.features[0]));
                     }
                 }});
