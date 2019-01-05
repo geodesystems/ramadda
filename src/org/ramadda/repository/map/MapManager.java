@@ -1202,6 +1202,9 @@ public class MapManager extends RepositoryManager implements WikiConstants {
         if (request.get("mapsubset", false)) {
             forceBounds = false;
         }
+        if (selectFields != null) {
+            forceBounds = false;
+        }
 
         boolean hidden = Misc.equals(props.get("mapHidden"), "true");
         MapInfo map = createMap(request, width, height, false, hidden, null);
