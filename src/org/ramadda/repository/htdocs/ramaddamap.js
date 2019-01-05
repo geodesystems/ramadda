@@ -677,6 +677,10 @@ function initMapFunctions(theMap) {
                     if(loadCallback) {
                         loadCallback(_this, layer);
                     }
+                    console.log(layer.features.length);
+                    if(layer.features.length==1) {
+                        $("#" + _this.displayDiv).html(_this.getFeatureText(layer, layer.features[0]));
+                    }
                 }});
         this.addLayer(layer);
         this.addSelectCallback(layer, canSelect,selectCallback, unselectCallback);
