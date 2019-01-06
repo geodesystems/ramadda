@@ -632,7 +632,7 @@ function initMapFunctions(theMap) {
             this.getMap().zoomToExtent(bounds);
             this.getMap().setCenter(bounds.getCenterLonLat());
         } else {
-            this.centerOnMarkers(null);
+            this.centerOnMarkers(theMap.dfltBounds);
         }
     }
 
