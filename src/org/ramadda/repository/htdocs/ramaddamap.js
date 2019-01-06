@@ -562,9 +562,11 @@ function initMapFunctions(theMap) {
                 var matches = false;
                 for (var attr in p) {
                     var value = "";
-                    if (typeof p[attr] == 'object' || typeof p[attr] == 'Object') {
+                    if ((typeof p[attr] == 'object') || (typeof p[attr] == 'Object')) {
                         var o = p[attr];
-                        value =  ""+o["value"];
+                        if(o) {
+                            value =  ""+o["value"];
+                        }
                     } else {
                         value =   ""+p[attr];
                     }
