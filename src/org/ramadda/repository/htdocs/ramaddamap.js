@@ -234,8 +234,10 @@ function initMapFunctions(theMap) {
                     $("#"+ this.searchDiv).html(search);
                     this.searchMsg = $("#" + this.searchDiv+"_message");
                     var searchInput = $("#"+ this.searchDiv+"_input");
-                    searchInput.change(function() {
-                            _this.searchFor(searchInput.val());
+                    searchInput.keypress(function(event) {
+                            if ( event.which == 13 ) {
+                                _this.searchFor(searchInput.val());
+                            }
                         });
                 }
                 
@@ -583,6 +585,7 @@ function initMapFunctions(theMap) {
         } else {
             this.searchMsg.html("");
         }
+
         for(a in this.loadedLayers) {
             var matchedFeature = null;
             var matchedCnt = 0;

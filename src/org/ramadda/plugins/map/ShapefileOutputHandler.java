@@ -810,7 +810,7 @@ public class ShapefileOutputHandler extends OutputHandler implements WikiConstan
 
         if (table) {
             sb.append("<table border=1>");
-            sb.append("<tr>");
+            sb.append("<tr valign=top>");
             sb.append(HtmlUtils.td(HtmlUtils.b("Field&nbsp;#"),
                                    HtmlUtils.style("padding:5px;")));
             for (DbaseDataWrapper dbd : fieldDatum) {
