@@ -286,13 +286,14 @@ public class MapManager extends RepositoryManager implements WikiConstants {
             mapInfo.setStyle(style);
         }
         mapInfo.setMapHidden(hidden);
-
+        String showSearch = (String)props.get("showSearch");
+        if(showSearch!=null) {
+            mapInfo.addProperty("showSearch",""+showSearch.equals("true"));
+        }
         if (mapLayers != null) {
             mapInfo.addProperty("mapLayers",
                                 StringUtil.split(mapLayers, ";", true, true));
         }
-
-
 
         for (Enumeration keys = props.keys(); keys.hasMoreElements(); ) {
             String key   = (String) keys.nextElement();
@@ -1196,6 +1197,7 @@ public class MapManager extends RepositoryManager implements WikiConstants {
         String viewBounds = Utils.getProperty(props, ATTR_VIEWBOUNDS,
                                 selectBounds);
 
+
         if ((viewBounds != null) && viewBounds.equals("<bounds>")) {
             viewBounds = mainEntry.getBoundsString();
         }
@@ -1224,6 +1226,11 @@ public class MapManager extends RepositoryManager implements WikiConstants {
         if (mapProps != null) {
             map.getMapProps().putAll(mapProps);
         }
+        String showSearch = (String)props.get("showSearch");
+        if(showSearch!=null) {
+            map.getMapProps().put("showSearch",""+showSearch.equals("true"));
+        }
+
         Hashtable theProps = Utils.makeMap(PROP_DETAILED, "" + details,
                                            PROP_SCREENBIGRECTS, "true");
 

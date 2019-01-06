@@ -64,7 +64,7 @@
 {{description wikify="true"}}
 +row
 +col-md-8
-{{map width="100%" height="450" viewBounds="<bounds>" details="true" displayDiv="mapDisplay"}}
+{{map width="100%" height="450" viewBounds="<bounds>" details="true" displayDiv="mapDisplay" showSearch="true" }}
 -col
 +col-md-4
 <div id="mapDisplay" style="max-height:450px; overflow-y:auto;"></div>
@@ -149,7 +149,7 @@
 {{description wikify="true"}}
 +row
 +col-md-8
-{{map width="100%" height="450" viewBounds="<bounds>" details="true" displayDiv="mapDisplay"}}
+{{map width="100%" height="450" viewBounds="<bounds>" details="true" displayDiv="mapDisplay" showSearch="true" }}
 -col
 +col-md-4
 <div id="mapDisplay" style="max-height:450px; overflow-y:auto;"></div>

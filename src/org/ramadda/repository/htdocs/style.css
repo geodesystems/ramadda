@@ -163,6 +163,10 @@ h2 a,   h2 a:visited, h2 a:link  {color: black;}
 }
 
 
+.ramadda-map-search {
+  margin-bottom:2px;
+}
+
 .ramadda-message {
   display: inline-block;
   border-radius: 4px;

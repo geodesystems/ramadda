@@ -530,7 +530,6 @@ public class ShapefileOutputHandler extends OutputHandler implements WikiConstan
             Result result = new Result(new FileInputStream(file),
                                        KmlOutputHandler.MIME_KML);
             result.setReturnFilename(returnFile);
-
             return result;
         }
 
@@ -570,6 +569,7 @@ public class ShapefileOutputHandler extends OutputHandler implements WikiConstan
             }
         }
 
+        //        System.err.println("fieldValues:" + fieldValues);
         Element      root = fc.toKml(forMap, bounds, fieldValues);
         long         t2   = System.currentTimeMillis();
         StringBuffer sb   = new StringBuffer(XmlUtil.XML_HEADER);

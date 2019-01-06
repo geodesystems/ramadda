@@ -368,6 +368,9 @@ public class MapInfo {
             HtmlUtils.div("&nbsp;",
                           HtmlUtils.id("ramadda-map-latlonreadout")
                           + HtmlUtils.style("font-style:italic; " + swidth));
+        HtmlUtils.div(result, "",
+                      HtmlUtils.cssClass("ramadda-map-search")+
+                      HtmlUtils.id(mapVarName+"_search"));
 
         HtmlUtils.div(result, contents,
                       HtmlUtils.cssClass("ramadda-map")

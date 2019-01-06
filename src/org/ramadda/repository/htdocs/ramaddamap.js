@@ -129,9 +129,11 @@ function RepositoryMap(mapId, params) {
                 layer: null,
                 markers: null,
                 vectors: null,
+                loadedLayers:[],
                 boxes: null,
                 kmlLayer: null,
                 kmlLayerName: null,
+                showSearch: false,
                 geojsonlLayer: null,
                 geojsonLayerName: null,
                 vectorLayers:[],
@@ -203,25 +205,10 @@ function RepositoryMap(mapId, params) {
                 }
             }
         };
-        this.map = new OpenLayers.Map(this.mapDivId,options);
-        if(this.mapHidden) {
-            //A hack when we are hidden
-            this.map.size = new OpenLayers.Size(1,1);
-        }
 
-
-        this.addBaseLayers();
-        if(this.kmlLayer) {
-            var url = ramaddaBaseUrl + "/entry/show?output=shapefile.kml&entryid=" + this.kmlLayer;
-            this.addKMLLayer(this.kmlLayerName,url,false,null,null,null,null);
-        }
-        if(this.geojsonLayer) {
-            var url = getRamadda().getEntryDownloadUrl(this.geojsonLayer);
-            this.addGeoJsonLayer(this.geojsonLayerName,url,false,null,null,null,null);
-        }
-
-
-    jQuery(document).ready(function($) {
+        this.mapOptions = options;
+        theMap.finishMapInit();
+        jQuery(document).ready(function($) {
             if(theMap.getMap()) {
                 theMap.getMap().updateSize();
             }
@@ -231,6 +218,35 @@ function RepositoryMap(mapId, params) {
 
 function initMapFunctions(theMap) {
     RamaddaUtil.defineMembers(theMap,  {
+            finishMapInit: function() {
+                var _this = this;
+                if(this.showSearch) {
+                    this.searchDiv = this.mapDivId+"_search";
+                    var search = "<input placeholder=\"Search\" id=\"" +  this.searchDiv+"_input" +"\" size=40> <span  id=\"" +  this.searchDiv+"_message\"></span>";
+                    $("#"+ this.searchDiv).html(search);
+                    this.searchMsg = $("#" + this.searchDiv+"_message");
+                    var searchInput = $("#"+ this.searchDiv+"_input");
+                    searchInput.change(function() {
+                            _this.searchFor(searchInput.val());
+                        });
+                }
+                
+                this.map = new OpenLayers.Map(this.mapDivId,this.mapOptions);
+                if(this.mapHidden) {
+                    //A hack when we are hidden
+                    this.map.size = new OpenLayers.Size(1,1);
+                }
+
+                this.addBaseLayers();
+                if(this.kmlLayer) {
+                    var url = ramaddaBaseUrl + "/entry/show?output=shapefile.kml&entryid=" + this.kmlLayer;
+                    this.addKMLLayer(this.kmlLayerName,url,false,null,null,null,null);
+                }
+                if(this.geojsonLayer) {
+                    var url = getRamadda().getEntryDownloadUrl(this.geojsonLayer);
+                    this.addGeoJsonLayer(this.geojsonLayerName,url,false,null,null,null,null);
+                }
+            },
             setMapDiv: function(divid) {
                 this.mapHidden  = false;
                 this.mapDivId = divid;
@@ -513,6 +529,89 @@ function initMapFunctions(theMap) {
         return map;
     }
 
+    theMap.searchFor = function(searchFor) {
+        var _this  = this;
+        if(searchFor == "") searchFor = null;
+        var bounds=null;
+        var toks = null;
+        var equals = false;
+        if(searchFor) {
+            searchFor = searchFor.toLowerCase();
+            if(searchFor.startsWith("=")) {
+                searchFor = searchFor.substring(1);
+                equals= true;
+            }
+            toks = searchFor.split("|");
+        }
+        if(!searchFor) {
+            this.searchMsg.html("");
+        }
+        for(a in this.loadedLayers) {
+            var matchedFeature = null;
+            var matchedCnt = 0;
+            var layer = this.loadedLayers[a];
+            for(f in layer.features) {
+                var feature = layer.features[f];
+                var style = feature.style||feature.originalStyle;
+                if(!style) style=feature.style = {};
+                if(!searchFor) {
+                    style.display = 'inline';
+                    continue;
+                }
+                var p = feature.attributes;
+                var matches = false;
+                for (var attr in p) {
+                    var value = "";
+                    if (typeof p[attr] == 'object' || typeof p[attr] == 'Object') {
+                        var o = p[attr];
+                        value =  ""+o["value"];
+                    } else {
+                        value =   ""+p[attr];
+                    }
+                    value = value.toLowerCase().trim();
+                    for(v in toks) {
+                        if(equals) {
+                            matches = (value ==toks[v]);
+                        } else {
+                            matches = value.includes(toks[v]);
+                        }
+                        if(matches) 
+                            break;
+                    }
+                    if(matches) 
+                        break;
+                }
+                if(matches) {
+                    matchedFeature = feature;
+                    matchedCnt++;
+                    style.display = 'inline';
+                        
+                    var geometry = feature.geometry;
+                    if(geometry) {
+                        var fbounds = geometry.getBounds();
+                        if(bounds) bounds.extend(fbounds);
+                        else bounds = fbounds;
+                    }
+                } else {
+                    style.display = 'none';
+                }
+            }
+            layer.redraw();
+            if(matchedCnt == 1) {
+                $("#" + _this.displayDiv).html(this.getFeatureText(layer, matchedFeature));
+            } else {
+                $("#" + _this.displayDiv).html("");
+            }
+            this.searchMsg.html(matchedCnt+" matched");
+        }
+        if(bounds) {
+            this.getMap().zoomToExtent(bounds);
+            this.getMap().setCenter(bounds.getCenterLonLat());
+        } else {
+            this.centerOnMarkers(null);
+        }
+    }
+
 
     theMap.getFeatureText = function(layer, feature) {
         var style = feature.style || feature.originalStyle  || layer.style;
@@ -531,9 +630,6 @@ function initMapFunctions(theMap) {
                     } else {
                         value =   ""+p[attr];
                     }
-                    //                    if(value.startsWith("http:") || value.startsWith("https:")) {
-                    //                        value  = "<a href='" + value+"'>" + value +"</a>";
-                    //                    }
                     out = out.replace("${" +style.id+"/" + attr+"}", value);
                 }
             } else {
@@ -666,6 +762,7 @@ function initMapFunctions(theMap) {
         this.showLoadingImage();
         layer.isMapLayer = true;
         layer.canSelect = canSelect;
+        this.loadedLayers.push(layer);
         layer.events.on({"loadend": function(e) {
                     _this.hideLoadingImage();
                     if(e.response && Utils.isDefined(e.response.code) && e.response.code == OpenLayers.Protocol.Response.FAILURE) {
@@ -1478,7 +1575,6 @@ function initMapFunctions(theMap) {
                 var bounds = this.transformLLBounds(createBounds(lon-offset, lat-offset,lon+offset,lat+offset));
                 this.map.zoomToExtent(bounds);
             }
-            
         }
     }
     
