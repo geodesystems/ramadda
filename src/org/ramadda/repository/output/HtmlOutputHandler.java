@@ -508,7 +508,7 @@ public class HtmlOutputHandler extends OutputHandler {
             return getMetadataXml(request, entry, false);
         }
 
-        return getHtmlResult(request, outputType, entry);
+        return getHtmlResult(request, outputType, entry, !outputType.equals(OUTPUT_INFO));
     }
 
 
@@ -1189,7 +1189,7 @@ public class HtmlOutputHandler extends OutputHandler {
             basicSB.append(desc);
             basicSB.append(HtmlUtils.br());
         }
-        request.put("showtitle", "false");
+        request.put(WikiConstants.ATTR_SHOWTITLE, "false");
         basicSB.append(entry.getTypeHandler().getEntryContent(request, entry,
                 false, true));
 

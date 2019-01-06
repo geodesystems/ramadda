@@ -353,6 +353,17 @@ public class WikiPageTypeHandler extends ExtensibleGroupTypeHandler {
 
     }
 
+    @Override
+        public void addToInformationTabs(Request request, Entry entry,
+                                     List<String> tabTitles,
+                                     List<String> tabContents) {
+        super.addToInformationTabs(request,  entry, tabTitles,tabContents);
+        StringBuilder sb = new StringBuilder();
+        sb.append(HtmlUtils.textArea("dummy",entry.getValue(0,""),10,120));
+        tabTitles.add("Wiki Text");
+        tabContents.add(sb.toString());
+    }
+
 
     /**
      * _more_

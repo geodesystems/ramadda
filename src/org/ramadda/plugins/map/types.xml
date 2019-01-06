@@ -3,6 +3,7 @@
 
   <type name="geo_kml"  description="KML/KMZ File"   handler="org.ramadda.plugins.map.KmlTypeHandler" pattern="(.*\.kml$|.*\.kmz$)">
      <property name="icon" value="/icons/kml.png"/>
+     <column name="showmap" label="Show Map" type="boolean" showinhtml="false" default="true"/>
    </type>
 
 
