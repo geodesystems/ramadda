@@ -585,7 +585,7 @@ function initMapFunctions(theMap) {
                     matchedFeature = feature;
                     matchedCnt++;
                     style.display = 'inline';
-                        
+                       
                     var geometry = feature.geometry;
                     if(geometry) {
                         var fbounds = geometry.getBounds();
@@ -597,10 +597,12 @@ function initMapFunctions(theMap) {
                 }
             }
             layer.redraw();
-            if(matchedCnt == 1) {
-                $("#" + _this.displayDiv).html(this.getFeatureText(layer, matchedFeature));
-            } else {
-                $("#" + _this.displayDiv).html("");
+            if(searchFor) {
+                if(matchedCnt == 1) {
+                    $("#" + _this.displayDiv).html(this.getFeatureText(layer, matchedFeature));
+                } else {
+                    $("#" + _this.displayDiv).html("");
+                }
             }
             this.searchMsg.html(matchedCnt+" matched");
         }
