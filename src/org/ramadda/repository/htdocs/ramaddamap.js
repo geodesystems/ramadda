@@ -230,7 +230,7 @@ function initMapFunctions(theMap) {
                 var _this = this;
                 if(this.showSearch) {
                     this.searchDiv = this.mapDivId+"_search";
-                    var search = "<input placeholder=\"Search\" id=\"" +  this.searchDiv+"_input" +"\" size=40> <span  id=\"" +  this.searchDiv+"_message\"></span>";
+                    var search = "<input placeholder=\"Search - ? for help\" id=\"" +  this.searchDiv+"_input" +"\" size=40> <span  id=\"" +  this.searchDiv+"_message\"></span>";
                     $("#"+ this.searchDiv).html(search);
                     this.searchMsg = $("#" + this.searchDiv+"_message");
                     var searchInput = $("#"+ this.searchDiv+"_input");
@@ -289,7 +289,7 @@ function initMapFunctions(theMap) {
                         this.displayedFeature = feature;
                         var callback = function() {
                             if(_this.displayedFeature == feature) {
-                                $("#" + _this.displayDiv).html(_this.getFeatureText(layer, feature));
+                                _this.showText(_this.getFeatureText(layer, feature));
                             }
                         }
                         setTimeout(callback,500);
@@ -321,7 +321,7 @@ function initMapFunctions(theMap) {
                 }
                 if(this.displayDiv) {
                     if(this.displayedFeature == feature  && !this.fixedText) {
-                        $("#" + this.displayDiv).html("");
+                        this.showText("");
                     }
                 }
             },
@@ -545,23 +545,44 @@ function initMapFunctions(theMap) {
         if(searchFor == "") searchFor = null;
         var bounds=null;
         var toks = null;
-        var equals = false;
-        var not = false;
+        var doHelp = false;
         if(searchFor) {
+            searchFor = searchFor.trim();
+            if(searchFor == "?") {
+                doHelp =true;
+            }
             searchFor = searchFor.toLowerCase();
-            if(searchFor.startsWith("!")) {
-                not = true;
-                searchFor = searchFor.substring(1);
+            toks = [];
+            var doOr = true;
+            tmp = searchFor.split("|");
+            if(tmp.length==1) {
+                tmp = searchFor.split("&");
+                doOr = tmp.length==1;
             }
-            if(searchFor.startsWith("=")) {
-                searchFor = searchFor.substring(1);
-                equals= true;
+            for(var i=0;i<tmp.length;i++) {
+                var not = false;
+                var equals = false;
+                var tok=tmp[i];
+                tmp2 = tok.split(":");
+                var field ="";
+                var value =tok;
+                if (tmp2.length>1) {
+                    field =tmp2[0];
+                    value =tmp2[1];
+                } 
+                if(value.startsWith("!")) {
+                    not = true;
+                    value = value.substring(1);
+                }
+                if(value.startsWith("=")) {
+                    value = value.substring(1);
+                    equals= true;
+                }
+                toks.push({field:field,value:value,not:not,equals:equals});
             }
-            toks = searchFor.split("|");
         } else {
             this.searchMsg.html("");
         }
-
         for(a in this.loadedLayers) {
             var matchedFeature = null;
             var matchedCnt = 0;
@@ -580,36 +601,63 @@ function initMapFunctions(theMap) {
                     continue;
                 }
                 var p = feature.attributes;
-                var matches = false;
-                for (var attr in p) {
-                    var value = "";
-                    if ((typeof p[attr] == 'object') || (typeof p[attr] == 'Object')) {
-                        var o = p[attr];
-                        if(o) {
-                            value =  ""+o["value"];
-                        }
-                    } else {
-                        value =   ""+p[attr];
+                if(doHelp) {
+                    var space = "&nbsp;&nbsp;&nbsp;"
+                    var help = "Enter, e.g.:<br>";
+                    help += space + "<i>&lt;term&gt;</i> (any match)<br>";
+                    help += space + "<i>=&lt;term&gt;</i> (exact match)<br>";
+                    help += space + "<i>!&lt;term&gt;</i> (not match)<br>";
+                    help += space + "<i>&lt;term 1&gt;|&lt;term 2&gt;</i> (match any)<br>";
+                    help += space + "<i>&lt;term 1&gt;&amp;&lt;term 2&gt;</i> (match all)<br>";
+                    help+="Or by field:<br>";
+                    for (var attr in p) {
+                        help+=space + attr.toLowerCase()+":" +"<i>&lt;term&gt;</i><br>";
                     }
-                    value = value.toLowerCase().trim();
-                    for(v in toks) {
-                        if(equals) {
-                            matches = (value ==toks[v]);
-                        } else {
-                            matches = value.includes(toks[v]);
-                        }
-                        if(!not && matches) 
-                            break;
-                    }
-                    if(matches) 
-                        break;
+                    this.showText(help);
+                    return
                 }
-                if(not) matches=!matches;
-                if(matches) {
+                var matches = false;
+                var checkAll = false;
+                var allMatched = true;
+                var someMatched = false;
+                if(tok.not) checkAll  = true;
+                for(v in toks) {
+                    var tok = toks[v];
+                    for (var attr in p) {
+                        var value = "";
+                        if ((typeof p[attr] == 'object') || (typeof p[attr] == 'Object')) {
+                            var o = p[attr];
+                            if(o) {
+                                value =  ""+o["value"];
+                            }
+                        } else {
+                            value =   ""+p[attr];
+                        }
+                        value = value.toLowerCase().trim();
+                        if (tok.field!="" && tok.field!=attr.toLowerCase()) {
+                            continue;
+                        }
+                        if(tok.equals) {
+                            matches = (value ==tok.value);
+                        } else {
+                            matches = value.includes(tok.value);
+                        }
+                        if(tok.not) {
+                            matches = !matches;
+                            if(!matches) {
+                                break;
+                            }
+                        } else {
+                            if(matches) break;
+                        }
+                    }
+                    if(matches) someMatched = true;
+                    if(!matches) allMatched = false;
+                }
+                if((doOr && someMatched) || (!doOr && allMatched)) {
                     matchedFeature = feature;
                     matchedCnt++;
                     style.display = 'inline';
-                       
                     var geometry = feature.geometry;
                     if(geometry) {
                         var fbounds = geometry.getBounds();
@@ -623,9 +671,9 @@ function initMapFunctions(theMap) {
             layer.redraw();
             if(searchFor) {
                 if(matchedCnt == 1) {
-                    $("#" + _this.displayDiv).html(this.getFeatureText(layer, matchedFeature));
+                    this.showText(this.getFeatureText(layer, matchedFeature));
                 } else {
-                    $("#" + _this.displayDiv).html("");
+                    this.showText("");
                 }
                 this.searchMsg.html(matchedCnt+" matched");
             }
@@ -803,7 +851,7 @@ function initMapFunctions(theMap) {
                     }
                     if(layer.features.length==1 && _this.displayDiv) {
                         _this.fixedText = true;
-                        $("#" + _this.displayDiv).html(_this.getFeatureText(layer, layer.features[0]));
+                        _this.showText(_this.getFeatureText(layer, layer.features[0]));
                     }
                 }});
         this.addLayer(layer);
@@ -2320,16 +2368,20 @@ function initMapFunctions(theMap) {
             this.textFeature = feature;
             var callback = function() {
                 if(_this.textFeature == feature) {
-                    $("#" + _this.displayDiv).html(_this.textFeature.text);
+                    _this.showText(_this.textFeature.text);
                 }
             }
             setTimeout(callback,500);
         }
     },
 
+    theMap.showText = function (text) {
+        $("#" + this.displayDiv).html(text);
+    }
+
     theMap.hideFeatureText = function (feature) {
         if(!feature || this.textFeature == feature) {
-            $("#" + this.displayDiv).html("");
+            this.showText("");
         }
     },
 
