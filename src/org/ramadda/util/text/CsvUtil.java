@@ -776,6 +776,7 @@ public class CsvUtil {
         "-deletecell <row #> <col #>  ",
         "-set <col #s> <row #s> <value> write the value into the cells",
         "-case <lower|upper|camel> <col #> (change case of column)",
+        "-limit <columns>  <size> limit the string size of the columns",
         "-prepend  <text> add the text to the beginning of the file. use _nl_ to insert newlines",
         "-pad <col #> <pad string> pad out or cut columns to achieve the count",
         "-change <col #s> <pattern> <substitution string>",
@@ -1371,6 +1372,15 @@ public class CsvUtil {
                 List<String> rows = getCols(args.get(++i));
                 info.getProcessor().addProcessor(
                     new Converter.ColumnSetter(cols, rows, args.get(++i)));
+
+                continue;
+            }
+
+            if (arg.equals("-limit")) {
+                List<String> cols = getCols(args.get(++i));
+                int size = Integer.parseInt(args.get(++i));
+                info.getProcessor().addProcessor(
+                                                 new Converter.ColumnLimiter(cols, size));
 
                 continue;
             }

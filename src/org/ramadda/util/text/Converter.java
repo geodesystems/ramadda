@@ -155,6 +155,48 @@ public abstract class Converter extends Processor {
     }
 
 
+    public static class ColumnLimiter extends Converter {
+        int size;
+
+        /**
+         * _more_
+         *
+         * @param cols _more_
+         */
+        public ColumnLimiter(List<String> cols, int size) {
+            super(cols);
+            this.size = size;
+        }
+
+
+
+        /**
+         * _more_
+         *
+         *
+         * @param info _more_
+         * @param row _more_
+         * @param line _more_
+         *
+         * @return _more_
+         */
+        @Override
+        public Row processRow(TextReader info, Row row, String line) {
+            List<Integer> indices = getIndices(info);
+            for (int i : indices) {
+                if ((i < 0) || (i >= row.size())) {
+                    continue;
+                }
+                String s = row.get(i).toString();
+                if(s.length()>size) s = s.substring(0,size-1);
+                row.set(i, s);
+            }
+            return row;
+        }
+
+    }
+
+
     /**
      * Class description
      *

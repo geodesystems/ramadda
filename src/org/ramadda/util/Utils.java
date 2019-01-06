@@ -2786,7 +2786,17 @@ public class Utils {
      *
      * @throws Exception _more_
      */
+
+
     public static void main(String args[]) throws Exception {
+        String dt = "2018-12-31 20:01:59.0000000 +00:00";
+        //String dt = "2018-12-31 20:01:59.0000000";
+        //        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS Z");
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS XXX");
+        sdf.parse(dt);
+    }
+
+    public static void xxmain(String args[]) throws Exception {
         String url =
             "https://api.census.gov/data/2015/acs5?get=NAME,B01003_001E,B01001_002E,B01001_026E,B01001A_001E,B01001B_001E,B01001I_001E,B01001D_001E,B25001_001E,B07013_002E,B07013_003E&for=county:*";
         doGet(new URL(url));
