@@ -150,7 +150,6 @@ function RepositoryMap(mapId, params) {
 
     initMapFunctions(this);
 
-
         var  dflt = {
             pointRadius: 3,
             fillOpacity: 0.8,
@@ -166,6 +165,15 @@ function RepositoryMap(mapId, params) {
 
         $.extend(this, dflt);
         $.extend(this, params);
+
+        this.defaultStyle =  {
+            pointRadius: this.pointRadius,
+            fillOpacity:this.fillOpacity,
+            fillColor:this.fillColor,
+            fill:this.fill,
+            strokeColor:this.strokeColor,
+            strokeWidth:this.strokeWidth,
+        };
 
         this.defaults = {};
         var theMap = this;
@@ -531,29 +539,40 @@ function initMapFunctions(theMap) {
 
     theMap.searchFor = function(searchFor) {
         var _this  = this;
+        if(searchFor) searchFor = searchFor.trim();
         if(searchFor == "") searchFor = null;
         var bounds=null;
         var toks = null;
         var equals = false;
+        var not = false;
         if(searchFor) {
             searchFor = searchFor.toLowerCase();
+            if(searchFor.startsWith("!")) {
+                not = true;
+                searchFor = searchFor.substring(1);
+            }
             if(searchFor.startsWith("=")) {
                 searchFor = searchFor.substring(1);
                 equals= true;
             }
             toks = searchFor.split("|");
-        }
-        if(!searchFor) {
+        } else {
             this.searchMsg.html("");
         }
+
         for(a in this.loadedLayers) {
             var matchedFeature = null;
             var matchedCnt = 0;
             var layer = this.loadedLayers[a];
+            var defaultStyle = layer.styleMap.styles["default"].defaultStyle;
             for(f in layer.features) {
                 var feature = layer.features[f];
-                var style = feature.style||feature.originalStyle;
-                if(!style) style=feature.style = {};
+                var style = feature.style;
+                if(!style) {
+                    style =  {};
+                    $.extend(style, defaultStyle);
+                    feature.style = style;
+                }
                 if(!searchFor) {
                     style.display = 'inline';
                     continue;
@@ -577,12 +596,13 @@ function initMapFunctions(theMap) {
                         } else {
                             matches = value.includes(toks[v]);
                         }
-                        if(matches) 
+                        if(!not && matches) 
                             break;
                     }
                     if(matches) 
                         break;
                 }
+                if(not) matches=!matches;
                 if(matches) {
                     matchedFeature = feature;
                     matchedCnt++;
@@ -605,8 +625,8 @@ function initMapFunctions(theMap) {
                 } else {
                     $("#" + _this.displayDiv).html("");
                 }
+                this.searchMsg.html(matchedCnt+" matched");
             }
-            this.searchMsg.html(matchedCnt+" matched");
         }
         if(bounds) {
             this.getMap().zoomToExtent(bounds);

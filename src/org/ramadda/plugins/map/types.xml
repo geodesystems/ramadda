@@ -67,6 +67,7 @@
 {{map width="100%" height="450" viewBounds="<bounds>" details="true" displayDiv="mapDisplay" showSearch="true" }}
 -col
 +col-md-4
+<div style="padding-top:20px;"></div>
 <div id="mapDisplay" style="max-height:450px; overflow-y:auto;"></div>
 -col
 -row
@@ -152,6 +153,7 @@
 {{map width="100%" height="450" viewBounds="<bounds>" details="true" displayDiv="mapDisplay" showSearch="true" }}
 -col
 +col-md-4
+<div style="padding-top:20px;"></div>
 <div id="mapDisplay" style="max-height:450px; overflow-y:auto;"></div>
 -col
 -row
