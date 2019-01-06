@@ -230,7 +230,9 @@ function initMapFunctions(theMap) {
                 var _this = this;
                 if(this.showSearch) {
                     this.searchDiv = this.mapDivId+"_search";
-                    var search = "<input placeholder=\"Search - ? for help\" id=\"" +  this.searchDiv+"_input" +"\" size=40> <span  id=\"" +  this.searchDiv+"_message\"></span>";
+                    var cbx = HtmlUtil.checkbox(this.searchDiv+"_download",[],false);
+                    var input = "<input placeholder=\"Search - ? for help\" id=\"" +  this.searchDiv+"_input" +"\" size=40>";
+                    var search = "<table width=100%><tr><td>" + input + " <span  id=\"" +  this.searchDiv+"_message\"></span></td><td align=right>" +cbx+" Download</td></tr></table>"
                     $("#"+ this.searchDiv).html(search);
                     this.searchMsg = $("#" + this.searchDiv+"_message");
                     var searchInput = $("#"+ this.searchDiv+"_input");
@@ -541,6 +543,19 @@ function initMapFunctions(theMap) {
         return map;
     }
 
+    theMap.getAttrValue = function(p, attr) {
+        value = "";
+        if ((typeof p[attr] == 'object') || (typeof p[attr] == 'Object')) {
+            var o = p[attr];
+            if(o) {
+                value =  ""+o["value"];
+            }
+        } else {
+            value =   ""+p[attr];
+        }
+        return value;
+    }
+
     theMap.searchFor = function(searchFor) {
         var _this  = this;
         if(searchFor) searchFor = searchFor.trim();
@@ -548,6 +563,9 @@ function initMapFunctions(theMap) {
         var bounds=null;
         var toks = null;
         var doHelp = false;
+        var download = $("#" + this.searchDiv+"_download").is(':checked');
+
+        var attrs = [];
         if(searchFor) {
             searchFor = searchFor.trim();
             if(searchFor == "?") {
@@ -599,11 +617,12 @@ function initMapFunctions(theMap) {
                     $.extend(style, defaultStyle);
                     feature.style = style;
                 }
+                var p = feature.attributes;
                 if(!searchFor) {
                     style.display = 'inline';
+                    attrs.push(p);
                     continue;
                 }
-                var p = feature.attributes;
                 if(doHelp) {
                     var space = "&nbsp;&nbsp;&nbsp;"
                     var help = "Enter, e.g.:<br>";
@@ -627,15 +646,7 @@ function initMapFunctions(theMap) {
                 for(v in toks) {
                     var tok = toks[v];
                     for (var attr in p) {
-                        var value = "";
-                        if ((typeof p[attr] == 'object') || (typeof p[attr] == 'Object')) {
-                            var o = p[attr];
-                            if(o) {
-                                value =  ""+o["value"];
-                            }
-                        } else {
-                            value =   ""+p[attr];
-                        }
+                        var value = this.getAttrValue(p,attr);
                         value = value.toLowerCase().trim();
                         if (tok.field!="" && tok.field!=attr.toLowerCase()) {
                             continue;
@@ -658,6 +669,7 @@ function initMapFunctions(theMap) {
                     if(!matches) allMatched = false;
                 }
                 if((doOr && someMatched) || (!doOr && allMatched)) {
+                    attrs.push(p);
                     matchedFeature = feature;
                     matchedCnt++;
                     style.display = 'inline';
@@ -670,6 +682,33 @@ function initMapFunctions(theMap) {
                 } else {
                     style.display = 'none';
                 }
+            }
+            if(download) {
+                var csv = "";
+                for(var i in attrs) {
+                    var p = attrs[i];
+                    for (var attr in p) {
+                        if(csv!="") csv+=",";
+                        csv +=attr.toLowerCase();
+                    }
+                    csv+="\n";
+                    break;
+                }
+                for(var i in attrs) {
+                    var p = attrs[i];
+                    var line = "";
+                    for (var attr in p) {
+                        var value = this.getAttrValue(p,attr);
+                        if(value.includes(",")) {
+                            value = "\"" + value +"\"";
+                        }
+                        if(line!="") line+=",";
+                        line+=value;
+                    }
+                    line+="\n";
+                    csv+=line;
+                }
+                Utils.makeDownloadFile("download.csv",csv);
             }
             layer.redraw();
             if(searchFor) {
