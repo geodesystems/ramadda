@@ -429,7 +429,9 @@ function initMapFunctions(theMap) {
         image.south =  south;
         image.east =  east;
         if(!this.imageLayers) this.imageLayers = {}
-        this.imageLayers[layerId] = image;
+        if(!theArgs.isBaseLayer) {
+            this.imageLayers[layerId] = image;
+        }
         return image;
     }
 
@@ -2306,11 +2308,10 @@ function initMapFunctions(theMap) {
 
     theMap.uncircleMarker = function(id) {
         feature = this.features[id+"_circle"];
-        console.log("id: " +feature + " " + id);
         if(feature) {
             this.circles.removeFeatures( [feature]);
         }
-        this.hideFeatureText(marker);
+        this.hideFeatureText(feature);
     }
 
     theMap.showFeatureText = function (feature) {
