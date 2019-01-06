@@ -646,11 +646,11 @@ function initMapFunctions(theMap) {
                 for(v in toks) {
                     var tok = toks[v];
                     for (var attr in p) {
-                        var value = this.getAttrValue(p,attr);
-                        value = value.toLowerCase().trim();
                         if (tok.field!="" && tok.field!=attr.toLowerCase()) {
                             continue;
                         }
+                        var value = this.getAttrValue(p,attr);
+                        value = value.toLowerCase().trim();
                         if(tok.equals) {
                             matches = (value ==tok.value);
                         } else {
@@ -668,6 +668,7 @@ function initMapFunctions(theMap) {
                     if(matches) someMatched = true;
                     if(!matches) allMatched = false;
                 }
+                
                 if((doOr && someMatched) || (!doOr && allMatched)) {
                     attrs.push(p);
                     matchedFeature = feature;
