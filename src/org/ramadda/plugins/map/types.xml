@@ -7,7 +7,7 @@
    </type>
 
 
-  <type name="latlonimage"  description="WMS Image" datatype="latlonimage"  handler="org.ramadda.plugins.map.LatLonImageTypeHandler">
+  <type name="latlonimage"  description="Lat-Lon Image" datatype="latlonimage"  handler="org.ramadda.plugins.map.LatLonImageTypeHandler">
      <property name="icon" value="/icons/map.png"/>
      <column name="map_width" label="Map Width" type="int" showinhtml="false" default="-100"/>
      <column name="map_height" label="Map Height" type="int" showinhtml="false" default="600"/>

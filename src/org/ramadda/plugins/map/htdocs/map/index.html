@@ -1,0 +1,45 @@
+<html>
+<title>RAMADDA Map Services</title>
+<body>
+<div class="ramadda-section">
+
+<h2>Maps in RAMADDA</h2>
+
+<a name="latlonimage"></a>
+<h2>Lat-Lon Images</h2>
+The RAMADDA Lat-Lon Image entry type displays a georeferenced image in a map. 
+Here is an <a href="https://boulderdata.org/repository/entry/show?entryid=51936d54-1ede-432d-9aa4-718e0b07ea20">example</a>. You upload an image and specify a geographic bounding box. Once you create the entry you can go and edit it again and the image will be displayed in the edit map popup.
+
+
+<a name="properties"></a>
+<h2>Shapefile Extra Properties</h2>
+The Shapefile Extra Properties metadata allows you to create a .properties file that adds on extra fields
+to the shapefile dbfile properties. For example, the 
+<a href="https://geodesystems.com/repository/entry/show?entryid=99f120c9-60da-4d40-9034-5fe2a333c237">Congressional Districts shapefile</a> 
+uses a 
+<a href="https://boulderdata.org/repository/metadata/view/2019members.properties?element=1&entryid=99f120c9-60da-4d40-9034-5fe2a333c237&metadata_id=4acaf645-cc30-49c3-9b1f-37055dedbbf4">properties file</a> to add on extra fields that describe the congressperson for the district. This properties file takes the form:
+<p>
+<pre>
+map.fields=&lt;comma searated extra field ids&gt; 
+e.g.:
+map.fields=extra1,extra2,...,extraN
+map.key=&lt;the field name in the shapefile to key on, e.g.. "geoid"&gt;
+map.&lt;key value&gt;.extra1=&lt;value1&gt;
+map.&lt;key value&gt;.extra2=&lt;value1&gt;
+...
+</pre>
+<p>
+For the congressional shapefile properties we use:
+<p>
+<pre>
+map.fields=party,state,member,url,memberimage,town,phone,address,gender
+map.key=geoid
+map.0200.party=R
+map.0200.member=Don Young
+map.0200.state=Alaska
+...
+</pre>
+
+</body>
+</html>
+

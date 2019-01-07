@@ -1,11 +1,16 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
 <metadata>
-    <handler category="Miscellaneous">
+    <handler category="Map">
         <type
        id="shapefile_display"
-       name="Shapefile Display"
+       name="Map Balloon Text"
        showinhtml="false"
        values="">
+      <help>
+<![CDATA[
+This allows you to create a text template that is used to for the map popup displays.
+]]>
+</help>
             <element
          id="schema_id"
          name="Schema ID">
@@ -109,6 +114,14 @@ field_value2:#0000ff
     <type
        name="Shapefile Extra Properties"
        id="shapefile_properties">
+      <help>
+<![CDATA[
+This allows you to create a .properties file that adds on extra fields
+to the shapefile dbfile properties. 
+See <a href="https://geodesystems.com/repository/map/index.html#properties" target=_help>here</a> for more information.
+]]>
+</help>
+
       <element name="Property File" datatype="file" thumbnail="false"/>
     </type>
 
@@ -117,6 +130,12 @@ field_value2:#0000ff
        name="Map Style"
        showinhtml="false"
        values="">
+      <help>
+<![CDATA[
+Override how maps are displayed.
+]]>
+</help>
+
             <element
          id="line_color"
          name="Line Color"
@@ -145,7 +164,7 @@ field_value2:#0000ff
 
 
     <type
-       name="Map Display Map"
+       name="Extra Map Layer"
        id="map_displaymap">
       <help>
 <![CDATA[Either GeoJson or KML Entry to display as a base layer in any map display ]]>

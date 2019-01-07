@@ -2,7 +2,6 @@
  * Copyright (c) 2008-2015 Geode Systems LLC
  */
 
-var globalDebug  = false;
 
 
 // google maps
@@ -11,20 +10,15 @@ var map_google_streets = "google.streets";
 var map_google_hybrid = "google.hybrid";
 var map_google_satellite = "google.satellite";
 
-var map_usfs_ownership = "usfs.ownership";
-
 // ESRI Maps
 var map_esri_topo = "esri.topo";
 var map_esri_street = "esri.street";
 var map_esri_worldimagery = "esri.worldimagery";
 var map_opentopo = "opentopo";
+
 var map_usgs_topo = "usgs.topo";
 var map_usgs_imagery = "usgs.imagery";
 var map_usgs_relief = "usgs.relief";
-var map_white = "white";
-var map_blue = "blue";
-var map_black = "black";
-var map_gray = "gray";
 
 // Microsoft maps - only work for -180 to 180
 var map_ms_shaded = "ms.shaded";
@@ -32,8 +26,6 @@ var map_ms_hybrid = "ms.hybrid";
 var map_ms_aerial = "ms.aerial";
 
 var map_osm = "osm";
-var map_osm_toner = "osm.toner";
-
 
 
 // doesn't support EPSG:900913
@@ -42,13 +34,6 @@ var map_ol_openstreetmap = "ol.openstreetmap";
 
 var map_default_layer =  map_osm;
 
-
-var ramaddaCircleHiliteAttrs = {
-    strokeColor:'black',
-    strokeWidth:1,
-    fill:true,
-    fillOpacity:0.5,
-    fillColor:'red'};
 
 function createLonLat(lon,lat) {
     lon = parseFloat(lon);
@@ -100,14 +85,16 @@ function ramaddaAddMap(map) {
     ramaddaMaps.push(map);
 }
 
-
-
 function RepositoryMap(mapId, params) {
-    mapId = mapId ||"map";
     ramaddaMapMap[mapId] = this;
     if(!params) params = {};
     ramaddaAddMap(this);
     var theMap = this;
+    if (mapId == null) {
+        mapId = "map";
+    }
+
+
     $.extend(this, {
             sourceProjection:sourceProjection,
                 displayProjection: displayProjection,
@@ -124,25 +111,17 @@ function RepositoryMap(mapId, params) {
                 latlonReadout : latlonReadoutID,
                 map: null,
                 defaultMapLayer: map_default_layer,
-                defaultCanSelect:true,
                 haveAddedDefaultLayer: false,
                 layer: null,
                 markers: null,
                 vectors: null,
-                loadedLayers:[],
                 boxes: null,
-                kmlLayer: null,
-                kmlLayerName: null,
-                showSearch: false,
-                geojsonlLayer: null,
-                geojsonLayerName: null,
                 vectorLayers:[],
                 features:{},
                 lines: null,
                 selectorBox: null,
                 selectorMarker: null,
                 listeners: [],
-                fixedText:false,
                 initialLayers: [],
                 imageLayers:{
                 },
@@ -150,11 +129,11 @@ function RepositoryMap(mapId, params) {
 
     initMapFunctions(this);
 
+
         var  dflt = {
             pointRadius: 3,
-            fillOpacity: 0.8,
+            fillOpacity: 0.6,
             fillColor: "#e6e6e6",
-            fill:true,
             strokeColor: "#999",
             strokeWidth: 1,
             scrollToZoom: false,
@@ -166,17 +145,8 @@ function RepositoryMap(mapId, params) {
         $.extend(this, dflt);
         $.extend(this, params);
 
-        this.defaultStyle =  {
-            pointRadius: this.pointRadius,
-            fillOpacity:this.fillOpacity,
-            fillColor:this.fillColor,
-            fill:this.fill,
-            strokeColor:this.strokeColor,
-            strokeWidth:this.strokeWidth,
-        };
+        this.default = {};
 
-        this.defaults = {};
-        var theMap = this;
 
         if(Utils.isDefined(params.onSelect)) {
             this.onSelect = params.onSelect;
@@ -196,209 +166,46 @@ function RepositoryMap(mapId, params) {
             units : "m",
             controls: [],
             maxResolution : 156543.0339,
-            maxExtent : maxExtent,
-            div:this.mapDivId,
-            eventListeners: {
-                featureover: function(e) { 
-                    theMap.handleFeatureover(e.feature);
-                },
-                featureout: function(e) { 
-                    theMap.handleFeatureout(e.feature);
-                },
-                nofeatureclick: function(e) { 
-                    theMap.handleNofeatureclick(e.layer);
-                },
-                featureclick: function(e) { 
-                    theMap.handleFeatureclick(e.layer,e.feature);
-                }
-            }
+            maxExtent : maxExtent
+            
         };
+        this.map = new OpenLayers.Map(this.mapDivId,options);
+        this.addBaseLayers();
 
-        this.mapOptions = options;
-        theMap.finishMapInit();
-        jQuery(document).ready(function($) {
-            if(theMap.getMap()) {
-                theMap.getMap().updateSize();
+
+    jQuery(document).ready(function($) {
+            if(theMap.map) {
+                theMap.map.updateSize();
             }
      });
 
 }
 
 function initMapFunctions(theMap) {
+
+
     RamaddaUtil.defineMembers(theMap,  {
-            finishMapInit: function() {
-                var _this = this;
-                if(this.showSearch) {
-                    this.searchDiv = this.mapDivId+"_search";
-                    var cbx = HtmlUtil.checkbox(this.searchDiv+"_download",[],false);
-                    var input = "<input placeholder=\"Search - ? for help\" id=\"" +  this.searchDiv+"_input" +"\" size=40>";
-                    var search = "<table width=100%><tr><td>" + input + " <span  id=\"" +  this.searchDiv+"_message\"></span></td><td align=right>" +cbx+" Download</td></tr></table>"
-                    $("#"+ this.searchDiv).html(search);
-                    this.searchMsg = $("#" + this.searchDiv+"_message");
-                    var searchInput = $("#"+ this.searchDiv+"_input");
-                    searchInput.keypress(function(event) {
-                            if ( event.which == 13 ) {
-                                _this.searchFor(searchInput.val());
-                            }
-                        });
-                }
-                
-                this.map = new OpenLayers.Map(this.mapDivId,this.mapOptions);
-                if(this.mapHidden) {
-                    //A hack when we are hidden
-                    this.map.size = new OpenLayers.Size(1,1);
-                }
-
-                this.addBaseLayers();
-                if(this.kmlLayer) {
-                    var url = ramaddaBaseUrl + "/entry/show?output=shapefile.kml&entryid=" + this.kmlLayer;
-                    this.addKMLLayer(this.kmlLayerName,url,false,null,null,null,null);
-                }
-                if(this.geojsonLayer) {
-                    var url = getRamadda().getEntryDownloadUrl(this.geojsonLayer);
-                    this.addGeoJsonLayer(this.geojsonLayerName,url,false,null,null,null,null);
-                }
-            },
-            setMapDiv: function(divid) {
-                this.mapHidden  = false;
-                this.mapDivId = divid;
-                theMap.getMap().render(theMap.mapDivId);
-                theMap.getMap().updateSize();
-                theMap.centerOnMarkers(theMap.dfltBounds);
-            },
-            handleFeatureover: function(feature) { 
-                var layer = feature.layer;
-                if(!(layer.isMapLayer=== true)) {
-                    /*
-                    if(feature.ramaddaId) {
-                        marker = this.findMarker(feature.ramaddaId);
-                        if(marker) {
-                            this.circleMarker(feature.ramaddaId,ramaddaCircleHiliteAttrs);
-                            return;
-                        }
-                        }*/
-                    if(feature.text) {
-                        this.showFeatureText(feature);
-                    }
-                    return;
-                }
-
-                if(layer.canSelect === false || !(layer.isMapLayer=== true)) return;
-                var _this = this;
-                if(!feature.isSelected) {
-                    feature.originalStyle = feature.style;
-                    feature.style = null;
-                    layer.drawFeature(feature,"temporary");
-                    if(this.displayDiv) {
-                        this.displayedFeature = feature;
-                        var callback = function() {
-                            if(_this.displayedFeature == feature) {
-                                _this.showText(_this.getFeatureText(layer, feature));
-                            }
-                        }
-                        setTimeout(callback,500);
-                    }
-
-                }
-            },
-            handleFeatureout: function(feature) { 
-                layer = feature.layer;
-                if(layer && !(layer.isMapLayer=== true)) {
-                    /*
-                    if(feature.ramaddaId) {
-                        marker = this.findMarker(feature.ramaddaId);
-                        if(marker) {
-                            this.uncircleMarker(feature.ramaddaId);
-                            return;
-                        }
-                    }
-                    */
-                    if(feature.text && !this.fixedText) {
-                        this.hideFeatureText(feature);
-                    }
-                    return;
-                }
-                if(layer == null || layer.canSelect === false) return;
-                feature.style = feature.originalStyle;
-                if(!feature.isSelected) {
-                    layer.drawFeature(feature,feature.style ||"default"); 
-                }
-                if(this.displayDiv) {
-                    if(this.displayedFeature == feature  && !this.fixedText) {
-                        this.showText("");
-                    }
-                }
-            },
-            handleNofeatureclick: function(layer) { 
-                if(layer.canSelect === false) return;
-                if(layer && layer.selectedFeature) {
-                    theMap.unselectFeature(layer.selectedFeature);
-                }
-            },
-            handleFeatureclick: function(layer, feature) { 
-                if(!layer)
-                    layer = feature.layer;
-                if(layer.canSelect === false) return;
-                //                if(layer.canSelect === false || !(layer.isMapLayer=== true)) return;
-                if(layer.selectedFeature) {
-                    layer.drawFeature(layer.selectedFeature,layer.selectedFeature.style ||"default");
-                    layer.selectedFeature.isSelected = false;
-                    theMap.onPopupClose();
-                }
-                theMap.selectedFeature = feature;
-                layer.selectedFeature = feature;
-                layer.selectedFeature.isSelected =true;
-                layer.drawFeature(layer.selectedFeature,"select"); 
-                if(layer.selectCallback) {
-                    layer.feature= layer.selectedFeature;
-                    if(feature.originalStyle) {
-                        feature.style = feature.originalStyle;
-                    }
-                    layer.selectCallback(layer);
-                } else {
-                    this.showMarkerPopup(feature, true);
-                }
-            },
-            unselectFeature: function(feature) {
-                if(!feature) return;
-                layer = feature.layer;
-                layer.drawFeature(layer.selectedFeature,layer.selectedFeature.style ||"default");
-                layer.selectedFeature.isSelected = false;
-                layer.selectedFeature = null;
-                this.selectedFeature = null;
-                this.onPopupClose();
-            },
             addLayer: function(layer) {
                 if(this.map!=null) {
                     this.map.addLayer(layer);
-                    this.checkLayerOrder();
                 } else {
                     this.initialLayers.push(layer);
                 }
             },
-            checkLayerOrder: function() {
-                if(this.circles) {
-                    this.map.setLayerIndex(this.circles, this.map.layers.length-1);
-                    this.map.raiseLayer(this.circles, this.map.layers.length-1);
-                    this.circles.redraw();
-                }
-                if(this.markers) {
-                    this.map.setLayerIndex(this.markers, this.map.layers.length-1);
-                    this.map.raiseLayer(this.markers, this.map.layers.length-1);
-                }
-                this.map.resetLayersZIndex();
-            }
         });
 
     theMap.addImageLayer = function(layerId, name, desc, url, visible, north,west,south,east, width,height,args) {
         var _this = this;
+
         var theArgs = {
             forSelect: false,
-            addBox: true,
-            isBaseLayer:false,
+            addBox: true
+
         };
         if(args)
             OpenLayers.Util.extend(theArgs, args);
+
+
 
         //Things go blooeey with lat up to 90
         if(north>88) north = 88;
@@ -410,7 +217,7 @@ function initMapFunctions(theMap) {
                                                     imageBounds,
                                                     new OpenLayers.Size(width, height),
                                                     {numZoomLevels: 3, 
-                                                            isBaseLayer: theArgs.isBaseLayer,
+                                                            isBaseLayer: false,
                                                             resolutions:this.map.layers[0].resolutions,
                                                             maxResolution:this.map.layers[0].resolutions[0]}
                                                     );
@@ -427,16 +234,18 @@ function initMapFunctions(theMap) {
         image.text = this.getPopupText(desc);
         image.ramaddaId = layerId;
         image.ramaddaName = name;
-        this.addLayer(image);
+        this.map.addLayer(image);
         image.north = north;
         image.west =  west;
         image.south =  south;
         image.east =  east;
+        if(visible)  {
+            //            image.box = this.createBox(layerId, "", north, west, south, east, desc, {});
+        } 
+
         if(!this.imageLayers) this.imageLayers = {}
-        if(!theArgs.isBaseLayer) {
-            this.imageLayers[layerId] = image;
-        }
-        return image;
+        this.imageLayers[layerId] = image;
+
     }
 
 
@@ -459,10 +268,12 @@ function initMapFunctions(theMap) {
             layer.visibility = true;
         }
 
+
         //If we have this here we get this error: 
         //http://lists.osgeo.org/pipermail/openlayers-users//2012-August/026025.html
         //        layer.reproject = true;
-        this.addLayer(layer);
+
+        this.map.addLayer(layer);
     }
 
 
@@ -490,7 +301,7 @@ function initMapFunctions(theMap) {
             layer.isBaseLayer = false;
         layer.visibility = false;
         layer.reproject = true;
-        this.addLayer(layer);
+        this.map.addLayer(layer);
         if(isDefault) {
             this.haveAddedDefaultLayer = true;
             this.map.setLayerIndex(layer, 0);
@@ -498,293 +309,78 @@ function initMapFunctions(theMap) {
         }
     }
 
-    theMap.getVectorLayerStyleMap = function(layer,args) {
-        var  props = {
-            pointRadius: this.pointRadius,
-            fillOpacity:this.fillOpacity,
-            fillColor:this.fillColor,
-            fill:this.fill,
-            strokeColor:this.strokeColor,
-            strokeWidth:this.strokeWidth,
-            select_fillOpacity: this.fillOpacity,
-            select_fillColor: "#666",
-            select_strokeColor:"#666",
-            select_strokeWidth:1
+    theMap.addGeoJsonLayer = function(name, geoJsonUrl, canSelect, selectCallback, unselectCallback, args) {
+        var _this=this;
+        var  dflt = {
+            fillColor: "#e6e6e6",
+            strokeColor: "#777777",
+            strokeWidth: 1,
+            select_fillColor: "#66cccc",
+            select_strokeColor: "#222222",
+            select_strokeWidth: 1
         };
-        if (args) RamaddaUtil.inherit(props, args);
-        var temporaryStyle = OpenLayers.Util.extend( {},  OpenLayers.Feature.Vector.style["temporary"]);
-        $.extend(temporaryStyle, {
-                pointRadius: props.pointRadius,
-                fillOpacity: props.fillOpacity,
-                strokeWidth: props.strokeWidth,
-                    strokeColor: props.strokeColor,
-                    }
-            );
-        var selectStyle = OpenLayers.Util.extend( {},  OpenLayers.Feature.Vector.style["select"]);
-        $.extend(selectStyle, {
-                pointRadius: 3,
-                    fillOpacity: props.select_fillOpacity,
-                    fillColor: props.select_fillColor,
-                    strokeColor: props.select_strokeColor,
-                    strokeWidth: props.select_strokeWidth});
+        if (!args) {
+            args = {};
+        }
+        $.extend(dflt, args);
+
+
+
+        var geoJsonLayer = new OpenLayers.Layer.Vector(name, {
+            projection: this.displayProjection,
+            strategies: [new OpenLayers.Strategy.Fixed()],
+            protocol: new OpenLayers.Protocol.HTTP({
+                url: geoJsonUrl,
+                format: new OpenLayers.Format.GeoJSON()
+            }),
+            styleMap: new OpenLayers.StyleMap({
+                "default": new OpenLayers.Style({
+                    pointRadius: 3,
+                    fillOpacity: 0.6,
+                    fillColor: dflt.fillColor,
+                    strokeColor: dflt.strokeColor,
+                    strokeWidth: dflt.strokeWidth
+                }),
+                "select": new OpenLayers.Style({
+                    pointRadius: 3,
+                    fillOpacity: 0.6,
+                    fillColor: dflt.select_fillColor,
+                    strokeColor: dflt.select_strokeColor,
+                    strokeWidth: dflt.select_strokeWidth
+                })
+            })
+        });
+        this.map.addLayer(geoJsonLayer);
         
-        var defaultStyle = OpenLayers.Util.extend( {},  OpenLayers.Feature.Vector.style["default"]);
-        $.extend(defaultStyle, {
-                pointRadius: props.pointRadius,
-                    fillOpacity: props.fillOpacity,
-                    fillColor: props.fillColor,
-                    fill:props.fill,
-                    strokeColor: props.strokeColor,
-                    strokeWidth: props.strokeWidth});
-        map= new OpenLayers.StyleMap({
-                "temporary": temporaryStyle,
-                "default": defaultStyle,
-                "select":  selectStyle});
-        return map;
-    }
+        geoJsonLayer.events.on({"loadend": function(e) {
+                    if(_this.centerOnMarkersCalled)
+                        _this.centerOnMarkers(_this.dfltBound);
+                }});
 
-    theMap.getAttrValue = function(p, attr) {
-        value = "";
-        if ((typeof p[attr] == 'object') || (typeof p[attr] == 'Object')) {
-            var o = p[attr];
-            if(o) {
-                value =  ""+o["value"];
-            }
-        } else {
-            value =   ""+p[attr];
-        }
-        return value;
-    }
 
-    theMap.searchFor = function(searchFor) {
-        var _this  = this;
-        if(searchFor) searchFor = searchFor.trim();
-        if(searchFor == "") searchFor = null;
-        var bounds=null;
-        var toks = null;
-        var doHelp = false;
-        var download = $("#" + this.searchDiv+"_download").is(':checked');
 
-        var attrs = [];
-        if(searchFor) {
-            searchFor = searchFor.trim();
-            if(searchFor == "?") {
-                doHelp =true;
-            }
-            searchFor = searchFor.toLowerCase();
-            toks = [];
-            var doOr = true;
-            tmp = searchFor.split("|");
-            if(tmp.length==1) {
-                tmp = searchFor.split("&");
-                doOr = tmp.length==1;
-            }
-            for(var i=0;i<tmp.length;i++) {
-                var not = false;
-                var equals = false;
-                var tok=tmp[i];
-                tmp2 = tok.split(":");
-                var field ="";
-                var value =tok;
-                if (tmp2.length>1) {
-                    field =tmp2[0];
-                    value =tmp2[1];
-                } 
-                if(value.startsWith("!")) {
-                    not = true;
-                    value = value.substring(1);
-                }
-                if(value.startsWith("=")) {
-                    value = value.substring(1);
-                    equals= true;
-                }
-                toks.push({field:field,value:value,not:not,equals:equals});
-            }
-        } else {
-            this.searchMsg.html("");
-        }
+        if (canSelect) {
+            select = new OpenLayers.Control.SelectFeature(geoJsonLayer, {
+                 multiple: false, 
+                 hover: this.selectOnHover,
+                 //highlightOnly: true,
+                 renderIntent: "select",
+            });
 
-        for(a in this.loadedLayers) {
-            var matchedFeature = null;
-            var matchedCnt = 0;
-            var layer = this.loadedLayers[a];
-            var defaultStyle = layer.styleMap.styles["default"].defaultStyle;
-            for(f in layer.features) {
-                var feature = layer.features[f];
-                var style = feature.style;
-                if(!style) {
-                    style =  {};
-                    $.extend(style, defaultStyle);
-                    feature.style = style;
-                }
-                var p = feature.attributes;
-                if(!searchFor) {
-                    style.display = 'inline';
-                    attrs.push(p);
-                    continue;
-                }
-                if(doHelp) {
-                    var space = "&nbsp;&nbsp;&nbsp;"
-                    var help = "Enter, e.g.:<br>";
-                    help += space + "<i>&lt;term&gt;</i> (any match)<br>";
-                    help += space + "<i>=&lt;term&gt;</i> (exact match)<br>";
-                    help += space + "<i>!&lt;term&gt;</i> (not match)<br>";
-                    help += space + "<i>&lt;term 1&gt;|&lt;term 2&gt;</i> (match any)<br>";
-                    help += space + "<i>&lt;term 1&gt;&amp;&lt;term 2&gt;</i> (match all)<br>";
-                    help+="Or by field:<br>";
-                    for (var attr in p) {
-                        help+=space + attr.toLowerCase()+":" +"<i>&lt;term&gt;</i><br>";
-                    }
-                    this.showText(help);
-                    return
-                }
-                var matches = false;
-                var checkAll = false;
-                var allMatched = true;
-                var someMatched = false;
-                if(tok.not) checkAll  = true;
-                for(v in toks) {
-                    var tok = toks[v];
-                    for (var attr in p) {
-                        if (tok.field!="" && tok.field!=attr.toLowerCase()) {
-                            continue;
-                        }
-                        var value = this.getAttrValue(p,attr);
-                        value = value.toLowerCase().trim();
-                        if(tok.equals) {
-                            matches = (value ==tok.value);
-                        } else {
-                            matches = value.includes(tok.value);
-                        }
-                        if(tok.not) {
-                            matches = !matches;
-                            if(!matches) {
-                                break;
-                            }
-                        } else {
-                            if(matches) break;
-                        }
-                    }
-                    if(matches) someMatched = true;
-                    if(!matches) allMatched = false;
-                }
-                
-                if((doOr && someMatched) || (!doOr && allMatched)) {
-                    attrs.push(p);
-                    matchedFeature = feature;
-                    matchedCnt++;
-                    style.display = 'inline';
-                    var geometry = feature.geometry;
-                    if(geometry) {
-                        var fbounds = geometry.getBounds();
-                        if(bounds) bounds.extend(fbounds);
-                        else bounds = fbounds;
-                    }
-                } else {
-                    style.display = 'none';
-                }
-            }
-            if(download) {
-                var csv = "";
-                for(var i in attrs) {
-                    var p = attrs[i];
-                    for (var attr in p) {
-                        if(csv!="") csv+=",";
-                        csv +=attr.toLowerCase();
-                    }
-                    csv+="\n";
-                    break;
-                }
-                for(var i in attrs) {
-                    var p = attrs[i];
-                    var line = "";
-                    for (var attr in p) {
-                        var value = this.getAttrValue(p,attr);
-                        if(value.includes(",")) {
-                            value = "\"" + value +"\"";
-                        }
-                        if(line!="") line+=",";
-                        line+=value;
-                    }
-                    line+="\n";
-                    csv+=line;
-                }
-                Utils.makeDownloadFile("download.csv",csv);
-            }
-            layer.redraw();
-            if(searchFor) {
-                if(matchedCnt == 1) {
-                    this.showText(this.getFeatureText(layer, matchedFeature));
-                } else {
-                    this.showText("");
-                }
-                this.searchMsg.html(matchedCnt+" matched");
-            }
-        }
-        if(bounds) {
-            this.getMap().zoomToExtent(bounds);
-            this.getMap().setCenter(bounds.getCenterLonLat());
-        } else {
-            this.centerOnMarkers(theMap.dfltBounds,this.centerOnMarkersForce);
+
+            theMap = this;
+            if(selectCallback==null||!Utils.isDefined(selectCallback)) selectCallback = function(layer){theMap.onFeatureSelect(layer)};
+            if(unselectCallback==null||!Utils.isDefined(unselectCallback)) unselectCallback = this.onFeatureUnselect;
+
+            geoJsonLayer.events.on({ 
+                "featureselected": selectCallback,
+                "featureunselected": unselectCallback
+            });
+            this.map.addControl(select);
+            select.activate();   
         }
     }
 
-
-    theMap.getFeatureText = function(layer, feature) {
-        var style = feature.style || feature.originalStyle  || layer.style;
-        var p = feature.attributes;
-        var out = feature.popupText;
-        if(!out) {
-            if(style && style["balloonStyle"]) {
-                out = style["balloonStyle"];
-                for (var attr in p) {
-                    //$[styleid/attr]
-                    var label = attr.replace("_"," ");
-                    var value = "";
-                    if (typeof p[attr] == 'object' || typeof p[attr] == 'Object') {
-                        var o = p[attr];
-                        value =  ""+o["value"];
-                    } else {
-                        value =   ""+p[attr];
-                    }
-                    out = out.replace("${" +style.id+"/" + attr+"}", value);
-                }
-            } else {
-                out = "<table>";
-                for (var attr in p) {
-                    var label = attr;
-                    lclabel = label.toLowerCase() ;
-                    if(lclabel == "objectid" ||
-                       lclabel == "feature_type" ||
-                       lclabel=="shapearea" ||
-                       lclabel=="styleurl" ||
-                       lclabel=="shapelen") continue;
-                    if(lclabel == "startdate") label = "Start Date";
-                    else if(lclabel == "enddate") label = "End Date";
-                    else if(lclabel == "aland") label = "Land Area";
-                    else if(lclabel == "awater") label = "Water Area";
-                    label = label.replace(/_/g," ");
-                    label = Utils.camelCase(label);
-                    out += "<tr valign=top><td align=right><div style=\"margin-right:5px;margin-bottom:3px;\"><b>" + label + ":</b></div></td><td><div style=\"margin-right:5px;margin-bottom:3px;\">";
-                    var value;
-                    if (p[attr]!=null && (typeof p[attr] == 'object' || typeof p[attr] == 'Object')) {
-                        var o = p[attr];
-                        value = ""+o["value"];
-                    } else {
-                        value=  ""+p[attr];
-                    }
-                    if(value.startsWith("http:") || value.startsWith("https:")) {
-                        value  = "<a href='" + value+"'>" + value +"</a>";
-                    }
-                    if(value == "null") continue;
-                    out +=value;
-                    out +=  "</div></td></tr>";
-                }
-                out += "</table>";
-            }
-        }
-        return out;
-    }
 
     theMap.onFeatureSelect = function(layer) {
         if( this.onSelect) {
@@ -792,11 +388,44 @@ function initMapFunctions(theMap) {
             func(this, layer);
             return;
         }
-        console.log("select:" + layer.feature);
-        //        var format = new OpenLayers.Format.GeoJSON();
-        //        var json = format.write(feature);
-        feature = layer.feature;
-        var out  = this.getFeatureText(layer, feature);
+
+
+        var format = new OpenLayers.Format.GeoJSON();
+        var feature = layer.feature;
+        var style = feature.style;
+        var json = format.write(feature);
+        var p = feature.attributes;
+        var out = "";
+        if(style && style["balloonStyle"]) {
+            out = style["balloonStyle"];
+            for (var attr in p) {
+                //$[styleid/attr]
+                var label = attr.replace("_"," ");
+                var value = "";
+                if (typeof p[attr] == 'object' || typeof p[attr] == 'Object') {
+                    var o = p[attr];
+                    value =  o["value"];
+                } else {
+                    value =   p[attr];
+                }
+                out = out.replace("${" +style.id+"/" + attr+"}", value);
+            }
+        } else {
+            out = "<table>";
+            for (var attr in p) {
+                var label = attr.replace("_"," ");
+                out += "<tr><td align=right><div style=\"margin-right:5px;margin-bottom:3px;\"><b>" + label + ":</b></div></td><td><div style=\"margin-right:5px;margin-bottom:3px;\">";
+                if (p[attr]!=null && (typeof p[attr] == 'object' || typeof p[attr] == 'Object')) {
+                    var o = p[attr];
+                    console.log("o=" + o);
+                    out += o["value"];
+                } else {
+                    out +=  p[attr];
+                }
+                out +=  "</div></td></tr>";
+            }
+            out += "</table>";
+        }
         if (this.currentPopup) {
             this.map.removePopup(this.currentPopup);
             this.currentPopup.destroy();
@@ -814,127 +443,94 @@ function initMapFunctions(theMap) {
     }
 
     theMap.onFeatureUnselect = function(layer) {
-        this.onPopupClose();
+       theMap.onPopupClose();
     }
 
     theMap.removeKMLLayer = function(layer) {
         this.map.removeLayer(layer);
     }
 
-    theMap.setDefaultCanSelect = function(canSelect) {
-        this.defaultCanSelect = canSelect;
-    }
-
-    theMap.getCanSelect = function(canSelect) {
-        if(((typeof canSelect) =="undefined") || (canSelect == null)) {
-            return this.defaultCanSelect;
-        }
-        return canSelect;
-    }
-
-    theMap.addSelectCallback = function(layer, canSelect, selectCallback, unselectCallback) {
+    theMap.addKMLLayer = function(name, kmlUrl, canSelect, selectCallback, unselectCallback, argProps) {
         var _this = this;
-        if (this.getCanSelect(canSelect)) {
-            /** don't add listeners here. We do it up at the main map level
-                select = new OpenLayers.Control.SelectFeature(layer, {
-                multiple: false, 
-                hover: this.selectOnHover,
-                //highlightOnly: true,
-                renderIntent: "select",
-                });
-                if (this.highlightOnHover) {
-                highlight = new OpenLayers.Control.SelectFeature(layer, {
-                multiple: false, 
-                hover: true,
-                highlightOnly: true,
-                renderIntent: "temporary"
-                });
-                }
-                //                highlight.selectStyle = OpenLayers.Feature.Vector.style['temporary'];
-                */
-            if(selectCallback==null||!Utils.isDefined(selectCallback)) 
-                selectCallback = function(layer){_this.onFeatureSelect(layer)};
-            if(unselectCallback==null || !Utils.isDefined(unselectCallback)) 
-                unselectCallback = function(layer){_this.onFeatureUnselect()};
-            layer.selectCallback  = selectCallback;
-            layer.unselectCallback  = selectCallback;
-            /**
-               layer.events.on({ 
-               "featureselected": selectCallback,
-               "featureunselected": unselectCallback,
-               });
+        var  props = {
+            pointRadius: this.pointRadius,
+            fillOpacity:this.fillOpacity,
+            fillColor:this.fillColor,
+            strokeColor:this.strokeColor,
+            strokeWidth:this.strokeWidth,
+            select_fillColor: "#666",
+            select_strokeColor: "#222222",
+            select_strokeWidth: 1
+        };
+        if (argProps) RamaddaUtil.inherit(props, argProps);
 
-               if (this.highlightOnHover) {
-               this.map.addControl(highlight);
-               highlight.activate();   
-               }
-               this.map.addControl(select);
-               select.activate();   
-            */
-        }
-    };
 
-    theMap.initMapVectorLayer = function(layer, canSelect, selectCallback, unselectCallback, loadCallback) {
-        var _this=this;
-        this.showLoadingImage();
-        layer.isMapLayer = true;
-        layer.canSelect = canSelect;
-        this.loadedLayers.push(layer);
-        layer.events.on({"loadend": function(e) {
-                    _this.hideLoadingImage();
-                    if(e.response && Utils.isDefined(e.response.code) && e.response.code == OpenLayers.Protocol.Response.FAILURE) {
-                        alert("An error occurred loading the map");
-                        return;
-                    }
-                    if(_this.centerOnMarkersCalled) {
-                        _this.centerOnMarkers(_this.dfltBounds,_this.centerOnMarkersForce);
-                    }
-                    if(loadCallback) {
-                        loadCallback(_this, layer);
-                    }
-                    if(layer.features.length==1 && _this.displayDiv) {
-                        _this.fixedText = true;
-                        _this.showText(_this.getFeatureText(layer, layer.features[0]));
-                    }
-                }});
-        this.addLayer(layer);
-        this.addSelectCallback(layer, canSelect,selectCallback, unselectCallback);
-    }
-
-    theMap.addGeoJsonLayer = function(name, url, canSelect, selectCallback, unselectCallback, args, loadCallback) {
-        var layer = new OpenLayers.Layer.Vector(name, {
+        var kmlLayer = new OpenLayers.Layer.Vector(name, {
             projection: this.displayProjection,
             strategies: [new OpenLayers.Strategy.Fixed()],
             protocol: new OpenLayers.Protocol.HTTP({
-                url: url,
-                format: new OpenLayers.Format.GeoJSON({
-                    })
-                }),
-            //xxstyleMap: this.getVectorLayerStyleMap(args)
-            });
-        layer.styleMap = this.getVectorLayerStyleMap(layer, args);
-        this.initMapVectorLayer(layer, canSelect, selectCallback, unselectCallback, loadCallback);
-        return layer;
-    }
-
-    theMap.addKMLLayer = function(name, url, canSelect, selectCallback, unselectCallback, args, loadCallback) {
-        var layer = new OpenLayers.Layer.Vector(name, {
-            projection: this.displayProjection,
-            strategies: [new OpenLayers.Strategy.Fixed()],
-            protocol: new OpenLayers.Protocol.HTTP({
-                url: url,
+                url: kmlUrl,
                 format: new OpenLayers.Format.KML({
                         extractStyles: true, 
                         extractAttributes: true,
                         maxDepth: 2
                 })
             }),
-            //styleMap: this.getVectorLayerStyleMap(args)
+            styleMap: new OpenLayers.StyleMap({
+                "default": new OpenLayers.Style({
+                    pointRadius: props.pointRadius,
+                    fillOpacity: props.fillOpacity,
+                    fillColor: props.fillColor,
+                    //                    fillColor: "#ff0000",
+                    strokeColor: props.strokeColor,
+                    strokeWidth: props.strokeWidth,
+                }),
+                "select": new OpenLayers.Style({
+                    pointRadius: 3,
+                    fillOpacity: 0.95,
+                    fillColor: props.select_fillColor,
+                    strokeColor: props.select_strokeColor,
+                    strokeWidth: 1
+                })
+            })
+        });
+        kmlLayer.events.on({"loadend": function(e) {
+                    if(_this.centerOnMarkersCalled)
+                        _this.centerOnMarkers(_this.dfltBound);
+                }});
+        this.map.addLayer(kmlLayer);
+        if (canSelect) {
+            select = new OpenLayers.Control.SelectFeature(kmlLayer, {
+                 multiple: false, 
+                 hover: this.selectOnHover,
+                 //highlightOnly: true,
+                 renderIntent: "select",
+            });
+            if (this.highlightOnHover) {
+                highlight = new OpenLayers.Control.SelectFeature(kmlLayer, {
+                     multiple: false, 
+                     hover: true,
+                     highlightOnly: true,
+                     renderIntent: "temporary"
+                });
+                highlight.selectStyle = OpenLayers.Feature.Vector.style['temporary'];
             }
-            );
-        layer.styleMap = this.getVectorLayerStyleMap(layer,args);
-        this.initMapVectorLayer(layer,canSelect, selectCallback, unselectCallback, loadCallback);
-        return layer;
+            theMap = this;
+            if(selectCallback==null||!Utils.isDefined(selectCallback)) selectCallback = function(layer){theMap.onFeatureSelect(layer)};
+            if(unselectCallback==null || !Utils.isDefined(unselectCallback)) unselectCallback = this.onFeatureUnselect;
+
+            kmlLayer.events.on({ 
+                "featureselected": selectCallback,
+                "featureunselected": unselectCallback
+            });
+            if (this.highlightOnHover) {
+                this.map.addControl(highlight);
+                highlight.activate();   
+            }
+            this.map.addControl(select);
+            select.activate();   
+        }
+        return kmlLayer;
     }
 
     theMap.addBaseLayers = function() {
@@ -942,21 +538,38 @@ function initMapFunctions(theMap) {
             this.mapLayers = [ 
                               map_osm,
                               map_esri_topo,
-                              map_esri_street,
                               map_opentopo,
-                              map_usfs_ownership,
                               map_usgs_topo,
                               map_usgs_imagery,
                               map_usgs_relief,
-                              map_osm_toner,
-                              map_white,
-                              map_gray,
-                              map_blue,
-                              map_black
-
+                              //                              map_esri_worldimagery,
+                              /*                              map_google_hybrid,
+                              map_google_terrain,
+                              map_google_streets, 
+                              map_google_satellite,
+                              */
             ];
         }
-        var dflt =  this.defaultMapLayer||map_osm;
+
+        var needgoogle = false;
+        for (var i=0; i<this.mapLayers.length; i++) {
+            if (this.mapLayers[i].indexOf('google') >= 0) {
+                needgoogle = true;
+                break;
+            }
+        }
+
+        //if (needgoogle && (typeof google.maps === 'undefined')) {
+        if (needgoogle && !(google && google.maps)) {
+            console.log("No google maps");
+            return;
+        }
+
+        var dflt =  this.defaultMapLayer;
+
+        //        dflt =   map_osm;
+
+
         if(!this.haveAddedDefaultLayer && dflt) {
             var index = this.mapLayers.indexOf(dflt);
             if(index >= 0) { 
@@ -1014,9 +627,6 @@ function initMapFunctions(theMap) {
                         '//c.tile.openstreetmap.org/${z}/${x}/${y}.png'
                         ];
                 newLayer = new OpenLayers.Layer.OSM("Open Street Map", urls);
-            } else if(mapLayer == map_osm_toner) {
-                urls = ["http://a.tile.stamen.com/toner/${z}/${x}/${y}.png"];
-                newLayer = new OpenLayers.Layer.OSM("OSM-Toner", urls);
             } else if (mapLayer == map_ms_shaded) {
                 newLayer  =  new OpenLayers.Layer.VirtualEarth(
                         "Virtual Earth - Shaded", {
@@ -1063,23 +673,11 @@ function initMapFunctions(theMap) {
                 //Not working
                 var layerURL = "https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}";
                 newLayer  =  new OpenLayers.Layer.XYZ(
-                        "ESRI World Imagery", layerURL, {
+                        "ESRI - World Imagery", layerURL, {
                             sphericalMercator : sphericalMercatorDefault,
                             numZoomLevels : zoomLevelsDefault,
                             wrapDateLine : wrapDatelineDefault
                         });
-            } else if (mapLayer == map_white) {
-                this.addImageLayer(map_white,"White Background","", ramaddaBaseUrl+"/images/white.png", false, 90,-180,-90,180, 50,50,{isBaseLayer:true});
-                continue;
-            } else if (mapLayer == map_gray) {
-                this.addImageLayer(map_gray,"Gray Background","", ramaddaBaseUrl+"/images/gray.png", false, 90,-180,-90,180, 50,50,{isBaseLayer:true});
-                continue;
-            } else if (mapLayer == map_blue) {
-                this.addImageLayer(map_blue,"Blue Background","", ramaddaBaseUrl+"/images/blue.png", false, 90,-180,-90,180, 50,50,{isBaseLayer:true});
-                continue;
-            } else if (mapLayer == map_black) {
-                this.addImageLayer(map_black,"Black Background","", ramaddaBaseUrl+"/images/black.png", false, 90,-180,-90,180, 50,50,{isBaseLayer:true});
-                continue;
             } else if (mapLayer == map_usgs_topo) {
                 newLayer = new OpenLayers.Layer.XYZ(
                                                     "USGS Topo",
@@ -1115,23 +713,15 @@ function initMapFunctions(theMap) {
             } else if (mapLayer == map_esri_topo) {
                 var layerURL = "//server.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer/tile/${z}/${y}/${x}";
                 newLayer  =  new OpenLayers.Layer.XYZ(
-                        "ESRI Topo", layerURL, {
+                        "ESRI - Topo", layerURL, {
                             sphericalMercator : sphericalMercatorDefault,
                             numZoomLevels : zoomLevelsDefault,
-                            wrapDateLine : wrapDatelineDefault,
-                        });
-            } else if (mapLayer == map_usfs_ownership) {
-                var layerURL  = "https://apps.fs.usda.gov/arcx/rest/services/wo_nfs_gstc/GSTC_TravelAccessBasemap_01/MapServer/tile/${z}/${y}/${x}"
-                newLayer  =  new OpenLayers.Layer.XYZ(
-                        "USFS Ownership", layerURL, {
-                            sphericalMercator : sphericalMercatorDefault,
-                            numZoomLevels : zoomLevelsDefault,
-                            wrapDateLine : wrapDatelineDefault,
+                            wrapDateLine : wrapDatelineDefault
                         });
             } else if (mapLayer == map_esri_street) {
                 var layerURL = "//server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/${z}/${y}/${x}";
                 newLayer  =  new OpenLayers.Layer.XYZ(
-                        "ESRI Streets", layerURL, {
+                        "ESRI - Streets", layerURL, {
                             sphericalMercator : sphericalMercatorDefault,
                             numZoomLevels : zoomLevelsDefault,
                             wrapDateLine : wrapDatelineDefault
@@ -1139,7 +729,7 @@ function initMapFunctions(theMap) {
             } else if (/\/tile\//.exec(mapLayer)) {
                 var layerURL = mapLayer;
                 newLayer  =  new OpenLayers.Layer.XYZ(
-                                                           "ESRI China Map", layerURL, {
+                                                           "ESRI - China Map", layerURL, {
                             sphericalMercator : sphericalMercatorDefault,
                             numZoomLevels : zoomLevelsDefault,
                             wrapDateLine : wrapDatelineDefault
@@ -1161,7 +751,7 @@ function initMapFunctions(theMap) {
                 if(mapLayer == this.defaultMapLayer) {
                     this.defaultOLMapLayer = newLayer;
                 }
-                this.addLayer(newLayer);
+                this.map.addLayer(newLayer);
             }
 
         }
@@ -1189,7 +779,6 @@ function initMapFunctions(theMap) {
 
     theMap.searchMarkers = function(text) {
         text = text.trim();
-        text = text.toLowerCase();
         var all  = text=="";
         var cbxall =   $(':input[id*=\"' + "visibleall_" + this.mapId +'\"]');
         cbxall.prop('checked', all);
@@ -1204,7 +793,7 @@ function initMapFunctions(theMap) {
                 else if(!Utils.isDefined(name)) {
                     visible = false;
                 } else {
-                    visible = name.toLowerCase().includes(text);
+                    visible = name.includes(text);
                 }
                 if(visible) {
                     marker.style.display = 'inline';
@@ -1225,7 +814,7 @@ function initMapFunctions(theMap) {
                 else if(!Utils.isDefined(name)) {
                     visible = false;
                 } else {
-                    visible = name.toLowerCase().includes(text);
+                    visible = name.includes(text);
                 }
                 marker.display(visible);
             }
@@ -1242,7 +831,7 @@ function initMapFunctions(theMap) {
                 else if(!Utils.isDefined(name)) {
                     visible = false;
                 } else {
-                    visible = name.toLowerCase().includes(text);
+                    visible = name.includes(text);
                 }
                 if(visible) {
                     line.style.display = 'inline';
@@ -1273,7 +862,7 @@ function initMapFunctions(theMap) {
 
 
         //this.vectors = new OpenLayers.Layer.Vector("Drawing");
-        //this.addLayer(this.vectors);
+        //this.map.addLayer(this.vectors);
 
         if (this.enableDragPan) {
           this.map.addControl(new OpenLayers.Control.Navigation({
@@ -1381,8 +970,16 @@ function initMapFunctions(theMap) {
             this.map.zoomToMaxExtent(); 
         }
 
+        if (this.markers) {
+            this.addVectorLayer(this.markers);
+        }
+
+        if (this.circles) {
+            this.addVectorLayer(this.circles);
+        }
+
         for(var i=0;i<this.initialLayers.length;i++) {
-            this.addLayer(this.initialLayers[i]);
+            this.map.addLayer(this.initialLayers[i]);
         }
         this.initialLayers = [];
 
@@ -1412,42 +1009,23 @@ function initMapFunctions(theMap) {
     }
 
 
-    theMap.addVectorLayer = function(layer,canSelect) {
-        this.addLayer(layer);
-        if (this.getCanSelect(canSelect)) {
-            this.vectorLayers.push(layer);
-            var _this = this;
-            if(!this.map.featureSelect) {
-                this.map.featureSelect = new OpenLayers.Control.SelectFeature(layer, {
-                        multiple: false,
-                        hover: this.selectOnHover,
-                        onSelect: function(feature) { 
-                            _this.showMarkerPopup(feature, true);
-                        }
-                    });
-                /*
-                if (this.highlightOnHover) {
-                    this.map.highlightSelect = new OpenLayers.Control.SelectFeature(layer, {
-                            multiple: false, 
-                            hover: true,
-                            highlightOnly: true,
-                            renderIntent: "temporary"
-                        });
-                    this.map.addControl(this.map.highlightSelect);
-                    this.map.highlightSelect.activate();   
-                    }*/
 
-                //for now
-                //this.map.addControl(this.map.featureSelect);
-                //                this.map.featureSelect.activate();
-            } else {
-                this.map.featureSelect.setLayer(this.vectorLayers);
-                /*
-                  if(this.map.highlightSelect) {
-                    this.map.highlightSelect.setLayer(this.vectorLayers);
-                }
-                */
-            }
+    theMap.addVectorLayer = function(layer) {
+        this.map.addLayer(layer);
+        this.vectorLayers.push(layer);
+        var _this = this;
+        if(!this.map.featureSelect) {
+            this.map.featureSelect = new OpenLayers.Control.SelectFeature(layer, {
+                    multiple: false,
+                    hover: this.selectOnHover,
+                    onSelect: function(feature) { 
+                        _this.showMarkerPopup(feature, true);
+                    }
+                });
+            this.map.addControl(this.map.featureSelect);
+            this.map.featureSelect.activate();
+        } else {
+            this.map.featureSelect.setLayer(this.vectorLayers);
         }
     }
 
@@ -1462,22 +1040,25 @@ function initMapFunctions(theMap) {
     theMap.initForDrawing = function() {
         var theMap = this;
         if (!theMap.drawingLayer) {
-            this.drawingLayer = new OpenLayers.Layer.Vector("Drawing");
-            this.addLayer(theMap.drawingLayer);
+            theMap.drawingLayer = new OpenLayers.Layer.Vector("Drawing");
+            theMap.map.addLayer(theMap.drawingLayer);
         }
-        this.drawControl = new OpenLayers.Control.DrawFeature(
+        theMap.drawControl = new OpenLayers.Control.DrawFeature(
                 theMap.drawingLayer, OpenLayers.Handler.Point);
         // theMap.drawControl.activate();
-        this.map.addControl(theMap.drawControl);
+        theMap.map.addControl(theMap.drawControl);
     }
 
     theMap.drawingFeatureAdded = function(feature) {
         // alert(feature);
     }
 
+
     theMap.addClickHandler = function(lonfld, latfld, zoomfld, object) {
+
         this.lonFldId = lonfld;
         this.latFldId = latfld;
+
         if (this.clickHandler)
             return;
         if (!this.map)
@@ -1556,7 +1137,7 @@ function initMapFunctions(theMap) {
                 // alert("north = " + this.fldNorth.obj.value);
                 this.setSelectionBox(this.fldNorth.obj.value,
                         this.fldWest.obj.value, this.fldSouth.obj.value,
-                        this.fldEast.obj.value);
+                                     this.fldEast.obj.value, true);
             }
             
             if (this.fldLon) {
@@ -1571,7 +1152,7 @@ function initMapFunctions(theMap) {
             // alert("north = " + this.fldNorth.obj.value);
             this.setSelectionBox(this.fldNorth.obj.value,
                     this.fldWest.obj.value, this.fldSouth.obj.value,
-                    this.fldEast.obj.value);
+                                 this.fldEast.obj.value,true);
             if (this.selectorBox) {
                 var boxBounds = this.selectorBox.bounds
                 this.map.setCenter(boxBounds.getCenterLonLat());
@@ -1600,7 +1181,7 @@ function initMapFunctions(theMap) {
 
     // Assume that north, south, east, and west are in degrees or
     // some variant thereof
-    theMap.setSelectionBox = function(north, west, south, east) {
+    theMap.setSelectionBox = function(north, west, south, east, centerView) {
         if (north == "" || west == "" || south == "" || east == "")
             return;
         var bounds = createBounds(west, Math.max(south,
@@ -1615,7 +1196,9 @@ function initMapFunctions(theMap) {
             this.selectorBox.bounds = this.transformLLBounds(bounds);
             // this.selectorBox.bounds = bounds;
         }
-        this.setViewToBounds(bounds)
+        if(centerView) {
+            this.setViewToBounds(bounds)
+        }
 
         if(this.boxes) {
             this.boxes.redraw();
@@ -1656,7 +1239,6 @@ function initMapFunctions(theMap) {
             $("#" +this.latFldId).val(formatLocationValue(lat));
         }
 
-
         var lonlat = new createLonLat(lon,lat);
         if (this.selectorMarker == null) {
             this.selectorMarker = this.addMarker(positionMarkerID, lonlat, "", "", "", 20,10);
@@ -1692,6 +1274,7 @@ function initMapFunctions(theMap) {
                 var bounds = this.transformLLBounds(createBounds(lon-offset, lat-offset,lon+offset,lat+offset));
                 this.map.zoomToExtent(bounds);
             }
+            
         }
     }
     
@@ -1824,7 +1407,7 @@ function initMapFunctions(theMap) {
                 var bounds = createBounds(ll.lon, ll.lat, ur.lon,
                         ur.lat);
                 bounds = theMap.normalizeBounds(bounds);
-                theMap.setSelectionBox(bounds.top, bounds.left, bounds.bottom, bounds.right);
+                theMap.setSelectionBox(bounds.top, bounds.left, bounds.bottom, bounds.right,false);
                 theMap.findSelectionFields();
                 if(listener) {
                     listener(bounds);
@@ -1920,7 +1503,7 @@ function initMapFunctions(theMap) {
                     newNorth+=dy;
                 var bounds = createBounds(newWest,newSouth, newEast, newNorth);
                 bounds = theMap.normalizeBounds(bounds);
-                theMap.setSelectionBox(bounds.top, bounds.left, bounds.bottom, bounds.right);
+                theMap.setSelectionBox(bounds.top, bounds.left, bounds.bottom, bounds.right, false);
                 theMap.findSelectionFields();
                 if(!theMap.fldNorth) return;
                 theMap.fldNorth.obj.value = bounds.top;
@@ -1939,9 +1522,6 @@ function initMapFunctions(theMap) {
             this.currentPopup.destroy();
             this.currentPopup = null;
             this.hiliteBox('');
-            if(this.selectedFeature) {
-                this.unselectFeature(this.selectedFeature);
-            }
         }
     }
 
@@ -2068,77 +1648,45 @@ function initMapFunctions(theMap) {
         this.showMarkerPopup(mymarker);
     }
 
-                                           
-    theMap.hideLoadingImage = function() {
-        if(this.loadingImage) {
-            this.loadingImage.style.visibility="hidden";
-        }
-    }
-
-    theMap.showLoadingImage = function() {
-        if(this.loadingImage) {
-            this.loadingImage.style.visibility="inline";
-            return;
-        }
-        sz = new OpenLayers.Size();
-        sz.h = 120;
-        sz.w = 120;
-        width = this.map.viewPortDiv.offsetWidth;
-        height = this.map.viewPortDiv.offsetHeight;
-        position = new OpenLayers.Pixel(width/2-sz.w/2,height/2-sz.h/2);
-        this.loadingImage  = OpenLayers.Util.createImage("loadingimage",
-                                          position,
-                                          sz,
-                                          ramaddaBaseUrl + '/icons/mapprogress.gif');
-        this.loadingImage.style.zIndex = 1010;
-        this.map.viewPortDiv.appendChild(this.loadingImage);
-    }
-
-
     // bounds are in lat/lon
-    theMap.centerOnMarkers = function(dfltBounds, force) {
+    theMap.centerOnMarkers = function(dfltBounds) {
         this.centerOnMarkersCalled = true;
-        this.centerOnMarkersForce = force;
+        this.dfltBounds = dfltBounds;
         now = Date.now();
         //        console.log("center on markers:" + ((now-this.startTime)/1000));
         var bounds = null;
         // bounds = this.boxes.getDataExtent();
         if(dfltBounds) {
-            if(dfltBounds.left<-180||dfltBounds.left>180||
-               dfltBounds.right<-180|| dfltBounds.right>180 || 
-               dfltBounds.bottom<-90 || dfltBounds.bottom>90 || 
-               dfltBounds.top<-90 || dfltBounds.top>90) { 
+            if(dfltBounds.left<-180||dfltBounds.right>180 || dfltBounds.bottom<-90 || dfltBounds.top>90) {
+                console.log("Got bad dfltBounds:" +dfltBounds);
                 dfltBounds = createBounds(-180,-90,180,90);
             }
         }
-        this.dfltBounds = dfltBounds;
         //        if (!bounds) {
-        if(!force) {
-            if (this.markers) {
-                // markers are in projection coordinates
-                var dataBounds = this.markers.getDataExtent();
-                bounds = this.transformProjBounds(dataBounds);
-            }
-            if(this.lines) {
-                var dataBounds = this.lines.getDataExtent();
-                var fromLine = this.transformProjBounds(dataBounds);
+        if (this.markers) {
+            // markers are in projection coordinates
+            var dataBounds = this.markers.getDataExtent();
+            bounds = this.transformProjBounds(dataBounds);
+        }
+        if(this.lines) {
+            var dataBounds = this.lines.getDataExtent();
+            var fromLine = this.transformProjBounds(dataBounds);
+            if(bounds)
+                bounds.extend(fromLine);
+            else
+                bounds = fromLine;
+        }
+        for(var layer in this.map.layers) {
+            layer = this.map.layers[layer];
+            if(!layer.getDataExtent) continue;
+            if(layer.isBaseLayer || !layer.getVisibility()) continue;
+            var dataBounds = layer.getDataExtent();
+            if(dataBounds) {
+                var latlon= this.transformProjBounds(dataBounds);
                 if(bounds)
-                    bounds.extend(fromLine);
+                    bounds.extend(latlon);
                 else
-                    bounds = fromLine;
-            }
-            for(var layer in this.getMap().layers) {
-                layer = this.getMap().layers[layer];
-                if(!layer.getDataExtent) continue;
-                if(layer.isBaseLayer || !layer.getVisibility()) continue;
-                var dataBounds = layer.getDataExtent();
-                if(dataBounds) {
-                    var latlon= this.transformProjBounds(dataBounds);
-                    if(bounds)
-                        bounds.extend(latlon);
-                    else
-                        bounds = latlon;
-                }
+                    bounds = latlon;
             }
         }
 
@@ -2148,11 +1696,22 @@ function initMapFunctions(theMap) {
         if(!bounds) {
             bounds  = dfltBounds;
         }
+        /*
+        if(bounds!=null) {
+            if(bounds.left==-9999 ||bounds.right==-9999 || bounds.bottom==-9999 || bounds.top==-9999) {
+                console.log("bad bounds:" +  bounds);
+                return;
+            }
+        }
+        */
+
+        //        console.log("bounds:" +  bounds);
+
         if (!bounds) {
             return;
         }
 
-        if (!this.getMap()) {
+        if (!this.map) {
             this.defaultBounds = bounds;
             return;
         }
@@ -2166,17 +1725,17 @@ function initMapFunctions(theMap) {
     theMap.setViewToBounds = function(bounds) {
         projBounds = this.transformLLBounds(bounds);
         if(projBounds.getWidth() ==0) {
-            this.getMap().zoomTo(this.initialZoom);
+            this.map.zoomTo(this.initialZoom);
         } else {
-            this.getMap().zoomToExtent(projBounds);
+            this.map.zoomToExtent(projBounds);
         }
-        this.getMap().setCenter(projBounds.getCenterLonLat());
+        this.map.setCenter(projBounds.getCenterLonLat());
 
     }
 
     theMap.setCenter = function(latLonPoint) {
         var projPoint =  this.transformLLPoint(latLonPoint);
-        this.getMap().setCenter(projPoint);
+        this.map.setCenter(projPoint);
     }
 
 
@@ -2185,15 +1744,15 @@ function initMapFunctions(theMap) {
             return;
         bounds = this.markers.getDataExtent();
         if(bounds == null) return;
-        this.getMap().setCenter(bounds.getCenterLonLat());
-        this.getMap().zoomToExtent(bounds);
+        this.map.setCenter(bounds.getCenterLonLat());
+        this.map.zoomToExtent(bounds);
     }
 
     theMap.centerToMarkers = function() {
         if (!this.markers)
             return;
         bounds = this.markers.getDataExtent();
-        this.getMap().setCenter(bounds.getCenterLonLat());
+        this.map.setCenter(bounds.getCenterLonLat());
     }
 
     theMap.setInitialCenterAndZoom = function(lon, lat, zoomLevel) {
@@ -2221,29 +1780,47 @@ function initMapFunctions(theMap) {
 
     theMap.seenMarkers = {};
 
-    theMap.addMarker = function(id, location, iconUrl, markerName, text, parentId, size, voffset, canSelect) {
+    theMap.addMarker = function(id, location, iconUrl, markerName, text, parentId, size, voffset) {
         if(size == null) size = 16;
         if(voffset ==null) voffset = 0;
         
         if (!this.markers) {
+            this.markers = new OpenLayers.Layer.Markers("Markers");
             this.markers = new OpenLayers.Layer.Vector("Markers");
-            this.addVectorLayer(this.markers, canSelect);
+
+            // Added this because I was getting an unknown method error
+            /*
+            this.markers.getFeatureFromEvent = function(evt) {
+                console.log("feature:" + evt);
+                return null;
+            };
+            this.markers.renderer = {moveRoot: function(root){}}
+            */
+
+            if (this.map) {
+                this.addVectorLayer(this.markers);
+            }
         }
         if (!iconUrl) {
             iconUrl = ramaddaBaseUrl + '/icons/marker.png';
         }
         var sz = new OpenLayers.Size(size, size);
         var calculateOffset = function(size) {
+            //            return new OpenLayers.Pixel(-(size.w / 2), -size.h);
             return new OpenLayers.Pixel(-(size.w / 2), -(size.h/2)-voffset);
         };
 
         var icon = new OpenLayers.Icon(iconUrl, sz, null, calculateOffset);
         var projPoint = this.transformLLPoint(location);
         var marker = new OpenLayers.Marker(projPoint, icon);
+
+
+
         var feature = new OpenLayers.Feature.Vector(
                                                     new OpenLayers.Geometry.Point( location.lon,location.lat ).transform(this.displayProjection, this.sourceProjection),
     {description:''} ,
     {externalGraphic: iconUrl, graphicHeight: size, graphicWidth: size, graphicXOffset:-size/2, graphicYOffset:-size/2  });
+
 
         feature.ramaddaId = id;
         feature.parentId = parentId;
@@ -2285,22 +1862,31 @@ function initMapFunctions(theMap) {
 
         feature.what = "marker";
         this.markers.addFeatures( [ feature ]);
+
+        /*
+        this.markers.addMarker(marker);
+        if(this.selectorMarker!=null && this.selectorMarker!=marker) {
+            this.markers.removeMarker(this.selectorMarker);
+            this.markers.addMarker(this.selectorMarker);
+            }
+        return marker;
+        */
         return feature;
     }
 
 
 
     theMap.initBoxes = function(theBoxes) {
-        if (!this.getMap()) {
+        if (!this.map) {
             // alert('whoa, no map');
         }
-        this.addLayer(theBoxes);
+        this.map.addLayer(theBoxes);
         // Added this because I was getting an unknown method error
         theBoxes.getFeatureFromEvent = function(evt) {
             return null;
         };
         var sf = new OpenLayers.Control.SelectFeature(theBoxes);
-        this.getMap().addControl(sf);
+        this.map.addControl(sf);
         sf.activate();
     }
 
@@ -2314,9 +1900,9 @@ function initMapFunctions(theMap) {
     theMap.addBox = function(box) {
         if (!this.boxes) {
             this.boxes = new OpenLayers.Layer.Boxes("Boxes", {
-                    wrapDateLine : wrapDatelineDefault,
-                });
-            if (!this.getMap()) {
+                            wrapDateLine : wrapDatelineDefault
+                        });
+            if (!this.map) {
                 this.initialBoxes = this.boxes;
             } else {
                 this.initBoxes(this.boxes);
@@ -2368,6 +1954,7 @@ function initMapFunctions(theMap) {
             fillColor: "red",
             fillOpacity:1.0,
             pointRadius : 5, 
+            zIndex: 20,
         };
 
         if (args["zoomToExtent"]) {
@@ -2379,10 +1966,6 @@ function initMapFunctions(theMap) {
 
 
     theMap.circleMarker = function(id, attrs) {
-        marker = this.findMarker(id);
-        if(!marker) {
-            return null;
-        }
         myattrs = {pointRadius : 12, 
                    stroke: true,
                    strokeColor : "red",
@@ -2391,45 +1974,20 @@ function initMapFunctions(theMap) {
 
         if(attrs)
             $.extend(myattrs, attrs);
-        var _this = this;
-        this.showFeatureText(marker);
-        return this.addPoint(id+"_circle",marker.location, myattrs);
+        marker = this.findMarker(id);
+        if(!marker) {
+            return null;
+        }
+        return this.addPoint(id,marker.location, myattrs);
     }
-
 
     theMap.uncircleMarker = function(id) {
-        feature = this.features[id+"_circle"];
-        if(feature) {
+        feature = this.features[id];
+        if(feature)
             this.circles.removeFeatures( [feature]);
-        }
-        this.hideFeatureText(feature);
     }
 
-    theMap.showFeatureText = function (feature) {
-        var _this = this;
-        if(feature.text && this.displayDiv) {
-            this.textFeature = feature;
-            var callback = function() {
-                if(_this.textFeature == feature) {
-                    _this.showText(_this.textFeature.text);
-                }
-            }
-            setTimeout(callback,500);
-        }
-    },
-
-    theMap.showText = function (text) {
-        $("#" + this.displayDiv).html(text);
-    }
-
-    theMap.hideFeatureText = function (feature) {
-        if(!feature || this.textFeature == feature) {
-            this.showText("");
-        }
-    },
-
-
-    theMap.addPoint = function(id, point, attrs, text, notReally) {
+    theMap.addPoint = function(id, point, attrs, text) {
         //Check if we have a LonLat instead of a Point
         var location = point;
         if(typeof point.x  ==='undefined') {
@@ -2439,20 +1997,49 @@ function initMapFunctions(theMap) {
         }
 
         var _this = this;
+        if(this.circles == null) {
+            this.circles =  new OpenLayers.Layer.Vector("Circles Layer");
+            /*
+            this.circles.events.on({
+                    'featureselected': function(feature) {
+                        feature  = feature.feature;
+                        _this.showMarkerPopup(feature);
+                    },
+                   'featureunselected': function(feature) {
+                   }
+                   });*/
+            if(this.map) {
+                this.addVectorLayer(this.circles);
+                /*
+                this.map.addLayer(this.circles);
+                var sf = new OpenLayers.Control.SelectFeature(this.circles,{
+                        clickout: false, 
+                        toggle: false,
+                        multiple: false, 
+                        hover: false,
+                        toggleKey: "ctrlKey", 
+                        multipleKey: "shiftKey", 
+                        box: false
+                    });
+
+                this.map.addControl(sf);
+                sf.activate();
+                */
+            }
+        }
+
 
         var cstyle = OpenLayers.Util.extend( {},  OpenLayers.Feature.Vector.style['default']);
         $.extend(cstyle, {
                 pointRadius : 5, 
-                    stroke: true,
-                    strokeColor : "red",
-                    strokeWidth : 0,
-                    strokeOpacity: 0.75,
-                    fill: true,
-                    fillColor: "blue",
-                    fillOpacity: 0.75,
-                    }
+                stroke: true,
+                strokeColor : "red",
+                strokeWidth : 0,
+                strokeOpacity: 0.75,
+                fill: true,
+                fillColor: "blue",
+                fillOpacity: 0.75}
             );
-
         if (attrs) {
             $.extend(cstyle, attrs);
             if(cstyle.pointRadius<=0)  cstyle.pointRadius = 1;
@@ -2468,49 +2055,16 @@ function initMapFunctions(theMap) {
         center.transform(this.displayProjection, this.sourceProjection);
         var feature = new OpenLayers.Feature.Vector(center, null, cstyle);
 
-        feature.center = center;
         feature.ramaddaId = id;
         feature.text = this.getPopupText(text, feature);
         feature.location =  location;
         this.features[id] = feature;
-        if(!notReally) {
-            if(this.circles == null) {
-                this.circles =  new OpenLayers.Layer.Vector("Circles Layer");
-                /*
-                  this.circles.events.on({
-                  'featureselected': function(feature) {
-                  feature  = feature.feature;
-                  _this.showMarkerPopup(feature);
-                  },
-                  'featureunselected': function(feature) {
-                  }
-                  });*/
-                this.addVectorLayer(this.circles);
-                /*
-                  this.addLayer(this.circles);
-                  var sf = new OpenLayers.Control.SelectFeature(this.circles,{
-                  clickout: false, 
-                  toggle: false,
-                  multiple: false, 
-                  hover: false,
-                  toggleKey: "ctrlKey", 
-                  multipleKey: "shiftKey", 
-                  box: false
-                  });
-
-                  this.getMap().addControl(sf);
-                  sf.activate();
-                */
-            }
-
-            this.circles.addFeatures( [feature]);
-        }
+        this.circles.addFeatures( [feature]);
         return feature;
     }
 
     theMap.removePoint = function(point){
-        if(this.circles)
-            this.circles.removeFeatures( [point]);
+        this.circles.removeFeatures( [point]);
     }
 
     theMap.addRectangle = function(id, north, west, south, east, attrs,info) {
@@ -2539,7 +2093,7 @@ function initMapFunctions(theMap) {
 
     theMap.removePolygon = function(line) {
         if (this.lines) {
-            //            this.lines.removeAllFeatures();
+            this.lines.removeAllFeatures();
             this.lines.removeFeatures([line]);
         }
     }
@@ -2548,6 +2102,7 @@ function initMapFunctions(theMap) {
 
     theMap.addPolygon = function(id, name, points, attrs,marker) {
         var _this = this;
+
         for(var i =0;i<points.length;i++) {
             points[i].transform(this.displayProjection, this.sourceProjection);
         }
@@ -2585,11 +2140,12 @@ function initMapFunctions(theMap) {
             line.style.display = 'none';
         }
 
+
         this.lines.addFeatures( [ line ]);
         return line;
     }
 
-    theMap.showMarkerPopup = function(marker, fromClick) {
+    theMap.showMarkerPopup = function(marker, fromClick=false) {
         if(this.entryClickHandler && window[this.entryClickHandler]) {
             if(!window[this.entryClickHandler](this,marker)) {
                 return;
@@ -2597,7 +2153,7 @@ function initMapFunctions(theMap) {
         }
 
         if (this.currentPopup) {
-            this.getMap().removePopup(this.currentPopup);
+            this.map.removePopup(this.currentPopup);
             this.currentPopup.destroy();
         }
 
@@ -2652,9 +2208,9 @@ function initMapFunctions(theMap) {
             popup.minSize =  new OpenLayers.Size(marker.inputProps.minSizeX, marker.inputProps.minSizeY);
         }
 
-        marker.popupText = popup;
+        marker.popup = popup;
         popup.marker = marker;
-        this.getMap().addPopup(popup);
+        this.map.addPopup(popup);
         this.currentPopup = popup;
 
 
@@ -2751,7 +2307,7 @@ function formatLocationValue(value) {
                 if (zoomFld) {
                     zoomFld.obj.value = this.theMap.getMap().getZoom();
                 }
-                //                this.theMap.setSelectionMarker(lonlat.lon, lonlat.lat);
+                this.theMap.setSelectionMarker(lonlat.lon, lonlat.lat);
 
                 if(this.clickListener!=null) {
                     this.clickListener.handleClick(this, lonlat.lon,lonlat.lat);
@@ -2836,7 +2392,7 @@ function highlightMarkers(selector, mapVar, background1, background2,id) {
                                    $(this).css('background',background1); 
                                if(!$(this).data('mapid')) 
                                    return;
-                               if(mapVar.circleMarker($(this).data('mapid'),ramaddaCircleHiliteAttrs)) {
+                               if(mapVar.circleMarker($(this).data('mapid'),{strokeColor:'blue'})) {
                                    return;
                                }
                                if(id == null)
@@ -2866,40 +2422,4 @@ function highlightMarkers(selector, mapVar, background1, background2,id) {
                                }
                                mapVar.uncircleMarker($(this).data('mapid'));
                            });
-}
-
-
-function ramaddaFindFeature(layer, point) {
-    for (var j = 0; j < layer.features.length; j++) {
-        var feature = layer.features[j];
-        var geometry = feature.geometry;
-        if(!geometry) {
-            continue;
-        }
-        bounds = geometry.getBounds();
-        if(!bounds.contains(point.x,point.y)) {
-            continue;
-        }
-        if(geometry.components) {
-            for(var sub=0;sub<geometry.components.length;sub++) {
-                comp = geometry.components[sub];
-                bounds = comp.getBounds();
-                if(!bounds.contains(point.x,point.y)) {
-                    continue;
-                }
-                if(comp.containsPoint && comp.containsPoint(point)) {
-                    return {feature: feature,index:j};
-                }
-            }
-        } else {
-            if(!geometry.containsPoint) {
-                console.log("unknown geometry:" + geometry.CLASS_NAME);
-                continue;
-            }
-            if(geometry.containsPoint(point)) {
-                return {feature: feature,index:j};
-            }
-        }
-    }
-    return null;
 }
