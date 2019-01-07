@@ -8,7 +8,8 @@
 <a name="latlonimage"></a>
 <h2>Lat-Lon Images</h2>
 The RAMADDA Lat-Lon Image entry type displays a georeferenced image in a map. 
-Here is an <a href="https://boulderdata.org/repository/entry/show?entryid=51936d54-1ede-432d-9aa4-718e0b07ea20">example</a>. You upload an image and specify a geographic bounding box. Once you create the entry you can go and edit it again and the image will be displayed in the edit map popup.
+Here is an <a href="https://boulderdata.org/repository/entry/show?entryid=51936d54-1ede-432d-9aa4-718e0b07ea20">example</a>. You upload an image and specify a geographic bounding box. Once you create the entry you can go and edit it again and the image will be displayed in the edit map popup. 
+
 
 
 <a name="properties"></a>
@@ -29,7 +30,7 @@ map.&lt;key value&gt;.extra2=&lt;value1&gt;
 ...
 </pre>
 <p>
-For the congressional shapefile properties we use:
+For the congressional shapefile properties file we use:
 <p>
 <pre>
 map.fields=party,state,member,url,memberimage,town,phone,address,gender
@@ -38,7 +39,13 @@ map.0200.party=R
 map.0200.member=Don Young
 map.0200.state=Alaska
 ...
+map.0101.party=R
+map.0101.member=Bradley Byrne
+map.0101.state=Alabama
+...
 </pre>
+
+This defines a number of extra field (party,state,member,url,memberimage,town,phone,address,gender). The geoid values (0200, 0101) are in the original shapefile. We use these values to add keys for the various fields.
 
 </body>
 </html>

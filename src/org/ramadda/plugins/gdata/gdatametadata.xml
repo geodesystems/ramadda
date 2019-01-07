@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
 <metadata>
-
+<!--
   <handler category="GDATA">
 
     <type name="Last Modified By" id="gdata.lastmodifiedby" searchable="false" browsable="false">
@@ -32,5 +32,5 @@
     </type>
 
   </handler>
-
+-->
 </metadata>

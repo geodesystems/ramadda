@@ -251,7 +251,7 @@
     </type>
   </handler>
 
-  <handler class="org.ramadda.repository.metadata.JpegMetadataHandler"   category="Miscellaneous" >
+  <handler class="org.ramadda.repository.metadata.JpegMetadataHandler"   category="Map" >
     <type
        name="Camera direction"
        id="camera.direction">
@@ -276,14 +276,16 @@
     </type>
 -->
 
-    <type
+    <type 
        name="Named Spatial Region"
+       category="Map"
        id="spatial.region">
       <element name="value"/>
     </type>
 
     <type
        name="Spatial Polygon Coordinates"
+       category="Map"
        showinhtml="false"
        id="spatial.polygon">
       <element name="polygon1" suffix="lat1,lon1;lat2,lon2;...;latN,lonN;"/>
@@ -294,6 +296,7 @@
 
     <type
        name="KML Polygon Coordinates"
+       category="Map"
        showinhtml="false"
        id="spatial.kmlpolycoords">
       <element name="polygon1" suffix="lon,lat "/>
