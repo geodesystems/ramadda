@@ -7,7 +7,7 @@
     </type>
   </handler>
 
-  <handler category="Tags">
+  <handler category="Miscellaneous">
     <type name="Document Comment" displaycategory="Comments" id="media_comment"  searchable="false" browsable="true">
       <element name="Location"  searchable="false"/>
       <element name="Comment"  searchable="false" rows="5"/>

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
 <metadata>
 
-  <handler category="Tags">
+  <handler category="DIF">
     <type name="GCMD Science Keyword" id="enum_gcmdkeyword" searchable="true" browsable="true" displaygroup="GCMD Science Keywords">
       <element
          name="Keyword"
