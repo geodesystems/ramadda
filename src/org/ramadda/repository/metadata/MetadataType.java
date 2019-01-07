@@ -1131,7 +1131,7 @@ public class MetadataType extends MetadataTypeBase {
                                          + getName());
         String        cancel = HtmlUtils.submit(msg("Cancel"), ARG_CANCEL);
         StringBuilder sb     = new StringBuilder();
-        sb.append(HtmlUtils.row(HtmlUtils.colspan(help, 2)));
+        sb.append(HtmlUtils.row(HtmlUtils.colspan(HtmlUtils.note(help), 3)));
         sb.append("\n");
 
         if ( !forEdit) {
