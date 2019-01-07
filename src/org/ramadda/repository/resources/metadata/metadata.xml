@@ -169,9 +169,15 @@
     </type>
 
     <type
-       name="Map Bubble"
+       name="Entry Map Bubble"
+       category="Map"
        showinhtml="false"       
        id="content.mapbubble">
+      <help>
+<![CDATA[
+Specify a wiki template to use for the map bubble shown for an entry
+]]>
+</help>
       <element name="entrytype" label="Entry Type" datatype="enumerationplus" values="folder:Folder,file:File"
                suffix="Entry type that this page style is applicable to"/>
       <element name="apply_to_this" label="Apply to this entry" datatype="boolean" default="true"
