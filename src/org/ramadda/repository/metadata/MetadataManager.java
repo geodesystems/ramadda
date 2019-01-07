@@ -1688,6 +1688,10 @@ public class MetadataManager extends RepositoryManager {
             groupSB.append(HtmlUtils.hidden(ARG_METADATA_TYPE, type.getId()));
             groupSB.append(HtmlUtils.submit(msg("Add") + HtmlUtils.space(1)
                                             + type.getLabel()));
+            if(Utils.stringDefined(type.getHelp())) {
+                groupSB.append(HtmlUtils.space(2));
+                groupSB.append(type.getHelp());
+            }
             groupSB.append(HtmlUtils.formClose());
             groupSB.append(HtmlUtils.p());
             groupSB.append(NEWLINE);

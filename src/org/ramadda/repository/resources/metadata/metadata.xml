@@ -155,6 +155,11 @@
        name="Page Style"
        showinhtml="false"       
        id="content.pagestyle">
+      <help>
+<![CDATA[
+Control how entries are displayed. 
+]]>
+</help>
       <element name="menus" label="Menus to show" datatype="string" suffix=" Comma separated list: &quot;file,edit,feeds,view,other&quot; or &quot;none&quot;"/>
       <element id="showbreadcrumbs" name="Show Breadcrumbs" datatype="boolean" default="true"/>
       <element id="showtoolbar" name="Show Toolbar" datatype="boolean" default="true"/>
@@ -191,12 +196,22 @@ Specify a wiki template to use for the map bubble shown for an entry
        name="Page Template"
        showinhtml="false"
        id="content.pagetemplate">
+      <help>
+<![CDATA[
+Override the page template
+]]>
+</help>
       <element name="template" label="Template" datatype="enumeration" />
     </type>
 
     <type
        name="Logo"
        id="content.logo">
+      <help>
+<![CDATA[
+Override the logo icon and URL used in the default page templates.
+]]>
+</help>
       <element name="Logo Image File" datatype="file" thumbnail="false" attachment="false"/>
       <element name="Logo URL"/>
       <element name="Page Title"/>
@@ -209,6 +224,12 @@ Specify a wiki template to use for the map bubble shown for an entry
     </type>
 
     <type name="Sort Order" id="content.sort">
+      <help>
+<![CDATA[
+Change how entries are sorted. e.g., by name, by date, ascending, etc.
+]]>
+</help>
+
       <element
         showinhtml="false"
          default="fromdate"
@@ -231,6 +252,11 @@ Specify a wiki template to use for the map bubble shown for an entry
        id="content.alias"
        displaycategory="AKA"
        >
+      <help>
+<![CDATA[
+Specify a short hand alias for the entry. Will link to /repository/alias/&lt;alias/&gt;
+]]>
+</help>
       <element name="Alias" />
       <template type="html"><![CDATA[<a href="${root}/alias/${attr1}">${attr1}</a>]]></template>
     </type>
@@ -239,6 +265,7 @@ Specify a wiki template to use for the map bubble shown for an entry
        name="Exclude in XML Output"
        showinhtml="false"
        id="display.exclude">
+      foruser="false"
       <element name="output"  datatype="string" default="*" />
     </type>
 
@@ -261,6 +288,11 @@ Specify a wiki template to use for the map bubble shown for an entry
     <type
        name="Camera direction"
        id="camera.direction">
+      <help>
+<![CDATA[
+This gets draw in maps as a direction indicator.
+]]>
+</help>
       <element name="Direction" datatype="double" suffix="Degrees"/>
     </type>
   </handler>
@@ -284,6 +316,7 @@ Specify a wiki template to use for the map bubble shown for an entry
 
     <type 
        name="Named Spatial Region"
+       foruser="false"
        category="Map"
        id="spatial.region">
       <element name="value"/>
@@ -291,6 +324,7 @@ Specify a wiki template to use for the map bubble shown for an entry
 
     <type
        name="Spatial Polygon Coordinates"
+       foruser="false"
        category="Map"
        showinhtml="false"
        id="spatial.polygon">
@@ -303,6 +337,7 @@ Specify a wiki template to use for the map bubble shown for an entry
     <type
        name="KML Polygon Coordinates"
        category="Map"
+       foruser="false"
        showinhtml="false"
        id="spatial.kmlpolycoords">
       <element name="polygon1" suffix="lon,lat "/>

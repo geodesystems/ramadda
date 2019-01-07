@@ -20,33 +20,23 @@ package org.ramadda.repository.metadata;
 import org.ramadda.repository.*;
 import org.ramadda.repository.util.FileWriter;
 import org.ramadda.util.HtmlUtils;
-
+import org.ramadda.util.Utils;
 
 import org.w3c.dom.*;
 
 
-import ucar.unidata.util.DateUtil;
-import ucar.unidata.util.IOUtil;
 import ucar.unidata.util.Misc;
 
 
-import ucar.unidata.util.StringUtil;
 import ucar.unidata.util.TwoFacedObject;
 import ucar.unidata.xml.XmlUtil;
 
-
-
-
-
 import java.io.*;
-
 
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.List;
-import java.util.zip.*;
-
 
 
 
@@ -922,9 +912,6 @@ public class MetadataHandler extends RepositoryManager {
         if (html == null) {
             return;
         }
-
-
-
         if (entry != null) {
             request.uploadFormWithAuthToken(
                 sb, getMetadataManager().URL_METADATA_ADD);
@@ -939,6 +926,7 @@ public class MetadataHandler extends RepositoryManager {
             sb.append("\n");
             sb.append(HtmlUtils.row(HtmlUtils.colspan(header(html[0]), 2)));
         }
+
 
         sb.append("\n");
         sb.append(html[1]);

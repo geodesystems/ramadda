@@ -8,7 +8,7 @@
        values="">
       <help>
 <![CDATA[
-This allows you to create a text template that is used to for the map popup displays.
+Create a text template that is used to for the map popup displays.
 ]]>
 </help>
             <element
@@ -60,6 +60,12 @@ color_map
        name="Shapefile Color By"
        showinhtml="false"
        values="">
+      <help>
+<![CDATA[
+Specify how the shapes in a shapefile are colored based on a field value.
+]]>
+</help>
+
             <element
          id="field"
          name="Field">
@@ -116,7 +122,7 @@ field_value2:#0000ff
        id="shapefile_properties">
       <help>
 <![CDATA[
-This allows you to create a .properties file that adds on extra fields to the shapefile dbfile properties. See <a href="https://geodesystems.com/repository/map/index.html#properties" target=_help>here</a> for more information.
+Create a .properties file that adds on extra fields to the shapefile dbfile properties. See <a href="https://geodesystems.com/repository/map/index.html#properties" target=_help>here</a> for more information.
 ]]>
 </help>
 
