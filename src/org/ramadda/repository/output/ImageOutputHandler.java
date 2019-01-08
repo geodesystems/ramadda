@@ -916,19 +916,24 @@ public class ImageOutputHandler extends OutputHandler {
             Rectangle2D rect = labelFM.getStringBounds("XXXXXX", g1);
             labelPad = ((int) rect.getHeight()) + 5;
         }
-        List<String> ids = request.get(ARG_ENTRYIDS, new ArrayList<String>());
-        final List<Image>  images     = new ArrayList<Image>();
-        final List<String> labels     = new ArrayList<String>();
-        final int[]        done       = { 0 };
-        int                lookingFor = 0;
-        for (String id : ids) {
-            final Entry child = getEntryManager().getEntry(request, id);
-            if (child == null) {
-                System.err.println("no entry:" + id);
-
-                continue;
+        int               entryCnt = request.get("entrycnt", 0);
+        List<String>      ids      = new ArrayList<String>();
+        final List<Entry> selected = new ArrayList<Entry>();
+        for (int i = 0; i < entryCnt; i++) {
+            if (request.defined(ARG_ENTRYID + "_" + i)) {
+                String id    = request.getString(ARG_ENTRYID + "_" + i, "");
+                Entry  child = getEntryManager().getEntry(request, id);
+                if (child != null) {
+                    selected.add(child);
+                }
             }
-            lookingFor++;
+        }
+
+        final int[]   done       = { 0 };
+        final Image[] imageArray = new Image[selected.size()];
+        for (int i = 0; i < selected.size(); i++) {
+            final Entry child = selected.get(i);
+            final int   idx   = i;
             Misc.run(new Runnable() {
                 public void run() {
                     try {
@@ -945,8 +950,7 @@ public class ImageOutputHandler extends OutputHandler {
                                           imageBytes);
                         image = ImageUtils.waitOnImage(image);
                         if (image != null) {
-                            images.add(image);
-                            labels.add(child.getName());
+                            imageArray[idx] = image;
                         }
                     } catch (Exception exc) {
                         System.err.println("error:" + exc);
@@ -960,7 +964,7 @@ public class ImageOutputHandler extends OutputHandler {
         }
 
         int tries = 0;
-        while (done[0] != lookingFor) {
+        while (done[0] != selected.size()) {
             if (tries++ > 60) {
                 return makeCollageForm(request, entry, entries,
                                        "Unable to read the images");
@@ -968,10 +972,21 @@ public class ImageOutputHandler extends OutputHandler {
             Misc.sleep(500);
         }
 
-        if (images.size() != lookingFor) {
+        if (done[0] != selected.size()) {
             return makeCollageForm(request, entry, entries,
                                    "Unable to read all images");
         }
+
+        List<Image>  images = new ArrayList<Image>();
+        List<String> labels = new ArrayList<String>();
+        for (int i = 0; i < selected.size(); i++) {
+            Entry child = selected.get(i);
+            if (imageArray[i] != null) {
+                images.add(imageArray[i]);
+                labels.add(child.getName());
+            }
+        }
+
 
         int scaledWidth = width / columns;
 
@@ -1232,8 +1247,10 @@ public class ImageOutputHandler extends OutputHandler {
                         "sortimages", true)) + " Sort images by height"));
         sb.append(HtmlUtils.formTableClose());
         sb.append("</td><td>&nbsp;&nbsp;&nbsp;&nbsp;<td><td>");
-        StringBuilder esb = new StringBuilder();
-        for (Entry child : entries) {
+        StringBuilder esb      = new StringBuilder();
+        int           entryCnt = 0;
+        for (int i = 0; i < entries.size(); i++) {
+            Entry child = entries.get(i);
             if ( !child.isImage()) {
                 continue;
             }
@@ -1260,13 +1277,17 @@ public class ImageOutputHandler extends OutputHandler {
                     request.entryUrl(getRepository().URL_ENTRY_SHOW, child),
                     img);
             }
-            esb.append(HtmlUtils.checkbox(ARG_ENTRYIDS, child.getId(), true));
+            esb.append(HtmlUtils.checkbox(ARG_ENTRYID + "_" + entryCnt,
+                                          child.getId(), true));
+            entryCnt++;
             esb.append(" ");
             esb.append(img);
             esb.append(" ");
             esb.append(child.getName());
             esb.append("<p>");
         }
+        sb.append(HtmlUtils.hidden("entrycnt", entryCnt + ""));
+
         sb.append("<b>Entries:</b><br>");
         sb.append(esb.toString());
         sb.append("</td></tr></table>");
