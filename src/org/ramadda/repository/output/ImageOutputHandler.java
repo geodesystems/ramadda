@@ -62,9 +62,9 @@ import java.net.*;
 
 import java.text.SimpleDateFormat;
 
-import java.util.Collections;
-
 import java.util.ArrayList;
+
+import java.util.Collections;
 import java.util.Date;
 import java.util.Enumeration;
 import java.util.Hashtable;
@@ -898,16 +898,29 @@ public class ImageOutputHandler extends OutputHandler {
         columns = Math.min(columns, 1000);
         int width = request.get("width", 1000);
         width = Math.min(width, 10000);
-        int                padx        = request.get("padx", 0);
-        int                pady        = request.get("pady", 0);
-        String             topLabel    = request.getString("toplabel", "");
-        String             bottomLabel = request.getString("bottomlabel", "");
+        int         padx        = request.get("padx", 0);
+        int         pady        = request.get("pady", 0);
+        String      topLabel    = request.getString("toplabel", "");
+        String      bottomLabel = request.getString("bottomlabel", "");
 
+        int         labelPad    = 0;
+        boolean     addLabels   = request.get("addlabels", false);
+        Font        labelFont   = new Font(Font.SANS_SERIF, Font.PLAIN, 12);
+        FontMetrics labelFM     = null;
+        if (addLabels) {
+            BufferedImage dummy = new BufferedImage(1, 1,
+                                      BufferedImage.TYPE_INT_ARGB);
+            Graphics2D g1 = dummy.createGraphics();
+            g1.setFont(labelFont);
+            labelFM = g1.getFontMetrics();
+            Rectangle2D rect = labelFM.getStringBounds("XXXXXX", g1);
+            labelPad = ((int) rect.getHeight()) + 5;
+        }
         List<String> ids = request.get(ARG_ENTRYIDS, new ArrayList<String>());
-        final List<Image>  images      = new ArrayList<Image>();
-        final List<String> labels      = new ArrayList<String>();
-        final int[]        done        = { 0 };
-        int                lookingFor  = 0;
+        final List<Image>  images     = new ArrayList<Image>();
+        final List<String> labels     = new ArrayList<String>();
+        final int[]        done       = { 0 };
+        int                lookingFor = 0;
         for (String id : ids) {
             final Entry child = getEntryManager().getEntry(request, id);
             if (child == null) {
@@ -960,28 +973,35 @@ public class ImageOutputHandler extends OutputHandler {
                                    "Unable to read all images");
         }
 
-        int   scaledWidth = width / columns;
+        int scaledWidth = width / columns;
 
-        if(request.get("sortimages",false)) {
-            List<Utils.ObjectSorter> sort = new ArrayList<Utils.ObjectSorter>();
-            for(Image image:images) {
-                int   iheight = image.getHeight(null);
-                int   iwidth  = image.getWidth(null);
-                int scaledHeight = scaledWidth * iheight / iwidth;
-                sort.add(new Utils.ObjectSorter(image, scaledHeight,false));
+        if (request.get("sortimages", false)) {
+            List<Utils.ObjectSorter> sort =
+                new ArrayList<Utils.ObjectSorter>();
+            for (int i = 0; i < images.size(); i++) {
+                Image  image        = images.get(i);
+                String label        = labels.get(i);
+                int    iheight      = image.getHeight(null);
+                int    iwidth       = image.getWidth(null);
+                int    scaledHeight = scaledWidth * iheight / iwidth;
+                sort.add(new Utils.ObjectSorter(new Object[] { image,
+                        label }, scaledHeight, false));
             }
             Collections.sort(sort);
             images.clear();
-            for(Utils.ObjectSorter o: sort) {
-                images.add((Image)o.getObject());
+            labels.clear();
+            for (Utils.ObjectSorter o : sort) {
+                Object[] pair = (Object[]) o.getObject();
+                images.add((Image) pair[0]);
+                labels.add((String) pair[1]);
             }
         }
 
 
 
-        int[] rowMax      = new int[images.size() / columns + 1];
-        int[] maxHeights  = new int[columns];
-        int[] extraPad    = new int[columns];
+        int[] rowMax     = new int[images.size() / columns + 1];
+        int[] maxHeights = new int[columns];
+        int[] extraPad   = new int[columns];
         for (int i = 0; i < rowMax.length; i++) {
             rowMax[i] = 0;
         }
@@ -1001,7 +1021,7 @@ public class ImageOutputHandler extends OutputHandler {
             int scaledHeight = scaledWidth * iheight / iwidth;
             rowMax[row] = Math.max(rowMax[row], scaledHeight);
             int idx = (i % columns);
-            maxHeights[idx] += pady + scaledHeight;
+            maxHeights[idx] += pady + labelPad + scaledHeight;
             if (++cnt >= columns) {
                 cnt = 0;
                 row++;
@@ -1015,7 +1035,7 @@ public class ImageOutputHandler extends OutputHandler {
         for (int i = 0; i < rowMax.length; i++) {
             maxHeight += rowMax[i];
         }
-        maxHeight += pady + rowMax.length * pady;
+        maxHeight += pady + rowMax.length * (pady + labelPad);
         for (int i = 0; i < maxHeights.length; i++) {
             maxHeights[i] = pady;
         }
@@ -1024,6 +1044,10 @@ public class ImageOutputHandler extends OutputHandler {
         BufferedImage collage = new BufferedImage(totalWidth, totalHeight,
                                     BufferedImage.TYPE_INT_ARGB);
         Graphics2D g = collage.createGraphics();
+        g.setFont(labelFont);
+        labelFM = g.getFontMetrics();
+        g.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING,
+                           RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
         Color bg = HtmlUtils.decodeColor(request.getString("background",
                        "white"), Color.white);
         Color fg = HtmlUtils.decodeColor(request.getString("foreground",
@@ -1035,12 +1059,13 @@ public class ImageOutputHandler extends OutputHandler {
         int numberOfRemainder = columns
                                 - (rowMax.length * columns - images.size());
         for (int i = 0; i < images.size(); i++) {
-            Image image          = images.get(i);
-            int   iheight        = image.getHeight(null);
-            int   iwidth         = image.getWidth(null);
-            int   scaledHeight   = scaledWidth * iheight / iwidth;
-            int   maxHeightInRow = rowMax[row];
-            int   yoff           = 0;
+            Image  image          = images.get(i);
+            String label          = labels.get(i);
+            int    iheight        = image.getHeight(null);
+            int    iwidth         = image.getWidth(null);
+            int    scaledHeight   = scaledWidth * iheight / iwidth;
+            int    maxHeightInRow = rowMax[row];
+            int    yoff           = 0;
             if (scaledHeight < maxHeightInRow) {
                 yoff = (maxHeightInRow - scaledHeight) / 2;
             }
@@ -1061,21 +1086,31 @@ public class ImageOutputHandler extends OutputHandler {
                                scaledHeight);
                 }
             }
-            g.drawImage(images.get(i), x + matte,
-                        maxHeights[col] + yoff + matte,
-                        scaledWidth - 2 * matte, scaledHeight - 2 * matte,
-                        null);
+            int imageX      = x + matte;
+            int imageY      = maxHeights[col] + yoff + matte;
+            int imageWidth  = scaledWidth - 2 * matte;
+            int imageHeight = scaledHeight - 2 * matte;
+            g.drawImage(images.get(i), imageX, imageY, imageWidth,
+                        imageHeight, null);
 
+            if (addLabels) {
+                g.setColor(fg);
+                Rectangle2D rect = labelFM.getStringBounds(label, g);
+                g.drawString(label,
+                             imageX + imageWidth / 2
+                             - (int) (rect.getWidth() / 2), (int) (imageY
+                                      + imageHeight + rect.getHeight()
+                                      + matte + 5));
+            }
             //                maxHeights[col]+=pady+scaledHeight;
-            maxHeights[col] += pady + maxHeightInRow;
+            maxHeights[col] += pady + labelPad + maxHeightInRow;
             if (++col >= columns) {
                 col = 0;
                 row++;
             }
         }
 
-        int  labelPad = 5;
-        Font f        = new Font(Font.SANS_SERIF, Font.PLAIN, 24);
+        Font f = new Font(Font.SANS_SERIF, Font.PLAIN, 24);
         if (Utils.stringDefined(topLabel)) {
             g.setFont(f);
             FontMetrics fm      = g.getFontMetrics();
@@ -1134,6 +1169,7 @@ public class ImageOutputHandler extends OutputHandler {
     private Result makeCollageForm(Request request, Entry entry,
                                    List<Entry> entries, String message)
             throws Exception {
+
         StringBuilder sb = new StringBuilder();
         getPageHandler().entrySectionOpen(request, entry, sb,
                                           "Image Collage");
@@ -1184,7 +1220,16 @@ public class ImageOutputHandler extends OutputHandler {
                                           request.getString("mattecolor",
                                               "white"))));
         sb.append(HtmlUtils.formEntry("",
-                                      HtmlUtils.checkbox("sortimages","true",request.get("sortimages",true)) +" Sort images by height")); 
+                                      HtmlUtils.checkbox("addlabels", "true",
+                                          request.get("addlabels",
+                                              true)) + " Add labels"));
+        sb.append(
+            HtmlUtils.formEntry(
+                "",
+                HtmlUtils.checkbox(
+                    "sortimages", "true",
+                    request.get(
+                        "sortimages", true)) + " Sort images by height"));
         sb.append(HtmlUtils.formTableClose());
         sb.append("</td><td>&nbsp;&nbsp;&nbsp;&nbsp;<td><td>");
         StringBuilder esb = new StringBuilder();
@@ -1230,6 +1275,7 @@ public class ImageOutputHandler extends OutputHandler {
         getPageHandler().entrySectionClose(request, entry, sb);
 
         return new Result("", sb);
+
     }
 
 
