@@ -1266,7 +1266,7 @@ public class ImageOutputHandler extends OutputHandler {
                     HtmlUtils.url(
                         request.makeUrl(repository.URL_ENTRY_GET) + "/"
                         + getStorageManager().getFileTail(
-                            entry), ARG_ENTRYID, entry.getId(),
+                                                          child), ARG_ENTRYID, child.getId(),
                                     ARG_IMAGEWIDTH, "" + 100);
                 img = HtmlUtils.img(thumburl, "",
                                     HtmlUtils.attr(HtmlUtils.ATTR_WIDTH,
