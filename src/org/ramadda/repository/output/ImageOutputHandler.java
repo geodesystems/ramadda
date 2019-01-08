@@ -966,15 +966,22 @@ public class ImageOutputHandler extends OutputHandler {
         int tries = 0;
         while (done[0] != selected.size()) {
             if (tries++ > 60) {
-                return makeCollageForm(request, entry, entries,
-                                       "Unable to read the images");
+                break;
             }
             Misc.sleep(500);
         }
 
         if (done[0] != selected.size()) {
+            StringBuilder sb = new StringBuilder();
+            for(int i=0;i<imageArray.length;i++) {
+                if(imageArray[i] == null) {
+                    Entry child = selected.get(i);
+                    sb.append(HtmlUtils.href(request.entryUrl(getRepository().URL_ENTRY_SHOW, child), child.getName()));
+                    sb.append("<br>");
+                }
+            }
             return makeCollageForm(request, entry, entries,
-                                   "Unable to read all images");
+                                   HtmlUtils.note("Unable to read the images from:<br>" + sb));
         }
 
         List<Image>  images = new ArrayList<Image>();
