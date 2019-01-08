@@ -20,8 +20,6 @@ package org.ramadda.repository;
 import org.ramadda.util.HtmlUtils;
 import org.ramadda.util.Utils;
 
-import java.text.SimpleDateFormat;
-
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Enumeration;
@@ -320,40 +318,6 @@ public class RepositoryBase implements Constants, RepositorySource {
     private boolean clientMode = false;
 
 
-
-    /** _more_ */
-    public static final String DEFAULT_TIME_FORMAT = "yyyy-MM-dd HH:mm z";
-
-    /** _more_ */
-    public static final String DEFAULT_TIME_SHORTFORMAT =
-        "yyyy/MM/dd HH:mm z";
-
-    /** _more_ */
-    public static final String DEFAULT_TIME_THISYEARFORMAT =
-        "yyyy/MM/dd HH:mm z";
-
-
-    /** _more_ */
-    protected SimpleDateFormat sdf;
-
-    /** _more_ */
-    protected SimpleDateFormat displaySdf;
-
-    /** _more_ */
-    protected SimpleDateFormat thisYearSdf;
-
-
-    /** _more_ */
-    protected SimpleDateFormat dateSdf =
-        RepositoryUtil.makeDateFormat("yyyy-MM-dd");
-
-    /** _more_ */
-    protected SimpleDateFormat timeSdf =
-        RepositoryUtil.makeDateFormat("HH:mm:ss z");
-
-    /** _more_ */
-    protected List<SimpleDateFormat> formats;
-
     /**
      * _more_
      */
@@ -373,18 +337,6 @@ public class RepositoryBase implements Constants, RepositorySource {
 
 
 
-    /**
-     * _more_
-     *
-     * @param date _more_
-     *
-     * @return _more_
-     */
-    public String formatYYYYMMDD(Date date) {
-        synchronized (dateSdf) {
-            return dateSdf.format(date);
-        }
-    }
 
     /**
      *     _more_

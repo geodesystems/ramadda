@@ -23,6 +23,7 @@ import org.ramadda.repository.Entry;
 import org.ramadda.repository.EntryManager;
 import org.ramadda.repository.Link;
 import org.ramadda.repository.PageDecorator;
+import org.ramadda.repository.PageHandler;
 import org.ramadda.repository.Repository;
 import org.ramadda.repository.RepositoryBase;
 import org.ramadda.repository.RepositoryManager;
@@ -90,11 +91,11 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                             new WikiTag(WIKI_TAG_NAME), 
                             new WikiTag(WIKI_TAG_DESCRIPTION),
                             new WikiTag(WIKI_TAG_RESOURCE, attrs(ATTR_TITLE,"",ATTR_INCLUDEICON,"true")), 
-                            new WikiTag(WIKI_TAG_DATERANGE, attrs(ATTR_FORMAT,RepositoryBase.DEFAULT_TIME_FORMAT)),
-                            new WikiTag(WIKI_TAG_DATE_FROM, attrs(ATTR_FORMAT,RepositoryBase.DEFAULT_TIME_FORMAT)),
-                            new WikiTag(WIKI_TAG_DATE_TO,attrs(ATTR_FORMAT,RepositoryBase.DEFAULT_TIME_FORMAT)), 
-                            new WikiTag(WIKI_TAG_DATE_CREATE,attrs(ATTR_FORMAT,RepositoryBase.DEFAULT_TIME_FORMAT)), 
-                            new WikiTag(WIKI_TAG_DATE_CHANGE,attrs(ATTR_FORMAT,RepositoryBase.DEFAULT_TIME_FORMAT)), 
+                            new WikiTag(WIKI_TAG_DATERANGE, attrs(ATTR_FORMAT,PageHandler.DEFAULT_TIME_FORMAT)),
+                            new WikiTag(WIKI_TAG_DATE_FROM, attrs(ATTR_FORMAT,PageHandler.DEFAULT_TIME_FORMAT)),
+                            new WikiTag(WIKI_TAG_DATE_TO,attrs(ATTR_FORMAT,PageHandler.DEFAULT_TIME_FORMAT)), 
+                            new WikiTag(WIKI_TAG_DATE_CREATE,attrs(ATTR_FORMAT,PageHandler.DEFAULT_TIME_FORMAT)), 
+                            new WikiTag(WIKI_TAG_DATE_CHANGE,attrs(ATTR_FORMAT,PageHandler.DEFAULT_TIME_FORMAT)), 
 
                             new WikiTag(WIKI_TAG_LABEL, attrs(ATTR_TEXT,"",ATTR_ID,"arbitrary id to match with property")),
                             new WikiTag(WIKI_TAG_LINK, attrs(ATTR_TITLE,"","button","false")),
@@ -1246,8 +1247,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                    || theTag.equals(WIKI_TAG_DATE_TO)
                    || theTag.equals(WIKI_TAG_DATE_CREATE)
                    || theTag.equals(WIKI_TAG_DATE_CHANGE)) {
-            String format = Utils.getProperty(props, ATTR_FORMAT,
-                                RepositoryBase.DEFAULT_TIME_FORMAT);
+
             Date date;
             if (theTag.equals(WIKI_TAG_DATE_FROM)) {
                 date = new Date(entry.getStartDate());
@@ -1258,25 +1258,13 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
             } else {
                 date = new Date(entry.getChangeDate());
             }
-            SimpleDateFormat dateFormat = new SimpleDateFormat(format);
-            String           tz         = getEntryUtil().getTimezone(entry);
-            if (tz != null) {
-                dateFormat.setTimeZone(TimeZone.getTimeZone(tz));
-            } else {
 
-                dateFormat.setTimeZone(RepositoryUtil.TIMEZONE_DEFAULT);
-            }
-
-            return dateFormat.format(date);
-
+            return getPageHandler().formatDate(entry, date, Utils.getProperty(props, ATTR_FORMAT,null));
         } else if (theTag.equals(WIKI_TAG_DATERANGE)) {
-            String format = Utils.getProperty(props, ATTR_FORMAT,
-                                RepositoryBase.DEFAULT_TIME_FORMAT);
+            String format = Utils.getProperty(props, ATTR_FORMAT,(String)null);
             Date             date1      = new Date(entry.getStartDate());
             Date             date2      = new Date(entry.getEndDate());
-            SimpleDateFormat dateFormat = new SimpleDateFormat(format);
-            dateFormat.setTimeZone(RepositoryUtil.TIMEZONE_DEFAULT);
-
+            SimpleDateFormat dateFormat = getPageHandler().getDateFormat(entry,format);
             String separator = Utils.getProperty(props, ATTR_SEPARATOR,
                                    " -- ");
 
@@ -2059,19 +2047,19 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
             BufferMapList<Date> map = new BufferMapList<Date>();
             SimpleDateFormat dateFormat =
                 new SimpleDateFormat("EEEEE MMMMM d");
-            dateFormat.setTimeZone(RepositoryUtil.TIMEZONE_DEFAULT);
+            dateFormat.setTimeZone(RepositoryUtil.TIMEZONE_UTC);
             Date firstDay = ((children.size() > 0)
                              ? new Date(children.get(0).getChangeDate())
                              : new Date());
             GregorianCalendar cal1 =
-                new GregorianCalendar(RepositoryUtil.TIMEZONE_DEFAULT);
+                new GregorianCalendar(RepositoryUtil.TIMEZONE_UTC);
             cal1.setTime(new Date(firstDay.getTime()));
             cal1.set(cal1.MILLISECOND, 0);
             cal1.set(cal1.SECOND, 0);
             cal1.set(cal1.MINUTE, 0);
             cal1.set(cal1.HOUR, 0);
             GregorianCalendar cal2 =
-                new GregorianCalendar(RepositoryUtil.TIMEZONE_DEFAULT);
+                new GregorianCalendar(RepositoryUtil.TIMEZONE_UTC);
             cal2.setTime(cal1.getTime());
             cal2.roll(cal2.DAY_OF_YEAR, 1);
 

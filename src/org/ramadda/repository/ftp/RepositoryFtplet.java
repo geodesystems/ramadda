@@ -24,10 +24,11 @@ import org.apache.ftpserver.usermanager.*;
 import org.apache.ftpserver.usermanager.impl.*;
 import org.apache.log4j.config.PropertyPrinter;
 
+
 import org.ramadda.repository.Constants;
 import org.ramadda.repository.Entry;
 import org.ramadda.repository.EntryManager;
-
+import org.ramadda.repository.RepositoryUtil;
 
 
 
@@ -190,7 +191,7 @@ public class RepositoryFtplet extends DefaultFtplet {
      */
     public RepositoryFtplet(FtpManager ftpManager) {
         this.ftpManager = ftpManager;
-        sdf = getRepository().getPageHandler().makeSDF("MMM dd HH:mm");
+        sdf = RepositoryUtil.makeDateFormat("MMM dd HH:mm");
     }
 
     /**

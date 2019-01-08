@@ -126,9 +126,10 @@ import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
+
+import java.util.TimeZone;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
-
 
 import java.util.zip.*;
 
@@ -375,9 +376,6 @@ public class Repository extends RepositoryBase implements RequestHandler,
     /** _more_ */
     private String dumpFile;
 
-
-
-
     /** _more_ */
     private Date startTime = new Date();
 
@@ -507,10 +505,12 @@ public class Repository extends RepositoryBase implements RequestHandler,
     private boolean enableHostnameMapping = true;
 
     /** _more_ */
-    public String language = "";
+    private String language = "";
 
     /** _more_ */
-    public String languageDefault = "";
+    private String languageDefault = "";
+
+
 
     /**
      * _more_
@@ -1220,7 +1220,6 @@ public class Repository extends RepositoryBase implements RequestHandler,
                 //noop
             }
         }
-        getPageHandler().initDateStuff();
         for (String s :
                 StringUtil.split(getProperty("ramadda.html.htdocroots",
                                              BLANK), ";", true, true)) {
@@ -3999,9 +3998,10 @@ public class Repository extends RepositoryBase implements RequestHandler,
         language              = getProperty(PROP_LANGUAGE, "");
         languageDefault       = getProperty(PROP_LANGUAGE_DEFAULT, "default");
         downloadOk            = getProperty(PROP_DOWNLOAD_OK, true);
-        minifiedOk            = getProperty("ramadda.minified", true);
+        minifiedOk            = getProperty(PROP_MINIFIED, true);
         enableHostnameMapping = getProperty(PROP_ENABLE_HOSTNAME_MAPPING,
                                             false);
+
     }
 
     /**
@@ -4020,6 +4020,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
             }
         }
     }
+
 
 
     /**

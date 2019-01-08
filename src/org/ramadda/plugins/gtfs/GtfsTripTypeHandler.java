@@ -211,9 +211,9 @@ public class GtfsTripTypeHandler extends GenericTypeHandler {
             String        suffix = "";
             if (entry.hasDate()) {
                 Date now = new Date();
-                String dttm = getRepository().formatYYYYMMDD(
+                String dttm = getPageHandler().formatYYYYMMDD(
                                   new Date(entry.getStartDate())) + " - "
-                                      + getRepository().formatYYYYMMDD(
+                                      + getPageHandler().formatYYYYMMDD(
                                           new Date(entry.getEndDate()));
                 if ((now.getTime() < entry.getStartDate())
                         || (now.getTime() > entry.getEndDate())) {

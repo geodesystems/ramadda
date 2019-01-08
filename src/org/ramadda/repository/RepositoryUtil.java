@@ -70,6 +70,22 @@ public class RepositoryUtil {
     public static final String HTDOCS_VERSION_SLASH = "/" + HTDOCS_VERSION;
 
 
+    /** _more_ */
+    public static final TimeZone TIMEZONE_UTC = TimeZone.getTimeZone("UTC");
+
+
+    /** timezone */
+    public static final TimeZone TIMEZONE_DEFAULT =  TimeZone.getTimeZone("UTC");
+
+
+    /** the file separator id */
+    public static final String FILE_SEPARATOR = "_file_";
+
+    /** The regular expression that matches the entry id */
+    public static final String ENTRY_ID_REGEX =
+        "[a-f|0-9]{8}-([a-f|0-9]{4}-){3}[a-f|0-9]{12}_";
+
+
     /**
      * _more_
      *
@@ -89,16 +105,6 @@ public class RepositoryUtil {
     }
 
 
-    /** timezone */
-    public static final TimeZone TIMEZONE_DEFAULT =
-        TimeZone.getTimeZone("UTC");
-
-    /** the file separator id */
-    public static final String FILE_SEPARATOR = "_file_";
-
-    /** The regular expression that matches the entry id */
-    public static final String ENTRY_ID_REGEX =
-        "[a-f|0-9]{8}-([a-f|0-9]{4}-){3}[a-f|0-9]{12}_";
 
 
 
@@ -154,9 +160,6 @@ public class RepositoryUtil {
     }
 
 
-
-
-
     /**
      * Make a date format from the format string
      *
@@ -165,10 +168,14 @@ public class RepositoryUtil {
      * @return  the date formatter
      */
     public static SimpleDateFormat makeDateFormat(String formatString) {
-        SimpleDateFormat dateFormat = new SimpleDateFormat();
-        dateFormat.setTimeZone(TIMEZONE_DEFAULT);
-        dateFormat.applyPattern(formatString);
+        return makeDateFormat(formatString, null);
+    }
 
+    public static SimpleDateFormat makeDateFormat(String formatString, TimeZone timezone) {
+        if(timezone == null) timezone  = TIMEZONE_DEFAULT;
+        SimpleDateFormat dateFormat = new SimpleDateFormat();
+        dateFormat.setTimeZone(timezone);
+        dateFormat.applyPattern(formatString);
         return dateFormat;
     }
 

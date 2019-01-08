@@ -1616,6 +1616,8 @@ public interface Constants {
 
     /** _more_ */
     public static final String PROP_DOWNLOAD_OK = "ramadda.download.ok";
+    public static final String PROP_MINIFIED = "ramadda.minified";
+    public static final String PROP_TIMEZONE = "ramadda.timezone";
 
     /** _more_ */
     public static final String PROP_ENTRY_TOP = "ramadda.entry.top";

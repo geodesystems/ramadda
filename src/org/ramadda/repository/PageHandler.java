@@ -75,7 +75,12 @@ public class PageHandler extends RepositoryManager {
 
 
     /** _more_ */
-    public static final String DEFAULT_TEMPLATE = "aodnStyle";
+    public static final String DEFAULT_TEMPLATE = "mapheader";
+
+    /** _more_          */
+    public static final String REGISTER_MESSAGE =
+        "<div class=\"ramadda-register-outer\"><div class=\"ramadda-register\">Powered by <a href=\"http://geodesystems.com\">Geode Systems RAMADDA</a></div></div>";
+
 
 
 
@@ -83,55 +88,30 @@ public class PageHandler extends RepositoryManager {
     public static final String DEFAULT_TIME_FORMAT = "yyyy-MM-dd HH:mm:ss z";
 
     /** _more_ */
-    public static final String DEFAULT_TIME_SHORTFORMAT =
-    //        "yyyy/MM/dd HH:mm z";
-    "yyyy/MM/dd";
+    public static final String DEFAULT_TIME_SHORTFORMAT = "yyyy/MM/dd";
 
     /** _more_ */
     public static final String DEFAULT_TIME_THISYEARFORMAT =
         "yyyy/MM/dd HH:mm z";
 
 
-    /** _more_ */
-    public static final TimeZone TIMEZONE_UTC = TimeZone.getTimeZone("UTC");
-
-    /** _more_ */
-    public static final TimeZone TIMEZONE_GMT = TimeZone.getTimeZone("GMT");
-
+    /** _more_          */
+    private TimeZone displayTimeZone;
 
 
     /** _more_ */
-    public static final GregorianCalendar calendar =
-        new GregorianCalendar(TIMEZONE_UTC);
+    private SimpleDateFormat displaySdf;
 
+    /** _more_ */
+    private SimpleDateFormat yyyymmddSdf;
 
 
     /** _more_ */
-    /*
-    public static final String REGISTER_MESSAGE =
-        "<div class=\"ramadda-register-outer\"><div class=\"ramadda-register\">Powered by <a href=\"http://geodesystems.com\">Geode Systems RAMADDA</a>&nbsp;-&nbsp;<a target=register href=\"https://geodesystems.com/repository/alias/ramadda_registration\">Register and purchase</a></div></div>";
-    */
-
-    public static final String REGISTER_MESSAGE =
-        "<div class=\"ramadda-register-outer\"><div class=\"ramadda-register\">Powered by <a href=\"http://geodesystems.com\">Geode Systems RAMADDA</a></div></div>";
-
-
-    /** _more_ */
-    protected SimpleDateFormat sdf;
-
-    /** _more_ */
-    protected SimpleDateFormat displaySdf;
-
-    /** _more_ */
-    protected SimpleDateFormat thisYearSdf;
-
-
-    /** _more_ */
-    protected SimpleDateFormat dateSdf =
+    private SimpleDateFormat dateSdf =
         RepositoryUtil.makeDateFormat("yyyy-MM-dd");
 
     /** _more_ */
-    protected SimpleDateFormat timeSdf =
+    private SimpleDateFormat timeSdf =
         RepositoryUtil.makeDateFormat("HH:mm:ss z");
 
 
@@ -263,6 +243,50 @@ public class PageHandler extends RepositoryManager {
     /** _more_ */
     private String headerIcon;
 
+    /** _more_ */
+    private Hashtable<String, String> typeToWikiTemplate =
+        new Hashtable<String, String>();
+
+    /** _more_ */
+    public static final String TEMPLATE_DEFAULT = "default";
+
+    /** _more_ */
+    public static final String TEMPLATE_CONTENT = "content";
+
+
+    /** _more_ */
+    private boolean showCreateDate;
+
+    /** _more_ */
+    private String shortDateFormat;
+
+    /** _more_ */
+    private String createdDisplayMode;
+
+    /** _more_ */
+    private String myLogoImage;
+
+    /** _more_ */
+    private String footer;
+
+    /** _more_ */
+    private boolean cacheTemplates;
+
+
+    /** _more_ */
+    TimeZone defaultTimeZone;
+
+
+    /** _more_ */
+    private Hashtable<String, SimpleDateFormat> dateFormats =
+        new Hashtable<String, SimpleDateFormat>();
+
+
+    /** _more_ */
+    protected List<SimpleDateFormat> parseFormats;
+
+
+
     /**
      * _more_
      *
@@ -271,6 +295,41 @@ public class PageHandler extends RepositoryManager {
     public PageHandler(Repository repository) {
         super(repository);
     }
+
+
+
+    /**
+     * _more_
+     */
+    @Override
+    public void initAttributes() {
+        super.initAttributes();
+        //Clear out any loaded templates
+        clearCache();
+        showCreateDate =
+            getRepository().getProperty(PROP_ENTRY_TABLE_SHOW_CREATEDATE,
+                                        false);
+        shortDateFormat = getRepository().getProperty(PROP_DATE_SHORTFORMAT,
+                DEFAULT_TIME_SHORTFORMAT);
+        createdDisplayMode =
+            getRepository().getProperty(PROP_CREATED_DISPLAY_MODE,
+                                        "none").trim();
+        footer      = repository.getProperty(PROP_HTML_FOOTER, BLANK);
+        myLogoImage = getRepository().getProperty(PROP_LOGO_IMAGE, null);
+        cacheTemplates =
+            getRepository().getProperty("ramadda.cachetemplates", true);
+        String tz = getRepository().getProperty(PROP_TIMEZONE, "UTC");
+        displayTimeZone = TimeZone.getTimeZone("UTC");
+
+        defaultTimeZone = TimeZone.getDefault();
+        displaySdf =
+            RepositoryUtil.makeDateFormat(getDefaultDisplayDateFormat(),
+                                          displayTimeZone);
+        yyyymmddSdf = RepositoryUtil.makeDateFormat("yyyy-MM-dd");
+
+        TimeZone.setDefault(RepositoryUtil.TIMEZONE_DEFAULT);
+    }
+
 
 
     /**
@@ -286,16 +345,6 @@ public class PageHandler extends RepositoryManager {
         return headerIcon;
     }
 
-    /**
-     * _more_
-     */
-    public void initDateStuff() {
-        sdf = RepositoryUtil.makeDateFormat(
-            getRepository().getProperty(
-                PROP_DATEFORMAT, DEFAULT_TIME_FORMAT));
-        defaultTimeZone = TimeZone.getDefault();
-        TimeZone.setDefault(RepositoryUtil.TIMEZONE_DEFAULT);
-    }
 
     /**
      * _more_
@@ -2047,19 +2096,66 @@ public class PageHandler extends RepositoryManager {
     }
 
 
-    /** _more_ */
-    private Hashtable<String, SimpleDateFormat> dateFormats =
-        new Hashtable<String, SimpleDateFormat>();
-
-    /** _more_ */
-    TimeZone defaultTimeZone;
-
-
-    /** _more_ */
-    protected List<SimpleDateFormat> formats;
-
+    /**
+     * _more_
+     *
+     * @return _more_
+     */
+    public String getDefaultDisplayDateFormat() {
+        return getRepository().getProperty(PROP_DATEFORMAT,
+                                           DEFAULT_TIME_FORMAT);
+    }
 
 
+    /**
+     * _more_
+     *
+     * @param entry _more_
+     * @param format _more_
+     *
+     * @return _more_
+     *
+     * @throws Exception _more_
+     */
+    public SimpleDateFormat getDateFormat(Entry entry, String format)
+            throws Exception {
+        if (format == null) {
+            format = getDefaultDisplayDateFormat();
+        }
+        String tz = getEntryUtil().getTimezone(entry);
+
+        return getSDF(format, tz);
+
+    }
+
+
+    /**
+     * _more_
+     *
+     * @param entry _more_
+     * @param date _more_
+     * @param format _more_
+     *
+     * @return _more_
+     *
+     * @throws Exception _more_
+     */
+    public String formatDate(Entry entry, Date date, String format)
+            throws Exception {
+        return getDateFormat(entry, format).format(date);
+    }
+
+
+    /**
+     * _more_
+     *
+     * @param format _more_
+     *
+     * @return _more_
+     */
+    private SimpleDateFormat getSDF(String format) {
+        return getSDF(format, null);
+    }
 
 
     /**
@@ -2070,7 +2166,7 @@ public class PageHandler extends RepositoryManager {
      *
      * @return _more_
      */
-    protected SimpleDateFormat getSDF(String format, String timezone) {
+    private SimpleDateFormat getSDF(String format, String timezone) {
         String key;
         if (timezone != null) {
             key = format + "-" + timezone;
@@ -2082,7 +2178,7 @@ public class PageHandler extends RepositoryManager {
             sdf = new SimpleDateFormat();
             sdf.applyPattern(format);
             if (timezone == null) {
-                sdf.setTimeZone(TIMEZONE_UTC);
+                sdf.setTimeZone(RepositoryUtil.TIMEZONE_UTC);
             } else {
                 if ((defaultTimeZone != null)
                         && (timezone.equals("")
@@ -2099,16 +2195,7 @@ public class PageHandler extends RepositoryManager {
     }
 
 
-    /**
-     * _more_
-     *
-     * @param format _more_
-     *
-     * @return _more_
-     */
-    public SimpleDateFormat makeSDF(String format) {
-        return getSDF(format, null);
-    }
+
 
     /**
      * _more_
@@ -2124,22 +2211,37 @@ public class PageHandler extends RepositoryManager {
     /**
      * _more_
      *
+     * @param date _more_
+     *
+     * @return _more_
+     */
+    public String formatYYYYMMDD(Date date) {
+        synchronized (yyyymmddSdf) {
+            return yyyymmddSdf.format(date);
+        }
+    }
+
+
+
+    /**
+     * _more_
+     *
      * @param d _more_
      * @param timezone _more_
      *
      * @return _more_
      */
     public String formatDate(Date d, String timezone) {
-        if (sdf == null) {
-            sdf = makeSDF(getRepository().getProperty(PROP_DATE_FORMAT,
-                    DEFAULT_TIME_FORMAT));
+        if (displaySdf == null) {
+            displaySdf = getSDF(getDefaultDisplayDateFormat());
         }
+
         SimpleDateFormat dateFormat = ((timezone == null)
-                                       ? sdf
+                                       ? displaySdf
                                        : getSDF(
-                                           getRepository().getProperty(
-                                               PROP_DATE_FORMAT,
-                                               DEFAULT_TIME_FORMAT), timezone));
+                                           getDefaultDisplayDateFormat(),
+                                           timezone));
+
         if (d == null) {
             return BLANK;
         }
@@ -2288,16 +2390,19 @@ public class PageHandler extends RepositoryManager {
         if ( !Utils.stringDefined(dttm)) {
             return null;
         }
-        if (formats == null) {
-            formats = new ArrayList<SimpleDateFormat>();
-            formats.add(makeSDF("yyyy-MM-dd HH:mm:ss z"));
-            formats.add(makeSDF("yyyy-MM-dd HH:mm:ss"));
-            formats.add(makeSDF("yyyy-MM-dd HH:mm"));
-            formats.add(makeSDF("yyyy-MM-dd"));
+        if (parseFormats == null) {
+            parseFormats = new ArrayList<SimpleDateFormat>();
+            parseFormats.add(
+                RepositoryUtil.makeDateFormat("yyyy-MM-dd HH:mm:ss z"));
+            parseFormats.add(
+                RepositoryUtil.makeDateFormat("yyyy-MM-dd HH:mm:ss"));
+            parseFormats.add(
+                RepositoryUtil.makeDateFormat("yyyy-MM-dd HH:mm"));
+            parseFormats.add(RepositoryUtil.makeDateFormat("yyyy-MM-dd"));
         }
 
 
-        for (SimpleDateFormat fmt : formats) {
+        for (SimpleDateFormat fmt : parseFormats) {
             try {
                 synchronized (fmt) {
                     return fmt.parse(dttm);
@@ -3340,7 +3445,7 @@ public class PageHandler extends RepositoryManager {
      */
     public String getIconUrl(Request request, Entry entry) throws Exception {
         String iconPath = getIconUrlInner(request, entry);
-        
+
         if (iconPath == null) {
             return getIconUrl(ICON_BLANK);
             //            return null;
@@ -3549,17 +3654,6 @@ public class PageHandler extends RepositoryManager {
     }
 
 
-    /** _more_ */
-    private Hashtable<String, String> typeToWikiTemplate =
-        new Hashtable<String, String>();
-
-    /** _more_ */
-    public static final String TEMPLATE_DEFAULT = "default";
-
-    /** _more_ */
-    public static final String TEMPLATE_CONTENT = "content";
-
-
 
     /**
      * _more_
@@ -3665,45 +3759,6 @@ public class PageHandler extends RepositoryManager {
         }
     }
 
-    /** _more_ */
-    private boolean showCreateDate;
-
-    /** _more_ */
-    private String shortDateFormat;
-
-    /** _more_ */
-    private String createdDisplayMode;
-
-    /** _more_ */
-    private String myLogoImage;
-
-    /** _more_ */
-    private String footer;
-
-    /** _more_ */
-    private boolean cacheTemplates;
-
-    /**
-     * _more_
-     */
-    @Override
-    public void initAttributes() {
-        super.initAttributes();
-        //Clear out any loaded templates
-        clearCache();
-        showCreateDate =
-            getRepository().getProperty(PROP_ENTRY_TABLE_SHOW_CREATEDATE,
-                                        false);
-        shortDateFormat = getRepository().getProperty(PROP_DATE_SHORTFORMAT,
-                DEFAULT_TIME_SHORTFORMAT);
-        createdDisplayMode =
-            getRepository().getProperty(PROP_CREATED_DISPLAY_MODE,
-                                        "none").trim();
-        footer      = repository.getProperty(PROP_HTML_FOOTER, BLANK);
-        myLogoImage = getRepository().getProperty(PROP_LOGO_IMAGE, null);
-        cacheTemplates =
-            getRepository().getProperty("ramadda.cachetemplates", true);
-    }
 
     /**
      * _more_
@@ -3721,6 +3776,15 @@ public class PageHandler extends RepositoryManager {
      */
     public String getShortDateFormat() {
         return shortDateFormat;
+    }
+
+    /**
+     * _more_
+     *
+     * @return _more_
+     */
+    public TimeZone getDisplayTimeZone() {
+        return displayTimeZone;
     }
 
     /**
