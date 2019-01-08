@@ -3632,7 +3632,6 @@ Time:14625 cnt:7000
         String mini = getRepository().getMinifiedOk()
                       ? ".mini"
                       : "";
-
         //        System.err.println(mini +" " + getRepository().getMinifiedOk());
         return s.replace(MACRO_URLROOT, getRepository().getUrlBase()).replace(
             "${baseentry}", getEntryManager().getRootEntry().getId()).replace(

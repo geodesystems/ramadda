@@ -52,10 +52,8 @@ import java.lang.reflect.*;
 
 import java.net.*;
 
-import java.text.SimpleDateFormat;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.Date;
 import java.util.Enumeration;
 import java.util.GregorianCalendar;
@@ -668,10 +666,8 @@ public abstract class Harvester extends RepositoryManager {
             long sleepTime = Misc.getPauseEveryTime((int) sleepMinutes);
             Date now       = new Date();
             Date then      = new Date(now.getTime() + sleepTime);
-            sleepLbl += msg("Would run at") + " " + then;
+            sleepLbl += msg("Would run at") + " " + getDateHandler().formatDate(then);
         }
-
-
 
         StringBuffer runWidgets = new StringBuffer();
         int          widgetCnt  = 0;
@@ -926,7 +922,7 @@ public abstract class Harvester extends RepositoryManager {
      * @param msg _more_
      */
     public void logStatus(String msg) {
-        status.append("[<i>" + new Date() + "</i>]: " + msg + "<br>");
+        status.append("[<i>" + getDateHandler().formatDate(new Date()) + "</i>]: " + msg + "<br>");
     }
 
 

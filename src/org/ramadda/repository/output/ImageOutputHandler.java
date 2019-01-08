@@ -1170,7 +1170,9 @@ public class ImageOutputHandler extends OutputHandler {
         }
 
         Font f = new Font(Font.SANS_SERIF, Font.PLAIN, 24);
+        Date now = new Date();
         if (Utils.stringDefined(topLabel)) {
+            topLabel = topLabel.replace("${timestamp}", getDateHandler().formatDate(now));
             g.setFont(f);
             FontMetrics fm      = g.getFontMetrics();
             Rectangle2D rect    = fm.getStringBounds(topLabel, g);
@@ -1188,6 +1190,7 @@ public class ImageOutputHandler extends OutputHandler {
         }
 
         if (Utils.stringDefined(bottomLabel)) {
+            bottomLabel = bottomLabel.replace("${timestamp}", getDateHandler().formatDate(now));
             g.setFont(f);
             FontMetrics fm      = g.getFontMetrics();
             Rectangle2D rect    = fm.getStringBounds(bottomLabel, g);
