@@ -1462,7 +1462,7 @@ public class MapManager extends RepositoryManager implements WikiConstants {
                         LatLonPointImpl fromPt =
                             new LatLonPointImpl(location[0], location[1]);
                         LatLonPointImpl pt = Bearing.findPoint(fromPt, dir,
-                                                               kms, null);
+                                                               km, null);
                         map.addLine(entry, entry.getId(), fromPt, pt, null);
 
                         break;
