@@ -12,11 +12,9 @@
 }
 
 .imageplayer-buttons {
- 
     margin-left:4px;
-    padding: 2px;
-    padding-bottom: 4px;
-    padding-top: 10px;
+    padding-bottom: 2px;
+     display: inline-block;
 }
 
 .imageplayer-button {
@@ -26,6 +24,8 @@
      padding: 0px;
      margin-bottom: 2px;
      font-size: 80%;
+     padding-left:5px;
+     padding-right:5px;
 }
 
 .imageplayer-button-play {
@@ -56,11 +56,20 @@
    border: 0px red solid;
 }
 
+.imageplayer-boxes {
+   margin-bottom:4px;
+   vertical-align: bottom;
+   line-height:0.2em;
+   display: inline-block;
+}
+
 .imageplayer-box-on, .imageplayer-box-off {
      display: inline-block;
      margin-left: 2px;
      padding:0px;
      border: 1px #fff solid;
+     width:20px;
+     height:25px;
 }
 
 .imageplayer-box-on {
@@ -70,9 +79,11 @@
 
 .imageplayer-box-off {
      background-color: #d3d3d3;
-//0cf;
 }
 
+.imageplayer-inputform  {
+margin-bottom:2px;
+}
 
 .imageplayer-block {
    padding-left:10px;
@@ -142,7 +153,7 @@ dwell_step = 1;
 delay_step = 100;
 delay_max = 6000;
 delay_min = 100;
-dwell_multipler = 3;
+dwell_multipler = 1;
 
 function ImagePlayer(args)  {
     this.prefix = "${imagePlayerPrefix}";
@@ -389,16 +400,15 @@ function ImagePlayer(args)  {
                 width--;
             }
             imgAttrs =  attr("class","imageplayer-filler") + gotoalt;
-            var filler = HtmlUtil.div(["class", "imageplayer-box-" + (isActiveImage?"on":"off")],HtmlUtil.image(icon_blank,["width",width,"height","20","title",title,"alt", title]));
-            box = tag("A", attr2("href","JavaScript: noop()", "onClick", call("${imagePlayerVar}.setImage", i + ",-1")), filler);
-
+            var filler = HtmlUtil.div(["onClick", call("${imagePlayerVar}.setImage", i + ",-1"), "title", title, "class", "imageplayer-box-" + (isActiveImage?"on":"off"),"style","width:" + width+"px;"]);
+            var box = filler;                                                                                                                                              
             hidebox = tag("A", attr2("href","JavaScript: noop()", "onClick", call("${imagePlayerVar}.toggleImageOk",i)),
                           span(attr("style", "xbackground-color:" + hidecolor),img(icon_blank,imgAttrs + hidealt)));
             boxes+=box;
             hideboxes+=hidebox;
         }
 
-        boxes = span(attr("style","font-size:10"),boxes);
+//        boxes = span(attr("style","font-size:10"),boxes);
         $(this.getId("boxes")).html(boxes);
         //        $(this.getId("hideboxes")).html(span(attr("style","font-size:10"),hideboxes));
     }
@@ -510,28 +520,19 @@ function noop() {
 <h3>This requires Javascript for an animation of the imagery.</h3>
 </noscript>
 
-
-
-
-<table border=0 cellpadding="0" cellspacing="0" width="100%" class="imageplayer-outer">
-    <tr valign="bottom">
-    <td width="250"> 
-<div class="imageplayer-buttons"><button class="imageplayer-button"   title="Go to first frame"  onClick="${imagePlayerVar}.setImage(0,1)">|&lt;&lt;</button><button class="imageplayer-button"  title="One step back" onClick="${imagePlayerVar}.setImage(${imagePlayerVar}.current_image-1,-1)">&lt;&lt;</button><button class="imageplayer-button imageplayer-button-play"  title="Start/stop" id="${imagePlayerPrefix}startstopbutton"    onClick="${imagePlayerVar}.startStop()"><div  id="${imagePlayerPrefix}startstopbuttonlabel">Play</div></button><button class="imageplayer-button"  title="One step forward" onClick="${imagePlayerVar}.setImage(${imagePlayerVar}.current_image+1,1)">&gt;&gt;</button><button class="imageplayer-button"  title="Go to last frame" href="JavaScript: noop()" onClick="${imagePlayerVar}.setImage(-1,-1)">&gt;&gt;|</button></div>
-</td>
-<td  valign="center">
-<table  border=0  width="100%" cellpadding=4 cellspacing=0><tr>
-<td>
-<div id="${imagePlayerPrefix}boxes">&nbsp;</div>
-</td>
-<td width=100 align=left>
-<div id="${imagePlayerPrefix}waiting">&nbsp;</div>
+<table border="0" cellpadding="0" cellspacing="0" width="100%" class="imageplayer-outer">
+<tr valign="bottom">
+<td> 
+<div class="imageplayer-buttons"><span class="ramadda-button"   title="Go to first frame"  onClick="${imagePlayerVar}.setImage(0,1)">|&lt;&lt;</span>&nbsp;<span class="ramadda-button"  title="One step back" onClick="${imagePlayerVar}.setImage(${imagePlayerVar}.current_image-1,-1)">&lt;&lt;</span>&nbsp;<span class="ramadda-button"  title="Start/stop" id="${imagePlayerPrefix}startstopbutton"    onClick="${imagePlayerVar}.startStop()"><div  style="width:50px;" id="${imagePlayerPrefix}startstopbuttonlabel">Play</div></span> <span class="ramadda-button"  title="One step forward" onClick="${imagePlayerVar}.setImage(${imagePlayerVar}.current_image+1,1)">&gt;&gt;</span>&nbsp;<span class="ramadda-button"  title="Go to last frame" href="JavaScript: noop()" onClick="${imagePlayerVar}.setImage(-1,-1)">&gt;&gt;|</span></div>&nbsp;<div class="imageplayer-boxes" id="${imagePlayerPrefix}boxes">&nbsp;<span id="${imagePlayerPrefix}waiting">&nbsp;</span></div>
 </td>
 <td width="5%" align="right">
+<!--
+<div class="imageplayer-inputform">
 <form method="POST" name="${imagePlayerPrefix}control_form" action="javascript:${imagePlayerVar}.frameNumberClicked();">
 <input type="text" id="${imagePlayerPrefix}framenumber" value=1 size="2" >
 </form>
-</td>
-</table>
+</div>
+-->
 </td>
 </tr>
 <tr valign="top" >
