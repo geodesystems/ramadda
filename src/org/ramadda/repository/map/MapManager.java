@@ -1455,7 +1455,7 @@ public class MapManager extends RepositoryManager implements WikiConstants {
                             JpegMetadataHandler.TYPE_CAMERA_DIRECTION)) {
                         double dir = Double.parseDouble(metadata.getAttr1());
                         double km = 1.0;
-                        String kms = metadta.getAttr2();
+                        String kms = metadata.getAttr2();
                         if(Utils.stringDefined(kms)) {
                             km =  Double.parseDouble(kms);
                         }
