@@ -3424,5 +3424,60 @@ public class Utils {
         return newImage;
     }
 
+    /**
+     * Class description
+     *
+     *
+     * @version        $version$, Mon, Jan 7, '19
+     * @author         Enter your name here...    
+     */
+    public static class ObjectSorter implements Comparable {
+
+        /** _more_          */
+        double value;
+
+        /** _more_          */
+        Object object;
+
+        /**
+         * _more_
+         *
+         * @param value _more_
+         * @param object _more_
+         */
+        public ObjectSorter(double value, Object object) {
+            this.value  = value;
+            this.object = object;
+        }
+
+        /**
+         * _more_
+         *
+         * @param o _more_
+         *
+         * @return _more_
+         */
+        public int compareTo(Object o) {
+            ObjectSorter that = (ObjectSorter) o;
+            if (value < that.value) {
+                return -1;
+            }
+            if (value > that.value) {
+                return 1;
+            }
+
+            return 0;
+        }
+
+        /**
+         * _more_
+         *
+         * @return _more_
+         */
+        public Object getObject() {
+            return object;
+        }
+    }
+
 
 }

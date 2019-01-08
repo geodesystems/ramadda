@@ -63,6 +63,8 @@ import java.net.*;
 import java.text.SimpleDateFormat;
 
 import java.util.ArrayList;
+
+import java.util.Collections;
 import java.util.Date;
 import java.util.Enumeration;
 import java.util.Hashtable;
@@ -942,6 +944,16 @@ public class ImageOutputHandler extends OutputHandler {
                     }
                 }
             });
+        }
+
+        List<Utils.ObjectSorter> sort = new ArrayList<Utils.ObjectSorter>();
+        for (Image image : images) {
+            sort.add(new Utils.ObjectSorter(image.getHeight(null), image));
+        }
+        Collections.sort(sort);
+        images.clear();
+        for (Utils.ObjectSorter o : sort) {
+            images.add((Image) o.getObject());
         }
 
         int tries = 0;
