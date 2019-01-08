@@ -3429,14 +3429,20 @@ public class Utils {
      *
      *
      * @version        $version$, Mon, Jan 7, '19
-     * @author         Enter your name here...    
+     * @author         Enter your name here...
      */
     public static class ObjectSorter implements Comparable {
 
         /** _more_          */
+        boolean ascending = true;
+
+        /** _more_ */
+        String svalue;
+
+        /** _more_ */
         double value;
 
-        /** _more_          */
+        /** _more_ */
         Object object;
 
         /**
@@ -3444,10 +3450,38 @@ public class Utils {
          *
          * @param value _more_
          * @param object _more_
+         * @param ascending _more_
          */
-        public ObjectSorter(double value, Object object) {
-            this.value  = value;
-            this.object = object;
+        public ObjectSorter(Object object, double value, boolean ascending) {
+            this.value     = value;
+            this.object    = object;
+            this.ascending = ascending;
+        }
+
+        /**
+         * _more_
+         *
+         * @param object _more_
+         * @param value _more_
+         * @param ascending _more_
+         */
+        public ObjectSorter(Object object, int value, boolean ascending) {
+            this.value     = value;
+            this.object    = object;
+            this.ascending = ascending;
+        }
+
+        /**
+         * _more_
+         *
+         * @param value _more_
+         * @param object _more_
+         * @param ascending _more_
+         */
+        public ObjectSorter(Object object, String value, boolean ascending) {
+            this.svalue    = value;
+            this.object    = object;
+            this.ascending = ascending;
         }
 
         /**
@@ -3459,11 +3493,18 @@ public class Utils {
          */
         public int compareTo(Object o) {
             ObjectSorter that = (ObjectSorter) o;
+            if (svalue != null) {
+                return svalue.compareTo(that.svalue);
+            }
             if (value < that.value) {
-                return -1;
+                return ascending
+                       ? -1
+                       : 1;
             }
             if (value > that.value) {
-                return 1;
+                return ascending
+                       ? 1
+                       : -1;
             }
 
             return 0;
@@ -3476,6 +3517,15 @@ public class Utils {
          */
         public Object getObject() {
             return object;
+        }
+
+        /**
+         * _more_
+         *
+         * @return _more_
+         */
+        public double getValue() {
+            return value;
         }
     }
 

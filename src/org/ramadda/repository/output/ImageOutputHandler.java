@@ -62,9 +62,9 @@ import java.net.*;
 
 import java.text.SimpleDateFormat;
 
-import java.util.ArrayList;
-
 import java.util.Collections;
+
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.Enumeration;
 import java.util.Hashtable;
@@ -946,16 +946,6 @@ public class ImageOutputHandler extends OutputHandler {
             });
         }
 
-        List<Utils.ObjectSorter> sort = new ArrayList<Utils.ObjectSorter>();
-        for (Image image : images) {
-            sort.add(new Utils.ObjectSorter(image.getHeight(null), image));
-        }
-        Collections.sort(sort);
-        images.clear();
-        for (Utils.ObjectSorter o : sort) {
-            images.add((Image) o.getObject());
-        }
-
         int tries = 0;
         while (done[0] != lookingFor) {
             if (tries++ > 60) {
@@ -970,8 +960,25 @@ public class ImageOutputHandler extends OutputHandler {
                                    "Unable to read all images");
         }
 
-
         int   scaledWidth = width / columns;
+
+        if(request.get("sortimages",false)) {
+            List<Utils.ObjectSorter> sort = new ArrayList<Utils.ObjectSorter>();
+            for(Image image:images) {
+                int   iheight = image.getHeight(null);
+                int   iwidth  = image.getWidth(null);
+                int scaledHeight = scaledWidth * iheight / iwidth;
+                sort.add(new Utils.ObjectSorter(image, scaledHeight,false));
+            }
+            Collections.sort(sort);
+            images.clear();
+            for(Utils.ObjectSorter o: sort) {
+                images.add((Image)o.getObject());
+            }
+        }
+
+
+
         int[] rowMax      = new int[images.size() / columns + 1];
         int[] maxHeights  = new int[columns];
         int[] extraPad    = new int[columns];
@@ -1049,7 +1056,7 @@ public class ImageOutputHandler extends OutputHandler {
                 g.fillRect(x, maxHeights[col] + yoff, scaledWidth,
                            scaledHeight);
                 if (matteColor.equals(bg)) {
-                    g.setColor(Color.gray);
+                    g.setColor(Color.LIGHT_GRAY);
                     g.drawRect(x, maxHeights[col] + yoff, scaledWidth,
                                scaledHeight);
                 }
@@ -1149,10 +1156,10 @@ public class ImageOutputHandler extends OutputHandler {
                                               "1000"))));
         sb.append(HtmlUtils.formEntry("Pad X:",
                                       HtmlUtils.input("padx",
-                                          request.getString("padx", "10"))));
+                                          request.getString("padx", "15"))));
         sb.append(HtmlUtils.formEntry("Pad Y:",
                                       HtmlUtils.input("pady",
-                                          request.getString("pady", "10"))));
+                                          request.getString("pady", "15"))));
         sb.append(HtmlUtils.formEntry("Background:",
                                       HtmlUtils.input("background",
                                           request.getString("background",
@@ -1176,6 +1183,8 @@ public class ImageOutputHandler extends OutputHandler {
                                       HtmlUtils.input("mattecolor",
                                           request.getString("mattecolor",
                                               "white"))));
+        sb.append(HtmlUtils.formEntry("",
+                                      HtmlUtils.checkbox("sortimages","true",request.get("sortimages",true)) +" Sort images by height")); 
         sb.append(HtmlUtils.formTableClose());
         sb.append("</td><td>&nbsp;&nbsp;&nbsp;&nbsp;<td><td>");
         StringBuilder esb = new StringBuilder();
