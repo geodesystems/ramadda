@@ -1454,10 +1454,15 @@ public class MapManager extends RepositoryManager implements WikiConstants {
                     if (metadata.getType().equals(
                             JpegMetadataHandler.TYPE_CAMERA_DIRECTION)) {
                         double dir = Double.parseDouble(metadata.getAttr1());
+                        double km = 1.0;
+                        String kms = metadta.getAttr2();
+                        if(Utils.stringDefined(kms)) {
+                            km =  Double.parseDouble(kms);
+                        }
                         LatLonPointImpl fromPt =
                             new LatLonPointImpl(location[0], location[1]);
                         LatLonPointImpl pt = Bearing.findPoint(fromPt, dir,
-                                                 0.5, null);
+                                                               kms, null);
                         map.addLine(entry, entry.getId(), fromPt, pt, null);
 
                         break;

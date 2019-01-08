@@ -294,6 +294,7 @@ This gets draw in maps as a direction indicator.
 ]]>
 </help>
       <element name="Direction" datatype="double" suffix="Degrees"/>
+      <element name="Distance" datatype="double" suffix="KM" default="1.0"/>
     </type>
   </handler>
 
