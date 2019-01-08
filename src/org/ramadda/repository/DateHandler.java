@@ -364,20 +364,20 @@ public class DateHandler extends RepositoryManager {
         String           timeArg    = request.getString(name + ".time", "");
         String           dateString = ((date == null)
                                        ? dateArg
-                                       : dateSdf.format(date));
+                                       : doFormat(date, dateSdf));
         SimpleDateFormat timeFormat = ((timezone == null)
                                        ? timeSdf
                                        : getSDF("HH:mm:ss z", timezone));
         String           timeString = ((date == null)
                                        ? timeArg
-                                       : timeFormat.format(date));
+                                       : doFormat(date, timeFormat));
 
         String           inputId    = HtmlUtils.getUniqueId("dateinput");
         String           minDate    = null;
         String           maxDate    = null;
         if ((dates != null) && !dates.isEmpty()) {
-            minDate = dateSdf.format((Date) dates.get(0));
-            maxDate = dateSdf.format((Date) dates.get(dates.size() - 1));
+            minDate = doFormat((Date) dates.get(0), dateSdf);
+            maxDate = doFormat((Date) dates.get(dates.size() - 1), dateSdf);
         }
 
         StringBuilder jsBuf =
@@ -472,7 +472,7 @@ public class DateHandler extends RepositoryManager {
      *
      */
     public String formatDate(Entry entry, Date date, String format) {
-        return getDateFormat(entry, format).format(date);
+        return doFormat(date, getDateFormat(entry, format));
     }
 
     /**
@@ -567,8 +567,20 @@ public class DateHandler extends RepositoryManager {
      * @return _more_
      */
     public String formatYYYYMMDD(Date date) {
-        synchronized (yyyymmddSdf) {
-            return yyyymmddSdf.format(date);
+        return doFormat(date, yyyymmddSdf);
+    }
+
+    /**
+     * _more_
+     *
+     * @param date _more_
+     * @param sdf _more_
+     *
+     * @return _more_
+     */
+    private String doFormat(Date date, SimpleDateFormat sdf) {
+        synchronized (sdf) {
+            return sdf.format(date);
         }
     }
 
@@ -597,9 +609,7 @@ public class DateHandler extends RepositoryManager {
                                            getDefaultDisplayDateFormat(),
                                            timezone));
 
-        synchronized (dateFormat) {
-            return dateFormat.format(d);
-        }
+        return doFormat(d, dateFormat);
     }
 
 
@@ -739,7 +749,7 @@ public class DateHandler extends RepositoryManager {
                                        ? "s"
                                        : "") + " ago";
         } else {
-            result = sdf.format(d);
+            result = doFormat(d, sdf);
         }
 
         return HtmlUtils.span(result,
