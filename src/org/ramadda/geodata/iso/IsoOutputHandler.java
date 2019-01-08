@@ -174,9 +174,9 @@ public class IsoOutputHandler extends OutputHandler {
         tag(DifUtil.TAG_Summary, root, entry.getDescription());
         parent = tag(DifUtil.TAG_Temporal_Coverage, root, null);
         tag(DifUtil.TAG_Start_Date, parent,
-        getPageHandler().formatYYYYMMDD(new Date(entry.getStartDate())));
+        getDateHandler().formatYYYYMMDD(new Date(entry.getStartDate())));
         tag(DifUtil.TAG_Stop_Date, parent,
-        getPageHandler().formatYYYYMMDD(new Date(entry.getEndDate())));
+        getDateHandler().formatYYYYMMDD(new Date(entry.getEndDate())));
         if (entry.hasAreaDefined()) {
             parent = tag(DifUtil.TAG_Spatial_Coverage, root, null);
             tag(DifUtil.TAG_Northernmost_Latitude, parent,

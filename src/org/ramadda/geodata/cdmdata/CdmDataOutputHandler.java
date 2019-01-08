@@ -26,6 +26,7 @@ import opendap.servlet.ReqState;
 
 import org.ramadda.repository.Entry;
 import org.ramadda.repository.Link;
+import org.ramadda.repository.DateHandler;
 import org.ramadda.repository.PageHandler;
 import org.ramadda.repository.Repository;
 import org.ramadda.repository.Request;
@@ -1114,7 +1115,7 @@ public class CdmDataOutputHandler extends OutputHandler implements CdmConstants 
             List formattedDates = new ArrayList();
             formattedDates.add(new TwoFacedObject("---", ""));
             for (CalendarDate date : dates) {
-                //formattedDates.add(getPageHandler().formatDate(request, date.toDate()));
+                //formattedDates.add(getDateHandler().formatDate(request, date.toDate()));
                 formattedDates.add(formatDate(request, date));
             }
             String fromDate = request.getUnsafeString(ARG_FROMDATE, "");
@@ -1144,12 +1145,12 @@ public class CdmDataOutputHandler extends OutputHandler implements CdmConstants 
         }
         if (date instanceof CalendarDate) {
             String dateFormat = getRepository().getProperty(PROP_DATE_FORMAT,
-                                    PageHandler.DEFAULT_TIME_FORMAT);
+                                    DateHandler.DEFAULT_TIME_FORMAT);
 
             return new CalendarDateFormatter(dateFormat).toString(
                 (CalendarDate) date);
         } else if (date instanceof Date) {
-            return getPageHandler().formatDate(request, (Date) date);
+            return getDateHandler().formatDate(request, (Date) date);
         } else {
             return date.toString();
         }

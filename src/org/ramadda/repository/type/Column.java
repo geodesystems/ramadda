@@ -2140,7 +2140,7 @@ public class Column implements DataTypes, Constants {
             } else {
                 date = new Date();
             }
-            widget = getRepository().getPageHandler().makeDateInput(request,
+            widget = getRepository().getDateHandler().makeDateInput(request,
                     urlArg, "", date, null);
         } else if (isType(DATATYPE_DATE)) {
             Date date;
@@ -2149,7 +2149,7 @@ public class Column implements DataTypes, Constants {
             } else {
                 date = new Date();
             }
-            widget = getRepository().getPageHandler().makeDateInput(request,
+            widget = getRepository().getDateHandler().makeDateInput(request,
                     urlArg, "", date, null, false);
         } else if (isType(DATATYPE_ENUMERATION)) {
             String value = ((dflt != null)
@@ -2784,12 +2784,12 @@ public class Column implements DataTypes, Constants {
                                  dateSelectValue,
                                  HtmlUtils.cssClass("search-select"));
 
-            widget = getRepository().getPageHandler().makeDateInput(
+            widget = getRepository().getDateHandler().makeDateInput(
                 request, searchArg + "_fromdate", "searchform", null, null,
                 isType(DATATYPE_DATETIME)) + HtmlUtils.space(1)
                     + HtmlUtils.img(getRepository().getIconUrl(ICON_RANGE))
                     + HtmlUtils.space(1)
-                    + getRepository().getPageHandler().makeDateInput(
+                    + getRepository().getDateHandler().makeDateInput(
                         request, searchArg + "_todate", "searchform", null,
                             null, isType(
                                 DATATYPE_DATETIME)) + HtmlUtils.space(4)

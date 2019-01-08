@@ -2836,14 +2836,14 @@ public class PointDatabaseTypeHandler extends BlobTypeHandler {
         basicSB.append(
             HtmlUtils.formEntry(
                 msgLabel("From Date"),
-                getPageHandler().makeDateInput(
+                getDateHandler().makeDateInput(
                     request, ARG_POINT_FROMDATE, "pointsearch", dateRange[0],
                     timezone)));
 
         basicSB.append(
             HtmlUtils.formEntry(
                 msgLabel("To Date"),
-                getPageHandler().makeDateInput(
+                getDateHandler().makeDateInput(
                     request, ARG_POINT_TODATE, "pointsearch", dateRange[1],
                     timezone)));
 

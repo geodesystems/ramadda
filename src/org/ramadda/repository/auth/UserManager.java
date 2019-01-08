@@ -3909,7 +3909,7 @@ public class UserManager extends RepositoryManager {
             String extra = results.getString(col++);
             String ip    = results.getString(col++);
             sb.append(HtmlUtils.row(HtmlUtils.cols(firstCol, what,
-                    getPageHandler().formatDate(dttm), ip,
+                    getDateHandler().formatDate(dttm), ip,
                     extra), HtmlUtils.cssClass("ramadda-user-activity")));
 
             cnt++;

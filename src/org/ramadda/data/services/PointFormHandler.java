@@ -987,12 +987,12 @@ public class PointFormHandler extends RecordFormHandler {
                 subsetSB.append(
                     formEntry(
                         request, msgLabel("Date Range"),
-                        getPageHandler().makeDateInput(
+                        getDateHandler().makeDateInput(
                             request, ARG_FROMDATE, "entryform", null, null,
                             showTime) + HtmlUtils.space(1)
                                       + HtmlUtils.img(getIconUrl(ICON_RANGE))
                                       + HtmlUtils.space(1)
-                                      + getPageHandler().makeDateInput(
+                                      + getDateHandler().makeDateInput(
                                           request, ARG_TODATE, "entryform",
                                           null, null, showTime)));
             }

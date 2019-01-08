@@ -4089,7 +4089,7 @@ public class TypeHandler extends RepositoryManager {
                     formEntry(
                         request,
                         msgLabel(getFormLabel(entry, ARG_DATE, "Date")),
-                        getPageHandler().makeDateInput(
+                        getDateHandler().makeDateInput(
                             request, ARG_FROMDATE, "entryform", fromDate,
                             timezone, showTime) + " " + setTimeCbx));
 
@@ -4100,7 +4100,7 @@ public class TypeHandler extends RepositoryManager {
                         msgLabel(
                             getFormLabel(
                                 entry, ARG_DATE,
-                                "Date Range")), getPageHandler()
+                                "Date Range")), getDateHandler()
                                     .makeDateInput(
                                         request, ARG_FROMDATE, "entryform",
                                         fromDate, timezone,
@@ -4110,7 +4110,7 @@ public class TypeHandler extends RepositoryManager {
                                                     ICON_RANGE)) + HtmlUtils
                                                         .space(1) +
                 //                        " <b>--</b> " +
-                getPageHandler().makeDateInput(request, ARG_TODATE,
+                getDateHandler().makeDateInput(request, ARG_TODATE,
                         "entryform", toDate, timezone,
                         showTime) + HtmlUtils.space(2) + " " + setTimeCbx));
             }
@@ -5101,10 +5101,10 @@ public class TypeHandler extends RepositoryManager {
 
         }
 
-        String fromField = repository.getPageHandler().makeDateInput(request,
+        String fromField = repository.getDateHandler().makeDateInput(request,
                                arg.getFrom(), "searchform", null, null,
                                showTime);
-        String toField = repository.getPageHandler().makeDateInput(request,
+        String toField = repository.getDateHandler().makeDateInput(request,
                              arg.getTo(), "searchform", null, null, showTime);
         /*
         basicSB.append(RepositoryManager.formEntryTop(request,
@@ -6657,7 +6657,8 @@ public class TypeHandler extends RepositoryManager {
      */
     public String formatDate(Request request, Entry entry, Date date,
                              String extra) {
-        return getPageHandler().formatDateShort(request, date,
+
+        return getDateHandler().formatDateShort(request, date,
                 getEntryUtil().getTimezone(entry), extra);
 
     }

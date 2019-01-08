@@ -139,9 +139,9 @@ public class Gtfs implements Constants {
      */
     public static String formatDateRange(Request request, Entry trip)
             throws Exception {
-        return request.getRepository().getPageHandler()
+        return request.getRepository().getDateHandler()
             .formatYYYYMMDD(new Date(trip.getStartDate())) + " - "
-            + request.getRepository().getPageHandler()
+            + request.getRepository().getDateHandler()
                     .formatYYYYMMDD(new Date(trip.getEndDate()));
     }
 

@@ -272,6 +272,9 @@ public class Repository extends RepositoryBase implements RequestHandler,
     /** The PageHandler */
     private PageHandler pageHandler;
 
+    /** The DateHandler */
+    private DateHandler dateHandler;
+
     /** The AssociationManager */
     private AssociationManager associationManager;
 
@@ -1758,6 +1761,10 @@ public class Repository extends RepositoryBase implements RequestHandler,
         return new PageHandler(this);
     }
 
+    protected DateHandler doMakeDateHandler() {
+        return new DateHandler(this);
+    }
+
     /**
      * _more_
      *
@@ -1958,13 +1965,22 @@ public class Repository extends RepositoryBase implements RequestHandler,
      * @return _more_
      */
     public PageHandler getPageHandler() {
-
         if (pageHandler == null) {
             pageHandler = doMakePageHandler();
         }
 
         return pageHandler;
     }
+
+    public DateHandler getDateHandler() {
+
+        if (dateHandler == null) {
+            dateHandler = doMakeDateHandler();
+        }
+
+        return dateHandler;
+    }
+
 
     /**
      * _more_

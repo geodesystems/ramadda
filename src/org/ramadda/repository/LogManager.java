@@ -208,7 +208,7 @@ public class LogManager extends RepositoryManager {
         String uri       = request.getRequestPath();
         String method    = request.getHttpServletRequest().getMethod();
         String userAgent = request.getUserAgent("none");
-        String time      = getPageHandler().formatDate(new Date());
+        String time      = getDateHandler().formatDate(new Date());
         String requestPath = method + " " + uri + " "
                              + request.getHttpServletRequest().getProtocol();
         String referer = request.getHttpServletRequest().getHeader("referer");
@@ -931,7 +931,7 @@ public class LogManager extends RepositoryManager {
 
             }
 
-            String dttm = getPageHandler().formatDate(logEntry.getDate());
+            String dttm = getDateHandler().formatDate(logEntry.getDate());
             dttm = dttm.replace(" ", "&nbsp;");
             String user = logEntry.getUser().getLabel();
             user = user.replace(" ", "&nbsp;");

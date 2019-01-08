@@ -410,7 +410,6 @@ public class EntryUtil extends RepositoryManager {
                     ContentMetadataHandler.TYPE_TIMEZONE, true);
             if ((metadataList != null) && (metadataList.size() > 0)) {
                 Metadata metadata = metadataList.get(0);
-
                 return metadata.getAttr1();
             }
         } catch (Exception exc) {
@@ -430,7 +429,7 @@ public class EntryUtil extends RepositoryManager {
      * @return _more_
      */
     public String formatDate(Request request, Entry entry) {
-        return getPageHandler().formatDate(request, entry.getStartDate(),
+        return getDateHandler().formatDate(request, entry.getStartDate(),
                                            getTimezone(entry));
     }
 

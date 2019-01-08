@@ -1529,7 +1529,7 @@ public class PatternHarvester extends Harvester /*implements EntryInitializer*/ 
         }
         if (getTestMode()) {
             debug("\tname: " + name + "\n\tgroup:" + groupName
-                  + "\n\tfromdate:" + getPageHandler().formatDate(fromDate));
+                  + "\n\tfromdate:" + getDateHandler().formatDate(fromDate));
             if (values != null) {
                 for (int i = 0; i < values.length; i++) {
                     debug("\tvalue: " + values[i]);

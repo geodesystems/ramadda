@@ -1067,7 +1067,7 @@ public class Service extends RepositoryManager {
                                         argPrefix, arg.getName(),
                                         (String) null);
                 if (Utils.stringDefined(dateString)) {
-                    Date date = getRepository().getPageHandler().parseDate(
+                    Date date = getRepository().getDateHandler().parseDate(
                                     dateString);
                     argValue = arg.getDateFormat().format(date);
                 }
@@ -1763,7 +1763,7 @@ public class Service extends RepositoryManager {
                         dates);
             }
             inputHtml.append(
-                getRepository().getPageHandler().makeDateInput(
+                getRepository().getDateHandler().makeDateInput(
                     request, argUrlName, "searchform", null, null, false,
                     dates));
         } else if (arg.isFile()) {

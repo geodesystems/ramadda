@@ -1992,7 +1992,7 @@ public class Request implements Constants, Cloneable {
         }
         String dateString = (String) getDateSelect(from, "").trim();
 
-        return repository.getPageHandler().parseDate(dateString);
+        return repository.getDateHandler().parseDate(dateString);
     }
 
 

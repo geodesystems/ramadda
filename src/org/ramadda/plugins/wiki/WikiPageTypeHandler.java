@@ -415,7 +415,7 @@ public class WikiPageTypeHandler extends ExtensibleGroupTypeHandler {
                 HtmlUtils.formEntry(
                     "",
                     msgLabel("Editing with text from version")
-                    + getPageHandler().formatDate(wph.getDate())));
+                    + getDateHandler().formatDate(wph.getDate())));
         }
 
         sb.append(HtmlUtils.formEntry(msgLabel("Title"),

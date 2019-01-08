@@ -2963,17 +2963,17 @@ public class EntryManager extends RepositoryManager {
         String[] macros = {
             "day", padZero(fromDay), "week", fromWeek + "", "month",
             padZero(fromMonth), "year", fromYear + "", "date",
-            getPageHandler().formatDate(fromDate), "fromdate",
-            getPageHandler().formatDate(fromDate), "monthname",
+            getDateHandler().formatDate(fromDate), "fromdate",
+            getDateHandler().formatDate(fromDate), "monthname",
             DateUtil.MONTH_NAMES[fromMonth - 1], "create_day",
             padZero(createDay), "from_day", padZero(fromDay), "to_day",
             padZero(toDay), "create_week", "" + createWeek, "from_week",
             "" + fromWeek, "to_week", "" + toWeek, "create_weekofyear",
             "" + createWeekOfYear, "from_weekofyear", "" + fromWeekOfYear,
             "to_weekofyear", "" + toWeekOfYear, "create_date",
-            getPageHandler().formatDate(createDate), "from_date",
-            getPageHandler().formatDate(fromDate), "to_date",
-            getPageHandler().formatDate(toDate), "create_month",
+            getDateHandler().formatDate(createDate), "from_date",
+            getDateHandler().formatDate(fromDate), "to_date",
+            getDateHandler().formatDate(toDate), "create_month",
             padZero(createMonth), "from_month", padZero(fromMonth),
             "to_month", padZero(toMonth), "create_year", createYear + "",
             "from_year", fromYear + "", "to_year", toYear + "",
@@ -5948,21 +5948,21 @@ public class EntryManager extends RepositoryManager {
 
         Date now        = new Date();
         Date createDate = (XmlUtil.hasAttribute(node, ATTR_CREATEDATE)
-                           ? getPageHandler().parseDate(
+                           ? getDateHandler().parseDate(
                                XmlUtil.getAttribute(node, ATTR_CREATEDATE))
                            : now);
         Date changeDate = (XmlUtil.hasAttribute(node, ATTR_CHANGEDATE)
-                           ? getPageHandler().parseDate(
+                           ? getDateHandler().parseDate(
                                XmlUtil.getAttribute(node, ATTR_CHANGEDATE))
                            : createDate);
         //don't use the create and change date from the xml
         createDate = changeDate = now;
         Date fromDate = (XmlUtil.hasAttribute(node, ATTR_FROMDATE)
-                         ? getPageHandler().parseDate(
+                         ? getDateHandler().parseDate(
                              XmlUtil.getAttribute(node, ATTR_FROMDATE))
                          : createDate);
         Date toDate = (XmlUtil.hasAttribute(node, ATTR_TODATE)
-                       ? getPageHandler().parseDate(
+                       ? getDateHandler().parseDate(
                            XmlUtil.getAttribute(node, ATTR_TODATE))
                        : fromDate);
 

@@ -1122,7 +1122,7 @@ public class PhoneHarvester extends Harvester {
         }
 
         String name = "Voice Message  - "
-                      + getPageHandler().formatDate(request, new Date());
+                      + getDateHandler().formatDate(request, new Date());
         String       type             = "media_audiofile";
         TypeHandler  typeHandler      = getRepository().getTypeHandler(type);
         Entry entry = typeHandler.createEntry(getRepository().getGUID());
