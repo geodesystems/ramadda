@@ -1191,7 +1191,7 @@ public class ImageOutputHandler extends OutputHandler {
         if (message != null) {
             sb.append(message);
         }
-        sb.append(request.formPost(getRepository().URL_ENTRY_SHOW));
+        sb.append(request.form(getRepository().URL_ENTRY_SHOW));
         sb.append(HtmlUtils.hidden(ARG_ENTRYID, entry.getId()));
         sb.append(HtmlUtils.hidden(ARG_OUTPUT, OUTPUT_COLLAGE));
         sb.append(HtmlUtils.submit("Make Collage", ARG_SUBMIT));
