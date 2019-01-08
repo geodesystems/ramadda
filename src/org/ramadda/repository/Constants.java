@@ -1575,9 +1575,6 @@ public interface Constants {
     public static final String PROP_API = "ramadda.api";
 
     /** _more_ */
-    public static final String PROP_DATEFORMAT = "ramadda.dateformat";
-
-    /** _more_ */
     public static final String PROP_DATE_FORMAT = "ramadda.date.format";
 
     /** _more_ */

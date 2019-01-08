@@ -432,7 +432,7 @@ public class DateHandler extends RepositoryManager {
      * @return _more_
      */
     public String getDefaultDisplayDateFormat() {
-        return getRepository().getProperty(PROP_DATEFORMAT,
+        return getRepository().getProperty(PROP_DATE_FORMAT,
                                            DEFAULT_TIME_FORMAT);
     }
 

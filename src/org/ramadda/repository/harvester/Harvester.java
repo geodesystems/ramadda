@@ -1083,7 +1083,6 @@ public abstract class Harvester extends RepositoryManager {
         double minutes = getSleepMinutes();
         if (minutes < 1) {
             Misc.sleep((long) (1000 * 60 * minutes));
-
             return;
         }
         Misc.pauseEvery((int) minutes);
