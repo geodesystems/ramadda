@@ -6327,6 +6327,7 @@ public class EntryManager extends RepositoryManager {
             }
         }
 
+
         String img = HtmlUtils.img(entryIcon, imgText.toString(),
                                    Utils.concatString(HtmlUtils.id(iconId),
                                        sourceEvent.toString()));

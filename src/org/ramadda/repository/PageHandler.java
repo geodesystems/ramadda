@@ -3340,9 +3340,10 @@ public class PageHandler extends RepositoryManager {
      */
     public String getIconUrl(Request request, Entry entry) throws Exception {
         String iconPath = getIconUrlInner(request, entry);
-
+        
         if (iconPath == null) {
-            return null;
+            return getIconUrl(ICON_BLANK);
+            //            return null;
         }
 
         return iconPath;
