@@ -3410,18 +3410,14 @@ public class Utils {
      *
      * @return _more_
      */
-    public static BufferedImage crop(BufferedImage image, int top,
-                                     int bottom, int left, int right) {
-
+    public static BufferedImage crop(BufferedImage image, int top, int left, int bottom, int right) {
         int imageWidth  = image.getWidth(null);
         int imageHeight = image.getHeight(null);
-        BufferedImage newImage = new BufferedImage(imageWidth - left - right,
-                                     imageHeight - top - bottom,
-                                     BufferedImage.TYPE_INT_ARGB);
-        Graphics newG = newImage.getGraphics();
-        newG.drawImage(image, -left, -top, null);
-
-        return newImage;
+        int w           = imageWidth-right-left;
+        int h           = imageHeight-top-bottom;
+        //        System.err.println("iw:" + imageWidth +" w:"  + w + " " + left +" " + right);
+        //        System.err.println("ih:" + imageHeight +" h:"  + h + " " + top +" " + bottom);
+        return image.getSubimage(left, top, w, h);
     }
 
     /**

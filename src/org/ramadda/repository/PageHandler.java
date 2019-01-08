@@ -2213,8 +2213,11 @@ public class PageHandler extends RepositoryManager {
      * @return _more_
      */
     public String showDialogError(String h) {
-        h = getDialogString(h);
-
+        return showDialogError(h,true);
+    }
+    public String showDialogError(String h, boolean cleanString) {
+        if(cleanString)
+            h = getDialogString(h);
         return getMessage(h, Constants.ICON_ERROR, false);
     }
 

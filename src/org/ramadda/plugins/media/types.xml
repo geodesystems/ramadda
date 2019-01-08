@@ -167,7 +167,7 @@
 </type>
 
 
-  <type name="type_image_webcam"  description="Webcam" super="type_image" foruser="true" category="Imagery" supercategory="Miscellaneous" >
+  <type name="type_image_webcam"  description="Webcam" super="type_image" foruser="true" category="Imagery" supercategory="Miscellaneous"  metadata="enum_tag,camera.direction">
      <property name="form.file.show" value="false"/>
      <property name="form.area.show" value="false"/>
      <property name="form.location.show" value="true"/>

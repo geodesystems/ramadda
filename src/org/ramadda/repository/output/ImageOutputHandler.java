@@ -890,6 +890,12 @@ public class ImageOutputHandler extends OutputHandler {
                                   List<Entry> entries)
             throws Exception {
 
+        int cropTop = 0; int cropLeft = 0; int cropBottom = 0; int cropRight = 0;
+        List<String> crops = StringUtil.split(request.getString("crop",""),",",true,true);
+        if(crops.size()>0) cropTop = Integer.parseInt(crops.get(0));
+        if(crops.size()>1) cropLeft = Integer.parseInt(crops.get(1));
+        if(crops.size()>2) cropBottom = Integer.parseInt(crops.get(2));
+        if(crops.size()>3) cropRight = Integer.parseInt(crops.get(3));
         int columns = request.get("columns", 3);
         int matte   = request.get("matte", 0);
         Color matteColor =
@@ -943,7 +949,6 @@ public class ImageOutputHandler extends OutputHandler {
                                     child.getResource().getPath(), true));
                         if (imageBytes == null) {
                             System.err.println("no image:" + child);
-
                             return;
                         }
                         Image image = Toolkit.getDefaultToolkit().createImage(
@@ -951,7 +956,7 @@ public class ImageOutputHandler extends OutputHandler {
                         image = ImageUtils.waitOnImage(image);
                         if (image != null) {
                             imageArray[idx] = image;
-                        }
+                        } 
                     } catch (Exception exc) {
                         System.err.println("error:" + exc);
                     } finally {
@@ -971,18 +976,21 @@ public class ImageOutputHandler extends OutputHandler {
             Misc.sleep(500);
         }
 
-        if (done[0] != selected.size()) {
-            StringBuilder sb = new StringBuilder();
-            for(int i=0;i<imageArray.length;i++) {
-                if(imageArray[i] == null) {
-                    Entry child = selected.get(i);
-                    sb.append(HtmlUtils.href(request.entryUrl(getRepository().URL_ENTRY_SHOW, child), child.getName()));
-                    sb.append("<br>");
-                }
+        boolean anyBad = false;
+        StringBuilder sb = new StringBuilder();
+        for(int i=0;i<imageArray.length;i++) {
+            if(imageArray[i] == null) {
+                anyBad = true;
+                Entry child = selected.get(i);
+                sb.append(HtmlUtils.href(request.entryUrl(getRepository().URL_ENTRY_SHOW, child), child.getName()));
+                sb.append("<br>");
             }
-            return makeCollageForm(request, entry, entries,
-                                   HtmlUtils.note("Unable to read the images from:<br>" + sb));
         }
+        if(anyBad) {
+            return makeCollageForm(request, entry, entries,
+                                   getPageHandler().showDialogError("Unable to read the images from:<br>" + sb, false));
+        }
+
 
         List<Image>  images = new ArrayList<Image>();
         List<String> labels = new ArrayList<String>();
@@ -1112,7 +1120,10 @@ public class ImageOutputHandler extends OutputHandler {
             int imageY      = maxHeights[col] + yoff + matte;
             int imageWidth  = scaledWidth - 2 * matte;
             int imageHeight = scaledHeight - 2 * matte;
-            g.drawImage(images.get(i), imageX, imageY, imageWidth,
+            if(cropTop!=0 || cropLeft!=0 || cropBottom!=0 || cropRight!=0) {
+                image = Utils.crop(ImageUtils.toBufferedImage(image), cropTop, cropLeft, cropBottom, cropRight);
+            }
+            g.drawImage(image, imageX, imageY, imageWidth,
                         imageHeight, null);
 
             if (addLabels) {
@@ -1241,6 +1252,9 @@ public class ImageOutputHandler extends OutputHandler {
                                       HtmlUtils.input("mattecolor",
                                           request.getString("mattecolor",
                                               "white"))));
+        sb.append(HtmlUtils.formEntry("Crop:",
+                                      HtmlUtils.input("crop",
+                                                      request.getString("crop", ""),HtmlUtils.attr("placeholder","top,left,bottom,right"))));
         sb.append(HtmlUtils.formEntry("",
                                       HtmlUtils.checkbox("addlabels", "true",
                                           request.get("addlabels",
@@ -1255,7 +1269,22 @@ public class ImageOutputHandler extends OutputHandler {
         sb.append(HtmlUtils.formTableClose());
         sb.append("</td><td>&nbsp;&nbsp;&nbsp;&nbsp;<td><td>");
         StringBuilder esb      = new StringBuilder();
+        boolean anyChecked = false;
         int           entryCnt = 0;
+        for (int i = 0; i < entries.size(); i++) {
+            Entry child = entries.get(i);
+            if ( !child.isImage()) {
+                continue;
+            }
+            String cbxId = ARG_ENTRYID + "_" + entryCnt;
+            if(request.defined(cbxId)) {
+                anyChecked = true;
+                break;
+            }
+            entryCnt++;
+        }
+
+        entryCnt = 0;
         for (int i = 0; i < entries.size(); i++) {
             Entry child = entries.get(i);
             if ( !child.isImage()) {
@@ -1284,8 +1313,10 @@ public class ImageOutputHandler extends OutputHandler {
                     request.entryUrl(getRepository().URL_ENTRY_SHOW, child),
                     img);
             }
-            esb.append(HtmlUtils.checkbox(ARG_ENTRYID + "_" + entryCnt,
-                                          child.getId(), true));
+            String cbxId = ARG_ENTRYID + "_" + entryCnt;
+            boolean checked = anyChecked?request.defined(cbxId):true;
+            esb.append(HtmlUtils.checkbox(cbxId,
+                                          child.getId(), checked));
             entryCnt++;
             esb.append(" ");
             esb.append(img);
