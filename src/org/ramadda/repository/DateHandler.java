@@ -107,13 +107,6 @@ public class DateHandler extends RepositoryManager {
     /** _more_ */
     private String shortDateFormat;
 
-
-
-
-    /** _more_ */
-    TimeZone defaultTimeZone;
-
-
     /** _more_ */
     private Hashtable<String, SimpleDateFormat> dateFormats =
         new Hashtable<String, SimpleDateFormat>();
@@ -141,12 +134,11 @@ public class DateHandler extends RepositoryManager {
     @Override
     public void initAttributes() {
         super.initAttributes();
+        dateFormats = new Hashtable<String, SimpleDateFormat>();
         shortDateFormat = getRepository().getProperty(PROP_DATE_SHORTFORMAT,
                 DEFAULT_TIME_SHORTFORMAT);
         String tz = getRepository().getProperty(PROP_TIMEZONE, "UTC");
-        displayTimeZone = TimeZone.getTimeZone("UTC");
-
-        defaultTimeZone = TimeZone.getDefault();
+        displayTimeZone = TimeZone.getTimeZone(tz);
         displaySdf =
             RepositoryUtil.makeDateFormat(getDefaultDisplayDateFormat(),
                                           displayTimeZone);
@@ -453,16 +445,18 @@ public class DateHandler extends RepositoryManager {
      *
      * @return _more_
      *
-     * @throws Exception _more_
      */
-    public SimpleDateFormat getDateFormat(Entry entry, String format)
-            throws Exception {
-        if (format == null) {
-            format = getDefaultDisplayDateFormat();
-        }
-        String tz = getEntryUtil().getTimezone(entry);
+    public SimpleDateFormat getDateFormat(Entry entry, String format) {
+        try {
+            if (format == null) {
+                format = getDefaultDisplayDateFormat();
+            }
+            String tz = getEntryUtil().getTimezone(entry);
 
-        return getSDF(format, tz);
+            return getSDF(format, tz);
+        } catch (Exception exc) {
+            throw new IllegalArgumentException(exc);
+        }
 
     }
 
@@ -476,11 +470,35 @@ public class DateHandler extends RepositoryManager {
      *
      * @return _more_
      *
-     * @throws Exception _more_
      */
-    public String formatDate(Entry entry, Date date, String format)
-            throws Exception {
+    public String formatDate(Entry entry, Date date, String format) {
         return getDateFormat(entry, format).format(date);
+    }
+
+    /**
+     * _more_
+     *
+     * @param request _more_
+     * @param entry _more_
+     * @param ms _more_
+     *
+     * @return _more_
+     */
+    public String formatDate(Request request, Entry entry, long ms) {
+        return formatDate(request, entry, new Date(ms));
+    }
+
+    /**
+     * _more_
+     *
+     * @param request _more_
+     * @param entry _more_
+     * @param d _more_
+     *
+     * @return _more_
+     */
+    public String formatDate(Request request, Entry entry, Date d) {
+        return formatDate(entry, d, null);
     }
 
 
@@ -515,16 +533,11 @@ public class DateHandler extends RepositoryManager {
         if (sdf == null) {
             sdf = new SimpleDateFormat();
             sdf.applyPattern(format);
-            if (timezone == null) {
-                sdf.setTimeZone(RepositoryUtil.TIMEZONE_UTC);
+            if (Utils.stringDefined(timezone)
+                    && !timezone.equals("default")) {
+                sdf.setTimeZone(TimeZone.getTimeZone(timezone));
             } else {
-                if ((defaultTimeZone != null)
-                        && (timezone.equals("")
-                            || timezone.equals("default"))) {
-                    sdf.setTimeZone(defaultTimeZone);
-                } else {
-                    sdf.setTimeZone(TimeZone.getTimeZone(timezone));
-                }
+                sdf.setTimeZone(displayTimeZone);
             }
             dateFormats.put(key, sdf);
         }
@@ -570,7 +583,10 @@ public class DateHandler extends RepositoryManager {
      * @return _more_
      */
     public String formatDate(Date d, String timezone) {
-        System.err.println("tz:" + timezone);
+        if (d == null) {
+            return BLANK;
+        }
+
         if (displaySdf == null) {
             displaySdf = getSDF(getDefaultDisplayDateFormat());
         }
@@ -581,9 +597,6 @@ public class DateHandler extends RepositoryManager {
                                            getDefaultDisplayDateFormat(),
                                            timezone));
 
-        if (d == null) {
-            return BLANK;
-        }
         synchronized (dateFormat) {
             return dateFormat.format(d);
         }
@@ -642,8 +655,32 @@ public class DateHandler extends RepositoryManager {
         return formatDate(d, timezone);
     }
 
+    /**
+     * _more_
+     *
+     * @param request _more_
+     * @param entry _more_
+     * @param ms _more_
+     *
+     * @return _more_
+     */
+    public String formatDateShort(Request request, Entry entry, long ms) {
+        return formatDateShort(request, entry, new Date(ms));
+    }
 
-
+    /**
+     * _more_
+     *
+     * @param request _more_
+     * @param entry _more_
+     * @param date _more_
+     *
+     * @return _more_
+     */
+    public String formatDateShort(Request request, Entry entry, Date date) {
+        return formatDateShort(request, date,
+                               getEntryUtil().getTimezone(entry));
+    }
 
     /**
      * _more_

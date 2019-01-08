@@ -27,11 +27,11 @@ import org.ramadda.repository.output.JsonOutputHandler;
 
 import org.ramadda.repository.output.WikiManager;
 import org.ramadda.repository.search.*;
+import org.ramadda.util.HtmlUtils;
+import org.ramadda.util.Utils;
 
 
 import org.ramadda.util.sql.SqlUtil;
-import org.ramadda.util.HtmlUtils;
-import org.ramadda.util.Utils;
 
 
 
@@ -490,32 +490,6 @@ public class RepositoryManager implements RepositorySource, Constants,
     }
 
 
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param ms _more_
-     *
-     * @return _more_
-     */
-    public String formatDate(Request request, long ms) {
-        return getDateHandler().formatDate(request, ms);
-    }
-
-
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param ms _more_
-     * @param entry _more_
-     *
-     * @return _more_
-     */
-    public String formatDate(Request request, long ms, Entry entry) {
-        return getDateHandler().formatDate(request, ms,
-                                           getEntryUtil().getTimezone(entry));
-    }
 
     /**
      * _more_
@@ -667,6 +641,11 @@ public class RepositoryManager implements RepositorySource, Constants,
         return repository.getPageHandler();
     }
 
+    /**
+     * _more_
+     *
+     * @return _more_
+     */
     public DateHandler getDateHandler() {
         return repository.getDateHandler();
     }

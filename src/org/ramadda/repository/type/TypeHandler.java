@@ -1040,8 +1040,16 @@ public class TypeHandler extends RepositoryManager {
     public void childEntryChanged(Entry entry, boolean isNew)
             throws Exception {}
 
-    public void metadataChanged(Request request, Entry entry)  throws Exception {
-    }
+    /**
+     * _more_
+     *
+     * @param request _more_
+     * @param entry _more_
+     *
+     * @throws Exception _more_
+     */
+    public void metadataChanged(Request request, Entry entry)
+            throws Exception {}
 
     /**
      * _more_
@@ -2138,15 +2146,17 @@ public class TypeHandler extends RepositoryManager {
         html = html.replace("${" + ARG_DESCRIPTION + "}",
                             entry.getDescription());
         html = html.replace("${" + ARG_CREATEDATE + "}",
-                            formatDate(request, entry.getCreateDate(),
-                                       entry));
+                            getDateHandler().formatDate(request, entry,
+                                entry.getCreateDate()));
         html = html.replace("${" + ARG_CHANGEDATE + "}",
-                            formatDate(request, entry.getChangeDate(),
-                                       entry));
+                            getDateHandler().formatDate(request, entry,
+                                entry.getChangeDate()));
         html = html.replace("${" + ARG_FROMDATE + "}",
-                            formatDate(request, entry.getStartDate(), entry));
+                            getDateHandler().formatDate(request, entry,
+                                entry.getStartDate()));
         html = html.replace("${" + ARG_TODATE + "}",
-                            formatDate(request, entry.getEndDate(), entry));
+                            getDateHandler().formatDate(request, entry,
+                                entry.getEndDate()));
         html = html.replace("${" + ARG_CREATOR + "}",
                             entry.getUser().getLabel());
 
@@ -3045,14 +3055,15 @@ public class TypeHandler extends RepositoryManager {
             if ( !request.isAnonymous()) {
                 if (showDate) {
                     sb.append(formEntry(request, msgLabel("Created"),
-                                        formatDate(request,
-                                            entry.getCreateDate(), entry)));
+                                        getDateHandler().formatDate(request,
+                                            entry, entry.getCreateDate())));
 
                     if (entry.getCreateDate() != entry.getChangeDate()) {
-                        sb.append(formEntry(request, msgLabel("Modified"),
-                                            formatDate(request,
-                                                entry.getChangeDate(),
-                                                    entry)));
+                        sb.append(
+                            formEntry(
+                                request, msgLabel("Modified"),
+                                getDateHandler().formatDate(
+                                    request, entry, entry.getChangeDate())));
 
                     }
                 }
@@ -3113,10 +3124,10 @@ public class TypeHandler extends RepositoryManager {
 
             if (showDate && hasDataDate) {
                 if (entry.getEndDate() != entry.getStartDate()) {
-                    String startDate = formatDate(request,
-                                           entry.getStartDate(), entry);
-                    String endDate = formatDate(request, entry.getEndDate(),
-                                         entry);
+                    String startDate = getDateHandler().formatDate(request,
+                                           entry, entry.getStartDate());
+                    String endDate = getDateHandler().formatDate(request,
+                                         entry, entry.getEndDate());
                     String searchUrl =
                         HtmlUtils
                             .url(request
@@ -3134,15 +3145,15 @@ public class TypeHandler extends RepositoryManager {
                     boolean showTime = typeHandler.okToShowInForm(entry,
                                            "time", true);
                     StringBuilder dateSB = new StringBuilder();
-                    dateSB.append(formatDate(request, entry.getStartDate(),
-                                             entry));
+                    dateSB.append(getDateHandler().formatDate(request, entry,
+                            entry.getStartDate()));
 
 
                     if (typeHandler.okToShowInForm(entry, ARG_TODATE)
                             && (entry.getEndDate() != entry.getStartDate())) {
                         dateSB.append(" - ");
-                        dateSB.append(formatDate(request, entry.getEndDate(),
-                                entry));
+                        dateSB.append(getDateHandler().formatDate(request,
+                                entry, entry.getEndDate()));
                     }
                     String formLabel = msgLabel(getFormLabel(entry, ARG_DATE,
                                            "Date"));
@@ -4057,11 +4068,10 @@ public class TypeHandler extends RepositoryManager {
 
         String dateHelp = " (e.g., 2007-12-11 00:00:00)";
         /*        String fromDate = ((entry != null)
-                           ? formatDate(request,
-                                        new Date(entry.getStartDate()))
+                           ? getDateHandler().formatDate(request,entry,entry.getStartDate())
                            : BLANK);
         String toDate = ((entry != null)
-                         ? formatDate(request, new Date(entry.getEndDate()))
+                         ? getDateHandler().formatDate(request, entry, entry.getEndDate())
                          : BLANK);*/
 
         String  timezone  = ((entry == null)
@@ -6645,23 +6655,8 @@ public class TypeHandler extends RepositoryManager {
     }
 
 
-    /**
-     * _more_
-     *
-     * @param request The request
-     * @param entry _more_
-     * @param date _more_
-     * @param extra _more_
-     *
-     * @return _more_
-     */
-    public String formatDate(Request request, Entry entry, Date date,
-                             String extra) {
 
-        return getDateHandler().formatDateShort(request, date,
-                getEntryUtil().getTimezone(entry), extra);
 
-    }
 
     /**
      * _more_

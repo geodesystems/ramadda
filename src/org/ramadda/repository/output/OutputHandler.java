@@ -1760,8 +1760,8 @@ public class OutputHandler extends RepositoryManager {
         boolean isMobile = request.isMobile();
 
         if (showDate) {
-            String dttm = entry.getTypeHandler().formatDate(request, entry,
-                              new Date(entry.getStartDate()), "");
+            String dttm = getDateHandler().formatDateShort(request, entry,
+                              entry.getStartDate());
             HtmlUtils.open(sb, HtmlUtils.TAG_TD, HtmlUtils.ATTR_WIDTH,
                            WIDTH_DATE, HtmlUtils.ATTR_ALIGN, "right");
             HtmlUtils.div(sb, dttm,
@@ -1770,8 +1770,8 @@ public class OutputHandler extends RepositoryManager {
         }
 
         if (showCreateDate) {
-            String dttm = entry.getTypeHandler().formatDate(request, entry,
-                              new Date(entry.getCreateDate()), "");
+            String dttm = getDateHandler().formatDateShort(request, entry,
+                              entry.getCreateDate());
             HtmlUtils.open(sb, HtmlUtils.TAG_TD, HtmlUtils.ATTR_WIDTH,
                            WIDTH_DATE, HtmlUtils.ATTR_ALIGN, "right");
             HtmlUtils.div(sb, dttm,

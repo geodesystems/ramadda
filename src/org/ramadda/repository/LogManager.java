@@ -17,7 +17,6 @@
 package org.ramadda.repository;
 
 
-
 import org.apache.log4j.Logger;
 
 
@@ -42,6 +41,9 @@ import java.io.*;
 import java.io.FileNotFoundException;
 
 import java.sql.SQLException;
+
+
+import java.text.SimpleDateFormat;
 
 
 import java.util.ArrayList;
@@ -139,6 +141,9 @@ public class LogManager extends RepositoryManager {
     /** _more_ */
     private int requestCount = 0;
 
+    /** _more_          */
+    private SimpleDateFormat sdf;
+
     /**
      * _more_
      *
@@ -147,6 +152,7 @@ public class LogManager extends RepositoryManager {
     public LogManager(Repository repository) {
         super(repository);
         LOGGER_OK = repository.getProperty(PROP_USELOG4J, true);
+        sdf = RepositoryUtil.makeDateFormat(DateHandler.DEFAULT_TIME_FORMAT);
     }
 
 
@@ -208,7 +214,7 @@ public class LogManager extends RepositoryManager {
         String uri       = request.getRequestPath();
         String method    = request.getHttpServletRequest().getMethod();
         String userAgent = request.getUserAgent("none");
-        String time      = getDateHandler().formatDate(new Date());
+        String time      = sdf.format(new Date());
         String requestPath = method + " " + uri + " "
                              + request.getHttpServletRequest().getProtocol();
         String referer = request.getHttpServletRequest().getHeader("referer");

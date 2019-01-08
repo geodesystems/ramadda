@@ -21,9 +21,6 @@ import org.ramadda.repository.*;
 import org.ramadda.repository.auth.*;
 import org.ramadda.repository.metadata.*;
 import org.ramadda.repository.type.*;
-
-
-import org.ramadda.util.sql.SqlUtil;
 import org.ramadda.util.CategoryBuffer;
 import org.ramadda.util.HtmlUtils;
 import org.ramadda.util.JQuery;
@@ -32,6 +29,9 @@ import org.ramadda.util.TTLCache;
 
 
 import org.ramadda.util.Utils;
+
+
+import org.ramadda.util.sql.SqlUtil;
 
 
 import org.w3c.dom.*;
@@ -508,7 +508,8 @@ public class HtmlOutputHandler extends OutputHandler {
             return getMetadataXml(request, entry, false);
         }
 
-        return getHtmlResult(request, outputType, entry, !outputType.equals(OUTPUT_INFO));
+        return getHtmlResult(request, outputType, entry,
+                             !outputType.equals(OUTPUT_INFO));
     }
 
 
@@ -1504,8 +1505,8 @@ public class HtmlOutputHandler extends OutputHandler {
             sb.append(getEntryManager().getTooltipLink(request, entry,
                     getEntryDisplayName(entry), url));
             sb.append(HtmlUtils.br());
-            sb.append(entry.getTypeHandler().formatDate(request, entry,
-                    new Date(entry.getStartDate()), ""));
+            sb.append(getDateHandler().formatDateShort(request, entry,
+                    entry.getStartDate()));
 
 
             //            sb.append (getEntryManager().getAjaxLink( request,  entry,
@@ -1755,8 +1756,8 @@ public class HtmlOutputHandler extends OutputHandler {
                     HtmlUtils.col(
                         entryLink.getLink(),
                         " nowrap " + HtmlUtils.cssClass("entry-table-name")));
-                String date = entry.getTypeHandler().formatDate(request,
-                                  entry, new Date(entry.getStartDate()), "");
+                String date = getDateHandler().formatDateShort(request,
+                                  entry, entry.getStartDate());
                 tableSB.append(
                     HtmlUtils.col(
                         date,
