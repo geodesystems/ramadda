@@ -20,11 +20,11 @@ package org.ramadda.repository.output;
 import org.ramadda.repository.*;
 import org.ramadda.repository.auth.*;
 import org.ramadda.repository.type.*;
-
-import org.ramadda.util.sql.SqlUtil;
 import org.ramadda.util.HtmlUtils;
 import org.ramadda.util.Json;
 import org.ramadda.util.Utils;
+
+import org.ramadda.util.sql.SqlUtil;
 
 
 import org.w3c.dom.*;
@@ -40,7 +40,15 @@ import ucar.unidata.xml.XmlUtil;
 
 import java.awt.Color;
 
+import java.awt.Font;
+import java.awt.FontMetrics;
+import java.awt.Graphics2D;
+
 import java.awt.Image;
+import java.awt.RenderingHints;
+import java.awt.Toolkit;
+
+import java.awt.geom.Rectangle2D;
 import java.awt.image.*;
 
 
@@ -162,6 +170,13 @@ public class ImageOutputHandler extends OutputHandler {
                        ICON_IMAGES);
 
     /** _more_ */
+    public static final OutputType OUTPUT_COLLAGE =
+        new OutputType("Collage", "image.collage",
+                       OutputType.TYPE_VIEW | OutputType.TYPE_FORSEARCH, "",
+                       ICON_IMAGES);
+
+
+    /** _more_ */
     public static final OutputType OUTPUT_VIDEO =
         new OutputType("Play Video", "image.video", OutputType.TYPE_VIEW, "",
                        ICON_IMAGES);
@@ -216,6 +231,7 @@ public class ImageOutputHandler extends OutputHandler {
         addType(OUTPUT_CAPTION);
         addType(OUTPUT_EDIT);
         addType(OUTPUT_VIDEO);
+        addType(OUTPUT_COLLAGE);
         addType(OUTPUT_STREETVIEW);
     }
 
@@ -289,6 +305,7 @@ public class ImageOutputHandler extends OutputHandler {
             //            links.add(makeLink(request, state.getEntry(), OUTPUT_SLIDESHOW));
             links.add(makeLink(request, state.getEntry(), OUTPUT_GALLERY));
             links.add(makeLink(request, state.getEntry(), OUTPUT_PLAYER));
+            links.add(makeLink(request, state.getEntry(), OUTPUT_COLLAGE));
         }
     }
 
@@ -766,6 +783,10 @@ public class ImageOutputHandler extends OutputHandler {
 
         }
 
+        if (output.equals(OUTPUT_COLLAGE)) {
+            return makeCollage(request, group, entries);
+        }
+
         String playerPrefix = "";
         String playerVar    = "";
         int    col          = 0;
@@ -824,6 +845,370 @@ public class ImageOutputHandler extends OutputHandler {
 
         return new Result(group.getName(), finalSB, getMimeType(output));
 
+    }
+
+    /** _more_ */
+    private static final String FILL_FLOW = "flow";
+    //    private static final String FILL_FLOW = "flow";
+
+    /**
+     * _more_
+     *
+     * @param request _more_
+     * @param entry _more_
+     * @param entries _more_
+     *
+     * @return _more_
+     *
+     * @throws Exception _more_
+     */
+    private Result makeCollage(Request request, Entry entry,
+                               List<Entry> entries)
+            throws Exception {
+        if (request.exists(ARG_SUBMIT)) {
+            return processCollage(request, entry, entries);
+        }
+
+        return makeCollageForm(request, entry, entries, null);
+    }
+
+
+    /**
+     * _more_
+     *
+     * @param request _more_
+     * @param entry _more_
+     * @param entries _more_
+     *
+     * @return _more_
+     *
+     * @throws Exception _more_
+     */
+    private Result processCollage(Request request, Entry entry,
+                                  List<Entry> entries)
+            throws Exception {
+
+        int columns = request.get("columns", 3);
+        int matte   = request.get("matte", 0);
+        Color matteColor =
+            HtmlUtils.decodeColor(request.getString("mattecolor", "white"),
+                                  Color.white);
+        columns = Math.min(columns, 1000);
+        int width = request.get("width", 1000);
+        width = Math.min(width, 10000);
+        int                padx        = request.get("padx", 0);
+        int                pady        = request.get("pady", 0);
+        String             topLabel    = request.getString("toplabel", "");
+        String             bottomLabel = request.getString("bottomlabel", "");
+
+        List<String> ids = request.get(ARG_ENTRYIDS, new ArrayList<String>());
+        final List<Image>  images      = new ArrayList<Image>();
+        final List<String> labels      = new ArrayList<String>();
+        final int[]        done        = { 0 };
+        int                lookingFor  = 0;
+        for (String id : ids) {
+            final Entry child = getEntryManager().getEntry(request, id);
+            if (child == null) {
+                System.err.println("no entry:" + id);
+
+                continue;
+            }
+            lookingFor++;
+            Misc.run(new Runnable() {
+                public void run() {
+                    try {
+                        byte[] imageBytes =
+                            IOUtil.readBytes(
+                                Utils.doMakeInputStream(
+                                    child.getResource().getPath(), true));
+                        if (imageBytes == null) {
+                            System.err.println("no image:" + child);
+
+                            return;
+                        }
+                        Image image = Toolkit.getDefaultToolkit().createImage(
+                                          imageBytes);
+                        image = ImageUtils.waitOnImage(image);
+                        if (image != null) {
+                            images.add(image);
+                            labels.add(child.getName());
+                        }
+                    } catch (Exception exc) {
+                        System.err.println("error:" + exc);
+                    } finally {
+                        synchronized (done) {
+                            done[0]++;
+                        }
+                    }
+                }
+            });
+        }
+
+        int tries = 0;
+        while (done[0] != lookingFor) {
+            if (tries++ > 60) {
+                return makeCollageForm(request, entry, entries,
+                                       "Unable to read the images");
+            }
+            Misc.sleep(500);
+        }
+
+        if (images.size() != lookingFor) {
+            return makeCollageForm(request, entry, entries,
+                                   "Unable to read all images");
+        }
+
+
+        int   scaledWidth = width / columns;
+        int[] rowMax      = new int[images.size() / columns + 1];
+        int[] maxHeights  = new int[columns];
+        int[] extraPad    = new int[columns];
+        for (int i = 0; i < rowMax.length; i++) {
+            rowMax[i] = 0;
+        }
+        for (int i = 0; i < maxHeights.length; i++) {
+            maxHeights[i] = pady;
+            extraPad[i]   = 0;
+        }
+        int row = 0;
+        int cnt = 0;
+        for (int i = 0; i < images.size(); i++) {
+            Image image   = images.get(i);
+            int   iheight = image.getHeight(null);
+            int   iwidth  = image.getWidth(null);
+            if ((iwidth <= 0) || (iheight < 0)) {
+                continue;
+            }
+            int scaledHeight = scaledWidth * iheight / iwidth;
+            rowMax[row] = Math.max(rowMax[row], scaledHeight);
+            int idx = (i % columns);
+            maxHeights[idx] += pady + scaledHeight;
+            if (++cnt >= columns) {
+                cnt = 0;
+                row++;
+            }
+        }
+        int maxHeight = 0;
+        for (int i = 0; i < maxHeights.length; i++) {
+            maxHeight = Math.max(maxHeight, maxHeights[i]);
+        }
+        maxHeight = 0;
+        for (int i = 0; i < rowMax.length; i++) {
+            maxHeight += rowMax[i];
+        }
+        maxHeight += pady + rowMax.length * pady;
+        for (int i = 0; i < maxHeights.length; i++) {
+            maxHeights[i] = pady;
+        }
+        int totalWidth  = width + (columns + 1) * padx;
+        int totalHeight = maxHeight;
+        BufferedImage collage = new BufferedImage(totalWidth, totalHeight,
+                                    BufferedImage.TYPE_INT_ARGB);
+        Graphics2D g = collage.createGraphics();
+        Color bg = HtmlUtils.decodeColor(request.getString("background",
+                       "white"), Color.white);
+        Color fg = HtmlUtils.decodeColor(request.getString("foreground",
+                       "black"), Color.black);
+        g.setColor(bg);
+        g.fillRect(0, 0, totalWidth, totalHeight);
+        row = 0;
+        int col = 0;
+        int numberOfRemainder = columns
+                                - (rowMax.length * columns - images.size());
+        for (int i = 0; i < images.size(); i++) {
+            Image image          = images.get(i);
+            int   iheight        = image.getHeight(null);
+            int   iwidth         = image.getWidth(null);
+            int   scaledHeight   = scaledWidth * iheight / iwidth;
+            int   maxHeightInRow = rowMax[row];
+            int   yoff           = 0;
+            if (scaledHeight < maxHeightInRow) {
+                yoff = (maxHeightInRow - scaledHeight) / 2;
+            }
+            int     x       = padx + col * (padx + scaledWidth);
+            boolean lastRow = rowMax.length == row + 1;
+            if (lastRow && (numberOfRemainder > 0)) {
+                int delta = (columns - numberOfRemainder)
+                            * (padx + scaledWidth) / 2;
+                x += delta;
+            }
+            if (matte > 0) {
+                g.setColor(matteColor);
+                g.fillRect(x, maxHeights[col] + yoff, scaledWidth,
+                           scaledHeight);
+                if (matteColor.equals(bg)) {
+                    g.setColor(Color.gray);
+                    g.drawRect(x, maxHeights[col] + yoff, scaledWidth,
+                               scaledHeight);
+                }
+            }
+            g.drawImage(images.get(i), x + matte,
+                        maxHeights[col] + yoff + matte,
+                        scaledWidth - 2 * matte, scaledHeight - 2 * matte,
+                        null);
+
+            //                maxHeights[col]+=pady+scaledHeight;
+            maxHeights[col] += pady + maxHeightInRow;
+            if (++col >= columns) {
+                col = 0;
+                row++;
+            }
+        }
+
+        int  labelPad = 5;
+        Font f        = new Font(Font.SANS_SERIF, Font.PLAIN, 24);
+        if (Utils.stringDefined(topLabel)) {
+            g.setFont(f);
+            FontMetrics fm      = g.getFontMetrics();
+            Rectangle2D rect    = fm.getStringBounds(topLabel, g);
+            int         twidth  = (int) rect.getWidth();
+            int         theight = (int) (rect.getHeight());
+            collage = ImageUtils.matte(collage, theight + labelPad * 2, 0, 0,
+                                       0, bg);
+            g = collage.createGraphics();
+            g.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING,
+                               RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
+            g.setFont(f);
+            g.setColor(fg);
+            int tx = totalWidth / 2 - twidth / 2;
+            g.drawString(topLabel, tx, labelPad + theight);
+        }
+
+        if (Utils.stringDefined(bottomLabel)) {
+            g.setFont(f);
+            FontMetrics fm      = g.getFontMetrics();
+            Rectangle2D rect    = fm.getStringBounds(bottomLabel, g);
+            int         twidth  = (int) rect.getWidth();
+            int         theight = (int) (rect.getHeight());
+            int         buffer  = theight + labelPad * 2;
+            collage = ImageUtils.matte(collage, 0, buffer, 0, 0, bg);
+            g       = collage.createGraphics();
+            g.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING,
+                               RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
+            g.setFont(f);
+            g.setColor(fg);
+            int tx = totalWidth / 2 - twidth / 2;
+            g.drawString(bottomLabel, tx, collage.getHeight(null) - labelPad);
+        }
+        File file = getStorageManager().getTmpFile(request, "collage.png");
+        ImageUtils.writeImageToFile(collage, file.toString());
+        Result result = new Result(new FileInputStream(file), "image/png");
+        result.setReturnFilename("collage.png");
+
+        return result;
+    }
+
+
+
+    /**
+     * _more_
+     *
+     * @param request _more_
+     * @param entry _more_
+     * @param entries _more_
+     * @param message _more_
+     *
+     * @return _more_
+     *
+     * @throws Exception _more_
+     */
+    private Result makeCollageForm(Request request, Entry entry,
+                                   List<Entry> entries, String message)
+            throws Exception {
+        StringBuilder sb = new StringBuilder();
+        getPageHandler().entrySectionOpen(request, entry, sb,
+                                          "Image Collage");
+        if (message != null) {
+            sb.append(message);
+        }
+        sb.append(request.formPost(getRepository().URL_ENTRY_SHOW));
+        sb.append(HtmlUtils.hidden(ARG_ENTRYID, entry.getId()));
+        sb.append(HtmlUtils.hidden(ARG_OUTPUT, OUTPUT_COLLAGE));
+        sb.append(HtmlUtils.submit("Make Collage", ARG_SUBMIT));
+        sb.append("<table><tr valign=top><td>");
+        sb.append(HtmlUtils.formTable());
+        sb.append(HtmlUtils.formEntry("Columns:",
+                                      HtmlUtils.input("columns",
+                                          request.getString("columns",
+                                              "3"))));
+        sb.append(HtmlUtils.formEntry("Width:",
+                                      HtmlUtils.input("width",
+                                          request.getString("width",
+                                              "1000"))));
+        sb.append(HtmlUtils.formEntry("Pad X:",
+                                      HtmlUtils.input("padx",
+                                          request.getString("padx", "10"))));
+        sb.append(HtmlUtils.formEntry("Pad Y:",
+                                      HtmlUtils.input("pady",
+                                          request.getString("pady", "10"))));
+        sb.append(HtmlUtils.formEntry("Background:",
+                                      HtmlUtils.input("background",
+                                          request.getString("background",
+                                              "white"))));
+        sb.append(HtmlUtils.formEntry("Top Label:",
+                                      HtmlUtils.input("toplabel",
+                                          request.getString("toplabel",
+                                              ""))));
+        sb.append(HtmlUtils.formEntry("Bottom Label:",
+                                      HtmlUtils.input("bottomlabel",
+                                          request.getString("bottomlabel",
+                                              ""))));
+        sb.append(HtmlUtils.formEntry("Label Color:",
+                                      HtmlUtils.input("foreground",
+                                          request.getString("foreground",
+                                              "black"))));
+        sb.append(HtmlUtils.formEntry("Matte:",
+                                      HtmlUtils.input("matte",
+                                          request.getString("matte", "5"))));
+        sb.append(HtmlUtils.formEntry("Matte Color:",
+                                      HtmlUtils.input("mattecolor",
+                                          request.getString("mattecolor",
+                                              "white"))));
+        sb.append(HtmlUtils.formTableClose());
+        sb.append("</td><td>&nbsp;&nbsp;&nbsp;&nbsp;<td><td>");
+        StringBuilder esb = new StringBuilder();
+        for (Entry child : entries) {
+            if ( !child.isImage()) {
+                continue;
+            }
+            List<String> urls = new ArrayList<String>();
+            getMetadataManager().getThumbnailUrls(request, child, urls);
+            String img = "";
+            if (urls.size() > 0) {
+                img = HtmlUtils.img(urls.get(0), "",
+                                    HtmlUtils.attr(HtmlUtils.ATTR_WIDTH,
+                                        "100"));
+            } else if (child.isFile()) {
+                String thumburl =
+                    HtmlUtils.url(
+                        request.makeUrl(repository.URL_ENTRY_GET) + "/"
+                        + getStorageManager().getFileTail(
+                            entry), ARG_ENTRYID, entry.getId(),
+                                    ARG_IMAGEWIDTH, "" + 100);
+                img = HtmlUtils.img(thumburl, "",
+                                    HtmlUtils.attr(HtmlUtils.ATTR_WIDTH,
+                                        "100"));
+            }
+            if (img.length() > 0) {
+                img = HtmlUtils.href(
+                    request.entryUrl(getRepository().URL_ENTRY_SHOW, child),
+                    img);
+            }
+            esb.append(HtmlUtils.checkbox(ARG_ENTRYIDS, child.getId(), true));
+            esb.append(" ");
+            esb.append(img);
+            esb.append(" ");
+            esb.append(child.getName());
+            esb.append("<p>");
+        }
+        sb.append("<b>Entries:</b><br>");
+        sb.append(esb.toString());
+        sb.append("</td></tr></table>");
+        sb.append(HtmlUtils.hidden(ARG_OUTPUT, OUTPUT_COLLAGE));
+        sb.append(HtmlUtils.formClose());
+        getPageHandler().entrySectionClose(request, entry, sb);
+
+        return new Result("", sb);
     }
 
 

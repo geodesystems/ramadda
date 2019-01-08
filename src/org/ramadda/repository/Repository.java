@@ -102,16 +102,7 @@ import ucar.unidata.util.TwoFacedObject;
 import ucar.unidata.xml.XmlEncoder;
 import ucar.unidata.xml.XmlUtil;
 
-import java.io.BufferedReader;
-import java.io.ByteArrayInputStream;
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.OutputStream;
-import java.io.PrintWriter;
-import java.io.StringWriter;
+import java.io.*;
 
 import java.lang.reflect.Constructor;
 
@@ -975,7 +966,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
      */
     public void init(Properties properties) throws Exception {
         /*
-                final PrintStream oldErr = System.err;
+        final PrintStream oldErr = System.err;
                 final PrintStream oldOut = System.out;
                 System.setErr(new PrintStream(oldOut){
                         public void     println(String x) {

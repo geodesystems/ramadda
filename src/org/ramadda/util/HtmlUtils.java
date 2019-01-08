@@ -2376,15 +2376,28 @@ public class HtmlUtils {
      * @return _more_
      */
     public static String radio(String name, String value, boolean checked) {
-        return radio(name, value, checked,"");
+        return radio(name, value, checked, "");
     }
 
-    public static String radio(String name, String value, boolean checked, String attrs) {
+    /**
+     * _more_
+     *
+     * @param name _more_
+     * @param value _more_
+     * @param checked _more_
+     * @param attrs _more_
+     *
+     * @return _more_
+     */
+    public static String radio(String name, String value, boolean checked,
+                               String attrs) {
         return tag(TAG_INPUT,
-                   attrs + attrs( /*ATTR_CLASS, CLASS_RADIO,*/ATTR_TYPE, TYPE_RADIO,
-                       ATTR_NAME, name, ATTR_VALUE, value) + (checked
-                ? " checked "
-                : ""));
+                   attrs
+                   + attrs( /*ATTR_CLASS, CLASS_RADIO,*/ATTR_TYPE,
+                       TYPE_RADIO, ATTR_NAME, name, ATTR_VALUE,
+                       value) + (checked
+                                 ? " checked "
+                                 : ""));
     }
 
     /**
@@ -3090,6 +3103,11 @@ public class HtmlUtils {
         }
 
 
+        /**
+         * _more_
+         *
+         * @return _more_
+         */
         public String toString() {
             return this.label;
         }
@@ -5143,14 +5161,9 @@ public class HtmlUtils {
             return new Color(Integer.decode(s).intValue());
         } catch (Exception e) {
             s = s.toLowerCase();
-            for (int i = 0; i < COLORNAMES.length; i++) {
-                if (s.equals(COLORNAMES[i])) {
-                    return COLORS[i];
-                }
-            }
-        }
 
-        return dflt;
+            return Utils.decodeColor(s, dflt);
+        }
     }
 
 

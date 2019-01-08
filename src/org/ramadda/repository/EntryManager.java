@@ -35,8 +35,6 @@ import org.ramadda.repository.type.ProcessFileTypeHandler;
 import org.ramadda.repository.type.TypeHandler;
 import org.ramadda.repository.type.TypeInsertInfo;
 import org.ramadda.repository.util.SelectInfo;
-import org.ramadda.util.sql.Clause;
-import org.ramadda.util.sql.SqlUtil;
 import org.ramadda.util.CategoryBuffer;
 import org.ramadda.util.CategoryList;
 import org.ramadda.util.FormInfo;
@@ -45,6 +43,8 @@ import org.ramadda.util.Json;
 import org.ramadda.util.TTLCache;
 import org.ramadda.util.TTLObject;
 import org.ramadda.util.Utils;
+import org.ramadda.util.sql.Clause;
+import org.ramadda.util.sql.SqlUtil;
 
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
@@ -650,7 +650,6 @@ public class EntryManager extends RepositoryManager {
                 if (entry == null) {
                     fatalError(request, "Could not find entry:" + suffix);
                 }
-                System.err.println("From path:" + path + "  -- " + prefix);
             }
 
             if (entry == null) {
@@ -717,7 +716,6 @@ public class EntryManager extends RepositoryManager {
 
 
             redirectUrl = redirectUrl + "?" + request.getUrlArgs();
-            //            System.err.println("routing remote request:" + redirectUrl);
             URL           url        = new URL(redirectUrl);
             URLConnection connection = url.openConnection();
             InputStream   is         = connection.getInputStream();
@@ -1260,9 +1258,6 @@ public class EntryManager extends RepositoryManager {
                         public boolean processEntry(Entry entry,
                                 List<Entry> children)
                                 throws Exception {
-
-                            System.err.println("processEntry:"
-                                    + entry.getName());
                             if ( !oldType.equals(TypeHandler.TYPE_ANY)
                                     && !entry.getTypeHandler().isType(
                                         oldType)) {
@@ -1994,7 +1989,6 @@ public class EntryManager extends RepositoryManager {
     private String getEntryTimestamp(Entry entry) {
         long changeDate = entry.getChangeDate();
 
-        //        System.err.println("timestamp:" +changeDate +" " + new Date(changeDate));
         return "" + changeDate;
     }
 
@@ -2612,7 +2606,6 @@ public class EntryManager extends RepositoryManager {
                     }
                     pattern = pattern.replaceAll("_DIGIT_", "\\\\d");
                     pattern = ".*(" + pattern + ").*";
-                    //                    System.err.println("Pattern:" + pattern + " " + origName);
                     Matcher matcher =
                         Pattern.compile(pattern).matcher(origName);
                     if (matcher.find()) {
@@ -2621,9 +2614,7 @@ public class EntryManager extends RepositoryManager {
                                         format).parse(dateString);
                         theDateRange[0] = dttm;
                         theDateRange[1] = dttm;
-                    } else {
-                        System.err.println("no match");
-                    }
+                    } else {}
                 }
 
                 String id           = getRepository().getGUID();
@@ -2668,7 +2659,6 @@ public class EntryManager extends RepositoryManager {
                     //theDateRange[0] = theDateRange[1] =   Utils.extractDate(theResource);
                 }
 
-                //                System.err.println("date:" + theDateRange[0] + " " + theResource);
 
                 if (theDateRange[0] == null) {
                     theDateRange[0] = ((theDateRange[1] == null)
@@ -3729,7 +3719,6 @@ public class EntryManager extends RepositoryManager {
         //        entry.setDescription(
         //            RepositoryUtil.encodeUntrustedText(entry.getDescription()));
 
-        //        System.err.println ("after:" + entry.getDescription());
         String fromName = RepositoryUtil.encodeUntrustedText(
                               request.getString(
                                   ARG_CONTRIBUTION_FROMNAME, ""));
@@ -4140,10 +4129,9 @@ public class EntryManager extends RepositoryManager {
                 getStorageManager().getFileInputStream(file);
 
             String range = (String) request.getHttpHeaderArgs().get("Range");
-            //            System.err.println("Range:" + range);
-            //            System.err.println("all:" +request.getHttpHeaderArgs());
-            long byteStart = -1;
-            long byteEnd   = -1;
+
+            long   byteStart = -1;
+            long   byteEnd   = -1;
             if (Utils.stringDefined(range)) {
                 //assume: bytes=start-end
                 List<String> toks1 = StringUtil.splitUpTo(range, "=", 2);
@@ -5096,7 +5084,6 @@ public class EntryManager extends RepositoryManager {
         if (fromIds == null) {
             fromIds = request.getString("entries", "");
         }
-        //        System.err.println("fromids: " + fromIds);
         List<Entry> entries = new ArrayList<Entry>();
         for (String id : StringUtil.split(fromIds, ",", true, true)) {
             Entry entry = getEntry(request, id, false);
@@ -5124,8 +5111,6 @@ public class EntryManager extends RepositoryManager {
                                   ? ""
                                   : encoded);
 
-        //        System.err.println ("textFromUser:" + textFromUser);
-        //        System.err.println ("extra:" + extraDesc);
         String desc = textFromUser;
 
         if (extraDesc != null) {
@@ -5152,8 +5137,7 @@ public class EntryManager extends RepositoryManager {
             return new Result("", new StringBuilder("OK"));
         }
 
-        Entry parent = getParentEntry(request);
-        //        System.err.println("parent:" + parent);
+        Entry   parent  = getParentEntry(request);
 
         String  type    = request.getString(ARG_TYPE, "wikipage");
         boolean isWiki  = type.equals("wikipage");
@@ -5197,7 +5181,6 @@ public class EntryManager extends RepositoryManager {
                     desc = textFromUser;
                 }
 
-                //                System.err.println("final desc:" + desc);
                 entry.initEntry(name, desc, parent, request.getUser(),
                                 new Resource(), "", date.getTime(),
                                 date.getTime(), date.getTime(),
@@ -5490,7 +5473,6 @@ public class EntryManager extends RepositoryManager {
                 ZipEntry ze;
                 while ((ze = zin.getNextEntry()) != null) {
                     String entryName = ze.getName();
-                    //                System.err.println ("ZIP: " + ze.getName());
                     if (entryName.endsWith("entries.xml")) {
                         InputStream entriesStream = zin;
                         //Check the import handlers
@@ -5841,7 +5823,6 @@ public class EntryManager extends RepositoryManager {
 
 
         if (file != null) {
-            //            System.err.println ("File:" + file +" files:" + files);
             File tmp = ((files == null)
                         ? null
                         : files.get(file));
@@ -5889,9 +5870,7 @@ public class EntryManager extends RepositoryManager {
             URL u = new URL(url);
             File f = getStorageManager().getTmpFile(request,
                          IOUtil.getFileTail(u.getFile()));
-            //            System.err.println("Importing " + u);
             Utils.writeTo(u, f);
-            //            System.err.println("file:" + f +" " + f.exists());
             if ( !f.exists()) {
                 throw new IllegalArgumentException("Failed to download URL:"
                         + u);
@@ -6982,16 +6961,15 @@ public class EntryManager extends RepositoryManager {
 
                 return getRemoteEntry(request, tuple[0], tuple[1]);
             } else if (isSynthEntry(entryId)) {
-                String[] pair          = getSynthId(entryId);
-                String   parentEntryId = pair[0];
-                String   syntheticPart = pair[1];
-                Entry    parentEntry   = null;
-                //                System.err.println("Parent:" + parentEntryId + " synth part:" + syntheticPart);
+                String[]    pair          = getSynthId(entryId);
+                String      parentEntryId = pair[0];
+                String      syntheticPart = pair[1];
+                Entry       parentEntry   = null;
 
-                TypeHandler typeHandler = getSynthTypeHandler(parentEntryId);
+                TypeHandler typeHandler   =
+                    getSynthTypeHandler(parentEntryId);
                 if (typeHandler != null) {
                     parentEntry = typeHandler.getSynthTopLevelEntry();
-                    //                    System.err.println("Got synth type handler:" + typeHandler.getType());
                 }
                 if (syntheticPart == null) {
                     return parentEntry;
@@ -7011,12 +6989,8 @@ public class EntryManager extends RepositoryManager {
                 }
 
 
-                //                System.err.println("synth type:" + typeHandler.getClass().getName());
                 entry = typeHandler.makeSynthEntry(request, parentEntry,
                         syntheticPart);
-                //                System.err.println("process parent:" + parentEntry);
-                //                System.err.println("process child:" + entry);
-
                 if (entry == null) {
                     return null;
                 }
@@ -7060,16 +7034,13 @@ public class EntryManager extends RepositoryManager {
             id = ProcessFileTypeHandler.TYPE_PROCESS;
         }
 
-        //        System.err.println("getSynthTypeHandler:" + id +":");
 
         TypeHandler typeHandler = getRepository().getTypeHandler(id);
         if (typeHandler == null) {
             typeHandler = getRepository().getTypeHandler("type_" + id);
-            //            System.err.println("trying type_" +id +" " + typeHandler);
         }
         if (typeHandler == null) {
             typeHandler = getSearchManager().getSearchProvider(id);
-            //            System.err.println("search provider:" + typeHandler);
         }
 
         return typeHandler;
@@ -7158,10 +7129,6 @@ public class EntryManager extends RepositoryManager {
         TypeHandler typeHandler = getRepository().getTypeHandler(request);
         List<Clause> where = typeHandler.assembleWhereClause(request,
                                  searchCriteriaSB);
-
-
-        //        System.err.println("Request:" + request);
-        //        System.err.println("Clause:" + where);
         if (extraClauses != null) {
             where.addAll(extraClauses);
         }
@@ -7809,7 +7776,6 @@ public class EntryManager extends RepositoryManager {
                 }
                 tif.setStatement(typeStatement);
             }
-            //           System.err.println ("entry: " + entry.getId());
             setStatement(entry, entryStmt, isNew, typeHandler);
 
 
@@ -7911,7 +7877,6 @@ public class EntryManager extends RepositoryManager {
         }
 
         if (t2 > t1) {
-            //System.err.println("added:" + entries.size() + " entries in " + (t2-t1) + " ms  Rate:" + (entries.size()/(t2-t1)));
             double seconds = totalTime / 1000.0;
             //            if ((totalEntries % 100 == 0) && (seconds > 0)) {
             if (seconds > 0) {
@@ -8010,7 +7975,6 @@ public class EntryManager extends RepositoryManager {
                 if (seenResources.contains(key)) {
                     nonUniqueOnes.add(entry);
 
-                    //                    System.out.println("seen resource:" + path);
                     continue;
                 }
                 seenResources.add(key);
@@ -8033,8 +7997,6 @@ public class EntryManager extends RepositoryManager {
             getDatabaseManager().closeStatement(select);
             getDatabaseManager().closeConnection(connection);
             long t2 = System.currentTimeMillis();
-            //            System.err.println("Took:" + (t2 - t1) + "ms to check: "
-            //                               + entries.size() + " entries");
         } catch (Exception exc) {
             logError("Processing:" + query, exc);
 
@@ -8311,15 +8273,13 @@ public class EntryManager extends RepositoryManager {
 
                 TypeHandler synthTypeHandler = getSynthTypeHandler(entryId);
 
-                //                System.err.println(" is synth entry mainEntry.getId=" + mainEntry.getId() +" th:" + (synthTypeHandler ==null?"null":synthTypeHandler.getClass().getName()));
 
-                Entry tmpMainEntry = null;
+                Entry       tmpMainEntry     = null;
                 if (synthTypeHandler != null) {
                     tmpMainEntry = synthTypeHandler.getSynthTopLevelEntry();
                 } else {
                     tmpMainEntry = (Entry) getEntry(request, entryId, false,
                             false);
-                    //                    System.err.println(" getEntry == null? :" + (mainEntry == null) +" " + entryId);
                 }
                 if (tmpMainEntry != null) {
                     mainEntry = tmpMainEntry;
@@ -8612,8 +8572,6 @@ public class EntryManager extends RepositoryManager {
         List<Element> associationNodes = new ArrayList<Element>();
         associationNodes.addAll((List<Element>) XmlUtil.findDescendants(root,
                 TAG_ASSOCIATION));
-        //        System.err.println("nodes:" + associationNodes.size());
-
 
         if (root.getTagName().equals(TAG_ENTRIES)) {
             //Look for the child entry
@@ -8748,7 +8706,6 @@ public class EntryManager extends RepositoryManager {
             File f = new File(IOUtil.joinDir(file, ".this.ramadda.xml"));
             if (f.exists()) {
                 Entry entry = parseEntryXml(f, true);
-                //                System.err.println("getTemplate:" + file + " file:" + f   + " entry: " + entry);
 
                 return entry;
             }

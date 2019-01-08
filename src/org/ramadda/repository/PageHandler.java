@@ -3852,6 +3852,29 @@ public class PageHandler extends RepositoryManager {
      *
      * @param request _more_
      * @param entry _more_
+     * @param title _more_
+     * @param text _more_
+     *
+     * @return _more_
+     *
+     * @throws Exception _more_
+     */
+    public Result makeEntryHeaderResult(Request request, Entry entry,
+                                        String title, String text)
+            throws Exception {
+        Appendable sb = new StringBuilder();
+        entrySectionOpen(request, entry, sb, title, false);
+        sb.append(text);
+        entrySectionClose(request, entry, sb);
+
+        return new Result("", sb);
+    }
+
+    /**
+     * _more_
+     *
+     * @param request _more_
+     * @param entry _more_
      * @param sb _more_
      * @param title _more_
      * @param showLine _more_

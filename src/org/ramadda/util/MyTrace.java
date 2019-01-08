@@ -63,7 +63,7 @@ public class MyTrace {
     /** _more_ */
     public static boolean displayMsg = false;
 
-    /** _more_          */
+    /** _more_ */
     public static boolean showThreadLabel = false;
 
     /** _more_ */

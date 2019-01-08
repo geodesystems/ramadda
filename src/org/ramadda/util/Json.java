@@ -614,8 +614,8 @@ public class Json {
             json.append(input);
             json.append("\n");
         }
-        JSONObject   obj      = new JSONObject(json.toString());
-        JSONArray    features = readArray(obj, "features");
+        JSONObject obj      = new JSONObject(json.toString());
+        JSONArray  features = readArray(obj, "features");
         //        List<String> names    = null;
         String[] names = null;
         for (int i = 0; i < features.length(); i++) {
@@ -635,7 +635,7 @@ public class Json {
                 pw.println("location");
             }
 
-            Bounds bounds = getFeatureBounds(feature, null);
+            Bounds    bounds   = getFeatureBounds(feature, null);
             JSONArray geom     = readArray(feature, "geometry.coordinates");
             String    type     = readValue(feature, "geometry.type", "NULL");
             double[]  centroid = bounds.getCenter();
@@ -709,9 +709,20 @@ public class Json {
         return bounds;
     }
 
-    public static Bounds getFeatureBounds(JSONObject feature, Bounds bounds) throws Exception {
-        JSONArray  coords1 = readArray(feature, "geometry.coordinates");
-        String     type    = readValue(feature, "geometry.type", "NULL");
+    /**
+     * _more_
+     *
+     * @param feature _more_
+     * @param bounds _more_
+     *
+     * @return _more_
+     *
+     * @throws Exception _more_
+     */
+    public static Bounds getFeatureBounds(JSONObject feature, Bounds bounds)
+            throws Exception {
+        JSONArray coords1 = readArray(feature, "geometry.coordinates");
+        String    type    = readValue(feature, "geometry.type", "NULL");
         if (type.equals("Polygon") || type.equals("MultiLineString")) {
             for (int idx1 = 0; idx1 < coords1.length(); idx1++) {
                 JSONArray coords2 = coords1.getJSONArray(idx1);
@@ -736,6 +747,7 @@ public class Json {
                 bounds.expand(lat, lon);
             }
         }
+
         return bounds;
     }
 
