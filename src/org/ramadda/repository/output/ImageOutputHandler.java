@@ -1140,12 +1140,10 @@ public class ImageOutputHandler extends OutputHandler {
                                     child.getResource().getPath(), true));
                         if (imageBytes == null) {
                             System.err.println("no image:" + child);
-
                             return;
                         }
-                        Image image = Toolkit.getDefaultToolkit().createImage(
-                                          imageBytes);
-                        image = ImageUtils.waitOnImage(image);
+
+                        Image image = ImageIO.read(new ByteArrayInputStream(imageBytes));
                         if (image != null) {
                             if ((cropArray[0] != 0) || (cropArray[1] != 0)
                                     || (cropArray[2] != 0)
@@ -1434,17 +1432,26 @@ public class ImageOutputHandler extends OutputHandler {
 
         int               entryCnt = request.get("entrycnt", 0);
         List<String>      ids      = new ArrayList<String>();
-        final List<Entry> selected = new ArrayList<Entry>();
+        List<Entry> imageEntries = new ArrayList<Entry>();
         for (int i = 0; i < entryCnt; i++) {
             if (request.defined(ARG_ENTRYID + "_" + i)) {
                 String id    = request.getString(ARG_ENTRYID + "_" + i, "");
                 Entry  child = getEntryManager().getEntry(request, id);
                 if (child != null) {
-                    selected.add(child);
+                    imageEntries.add(child);
                 }
             }
         }
+        if(request.get("reverse",false)) {
+            List<Entry> tmp = new ArrayList<Entry>();
+            for(int i=imageEntries.size()-1;i>=0;i--)
+                tmp.add(imageEntries.get(i));
+            imageEntries  = tmp;
+        }
+
+        final List<Entry> selected = imageEntries;
         final int width = request.get("width",0);
+        final int maxHeight = request.get("maxheight",0);
         final int[]    done       = { 0 };
         final String[] imageArray = new String[selected.size()];
         for (int i = 0; i < selected.size(); i++) {
@@ -1476,18 +1483,40 @@ public class ImageOutputHandler extends OutputHandler {
                         if(imageFile == null) {
                             return;
                         }
+
+                        BufferedImage image = null;
+                        if(maxHeight>0 || width>0) {
+                            image = ImageIO.read(new File(imageFile));
+                        }
+
                         if(width>0) {
-                            BufferedImage image = ImageIO.read(new File(imageFile));
                             Image newImage = image.getScaledInstance(width, -1,
                                                             Image.SCALE_AREA_AVERAGING);
-                            File  tmp = getStorageManager().getTmpFile(request, IOUtil.getFileTail(imageFile));
+                            String  newFile = IOUtil.getFileTail(imageFile).toLowerCase();
+                            if(!newFile.endsWith(".gif") || !newFile.endsWith(".png") || !newFile.endsWith(".jpg")||
+                               !newFile.endsWith(".jpeg")) 
+                                newFile = IOUtil.stripExtension(newFile)+".png";
+                            File  tmp = getStorageManager().getTmpFile(request, newFile);
                             ImageUtils.writeImageToFile(newImage, tmp.toString());
+                            imageFile = tmp.toString();
+                            image = ImageUtils.toBufferedImage(newImage);
+                        }
+
+                        if(maxHeight>0 && image.getHeight(null)>maxHeight) {
+                            image = Utils.crop(ImageUtils.toBufferedImage(image), 0,0,image.getHeight(null)-maxHeight,0);
+                            String  newFile = IOUtil.getFileTail(imageFile).toLowerCase();
+                            if(!newFile.endsWith(".gif") || !newFile.endsWith(".png") || !newFile.endsWith(".jpg")||
+                               !newFile.endsWith(".jpeg")) 
+                                newFile = IOUtil.stripExtension(newFile)+".png";
+                            File  tmp = getStorageManager().getTmpFile(request, newFile);
+                            ImageUtils.writeImageToFile(image, tmp.toString());
                             imageFile = tmp.toString();
                         }
                         imageArray[idx] = imageFile;
 
-                    } catch (Exception exc) {}
-                    finally {
+                    } catch (Exception exc) {
+                        System.err.println("Error:" + exc);
+                    } finally {
                         synchronized (done) {
                             done[0]++;
                         }
@@ -1587,7 +1616,7 @@ public class ImageOutputHandler extends OutputHandler {
                 "Delay:",
                 HtmlUtils.input(
                     "delay", request.getString("delay", "100"),
-                    HtmlUtils.SIZE_10) + " hundredths of a second"));
+                    HtmlUtils.SIZE_5) + " hundredths of a second"));
         /*
         sb.append(HtmlUtils.formEntry("End Pause:",
                                       HtmlUtils.input("endpause",
@@ -1600,14 +1629,27 @@ public class ImageOutputHandler extends OutputHandler {
                 "Loop Count:",
                 HtmlUtils.input(
                     "loopcount", request.getString("loopcount", "0"),
-                    HtmlUtils.SIZE_10) + " 0=forever"));
+                    HtmlUtils.SIZE_5) + " 0=forever"));
 
         sb.append(
             HtmlUtils.formEntry(
                                 "Image Width:",
                 HtmlUtils.input(
                                 "width", request.getString("width", ""),
-                                HtmlUtils.SIZE_10)));
+                                HtmlUtils.SIZE_5)));
+        sb.append(
+            HtmlUtils.formEntry(
+                                "Max Height:",
+                HtmlUtils.input(
+                                "maxheight", request.getString("maxheight", ""),
+                                HtmlUtils.SIZE_5)));
+        sb.append(
+            HtmlUtils.formEntry(
+                "",
+                HtmlUtils.checkbox(
+                    "reverse", "true",
+                    request.get(
+                        "reverse", false)) + " Reverse sort the images"));
         sb.append(HtmlUtils.formTableClose());
         sb.append("</td><td>&nbsp;&nbsp;&nbsp;&nbsp;<td><td>");
         StringBuilder esb        = new StringBuilder();

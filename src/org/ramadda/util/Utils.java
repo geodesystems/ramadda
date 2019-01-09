@@ -3450,7 +3450,6 @@ public class Utils {
         int imageHeight = image.getHeight(null);
         int w           = imageWidth - right - left;
         int h           = imageHeight - top - bottom;
-
         //        System.err.println("iw:" + imageWidth +" w:"  + w + " " + left +" " + right);
         //        System.err.println("ih:" + imageHeight +" h:"  + h + " " + top +" " + bottom);
         return image.getSubimage(left, top, w, h);
