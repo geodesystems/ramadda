@@ -155,7 +155,7 @@ public abstract class Converter extends Processor {
     }
 
 
-    public static class ColumnLimiter extends Converter {
+    public static class ColumnWidth extends Converter {
         int size;
 
         /**
@@ -163,7 +163,7 @@ public abstract class Converter extends Processor {
          *
          * @param cols _more_
          */
-        public ColumnLimiter(List<String> cols, int size) {
+        public ColumnWidth(List<String> cols, int size) {
             super(cols);
             this.size = size;
         }

@@ -2612,32 +2612,44 @@ public class Utils {
     public static List<String> parseCommandLine(String s) {
         List<String> args = new ArrayList<String>();
         s = s.trim();
-        StringBuilder sb       = new StringBuilder();
-        boolean       inQuote  = false;
-        boolean       inEscape = false;
+        StringBuilder sb         = new StringBuilder();
+        boolean       inQuote    = false;
+        boolean       prevEscape = false;
         for (int i = 0; i < s.length(); i++) {
-            char c = s.charAt(i);
+            char    c        = s.charAt(i);
+            boolean isQuote  = (c == '\"');
+            boolean isEscape = (c == '\\');
+
+            //            System.err.println("char:" + c + " prev escape:" + prevEscape +" isquote:" + isQuote +" inquote:"+ inQuote);
+            if (prevEscape) {
+                sb.append(c);
+                prevEscape = false;
+
+                continue;
+            }
+
+
             if (c == '\\') {
-                if (inEscape) {
+                if (prevEscape) {
                     sb.append(c);
-                    inEscape = false;
+                    prevEscape = false;
                 } else {
-                    inEscape = true;
+                    prevEscape = true;
                 }
 
                 continue;
             }
             if (c == '\"') {
-                if (inEscape) {
+                if (prevEscape) {
                     sb.append(c);
-                    inEscape = false;
+                    prevEscape = false;
 
                     continue;
                 }
                 if (inQuote) {
                     inQuote = false;
                     args.add(sb.toString());
-                    sb = new StringBuilder();
+                    sb.setLength(0);
                 } else {
                     inQuote = true;
                 }
@@ -2658,6 +2670,9 @@ public class Utils {
                 continue;
             }
             sb.append(c);
+        }
+        if (inQuote) {
+            throw new IllegalArgumentException("Unclosed quote:" + s);
         }
         if (sb.length() > 0) {
             args.add(sb.toString());
@@ -2800,6 +2815,19 @@ public class Utils {
 
 
     public static void main(String args[]) throws Exception {
+        String s = "-1 \"\\\n\\\"X";
+        //        System.err.println(s);
+        System.err.println(parseCommandLine(s));
+    }
+
+    /**
+     * _more_
+     *
+     * @param args _more_
+     *
+     * @throws Exception _more_
+     */
+    public static void main3(String args[]) throws Exception {
         //        doMakeInputStream("https://www-static.bouldercolorado.gov/docs/webcams/bouldercreek/camera0.jpg",true);
         String dt = "2018-12-31 20:01:59.0000000 +00:00";
         //String dt = "2018-12-31 20:01:59.0000000";
@@ -3410,11 +3438,13 @@ public class Utils {
      *
      * @return _more_
      */
-    public static BufferedImage crop(BufferedImage image, int top, int left, int bottom, int right) {
+    public static BufferedImage crop(BufferedImage image, int top, int left,
+                                     int bottom, int right) {
         int imageWidth  = image.getWidth(null);
         int imageHeight = image.getHeight(null);
-        int w           = imageWidth-right-left;
-        int h           = imageHeight-top-bottom;
+        int w           = imageWidth - right - left;
+        int h           = imageHeight - top - bottom;
+
         //        System.err.println("iw:" + imageWidth +" w:"  + w + " " + left +" " + right);
         //        System.err.println("ih:" + imageHeight +" h:"  + h + " " + top +" " + bottom);
         return image.getSubimage(left, top, w, h);
@@ -3429,7 +3459,7 @@ public class Utils {
      */
     public static class ObjectSorter implements Comparable {
 
-        /** _more_          */
+        /** _more_ */
         boolean ascending = true;
 
         /** _more_ */
