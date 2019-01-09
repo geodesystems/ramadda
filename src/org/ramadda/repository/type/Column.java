@@ -2373,8 +2373,11 @@ public class Column implements DataTypes, Constants {
      * @return _more_
      */
     public double[] getLatLon(Object[] values) {
-        return new double[] { (Double) values[offset],
-                              (Double) values[offset + 1] };
+        Double lat = (Double) values[offset];
+        Double lon = (Double) values[offset+1];
+        return new double[] { lat==null?Double.NaN:lat.doubleValue(),
+                              lon==null?Double.NaN:lon.doubleValue()};
+
     }
 
     /**
