@@ -1125,7 +1125,6 @@ public class Repository extends RepositoryBase implements RequestHandler,
             File catalinaConfFile = new File(catalinaBase
                                              + "/conf/repository.properties");
             if (catalinaConfFile.exists()) {
-                println("RAMADDA: loading:" + catalinaConfFile);
                 loadProperties(localProperties, catalinaConfFile.toString());
             }
         }

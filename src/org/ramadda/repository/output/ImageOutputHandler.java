@@ -18,6 +18,7 @@ package org.ramadda.repository.output;
 
 
 import org.ramadda.repository.*;
+import org.ramadda.repository.job.JobManager;
 import org.ramadda.repository.auth.*;
 import org.ramadda.repository.type.*;
 import org.ramadda.util.HtmlUtils;
@@ -29,6 +30,8 @@ import org.ramadda.util.sql.SqlUtil;
 
 import org.w3c.dom.*;
 
+import ucar.unidata.ui.AnimatedGifEncoder;
+
 import ucar.unidata.ui.ImageUtils;
 import ucar.unidata.util.DateUtil;
 import ucar.unidata.util.IOUtil;
@@ -38,6 +41,8 @@ import ucar.unidata.util.Misc;
 import ucar.unidata.util.StringUtil;
 import ucar.unidata.xml.XmlUtil;
 
+
+import javax.imageio.*;
 import java.awt.Color;
 
 import java.awt.Font;
@@ -173,7 +178,13 @@ public class ImageOutputHandler extends OutputHandler {
 
     /** _more_ */
     public static final OutputType OUTPUT_COLLAGE =
-        new OutputType("Collage", "image.collage",
+        new OutputType("Make Collage", "image.collage",
+                       OutputType.TYPE_VIEW | OutputType.TYPE_FORSEARCH, "",
+                       ICON_IMAGES);
+
+    /** _more_          */
+    public static final OutputType OUTPUT_ANIMATEDGIF =
+        new OutputType("Make Animated Gif", "image.animatedgif",
                        OutputType.TYPE_VIEW | OutputType.TYPE_FORSEARCH, "",
                        ICON_IMAGES);
 
@@ -234,6 +245,8 @@ public class ImageOutputHandler extends OutputHandler {
         addType(OUTPUT_EDIT);
         addType(OUTPUT_VIDEO);
         addType(OUTPUT_COLLAGE);
+        addType(OUTPUT_ANIMATEDGIF);
+
         addType(OUTPUT_STREETVIEW);
     }
 
@@ -308,6 +321,10 @@ public class ImageOutputHandler extends OutputHandler {
             links.add(makeLink(request, state.getEntry(), OUTPUT_GALLERY));
             links.add(makeLink(request, state.getEntry(), OUTPUT_PLAYER));
             links.add(makeLink(request, state.getEntry(), OUTPUT_COLLAGE));
+            if(repository.getProperty("service.imagemagick")!=null) {
+                links.add(makeLink(request, state.getEntry(),
+                                   OUTPUT_ANIMATEDGIF));
+            }
         }
     }
 
@@ -788,6 +805,9 @@ public class ImageOutputHandler extends OutputHandler {
         if (output.equals(OUTPUT_COLLAGE)) {
             return makeCollage(request, group, entries);
         }
+        if (output.equals(OUTPUT_ANIMATEDGIF)) {
+            return makeAnimatedGif(request, group, entries);
+        }
 
         String playerPrefix = "";
         String playerVar    = "";
@@ -873,6 +893,163 @@ public class ImageOutputHandler extends OutputHandler {
 
         return makeCollageForm(request, entry, entries, null);
     }
+
+
+    /**
+     * _more_
+     *
+     * @param request _more_
+     * @param entry _more_
+     * @param entries _more_
+     * @param message _more_
+     *
+     * @return _more_
+     *
+     * @throws Exception _more_
+     */
+    private Result makeCollageForm(Request request, Entry entry,
+                                   List<Entry> entries, String message)
+            throws Exception {
+
+        StringBuilder sb = new StringBuilder();
+        getPageHandler().entrySectionOpen(request, entry, sb,
+                                          "Image Collage");
+        if (message != null) {
+            sb.append(message);
+        }
+        sb.append(request.form(getRepository().URL_ENTRY_SHOW));
+        sb.append(HtmlUtils.hidden(ARG_ENTRYID, entry.getId()));
+        sb.append(HtmlUtils.hidden(ARG_OUTPUT, OUTPUT_COLLAGE));
+        sb.append(HtmlUtils.submit("Make Collage", ARG_SUBMIT));
+        sb.append("<table><tr valign=top><td>");
+        sb.append(HtmlUtils.formTable());
+        sb.append(HtmlUtils.formEntry("Columns:",
+                                      HtmlUtils.input("columns",
+                                          request.getString("columns",
+                                              "3"))));
+        sb.append(HtmlUtils.formEntry("Width:",
+                                      HtmlUtils.input("width",
+                                          request.getString("width",
+                                              "1000"))));
+        sb.append(HtmlUtils.formEntry("Pad X:",
+                                      HtmlUtils.input("padx",
+                                          request.getString("padx", "15"))));
+        sb.append(HtmlUtils.formEntry("Pad Y:",
+                                      HtmlUtils.input("pady",
+                                          request.getString("pady", "15"))));
+        sb.append(HtmlUtils.formEntry("Background:",
+                                      HtmlUtils.input("background",
+                                          request.getString("background",
+                                              "white"))));
+        sb.append(HtmlUtils.formEntry("Top Label:",
+                                      HtmlUtils.input("toplabel",
+                                          request.getString("toplabel",
+                                              ""))));
+        sb.append(HtmlUtils.formEntry("Bottom Label:",
+                                      HtmlUtils.input("bottomlabel",
+                                          request.getString("bottomlabel",
+                                              ""))));
+        sb.append(HtmlUtils.formEntry("Label Color:",
+                                      HtmlUtils.input("foreground",
+                                          request.getString("foreground",
+                                              "black"))));
+        sb.append(HtmlUtils.formEntry("Matte:",
+                                      HtmlUtils.input("matte",
+                                          request.getString("matte", "5"))));
+        sb.append(HtmlUtils.formEntry("Matte Color:",
+                                      HtmlUtils.input("mattecolor",
+                                          request.getString("mattecolor",
+                                              "white"))));
+        sb.append(HtmlUtils.formEntry("Crop:",
+                                      HtmlUtils.input("crop",
+                                          request.getString("crop", ""),
+                                          HtmlUtils.attr("placeholder",
+                                              "top,left,bottom,right"))));
+        sb.append(HtmlUtils.formEntry("",
+                                      HtmlUtils.checkbox("addlabels", "true",
+                                          request.get("addlabels",
+                                              true)) + " Add labels"));
+        sb.append(
+            HtmlUtils.formEntry(
+                "",
+                HtmlUtils.checkbox(
+                    "sortimages", "true",
+                    request.get(
+                        "sortimages", true)) + " Sort images by height"));
+        sb.append(HtmlUtils.formTableClose());
+        sb.append("</td><td>&nbsp;&nbsp;&nbsp;&nbsp;<td><td>");
+        StringBuilder esb        = new StringBuilder();
+        boolean       anyChecked = false;
+        int           entryCnt   = 0;
+        for (int i = 0; i < entries.size(); i++) {
+            Entry child = entries.get(i);
+            if ( !child.isImage()) {
+                continue;
+            }
+            String cbxId = ARG_ENTRYID + "_" + entryCnt;
+            if (request.defined(cbxId)) {
+                anyChecked = true;
+
+                break;
+            }
+            entryCnt++;
+        }
+
+        entryCnt = 0;
+        for (int i = 0; i < entries.size(); i++) {
+            Entry child = entries.get(i);
+            if ( !child.isImage()) {
+                continue;
+            }
+            List<String> urls = new ArrayList<String>();
+            getMetadataManager().getThumbnailUrls(request, child, urls);
+            String img = "";
+            if (urls.size() > 0) {
+                img = HtmlUtils.img(urls.get(0), "",
+                                    HtmlUtils.attr(HtmlUtils.ATTR_WIDTH,
+                                        "100"));
+            } else if (child.isFile()) {
+                String thumburl =
+                    HtmlUtils.url(
+                        request.makeUrl(repository.URL_ENTRY_GET) + "/"
+                        + getStorageManager().getFileTail(
+                            child), ARG_ENTRYID, child.getId(),
+                                    ARG_IMAGEWIDTH, "" + 100);
+                img = HtmlUtils.img(thumburl, "",
+                                    HtmlUtils.attr(HtmlUtils.ATTR_WIDTH,
+                                        "100"));
+            }
+            if (img.length() > 0) {
+                img = HtmlUtils.href(
+                    request.entryUrl(getRepository().URL_ENTRY_SHOW, child),
+                    img);
+            }
+            String  cbxId   = ARG_ENTRYID + "_" + entryCnt;
+            boolean checked = anyChecked
+                              ? request.defined(cbxId)
+                              : true;
+            esb.append(HtmlUtils.checkbox(cbxId, child.getId(), checked));
+            entryCnt++;
+            esb.append(" ");
+            esb.append(img);
+            esb.append(" ");
+            esb.append(child.getName());
+            esb.append("<p>");
+        }
+        sb.append(HtmlUtils.hidden("entrycnt", entryCnt + ""));
+
+        sb.append("<b>Images:</b><br>");
+        sb.append(esb.toString());
+        sb.append("</td></tr></table>");
+        sb.append(HtmlUtils.hidden(ARG_OUTPUT, OUTPUT_COLLAGE));
+        sb.append(HtmlUtils.formClose());
+        getPageHandler().entrySectionClose(request, entry, sb);
+
+        return new Result("", sb);
+
+    }
+
+
 
 
     /**
@@ -1169,10 +1346,11 @@ public class ImageOutputHandler extends OutputHandler {
             }
         }
 
-        Font f = new Font(Font.SANS_SERIF, Font.PLAIN, 24);
+        Font f   = new Font(Font.SANS_SERIF, Font.PLAIN, 24);
         Date now = new Date();
         if (Utils.stringDefined(topLabel)) {
-            topLabel = topLabel.replace("${timestamp}", getDateHandler().formatDate(now));
+            topLabel = topLabel.replace("${timestamp}",
+                                        getDateHandler().formatDate(now));
             g.setFont(f);
             FontMetrics fm      = g.getFontMetrics();
             Rectangle2D rect    = fm.getStringBounds(topLabel, g);
@@ -1190,7 +1368,8 @@ public class ImageOutputHandler extends OutputHandler {
         }
 
         if (Utils.stringDefined(bottomLabel)) {
-            bottomLabel = bottomLabel.replace("${timestamp}", getDateHandler().formatDate(now));
+            bottomLabel = bottomLabel.replace("${timestamp}",
+                    getDateHandler().formatDate(now));
             g.setFont(f);
             FontMetrics fm      = g.getFontMetrics();
             Rectangle2D rect    = fm.getStringBounds(bottomLabel, g);
@@ -1222,81 +1401,213 @@ public class ImageOutputHandler extends OutputHandler {
      * @param request _more_
      * @param entry _more_
      * @param entries _more_
+     *
+     * @return _more_
+     *
+     * @throws Exception _more_
+     */
+    private Result makeAnimatedGif(Request request, Entry entry,
+                                   List<Entry> entries)
+            throws Exception {
+        if (request.exists(ARG_SUBMIT)) {
+            return processAnimatedGif(request, entry, entries);
+        }
+
+        return makeAnimatedGifForm(request, entry, entries, null);
+    }
+
+
+    /**
+     * _more_
+     *
+     * @param request _more_
+     * @param entry _more_
+     * @param entries _more_
+     *
+     * @return _more_
+     *
+     * @throws Exception _more_
+     */
+    private Result processAnimatedGif(final Request request, Entry entry,
+                                      List<Entry> entries)
+            throws Exception {
+
+        int               entryCnt = request.get("entrycnt", 0);
+        List<String>      ids      = new ArrayList<String>();
+        final List<Entry> selected = new ArrayList<Entry>();
+        for (int i = 0; i < entryCnt; i++) {
+            if (request.defined(ARG_ENTRYID + "_" + i)) {
+                String id    = request.getString(ARG_ENTRYID + "_" + i, "");
+                Entry  child = getEntryManager().getEntry(request, id);
+                if (child != null) {
+                    selected.add(child);
+                }
+            }
+        }
+        final int width = request.get("width",0);
+        final int[]    done       = { 0 };
+        final String[] imageArray = new String[selected.size()];
+        for (int i = 0; i < selected.size(); i++) {
+            final Entry child = selected.get(i);
+            final int   idx   = i;
+            Misc.run(new Runnable() {
+                public void run() {
+                    try {
+                        String imageFile=  null;
+
+                        if (child.isFile()) {
+                            imageFile =  child.getResource().getPath();
+                        } else if (child.getResource().isUrl()) {
+                            String tail = IOUtil.getFileTail(
+                                              child.getResource().getPath());
+                            File file =
+                                getStorageManager().getTmpFile(request, tail);
+                            InputStream is =
+                                Utils.doMakeInputStream(
+                                    child.getResource().getPath(), true);
+                            BufferedOutputStream bos =
+                                new BufferedOutputStream(
+                                    new FileOutputStream(file));
+                            IOUtil.writeTo(is, bos);
+                            IOUtil.close(bos);
+                            imageFile  =file.toString();
+                        }
+
+                        if(imageFile == null) {
+                            return;
+                        }
+                        if(width>0) {
+                            BufferedImage image = ImageIO.read(new File(imageFile));
+                            Image newImage = image.getScaledInstance(width, -1,
+                                                            Image.SCALE_AREA_AVERAGING);
+                            File  tmp = getStorageManager().getTmpFile(request, IOUtil.getFileTail(imageFile));
+                            ImageUtils.writeImageToFile(newImage, tmp.toString());
+                            imageFile = tmp.toString();
+                        }
+                        imageArray[idx] = imageFile;
+
+                    } catch (Exception exc) {}
+                    finally {
+                        synchronized (done) {
+                            done[0]++;
+                        }
+                    }
+                }
+            });
+        }
+
+        int tries = 0;
+        while (done[0] != selected.size()) {
+            if (tries++ > 60) {
+                break;
+            }
+            Misc.sleep(500);
+        }
+
+
+        boolean       anyBad = false;
+        StringBuilder sb     = new StringBuilder();
+        for (int i = 0; i < imageArray.length; i++) {
+            if (imageArray[i] == null) {
+                anyBad = true;
+                Entry child = selected.get(i);
+                sb.append(
+                    HtmlUtils.href(
+                        request.entryUrl(
+                            getRepository().URL_ENTRY_SHOW,
+                            child), child.getName()));
+                sb.append("<br>");
+            }
+        }
+        if (anyBad) {
+            return makeAnimatedGifForm(
+                request, entry, entries,
+                getPageHandler().showDialogError(
+                    "Unable to read images from:<br>" + sb, false));
+        }
+
+        List<String> files = new ArrayList<String>();
+        for (String f : imageArray) {
+            files.add(f);
+        }
+
+        String  tail                  = entry.getName() + ".gif";
+        File    file = getStorageManager().getTmpFile(request, tail);
+        boolean useGlobalPaletteValue = true;
+        double  endPause              = request.get("endpause", 1.0);
+        int    delay          = request.get("delay", 100);
+        int     loopCount             = request.get("loopcount", 0);
+        List<String> commands = new ArrayList<String>();
+        commands.add(repository.getProperty("service.imagemagick")+"/convert");
+        commands.addAll(Utils.makeList("-loop",loopCount+"", "-delay",delay+"",
+                                       "-dispose",
+                                       "Background"));
+        commands.addAll(files);
+        commands.addAll(Utils.makeList("-coalesce"));
+        commands.add(file.toString());
+        JobManager.CommandResults results =
+            getRepository().getJobManager().executeCommand(commands,
+                                                           getStorageManager().getRepositoryDir());
+        Result result = new Result(new FileInputStream(file), "image/gif");
+        result.setReturnFilename(tail);
+        return result;
+    }
+
+
+
+    /**
+     * _more_
+     *
+     * @param request _more_
+     * @param entry _more_
+     * @param entries _more_
      * @param message _more_
      *
      * @return _more_
      *
      * @throws Exception _more_
      */
-    private Result makeCollageForm(Request request, Entry entry,
-                                   List<Entry> entries, String message)
+    private Result makeAnimatedGifForm(Request request, Entry entry,
+                                       List<Entry> entries, String message)
             throws Exception {
 
         StringBuilder sb = new StringBuilder();
-        getPageHandler().entrySectionOpen(request, entry, sb,
-                                          "Image Collage");
+        getPageHandler().entrySectionOpen(request, entry, sb, "Animated Gif");
         if (message != null) {
             sb.append(message);
         }
         sb.append(request.form(getRepository().URL_ENTRY_SHOW));
         sb.append(HtmlUtils.hidden(ARG_ENTRYID, entry.getId()));
-        sb.append(HtmlUtils.hidden(ARG_OUTPUT, OUTPUT_COLLAGE));
-        sb.append(HtmlUtils.submit("Make Collage", ARG_SUBMIT));
+        sb.append(HtmlUtils.hidden(ARG_OUTPUT, OUTPUT_ANIMATEDGIF));
+        sb.append(HtmlUtils.submit("Make Animated Gif", ARG_SUBMIT));
         sb.append("<table><tr valign=top><td>");
         sb.append(HtmlUtils.formTable());
-        sb.append(HtmlUtils.formEntry("Columns:",
-                                      HtmlUtils.input("columns",
-                                          request.getString("columns",
-                                              "3"))));
-        sb.append(HtmlUtils.formEntry("Width:",
-                                      HtmlUtils.input("width",
-                                          request.getString("width",
-                                              "1000"))));
-        sb.append(HtmlUtils.formEntry("Pad X:",
-                                      HtmlUtils.input("padx",
-                                          request.getString("padx", "15"))));
-        sb.append(HtmlUtils.formEntry("Pad Y:",
-                                      HtmlUtils.input("pady",
-                                          request.getString("pady", "15"))));
-        sb.append(HtmlUtils.formEntry("Background:",
-                                      HtmlUtils.input("background",
-                                          request.getString("background",
-                                              "white"))));
-        sb.append(HtmlUtils.formEntry("Top Label:",
-                                      HtmlUtils.input("toplabel",
-                                          request.getString("toplabel",
-                                              ""))));
-        sb.append(HtmlUtils.formEntry("Bottom Label:",
-                                      HtmlUtils.input("bottomlabel",
-                                          request.getString("bottomlabel",
-                                              ""))));
-        sb.append(HtmlUtils.formEntry("Label Color:",
-                                      HtmlUtils.input("foreground",
-                                          request.getString("foreground",
-                                              "black"))));
-        sb.append(HtmlUtils.formEntry("Matte:",
-                                      HtmlUtils.input("matte",
-                                          request.getString("matte", "5"))));
-        sb.append(HtmlUtils.formEntry("Matte Color:",
-                                      HtmlUtils.input("mattecolor",
-                                          request.getString("mattecolor",
-                                              "white"))));
-        sb.append(HtmlUtils.formEntry("Crop:",
-                                      HtmlUtils.input("crop",
-                                          request.getString("crop", ""),
-                                          HtmlUtils.attr("placeholder",
-                                              "top,left,bottom,right"))));
-        sb.append(HtmlUtils.formEntry("",
-                                      HtmlUtils.checkbox("addlabels", "true",
-                                          request.get("addlabels",
-                                              true)) + " Add labels"));
         sb.append(
             HtmlUtils.formEntry(
-                "",
-                HtmlUtils.checkbox(
-                    "sortimages", "true",
-                    request.get(
-                        "sortimages", true)) + " Sort images by height"));
+                "Delay:",
+                HtmlUtils.input(
+                    "delay", request.getString("delay", "100"),
+                    HtmlUtils.SIZE_10) + " hundredths of a second"));
+        /*
+        sb.append(HtmlUtils.formEntry("End Pause:",
+                                      HtmlUtils.input("endpause",
+                                          request.getString("endpause", "1"),
+                                         HtmlUtils.SIZE_5) + "  seconds"));
+        */
+
+        sb.append(
+            HtmlUtils.formEntry(
+                "Loop Count:",
+                HtmlUtils.input(
+                    "loopcount", request.getString("loopcount", "0"),
+                    HtmlUtils.SIZE_10) + " 0=forever"));
+
+        sb.append(
+            HtmlUtils.formEntry(
+                                "Image Width:",
+                HtmlUtils.input(
+                                "width", request.getString("width", ""),
+                                HtmlUtils.SIZE_10)));
         sb.append(HtmlUtils.formTableClose());
         sb.append("</td><td>&nbsp;&nbsp;&nbsp;&nbsp;<td><td>");
         StringBuilder esb        = new StringBuilder();
@@ -1359,10 +1670,10 @@ public class ImageOutputHandler extends OutputHandler {
         }
         sb.append(HtmlUtils.hidden("entrycnt", entryCnt + ""));
 
-        sb.append("<b>Entries:</b><br>");
+        sb.append("<b>Images:</b><br>");
         sb.append(esb.toString());
         sb.append("</td></tr></table>");
-        sb.append(HtmlUtils.hidden(ARG_OUTPUT, OUTPUT_COLLAGE));
+
         sb.append(HtmlUtils.formClose());
         getPageHandler().entrySectionClose(request, entry, sb);
 
@@ -1603,6 +1914,24 @@ public class ImageOutputHandler extends OutputHandler {
      * }
      *
      */
+
+    public static void main(String[]args) throws Exception {
+        List<String> files = new ArrayList<String>();
+        for(String f:args) files.add(f);
+        boolean useGlobalPaletteValue = true;
+        double  endPause              =  1.0;
+        double  displayRate           = 1.0;
+        double  rate                  = 1.0 / displayRate;
+        int     loopCount             = 0;
+        System.err.println("encoding");
+        AnimatedGifEncoder.createGif("test.gif", files, loopCount,
+                                     (int) (rate * 1000),
+                                     (int) ((endPause == -1)
+                                            ? -1
+                                            : endPause
+                                            * 1000), useGlobalPaletteValue);
+    }
+
 
 
 }

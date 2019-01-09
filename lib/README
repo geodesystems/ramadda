@@ -8,6 +8,8 @@ I will submit the fix to the jfreechart folks but for now we're good (I think)
 javax.jar:
 This was some old javax components that were originally in the giant IDV external.jar
 
+ij.jar: The iamgej from the IDV
+
 ramaddalib.jar:
   This holds all of the 3rd party libs  used by ramadda. It is made
   with the ant target ramaddalib in src/org/ramadda/repository

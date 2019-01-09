@@ -353,6 +353,7 @@
         <unjar src="${lib_dir}/javadiff.jar" dest="${tmpjar_dir}"/>
         <unjar src="${lib_dir}/smtp.jar" dest="${tmpjar_dir}"/>
         <unjar src="${lib_dir}/gson-2.2.4.jar" dest="${tmpjar_dir}"/>
+        <unjar src="${lib_dir}/ij.jar" dest="${tmpjar_dir}"/>
         <unjar src="${lib_dir}/postgres.jar" dest="${tmpjar_dir}"/>
         <unjar src="${lib_dir}/mysql-connector-java-5.1.32-bin.jar" dest="${tmpjar_dir}"/>
         <unjar src="${lib_dir}/h2.jar" dest="${tmpjar_dir}"/>

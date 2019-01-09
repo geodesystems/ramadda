@@ -2903,7 +2903,13 @@ public class Utils {
         return h;
     }
 
-
+    public static List makeList(Object... args) {
+        List h = new ArrayList();
+        for (Object arg : args) {
+            h.add(arg);
+        }
+        return h;
+    }
 
     /** _more_ */
     public static final Hashtable<String, Color> COLORNAMES =
