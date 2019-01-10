@@ -935,6 +935,13 @@ public abstract class Converter extends Processor {
             doAddress       = true;
         }
 
+        public Geocoder(List<String> cols, String suffix, boolean forDb) throws Exception {
+            super(cols);
+            this.suffix     = suffix;
+            this.writeForDb = forDb;
+            doAddress       = true;
+        }
+
         /**
          * _more_
          *

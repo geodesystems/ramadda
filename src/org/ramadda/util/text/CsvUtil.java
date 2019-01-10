@@ -792,6 +792,7 @@ public class CsvUtil {
         "-unfurl <col to get new column header#> <value columns> <unique col>  <other columns>  (make columns from data values)",
         "-geocode <col idx> <csv file> <name idx> <lat idx> <lon idx>",
         "-geocodeaddress <col indices> <suffix> ",
+        "-geocodeaddressdb <col indices> <suffix> ",
         "-denormalize <col idx>  <csv file>  read the id,value from file and substitute the value in the dest file col idx",
         "-count (show count)", "-maxrows <max rows to print>",
         "-skipline <pattern> (skip any line that matches the pattern)",
@@ -1222,6 +1223,14 @@ public class CsvUtil {
                 String       suffix = args.get(++i);
                 info.getProcessor().addProcessor(new Converter.Geocoder(cols,
                         suffix));
+
+                continue;
+            }
+            if (arg.equals("-geocodeaddressdb")) {
+                List<String> cols   = getCols(args.get(++i));
+                String       suffix = args.get(++i);
+                info.getProcessor().addProcessor(new Converter.Geocoder(cols,
+                                                                        suffix, true));
 
                 continue;
             }
