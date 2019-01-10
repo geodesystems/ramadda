@@ -1307,12 +1307,13 @@ public abstract class Processor extends CsvOperator {
                                 "yyyy-MM-dd HH:mm");
             for (int colIdx = 0; colIdx < row1.getValues().size(); colIdx++) {
                 Object col = row1.getValues().get(colIdx);
-                label = Utils.makeLabel(col.toString());
-                String colId = label.toLowerCase().replaceAll(" ",
-                                   "_").replaceAll("[^a-z0-9]", "_");
+                String colId = Utils.makeLabel(col.toString());
+                colId = colId.toLowerCase().replaceAll(" ",
+                                                       "_").replaceAll("[^a-z0-9]", "_");
                 colId = colId.replaceAll("_+_", "_");
                 colId = colId.replaceAll("_$", "");
                 colId = CsvUtil.getDbProp(props, colId, "id", colId);
+                label = Utils.makeLabel(colId);
                 label = CsvUtil.getDbProp(props, colId, "label", label);
                 label = label.replaceAll("\n", " ").replaceAll("\r", " ");
 
