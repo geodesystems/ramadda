@@ -1347,8 +1347,7 @@ public abstract class Processor extends CsvOperator {
                             size }));
                 }
                 attrs.append(XmlUtil.attrs(new String[] { "name", colId }));
-                if ((colId.indexOf("code") >= 0)
-                        || (colId.indexOf("type") >= 0)
+                if (colId.indexOf("type") >= 0
                         || (colId.indexOf("category") >= 0)) {
                     type = "enumerationplus";
                 } else if (colId.indexOf("date") >= 0) {
