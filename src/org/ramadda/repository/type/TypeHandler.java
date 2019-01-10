@@ -4260,9 +4260,7 @@ public class TypeHandler extends RepositoryManager {
                             String textWidget =
                                 HtmlUtils.textArea(ARG_DESCRIPTION, desc,
                                     rows,
-                                    getProperty(entry,
-                                        "form.description.columns",
-                                        120), HtmlUtils.id(ARG_DESCRIPTION));
+                                     HtmlUtils.id(ARG_DESCRIPTION));
                             sb.append(
                                 HtmlUtils.formEntryTop(
                                     msgLabel("Wiki Text"), textWidget));
@@ -4277,8 +4275,7 @@ public class TypeHandler extends RepositoryManager {
                                     getFormLabel(
                                         entry, ARG_DESCRIPTION, "Description")), buttons
                                             + HtmlUtils.textArea(
-                                                ARG_DESCRIPTION, desc, rows, getProperty(
-                                                    entry, "form.description.columns", 60), HtmlUtils.id(
+                                                ARG_DESCRIPTION, desc, rows, HtmlUtils.id(
                                                         ARG_DESCRIPTION))));
                     }
 

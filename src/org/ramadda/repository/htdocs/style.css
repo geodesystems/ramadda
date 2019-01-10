@@ -369,6 +369,9 @@ h2 a,   h2 a:visited, h2 a:link  {color: black;}
 textarea, input, select {
       font-size: .8em;
 }
+textarea, input {
+  resize:both;
+}
 
 ul {
    margin-top:5px;

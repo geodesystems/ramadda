@@ -2724,9 +2724,13 @@ public class HtmlUtils {
      */
     public static String textArea(String name, String value, int rows,
                                   int columns) {
-
         return textArea(name, value, rows, columns, "");
     }
+
+    public static String textArea(String name, String value, int rows, String attr) {
+        return textArea(name, value,rows,0,attr);
+    }
+
 
     /**
      * _more_
@@ -2741,9 +2745,10 @@ public class HtmlUtils {
      */
     public static String textArea(String name, String value, int rows,
                                   int columns, String extra) {
+        String width = columns>0?attr(ATTR_COLS, "" + columns):style("width:100%");
         return tag(TAG_TEXTAREA,
                    attrs(ATTR_NAME, name, ATTR_CLASS, CLASS_TEXTAREA)
-                   + attrs(ATTR_ROWS, "" + rows, ATTR_COLS, "" + columns)
+                   + attrs(ATTR_ROWS, "" + rows) + width
                    + extra, value);
     }
 
