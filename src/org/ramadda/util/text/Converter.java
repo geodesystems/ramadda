@@ -1060,7 +1060,7 @@ public abstract class Converter extends Processor {
                 double[] bounds = null;
                 if (doAddress) {
                     bounds = GeoUtils.getLocationFromAddress(key.toString());
-                    System.err.println("key:" + key + " b:" + bounds);
+                    //                    System.err.println("key:" + key + " b:" + bounds);
                 } else {
                     String tok = key.toString();
                     bounds = map.get(tok);
