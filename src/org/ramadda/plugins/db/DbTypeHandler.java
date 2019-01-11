@@ -2651,10 +2651,10 @@ public class DbTypeHandler extends PointTypeHandler /* BlobTypeHandler*/ {
                             }
                         } else {
                             scnt[0] += valueList.size();
+                            long t1 = System.currentTimeMillis();
                             doStore(entry, valueList, true);
-                            System.err.println(
-                                "DbTypeHandler.bulkUpload: stored: "
-                                + scnt[0]);
+                            long t2 = System.currentTimeMillis();
+                            Utils.printTimes("DbTypeHandler.bulkUpload: stored: "+ scnt[0],t1,t2);
                         }
                         valueList.clear();
                     }
