@@ -801,7 +801,7 @@ public class CsvUtil {
         "-denormalize <col idx>  <csv file>  (read the id,value from file and substitute the value in the dest file col idx)",
         "-count (show count)", "-maxrows <max rows to print>",
         "-skipline <pattern> (skip any line that matches the pattern)",
-        "-changeline <from> <to> (change the line))",
+        "-changeline <from> <to> (change the line)",
         "-prune <number of leading bytes to remove>",
         "-strict (be strict on columns. any rows that are not the size of the other rows are dropped)",
         "-flag (be strict on columns. any rows that are not the size of the other rows are shown)",

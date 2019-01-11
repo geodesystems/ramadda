@@ -37,7 +37,7 @@ function csvGetUrl(cmds,rawInput) {
 function csvMakeDbMenu(field,value,label) {
     if(!value) value = "null";
     else value = "'" + value +"'";
-    return "<a  class='ramadda-menuitem-link' onclick=\"csvInsertDb('" + field+"'," +value+");\">" + (label||field)+"</a>";
+    return HtmlUtil.tag("a",["class","ramadda-menuitem-link","onclick","csvInsertDb('" + field+"'," +value+");"],(label||field));
 }
 
 function csvInsertDb(field,value) {
@@ -53,7 +53,7 @@ function csvCall(cmds,args) {
     }
     stop = 
         HtmlUtil.onClick("csvStop()","Stop",[]);
-    csvOutput("<pre>\nProcessing...\n" + stop +"</pre>");
+    csvOutput(HtmlUtil.tag("pre",[],"Processing..."));
 
     var cleanCmds = "";
     var lines = cmds.split("\n");
@@ -105,7 +105,7 @@ function csvCall(cmds,args) {
     //    console.log(url);
     var jqxhr = $.getJSON( url, function(data) {
             if(data.error!=null) {
-                csvOutput("<pre>Error:" + window.atob(data.error) +"</pre>");
+                csvOutput(HtmlUtil.tag("pre",[],"Error:" + window.atob(data.error)));
                 return;
             }
             if(Utils.isDefined(args.func)) {
@@ -113,14 +113,14 @@ function csvCall(cmds,args) {
                 //                return;
             }
             if(data.file) {
-                csvOutput("<pre></pre>");
+                csvOutput(HtmlUtil.tag("pre",[],""));
                 iframe = '<iframe src="' + data.file +'"  style="display:none;"></iframe>';
                 $("#convertcsv_scratch").html(iframe);
                 return;
             } 
             if(Utils.isDefined(data.html) ) {
                 html = window.atob(data.html);
-                html = "<pre>" + html +"</html>";
+                html = HtmlUtil.tag("pre",[],html);
                 $("#convertcsv_output").html(html);
                 return;
             }
@@ -210,11 +210,11 @@ function csvCall(cmds,args) {
                 }
                 return;
             }
-            $("#convertcsv_output").html("<pre>No response given</pre>");
+            $("#convertcsv_output").html(HtmlUtil.tag("pre",[],"No response given"));
         })
         .fail(function(jqxhr, textStatus, error) {
                 var err = textStatus + ", " + error;
-                 csvOutput("<pre>Error:" + err +"</pre>");
+                csvOutput(HtmlUtil.tag("pre",[],"Error:" + err));
             });
 }
 
@@ -251,7 +251,7 @@ function csvOutput(html) {
 }
 
 function csvClearCommand() {
-    csvOutput("<pre>\n</pre>");
+    csvOutput(HtmlUtil.tag("pre",[],"\n"));
 }
 
 function csvRunCommand(force) {
@@ -296,7 +296,7 @@ html = "";
 maxRows="Rows: " + HtmlUtil.input("","30",["size","5", "id","convertcsv_maxrows"]);
 
 html+="<table border=0 width=100%><tr><td>";
-html+="<span id=csv_commands></span>";
+html+=HtmlUtil.tag("span",["id","csv_commands"],"");
 fileSelect = HtmlUtil.href("javascript:void(0);","Select file",["style", "color:black", "onClick", "selectInitialClick(event,'convertcsv_file1','convertcsv_input','true','entry:entryid','" + convertCsvEntry+"');",  "id","convertcsv_file1_selectlink"]);
 html += fileSelect;
 html += "</td><td align=right>";
@@ -360,7 +360,7 @@ $('#convertcsv_input').keyup(function(e){
                 var csvCommandsMap = {}
                 var result = window.atob(data.result);
                 var select = "<select id=csv_command_select class=ramadda-pulldown>";
-                select +="<option>Commands</option>"
+                select +=HtmlUtil.tag("option",[],"Commands");
                 var lines = result.split("\n");
                 for(var i=0;i<lines.length;i++){
                     line = lines[i].trim();
@@ -376,11 +376,21 @@ $('#convertcsv_input').keyup(function(e){
                         //}
                     }
                     if(!command.startsWith("-")) continue;
+                    var tooltip="";
+                    var arr = line.match(/\((.*?)\)/g);
+                    if(arr && arr.length>0) {
+                        tooltip = arr[0];
+                        tooltip = tooltip.replace(/\"/g,"&quot;");
+                        tooltip = tooltip.replace(/\(/g,"");
+                        tooltip = tooltip.replace(/\)/g,"");
+                        //                        console.log("tt:" + tooltip);
+                    }
+
                     var label = command;
                     label = Utils.camelCase(label.replace("-",""));
                     line = line.replace(/\(.*?\)/g,"");
                     csvCommandsMap[command] = line;
-                    select +="<option value=\"" + command +"\">" + label +"</option>\n";
+                    select +=HtmlUtil.tag("option",["value", command,"title",tooltip],label);
                 }
                 select += "</select>&nbsp;&nbsp;";
                 $("#csv_commands").html(select);
