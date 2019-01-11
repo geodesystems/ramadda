@@ -43,7 +43,10 @@ function csvMakeDbMenu(field,value,label) {
 function csvInsertDb(field,value) {
     var popup = $("#csv_db_popup");
     popup.css("display","none");
-    csvInsertCommand(field +" \"" +(value||" ")+"\"");
+    if(!value) value = " ";
+    if(value!=true && value!=false) 
+        value = " \"" +value+"\"";
+    csvInsertCommand(field +value);
 }
 
 
@@ -182,12 +185,12 @@ function csvCall(cmds,args) {
                                     html +=
                                         csvMakeDbMenu(field+".cansearch")+space +
                                         csvMakeDbMenu(field+".cansearch","true","true")+space +
-                                        csvMakeDbMenu(field+".cansearch","true","false")+
+                                        csvMakeDbMenu(field+".cansearch","false","false")+
                                         "<br>";
                                     html +=
                                         csvMakeDbMenu(field+".canlist")+space +
                                         csvMakeDbMenu(field+".canlist","true","true")+space+
-                                        csvMakeDbMenu(field+".canlist","true","false")+
+                                        csvMakeDbMenu(field+".canlist","false","false")+
                                         "<br>";
                                 }
                                 html+="</div>";
