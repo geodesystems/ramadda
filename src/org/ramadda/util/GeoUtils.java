@@ -390,6 +390,10 @@ public class GeoUtils {
                 place = Place.getPlace(tmp);
             }
         }
+        if(place==null && address.length()>5) {
+            String tmp = address.substring(0,5);
+            place = Place.getPlace(tmp);
+        }
 
         if(place!=null) {
             //            System.err.println("got place:" + address +" " + place.getLatitude()+" " + place.getLongitude());
