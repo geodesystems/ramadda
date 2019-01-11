@@ -375,10 +375,6 @@ public class GeoUtils {
             String googleKey)
             throws Exception {
 
-        if (googleKey == null) {
-            googleKey = GeoUtils.googleKey;
-        }
-
         if (address == null) {
             return null;
         }
@@ -386,6 +382,16 @@ public class GeoUtils {
         if (address.length() == 0) {
             return null;
         }
+        Place place = Place.getPlace(address);
+        if(place!=null) {
+            //            System.err.println("got place:" + address +" " + place.getLatitude()+" " + place.getLongitude());
+            return new double[]{place.getLatitude(),place.getLongitude()};
+        }
+
+        if (googleKey == null) {
+            googleKey = GeoUtils.googleKey;
+        }
+
         if (addressToLocation == null) {
             addressToLocation = new Hashtable<String, double[]>();
             if (cacheDir != null) {
