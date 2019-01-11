@@ -44,7 +44,7 @@ function csvInsertDb(field,value) {
     var popup = $("#csv_db_popup");
     popup.css("display","none");
     if(!value) value = " ";
-    if(value!=true && value!=false) 
+    if(value!="true" && value!="false") 
         value = " \"" +value+"\"";
     csvInsertCommand(field +value);
 }
