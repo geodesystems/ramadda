@@ -78,6 +78,7 @@ import ucar.unidata.xml.XmlUtil;
 import java.io.*;
 
 
+import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
@@ -2871,8 +2872,11 @@ public class DbTypeHandler extends PointTypeHandler /* BlobTypeHandler*/ {
         String sql  = makeInsertOrUpdateSql(entry, (isNew
                 ? null
                 : dbid));
-        PreparedStatement stmt =
-            getRepository().getDatabaseManager().getPreparedStatement(sql);
+        Connection connection = getDatabaseManager().getConnection();
+        PreparedStatement stmt = connection.prepareStatement(sql);
+        connection.setAutoCommit(false);
+            //            getRepository().getDatabaseManager().getPreparedStatement(sql);
+
         try {
             for (Object[] values : valueList) {
                 int stmtIdx = tableHandler.setStatement(entry, values, stmt,
@@ -2882,6 +2886,8 @@ public class DbTypeHandler extends PointTypeHandler /* BlobTypeHandler*/ {
                 }
                 stmt.execute();
             }
+            connection.commit();
+            connection.setAutoCommit(true);
         } finally {
             getRepository().getDatabaseManager().closeAndReleaseConnection(
                 stmt);
