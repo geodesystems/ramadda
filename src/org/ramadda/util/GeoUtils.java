@@ -383,6 +383,14 @@ public class GeoUtils {
             return null;
         }
         Place place = Place.getPlace(address);
+        if(place==null) {
+            int index = address.indexOf("-");
+            if(index>0) {
+                String tmp = address.substring(0,index);
+                place = Place.getPlace(tmp);
+            }
+        }
+
         if(place!=null) {
             //            System.err.println("got place:" + address +" " + place.getLatitude()+" " + place.getLongitude());
             return new double[]{place.getLatitude(),place.getLongitude()};
