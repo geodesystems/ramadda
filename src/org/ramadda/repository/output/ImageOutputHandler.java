@@ -1,3 +1,4 @@
+
 /*
 * Copyright (c) 2008-2019 Geode Systems LLC
 *
@@ -817,10 +818,10 @@ public class ImageOutputHandler extends OutputHandler {
 
         if (output.equals(OUTPUT_PLAYER)) {
             sb = new StringBuilder();
-            getPageHandler().entrySectionOpen(request, entry, sb,
+            getPageHandler().entrySectionOpen(request, group, sb,
                                           "Image Player");
             makePlayer(request, group, entries, sb, true, true);
-            getPageHandler().entrySectionClose(request, entry, sb);
+            getPageHandler().entrySectionClose(request, group, sb);
         } else if (output.equals(OUTPUT_SLIDESHOW)) {
             for (int i = entries.size() - 1; i >= 0; i--) {
                 Entry entry = entries.get(i);
