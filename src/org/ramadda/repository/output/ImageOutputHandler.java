@@ -1826,9 +1826,11 @@ public class ImageOutputHandler extends OutputHandler {
         String playerTemplate =
             repository.getResource(
                 "/org/ramadda/repository/resources/web/imageplayer.html");
+        /*
         playerTemplate = IOUtil.readContents(
             "/Users/jeffmc/source/ramadda/src/org/ramadda/repository/resources/web/imageplayer.html",
             getClass());
+        */
 
 
         playerTemplate = playerTemplate.replaceAll("\\$\\{imagePlayerVar\\}",
