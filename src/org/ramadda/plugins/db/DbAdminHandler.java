@@ -160,20 +160,23 @@ public class DbAdminHandler extends AdminHandlerImpl {
                 (List<Element>) XmlUtil.findChildren(tableNode, TAG_COLUMN);
             Element idNode = XmlUtil.create(TAG_COLUMN, tableNode,
                                             new String[] {
-                "name", DbTypeHandler.COL_DBID, Column.ATTR_ISINDEX, "true",
+                "name", DbTypeHandler.COL_DBID, 
+                Column.ATTR_ISINDEX, "true",
                 Column.ATTR_TYPE, "string", Column.ATTR_SHOWINFORM, "false"
             });
             Element userNode = XmlUtil.create(TAG_COLUMN, tableNode,
                                    new String[] {
-                "name", DbTypeHandler.COL_DBUSER, Column.ATTR_ISINDEX, "true",
+                "name", DbTypeHandler.COL_DBUSER, 
+                //Column.ATTR_ISINDEX, "true",
                 Column.ATTR_TYPE, "string", Column.ATTR_SHOWINFORM, "false",
                 Column.ATTR_CANLIST, "false"
             });
 
             Element createDateNode = XmlUtil.create(TAG_COLUMN, tableNode,
                                          new String[] {
-                "name", DbTypeHandler.COL_DBCREATEDATE, Column.ATTR_ISINDEX,
-                "true", Column.ATTR_TYPE, "datetime", Column.ATTR_SHOWINFORM,
+                "name", DbTypeHandler.COL_DBCREATEDATE, 
+                //Column.ATTR_ISINDEX,  "true", 
+                Column.ATTR_TYPE, "datetime", Column.ATTR_SHOWINFORM,
                 "false", Column.ATTR_CANLIST, "false"
             });
 
