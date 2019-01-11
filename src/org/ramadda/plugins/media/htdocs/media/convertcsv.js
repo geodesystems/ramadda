@@ -1,5 +1,6 @@
 
 
+var csvDbPopupTime;
 
 function csvGetInput(force) {
     val= "";
@@ -33,6 +34,19 @@ function csvGetUrl(cmds,rawInput) {
     return url;
 }
 
+function csvMakeDbMenu(field,value,label) {
+    if(!value) value = "null";
+    else value = "'" + value +"'";
+    return "<a  class='ramadda-menuitem-link' onclick=\"csvInsertDb('" + field+"'," +value+");\">" + (label||field)+"</a>";
+}
+
+function csvInsertDb(field,value) {
+    var popup = $("#csv_db_popup");
+    popup.css("display","none");
+    csvInsertCommand(field +" \"" +(value||" ")+"\"");
+}
+
+
 function csvCall(cmds,args) {
     if (!args)  {
         args = {};
@@ -55,7 +69,6 @@ function csvCall(cmds,args) {
         cleanCmds+=line+"\n";
     }
     cmds = cleanCmds;
-    console.log("commands:" + cmds);
     var rawInput = csvGetInput();
     if((!args.download && !doExplode) || args.html) {
         //        maxRows = args.maxRows;
@@ -120,9 +133,80 @@ function csvCall(cmds,args) {
                 if(showHtml) {
                     $("#convertcsv_output").html(result);
                 } else {
-                    result = result.replace(/</g,"&lt;");
-                    result = result.replace(/>/,"&gt;");
-                    $("#convertcsv_output").html("<pre>" + result +"</pre>");
+                    var isDb = result.startsWith("<tables");
+                    if(isDb) {
+                        result = result.replace("<tables>","Database:");
+                        result = result.replace(/\/>/g,"");
+                        result = result.replace(/>/g,"");
+                        result = result.replace(/<table +id="(.*?)"/g,"\t<table <a class=csv_db_field field='table' onclick=noop() title='Add to input'>$1</a>");
+                        result = result.replace("<table ","table:");
+                        result = result.replace("</table","");
+                        result = result.replace("</tables","");
+
+                        result = result.replace(/<column +name="(.*?)"/g,"\tcolumn: name=\"<a class=csv_db_field field='$1' onclick=noop() title='Add to input'>$1</a>\"");
+                        result = result.replace(/ ([^ ]+)="([^"]+)"/g,"\t$1:$2");
+                        result = result.replace(/ ([^ ]+)="([^"]*)"/g,"\t$1:\"$2\"");
+
+                    } else {
+                        result = result.replace(/</g,"&lt;");
+                        result = result.replace(/>/,"&gt;");
+                    }
+                    var html = "<pre>" + result +"</pre>";
+                    if(isDb) {
+                        html+="<div class=\"ramadda-popup\" xstyle=\"display: none;position:absolute;\" id=csv_db_popup></div>" ;
+                    }
+                    $("#convertcsv_output").html(html);
+                    if(isDb){
+                        $("#convertcsv_output .csv_db_field").click(function(event) {
+                                var space = "&nbsp;"
+                                event.preventDefault();
+                                var pos=$(this).offset();
+                                var h=$(this).height();
+                                var w=$(this).width();
+                                var field  = $(this).attr("field");
+                                var html = "<div style=\"margin:2px;margin-left:5px;margin-right:5px;\">\n";
+                                if(field  == "table") {
+                                    html +=csvMakeDbMenu(field+".name")+"<br>";
+                                    html +=csvMakeDbMenu(field+".label")+"<br>";
+                                } else {
+                                    html +=csvMakeDbMenu(field+".id")+"<br>";
+                                    html +=csvMakeDbMenu(field+".label")+"<br>";
+                                    html +=
+                                        csvMakeDbMenu(field+".type")+space +
+                                        csvMakeDbMenu(field+".type","string","string")+space +
+                                        csvMakeDbMenu(field+".type","double","double")+space +
+                                        csvMakeDbMenu(field+".type","int","int")+space +
+                                        csvMakeDbMenu(field+".type","enumeration","enumeration")+space +
+                                        csvMakeDbMenu(field+".type","enumerationplus","enumerationplus")+space +
+                                        "<br>";
+                                    html +=
+                                        csvMakeDbMenu(field+".cansearch")+space +
+                                        csvMakeDbMenu(field+".cansearch","true","true")+space +
+                                        csvMakeDbMenu(field+".cansearch","true","false")+
+                                        "<br>";
+                                    html +=
+                                        csvMakeDbMenu(field+".canlist")+space +
+                                        csvMakeDbMenu(field+".canlist","true","true")+space+
+                                        csvMakeDbMenu(field+".canlist","true","false")+
+                                        "<br>";
+                                }
+                                html+="</div>";
+                                var popup = $("#csv_db_popup");
+                                csvDbPopupTime = new Date();
+                                popup.css("display","block");
+                                popup.html(html);
+                                var myalign  = "left top";
+                                var atalign  = "left bottom";
+                                popup.position({
+                                        of: $(this),
+                                            my: myalign,
+                                            at: atalign,
+                                            collision: "none none"
+                                            });
+
+                            })
+
+                    }
                 }
                 return;
             }
@@ -145,10 +229,21 @@ function csvStop() {
 }
 
 
-function csvAppendCommand(cmds) {
+
+function csvInsertCommand(cmds) {
     if(!cmds) return;
     cmds = cmds.replace(/_quote_/g,"\"");
-    $('#convertcsv_input').val($('#convertcsv_input').val()+" "+ cmds);
+    cmds = " " + cmds +" ";
+    var input = $('#convertcsv_input');
+    var start = input.prop('selectionStart');
+    var end = input.prop('selectionEnd');
+    input.val(input.val().substring(0, start)
+              +cmds 
+              + input.val().substring(end));
+    setTimeout(function() {
+            input.focus();},0);
+    input[0].selectionStart = start+cmds.length;
+    input[0].selectionEnd = start+cmds.length;
 }
 
 function csvOutput(html) {
@@ -238,6 +333,17 @@ html += HtmlUtil.div(["id", "convertcsv_scratch"],"");
 $("#convertcsv_div").html(html);
 csvFlipInput(convertCsvLastInput);
 $(".convert_button").button();
+$(document).click(function(e) {
+        if(csvDbPopupTime) {
+            var now = new Date();
+            var timeDiff = now-csvDbPopupTime;
+            if(timeDiff<1000)  {
+                return;
+            }
+        }
+    var popup = $("#csv_db_popup");
+    popup.css("display","none");
+    });
 $('#convertcsv_input').keyup(function(e){
         if(e.keyCode == 13) {
             //            csvRunCommand(true);
@@ -278,10 +384,10 @@ $('#convertcsv_input').keyup(function(e){
                 }
                 select += "</select>&nbsp;&nbsp;";
                 $("#csv_commands").html(select);
-                $(".ramadda-pulldown").selectBoxIt({});                                 
-                $("#csv_command_select").change(function() {
+                //                $(".ramadda-pulldown").selectBoxIt({});                                 
+                $("#csv_command_select").change(function(evt) {
                         var line = csvCommandsMap[$("#csv_command_select").val()];
-                        csvAppendCommand(line);
+                        csvInsertCommand(line);
                     });
             }
             

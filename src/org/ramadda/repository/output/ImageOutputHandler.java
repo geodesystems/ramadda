@@ -18,8 +18,8 @@ package org.ramadda.repository.output;
 
 
 import org.ramadda.repository.*;
-import org.ramadda.repository.job.JobManager;
 import org.ramadda.repository.auth.*;
+import org.ramadda.repository.job.JobManager;
 import org.ramadda.repository.type.*;
 import org.ramadda.util.HtmlUtils;
 import org.ramadda.util.Json;
@@ -41,8 +41,6 @@ import ucar.unidata.util.Misc;
 import ucar.unidata.util.StringUtil;
 import ucar.unidata.xml.XmlUtil;
 
-
-import javax.imageio.*;
 import java.awt.Color;
 
 import java.awt.Font;
@@ -81,6 +79,9 @@ import java.util.Properties;
 import java.util.regex.*;
 
 import java.util.zip.*;
+
+
+import javax.imageio.*;
 
 
 /**
@@ -182,7 +183,7 @@ public class ImageOutputHandler extends OutputHandler {
                        OutputType.TYPE_VIEW | OutputType.TYPE_FORSEARCH, "",
                        ICON_IMAGES);
 
-    /** _more_          */
+    /** _more_ */
     public static final OutputType OUTPUT_ANIMATEDGIF =
         new OutputType("Make Animated Gif", "image.animatedgif",
                        OutputType.TYPE_VIEW | OutputType.TYPE_FORSEARCH, "",
@@ -321,7 +322,7 @@ public class ImageOutputHandler extends OutputHandler {
             links.add(makeLink(request, state.getEntry(), OUTPUT_GALLERY));
             links.add(makeLink(request, state.getEntry(), OUTPUT_PLAYER));
             links.add(makeLink(request, state.getEntry(), OUTPUT_COLLAGE));
-            if(repository.getProperty("service.imagemagick")!=null) {
+            if (repository.getProperty("service.imagemagick") != null) {
                 links.add(makeLink(request, state.getEntry(),
                                    OUTPUT_ANIMATEDGIF));
             }
@@ -852,6 +853,8 @@ public class ImageOutputHandler extends OutputHandler {
             String template =
                 repository.getResource(
                     "/org/ramadda/repository/resources/web/slideshow.html");
+
+
             template = template.replace("${imagelist}", sb.toString());
             template = StringUtil.replace(template, "${root}",
                                           repository.getUrlBase());
@@ -1140,10 +1143,13 @@ public class ImageOutputHandler extends OutputHandler {
                                     child.getResource().getPath(), true));
                         if (imageBytes == null) {
                             System.err.println("no image:" + child);
+
                             return;
                         }
 
-                        Image image = ImageIO.read(new ByteArrayInputStream(imageBytes));
+                        Image image = ImageIO.read(
+                                          new ByteArrayInputStream(
+                                              imageBytes));
                         if (image != null) {
                             if ((cropArray[0] != 0) || (cropArray[1] != 0)
                                     || (cropArray[2] != 0)
@@ -1430,9 +1436,9 @@ public class ImageOutputHandler extends OutputHandler {
                                       List<Entry> entries)
             throws Exception {
 
-        int               entryCnt = request.get("entrycnt", 0);
-        List<String>      ids      = new ArrayList<String>();
-        List<Entry> imageEntries = new ArrayList<Entry>();
+        int          entryCnt     = request.get("entrycnt", 0);
+        List<String> ids          = new ArrayList<String>();
+        List<Entry>  imageEntries = new ArrayList<Entry>();
         for (int i = 0; i < entryCnt; i++) {
             if (request.defined(ARG_ENTRYID + "_" + i)) {
                 String id    = request.getString(ARG_ENTRYID + "_" + i, "");
@@ -1442,28 +1448,29 @@ public class ImageOutputHandler extends OutputHandler {
                 }
             }
         }
-        if(request.get("reverse",false)) {
+        if (request.get("reverse", false)) {
             List<Entry> tmp = new ArrayList<Entry>();
-            for(int i=imageEntries.size()-1;i>=0;i--)
+            for (int i = imageEntries.size() - 1; i >= 0; i--) {
                 tmp.add(imageEntries.get(i));
-            imageEntries  = tmp;
+            }
+            imageEntries = tmp;
         }
 
-        final List<Entry> selected = imageEntries;
-        final int width = request.get("width",0);
-        final int maxHeight = request.get("maxheight",0);
-        final int[]    done       = { 0 };
-        final String[] imageArray = new String[selected.size()];
+        final List<Entry> selected   = imageEntries;
+        final int         width      = request.get("width", 0);
+        final int         maxHeight  = request.get("maxheight", 0);
+        final int[]       done       = { 0 };
+        final String[]    imageArray = new String[selected.size()];
         for (int i = 0; i < selected.size(); i++) {
             final Entry child = selected.get(i);
             final int   idx   = i;
             Misc.run(new Runnable() {
                 public void run() {
                     try {
-                        String imageFile=  null;
+                        String imageFile = null;
 
                         if (child.isFile()) {
-                            imageFile =  child.getResource().getPath();
+                            imageFile = child.getResource().getPath();
                         } else if (child.getResource().isUrl()) {
                             String tail = IOUtil.getFileTail(
                                               child.getResource().getPath());
@@ -1477,39 +1484,61 @@ public class ImageOutputHandler extends OutputHandler {
                                     new FileOutputStream(file));
                             IOUtil.writeTo(is, bos);
                             IOUtil.close(bos);
-                            imageFile  =file.toString();
+                            imageFile = file.toString();
                         }
 
-                        if(imageFile == null) {
+                        if (imageFile == null) {
                             return;
                         }
 
                         BufferedImage image = null;
-                        if(maxHeight>0 || width>0) {
+                        if ((maxHeight > 0) || (width > 0)) {
                             image = ImageIO.read(new File(imageFile));
                         }
 
-                        if(width>0) {
-                            Image newImage = image.getScaledInstance(width, -1,
-                                                            Image.SCALE_AREA_AVERAGING);
-                            String  newFile = IOUtil.getFileTail(imageFile).toLowerCase();
-                            if(!newFile.endsWith(".gif") || !newFile.endsWith(".png") || !newFile.endsWith(".jpg")||
-                               !newFile.endsWith(".jpeg")) 
-                                newFile = IOUtil.stripExtension(newFile)+".png";
-                            File  tmp = getStorageManager().getTmpFile(request, newFile);
-                            ImageUtils.writeImageToFile(newImage, tmp.toString());
+                        if (width > 0) {
+                            Image newImage = image.getScaledInstance(width,
+                                                 -1,
+                                                 Image.SCALE_AREA_AVERAGING);
+                            String newFile =
+                                IOUtil.getFileTail(imageFile).toLowerCase();
+                            if ( !newFile.endsWith(".gif")
+                                    || !newFile.endsWith(".png")
+                                    || !newFile.endsWith(".jpg")
+                                    || !newFile.endsWith(".jpeg")) {
+                                newFile = IOUtil.stripExtension(newFile)
+                                          + ".png";
+                            }
+                            File tmp =
+                                getStorageManager().getTmpFile(request,
+                                    newFile);
+                            ImageUtils.writeImageToFile(newImage,
+                                    tmp.toString());
                             imageFile = tmp.toString();
-                            image = ImageUtils.toBufferedImage(newImage);
+                            image     = ImageUtils.toBufferedImage(newImage);
                         }
 
-                        if(maxHeight>0 && image.getHeight(null)>maxHeight) {
-                            image = Utils.crop(ImageUtils.toBufferedImage(image), 0,0,image.getHeight(null)-maxHeight,0);
-                            String  newFile = IOUtil.getFileTail(imageFile).toLowerCase();
-                            if(!newFile.endsWith(".gif") || !newFile.endsWith(".png") || !newFile.endsWith(".jpg")||
-                               !newFile.endsWith(".jpeg")) 
-                                newFile = IOUtil.stripExtension(newFile)+".png";
-                            File  tmp = getStorageManager().getTmpFile(request, newFile);
-                            ImageUtils.writeImageToFile(image, tmp.toString());
+                        if ((maxHeight > 0)
+                                && (image.getHeight(null) > maxHeight)) {
+                            image =
+                                Utils.crop(ImageUtils.toBufferedImage(image),
+                                           0, 0,
+                                           image.getHeight(null) - maxHeight,
+                                           0);
+                            String newFile =
+                                IOUtil.getFileTail(imageFile).toLowerCase();
+                            if ( !newFile.endsWith(".gif")
+                                    || !newFile.endsWith(".png")
+                                    || !newFile.endsWith(".jpg")
+                                    || !newFile.endsWith(".jpeg")) {
+                                newFile = IOUtil.stripExtension(newFile)
+                                          + ".png";
+                            }
+                            File tmp =
+                                getStorageManager().getTmpFile(request,
+                                    newFile);
+                            ImageUtils.writeImageToFile(image,
+                                    tmp.toString());
                             imageFile = tmp.toString();
                         }
                         imageArray[idx] = imageFile;
@@ -1560,25 +1589,26 @@ public class ImageOutputHandler extends OutputHandler {
             files.add(f);
         }
 
-        String  tail                  = entry.getName() + ".gif";
-        File    file = getStorageManager().getTmpFile(request, tail);
-        boolean useGlobalPaletteValue = true;
-        double  endPause              = request.get("endpause", 1.0);
-        int    delay          = request.get("delay", 100);
-        int     loopCount             = request.get("loopcount", 0);
-        List<String> commands = new ArrayList<String>();
-        commands.add(repository.getProperty("service.imagemagick")+"/convert");
-        commands.addAll(Utils.makeList("-loop",loopCount+"", "-delay",delay+"",
-                                       "-dispose",
-                                       "Background"));
+        String       tail                  = entry.getName() + ".gif";
+        File         file = getStorageManager().getTmpFile(request, tail);
+        boolean      useGlobalPaletteValue = true;
+        double       endPause              = request.get("endpause", 1.0);
+        int          delay                 = request.get("delay", 100);
+        int          loopCount             = request.get("loopcount", 0);
+        List<String> commands              = new ArrayList<String>();
+        commands.add(repository.getProperty("service.imagemagick")
+                     + "/convert");
+        commands.addAll(Utils.makeList("-loop", loopCount + "", "-delay",
+                                       delay + "", "-dispose", "Background"));
         commands.addAll(files);
         commands.addAll(Utils.makeList("-coalesce"));
         commands.add(file.toString());
         JobManager.CommandResults results =
             getRepository().getJobManager().executeCommand(commands,
-                                                           getStorageManager().getRepositoryDir());
+                getStorageManager().getRepositoryDir());
         Result result = new Result(new FileInputStream(file), "image/gif");
         result.setReturnFilename(tail);
+
         return result;
     }
 
@@ -1631,18 +1661,14 @@ public class ImageOutputHandler extends OutputHandler {
                     "loopcount", request.getString("loopcount", "0"),
                     HtmlUtils.SIZE_5) + " 0=forever"));
 
-        sb.append(
-            HtmlUtils.formEntry(
-                                "Image Width:",
-                HtmlUtils.input(
-                                "width", request.getString("width", ""),
-                                HtmlUtils.SIZE_5)));
-        sb.append(
-            HtmlUtils.formEntry(
-                                "Max Height:",
-                HtmlUtils.input(
-                                "maxheight", request.getString("maxheight", ""),
-                                HtmlUtils.SIZE_5)));
+        sb.append(HtmlUtils.formEntry("Image Width:",
+                                      HtmlUtils.input("width",
+                                          request.getString("width", ""),
+                                          HtmlUtils.SIZE_5)));
+        sb.append(HtmlUtils.formEntry("Max Height:",
+                                      HtmlUtils.input("maxheight",
+                                          request.getString("maxheight", ""),
+                                          HtmlUtils.SIZE_5)));
         sb.append(
             HtmlUtils.formEntry(
                 "",
@@ -1798,7 +1824,9 @@ public class ImageOutputHandler extends OutputHandler {
         String playerTemplate =
             repository.getResource(
                 "/org/ramadda/repository/resources/web/imageplayer.html");
-        //        playerTemplate = IOUtil.readContents("/Users/jeffmc/source/ramadda/src/org/ramadda/repository/resources/web/imageplayer.html",getClass());
+        playerTemplate = IOUtil.readContents(
+            "/Users/jeffmc/source/ramadda/src/org/ramadda/repository/resources/web/imageplayer.html",
+            getClass());
 
 
         playerTemplate = playerTemplate.replaceAll("\\$\\{imagePlayerVar\\}",
@@ -1955,13 +1983,19 @@ public class ImageOutputHandler extends OutputHandler {
      *   finalSB.append(sb);
      * }
      *
+     *
+     * @param args _more_
+     *
+     * @throws Exception _more_
      */
 
-    public static void main(String[]args) throws Exception {
+    public static void main(String[] args) throws Exception {
         List<String> files = new ArrayList<String>();
-        for(String f:args) files.add(f);
+        for (String f : args) {
+            files.add(f);
+        }
         boolean useGlobalPaletteValue = true;
-        double  endPause              =  1.0;
+        double  endPause              = 1.0;
         double  displayRate           = 1.0;
         double  rate                  = 1.0 / displayRate;
         int     loopCount             = 0;

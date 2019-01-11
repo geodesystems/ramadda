@@ -2605,21 +2605,171 @@ public class Utils {
     /**
      * _more_
      *
+     * @param c _more_
+     * @param sb _more_
+     * @param lines _more_
+     *
+     * @return _more_
+     */
+    private static StringBuilder append(char c, StringBuilder sb,
+                                        List<StringBuilder> lines) {
+        if (sb == null) {
+            sb = new StringBuilder();
+            lines.add(sb);
+        }
+        sb.append(c);
+
+        return sb;
+    }
+
+    /**
+     * _more_
+     *
+     * @param commandString _more_
+     *
+     * @return _more_
+     */
+    public static List<StringBuilder> parseMultiLineCommandLine(
+            String commandString) {
+
+        List<StringBuilder> lines = new ArrayList<StringBuilder>();
+        //        System.err.println(commandString);
+        StringBuilder sb         = null;
+        boolean       prevEscape = false;
+        int           bracketCnt = 0;
+        for (int i = 0; i < commandString.length(); i++) {
+            char c = commandString.charAt(i);
+            if (c == '\r') {
+                continue;
+            }
+            boolean inEscape = prevEscape;
+            prevEscape = false;
+            if (c == '{') {
+                if (inEscape) {
+                    sb = append(c, sb, lines);
+
+                    continue;
+                }
+                //                if(bracketCnt>0) 
+                sb = append(c, sb, lines);
+                bracketCnt++;
+
+                continue;
+            }
+            if (c == '}') {
+                if (inEscape) {
+                    sb = append(c, sb, lines);
+
+                    continue;
+                }
+                bracketCnt--;
+                if (bracketCnt < 0) {
+                    throw new IllegalArgumentException("Unopened bracket:"
+                            + commandString);
+                }
+                //                if(bracketCnt>0) 
+                sb = append(c, sb, lines);
+
+                continue;
+            }
+
+            if (c == '\n') {
+                if ( !inEscape && (bracketCnt == 0)) {
+                    sb = null;
+                } else {
+                    sb = append(' ', sb, lines);
+                }
+
+                continue;
+            }
+
+            if (inEscape) {
+                sb = append(c, sb, lines);
+
+                continue;
+            }
+            if (c == '\\') {
+                prevEscape = true;
+
+                continue;
+            }
+            sb = append(c, sb, lines);
+
+            if (c == '{') {
+                bracketCnt++;
+            } else if (c == '}') {
+                bracketCnt--;
+            }
+        }
+        //        System.err.println(lines);
+        if (true) {
+            return lines;
+        }
+
+        /*
+
+        List<String> toks = StringUtil.split(commandString, "\n", true,
+                                             true);
+        boolean priorLineContinues = false;
+        for (int i = 0; i < toks.size(); i++) {
+            String  line       = toks.get(i);
+            if(bracketCnt==0) {
+                StringBuilder sb = new StringBuilder();
+                for(int j=0;j<line.length();j++) {
+                    char c = line.charAt(j);
+                    if(c == '{') {
+                        bracketCnt++;
+                    } else if(c == '}') {
+                        bracketCnt--;
+                    }
+                }
+            }
+            boolean appendNext = false;
+            if (line.endsWith("\\")) {
+                appendNext = true;
+                line       = line.substring(0, line.length() - 1);
+            } else {
+                appendNext = false;
+            }
+            if (priorLineContinues) {
+                lines.get(lines.size() - 1).append(" ");
+                lines.get(lines.size() - 1).append(line);
+            } else {
+                lines.add(new StringBuilder(line));
+            }
+            priorLineContinues = appendNext;
+        }
+        */
+
+        return lines;
+
+    }
+
+
+    /**
+     * _more_
+     *
      * @param s _more_
      *
      * @return _more_
      */
     public static List<String> parseCommandLine(String s) {
+
+        //        System.err.println("command line:" + s);
         List<String> args = new ArrayList<String>();
         s = s.trim();
         StringBuilder sb         = new StringBuilder();
         boolean       inQuote    = false;
+        boolean       inBracket  = false;
         boolean       prevEscape = false;
+        //        System.err.println("s:" + s);
         for (int i = 0; i < s.length(); i++) {
-            char    c        = s.charAt(i);
-            boolean isQuote  = (c == '\"');
-            boolean isEscape = (c == '\\');
-
+            char    c            = s.charAt(i);
+            boolean isQuote      = (c == '\"') || (c == '{') || (c == '}');
+            boolean openBracket  = (c == '{');
+            boolean closeBracket = (c == '}');
+            boolean isEscape     = (c == '\\');
+            //        s = " -db  {rhl_0000005.id \"test it\" }";
             //            System.err.println("char:" + c + " prev escape:" + prevEscape +" isquote:" + isQuote +" inquote:"+ inQuote);
             if (prevEscape) {
                 sb.append(c);
@@ -2627,7 +2777,6 @@ public class Utils {
 
                 continue;
             }
-
 
             if (c == '\\') {
                 if (prevEscape) {
@@ -2639,13 +2788,39 @@ public class Utils {
 
                 continue;
             }
-            if (c == '\"') {
-                if (prevEscape) {
-                    sb.append(c);
-                    prevEscape = false;
+            if (prevEscape) {
+                sb.append(c);
+                prevEscape = false;
 
-                    continue;
+                continue;
+            }
+            //.... " {.....} "
+            if (openBracket) {
+                if (inQuote) {
+                    sb.append(c);
+                } else {
+                    inBracket = true;
                 }
+
+                continue;
+            }
+            if (closeBracket) {
+                if (inQuote) {
+                    sb.append(c);
+                } else {
+                    args.add(sb.toString());
+                    sb.setLength(0);
+                    inBracket = false;
+                }
+
+                continue;
+            }
+            if (inBracket) {
+                sb.append(c);
+
+                continue;
+            }
+            if (isQuote) {
                 if (inQuote) {
                     inQuote = false;
                     args.add(sb.toString());
@@ -2674,11 +2849,16 @@ public class Utils {
         if (inQuote) {
             throw new IllegalArgumentException("Unclosed quote:" + s);
         }
+        if (inBracket) {
+            throw new IllegalArgumentException("Unclosed bracket:" + s);
+        }
         if (sb.length() > 0) {
             args.add(sb.toString());
         }
+        //        System.err.println("args:" + args);
 
         return args;
+
     }
 
 
@@ -2812,12 +2992,17 @@ public class Utils {
      *
      * @throws Exception _more_
      */
-
-
     public static void main(String args[]) throws Exception {
         String s = "-1 \"\\\n\\\"X";
+        s = "-1 {hello \nthere} more";
+        s = " -db  {\nx1 \nx2\nx3}rhl_0000005.id  \n\"test it\" \nshould\\\n be \\\none same line\n  \nanother";
+        s = "{\nx1 \nx2 {} \n x3}";
+        s = "-db {\nrhl_0000005.id foo\n40_00485165555076 { }\n}\nanother line\n{and another line}";
+        //        s = "should\\\n be \\\non same line";
+        parseMultiLineCommandLine(s);
+        //        s = "-maxrows 30 -db \" rhl_0000005.id {test it} \" ";                    
         //        System.err.println(s);
-        System.err.println(parseCommandLine(s));
+        //        System.err.println(parseCommandLine(s));
     }
 
     /**
@@ -2903,11 +3088,19 @@ public class Utils {
         return h;
     }
 
+    /**
+     * _more_
+     *
+     * @param args _more_
+     *
+     * @return _more_
+     */
     public static List makeList(Object... args) {
         List h = new ArrayList();
         for (Object arg : args) {
             h.add(arg);
         }
+
         return h;
     }
 
@@ -3450,6 +3643,7 @@ public class Utils {
         int imageHeight = image.getHeight(null);
         int w           = imageWidth - right - left;
         int h           = imageHeight - top - bottom;
+
         //        System.err.println("iw:" + imageWidth +" w:"  + w + " " + left +" " + right);
         //        System.err.println("ih:" + imageHeight +" h:"  + h + " " + top +" " + bottom);
         return image.getSubimage(left, top, w, h);

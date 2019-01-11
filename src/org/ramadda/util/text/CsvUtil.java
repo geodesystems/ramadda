@@ -806,7 +806,7 @@ public class CsvUtil {
         "-strict (be strict on columns. any rows that are not the size of the other rows are dropped)",
         "-flag (be strict on columns. any rows that are not the size of the other rows are shown)",
         "-rotate", "-flip", "-delimiter (specify an alternative delimiter)",
-        "-db <props> (generate the RAMADDA db xml from the header, props are a set of name value pairs:)\n\ttable.id <new id> table.name <new name> table.cansearch <true|false> table.canlist <true|false> table.icon <icon, e.g., /db/database.png>\n\t<column name>.id <new id for column> <column name>.label <new label>\n\t<column name>.type <string|enumeration|double|int|date>\n\t<column name>.format <yyyy MM dd HH mm ss format for dates>\n\t<column name>.canlist <true|false> <column name>.cansearch <true|false>\n\tinstall <true|false install the new db table>\n\tnukedb <true|false careful! this deletes any prior created dbs>",
+        "-db {<props>} (generate the RAMADDA db xml from the header, props are a set of name value pairs:)\n\ttable.id <new id> table.name <new name> table.cansearch <true|false> table.canlist <true|false> table.icon <icon, e.g., /db/database.png>\n\t<column name>.id <new id for column> <column name>.label <new label>\n\t<column name>.type <string|enumeration|double|int|date>\n\t<column name>.format <yyyy MM dd HH mm ss format for dates>\n\t<column name>.canlist <true|false> <column name>.cansearch <true|false>\n\tinstall <true|false install the new db table>\n\tnukedb <true|false careful! this deletes any prior created dbs>",
         "-print (print to stdout)", "-raw (print the file raw)",
         "-record (print records)", "-cat <*.csv>  (one or more csv files)",
         "-header (print the first line)",

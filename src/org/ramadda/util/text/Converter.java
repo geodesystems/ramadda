@@ -155,13 +155,23 @@ public abstract class Converter extends Processor {
     }
 
 
+    /**
+     * Class description
+     *
+     *
+     * @version        $version$, Fri, Jan 11, '19
+     * @author         Enter your name here...    
+     */
     public static class ColumnWidth extends Converter {
+
+        /** _more_          */
         int size;
 
         /**
          * _more_
          *
          * @param cols _more_
+         * @param size _more_
          */
         public ColumnWidth(List<String> cols, int size) {
             super(cols);
@@ -188,9 +198,12 @@ public abstract class Converter extends Processor {
                     continue;
                 }
                 String s = row.get(i).toString();
-                if(s.length()>size) s = s.substring(0,size-1);
+                if (s.length() > size) {
+                    s = s.substring(0, size - 1);
+                }
                 row.set(i, s);
             }
+
             return row;
         }
 
@@ -935,7 +948,17 @@ public abstract class Converter extends Processor {
             doAddress       = true;
         }
 
-        public Geocoder(List<String> cols, String suffix, boolean forDb) throws Exception {
+        /**
+         * _more_
+         *
+         * @param cols _more_
+         * @param suffix _more_
+         * @param forDb _more_
+         *
+         * @throws Exception _more_
+         */
+        public Geocoder(List<String> cols, String suffix, boolean forDb)
+                throws Exception {
             super(cols);
             this.suffix     = suffix;
             this.writeForDb = forDb;

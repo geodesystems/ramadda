@@ -403,34 +403,13 @@ public class TabularOutputHandler extends OutputHandler {
             String commandString           = request.getString("commands",
                                                  "");
 
-            List<StringBuilder> lines      = new ArrayList<StringBuilder>();
-            List<String> toks = StringUtil.split(commandString, "\n", true,
-                                    true);
-            boolean priorLineContinues = false;
-            for (int i = 0; i < toks.size(); i++) {
-                String  line       = toks.get(i);
-                boolean appendNext = false;
-                if (line.endsWith("\\")) {
-                    appendNext = true;
-                    line       = line.substring(0, line.length() - 1);
-                } else {
-                    appendNext = false;
-                }
-                if (priorLineContinues) {
-                    lines.get(lines.size() - 1).append(" ");
-                    lines.get(lines.size() - 1).append(line);
-                } else {
-                    lines.add(new StringBuilder(line));
-                }
-                priorLineContinues = appendNext;
-            }
-
-
+            List<StringBuilder> lines      = Utils.parseMultiLineCommandLine(commandString);
 
             if ( !download) {
                 StringBuilder sb = new StringBuilder();
                 for (StringBuilder lineSB : lines) {
-                    String line = lineSB.toString();
+                    String line = lineSB.toString().trim();
+                    if(line.length()==0) continue;
                     if (line.startsWith("#")) {
                         continue;
                     }

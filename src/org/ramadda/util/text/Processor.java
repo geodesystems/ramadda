@@ -1306,10 +1306,10 @@ public abstract class Processor extends CsvOperator {
             String format = CsvUtil.getDbProp(props, "table", "format",
                                 "yyyy-MM-dd HH:mm");
             for (int colIdx = 0; colIdx < row1.getValues().size(); colIdx++) {
-                Object col = row1.getValues().get(colIdx);
+                Object col   = row1.getValues().get(colIdx);
                 String colId = Utils.makeLabel(col.toString());
                 colId = colId.toLowerCase().replaceAll(" ",
-                                                       "_").replaceAll("[^a-z0-9]", "_");
+                        "_").replaceAll("[^a-z0-9]", "_");
                 colId = colId.replaceAll("_+_", "_");
                 colId = colId.replaceAll("_$", "");
                 colId = CsvUtil.getDbProp(props, colId, "id", colId);
@@ -1347,7 +1347,7 @@ public abstract class Processor extends CsvOperator {
                             size }));
                 }
                 attrs.append(XmlUtil.attrs(new String[] { "name", colId }));
-                if (colId.indexOf("type") >= 0
+                if ((colId.indexOf("type") >= 0)
                         || (colId.indexOf("category") >= 0)) {
                     type = "enumerationplus";
                 } else if (colId.indexOf("date") >= 0) {
@@ -1358,7 +1358,8 @@ public abstract class Processor extends CsvOperator {
                 }
 
                 type = CsvUtil.getDbProp(props, colId, "type", type);
-                String values = CsvUtil.getDbProp(props, colId, "values", null);
+                String values = CsvUtil.getDbProp(props, colId, "values",
+                                    null);
                 String searchRows = CsvUtil.getDbProp(props, colId,
                                         "searchrows", "");
                 canSearch = "true".equals(CsvUtil.getDbProp(props, colId,
@@ -1369,8 +1370,9 @@ public abstract class Processor extends CsvOperator {
                     "type", type, "label", label, "cansearch", "" + canSearch,
                     "canlist", "" + canList
                 }));
-                if(values!=null) {
-                    attrs.append(XmlUtil.attrs(new String[] {"values",values}));
+                if (values != null) {
+                    attrs.append(XmlUtil.attrs(new String[] { "values",
+                            values }));
                 }
                 if (searchRows.length() > 0) {
                     attrs.append(XmlUtil.attrs(new String[] { "searchrows",
