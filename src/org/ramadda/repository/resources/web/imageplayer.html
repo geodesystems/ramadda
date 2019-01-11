@@ -198,7 +198,6 @@ function ImagePlayer(args)  {
         this.images.push(new MyImage(url,label,dttm));
     }
 
-    
     this.startStop = function() {
         if(this.running==1) {
             this.stop();
@@ -208,20 +207,7 @@ function ImagePlayer(args)  {
     }
 
 
-    this.initImages = function() {
-        if(this.inited) return;
-        this.inited = true;
-        var html = "";
-        for(var i=0;i<this.images.length;i++) {
-            html+="<img src=\""  + this.images[i].url +"\" id=\"" + this.prefix+"_image" + i +"\" style=\"display:none;\">\n"; 
-        }
-        console.log(html);
-
-        $(this.getId("img")).html(html);
-    }
-
     this.start = function() {
-        this.initImages();
         this.resetImageWait();
         this.running=true;
         $(this.getId("startstop")).attr("src",  icon_stop);
@@ -451,27 +437,19 @@ function ImagePlayer(args)  {
     }
 
 
+
+
     this.displayImage = function() {
         if(this.images.length==0) {
             //            alert('no images');
             return
         }
-        this.initImages();
 /*
         if(!this.images[this.current_image].image) {
             this.images[this.current_image].image = new Image();
             this.images[this.current_image].image.src = this.images[this.current_image].url;
         }
 */
-
-        for(var i=0;i<this.images.length;i++) {
-            console.log("id:" +this.getId("_image"+this.current_image));
-            if(i == this.current_image) 
-                $(this.getId("_image"+i)).css("display","block");
-            else 
-                $(this.getId("_image"+i)).css("display","none");
-        }
-                      
 
         var currentImage = this.images[this.current_image];
         this.waitingForImageToLoad= true;
@@ -560,9 +538,8 @@ function noop() {
 <tr valign="top" >
 <td style="border-top: 1px #aaa solid;" colspan="2" valign=top>
    <div  id="${imagePlayerPrefix}header" style="margin:2">&nbsp;</div>
-   <div  id="${imagePlayerPrefix}img"></div>
    <div class="imageplayer-block">
-${ximagehtml}
+${imagehtml}
    </div>
 </td>
 </tr>

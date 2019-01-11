@@ -174,7 +174,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                                         + attrs(ATTR_WIDTH, "400",
                                                 ATTR_HEIGHT,
                                                 "270")), 
-                            new WikiTag(WIKI_TAG_PLAYER, attrs("loopdelay","1000","loopstart","false"))),
+                            new WikiTag(WIKI_TAG_PLAYER, attrs("loopdelay","1000","loopstart","false","imageWidth","600"))),
         new WikiTagCategory("Misc",
                             new WikiTag(WIKI_TAG_CALENDAR, attrs(ATTR_DAY, "false")),
                             new WikiTag(WIKI_TAG_TIMELINE, attrs(ATTR_HEIGHT, "150")),
@@ -2130,6 +2130,9 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                 imageRequest.put("loopdelay", "" + delay);
             }
 
+            String iwidth= Utils.getProperty(props,"imageWidth",(String)null);
+            if(iwidth!=null)
+                imageRequest.put(ARG_WIDTH,iwidth);
             int height = Utils.getProperty(props, ATTR_HEIGHT, 0);
             if (height > 0) {
                 imageRequest.put(ARG_HEIGHT, "" + height);

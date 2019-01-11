@@ -2189,11 +2189,13 @@ public class EntryManager extends RepositoryManager {
                         dateRange = new Date(formTimestamp) + ":"
                                     + new Date(currentTimestamp);
                     } catch (Exception ignore) {}
+                    getPageHandler().entrySectionOpen(request, entry, sb, "Entry Edit");
                     sb.append(
                         getPageHandler().showDialogError(
                             msg(
                             "Error: The entry you are editing has been edited since the time you began the edit:"
                             + dateRange)));
+                    getPageHandler().entrySectionClose(request, entry, sb);
 
                     return addEntryHeader(request, entry,
                                           new Result(msg("Entry Edit Error"),

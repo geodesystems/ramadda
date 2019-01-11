@@ -3287,7 +3287,7 @@ public class TypeHandler extends RepositoryManager {
         return HtmlUtils.href(
             getEntryManager().getEntryResourceUrl(request, entry),
             HtmlUtils.img(getRepository().getIconUrl(ICON_FETCH)) + " "
-            + fileTail);
+            + entry.getName());
     }
 
 

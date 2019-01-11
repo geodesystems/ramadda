@@ -1992,7 +1992,6 @@ public class PageHandler extends RepositoryManager {
                 extras.add("");
                 urls.add(request.makeUrl(getRepositoryBase().URL_USER_CART));
                 //        labels.add(HtmlUtils.img(getRepository().getIconUrl(ICON_CART),
-                //                                msg("Data Cart")));
                 labels.add(HtmlUtils.img(getIconUrl("/icons/cart.png")) + " "
                            + msg("Data Cart"));
                 tips.add(msg("View data cart"));

@@ -2225,7 +2225,7 @@ public class UserManager extends RepositoryManager {
     public Result showCart(Request request) throws Exception {
 
         StringBuilder sb = new StringBuilder();
-        HtmlUtils.titleSectionOpen(sb, "User Cart");
+        //        HtmlUtils.titleSectionOpen(sb, "User Cart");
         request.appendMessage(sb);
         List<Entry> entries = getCart(request);
         if (entries.size() == 0) {
@@ -2235,7 +2235,7 @@ public class UserManager extends RepositoryManager {
         }
 
         if (entries.size() == 0) {
-            sb.append(HtmlUtils.sectionClose());
+            //            sb.append(HtmlUtils.sectionClose());
 
             return makeResult(request, msg("User Cart"), sb);
         }
@@ -2403,8 +2403,7 @@ public class UserManager extends RepositoryManager {
             sb.append("</form>");
         }
 
-
-        sb.append(HtmlUtils.sectionClose());
+        //        sb.append(HtmlUtils.sectionClose());
 
         return makeResult(request, "User Cart", sb);
 
@@ -3682,7 +3681,7 @@ public class UserManager extends RepositoryManager {
                     if ( !request.getUser().getAnonymous()) {
                         link = makeLink(request, state.getEntry(),
                                         OUTPUT_FAVORITE);
-                        link.setLinkType(OutputType.TYPE_TOOLBAR);
+                        link.setLinkType(OutputType.TYPE_FILE);
                         links.add(link);
                     }
                 }
@@ -3744,6 +3743,9 @@ public class UserManager extends RepositoryManager {
 
             }
         };
+
+        outputHandler.addType(OUTPUT_FAVORITE);
+        outputHandler.addType(OUTPUT_CART_ADD);
 
         getRepository().addOutputHandler(outputHandler);
     }

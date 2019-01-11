@@ -817,9 +817,10 @@ public class ImageOutputHandler extends OutputHandler {
 
         if (output.equals(OUTPUT_PLAYER)) {
             sb = new StringBuilder();
+            getPageHandler().entrySectionOpen(request, entry, sb,
+                                          "Image Player");
             makePlayer(request, group, entries, sb, true, true);
-            //            sb.append(tmp);
-            //            sb.append(HtmlUtils.leftRight(getSortLinks(request), fullUrl));
+            getPageHandler().entrySectionClose(request, entry, sb);
         } else if (output.equals(OUTPUT_SLIDESHOW)) {
             for (int i = entries.size() - 1; i >= 0; i--) {
                 Entry entry = entries.get(i);
@@ -1872,11 +1873,11 @@ public class ImageOutputHandler extends OutputHandler {
                 Json.map(playerArgs));
 
         String widthAttr = "";
-        int    width     = request.get(ARG_WIDTH, 600);
-        if (width > 0) {
-            widthAttr = HtmlUtils.attr(HtmlUtils.ATTR_WIDTH, "" + width);
+        String    width     = request.getString(ARG_WIDTH, "600");
+        if (width !=null) {
+            widthAttr = HtmlUtils.attr(HtmlUtils.ATTR_WIDTH, width);
         }
-        String imageHtml = "<IMG class=\"imageplayer-image\" id=\""
+        String imageHtml = "<img class=\"imageplayer-image\" id=\""
                            + playerPrefix + "animation\" BORDER=\"0\" "
                            + widthAttr + HtmlUtils.attr("SRC", firstImage)
                            + " ALT=\"Loading image\">";
@@ -1892,7 +1893,7 @@ public class ImageOutputHandler extends OutputHandler {
         if (addHeader) {
             String fullUrl       = "";
             String originalWidth = request.getString(ARG_WIDTH, null);
-            if (width > 0) {
+            if (false/*width > 0*/) {
                 request.put(ARG_WIDTH, "0");
                 fullUrl = HtmlUtils.href(request.getUrl(),
                                          msg("Use image width"));
