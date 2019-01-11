@@ -83,6 +83,8 @@ public class CsvUtil {
     /** _more_ */
     private boolean okToRun = true;
 
+    private boolean verbose = false;
+
     /**
      * _more_
      *
@@ -281,6 +283,11 @@ public class CsvUtil {
 
                 return;
             }
+            if(arg.equals("-verbose")) {
+                verbose = true;
+                continue;
+            }
+
             if (arg.equals("-cat")) {
                 doConcat = true;
 
@@ -612,6 +619,11 @@ public class CsvUtil {
             //            System.err.println("line:" + line);
             if (line == null) {
                 break;
+            }
+            if(verbose)  {
+                if(((cnt++)%10000) == 0) {
+                    System.err.println("processed:" + cnt);
+                }
             }
 
             if (line.length() > 2000) {
