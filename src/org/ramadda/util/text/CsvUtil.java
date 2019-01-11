@@ -621,7 +621,7 @@ public class CsvUtil {
                 break;
             }
             if(verbose)  {
-                if(((cnt++)%10000) == 0) {
+                if(((++cnt)%1000) == 0) {
                     System.err.println("processed:" + cnt);
                 }
             }
