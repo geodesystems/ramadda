@@ -3609,7 +3609,7 @@ public class DbTypeHandler extends PointTypeHandler /* BlobTypeHandler*/ {
                             String icon = iconMap.get(value);
                             if (icon != null) {
                                 prefix.append(
-                                    HtmlUtils.img(getDbIconUrl(icon)));
+                                              HtmlUtils.img(getDbIconUrl(icon),"",HtmlUtils.attr("width","16")));
                                 prefix.append(" ");
 
                             }
