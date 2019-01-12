@@ -4465,7 +4465,7 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
             String href = HtmlUtils.href(url,label);
 
             String rowValue = (String) valuesArray[gridColumn.getOffset()];
-            if(rowValue == null) rowValue = "null";
+            if(rowValue == null) rowValue = "&lt;blank&gt;";
             StringBuilder buffer = map.get(rowValue);
             if (buffer == null) {
                 map.put(rowValue, buffer = new StringBuilder());
