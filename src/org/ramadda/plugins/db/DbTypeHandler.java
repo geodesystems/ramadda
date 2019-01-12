@@ -4453,6 +4453,8 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
         List<String> rowValues = new ArrayList<String>();
         int          cnt       = 0;
 
+        System.err.println("Grid column:" +gridColumn.getName());
+
         for (Object[] valuesArray : valueList) {
             String url = canEdit
                          ? getEditUrl(request, entry,
@@ -4461,6 +4463,7 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
                                       (String) valuesArray[IDX_DBID]);
             String href = HtmlUtils.href(url,
                                          getLabel(entry, valuesArray, sdf));
+            System.err.println("value:" +valuesArray[gridColumn.getOffset()]);
             String rowValue = (String) valuesArray[gridColumn.getOffset()];
             StringBuilder buffer = map.get(rowValue);
             if (buffer == null) {

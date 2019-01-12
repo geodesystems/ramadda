@@ -138,7 +138,7 @@ public class DbAdminHandler extends AdminHandlerImpl {
             Class handlerClass =
                 Misc.findClass(XmlUtil.getAttribute(tableNode, ATTR_HANDLER,
                     "org.ramadda.plugins.db.DbTypeHandler"));
-            System.err.println("class:" + handlerClass);
+            //            System.err.println("class:" + handlerClass);
             Constructor ctor = Utils.findConstructor(handlerClass,
                                    new Class[] { Repository.class,
                     String.class, tableNode.getClass(), String.class });
