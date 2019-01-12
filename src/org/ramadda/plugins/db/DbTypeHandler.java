@@ -4461,9 +4461,11 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
                                       (String) valuesArray[IDX_DBID])
                          : getViewUrl(request, entry,
                                       (String) valuesArray[IDX_DBID]);
-            String href = HtmlUtils.href(url,
-                                         getLabel(entry, valuesArray, sdf));
+            String label = getLabel(entry, valuesArray, sdf);
+            String href = HtmlUtils.href(url,label);
+
             String rowValue = (String) valuesArray[gridColumn.getOffset()];
+            if(rowValue == null) rowValue = "null";
             StringBuilder buffer = map.get(rowValue);
             if (buffer == null) {
                 map.put(rowValue, buffer = new StringBuilder());
@@ -5538,7 +5540,7 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
     public String getLabel(Entry entry, Object[] values, SimpleDateFormat sdf)
             throws Exception {
         String lbl = getLabelInner(entry, values, sdf);
-        if ((lbl == null) || (lbl.trim().length() == 0)) {
+        if (!Utils.stringDefined(lbl)) {
             lbl = "---";
         }
 
