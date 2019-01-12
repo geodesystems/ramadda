@@ -530,8 +530,10 @@ public class TypeHandler extends RepositoryManager {
             }
 
             setProperties(node);
-            setDescription(Utils.getAttributeOrTag(node, ATTR_DB_DESCRIPTION,
-                    getType()));
+            if(!Utils.stringDefined(description)) {
+                setDescription(Utils.getAttributeOrTag(node, ATTR_DB_DESCRIPTION,
+                                                       getType()));
+            }
 
             String superType = Utils.getAttributeOrTag(node, ATTR_SUPER,
                                    (String) null);
@@ -6249,7 +6251,7 @@ public class TypeHandler extends RepositoryManager {
      * @return _more_
      */
     public String getLabel() {
-        if ((description == null) || (description.trim().length() == 0)) {
+        if (!Utils.stringDefined(description)) {
             return getType();
         }
 
