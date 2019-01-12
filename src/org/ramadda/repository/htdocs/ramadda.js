@@ -3,7 +3,6 @@
 */
 
 
-
 //
 //This is the remnant of the original (and pretty crappy) js
 //lots of globals, not much jq
@@ -27,6 +26,7 @@ var mouseMoveCnt =0;
 var objectToHide;
 
 function hidePopupObject() {
+    console.log("hidePopup");
     if(objectToHide!=popupObject) {
         //	return;
     }

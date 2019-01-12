@@ -1,7 +1,17 @@
-/**
-* Copyright (c) 2008-2015 Geode Systems LLC
-* This Software is licensed under the Geode Systems RAMADDA License available in the source distribution in the file 
-* ramadda_license.txt. The above copyright notice shall be included in all copies or substantial portions of the Software.
+/*
+* Copyright (c) 2008-2019 Geode Systems LLC
+*
+* Licensed under the Apache License, Version 2.0 (the "License");
+* you may not use this file except in compliance with the License.
+* You may obtain a copy of the License at
+* 
+*     http://www.apache.org/licenses/LICENSE-2.0
+* 
+* Unless required by applicable law or agreed to in writing, software
+* distributed under the License is distributed on an "AS IS" BASIS,
+* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+* See the License for the specific language governing permissions and
+* limitations under the License.
 */
 
 /**
@@ -67,7 +77,6 @@ public class OldPhoneDbTypeHandler extends PhoneDbTypeHandler {
      * _more_
      *
      *
-     * @param dbAdmin _more_
      * @param repository _more_
      * @param tableName _more_
      * @param tableNode _more_
@@ -75,11 +84,10 @@ public class OldPhoneDbTypeHandler extends PhoneDbTypeHandler {
      *
      * @throws Exception _more_
      */
-    public OldPhoneDbTypeHandler(DbAdminHandler dbAdmin,
-                                 Repository repository, String tableName,
+    public OldPhoneDbTypeHandler(Repository repository, String tableName,
                                  Element tableNode, String desc)
             throws Exception {
-        super(dbAdmin, repository, tableName, tableNode, desc);
+        super(repository, tableName, tableNode, desc);
     }
 
 
@@ -92,14 +100,15 @@ public class OldPhoneDbTypeHandler extends PhoneDbTypeHandler {
      *
      * @throws Exception _more_
      */
-    public void init(List<Element> columnNodes) throws Exception {
-        super.init(columnNodes);
+    @Override
+    public void initDbColumns(List<Element> columnNodes) throws Exception {
+        super.initDbColumns(columnNodes);
+        List<Column> columnsToUse = getDbInfo().getColumns();
         dateColumn       = columnsToUse.get(0);
         fromNameColumn   = columnsToUse.get(1);
         fromNumberColumn = columnsToUse.get(2);
         toNameColumn     = columnsToUse.get(5);
         toNumberColumn   = columnsToUse.get(6);
-
     }
 
 

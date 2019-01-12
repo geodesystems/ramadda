@@ -233,11 +233,10 @@ public class RegistrationDbTypeHandler extends DbTypeHandler {
      *
      * @throws Exception _more_
      */
-    public RegistrationDbTypeHandler(DbAdminHandler dbAdmin,
-                                     Repository repository, String tableName,
+    public RegistrationDbTypeHandler(Repository repository, String tableName,
                                      Element tableNode, String desc)
             throws Exception {
-        super(dbAdmin, repository, tableName, tableNode, desc);
+        super(repository, tableName, tableNode, desc);
     }
 
 
@@ -311,8 +310,8 @@ public class RegistrationDbTypeHandler extends DbTypeHandler {
         StringBuffer sb     = new StringBuffer();
         String       action = request.getString(ARG_ACTION, "");
 
-        int pricePerUser = (int) Utils.getProperty(props,
-                               PROP_PRICE_PER_USER, 60.0);
+        int pricePerUser =  Utils.getProperty(props,
+                               PROP_PRICE_PER_USER, 60);
 
         int users = request.get(ARG_USERS, 0);
         int ppu = 0;
@@ -575,7 +574,7 @@ public class RegistrationDbTypeHandler extends DbTypeHandler {
                                    + ";\n"));
         sb.append(
             HtmlUtils.importJS(
-                getRepository().fileUrl("/registration/registration.js")));
+                getRepository().getHtdocsUrl("/registration/registration.js")));
 
 
 
@@ -629,7 +628,7 @@ public class RegistrationDbTypeHandler extends DbTypeHandler {
                 msgLabel("Price/user"),
                 HtmlUtils.input(
                     PROP_PRICE_PER_USER,
-                    "" + Utils.getProperty(props, PROP_PRICE_PER_USER, 60.0),
+                    "" + Utils.getProperty(props, PROP_PRICE_PER_USER, 60),
                     HtmlUtils.SIZE_5)));
         formBuffer.append(HtmlUtils.formEntry(msgLabel("Paypal Account"),
                 HtmlUtils.input(PROP_PAYPAL_BUSINESS,

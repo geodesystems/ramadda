@@ -46,11 +46,10 @@ public class EquipmentDbTypeHandler extends DbTypeHandler {
      *
      * @throws Exception _more_
      */
-    public EquipmentDbTypeHandler(DbAdminHandler dbAdmin,
-                                  Repository repository, String tableName,
+    public EquipmentDbTypeHandler(Repository repository, String tableName,
                                   Element tableNode, String desc)
             throws Exception {
-        super(dbAdmin, repository, tableName, tableNode, desc);
+        super(repository, tableName, tableNode, desc);
     }
 
     /**

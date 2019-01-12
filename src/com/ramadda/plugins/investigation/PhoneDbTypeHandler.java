@@ -1,7 +1,17 @@
-/**
-* Copyright (c) 2008-2015 Geode Systems LLC
-* This Software is licensed under the Geode Systems RAMADDA License available in the source distribution in the file 
-* ramadda_license.txt. The above copyright notice shall be included in all copies or substantial portions of the Software.
+/*
+* Copyright (c) 2008-2019 Geode Systems LLC
+*
+* Licensed under the Apache License, Version 2.0 (the "License");
+* you may not use this file except in compliance with the License.
+* You may obtain a copy of the License at
+* 
+*     http://www.apache.org/licenses/LICENSE-2.0
+* 
+* Unless required by applicable law or agreed to in writing, software
+* distributed under the License is distributed on an "AS IS" BASIS,
+* WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+* See the License for the specific language governing permissions and
+* limitations under the License.
 */
 
 /**
@@ -25,14 +35,14 @@ import org.ramadda.repository.output.*;
 
 
 import org.ramadda.repository.type.*;
-
-import org.ramadda.sql.Clause;
 import org.ramadda.util.HtmlUtils;
 import org.ramadda.util.Json;
 import org.ramadda.util.Utils;
 
 
 import org.ramadda.util.Utils;
+
+import org.ramadda.util.sql.Clause;
 
 
 import org.w3c.dom.*;
@@ -113,7 +123,6 @@ public class PhoneDbTypeHandler extends DbTypeHandler {
      * _more_
      *
      *
-     * @param dbAdmin _more_
      * @param repository _more_
      * @param tableName _more_
      * @param tableNode _more_
@@ -121,11 +130,10 @@ public class PhoneDbTypeHandler extends DbTypeHandler {
      *
      * @throws Exception _more_
      */
-    public PhoneDbTypeHandler(DbAdminHandler dbAdmin, Repository repository,
-                              String tableName, Element tableNode,
-                              String desc)
+    public PhoneDbTypeHandler(Repository repository, String tableName,
+                              Element tableNode, String desc)
             throws Exception {
-        super(dbAdmin, repository, tableName, tableNode, desc);
+        super(repository, tableName, tableNode, desc);
     }
 
 
@@ -136,8 +144,9 @@ public class PhoneDbTypeHandler extends DbTypeHandler {
      *
      * @throws Exception _more_
      */
-    public void init(List<Element> columnNodes) throws Exception {
-        super.init(columnNodes);
+    @Override
+    public void initDbColumns(List<Element> columnNodes) throws Exception {
+        super.initDbColumns(columnNodes);
         viewList.add(1, new TwoFacedObject("Call Listing",
                                            VIEW_CALL_LISTING));
         viewList.add(1, new TwoFacedObject("Call Graph", VIEW_CALL_GRAPH));
@@ -195,18 +204,24 @@ public class PhoneDbTypeHandler extends DbTypeHandler {
      * @param values _more_
      * @param sdf _more_
      *
+     *
+     * @return _more_
      * @throws Exception _more_
      */
     @Override
-    public void formatTableValue(Request request, Entry entry, Appendable sb,
-                                 Column column, Object[] values,
-                                 SimpleDateFormat sdf)
+    public String formatTableValue(Request request, Entry entry,
+                                   Appendable sb, Column column,
+                                   Object[] values, SimpleDateFormat sdf)
             throws Exception {
         if (column.equals(fromNumberColumn)
                 || column.equals(toNumberColumn)) {
-            Utils.append(sb, formatNumber(column.getString(values)));
+            String s = formatNumber(column.getString(values));
+            Utils.append(sb, s);
+
+            return s;
         } else {
-            super.formatTableValue(request, entry, sb, column, values, sdf);
+            return super.formatTableValue(request, entry, sb, column, values,
+                                          sdf);
         }
     }
 
