@@ -791,15 +791,8 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
         }
 
         boolean embedded = request.get(ARG_EMBEDDED, false);
-        if (Utils.stringDefined(entry.getDescription())) {
-            sb.append(getWikiManager().wikifyEntry(request, entry,
-                    entry.getDescription()));
-            sb.append(HtmlUtils.br());
-        }
-
         if (embedded) {
             addStyleSheet(sb);
-
             return;
         }
 
@@ -808,6 +801,12 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
             getPageHandler().entrySectionOpen(request, entry, sb, "", true);
         }
 
+
+        if (Utils.stringDefined(entry.getDescription())) {
+            sb.append(getWikiManager().wikifyEntry(request, entry,
+                    entry.getDescription()));
+            sb.append(HtmlUtils.br());
+        }
 
         List<String> headerToks = new ArrayList<String>();
         String baseUrl =
