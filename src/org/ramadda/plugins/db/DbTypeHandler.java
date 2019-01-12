@@ -793,6 +793,7 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
         boolean embedded = request.get(ARG_EMBEDDED, false);
         if (embedded) {
             addStyleSheet(sb);
+
             return;
         }
 
@@ -1734,62 +1735,63 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
         }
 
         if (normalForm) {
+            if (tfos.size() > 0) {
+                sb.append(
+                    formEntry(
+                        request, msgLabel("Group By"),
+                        HtmlUtils.select(
+                            ARG_GROUPBY, tfos,
+                            (List<String>) request.get(
+                                ARG_GROUPBY,
+                                new ArrayList()), " multiple size=4 ")));
 
-            sb.append(formEntry(request, msgLabel("Group By"),
-                                HtmlUtils.select(ARG_GROUPBY, tfos,
-                                    (List<String>) request.get(ARG_GROUPBY,
-                                        new ArrayList()), " multiple size=4 "
-            /*HtmlUtils.cssClass("search-select")*/
-            )));
+                List<TwoFacedObject> aggTypes =
+                    new ArrayList<TwoFacedObject>();
+                aggTypes.add(new TwoFacedObject("----", ""));
+                aggTypes.add(new TwoFacedObject("Sum", "sum"));
+                aggTypes.add(new TwoFacedObject("Count", "count"));
+                aggTypes.add(new TwoFacedObject("Average", "avg"));
+                aggTypes.add(new TwoFacedObject("Min", "min"));
+                aggTypes.add(new TwoFacedObject("Max", "max"));
 
-            List<TwoFacedObject> aggTypes = new ArrayList<TwoFacedObject>();
-            aggTypes.add(new TwoFacedObject("----", ""));
-            aggTypes.add(new TwoFacedObject("Sum", "sum"));
-            aggTypes.add(new TwoFacedObject("Count", "count"));
-            aggTypes.add(new TwoFacedObject("Average", "avg"));
-            aggTypes.add(new TwoFacedObject("Min", "min"));
-            aggTypes.add(new TwoFacedObject("Max", "max"));
-
-            StringBuilder aggSB = new StringBuilder();
-            for (int i = 0; i < 3; i++) {
-                aggSB.append(
-                    HtmlUtils.select(
-                        ARG_AGG
-                        + i, aggtfos, request.getString(
-                            ARG_AGG + i, ""), HtmlUtils.cssClass(
-                            "search-select")) + HtmlUtils.space(2)
-                                + HtmlUtils.select(
-                                    ARG_AGG_TYPE
-                                    + i, aggTypes, request.getString(
+                StringBuilder aggSB = new StringBuilder();
+                for (int i = 0; i < 3; i++) {
+                    aggSB.append(
+                        HtmlUtils.select(
+                            ARG_AGG
+                            + i, aggtfos, request.getString(
+                                ARG_AGG + i, ""), HtmlUtils.cssClass(
+                                "search-select")) + HtmlUtils.space(2)
+                                    + HtmlUtils.select(
                                         ARG_AGG_TYPE
-                                        + i, ""), HtmlUtils.cssClass(
-                                            "search-select")));
-                aggSB.append("<br>");
-            }
-            sb.append(formEntry(request, msgLabel("Aggregate"),
-                                aggSB.toString()));
+                                        + i, aggTypes, request.getString(
+                                            ARG_AGG_TYPE
+                                            + i, ""), HtmlUtils.cssClass(
+                                                "search-select")));
+                    aggSB.append("<br>");
+                }
+                sb.append(formEntry(request, msgLabel("Aggregate"),
+                                    aggSB.toString()));
 
+            }
         }
 
-        sb.append(
-            formEntry(
-                request, msgLabel("Order By"),
-                HtmlUtils.select(
-                    ARG_DB_SORTBY, aggtfos,
-                    request.getString(ARG_DB_SORTBY, ""),
-                    HtmlUtils.cssClass("search-select")) + HtmlUtils.space(2)
-                        + HtmlUtils.radio(
-                            ARG_DB_SORTDIR, "asc",
-                            request.getString(ARG_DB_SORTDIR, "asc").equals(
-                                "asc"), " default='asc' ") + " "
+        if (aggtfos.size() > 0) {
+            sb.append(formEntry(request, msgLabel("Order By"), HtmlUtils
+                .select(ARG_DB_SORTBY, aggtfos, request
+                    .getString(ARG_DB_SORTBY, ""), HtmlUtils
+                    .cssClass("search-select")) + HtmlUtils.space(2)
+                        + HtmlUtils
+                            .radio(ARG_DB_SORTDIR, "asc", request
+                                .getString(ARG_DB_SORTDIR, "asc")
+                                .equals("asc"), " default='asc' ") + " "
                                     + "Ascending "
-                                    + HtmlUtils.radio(
-                                        ARG_DB_SORTDIR, "desc",
-                                        request.getString(
-                                            ARG_DB_SORTDIR, "asc").equals(
-                                            "desc"), " default='asc' ") + " "
-                                                + "Descending"));
+                                    + HtmlUtils
+                                        .radio(ARG_DB_SORTDIR, "desc", request
+                                            .getString(ARG_DB_SORTDIR, "asc")
+                                            .equals("desc"), " default='asc' ") + " " + "Descending"));
 
+        }
         if (normalForm) {
             sb.append(
                 formEntry(

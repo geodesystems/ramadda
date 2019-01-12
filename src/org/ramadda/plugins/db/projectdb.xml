@@ -111,7 +111,7 @@
 
 
 <table id="notes" name="Notes" icon="/icons/note.gif">
-   <column name="note" type="string" label="Note"  canlist="true" rows="5" columns="40" size="10000" />
+   <column name="note" type="string" label="Note"  cansearch="true" canlist="true" rows="5" columns="40" size="10000" />
 </table>
 
 
