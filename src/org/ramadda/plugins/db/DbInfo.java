@@ -459,7 +459,7 @@ public class DbInfo {
      * @return _more_
      */
     public List<Column> getCategoryColumns() {
-        return numberColumns;
+        return categoryColumns;
     }
 
     /**
