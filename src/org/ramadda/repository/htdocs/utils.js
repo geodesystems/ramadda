@@ -95,16 +95,19 @@ var Utils = {
         return true;
     },
     formatNumber: function(number) {
-        if(number>1000) {
+        var anumber = number<0?-number:number;
+        if(anumber == Math.floor(anumber)) return number;
+        if(anumber>1000) {
             return number_format(number,0);
-        } else if (number>100) {
+        } else if (anumber>100) {
             return number_format(number,1);
-        } else if (number>10) {
+        } else if (anumber>10) {
             return number_format(number,2);
-        } else if (number>1) {
+        } else if (anumber>1) {
             return number_format(number,3);
-        } 
-        return number;
+        } else {
+            return number_format(number,5);
+        }
     },
     isNumber: function(value) {
         if ((undefined === value) || (null === value)) {
@@ -176,7 +179,6 @@ var Utils = {
         if(window["initRamaddaDisplays"]) {
             initRamaddaDisplays();
         }
-
 
         //allow for tabs to be added to text areas
         $(document).delegate('textarea', 'keydown', function(e) {

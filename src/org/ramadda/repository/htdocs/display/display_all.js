@@ -407,6 +407,9 @@ function DisplayThing(argId, argProperties) {
           }
           return this.getProperty(key, dflt);
        },
+       initTooltip: function() {
+                //don't do this for now                $( document ).tooltip();
+            },
        formatNumber: function(number) {
           if(!this.getProperty("format", true)) return number;
           return Utils.formatNumber(number);
@@ -434,7 +437,6 @@ function DisplayThing(argId, argProperties) {
 
 
 function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
-
     RamaddaUtil.initMembers(this, {
             orientation: "horizontal",
         });
@@ -2015,8 +2017,8 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
                 var popup = GuiUtils.getDomObject(popupId);
                 var srcObj = GuiUtils.getDomObject(srcId);
                 if(!popup || !srcObj) return;
-                var myalign = 'right top';
-                var atalign = 'right bottom';
+                var myalign = 'left top';
+                var atalign = 'left bottom';
                 showObject(popup);
                 jQuery("#"+popupId ).position({
                         of: jQuery( "#" + srcId ),
@@ -2103,14 +2105,13 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
                     var titleDiv = "";
                     var label = title;
                     if(title!="" && this.entryId) {
-                        //xxxx
                         label = HtmlUtil.href(this.getRamadda().getEntryUrl(this.entryId),title);
                     }
-                    titleDiv = HtmlUtil.tag("div", [ATTR_CLASS,"display-title",ATTR_ID,this.getDomId(ID_TITLE)], label);
+                    titleDiv = HtmlUtil.tag("span", [ATTR_CLASS,"display-title",ATTR_ID,this.getDomId(ID_TITLE)], label);
                     if(button== "") {
                         html += titleDiv;
                     } else {
-                        html += "<table class=display-header-table cellspacing=0 cellpadding=0 width=100%><tr><td>" + titleDiv +"</td><td align=right>" + button +"</td></tr></table>";
+                        html += "<div class=display-header>" + button +"&nbsp;" + titleDiv +"</div>";
                     }
                 }
 
@@ -4786,6 +4787,7 @@ var DISPLAY_BARTABLE = "bartable";
 var DISPLAY_BARSTACK = "barstack";
 var DISPLAY_SCATTERPLOT = "scatterplot";
 var DISPLAY_STATS = "stats";
+var DISPLAY_INFO = "info";
 var DISPLAY_PIECHART = "piechart";
 var DISPLAY_TABLE = "table";
 var DISPLAY_TEXT = "text";
@@ -4817,6 +4819,7 @@ addGlobalDisplayType({type:DISPLAY_BARTABLE,label: "Bar Table",requiresData:true
 
 addGlobalDisplayType({type:DISPLAY_SCATTERPLOT,label: "Scatter Plot",requiresData:true,forUser:true,category:CHARTS_CATEGORY});
 addGlobalDisplayType({type:DISPLAY_STATS , label: "Stats Table",requiresData:false,forUser:true,category:CHARTS_CATEGORY});
+addGlobalDisplayType({type:DISPLAY_INFO , label: "Info Table",requiresData:false,forUser:true,category:CHARTS_CATEGORY});
 
 
 addGlobalDisplayType({type:DISPLAY_PIECHART,label: "Pie Chart",requiresData:true,forUser:true,category:CHARTS_CATEGORY});
@@ -6005,14 +6008,19 @@ function RamaddaTextDisplay(displayManager, id, properties) {
 }
 
 
-function RamaddaStatsDisplay(displayManager, id, properties) {
+function RamaddaStatsDisplay(displayManager, id, properties,type) {
     var SUPER;
     $.extend(this, {
             showMin:true,
+                showType:false,
                 showMax: true,
-                showAverage:true});
-    RamaddaUtil.inherit(this, SUPER = new RamaddaFieldsDisplay(displayManager, id, DISPLAY_STATS, properties));
-    addRamaddaDisplay(this);
+                showAverage:true,
+                showMissing:true,
+                showText: false,
+                });
+    RamaddaUtil.inherit(this, SUPER = new RamaddaFieldsDisplay(displayManager, id, type||DISPLAY_STATS, properties));
+    if(!type)
+        addRamaddaDisplay(this);
 
 
     RamaddaUtil.defineMembers(this, {
@@ -6040,7 +6048,7 @@ function RamaddaStatsDisplay(displayManager, id, properties) {
                 var l = [];
                 for(i=0;i<fields.length;i++) { 
                     var field = fields[i];
-                    if(!justOne && !field.isNumeric) continue;
+                    if(!justOne && (!this.showText && !field.isNumeric)) continue;
                     var lbl  =field.getLabel().toLowerCase();
                     if(lbl.indexOf("latitude")>=0 || lbl.indexOf("longitude")>=0) {
                         continue;
@@ -6070,30 +6078,31 @@ function RamaddaStatsDisplay(displayManager, id, properties) {
                 this.allFields =  allFields;
                 var fields = this.getSelectedFields([]);
                 var fieldMap = {};
-                var stats = new Array();
+                var stats = [];
                 var justOne = (tuples.length == 2);
                 for(var rowIdx=1;rowIdx<tuples.length;rowIdx++) {
                     var tuple = tuples[rowIdx];
                     if(rowIdx == 1) {
                         for(var col=0;col<tuple.length;col++) {
-                            stats.push({isNumber:false,min:Number.MAX_SAFE_INTEGER,max:Number.MIN_SAFE_INTEGER,total:0});
+                            stats.push({isNumber:false,min:Number.MAX_SAFE_INTEGER,max:Number.MIN_SAFE_INTEGER,total:0,numMissing:0,numNotMissing:0,type:null});
                         }
                     }
                     for(var fieldIdx=0;fieldIdx<fields.length;fieldIdx++) {
                         var field = fields[fieldIdx];
                         var col = field.getIndex()
+                        stats[col].type = field.getType();
                         var v  = tuple[col];
-                        if(typeof v == 'number') {
+                        stats[col].isNumber = field.isNumeric;
+                        if(v==null) {
+                            stats[col].numMissing++;
+                        } else {
+                            stats[col].numNotMissing++;
+                        }
+                        if(v && (typeof v == 'number')) {
                             var label = field.getLabel().toLowerCase();
                             if(label.indexOf("latitude")>=0 || label.indexOf("longitude")>=0) {
                                 continue;
                             }
-
-                            if(!stats[col].isNumber) {
-                                stats[col].max = v;
-                                stats[col].min = v;
-                            }
-                            stats[col].isNumber = true;
                             stats[col].total+=v;
                             stats[col].max=Math.max(stats[col].max, v);
                             stats[col].min=Math.min(stats[col].min, v);
@@ -6120,48 +6129,76 @@ function RamaddaStatsDisplay(displayManager, id, properties) {
                         header.push("Average");
                         dummy.push("&nbsp;");
                     }
-                    html += HtmlUtil.tr([],HtmlUtil.tds(["class","display-stats-header","align","center"],header));
+                    if(this.showMissing) {
+                        header.push("Not&nbsp;Missing");
+                        dummy.push("&nbsp;");
+                        header.push("Missing");
+                        dummy.push("&nbsp;");
+                    }
+                    if(this.showType) {
+                        header.push("Type");
+                        dummy.push("&nbsp;");                        
+                    }
+                    html += HtmlUtil.tr(["valign","bottom"],HtmlUtil.tds(["class","display-stats-header","align","center"],header));
                 }
                 var cats = [];
                 var catMap = {};
                 for(var fieldIdx=0;fieldIdx<fields.length;fieldIdx++) {
                     var field = fields[fieldIdx];
-                    var col = field.getIndex()
+                    var col = field.getIndex();
                     var field = allFields[col];
                     var right = "";
-                    if(stats[col].isNumber) {
-                        var total = "&nbsp;";
-                        var avg  = this.formatNumber(stats[col].total/tuples.length);
-                        var label = field.getLabel().toLowerCase();
-                        //Some guess work about when to show a total
-                        if(label.indexOf("%")<0 && label.indexOf("percent")<0 && label.indexOf("median")<0) {
-                            total  =  this.formatNumber(stats[col].total);
-                        } 
-                        var values = [];
-                        if(justOne) {
-                            right = HtmlUtil.tds(["xalign","right"],[this.formatNumber(stats[col].min)]);
-                        } else {
-                            if(this.showMin)
-                                values.push(this.formatNumber(stats[col].min));
-                            if(this.showMax)
-                                values.push(this.formatNumber(stats[col].max));
-                            values.push(total);
-                            if(this.showAverage)
-                                values.push(avg);
-                            right = HtmlUtil.tds(["align","right"],values);
+                    var total = "&nbsp;";
+                    var label = field.getLabel().toLowerCase();
+                    var avg  = this.formatNumber(stats[col].total/tuples.length);
+                    //Some guess work about when to show a total
+                    if(label.indexOf("%")<0 && label.indexOf("percent")<0 && label.indexOf("median")<0) {
+                        total  =  this.formatNumber(stats[col].total);
+                    } 
+                    if(justOne) {
+                        right = HtmlUtil.tds(["xalign","right"],[this.formatNumber(stats[col].min)]);
+                        continue;
+                    } 
+                    var values = [];
+                    if(!stats[col].isNumber && this.showText) {
+                        if(this.showMin)
+                            values.push("-");
+                        if(this.showMax)
+                            values.push("-");
+                        values.push("-");
+                        if(this.showAverage)
+                            values.push("-");
+                        if(this.showMissing) {
+                            values.push(stats[col].numNotMissing);
+                            values.push(stats[col].numMissing);
                         }
                     } else {
-                        right = HtmlUtil.tds([],dummy);
-                    }
-                    var align = (justOne?"right":"left");
+                        if(this.showMin)
+                            values.push(this.formatNumber(stats[col].min));
+                        if(this.showMax)
+                            values.push(this.formatNumber(stats[col].max));
+                        values.push(total);
+                        if(this.showAverage)
+                            values.push(avg);
+                        if(this.showMissing) {
+                            values.push(stats[col].numNotMissing);
+                            values.push(stats[col].numMissing);
+                        }
 
+                    } 
+                    if(this.showType) {
+                        values.push(stats[col].type);
+                    }
+                    right = HtmlUtil.tds(["align","right"],values);
+                    var align = (justOne?"right":"left");
                     var label = field.getLabel();
-                   var toks =  label.split("!!");
-                    var title = label;
+                    var toks =  label.split("!!");
+                    var title = field.getId();
                     label = toks[toks.length-1];
                     if(justOne) {
                         label +=":";
                     }
+                    label = label.replace(/ /g,"&nbsp;")
                     var row =  HtmlUtil.tr([],HtmlUtil.td(["align",align],"<b>" +HtmlUtil.tag("div", ["title",title], label)+"</b>") + right);
                     if(justOne) {
                         html += row;
@@ -6171,13 +6208,27 @@ function RamaddaStatsDisplay(displayManager, id, properties) {
                 }
                 html += "</table>";
                 this.setContents(html);
-                $( document ).tooltip();
+                this.initTooltip();
             },
             handleEventRecordSelection: function(source,  args) {
                 //                this.lastHtml = args.html;
                 //                this.setContents(args.html);
             }
         });
+}
+
+
+function RamaddaInfoDisplay(displayManager, id, properties) {
+    var SUPER;
+    RamaddaUtil.inherit(this, SUPER = new RamaddaStatsDisplay(displayManager, id, properties, DISPLAY_STATS));
+    $.extend(this, {
+            showType:true,
+                showText:true,
+                showMax: true,
+                showAverage:true,
+                showMissing:true});
+
+    addRamaddaDisplay(this);
 }
 
 
@@ -6277,7 +6328,7 @@ function RamaddaCrosstabDisplay(displayManager, id, properties) {
                 }
                 html += "</table>";
                 this.setContents(html);
-                $( document ).tooltip();
+                this.initTooltip();
             },
         });
 }
@@ -6378,7 +6429,6 @@ function RamaddaCorrelationDisplay(displayManager, id, properties) {
                     colors = Utils.ColorTables[this.colorBar];
                 for(var fieldIdx1=0;fieldIdx1<fields.length;fieldIdx1++) {
                     var field1 = fields[fieldIdx1];
-
                     if(!field1.isFieldNumeric() || field1.isFieldGeo())  continue;
                     html+="<tr><td class=display-heading><b>" + field1.getLabel() +"</b></td>";
                     for(var fieldIdx2=0;fieldIdx2<fields.length;fieldIdx2++) {
@@ -6425,8 +6475,8 @@ function RamaddaCorrelationDisplay(displayManager, id, properties) {
                 }
                 html += "</table>";
                 this.setContents(html);
+                this.initTooltip();
 
-                $( document ).tooltip();
             },
         });
 }

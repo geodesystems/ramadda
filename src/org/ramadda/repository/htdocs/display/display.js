@@ -261,6 +261,9 @@ function DisplayThing(argId, argProperties) {
           }
           return this.getProperty(key, dflt);
        },
+       initTooltip: function() {
+                //don't do this for now                $( document ).tooltip();
+            },
        formatNumber: function(number) {
           if(!this.getProperty("format", true)) return number;
           return Utils.formatNumber(number);
@@ -288,7 +291,6 @@ function DisplayThing(argId, argProperties) {
 
 
 function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
-
     RamaddaUtil.initMembers(this, {
             orientation: "horizontal",
         });
@@ -1869,8 +1871,8 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
                 var popup = GuiUtils.getDomObject(popupId);
                 var srcObj = GuiUtils.getDomObject(srcId);
                 if(!popup || !srcObj) return;
-                var myalign = 'right top';
-                var atalign = 'right bottom';
+                var myalign = 'left top';
+                var atalign = 'left bottom';
                 showObject(popup);
                 jQuery("#"+popupId ).position({
                         of: jQuery( "#" + srcId ),
@@ -1957,14 +1959,13 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
                     var titleDiv = "";
                     var label = title;
                     if(title!="" && this.entryId) {
-                        //xxxx
                         label = HtmlUtil.href(this.getRamadda().getEntryUrl(this.entryId),title);
                     }
-                    titleDiv = HtmlUtil.tag("div", [ATTR_CLASS,"display-title",ATTR_ID,this.getDomId(ID_TITLE)], label);
+                    titleDiv = HtmlUtil.tag("span", [ATTR_CLASS,"display-title",ATTR_ID,this.getDomId(ID_TITLE)], label);
                     if(button== "") {
                         html += titleDiv;
                     } else {
-                        html += "<table class=display-header-table cellspacing=0 cellpadding=0 width=100%><tr><td>" + titleDiv +"</td><td align=right>" + button +"</td></tr></table>";
+                        html += "<div class=display-header>" + button +"&nbsp;" + titleDiv +"</div>";
                     }
                 }
 
