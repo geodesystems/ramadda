@@ -7,10 +7,10 @@ var DISPLAY_LINECHART = "linechart";
 var DISPLAY_BARCHART = "barchart";
 var DISPLAY_BARTABLE = "bartable";
 var DISPLAY_BARSTACK = "barstack";
+var DISPLAY_PIECHART = "piechart";
 var DISPLAY_SCATTERPLOT = "scatterplot";
 var DISPLAY_STATS = "stats";
 var DISPLAY_INFO = "info";
-var DISPLAY_PIECHART = "piechart";
 var DISPLAY_TABLE = "table";
 var DISPLAY_TEXT = "text";
 var DISPLAY_CROSSTAB = "crosstab";
@@ -899,11 +899,11 @@ getChartType: function() {
                     if(this.chartWidth) 
                         style += "width:" + this.chartWidth +";" ;                    
                     else 
-                        style += "width:" + "600px;";
+                        style += "width:" + "100%;";
                     if(this.chartHeight) 
                         style += "height:" + this.chartHeight +";" ;                    
                     else 
-                        style += "height:" + "400px;";
+                        style += "height:" + "100%;";
                     divAttrs.push(style);
                 } else {
                     //                    divAttrs.push("style");
