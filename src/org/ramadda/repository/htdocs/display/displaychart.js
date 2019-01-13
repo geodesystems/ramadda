@@ -762,6 +762,7 @@ function RamaddaMultiChart(displayManager, id, properties) {
                         if(h.length>20) {
                             h = h.substring(0,19)+"...";
                         }
+                        if(this.gaugeLabel) h = this.gaugeLabel;
                         list.push([h,last[i]]);
                     }
                     return  google.visualization.arrayToDataTable(list);
@@ -1114,7 +1115,6 @@ function RamaddaMultiChart(displayManager, id, properties) {
                     this.chart = new google.visualization.Histogram(document.getElementById(chartId));
 
                 } else  if(chartType == DISPLAY_GAUGE) {
-
                     var min =Number.MAX_VALUE;
                     var max =Number.MIN_VALUE;
                     for(var row=1;row<dataList.length;row++) {
@@ -1127,6 +1127,10 @@ function RamaddaMultiChart(displayManager, id, properties) {
                             max = Math.max(max, tuple[col]);
                         }
                     }
+                    if(Utils.isDefined(this.gaugeMin)) 
+                        min  = parseFloat(this.gaugeMin);
+                    if(Utils.isDefined(this.gaugeMax)) 
+                        max  = parseFloat(this.gaugeMax);
                     chartOptions.min = min;
                     chartOptions.max = max;
                     this.chart = new google.visualization.Gauge(document.getElementById(chartId));
