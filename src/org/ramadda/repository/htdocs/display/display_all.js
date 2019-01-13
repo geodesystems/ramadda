@@ -4787,8 +4787,8 @@ var DISPLAY_BARTABLE = "bartable";
 var DISPLAY_BARSTACK = "barstack";
 var DISPLAY_PIECHART = "piechart";
 var DISPLAY_SCATTERPLOT = "scatterplot";
+var DISPLAY_HISTOGRAM = "histogram";
 var DISPLAY_STATS = "stats";
-var DISPLAY_INFO = "info";
 var DISPLAY_TABLE = "table";
 var DISPLAY_TEXT = "text";
 var DISPLAY_CROSSTAB = "crosstab";
@@ -4818,8 +4818,8 @@ addGlobalDisplayType({type:DISPLAY_BARSTACK,label: "Stacked Bar Chart",requiresD
 addGlobalDisplayType({type:DISPLAY_BARTABLE,label: "Bar Table",requiresData:true,forUser:true,category:CHARTS_CATEGORY});
 
 addGlobalDisplayType({type:DISPLAY_SCATTERPLOT,label: "Scatter Plot",requiresData:true,forUser:true,category:CHARTS_CATEGORY});
+addGlobalDisplayType({type:DISPLAY_HISTOGRAM,label: "Histogram",requiresData:true,forUser:true,category:CHARTS_CATEGORY});
 addGlobalDisplayType({type:DISPLAY_STATS , label: "Stats Table",requiresData:false,forUser:true,category:CHARTS_CATEGORY});
-addGlobalDisplayType({type:DISPLAY_INFO , label: "Info Table",requiresData:false,forUser:true,category:CHARTS_CATEGORY});
 
 
 addGlobalDisplayType({type:DISPLAY_PIECHART,label: "Pie Chart",requiresData:true,forUser:true,category:CHARTS_CATEGORY});
@@ -5235,7 +5235,7 @@ getChartType: function() {
                 var props = {
                     includeIndex: true,
                 };
-                if(this.chartType == DISPLAY_TABLE || this.chartType == DISPLAY_BARTABLE || chartType == DISPLAY_PIECHART || chartType == DISPLAY_SCATTERPLOT) {
+                if(this.chartType == DISPLAY_TABLE || this.chartType == DISPLAY_BARTABLE || chartType == DISPLAY_PIECHART || chartType == DISPLAY_SCATTERPLOT || chartType == DISPLAY_HISTOGRAM) {
                     props.includeIndex = false;
                 }
                 props.groupByIndex = -1;
@@ -5519,6 +5519,10 @@ getChartType: function() {
                     return  google.visualization.arrayToDataTable(dataList);
                 }
 
+                if(this.chartType == DISPLAY_HISTOGRAM) {
+                    return  google.visualization.arrayToDataTable(dataList);
+                }
+
                 if(this.chartType == DISPLAY_PIECHART) {
                     var dataTable = new google.visualization.DataTable();
                     var list = [];
@@ -5677,11 +5681,11 @@ getChartType: function() {
                     if(this.chartWidth) 
                         style += "width:" + this.chartWidth +";" ;                    
                     else 
-                        style += "width:" + "600px;";
+                        style += "width:" + "100%;";
                     if(this.chartHeight) 
                         style += "height:" + this.chartHeight +";" ;                    
                     else 
-                        style += "height:" + "400px;";
+                        style += "height:" + "100%;";
                     divAttrs.push(style);
                 } else {
                     //                    divAttrs.push("style");
@@ -5828,6 +5832,27 @@ getChartType: function() {
 
 
                     this.chart = new google.visualization.ScatterChart(document.getElementById(chartId));
+                } else  if(chartType == DISPLAY_HISTOGRAM) {
+                    if(this.legendPosition) {
+                        chartOptions.legend={};
+                        chartOptions.legend.position=this.legendPosition;
+                    }
+                    chartOptions.vAxis={};
+                    if(Utils.isDefined(this.logScale)) {
+                        chartOptions.vAxis.logScale = (""+this.logScale) == true;
+                    }
+                    if(this.textPosition) {
+                        chartOptions.vAxis.textPosition = this.textPosition;
+                    }
+                    if(!isNaN(this.vAxisMaxValue)) {
+                        chartOptions.vAxis.maxValue = this.vAxisMaxValue;
+                    }
+                    if(!isNaN(this.vAxisMinValue)) {
+                        chartOptions.vAxis.minValue = this.vAxisMinValue;
+                    }
+
+                    this.chart = new google.visualization.Histogram(document.getElementById(chartId));
+
                 } else  if(chartType == DISPLAY_PIECHART) {
                     chartOptions.tooltip = {textStyle: {color: '#000000'}, showColorCode: true};
                     chartOptions.title=dataList[0][0] +" - " +dataList[0][1];
@@ -5956,6 +5981,12 @@ function TableDisplay(displayManager, id, properties) {
     addRamaddaDisplay(this);
 }
 
+function HistogramDisplay(displayManager, id, properties) {
+    properties = $.extend({"chartType": DISPLAY_HISTOGRAM}, properties);
+    RamaddaUtil.inherit(this, new RamaddaMultiChart(displayManager, id, properties));
+    addRamaddaDisplay(this);
+}
+
 
 function BartableDisplay(displayManager, id, properties) {
     properties = $.extend({"chartType": DISPLAY_BARTABLE}, properties);
@@ -6028,15 +6059,23 @@ function RamaddaTextDisplay(displayManager, id, properties) {
 
 function RamaddaStatsDisplay(displayManager, id, properties,type) {
     var SUPER;
+    var dflt = Utils.isDefined(properties["showDefault"])?properties["showDefault"]:true;
     $.extend(this, {
-            showMin:true,
-                showType:false,
-                showMax: true,
-                showAverage:true,
-                showMissing:true,
-                showText: false,
+            showMin:dflt,
+                showMax: dflt,
+                showAverage:dflt,
+                showStd:dflt,
+                showPercentile:dflt,
+                showCount:dflt,
+                showTotal: dflt,
+                showPercentile:dflt,
+                showMissing:dflt,
+                showUnique:dflt,
+                showType:dflt,
+                showText: dflt,
                 });
     RamaddaUtil.inherit(this, SUPER = new RamaddaFieldsDisplay(displayManager, id, type||DISPLAY_STATS, properties));
+
     if(!type)
         addRamaddaDisplay(this);
 
@@ -6102,7 +6141,7 @@ function RamaddaStatsDisplay(displayManager, id, properties,type) {
                     var tuple = tuples[rowIdx];
                     if(rowIdx == 1) {
                         for(var col=0;col<tuple.length;col++) {
-                            stats.push({isNumber:false,min:Number.MAX_SAFE_INTEGER,max:Number.MIN_SAFE_INTEGER,total:0,numMissing:0,numNotMissing:0,type:null});
+                            stats.push({isNumber:false,count:0,min:Number.MAX_SAFE_INTEGER,uniqueMap:{},unique:0,std:0,max:Number.MIN_SAFE_INTEGER,total:0,numMissing:0,numNotMissing:0,type:null,values:[]});
                         }
                     }
                     for(var fieldIdx=0;fieldIdx<fields.length;fieldIdx++) {
@@ -6110,7 +6149,16 @@ function RamaddaStatsDisplay(displayManager, id, properties,type) {
                         var col = field.getIndex()
                         stats[col].type = field.getType();
                         var v  = tuple[col];
+                        if(v) {
+                            if(!Utils.isDefined(stats[col].uniqueMap[v])) {
+                                stats[col].uniqueMap[v] = 1;
+                                stats[col].unique++;
+                            } else {
+                                stats[col].uniqueMap[v]++;
+                            }
+                        }
                         stats[col].isNumber = field.isNumeric;
+                        stats[col].count++;
                         if(v==null) {
                             stats[col].numMissing++;
                         } else {
@@ -6124,27 +6172,88 @@ function RamaddaStatsDisplay(displayManager, id, properties,type) {
                             stats[col].total+=v;
                             stats[col].max=Math.max(stats[col].max, v);
                             stats[col].min=Math.min(stats[col].min, v);
+                            stats[col].values.push(v);
                         }
                     }
                 }
 
+
+                if(this.showUnique) {
+                    for(var fieldIdx=0;fieldIdx<fields.length;fieldIdx++) {
+                        var field = fields[fieldIdx];
+                        var col = field.getIndex();
+                        stats[col].uniqueMax = 0;
+                        stats[col].uniqueValue = "";
+                        for(var v in stats[col].uniqueMap) {
+                            var count = stats[col].uniqueMap[v];
+                            if(count>stats[col].uniqueMax) {
+                                stats[col].uniqueMax =  count;
+                                stats[col].uniqueValue  =v ;
+                            }
+                        }
+                    }
+                }
+
+                if(this.showStd) {
+                    for(var fieldIdx=0;fieldIdx<fields.length;fieldIdx++) {
+                        var field = fields[fieldIdx];
+                        var col = field.getIndex();
+                        var values = stats[col].values;
+                        if(values.length>0) {
+                            var average = stats[col].total/values.length;
+                            var stdTotal = 0;
+                            for(var i=0;i<values.length;i++) {
+                                var diff = values[i]-average;
+                                stdTotal += diff*diff;
+                            }
+                            var mean = stdTotal/values.length;
+                            stats[col].std = Math.sqrt(mean);
+                        }
+                    }
+                }
                 var border = (justOne?"0":"1");
                 var html = HtmlUtil.openTag("table",["border", border ,"bordercolor","#ccc","class","display-stats","cellspacing","1","cellpadding","5"]);
                 var dummy = ["&nbsp;"];
                 if(!justOne) {
                     header = [""];
+                    if(this.showCount) {
+                        header.push("Count");
+                        dummy.push("&nbsp;");
+                    }
                     if(this.showMin) {
                         header.push("Min");
+                        dummy.push("&nbsp;");
+                    }
+                    if(this.showPercentile) {
+                        header.push("25%");
+                        dummy.push("&nbsp;");
+                        header.push("50%");
+                        dummy.push("&nbsp;");
+                        header.push("75%");
                         dummy.push("&nbsp;");
                     }
                     if(this.showMax) {
                         header.push("Max");
                         dummy.push("&nbsp;");
                     }
-                    header.push("Total");
-                    dummy.push("&nbsp;");
+                    if(this.showTotal) {
+                        header.push("Total");
+                        dummy.push("&nbsp;");
+                    }
                     if(this.showAverage) {
                         header.push("Average");
+                        dummy.push("&nbsp;");
+                    }
+                    if(this.showStd) {
+                        header.push("Std");
+                        dummy.push("&nbsp;");
+                    }
+                    if(this.showUnique) {
+                        header.push("# Unique");
+                        dummy.push("&nbsp;");
+                        header.push("Top");
+                        dummy.push("&nbsp;");
+                        header.push("Freq.");
                         dummy.push("&nbsp;");
                     }
                     if(this.showMissing) {
@@ -6168,7 +6277,7 @@ function RamaddaStatsDisplay(displayManager, id, properties,type) {
                     var right = "";
                     var total = "&nbsp;";
                     var label = field.getLabel().toLowerCase();
-                    var avg  = this.formatNumber(stats[col].total/tuples.length);
+                    var avg  = stats[col].numNotMissing==0?"NA":this.formatNumber(stats[col].total/stats[col].numNotMissing);
                     //Some guess work about when to show a total
                     if(label.indexOf("%")<0 && label.indexOf("percent")<0 && label.indexOf("median")<0) {
                         total  =  this.formatNumber(stats[col].total);
@@ -6179,25 +6288,67 @@ function RamaddaStatsDisplay(displayManager, id, properties,type) {
                     } 
                     var values = [];
                     if(!stats[col].isNumber && this.showText) {
+                        if(this.showCount)
+                            values.push(stats[col].count);
                         if(this.showMin)
                             values.push("-");
+                        if(this.showPercentile) {
+                            values.push("-");
+                            values.push("-");
+                            values.push("-");
+                        }
                         if(this.showMax)
                             values.push("-");
                         values.push("-");
-                        if(this.showAverage)
+                        if(this.showAverage) {
                             values.push("-");
+                        }
+                        if(this.showStd) {
+                            values.push("-");
+                        }
+                        if(this.showUnique) {
+                            values.push(stats[col].unique);
+                            values.push(stats[col].uniqueValue);
+                            values.push(stats[col].uniqueMax);
+                        }
                         if(this.showMissing) {
                             values.push(stats[col].numNotMissing);
                             values.push(stats[col].numMissing);
                         }
                     } else {
-                        if(this.showMin)
+                        if(this.showCount) {
+                            values.push(stats[col].count); 
+                        }
+                        if(this.showMin) {
                             values.push(this.formatNumber(stats[col].min));
-                        if(this.showMax)
+                        }
+                        if(this.showPercentile) {
+                            var range = stats[col].max-stats[col].min;
+                            values.push(this.formatNumber(stats[col].min+range*0.25));
+                            values.push(this.formatNumber(stats[col].min+range*0.50));
+                            values.push(this.formatNumber(stats[col].min+range*0.75));
+                        }
+                        if(this.showMax) {
                             values.push(this.formatNumber(stats[col].max));
-                        values.push(total);
-                        if(this.showAverage)
+                        }
+                        if(this.showTotal) {
+                            values.push(total);
+                        }
+                        if(this.showAverage) {
                             values.push(avg);
+                        }
+                        if(this.showStd) { 
+                           values.push(this.formatNumber(stats[col].std));
+                        }
+                        if(this.showUnique) {
+                            values.push(stats[col].unique);
+                            if(Utils.isNumber(stats[col].uniqueValue)) {
+                                values.push(this.formatNumber(stats[col].uniqueValue));
+                            } else  {
+                                values.push(stats[col].uniqueValue);
+                            }
+                            values.push(stats[col].uniqueMax);
+                        }
                         if(this.showMissing) {
                             values.push(stats[col].numNotMissing);
                             values.push(stats[col].numMissing);
@@ -6236,18 +6387,6 @@ function RamaddaStatsDisplay(displayManager, id, properties,type) {
 }
 
 
-function RamaddaInfoDisplay(displayManager, id, properties) {
-    var SUPER;
-    RamaddaUtil.inherit(this, SUPER = new RamaddaStatsDisplay(displayManager, id, properties, DISPLAY_STATS));
-    $.extend(this, {
-            showType:true,
-                showText:true,
-                showMax: true,
-                showAverage:true,
-                showMissing:true});
-
-    addRamaddaDisplay(this);
-}
 
 
 
