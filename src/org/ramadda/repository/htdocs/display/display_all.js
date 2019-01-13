@@ -5533,7 +5533,17 @@ function RamaddaMultiChart(displayManager, id, properties) {
                     var last = dataList[dataList.length-1];
                     for(var i=0;i<last.length;i++) {
                         if(!Utils.isNumber(last[i])) continue;
-                        list.push([header[i],last[i]]);
+                        var h  = header[i];
+                        if(h.length>20) {
+                            var index = h.indexOf("(");
+                            if(index>0) {
+                                h = h.substring(0,index);
+                            } 
+                        }
+                        if(h.length>20) {
+                            h = h.substring(0,19)+"...";
+                        }
+                        list.push([h,last[i]]);
                     }
                     return  google.visualization.arrayToDataTable(list);
                 }
