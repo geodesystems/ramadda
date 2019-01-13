@@ -482,6 +482,7 @@ getChartType: function() {
                         if(field.getId() == this.groupBy) {
                             props.groupByIndex = field.getIndex();
                             props.groupByField = field;
+                            this.groupByField  = field;
                             break;
                         }
                     }
@@ -739,6 +740,23 @@ getChartType: function() {
                 if(dataList.length==1 || this.chartType == DISPLAY_TABLE) {
                     return  google.visualization.arrayToDataTable(dataList);
                 }
+
+                if(this.chartType == DISPLAY_PIECHART) {
+                    var dataTable = new google.visualization.DataTable();
+                    var list = [];
+                    var groupBy = this.groupByField;
+                    var data = selectedFields[0];
+                    var header = dataList[0];
+                    dataTable.addColumn("string",header[0]);
+                    dataTable.addColumn("number",header[1]);
+                    //                    dataTable.addColumn({type:'string',role:'tooltip'});
+                    for(var i=1;i<dataList.length;i++) {
+                        //                        list.push([dataList[i][0],dataList[i][1],"\n" +header[0]+": " + dataList[i][0] +"\n" +header[1] +": " +dataList[i][1]]);
+                        list.push([dataList[i][0],dataList[i][1]]);
+                    }
+                    dataTable.addRows(list);
+                    return dataTable;
+                }
                 var dataTable = new google.visualization.DataTable();
                 var header = dataList[0];
                 var sample = dataList[1];
@@ -752,7 +770,7 @@ getChartType: function() {
                         } else {
                             dataTable.addColumn((typeof value), header[j]);
                         }
-                    } else {
+                   } else {
                         //Assume all remaining fields are numbers
                         dataTable.addColumn('number', header[j]);
                         dataTable.addColumn({type: 'string', role: 'tooltip','p': {'html': true}});
@@ -815,8 +833,6 @@ getChartType: function() {
                 }
 
                 var dataTable = this.makeDataTable(chartType, dataList, props,selectedFields);
-
-
 
                 /*
                 for(var i=1;i<dataList.length;i++) {
@@ -1035,6 +1051,8 @@ getChartType: function() {
 
                     this.chart = new google.visualization.ScatterChart(document.getElementById(chartId));
                 } else  if(chartType == DISPLAY_PIECHART) {
+                    chartOptions.tooltip = {textStyle: {color: '#000000'}, showColorCode: true};
+                    chartOptions.title=dataList[0][0] +" - " +dataList[0][1];
                     if(this.is3D) {
                         chartOptions.is3D = true;
                     }
