@@ -1060,21 +1060,28 @@ getChartType: function() {
                         chartOptions.legend.position=this.legendPosition;
                     }
                     chartOptions.vAxis={};
+                    chartOptions.vAxis.viewWindow={};
                     if(Utils.isDefined(this.logScale)) {
                         chartOptions.vAxis.logScale = (""+this.logScale) == true;
                     }
                     if(this.textPosition) {
                         chartOptions.vAxis.textPosition = this.textPosition;
                     }
+                    
+                    if(Utils.isDefined(this.minValue)) {
+                        chartOptions.vAxis.viewWindow.min = parseFloat(this.minValue);
+                    }
+                    if(Utils.isDefined(this.maxValue)) {
+                        chartOptions.vAxis.viewWindow.max = parseFloat(this.maxValue);
+                    }
                     if(!isNaN(this.vAxisMaxValue)) {
-                        chartOptions.vAxis.maxValue = this.vAxisMaxValue;
+                        chartOptions.vAxis.maxValue = parseFloat(this.vAxisMaxValue);
                     }
+                    //                    console.log(JSON.stringify(chartOptions));
                     if(!isNaN(this.vAxisMinValue)) {
-                        chartOptions.vAxis.minValue = this.vAxisMinValue;
+                        chartOptions.vAxis.minValue = parseFloat(this.vAxisMinValue);
                     }
-
                     this.chart = new google.visualization.Histogram(document.getElementById(chartId));
-
                 } else  if(chartType == DISPLAY_PIECHART) {
                     chartOptions.tooltip = {textStyle: {color: '#000000'}, showColorCode: true};
                     chartOptions.title=dataList[0][0] +" - " +dataList[0][1];
