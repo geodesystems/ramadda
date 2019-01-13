@@ -723,12 +723,15 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
                     var pointData = dataList[collectionIdx];
                     var fields = this.getFieldsToSelect(pointData);
                     if(fixedFields !=null) {
-                        for(i=0;i<fields.length;i++) { 
-                            var field = fields[i];
-                            var id = field.getId();
-                            if(fixedFields.indexOf(id)>=0 ||
-			       fixedFields.indexOf("#"+ (i+1))>=0) {
-                                df.push(field);
+                        for(var i=0;i<fixedFields.length;i++) {
+                            var sfield = fixedFields[i];
+                            for(var j=0;j<fields.length;j++) { 
+                                var field = fields[j];
+                                var id = field.getId();
+                                if(id == sfield || ("#"+(j+1)) == sfield) {
+                                    df.push(field);
+                                    break;
+                                }
                             }
                         }
                     }
