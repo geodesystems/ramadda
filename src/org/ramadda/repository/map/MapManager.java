@@ -311,7 +311,7 @@ public class MapManager extends RepositoryManager implements WikiConstants {
 
         String mapLayer = null;
         if (entry != null) {
-            List<Metadata> layers = getMetadataManager().getMetadata(entry,
+            List<Metadata> layers = getMetadataManager().findMetadata(request, entry,
                                         "map_layer", true);
             if (layers.size() > 0) {
                 mapLayer = layers.get(0).getAttr1();
