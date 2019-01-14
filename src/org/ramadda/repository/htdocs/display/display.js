@@ -1938,7 +1938,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
                     html += HtmlUtil.openDiv(["class","minitron"]);
                 }
                 if(width>0) {
-                    html += HtmlUtil.openDiv(["class","display-contents","style","width:" + width +";"]);
+                    html += HtmlUtil.openDiv(["class","display-contents","style","width:" + width +"px;"]);
                 } else {
                     html += HtmlUtil.openDiv(["class","display-contents"]);
                 }
