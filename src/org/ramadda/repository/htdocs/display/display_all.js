@@ -5605,6 +5605,9 @@ function RamaddaMultiChart(displayManager, id, properties) {
                         if(value && (typeof value) =="object") {
                             if(value.f) value = value.f;
                         }
+                        if(Utils.isNumber(value)) {
+                            value  = this.formatNumber(value);
+                        }
                         value = ""+value;
                         value = value.replace(/ /g,"&nbsp;");
                         tooltip+="<b>" +label+"</b>:&nbsp;" +value;
