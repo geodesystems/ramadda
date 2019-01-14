@@ -3654,7 +3654,7 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
             props.put("defaultMapLayer", request.getString("mapLayer", ""));
         }
 
-        MapInfo map = getRepository().getMapManager().createMap(request,
+        MapInfo map = getRepository().getMapManager().createMap(request,entry, 
                           width, height, false, props);
         boolean       makeRectangles = valueList.size() <= 20;
 

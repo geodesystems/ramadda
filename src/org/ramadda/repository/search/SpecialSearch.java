@@ -434,7 +434,7 @@ public class SpecialSearch extends RepositoryManager implements RequestHandler {
         makeSearchForm(request, formSB);
 
 
-        MapInfo map = getRepository().getMapManager().createMap(request,
+        MapInfo map = getRepository().getMapManager().createMap(request,null,
                           contentsWidth, contentsHeight, true, null);
 
 
@@ -683,7 +683,7 @@ public class SpecialSearch extends RepositoryManager implements RequestHandler {
                                 request.getString(ARG_AREA_EAST, ""), };
 
             MapInfo selectMap =
-                getRepository().getMapManager().createMap(request, true,
+                getRepository().getMapManager().createMap(request, null, true,
                     null);
             String mapSelector = selectMap.makeSelector(ARG_AREA, true, nwse);
             formSB.append(formEntry(request, msgLabel("Location"),

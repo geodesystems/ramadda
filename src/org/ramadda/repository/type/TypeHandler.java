@@ -3952,7 +3952,7 @@ public class TypeHandler extends RepositoryManager {
 
             String[] nwse = new String[] { lat, lon };
             //            sb.append(formEntry(request, msgLabel("Location"),  locationWidget));
-            MapInfo map = getMapManager().createMap(request, true,
+            MapInfo map = getMapManager().createMap(request, entry, true,
                               getMapManager().getMapProps(request, entry,
                                   null));
             String mapSelector = map.makeSelector(ARG_LOCATION, true, nwse,
@@ -4045,7 +4045,7 @@ public class TypeHandler extends RepositoryManager {
          }
              */
         String extraMapStuff = "";
-        MapInfo map = getRepository().getMapManager().createMap(request,
+        MapInfo map = getRepository().getMapManager().createMap(request,entry,
                           true, props);
         addToMapSelector(request, entry, map);
         String mapSelector = map.makeSelector(ARG_AREA, true, nwse, "", "")
@@ -5004,7 +5004,7 @@ public class TypeHandler extends RepositoryManager {
         if (advancedForm) {
             String             radio = getSpatialSearchTypeWidget(request);
             SelectionRectangle bbox  = getSelectionBounds(request);
-            MapInfo map = getRepository().getMapManager().createMap(request,
+            MapInfo map = getRepository().getMapManager().createMap(request,null,
                               true, null);
 
             String mapSelector = map.makeSelector(ARG_AREA, true,

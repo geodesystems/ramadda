@@ -102,6 +102,7 @@ public class MapManager extends RepositoryManager implements WikiConstants {
      * Create a map
      *
      * @param request      the Request
+     * @param entry _more_
      * @param forSelection true if map used for selection
      * @param props _more_
      *
@@ -109,11 +110,12 @@ public class MapManager extends RepositoryManager implements WikiConstants {
      *
      * @throws Exception _more_
      */
-    public MapInfo createMap(Request request, boolean forSelection,
+    public MapInfo createMap(Request request, Entry entry,
+                             boolean forSelection,
                              Hashtable<String, String> props)
             throws Exception {
-        return createMap(request, MapInfo.DFLT_WIDTH, MapInfo.DFLT_HEIGHT,
-                         forSelection, props);
+        return createMap(request, entry, MapInfo.DFLT_WIDTH,
+                         MapInfo.DFLT_HEIGHT, forSelection, props);
     }
 
 
@@ -238,6 +240,7 @@ public class MapManager extends RepositoryManager implements WikiConstants {
      * Create a map
      *
      * @param request      the Request
+     * @param entry _more_
      * @param width        map width
      * @param height       map height
      * @param forSelection true if map used for selection
@@ -247,11 +250,12 @@ public class MapManager extends RepositoryManager implements WikiConstants {
      *
      * @throws Exception _more_
      */
-    public MapInfo createMap(Request request, int width, int height,
-                             boolean forSelection,
+    public MapInfo createMap(Request request, Entry entry, int width,
+                             int height, boolean forSelection,
                              Hashtable<String, String> props)
             throws Exception {
-        return createMap(request, width, height, forSelection, false, props);
+        return createMap(request, entry, width, height, forSelection, false,
+                         props);
     }
 
 
@@ -259,6 +263,7 @@ public class MapManager extends RepositoryManager implements WikiConstants {
      * _more_
      *
      * @param request _more_
+     * @param entry _more_
      * @param width _more_
      * @param height _more_
      * @param forSelection _more_
@@ -269,14 +274,16 @@ public class MapManager extends RepositoryManager implements WikiConstants {
      *
      * @throws Exception _more_
      */
-    public MapInfo createMap(Request request, int width, int height,
-                             boolean forSelection, boolean hidden,
-                             Hashtable<String, String> props)
+    public MapInfo createMap(Request request, Entry entry, int width,
+                             int height, boolean forSelection,
+                             boolean hidden, Hashtable<String, String> props)
             throws Exception {
 
         //        System.err.println("MapManager.createMap: " + width + " " + height);
 
-        if(props == null) props = new Hashtable<String,String>();
+        if (props == null) {
+            props = new Hashtable<String, String>();
+        }
         String style = props.get("style");
         props.remove("style");
         MapInfo mapInfo = new MapInfo(request, getRepository(), width,
@@ -286,9 +293,9 @@ public class MapManager extends RepositoryManager implements WikiConstants {
             mapInfo.setStyle(style);
         }
         mapInfo.setMapHidden(hidden);
-        String showSearch = (String)props.get("showSearch");
-        if(showSearch!=null) {
-            mapInfo.addProperty("showSearch",""+showSearch.equals("true"));
+        String showSearch = (String) props.get("showSearch");
+        if (showSearch != null) {
+            mapInfo.addProperty("showSearch", "" + showSearch.equals("true"));
         }
         if (mapLayers != null) {
             mapInfo.addProperty("mapLayers",
@@ -302,11 +309,22 @@ public class MapManager extends RepositoryManager implements WikiConstants {
         }
 
 
-        String mapLayer = (String) props.get("defaultMapLayer");
-        if(mapLayer == null) 
+        String mapLayer = null;
+        if (entry != null) {
+            List<Metadata> layers = getMetadataManager().getMetadata(entry,
+                                        "map_layer", true);
+            if (layers.size() > 0) {
+                mapLayer = layers.get(0).getAttr1();
+            }
+        }
+
+        if (mapLayer == null) {
+            mapLayer = (String) props.get("defaultMapLayer");
+        }
+        if (mapLayer == null) {
             mapLayer = getDefaultMapLayer();
-        mapInfo.addProperty("defaultMapLayer",
-                            Json.quote(mapLayer));
+        }
+        mapInfo.addProperty("defaultMapLayer", Json.quote(mapLayer));
 
         String key = KEY2;
         if (request.getExtraProperty(key) == null) {
@@ -953,7 +971,7 @@ public class MapManager extends RepositoryManager implements WikiConstants {
         }
 
         sb.append(mapHtml);
-        if(weight!=12) {
+        if (weight != 12) {
             sb.append(HtmlUtils.close(HtmlUtils.TAG_DIV));
             sb.append(HtmlUtils.close(HtmlUtils.TAG_DIV));
         }
@@ -1209,7 +1227,8 @@ public class MapManager extends RepositoryManager implements WikiConstants {
         }
 
         boolean hidden = Misc.equals(props.get("mapHidden"), "true");
-        MapInfo map = createMap(request, width, height, false, hidden, null);
+        MapInfo map = createMap(request, mainEntry, width, height, false,
+                                hidden, null);
         if (map == null) {
             return null;
         }
@@ -1226,9 +1245,10 @@ public class MapManager extends RepositoryManager implements WikiConstants {
         if (mapProps != null) {
             map.getMapProps().putAll(mapProps);
         }
-        String showSearch = (String)props.get("showSearch");
-        if(showSearch!=null) {
-            map.getMapProps().put("showSearch",""+showSearch.equals("true"));
+        String showSearch = (String) props.get("showSearch");
+        if (showSearch != null) {
+            map.getMapProps().put("showSearch",
+                                  "" + showSearch.equals("true"));
         }
 
         Hashtable theProps = Utils.makeMap(PROP_DETAILED, "" + details,
@@ -1454,15 +1474,15 @@ public class MapManager extends RepositoryManager implements WikiConstants {
                     if (metadata.getType().equals(
                             JpegMetadataHandler.TYPE_CAMERA_DIRECTION)) {
                         double dir = Double.parseDouble(metadata.getAttr1());
-                        double km = 1.0;
+                        double km  = 1.0;
                         String kms = metadata.getAttr2();
-                        if(Utils.stringDefined(kms)) {
-                            km =  Double.parseDouble(kms);
+                        if (Utils.stringDefined(kms)) {
+                            km = Double.parseDouble(kms);
                         }
                         LatLonPointImpl fromPt =
                             new LatLonPointImpl(location[0], location[1]);
                         LatLonPointImpl pt = Bearing.findPoint(fromPt, dir,
-                                                               km, null);
+                                                 km, null);
                         map.addLine(entry, entry.getId(), fromPt, pt, null);
 
                         break;

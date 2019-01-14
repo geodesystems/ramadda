@@ -442,7 +442,7 @@ sb.append(HtmlUtils.form(formUrl,
 
             String mapRegionGroup = null;
 
-            MapInfo map = getRepository().getMapManager().createMap(request,
+            MapInfo map = getRepository().getMapManager().createMap(request,null,
                               true, null);
 
             map.setMapRegions(getPageHandler().getMapRegions(mapRegionGroup));

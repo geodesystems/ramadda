@@ -945,7 +945,7 @@ public class PointFormHandler extends RecordFormHandler {
                     formatPointCount(numRecords)));
         }
 
-        MapInfo map = getRepository().getMapManager().createMap(request,
+        MapInfo map = getRepository().getMapManager().createMap(request,entry,
                           true, null);
         List<Metadata> metadataList = getMetadataManager().getMetadata(entry);
         boolean didMetadata = map.addSpatialMetadata(entry, metadataList);
@@ -1388,7 +1388,7 @@ public class PointFormHandler extends RecordFormHandler {
         StringBuffer mapSB = new StringBuffer();
         boolean showMap = pointEntry.isCapable(PointFile.ACTION_MAPINCHART)
                           && request.get(ARG_MAP_SHOW, true);
-        MapInfo map = getRepository().getMapManager().createMap(request, 500,
+        MapInfo map = getRepository().getMapManager().createMap(request, entry, 500,
                           300, false, null);
         if (showMap) {
             makeMapLines(request, pointEntry, map, 0);

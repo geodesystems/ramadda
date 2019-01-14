@@ -942,7 +942,7 @@ public class IdvOutputHandler extends OutputHandler implements IdvConstants {
         tabContents.add(basic.toString());
 
         StringBuffer bounds = new StringBuffer();
-        MapInfo map = getRepository().getMapManager().createMap(request,
+        MapInfo map = getRepository().getMapManager().createMap(request,entry,
                           true, null);
         map.addBox(entry, new MapBoxProperties("blue", false));
         map.centerOn(entry);

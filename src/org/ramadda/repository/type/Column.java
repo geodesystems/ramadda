@@ -2091,7 +2091,7 @@ public class Column implements DataTypes, Constants {
                 lat = ((Double) values[offset]).doubleValue();
                 lon = ((Double) values[offset + 1]).doubleValue();
             }
-            MapInfo map = getRepository().getMapManager().createMap(request,
+            MapInfo map = getRepository().getMapManager().createMap(request,entry,
                               true, null);
             widget = map.makeSelector(urlArg, true,
                                       new String[] { latLonOk(lat)
@@ -2112,7 +2112,7 @@ public class Column implements DataTypes, Constants {
                               ? values[offset + 3] + ""
                               : "", };
             }
-            MapInfo map = getRepository().getMapManager().createMap(request,
+            MapInfo map = getRepository().getMapManager().createMap(request,entry,
                               true, null);
             widget = map.makeSelector(urlArg, true, nwse, "", "");
         } else if (isType(DATATYPE_BOOLEAN)) {
@@ -2749,14 +2749,14 @@ public class Column implements DataTypes, Constants {
         if (isType(DATATYPE_LATLON)) {
             String[] nwseValues = getNWSE(request, null, searchArg, false);
             String[] nwseView   = getNWSE(request, entry, searchArg, true);
-            MapInfo map = getRepository().getMapManager().createMap(request,
+            MapInfo map = getRepository().getMapManager().createMap(request,entry,
                               true, null);
             widget = map.makeSelector(searchArg, true, nwseValues, nwseView,
                                       "", "");
         } else if (isType(DATATYPE_LATLONBBOX)) {
             String[] nwseValues = getNWSE(request, null, searchArg, false);
             String[] nwseView   = getNWSE(request, entry, searchArg, true);
-            MapInfo map = getRepository().getMapManager().createMap(request,
+            MapInfo map = getRepository().getMapManager().createMap(request,entry,
                               true, null);
             widget = map.makeSelector(searchArg, true, nwseValues, nwseView,
                                       "", "");

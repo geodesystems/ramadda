@@ -769,7 +769,7 @@ public class GridPointOutputHandler extends OutputHandler implements CdmConstant
             lat = Misc.format(llr.getLatMin() + llr.getHeight() / 2);
             lon = Misc.format(llr.getCenterLon());
         }
-        MapInfo map = getRepository().getMapManager().createMap(request,
+        MapInfo map = getRepository().getMapManager().createMap(request,entry,
                           true, null);
         map.addBox("", "", "", llr,
                    new MapBoxProperties("blue", false, true));

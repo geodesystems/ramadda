@@ -166,6 +166,20 @@ Override how maps are displayed.
          suffix=""/>
         </type>
 
+    <type
+       id="map_layer"
+       name="Map Layer"
+       showinhtml="true">
+            <element
+         id="maplayer"
+         name="Map Layer"
+               datatype="enumeration"
+               values="osm:Open Street Map,esri.topo:Esri Topo,esri.street:Esri Streets,usfs.ownership:USFS ,opentopo:Open Topo,usgs.topo:USGS Topo,usgs.imagery:USGS Imagery,usgs.relief:Shaded Relief,osm.toner:Open Street Map Toner"
+               />
+        </type>
+
+
+
 
     <type
        name="Extra Map Layer"

@@ -2472,7 +2472,7 @@ public class PointDatabaseTypeHandler extends BlobTypeHandler {
         StringBuffer sb = new StringBuffer();
         sb.append(getHeader(request, entry));
         String icon = getIconUrl("/icons/pointdata.gif");
-        MapInfo map = getRepository().getMapManager().createMap(request,
+        MapInfo map = getRepository().getMapManager().createMap(request,entry,
                           request.get(ARG_WIDTH, 800),
                           request.get(ARG_HEIGHT, 500), false, null);
         int cnt = 0;
@@ -2860,7 +2860,7 @@ public class PointDatabaseTypeHandler extends BlobTypeHandler {
                             request.getString(ARG_POINT_HOUR, ""))));
 
 
-        MapInfo map = getRepository().getMapManager().createMap(request,
+        MapInfo map = getRepository().getMapManager().createMap(request,entry,
                           true, null);
         map.addBox(entry, new MapBoxProperties("blue", false));
         map.centerOn(entry);

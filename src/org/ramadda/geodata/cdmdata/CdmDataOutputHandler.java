@@ -789,7 +789,7 @@ public class CdmDataOutputHandler extends OutputHandler implements CdmConstants 
                                        false);
         LatLonRect         llr   = dataset.getBoundingBox();
         if (llr != null) {
-            MapInfo map = getRepository().getMapManager().createMap(request,
+            MapInfo map = getRepository().getMapManager().createMap(request,entry,
                               true, null);
             map.addBox("", "", "", llr,
                        new MapBoxProperties("blue", false, true));
@@ -1231,7 +1231,7 @@ public class CdmDataOutputHandler extends OutputHandler implements CdmConstants 
             throws Exception {
 
 
-        MapInfo map = getRepository().getMapManager().createMap(request,
+        MapInfo map = getRepository().getMapManager().createMap(request,entry,
                           false, null);
         String              path = getPath(request, entry);
         FeatureDatasetPoint pod = getCdmManager().getPointDataset(entry,
@@ -1444,7 +1444,7 @@ public class CdmDataOutputHandler extends OutputHandler implements CdmConstants 
             getCdmManager().getTrajectoryDataset(path);
         StringBuffer         sb   = new StringBuffer();
 
-        MapInfo map = getRepository().getMapManager().createMap(request, 800,
+        MapInfo map = getRepository().getMapManager().createMap(request, entry, 800,
                           600, false, null);
         List trajectories = tod.getTrajectories();
         //TODO: Use new openlayers map
@@ -1538,7 +1538,7 @@ public class CdmDataOutputHandler extends OutputHandler implements CdmConstants 
                 msgLabel("Format"),
                 HtmlUtils.select(CdmConstants.ARG_FORMAT, formats, format)));
 
-        MapInfo map = getRepository().getMapManager().createMap(request,
+        MapInfo map = getRepository().getMapManager().createMap(request,entry,
                           true, null);
         map.addBox(entry, new MapBoxProperties("blue", false, true));
         map.centerOn(entry);

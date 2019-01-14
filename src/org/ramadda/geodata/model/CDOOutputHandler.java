@@ -934,7 +934,7 @@ public class CDOOutputHandler extends OutputHandler implements ServiceProvider {
 
         MapInfo map;
         if ( !usePopup) {
-            map = getRepository().getMapManager().createMap(request, 250,
+            map = getRepository().getMapManager().createMap(request, null, 250,
                     150, true, null);
             String maplayers = getRepository().getProperty(PROP_MAP_LAYERS,
                                    null);
@@ -953,7 +953,7 @@ public class CDOOutputHandler extends OutputHandler implements ServiceProvider {
             map.addProperty("showZoomPanControl", "false");
             map.addProperty("showZoomOnlyControl", "true");
         } else {
-            map = getRepository().getMapManager().createMap(request, true,
+            map = getRepository().getMapManager().createMap(request, null, true,
                     null);
         }
 
