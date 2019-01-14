@@ -763,6 +763,7 @@ function RamaddaMultiChart(displayManager, id, properties) {
                             h = h.substring(0,19)+"...";
                         }
                         if(this.gaugeLabel) h = this.gaugeLabel;
+                        else if(this["gaugeLabel" + (i+1)]) h = this["gaugeLabel" + (i+1)];
                         list.push([h,last[i]]);
                     }
                     return  google.visualization.arrayToDataTable(list);
