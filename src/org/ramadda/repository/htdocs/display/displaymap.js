@@ -17,10 +17,7 @@ function displayMapGetMarkerIcon() {
     return  ramaddaBaseUrl + "/lib/openlayers/v2/img/" + displayMapMarkers[displayMapCurrentMarker];
 }
 
-addGlobalDisplayType({
-	type : DISPLAY_MAP,
-	label : "Map"
-});
+addGlobalDisplayType({type : DISPLAY_MAP,label : "Map"});
 
 function MapFeature(source, points) {
 	RamaddaUtil.defineMembers(this, {

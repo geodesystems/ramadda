@@ -4824,6 +4824,7 @@ var DISPLAY_BARCHART = "barchart";
 var DISPLAY_BARTABLE = "bartable";
 var DISPLAY_BARSTACK = "barstack";
 var DISPLAY_PIECHART = "piechart";
+var DISPLAY_CALENDAR = "calendar";
 var DISPLAY_SCATTERPLOT = "scatterplot";
 var DISPLAY_HISTOGRAM = "histogram";
 var DISPLAY_BUBBLE = "bubble";
@@ -4857,19 +4858,17 @@ addGlobalDisplayType({type:DISPLAY_BARCHART,label: "Bar Chart",requiresData:true
 addGlobalDisplayType({type:DISPLAY_BARSTACK,label: "Stacked Bar Chart",requiresData:true,forUser:true,category:CHARTS_CATEGORY});
 addGlobalDisplayType({type: DISPLAY_AREACHART, label:"Area Chart",requiresData:true,forUser:true,category:CHARTS_CATEGORY});
 addGlobalDisplayType({type:DISPLAY_BARTABLE,label: "Bar Table",requiresData:true,forUser:true,category:CHARTS_CATEGORY});
-
 addGlobalDisplayType({type:DISPLAY_SCATTERPLOT,label: "Scatter Plot",requiresData:true,forUser:true,category:CHARTS_CATEGORY});
 addGlobalDisplayType({type:DISPLAY_HISTOGRAM,label: "Histogram",requiresData:true,forUser:true,category:CHARTS_CATEGORY});
 addGlobalDisplayType({type:DISPLAY_BUBBLE,label: "Bubble Chart",requiresData:true,forUser:true,category:CHARTS_CATEGORY});
 addGlobalDisplayType({type:DISPLAY_GAUGE,label: "Gauge",requiresData:true,forUser:true,category:CHARTS_CATEGORY});
-addGlobalDisplayType({type:DISPLAY_STATS , label: "Stats Table",requiresData:false,forUser:true,category:CHARTS_CATEGORY});
-
-
 addGlobalDisplayType({type:DISPLAY_PIECHART,label: "Pie Chart",requiresData:true,forUser:true,category:CHARTS_CATEGORY});
-addGlobalDisplayType({type:DISPLAY_TABLE , label: "Table",requiresData:true,forUser:true,category:CHARTS_CATEGORY});
-addGlobalDisplayType({type:DISPLAY_TEXT , label: "Text Readout",requiresData:false,forUser:true,category:CHARTS_CATEGORY});
 
-addGlobalDisplayType({type:DISPLAY_CORRELATION , label: "Correlation",requiresData:true,forUser:true,category:CHARTS_CATEGORY});
+addGlobalDisplayType({type:DISPLAY_CALENDAR,label: "Calendar Chart",requiresData:true,forUser:true,category:"Misc"});
+addGlobalDisplayType({type:DISPLAY_STATS , label: "Stats Table",requiresData:false,forUser:true,category:"Misc"});
+addGlobalDisplayType({type:DISPLAY_TABLE , label: "Table",requiresData:true,forUser:true,category:"Misc"});
+addGlobalDisplayType({type:DISPLAY_TEXT , label: "Text Readout",requiresData:false,forUser:true,category:"Misc"});
+addGlobalDisplayType({type:DISPLAY_CORRELATION , label: "Correlation",requiresData:true,forUser:true,category:"Misc"});
 
 
 
@@ -5576,6 +5575,18 @@ function RamaddaMultiChart(displayManager, id, properties) {
                     return  google.visualization.arrayToDataTable(dataList);
                 }
 
+                if(this.chartType == DISPLAY_CALENDAR) {
+                    var dataTable = new google.visualization.DataTable();
+                    var header = dataList[0];
+                    dataTable.addColumn({ type: 'date', id: 'Date' });
+                    dataTable.addColumn({ type: 'number', id: header[1]});
+                    var list = [];
+                    for(var i=1;i<dataList.length;i++) {
+                        list.push([dataList[i][0],dataList[i][1]]);
+                    }
+                    dataTable.addRows(list);
+                }
+
                 if(this.chartType == DISPLAY_PIECHART) {
                     var dataTable = new google.visualization.DataTable();
                     var list = [];
@@ -5969,6 +5980,8 @@ function RamaddaMultiChart(displayManager, id, properties) {
                     chartOptions.hAxis.title =  this.getProperty("hAxisTitle", header.length>1?header[1]:null);
                     chartOptions.vAxis.title =  this.getProperty("vAxisTitle", header.length>2?header[2]:null);
                     this.chart = new google.visualization.BubbleChart(document.getElementById(chartId));
+                } else  if(chartType == DISPLAY_CALENDAR) {
+                    this.chart = new google.visualization.Calendar(document.getElementById(chartId));
                 } else  if(chartType == DISPLAY_PIECHART) {
                     chartOptions.tooltip = {textStyle: {color: '#000000'}, showColorCode: true};
                     chartOptions.title=dataList[0][0] +" - " +dataList[0][1];
@@ -6097,6 +6110,12 @@ function BarstackDisplay(displayManager, id, properties) {
 
 function PiechartDisplay(displayManager, id, properties) {
     properties = $.extend({"chartType": DISPLAY_PIECHART}, properties);
+    RamaddaUtil.inherit(this, new RamaddaMultiChart(displayManager, id, properties));
+    addRamaddaDisplay(this);
+}
+
+function CalendarDisplay(displayManager, id, properties) {
+    properties = $.extend({"chartType": DISPLAY_CALENDAR}, properties);
     RamaddaUtil.inherit(this, new RamaddaMultiChart(displayManager, id, properties));
     addRamaddaDisplay(this);
 }
@@ -9558,10 +9577,7 @@ function displayMapGetMarkerIcon() {
     return  ramaddaBaseUrl + "/lib/openlayers/v2/img/" + displayMapMarkers[displayMapCurrentMarker];
 }
 
-addGlobalDisplayType({
-	type : DISPLAY_MAP,
-	label : "Map"
-});
+addGlobalDisplayType({type : DISPLAY_MAP,label : "Map"});
 
 function MapFeature(source, points) {
 	RamaddaUtil.defineMembers(this, {

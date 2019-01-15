@@ -296,6 +296,13 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                                               ATTR_SHOWMENU, "true", 
                                               ATTR_SHOWTITLE, "true")),
                             new WikiTag(WIKI_TAG_DISPLAY,
+                                        "Calendar",
+                                        attrs(ATTR_TYPE, "calendar",
+                                              "#fields", "",
+                                              ATTR_LAYOUTHERE, "true", 
+                                              ATTR_SHOWMENU, "true", 
+                                              ATTR_SHOWTITLE, "true")),
+                            new WikiTag(WIKI_TAG_DISPLAY,
                                         "Gauge",
                                         attrs(ATTR_TYPE, "gauge", 
                                               "#fields", "",
@@ -315,6 +322,12 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                                         "Correlation",
                                         attrs(ATTR_TYPE, "correlation", 
                                               "#fields", "",
+                                              ATTR_LAYOUTHERE, "true", 
+                                              ATTR_SHOWMENU, "true", 
+                                              ATTR_SHOWTITLE, "true")),
+                            new WikiTag(WIKI_TAG_DISPLAY,
+                                        "Animation",
+                                        attrs(ATTR_TYPE, "animation",
                                               ATTR_LAYOUTHERE, "true", 
                                               ATTR_SHOWMENU, "true", 
                                               ATTR_SHOWTITLE, "true")),
@@ -5299,7 +5312,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
             //                    "google.load(\"visualization\", \"1\", {packages:['corechart','table','bar']});\n"));
             HtmlUtils.script(
                 sb,
-                "google.charts.load(\"43\", {packages:['corechart','table','bar','gauge']});\n");
+                "google.charts.load(\"43\", {packages:['corechart','calendar','table','bar','gauge']});\n");
             HtmlUtils.importJS(sb, getHtdocsUrl("/lib/d3/d3.min.js"));
             HtmlUtils.importJS(
                 sb, getHtdocsUrl("/lib/jquery.handsontable.full.min.js"));
