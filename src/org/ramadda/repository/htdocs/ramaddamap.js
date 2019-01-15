@@ -146,6 +146,9 @@ function RepositoryMap(mapId, params) {
                 initialLayers: [],
                 imageLayers:{
                 },
+                tickSelectColor:"red",
+                tickHoverColor:"blue",
+                tickColor:"#888"
                 });
 
     initMapFunctions(this);
@@ -997,6 +1000,10 @@ function initMapFunctions(theMap) {
         }
     };
 
+    theMap.startDate = null;
+    theMap.endDate = null;
+    theMap.startFeature = null;
+    theMap.endFeature = null;
     theMap.initDates = function(layer) {
         var _this = this;
         var features = layer.features;
@@ -1014,7 +1021,6 @@ function initMapFunctions(theMap) {
                 var name = (""+attr).toLowerCase();
                 var isYear = name.includes("year")||name.includes("_yr");
                 var isDate = name.includes("date");
-                //                if(i<3) console.log("name:" + name +" isYear:" + isYear);
                 if(!(isDate || isYear)) continue;
                 var value = this.getAttrValue(p,attr);
                 if(!value) continue;
@@ -1022,6 +1028,11 @@ function initMapFunctions(theMap) {
                     var date = Utils.parseDate(value);
                     if(isYear) didYear = true;
                     else didDate  = true;
+                    if(this.startDate!=null && this.endDate!=null) {
+                        if(date.getTime()<this.startDate.getTime() || date.getTime()>this.endDate.getTime()) {
+                            continue;
+                        }
+                    }
                     this.dates.push(date);
                     this.dateFeatures.push(feature);
                     this.minDate=this.minDate==null?date:this.minDate.getTime()>date.getTime()?date:this.minDate;
@@ -1047,21 +1058,40 @@ function initMapFunctions(theMap) {
             var endLabel = this.maxDate.toLocaleDateString("en-US", options);
             this.animationTicks = $("#"+this.mapDivId+"_animation_ticks");
             this.animationInfo = $("#"+this.mapDivId+"_animation_info");
-            var info = "<table width=100%><tr><td>" + startLabel+"</td><td align=right>" + endLabel+"</td></tr></table>";
+            var center  = "";
+            if(this.startDate && this.endDate) {
+                center = HtmlUtil.div(["id", this.mapDivId+"_ticks_reset","class","ramadda-map-animation-tick-reset"],"Reset");
+            }
+            var info = "<table width=100%><tr valign=top><td width=40%>" + startLabel+"</td><td align=center width=20%>" + center +"</td><td align=right width=40%>" + endLabel+"</td></tr></table>";
             this.animationInfo.html(info);
+            if(this.startDate && this.endDate) {
+                var reset = $("#" + this.mapDivId+"_ticks_reset");
+                reset.click(function() {
+                        _this.startDate = null;
+                        _this.endDate = null;
+                        _this.startFeature = null;
+                        _this.endFeature = null;
+                        _this.setFeatureDateRange(layer);
+                    });
+            }
             var width = this.animationTicks.width();
             var percentPad = width>0?5/width:0;
             //            console.log("w:" + width + " " + percentPad);
             var html = "";
             var start = this.minDate.getTime();
             var end = this.maxDate.getTime();
+            if(this.startDate!=null && this.endDate!=null) {
+                start = this.startDate.getTime();
+                end = this.endDate.getTime();
+            }
             var range = end-start;
             if(range>0) {
                 for(var i=0;i<this.dates.length;i++) {
-                    var feature = this.dateFeatures[i];
-                    feature.dateIndex = i;
                     var date = this.dates[i];
                     var time = date.getTime();
+                    if(time<start || time>end) continue;
+                    var feature = this.dateFeatures[i];
+                    feature.dateIndex = i;
                     var percent = 100*(time-start)/range;
                     percent = percent-percent*percentPad;
                     var fdate = date.toLocaleDateString("en-US", options);
@@ -1099,48 +1129,83 @@ function initMapFunctions(theMap) {
                     var index = parseInt($(this).attr("feature-index"));
                     var feature = _this.dateFeatures[index];
                     if(evt.shiftKey) {
-                        _this.animateFeatures(feature.layer, feature.featureDate);
+                        if(_this.startDate == null) {
+                            _this.startDate = feature.featureDate;
+                            _this.startFeature = feature;
+                            _this.dateFeatureSelect(feature);
+                        } else if(_this.endDate==null) {
+                            _this.endDate = feature.featureDate;
+                            _this.endFeature = feature;
+                            _this.dateFeatureSelect(feature);
+                        } else  {
+                            _this.dateFeatureSelect(null);
+                            _this.startDate = feature.featureDate;
+                            _this.startFeature = feature;
+                            _this.endDate = null;
+                            _this.endFeature = null;
+                            _this.dateFeatureSelect(feature);
+                        }
+                        console.log("date:" +  _this.startDate + " " + _this.endDate);
+                        if(_this.startDate!=null && _this.endDate!=null) {
+                            if(_this.startDate.getTime()==_this.endDate.getTime()) {
+                                _this.startDate = null;
+                                _this.startFeature = null;
+                                _this.endDate = null;
+                                _this.endFeature = null;
+                                _this.dateFeatureSelect(null);
+                                return;
+                            } else if(_this.startDate.getTime()>_this.endDate.getTime()) {
+                                var tmp = _this.startDate;
+                                _this.startDate = _this.endDate;
+                                _this.endDate = tmp;
+                                tmp = _this.startFeature;
+                                _this.startFeature = _this.endFeature;
+                                _this.endFeature = tmp;
+                            }
+                            _this.setFeatureDateRange(feature.layer);
+                        }
                     } else {
-                        _this.clearDateFeature();
                         var center = evt.metaKey || evt.ctrlKey;
-                        if(_this.isAnimating) {
-                            _this.animateFeatures(feature.layer);
-                            center = false;
-                        } 
+                        if(_this.startDate!=null || _this.endDate!=null) {
+                            _this.startDate = null;
+                            _this.endDate = null;
+                            _this.setFeatureDateRange(feature.layer, feature.featureDate);
+                            //                            center = true;
+                        }
+                        _this.clearDateFeature();
                         _this.handleFeatureclick(feature.layer,feature,center);
                     }
                 });
         }
     }
 
-    theMap.animateFeatures = function(layer,date) {
-        this.dateSearch = date;
-        this.isAnimating  = Utils.isDefined(date);
+    theMap.setFeatureDateRange = function(layer) {
+        this.dateFeatureSelect(null);
+        console.log("set range:" +  this.startDate + " " + this.endDate);
         var features = layer.features;
-        var didOff = false;
         if(layer.selectedFeature) {
-            console.log("have selected");
             this.unselectFeature(layer.selectedFeature);
-            return;
         }
         for (var i = 0; i < features.length; i++) {
             var feature = features[i];
-            if(date && feature.featureDate) {
-                feature.featureVisibleDate = feature.featureDate.getTime()<=date.getTime();
+            if(this.startDate && this.endDate && feature.featureDate) {
+                feature.featureVisibleDate = this.startDate.getTime() <=feature.featureDate.getTime() &&
+                    feature.featureDate.getTime()<=this.endDate.getTime();
             } else {
                 feature.featureVisibleDate = true;
             }
         }
         this.setFeatureVisibility(layer);
+        this.initDates(layer);
     }
     theMap.dateFeatureSelect = function(feature) {
         var tick = this.getFeatureTick(feature);
-        tick.css("background-color","red");
+        tick.css("background-color",this.tickSelectColor);
         tick.css("zIndex","100");
     }
     theMap.dateFeatureOver = function(feature) {
         var tick = this.getFeatureTick(feature);
-        tick.css("background-color","blue");
+        tick.css("background-color",this.tickHoverColor);
         tick.css("zIndex","100");
         //In case some aren't closed
         this.getFeatureTick(null).tooltip("close");
@@ -1148,8 +1213,13 @@ function initMapFunctions(theMap) {
     }
     theMap.dateFeatureOut = function(feature) {
         var tick = this.getFeatureTick(feature);
-        tick.css("background-color","");
-        tick.css("zIndex","0");
+        if(feature && (feature == this.startFeature || feature == this.endFeature)) {
+            tick.css("background-color",this.tickSelectColor);
+            tick.css("zIndex","0");
+        } else {
+            tick.css("background-color","");
+            tick.css("zIndex","0");
+        }
         tick.tooltip("close");
     }
     theMap.getFeatureTick = function(feature) {

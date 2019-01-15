@@ -166,12 +166,6 @@ h2 a,   h2 a:visited, h2 a:link  {color: black;}
 .ramadda-map-animation {
 }
 
-.ramadda-map-animation-ticks {
-   position:relative;
-   height:21px;
-   border-bottom: 1px #ccc solid;
-//   height:100%;
-}
 
 .ramadda-map-features {
 }
@@ -180,6 +174,21 @@ h2 a,   h2 a:visited, h2 a:link  {color: black;}
    cursor:pointer;
 }
 .ramadda-map-feature:hover {
+   text-decoration: underline;
+}
+
+.ramadda-map-animation-ticks {
+   position:relative;
+   height:21px;
+   border-bottom: 1px #ccc solid;
+//   height:100%;
+}
+
+.ramadda-map-animation-tick-reset {
+   cursor:pointer;
+}
+
+.ramadda-map-animation-tick-reset:hover {
    text-decoration: underline;
 }
 
