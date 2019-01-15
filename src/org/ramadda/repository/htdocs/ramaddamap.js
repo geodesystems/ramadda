@@ -289,6 +289,7 @@ function initMapFunctions(theMap) {
                     feature.originalStyle = feature.style;
                     feature.style = null;
                     layer.drawFeature(feature,"temporary");
+                    this.dateFeatureOver(feature);
                     if(this.displayDiv) {
                         this.displayedFeature = feature;
                         var callback = function() {
@@ -318,9 +319,14 @@ function initMapFunctions(theMap) {
                 if(!feature.isSelected) {
                     layer.drawFeature(feature,feature.style ||"default"); 
                 }
+                this.dateFeatureOut(feature);
                 if(!skipText && this.displayedFeature == feature  && !this.fixedText) {
                     this.showText("");
                 }
+            },
+            getLayerCanSelect: function(layer) {
+                if(!layer) return false;
+                return layer.canSelect;
             },
             handleNofeatureclick: function(layer) { 
                 if(layer.canSelect === false) return;
@@ -332,7 +338,7 @@ function initMapFunctions(theMap) {
              handleFeatureclick: function(layer, feature, center) { 
                 if(!layer)
                     layer = feature.layer;
-                this.selectDateFeature(feature);
+                this.dateFeatureSelect(feature);
                 if(layer.canSelect === false) return;
                 if(layer.selectedFeature) {
                     this.unselectFeature(layer.selectedFeature);
@@ -796,7 +802,7 @@ function initMapFunctions(theMap) {
                 this.clearDateFeature(feature);
                 didOff = true;
             } else {
-                this.selectDateFeature(feature);
+                this.dateFeatureSelect(feature);
                 didOn = true;
                 cnt++;
                 if(!onFeature) onFeature= feature;
@@ -1062,14 +1068,25 @@ function initMapFunctions(theMap) {
                     //                        console.log("date:" + date+" percent:" + percent);
                     var fdate = date.toLocaleDateString("en-US", options);
                     var name = this.getFeatureName(feature);
-                    var tooltip = name!=null?name+"\n":"";
+                    var tooltip = "";
+                    tooltip += name!=null?name+"<br>":"";
                     tooltip+=fdate;
-                    tooltip+="\nshift-click: set visible range,cmd/ctrl-click:zoom";
+                    tooltip+="<br>shift-click: set visible range<br>cmd/ctrl-click:zoom";
+                    tooltip+="";
                     html+=HtmlUtil.div(["id",this.mapDivId+"_tick" + i, "feature-index",""+i,"style","left:" + percent+"%","class","ramadda-map-animation-tick","title",tooltip],"");
                 }
             }
             this.animationTicks.html(html);
             var tick  =  $("#" + this.mapDivId+"_animation .ramadda-map-animation-tick");
+            tick.tooltip({
+                    content: function () {
+                        return $(this).prop('title');
+                    },
+                    position: { my: "left top", at: "left bottom+2" },
+                    classes: {
+                        "ui-tooltip": "ramadda-tooltip"
+                            }
+                });
             tick.mouseover(function() {
                     var index = parseInt($(this).attr("feature-index"));
                     var feature = _this.dateFeatures[index];
@@ -1118,13 +1135,30 @@ function initMapFunctions(theMap) {
         }
         this.setFeatureVisibility(layer);
     }
-    theMap.selectDateFeature = function(feature) {
-        if(!Utils.isDefined(feature.dateIndex)) return;
-        var element = $("#" + this.mapDivId+"_tick" + feature.dateIndex);
-        element.css("background-color","red");
-        element.css("zIndex","100");
+    theMap.dateFeatureSelect = function(feature) {
+        var tick = this.getFeatureTick(feature);
+        tick.css("background-color","red");
+        tick.css("zIndex","100");
     }
-
+    theMap.dateFeatureOver = function(feature) {
+        var tick = this.getFeatureTick(feature);
+        tick.css("background-color","blue");
+        tick.css("zIndex","100");
+        //In case some aren't closed
+        this.getFeatureTick(null).tooltip("close");
+        tick.tooltip("open");
+    }
+    theMap.dateFeatureOut = function(feature) {
+        var tick = this.getFeatureTick(feature);
+        tick.css("background-color","");
+        tick.css("zIndex","0");
+        tick.tooltip("close");
+    }
+    theMap.getFeatureTick = function(feature) {
+        if(!feature)
+            return $("#" + this.mapDivId+"_animation_ticks" +" .ramadda-map-animation-tick");
+        return $("#" + this.mapDivId+"_tick" + feature.dateIndex);        
+    }
     theMap.clearDateFeature = function(feature) {
         var element = feature!=null?$("#" + this.mapDivId+"_tick" + feature.dateIndex):$("#" + this.mapDivId+"_animation_ticks .ramadda-map-animation-tick");
         //        console.log("clear date:" +(feature!=null?feature.dateIndex:"NA")+ " " + element.size());

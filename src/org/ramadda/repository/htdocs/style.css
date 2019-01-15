@@ -2260,6 +2260,15 @@ nowiki {
 }
 
 
+.ramadda-tooltip {
+   padding:0px;
+   padding-left:5px;
+   padding-right:5px;
+   border: 2px solid red;
+   box-shadow: 0 0 1px black;
+   font-size: 10pt;
+}
+
 .foobar {
        border: 1px red solid;
 }
