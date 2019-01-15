@@ -77,6 +77,7 @@ var Utils = {
         return   !(typeof v=== 'undefined');
     },
     camelCase: function(s) {
+        if(!s) return s;
         var r = "";
         toks = s.split(" ");
         for(var i=0;i<toks.length;i++) {

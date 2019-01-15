@@ -289,12 +289,12 @@ function initMapFunctions(theMap) {
                     feature.originalStyle = feature.style;
                     feature.style = null;
                     layer.drawFeature(feature,"temporary");
-                    this.dateFeatureOver(feature);
                     if(this.displayDiv) {
                         this.displayedFeature = feature;
                         var callback = function() {
                             if(_this.displayedFeature == feature) {
                                 _this.showText(_this.getFeatureText(layer, feature));
+                                _this.dateFeatureOver(feature);
                             }
                         }
                         if(!skipText) {
@@ -1064,10 +1064,8 @@ function initMapFunctions(theMap) {
                     var time = date.getTime();
                     var percent = 100*(time-start)/range;
                     percent = percent-percent*percentPad;
-                    //                    if(i<10)
-                    //                        console.log("date:" + date+" percent:" + percent);
                     var fdate = date.toLocaleDateString("en-US", options);
-                    var name = this.getFeatureName(feature);
+                    var name =  Utils.camelCase(this.getFeatureName(feature));
                     var tooltip = "";
                     tooltip += name!=null?name+"<br>":"";
                     tooltip+=fdate;
