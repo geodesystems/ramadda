@@ -791,7 +791,7 @@ function initMapFunctions(theMap) {
 
     theMap.setFeatureVisibility  = function(layer) {
         var _this  = this;
-        var didSearch = this.searchText || this.searchDate;
+        var didSearch = this.searchText || (this.startDate && this.endDate);
         var bounds=null;
         var html = "";
         var didOn = false;
