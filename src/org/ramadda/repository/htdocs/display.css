@@ -245,6 +245,8 @@ color: #000;
 
 .display-animation-button {
 //    background-color:  #fff;
+    margin-left:4px;
+    margin-right:4px;
     margin: 1px;
 }
 

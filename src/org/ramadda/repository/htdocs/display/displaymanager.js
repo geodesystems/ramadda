@@ -143,12 +143,12 @@ function DisplayManager(argId,argProperties) {
                 var indexObj = [];
                 var closest =  RecordUtil.findClosest(records, lon, lat, indexObj);
                 if(closest!=null) {
-                    this.handleEventRecordSelection(mapDisplay, pointData, indexObj.index);
+                    this.propagateEventRecordSelection(mapDisplay, pointData, {index:indexObj.index});
                 }
                 this.notifyEvent("handleEventMapClick", mapDisplay, {mapDisplay:mapDisplay,lon:lon,lat:lat});
             },
-            handleEventRecordSelection: function(source, pointData, index) {
-
+            propagateEventRecordSelection: function(source, pointData, args) {
+                var index = args.index;
                 if(pointData ==null && this.dataList.length>0) {
                     pointData = this.dataList[0];
                 }
@@ -158,16 +158,12 @@ function DisplayManager(argId,argProperties) {
                     return;
                 }
                 if(index<0 || index>= records.length) {
-                    console.log("handleEventRecordSelection: bad index= " + index);
+                    console.log("propagateEventRecordSelection: bad index= " + index);
                     return;
                  }
-
-
                 var record = records[index];
                 if(record == null) return;
                 var values = this.getRecordHtml(record,fields);
-
-
                 if(source.recordSelectionCallback) {
                     var func = source.recordSelectionCallback;
                     if((typeof  func) == "string") {
@@ -175,7 +171,7 @@ function DisplayManager(argId,argProperties) {
                     }
                     func({display:source, pointData: pointData, index:index, pointRecord:record});
                 }
-                var params =  {index:index, record:record, html:values};
+                var params =  {index:index, record:record, html:values,data:pointData};
                 this.notifyEvent("handleEventRecordSelection", source,params);
                 var entries  =source.getEntries();
                 if(entries!=null && entries.length>0) {

@@ -1046,7 +1046,7 @@ function initMapFunctions(theMap) {
             }
         }
         if(this.hasDates) {
-            var options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric',hour:'numeric',minute:'numeric' };
+            var options = null;
             if(didYear)
                 options = {year: 'numeric'};
             $("#"+this.mapDivId+"_footer").html(HtmlUtil.div(["class","ramadda-map-animation", "id",this.mapDivId+"_animation"],""));
@@ -1054,8 +1054,8 @@ function initMapFunctions(theMap) {
             var ticksDiv = HtmlUtil.div(["class","ramadda-map-animation-ticks", "id",this.mapDivId+"_animation_ticks"],"");
             var infoDiv = HtmlUtil.div(["class","ramadda-map-animation-info", "id",this.mapDivId+"_animation_info"],"");
             this.animation.html(ticksDiv+infoDiv);
-            var startLabel = this.minDate.toLocaleDateString("en-US", options);
-            var endLabel = this.maxDate.toLocaleDateString("en-US", options);
+            var startLabel = Utils.formatDate(this.minDate,options);
+            var endLabel = Utils.formatDate(this.maxDate,options);
             this.animationTicks = $("#"+this.mapDivId+"_animation_ticks");
             this.animationInfo = $("#"+this.mapDivId+"_animation_info");
             var center  = "";

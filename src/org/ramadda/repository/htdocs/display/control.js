@@ -54,7 +54,7 @@ function RamaddaAnimationDisplay(displayManager, id, properties) {
             setIndex: function(i) {
                 if(i<0) i=0;
                 this.index = i;
-                this.applyStep();
+                this.applyStep(true, !Utils.isDefined(i));
             },
             toggle: function() {
                 if(this.running) {
@@ -70,7 +70,8 @@ function RamaddaAnimationDisplay(displayManager, id, properties) {
                 var theAnimation = this;
                 setTimeout(function() {theAnimation.tick();}, this.sleepTime);
             },
-           applyStep: function() {
+             applyStep: function(propagate, goToEnd) {
+                if(!Utils.isDefined(propagate)) propagate = true;
                 var data = this.displayManager.getDefaultData();
                 if(data == null) return;
                 var records = data.getRecords();
@@ -78,18 +79,32 @@ function RamaddaAnimationDisplay(displayManager, id, properties) {
                     $("#" + this.getDomId(ID_TIME)).html("no records");
                     return;
                 }
+                if(goToEnd) this.index = records.length-1;
                 if(this.index>=records.length) {
-                    this.index = records.length-1;
+                    this.index = 0;
                 }
                 var record = records[this.index];
                 var label = "";
                 if(record.getDate()!=null) {
-                    label += HtmlUtil.b("Date:") + " "  + record.getDate();
+                    var dttm = this.formatDate(record.getDate(),{suffix:this.getTimeZone()});
+                    label += HtmlUtil.b("Date:") + " "  + dttm;
                 } else {
                     label += HtmlUtil.b("Index:") +" " + this.index;
                 }
                 $("#" + this.getDomId(ID_TIME)).html(label);
-                this.displayManager.handleEventRecordSelection(this, null, this.index);
+                if(propagate) {
+                    this.displayManager.propagateEventRecordSelection(this, data, {index:this.index});
+                }
+            },
+            handleEventRecordSelection: function(source, args) {
+                var data = this.displayManager.getDefaultData();
+                if(data == null) return;
+                if(data != args.data) {
+                    return;
+                }
+                if(!data) return;
+                this.index = args.index;
+                this.applyStep(false);
             },
             faster: function() {
                 this.sleepTime = this.sleepTime/2;
@@ -118,17 +133,13 @@ function RamaddaAnimationDisplay(displayManager, id, properties) {
                 var get = this.getGet();
                 var html =  "";
                 html+=  HtmlUtil.onClick(get +".setIndex(0);", HtmlUtil.image(this.iconBegin,[ATTR_TITLE,"beginning", ATTR_CLASS, "display-animation-button", "xwidth","32"]));
-                html +="  ";
                 html+=  HtmlUtil.onClick(get +".deltaIndex(-1);", HtmlUtil.image(this.iconBack,[ATTR_TITLE,"back 1", ATTR_CLASS, "display-animation-button", "xwidth","32"]));
-                html +="  ";
                 html+=  HtmlUtil.onClick(get +".toggle();", HtmlUtil.image(this.iconStart,[ATTR_TITLE,"play/stop", ATTR_CLASS, "display-animation-button", "xwidth","32", ATTR_ID, this.getDomId(ID_START)]));
-                html +="  ";
                 html+=  HtmlUtil.onClick(get +".deltaIndex(1);", HtmlUtil.image(this.iconForward,[ATTR_TITLE,"forward 1", ATTR_CLASS, "display-animation-button", "xwidth","32"]));
-                html +="  ";
+                html+=  HtmlUtil.onClick(get +".setIndex();", HtmlUtil.image(this.iconEnd,[ATTR_TITLE,"end", ATTR_CLASS, "display-animation-button", "xwidth","32"]));
                 html+=  HtmlUtil.onClick(get +".faster();", HtmlUtil.image(this.iconFaster,[ATTR_CLASS, "display-animation-button", ATTR_TITLE,"faster", "xwidth","32"]));
-                html +="  ";
                 html+=  HtmlUtil.onClick(get +".slower();", HtmlUtil.image(this.iconSlower,[ATTR_CLASS, "display-animation-button", ATTR_TITLE,"slower", "xwidth","32"]));
-                html+=  HtmlUtil.div([ATTR_ID, this.getDomId(ID_TIME)],"&nbsp;");
+                html+=  HtmlUtil.div(["style","display:inline-block; margin-left:10px;",ATTR_ID, this.getDomId(ID_TIME)],"&nbsp;");
                 this.setDisplayTitle("Animation");
                 this.setContents(html);
             },

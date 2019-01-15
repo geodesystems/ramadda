@@ -151,6 +151,20 @@ function DisplayThing(argId, argProperties) {
             setId: function(id) {
                 this.objectId = id;
             },
+            getTimeZone: function() {
+                return this.getProperty("timeZone");
+            },
+             formatDate: function(date,args) {
+                if(!args) args = {};
+                var suffix;
+                if(!Utils.isDefined(args.suffix)) 
+                    suffix = args.suffix;
+                else
+                    suffix = this.getProperty("dateSuffix");
+                var timeZone = this.getTimeZone();
+                if(!suffix && timeZone) suffix = timeZone;
+                return Utils.formatDate(date,args.options,{timeZone:timeZone,suffix:suffix});
+            },
         getUniqueId: function(base) {
                 return HtmlUtil.getUniqueId(base);
         },

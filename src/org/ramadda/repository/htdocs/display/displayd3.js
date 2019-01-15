@@ -345,7 +345,6 @@ function RamaddaD3Display(displayManager, id, properties) {
             },
             //this gets called when an event source has selected a record
             handleEventRecordSelection: function(source, args) {
-                //this.setContents(args.html);
             },
             mouseover: function() {
                 // TO DO

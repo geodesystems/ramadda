@@ -750,6 +750,15 @@ function makePointData(json, derived,source) {
     if ((typeof name === 'undefined')) {
         name =  "Point Data";
     }
+
+    pointRecords.sort(function(a,b) {
+            if(a.getDate() && b.getDate()) {
+                if(a.getDate().getTime()<b.getDate().getTime()) return -1;
+                if(a.getDate().getTime()>b.getDate().getTime()) return 1;
+                return 0;
+            }
+        }); 
+
     return new  PointData(name,  fields, pointRecords);
 }
 

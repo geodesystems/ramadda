@@ -226,7 +226,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
                         return;
                     }
                     //                    console.log("map index:" + layer.feature.dataIndex);
-                    this.getDisplayManager().handleEventRecordSelection(this,this.getPointData(),layer.feature.dataIndex);
+                    this.getDisplayManager().propagateEventRecordSelection(this,this.getPointData(),{index:layer.feature.dataIndex});
                 },
                doDisplayMap:  function() {
                     var v = (this.kmlLayer!=null || this.geojsonLayer!=null) && ((""+this.getProperty("displayAsMap","")) == "true");
@@ -937,23 +937,23 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		},
 
 		handleEventRecordSelection : function(source, args) {
-			var record = args.record;
-			if (record.hasLocation()) {
-                            var latitude = record.getLatitude();
-				var longitude = record.getLongitude();
-                                if(latitude<-90 || latitude>90 || longitude<-180 || longitude>180) return;
-				var point = new OpenLayers.LonLat(longitude, latitude);
-				var marker = this.myMarkers[source];
-				if (marker != null) {
-                                    this.map.removeMarker(marker);
-				}
-                                var icon = displayMapMarkerIcons[source];
-                                if(icon == null) {
-                                    icon =  displayMapGetMarkerIcon();
-                                    displayMapMarkerIcons[source] = icon;
-                                }
-				this.myMarkers[source] = this.map.addMarker(source.getId(), point, icon, "", args.html,null,24);
-			}
+                    var record = args.record;
+                    if (record.hasLocation()) {
+                        var latitude = record.getLatitude();
+                        var longitude = record.getLongitude();
+                        if(latitude<-90 || latitude>90 || longitude<-180 || longitude>180) return;
+                        var point = new OpenLayers.LonLat(longitude, latitude);
+                        var marker = this.myMarkers[source];
+                        if (marker != null) {
+                            this.map.removeMarker(marker);
+                        }
+                        var icon = displayMapMarkerIcons[source];
+                        if(icon == null) {
+                            icon =  displayMapGetMarkerIcon();
+                            displayMapMarkerIcons[source] = icon;
+                        }
+                        this.myMarkers[source] = this.map.addMarker(source.getId(), point, icon, "", args.html,null,24);
+                    }
 		}
 	});
 }

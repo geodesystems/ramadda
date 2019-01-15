@@ -297,6 +297,20 @@ function DisplayThing(argId, argProperties) {
             setId: function(id) {
                 this.objectId = id;
             },
+            getTimeZone: function() {
+                return this.getProperty("timeZone");
+            },
+             formatDate: function(date,args) {
+                if(!args) args = {};
+                var suffix;
+                if(!Utils.isDefined(args.suffix)) 
+                    suffix = args.suffix;
+                else
+                    suffix = this.getProperty("dateSuffix");
+                var timeZone = this.getTimeZone();
+                if(!suffix && timeZone) suffix = timeZone;
+                return Utils.formatDate(date,args.options,{timeZone:timeZone,suffix:suffix});
+            },
         getUniqueId: function(base) {
                 return HtmlUtil.getUniqueId(base);
         },
@@ -3916,6 +3930,15 @@ function makePointData(json, derived,source) {
     if ((typeof name === 'undefined')) {
         name =  "Point Data";
     }
+
+    pointRecords.sort(function(a,b) {
+            if(a.getDate() && b.getDate()) {
+                if(a.getDate().getTime()<b.getDate().getTime()) return -1;
+                if(a.getDate().getTime()>b.getDate().getTime()) return 1;
+                return 0;
+            }
+        }); 
+
     return new  PointData(name,  fields, pointRecords);
 }
 
@@ -4312,7 +4335,7 @@ function RamaddaAnimationDisplay(displayManager, id, properties) {
             setIndex: function(i) {
                 if(i<0) i=0;
                 this.index = i;
-                this.applyStep();
+                this.applyStep(true, !Utils.isDefined(i));
             },
             toggle: function() {
                 if(this.running) {
@@ -4328,7 +4351,8 @@ function RamaddaAnimationDisplay(displayManager, id, properties) {
                 var theAnimation = this;
                 setTimeout(function() {theAnimation.tick();}, this.sleepTime);
             },
-           applyStep: function() {
+             applyStep: function(propagate, goToEnd) {
+                if(!Utils.isDefined(propagate)) propagate = true;
                 var data = this.displayManager.getDefaultData();
                 if(data == null) return;
                 var records = data.getRecords();
@@ -4336,18 +4360,32 @@ function RamaddaAnimationDisplay(displayManager, id, properties) {
                     $("#" + this.getDomId(ID_TIME)).html("no records");
                     return;
                 }
+                if(goToEnd) this.index = records.length-1;
                 if(this.index>=records.length) {
-                    this.index = records.length-1;
+                    this.index = 0;
                 }
                 var record = records[this.index];
                 var label = "";
                 if(record.getDate()!=null) {
-                    label += HtmlUtil.b("Date:") + " "  + record.getDate();
+                    var dttm = this.formatDate(record.getDate(),{suffix:this.getTimeZone()});
+                    label += HtmlUtil.b("Date:") + " "  + dttm;
                 } else {
                     label += HtmlUtil.b("Index:") +" " + this.index;
                 }
                 $("#" + this.getDomId(ID_TIME)).html(label);
-                this.displayManager.handleEventRecordSelection(this, null, this.index);
+                if(propagate) {
+                    this.displayManager.propagateEventRecordSelection(this, data, {index:this.index});
+                }
+            },
+            handleEventRecordSelection: function(source, args) {
+                var data = this.displayManager.getDefaultData();
+                if(data == null) return;
+                if(data != args.data) {
+                    return;
+                }
+                if(!data) return;
+                this.index = args.index;
+                this.applyStep(false);
             },
             faster: function() {
                 this.sleepTime = this.sleepTime/2;
@@ -4376,17 +4414,13 @@ function RamaddaAnimationDisplay(displayManager, id, properties) {
                 var get = this.getGet();
                 var html =  "";
                 html+=  HtmlUtil.onClick(get +".setIndex(0);", HtmlUtil.image(this.iconBegin,[ATTR_TITLE,"beginning", ATTR_CLASS, "display-animation-button", "xwidth","32"]));
-                html +="  ";
                 html+=  HtmlUtil.onClick(get +".deltaIndex(-1);", HtmlUtil.image(this.iconBack,[ATTR_TITLE,"back 1", ATTR_CLASS, "display-animation-button", "xwidth","32"]));
-                html +="  ";
                 html+=  HtmlUtil.onClick(get +".toggle();", HtmlUtil.image(this.iconStart,[ATTR_TITLE,"play/stop", ATTR_CLASS, "display-animation-button", "xwidth","32", ATTR_ID, this.getDomId(ID_START)]));
-                html +="  ";
                 html+=  HtmlUtil.onClick(get +".deltaIndex(1);", HtmlUtil.image(this.iconForward,[ATTR_TITLE,"forward 1", ATTR_CLASS, "display-animation-button", "xwidth","32"]));
-                html +="  ";
+                html+=  HtmlUtil.onClick(get +".setIndex();", HtmlUtil.image(this.iconEnd,[ATTR_TITLE,"end", ATTR_CLASS, "display-animation-button", "xwidth","32"]));
                 html+=  HtmlUtil.onClick(get +".faster();", HtmlUtil.image(this.iconFaster,[ATTR_CLASS, "display-animation-button", ATTR_TITLE,"faster", "xwidth","32"]));
-                html +="  ";
                 html+=  HtmlUtil.onClick(get +".slower();", HtmlUtil.image(this.iconSlower,[ATTR_CLASS, "display-animation-button", ATTR_TITLE,"slower", "xwidth","32"]));
-                html+=  HtmlUtil.div([ATTR_ID, this.getDomId(ID_TIME)],"&nbsp;");
+                html+=  HtmlUtil.div(["style","display:inline-block; margin-left:10px;",ATTR_ID, this.getDomId(ID_TIME)],"&nbsp;");
                 this.setDisplayTitle("Animation");
                 this.setContents(html);
             },
@@ -5157,6 +5191,10 @@ function RamaddaMultiChart(displayManager, id, properties) {
                 if(source==this) {
                     return;
                 }
+                var data =   this.dataCollection.getList()[0];
+                if(data != args.data) {
+                    return;
+                }
                 //                console.log("chart index="+ args.index);
                 this.setChartSelection(args.index);
             },
@@ -5529,27 +5567,7 @@ function RamaddaMultiChart(displayManager, id, properties) {
                     return  google.visualization.arrayToDataTable(dataList);
                 }
                 if(this.chartType == DISPLAY_GAUGE) {
-                    var list = [];
-                    list.push(["Label","Value"]);
-                    var header = dataList[0];
-                    var last = dataList[dataList.length-1];
-                    for(var i=0;i<last.length;i++) {
-                        if(!Utils.isNumber(last[i])) continue;
-                        var h  = header[i];
-                        if(h.length>20) {
-                            var index = h.indexOf("(");
-                            if(index>0) {
-                                h = h.substring(0,index);
-                            } 
-                        }
-                        if(h.length>20) {
-                            h = h.substring(0,19)+"...";
-                        }
-                        if(this.gaugeLabel) h = this.gaugeLabel;
-                        else if(this["gaugeLabel" + (i+1)]) h = this["gaugeLabel" + (i+1)];
-                        list.push([h,last[i]]);
-                    }
-                    return  google.visualization.arrayToDataTable(list);
+                    return this.makeGaugeDataTable(dataList);
                 }
                 if(this.chartType == DISPLAY_HISTOGRAM) {
                     return  google.visualization.arrayToDataTable(dataList);
@@ -5606,7 +5624,9 @@ function RamaddaMultiChart(displayManager, id, properties) {
                         value = row[j];
                         if(!value) value ="NA";
                         if(value && (typeof value) =="object") {
-                            if(value.f) value = value.f;
+                            if(value.f) {
+                                value = value.f;
+                            }  
                         }
                         if(Utils.isNumber(value)) {
                             value  = this.formatNumber(value);
@@ -5902,6 +5922,8 @@ function RamaddaMultiChart(displayManager, id, properties) {
                     this.chart = new google.visualization.Histogram(document.getElementById(chartId));
 
                 } else  if(chartType == DISPLAY_GAUGE) {
+                    this.dataList = dataList;
+                    this.chartOptions = chartOptions;
                     var min =Number.MAX_VALUE;
                     var max =Number.MIN_VALUE;
                     for(var row=1;row<dataList.length;row++) {
@@ -5996,7 +6018,7 @@ function RamaddaMultiChart(displayManager, id, properties) {
                         chartOptions.height = "100%";
                     }
                     this.chart.draw(dataTable, chartOptions); 
-                   var theDisplay = this;
+                    var theDisplay = this;
 
                     google.visualization.events.addListener(this.chart, 'onmouseover', function(event) {
                             mapVar  = theDisplay.getProperty("mapVar",null);
@@ -6033,8 +6055,8 @@ function RamaddaMultiChart(displayManager, id, properties) {
                                 var selected = theDisplay.chart.getSelection();
                                 if(selected && selected.length>0) {
                                     var index = selected[0].row;
-                                    theDisplay.displayManager.handleEventRecordSelection(theDisplay, 
-                                                                                         theDisplay.dataCollection.getList()[0], index);
+                                    theDisplay.displayManager.propagateEventRecordSelection(theDisplay, 
+                                                                                            theDisplay.dataCollection.getList()[0], {index:index});
                                 }
                             }
                         });
@@ -6096,6 +6118,41 @@ function GaugeDisplay(displayManager, id, properties) {
     properties = $.extend({"chartType": DISPLAY_GAUGE}, properties);
     RamaddaUtil.inherit(this, new RamaddaMultiChart(displayManager, id, properties));
     addRamaddaDisplay(this);
+    RamaddaUtil.inherit(this,{
+            makeGaugeDataTable: function(dataList) {
+                if(!Utils.isDefined(this.index)) this.index = dataList.length-1;
+                var index = this.index+1;
+                var list = [];
+                list.push(["Label","Value"]);
+                var header = dataList[0];
+                if(index>=dataList.length) index = dataList.length-1;
+                var row = dataList[index];
+                for(var i=0;i<row.length;i++) {
+                    if(!Utils.isNumber(row[i])) continue;
+                    var h  = header[i];
+                    if(h.length>20) {
+                        var index = h.indexOf("(");
+                        if(index>0) {
+                            h = h.substring(0,index);
+                        } 
+                    }
+                    if(h.length>20) {
+                        h = h.substring(0,19)+"...";
+                    }
+                    if(this.gaugeLabel) h = this.gaugeLabel;
+                    else if(this["gaugeLabel" + (i+1)]) h = this["gaugeLabel" + (i+1)];
+                    list.push([h,row[i]]);
+                }
+                return  google.visualization.arrayToDataTable(list);
+        },
+        setChartSelection: function(index) {
+                if(this.chart) {
+                    this.index  = index;
+                    var dataTable = this.makeGaugeDataTable(this.dataList);
+                    this.chart.draw(dataTable, this.chartOptions);
+                }
+            },
+                });
 }
 
 function BubbleDisplay(displayManager, id, properties) {
@@ -7105,7 +7162,6 @@ function RamaddaD3Display(displayManager, id, properties) {
             },
             //this gets called when an event source has selected a record
             handleEventRecordSelection: function(source, args) {
-                //this.setContents(args.html);
             },
             mouseover: function() {
                 // TO DO
@@ -9140,12 +9196,12 @@ function DisplayManager(argId,argProperties) {
                 var indexObj = [];
                 var closest =  RecordUtil.findClosest(records, lon, lat, indexObj);
                 if(closest!=null) {
-                    this.handleEventRecordSelection(mapDisplay, pointData, indexObj.index);
+                    this.propagateEventRecordSelection(mapDisplay, pointData, {index:indexObj.index});
                 }
                 this.notifyEvent("handleEventMapClick", mapDisplay, {mapDisplay:mapDisplay,lon:lon,lat:lat});
             },
-            handleEventRecordSelection: function(source, pointData, index) {
-
+            propagateEventRecordSelection: function(source, pointData, args) {
+                var index = args.index;
                 if(pointData ==null && this.dataList.length>0) {
                     pointData = this.dataList[0];
                 }
@@ -9155,16 +9211,12 @@ function DisplayManager(argId,argProperties) {
                     return;
                 }
                 if(index<0 || index>= records.length) {
-                    console.log("handleEventRecordSelection: bad index= " + index);
+                    console.log("propagateEventRecordSelection: bad index= " + index);
                     return;
                  }
-
-
                 var record = records[index];
                 if(record == null) return;
                 var values = this.getRecordHtml(record,fields);
-
-
                 if(source.recordSelectionCallback) {
                     var func = source.recordSelectionCallback;
                     if((typeof  func) == "string") {
@@ -9172,7 +9224,7 @@ function DisplayManager(argId,argProperties) {
                     }
                     func({display:source, pointData: pointData, index:index, pointRecord:record});
                 }
-                var params =  {index:index, record:record, html:values};
+                var params =  {index:index, record:record, html:values,data:pointData};
                 this.notifyEvent("handleEventRecordSelection", source,params);
                 var entries  =source.getEntries();
                 if(entries!=null && entries.length>0) {
@@ -9715,7 +9767,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
                         return;
                     }
                     //                    console.log("map index:" + layer.feature.dataIndex);
-                    this.getDisplayManager().handleEventRecordSelection(this,this.getPointData(),layer.feature.dataIndex);
+                    this.getDisplayManager().propagateEventRecordSelection(this,this.getPointData(),{index:layer.feature.dataIndex});
                 },
                doDisplayMap:  function() {
                     var v = (this.kmlLayer!=null || this.geojsonLayer!=null) && ((""+this.getProperty("displayAsMap","")) == "true");
@@ -10426,23 +10478,23 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		},
 
 		handleEventRecordSelection : function(source, args) {
-			var record = args.record;
-			if (record.hasLocation()) {
-                            var latitude = record.getLatitude();
-				var longitude = record.getLongitude();
-                                if(latitude<-90 || latitude>90 || longitude<-180 || longitude>180) return;
-				var point = new OpenLayers.LonLat(longitude, latitude);
-				var marker = this.myMarkers[source];
-				if (marker != null) {
-                                    this.map.removeMarker(marker);
-				}
-                                var icon = displayMapMarkerIcons[source];
-                                if(icon == null) {
-                                    icon =  displayMapGetMarkerIcon();
-                                    displayMapMarkerIcons[source] = icon;
-                                }
-				this.myMarkers[source] = this.map.addMarker(source.getId(), point, icon, "", args.html,null,24);
-			}
+                    var record = args.record;
+                    if (record.hasLocation()) {
+                        var latitude = record.getLatitude();
+                        var longitude = record.getLongitude();
+                        if(latitude<-90 || latitude>90 || longitude<-180 || longitude>180) return;
+                        var point = new OpenLayers.LonLat(longitude, latitude);
+                        var marker = this.myMarkers[source];
+                        if (marker != null) {
+                            this.map.removeMarker(marker);
+                        }
+                        var icon = displayMapMarkerIcons[source];
+                        if(icon == null) {
+                            icon =  displayMapGetMarkerIcon();
+                            displayMapMarkerIcons[source] = icon;
+                        }
+                        this.myMarkers[source] = this.map.addMarker(source.getId(), point, icon, "", args.html,null,24);
+                    }
 		}
 	});
 }

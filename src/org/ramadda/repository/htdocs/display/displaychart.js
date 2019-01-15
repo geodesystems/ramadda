@@ -376,6 +376,10 @@ function RamaddaMultiChart(displayManager, id, properties) {
                 if(source==this) {
                     return;
                 }
+                var data =   this.dataCollection.getList()[0];
+                if(data != args.data) {
+                    return;
+                }
                 //                console.log("chart index="+ args.index);
                 this.setChartSelection(args.index);
             },
@@ -748,27 +752,7 @@ function RamaddaMultiChart(displayManager, id, properties) {
                     return  google.visualization.arrayToDataTable(dataList);
                 }
                 if(this.chartType == DISPLAY_GAUGE) {
-                    var list = [];
-                    list.push(["Label","Value"]);
-                    var header = dataList[0];
-                    var last = dataList[dataList.length-1];
-                    for(var i=0;i<last.length;i++) {
-                        if(!Utils.isNumber(last[i])) continue;
-                        var h  = header[i];
-                        if(h.length>20) {
-                            var index = h.indexOf("(");
-                            if(index>0) {
-                                h = h.substring(0,index);
-                            } 
-                        }
-                        if(h.length>20) {
-                            h = h.substring(0,19)+"...";
-                        }
-                        if(this.gaugeLabel) h = this.gaugeLabel;
-                        else if(this["gaugeLabel" + (i+1)]) h = this["gaugeLabel" + (i+1)];
-                        list.push([h,last[i]]);
-                    }
-                    return  google.visualization.arrayToDataTable(list);
+                    return this.makeGaugeDataTable(dataList);
                 }
                 if(this.chartType == DISPLAY_HISTOGRAM) {
                     return  google.visualization.arrayToDataTable(dataList);
@@ -825,7 +809,9 @@ function RamaddaMultiChart(displayManager, id, properties) {
                         value = row[j];
                         if(!value) value ="NA";
                         if(value && (typeof value) =="object") {
-                            if(value.f) value = value.f;
+                            if(value.f) {
+                                value = value.f;
+                            }  
                         }
                         if(Utils.isNumber(value)) {
                             value  = this.formatNumber(value);
@@ -1121,6 +1107,8 @@ function RamaddaMultiChart(displayManager, id, properties) {
                     this.chart = new google.visualization.Histogram(document.getElementById(chartId));
 
                 } else  if(chartType == DISPLAY_GAUGE) {
+                    this.dataList = dataList;
+                    this.chartOptions = chartOptions;
                     var min =Number.MAX_VALUE;
                     var max =Number.MIN_VALUE;
                     for(var row=1;row<dataList.length;row++) {
@@ -1215,7 +1203,7 @@ function RamaddaMultiChart(displayManager, id, properties) {
                         chartOptions.height = "100%";
                     }
                     this.chart.draw(dataTable, chartOptions); 
-                   var theDisplay = this;
+                    var theDisplay = this;
 
                     google.visualization.events.addListener(this.chart, 'onmouseover', function(event) {
                             mapVar  = theDisplay.getProperty("mapVar",null);
@@ -1252,8 +1240,8 @@ function RamaddaMultiChart(displayManager, id, properties) {
                                 var selected = theDisplay.chart.getSelection();
                                 if(selected && selected.length>0) {
                                     var index = selected[0].row;
-                                    theDisplay.displayManager.handleEventRecordSelection(theDisplay, 
-                                                                                         theDisplay.dataCollection.getList()[0], index);
+                                    theDisplay.displayManager.propagateEventRecordSelection(theDisplay, 
+                                                                                            theDisplay.dataCollection.getList()[0], {index:index});
                                 }
                             }
                         });
@@ -1315,6 +1303,41 @@ function GaugeDisplay(displayManager, id, properties) {
     properties = $.extend({"chartType": DISPLAY_GAUGE}, properties);
     RamaddaUtil.inherit(this, new RamaddaMultiChart(displayManager, id, properties));
     addRamaddaDisplay(this);
+    RamaddaUtil.inherit(this,{
+            makeGaugeDataTable: function(dataList) {
+                if(!Utils.isDefined(this.index)) this.index = dataList.length-1;
+                var index = this.index+1;
+                var list = [];
+                list.push(["Label","Value"]);
+                var header = dataList[0];
+                if(index>=dataList.length) index = dataList.length-1;
+                var row = dataList[index];
+                for(var i=0;i<row.length;i++) {
+                    if(!Utils.isNumber(row[i])) continue;
+                    var h  = header[i];
+                    if(h.length>20) {
+                        var index = h.indexOf("(");
+                        if(index>0) {
+                            h = h.substring(0,index);
+                        } 
+                    }
+                    if(h.length>20) {
+                        h = h.substring(0,19)+"...";
+                    }
+                    if(this.gaugeLabel) h = this.gaugeLabel;
+                    else if(this["gaugeLabel" + (i+1)]) h = this["gaugeLabel" + (i+1)];
+                    list.push([h,row[i]]);
+                }
+                return  google.visualization.arrayToDataTable(list);
+        },
+        setChartSelection: function(index) {
+                if(this.chart) {
+                    this.index  = index;
+                    var dataTable = this.makeGaugeDataTable(this.dataList);
+                    this.chart.draw(dataTable, this.chartOptions);
+                }
+            },
+                });
 }
 
 function BubbleDisplay(displayManager, id, properties) {

@@ -30,6 +30,21 @@ function noop() {}
 
 var Utils = {
     pageLoaded: false,
+    formatDate: function(date,options, args) {
+        if(!args) args = {};
+        if(!options) {
+            options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric',hour:'numeric',minute:'numeric' };
+        }
+        var suffix = args.suffix;
+        if(!suffix) suffix = "";
+        else suffix = " " + suffix;
+        if(args.timeZone) {
+            options.timeZone = args.timeZone;
+        } else {
+            options.timeZone = "UTC";
+        }
+        return date.toLocaleDateString("en-US", options) + suffix;
+    },
     parseDate: function(s,roundUp, rel) {
         if(s ==null) return null;
         s = s.trim();
