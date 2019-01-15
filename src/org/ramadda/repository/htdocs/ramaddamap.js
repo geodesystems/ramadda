@@ -266,7 +266,7 @@ function initMapFunctions(theMap) {
                 theMap.getMap().updateSize();
                 theMap.centerOnMarkers(theMap.dfltBounds);
             },
-            handleFeatureover: function(feature) { 
+            handleFeatureover: function(feature, skipText) { 
                 var layer = feature.layer;
                 if(!(layer.isMapLayer=== true)) {
                     /*
@@ -277,7 +277,7 @@ function initMapFunctions(theMap) {
                             return;
                         }
                         }*/
-                    if(feature.text) {
+                    if(!skipText && feature.text) {
                         this.showFeatureText(feature);
                     }
                     return;
@@ -296,25 +296,20 @@ function initMapFunctions(theMap) {
                                 _this.showText(_this.getFeatureText(layer, feature));
                             }
                         }
-                        setTimeout(callback,500);
+                        if(!skipText) {
+                            setTimeout(callback,500);
+                        }
                     }
 
                 }
             },
-            handleFeatureout: function(feature) { 
+            handleFeatureout: function(feature, skipText) { 
                 layer = feature.layer;
                 if(layer && !(layer.isMapLayer=== true)) {
-                    /*
-                    if(feature.ramaddaId) {
-                        marker = this.findMarker(feature.ramaddaId);
-                        if(marker) {
-                            this.uncircleMarker(feature.ramaddaId);
-                            return;
+                    if(!skipText) {
+                        if(feature.text && !this.fixedText) {
+                            this.hideFeatureText(feature);
                         }
-                    }
-                    */
-                    if(feature.text && !this.fixedText) {
-                        this.hideFeatureText(feature);
                     }
                     return;
                 }
@@ -323,29 +318,26 @@ function initMapFunctions(theMap) {
                 if(!feature.isSelected) {
                     layer.drawFeature(feature,feature.style ||"default"); 
                 }
-                if(this.displayDiv) {
-                    if(this.displayedFeature == feature  && !this.fixedText) {
-                        this.showText("");
-                    }
+                if(!skipText && this.displayedFeature == feature  && !this.fixedText) {
+                    this.showText("");
                 }
             },
             handleNofeatureclick: function(layer) { 
                 if(layer.canSelect === false) return;
                 if(layer && layer.selectedFeature) {
-                    theMap.unselectFeature(layer.selectedFeature);
+                    this.unselectFeature(layer.selectedFeature);
+                    this.clearDateFeature();
                 }
             },
-            handleFeatureclick: function(layer, feature) { 
+             handleFeatureclick: function(layer, feature, center) { 
                 if(!layer)
                     layer = feature.layer;
+                this.selectDateFeature(feature);
                 if(layer.canSelect === false) return;
-                //                if(layer.canSelect === false || !(layer.isMapLayer=== true)) return;
                 if(layer.selectedFeature) {
-                    layer.drawFeature(layer.selectedFeature,layer.selectedFeature.style ||"default");
-                    layer.selectedFeature.isSelected = false;
-                    theMap.onPopupClose();
+                    this.unselectFeature(layer.selectedFeature);
                 }
-                theMap.selectedFeature = feature;
+                this.selectedFeature = feature;
                 layer.selectedFeature = feature;
                 layer.selectedFeature.isSelected =true;
                 layer.drawFeature(layer.selectedFeature,"select"); 
@@ -358,15 +350,40 @@ function initMapFunctions(theMap) {
                 } else {
                     this.showMarkerPopup(feature, true);
                 }
+                if(center) {
+                    var geometry = feature.geometry;
+                    if(geometry) {
+                        var bounds = geometry.getBounds();
+                        if(bounds) {
+                            this.getMap().zoomToExtent(bounds);
+                            this.getMap().setCenter(bounds.getCenterLonLat());
+                        }
+                    }
+                }
             },
+
+
             unselectFeature: function(feature) {
                 if(!feature) return;
+                feature.renderIntent = null;
+                feature.isSelected = false;
                 layer = feature.layer;
                 layer.drawFeature(layer.selectedFeature,layer.selectedFeature.style ||"default");
                 layer.selectedFeature.isSelected = false;
                 layer.selectedFeature = null;
                 this.selectedFeature = null;
                 this.onPopupClose();
+                return;
+
+                if(!feature) return;
+                this.clearDateFeature(feature);
+                layer = feature.layer;
+                layer.selectedFeature = null;
+                this.onPopupClose();
+                feature.isSelected = false;
+                layer.selectedFeature = null;
+                this.selectedFeature = null;
+                this.checkFeatureVisible(feature, true);
             },
             addLayer: function(layer) {
                 if(this.map!=null) {
@@ -543,6 +560,23 @@ function initMapFunctions(theMap) {
         return map;
     }
 
+    theMap.getFeatureName = function(feature) {
+        var p = feature.attributes;
+        for (var attr in p) {
+            var name = (""+attr).toLowerCase();
+            if(!(name.includes("label"))) continue;
+            var value = this.getAttrValue(p,attr);
+            if(value) return value;
+        }
+        for (var attr in p) {
+            var name = (""+attr).toLowerCase();
+            if(!(name.includes("name"))) continue;
+            var value = this.getAttrValue(p,attr);
+            if(value) return value;
+        }
+
+
+    }
     theMap.getAttrValue = function(p, attr) {
         value = "";
         if ((typeof p[attr] == 'object') || (typeof p[attr] == 'Object')) {
@@ -560,6 +594,7 @@ function initMapFunctions(theMap) {
         var _this  = this;
         if(searchFor) searchFor = searchFor.trim();
         if(searchFor == "") searchFor = null;
+        this.searchText = searchFor;
         var bounds=null;
         var toks = null;
         var doHelp = false;
@@ -605,21 +640,15 @@ function initMapFunctions(theMap) {
         }
 
         for(a in this.loadedLayers) {
-            var matchedFeature = null;
-            var matchedCnt = 0;
             var layer = this.loadedLayers[a];
-            var defaultStyle = layer.styleMap.styles["default"].defaultStyle;
+            if(layer.selectedFeature) {
+                this.handleNofeatureclick(layer);
+            }
             for(f in layer.features) {
                 var feature = layer.features[f];
-                var style = feature.style;
-                if(!style) {
-                    style =  {};
-                    $.extend(style, defaultStyle);
-                    feature.style = style;
-                }
                 var p = feature.attributes;
                 if(!searchFor) {
-                    style.display = 'inline';
+                    feature.featureVisibleSearch= true;
                     attrs.push(p);
                     continue;
                 }
@@ -670,20 +699,15 @@ function initMapFunctions(theMap) {
                 }
                 
                 if((doOr && someMatched) || (!doOr && allMatched)) {
-                    attrs.push(p);
-                    matchedFeature = feature;
-                    matchedCnt++;
-                    style.display = 'inline';
-                    var geometry = feature.geometry;
-                    if(geometry) {
-                        var fbounds = geometry.getBounds();
-                        if(bounds) bounds.extend(fbounds);
-                        else bounds = fbounds;
+                    feature.featureVisibleSearch= true;
+                    if(this.getFeatureVisible(feature)) {
+                        attrs.push(p);
                     }
                 } else {
-                    style.display = 'none';
+                    feature.featureVisibleSearch= false;
                 }
             }
+
             if(download) {
                 var csv = "";
                 for(var i in attrs) {
@@ -711,22 +735,118 @@ function initMapFunctions(theMap) {
                 }
                 Utils.makeDownloadFile("download.csv",csv);
             }
-            layer.redraw();
-            if(searchFor) {
-                if(matchedCnt == 1) {
-                    this.showText(this.getFeatureText(layer, matchedFeature));
-                } else {
-                    this.showText("");
+            this.setFeatureVisibility(layer);
+        }
+    }
+
+    theMap.checkFeatureVisible = function(feature, redraw) {
+        var layer = feature.layer;
+        var visible = this.getFeatureVisible(feature);
+        if(feature.originalStyle) {
+            feature.style = feature.originalStyle;
+        }
+        var style = feature.style;
+        if(!style) {
+            style =  {};
+            var defaultStyle = layer.styleMap.styles["default"].defaultStyle;
+            $.extend(style, defaultStyle);
+            feature.style = style;
+        } else {
+        }
+        if(!visible) {
+            style.display = 'none';
+        } else {
+            style.display = 'inline';
+        }
+        if(redraw) {
+            if(!feature.isSelected)
+                feature.renderIntent = null;
+            layer.drawFeature(feature,feature.style ||"default");
+        }
+        return visible;
+    }
+
+    theMap.getFeatureVisible = function(feature) {
+        var visible = true;
+        if(Utils.isDefined(feature.featureVisibleSearch) && !feature.featureVisibleSearch) {
+            visible = false;
+        }
+        if(Utils.isDefined(feature.featureVisibleDate) && !feature.featureVisibleDate) {
+            visible = false;
+        }
+        if(Utils.isDefined(feature.featureVisible) && !feature.featureVisible) {
+            visible = false;
+        }
+        return visible;
+    }
+
+    theMap.setFeatureVisibility  = function(layer) {
+        var _this  = this;
+        var didSearch = this.searchText || this.searchDate;
+        var bounds=null;
+        var html = "";
+        var didOn = false;
+        var didOff = false;
+        var cnt = 0;
+        var onFeature = null;
+        for(var i=0;i<layer.features.length;i++) {
+            var feature = layer.features[i];
+            var visible = this.checkFeatureVisible(feature, false);
+            if(!visible) {
+                this.clearDateFeature(feature);
+                didOff = true;
+            } else {
+                this.selectDateFeature(feature);
+                didOn = true;
+                cnt++;
+                if(!onFeature) onFeature= feature;
+                html+=HtmlUtil.div(["class","ramadda-map-feature","feature-index",""+i],this.getFeatureName(feature));
+                var geometry = feature.geometry;
+                if(geometry) {
+                    var fbounds = geometry.getBounds();
+                    if(bounds) bounds.extend(fbounds);
+                    else bounds = fbounds;
                 }
-                this.searchMsg.html(matchedCnt+" matched");
+            }
+        } 
+        if(cnt == 1) {
+            this.showText(this.getFeatureText(layer, onFeature));
+        } else {
+            if(didSearch || (didOn && didOff)) {
+                var id = this.mapDivId+"_features";
+                this.showText(HtmlUtil.div(["id",id,"class","ramadda-map-features"],html));
+                $("#" + id+" .ramadda-map-feature").click(function() {
+                    var index = parseInt($(this).attr("feature-index"));
+                    _this.handleFeatureclick(layer, layer.features[index],true);
+                    });
+                $("#" + id+" .ramadda-map-feature").mouseover(function() {
+                    var index = parseInt($(this).attr("feature-index"));
+                    _this.handleFeatureover(layer.features[index],true);
+                    });
+                $("#" + id+" .ramadda-map-feature").mouseout(function() {
+                    var index = parseInt($(this).attr("feature-index"));
+                    _this.handleFeatureout(layer.features[index], true);
+                    });
+
+            } else {
+                this.clearDateFeature();
+                this.showText("");
             }
         }
+        if(this.searchMsg) {
+            if(didSearch)
+                this.searchMsg.html(cnt+" matched");
+            else
+                this.searchMsg.html("");
+        }
+        layer.redraw();
         if(bounds) {
             this.getMap().zoomToExtent(bounds);
             this.getMap().setCenter(bounds.getCenterLonLat());
         } else {
             this.centerOnMarkers(theMap.dfltBounds,this.centerOnMarkersForce);
         }
+
     }
 
 
@@ -792,9 +912,6 @@ function initMapFunctions(theMap) {
             func(this, layer);
             return;
         }
-        console.log("select:" + layer.feature);
-        //        var format = new OpenLayers.Format.GeoJSON();
-        //        var json = format.write(feature);
         feature = layer.feature;
         var out  = this.getFeatureText(layer, feature);
         if (this.currentPopup) {
@@ -874,6 +991,148 @@ function initMapFunctions(theMap) {
         }
     };
 
+    theMap.initDates = function(layer) {
+        var _this = this;
+        var features = layer.features;
+        var didDate = false;
+        var didYear= false;
+        this.hasDates = false;
+        this.dates = [];
+        this.dateFeatures = [];
+        this.minDate = null;
+        this.maxDate = null;
+        for (var i = 0; i < features.length; i++) {
+            var feature = features[i];
+            var p = feature.attributes;
+            for (var attr in p) {
+                var name = (""+attr).toLowerCase();
+                var isYear = name.includes("year")||name.includes("_yr");
+                var isDate = name.includes("date");
+                //                if(i<3) console.log("name:" + name +" isYear:" + isYear);
+                if(!(isDate || isYear)) continue;
+                var value = this.getAttrValue(p,attr);
+                if(!value) continue;
+                try {
+                    var date = Utils.parseDate(value);
+                    if(isYear) didYear = true;
+                    else didDate  = true;
+                    this.dates.push(date);
+                    this.dateFeatures.push(feature);
+                    this.minDate=this.minDate==null?date:this.minDate.getTime()>date.getTime()?date:this.minDate;
+                    this.maxDate=this.maxDate==null?date:this.maxDate.getTime()<date.getTime()?date:this.maxDate;
+                    feature.featureDate = date;
+                    this.hasDates = true;
+                    break;
+                } catch(e) {
+                    console.log("error:" + e);
+                }
+            }
+        }
+        if(this.hasDates) {
+            var options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric',hour:'numeric',minute:'numeric' };
+            if(didYear)
+                options = {year: 'numeric'};
+            $("#"+this.mapDivId+"_footer").html(HtmlUtil.div(["class","ramadda-map-animation", "id",this.mapDivId+"_animation"],""));
+            this.animation = $("#"+this.mapDivId+"_animation");
+            var ticksDiv = HtmlUtil.div(["class","ramadda-map-animation-ticks", "id",this.mapDivId+"_animation_ticks"],"");
+            var infoDiv = HtmlUtil.div(["class","ramadda-map-animation-info", "id",this.mapDivId+"_animation_info"],"");
+            this.animation.html(ticksDiv+infoDiv);
+            var startLabel = this.minDate.toLocaleDateString("en-US", options);
+            var endLabel = this.maxDate.toLocaleDateString("en-US", options);
+            this.animationTicks = $("#"+this.mapDivId+"_animation_ticks");
+            this.animationInfo = $("#"+this.mapDivId+"_animation_info");
+            var info = "<table width=100%><tr><td>" + startLabel+"</td><td align=right>" + endLabel+"</td></tr></table>";
+            this.animationInfo.html(info);
+            var width = this.animationTicks.width();
+            var percentPad = width>0?5/width:0;
+            //            console.log("w:" + width + " " + percentPad);
+            var html = "";
+            var start = this.minDate.getTime();
+            var end = this.maxDate.getTime();
+            var range = end-start;
+            if(range>0) {
+                for(var i=0;i<this.dates.length;i++) {
+                    var feature = this.dateFeatures[i];
+                    feature.dateIndex = i;
+                    var date = this.dates[i];
+                    var time = date.getTime();
+                    var percent = 100*(time-start)/range;
+                    percent = percent-percent*percentPad;
+                    //                    if(i<10)
+                    //                        console.log("date:" + date+" percent:" + percent);
+                    var fdate = date.toLocaleDateString("en-US", options);
+                    var name = this.getFeatureName(feature);
+                    var tooltip = name!=null?name+"\n":"";
+                    tooltip+=fdate;
+                    tooltip+="\nshift-click: set visible range,cmd/ctrl-click:zoom";
+                    html+=HtmlUtil.div(["id",this.mapDivId+"_tick" + i, "feature-index",""+i,"style","left:" + percent+"%","class","ramadda-map-animation-tick","title",tooltip],"");
+                }
+            }
+            this.animationTicks.html(html);
+            var tick  =  $("#" + this.mapDivId+"_animation .ramadda-map-animation-tick");
+            tick.mouseover(function() {
+                    var index = parseInt($(this).attr("feature-index"));
+                    var feature = _this.dateFeatures[index];
+                    _this.handleFeatureover(feature,true);
+                });
+            tick.mouseout(function() {
+                    var index = parseInt($(this).attr("feature-index"));
+                    var feature = _this.dateFeatures[index];
+                    _this.handleFeatureout(feature, true);
+                    });
+            tick.click(function(evt) {
+                    var index = parseInt($(this).attr("feature-index"));
+                    var feature = _this.dateFeatures[index];
+                    if(evt.shiftKey) {
+                        _this.animateFeatures(feature.layer, feature.featureDate);
+                    } else {
+                        _this.clearDateFeature();
+                        var center = evt.metaKey || evt.ctrlKey;
+                        if(_this.isAnimating) {
+                            _this.animateFeatures(feature.layer);
+                            center = false;
+                        } 
+                        _this.handleFeatureclick(feature.layer,feature,center);
+                    }
+                });
+        }
+    }
+
+    theMap.animateFeatures = function(layer,date) {
+        this.dateSearch = date;
+        this.isAnimating  = Utils.isDefined(date);
+        var features = layer.features;
+        var didOff = false;
+        if(layer.selectedFeature) {
+            console.log("have selected");
+            this.unselectFeature(layer.selectedFeature);
+            return;
+        }
+        for (var i = 0; i < features.length; i++) {
+            var feature = features[i];
+            if(date && feature.featureDate) {
+                feature.featureVisibleDate = feature.featureDate.getTime()<=date.getTime();
+            } else {
+                feature.featureVisibleDate = true;
+            }
+        }
+        this.setFeatureVisibility(layer);
+    }
+    theMap.selectDateFeature = function(feature) {
+        if(!Utils.isDefined(feature.dateIndex)) return;
+        var element = $("#" + this.mapDivId+"_tick" + feature.dateIndex);
+        element.css("background-color","red");
+        element.css("zIndex","100");
+    }
+
+    theMap.clearDateFeature = function(feature) {
+        var element = feature!=null?$("#" + this.mapDivId+"_tick" + feature.dateIndex):$("#" + this.mapDivId+"_animation_ticks .ramadda-map-animation-tick");
+        //        console.log("clear date:" +(feature!=null?feature.dateIndex:"NA")+ " " + element.size());
+        element.css("background-color","");
+        element.css("zIndex","0");
+    }
+
+
     theMap.initMapVectorLayer = function(layer, canSelect, selectCallback, unselectCallback, loadCallback) {
         var _this=this;
         this.showLoadingImage();
@@ -896,6 +1155,7 @@ function initMapFunctions(theMap) {
                         _this.fixedText = true;
                         _this.showText(_this.getFeatureText(layer, layer.features[0]));
                     }
+                    _this.initDates(layer);
                 }});
         this.addLayer(layer);
         this.addSelectCallback(layer, canSelect,selectCallback, unselectCallback);
@@ -2395,6 +2655,7 @@ function initMapFunctions(theMap) {
             $.extend(myattrs, attrs);
         var _this = this;
         this.showFeatureText(marker);
+
         return this.addPoint(id+"_circle",marker.location, myattrs);
     }
 

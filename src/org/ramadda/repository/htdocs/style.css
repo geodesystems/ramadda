@@ -163,6 +163,41 @@ h2 a,   h2 a:visited, h2 a:link  {color: black;}
 }
 
 
+.ramadda-map-animation {
+}
+
+.ramadda-map-animation-ticks {
+   position:relative;
+   height:21px;
+   border-bottom: 1px #ccc solid;
+//   height:100%;
+}
+
+.ramadda-map-features {
+}
+
+.ramadda-map-feature {
+   cursor:pointer;
+}
+.ramadda-map-feature:hover {
+   text-decoration: underline;
+}
+
+.ramadda-map-animation-tick {
+   width:5px;
+   position:absolute;
+   height:20px;
+   background-color:#888;
+   display:inline-block;
+   zIndex:0;
+   z-index:0;
+}
+.ramadda-map-animation-tick:hover {
+   background-color:blue;
+   zIndex:50;
+   z-index:50;
+}
+
 .ramadda-map-search {
   margin-bottom:2px;
 }

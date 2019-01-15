@@ -6699,6 +6699,8 @@ function RamaddaCorrelationDisplay(displayManager, id, properties) {
                 colorByMax = parseFloat(this.colorByMax);
                 if(this.colorBar && this.colorBar !="none")
                     colors = Utils.ColorTables[this.colorBar];
+                else if(this.colorTable && this.colorTable !="none")
+                    colors = Utils.ColorTables[this.colorTable];
                 for(var fieldIdx1=0;fieldIdx1<fields.length;fieldIdx1++) {
                     var field1 = fields[fieldIdx1];
                     if(!field1.isFieldNumeric() || field1.isFieldGeo())  continue;
