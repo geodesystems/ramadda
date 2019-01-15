@@ -5511,7 +5511,9 @@ function RamaddaMultiChart(displayManager, id, properties) {
             },
             setChartSelection: function(index) {
                 if(this.chart!=null) {
-                    this.chart.setSelection([{row:index, column:null}]); 
+                    if(this.chart.setSelection) {
+                        this.chart.setSelection([{row:index, column:null}]); 
+                    }
                     //                    var container = $('#table_div').find('.google-visualization-table-table:eq(0)').parent();
                     //                    var header = $('#table_div').find('.google-visualization-table-table:eq(1)').parent();
                     //                    var row = $('.google-visualization-table-tr-sel');
