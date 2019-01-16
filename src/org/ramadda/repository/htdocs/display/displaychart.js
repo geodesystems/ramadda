@@ -2083,9 +2083,11 @@ function RamaddaCorrelationDisplay(displayManager, id, properties) {
                     var field1 = fields[fieldIdx1];
                     if(!field1.isFieldNumeric() || field1.isFieldGeo())  continue;
                     html+="<tr><td>" + HtmlUtil.tag("div",["class","side-heading"], field1.getLabel().replace(/ /g,"&nbsp;")) +"</td>";
+                    var rowName = field1.getLabel();
                     for(var fieldIdx2=0;fieldIdx2<fields.length;fieldIdx2++) {
                         var field2 = fields[fieldIdx2];
                         if(!field2.isFieldNumeric() || field2.isFieldGeo()) continue;
+                        var colName = field2.getLabel();
                         var t1=0;
                         var t2=0;
                         var cnt=0;
@@ -2121,7 +2123,7 @@ function RamaddaCorrelationDisplay(displayManager, id, properties) {
                             else if(index<0) index = 0;
                             style = "background-color:" + colors[index];
                         }
-                        html+="<td align=right style=\"" + style +"\">" + r.toFixed(3) +"</td>";
+                        html+="<td align=right style=\"" + style +"\">" + HtmlUtil.tag("div",["title","&rho;(" + rowName +"," + colName+")"], r.toFixed(3)) +"</td>";
                     }
                     html+="</tr>";
                 }
