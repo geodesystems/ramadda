@@ -807,13 +807,73 @@ function RamaddaMultiChart(displayManager, id, properties) {
                     dataTable.addColumn("string",header[0]);
                     dataTable.addColumn("number",header[1]);
                     //                    dataTable.addColumn({type:'string',role:'tooltip'});
-                    for(var i=1;i<dataList.length;i++) {
-                        //                        list.push([dataList[i][0],dataList[i][1],"\n" +header[0]+": " + dataList[i][0] +"\n" +header[1] +": " +dataList[i][1]]);
-                        list.push([dataList[i][0],dataList[i][1]]);
+                    if(this.getProperty("bins",null)) {
+                        var bins = parseInt(this.getProperty("bins",null));
+                        var min =Number.MAX_VALUE;
+                        var max =Number.MIN_VALUE;
+                        var haveMin = false;
+                        var haveMax= false;
+                        if(this.getProperty("binMin")) {
+                            min = parseFloat(this.getProperty("binMin"));
+                            haveMin = true;
+                        }
+                        if(this.getProperty("binMax")) {
+                            max = parseFloat(this.getProperty("binMax"));
+                            haveMax = true;
+                        }
+
+                        var goodRows = [];
+                        for(var i=1;i<dataList.length;i++) {
+                            var value  = dataList[i][1];
+                            //                            console.log(value +" " + isNaN(value));
+                            if(value == Number.POSITIVE_INFINITY || isNaN(value) || !Utils.isNumber(value) ||!Utils.isDefined(value) || value == null) {
+                                //                                console.log("bad value:" + value);
+                                continue;
+                            }
+                            if(!haveMin)
+                                min = Math.min(value, min);
+                            if(!haveMax)
+                                max = Math.max(value, max);
+                            goodRows.push(dataList[i]);
+                            //                            console.log(value +" " + min +" " + max);
+                        }
+                        var binList = [];
+
+
+                        var step = (max-min)/bins;
+                        console.log("min:" + min +" max:" + max + " step:" + step);
+                        for(var binIdx=0;binIdx<bins;binIdx++) {
+                            binList.push({min:min+binIdx*step,max:min+(binIdx+1)*step,values:[]});
+                        }
+                        for(var rowIdx=1;rowIdx<goodRows.length;rowIdx++) {
+                            var value =  goodRows[rowIdx][1];
+                            var ok = false;
+                            for(var binIdx=0;binIdx<bins;binIdx++) {
+                                if(value<binList[binIdx].min || (value>=binList[binIdx].min && value<=binList[binIdx].max)) {
+                                    binList[binIdx].values.push(value);
+                                    ok = true;
+                                    break;
+                                }
+                            }
+                            if(!ok) {
+                                binList[binList.length-1].values.push(value);
+                            }
+                        }
+                        for(var binIdx=0;binIdx<bins;binIdx++) {
+                            var bin = binList[binIdx];
+                            //                            console.log("bin:" + bin.min +" " + bin.max + " count:" + bin.values.length);
+                            list.push(["Bin:" +this.formatNumber(bin.min)+"-" + this.formatNumber(bin.max),
+                                       bin.values.length]);
+                        }
+                    } else {
+                        for(var i=1;i<dataList.length;i++) {
+                            list.push([dataList[i][0],dataList[i][1]]);
+                        }
                     }
                     dataTable.addRows(list);
                     return dataTable;
                 }
+
                 var dataTable = new google.visualization.DataTable();
                 var header = dataList[0];
                 var sample = dataList[1];
@@ -1201,7 +1261,12 @@ function RamaddaMultiChart(displayManager, id, properties) {
                     this.chart = new google.visualization.Calendar(document.getElementById(chartId));
                 } else  if(chartType == DISPLAY_PIECHART) {
                     chartOptions.tooltip = {textStyle: {color: '#000000'}, showColorCode: true};
-                    chartOptions.title=dataList[0][0] +" - " +dataList[0][1];
+                    if(this.getProperty("bins",null)) {
+                        chartOptions.title="Bins: " +dataList[0][1];
+                    } else {
+                        chartOptions.title=dataList[0][0] +" - " +dataList[0][1];
+                    }
+
                     if(this.is3D) {
                         chartOptions.is3D = true;
                     }
@@ -1342,6 +1407,9 @@ function CalendarDisplay(displayManager, id, properties) {
                     return " height:" + height +"px; " + " max-height:" + height +"px; overflow-y: auto;";
                 }
                 return "";
+            },
+            canDoMultiFields: function() {
+                return false;
             }
         });
 }
@@ -1545,7 +1613,8 @@ function RamaddaStatsDisplay(displayManager, id, properties,type) {
             defaultSelectedToAll: function() {
                 return true;
             },
-            fieldSelectionChanged: function() {
+           fieldSelectionChanged: function() {
+                SUPER.fieldSelectionChanged.call(this);
                 this.updateUI();
             },
             updateUI: function() {

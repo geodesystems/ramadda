@@ -300,9 +300,12 @@ function DisplayThing(argId, argProperties) {
             getTimeZone: function() {
                 return this.getProperty("timeZone");
             },
-             formatDate: function(date,args) {
+            formatDate: function(date,args) {
                 //Check for date object from charts
                 if(!date.getTime && date.v) date= date.v;
+                if(!date.toLocaleDateString) {
+                    return ""+ date;
+                }
                 if(!args) args = {};
                 var suffix;
                 if(!Utils.isDefined(args.suffix)) 
@@ -560,7 +563,6 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
                 var title = "";
                 if(this.getShowTitle()) {
                     title= entry.getName();
-                    console.log(title);
                     title = HtmlUtil.href(this.getRamadda().getEntryUrl(this.entryId),title);
                     this.jq(ID_TITLE).html(title);
                 }
@@ -850,6 +852,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 
             },
             fieldSelectionChanged: function() {
+                this.setDisplayTitle();
                 if(this.displayData) {
                     this.clearCachedData();
                     this.displayData();
@@ -865,6 +868,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             },
             getSelectedFields:function(dfltList) {
                 this.lastSelectedFields =  this.getSelectedFieldsInner(dfltList);
+                this.setDisplayTitle();
                 return this.lastSelectedFields;
             },
             getSelectedFieldsInner:function(dfltList) {
@@ -2126,7 +2130,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
                     if(title!="" && this.entryId) {
                         label = HtmlUtil.href(this.getRamadda().getEntryUrl(this.entryId),title);
                     }
-                    titleDiv = HtmlUtil.tag("span", [ATTR_CLASS,"display-title",ATTR_ID,this.getDomId(ID_TITLE)], label);
+                    titleDiv = HtmlUtil.tag("span", [ATTR_CLASS,"display-title",ATTR_ID,this.getDomId(ID_TITLE)], this.getDisplayTitle(title));
                     if(button== "") {
                         html += titleDiv;
                     } else {
@@ -2278,11 +2282,24 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             getHeight: function() {
                 return this.getFormValue("height",0);
             },
-            setDisplayTitle: function(title) {
+            getDisplayTitle: function(title) {
+                if(!title) title = this.title!=null?this.title:"";
                 var text = title;
+                var fields = this.lastSelectedFields;
+                if(fields && fields.length>0) 
+                    text = text.replace("{field}", fields[0].getLabel());
+                else
+                    text = text.replace("{field}", "");
+                return text;
+            },
+
+            setDisplayTitle: function(title) {
+                if(!Utils.stringDefined(title)) {
+                    title= this.getTitle(false).trim();
+                }
+                var text = this.getDisplayTitle(title);
                 if(this.entryId) {
-                    //xxx
-                    text = HtmlUtil.href(this.getRamadda().getEntryUrl(this.entryId),title);
+                    text = HtmlUtil.href(this.getRamadda().getEntryUrl(this.entryId),text);
                 }
                 if(this.getShowTitle()) {
                     this.jq(ID_TITLE).show();
@@ -4426,7 +4443,7 @@ function RamaddaAnimationDisplay(displayManager, id, properties) {
                 html+=  HtmlUtil.onClick(get +".setIndex();", HtmlUtil.image(this.iconEnd,[ATTR_TITLE,"end", ATTR_CLASS, "display-animation-button", "xwidth","32"]));
                 html+=  HtmlUtil.onClick(get +".faster();", HtmlUtil.image(this.iconFaster,[ATTR_CLASS, "display-animation-button", ATTR_TITLE,"faster", "xwidth","32"]));
                 html+=  HtmlUtil.onClick(get +".slower();", HtmlUtil.image(this.iconSlower,[ATTR_CLASS, "display-animation-button", ATTR_TITLE,"slower", "xwidth","32"]));
-                html+=  HtmlUtil.div(["style","display:inline-block; margin-left:10px;",ATTR_ID, this.getDomId(ID_TIME)],"&nbsp;");
+                html+=  HtmlUtil.div(["style","display:inline-block; min-height:24px; margin-left:10px;",ATTR_ID, this.getDomId(ID_TIME)],"&nbsp;");
                 this.setDisplayTitle("Animation");
                 this.setContents(html);
             },
@@ -5191,11 +5208,16 @@ function RamaddaMultiChart(displayManager, id, properties) {
                     pointData[i].handleEventMapClick(this, source, args.lon,args.lat);
                 }
             },
+             okToHandleEventRecordSelection: function() {
+                return true;
+            },
             handleEventRecordSelection: function(source, args) {
                 //TODO: don't do this in index space, do it in time or space space
                 if(source==this) {
                     return;
                 }
+                if(!this.okToHandleEventRecordSelection()) 
+                    return;
                 var data =   this.dataCollection.getList()[0];
                 if(data != args.data) {
                     return;
@@ -5623,13 +5645,73 @@ function RamaddaMultiChart(displayManager, id, properties) {
                     dataTable.addColumn("string",header[0]);
                     dataTable.addColumn("number",header[1]);
                     //                    dataTable.addColumn({type:'string',role:'tooltip'});
-                    for(var i=1;i<dataList.length;i++) {
-                        //                        list.push([dataList[i][0],dataList[i][1],"\n" +header[0]+": " + dataList[i][0] +"\n" +header[1] +": " +dataList[i][1]]);
-                        list.push([dataList[i][0],dataList[i][1]]);
+                    if(this.getProperty("bins",null)) {
+                        var bins = parseInt(this.getProperty("bins",null));
+                        var min =Number.MAX_VALUE;
+                        var max =Number.MIN_VALUE;
+                        var haveMin = false;
+                        var haveMax= false;
+                        if(this.getProperty("binMin")) {
+                            min = parseFloat(this.getProperty("binMin"));
+                            haveMin = true;
+                        }
+                        if(this.getProperty("binMax")) {
+                            max = parseFloat(this.getProperty("binMax"));
+                            haveMax = true;
+                        }
+
+                        var goodRows = [];
+                        for(var i=1;i<dataList.length;i++) {
+                            var value  = dataList[i][1];
+                            //                            console.log(value +" " + isNaN(value));
+                            if(value == Number.POSITIVE_INFINITY || isNaN(value) || !Utils.isNumber(value) ||!Utils.isDefined(value) || value == null) {
+                                //                                console.log("bad value:" + value);
+                                continue;
+                            }
+                            if(!haveMin)
+                                min = Math.min(value, min);
+                            if(!haveMax)
+                                max = Math.max(value, max);
+                            goodRows.push(dataList[i]);
+                            //                            console.log(value +" " + min +" " + max);
+                        }
+                        var binList = [];
+
+
+                        var step = (max-min)/bins;
+                        console.log("min:" + min +" max:" + max + " step:" + step);
+                        for(var binIdx=0;binIdx<bins;binIdx++) {
+                            binList.push({min:min+binIdx*step,max:min+(binIdx+1)*step,values:[]});
+                        }
+                        for(var rowIdx=1;rowIdx<goodRows.length;rowIdx++) {
+                            var value =  goodRows[rowIdx][1];
+                            var ok = false;
+                            for(var binIdx=0;binIdx<bins;binIdx++) {
+                                if(value<binList[binIdx].min || (value>=binList[binIdx].min && value<=binList[binIdx].max)) {
+                                    binList[binIdx].values.push(value);
+                                    ok = true;
+                                    break;
+                                }
+                            }
+                            if(!ok) {
+                                binList[binList.length-1].values.push(value);
+                            }
+                        }
+                        for(var binIdx=0;binIdx<bins;binIdx++) {
+                            var bin = binList[binIdx];
+                            //                            console.log("bin:" + bin.min +" " + bin.max + " count:" + bin.values.length);
+                            list.push(["Bin:" +this.formatNumber(bin.min)+"-" + this.formatNumber(bin.max),
+                                       bin.values.length]);
+                        }
+                    } else {
+                        for(var i=1;i<dataList.length;i++) {
+                            list.push([dataList[i][0],dataList[i][1]]);
+                        }
                     }
                     dataTable.addRows(list);
                     return dataTable;
                 }
+
                 var dataTable = new google.visualization.DataTable();
                 var header = dataList[0];
                 var sample = dataList[1];
@@ -6017,7 +6099,12 @@ function RamaddaMultiChart(displayManager, id, properties) {
                     this.chart = new google.visualization.Calendar(document.getElementById(chartId));
                 } else  if(chartType == DISPLAY_PIECHART) {
                     chartOptions.tooltip = {textStyle: {color: '#000000'}, showColorCode: true};
-                    chartOptions.title=dataList[0][0] +" - " +dataList[0][1];
+                    if(this.getProperty("bins",null)) {
+                        chartOptions.title="Bins: " +dataList[0][1];
+                    } else {
+                        chartOptions.title=dataList[0][0] +" - " +dataList[0][1];
+                    }
+
                     if(this.is3D) {
                         chartOptions.is3D = true;
                     }
@@ -6158,6 +6245,9 @@ function CalendarDisplay(displayManager, id, properties) {
                     return " height:" + height +"px; " + " max-height:" + height +"px; overflow-y: auto;";
                 }
                 return "";
+            },
+            canDoMultiFields: function() {
+                return false;
             }
         });
 }
@@ -6173,6 +6263,11 @@ function HistogramDisplay(displayManager, id, properties) {
     properties = $.extend({"chartType": DISPLAY_HISTOGRAM}, properties);
     RamaddaUtil.inherit(this, new RamaddaMultiChart(displayManager, id, properties));
     addRamaddaDisplay(this);
+    RamaddaUtil.inherit(this,{
+             okToHandleEventRecordSelection: function() {
+                return false;
+            },
+                });
 }
 
 function GaugeDisplay(displayManager, id, properties) {
@@ -6356,7 +6451,8 @@ function RamaddaStatsDisplay(displayManager, id, properties,type) {
             defaultSelectedToAll: function() {
                 return true;
             },
-            fieldSelectionChanged: function() {
+           fieldSelectionChanged: function() {
+                SUPER.fieldSelectionChanged.call(this);
                 this.updateUI();
             },
             updateUI: function() {

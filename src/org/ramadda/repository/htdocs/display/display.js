@@ -154,9 +154,12 @@ function DisplayThing(argId, argProperties) {
             getTimeZone: function() {
                 return this.getProperty("timeZone");
             },
-             formatDate: function(date,args) {
+            formatDate: function(date,args) {
                 //Check for date object from charts
                 if(!date.getTime && date.v) date= date.v;
+                if(!date.toLocaleDateString) {
+                    return ""+ date;
+                }
                 if(!args) args = {};
                 var suffix;
                 if(!Utils.isDefined(args.suffix)) 
@@ -414,7 +417,6 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
                 var title = "";
                 if(this.getShowTitle()) {
                     title= entry.getName();
-                    console.log(title);
                     title = HtmlUtil.href(this.getRamadda().getEntryUrl(this.entryId),title);
                     this.jq(ID_TITLE).html(title);
                 }
@@ -704,6 +706,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 
             },
             fieldSelectionChanged: function() {
+                this.setDisplayTitle();
                 if(this.displayData) {
                     this.clearCachedData();
                     this.displayData();
@@ -719,6 +722,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             },
             getSelectedFields:function(dfltList) {
                 this.lastSelectedFields =  this.getSelectedFieldsInner(dfltList);
+                this.setDisplayTitle();
                 return this.lastSelectedFields;
             },
             getSelectedFieldsInner:function(dfltList) {
@@ -1980,7 +1984,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
                     if(title!="" && this.entryId) {
                         label = HtmlUtil.href(this.getRamadda().getEntryUrl(this.entryId),title);
                     }
-                    titleDiv = HtmlUtil.tag("span", [ATTR_CLASS,"display-title",ATTR_ID,this.getDomId(ID_TITLE)], label);
+                    titleDiv = HtmlUtil.tag("span", [ATTR_CLASS,"display-title",ATTR_ID,this.getDomId(ID_TITLE)], this.getDisplayTitle(title));
                     if(button== "") {
                         html += titleDiv;
                     } else {
@@ -2132,11 +2136,24 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             getHeight: function() {
                 return this.getFormValue("height",0);
             },
-            setDisplayTitle: function(title) {
+            getDisplayTitle: function(title) {
+                if(!title) title = this.title!=null?this.title:"";
                 var text = title;
+                var fields = this.lastSelectedFields;
+                if(fields && fields.length>0) 
+                    text = text.replace("{field}", fields[0].getLabel());
+                else
+                    text = text.replace("{field}", "");
+                return text;
+            },
+
+            setDisplayTitle: function(title) {
+                if(!Utils.stringDefined(title)) {
+                    title= this.getTitle(false).trim();
+                }
+                var text = this.getDisplayTitle(title);
                 if(this.entryId) {
-                    //xxx
-                    text = HtmlUtil.href(this.getRamadda().getEntryUrl(this.entryId),title);
+                    text = HtmlUtil.href(this.getRamadda().getEntryUrl(this.entryId),text);
                 }
                 if(this.getShowTitle()) {
                     this.jq(ID_TITLE).show();

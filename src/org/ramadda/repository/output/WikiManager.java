@@ -290,9 +290,12 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                                         attrs(ATTR_TYPE, "piechart", "#pieHole","0.5",
                                               "#is3D","true",
                                               "#fields", "",
+                                              "#bins","bin count",
+                                              "#binMin","min",
+                                              "#binMax","max",
                                               "#sliceVisibilityThreshold","0.01",
-                                              "#chartWidth","400px",
-                                              "#chartHeight","400px",
+                                              "width","500",
+                                              "height","250",
                                               ATTR_LAYOUTHERE, "true", 
                                               ATTR_SHOWMENU, "true", 
                                               ATTR_SHOWTITLE, "true")),
@@ -5066,6 +5069,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
         }
         props.remove(ATTR_TITLE);
         if (title != null) {
+            title = title.replace("{entry}", entry.getName());
             propList.add(ATTR_TITLE);
             propList.add(Json.quote(title));
         } else {

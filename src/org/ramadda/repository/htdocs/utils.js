@@ -122,7 +122,9 @@ var Utils = {
         } else if (anumber>1) {
             return number_format(number,3);
         } else {
-            return number_format(number,5);
+            var decimals = ""+(number-Math.floor(number));
+            var s =  number_format(number,Math.min(decimals.length-2,5));
+            return s;
         }
     },
     isNumber: function(value) {

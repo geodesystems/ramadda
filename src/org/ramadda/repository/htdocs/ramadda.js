@@ -26,7 +26,6 @@ var mouseMoveCnt =0;
 var objectToHide;
 
 function hidePopupObject() {
-    console.log("hidePopup");
     if(objectToHide!=popupObject) {
         //	return;
     }
