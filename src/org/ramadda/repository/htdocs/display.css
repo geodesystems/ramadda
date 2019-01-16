@@ -40,12 +40,30 @@
 .display-correlation td {
     padding-left: 3px;
     padding-right: 3px;
+    border: 0px #888 solid;
 }
 
-.display-correlation .display-heading {
-    background-color: #efefef;
-    padding-left: 10px;
-    padding-right: 10px;
+.display-correlation .side-heading {
+//    background-color: #efefef;
+    font-weight: bold;
+    vertical-align: bottom;
+    height:100%;
+    min-height:40px;
+    padding-right:4px;
+    text-align:right;
+}
+
+.display-correlation .top-heading {
+//    background-color: #efefef;
+    height:100%;
+    vertical-align: bottom;
+    font-weight: bold;
+    padding-left: 2px;
+    padding-right: 2px;
+    border: 0px #ccc solid;
+    width:120px;
+    max-width:120px;
+    overflow-x:auto;
 }
 
 
@@ -57,7 +75,7 @@
 }
 
 .display-header {
-                text-align:left;
+     text-align:left;
 }
 .display-dialog-button {
     padding-left: 6px;

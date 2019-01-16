@@ -6906,13 +6906,13 @@ function RamaddaCorrelationDisplay(displayManager, id, properties) {
                 var allFields =  this.dataCollection.getList()[0].getRecordFields();
                 var fields = this.getSelectedFields([]);
                 if(fields.length==0) fields = allFields;
-                var html = HtmlUtil.openTag("table",["border", "1px" ,"bordercolor","#ccc","class","display-correlation","cellspacing","1","cellpadding","5"]);
+                var html = HtmlUtil.openTag("table",["border", "0" ,"class","display-correlation"]);
 
-                html+="<tr><td class=display-heading>&nbsp;</td>";
+                html+="<tr valign=bottom><td class=display-heading>&nbsp;</td>";
                 for(var fieldIdx=0;fieldIdx<fields.length;fieldIdx++) {
                     var field1 = fields[fieldIdx];
                     if(!field1.isFieldNumeric() || field1.isFieldGeo()) continue;
-                    html+= "<td align=center class=display-heading><b>" + field1.getLabel() +"</b></td>";
+                    html+= "<td align=center class=top-heading>" + HtmlUtil.tag("div",["class","top-heading"],field1.getLabel())+"</td>";
                 }
                 html+="</tr>";
 
@@ -6926,7 +6926,7 @@ function RamaddaCorrelationDisplay(displayManager, id, properties) {
                 for(var fieldIdx1=0;fieldIdx1<fields.length;fieldIdx1++) {
                     var field1 = fields[fieldIdx1];
                     if(!field1.isFieldNumeric() || field1.isFieldGeo())  continue;
-                    html+="<tr><td class=display-heading><b>" + field1.getLabel() +"</b></td>";
+                    html+="<tr><td>" + HtmlUtil.tag("div",["class","side-heading"], field1.getLabel().replace(/ /g,"&nbsp;")) +"</td>";
                     for(var fieldIdx2=0;fieldIdx2<fields.length;fieldIdx2++) {
                         var field2 = fields[fieldIdx2];
                         if(!field2.isFieldNumeric() || field2.isFieldGeo()) continue;
