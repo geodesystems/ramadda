@@ -370,11 +370,16 @@ function RamaddaMultiChart(displayManager, id, properties) {
                     pointData[i].handleEventMapClick(this, source, args.lon,args.lat);
                 }
             },
+             okToHandleEventRecordSelection: function() {
+                return true;
+            },
             handleEventRecordSelection: function(source, args) {
                 //TODO: don't do this in index space, do it in time or space space
                 if(source==this) {
                     return;
                 }
+                if(!this.okToHandleEventRecordSelection()) 
+                    return;
                 var data =   this.dataCollection.getList()[0];
                 if(data != args.data) {
                     return;
@@ -1352,6 +1357,11 @@ function HistogramDisplay(displayManager, id, properties) {
     properties = $.extend({"chartType": DISPLAY_HISTOGRAM}, properties);
     RamaddaUtil.inherit(this, new RamaddaMultiChart(displayManager, id, properties));
     addRamaddaDisplay(this);
+    RamaddaUtil.inherit(this,{
+             okToHandleEventRecordSelection: function() {
+                return false;
+            },
+                });
 }
 
 function GaugeDisplay(displayManager, id, properties) {

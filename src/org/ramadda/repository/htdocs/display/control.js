@@ -139,7 +139,7 @@ function RamaddaAnimationDisplay(displayManager, id, properties) {
                 html+=  HtmlUtil.onClick(get +".setIndex();", HtmlUtil.image(this.iconEnd,[ATTR_TITLE,"end", ATTR_CLASS, "display-animation-button", "xwidth","32"]));
                 html+=  HtmlUtil.onClick(get +".faster();", HtmlUtil.image(this.iconFaster,[ATTR_CLASS, "display-animation-button", ATTR_TITLE,"faster", "xwidth","32"]));
                 html+=  HtmlUtil.onClick(get +".slower();", HtmlUtil.image(this.iconSlower,[ATTR_CLASS, "display-animation-button", ATTR_TITLE,"slower", "xwidth","32"]));
-                html+=  HtmlUtil.div(["style","display:inline-block; margin-left:10px;",ATTR_ID, this.getDomId(ID_TIME)],"&nbsp;");
+                html+=  HtmlUtil.div(["style","display:inline-block; min-height:24px; margin-left:10px;",ATTR_ID, this.getDomId(ID_TIME)],"&nbsp;");
                 this.setDisplayTitle("Animation");
                 this.setContents(html);
             },

@@ -359,8 +359,14 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                                               "#showText","true",
                                               ATTR_LAYOUTHERE, "true", 
                                               ATTR_SHOWMENU, "true", 
+                                              ATTR_SHOWTITLE, "true")),
+                            new WikiTag(WIKI_TAG_DISPLAY,
+                                        "Animation",
+                                        attrs(ATTR_TYPE, "animation", 
+                                              ATTR_LAYOUTHERE, "true", 
+                                              ATTR_SHOWMENU, "true", 
                                               ATTR_SHOWTITLE, "true"))
-                            )
+                            ),
                             };
     //J++
 
