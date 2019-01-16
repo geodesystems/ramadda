@@ -2439,10 +2439,10 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             },
             dateInRange: function(date) {
                 if(date!=null) {
-                    if(this.minDateObj!=null && date.getTime()< minDate) {
+                    if(this.minDateObj!=null && date.getTime()< this.minDateObj.getTime()) {
                         return false;
                     }
-                    if(this.maxDateObj!=null && date.getTime()> maxDate) {
+                    if(this.maxDateObj!=null && date.getTime()> this.maxDateObj.getTime()) {
                         return false;
                     }
                 }
