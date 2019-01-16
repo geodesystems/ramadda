@@ -1114,6 +1114,9 @@ function RamaddaMultiChart(displayManager, id, properties) {
                         chartOptions.legend={};
                         chartOptions.legend.position=this.legendPosition;
                     }
+                    var isStacked = this.getProperty("isStacked",null);
+                    if(isStacked) 
+                        chartOptions.isStacked = isStacked=="true"?true:isStacked=="false"?false:isStacked;
                     chartOptions.vAxis={};
                     chartOptions.vAxis.viewWindow={};
                     if(Utils.isDefined(this.logScale)) {
