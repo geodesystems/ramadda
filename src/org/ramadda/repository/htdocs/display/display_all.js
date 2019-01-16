@@ -6123,8 +6123,8 @@ function CalendarDisplay(displayManager, id, properties) {
     RamaddaUtil.inherit(this, new RamaddaMultiChart(displayManager, id, properties));
     addRamaddaDisplay(this);
     RamaddaUtil.inherit(this,{
-            getDimensionsStyle: function() {
-                var height = this.getProperty("height",-1);
+            xgetDimensionsStyle: function() {
+                var height = this.getProperty("height",200);
                 if(height>0) {
                     return " height:" + height +"px; " + " max-height:" + height +"px; overflow-y: auto;";
                 }

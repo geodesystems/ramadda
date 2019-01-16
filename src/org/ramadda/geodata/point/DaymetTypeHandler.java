@@ -48,6 +48,7 @@ public class DaymetTypeHandler extends PointTypeHandler {
 
     /** _more_ */
     private static int IDX = RecordTypeHandler.IDX_LAST + 1;
+    private static int IDX_STRIDE = IDX++;
 
 
 
@@ -109,14 +110,13 @@ public class DaymetTypeHandler extends PointTypeHandler {
             dateSDF = RepositoryUtil.makeDateFormat("yyyy-MM-dd");
         }
         String startDate = "2010-01-01";
+        String endDate = dateSDF.format(cal.getTime());
         if (entry.getStartDate() < entry.getEndDate()) {
             startDate = dateSDF.format(new Date(entry.getStartDate()));
+            endDate = dateSDF.format(new Date(entry.getEndDate()));
         }
         url = url.replace("${start}", startDate);
-
-        String endDate = dateSDF.format(cal.getTime());
         url = url.replace("${end}", endDate);
-
         return url;
     }
 
@@ -186,8 +186,9 @@ public class DaymetTypeHandler extends PointTypeHandler {
                 if ( !file.exists()) {
                     ByteArrayOutputStream bos  = new ByteArrayOutputStream();
                     FileOutputStream      fos  = new FileOutputStream(file);
+                    int stride = entry.getValue(IDX_STRIDE,7);
                     String[]              args = new String[] {
-                        "-skip", "8", "-decimate", "0", "7", "-change", "0",
+                        "-skip", "8", "-decimate", "0", ""+stride, "-change", "0",
                         "\\.0$", "", "-change", "1", "\\.0$", "", "-combine",
                         "0,1", "-", "", "-scale", "3", "0", "0.0393700787",
                         "0", "-format", "3", "#0.00", "-columns", "9,2-8",

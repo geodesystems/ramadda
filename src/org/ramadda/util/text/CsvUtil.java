@@ -954,7 +954,9 @@ public class CsvUtil {
             if (arg.equals("-decimate")) {
                 int start = Integer.parseInt(args.get(++i));
                 int skip  = Integer.parseInt(args.get(++i));
-                info.getFilter().addFilter(new Filter.Decimate(start, skip));
+                if(skip>0) {
+                    info.getFilter().addFilter(new Filter.Decimate(start, skip));
+                }
 
                 continue;
             }
