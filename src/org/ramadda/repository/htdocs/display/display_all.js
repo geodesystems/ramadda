@@ -749,7 +749,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
                         }
                     }
 
-                    if(this.canDoMultiFields() && fields.length>0) {
+                    if(/*this.canDoMultiFields() && */fields.length>0) {
                         var selected = this.getSelectedFields([]);
                         var selectedIds = [];
                         for(i=0;i<selected.length;i++) { 
@@ -816,9 +816,15 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
                                 if(field.derived) {
                                     label += " (derived)";
                                 }
+                                var widget;
+                                if(this.canDoMultiFields()) {
+                                    widget = HtmlUtil.checkbox(field.checkboxId, ["class", checkboxClass], on);
+                                } else {
+                                    widget = HtmlUtil.radio(field.checkboxId, "field_radio", checkboxClass, "", on);
+                                }
+
                                 html += HtmlUtil.tag(TAG_DIV, [ATTR_TITLE, field.getId()],
-                                                     HtmlUtil.checkbox(field.checkboxId, ["class", checkboxClass],
-                                                                       on) +" " +label
+                                                     widget +" " +label
                                                      );
                             }
                             //                        html+= "<br>";
