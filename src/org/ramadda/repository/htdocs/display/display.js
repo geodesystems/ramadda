@@ -155,6 +155,8 @@ function DisplayThing(argId, argProperties) {
                 return this.getProperty("timeZone");
             },
              formatDate: function(date,args) {
+                //Check for date object from charts
+                if(!date.getTime && date.v) date= date.v;
                 if(!args) args = {};
                 var suffix;
                 if(!Utils.isDefined(args.suffix)) 
@@ -2367,7 +2369,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
                 var minDate = (this.minDateObj!=null?this.minDateObj.getTime():-1);
                 var maxDate = (this.maxDateObj!=null?this.maxDateObj.getTime():-1);
                 if(this.minDateObj!=null || this.maxDateObj!=null) {
-                    console.log("dates: "  + this.minDateObj +" " + this.maxDateObj);
+                    //                    console.log("dates: "  + this.minDateObj +" " + this.maxDateObj);
                 }
 
 

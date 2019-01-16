@@ -301,6 +301,8 @@ function DisplayThing(argId, argProperties) {
                 return this.getProperty("timeZone");
             },
              formatDate: function(date,args) {
+                //Check for date object from charts
+                if(!date.getTime && date.v) date= date.v;
                 if(!args) args = {};
                 var suffix;
                 if(!Utils.isDefined(args.suffix)) 
@@ -2513,7 +2515,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
                 var minDate = (this.minDateObj!=null?this.minDateObj.getTime():-1);
                 var maxDate = (this.maxDateObj!=null?this.maxDateObj.getTime():-1);
                 if(this.minDateObj!=null || this.maxDateObj!=null) {
-                    console.log("dates: "  + this.minDateObj +" " + this.maxDateObj);
+                    //                    console.log("dates: "  + this.minDateObj +" " + this.maxDateObj);
                 }
 
 
@@ -5584,6 +5586,7 @@ function RamaddaMultiChart(displayManager, id, properties) {
                     var header = dataList[0];
                     dataTable.addColumn({ type: 'date', id: 'Date' });
                     dataTable.addColumn({ type: 'number', id: header[1]});
+                    dataTable.addColumn({type:'string',role:'tooltip', 'p': {'html': true}});
                     var haveMissing = false;
                     var missing = this.getProperty("missingValue",null);
                     if(missing) {
@@ -5591,13 +5594,20 @@ function RamaddaMultiChart(displayManager, id, properties) {
                         missing = parseFloat(missing);
                     }
                     var list = [];
+                    var cnt = 0;
                     for(var i=1;i<dataList.length;i++) {
                         var value = dataList[i][1];
                         if(value == NaN) continue;
                         if(haveMissing && value == missing) {
                             continue;
                         }
-                        list.push([dataList[i][0],value]);
+                        cnt++;
+                        var dttm = this.formatDate(dataList[i][0]);
+                        dttm = dttm.replace(/ /g,"&nbsp;");
+                        var tooltip = "<center><b>" + dttm +"</b></center>" +
+                            "<b>" + header[1]+"</b>: " + this.formatNumber(value) ;
+                        tooltip =HtmlUtil.tag("div",["style","padding:5px;"],tooltip);
+                        list.push([dataList[i][0],value,tooltip]);
                     }
                     dataTable.addRows(list);
                     return dataTable;
