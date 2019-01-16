@@ -5595,6 +5595,7 @@ function RamaddaMultiChart(displayManager, id, properties) {
                     }
                     var list = [];
                     var cnt = 0;
+                    var options =  { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'};
                     for(var i=1;i<dataList.length;i++) {
                         var value = dataList[i][1];
                         if(value == NaN) continue;
@@ -5602,10 +5603,10 @@ function RamaddaMultiChart(displayManager, id, properties) {
                             continue;
                         }
                         cnt++;
-                        var dttm = this.formatDate(dataList[i][0]);
+                        var dttm = this.formatDate(dataList[i][0],{options:options});
                         dttm = dttm.replace(/ /g,"&nbsp;");
                         var tooltip = "<center><b>" + dttm +"</b></center>" +
-                            "<b>" + header[1]+"</b>: " + this.formatNumber(value) ;
+                            "<b>" + header[1].replace(/ /g,"&nbsp;")+"</b>:&nbsp;" + this.formatNumber(value) ;
                         tooltip =HtmlUtil.tag("div",["style","padding:5px;"],tooltip);
                         list.push([dataList[i][0],value,tooltip]);
                     }
