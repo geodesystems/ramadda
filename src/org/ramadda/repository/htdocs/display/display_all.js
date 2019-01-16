@@ -5985,6 +5985,9 @@ function RamaddaMultiChart(displayManager, id, properties) {
                     chartOptions.vAxis.title =  this.getProperty("vAxisTitle", header.length>2?header[2]:null);
                     this.chart = new google.visualization.BubbleChart(document.getElementById(chartId));
                 } else  if(chartType == DISPLAY_CALENDAR) {
+                    chartOptions.calendar = {
+                        cellSize: parseInt(this.getProperty("cellSize",15))
+                    };
                     this.chart = new google.visualization.Calendar(document.getElementById(chartId));
                 } else  if(chartType == DISPLAY_PIECHART) {
                     chartOptions.tooltip = {textStyle: {color: '#000000'}, showColorCode: true};
