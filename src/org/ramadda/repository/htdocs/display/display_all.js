@@ -2229,16 +2229,20 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
                 this.popup(this.getDomId(ID_DIALOG_BUTTON), dialog);
                 this.initDialog();
             },
+            getDimensionsStyle: function() {
+                var height = this.getProperty("height",-1);
+                if(height>0) {
+                    return  " height:" + height +"px; " + " max-height:" + height +"px; /*overflow-y: auto;*/";
+                }
+                return "";
+            },
             getContentsDiv: function() {
                 var extraStyle = "";
                 var width = this.getWidth();
                 if(width>0) {
                     extraStyle += "width:" + width +"px; /*overflow-x: auto;*/";
                 }
-                var height = this.getProperty("height",-1);
-                if(height>0) {
-                    extraStyle += " height:" + height +"px; " + " max-height:" + height +"px; /*overflow-y: auto;*/";
-                }
+                extraStyle += this.getDimensionsStyle();
                 return  HtmlUtil.div([ATTR_CLASS,"display-contents-inner display-" +this.type, "style", extraStyle, ATTR_ID, this.getDomId(ID_DISPLAY_CONTENTS)],"");
             },
             copyDisplay: function() {
@@ -6118,6 +6122,15 @@ function CalendarDisplay(displayManager, id, properties) {
     properties = $.extend({"chartType": DISPLAY_CALENDAR}, properties);
     RamaddaUtil.inherit(this, new RamaddaMultiChart(displayManager, id, properties));
     addRamaddaDisplay(this);
+    RamaddaUtil.inherit(this,{
+            getDimensionsStyle: function() {
+                var height = this.getProperty("height",-1);
+                if(height>0) {
+                    return " height:" + height +"px; " + " max-height:" + height +"px; overflow-y: auto;";
+                }
+                return "";
+            }
+        });
 }
 
 
