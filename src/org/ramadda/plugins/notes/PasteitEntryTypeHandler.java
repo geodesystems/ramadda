@@ -14,7 +14,7 @@
 * limitations under the License.
 */
 
-package org.ramadda.plugins.pasteit;
+package org.ramadda.plugins.notes;
 
 
 import org.ramadda.repository.*;
