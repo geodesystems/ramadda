@@ -152,8 +152,6 @@ public class JsonFileTypeHandler extends GenericTypeHandler {
         HtmlUtils.pre(sb, formatted);
         HtmlUtils.close(sb, "div");
         sb.append(HtmlUtils.script("ramaddaInitJsonDisplay('" + id + "');"));
-        System.err.println(sb);
-
         return sb.toString();
     }
 
