@@ -215,7 +215,7 @@ fields=Date[type=date format=yyyy-MM-dd],Open[chartable=true],High[chartable=tru
      </property>
      <column name="symbol" type="string"  label="Symbol"   />
      <column name="datatype" type="enumeration"  label="Data Type"   values="TIME_SERIES_DAILY:Daily,TIME_SERIES_DAILY_ADJUSTED:Daily Adjusted,TIME_SERIES_WEEKLY:Weekly,TIME_SERIES_WEEKLY_ADJUSTED:Weekly Adjusted,TIME_SERIES_MONTHLY:Monthly,TIME_SERIES_MONTHLY_ADJUSTED:Monthly Adjusted,TIME_SERIES_INTRADAY:Intraday"/>
-     <column name="interval" type="enumeration"  label="Interval for Intraday"   values="1min:1 Minute,5min:5 Minute,15min:15 Minute,30min:30 Minute,60min:60 Minute"/>
+     <column name="stock_interval" type="enumeration"  label="Interval for Intraday"   values="1min:1 Minute,5min:5 Minute,15min:15 Minute,30min:30 Minute,60min:60 Minute"/>
      <wiki_inner><![CDATA[
 +section # title="Stock: {{name}}"
 <br>
