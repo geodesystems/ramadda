@@ -6055,22 +6055,33 @@ function RamaddaMultiChart(displayManager, id, properties) {
                     this.chartOptions = chartOptions;
                     var min =Number.MAX_VALUE;
                     var max =Number.MIN_VALUE;
+                    var setMinMax = true;
                     for(var row=1;row<dataList.length;row++) {
                         var tuple = dataList[row];
+                        //                        if(tuple.length>2) setMinMax = false;
                         for(var col=0;col<tuple.length;col++) {
                             if(!Utils.isNumber(tuple[col])) {
                                 continue;
                             }
-                            min = Math.min(min, tuple[col]);
-                            max = Math.max(max, tuple[col]);
+                            var value = tuple[col];
+                            min = Math.min(min, value);
+                            max = Math.max(max, value);
                         }
                     }
-                    if(Utils.isDefined(this.gaugeMin)) 
+                    min = Utils.formatNumber(min,true);
+                    max = Utils.formatNumber(max,true);
+                    if(Utils.isDefined(this.gaugeMin))  {
+                        setMinMax = true;
                         min  = parseFloat(this.gaugeMin);
-                    if(Utils.isDefined(this.gaugeMax)) 
+                    }
+                    if(Utils.isDefined(this.gaugeMax)) {
+                        setMinMax = true;
                         max  = parseFloat(this.gaugeMax);
-                    chartOptions.min = min;
-                    chartOptions.max = max;
+                    }
+                    if(setMinMax) {
+                        chartOptions.min = min;
+                        chartOptions.max = max;
+                    }
                     this.chart = new google.visualization.Gauge(document.getElementById(chartId));
                 } else  if(chartType == DISPLAY_BUBBLE) {
                     if(this.colorTable)
@@ -6303,7 +6314,8 @@ function GaugeDisplay(displayManager, id, properties) {
                     }
                     if(this.gaugeLabel) h = this.gaugeLabel;
                     else if(this["gaugeLabel" + (i+1)]) h = this["gaugeLabel" + (i+1)];
-                    list.push([h,row[i]]);
+                    var value = row[i];
+                    list.push([h,Utils.formatNumber(value,true)]);
                 }
                 return  google.visualization.arrayToDataTable(list);
         },

@@ -110,7 +110,13 @@ var Utils = {
         if(v == null || v =="") return false;
         return true;
     },
-    formatNumber: function(number) {
+    formatNumber: function(number, toFloat) {
+        var s = this.formatNumberInner(number);
+        if(toFloat) return parseFloat(s);
+        return s;
+    },
+
+    formatNumberInner: function(number) {
         var anumber = number<0?-number:number;
         if(anumber == Math.floor(anumber)) return number;
         if(anumber>1000) {
