@@ -1,4 +1,4 @@
-<types xxxsupercategory="Miscellaneous" category="Information">
+<types category="Information">
 
   <type name="notes_notebook"  description="Notebook" handler="org.ramadda.plugins.notes.NotebookTypeHandler" >
      <property name="icon" value="/notes/notebook.png"/>
@@ -31,10 +31,24 @@
 
 </type>
 
-<types xxxsupercategory="Miscellaneous" category="Information">
+
+  <type name="notes_jsonfile"  description="Json File" handler="org.ramadda.plugins.notes.JsonFileTypeHandler" >
+     <property name="icon" value="/icons/json.png"/>
+     <property name="form.area.show" value="false"/>
+     <property name="form.date.show" value="false"/>
+     <property name="form.datatype.show" value="false"/>
+     <wiki_inner><![CDATA[
++section title={{name}}
+{{description wikify="true"}}
+{{json.view wikify="false"}}
+-section
+]]>
+</wiki_inner>
+</type>
+
 
 <!--
-  <type name="pasteitcollection"  description="Paste It Collection" handler="org.ramadda.plugins.pasteit.PasteitCollectionTypeHandler" >
+  <type name="pasteitcollection"  description="Paste It Collection" handler="org.ramadda.plugins.notes.PasteitCollectionTypeHandler" >
      <property name="icon" value="/faq/faq.png"/>
      <property name="form.description.rows" value="5"/>
      <property name="form.area.show" value="false"/>
@@ -45,17 +59,13 @@
 -->
 
 
-  <type name="pasteitentry"  description="Paste Text Entry" handler="org.ramadda.plugins.pasteit.PasteitEntryTypeHandler" >
+  <type name="pasteitentry"  description="Paste Text Entry" handler="org.ramadda.plugins.notes.PasteitEntryTypeHandler" >
      <property name="icon" value="/icons/txt.png"/>
      <property name="form.area.show" value="false"/>
      <property name="form.date.show" value="false"/>
      <property name="form.resource.show" value="false"/>
      <property name="form.datatype.show" value="false"/>
 </type>
-
-
-</types>
-
 
 
 </types>

@@ -1070,3 +1070,22 @@ function number_format( number, decimals, dec_point, thousands_sep ) {
 }
 
 
+function ramaddaInitJsonDisplay(id) {
+    var img = "<img class=\"ramadda-json-button\" src=\"" +icon_tree_open+ "\"> ";
+    $("#" +id +" .ramadda-json-block").before(img);
+    $("#" +id +" .ramadda-json-button").click(function() {
+            var block = $(this).next();
+            var state = block.attr("block-state");
+            if(state == "close") {
+                state = "open";
+                block.css("display","inline-block");
+                $(this).attr("src",icon_tree_open);
+            } else {
+                state = "close";
+                $(this).attr("src",icon_tree_closed);
+                block.css("display","none");
+            }
+            block.attr("block-state",state);
+            //            block.css("background","red");
+        });
+}

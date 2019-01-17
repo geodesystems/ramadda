@@ -1036,6 +1036,40 @@ public class Json {
     }
 
 
+
+    /**
+     * _more_
+     *
+     * @param file _more_
+     * @param forHtml _more_
+     *
+     * @return _more_
+     *
+     * @throws Exception _more_
+     */
+    public static String format(String file, boolean forHtml)
+            throws Exception {
+        String     json = IOUtil.readContents(file, Json.class);
+        JSONObject obj  = new JSONObject(json.toString());
+        String     s    = obj.toString(forHtml
+                                       ? 1
+                                       : 3);
+        if (forHtml) {
+            s = s.replaceAll("\t", "  ");
+            s = s.replaceAll("<", "&lt;").replaceAll(">", "&gt;");
+            s = s.replaceAll("\\{", "<span class='ramadda-json-block'>{");
+            s = s.replaceAll("\\} *([^,])", "}</span>$1");
+            s = s.replaceAll("\\} *,", "},</span>");
+
+            s = s.replaceAll("\\[", "<span class='ramadda-json-block'>[");
+            s = s.replaceAll("\\] *([^,])", "]</span>$1");
+            s = s.replaceAll("\\] *,", "],</span>");
+        }
+
+        return s;
+    }
+
+
     /**
      * _more_
      *
@@ -1044,14 +1078,16 @@ public class Json {
      * @throws Exception _more_
      */
     public static void main(String[] args) throws Exception {
+        System.out.println(format(args[0], true));
+        if (true) {
+            return;
+        }
+
         System.err.println(getBounds(args[0]));
         if (true) {
             return;
         }
-        String json = IOUtil.readContents(args[0], Json.class);
-        //        JSONObject   obj      = new JSONObject(json.toString());
-        //        System.out.println(obj.toString(3));
-        //        if(true) return;
+
 
         toCsv(args[0], System.out, (args.length > 1)
                                    ? args[1]

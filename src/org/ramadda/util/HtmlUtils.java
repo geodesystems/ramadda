@@ -1832,6 +1832,10 @@ public class HtmlUtils {
         return pre(content, "");
     }
 
+    public static void pre(Appendable sb, String content) throws Exception {
+        tag(sb, TAG_PRE, "", content);
+    }
+
 
     /**
      * _more_

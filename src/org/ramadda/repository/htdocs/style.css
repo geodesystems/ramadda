@@ -544,6 +544,13 @@ input, password, fileinput,textarea {
    color: black;
 }
 
+.ramadda-json-block {
+  display:inline-block;
+//border: 1px #d8d8d8  solid;
+    vertical-align:top;
+    //margin-left:5px;
+}
+
 .entry-list {
     overflow-y: auto;
     border: 1px #d8d8d8  solid;

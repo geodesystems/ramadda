@@ -22,9 +22,14 @@ import org.ramadda.repository.auth.*;
 import org.ramadda.repository.metadata.*;
 import org.ramadda.repository.output.*;
 import org.ramadda.repository.type.*;
-import org.ramadda.util.FormInfo;
 
+import org.ramadda.util.FormInfo;
 import org.ramadda.util.HtmlUtils;
+import org.ramadda.util.HtmlUtils;
+
+import org.ramadda.util.Json;
+import org.ramadda.util.Utils;
+import org.ramadda.util.WikiUtil;
 
 import org.w3c.dom.*;
 
@@ -32,15 +37,15 @@ import ucar.unidata.util.IOUtil;
 
 import java.io.*;
 
+import java.util.Hashtable;
+
 
 /**
  *
  *
  */
-public class PasteitEntryTypeHandler extends GenericTypeHandler {
+public class JsonFileTypeHandler extends GenericTypeHandler {
 
-    /** _more_ */
-    public static final String ARG_SUFFIX = "suffix";
 
     /**
      * _more_
@@ -50,7 +55,7 @@ public class PasteitEntryTypeHandler extends GenericTypeHandler {
      *
      * @throws Exception _more_
      */
-    public PasteitEntryTypeHandler(Repository repository, Element entryNode)
+    public JsonFileTypeHandler(Repository repository, Element entryNode)
             throws Exception {
         super(repository, entryNode);
     }
@@ -75,14 +80,7 @@ public class PasteitEntryTypeHandler extends GenericTypeHandler {
             throws Exception {
         super.addSpecialToEntryForm(request, sb, parentEntry, entry,
                                     formInfo, baseTypeHandler);
-        //Only on a new entry
-        if (entry != null) {
-            return;
-        }
-        sb.append(formEntry(request, msgLabel("File suffix"),
-                            HtmlUtils.input(ARG_SUFFIX, "txt", 10)));
-
-        sb.append(formEntryTop(request, msgLabel("Paste text"),
+        sb.append(formEntryTop(request, msgLabel("Json text"),
                                HtmlUtils.textArea(ARG_TEXT, "", 50, 60)));
     }
 
@@ -93,15 +91,18 @@ public class PasteitEntryTypeHandler extends GenericTypeHandler {
      *
      * @return _more_
      */
-@Override
+    @Override
     public String getUploadedFile(Request request) {
         try {
+            if (request.defined(ARG_FILE)) {
+                return request.getUploadedFile(ARG_FILE);
+            }
             String name = request.getString(ARG_NAME, "").trim();
             if (name.length() == 0) {
                 name = "file";
             }
-            if (name.indexOf(".") < 0) {
-                name = name + "." + request.getString(ARG_SUFFIX, "");
+            if ( !name.toLowerCase().endsWith(".json")) {
+                name = name + ".json";
             }
             File         f   = getStorageManager().getTmpFile(request, name);
             OutputStream out = getStorageManager().getFileOutputStream(f);
@@ -115,5 +116,47 @@ public class PasteitEntryTypeHandler extends GenericTypeHandler {
 
         }
     }
+
+
+    /**
+     * _more_
+     *
+     * @param wikiUtil _more_
+     * @param request _more_
+     * @param originalEntry _more_
+     * @param entry _more_
+     * @param tag _more_
+     * @param props _more_
+     *
+     * @return _more_
+     *
+     * @throws Exception _more_
+     */
+    @Override
+    public String getWikiInclude(WikiUtil wikiUtil, Request request,
+                                 Entry originalEntry, Entry entry,
+                                 String tag, Hashtable props)
+            throws Exception {
+
+        if ( !tag.equals("json.view")) {
+            return super.getWikiInclude(wikiUtil, request, originalEntry,
+                                        entry, tag, props);
+        }
+        if ( !entry.isFile()) {
+            return "No Json file available";
+        }
+        String        id = Utils.getGuid();
+        String formatted = Json.format(entry.getResource().getPath(), true);
+        StringBuilder sb = new StringBuilder();
+        HtmlUtils.open(sb, "div", "id", id);
+        HtmlUtils.pre(sb, formatted);
+        HtmlUtils.close(sb, "div");
+        sb.append(HtmlUtils.script("ramaddaInitJsonDisplay('" + id + "');"));
+        System.err.println(sb);
+
+        return sb.toString();
+    }
+
+
 
 }
