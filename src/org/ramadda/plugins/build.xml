@@ -48,7 +48,6 @@
       <ant antfile="${src_dir}/org/ramadda/plugins/nist/build.xml" inheritAll="false"/>
       <ant antfile="${src_dir}/org/ramadda/plugins/notes/build.xml" inheritAll="false"/>
       <ant antfile="${src_dir}/org/ramadda/plugins/ontology/build.xml" inheritAll="false"/>
-      <ant antfile="${src_dir}/org/ramadda/plugins/pasteit/build.xml" inheritAll="false"/>
       <ant antfile="${src_dir}/org/ramadda/plugins/phone/build.xml" inheritAll="false"/>
       <ant antfile="${src_dir}/org/ramadda/plugins/poll/build.xml" inheritAll="false"/>
       <ant antfile="${src_dir}/org/ramadda/plugins/power/build.xml" inheritAll="false"/>
