@@ -1070,22 +1070,52 @@ function number_format( number, decimals, dec_point, thousands_sep ) {
 }
 
 
-function ramaddaInitJsonDisplay(id) {
-    var img = "<img class=\"ramadda-json-button\" src=\"" +icon_tree_open+ "\"> ";
-    $("#" +id +" .ramadda-json-block").before(img);
-    $("#" +id +" .ramadda-json-button").click(function() {
-            var block = $(this).next();
-            var state = block.attr("block-state");
-            if(state == "close") {
-                state = "open";
-                block.css("display","inline-block");
-                $(this).attr("src",icon_tree_open);
-            } else {
-                state = "close";
-                $(this).attr("src",icon_tree_closed);
-                block.css("display","none");
-            }
-            block.attr("block-state",state);
-            //            block.css("background","red");
+function ramaddaJsonAllOpen(id) {
+   $("#" +id +" .ramadda-json-button").each(function() {
+           ramaddaJsonSetVisible(id,$(this),"close");
+       });
+}
+function ramaddaJsonAllClose(id) {
+   $("#" +id +" .ramadda-json-button").each(function() {
+           ramaddaJsonSetVisible(id,$(this),"open");
+       });
+}
+
+function ramaddaJsonSetVisible(id, button, state,all) {
+    var block = button.next();
+    if(!state)
+        state = block.attr("block-state");
+    if(state == "close") {
+        if(all){
+            block.find(".ramadda-json-button").each(function() {
+                    ramaddaJsonSetVisible(id,$(this),"close");
+                });
+        }
+        state = "open";
+        block.css("display","inline-block");
+        button.attr("src",icon_tree_open);
+    } else {
+        if(all){
+            block.find(".ramadda-json-button").each(function() {
+                    ramaddaJsonSetVisible(id,$(this),"open");
+                });
+        }
+        state = "close";
+        button.attr("src",icon_tree_closed);
+        block.css("display","none");
+    }
+    block.attr("block-state",state);
+}
+
+function ramaddaJsonInit(id) {
+    
+    var img = HtmlUtil.image(icon_tree_open, ["class","ramadda-json-button","title","shift-click: toggle all"]);
+    var links = HtmlUtil.onClick("ramaddaJsonAllOpen('" + id+"')","All Open",[]) +
+        "&nbsp;&nbsp;" +
+        HtmlUtil.onClick("ramaddaJsonAllClose('" + id+"')","All Close",[])
+    $("#" +id).before(links);
+    $("#" +id +" .ramadda-json-block").before(img+" ");
+    $("#" +id +" .ramadda-json-button").click(function(evt) {
+            ramaddaJsonSetVisible(id,$(this),null,evt.shiftKey);
         });
 }
