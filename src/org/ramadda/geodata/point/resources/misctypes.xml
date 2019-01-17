@@ -50,15 +50,17 @@
 {{display type="linechart" showTitle="false" layoutHere="false" fields="tmax"}}
 {{display type="linechart" showTitle="false" layoutHere="false" fields="swe"}}
 {{display type="barchart" showTitle="false" layoutHere="false" fields="precipitation"}}
-{{resource  message="" title="Download Data"}}
 -col
 +col-md-4
 <center>
 Data courtesy of <a href="https://daymet.ornl.gov/">ORNL Daymet</a>
+{{resource  message="" title="Download Data"}}
 </center>
 {{map}}
 -col
 -row
+{{display  type="correlation"  fields="precipitation,tmax,tmin,vp,srad,swe"  layoutHere="true"  showMenu="true"  showTitle="false" 
+}}
 ]]>
 
 </wiki>
