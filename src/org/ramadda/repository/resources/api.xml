@@ -53,7 +53,7 @@
   </group>
 
   <group handler="searchmanager">
-      <api request="/search/textform"        method="processEntryTextSearchForm"     name="Search" toplevel="true"  icon="/icons/magnifier.png"/>
+      <api request="/search/textform"        method="processEntryTextSearchForm"     name="Search" xtoplevel="true"  icon="/icons/magnifier.png"/>
       <api request="/search/form"            method="processEntrySearchForm"         name="Search"/>
       <api request="/search/browse"          method="processEntryBrowseSearchForm"   name="Browse"/>
       <api request="/search/do"              method="processEntrySearch"/>
