@@ -2337,7 +2337,6 @@ public class TypeHandler extends RepositoryManager {
     public void getEntryLinks(Request request, Entry entry, List<Link> links)
             throws Exception {
 
-
         if (parent != null) {
             parent.getEntryLinks(request, entry, links);
 
