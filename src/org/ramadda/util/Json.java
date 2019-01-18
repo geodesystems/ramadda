@@ -1051,19 +1051,29 @@ public class Json {
             throws Exception {
         String     json = IOUtil.readContents(file, Json.class);
         JSONObject obj  = new JSONObject(json.toString());
-        String     s    = obj.toString(forHtml
-                                       ? 1
-                                       : 3);
+        //        String     s    = forHtml?obj.toString().replaceAll("\n"," "):obj.toString(3);
+        String s = forHtml
+                   ? obj.toString(1)
+                   : obj.toString(3);
+        //        if(true) return s;
         if (forHtml) {
-            s = s.replaceAll("\t", "  ");
-            s = s.replaceAll("<", "&lt;").replaceAll(">", "&gt;");
-            s = s.replaceAll("\\{", "<span class='ramadda-json-block'>{");
-            s = s.replaceAll("\\} *([^,])", "}</span>$1");
-            s = s.replaceAll("\\} *,", "},</span>");
+            s = s.replaceAll("\t", "  ").replaceAll("<",
+                             "&lt;").replaceAll(">", "&gt;");
 
-            s = s.replaceAll("\\[", "<span class='ramadda-json-block'>[");
-            s = s.replaceAll("\\] *([^,])", "]</span>$1");
-            s = s.replaceAll("\\] *,", "],</span>");
+            s = s.replaceAll(
+                "\\{",
+                "<span class=ramadda-json-openbracket>{</span><span class='ramadda-json-block'>");
+            s = s.replaceAll("( *)\\}( *)([^,])", "</span>$1$2}$3");
+            s = s.replaceAll("( *)\\}( *),", "</span>$1}$2,");
+
+            s = s.replaceAll(
+                "\\[",
+                "<span class=ramadda-json-openbracket>[</span><span class='ramadda-json-block'>");
+            s = s.replaceAll("( *)\\]( *)([^,])", "</span>$1$2]$3");
+            s = s.replaceAll("( *)\\]( *),", "</span>$1]$2,");
+
+            s = s.replace(">\n", ">");
+            s = s.replaceAll("(?s)\n( *)</span", "</span");
         }
 
         return s;
@@ -1078,7 +1088,10 @@ public class Json {
      * @throws Exception _more_
      */
     public static void main(String[] args) throws Exception {
-        System.out.println(format(args[0], true));
+        String s = format(args[0], true);
+        if (s != null) {
+            System.out.println(s);
+        }
         if (true) {
             return;
         }

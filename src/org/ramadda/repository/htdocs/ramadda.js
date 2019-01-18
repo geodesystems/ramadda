@@ -1082,7 +1082,9 @@ function ramaddaJsonAllClose(id) {
 }
 
 function ramaddaJsonSetVisible(id, button, state,all) {
-    var block = button.next();
+    var block = button.next(".ramadda-json-block");
+    var block = button.next().next();
+    //    console.log("block:" + block.size());
     if(!state)
         state = block.attr("block-state");
     if(state == "close") {
@@ -1092,7 +1094,7 @@ function ramaddaJsonSetVisible(id, button, state,all) {
                 });
         }
         state = "open";
-        block.css("display","inline-block");
+        block.css("display","block");
         button.attr("src",icon_tree_open);
     } else {
         if(all){
@@ -1114,8 +1116,10 @@ function ramaddaJsonInit(id) {
         "&nbsp;&nbsp;" +
         HtmlUtil.onClick("ramaddaJsonAllClose('" + id+"')","All Close",[])
     $("#" +id).before(links);
-    $("#" +id +" .ramadda-json-block").before(img+" ");
+    var block = $("#" +id +" .ramadda-json-block");
+    block.prev(".ramadda-json-openbracket").before(img+" ");
     $("#" +id +" .ramadda-json-button").click(function(evt) {
+            //           $(this).css("background","red");
             ramaddaJsonSetVisible(id,$(this),null,evt.shiftKey);
         });
 }

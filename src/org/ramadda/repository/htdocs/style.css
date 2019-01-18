@@ -545,10 +545,13 @@ input, password, fileinput,textarea {
 }
 
 .ramadda-json-block {
-  display:inline-block;
-//border: 1px #d8d8d8  solid;
-    vertical-align:top;
-    //margin-left:5px;
+//  position:relative;
+//  left: 50px;
+  margin-left:20px;
+//  top: 10px;
+  display:block;
+  vertical-align:top;
+//  border: 1px #d8d8d8  solid;
 }
 
 .entry-list {
