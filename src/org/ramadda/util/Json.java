@@ -1055,7 +1055,6 @@ public class Json {
         String s = forHtml
                    ? obj.toString(1)
                    : obj.toString(3);
-        if(true) return s;
         if (forHtml) {
             s = s.replaceAll("\t", "  ").replaceAll("<",
                              "&lt;").replaceAll(">", "&gt;");
