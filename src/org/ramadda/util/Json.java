@@ -1055,7 +1055,7 @@ public class Json {
         String s = forHtml
                    ? obj.toString(1)
                    : obj.toString(3);
-        //        if(true) return s;
+        if(true) return s;
         if (forHtml) {
             s = s.replaceAll("\t", "  ").replaceAll("<",
                              "&lt;").replaceAll(">", "&gt;");
@@ -1089,7 +1089,13 @@ public class Json {
      * @throws Exception _more_
      */
     public static void main(String[] args) throws Exception {
-        String s = format(args[0], true);
+        String file = args[0];
+        boolean html = true;
+        if(file.equals("-plain")) {
+            html = false;
+            file = args[1];
+        }
+        String s = format(file, html);
         if (s != null) {
             System.out.println(s);
         }

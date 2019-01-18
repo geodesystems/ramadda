@@ -5138,6 +5138,9 @@ public class HtmlUtils {
         if (value == null) {
             return dflt;
         }
+        if(value.equals("transparent")) {
+            return new Color(1f,0f,0f,0.0f );
+        }
         value = value.trim();
         if (value.equals("null")) {
             return null;
