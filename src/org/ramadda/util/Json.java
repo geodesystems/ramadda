@@ -1065,6 +1065,7 @@ public class Json {
                 "<span class=ramadda-json-openbracket>{</span><span class='ramadda-json-block'>");
             s = s.replaceAll("( *)\\}( *)([^,])", "</span>$1$2}$3");
             s = s.replaceAll("( *)\\}( *),", "</span>$1}$2,");
+            s = s.replaceAll("}}", "}</span>}");
 
             s = s.replaceAll(
                 "\\[",
