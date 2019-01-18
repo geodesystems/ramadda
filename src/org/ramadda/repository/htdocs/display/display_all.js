@@ -7175,7 +7175,6 @@ function RamaddaHeatmapDisplay(displayManager, id, properties) {
                         maxs[colIdx] = Math.max(maxs[colIdx], value);
                     }
                 }
-a
 
                 html += HtmlUtil.openTag("table",["border", "0" ,"class","display-heatmap"]);
                 html+="<tr valign=bottom>";
