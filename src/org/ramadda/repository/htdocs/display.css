@@ -67,6 +67,42 @@
 }
 
 
+.display-heatmap {
+}
+
+.display-heatmap .side-heading {
+    font-weight: bold;
+    height:100%;
+    min-height:40px;
+    padding-right:4px;
+    text-align:right;
+    vertical-align:middle;
+}
+
+
+.display-heatmap-cell  {  
+  border-right: 1px #666 solid;
+  border-left: 1px #666 solid;
+  padding-right:10px;
+  padding-left:10px;
+}
+
+
+
+
+.display-heatmap .top-heading {
+    height:100%;
+    vertical-align: bottom;
+    font-weight: bold;
+    padding-left: 2px;
+    padding-right: 2px;
+    border: 0px #ccc solid;
+    width:150px;
+    max-width:150px;
+    overflow-x:auto;
+}
+
+
 
 .display-dialog-subheader {
    font-weight: bold;

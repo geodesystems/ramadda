@@ -19,6 +19,7 @@ var DISPLAY_TABLE = "table";
 var DISPLAY_TEXT = "text";
 var DISPLAY_CROSSTAB = "crosstab";
 var DISPLAY_CORRELATION = "correlation";
+var DISPLAY_HEATMAP = "heatmap";
 
 var googleChartsLoaded = false;
 function googleChartsHaveLoaded () {
@@ -54,6 +55,7 @@ addGlobalDisplayType({type:DISPLAY_STATS , label: "Stats Table",requiresData:fal
 addGlobalDisplayType({type:DISPLAY_TABLE , label: "Table",requiresData:true,forUser:true,category:"Misc"});
 addGlobalDisplayType({type:DISPLAY_TEXT , label: "Text Readout",requiresData:false,forUser:true,category:"Misc"});
 addGlobalDisplayType({type:DISPLAY_CORRELATION , label: "Correlation",requiresData:true,forUser:true,category:"Misc"});
+addGlobalDisplayType({type:DISPLAY_HEATMAP , label: "Heatmap",requiresData:true,forUser:true,category:"Misc"});
 
 
 
@@ -2136,6 +2138,257 @@ function RamaddaCorrelationDisplay(displayManager, id, properties) {
                             style = "background-color:" + colors[index];
                         }
                         html+="<td align=right style=\"" + style +"\">" + HtmlUtil.tag("div",["title","&rho;(" + rowName +"," + colName+")"], r.toFixed(3)) +"</td>";
+                    }
+                    html+="</tr>";
+                }
+                html += "</table>";
+                this.setContents(html);
+                this.initTooltip();
+
+            },
+        });
+}
+
+
+function RamaddaHeatmapDisplay(displayManager, id, properties) {
+    var SUPER;
+    $.extend(this, {
+            colorBar:"red_white_blue",
+                });
+
+    RamaddaUtil.inherit(this, SUPER = new RamaddaFieldsDisplay(displayManager, id, DISPLAY_HEATMAP, properties));
+    addRamaddaDisplay(this);
+
+    RamaddaUtil.defineMembers(this, {
+            "map-display": false,
+            needsData: function() {
+                return true;
+            },
+            getMenuItems: function(menuItems) {
+                SUPER.getMenuItems.call(this,menuItems);
+                var get = this.getGet();
+                var tmp = HtmlUtil.formTable();
+                var ct = "<select id=" + this.getDomId("colorbar")+">";
+                for(table in Utils.ColorTables) {
+                    if(table == this.colorBar)
+                        ct+="<option selected>"+ table+"</option>";
+                    else
+                        ct+="<option>"+ table+"</option>";
+                }
+                ct+= "</select>";
+
+                tmp += HtmlUtil.formEntry("Color Bar:",ct);
+                                          
+                tmp += HtmlUtil.formEntry("Color By Range:", HtmlUtil.input("", this.colorByMin, ["size","7",ATTR_ID,  this.getDomId("colorbymin")]) + " - " +
+                                          HtmlUtil.input("", this.colorByMax, ["size","7",ATTR_ID,  this.getDomId("colorbymax")]));
+                tmp += "</table>";
+                menuItems.push(tmp);
+            },
+           initDialog: function() {
+                SUPER.initDialog.call(this);
+                var _this  = this;
+                var updateFunc  = function() {
+                    _this.colorByMin = _this.jq("colorbymin").val();
+                    _this.colorByMax = _this.jq("colorbymax").val();
+                    _this.updateUI();
+                    
+                };
+                var func2  = function() {
+                    _this.colorBar = _this.jq("colorbar").val();
+                    _this.updateUI();
+                    
+                };
+                this.jq("colorbymin").blur(updateFunc);
+                this.jq("colorbymax").blur(updateFunc);
+                this.jq("colorbar").change(func2);
+        },
+
+            handleEventPointDataLoaded : function(source, pointData) {
+                if(!this.needsData()) {
+                    if(this.dataCollection == null) {
+                        this.dataCollection =  source.dataCollection;
+                        this.updateUI();
+                    }
+                }
+            },
+            fieldSelectionChanged: function() {
+                this.updateUI();
+            },
+            getDimensionsStyle: function() {
+                var height = this.getProperty("height",-1);
+                if(height>0) {
+                    return  " height:" + height +"px; " + " max-height:" + height +"px; overflow-y: auto;";
+                }
+                return "";
+            },
+            updateUI: function(pointData) {
+                var _this = this;
+                if(!haveGoogleChartsLoaded ()) {
+                    var func = function() {
+                        _this.updateUI();
+                    }
+                    this.setContents(this.getLoadingMessage());
+                    setTimeout(func,1000);
+                    return;
+                }
+
+                SUPER.updateUI.call(this,pointData);
+                if(!this.hasData()) {
+                    this.setContents(this.getLoadingMessage());
+                    return;
+                }
+                var tuples = this.getStandardData(null,{includeIndex: true});
+                var header = tuples[0];
+                var showIndex = this.getProperty("showIndex",true);
+                var showValue = this.getProperty("showValue",true);
+                var textColor = this.getProperty("textColor","black");
+
+                var cellHeight = this.getProperty("cellHeight",null);
+                var extraTdStyle = "";
+                if(this.getProperty("showBorder","false") == "true") {
+                    extraTdStyle = "border-bottom:1px #666 solid;";
+                }
+                var extraCellStyle = "";
+                if(cellHeight) 
+                    extraCellStyle += "height:" + cellHeight+"px; max-height:" + cellHeight+"px; min-height:" + cellHeight+"px;";
+                var allFields =  this.dataCollection.getList()[0].getRecordFields();
+                var fields = this.getSelectedFields([]);
+
+                if(fields.length==0) fields = allFields;
+                var html = "";
+                var colors = null;
+                var colorByMin = null;
+                var colorByMax = null;
+                if(Utils.stringDefined(this.getProperty("colorByMins"))) {
+                    colorByMin = [];
+                    var c = this.getProperty("colorByMins").split(",");
+                    for(var i=0;i<c.length;i++) {
+                        colorByMin.push(parseFloat(c[i]));
+                    }
+                }
+                if(Utils.stringDefined(this.getProperty("colorByMaxes"))) {
+                    colorByMax = [];
+                    var c = this.getProperty("colorByMaxes").split(",");
+                    for(var i=0;i<c.length;i++) {
+                        colorByMax.push(parseFloat(c[i]));
+                    }
+                }
+
+                if(Utils.stringDefined(this.getProperty("colorTables"))) {
+                    var c = this.getProperty("colorTables").split(",");
+                    colors = [];
+                    for(var i=0;i<c.length;i++) {
+                        var name = c[i];
+                        if(name == "none") {
+                            colors.push(null);
+                            continue;
+                        }
+                        var ct = Utils.ColorTables[name];
+                        //                        console.log("ct:" + name +" " +(ct!=null));
+                        colors.push(ct);
+                    }
+                }  else if(this.colorTable && this.colorTable !="none") {
+                    colors = [Utils.ColorTables[this.colorTable]];
+                } else if(this.colorBar && this.colorBar !="none") {
+                    colors = [Utils.ColorTables[this.colorBar]];
+                }
+
+                
+                
+                var mins = null;
+                var maxs = null;
+                for(var rowIdx=1;rowIdx<tuples.length;rowIdx++) {
+                    var row = tuples[rowIdx];
+                    if(mins==null) {
+                        mins = [];
+                        maxs = [];
+                        for(var colIdx=1;colIdx<row.length;colIdx++) {
+                            mins.push(Number.MAX_VALUE);
+                            maxs.push(Number.MIN_VALUE);
+                        }
+                    }
+
+                    for(var colIdx=0;colIdx<fields.length;colIdx++) {
+                        var field = fields[colIdx];
+                        //Add one to the field index to account for the main time index
+                        var index =field.getIndex()+1;
+                        if(!field || !field.isFieldNumeric() || field.isFieldGeo())  continue;
+
+                        var value = row[index];
+                        if(value == Number.POSITIVE_INFINITY || isNaN(value) || !Utils.isNumber(value) ||!Utils.isDefined(value) || value == null) {
+                            continue;
+                        }
+                        mins[colIdx] = Math.min(mins[colIdx], value);
+                        maxs[colIdx] = Math.max(maxs[colIdx], value);
+                    }
+                }
+a
+
+                html += HtmlUtil.openTag("table",["border", "0" ,"class","display-heatmap"]);
+                html+="<tr valign=bottom>";
+                if(showIndex) {
+                    html+= "<td align=center class=top-heading>" + HtmlUtil.tag("div",["class","top-heading"],header[0])+"</td>";
+                }
+                for(var fieldIdx=0;fieldIdx<fields.length;fieldIdx++) {
+                    var field = fields[fieldIdx];
+                    if((!field.isFieldNumeric() || field.isFieldGeo())) continue;
+                    html+= "<td align=center class=top-heading>" + HtmlUtil.tag("div",["class","top-heading"],field.getLabel())+"</td>";
+                }
+                html+="</tr>\n";
+
+
+
+
+                for(var rowIdx=1;rowIdx<tuples.length;rowIdx++) {
+                    var row = tuples[rowIdx];
+                    var index = row[0];
+                    //check if its a date
+                    if(index.f) {
+                        index = index.f;
+                    }
+                    var rowLabel = index;
+                    html+="<tr valign='center'>\n";
+                    if(showIndex) {
+                        //                        html+="<td>" + HtmlUtil.tag("div",[HtmlUtil.attr("class","side-heading")+ extraCellStyle], rowLabel) +"</td>";
+                        html+=HtmlUtil.td(["class","side-heading", "style",extraCellStyle], rowLabel);
+                    }
+                    var colCnt = 0;
+                    for(var colIdx=0;colIdx<fields.length;colIdx++) {
+                        var field = fields[colIdx];
+                        //Add one to the field index to account for the main time index
+                        var index =field.getIndex()+1;
+                        if(!field || !field.isFieldNumeric() || field.isFieldGeo())  continue;
+                        var style="";
+                        var value = row[index];
+                        var min = mins[colIdx];
+                        var max = maxs[colIdx];
+                        if(colorByMin && colCnt<colorByMin.length) 
+                            min = colorByMin[colCnt];
+                        if(colorByMax && colCnt<colorByMax.length) 
+                            max = colorByMax[colCnt];
+
+
+                        var ok = min!=max && !(value == Number.POSITIVE_INFINITY || isNaN(value) || !Utils.isNumber(value) ||!Utils.isDefined(value) || value == null);
+                        var title = header[0] +": " +rowLabel +" - " +field.getLabel()+": " +value;
+                        if(ok && colors!=null) {
+                            var ct  = colors[Math.min(colCnt,colors.length-1)];
+                            if(ct) {
+                                var percent = (value- min)/(max-min);
+                                var ctIndex = parseInt(percent*ct.length);
+                                if(ctIndex>=ct.length) ctIndex = ct.length-1;
+                                else if(ctIndex<0) ctIndex = 0;
+                                style = "background-color:" + ct[ctIndex]+";";
+                            }
+                        }
+                        var number;
+                        if(!ok) {
+                            number = "-";
+                        } else {
+                            number = Utils.formatNumber(value)
+                        }
+                        if(!showValue) number ="";
+                        html+=HtmlUtil.td(["valign","center", "align","right", "style",style+extraCellStyle+extraTdStyle, "class", "display-heatmap-cell"], HtmlUtil.div(["title",title,"style",extraCellStyle+"color:" + textColor],number));
+                        colCnt++;
                     }
                     html+="</tr>";
                 }

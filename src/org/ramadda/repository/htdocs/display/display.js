@@ -2600,7 +2600,10 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
                return true;
             },
             initDateFormats: function() {
-                if (!this.googleLoaded()) return false;
+                if (!this.googleLoaded()) {
+                    console.log("google hasn't loaded");
+                    return false;
+                }
                 if(this.fmt_yyyy) return true;
                 var tz = 0;
                 this.timezone = this.getProperty("timezone");
@@ -2613,8 +2616,14 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
                 return true;
             },
             getDateValue: function(arg, formatter) {
-                if (!this.initDateFormats()) return arg;
-                date = new Date(arg);
+                if (!this.initDateFormats()) {
+                    return arg;
+                }
+                if(!(typeof arg=="object")) {
+                   date = new Date(arg);
+                } else {
+                    date = arg;
+                }
                 if (!formatter) {
                    formatter = this.fmt_yyyymmddhhmm;
                 }
