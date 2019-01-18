@@ -145,13 +145,20 @@ public class JsonFileTypeHandler extends GenericTypeHandler {
         if ( !entry.isFile()) {
             return "No Json file available";
         }
-        String        id = Utils.getGuid();
-        String formatted = Json.format(entry.getResource().getPath(), true);
         StringBuilder sb = new StringBuilder();
-        HtmlUtils.open(sb, "div", "id", id);
-        HtmlUtils.pre(sb, formatted);
-        HtmlUtils.close(sb, "div");
-        sb.append(HtmlUtils.script("ramaddaJsonInit('" + id + "');"));
+        try {
+            String id = Utils.getGuid();
+            String formatted = Json.format(entry.getResource().getPath(),
+                                           true);
+            HtmlUtils.open(sb, "div", "id", id);
+            HtmlUtils.pre(sb, formatted);
+            HtmlUtils.close(sb, "div");
+            sb.append(HtmlUtils.script("ramaddaJsonInit('" + id + "');"));
+        } catch (Exception exc) {
+            sb.append("Error formatting JSON: " + exc);
+            exc.printStackTrace();
+        }
+
         return sb.toString();
     }
 

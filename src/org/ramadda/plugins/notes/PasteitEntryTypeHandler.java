@@ -93,7 +93,7 @@ public class PasteitEntryTypeHandler extends GenericTypeHandler {
      *
      * @return _more_
      */
-@Override
+    @Override
     public String getUploadedFile(Request request) {
         try {
             String name = request.getString(ARG_NAME, "").trim();
