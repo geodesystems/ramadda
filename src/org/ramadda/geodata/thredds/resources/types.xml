@@ -3,7 +3,7 @@
 
   <type name="cataloglink"  description="Catalog Link" category="Geoscience Data" >
      <property name="icon" value="/icons/book_link.png"/>
-     <property name="form.date.show" value="false"/>
+     <property name="form.date.show" value="true"/>
      <property name="form.area.show" value="false"/>
      <property name="form.file.show" value="false"/>
   </type>
