@@ -17,12 +17,15 @@
 package org.ramadda.repository.output;
 
 
+import org.ramadda.data.services.RecordTypeHandler;
+
+
 import org.ramadda.repository.Association;
 import org.ramadda.repository.Constants;
+import org.ramadda.repository.DateHandler;
 import org.ramadda.repository.Entry;
 import org.ramadda.repository.EntryManager;
 import org.ramadda.repository.Link;
-import org.ramadda.repository.DateHandler;
 import org.ramadda.repository.PageDecorator;
 import org.ramadda.repository.PageHandler;
 import org.ramadda.repository.Repository;
@@ -42,7 +45,6 @@ import org.ramadda.repository.type.LocalFileTypeHandler;
 import org.ramadda.repository.type.TypeHandler;
 import org.ramadda.repository.util.DateArgument;
 import org.ramadda.repository.util.ServerInfo;
-import org.ramadda.data.services.RecordTypeHandler;
 
 import org.ramadda.util.BufferMapList;
 import org.ramadda.util.HtmlUtils;
@@ -352,6 +354,8 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                                         attrs(ATTR_TYPE, "entrydategrid", 
                                               "#" +ATTR_HEIGHT, "400", 
                                               "#" +ATTR_WIDTH, "100%", 
+                                              "#showIcon","true",
+                                              "#showName","true",
                                               "#urlTemplate","{url}|{entryid}|{resource}",
                                               "#scaleWidth","true|false",
                                               "#entries", "",
@@ -1137,7 +1141,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
             Request myRequest = request.cloneMe();
             myRequest.put(ATTR_SHOWTITLE,
                           "" + Utils.getProperty(props, ATTR_SHOWTITLE,
-                                                 false));
+                              false));
             boolean details = Utils.getProperty(props, ATTR_DETAILS, false);
             if ( !details) {
                 return entry.getTypeHandler().getEntryContent(myRequest,
@@ -1407,12 +1411,15 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                 date = new Date(entry.getChangeDate());
             }
 
-            return getDateHandler().formatDate(entry, date, Utils.getProperty(props, ATTR_FORMAT,null));
+            return getDateHandler().formatDate(entry, date,
+                    Utils.getProperty(props, ATTR_FORMAT, null));
         } else if (theTag.equals(WIKI_TAG_DATERANGE)) {
-            String format = Utils.getProperty(props, ATTR_FORMAT,(String)null);
-            Date             date1      = new Date(entry.getStartDate());
-            Date             date2      = new Date(entry.getEndDate());
-            SimpleDateFormat dateFormat = getDateHandler().getDateFormat(entry,format);
+            String format = Utils.getProperty(props, ATTR_FORMAT,
+                                (String) null);
+            Date date1 = new Date(entry.getStartDate());
+            Date date2 = new Date(entry.getEndDate());
+            SimpleDateFormat dateFormat =
+                getDateHandler().getDateFormat(entry, format);
             String separator = Utils.getProperty(props, ATTR_SEPARATOR,
                                    " -- ");
 
@@ -2277,9 +2284,11 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                 imageRequest.put("loopdelay", "" + delay);
             }
 
-            String iwidth= Utils.getProperty(props,"imageWidth",(String)null);
-            if(iwidth!=null)
-                imageRequest.put(ARG_WIDTH,iwidth);
+            String iwidth = Utils.getProperty(props, "imageWidth",
+                                (String) null);
+            if (iwidth != null) {
+                imageRequest.put(ARG_WIDTH, iwidth);
+            }
             int height = Utils.getProperty(props, ATTR_HEIGHT, 0);
             if (height > 0) {
                 imageRequest.put(ARG_HEIGHT, "" + height);
@@ -2648,7 +2657,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                 "strokeColor", "fillColor", "fillOpacity", "scrollToZoom",
                 "fill", "selectOnHover", "onSelect", "showDetailsLink",
                 "zoom:initialZoom", "layer:defaultMapLayer", "kmlLayer",
-                "kmlLayerName","displayDiv"
+                "kmlLayerName", "displayDiv"
             };
             for (String mapArg : mapArgs) {
                 String key = mapArg;
@@ -2659,7 +2668,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                 }
                 String v = Utils.getProperty(props, key);
                 if (v != null) {
-                    v = v.replace("${entryid}",entry.getId());
+                    v = v.replace("${entryid}", entry.getId());
                     mapProps.put(mapArg, Json.quote(v));
                 }
             }
@@ -3790,7 +3799,8 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
         int     columns      = Utils.getProperty(props, ATTR_COLUMNS, 3);
         boolean random       = Utils.getProperty(props, ATTR_RANDOM, false);
         boolean popup        = Utils.getProperty(props, ATTR_POPUP, true);
-        boolean thumbnail    = Utils.getProperty(props, ATTR_THUMBNAIL, false);
+        boolean thumbnail    = Utils.getProperty(props, ATTR_THUMBNAIL,
+                                   false);
         String  caption = Utils.getProperty(props, ATTR_CAPTION, "${name}");
         String captionPos = Utils.getProperty(props, ATTR_POPUPCAPTION,
                                 "none");
@@ -4864,12 +4874,14 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
      */
     public String getStandardChartDisplay(Request request, Entry entry)
             throws Exception {
-        RecordTypeHandler typeHandler = (RecordTypeHandler) entry.getTypeHandler();
+        RecordTypeHandler typeHandler =
+            (RecordTypeHandler) entry.getTypeHandler();
         String        name = entry.getName();
         StringBuilder wiki = new StringBuilder();
         wiki.append(
             "{{group  showTitle=\"true\"  showMenu=\"true\"  layoutType=\"columns\"  layoutColumns=\"2\"  }}\n");
-        String chartType =typeHandler.getChartProperty(request, entry,"chart.type", "linechart");
+        String chartType = typeHandler.getChartProperty(request, entry,
+                               "chart.type", "linechart");
         wiki.append(
             "{{display  xwidth=\"600\"  height=\"400\"   type=\"" + chartType
             + "\"  name=\"\"  layoutHere=\"false\"  showMenu=\"true\"  showTitle=\"true\"  row=\"0\"  column=\"0\"  }}");
@@ -4884,7 +4896,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                 layerVar  = "mapLayers=\"" + mapLayers + "\"";
             }
             String entryAttrs = typeHandler.getChartProperty(request, entry,
-                                                             "chart.wiki.map", "");
+                                    "chart.wiki.map", "");
             if (entry.getTypeHandler().getTypeProperty("isTrajectory", false)
                     || entry.getTypeHandler().getProperty(entry,
                         "isTrajectory", false)) {
@@ -5120,9 +5132,9 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
         topProps.add(Json.quote(defaultLayer));
 
         String displayDiv = (String) props.get("displayDiv");
-        if(displayDiv!=null) {
+        if (displayDiv != null) {
             displayDiv = displayDiv.replace("${entryid}", entry.getId());
-            Utils.add(propList, "displayDiv",Json.quote(displayDiv));
+            Utils.add(propList, "displayDiv", Json.quote(displayDiv));
             props.remove("displayDiv");
         }
 
@@ -5207,16 +5219,19 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
         }
 
         String displayType = Utils.getProperty(props, "type", "linechart");
-        if(displayType.equals("entrygallery") || displayType.equals("entrydategrid")) {
+        if (displayType.equals("entrygallery")
+                || displayType.equals("entrydategrid")) {
             List<Entry> children = getEntries(request, originalEntry, entry,
-                                              props);
+                                       props);
             StringBuilder ids = new StringBuilder();
-            for(Entry child: children){
-                if(ids.length()>0) ids.append(",");
+            for (Entry child : children) {
+                if (ids.length() > 0) {
+                    ids.append(",");
+                }
                 ids.append(child.getId());
             }
             props.remove("entries");
-            Utils.add(propList, "entries",Json.quote(ids.toString()));
+            Utils.add(propList, "entries", Json.quote(ids.toString()));
         }
         props.remove("type");
         for (Enumeration keys = props.keys(); keys.hasMoreElements(); ) {

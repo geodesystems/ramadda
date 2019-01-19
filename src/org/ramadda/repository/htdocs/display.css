@@ -150,21 +150,40 @@
 
 
 .display-entrygrid-entry {
+   cursor:pointer;
+}
+
+.display-entrygrid-entry-box {
     position: absolute;
     width: 20px;
     height: 15px;
     background: lightblue;
     border: 1px #888 solid;
-    #margin-top:10px;
+    font-size:8pt;
+    color:#ccc;
 }
 
-.display-entrygrid-entry:hover {
+
+.display-entrygrid-entry-box:hover {
     border: 1px blue solid;
     background: blue;
     z-index: 100;
 }
 
+.display-entrygrid-entry-text {
+    z-index:10;
+    position: absolute;
+    margin-top:-15px;
+    font-size:8pt;
+    color:#666;
+}
 
+.display-entrygrid-entry-icon {
+    z-index:10;
+    position: absolute;
+    margin-left:-18px;
+    margin-top:-8px;
+}
 
 .display-heatmap {
 }
