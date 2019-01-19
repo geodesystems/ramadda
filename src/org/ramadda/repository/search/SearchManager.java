@@ -1497,6 +1497,8 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
         HashSet<String> providers = new HashSet<String>();
 
 
+
+
         for (String arg :
                 (List<String>) request.get(ARG_PROVIDER, new ArrayList())) {
             providers.addAll(StringUtil.split(arg, ",", true, true));
@@ -1511,30 +1513,44 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
         List<Entry>          entries         = new ArrayList<Entry>();
         List<Entry>          allEntries      = new ArrayList<Entry>();
 
-        List<SearchProvider> searchProviders =
-            new ArrayList<SearchProvider>();
-        for (SearchProvider searchProvider : getSearchProviders()) {
-            if ( !doAll && (providers != null) && (providers.size() > 0)) {
-                if ( !providers.contains(searchProvider.getId())) {
-                    continue;
-                }
+        boolean doSearch = true;
+
+
+        if(request.defined("entries")) {
+            for(String id: StringUtil.split(request.getString("entries",""),",",true,true)) {
+                Entry e = getEntryManager().getEntry(request, id);
+                if(e==null)  continue;
+                allEntries.add(e);
             }
-            searchProviders.add(searchProvider);
+            doSearch = false;
         }
 
+        if(doSearch) {
+            List<SearchProvider> searchProviders =
+                new ArrayList<SearchProvider>();
+            for (SearchProvider searchProvider : getSearchProviders()) {
+                if ( !doAll && (providers != null) && (providers.size() > 0)) {
+                    if ( !providers.contains(searchProvider.getId())) {
+                        continue;
+                    }
+                }
+                searchProviders.add(searchProvider);
+            }
 
 
-        final int[]     runnableCnt = { 0 };
-        final boolean[] running     = { true };
-        List<Runnable>  runnables   = new ArrayList<Runnable>();
-        for (SearchProvider searchProvider : searchProviders) {
-            Runnable runnable = makeRunnable(request, searchProvider,
-                                             allEntries, searchInfo, running,
-                                             runnableCnt);
-            runnables.add(runnable);
+
+            final int[]     runnableCnt = { 0 };
+            final boolean[] running     = { true };
+            List<Runnable>  runnables   = new ArrayList<Runnable>();
+            for (SearchProvider searchProvider : searchProviders) {
+                Runnable runnable = makeRunnable(request, searchProvider,
+                                                 allEntries, searchInfo, running,
+                                                 runnableCnt);
+                runnables.add(runnable);
+            }
+
+            runEm(runnables, running, runnableCnt);
         }
-
-        runEm(runnables, running, runnableCnt);
 
         if ( !request.exists(ARG_ORDERBY)) {
             for (Entry e : allEntries) {

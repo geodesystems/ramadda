@@ -1605,6 +1605,10 @@ a.ramadda-menuitem-link {
     margin-left:5px;
 }
 
+.image-caption a {
+color:#666;
+font-size:10pt;
+}
 
 .image-description {
    margin-top:8px;

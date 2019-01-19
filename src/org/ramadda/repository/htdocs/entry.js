@@ -398,7 +398,11 @@ function Ramadda(repositoryRoot) {
                 }
                 return urls;
             },
-           getSearchUrl: function(settings, output) {
+             getUrlRoot:function(){
+                return this.repositoryRoot;
+            },
+
+             getSearchUrl: function(settings, output, bar) {
                 var url =  this.repositoryRoot +"/search/do?output=" +output;
                 for(var i =0;i<settings.types.length;i++) {
                     var type = settings.types[i];
@@ -414,6 +418,9 @@ function Ramadda(repositoryRoot) {
                     url += "&name=" + settings.name;
                 if(settings.startDate && settings.startDate.length>0) {
                     url += "&starttime=" + settings.startDate;
+                }
+                if(settings.entries && settings.entries.length>0) {
+                    url += "&entries=" + settings.entries;
                 }
                 if(settings.orderBy == "name") {
                     url += "&orderby=name&ascending=true";
@@ -577,12 +584,16 @@ function Entry(props) {
             services: [],
             properties: [],
             childrenEntries: null,
+                startDate:null,
+                endDate:null,
         });
 
     RamaddaUtil.inherit(this,  props);
 
     this.domId = Utils.cleanId(this.id);
 
+    this.startDate = Utils.parseDate(props.startDate);
+    this.endDate = Utils.parseDate(props.endDate);
     this.attributes = [];
     this.metadata = [];
     for(var i=0;i<this.properties.length;i++) {
@@ -609,6 +620,12 @@ function Entry(props) {
                 if(this.displayName) return this.displayName;
                 return this.getName();
             },
+            getStartDate:function() {
+                return this.startDate;
+            },
+                getEndDate:function() {
+                return this.endDate;
+            },
             getIsGroup: function() {return this.isGroup;},
             getChildrenEntries: function(callback, extraArgs) {
                 if(this.childrenEntries !=null) {
@@ -623,8 +640,7 @@ function Entry(props) {
                     jsonUrl += "&" + extraArgs;
                 }
 
-                console.log(jsonUrl);
-
+                //                console.log(jsonUrl);
                 var myCallback = {
                     entryListChanged: function(list) {
 
@@ -639,6 +655,16 @@ function Entry(props) {
                 }
                 return this.type;
             },
+            getThumbnail: function() {
+                if(!this.metadata) return null;
+                for(var i=0;i<this.metadata.length;i++) {
+                    var metadata=this.metadata[i];
+                    if(metadata.type == "content.thumbnail")
+                        return this.getRamadda().getRoot()+"/metadata/view/" + metadata.attr1 +"?element=1&entryid=" + this.getId() +"&metadata_id="+ metadata.id;
+                }
+                return null;
+            },
+
             getMetadata: function() {
                 return this.metadata;
             },
@@ -910,6 +936,7 @@ function EntrySearchSettings(props) {
             metadata: [],
             extra:"",
             sortBy:"",
+            entries: null,
             startDate: null,
                 endDate: null,
                 north: NaN,

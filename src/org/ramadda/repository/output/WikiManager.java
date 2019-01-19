@@ -348,6 +348,17 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                                               ATTR_SHOWMENU, "true", 
                                               ATTR_SHOWTITLE, "true")),
                             new WikiTag(WIKI_TAG_DISPLAY,
+                                        "Date Grid",
+                                        attrs(ATTR_TYPE, "entrydategrid", 
+                                              "#" +ATTR_HEIGHT, "400", 
+                                              "#" +ATTR_WIDTH, "100%", 
+                                              "#urlTemplate","{url}|{entryid}|{resource}",
+                                              "#scaleWidth","true|false",
+                                              "#entries", "",
+                                              ATTR_LAYOUTHERE, "true", 
+                                              ATTR_SHOWMENU, "true", 
+                                              ATTR_SHOWTITLE, "true")),
+                            new WikiTag(WIKI_TAG_DISPLAY,
                                         "Animation",
                                         attrs(ATTR_TYPE, "animation",
                                               ATTR_LAYOUTHERE, "true", 
@@ -4916,6 +4927,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
             throws Exception {
 
         this.addDisplayImports(request, sb);
+
         List<String>  topProps = new ArrayList<String>();
         List<String>  propList = new ArrayList<String>();
         StringBuilder js       = new StringBuilder();
@@ -5195,6 +5207,17 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
         }
 
         String displayType = Utils.getProperty(props, "type", "linechart");
+        if(displayType.equals("entrygallery") || displayType.equals("entrydategrid")) {
+            List<Entry> children = getEntries(request, originalEntry, entry,
+                                              props);
+            StringBuilder ids = new StringBuilder();
+            for(Entry child: children){
+                if(ids.length()>0) ids.append(",");
+                ids.append(child.getId());
+            }
+            props.remove("entries");
+            Utils.add(propList, "entries",Json.quote(ids.toString()));
+        }
         props.remove("type");
         for (Enumeration keys = props.keys(); keys.hasMoreElements(); ) {
             Object key   = keys.nextElement();

@@ -2994,6 +2994,18 @@ public class Utils {
      * @throws Exception _more_
      */
     public static void main(String args[]) throws Exception {
+        byte[]bytes = decodeBase64(args[0]);
+        for(int i=0;i<bytes.length;i+=4) {
+            int asInt = (bytes[i] & 0xFF) 
+                | ((bytes[i+1] & 0xFF) << 8) 
+                | ((bytes[i+2] & 0xFF) << 16) 
+                | ((bytes[i+3] & 0xFF) << 24);
+            float asFloat = Float.intBitsToFloat(asInt);
+            System.err.println("i:" + i +" f:" + asFloat);
+        }
+        if(true) return;
+
+
         String s = "-1 \"\\\n\\\"X";
         s = "-1 {hello \nthere} more";
         s = " -db  {\nx1 \nx2\nx3}rhl_0000005.id  \n\"test it\" \nshould\\\n be \\\none same line\n  \nanother";

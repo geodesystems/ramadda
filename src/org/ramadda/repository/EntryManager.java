@@ -1078,6 +1078,15 @@ public class EntryManager extends RepositoryManager {
         return entry.getTypeHandler().processEntryAccess(request, entry);
     }
 
+    public Result processEntryTypeAction(Request request) throws Exception {
+        Entry entry = getEntry(request);
+        if(entry == null) {
+                throw new RepositoryUtil.MissingEntryException(
+                                                               "Could not find entry");
+        }
+        return entry.getTypeHandler().processEntryAction(request, entry);
+    }
+
 
     /** _more_ */
     public static final String ARG_EXTEDIT_EDIT = "extedit.edit";

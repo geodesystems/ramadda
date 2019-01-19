@@ -26,6 +26,7 @@
       <api request="/entry/get/*"            method="processEntryGet"        authmethod="httpauth"  />
       <api request="/entry/getentries"       method="processGetEntries" />
       <api request="/entry/copy"             method="processEntryCopy"/>
+      <api request="/entry/type/*"           method="processEntryTypeAction"/>
       <api request="/entry/typechange"       method="processEntryTypeChange"/>
       <api request="/entry/import"           method="processEntryImport" actions="new"/>
       <api request="/entry/export/*"         method="processEntryExport" />

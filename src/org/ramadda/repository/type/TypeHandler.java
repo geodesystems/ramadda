@@ -530,9 +530,9 @@ public class TypeHandler extends RepositoryManager {
             }
 
             setProperties(node);
-            if(!Utils.stringDefined(description)) {
-                setDescription(Utils.getAttributeOrTag(node, ATTR_DB_DESCRIPTION,
-                                                       getType()));
+            if ( !Utils.stringDefined(description)) {
+                setDescription(Utils.getAttributeOrTag(node,
+                        ATTR_DB_DESCRIPTION, getType()));
             }
 
             String superType = Utils.getAttributeOrTag(node, ATTR_SUPER,
@@ -1179,6 +1179,46 @@ public class TypeHandler extends RepositoryManager {
         return new Result("Error",
                           new StringBuilder("Entry access not defined"));
     }
+
+
+    /**
+     * _more_
+     *
+     * @param request _more_
+     * @param entry _more_
+     * @param action _more_
+     *
+     * @return _more_
+     *
+     * @throws Exception _more_
+     */
+    public String getEntryActionUrl(Request request, Entry entry,
+                                    String action)
+            throws Exception {
+        return request.makeUrl(getRepository().URL_ENTRY_ACTION, ARG_ENTRYID,
+                               entry.getId(), ARG_ACTION, action);
+
+    }
+
+    /**
+     * _more_
+     *
+     * @param request _more_
+     * @param entry _more_
+     *
+     * @return _more_
+     *
+     * @throws Exception _more_
+     */
+    public Result processEntryAction(Request request, Entry entry)
+            throws Exception {
+        if (parent != null) {
+            return parent.processEntryAction(request, entry);
+        }
+
+        return new Result("Error", new StringBuilder("Unknown entry action"));
+    }
+
 
     /**
      * _more_
@@ -4044,8 +4084,8 @@ public class TypeHandler extends RepositoryManager {
          }
              */
         String extraMapStuff = "";
-        MapInfo map = getRepository().getMapManager().createMap(request,entry,
-                          true, props);
+        MapInfo map = getRepository().getMapManager().createMap(request,
+                          entry, true, props);
         addToMapSelector(request, entry, map);
         String mapSelector = map.makeSelector(ARG_AREA, true, nwse, "", "")
                              + extraMapStuff;
@@ -4260,8 +4300,7 @@ public class TypeHandler extends RepositoryManager {
                                     EntryManager.MAX_DESCRIPTION_LENGTH);
                             String textWidget =
                                 HtmlUtils.textArea(ARG_DESCRIPTION, desc,
-                                    rows,
-                                     HtmlUtils.id(ARG_DESCRIPTION));
+                                    rows, HtmlUtils.id(ARG_DESCRIPTION));
                             sb.append(
                                 HtmlUtils.formEntryTop(
                                     msgLabel("Wiki Text"), textWidget));
@@ -4277,7 +4316,7 @@ public class TypeHandler extends RepositoryManager {
                                         entry, ARG_DESCRIPTION, "Description")), buttons
                                             + HtmlUtils.textArea(
                                                 ARG_DESCRIPTION, desc, rows, HtmlUtils.id(
-                                                        ARG_DESCRIPTION))));
+                                                    ARG_DESCRIPTION))));
                     }
 
                     if (showHtmlEditor) {
@@ -5003,8 +5042,8 @@ public class TypeHandler extends RepositoryManager {
         if (advancedForm) {
             String             radio = getSpatialSearchTypeWidget(request);
             SelectionRectangle bbox  = getSelectionBounds(request);
-            MapInfo map = getRepository().getMapManager().createMap(request,null,
-                              true, null);
+            MapInfo map = getRepository().getMapManager().createMap(request,
+                              null, true, null);
 
             String mapSelector = map.makeSelector(ARG_AREA, true,
                                      bbox.getStringArray(), "", radio);
@@ -6250,7 +6289,7 @@ public class TypeHandler extends RepositoryManager {
      * @return _more_
      */
     public String getLabel() {
-        if (!Utils.stringDefined(description)) {
+        if ( !Utils.stringDefined(description)) {
             return getType();
         }
 

@@ -30,6 +30,13 @@ function noop() {}
 
 var Utils = {
     pageLoaded: false,
+    padLeft: function(s,length,pad) {
+        s = ""+s;
+        if(!pad) pad = " ";
+        while(s.length<length)
+            s = pad +s;
+        return s;
+    },
     formatDate: function(date,options, args) {
         if(!args) args = {};
         if(!options) {
@@ -44,6 +51,9 @@ var Utils = {
             options.timeZone = "UTC";
         }
         return date.toLocaleDateString("en-US", options) + suffix;
+    },
+    getDayInYear: function(date){
+        return (Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()) - Date.UTC(date.getFullYear(), 0, 0)) / 24 / 60 / 60 / 1000;
     },
     parseDate: function(s,roundUp, rel) {
         if(s ==null) return null;

@@ -8,6 +8,7 @@ var DISPLAY_ENTRYLIST = "entrylist";
 var DISPLAY_TESTLIST = "testlist";
 var DISPLAY_ENTRYDISPLAY = "entrydisplay";
 var DISPLAY_ENTRY_GALLERY = "entrygallery";
+var DISPLAY_ENTRY_DATEGRID = "entrydategridy";
 var DISPLAY_OPERANDS = "operands";
 var DISPLAY_METADATA = "metadata";
 var DISPLAY_TIMELINE = "timeline";
@@ -28,6 +29,7 @@ addGlobalDisplayType({type: DISPLAY_ENTRYLIST, label:"Entry List",requiresData:f
 addGlobalDisplayType({type: DISPLAY_TESTLIST, label:"Test  List",requiresData:false,category:"Entry Displays"});
 addGlobalDisplayType({type: DISPLAY_ENTRYDISPLAY, label:"Entry Display",requiresData:false,category:"Entry Displays"});
 addGlobalDisplayType({type: DISPLAY_ENTRY_GALLERY, label:"Entry Gallery",requiresData:false,category:"Entry Displays"});
+addGlobalDisplayType({type: DISPLAY_ENTRY_DATEGRID, label:"Entry Date Grid",requiresData:false,category:"Entry Displays"});
 //addGlobalDisplayType({type: DISPLAY_OPERANDS, label:"Operands",requiresData:false,category:"Entry Displays"});
 addGlobalDisplayType({type: DISPLAY_METADATA, label:"Metadata Table",requiresData:false,category:"Entry Displays"});
 
@@ -1052,13 +1054,30 @@ function RamaddaEntrygalleryDisplay(displayManager, id, properties) {
     RamaddaUtil.defineMembers(this, {
             entries: properties.entries,
             initDisplay: function() {
+                var _this =this;
                 this.initUI();
                 var html =    HtmlUtil.div([ATTR_ID,this.getDomId(ID_GALLERY)],"Gallery");
                 this.setContents(html);
 
                 if(this.selectedEntries!=null) {
                     this.jq(ID_GALLERY).html(this.getEntriesGallery(this.selectedEntries));
+                    return;
                 }
+                if(this.entries) {
+                    var props = {entries:this.entries};
+                    var searchSettings= new EntrySearchSettings(props);
+                    var jsonUrl = this.getRamadda().getSearchUrl(searchSettings, OUTPUT_JSON,"BAR");
+                    console.log(jsonUrl);
+                    var myCallback = {
+                        entryListChanged: function(list) {
+                            var entries  = list.getEntries();
+                            _this.jq(ID_GALLERY).html(_this.getEntriesGallery(entries));
+                            $("a.popup_image").fancybox({'titleShow' : false});
+                        }
+                    };
+                    var entryList = new EntryList(this.getRamadda(), jsonUrl, myCallback, true);
+                }
+
                 if(this.entryList!=null && this.entryList.haveLoaded) {
                     this.entryListChanged(this.entryList);
                 }
@@ -1068,12 +1087,12 @@ function RamaddaEntrygalleryDisplay(displayManager, id, properties) {
                 var html = "";
                 var imageCnt = 0;
                 var imageEntries = [];
-
                 for(var i=0;i<entries.length;i++) {
                     var entry = entries[i];
                     //Don: Right now this just shows all of the images one after the other.
                     //If there is just one image we should just display it
                     //We should do a gallery here if more than 1
+
                     if(entry.isImage()) {
                         imageEntries.push(entry);
                         var link  =  HtmlUtil.tag(TAG_A,[ATTR_HREF, entry.getEntryUrl()],entry.getName());
@@ -1089,23 +1108,33 @@ function RamaddaEntrygalleryDisplay(displayManager, id, properties) {
                     }
                 }
 
-
-
                 if(imageCnt>1) {
                     //Show a  gallery instead
                     var newHtml = "";
+                    newHtml+="<div class=\"row\">\n";
+                    var columns = parseInt(this.getProperty("columns","3"));
+                    var colClass="col-md-" + (12/columns);
                     for(var i=0;i<imageEntries.length;i++) {
+                        if(i>=columns) {
+                            newHtml+="</div><div class=\"row\">\n";
+                        }
+                        newHtml+="<div class=" + colClass+">\n";
                         var entry = imageEntries[i];
                         var link  =  HtmlUtil.tag(TAG_A,[ATTR_HREF, entry.getEntryUrl()],entry.getName());
                         //Don: right now I just replicate what I do above
-                        newHtml  += HtmlUtil.tag(TAG_IMG,["src", entry.getResourceUrl(), ATTR_WIDTH,"500",ATTR_ID,
-                                                          this.getDomId("entry_" + entry.getIdForDom()),
-                                                          ATTR_ENTRYID,entry.getId(), ATTR_CLASS,"display-entrygallery-entry"]) +"<br>" +
-                            link+"<p>";
+                        var img = HtmlUtil.image(entry.getResourceUrl(), [ATTR_WIDTH,"100%",ATTR_ID,
+                                                                          this.getDomId("entry_" + entry.getIdForDom()),
+                                                                          ATTR_ENTRYID,entry.getId(), ATTR_CLASS,"display-entrygallery-entry"]);
+                        img =  HtmlUtil.href(entry.getResourceUrl(),img,["class","popup_image"]);
+                        newHtml += HtmlUtil.div(["class","image-outer"],HtmlUtil.div(["class","image-inner"], img) +
+                                               HtmlUtil.div(["class","image-caption"], link));
 
+                        newHtml+="</div>\n";
                     }
+                    newHtml+="</div>\n";
                     html = newHtml;
                 }
+
 
                 //append the links to the non image entries
                 if(nonImageHtml!="") {
@@ -1114,6 +1143,203 @@ function RamaddaEntrygalleryDisplay(displayManager, id, properties) {
                     }
                     html += nonImageHtml;
                 }
+                return html;
+            }
+        });
+}
+
+
+
+
+function RamaddaEntrydategridDisplay(displayManager, id, properties) {
+    var SUPER;
+    var ID_CONTENTS = "contents";
+    RamaddaUtil.inherit(this, SUPER = new RamaddaEntryDisplay(displayManager, id, DISPLAY_ENTRY_DATEGRID, properties));
+    addRamaddaDisplay(this);
+    RamaddaUtil.defineMembers(this, {
+            entries: properties.entries,
+            initDisplay: function() {
+                var _this =this;
+                this.initUI();
+                var html =    HtmlUtil.div([ATTR_ID,this.getDomId(ID_CONTENTS)],this.getLoadingMessage("Loading entries..."));
+                this.setContents(html);
+                if(!this.entries) {
+                    _this.jq(ID_CONTENTS).html(this.getLoadingMessage("No entries specified"));
+                    return;
+                }
+                var props = {entries:this.entries};
+                var searchSettings= new EntrySearchSettings(props);
+                var jsonUrl = this.getRamadda().getSearchUrl(searchSettings, OUTPUT_JSON,"BAR");
+                var myCallback = {
+                    entryListChanged: function(list) {
+                        var entries  = list.getEntries();
+                        if(entries.length==0) {
+                            _this.jq(ID_CONTENTS).html(_this.getLoadingMessage("No entries selected"));
+                            return;
+                        }
+                        _this.jq(ID_CONTENTS).html(_this.getDateGrid(entries));
+                        _this.initDateGrid(entries);
+                    }
+                };
+                var entryList = new EntryList(this.getRamadda(), jsonUrl, myCallback, true);
+            },
+            initDateGrid:function (entries) {
+                var _this = this;
+                $("#" + this.gridId +" .display-entrygrid-entry").click(function(){
+                        var index = parseInt($(this).attr("index"));
+                        entry = entries[index];
+                        var url = entry.getEntryUrl();
+                        if(_this.urlTemplate) {
+                            url = _this.urlTemplate.replace("{url}",url).replace(/{entryid}/g,entry.getId()).replace(/{resource}/g,entry.getResourceUrl());
+                        }
+                        window.open(url,"_entry");
+                    });
+                $("#" + this.gridId +" .display-entrygrid-entry").mouseout(function(){
+                        var popup = $("#" + _this.gridId +" .display-entrygrid-popup");
+                        popup.hide();
+                    });
+                $("#" + this.gridId +" .display-entrygrid-entry").mouseover(function(){
+                        var index = parseInt($(this).attr("index"));
+                        entry = entries[index];
+                        var thumb = entry.getThumbnail();
+                        var popup = $("#" + _this.gridId +" .display-entrygrid-popup");
+                        var html ="";
+                        if(thumb){
+                            html = HtmlUtil.image(thumb,["width","300;"])+"<br>";
+                        }  else if(entry.isImage()) {
+                            html  += HtmlUtil.image(entry.getResourceUrl(), ["width","300"]) +"<br>";
+                        }
+                        html+= entry.getName()+"<br>";
+                        var start  = entry.getStartDate().getFullYear()+"-" + Utils.padLeft(entry.getStartDate().getMonth()+1,2,"0")+"-" + Utils.padLeft(entry.getStartDate().getDate(),2,"0");
+                        var end  = entry.getEndDate().getFullYear()+"-" + Utils.padLeft(entry.getEndDate().getMonth()+1,2,"0")+"-" + Utils.padLeft(entry.getEndDate().getDate(),2,"0");
+                        html+="Date: " + start +" - " +end;
+                        popup.html(html);
+                        popup.show();
+                        popup.position({
+                                of: $(this),
+                                    my: "left top",
+                                    at: "left bottom",
+                                    collision: "none none"
+                                    });
+                        popup.position({
+                                of: $(this),
+                                    my: "left top",
+                                    at: "left bottom",
+                                    collision: "none none"
+                                    });
+                    });
+            },
+            getDateGrid:function (entries) {
+                this.gridId = HtmlUtil.getUniqueId();
+
+
+                var minDate = null;
+                var maxDate = null;
+                for(var i=0;i<entries.length;i++) {
+                    var entry = entries[i];
+                    minDate = minDate==null?entry.getStartDate():(minDate.getTime()>entry.getStartDate().getTime()?entry.getStartDate():minDate);
+                    maxDate = maxDate==null?entry.getEndDate():(maxDate.getTime()<entry.getEndDate().getTime()?entry.getEndDate():maxDate);
+                }
+
+                var options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric',hour:'numeric',minute:'numeric' };
+                var scaleWidth = this.getProperty("scaleWidth",true);
+                var startYear = minDate.getFullYear();
+                var endYear = maxDate.getFullYear()+1;
+                var yearRange = endYear - startYear;
+                minDate  = Utils.parseDate(startYear +"-01-01"); 
+                maxDate  = Utils.parseDate(endYear +"-12-31"); 
+                var dateRange = maxDate.getTime()-minDate.getTime();
+
+                var hlines = "";
+                var vlines = "";
+                var dayOffset = 15;
+                var monthDays = [31,28,31,30,31,30,31,31,30,31,30,31,31];
+                var monthNums = [0,1,2,3,4,5,6,7,8,9,10,11,12];
+                var months = ["Jan","Feb","Mar","Apr","May","Jun", "Jul","Aug", "Sep","Oct", "Nov","Dec",null];
+                                           var days = dayOffset;
+                var daysInYAxis = 365+dayOffset;
+                var leftAxis = "";
+                var bottomAxis = "";
+                for(var month=0;month<months.length;month++) {
+                    var yPercent  =Math.round(100*(days/daysInYAxis));
+                    //                    console.log(months[month] +" " + yPercent +" days:" + days);
+                    days+=monthDays[month];
+                    var bottom = yPercent +"%";
+                    var style = "bottom:" + bottom+";";
+                    if(months[month])
+                        leftAxis+=HtmlUtil.div(["style",style,"class","display-entrygrid-leftaxis-tick"],months[month]+" " + HtmlUtil.div(["class","display-entrygrid-htick"],""));
+                    hlines+=HtmlUtil.div(["style","bottom:" + bottom+";","class","display-entrygrid-hline"]," ");
+                }
+                for(var year=startYear;year<endYear;year++) {
+                    var xPercent = Math.round(100*(year-startYear)/yearRange);
+                    if(year>startYear)
+                        vlines+=HtmlUtil.div(["style","left:" + xPercent+"%;", "class","display-entrygrid-vline"]," ");
+                    bottomAxis+=HtmlUtil.div(["style","left:" + xPercent+"%;","class","display-entrygrid-bottomaxis-tick"], HtmlUtil.div(["class","display-entrygrid-vtick"],"")+" " + year);
+                }
+
+                var html = "";
+                html+=HtmlUtil.openTag("table",["border","0", "class","","cellspacing","0","cellspacing","0","width","100%","style","height:100%;"]);
+                html+=HtmlUtil.openTag("tr",["style","height:100%;"]);
+                html+=HtmlUtil.openTag("td",["width","100","style","height:100%;"]);
+                html+= HtmlUtil.openDiv(["class","display-entrygrid-leftaxis"]);
+                html += leftAxis;
+                html+= HtmlUtil.closeDiv();
+                html+= HtmlUtil.closeDiv();
+                html+=HtmlUtil.closeTag("td");
+                html+=HtmlUtil.openTag("td",["xwidth","100"]);
+                html += HtmlUtil.openDiv(["class","display-entrygrid","id", this.gridId]);
+
+                var content = HtmlUtil.openDiv(["class","display-entrygrid-content"]);
+                content += hlines;
+                content += vlines;
+                content += HtmlUtil.openDiv(["class","display-entrygrid-content-inner","style","height:" + this.getProperty("height","400")+"px"]);
+                for(var i=0;i<entries.length;i++) {
+                    var entry = entries[i];
+                    var doy = Utils.getDayInYear(entry.getStartDate());
+                    var leftPercent = Math.round(100*(Math.min(entry.getStartDate().getTime(),entry.getEndDate().getTime())-minDate.getTime())/dateRange);
+                    var widthPercent = Math.round(100*(Math.abs((entry.getEndDate().getTime()-entry.getStartDate().getTime()))/dateRange));
+                    var left = leftPercent+"%";
+                    //start = -31, end=395
+                    var yPercent  =Math.round(100*(1-(doy+dayOffset)/daysInYAxis));
+                    var top = (yPercent) +"%;";
+                    var style = "left:"+  left+";" +" top:" + top;
+                    if(scaleWidth) {
+                        if(widthPercent>1) {
+                            style+="width:" + widthPercent+"%;";
+                        } else {
+                            style+="width:5px";
+                        }
+                    }
+                    //                    console.log(entry.getName() + " " + entry.getStartDate() + " - " + entry.getEndDate() +" " + style +" doy:" + doy +" " + widthPercent);
+                    var pt = HtmlUtil.div(["class","display-entrygrid-entry","style", style,"index",i],"");
+                    content+=pt;
+                }
+                content+= HtmlUtil.closeDiv();
+                content+= HtmlUtil.closeDiv();
+                content+= HtmlUtil.div(["class","display-entrygrid-popup ramadda-popup"],"");
+                html+=content;
+                html+= HtmlUtil.closeDiv();
+                html+=HtmlUtil.closeTag("td");
+                html+=HtmlUtil.closeTag("tr");
+                html+=HtmlUtil.openTag("tr",[]);
+                html+=HtmlUtil.openTag("td",["width","100"]);
+                html+=HtmlUtil.closeTag("td");
+                html+=HtmlUtil.openTag("td",["xwidth","100"]);
+                html+= HtmlUtil.openDiv(["class","display-entrygrid-bottomaxis"]);
+                html+=bottomAxis; 
+                html+=HtmlUtil.closeTag("div");
+                html+=HtmlUtil.closeTag("td");
+                html+=HtmlUtil.closeTag("table");
+                /*
+                    var thumbnail = entry.getThumbnail();
+                    var link  =  HtmlUtil.tag(TAG_A,[ATTR_HREF, entry.getEntryUrl()],entry.getName());
+                    html  += HtmlUtil.tag(TAG_IMG,["src", entry.getResourceUrl(), ATTR_WIDTH,"500",ATTR_ID,
+                                                   this.getDomId("entry_" + entry.getIdForDom()),
+                                                   ATTR_ENTRYID,entry.getId(), ATTR_CLASS,"display-entrygallery-entry"]) +"<br>" +
+                        link+"<p>";
+                */
+
+
                 return html;
             }
         });
