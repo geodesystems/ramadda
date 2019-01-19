@@ -1206,8 +1206,10 @@ function RamaddaEntrydategridDisplay(displayManager, id, properties) {
                         var html ="";
                         if(thumb){
                             html = HtmlUtil.image(thumb,["width","300;"])+"<br>";
+                            //                            console.log("thumb:" + html);
                         }  else if(entry.isImage()) {
                             html  += HtmlUtil.image(entry.getResourceUrl(), ["width","300"]) +"<br>";
+                            //                            console.log("is image:" + html);
                         }
                         html+= entry.getIconImage() +" " +entry.getName()+"<br>";
                         var start  = entry.getStartDate().getFullYear()+"-" + Utils.padLeft(entry.getStartDate().getMonth()+1,2,"0")+"-" + Utils.padLeft(entry.getStartDate().getDate(),2,"0");
