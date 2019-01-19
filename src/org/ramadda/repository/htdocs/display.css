@@ -134,14 +134,14 @@
    position:absolute;
    display:inline-block;
    width:100%;
-   border-bottom: 1px #ccc dotted;
+   border-bottom: 1px #eee dotted;
 }
 
 .display-entrygrid-vline {
    position:absolute;
    display:inline-block;
    height:100%;
-   border-left: 1px #ccc dotted;
+   border-left: 1px #eee dotted;
 }
 
 .display-entrygrid-popup {
