@@ -8906,7 +8906,7 @@ function RamaddaEntrydategridDisplay(displayManager, id, properties) {
                         }  else if(entry.isImage()) {
                             html  += HtmlUtil.image(entry.getResourceUrl(), ["width","300"]) +"<br>";
                         }
-                        html+= entry.getName()+"<br>";
+                        html+= entry.getIconImage() +" " +entry.getName()+"<br>";
                         var start  = entry.getStartDate().getFullYear()+"-" + Utils.padLeft(entry.getStartDate().getMonth()+1,2,"0")+"-" + Utils.padLeft(entry.getStartDate().getDate(),2,"0");
                         var end  = entry.getEndDate().getFullYear()+"-" + Utils.padLeft(entry.getEndDate().getMonth()+1,2,"0")+"-" + Utils.padLeft(entry.getEndDate().getDate(),2,"0");
                         html+="Date: " + start +" - " +end;
@@ -8914,8 +8914,8 @@ function RamaddaEntrydategridDisplay(displayManager, id, properties) {
                         popup.show();
                         popup.position({
                                 of: $(this),
-                                    my: "left top",
                                     at: "left bottom",
+                                    my: "left top",
                                     collision: "none none"
                                     });
                         popup.position({
@@ -8940,6 +8940,8 @@ function RamaddaEntrydategridDisplay(displayManager, id, properties) {
 
                 var options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric',hour:'numeric',minute:'numeric' };
                 var scaleWidth = this.getProperty("scaleWidth",true);
+                var showIcon = this.getProperty("showIcon",false);
+                var showName = this.getProperty("showName",false);
                 var startYear = minDate.getFullYear();
                 var endYear = maxDate.getFullYear()+1;
                 var yearRange = endYear - startYear;
@@ -8990,6 +8992,7 @@ function RamaddaEntrydategridDisplay(displayManager, id, properties) {
                 content += hlines;
                 content += vlines;
                 content += HtmlUtil.openDiv(["class","display-entrygrid-content-inner","style","height:" + this.getProperty("height","400")+"px"]);
+                var seen = {};
                 for(var i=0;i<entries.length;i++) {
                     var entry = entries[i];
                     var doy = Utils.getDayInYear(entry.getStartDate());
@@ -8999,7 +9002,8 @@ function RamaddaEntrydategridDisplay(displayManager, id, properties) {
                     //start = -31, end=395
                     var yPercent  =Math.round(100*(1-(doy+dayOffset)/daysInYAxis));
                     var top = (yPercent) +"%;";
-                    var style = "left:"+  left+";" +" top:" + top;
+                    var pos = "left:"+  left+";" +" top:" + top;
+                    var style = pos;
                     if(scaleWidth) {
                         if(widthPercent>1) {
                             style+="width:" + widthPercent+"%;";
@@ -9008,8 +9012,15 @@ function RamaddaEntrydategridDisplay(displayManager, id, properties) {
                         }
                     }
                     //                    console.log(entry.getName() + " " + entry.getStartDate() + " - " + entry.getEndDate() +" " + style +" doy:" + doy +" " + widthPercent);
-                    var pt = HtmlUtil.div(["class","display-entrygrid-entry","style", style,"index",i],"");
-                    content+=pt;
+                    if(showIcon) {
+                        content += HtmlUtil.div(["class","display-entrygrid-entry-icon display-entrygrid-entry", "index",i, "style", pos],entry.getIconImage());
+                    }
+                    if(showName && !seen[pos]) {
+                        var name = entry.getName().replace(/ /g,"&nbsp;");
+                        content += HtmlUtil.div(["class","display-entrygrid-entry-text display-entrygrid-entry", "index",i,"style", pos],name);
+                    }
+                    content+= HtmlUtil.div(["class","display-entrygrid-entry-box display-entrygrid-entry","style", style,"index",i],"");
+                    seen[pos] = true;
                 }
                 content+= HtmlUtil.closeDiv();
                 content+= HtmlUtil.closeDiv();
