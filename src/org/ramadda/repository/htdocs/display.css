@@ -67,38 +67,30 @@
 }
 
 
-.display-entrygrid {
+.display-dategrid {
 }
 
 
-.display-entrygrid-content {
+.display-dategrid-canvas {
   position: relative;
-  width:100%;
   height:100%;
   border: 1px #000 solid;
-//  padding:20px;
 }
 
-.display-entrygrid-content-inner {
-  position: relative;
-  height:100%;
-  #margin-right:20px;
-  #margin-bottom:20px;
-}
 
-.display-entrygrid-leftaxis {
+.display-dategrid-axis-left {
   position: relative;
-  width:100%;
+  width:100px;
   height:100%;
 }
 
-.display-entrygrid-bottomaxis {
+.display-dategrid-axis-bottom {
   position: relative;
   width:100%;
-  height:100%;
+  height:50px;
 }
 
-.display-entrygrid-htick {
+.display-dategrid-htick {
    vertical-align:bottom;
    display:inline-block;
    height:100%;
@@ -106,7 +98,7 @@
    border-bottom: 1px #000 solid;
 }
 
-.display-entrygrid-leftaxis-tick {
+.display-dategrid-axis-left-tick {
     position: absolute;
     padding-right:5px;
     font-size:8pt;
@@ -114,7 +106,7 @@
     right:-5px;
 }
 
-.display-entrygrid-vtick {
+.display-dategrid-vtick {
    #vertical-align:bottom;
    display:inline-block;
    height:15px;
@@ -123,37 +115,37 @@
    border-left: 1px #000 solid;
 }
 
-.display-entrygrid-bottomaxis-tick {
+.display-dategrid-axis-bottom-tick {
     position: absolute;
     padding-right:5px;
     font-size:8pt;
     color:#666;
 }
 
-.display-entrygrid-hline {
+.display-dategrid-hline {
    position:absolute;
    display:inline-block;
    width:100%;
    border-bottom: 1px #eee dotted;
 }
 
-.display-entrygrid-vline {
+.display-dategrid-vline {
    position:absolute;
    display:inline-block;
    height:100%;
    border-left: 1px #eee dotted;
 }
 
-.display-entrygrid-popup {
+.display-dategrid-popup {
   padding:10px;
 }
 
 
-.display-entrygrid-entry {
+.display-dategrid-entry {
    cursor:pointer;
 }
 
-.display-entrygrid-entry-box {
+.display-dategrid-entry-box {
     position: absolute;
     width: 20px;
     height: 15px;
@@ -164,13 +156,13 @@
 }
 
 
-.display-entrygrid-entry-box:hover {
+.display-dategrid-entry-box:hover {
     border: 1px blue solid;
     background: blue;
     z-index: 100;
 }
 
-.display-entrygrid-entry-text {
+.display-dategrid-entry-text {
     z-index:10;
     position: absolute;
     margin-top:-15px;
@@ -178,7 +170,7 @@
     color:#666;
 }
 
-.display-entrygrid-entry-icon {
+.display-dategrid-entry-icon {
     z-index:10;
     position: absolute;
     margin-left:-18px;

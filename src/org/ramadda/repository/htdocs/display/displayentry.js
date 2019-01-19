@@ -1154,6 +1154,10 @@ function RamaddaEntrygalleryDisplay(displayManager, id, properties) {
 function RamaddaEntrydategridDisplay(displayManager, id, properties) {
     var SUPER;
     var ID_CONTENTS = "contents";
+    var ID_DATEGRID = "dategrid";
+    var ID_AXIS_LEFT = "axis_left";
+    var ID_AXIS_BOTTOM = "axis_bottom";
+    var ID_CANVAS = "canvas";
     RamaddaUtil.inherit(this, SUPER = new RamaddaEntryDisplay(displayManager, id, DISPLAY_ENTRY_DATEGRID, properties));
     addRamaddaDisplay(this);
     RamaddaUtil.defineMembers(this, {
@@ -1163,29 +1167,35 @@ function RamaddaEntrydategridDisplay(displayManager, id, properties) {
                 this.initUI();
                 var html =    HtmlUtil.div([ATTR_ID,this.getDomId(ID_CONTENTS)],this.getLoadingMessage("Loading entries..."));
                 this.setContents(html);
-                if(!this.entries) {
+                if(!this.entryIds) {
                     _this.jq(ID_CONTENTS).html(this.getLoadingMessage("No entries specified"));
                     return;
                 }
-                var props = {entries:this.entries};
+                var props = {entries:this.entryIds};
                 var searchSettings= new EntrySearchSettings(props);
                 var jsonUrl = this.getRamadda().getSearchUrl(searchSettings, OUTPUT_JSON,"BAR");
                 var myCallback = {
                     entryListChanged: function(list) {
-                        var entries  = list.getEntries();
-                        if(entries.length==0) {
+                        _this.entries  = list.getEntries();
+                        if(_this.entries.length==0) {
                             _this.jq(ID_CONTENTS).html(_this.getLoadingMessage("No entries selected"));
                             return;
                         }
-                        _this.jq(ID_CONTENTS).html(_this.getDateGrid(entries));
-                        _this.initDateGrid(entries);
+                        _this.jq(ID_CONTENTS).html(_this.makeFramework());
+                        _this.canvas = $("#" + _this.getDomId(ID_CANVAS));
+                        _this.popup = $("#" + _this.getDomId(ID_DATEGRID) + " .display-dategrid-popup");
+                        _this.jq(ID_AXIS_LEFT).html("");
+                        _this.jq(ID_AXIS_BOTTOM).html("");
+                        _this.makeDateGrid(_this.entries);
+                        _this.initDateGrid(_this.entries);
                     }
                 };
                 var entryList = new EntryList(this.getRamadda(), jsonUrl, myCallback, true);
             },
             initDateGrid:function (entries) {
                 var _this = this;
-                $("#" + this.gridId +" .display-entrygrid-entry").click(function(){
+                var items = this.canvas.find(".display-dategrid-entry");
+                items.click(function(){
                         var index = parseInt($(this).attr("index"));
                         entry = entries[index];
                         var url = entry.getEntryUrl();
@@ -1194,15 +1204,14 @@ function RamaddaEntrydategridDisplay(displayManager, id, properties) {
                         }
                         window.open(url,"_entry");
                     });
-                $("#" + this.gridId +" .display-entrygrid-entry").mouseout(function(){
-                        var popup = $("#" + _this.gridId +" .display-entrygrid-popup");
-                        popup.hide();
+                items.mouseout(function(){
+                        _this.popup.hide();
                     });
-                $("#" + this.gridId +" .display-entrygrid-entry").mouseover(function(){
+                items.mouseover(function(evt){
+                        var x = GuiUtils.getEventX(evt);
                         var index = parseInt($(this).attr("index"));
                         entry = entries[index];
                         var thumb = entry.getThumbnail();
-                        var popup = $("#" + _this.gridId +" .display-entrygrid-popup");
                         var html ="";
                         if(thumb){
                             html = HtmlUtil.image(thumb,["width","300;"])+"<br>";
@@ -1215,15 +1224,15 @@ function RamaddaEntrydategridDisplay(displayManager, id, properties) {
                         var start  = entry.getStartDate().getFullYear()+"-" + Utils.padLeft(entry.getStartDate().getMonth()+1,2,"0")+"-" + Utils.padLeft(entry.getStartDate().getDate(),2,"0");
                         var end  = entry.getEndDate().getFullYear()+"-" + Utils.padLeft(entry.getEndDate().getMonth()+1,2,"0")+"-" + Utils.padLeft(entry.getEndDate().getDate(),2,"0");
                         html+="Date: " + start +" - " +end;
-                        popup.html(html);
-                        popup.show();
-                        popup.position({
+                        _this.popup.html(html);
+                        _this.popup.show();
+                        _this.popup.position({
                                 of: $(this),
                                     at: "left bottom",
                                     my: "left top",
                                     collision: "none none"
                                     });
-                        popup.position({
+                        _this.popup.position({
                                 of: $(this),
                                     my: "left top",
                                     at: "left bottom",
@@ -1231,9 +1240,37 @@ function RamaddaEntrydategridDisplay(displayManager, id, properties) {
                                     });
                     });
             },
-            getDateGrid:function (entries) {
-                this.gridId = HtmlUtil.getUniqueId();
+            makeFramework:function (entries) {
+                var html = "";
+                html += HtmlUtil.openDiv(["class","display-dategrid","id", this.getDomId(ID_DATEGRID)]);
+                html+= HtmlUtil.div(["class","display-dategrid-popup ramadda-popup"],"");
+                html += HtmlUtil.openTag("table",["border","0", "class","","cellspacing","0","cellspacing","0","width","100%","style","height:100%;"]);
+                html += HtmlUtil.openTag("tr",["style","height:100%;"]);
+                html += HtmlUtil.openTag("td",["style","height:100%;"]);
+                html += HtmlUtil.openDiv(["class","display-dategrid-axis-left","id",this.getDomId(ID_AXIS_LEFT)]);
+                html += HtmlUtil.closeDiv();
+                html += HtmlUtil.closeDiv();
+                html += HtmlUtil.closeTag("td");
+                html += HtmlUtil.openTag("td",["style","height:" + this.getProperty("height","400")+"px"]);
+                html += HtmlUtil.openDiv(["class","display-dategrid-canvas","id", this.getDomId(ID_CANVAS)]);
+                html+= HtmlUtil.closeDiv();
+                html+= HtmlUtil.closeDiv();
+                html+=HtmlUtil.closeTag("td");
+                html+=HtmlUtil.closeTag("tr");
+                html+=HtmlUtil.openTag("tr",[]);
+                html+=HtmlUtil.tag("td",["width","100"],"&nbsp;");
+                html+=HtmlUtil.openTag("td",[]);
+                html+= HtmlUtil.div(["class","display-dategrid-axis-bottom","id",this.getDomId(ID_AXIS_BOTTOM)],"");
+                html+=HtmlUtil.closeTag("table");
+                html+=HtmlUtil.closeTag("td");
+                return html;
+            },
 
+
+            makeDateGrid:function (entries) {
+                var scaleWidth = this.getProperty("scaleWidth",true);
+                var showIcon = this.getProperty("showIcon",false);
+                var showName = this.getProperty("showName",false);
 
                 var minDate = null;
                 var maxDate = null;
@@ -1242,11 +1279,6 @@ function RamaddaEntrydategridDisplay(displayManager, id, properties) {
                     minDate = minDate==null?entry.getStartDate():(minDate.getTime()>entry.getStartDate().getTime()?entry.getStartDate():minDate);
                     maxDate = maxDate==null?entry.getEndDate():(maxDate.getTime()<entry.getEndDate().getTime()?entry.getEndDate():maxDate);
                 }
-
-                var options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric',hour:'numeric',minute:'numeric' };
-                var scaleWidth = this.getProperty("scaleWidth",true);
-                var showIcon = this.getProperty("showIcon",false);
-                var showName = this.getProperty("showName",false);
                 var startYear = minDate.getFullYear();
                 var endYear = maxDate.getFullYear()+1;
                 var yearRange = endYear - startYear;
@@ -1270,32 +1302,18 @@ function RamaddaEntrydategridDisplay(displayManager, id, properties) {
                     var bottom = yPercent +"%";
                     var style = "bottom:" + bottom+";";
                     if(months[month])
-                        leftAxis+=HtmlUtil.div(["style",style,"class","display-entrygrid-leftaxis-tick"],months[month]+" " + HtmlUtil.div(["class","display-entrygrid-htick"],""));
-                    hlines+=HtmlUtil.div(["style","bottom:" + bottom+";","class","display-entrygrid-hline"]," ");
+                        leftAxis+=HtmlUtil.div(["style",style,"class","display-dategrid-axis-left-tick"],months[month]+" " + HtmlUtil.div(["class","display-dategrid-htick"],""));
+                    hlines+=HtmlUtil.div(["style","bottom:" + bottom+";","class","display-dategrid-hline"]," ");
                 }
                 for(var year=startYear;year<endYear;year++) {
                     var xPercent = Math.round(100*(year-startYear)/yearRange);
                     if(year>startYear)
-                        vlines+=HtmlUtil.div(["style","left:" + xPercent+"%;", "class","display-entrygrid-vline"]," ");
-                    bottomAxis+=HtmlUtil.div(["style","left:" + xPercent+"%;","class","display-entrygrid-bottomaxis-tick"], HtmlUtil.div(["class","display-entrygrid-vtick"],"")+" " + year);
+                        vlines+=HtmlUtil.div(["style","left:" + xPercent+"%;", "class","display-dategrid-vline"]," ");
+                    bottomAxis+=HtmlUtil.div(["style","left:" + xPercent+"%;","class","display-dategrid-axis-bottom-tick"], HtmlUtil.div(["class","display-dategrid-vtick"],"")+" " + year);
                 }
 
-                var html = "";
-                html+=HtmlUtil.openTag("table",["border","0", "class","","cellspacing","0","cellspacing","0","width","100%","style","height:100%;"]);
-                html+=HtmlUtil.openTag("tr",["style","height:100%;"]);
-                html+=HtmlUtil.openTag("td",["width","100","style","height:100%;"]);
-                html+= HtmlUtil.openDiv(["class","display-entrygrid-leftaxis"]);
-                html += leftAxis;
-                html+= HtmlUtil.closeDiv();
-                html+= HtmlUtil.closeDiv();
-                html+=HtmlUtil.closeTag("td");
-                html+=HtmlUtil.openTag("td",["xwidth","100"]);
-                html += HtmlUtil.openDiv(["class","display-entrygrid","id", this.gridId]);
 
-                var content = HtmlUtil.openDiv(["class","display-entrygrid-content"]);
-                content += hlines;
-                content += vlines;
-                content += HtmlUtil.openDiv(["class","display-entrygrid-content-inner","style","height:" + this.getProperty("height","400")+"px"]);
+                var items = "";
                 var seen = {};
                 for(var i=0;i<entries.length;i++) {
                     var entry = entries[i];
@@ -1303,7 +1321,6 @@ function RamaddaEntrydategridDisplay(displayManager, id, properties) {
                     var leftPercent = Math.round(100*(Math.min(entry.getStartDate().getTime(),entry.getEndDate().getTime())-minDate.getTime())/dateRange);
                     var widthPercent = Math.round(100*(Math.abs((entry.getEndDate().getTime()-entry.getStartDate().getTime()))/dateRange));
                     var left = leftPercent+"%";
-                    //start = -31, end=395
                     var yPercent  =Math.round(100*(1-(doy+dayOffset)/daysInYAxis));
                     var top = (yPercent) +"%;";
                     var pos = "left:"+  left+";" +" top:" + top;
@@ -1317,42 +1334,18 @@ function RamaddaEntrydategridDisplay(displayManager, id, properties) {
                     }
                     //                    console.log(entry.getName() + " " + entry.getStartDate() + " - " + entry.getEndDate() +" " + style +" doy:" + doy +" " + widthPercent);
                     if(showIcon) {
-                        content += HtmlUtil.div(["class","display-entrygrid-entry-icon display-entrygrid-entry", "index",i, "style", pos],entry.getIconImage());
+                        items += HtmlUtil.div(["class","display-dategrid-entry-icon display-dategrid-entry", "index",i, "style", pos],entry.getIconImage());
                     }
                     if(showName && !seen[pos]) {
                         var name = entry.getName().replace(/ /g,"&nbsp;");
-                        content += HtmlUtil.div(["class","display-entrygrid-entry-text display-entrygrid-entry", "index",i,"style", pos],name);
+                        items += HtmlUtil.div(["class","display-dategrid-entry-text display-dategrid-entry", "index",i,"style", pos],name);
                     }
-                    content+= HtmlUtil.div(["class","display-entrygrid-entry-box display-entrygrid-entry","style", style,"index",i],"");
+                    items+= HtmlUtil.div(["class","display-dategrid-entry-box display-dategrid-entry","style", style,"index",i],"");
                     seen[pos] = true;
                 }
-                content+= HtmlUtil.closeDiv();
-                content+= HtmlUtil.closeDiv();
-                content+= HtmlUtil.div(["class","display-entrygrid-popup ramadda-popup"],"");
-                html+=content;
-                html+= HtmlUtil.closeDiv();
-                html+=HtmlUtil.closeTag("td");
-                html+=HtmlUtil.closeTag("tr");
-                html+=HtmlUtil.openTag("tr",[]);
-                html+=HtmlUtil.openTag("td",["width","100"]);
-                html+=HtmlUtil.closeTag("td");
-                html+=HtmlUtil.openTag("td",["xwidth","100"]);
-                html+= HtmlUtil.openDiv(["class","display-entrygrid-bottomaxis"]);
-                html+=bottomAxis; 
-                html+=HtmlUtil.closeTag("div");
-                html+=HtmlUtil.closeTag("td");
-                html+=HtmlUtil.closeTag("table");
-                /*
-                    var thumbnail = entry.getThumbnail();
-                    var link  =  HtmlUtil.tag(TAG_A,[ATTR_HREF, entry.getEntryUrl()],entry.getName());
-                    html  += HtmlUtil.tag(TAG_IMG,["src", entry.getResourceUrl(), ATTR_WIDTH,"500",ATTR_ID,
-                                                   this.getDomId("entry_" + entry.getIdForDom()),
-                                                   ATTR_ENTRYID,entry.getId(), ATTR_CLASS,"display-entrygallery-entry"]) +"<br>" +
-                        link+"<p>";
-                */
-
-
-                return html;
+                this.jq(ID_AXIS_LEFT).html(leftAxis);
+                this.jq(ID_CANVAS).html(hlines+vlines+items);
+                this.jq(ID_AXIS_BOTTOM).html(bottomAxis);
             }
         });
 }

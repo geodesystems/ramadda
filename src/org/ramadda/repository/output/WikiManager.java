@@ -5231,7 +5231,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                 ids.append(child.getId());
             }
             props.remove("entries");
-            Utils.add(propList, "entries", Json.quote(ids.toString()));
+            Utils.add(propList, "entryIds", Json.quote(ids.toString()));
         }
         props.remove("type");
         for (Enumeration keys = props.keys(); keys.hasMoreElements(); ) {
