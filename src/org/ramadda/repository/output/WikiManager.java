@@ -350,8 +350,8 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                                               ATTR_SHOWMENU, "true", 
                                               ATTR_SHOWTITLE, "true")),
                             new WikiTag(WIKI_TAG_DISPLAY,
-                                        "Date Grid",
-                                        attrs(ATTR_TYPE, "entrydategrid", 
+                                        "Entry Grid",
+                                        attrs(ATTR_TYPE, "entrygrid", 
                                               "#" +ATTR_HEIGHT, "400", 
                                               "#" +ATTR_WIDTH, "100%", 
                                               "#showIcon","true",
@@ -5220,7 +5220,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
 
         String displayType = Utils.getProperty(props, "type", "linechart");
         if (displayType.equals("entrygallery")
-                || displayType.equals("entrydategrid")) {
+                || displayType.equals("entrygrid")) {
             List<Entry> children = getEntries(request, originalEntry, entry,
                                        props);
             StringBuilder ids = new StringBuilder();

@@ -53,7 +53,11 @@ var Utils = {
         return date.toLocaleDateString("en-US", options) + suffix;
     },
     getDayInYear: function(date){
-        return (Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()) - Date.UTC(date.getFullYear(), 0, 0)) / 24 / 60 / 60 / 1000;
+        return (Date.UTC(date.getUTCFullYear(), date.getUTCMonth(), date.getUTCDate()) - Date.UTC(date.getUTCFullYear(), 0, 0)) / 24 / 60 / 60 / 1000;
+    },
+    monthShortNames:  ["Jan","Feb","Mar","Apr","May","Jun", "Jul","Aug", "Sep","Oct", "Nov","Dec"],
+    getMonthShortNames: function() {
+        return this.monthShortNames;
     },
     parseDate: function(s,roundUp, rel) {
         if(s ==null) return null;

@@ -559,6 +559,8 @@ function EntryType(props) {
         });
 }
 
+var xnt = 0;
+
 function Entry(props) {
     if(props.repositoryId == null) {
         props.repositoryId = props.baseUrl;
@@ -594,6 +596,12 @@ function Entry(props) {
 
     this.startDate = Utils.parseDate(props.startDate);
     this.endDate = Utils.parseDate(props.endDate);
+    if(this.endDate.getTime()<this.startDate.getTime()) {
+        var tmp = this.startDate;
+        this.startDate = this.endDate;
+        this.endDate = tmp;
+    }
+    //    console.log(props.name +" dttm:" + this.getEndDate());
     this.attributes = [];
     this.metadata = [];
     for(var i=0;i<this.properties.length;i++) {
@@ -623,7 +631,7 @@ function Entry(props) {
             getStartDate:function() {
                 return this.startDate;
             },
-                getEndDate:function() {
+            getEndDate:function() {
                 return this.endDate;
             },
             getIsGroup: function() {return this.isGroup;},

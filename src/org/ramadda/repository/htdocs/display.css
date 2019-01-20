@@ -67,30 +67,30 @@
 }
 
 
-.display-dategrid {
+.display-grid {
 }
 
 
-.display-dategrid-canvas {
+.display-grid-canvas {
   position: relative;
   height:100%;
   border: 1px #000 solid;
 }
 
 
-.display-dategrid-axis-left {
+.display-grid-axis-left {
   position: relative;
   width:100px;
   height:100%;
 }
 
-.display-dategrid-axis-bottom {
+.display-grid-axis-bottom {
   position: relative;
   width:100%;
   height:50px;
 }
 
-.display-dategrid-htick {
+.display-grid-htick {
    vertical-align:bottom;
    display:inline-block;
    height:100%;
@@ -98,7 +98,7 @@
    border-bottom: 1px #000 solid;
 }
 
-.display-dategrid-axis-left-tick {
+.display-grid-axis-left-tick {
     position: absolute;
     padding-right:5px;
     font-size:8pt;
@@ -106,7 +106,7 @@
     right:-5px;
 }
 
-.display-dategrid-vtick {
+.display-grid-vtick {
    #vertical-align:bottom;
    display:inline-block;
    height:15px;
@@ -115,37 +115,37 @@
    border-left: 1px #000 solid;
 }
 
-.display-dategrid-axis-bottom-tick {
+.display-grid-axis-bottom-tick {
     position: absolute;
     padding-right:5px;
     font-size:8pt;
     color:#666;
 }
 
-.display-dategrid-hline {
+.display-grid-hline {
    position:absolute;
    display:inline-block;
    width:100%;
-   border-bottom: 1px #eee dotted;
+   border-bottom: 1px #ccc dotted;
 }
 
-.display-dategrid-vline {
+.display-grid-vline {
    position:absolute;
    display:inline-block;
    height:100%;
-   border-left: 1px #eee dotted;
+   border-left: 1px #ccc dotted;
 }
 
-.display-dategrid-popup {
+.display-grid-popup {
   padding:10px;
 }
 
 
-.display-dategrid-entry {
+.display-grid-entry {
    cursor:pointer;
 }
 
-.display-dategrid-entry-box {
+.display-grid-entry-box {
     position: absolute;
     width: 20px;
     height: 15px;
@@ -156,13 +156,13 @@
 }
 
 
-.display-dategrid-entry-box:hover {
+.display-grid-entry-box:hover {
     border: 1px blue solid;
     background: blue;
     z-index: 100;
 }
 
-.display-dategrid-entry-text {
+.display-grid-entry-text {
     z-index:10;
     position: absolute;
     margin-top:-15px;
@@ -170,7 +170,7 @@
     color:#666;
 }
 
-.display-dategrid-entry-icon {
+.display-grid-entry-icon {
     z-index:10;
     position: absolute;
     margin-left:-18px;

@@ -207,7 +207,7 @@ public class JsonOutputHandler extends OutputHandler {
      */
     private String formatDate(long dttm) {
         if (sdf == null) {
-            sdf = RepositoryUtil.makeDateFormat("yyyy-MM-dd HH:mm:ss");
+            sdf = RepositoryUtil.makeDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
         }
         synchronized (sdf) {
             return sdf.format(new Date(dttm));

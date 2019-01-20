@@ -8,7 +8,7 @@ var DISPLAY_ENTRYLIST = "entrylist";
 var DISPLAY_TESTLIST = "testlist";
 var DISPLAY_ENTRYDISPLAY = "entrydisplay";
 var DISPLAY_ENTRY_GALLERY = "entrygallery";
-var DISPLAY_ENTRY_DATEGRID = "entrydategridy";
+var DISPLAY_ENTRY_GRID = "entrygrid";
 var DISPLAY_OPERANDS = "operands";
 var DISPLAY_METADATA = "metadata";
 var DISPLAY_TIMELINE = "timeline";
@@ -29,7 +29,7 @@ addGlobalDisplayType({type: DISPLAY_ENTRYLIST, label:"Entry List",requiresData:f
 addGlobalDisplayType({type: DISPLAY_TESTLIST, label:"Test  List",requiresData:false,category:"Entry Displays"});
 addGlobalDisplayType({type: DISPLAY_ENTRYDISPLAY, label:"Entry Display",requiresData:false,category:"Entry Displays"});
 addGlobalDisplayType({type: DISPLAY_ENTRY_GALLERY, label:"Entry Gallery",requiresData:false,category:"Entry Displays"});
-addGlobalDisplayType({type: DISPLAY_ENTRY_DATEGRID, label:"Entry Date Grid",requiresData:false,category:"Entry Displays"});
+addGlobalDisplayType({type: DISPLAY_ENTRY_GRID, label:"Entry Date Grid",requiresData:false,category:"Entry Displays"});
 //addGlobalDisplayType({type: DISPLAY_OPERANDS, label:"Operands",requiresData:false,category:"Entry Displays"});
 addGlobalDisplayType({type: DISPLAY_METADATA, label:"Metadata Table",requiresData:false,category:"Entry Displays"});
 
@@ -1151,14 +1151,14 @@ function RamaddaEntrygalleryDisplay(displayManager, id, properties) {
 
 
 
-function RamaddaEntrydategridDisplay(displayManager, id, properties) {
+function RamaddaEntrygridDisplay(displayManager, id, properties) {
     var SUPER;
     var ID_CONTENTS = "contents";
-    var ID_DATEGRID = "dategrid";
+    var ID_GRID = "grid";
     var ID_AXIS_LEFT = "axis_left";
     var ID_AXIS_BOTTOM = "axis_bottom";
     var ID_CANVAS = "canvas";
-    RamaddaUtil.inherit(this, SUPER = new RamaddaEntryDisplay(displayManager, id, DISPLAY_ENTRY_DATEGRID, properties));
+    RamaddaUtil.inherit(this, SUPER = new RamaddaEntryDisplay(displayManager, id, DISPLAY_ENTRY_GRID, properties));
     addRamaddaDisplay(this);
     RamaddaUtil.defineMembers(this, {
             entries: properties.entries,
@@ -1183,18 +1183,18 @@ function RamaddaEntrydategridDisplay(displayManager, id, properties) {
                         }
                         _this.jq(ID_CONTENTS).html(_this.makeFramework());
                         _this.canvas = $("#" + _this.getDomId(ID_CANVAS));
-                        _this.popup = $("#" + _this.getDomId(ID_DATEGRID) + " .display-dategrid-popup");
+                        _this.popup = $("#" + _this.getDomId(ID_GRID) + " .display-grid-popup");
                         _this.jq(ID_AXIS_LEFT).html("");
                         _this.jq(ID_AXIS_BOTTOM).html("");
-                        _this.makeDateGrid(_this.entries);
-                        _this.initDateGrid(_this.entries);
+                        _this.makeGrid(_this.entries);
+                        _this.initGrid(_this.entries);
                     }
                 };
                 var entryList = new EntryList(this.getRamadda(), jsonUrl, myCallback, true);
             },
-            initDateGrid:function (entries) {
+            initGrid:function (entries) {
                 var _this = this;
-                var items = this.canvas.find(".display-dategrid-entry");
+                var items = this.canvas.find(".display-grid-entry");
                 items.click(function(){
                         var index = parseInt($(this).attr("index"));
                         entry = entries[index];
@@ -1221,9 +1221,9 @@ function RamaddaEntrydategridDisplay(displayManager, id, properties) {
                             //                            console.log("is image:" + html);
                         }
                         html+= entry.getIconImage() +" " +entry.getName()+"<br>";
-                        var start  = entry.getStartDate().getFullYear()+"-" + Utils.padLeft(entry.getStartDate().getMonth()+1,2,"0")+"-" + Utils.padLeft(entry.getStartDate().getDate(),2,"0");
-                        var end  = entry.getEndDate().getFullYear()+"-" + Utils.padLeft(entry.getEndDate().getMonth()+1,2,"0")+"-" + Utils.padLeft(entry.getEndDate().getDate(),2,"0");
-                        html+="Date: " + start +" - " +end;
+                        var start  = entry.getStartDate().getUTCFullYear()+"-" + Utils.padLeft(entry.getStartDate().getUTCMonth()+1,2,"0")+"-" + Utils.padLeft(entry.getStartDate().getUTCDate(),2,"0");
+                        var end  = entry.getEndDate().getUTCFullYear()+"-" + Utils.padLeft(entry.getEndDate().getUTCMonth()+1,2,"0")+"-" + Utils.padLeft(entry.getEndDate().getUTCDate(),2,"0");
+                        html+="Date: " + start +" - " +end+" UTC";
                         _this.popup.html(html);
                         _this.popup.show();
                         _this.popup.position({
@@ -1242,17 +1242,17 @@ function RamaddaEntrydategridDisplay(displayManager, id, properties) {
             },
             makeFramework:function (entries) {
                 var html = "";
-                html += HtmlUtil.openDiv(["class","display-dategrid","id", this.getDomId(ID_DATEGRID)]);
-                html+= HtmlUtil.div(["class","display-dategrid-popup ramadda-popup"],"");
+                html += HtmlUtil.openDiv(["class","display-grid","id", this.getDomId(ID_GRID)]);
+                html+= HtmlUtil.div(["class","display-grid-popup ramadda-popup"],"");
                 html += HtmlUtil.openTag("table",["border","0", "class","","cellspacing","0","cellspacing","0","width","100%","style","height:100%;"]);
                 html += HtmlUtil.openTag("tr",["style","height:100%;"]);
                 html += HtmlUtil.openTag("td",["style","height:100%;"]);
-                html += HtmlUtil.openDiv(["class","display-dategrid-axis-left","id",this.getDomId(ID_AXIS_LEFT)]);
+                html += HtmlUtil.openDiv(["class","display-grid-axis-left","id",this.getDomId(ID_AXIS_LEFT)]);
                 html += HtmlUtil.closeDiv();
                 html += HtmlUtil.closeDiv();
                 html += HtmlUtil.closeTag("td");
                 html += HtmlUtil.openTag("td",["style","height:" + this.getProperty("height","400")+"px"]);
-                html += HtmlUtil.openDiv(["class","display-dategrid-canvas","id", this.getDomId(ID_CANVAS)]);
+                html += HtmlUtil.openDiv(["class","display-grid-canvas","id", this.getDomId(ID_CANVAS)]);
                 html+= HtmlUtil.closeDiv();
                 html+= HtmlUtil.closeDiv();
                 html+=HtmlUtil.closeTag("td");
@@ -1260,14 +1260,14 @@ function RamaddaEntrydategridDisplay(displayManager, id, properties) {
                 html+=HtmlUtil.openTag("tr",[]);
                 html+=HtmlUtil.tag("td",["width","100"],"&nbsp;");
                 html+=HtmlUtil.openTag("td",[]);
-                html+= HtmlUtil.div(["class","display-dategrid-axis-bottom","id",this.getDomId(ID_AXIS_BOTTOM)],"");
+                html+= HtmlUtil.div(["class","display-grid-axis-bottom","id",this.getDomId(ID_AXIS_BOTTOM)],"");
                 html+=HtmlUtil.closeTag("table");
                 html+=HtmlUtil.closeTag("td");
                 return html;
             },
 
 
-            makeDateGrid:function (entries) {
+            makeGrid:function (entries) {
                 var scaleWidth = this.getProperty("scaleWidth",true);
                 var showIcon = this.getProperty("showIcon",false);
                 var showName = this.getProperty("showName",false);
@@ -1279,37 +1279,39 @@ function RamaddaEntrydategridDisplay(displayManager, id, properties) {
                     minDate = minDate==null?entry.getStartDate():(minDate.getTime()>entry.getStartDate().getTime()?entry.getStartDate():minDate);
                     maxDate = maxDate==null?entry.getEndDate():(maxDate.getTime()<entry.getEndDate().getTime()?entry.getEndDate():maxDate);
                 }
-                var startYear = minDate.getFullYear();
-                var endYear = maxDate.getFullYear()+1;
-                var yearRange = endYear - startYear;
-                minDate  = Utils.parseDate(startYear +"-01-01"); 
-                maxDate  = Utils.parseDate(endYear +"-12-31"); 
-                var dateRange = maxDate.getTime()-minDate.getTime();
 
+                minDate  = new Date(Date.UTC(minDate.getUTCFullYear(),0,1));
+                maxDate  = new Date(Date.UTC(maxDate.getUTCFullYear()+1,0,1));
+                var dateRange = maxDate.getTime()-minDate.getTime();
                 var hlines = "";
                 var vlines = "";
-                var dayOffset = 15;
-                var monthDays = [31,28,31,30,31,30,31,31,30,31,30,31];
-                var monthNums = [0,1,2,3,4,5,6,7,8,9,10,11];
-                var months = ["Jan","Feb","Mar","Apr","May","Jun", "Jul","Aug", "Sep","Oct", "Nov","Dec"];
-                                           var days = dayOffset;
-                var daysInYAxis = 365+dayOffset;
                 var leftAxis = "";
                 var bottomAxis = "";
+                var y1 = new Date(Date.UTC(0,11,15));
+                var y2 = new Date(Date.UTC(1,11,31));
+                var yRange = y2.getTime()-y1.getTime();
+                var months = Utils.getMonthShortNames();
                 for(var month=0;month<months.length;month++) {
-                    var yPercent  =Math.round(100*(days/daysInYAxis));
-                    days+=monthDays[month];
-                    var bottom = yPercent +"%";
-                    var style = "bottom:" + bottom+";";
+                    var t1 = new Date(Date.UTC(1,month));
+                    var yPercent = 100*(1-(y2.getTime()-t1.getTime())/yRange);
+                    var style = "bottom:" + yPercent +"%;";
                     if(months[month])
-                        leftAxis+=HtmlUtil.div(["style",style,"class","display-dategrid-axis-left-tick"],months[month]+" " + HtmlUtil.div(["class","display-dategrid-htick"],""));
-                    hlines+=HtmlUtil.div(["style","bottom:" + bottom+";","class","display-dategrid-hline"]," ");
+                        leftAxis+=HtmlUtil.div(["style",style,"class","display-grid-axis-left-tick"],months[month]+" " + HtmlUtil.div(["class","display-grid-htick"],""));
+                    hlines+=HtmlUtil.div(["style",style,"class","display-grid-hline"]," ");
                 }
-                for(var year=startYear;year<endYear;year++) {
-                    var xPercent = Math.round(100*(year-startYear)/yearRange);
-                    if(year>startYear)
-                        vlines+=HtmlUtil.div(["style","left:" + xPercent+"%;", "class","display-dategrid-vline"]," ");
-                    bottomAxis+=HtmlUtil.div(["style","left:" + xPercent+"%;","class","display-dategrid-axis-bottom-tick"], HtmlUtil.div(["class","display-dategrid-vtick"],"")+" " + year);
+
+
+                var yearDate  = new Date(Date.UTC(minDate.getUTCFullYear()));
+                var tickCnt = 0;
+                while(yearDate.getTime()<maxDate.getTime()) {
+                    var d1 = yearDate;
+                    var x1 = 100*(d1.getTime()-minDate.getTime())/dateRange;
+                    if(tickCnt>0) 
+                        vlines+=HtmlUtil.div(["style","left:" + x1+"%;", "class","display-grid-vline"]," ");
+                    var label = yearDate.getUTCFullYear();
+                    bottomAxis+=HtmlUtil.div(["style","left:" + x1+"%;","class","display-grid-axis-bottom-tick"], HtmlUtil.div(["class","display-grid-vtick"],"")+" " + label);
+                    yearDate.setUTCFullYear(yearDate.getUTCFullYear()+1);
+                    tickCnt++;
                 }
 
 
@@ -1317,31 +1319,30 @@ function RamaddaEntrydategridDisplay(displayManager, id, properties) {
                 var seen = {};
                 for(var i=0;i<entries.length;i++) {
                     var entry = entries[i];
-                    var doy = Utils.getDayInYear(entry.getStartDate());
-                    var leftPercent = Math.round(100*(Math.min(entry.getStartDate().getTime(),entry.getEndDate().getTime())-minDate.getTime())/dateRange);
-                    var widthPercent = Math.round(100*(Math.abs((entry.getEndDate().getTime()-entry.getStartDate().getTime()))/dateRange));
-                    var left = leftPercent+"%";
-                    var yPercent  =Math.round(100*(1-(doy+dayOffset)/daysInYAxis));
-                    var top = (yPercent) +"%;";
-                    var pos = "left:"+  left+";" +" top:" + top;
+                    var d1 = entry.getStartDate();
+                    var t1 = new Date(Date.UTC(1,d1.getUTCMonth(),d1.getUTCDate()));
+                    var y1 = 100*((y2.getTime()-t1.getTime())/yRange);
+                    var x1 = 100*(d1.getTime()-minDate.getTime())/dateRange;
+                    var x2 = 100*(Math.abs((entry.getEndDate().getTime()-entry.getStartDate().getTime()))/dateRange);
+                    var pos = "left:"+  x1 + "%;" +" top:" + y1+"%;";
+                    var key = "left:"+  Math.round(x1) + "%;" +" top:" + Math.round(y1)+"%;";
                     var style = pos;
                     if(scaleWidth) {
-                        if(widthPercent>1) {
-                            style+="width:" + widthPercent+"%;";
+                        if(x2>1) {
+                            style+="width:" + x2+"%;";
                         } else {
                             style+="width:5px";
                         }
                     }
-                    //                    console.log(entry.getName() + " " + entry.getStartDate() + " - " + entry.getEndDate() +" " + style +" doy:" + doy +" " + widthPercent);
                     if(showIcon) {
-                        items += HtmlUtil.div(["class","display-dategrid-entry-icon display-dategrid-entry", "index",i, "style", pos],entry.getIconImage());
+                        items += HtmlUtil.div(["class","display-grid-entry-icon display-grid-entry", "index",i, "style", pos],entry.getIconImage());
                     }
-                    if(showName && !seen[pos]) {
+                    if(showName && !seen[key]) {
                         var name = entry.getName().replace(/ /g,"&nbsp;");
-                        items += HtmlUtil.div(["class","display-dategrid-entry-text display-dategrid-entry", "index",i,"style", pos],name);
+                        items += HtmlUtil.div(["class","display-grid-entry-text display-grid-entry", "index",i,"style", pos],name);
                     }
-                    items+= HtmlUtil.div(["class","display-dategrid-entry-box display-dategrid-entry","style", style,"index",i],"");
-                    seen[pos] = true;
+                    items+= HtmlUtil.div(["class","display-grid-entry-box display-grid-entry","style", style,"index",i],"");
+                    seen[key] = true;
                 }
                 this.jq(ID_AXIS_LEFT).html(leftAxis);
                 this.jq(ID_CANVAS).html(hlines+vlines+items);
