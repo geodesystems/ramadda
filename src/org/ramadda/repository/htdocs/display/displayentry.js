@@ -1181,13 +1181,106 @@ function RamaddaEntrygridDisplay(displayManager, id, properties) {
                             _this.jq(ID_CONTENTS).html(_this.getLoadingMessage("No entries selected"));
                             return;
                         }
+                        _this.drag = null;
                         _this.jq(ID_CONTENTS).html(_this.makeFramework());
+
                         _this.canvas = $("#" + _this.getDomId(ID_CANVAS));
-                        _this.popup = $("#" + _this.getDomId(ID_GRID) + " .display-grid-popup");
+                        _this.gridPopup = $("#" + _this.getDomId(ID_GRID) + " .display-grid-popup");
+                        var debugMouse = false;
+                        var bottomAxis = _this.jq(ID_AXIS_BOTTOM);
+                        var mousedown = function(evt) {
+                            if(debugMouse)
+                                console.log("mouse down");
+                            _this.handledClick =false;
+                            _this.drag = {
+                                dragging:false,
+                                x: GuiUtils.getEventX(evt),
+                                minDate:_this.minDate,
+                                maxDate:_this.maxDate,
+                            }
+                        }
+                        var mouseleave = function(evt) {
+                            if(debugMouse)
+                                console.log("mouse leave");
+                            _this.drag = null;
+                            _this.handledClick =false;
+                        }
+                        var mouseup = function(evt) {
+                            if(debugMouse)
+                                console.log("mouse up");
+                            if(_this.drag) {
+                                if(_this.drag.dragging) {
+                                    if(debugMouse)
+                                        console.log("mouse up-was dragging");
+                                    _this.handledClick =true;
+                                }
+                                _this.drag = null;
+                            }
+                            }
+                        var mousemove = function(evt) {
+                            if(debugMouse)
+                                console.log("mouse move");
+                            var drag = _this.drag;
+                            if(!drag) return;
+                            drag.dragging = true;
+                            var x = GuiUtils.getEventX(evt);
+                            var delta = drag.x-x;
+                            var width = $(this).width();
+                            var percent = (x-drag.x)/width;
+                            var diff = (drag.maxDate.getTime()-drag.minDate.getTime())*percent;
+                            _this.minDate = new Date(drag.minDate.getTime()-diff);
+                            _this.maxDate = new Date(drag.maxDate.getTime()-diff);
+                            _this.makeGrid(_this.entries);
+                        }
+                        var clickFunc = function(evt) {
+                            if(_this.handledClick) {
+                                if(debugMouse)
+                                    console.log("mouse click-other click");
+                                _this.handledClick =false;
+                                return;
+                            }
+                            if(_this.drag && _this.drag.dragging) {
+                                if(debugMouse)
+                                    console.log("mouse click-was dragging");
+                                _this.drag = null;
+                                return;
+                            }
+                            if(debugMouse)
+                                console.log("mouse click");
+                            _this.drag = null;
+                            var reset = evt.metaKey || evt.ctrlKey;
+                            if(reset) {
+                                _this.minDate = null;
+                                _this.maxDate = null;
+                            } else {
+                                var zoomOut = evt.shiftKey;
+                                var d1 = _this.minDate.getTime();
+                                var d2 = _this.maxDate.getTime();
+                                var dateRange =  d2- d1;
+                                var diff;
+                                diff = (zoomOut?1:-1)*dateRange*0.1;
+                                _this.minDate = new Date(d1-diff);
+                                _this.maxDate = new Date(d2+diff);
+                            }
+                            _this.makeGrid(_this.entries);
+                        };
+
+                        _this.canvas.mousedown(mousedown);
+                        _this.canvas.mouseleave(mouseleave);
+                        _this.canvas.mouseup(mouseup);
+                        _this.canvas.mousemove(mousemove);
+                        _this.canvas.click(clickFunc);
+                        bottomAxis.mousedown(mousedown);
+                        bottomAxis.mouseleave(mouseleave);
+                        bottomAxis.mouseup(mouseup);
+                        bottomAxis.mousemove(mousemove);
+                        bottomAxis.click(clickFunc);
+
+
+
                         _this.jq(ID_AXIS_LEFT).html("");
                         _this.jq(ID_AXIS_BOTTOM).html("");
                         _this.makeGrid(_this.entries);
-                        _this.initGrid(_this.entries);
                     }
                 };
                 var entryList = new EntryList(this.getRamadda(), jsonUrl, myCallback, true);
@@ -1195,17 +1288,21 @@ function RamaddaEntrygridDisplay(displayManager, id, properties) {
             initGrid:function (entries) {
                 var _this = this;
                 var items = this.canvas.find(".display-grid-entry");
-                items.click(function(){
+                items.click(function(evt){
                         var index = parseInt($(this).attr("index"));
                         entry = entries[index];
                         var url = entry.getEntryUrl();
                         if(_this.urlTemplate) {
                             url = _this.urlTemplate.replace("{url}",url).replace(/{entryid}/g,entry.getId()).replace(/{resource}/g,entry.getResourceUrl());
                         }
+
+                        _this.handledClick =true;
+                        _this.drag  = null;
                         window.open(url,"_entry");
+                        //                        evt.stopPropagation();
                     });
                 items.mouseout(function(){
-                        _this.popup.hide();
+                        _this.gridPopup.hide();
                     });
                 items.mouseover(function(evt){
                         var x = GuiUtils.getEventX(evt);
@@ -1215,24 +1312,22 @@ function RamaddaEntrygridDisplay(displayManager, id, properties) {
                         var html ="";
                         if(thumb){
                             html = HtmlUtil.image(thumb,["width","300;"])+"<br>";
-                            //                            console.log("thumb:" + html);
                         }  else if(entry.isImage()) {
                             html  += HtmlUtil.image(entry.getResourceUrl(), ["width","300"]) +"<br>";
-                            //                            console.log("is image:" + html);
                         }
                         html+= entry.getIconImage() +" " +entry.getName()+"<br>";
                         var start  = entry.getStartDate().getUTCFullYear()+"-" + Utils.padLeft(entry.getStartDate().getUTCMonth()+1,2,"0")+"-" + Utils.padLeft(entry.getStartDate().getUTCDate(),2,"0");
                         var end  = entry.getEndDate().getUTCFullYear()+"-" + Utils.padLeft(entry.getEndDate().getUTCMonth()+1,2,"0")+"-" + Utils.padLeft(entry.getEndDate().getUTCDate(),2,"0");
                         html+="Date: " + start +" - " +end+" UTC";
-                        _this.popup.html(html);
-                        _this.popup.show();
-                        _this.popup.position({
+                        _this.gridPopup.html(html);
+                        _this.gridPopup.show();
+                        _this.gridPopup.position({
                                 of: $(this),
                                     at: "left bottom",
                                     my: "left top",
                                     collision: "none none"
                                     });
-                        _this.popup.position({
+                        _this.gridPopup.position({
                                 of: $(this),
                                     my: "left top",
                                     at: "left bottom",
@@ -1242,17 +1337,18 @@ function RamaddaEntrygridDisplay(displayManager, id, properties) {
             },
             makeFramework:function (entries) {
                 var html = "";
+                var mouseInfo = "click:zoom in;shift-click:zoom out;command/ctrl click: reset";
                 html += HtmlUtil.openDiv(["class","display-grid","id", this.getDomId(ID_GRID)]);
                 html+= HtmlUtil.div(["class","display-grid-popup ramadda-popup"],"");
                 html += HtmlUtil.openTag("table",["border","0", "class","","cellspacing","0","cellspacing","0","width","100%","style","height:100%;"]);
                 html += HtmlUtil.openTag("tr",["style","height:100%;"]);
                 html += HtmlUtil.openTag("td",["style","height:100%;"]);
-                html += HtmlUtil.openDiv(["class","display-grid-axis-left","id",this.getDomId(ID_AXIS_LEFT)]);
+                html += HtmlUtil.openDiv(["class","display-grid-axis-left ramadda-noselect","id",this.getDomId(ID_AXIS_LEFT)]);
                 html += HtmlUtil.closeDiv();
                 html += HtmlUtil.closeDiv();
                 html += HtmlUtil.closeTag("td");
                 html += HtmlUtil.openTag("td",["style","height:" + this.getProperty("height","400")+"px"]);
-                html += HtmlUtil.openDiv(["class","display-grid-canvas","id", this.getDomId(ID_CANVAS)]);
+                html += HtmlUtil.openDiv(["class","display-grid-canvas ramadda-noselect","id", this.getDomId(ID_CANVAS)]);
                 html+= HtmlUtil.closeDiv();
                 html+= HtmlUtil.closeDiv();
                 html+=HtmlUtil.closeTag("td");
@@ -1260,7 +1356,7 @@ function RamaddaEntrygridDisplay(displayManager, id, properties) {
                 html+=HtmlUtil.openTag("tr",[]);
                 html+=HtmlUtil.tag("td",["width","100"],"&nbsp;");
                 html+=HtmlUtil.openTag("td",[]);
-                html+= HtmlUtil.div(["class","display-grid-axis-bottom","id",this.getDomId(ID_AXIS_BOTTOM)],"");
+                html+= HtmlUtil.div(["class","display-grid-axis-bottom ramadda-noselect","title",mouseInfo, "id",this.getDomId(ID_AXIS_BOTTOM)],"");
                 html+=HtmlUtil.closeTag("table");
                 html+=HtmlUtil.closeTag("td");
                 return html;
@@ -1272,17 +1368,21 @@ function RamaddaEntrygridDisplay(displayManager, id, properties) {
                 var showIcon = this.getProperty("showIcon",false);
                 var showName = this.getProperty("showName",false);
 
-                var minDate = null;
-                var maxDate = null;
-                for(var i=0;i<entries.length;i++) {
-                    var entry = entries[i];
-                    minDate = minDate==null?entry.getStartDate():(minDate.getTime()>entry.getStartDate().getTime()?entry.getStartDate():minDate);
-                    maxDate = maxDate==null?entry.getEndDate():(maxDate.getTime()<entry.getEndDate().getTime()?entry.getEndDate():maxDate);
+                if(!this.minDate) {
+                    var minDate= null;
+                    var maxDate = null;
+                    for(var i=0;i<entries.length;i++) {
+                        var entry = entries[i];
+                        minDate = minDate==null?entry.getStartDate():(minDate.getTime()>entry.getStartDate().getTime()?entry.getStartDate():minDate);
+                        maxDate = maxDate==null?entry.getEndDate():(maxDate.getTime()<entry.getEndDate().getTime()?entry.getEndDate():maxDate);
+                    }
+                    this.minDate  = new Date(Date.UTC(minDate.getUTCFullYear(),0,1));
+                    this.maxDate  = new Date(Date.UTC(maxDate.getUTCFullYear()+1,0,1));
                 }
 
-                minDate  = new Date(Date.UTC(minDate.getUTCFullYear(),0,1));
-                maxDate  = new Date(Date.UTC(maxDate.getUTCFullYear()+1,0,1));
-                var dateRange = maxDate.getTime()-minDate.getTime();
+                var xMin = this.minDate;
+                var xMax = this.maxDate;
+                var dateRange = xMax.getTime()-xMin.getTime();
                 var hlines = "";
                 var vlines = "";
                 var leftAxis = "";
@@ -1301,17 +1401,17 @@ function RamaddaEntrygridDisplay(displayManager, id, properties) {
                 }
 
 
-                var yearDate  = new Date(Date.UTC(minDate.getUTCFullYear()));
-                var tickCnt = 0;
-                while(yearDate.getTime()<maxDate.getTime()) {
+                var yearDate  = new Date(Date.UTC(xMin.getUTCFullYear()));
+                while(yearDate.getTime()<xMax.getTime()) {
                     var d1 = yearDate;
-                    var x1 = 100*(d1.getTime()-minDate.getTime())/dateRange;
-                    if(tickCnt>0) 
-                        vlines+=HtmlUtil.div(["style","left:" + x1+"%;", "class","display-grid-vline"]," ");
-                    var label = yearDate.getUTCFullYear();
-                    bottomAxis+=HtmlUtil.div(["style","left:" + x1+"%;","class","display-grid-axis-bottom-tick"], HtmlUtil.div(["class","display-grid-vtick"],"")+" " + label);
+                    var x1 = 100*(d1.getTime()-xMin.getTime())/dateRange;
+                    if(x1>=0 && x1<100) {
+                        if(x1>0) 
+                            vlines+=HtmlUtil.div(["style","left:" + x1+"%;", "class","display-grid-vline"]," ");
+                        var label = yearDate.getUTCFullYear();
+                        bottomAxis+=HtmlUtil.div(["style","left:" + x1+"%;","class","display-grid-axis-bottom-tick"], HtmlUtil.div(["class","display-grid-vtick"],"")+" " + label);
+                    }
                     yearDate.setUTCFullYear(yearDate.getUTCFullYear()+1);
-                    tickCnt++;
                 }
 
 
@@ -1322,8 +1422,19 @@ function RamaddaEntrygridDisplay(displayManager, id, properties) {
                     var d1 = entry.getStartDate();
                     var t1 = new Date(Date.UTC(1,d1.getUTCMonth(),d1.getUTCDate()));
                     var y1 = 100*((y2.getTime()-t1.getTime())/yRange);
-                    var x1 = 100*(d1.getTime()-minDate.getTime())/dateRange;
+                    var x1 = 100*(d1.getTime()-xMin.getTime())/dateRange;
                     var x2 = 100*(Math.abs((entry.getEndDate().getTime()-entry.getStartDate().getTime()))/dateRange);
+                    if((x1+x2<0) || x1>=100)
+                        continue;
+                    var clipLeft = false;
+                    if(x1<0) {
+                        clipLeft =true;
+                        x2 = x2+x1;
+                        x1=0;
+                    }
+                    if(x1+x2>100) {
+                        x2=100-x1;
+                    }
                     var pos = "left:"+  x1 + "%;" +" top:" + y1+"%;";
                     var key = "left:"+  Math.round(x1) + "%;" +" top:" + Math.round(y1)+"%;";
                     var style = pos;
@@ -1334,19 +1445,20 @@ function RamaddaEntrygridDisplay(displayManager, id, properties) {
                             style+="width:5px";
                         }
                     }
-                    if(showIcon) {
+                    if(showIcon && !clipLeft) {
                         items += HtmlUtil.div(["class","display-grid-entry-icon display-grid-entry", "index",i, "style", pos],entry.getIconImage());
                     }
-                    if(showName && !seen[key]) {
+                    if(showName && !clipLeft && !seen[key]) {
+                        seen[key] = true;
                         var name = entry.getName().replace(/ /g,"&nbsp;");
                         items += HtmlUtil.div(["class","display-grid-entry-text display-grid-entry", "index",i,"style", pos],name);
                     }
                     items+= HtmlUtil.div(["class","display-grid-entry-box display-grid-entry","style", style,"index",i],"");
-                    seen[key] = true;
                 }
                 this.jq(ID_AXIS_LEFT).html(leftAxis);
                 this.jq(ID_CANVAS).html(hlines+vlines+items);
                 this.jq(ID_AXIS_BOTTOM).html(bottomAxis);
+                this.initGrid(entries);
             }
         });
 }
@@ -1444,8 +1556,6 @@ function RamaddaMetadataDisplay(displayManager, id, properties) {
                     var metadata = entry.getMetadata();
                     var row = [];
                     var buttonId = this.getDomId("entrylink" + entry.getIdForDom());
-                    //                    var link =  HtmlUtil.onClick(this.getGet()+".showEntryDetails(event, '" + entry.getIdForDom() +"','" + buttonId +"',true);", 
-                    //                                                 entry.getIconImage() +" " + entry.getName(),[ATTR_ID,buttonId,ATTR_CLASS,"display-metadata-link"]);
                     var link =  entry.getLink(entry.getIconImage() +" " + entry.getName());
                     row.push(HtmlUtil.td([ATTR_CLASS, "display-metadata-table-cell"],HtmlUtil.div([ATTR_CLASS,"display-metadata-entrylink"], link)));
                     for(var mdtIdx=0;mdtIdx<mdts.length;mdtIdx++) {

@@ -455,6 +455,17 @@ input, password, fileinput,textarea {
    padding:10px;
 }
 
+.ramadda-noselect {
+  -webkit-touch-callout: none; /* iOS Safari */
+    -webkit-user-select: none; /* Safari */
+     -khtml-user-select: none; /* Konqueror HTML */
+       -moz-user-select: none; /* Firefox */
+        -ms-user-select: none; /* Internet Explorer/Edge */
+            user-select: none; /* Non-prefixed version, currently
+                                  supported by Chrome and Opera */
+}
+
+
 .entry-action-list {
    background: transparent;
    padding: 0px;
