@@ -147,8 +147,7 @@ public class DbAdminHandler extends AdminHandlerImpl {
                                    + handlerClass.getName() + " "
                                    + XmlUtil.toString(tableNode));
 
-                throw new IllegalArgumentException(
-                    "DbAdminHandler: could not find constructor");
+                continue;
             }
 
             DbTypeHandler typeHandler =
