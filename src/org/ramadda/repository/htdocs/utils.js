@@ -20,7 +20,9 @@ var icon_folderopen = ramaddaBaseUrl +"/icons/togglearrowdown.gif";
 
 var icon_tree_open = ramaddaBaseUrl +"/icons/togglearrowdown.gif";
 var icon_tree_closed = ramaddaBaseUrl +"/icons/togglearrowright.gif";
-
+var icon_zoom = ramaddaBaseUrl +"/icons/magnifier.png";
+var icon_zoom_in = ramaddaBaseUrl +"/icons/magnifier_zoom_in.png";
+var icon_zoom_out = ramaddaBaseUrl +"/icons/magnifier_zoom_out.png";
 
 var icon_menuarrow = ramaddaBaseUrl +"/icons/downdart.gif";
 var icon_blank = ramaddaBaseUrl +"/icons/blank.gif";
@@ -37,6 +39,9 @@ var Utils = {
             s = pad +s;
         return s;
     },
+    formatDateYYYYMMDD: function(date,options, args) {
+        return date.getUTCFullYear() +"-" + (date.getUTCMonth()+1) +"-" + date.getUTCDate();
+    },
     formatDate: function(date,options, args) {
         if(!args) args = {};
         if(!options) {
@@ -51,6 +56,29 @@ var Utils = {
             options.timeZone = "UTC";
         }
         return date.toLocaleDateString("en-US", options) + suffix;
+    },
+    incrementYear: function(date,by) {
+        if(by==null) by = 1;
+        date.setUTCFullYear(date.getUTCFullYear()+by);
+        return date;
+    },
+    incrementMonth: function(date,by) {
+        if(by==null) by = 1;
+        while(by>0) {
+            if(date.getUTCMonth()==11) {
+                date.setUTCFullYear(date.getUTCFullYear()+1);
+                date.setUTCMonth(0);
+            } else {
+                date.setUTCMonth(date.getUTCMonth()+1);
+            }
+            by--;
+        }
+        return date;
+    },
+    incrementDay: function(date,by) {
+        if(by==null) by = 1;
+        date.setTime(date.getTime()+(by*1000*3600*24));
+        return date;
     },
     getDayInYear: function(date){
         return (Date.UTC(date.getUTCFullYear(), date.getUTCMonth(), date.getUTCDate()) - Date.UTC(date.getUTCFullYear(), 0, 0)) / 24 / 60 / 60 / 1000;

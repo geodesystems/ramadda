@@ -1158,6 +1158,8 @@ function RamaddaEntrygridDisplay(displayManager, id, properties) {
     var ID_AXIS_LEFT = "axis_left";
     var ID_AXIS_BOTTOM = "axis_bottom";
     var ID_CANVAS = "canvas";
+    var ID_TOP = "top";
+    var ID_RIGHT = "right";
     RamaddaUtil.inherit(this, SUPER = new RamaddaEntryDisplay(displayManager, id, DISPLAY_ENTRY_GRID, properties));
     addRamaddaDisplay(this);
     RamaddaUtil.defineMembers(this, {
@@ -1232,7 +1234,7 @@ function RamaddaEntrygridDisplay(displayManager, id, properties) {
                             _this.maxDate = new Date(drag.maxDate.getTime()-diff);
                             _this.makeGrid(_this.entries);
                         }
-                        var clickFunc = function(evt) {
+                        var mouseclick = function(evt) {
                             if(_this.handledClick) {
                                 if(debugMouse)
                                     console.log("mouse click-other click");
@@ -1248,34 +1250,39 @@ function RamaddaEntrygridDisplay(displayManager, id, properties) {
                             if(debugMouse)
                                 console.log("mouse click");
                             _this.drag = null;
-                            var reset = evt.metaKey || evt.ctrlKey;
-                            if(reset) {
-                                _this.minDate = null;
-                                _this.maxDate = null;
+                            var action;
+                            if(evt.metaKey || evt.ctrlKey) {
+                                action="reset";
                             } else {
                                 var zoomOut = evt.shiftKey;
-                                var d1 = _this.minDate.getTime();
-                                var d2 = _this.maxDate.getTime();
-                                var dateRange =  d2- d1;
-                                var diff;
-                                diff = (zoomOut?1:-1)*dateRange*0.1;
-                                _this.minDate = new Date(d1-diff);
-                                _this.maxDate = new Date(d2+diff);
+                                if(zoomOut)
+                                    action = "zoomout";
+                                else
+                                    action="zoomin";
                             }
-                            _this.makeGrid(_this.entries);
+                            _this.doZoom(action);
                         };
 
                         _this.canvas.mousedown(mousedown);
                         _this.canvas.mouseleave(mouseleave);
                         _this.canvas.mouseup(mouseup);
                         _this.canvas.mousemove(mousemove);
-                        _this.canvas.click(clickFunc);
+                        _this.canvas.click(mouseclick);
                         bottomAxis.mousedown(mousedown);
                         bottomAxis.mouseleave(mouseleave);
                         bottomAxis.mouseup(mouseup);
                         bottomAxis.mousemove(mousemove);
-                        bottomAxis.click(clickFunc);
+                        bottomAxis.click(mouseclick);
 
+                        var links = 
+                        HtmlUtil.image(icon_zoom,["class","display-grid-action","title","reset zoom","action","reset"]) +
+                        HtmlUtil.image(icon_zoom_in,["class","display-grid-action","title","zoom in","action","zoomin"]) +
+                        HtmlUtil.image(icon_zoom_out,["class","display-grid-action","title","zoom out","action","zoomout"]);
+                        _this.jq(ID_TOP).html(links);
+                        $("#" + _this.getDomId(ID_GRID) + " .display-grid-action").click(function() {
+                                var action = $(this).attr("action");
+                                _this.doZoom(action);
+                            });
 
 
                         _this.jq(ID_AXIS_LEFT).html("");
@@ -1284,6 +1291,21 @@ function RamaddaEntrygridDisplay(displayManager, id, properties) {
                     }
                 };
                 var entryList = new EntryList(this.getRamadda(), jsonUrl, myCallback, true);
+            },
+            doZoom: function(action) {
+                if(action=="reset") {
+                    this.minDate = null;
+                    this.maxDate = null;
+                } else {
+                    var zoomOut = (action=="zoomout");
+                    var d1 = this.minDate.getTime();
+                    var d2 = this.maxDate.getTime();
+                    var dateRange =  d2- d1;
+                    var diff = (zoomOut?1:-1)*dateRange*0.1;
+                    this.minDate = new Date(d1-diff);
+                    this.maxDate = new Date(d2+diff);
+                }
+                this.makeGrid(this.entries);
             },
             initGrid:function (entries) {
                 var _this = this;
@@ -1339,8 +1361,12 @@ function RamaddaEntrygridDisplay(displayManager, id, properties) {
                 var html = "";
                 var mouseInfo = "click:zoom in;shift-click:zoom out;command/ctrl click: reset";
                 html += HtmlUtil.openDiv(["class","display-grid","id", this.getDomId(ID_GRID)]);
-                html+= HtmlUtil.div(["class","display-grid-popup ramadda-popup"],"");
+                html += HtmlUtil.div(["class","display-grid-popup ramadda-popup"],"");
                 html += HtmlUtil.openTag("table",["border","0", "class","","cellspacing","0","cellspacing","0","width","100%","style","height:100%;"]);
+                html += HtmlUtil.openTag("tr",["valign","bottom"]);
+                html += HtmlUtil.tag("td");
+                html += HtmlUtil.tag("td",[],HtmlUtil.div(["id",this.getDomId(ID_TOP)],""));
+                html += HtmlUtil.closeTag("tr");
                 html += HtmlUtil.openTag("tr",["style","height:100%;"]);
                 html += HtmlUtil.openTag("td",["style","height:100%;"]);
                 html += HtmlUtil.openDiv(["class","display-grid-axis-left ramadda-noselect","id",this.getDomId(ID_AXIS_LEFT)]);
@@ -1380,11 +1406,23 @@ function RamaddaEntrygridDisplay(displayManager, id, properties) {
                     this.maxDate  = new Date(Date.UTC(maxDate.getUTCFullYear()+1,0,1));
                 }
 
-                var xMin = this.minDate;
-                var xMax = this.maxDate;
-                var dateRange = xMax.getTime()-xMin.getTime();
-                var hlines = "";
-                var vlines = "";
+                var axis = {
+                    vlines:"",
+                    hlines:"",
+                    width: this.canvas.width(),
+                    height: this.canvas.height(),
+                    h: {
+                        maxTicks:Math.ceil(this.canvas.width()/80),
+                        minDate:this.minDate,
+                        maxDate:this.maxDate,
+                        dateRange: this.maxDate.getTime()-this.minDate.getTime(),
+                        type:"year"
+                    }
+                }
+
+
+
+
                 var leftAxis = "";
                 var bottomAxis = "";
                 var y1 = new Date(Date.UTC(0,11,15));
@@ -1397,21 +1435,84 @@ function RamaddaEntrygridDisplay(displayManager, id, properties) {
                     var style = "bottom:" + yPercent +"%;";
                     if(months[month])
                         leftAxis+=HtmlUtil.div(["style",style,"class","display-grid-axis-left-tick"],months[month]+" " + HtmlUtil.div(["class","display-grid-htick"],""));
-                    hlines+=HtmlUtil.div(["style",style,"class","display-grid-hline"]," ");
+                    axis.hlines+=HtmlUtil.div(["style",style,"class","display-grid-hline"]," ");
                 }
 
 
-                var yearDate  = new Date(Date.UTC(xMin.getUTCFullYear()));
-                while(yearDate.getTime()<xMax.getTime()) {
-                    var d1 = yearDate;
-                    var x1 = 100*(d1.getTime()-xMin.getTime())/dateRange;
+                var numYears = axis.h.maxDate.getUTCFullYear()  - axis.h.minDate.getUTCFullYear();
+                var skip = 1;
+                var years = numYears;
+                skip = Math.max(1, Math.floor(numYears/axis.h.maxTicks));
+                if((numYears/skip)<=(axis.h.maxTicks/2)) {
+                    var numMonths = 0;
+                    var tmp  = new Date(axis.h.minDate.getTime());
+                    while(tmp.getTime()<axis.h.maxDate.getTime()) {
+                        Utils.incrementMonth(tmp);
+                        numMonths++;
+                    }
+                    skip=Math.max(1,Math.floor(numMonths/axis.h.maxTicks));
+                    axis.h.type  = "month";
+                    if((numMonths/skip)<=(axis.h.maxTicks/2)) {
+                        var tmp  = new Date(axis.h.minDate.getTime());
+                        var numDays =  0;
+                        while(tmp.getTime()<axis.h.maxDate.getTime()) {
+                            Utils.incrementDay(tmp);
+                            numDays++;
+                        }
+                        skip=Math.max(1, Math.floor(numDays/axis.h.maxTicks));
+                        axis.h.type  = "day";
+                    }
+                }
+
+                var lastYear= null;
+                var lastMonth= null;
+                var tickDate;
+                if(axis.h.type == "year") {
+                    tickDate  = new Date(Date.UTC(axis.h.minDate.getUTCFullYear()));
+                } else if(axis.h.type == "month") {
+                    tickDate  = new Date(Date.UTC(axis.h.minDate.getUTCFullYear(),axis.h.minDate.getUTCMonth()));
+                } else {
+                    tickDate  = new Date(Date.UTC(axis.h.minDate.getUTCFullYear(),axis.h.minDate.getUTCMonth(),axis.h.minDate.getUTCDate()));
+                }
+                //                console.log(axis.h.type+" skip:" + skip + "   min:" + Utils.formatDateYYYYMMDD(axis.h.minDate)+"   max:" + Utils.formatDateYYYYMMDD(axis.h.maxDate));
+                while(tickDate.getTime()<axis.h.maxDate.getTime()) {
+                    var x1 = 100*(tickDate.getTime()-axis.h.minDate.getTime())/axis.h.dateRange;
+                    //                    console.log("    perc:"+ x1 +" " + Utils.formatDateYYYYMMDD(tickDate));
                     if(x1>=0 && x1<100) {
-                        if(x1>0) 
-                            vlines+=HtmlUtil.div(["style","left:" + x1+"%;", "class","display-grid-vline"]," ");
-                        var label = yearDate.getUTCFullYear();
+                        var label="";
+                        var year = tickDate.getUTCFullYear(); 
+                        var month = tickDate.getUTCMonth(); 
+                        var tickClass="display-grid-vline";
+                        if(axis.h.type == "year") {
+                            label = year;
+                        } else if(axis.h.type=="month") {
+                            label = months[tickDate.getUTCMonth()];
+                            if(lastYear!=year) {
+                                label = label +"<br>" +  year;
+                                lastYear = year;
+                                tickClass="display-grid-vline-major";
+                            }
+                        }  else {
+                            label = tickDate.getUTCDate();
+                            if(lastYear!=year || lastMonth!=month) {
+                                label = label +"<br>" +months[month] +" " +  year;
+                                lastYear = year;
+                                lastMonth  = month;
+                                tickClass="display-grid-vline-major";
+                            }
+                        }
+                        if(x1>0)  {
+                            axis.vlines+=HtmlUtil.div(["style","left:" + x1+"%;", "class",tickClass]," ");
+                        }
                         bottomAxis+=HtmlUtil.div(["style","left:" + x1+"%;","class","display-grid-axis-bottom-tick"], HtmlUtil.div(["class","display-grid-vtick"],"")+" " + label);
                     }
-                    yearDate.setUTCFullYear(yearDate.getUTCFullYear()+1);
+                    if(axis.h.type == "year") {
+                        Utils.incrementYear(tickDate, skip);
+                    }  else  if(axis.h.type == "month") {
+                        Utils.incrementMonth(tickDate,skip);
+                    } else {
+                        Utils.incrementDay(tickDate,skip);
+                    }
                 }
 
 
@@ -1422,8 +1523,8 @@ function RamaddaEntrygridDisplay(displayManager, id, properties) {
                     var d1 = entry.getStartDate();
                     var t1 = new Date(Date.UTC(1,d1.getUTCMonth(),d1.getUTCDate()));
                     var y1 = 100*((y2.getTime()-t1.getTime())/yRange);
-                    var x1 = 100*(d1.getTime()-xMin.getTime())/dateRange;
-                    var x2 = 100*(Math.abs((entry.getEndDate().getTime()-entry.getStartDate().getTime()))/dateRange);
+                    var x1 = 100*(d1.getTime()-axis.h.minDate.getTime())/axis.h.dateRange;
+                    var x2 = 100*(Math.abs((entry.getEndDate().getTime()-entry.getStartDate().getTime()))/axis.h.dateRange);
                     if((x1+x2<0) || x1>=100)
                         continue;
                     var clipLeft = false;
@@ -1456,7 +1557,7 @@ function RamaddaEntrygridDisplay(displayManager, id, properties) {
                     items+= HtmlUtil.div(["class","display-grid-entry-box display-grid-entry","style", style,"index",i],"");
                 }
                 this.jq(ID_AXIS_LEFT).html(leftAxis);
-                this.jq(ID_CANVAS).html(hlines+vlines+items);
+                this.jq(ID_CANVAS).html(axis.hlines+axis.vlines+items);
                 this.jq(ID_AXIS_BOTTOM).html(bottomAxis);
                 this.initGrid(entries);
             }

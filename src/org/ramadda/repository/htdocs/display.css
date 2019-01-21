@@ -77,6 +77,13 @@
   border: 1px #000 solid;
 }
 
+.display-grid-action {
+  padding:1px;
+}
+
+.display-grid-action:hover {
+   background:#eee;
+}
 
 .display-grid-axis-left {
   position: relative;
@@ -107,11 +114,10 @@
 }
 
 .display-grid-vtick {
-   #vertical-align:bottom;
    display:inline-block;
    height:15px;
-   margin-top:-2px;
-//   margin-bottom:5px;
+   margin-top:-1px;
+   margin-left:1px;
    border-left: 1px #000 solid;
 }
 
@@ -133,7 +139,14 @@
    position:absolute;
    display:inline-block;
    height:100%;
-   border-left: 1px #ccc dotted;
+   border-left: 1px #eee dotted;
+}
+
+.display-grid-vline-major {
+   position:absolute;
+   display:inline-block;
+   height:100%;
+   border-left: 1px #999 solid;
 }
 
 .display-grid-popup {
