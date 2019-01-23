@@ -281,7 +281,7 @@ function RamaddaMultiChart(displayManager, id, properties) {
                 if(!isNaN(this.vAxisMaxValue)) {
                     max = "" +this.vAxisMaxValue;
                 }
-               var tmp = HtmlUtil.formTable();
+                var tmp = HtmlUtil.formTable();
                 tmp += HtmlUtil.formEntry("Axis Range:", HtmlUtil.input("", min, ["size","7",ATTR_ID,  this.getDomId("vaxismin")]) + " - " +
                                           HtmlUtil.input("", max, ["size","7",ATTR_ID,  this.getDomId("vaxismax")]));
                 tmp += HtmlUtil.formEntry("Date Range:", HtmlUtil.input("", this.minDate, ["size","10",ATTR_ID,  this.getDomId("mindate")]) + " - " +
@@ -1014,7 +1014,7 @@ function RamaddaMultiChart(displayManager, id, properties) {
                 var width = "90%";
                 var left = "10%";
                 useMultipleAxes = this.getProperty("useMultipleAxes",true);
-                if(selectedFields.length>1 && useMultipleAxes) {
+                if((selectedFields.length>1 && useMultipleAxes) || this.getProperty("padRight",false)) {
                     width = "80%";
                 }
                 var chartId = this.getDomId(ID_CHART);
