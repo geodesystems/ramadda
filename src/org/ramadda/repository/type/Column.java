@@ -73,7 +73,7 @@ public class Column implements DataTypes, Constants {
 
 
     /** _more_ */
-    public static final String ARG_EDIT_PREFIX = "edit.";
+    public static final String ARG_EDIT_PREFIX = "edit_";
 
     /** _more_ */
     public static final String ARG_SEARCH_PREFIX = "search.";
@@ -181,7 +181,7 @@ public class Column implements DataTypes, Constants {
     /** _more_ */
     public static final String ATTR_CANSEARCH = "cansearch";
 
-    /** _more_          */
+    /** _more_ */
     public static final String ATTR_SEARCHROWS = "searchrows";
 
     /** _more_ */
@@ -309,7 +309,7 @@ public class Column implements DataTypes, Constants {
     /** _more_ */
     private boolean canSearch;
 
-    /** _more_          */
+    /** _more_ */
     private int searchRows;
 
     /** _more_ */
@@ -2042,7 +2042,7 @@ public class Column implements DataTypes, Constants {
 
 
 
-    //For now just change the edit argument by adding a edit. prefix
+    //For now just change the edit argument by adding a edit_ prefix
 
     /**
      * _more_
@@ -2050,7 +2050,7 @@ public class Column implements DataTypes, Constants {
      * @return _more_
      */
     public String getEditArg() {
-        return ARG_EDIT_PREFIX + getFullName();
+        return ARG_EDIT_PREFIX + getFullName().replace(".", "_");
     }
 
 
@@ -2091,8 +2091,8 @@ public class Column implements DataTypes, Constants {
                 lat = ((Double) values[offset]).doubleValue();
                 lon = ((Double) values[offset + 1]).doubleValue();
             }
-            MapInfo map = getRepository().getMapManager().createMap(request,entry,
-                              true, null);
+            MapInfo map = getRepository().getMapManager().createMap(request,
+                              entry, true, null);
             widget = map.makeSelector(urlArg, true,
                                       new String[] { latLonOk(lat)
                     ? lat + ""
@@ -2112,8 +2112,8 @@ public class Column implements DataTypes, Constants {
                               ? values[offset + 3] + ""
                               : "", };
             }
-            MapInfo map = getRepository().getMapManager().createMap(request,entry,
-                              true, null);
+            MapInfo map = getRepository().getMapManager().createMap(request,
+                              entry, true, null);
             widget = map.makeSelector(urlArg, true, nwse, "", "");
         } else if (isType(DATATYPE_BOOLEAN)) {
             boolean value = true;
@@ -2278,19 +2278,16 @@ public class Column implements DataTypes, Constants {
                         value = StringUtil.join("\n",
                                 StringUtil.split(value, ",", true, true));
                     }
-                    String buttons = "";
                     if (isWiki) {
-                        buttons =
-                            getRepository().getWikiManager().makeWikiEditBar(
-                                request, entry, domId) + HtmlUtils.br();
+                        StringBuilder tmp = new StringBuilder();
+                        typeHandler.addWikiEditor(request, entry, tmp,
+                                formInfo, urlArg, value, null, size);
+                        widget = tmp.toString();
+                    } else {
+                        int areaRows = rows;
+                        widget = HtmlUtils.textArea(urlArg, value, areaRows,
+                                columns, HtmlUtils.id(domId));
                     }
-                    int areaRows = rows;
-                    if ((areaRows <= 1) && isWiki) {
-                        areaRows = 50;
-                    }
-                    widget = buttons
-                             + HtmlUtils.textArea(urlArg, value, areaRows,
-                                 columns, HtmlUtils.id(domId));
                 } else {
                     widget = HtmlUtils.input(urlArg, value,
                                              HtmlUtils.id(domId) + " size=\""
@@ -2374,9 +2371,13 @@ public class Column implements DataTypes, Constants {
      */
     public double[] getLatLon(Object[] values) {
         Double lat = (Double) values[offset];
-        Double lon = (Double) values[offset+1];
-        return new double[] { lat==null?Double.NaN:lat.doubleValue(),
-                              lon==null?Double.NaN:lon.doubleValue()};
+        Double lon = (Double) values[offset + 1];
+
+        return new double[] { (lat == null)
+                              ? Double.NaN
+                              : lat.doubleValue(), (lon == null)
+                ? Double.NaN
+                : lon.doubleValue() };
 
     }
 
@@ -2749,15 +2750,15 @@ public class Column implements DataTypes, Constants {
         if (isType(DATATYPE_LATLON)) {
             String[] nwseValues = getNWSE(request, null, searchArg, false);
             String[] nwseView   = getNWSE(request, entry, searchArg, true);
-            MapInfo map = getRepository().getMapManager().createMap(request,entry,
-                              true, null);
+            MapInfo map = getRepository().getMapManager().createMap(request,
+                              entry, true, null);
             widget = map.makeSelector(searchArg, true, nwseValues, nwseView,
                                       "", "");
         } else if (isType(DATATYPE_LATLONBBOX)) {
             String[] nwseValues = getNWSE(request, null, searchArg, false);
             String[] nwseView   = getNWSE(request, entry, searchArg, true);
-            MapInfo map = getRepository().getMapManager().createMap(request,entry,
-                              true, null);
+            MapInfo map = getRepository().getMapManager().createMap(request,
+                              entry, true, null);
             widget = map.makeSelector(searchArg, true, nwseValues, nwseView,
                                       "", "");
         } else if (isDate()) {

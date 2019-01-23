@@ -4,43 +4,50 @@
 
 
 function insertText(id,value) {
+    var editor = HtmlUtil.getAceEditor(id);
     var textComp = GuiUtils.getDomObject(id);
-    if(textComp) {
-	insertAtCursor(textComp.obj, value);
+    if(textComp || editor) {
+	insertAtCursor(id, textComp.obj, value);
     }
 }
 
 
 
-function insertAtCursor(myField, myValue) {
+function insertAtCursor(id, myField, value) {
+    var editor = HtmlUtil.getAceEditor(id);
+    if(editor) {
+        var cursor = editor.getCursorPosition();        
+        editor.insert(value);
+        editor.focus();
+        return;
+    }
+
 
     var textScroll = myField.scrollTop;
-
 
     //IE support
     if (document.selection) {
         myField.focus();
         sel = document.selection.createRange();
-        sel.text = myValue;
+        sel.text = value;
     }
     //MOZILLA/NETSCAPE support
     else if (myField.selectionStart || myField.selectionStart == '0') {
         var startPos = myField.selectionStart;
         var endPos = myField.selectionEnd;
         myField.value = myField.value.substring(0, startPos)
-            + myValue
+            + value
             + myField.value.substring(endPos, myField.value.length);
     } else {
-        myField.value += myValue;
+        myField.value += value;
     }
     myField.scrollTop = textScroll;
 }
 
-
-
 function insertTags(id, tagOpen, tagClose, sampleText) {
     var textComp = GuiUtils.getDomObject(id);
-    if(textComp) {
+    var editor = HtmlUtil.getAceEditor(id);
+    if(textComp || editor) {
 	insertTagsInner(id, textComp.obj, tagOpen,tagClose,sampleText);
     }
 }
@@ -50,13 +57,27 @@ function insertTags(id, tagOpen, tagClose, sampleText) {
 // apply tagOpen/tagClose to selection in textarea,
 // use sampleText instead of selection if there is none
 function insertTagsInner(id, txtarea, tagOpen, tagClose, sampleText) {
-    //    console.log(id + " " + txtarea + " " + tagOpen +" - " + tagClose +" - " + sampleText);
     var selText, isSample = false;
     tagOpen = tagOpen.replace(/&quote;/gi,'\"');
     tagClose = tagClose.replace(/&quote;/gi,'\"');
 
     tagOpen = tagOpen.replace(/newline/gi,'\n');
     tagClose = tagClose.replace(/newline/gi,'\n');
+    var editor = HtmlUtil.getAceEditor(id);
+    if(editor) {
+        var text = tagOpen  + tagClose+ " ";
+        var cursor = editor.getCursorPosition();
+        editor.insert(text);
+        if(tagOpen.endsWith("\n")) {
+            cursor.row++;
+            cursor.column=0;
+        } else {
+            cursor.column+=tagOpen.length;
+        }
+        editor.selection.moveTo(cursor.row, cursor.column);
+        editor.focus();
+        return;
+    }
 
 
     if (txtarea.selectionStart || txtarea.selectionStart == '0') { // Mozilla

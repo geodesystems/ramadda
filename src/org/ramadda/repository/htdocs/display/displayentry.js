@@ -1391,6 +1391,7 @@ function RamaddaEntrygridDisplay(displayManager, id, properties) {
 
             makeGrid:function (entries) {
                 var scaleWidth = this.getProperty("scaleWidth",true);
+                var scaleHeight = this.getProperty("scaleHeight",false);
                 var showIcon = this.getProperty("showIcon",false);
                 var showName = this.getProperty("showName",false);
 
@@ -1407,143 +1408,101 @@ function RamaddaEntrygridDisplay(displayManager, id, properties) {
                 }
 
                 var axis = {
-                    vlines:"",
-                    hlines:"",
                     width: this.canvas.width(),
                     height: this.canvas.height(),
+                    v: {
+                        axisType:"months",
+                        ascending: true,
+                        skip:1,
+                        ticks:[],
+                        lines:"",
+                        html:"",
+                        minDate:this.minDate,
+                        maxDate:this.maxDate,
+                    },
                     h: {
+                        axisType:"date",
+                        ascending: true,
+                        skip:1,
+                        ticks:[],
+                        lines:"",
                         maxTicks:Math.ceil(this.canvas.width()/80),
                         minDate:this.minDate,
                         maxDate:this.maxDate,
-                        dateRange: this.maxDate.getTime()-this.minDate.getTime(),
-                        type:"year"
+                        html:""
                     }
                 }
 
-
-
-
-                var leftAxis = "";
-                var bottomAxis = "";
-                var y1 = new Date(Date.UTC(0,11,15));
-                var y2 = new Date(Date.UTC(1,11,31));
-                var yRange = y2.getTime()-y1.getTime();
-                var months = Utils.getMonthShortNames();
-                for(var month=0;month<months.length;month++) {
-                    var t1 = new Date(Date.UTC(1,month));
-                    var yPercent = 100*(1-(y2.getTime()-t1.getTime())/yRange);
-                    var style = "bottom:" + yPercent +"%;";
-                    if(months[month])
-                        leftAxis+=HtmlUtil.div(["style",style,"class","display-grid-axis-left-tick"],months[month]+" " + HtmlUtil.div(["class","display-grid-htick"],""));
-                    axis.hlines+=HtmlUtil.div(["style",style,"class","display-grid-hline"]," ");
-                }
-
-
-                var numYears = axis.h.maxDate.getUTCFullYear()  - axis.h.minDate.getUTCFullYear();
-                var skip = 1;
-                var years = numYears;
-                skip = Math.max(1, Math.floor(numYears/axis.h.maxTicks));
-                if((numYears/skip)<=(axis.h.maxTicks/2)) {
-                    var numMonths = 0;
-                    var tmp  = new Date(axis.h.minDate.getTime());
-                    while(tmp.getTime()<axis.h.maxDate.getTime()) {
-                        Utils.incrementMonth(tmp);
-                        numMonths++;
-                    }
-                    skip=Math.max(1,Math.floor(numMonths/axis.h.maxTicks));
-                    axis.h.type  = "month";
-                    if((numMonths/skip)<=(axis.h.maxTicks/2)) {
-                        var tmp  = new Date(axis.h.minDate.getTime());
-                        var numDays =  0;
-                        while(tmp.getTime()<axis.h.maxDate.getTime()) {
-                            Utils.incrementDay(tmp);
-                            numDays++;
-                        }
-                        skip=Math.max(1, Math.floor(numDays/axis.h.maxTicks));
-                        axis.h.type  = "day";
-                    }
-                }
-
-                var lastYear= null;
-                var lastMonth= null;
-                var tickDate;
-                if(axis.h.type == "year") {
-                    tickDate  = new Date(Date.UTC(axis.h.minDate.getUTCFullYear()));
-                } else if(axis.h.type == "month") {
-                    tickDate  = new Date(Date.UTC(axis.h.minDate.getUTCFullYear(),axis.h.minDate.getUTCMonth()));
+                if(axis.v.axisType == "size") {
+                    this.calculateSizeAxis(axis.v);
                 } else {
-                    tickDate  = new Date(Date.UTC(axis.h.minDate.getUTCFullYear(),axis.h.minDate.getUTCMonth(),axis.h.minDate.getUTCDate()));
+                    this.calculateMonthAxis(axis.v);
                 }
-                //                console.log(axis.h.type+" skip:" + skip + "   min:" + Utils.formatDateYYYYMMDD(axis.h.minDate)+"   max:" + Utils.formatDateYYYYMMDD(axis.h.maxDate));
-                while(tickDate.getTime()<axis.h.maxDate.getTime()) {
-                    var x1 = 100*(tickDate.getTime()-axis.h.minDate.getTime())/axis.h.dateRange;
-                    //                    console.log("    perc:"+ x1 +" " + Utils.formatDateYYYYMMDD(tickDate));
-                    if(x1>=0 && x1<100) {
-                        var label="";
-                        var year = tickDate.getUTCFullYear(); 
-                        var month = tickDate.getUTCMonth(); 
-                        var tickClass="display-grid-vline";
-                        if(axis.h.type == "year") {
-                            label = year;
-                        } else if(axis.h.type=="month") {
-                            label = months[tickDate.getUTCMonth()];
-                            if(lastYear!=year) {
-                                label = label +"<br>" +  year;
-                                lastYear = year;
-                                tickClass="display-grid-vline-major";
-                            }
-                        }  else {
-                            label = tickDate.getUTCDate();
-                            if(lastYear!=year || lastMonth!=month) {
-                                label = label +"<br>" +months[month] +" " +  year;
-                                lastYear = year;
-                                lastMonth  = month;
-                                tickClass="display-grid-vline-major";
-                            }
-                        }
-                        if(x1>0)  {
-                            axis.vlines+=HtmlUtil.div(["style","left:" + x1+"%;", "class",tickClass]," ");
-                        }
-                        bottomAxis+=HtmlUtil.div(["style","left:" + x1+"%;","class","display-grid-axis-bottom-tick"], HtmlUtil.div(["class","display-grid-vtick"],"")+" " + label);
-                    }
-                    if(axis.h.type == "year") {
-                        Utils.incrementYear(tickDate, skip);
-                    }  else  if(axis.h.type == "month") {
-                        Utils.incrementMonth(tickDate,skip);
-                    } else {
-                        Utils.incrementDay(tickDate,skip);
-                    }
+                for(var i=0;i<axis.v.ticks.length;i++) {
+                    var tick = axis.v.ticks[i];
+                    var style = "bottom:" + tick.percent +"%;";
+                    var lineClass =tick.major?"display-grid-hline-major":"display-grid-hline";
+                    axis.v.lines+=HtmlUtil.div(["style",style,"class",lineClass]," ");
+                    axis.v.html+=HtmlUtil.div(["style",style,"class","display-grid-axis-left-tick"],tick.label+" " + HtmlUtil.div(["class","display-grid-htick"],""));
                 }
 
+                this.calculateDateAxis(axis.h);
+                for(var i=0;i<axis.h.ticks.length;i++) {
+                    var tick = axis.h.ticks[i];
+                    if(tick.percent>0)  {
+                        var lineClass =tick.major?"display-grid-vline-major":"display-grid-vline";
+                        axis.h.lines+=HtmlUtil.div(["style","left:" + tick.percent+"%;", "class",lineClass]," ");
+                    }
+                    axis.h.html+=HtmlUtil.div(["style","left:" + tick.percent+"%;","class","display-grid-axis-bottom-tick"], HtmlUtil.div(["class","display-grid-vtick"],"")+" " + tick.label);
+                }
 
                 var items = "";
                 var seen = {};
                 for(var i=0;i<entries.length;i++) {
                     var entry = entries[i];
-                    var d1 = entry.getStartDate();
-                    var t1 = new Date(Date.UTC(1,d1.getUTCMonth(),d1.getUTCDate()));
-                    var y1 = 100*((y2.getTime()-t1.getTime())/yRange);
-                    var x1 = 100*(d1.getTime()-axis.h.minDate.getTime())/axis.h.dateRange;
-                    var x2 = 100*(Math.abs((entry.getEndDate().getTime()-entry.getStartDate().getTime()))/axis.h.dateRange);
-                    if((x1+x2<0) || x1>=100)
+                    var y = this[axis.v.calculatePercent].call(this,entry,axis.v);
+                    var x = this[axis.h.calculatePercent].call(this,entry,axis.h);
+                    if(scaleHeight) {
+                        var tmp = y.p1;
+                        y.p1=y.p2;
+                        y.p2=tmp;
+                    }
+                    if((x.p1+x.delta<0) || x.p1>=100)
                         continue;
                     var clipLeft = false;
-                    if(x1<0) {
+                    console.log("x:" + x.p1 +" " + x.p2 + " " + x.delta);
+                    if(x.p1<0) {
                         clipLeft =true;
-                        x2 = x2+x1;
-                        x1=0;
+                        x.delta = x.delta+x.p1;
+                        x.p1=0;
                     }
-                    if(x1+x2>100) {
-                        x2=100-x1;
+                    if(x.p1+x.delta>100) {
+                        x.delta=100-x.p1;
                     }
-                    var pos = "left:"+  x1 + "%;" +" top:" + y1+"%;";
-                    var key = "left:"+  Math.round(x1) + "%;" +" top:" + Math.round(y1)+"%;";
+
+                    if(y.p1<0) {
+                        y.p2 = y.p2+y.p1;
+                        y.p1=0;
+                    }
+                    if(y.p1+y.p2>100) {
+                        y.p2=100-y.p1;
+                    }
+
+                    var key = "left:"+  Math.round(x.p1) + "%;" +" top:" + Math.round(y.p1)+"%;";
+                    var pos = "left:"+  x.p1 + "%;" +" top:" + y.p1+"%;";
                     var style = pos;
                     if(scaleWidth) {
-                        if(x2>1) {
-                            style+="width:" + x2+"%;";
+                        if(x.delta>1) {
+                            style+="width:" + x.delta+"%;";
                         } else {
                             style+="width:5px";
+                        }
+                    }
+                    if(scaleHeight) {
+                        if(y2>1) {
+                            style+="height:" + y2+"%;";
+                        } else {
+                            style+="height:5px";
                         }
                     }
                     if(showIcon && !clipLeft) {
@@ -1556,10 +1515,143 @@ function RamaddaEntrygridDisplay(displayManager, id, properties) {
                     }
                     items+= HtmlUtil.div(["class","display-grid-entry-box display-grid-entry","style", style,"index",i],"");
                 }
-                this.jq(ID_AXIS_LEFT).html(leftAxis);
-                this.jq(ID_CANVAS).html(axis.hlines+axis.vlines+items);
-                this.jq(ID_AXIS_BOTTOM).html(bottomAxis);
+                this.jq(ID_AXIS_LEFT).html(axis.v.html);
+                this.jq(ID_CANVAS).html(axis.v.lines+axis.h.lines+items);
+                this.jq(ID_AXIS_BOTTOM).html(axis.h.html);
                 this.initGrid(entries);
+            },
+            calculateSizeAxis:function(axisInfo) {
+                var min =Number.MAX_VALUE;
+                var max =Number.MIN_VALUE;
+                for(var i=0;i<this.entries.length;i++) {
+                    var entry = this.entries[i];
+                    min = Math.min(min, entry.getSize());
+                    max = Math.max(max, entry.getSize());
+                }
+            },
+             calculateDatePercent:function(entry, axisInfo) {
+                var p1 = 100*(entry.getStartDate().getTime()-axisInfo.min)/axisInfo.range;
+                var p2 = 100*(entry.getEndDate().getTime()-axisInfo.min)/axisInfo.range;
+                if(!axisInfo.ascending) {
+                    var tmp  =p1;
+                    p1=p2;
+                    p2=tmp;
+                }
+                return {p1:p1,p2:p2,delta:Math.abs(p2-p1)};
+            },
+            calculateMonthPercent:function(entry, axisInfo) {
+                var d1 = entry.getStartDate();
+                var d2 = entry.getEndDate();
+                var t1 = new Date(Date.UTC(1,d1.getUTCMonth(),d1.getUTCDate()));
+                var t2 = new Date(Date.UTC(1,d2.getUTCMonth(),d2.getUTCDate()));
+                var p1 = 100*((axisInfo.max-t1.getTime())/axisInfo.range);
+                var p2 = 100*((axisInfo.max-t2.getTime())/axisInfo.range);
+                if(!axisInfo.ascending) {
+                    var tmp  =p1;
+                    p1=p2;
+                    p2=tmp;
+                }
+                return {p1:p1,p2:p2,delta:Math.abs(p2-p1)};
+            },
+             calculateMonthAxis:function(axisInfo) {
+                axisInfo.calculatePercent = "calculateMonthPercent";
+                axisInfo.minDate = new Date(Date.UTC(0,11,15));
+                axisInfo.maxDate = new Date(Date.UTC(1,11,31));
+                axisInfo.min = axisInfo.minDate.getTime();
+                axisInfo.max = axisInfo.maxDate.getTime();
+                axisInfo.range = axisInfo.max-axisInfo.min;
+                var months = Utils.getMonthShortNames();
+                for(var month=0;month<months.length;month++) {
+                    var t1 = new Date(Date.UTC(1,month));
+                    var percent = (axisInfo.maxDate.getTime()-t1.getTime())/axisInfo.range;
+                    if(!axisInfo.ascending)
+                        percent = (1-percent);
+                    axisInfo.ticks.push({percent:100*percent,label:months[month],major:false});
+                }
+            },
+             calculateDateAxis: function(axisInfo) {
+                axisInfo.calculatePercent = "calculateDatePercent";
+                var numYears = axisInfo.maxDate.getUTCFullYear()  - axisInfo.minDate.getUTCFullYear();
+                var years = numYears;
+                axisInfo.type  = "year";
+                axisInfo.skip = Math.max(1, Math.floor(numYears/axisInfo.maxTicks));
+                if((numYears/axisInfo.skip)<=(axisInfo.maxTicks/2)) {
+                    var numMonths = 0;
+                    var tmp  = new Date(axisInfo.minDate.getTime());
+                    while(tmp.getTime()<axisInfo.maxDate.getTime()) {
+                        Utils.incrementMonth(tmp);
+                        numMonths++;
+                    }
+                    axisInfo.skip=Math.max(1,Math.floor(numMonths/axisInfo.maxTicks));
+                    axisInfo.type  = "month";
+                    if((numMonths/axisInfo.skip)<=(axisInfo.maxTicks/2)) {
+                        var tmp  = new Date(axisInfo.minDate.getTime());
+                        var numDays =  0;
+                        while(tmp.getTime()<axisInfo.maxDate.getTime()) {
+                            Utils.incrementDay(tmp);
+                            numDays++;
+                        }
+                        axisInfo.skip=Math.max(1, Math.floor(numDays/axisInfo.maxTicks));
+                        axisInfo.type  = "day";
+                    }
+                }
+
+
+                axisInfo.min = axisInfo.minDate.getTime();
+                axisInfo.max = axisInfo.maxDate.getTime();
+                axisInfo.range= axisInfo.max-axisInfo.min;
+                var months = Utils.getMonthShortNames();
+                var lastYear= null;
+                var lastMonth= null;
+                var tickDate;
+                if(axisInfo.type == "year") {
+                    tickDate  = new Date(Date.UTC(axisInfo.minDate.getUTCFullYear()));
+                } else if(axisInfo.type == "month") {
+                    tickDate  = new Date(Date.UTC(axisInfo.minDate.getUTCFullYear(),axisInfo.minDate.getUTCMonth()));
+                } else {
+                    tickDate  = new Date(Date.UTC(axisInfo.minDate.getUTCFullYear(),axisInfo.minDate.getUTCMonth(),axisInfo.minDate.getUTCDate()));
+                }
+                //                console.log(axisInfo.type+" skip:" + axisInfo.skip + "   min:" + Utils.formatDateYYYYMMDD(axisInfo.minDate)+"   max:" + Utils.formatDateYYYYMMDD(axisInfo.maxDate));
+                while(tickDate.getTime()<axisInfo.maxDate.getTime()) {
+                    var percent = (tickDate.getTime()-axisInfo.minDate.getTime())/axisInfo.range;
+                    if(!axisInfo.ascending)
+                        percent = (1-percent);
+                    percent = 100*percent;
+                    //                    console.log("    perc:"+ percent +" " + Utils.formatDateYYYYMMDD(tickDate));
+                    if(percent>=0 && percent<100) {
+                        var label="";
+                        var year = tickDate.getUTCFullYear(); 
+                        var month = tickDate.getUTCMonth(); 
+                        var major  = false;
+                        if(axisInfo.type == "year") {
+                            label = year;
+                        } else if(axisInfo.type=="month") {
+                            label = months[tickDate.getUTCMonth()];
+                            if(lastYear!=year) {
+                                label = label +"<br>" +  year;
+                                lastYear = year;
+                                major  =true;
+                            }
+                        }  else {
+                            label = tickDate.getUTCDate();
+                            if(lastYear!=year || lastMonth!=month) {
+                                label = label +"<br>" +months[month] +" " +  year;
+                                lastYear = year;
+                                lastMonth  = month;
+                                major  =true;
+                            }
+                        }
+                        axisInfo.ticks.push({percent:percent,label:label,major:major});
+                    }
+                    if(axisInfo.type == "year") {
+                        Utils.incrementYear(tickDate, axisInfo.skip);
+                    }  else  if(axisInfo.type == "month") {
+                        Utils.incrementMonth(tickDate,axisInfo.skip);
+                    } else {
+                        Utils.incrementDay(tickDate,axisInfo.skip);
+                    }
+                }
+
             }
         });
 }

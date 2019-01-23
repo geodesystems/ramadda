@@ -4189,6 +4189,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
         buttons.append(addWikiEditButton(textAreaId, "button_linebreak.png",
                                          "Line break", "<br>", "", "",
                                          "mw-editbutton-headline"));
+        /*
         buttons.append(addWikiEditButton(textAreaId, "button_strike.png",
                                          "Strike Through", "<s>", "</s>",
                                          "Strike-through text",
@@ -4203,6 +4204,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                                          "Sub Script", "<sub>", "</sub>",
                                          "Subscript script text",
                                          "mw-editbutton-headline"));
+        */
         buttons.append(addWikiEditButton(textAreaId, "button_small.png",
                                          "Small text", "<small>", "</small>",
                                          "Small text",

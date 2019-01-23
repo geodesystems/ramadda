@@ -573,6 +573,38 @@ var HtmlUtil =  {
             ramaddaDisplayCheckLayout();
         }
     },
+    getAceEditor: function(id) {
+        if(!this.aceEditors) return null;
+        var info = this.aceEditors[id];
+        if(!info) return null;
+        return info.editor;
+    },
+    handleAceEditorSubmit: function() {
+        console.log("handle submit:" +this.aceEditors);
+        if(!this.aceEditors) return;
+        for(a in this.aceEditors) {
+            var info = this.aceEditors[a];
+            console.log("hidden:" +info.hidden +" " + $("#"+info.hidden).size());
+            $("#"+info.hidden).val(info.editor.getValue());
+        }
+    },
+    initAceEditor: function(formId, id, hidden) {
+        if(!this.aceEditors) {
+            this.aceEditors = {};
+        }
+        var info = {};
+        this.aceEditors[id] = info;
+        info.editor = ace.edit(id);
+        info.formId = formId;
+        info.hidden = hidden;
+        info.editor.setKeyboardHandler("emacs");
+        info.editor.setShowPrintMargin(false);
+        info.editor.setOptions({
+                autoScrollEditorIntoView: true,
+                    copyWithEmptySelection: true,
+                    });
+        info.editor.session.setMode("ace/mode/ramadda"); 
+   },
     makeBreadcrumbs: function(id) {
         jQuery("#"+id).jBreadCrumb({
                 previewWidth: 10, 

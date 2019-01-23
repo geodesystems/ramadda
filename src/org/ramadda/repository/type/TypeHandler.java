@@ -4287,24 +4287,10 @@ public class TypeHandler extends RepositoryManager {
                             if ( !isWiki) {
                                 rows = 50;
                             }
-                            buttons =
-                                getRepository().getWikiManager()
-                                    .makeWikiEditBar(request, entry,
-                                        ARG_DESCRIPTION) + HtmlUtils.br();
-                            sb.append("<tr><td></td><td>");
-                            sb.append(buttons);
-                            //                    sb.append(HtmlUtils.br());
-                            domId = ARG_DESCRIPTION;
-                            formInfo.addMaxSizeValidation("Description",
-                                    domId,
-                                    EntryManager.MAX_DESCRIPTION_LENGTH);
-                            String textWidget =
-                                HtmlUtils.textArea(ARG_DESCRIPTION, desc,
-                                    rows, HtmlUtils.id(ARG_DESCRIPTION));
-                            sb.append(
-                                HtmlUtils.formEntryTop(
-                                    msgLabel("Wiki Text"), textWidget));
-                            sb.append("</td></tr>");
+                            addWikiEditor(
+                                request, entry, sb, formInfo,
+                                ARG_DESCRIPTION, desc, "Description",
+                                EntryManager.MAX_DESCRIPTION_LENGTH);
                         }
                     }
 
@@ -4609,6 +4595,66 @@ public class TypeHandler extends RepositoryManager {
         }
     }
 
+
+
+
+    /**
+     * _more_
+     *
+     * @param request _more_
+     * @param entry _more_
+     * @param sb _more_
+     * @param formInfo _more_
+     * @param id _more_
+     * @param text _more_
+     * @param label _more_
+     * @param length _more_
+     *
+     * @throws Exception _more_
+     */
+    public void addWikiEditor(Request request, Entry entry, Appendable sb,
+                              FormInfo formInfo, String id, String text,
+                              String label, int length)
+            throws Exception {
+        String editorId = id + "_editor";
+        String buttons =
+            getRepository().getWikiManager().makeWikiEditBar(request, entry,
+                editorId) + HtmlUtils.br();
+        if (label != null) {
+            sb.append("<tr><td colspan=2>");
+            sb.append(HtmlUtils.b(msgLabel(label)));
+            sb.append(HtmlUtils.br());
+        }
+        sb.append(buttons);
+        if (length > 0) {
+            formInfo.addMaxSizeValidation(label, id, length);
+        }
+
+        text = text.replaceAll("<", "&lt;").replaceAll(">", "&gt;");
+        String textWidget = HtmlUtils.div(text,
+                                          HtmlUtils.id(id + "_editor")
+                                          + HtmlUtils.attr("class",
+                                              "ace_editor"));
+        sb.append(HtmlUtils.hidden(id, "", HtmlUtils.id(id)));
+        if (label != null) {
+            sb.append(textWidget);
+        } else {
+            sb.append(textWidget);
+        }
+        if (request.getExtraProperty("didace") == null) {
+            request.putExtraProperty("didace", "true");
+            HtmlUtils.importJS(
+                sb, getRepository().getHtdocsUrl("/lib/ace/src-min/ace.js"));
+            formInfo.appendExtraJS("HtmlUtil.handleAceEditorSubmit();\n");
+        }
+
+        sb.append(HtmlUtils.script("HtmlUtil.initAceEditor('"
+                                   + formInfo.getId() + "','" + editorId
+                                   + "','" + id + "');"));
+        if (label != null) {
+            sb.append("</td></tr>");
+        }
+    }
 
     /**
      * _more_

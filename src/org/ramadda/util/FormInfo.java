@@ -35,6 +35,9 @@ public class FormInfo {
     /** _more_ */
     private String formId;
 
+    /** _more_          */
+    private StringBuilder extraJS = new StringBuilder();
+
     /**
      * _more_
      *
@@ -49,6 +52,16 @@ public class FormInfo {
     /**
      * _more_
      *
+     * @param js _more_
+     */
+    public void appendExtraJS(String js) {
+        extraJS.append(js);
+        extraJS.append("\n");
+    }
+
+    /**
+     * _more_
+     *
      * @param sb _more_
      *
      * @throws Exception _more_
@@ -57,8 +70,19 @@ public class FormInfo {
         StringBuilder validateJavascript = new StringBuilder("");
         addJavascriptValidation(validateJavascript);
         String script = JQuery.ready(JQuery.submit(JQuery.id(formId),
-                            validateJavascript.toString()));
+        //                                                   extraJS +
+        //                                                   "event.preventDefault();return;\n" +
+        validateJavascript.toString() + "\n" + extraJS));
         HtmlUtils.script(sb, script);
+    }
+
+    /**
+     * _more_
+     *
+     * @return _more_
+     */
+    public String getId() {
+        return formId;
     }
 
 

@@ -135,6 +135,13 @@
    border-bottom: 1px #ccc dotted;
 }
 
+.display-grid-hline-major {
+   position:absolute;
+   display:inline-block;
+   width:100%;
+   border-bottom: 1px #999 solid;
+}
+
 .display-grid-vline {
    position:absolute;
    display:inline-block;

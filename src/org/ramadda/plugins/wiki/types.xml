@@ -5,6 +5,8 @@
      <property name="form.date.show" value="true"/>
      <property name="form.area.show" value="true"/>
      <property name="form.resource.show" value="false"/>
+     <property name="form.description.iswiki" value="true"/>
+
      <column name="wikitext" type="clob" size="256000" label="Wiki Text" cansearch="true" showinhtml="false"/>
      <column name="category" iscategory="true"  type="string"  label="Wiki Page Category" cansearch="true" isindex="true" searchtype="select" showinhtml="false"/>
 </type>

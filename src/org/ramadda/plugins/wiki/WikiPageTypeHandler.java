@@ -71,7 +71,7 @@ public class WikiPageTypeHandler extends ExtensibleGroupTypeHandler {
      * _more_
      */
     public static final String ARG_WIKI_TEXTAREA = Column.ARG_EDIT_PREFIX
-                                                   + "wikipage.wikitext";
+                                                   + "wikipage_wikitext";
 
 
     /** _more_ */
@@ -443,13 +443,8 @@ public class WikiPageTypeHandler extends ExtensibleGroupTypeHandler {
         help.append("<i>{{&lt;output identifier&gt;}}</i><br>");
 
 
-        String textAreaId = ARG_WIKI_TEXTAREA.replaceAll("\\.", "_");
-        String buttons =
-            getRepository().getWikiManager().makeWikiEditBar(request, entry,
-                textAreaId);
-        String textWidget = buttons + HtmlUtils.br()
-                            + HtmlUtils.textArea(ARG_WIKI_TEXTAREA, wikiText,
-                                50, 100, HtmlUtils.id(textAreaId));
+        addWikiEditor(request, entry,  sb, formInfo, ARG_WIKI_TEXTAREA, wikiText, "Wiki Text",256000);
+
 
         /*
         String right = HtmlUtils.div(help.toString(),
@@ -458,11 +453,9 @@ public class WikiPageTypeHandler extends ExtensibleGroupTypeHandler {
         textWidget = "<table><tr valign=\"top\"><td>" + textWidget
                      + "</td><td>" + right + "</td></tr></table>";
         */
-        sb.append(HtmlUtils.formEntryTop(msgLabel("Wiki Text"), textWidget));
         addDateToEntryForm(request, sb, entry);
         addAreaWidget(request, entry, sb, formInfo);
         //super.addToEntryForm(request, sb, parentEntry, entry, formInfo);
-
     }
 
 

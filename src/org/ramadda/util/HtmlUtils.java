@@ -1832,6 +1832,14 @@ public class HtmlUtils {
         return pre(content, "");
     }
 
+    /**
+     * _more_
+     *
+     * @param sb _more_
+     * @param content _more_
+     *
+     * @throws Exception _more_
+     */
     public static void pre(Appendable sb, String content) throws Exception {
         tag(sb, TAG_PRE, "", content);
     }
@@ -2731,8 +2739,19 @@ public class HtmlUtils {
         return textArea(name, value, rows, columns, "");
     }
 
-    public static String textArea(String name, String value, int rows, String attr) {
-        return textArea(name, value,rows,0,attr);
+    /**
+     * _more_
+     *
+     * @param name _more_
+     * @param value _more_
+     * @param rows _more_
+     * @param attr _more_
+     *
+     * @return _more_
+     */
+    public static String textArea(String name, String value, int rows,
+                                  String attr) {
+        return textArea(name, value, rows, 0, attr);
     }
 
 
@@ -2749,11 +2768,13 @@ public class HtmlUtils {
      */
     public static String textArea(String name, String value, int rows,
                                   int columns, String extra) {
-        String width = columns>0?attr(ATTR_COLS, "" + columns):style("width:100%");
+        String width = (columns > 0)
+                       ? attr(ATTR_COLS, "" + columns)
+                       : style("width:100%");
+
         return tag(TAG_TEXTAREA,
                    attrs(ATTR_NAME, name, ATTR_CLASS, CLASS_TEXTAREA)
-                   + attrs(ATTR_ROWS, "" + rows) + width
-                   + extra, value);
+                   + attrs(ATTR_ROWS, "" + rows) + width + extra, value);
     }
 
     /**
@@ -5138,8 +5159,8 @@ public class HtmlUtils {
         if (value == null) {
             return dflt;
         }
-        if(value.equals("transparent")) {
-            return new Color(1f,0f,0f,0.0f );
+        if (value.equals("transparent")) {
+            return new Color(1f, 0f, 0f, 0.0f);
         }
         value = value.trim();
         if (value.equals("null")) {

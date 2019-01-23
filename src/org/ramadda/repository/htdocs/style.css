@@ -436,6 +436,24 @@ input, password, fileinput,textarea {
   border : 1px #000 solid;
 }
 
+.ace_attribute-name {
+   font-style:italic;
+}
+.ace_attribute-value {
+   font-style:italic;
+}
+.ace_tag {
+   font-weight: bold;
+}
+.ace_editor  { 
+max-width:100%;
+overflow-x:auto;
+width: 1000px;
+height:500px;
+border: 1px #ccc solid;
+}
+
+
 .ramadda-confirm {
    margin:15px;
    margin-left:25px;

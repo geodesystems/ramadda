@@ -655,8 +655,9 @@ public class Utils {
         for (int i = 0; i < constructors.length; i++) {
             Class[] formals = constructors[i].getParameterTypes();
             for (int j = 0; j < formals.length; j++) {
-                System.err.println("\tparam " + j + "  " + formals[j].getName()
-                                   + " " + paramTypes[j].getName());
+                System.err.println("\tparam " + j + "  "
+                                   + formals[j].getName() + " "
+                                   + paramTypes[j].getName());
             }
         }
 
@@ -2994,16 +2995,17 @@ public class Utils {
      * @throws Exception _more_
      */
     public static void main(String args[]) throws Exception {
-        byte[]bytes = decodeBase64(args[0]);
-        for(int i=0;i<bytes.length;i+=4) {
-            int asInt = (bytes[i] & 0xFF) 
-                | ((bytes[i+1] & 0xFF) << 8) 
-                | ((bytes[i+2] & 0xFF) << 16) 
-                | ((bytes[i+3] & 0xFF) << 24);
+        byte[] bytes = decodeBase64(args[0]);
+        for (int i = 0; i < bytes.length; i += 4) {
+            int asInt = (bytes[i] & 0xFF) | ((bytes[i + 1] & 0xFF) << 8)
+                        | ((bytes[i + 2] & 0xFF) << 16)
+                        | ((bytes[i + 3] & 0xFF) << 24);
             float asFloat = Float.intBitsToFloat(asInt);
-            System.err.println("i:" + i +" f:" + asFloat);
+            System.err.println("i:" + i + " f:" + asFloat);
         }
-        if(true) return;
+        if (true) {
+            return;
+        }
 
 
         String s = "-1 \"\\\n\\\"X";
