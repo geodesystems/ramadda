@@ -5550,8 +5550,8 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
             this.label = label;
             this.attrs = attrs;
             if(tag.equals(WIKI_TAG_DISPLAY)) {
-                System.out.println("<li> " + label);
-                System.out.println("[wiki::tagdef display {type=\"" + tag+"\" " + attrs+"}]");
+                //                System.out.println("<li> " + label);
+                //                System.out.println("[wiki::tagdef display {type=\"" + tag+"\" " + attrs+"}]");
             }
         }
 
