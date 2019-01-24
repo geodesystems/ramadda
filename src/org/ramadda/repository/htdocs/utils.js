@@ -754,6 +754,9 @@ var HtmlUtil =  {
    formTable : function() {
         return  this.openTag("table",["class","formtable","cellspacing","0","cellspacing","0"]);
     },
+   formTableClose : function() {
+        return  this.closeTag("table");
+    },
     formEntryTop : function(label, value) {
         return this.tag("tr", ["valign","top"],
                         this.tag("td",["class","formlabel","align","right"],

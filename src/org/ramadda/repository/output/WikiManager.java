@@ -352,14 +352,19 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                             new WikiTag(WIKI_TAG_DISPLAY,
                                         "Entry Grid",
                                         attrs(ATTR_TYPE, "entrygrid", 
-                                              "#" +ATTR_HEIGHT, "400", 
+                                              "\nshowIcon","true",
+                                              "showName","true",
+                                              "scaleWidth","true",
+                                              "scaleHeight","false",
+                                              "\n#xAxisAscending","true",
+                                              "\n#xAxisScale","true",
+                                              "\n#yAxisAscending","true",
+                                              "\n#yAxisScale","true",
+                                              "\n#urlTemplate","{url}|{entryid}|{resource}",
+                                              "\n#" +ATTR_HEIGHT, "400", 
                                               "#" +ATTR_WIDTH, "100%", 
-                                              "#showIcon","true",
-                                              "#showName","true",
-                                              "#urlTemplate","{url}|{entryid}|{resource}",
-                                              "#scaleWidth","true|false",
-                                              "#entries", "",
-                                              ATTR_LAYOUTHERE, "true", 
+                                              "\n#entries", "",
+                                              "\n" + ATTR_LAYOUTHERE, "true", 
                                               ATTR_SHOWMENU, "true", 
                                               ATTR_SHOWTITLE, "true")),
                             new WikiTag(WIKI_TAG_DISPLAY,
@@ -4165,6 +4170,12 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                 textAreaId, "button_section.png", "Section",
                 "+section title={{name}}newlinenewline", "-section",
                 "Section", "mw-editbutton-bold"));
+        buttons.append(addWikiEditButton(textAreaId, "button_blockquote.png",
+                                         "Insert row and column",
+                                         "+rownewline+col-6newline", "-colnewline+col-6newline-row",
+                                         "Row/Column",
+                                         "mw-editbutton-headline"));
+
         buttons.append(addWikiEditButton(textAreaId, "button_bold.png",
                                          "Bold text", "\\'\\'\\'",
                                          "\\'\\'\\'", "Bold text",
@@ -4208,11 +4219,6 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
         buttons.append(addWikiEditButton(textAreaId, "button_small.png",
                                          "Small text", "<small>", "</small>",
                                          "Small text",
-                                         "mw-editbutton-headline"));
-        buttons.append(addWikiEditButton(textAreaId, "button_blockquote.png",
-                                         "Insert block quote",
-                                         "<blockquote>", "</blockquote>",
-                                         "Quoted text",
                                          "mw-editbutton-headline"));
         //        buttons.append(addWikiEditButton(textAreaId,"button_image.png","Embedded file","[[File:","]]","Example.jpg","mw-editbutton-image"));
         //        buttons.append(addWikiEditButton(textAreaId,"button_media.png","File link","[[Media:","]]","Example.ogg","mw-editbutton-media"));
@@ -5381,7 +5387,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
             //                    "google.load(\"visualization\", \"1\", {packages:['corechart','table','bar']});\n"));
             HtmlUtils.script(
                 sb,
-                "google.charts.load(\"43\", {packages:['corechart','calendar','table','bar','gauge']});\n");
+                "google.charts.load(\"43\", {packages:['corechart','calendar','table','bar','sankey','gauge']});\n");
             HtmlUtils.importJS(sb, getHtdocsUrl("/lib/d3/d3.min.js"));
             HtmlUtils.importJS(
                 sb, getHtdocsUrl("/lib/jquery.handsontable.full.min.js"));

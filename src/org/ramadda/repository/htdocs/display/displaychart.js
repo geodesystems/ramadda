@@ -9,6 +9,7 @@ var DISPLAY_BARCHART = "barchart";
 var DISPLAY_BARTABLE = "bartable";
 var DISPLAY_BARSTACK = "barstack";
 var DISPLAY_PIECHART = "piechart";
+var DISPLAY_SANKEY = "sankey";
 var DISPLAY_CALENDAR = "calendar";
 var DISPLAY_SCATTERPLOT = "scatterplot";
 var DISPLAY_HISTOGRAM = "histogram";
@@ -30,7 +31,7 @@ google.charts.setOnLoadCallback(googleChartsHaveLoaded);
 function haveGoogleChartsLoaded () {
     if(!googleChartsLoaded) {
         if (typeof google.visualization !== "undefined") { 
-            if (typeof google.visualization.BarChart !== "undefined") { 
+            if (typeof google.visualization.Gauge !== "undefined") { 
                 googleChartsLoaded = true;
             }
         }
@@ -49,6 +50,7 @@ addGlobalDisplayType({type:DISPLAY_HISTOGRAM,label: "Histogram",requiresData:tru
 addGlobalDisplayType({type:DISPLAY_BUBBLE,label: "Bubble Chart",requiresData:true,forUser:true,category:CHARTS_CATEGORY});
 addGlobalDisplayType({type:DISPLAY_GAUGE,label: "Gauge",requiresData:true,forUser:true,category:CHARTS_CATEGORY});
 addGlobalDisplayType({type:DISPLAY_PIECHART,label: "Pie Chart",requiresData:true,forUser:true,category:CHARTS_CATEGORY});
+addGlobalDisplayType({type:DISPLAY_SANKEY,label: "Sankey Chart",requiresData:true,forUser:true,category:CHARTS_CATEGORY});
 
 addGlobalDisplayType({type:DISPLAY_CALENDAR,label: "Calendar Chart",requiresData:true,forUser:true,category:"Misc"});
 addGlobalDisplayType({type:DISPLAY_STATS , label: "Stats Table",requiresData:false,forUser:true,category:"Misc"});
@@ -298,7 +300,7 @@ function RamaddaMultiChart(displayManager, id, properties) {
                 return this.getProperty(PROP_CHART_TYPE,DISPLAY_LINECHART);
             },
             defaultSelectedToAll: function() {
-                if(this.chartType == DISPLAY_TABLE) {
+                if(this.chartType == DISPLAY_TABLE || this.chartType == DISPLAY_SANKEY) {
                     return true;
                 }
                 return SUPER.defaultSelectedToAll.call(this);
@@ -391,7 +393,7 @@ function RamaddaMultiChart(displayManager, id, properties) {
             },
             getFieldsToSelect: function(pointData) {
                 var chartType = this.getProperty(PROP_CHART_TYPE,DISPLAY_LINECHART);
-                if(this.chartType == DISPLAY_TABLE || this.chartType == DISPLAY_BARTABLE || this.chartType == DISPLAY_BUBBLE) {
+                if(this.chartType == DISPLAY_TABLE || this.chartType == DISPLAY_BARTABLE || this.chartType == DISPLAY_BUBBLE || this.chartType == DISPLAY_SANKEY) {
                     //                    return pointData.getRecordFields();
                     return pointData.getNonGeoFields();
                 } 
@@ -472,7 +474,7 @@ function RamaddaMultiChart(displayManager, id, properties) {
                 var props = {
                     includeIndex: true,
                 };
-                if(this.chartType == DISPLAY_TABLE || this.chartType == DISPLAY_BARTABLE || chartType == DISPLAY_PIECHART || chartType == DISPLAY_SCATTERPLOT || chartType == DISPLAY_HISTOGRAM|| chartType == DISPLAY_BUBBLE|| chartType == DISPLAY_GAUGE)  {
+                if(this.chartType == DISPLAY_TABLE || this.chartType == DISPLAY_BARTABLE || chartType == DISPLAY_PIECHART || chartType == DISPLAY_SCATTERPLOT || chartType == DISPLAY_HISTOGRAM|| chartType == DISPLAY_BUBBLE|| chartType == DISPLAY_GAUGE || chartType==DISPLAY_SANKEY)  {
                     props.includeIndex = false;
                 }
                 props.groupByIndex = -1;
@@ -753,8 +755,66 @@ function RamaddaMultiChart(displayManager, id, properties) {
             tableHeaderMouseover: function(i,tooltip) {
                 //alert("new:" + tooltip);
             },
+            filterDate: function(dataList, fields) {
+                var fieldName = this.getProperty("filterField");
+                var pattern = this.getProperty("filterPattern");
+                var filterSValue = this.getProperty("filterValue");
+                var filterOperator = this.getProperty("filterOperator");
+                
+                
+                if(fieldName  && (pattern || (filterSValue && filterOperator))) {
+                    var field = null;
+                    for(var i=0;i<fields.length;i++) {
+                        if(fields[i].getId() == fieldName || fieldName == "#"+(i+1)) {
+                            field = fields[i];
+                            break;
+                        }
+                    }
+                    if(field) {
+                        var list = [];
+                        var filterValue;
+                        if(filterSValue) {
+                            filterValue = parseFloat(filterSValue);
+                        }
+                        for(var i=0;i<dataList.length;i++) {
+                            var row = dataList[i];
+                            if(i==0) {
+                                list.push(row);
+                                continue;
+                            }
+                            var value = row[field.getIndex()];
+                            if(filterSValue && filterOperator) {
+                                var filterValue = parseFloat(filterSValue);
+                                var ok = false;
+                                if(filterOperator == "<") {
+                                    ok  = value<filterValue;
+                                } else  if(filterOperator == "<=") {
+                                    ok  = value<=filterValue;
+                                } else  if(filterOperator == "==") {
+                                    ok  = value==filterValue;
+                                } else  if(filterOperator == ">") {
+                                    ok  = value>filterValue;
+                                } else  if(filterOperator == ">=") {
+                                    ok  = value>=filterValue;
+                                }
+                                if(ok) 
+                                    list.push(row);
+                                continue;
+                            }
+                            var value = ""+row[field.getIndex()];
+                            if(value.match(pattern)) {
+                                list.push(row);
+                            }
+                        }
+                        dataList = list;
+                    }
+                }
+                return dataList;
+            },
             makeDataTable:function(chartType,dataList,props,selectedFields) {
-                if(dataList.length==1 || this.chartType == DISPLAY_TABLE) {
+                dataList = this.filterDate(dataList, selectedFields);
+
+                if(dataList.length==1 || this.chartType == DISPLAY_TABLE || this.chartType == DISPLAY_SANKEY) {
                     return  google.visualization.arrayToDataTable(dataList);
                 }
                 if(this.chartType == DISPLAY_GAUGE) {
@@ -1014,7 +1074,8 @@ function RamaddaMultiChart(displayManager, id, properties) {
                 var width = "90%";
                 var left = "10%";
                 useMultipleAxes = this.getProperty("useMultipleAxes",true);
-                if((selectedFields.length>1 && useMultipleAxes) || this.getProperty("padRight",false)) {
+
+                if((selectedFields.length>1 && useMultipleAxes) || this.getProperty("padRight",false)===true) {
                     width = "80%";
                 }
                 var chartId = this.getDomId(ID_CHART);
@@ -1040,6 +1101,23 @@ function RamaddaMultiChart(displayManager, id, properties) {
                 this.setContents(HtmlUtil.div(divAttrs,""));
 
 
+                if(chartType == DISPLAY_SANKEY) {
+                    chartOptions.height = parseInt(this.getProperty("chartHeight",this.getProperty("height","400")));
+                    chartOptions.sankey =  {
+                        node: {
+                            colors: this.colors,
+                            width:5,
+                        },
+                        link: {
+                            colorMode: 'source',
+                            colors: this.colors,
+                            color: {
+                                //                                stroke:'black',
+                                //strokeWidth:1,
+                            }
+                        }
+                    }
+                }
                 if(chartType == DISPLAY_LINECHART || chartType == DISPLAY_AREACHART || chartType == DISPLAY_BARCHART ||
                    chartType == DISPLAY_BARSTACK ) {
                     chartOptions.height = this.getProperty("chartHeight",this.getProperty("height","150"));
@@ -1135,7 +1213,8 @@ function RamaddaMultiChart(displayManager, id, properties) {
                     }
                     chartOptions.orientation =  "horizontal";
                     this.chart = new google.visualization.BarChart(document.getElementById(chartId));
-
+                } else if(chartType == DISPLAY_SANKEY) {
+                    this.chart = new google.visualization.Sankey(document.getElementById(chartId));
                 } else  if(chartType == DISPLAY_SCATTERPLOT) {
                     var height  = 400;
                     if(Utils.isDefined(this.chartHeight)) {
@@ -1405,6 +1484,12 @@ function BarstackDisplay(displayManager, id, properties) {
 
 function PiechartDisplay(displayManager, id, properties) {
     properties = $.extend({"chartType": DISPLAY_PIECHART}, properties);
+    RamaddaUtil.inherit(this, new RamaddaMultiChart(displayManager, id, properties));
+    addRamaddaDisplay(this);
+}
+
+function SankeyDisplay(displayManager, id, properties) {
+    properties = $.extend({"chartType": DISPLAY_SANKEY}, properties);
     RamaddaUtil.inherit(this, new RamaddaMultiChart(displayManager, id, properties));
     addRamaddaDisplay(this);
 }
