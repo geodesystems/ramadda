@@ -94,11 +94,13 @@
 
 
   <outputhandler>
+<!--
    <service id="imagemagick_convert_test" label="Test Convert Image" command="${service.imagemagick}/convert">
        <service link="imagemagick_convert"><param name="newtype">png</param><param name="resize">50</param></service>
        <service link="imagemagick_polaroid"><param name="bordercolor">red</param><param name="background">green</param></service>
        <output type="type_image" pattern=".*"/>
     </service>
+-->
   </outputhandler>
 
 
