@@ -10,14 +10,18 @@ RAMADDA wiki tags that allow for displaying maps, lists, charts, etc. The <a hre
 <subhead intoc="false" id="editor">Wiki Editor</subhead>
 RAMADDA provides a wiki text editor:
 [ht::cimg images/wikiedit.png {Wiki Text Editor} {border=0 width=600}]
+
 <ul>
 <li>
 The  buttons allow you to add basic wiki markup.
+<p>
 <li>
 The Add property menu adds RAMADDA specific properties from the entry that is being displayed 
 (e.g., name, description, children entries, etc).
+<p>
 <li>
 The Add entry id menu allows you to specify the entry to use in properties (see below).
+<p>
 <li>
 The Add entry link menu adds wiki links to other entries.
 </ul>
@@ -321,11 +325,17 @@ Normally, all property tags refer to the current entry. However, you can specify
 
 The entry value can be:
 <ul>
+<p>
 <li> The ID of an entry
+<p>
 <li> Its full path, e.g., /Top/.../entry_name
+<p>
 <li> The parent entry - "parent" 
+<p>
 <li> The parent of the parent entry  -"grandparent"
+<p>
 <li> The entry itself - "this"
+<p>
 <li> An entry linked to the entry. Either "link" to find the first one or to specify an entry type use "link:entry_type"
 </ul>
 
@@ -371,9 +381,13 @@ The first set of property tags show some information for the entry. Note: the at
 
 <ul>
 <li> [wiki::tagdef name]:  Entry name
+<p>
 <li> [wiki::tagdef entryid]:  Entry ID
+<p>
 <li> [wiki::tagdef description {wikify="true|false"}]: Entry description. If wikify=true then treat the description as
 wiki text.
+
+<p>
 <li> 
 [wiki::tagdef fromdate {format="date time format"} ]<br> 
 [wiki::tagdef todate {format="date time format"} ]<br> 
@@ -386,7 +400,9 @@ This follows the
 Java <a href="http://docs.oracle.com/javase/6/docs/api/java/text/SimpleDateFormat.html">date format</a> conventions.
 
 
+<p>
 <li> [wiki::tagdef information]: The information tabs.
+<p>
 <li> [wiki::tagdef properties {metadata.types="types to show or not show"}]: Show the properties listing.
 The attribute metadata.types is an optional comma separated list of the metata (or property) types that should be shown or not shown.
 
@@ -402,7 +418,9 @@ Then if you wanted to just show  the Project PI property then do:
 
 
 <li> [wiki::tagdef html]: Shows the default html view of the entry. Note: this requires an entry="..." to specify a different entry.
+<p>
 <li> [wiki::tagdef link {linkresource=true|false button=true|false output=someoutput}]: Makes a link to the entry. Set button=true to buttonize the link. Link to the file with linkresource=true. Link to some other view with output=
+<p>
 <li> [wiki::tagdef map {width="width of map" height="height of map" listentries="true|false" listwidth="width or percent"}]: Display a map. If the entry is a folder then display the children entries of the folder.
 
 If you do not specify a width then the map will be sized to fit its page. 
@@ -424,10 +442,15 @@ If you have a Folder (or other group) and want to just show the Folder and nots 
 Display the Google Earth plugin. 
 
 <li> [wiki::tagdef comments]: Show the comments.
+<p>
 <li> [wiki::tagdef breadcrumbs]: Show the breadcrumb path.
+<p>
 <li> [wiki::tagdef layout]: This shows the "Layout:" toolbar bar for an entry.
+<p>
 <li> [wiki::tagdef toolbar]: Show the entry toolbar.
-<li> [wiki::tagdef image {src="image source" alt="alt text" width="image width" link="true|false" left="absolute position" top="absolute position" linkresource="true|false" alt="image alt label"}]: Include an image. If src is not given then this shows the image (if there is one) 
+<p>
+<li> [wiki::tagdef image {src="image source" alt="alt text" width="image width" link="true|false" left="absolute position" top="absolute position" linkresource="true|false" alt="image alt label"}]: <br>
+Include an image. If src is not given then this shows the image (if there is one) 
 from the entry.  If src is specified it can take on the form: 
 <pre>
 src="entry name"
@@ -449,6 +472,7 @@ resource).  height and width can be used to scale the image, the alt
 attribute will be used in place of the entry id as a label on the image
 for accessibility.
 
+<p>
 <li> [wiki::tagdef menu {popup="true|false" title="title to use" menus="file,edit,feeds,view,other"}]: 
 Show the menu actions. If menus is not specified
 show all of the menus. If menus is specified only show those menus listed.

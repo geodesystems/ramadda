@@ -36,14 +36,18 @@ RAMADDA wiki tags that allow for displaying maps, lists, charts, etc. The <a hre
 <a name="editor"></a><p><div class="ramadda-page-heading">11.1.0 Wiki Editor</div> 
 RAMADDA provides a wiki text editor:
 <a name="image1"></a><div class="cimg"><a href="images/wikiedit.png"><img  src="images/wikiedit.png" border=0 width=600 alt="Wiki Text Editor" ></a><br><span class="caption">Image 1: Wiki Text Editor</span></div>
+
 <ul>
 <li>
 The  buttons allow you to add basic wiki markup.
+<p>
 <li>
 The Add property menu adds RAMADDA specific properties from the entry that is being displayed 
 (e.g., name, description, children entries, etc).
+<p>
 <li>
 The Add entry id menu allows you to specify the entry to use in properties (see below).
+<p>
 <li>
 The Add entry link menu adds wiki links to other entries.
 </ul>
@@ -347,11 +351,17 @@ Normally, all property tags refer to the current entry. However, you can specify
 
 The entry value can be:
 <ul>
+<p>
 <li> The ID of an entry
+<p>
 <li> Its full path, e.g., /Top/.../entry_name
+<p>
 <li> The parent entry - "parent" 
+<p>
 <li> The parent of the parent entry  -"grandparent"
+<p>
 <li> The entry itself - "this"
+<p>
 <li> An entry linked to the entry. Either "link" to find the first one or to specify an entry type use "link:entry_type"
 </ul>
 
@@ -397,9 +407,13 @@ The first set of property tags show some information for the entry. Note: the at
 
 <ul>
 <li> <a name="name"></a>{{name}}:  Entry name
+<p>
 <li> <a name="entryid"></a>{{entryid}}:  Entry ID
+<p>
 <li> <a name="description"></a>{{description <i>wikify="true|false"</i>}}: Entry description. If wikify=true then treat the description as
 wiki text.
+
+<p>
 <li> 
 <a name="fromdate"></a>{{fromdate <i>format="date time format"</i>}}<br> 
 <a name="todate"></a>{{todate <i>format="date time format"</i>}}<br> 
@@ -412,7 +426,9 @@ This follows the
 Java <a href="http://docs.oracle.com/javase/6/docs/api/java/text/SimpleDateFormat.html">date format</a> conventions.
 
 
+<p>
 <li> <a name="information"></a>{{information}}: The information tabs.
+<p>
 <li> <a name="properties"></a>{{properties <i>metadata.types="types to show or not show"</i>}}: Show the properties listing.
 The attribute metadata.types is an optional comma separated list of the metata (or property) types that should be shown or not shown.
 
@@ -428,7 +444,9 @@ Then if you wanted to just show  the Project PI property then do:
 
 
 <li> <a name="html"></a>{{html}}: Shows the default html view of the entry. Note: this requires an entry="..." to specify a different entry.
+<p>
 <li> <a name="link"></a>{{link <i>linkresource=true|false button=true|false output=someoutput</i>}}: Makes a link to the entry. Set button=true to buttonize the link. Link to the file with linkresource=true. Link to some other view with output=
+<p>
 <li> <a name="map"></a>{{map <i>width="width of map" height="height of map" listentries="true|false" listwidth="width or percent"</i>}}: Display a map. If the entry is a folder then display the children entries of the folder.
 
 If you do not specify a width then the map will be sized to fit its page. 
@@ -450,10 +468,15 @@ If you have a Folder (or other group) and want to just show the Folder and nots 
 Display the Google Earth plugin. 
 
 <li> <a name="comments"></a>{{comments}}: Show the comments.
+<p>
 <li> <a name="breadcrumbs"></a>{{breadcrumbs}}: Show the breadcrumb path.
+<p>
 <li> <a name="layout"></a>{{layout}}: This shows the "Layout:" toolbar bar for an entry.
+<p>
 <li> <a name="toolbar"></a>{{toolbar}}: Show the entry toolbar.
-<li> <a name="image"></a>{{image <i>src="image source" alt="alt text" width="image width" link="true|false" left="absolute position" top="absolute position" linkresource="true|false" alt="image alt label"</i>}}: Include an image. If src is not given then this shows the image (if there is one) 
+<p>
+<li> <a name="image"></a>{{image <i>src="image source" alt="alt text" width="image width" link="true|false" left="absolute position" top="absolute position" linkresource="true|false" alt="image alt label"</i>}}: <br>
+Include an image. If src is not given then this shows the image (if there is one) 
 from the entry.  If src is specified it can take on the form: 
 <pre>
 src="entry name"
@@ -475,6 +498,7 @@ resource).  height and width can be used to scale the image, the alt
 attribute will be used in place of the entry id as a label on the image
 for accessibility.
 
+<p>
 <li> <a name="menu"></a>{{menu <i>popup="true|false" title="title to use" menus="file,edit,feeds,view,other"</i>}}: 
 Show the menu actions. If menus is not specified
 show all of the menus. If menus is specified only show those menus listed.
