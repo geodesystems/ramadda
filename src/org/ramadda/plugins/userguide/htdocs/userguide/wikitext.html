@@ -33,7 +33,7 @@ All of the display in RAMADDA is accomplished through its  wiki facility. This s
 RAMADDA wiki tags that allow for displaying maps, lists, charts, etc. The <a href="http://geodesystems.com/repository/alias/wikis">geodesystems.com site</a> has many examples of the wiki facility.
 
 
-<a name="editor"></a><div class="ramadda-page-heading">11.1.0 Wiki Editor</div> 
+<a name="editor"></a><p><div class="ramadda-page-heading">11.1.0 Wiki Editor</div> 
 RAMADDA provides a wiki text editor:
 <a name="image1"></a><div class="cimg"><a href="images/wikiedit.png"><img  src="images/wikiedit.png" border=0 width=600 alt="Wiki Text Editor" ></a><br><span class="caption">Image 1: Wiki Text Editor</span></div>
 <ul>
@@ -48,7 +48,7 @@ The Add entry id menu allows you to specify the entry to use in properties (see 
 The Add entry link menu adds wiki links to other entries.
 </ul>
 
-<a name="markup"></a><div class="ramadda-page-heading">11.1.1 Basic Markup</div> 
+<a name="markup"></a><p><div class="ramadda-page-heading">11.1.1 Basic Markup</div> 
 
 The RAMADDA Wiki facility generally follows the format
 that Wikipedia follows. For example:
@@ -84,9 +84,10 @@ more wiki text
 See the <a href=" http://en.wikipedia.org/wiki/Help:Wiki_markup">Wikipedia page on Wiki Markup</a> for more information on basic Wiki markup. 
 
 
-<a name="display"></a><div class="ramadda-page-heading">11.1.2 Layout and Display Markup</div> 
+<a name="display"></a><p><div class="ramadda-page-heading">11.1.2 Layout and Display Markup</div> 
 There are a number of helper layout tags that make it easy to do page layout and display.
 
+<p>
 <b>Sections</b><br>
 
 To get the full page layout like on <a href="http://ramadda.org/repository">ramadda.org</a> use the "+section" tag:
@@ -149,6 +150,25 @@ You can also add a CSS style descriptor
 </pre>
 
 
+<p>
+<b>Tabs</b><br>
+You can create a set of tabs with:
+<pre>
++tabs
++tab Tab 1 title
+Tab 1 content
+-tab
++tab Tab 2 title
+Tab 2 content
+-tab
+...
++tab Tab N title
+Tab N content
+-tab
+-tabs
+</pre>
+
+
 <b>Titles and headings</b><br>
 There are a number of block display elements - 
 title, heading, blurb, note, and block that can be used as:
@@ -177,9 +197,7 @@ Examples at <a href="https://geodesystems.com/repository/alias/wikiexamples">htt
 
 
 
-
-
-
+<p>
 <b>Inset</b>
 By default, a page has no margins on the left-side. If you have normal text layout you can make an inset with "+inset":
 <pre>
@@ -199,14 +217,15 @@ This by default gives a 20px left and right margin. To change this you can add a
 
 
 <a name="layout"></a>
-
-
+<p>
 <b>Grid Layout</b><br>
 There is support for the <a href="http://getbootstrap.com/">Bootstrap</a> CSS grid system. To do a row layout use the following. The "+col-md-..." correspond to Bootstraps column widths, e.g., col-md-[2,3,4,6,8,9,10,12].
 Basically you can have any number of columns within a row.
 Each column has a width, the sum of which adds up to 12.
+Note: you can also use +col-&lt;some number&gt; as a short hand, dropping the %quot;-md&quot;
 
-Three equally spaced columns:
+<p>
+Here is three equally spaced columns:
 
 <pre>+row
 +col-md-4 
@@ -221,7 +240,7 @@ Right column contents
 -row
 </pre>
 
-Results in: 
+Which results in: 
 
 <div class="row">
 <div class="col-md-4" style="border: 1px #000 solid;">
@@ -236,7 +255,7 @@ Right column contents
 </div>
 
 
-
+<p>
 You can set the widths of different columns:
 <pre>
 +row
@@ -249,7 +268,7 @@ Right column contents
 -row
 </pre>
 
-Results in:
+Which results in:
 
 <div class="row">
 <div class="col-md-2"  style="border: 1px #000 solid;">
@@ -263,7 +282,7 @@ Right column contents
 
 
 
-<a name="links"></a><div class="ramadda-page-heading">11.1.3 Linking to other entries</div> 
+<a name="links"></a><p><div class="ramadda-page-heading">11.1.3 Linking to other entries</div> 
 Normally in a wiki a link to another page is of the form:
 <blockquote><pre>
 [[Page name]]
@@ -304,7 +323,7 @@ If the entry with the given name does not exist then the link will take one to t
 create entry form.
 
 
-<a name="properties"></a><div class="ramadda-page-heading">11.1.4 Wiki Properties</div> 
+<a name="properties"></a><p><div class="ramadda-page-heading">11.1.4 Wiki Properties</div> 
 You can also import content from the current Wiki Page entry or any other entry with the import  
 syntax:
 <blockquote><pre>{{property}}</pre></blockquote>
@@ -371,7 +390,7 @@ Note: you can specify a prefix and suffix attributes that are only used if the t
 This would only show when there is a Links sub-folder.
 
 
-<a name="basic"></a><div class="ramadda-page-heading">11.1.5 Basic Wiki Properties</div> 
+<a name="basic"></a><p><div class="ramadda-page-heading">11.1.5 Basic Wiki Properties</div> 
 
 The first set of property tags show some information for the entry. Note: the attributes are all optional.
 
@@ -480,7 +499,7 @@ Show the menu actions in a popup:
 
 
 
-<a name="displays"></a><div class="ramadda-page-heading">11.1.6 Display Components</div> 
+<a name="displays"></a><p><div class="ramadda-page-heading">11.1.6 Display Components</div> 
 There is a set of new "display" wiki tags that allow you to develop rich 
 integrated and interactive search, map and charting wiki pages.
 
@@ -601,7 +620,7 @@ ramaddaBaseUrl="http://community.ramadda.org/repository/repos/data"
 </pre>
 
 
-<a name="collection"></a><div class="ramadda-page-heading">11.1.7 Collection Wiki Properties</div> 
+<a name="collection"></a><p><div class="ramadda-page-heading">11.1.7 Collection Wiki Properties</div> 
 
 The following properties display a collection of entries. By default they
 are the children entries of the wiki entry but you can specify
@@ -958,7 +977,7 @@ apply.header="${url}"
 
 
 
-<a name="block"></a><div class="ramadda-page-heading">11.1.8 Hiding and showing content</div> 
+<a name="block"></a><p><div class="ramadda-page-heading">11.1.8 Hiding and showing content</div> 
 
 The &lt;block&gt; tag allows you to easily create a toggle block and/or show or hide content
 based on the user's device.
@@ -1015,7 +1034,7 @@ This will not show the content in place. Rather you can reference and insert the
 
 
 
-<a name="import"></a><div class="ramadda-page-heading">11.1.9 Importing any page</div> 
+<a name="import"></a><p><div class="ramadda-page-heading">11.1.9 Importing any page</div> 
 
 You can also import any of the views of an entry, e.g., the map view, 
 the calendar view, etc., with the  
@@ -1032,6 +1051,7 @@ and use that.
 
 
 
+<p>
 <a name="snippet"></a>
 <b>Snippet</b><br>
 A number of the layouts below (e.g,, table layout) will include a snippet of descriptive text from the entry that is being displayed. The snippet text is defined in the description of the entry with:

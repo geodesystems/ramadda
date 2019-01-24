@@ -5203,20 +5203,29 @@ function RamaddaMultiChart(displayManager, id, properties) {
                 this.maxDate =v;
                 this.displayData();
             },
+            trendLineEnabled: function() {
+                var chartType = this.getProperty(PROP_CHART_TYPE,DISPLAY_LINECHART);
+                if(chartType == DISPLAY_LINECHART || chartType == DISPLAY_AREACHART || chartType == DISPLAY_BARCHART ) {
+                    return true;
+                }
+                return false;
+            },
            getDialogContents: function(tabTitles, tabContents) {
                 var height = "600";
                 var html  =  HtmlUtil.div([ATTR_ID,  this.getDomId(ID_FIELDS),"style","overflow-y: auto;    max-height:" + height +"px;"]," FIELDS ");
 
-                html += HtmlUtil.div([ATTR_CLASS,"display-dialog-subheader"],  "Other");
-
-                html += HtmlUtil.checkbox(this.getDomId(ID_TRENDS_CBX),
-                                          [],
-                                          this.showTrendLines) +"  "  + "Show trend line";
-                html += " ";
-                html += HtmlUtil.checkbox(this.getDomId(ID_PERCENT_CBX),
-                                          [],
-                                          this.showPercent) +"  "  + "Show percent of displayed total" + "<br>";
-                html +=  "<br>";
+                if(this.trendLineEnabled()) {
+                    html += HtmlUtil.div([ATTR_CLASS,"display-dialog-subheader"],  "Other");
+                
+                    html += HtmlUtil.checkbox(this.getDomId(ID_TRENDS_CBX),
+                                              [],
+                                              this.showTrendLines) +"  "  + "Show trend line";
+                    html += " ";
+                    html += HtmlUtil.checkbox(this.getDomId(ID_PERCENT_CBX),
+                                              [],
+                                              this.showPercent) +"  "  + "Show percent of displayed total" + "<br>";
+                    html +=  "<br>";
+                }
 
                 tabTitles.push("Fields"); 
                 tabContents.push(html);
@@ -5610,21 +5619,25 @@ function RamaddaMultiChart(displayManager, id, properties) {
                 //alert("new:" + tooltip);
             },
             filterDate: function(dataList, fields) {
-                var fieldName = this.getProperty("filterField");
+                var patternFieldId = this.getProperty("patternFilterField");
+                var numericFieldId = this.getProperty("numericFilterField");
                 var pattern = this.getProperty("filterPattern");
-                var filterSValue = this.getProperty("filterValue");
-                var filterOperator = this.getProperty("filterOperator");
-                
-                
-                if(fieldName  && (pattern || (filterSValue && filterOperator))) {
-                    var field = null;
+                var filterSValue = this.getProperty("numericFilterValue");
+                var filterOperator = this.getProperty("numericFilterOperator","<");
+               
+                if((numericFieldId || patternFieldId)  && (pattern || (filterSValue && filterOperator))) {
+                    var patternField = null;
+                    var numericField = null;
                     for(var i=0;i<fields.length;i++) {
-                        if(fields[i].getId() == fieldName || fieldName == "#"+(i+1)) {
-                            field = fields[i];
-                            break;
+                        if(fields[i].getId() == patternFieldId || patternFieldId == "#"+(i+1)) {
+                            patternField = fields[i];
                         }
+                        if(fields[i].getId() == numericFieldId || numericFieldId == "#"+(i+1)) {
+                            numericField = fields[i];
+                        }
+                        if(patternField && numericField) break;
                     }
-                    if(field) {
+                    if(patternField || numericField) {
                         var list = [];
                         var filterValue;
                         if(filterSValue) {
@@ -5636,10 +5649,10 @@ function RamaddaMultiChart(displayManager, id, properties) {
                                 list.push(row);
                                 continue;
                             }
-                            var value = row[field.getIndex()];
-                            if(filterSValue && filterOperator) {
+                            var ok = false;
+                            if(numericField && filterSValue && filterOperator) {
+                                var value = parseFloat(row[numericField.getIndex()]);
                                 var filterValue = parseFloat(filterSValue);
-                                var ok = false;
                                 if(filterOperator == "<") {
                                     ok  = value<filterValue;
                                 } else  if(filterOperator == "<=") {
@@ -5651,12 +5664,14 @@ function RamaddaMultiChart(displayManager, id, properties) {
                                 } else  if(filterOperator == ">=") {
                                     ok  = value>=filterValue;
                                 }
-                                if(ok) 
-                                    list.push(row);
-                                continue;
+                                if(!ok) 
+                                    continue;
                             }
-                            var value = ""+row[field.getIndex()];
-                            if(value.match(pattern)) {
+                            if(patternField && pattern) {
+                                var value = ""+row[patternField.getIndex()];
+                                ok = value.match(pattern);
+                            }
+                            if(ok) {
                                 list.push(row);
                             }
                         }
@@ -5972,6 +5987,7 @@ function RamaddaMultiChart(displayManager, id, properties) {
                         }
                     }
                 }
+
                 if(chartType == DISPLAY_LINECHART || chartType == DISPLAY_AREACHART || chartType == DISPLAY_BARCHART ||
                    chartType == DISPLAY_BARSTACK ) {
                     chartOptions.height = this.getProperty("chartHeight",this.getProperty("height","150"));

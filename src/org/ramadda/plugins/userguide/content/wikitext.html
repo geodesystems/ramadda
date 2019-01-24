@@ -61,6 +61,7 @@ See the <a href=" http://en.wikipedia.org/wiki/Help:Wiki_markup">Wikipedia page 
 <subhead intoc="false" id="display">Layout and Display Markup</subhead>
 There are a number of helper layout tags that make it easy to do page layout and display.
 
+<p>
 <b>Sections</b><br>
 
 To get the full page layout like on <a href="http://ramadda.org/repository">ramadda.org</a> use the "+section" tag:
@@ -123,6 +124,25 @@ You can also add a CSS style descriptor
 </pre>
 
 
+<p>
+<b>Tabs</b><br>
+You can create a set of tabs with:
+<pre>
++tabs
++tab Tab 1 title
+Tab 1 content
+-tab
++tab Tab 2 title
+Tab 2 content
+-tab
+...
++tab Tab N title
+Tab N content
+-tab
+-tabs
+</pre>
+
+
 <b>Titles and headings</b><br>
 There are a number of block display elements - 
 title, heading, blurb, note, and block that can be used as:
@@ -151,10 +171,9 @@ Examples at <a href="https://geodesystems.com/repository/alias/wikiexamples">htt
 
 
 
+<p>
+<b>Inset</b><br>
 
-
-
-<b>Inset</b>
 By default, a page has no margins on the left-side. If you have normal text layout you can make an inset with "+inset":
 <pre>
 +inset
@@ -173,14 +192,15 @@ This by default gives a 20px left and right margin. To change this you can add a
 
 
 <a name="layout"></a>
-
-
+<p>
 <b>Grid Layout</b><br>
 There is support for the <a href="http://getbootstrap.com/">Bootstrap</a> CSS grid system. To do a row layout use the following. The "+col-md-..." correspond to Bootstraps column widths, e.g., col-md-\[2,3,4,6,8,9,10,12\].
 Basically you can have any number of columns within a row.
 Each column has a width, the sum of which adds up to 12.
+Note: you can also use +col-&lt;some number&gt; as a short hand, dropping the %quot;-md&quot;
 
-Three equally spaced columns:
+<p>
+Here is three equally spaced columns:
 
 <pre>+row
 +col-md-4 
@@ -195,7 +215,7 @@ Right column contents
 -row
 </pre>
 
-Results in: 
+Which results in: 
 
 <div class="row">
 <div class="col-md-4" style="border: 1px #000 solid;">
@@ -210,7 +230,7 @@ Right column contents
 </div>
 
 
-
+<p>
 You can set the widths of different columns:
 <pre>
 +row
@@ -223,7 +243,7 @@ Right column contents
 -row
 </pre>
 
-Results in:
+Which results in:
 
 <div class="row">
 <div class="col-md-2"  style="border: 1px #000 solid;">
@@ -294,6 +314,8 @@ This would give us:
 [ht::cimg images/wikiinformation.png {} {border=0}]
 
 
+<a name="entry"></a>
+<p><b>entry attribute</b><br>
 Normally, all property tags refer to the current entry. However, you can specify another entry:
 [wiki::text [wiki::tag information {entry="some other entry id or name or 'parent' or 'grandparent'"}]]
 
@@ -1007,6 +1029,7 @@ and use that.
 
 
 
+<p>
 <a name="snippet"></a>
 <b>Snippet</b><br>
 A number of the layouts below (e.g,, table layout) will include a snippet of descriptive text from the entry that is being displayed. The snippet text is defined in the description of the entry with:

@@ -621,6 +621,7 @@ proc gen::addSubHead {from content} {
             foreach id [split $id ,] {
                 append body "<a name=\"$id\"></a>"
             }
+            append body "<p>"
             append body "<div class=\"ramadda-page-heading\">$levelLabel.$cnt $label</div> "
             incr cnt
             if {$intoc != "false"} {set intoc 1} else {set intoc 0}
