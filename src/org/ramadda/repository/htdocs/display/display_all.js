@@ -4863,6 +4863,7 @@ var DISPLAY_BARCHART = "barchart";
 var DISPLAY_BARTABLE = "bartable";
 var DISPLAY_BARSTACK = "barstack";
 var DISPLAY_PIECHART = "piechart";
+var DISPLAY_SANKEY = "sankey";
 var DISPLAY_CALENDAR = "calendar";
 var DISPLAY_SCATTERPLOT = "scatterplot";
 var DISPLAY_HISTOGRAM = "histogram";
@@ -4884,7 +4885,7 @@ google.charts.setOnLoadCallback(googleChartsHaveLoaded);
 function haveGoogleChartsLoaded () {
     if(!googleChartsLoaded) {
         if (typeof google.visualization !== "undefined") { 
-            if (typeof google.visualization.BarChart !== "undefined") { 
+            if (typeof google.visualization.Gauge !== "undefined") { 
                 googleChartsLoaded = true;
             }
         }
@@ -4903,6 +4904,7 @@ addGlobalDisplayType({type:DISPLAY_HISTOGRAM,label: "Histogram",requiresData:tru
 addGlobalDisplayType({type:DISPLAY_BUBBLE,label: "Bubble Chart",requiresData:true,forUser:true,category:CHARTS_CATEGORY});
 addGlobalDisplayType({type:DISPLAY_GAUGE,label: "Gauge",requiresData:true,forUser:true,category:CHARTS_CATEGORY});
 addGlobalDisplayType({type:DISPLAY_PIECHART,label: "Pie Chart",requiresData:true,forUser:true,category:CHARTS_CATEGORY});
+addGlobalDisplayType({type:DISPLAY_SANKEY,label: "Sankey Chart",requiresData:true,forUser:true,category:CHARTS_CATEGORY});
 
 addGlobalDisplayType({type:DISPLAY_CALENDAR,label: "Calendar Chart",requiresData:true,forUser:true,category:"Misc"});
 addGlobalDisplayType({type:DISPLAY_STATS , label: "Stats Table",requiresData:false,forUser:true,category:"Misc"});
@@ -5135,7 +5137,7 @@ function RamaddaMultiChart(displayManager, id, properties) {
                 if(!isNaN(this.vAxisMaxValue)) {
                     max = "" +this.vAxisMaxValue;
                 }
-               var tmp = HtmlUtil.formTable();
+                var tmp = HtmlUtil.formTable();
                 tmp += HtmlUtil.formEntry("Axis Range:", HtmlUtil.input("", min, ["size","7",ATTR_ID,  this.getDomId("vaxismin")]) + " - " +
                                           HtmlUtil.input("", max, ["size","7",ATTR_ID,  this.getDomId("vaxismax")]));
                 tmp += HtmlUtil.formEntry("Date Range:", HtmlUtil.input("", this.minDate, ["size","10",ATTR_ID,  this.getDomId("mindate")]) + " - " +
@@ -5152,7 +5154,7 @@ function RamaddaMultiChart(displayManager, id, properties) {
                 return this.getProperty(PROP_CHART_TYPE,DISPLAY_LINECHART);
             },
             defaultSelectedToAll: function() {
-                if(this.chartType == DISPLAY_TABLE) {
+                if(this.chartType == DISPLAY_TABLE || this.chartType == DISPLAY_SANKEY) {
                     return true;
                 }
                 return SUPER.defaultSelectedToAll.call(this);
@@ -5245,7 +5247,7 @@ function RamaddaMultiChart(displayManager, id, properties) {
             },
             getFieldsToSelect: function(pointData) {
                 var chartType = this.getProperty(PROP_CHART_TYPE,DISPLAY_LINECHART);
-                if(this.chartType == DISPLAY_TABLE || this.chartType == DISPLAY_BARTABLE || this.chartType == DISPLAY_BUBBLE) {
+                if(this.chartType == DISPLAY_TABLE || this.chartType == DISPLAY_BARTABLE || this.chartType == DISPLAY_BUBBLE || this.chartType == DISPLAY_SANKEY) {
                     //                    return pointData.getRecordFields();
                     return pointData.getNonGeoFields();
                 } 
@@ -5326,7 +5328,7 @@ function RamaddaMultiChart(displayManager, id, properties) {
                 var props = {
                     includeIndex: true,
                 };
-                if(this.chartType == DISPLAY_TABLE || this.chartType == DISPLAY_BARTABLE || chartType == DISPLAY_PIECHART || chartType == DISPLAY_SCATTERPLOT || chartType == DISPLAY_HISTOGRAM|| chartType == DISPLAY_BUBBLE|| chartType == DISPLAY_GAUGE)  {
+                if(this.chartType == DISPLAY_TABLE || this.chartType == DISPLAY_BARTABLE || chartType == DISPLAY_PIECHART || chartType == DISPLAY_SCATTERPLOT || chartType == DISPLAY_HISTOGRAM|| chartType == DISPLAY_BUBBLE|| chartType == DISPLAY_GAUGE || chartType==DISPLAY_SANKEY)  {
                     props.includeIndex = false;
                 }
                 props.groupByIndex = -1;
@@ -5607,8 +5609,66 @@ function RamaddaMultiChart(displayManager, id, properties) {
             tableHeaderMouseover: function(i,tooltip) {
                 //alert("new:" + tooltip);
             },
+            filterDate: function(dataList, fields) {
+                var fieldName = this.getProperty("filterField");
+                var pattern = this.getProperty("filterPattern");
+                var filterSValue = this.getProperty("filterValue");
+                var filterOperator = this.getProperty("filterOperator");
+                
+                
+                if(fieldName  && (pattern || (filterSValue && filterOperator))) {
+                    var field = null;
+                    for(var i=0;i<fields.length;i++) {
+                        if(fields[i].getId() == fieldName || fieldName == "#"+(i+1)) {
+                            field = fields[i];
+                            break;
+                        }
+                    }
+                    if(field) {
+                        var list = [];
+                        var filterValue;
+                        if(filterSValue) {
+                            filterValue = parseFloat(filterSValue);
+                        }
+                        for(var i=0;i<dataList.length;i++) {
+                            var row = dataList[i];
+                            if(i==0) {
+                                list.push(row);
+                                continue;
+                            }
+                            var value = row[field.getIndex()];
+                            if(filterSValue && filterOperator) {
+                                var filterValue = parseFloat(filterSValue);
+                                var ok = false;
+                                if(filterOperator == "<") {
+                                    ok  = value<filterValue;
+                                } else  if(filterOperator == "<=") {
+                                    ok  = value<=filterValue;
+                                } else  if(filterOperator == "==") {
+                                    ok  = value==filterValue;
+                                } else  if(filterOperator == ">") {
+                                    ok  = value>filterValue;
+                                } else  if(filterOperator == ">=") {
+                                    ok  = value>=filterValue;
+                                }
+                                if(ok) 
+                                    list.push(row);
+                                continue;
+                            }
+                            var value = ""+row[field.getIndex()];
+                            if(value.match(pattern)) {
+                                list.push(row);
+                            }
+                        }
+                        dataList = list;
+                    }
+                }
+                return dataList;
+            },
             makeDataTable:function(chartType,dataList,props,selectedFields) {
-                if(dataList.length==1 || this.chartType == DISPLAY_TABLE) {
+                dataList = this.filterDate(dataList, selectedFields);
+
+                if(dataList.length==1 || this.chartType == DISPLAY_TABLE || this.chartType == DISPLAY_SANKEY) {
                     return  google.visualization.arrayToDataTable(dataList);
                 }
                 if(this.chartType == DISPLAY_GAUGE) {
@@ -5868,7 +5928,8 @@ function RamaddaMultiChart(displayManager, id, properties) {
                 var width = "90%";
                 var left = "10%";
                 useMultipleAxes = this.getProperty("useMultipleAxes",true);
-                if(selectedFields.length>1 && useMultipleAxes) {
+
+                if((selectedFields.length>1 && useMultipleAxes) || this.getProperty("padRight",false)===true) {
                     width = "80%";
                 }
                 var chartId = this.getDomId(ID_CHART);
@@ -5894,6 +5955,23 @@ function RamaddaMultiChart(displayManager, id, properties) {
                 this.setContents(HtmlUtil.div(divAttrs,""));
 
 
+                if(chartType == DISPLAY_SANKEY) {
+                    chartOptions.height = parseInt(this.getProperty("chartHeight",this.getProperty("height","400")));
+                    chartOptions.sankey =  {
+                        node: {
+                            colors: this.colors,
+                            width:5,
+                        },
+                        link: {
+                            colorMode: 'source',
+                            colors: this.colors,
+                            color: {
+                                //                                stroke:'black',
+                                //strokeWidth:1,
+                            }
+                        }
+                    }
+                }
                 if(chartType == DISPLAY_LINECHART || chartType == DISPLAY_AREACHART || chartType == DISPLAY_BARCHART ||
                    chartType == DISPLAY_BARSTACK ) {
                     chartOptions.height = this.getProperty("chartHeight",this.getProperty("height","150"));
@@ -5989,7 +6067,8 @@ function RamaddaMultiChart(displayManager, id, properties) {
                     }
                     chartOptions.orientation =  "horizontal";
                     this.chart = new google.visualization.BarChart(document.getElementById(chartId));
-
+                } else if(chartType == DISPLAY_SANKEY) {
+                    this.chart = new google.visualization.Sankey(document.getElementById(chartId));
                 } else  if(chartType == DISPLAY_SCATTERPLOT) {
                     var height  = 400;
                     if(Utils.isDefined(this.chartHeight)) {
@@ -6259,6 +6338,12 @@ function BarstackDisplay(displayManager, id, properties) {
 
 function PiechartDisplay(displayManager, id, properties) {
     properties = $.extend({"chartType": DISPLAY_PIECHART}, properties);
+    RamaddaUtil.inherit(this, new RamaddaMultiChart(displayManager, id, properties));
+    addRamaddaDisplay(this);
+}
+
+function SankeyDisplay(displayManager, id, properties) {
+    properties = $.extend({"chartType": DISPLAY_SANKEY}, properties);
     RamaddaUtil.inherit(this, new RamaddaMultiChart(displayManager, id, properties));
     addRamaddaDisplay(this);
 }
@@ -8857,6 +8942,18 @@ function RamaddaEntrygridDisplay(displayManager, id, properties) {
     var ID_CANVAS = "canvas";
     var ID_TOP = "top";
     var ID_RIGHT = "right";
+
+    var ID_SETTINGS = "gridsettings";
+    var ID_YAXIS_ASCENDING = "yAxisAscending";
+    var ID_YAXIS_SCALE = "scaleHeight";
+    var ID_XAXIS_ASCENDING = "xAxisAscending";
+    var ID_XAXIS_TYPE = "xAxisType";
+    var ID_YAXIS_TYPE = "yAxisType";
+    var ID_XAXIS_SCALE = "scaleWidth";
+    var ID_SHOW_ICON = "showIcon";
+    var ID_SHOW_NAME = "showName";
+    var ID_COLOR = "boxColor";
+
     RamaddaUtil.inherit(this, SUPER = new RamaddaEntryDisplay(displayManager, id, DISPLAY_ENTRY_GRID, properties));
     addRamaddaDisplay(this);
     RamaddaUtil.defineMembers(this, {
@@ -8886,7 +8983,8 @@ function RamaddaEntrygridDisplay(displayManager, id, properties) {
                         _this.canvas = $("#" + _this.getDomId(ID_CANVAS));
                         _this.gridPopup = $("#" + _this.getDomId(ID_GRID) + " .display-grid-popup");
                         var debugMouse = false;
-                        var bottomAxis = _this.jq(ID_AXIS_BOTTOM);
+                        var xAxis = _this.jq(ID_AXIS_BOTTOM);
+                        var yAxis = _this.jq(ID_AXIS_LEFT);
                         var mousedown = function(evt) {
                             if(debugMouse)
                                 console.log("mouse down");
@@ -8894,8 +8992,15 @@ function RamaddaEntrygridDisplay(displayManager, id, properties) {
                             _this.drag = {
                                 dragging:false,
                                 x: GuiUtils.getEventX(evt),
-                                minDate:_this.minDate,
-                                maxDate:_this.maxDate,
+                                y: GuiUtils.getEventY(evt),
+                                X: {
+                                    minDate:_this.axis.X.minDate?_this.axis.X.minDate:_this.minDate,
+                                    maxDate:_this.axis.X.maxDate?_this.axis.X.maxDate:_this.maxDate,
+                                },
+                                Y: {
+                                    minDate:_this.axis.Y.minDate?_this.axis.Y.minDate:_this.minDate,
+                                    maxDate:_this.axis.Y.maxDate?_this.axis.Y.maxDate:_this.maxDate,
+                                }
                             }
                         }
                         var mouseleave = function(evt) {
@@ -8916,22 +9021,36 @@ function RamaddaEntrygridDisplay(displayManager, id, properties) {
                                 _this.drag = null;
                             }
                             }
-                        var mousemove = function(evt) {
+                        var mousemove = function(evt,doX,doY) {
                             if(debugMouse)
                                 console.log("mouse move");
                             var drag = _this.drag;
                             if(!drag) return;
                             drag.dragging = true;
                             var x = GuiUtils.getEventX(evt);
-                            var delta = drag.x-x;
+                            var deltaX = drag.x-x;
+                            var y = GuiUtils.getEventY(evt);
+                            var deltaY = drag.y-y;
                             var width = $(this).width();
-                            var percent = (x-drag.x)/width;
-                            var diff = (drag.maxDate.getTime()-drag.minDate.getTime())*percent;
-                            _this.minDate = new Date(drag.minDate.getTime()-diff);
-                            _this.maxDate = new Date(drag.maxDate.getTime()-diff);
+                            var height = $(this).height();
+                            var percentX = (x-drag.x)/width;
+                            var percentY = (y-drag.y)/height;
+                            var ascX = _this.getXAxisAscending();
+                            var ascY = _this.getXAxisAscending();
+                            var diffX = (drag.X.maxDate.getTime()-drag.X.minDate.getTime())*percentX;
+                            var diffY = (drag.Y.maxDate.getTime()-drag.Y.minDate.getTime())*percentY;
+
+                            if(doX) {
+                                _this.axis.X.minDate = new Date(drag.X.minDate.getTime()+((ascX?-1:1)*diffX));
+                                _this.axis.X.maxDate = new Date(drag.X.maxDate.getTime()+((ascX?-1:1)*diffX));
+                            }
+                            if(doY) {
+                                _this.axis.Y.minDate = new Date(drag.Y.minDate.getTime()+((ascY?1:-1)*diffY));
+                                _this.axis.Y.maxDate = new Date(drag.Y.maxDate.getTime()+((ascY?1:-1)*diffY));
+                            }
                             _this.makeGrid(_this.entries);
                         }
-                        var mouseclick = function(evt) {
+                        var mouseclick = function(evt, doX,doY) {
                             if(_this.handledClick) {
                                 if(debugMouse)
                                     console.log("mouse click-other click");
@@ -8957,19 +9076,47 @@ function RamaddaEntrygridDisplay(displayManager, id, properties) {
                                 else
                                     action="zoomin";
                             }
-                            _this.doZoom(action);
+                            _this.doZoom(action,doX,doY);
                         };
+
+                        var mousemoveCanvas = function(evt) {
+                            mousemove(evt,true,true);
+                        }
+                        var mousemoveX = function(evt) {
+                            mousemove(evt,true,false);
+                        }
+                        var mousemoveY = function(evt) {
+                            mousemove(evt,false,true);
+                        }
+
+                        var mouseclickCanvas = function(evt) {
+                            mouseclick(evt,true,true);
+                        }
+                        var mouseclickX = function(evt) {
+                            mouseclick(evt,true,false);
+                        }
+                        var mouseclickY = function(evt) {
+                            mouseclick(evt,false,true);
+                        }
+
 
                         _this.canvas.mousedown(mousedown);
                         _this.canvas.mouseleave(mouseleave);
                         _this.canvas.mouseup(mouseup);
-                        _this.canvas.mousemove(mousemove);
-                        _this.canvas.click(mouseclick);
-                        bottomAxis.mousedown(mousedown);
-                        bottomAxis.mouseleave(mouseleave);
-                        bottomAxis.mouseup(mouseup);
-                        bottomAxis.mousemove(mousemove);
-                        bottomAxis.click(mouseclick);
+                        _this.canvas.mousemove(mousemoveCanvas);
+                        _this.canvas.click(mouseclickCanvas);
+
+                        xAxis.mousedown(mousedown);
+                        xAxis.mouseleave(mouseleave);
+                        xAxis.mouseup(mouseup);
+                        xAxis.mousemove(mousemoveX);
+                        xAxis.click(mouseclickX);
+
+                        yAxis.mousedown(mousedown);
+                        yAxis.mouseleave(mouseleave);
+                        yAxis.mouseup(mouseup);
+                        yAxis.mousemove(mousemoveY);
+                        yAxis.click(mouseclickY);
 
                         var links = 
                         HtmlUtil.image(icon_zoom,["class","display-grid-action","title","reset zoom","action","reset"]) +
@@ -8989,18 +9136,97 @@ function RamaddaEntrygridDisplay(displayManager, id, properties) {
                 };
                 var entryList = new EntryList(this.getRamadda(), jsonUrl, myCallback, true);
             },
-            doZoom: function(action) {
+           initDialog: function() {
+                SUPER.initDialog.call(this);
+                var _this = this;
+                var cbx= this.jq(ID_SETTINGS +" :checkbox");
+                console.log(cbx.size());
+                cbx.click(function() {
+                        _this.setProperty($(this).attr("attr"),$(this).is(':checked'));
+                        _this.makeGrid(_this.entries);
+                    });
+                var input= this.jq(ID_SETTINGS +" :input");
+                input.blur(function() {
+                        _this.setProperty($(this).attr("attr"),$(this).val());
+                        _this.makeGrid(_this.entries);
+                    });
+                input.keypress(function(event){
+                        var keycode = (event.keyCode ? event.keyCode : event.which);
+                        if(keycode == 13){
+                            _this.setProperty($(this).attr("attr"),$(this).val());
+                            _this.makeGrid(_this.entries);
+                        }});
+
+            },
+           getDialogContents: function(tabTitles, tabContents) {
+                var height = "600";
+                var html  =  "";
+                html += HtmlUtil.openTag("div", ["id", this.getDomId(ID_SETTINGS)]);
+
+                html += HtmlUtil.formTable();
+                html+=HtmlUtil.formEntry("",
+                                         HtmlUtil.checkbox(this.getDomId(ID_SHOW_ICON),
+                                                           ["attr",ID_SHOW_ICON],
+                                                           this.getProperty(ID_SHOW_ICON,"true")) +" Show Icon"+
+                                         "&nbsp;&nbsp;" +
+                                         HtmlUtil.checkbox(this.getDomId(ID_SHOW_NAME),
+                                                           ["attr",ID_SHOW_NAME],
+                                                           this.getProperty(ID_SHOW_NAME,"true")) +" Show Name");
+                html += HtmlUtil.formEntry("X-Axis:",
+                                         HtmlUtil.checkbox(this.getDomId(ID_XAXIS_ASCENDING),
+                                                           ["attr",ID_XAXIS_ASCENDING],
+                                                           this.getXAxisAscending()) +" Ascending" +
+                                         "&nbsp;&nbsp;" +
+                                         HtmlUtil.checkbox(this.getDomId(ID_XAXIS_SCALE),
+                                                           ["attr",ID_XAXIS_SCALE],
+                                                           this.getXAxisScale()) +" Scale Width");
+                html+=HtmlUtil.formEntry("Y-Axis:",
+                                         HtmlUtil.checkbox(this.getDomId(ID_YAXIS_ASCENDING),
+                                                           ["attr",ID_YAXIS_ASCENDING],
+                                                           this.getYAxisAscending()) +" Ascending" +
+                                         "&nbsp;&nbsp;" +
+                                         HtmlUtil.checkbox(this.getDomId(ID_YAXIS_SCALE),
+                                                           ["attr",ID_YAXIS_SCALE],
+                                                           this.getYAxisScale()) +" Scale Height");
+
+                html+=HtmlUtil.formEntry("Box Color:",
+                                         HtmlUtil.input(this.getDomId(ID_COLOR),
+                                                        this.getProperty(ID_COLOR,"lightblue"),
+                                                        ["attr",ID_COLOR]));
+                                       
+                html += HtmlUtil.formTableClose();
+                html += HtmlUtil.closeTag("div");
+                tabTitles.push("Entry Grid"); 
+                tabContents.push(html);
+                SUPER.getDialogContents.call(this,tabTitles, tabContents);
+            },
+
+            doZoom: function(action, doX, doY) {
+                if(!Utils.isDefined(doX)) doX = true;
+                if(!Utils.isDefined(doY)) doY = true;
                 if(action=="reset") {
-                    this.minDate = null;
-                    this.maxDate = null;
+                    this.axis.Y.minDate = null;
+                    this.axis.Y.maxDate = null;
+                    this.axis.X.minDate = null;
+                    this.axis.X.maxDate = null;
                 } else {
                     var zoomOut = (action=="zoomout");
-                    var d1 = this.minDate.getTime();
-                    var d2 = this.maxDate.getTime();
-                    var dateRange =  d2- d1;
-                    var diff = (zoomOut?1:-1)*dateRange*0.1;
-                    this.minDate = new Date(d1-diff);
-                    this.maxDate = new Date(d2+diff);
+                    if(doX) {
+                        var d1 = this.axis.X.minDate.getTime();
+                        var d2 = this.axis.X.maxDate.getTime();
+                        var dateRange =  d2- d1;
+                        var diff = (zoomOut?1:-1)*dateRange*0.1;
+                        this.axis.X.minDate = new Date(d1-diff);
+                        this.axis.X.maxDate = new Date(d2+diff);
+                    }
+                    if(doY) {
+                        var d1 = this.axis.Y.minDate.getTime();
+                        var d2 = this.axis.Y.maxDate.getTime();
+                        var dateRange =  d2- d1;
+                        var diff = (zoomOut?1:-1)*dateRange*0.1;
+                        this.axis.Y.minDate = new Date(d1-diff);
+                        this.axis.Y.maxDate = new Date(d2+diff);
+                    }
                 }
                 this.makeGrid(this.entries);
             },
@@ -9021,9 +9247,30 @@ function RamaddaEntrygridDisplay(displayManager, id, properties) {
                         //                        evt.stopPropagation();
                     });
                 items.mouseout(function(){
+                        var id = $(this).attr("entryid");
+                        if(id) {
+                            var other = _this.canvas.find("[entryid='"+ id+"']");
+                            other.each(function() {
+                                    if($(this).attr("itemtype") == "box") {
+                                        $(this).attr("prevcolor",$(this).css("background"));
+                                        $(this).css("background",$(this).attr("prevcolor"));
+                                    }
+                                });
+                        }
+
                         _this.gridPopup.hide();
                     });
                 items.mouseover(function(evt){
+                        var id = $(this).attr("entryid");
+                        if(id) {
+                            var other = _this.canvas.find("[entryid='"+ id+"']");
+                            other.each(function() {
+                                    if($(this).attr("itemtype") == "box") {
+                                        $(this).attr("prevcolor",$(this).css("background"));
+                                        $(this).css("background","rgba(0,0,255,0.5)");
+                                    }
+                                });
+                        }
                         var x = GuiUtils.getEventX(evt);
                         var index = parseInt($(this).attr("index"));
                         entry = entries[index];
@@ -9086,11 +9333,29 @@ function RamaddaEntrygridDisplay(displayManager, id, properties) {
             },
 
 
+            getXAxisType: function() {
+                return this.getProperty(ID_XAXIS_TYPE,"date");
+            },
+            getYAxisType: function() {
+                return this.getProperty(ID_YAXIS_TYPE,"month");
+            },
+            getXAxisAscending: function() {
+                return this.getProperty(ID_XAXIS_ASCENDING,true);
+            },
+            getYAxisAscending: function() {
+                return this.getProperty(ID_YAXIS_ASCENDING,true);
+            },
+            getXAxisScale: function() {
+                return this.getProperty(ID_XAXIS_SCALE,true);
+            },
+            getYAxisScale: function() {
+                return this.getProperty(ID_YAXIS_SCALE,false);
+            },
+
+
             makeGrid:function (entries) {
-                var scaleWidth = this.getProperty("scaleWidth",true);
-                var scaleHeight = this.getProperty("scaleHeight",false);
-                var showIcon = this.getProperty("showIcon",false);
-                var showName = this.getProperty("showName",false);
+                var showIcon = this.getProperty(ID_SHOW_ICON,true);
+                var showName = this.getProperty(ID_SHOW_NAME,true);
 
                 if(!this.minDate) {
                     var minDate= null;
@@ -9107,114 +9372,157 @@ function RamaddaEntrygridDisplay(displayManager, id, properties) {
                 var axis = {
                     width: this.canvas.width(),
                     height: this.canvas.height(),
-                    v: {
-                        axisType:"months",
-                        ascending: true,
+                    Y: {
+                        vertical:true,
+                        axisType:this.getYAxisType(),
+                        ascending: this.getYAxisAscending(),
+                        scale: this.getYAxisScale(),
                         skip:1,
+                        maxTicks:Math.ceil(this.canvas.height()/80),                        
+                        minDate:this.minDate,
+                        maxDate:this.maxDate,
                         ticks:[],
                         lines:"",
                         html:"",
                         minDate:this.minDate,
                         maxDate:this.maxDate,
                     },
-                    h: {
-                        axisType:"date",
-                        ascending: true,
+                    X: {
+                        vertical:false,
+                        axisType:this.getXAxisType(),
+                        ascending: this.getXAxisAscending(),
+                        scale: this.getXAxisScale(),
                         skip:1,
-                        ticks:[],
-                        lines:"",
-                        maxTicks:Math.ceil(this.canvas.width()/80),
+                        maxTicks:Math.ceil(this.canvas.width()/80),                        
                         minDate:this.minDate,
                         maxDate:this.maxDate,
+                        ticks:[],
+                        lines:"",
                         html:""
                     }
                 }
-
-                if(axis.v.axisType == "size") {
-                    this.calculateSizeAxis(axis.v);
+                if(!this.axis) {
+                    this.axis  = axis;
                 } else {
-                    this.calculateMonthAxis(axis.v);
+                    if(this.axis.X.minDate) {
+                        axis.X.minDate = this.axis.X.minDate;
+                        axis.X.maxDate = this.axis.X.maxDate;
+                    } else {
+                        this.axis.X.minDate = axis.X.minDate;
+                        this.axis.X.maxDate = axis.X.maxDate;
+                    }
+                    if(this.axis.Y.minDate) {
+                        axis.Y.minDate = this.axis.Y.minDate;
+                        axis.Y.maxDate = this.axis.Y.maxDate;
+                    } else {
+                        this.axis.Y.minDate = axis.Y.minDate;
+                        this.axis.Y.maxDate = axis.Y.maxDate;
+                    }
                 }
-                for(var i=0;i<axis.v.ticks.length;i++) {
-                    var tick = axis.v.ticks[i];
-                    var style = "bottom:" + tick.percent +"%;";
+ 
+                if(axis.Y.axisType == "size") {
+                    this.calculateSizeAxis(axis.Y);
+                } else if(axis.Y.axisType == "date") {
+                    this.calculateDateAxis(axis.Y);
+                } else {
+                    this.calculateMonthAxis(axis.Y);
+                }
+                for(var i=0;i<axis.Y.ticks.length;i++) {
+                    var tick = axis.Y.ticks[i];
+                    var style = (axis.Y.ascending?"bottom:":"top:") + tick.percent +"%;";
+                    var style = "bottom:"+ tick.percent +"%;";
                     var lineClass =tick.major?"display-grid-hline-major":"display-grid-hline";
-                    axis.v.lines+=HtmlUtil.div(["style",style,"class",lineClass]," ");
-                    axis.v.html+=HtmlUtil.div(["style",style,"class","display-grid-axis-left-tick"],tick.label+" " + HtmlUtil.div(["class","display-grid-htick"],""));
+                    axis.Y.lines+=HtmlUtil.div(["style",style,"class",lineClass]," ");
+                    axis.Y.html+=HtmlUtil.div(["style",style,"class","display-grid-axis-left-tick"],tick.label+" " + HtmlUtil.div(["class","display-grid-htick"],""));
                 }
 
-                this.calculateDateAxis(axis.h);
-                for(var i=0;i<axis.h.ticks.length;i++) {
-                    var tick = axis.h.ticks[i];
+                if(axis.X.axisType == "size") {
+                    this.calculateSizeAxis(axis.X);
+                } else if(axis.X.axisType == "date") {
+                    this.calculateDateAxis(axis.X);
+                } else {
+                    this.calculateMonthAxis(axis.X);
+                }
+                for(var i=0;i<axis.X.ticks.length;i++) {
+                    var tick = axis.X.ticks[i];
                     if(tick.percent>0)  {
                         var lineClass =tick.major?"display-grid-vline-major":"display-grid-vline";
-                        axis.h.lines+=HtmlUtil.div(["style","left:" + tick.percent+"%;", "class",lineClass]," ");
+                        axis.X.lines+=HtmlUtil.div(["style","left:" + tick.percent+"%;", "class",lineClass]," ");
                     }
-                    axis.h.html+=HtmlUtil.div(["style","left:" + tick.percent+"%;","class","display-grid-axis-bottom-tick"], HtmlUtil.div(["class","display-grid-vtick"],"")+" " + tick.label);
+                    axis.X.html+=HtmlUtil.div(["style","left:" + tick.percent+"%;","class","display-grid-axis-bottom-tick"], HtmlUtil.div(["class","display-grid-vtick"],"")+" " + tick.label);
                 }
 
                 var items = "";
                 var seen = {};
                 for(var i=0;i<entries.length;i++) {
                     var entry = entries[i];
-                    var y = this[axis.v.calculatePercent].call(this,entry,axis.v);
-                    var x = this[axis.h.calculatePercent].call(this,entry,axis.h);
-                    if(scaleHeight) {
-                        var tmp = y.p1;
-                        y.p1=y.p2;
-                        y.p2=tmp;
+                    var vInfo = this[axis.Y.calculatePercent].call(this,entry,axis.Y);
+                    var xInfo = this[axis.X.calculatePercent].call(this,entry,axis.X);
+                    if(vInfo.p1<0) {
+                        vInfo.p2 = vInfo.p2+vInfo.p1;
+                        vInfo.p1=0;
                     }
-                    if((x.p1+x.delta<0) || x.p1>=100)
-                        continue;
-                    var clipLeft = false;
-                    console.log("x:" + x.p1 +" " + x.p2 + " " + x.delta);
-                    if(x.p1<0) {
-                        clipLeft =true;
-                        x.delta = x.delta+x.p1;
-                        x.p1=0;
-                    }
-                    if(x.p1+x.delta>100) {
-                        x.delta=100-x.p1;
+                    if(vInfo.p1+vInfo.p2>100) {
+                        vInfo.p2=100-vInfo.p1;
                     }
 
-                    if(y.p1<0) {
-                        y.p2 = y.p2+y.p1;
-                        y.p1=0;
+                    var style = "";
+                    var pos = "";
+
+                    if(axis.X.ascending) {
+                        style += "left:"+  xInfo.p1 + "%;";
+                        pos += "left:"+  xInfo.p1 + "%;";
+                    } else {
+                        style += "right:"+  xInfo.p1 + "%;";
+                        pos += "left:"+  (100-xInfo.p2) + "%;";
                     }
-                    if(y.p1+y.p2>100) {
-                        y.p2=100-y.p1;
+                    
+                    if(axis.X.scale) {
+                        if(xInfo.delta>1) {
+                            style+="width:" + xInfo.delta+"%;";
+                        } else {
+                            style+="width:" + this.getProperty("fixedWidth","5") +"px;";
+                        }
                     }
 
-                    var key = "left:"+  Math.round(x.p1) + "%;" +" top:" + Math.round(y.p1)+"%;";
-                    var pos = "left:"+  x.p1 + "%;" +" top:" + y.p1+"%;";
-                    var style = pos;
-                    if(scaleWidth) {
-                        if(x.delta>1) {
-                            style+="width:" + x.delta+"%;";
+
+                    var namePos = pos;
+                    if(axis.Y.ascending) {
+                        style+=" bottom:" + vInfo.p2+"%;";
+                        pos +=" bottom:" + vInfo.p2+"%;";
+                        namePos +=" bottom:" + vInfo.p2+"%;";
+                    } else {
+                        style+=" top:" + vInfo.p2+"%;";
+                        pos+=" top:" + vInfo.p2+"%;";
+                        namePos+=" top:" + vInfo.p2+"%;";
+                        namePos+="margin-top:-15px;"
+                    }
+                    if(axis.Y.scale) {
+                        if(vInfo.p2>1) {
+                            style+="height:" + vInfo.delta+"%;";
                         } else {
-                            style+="width:5px";
+                            style+="height:" + this.getProperty("fixedHeight","5")+"px;";
                         }
                     }
-                    if(scaleHeight) {
-                        if(y2>1) {
-                            style+="height:" + y2+"%;";
-                        } else {
-                            style+="height:5px";
-                        }
+
+                    if(entry.getName().includes("rilsd")) {
+                        console.log("pos:" + namePos);
                     }
-                    if(showIcon && !clipLeft) {
-                        items += HtmlUtil.div(["class","display-grid-entry-icon display-grid-entry", "index",i, "style", pos],entry.getIconImage());
+                    if(showIcon) {
+                        items += HtmlUtil.div(["class","display-grid-entry-icon display-grid-entry", "entryid",entry.getId(),"index",i, "style", pos],entry.getIconImage());
                     }
-                    if(showName && !clipLeft && !seen[key]) {
+                    var key = Math.round(xInfo.p1) + "---" + Math.round(vInfo.p1);
+                    if(showName && !seen[key]) {
                         seen[key] = true;
                         var name = entry.getName().replace(/ /g,"&nbsp;");
-                        items += HtmlUtil.div(["class","display-grid-entry-text display-grid-entry", "index",i,"style", pos],name);
+                        items += HtmlUtil.div(["class","display-grid-entry-text display-grid-entry", "entryid",entry.getId(),"index",i,"style", namePos],name);
                     }
-                    items+= HtmlUtil.div(["class","display-grid-entry-box display-grid-entry","style", style,"index",i],"");
+                    var boxStyle = style+"background:" + this.getProperty(ID_COLOR,"lightblue");
+                    items+= HtmlUtil.div(["class","display-grid-entry-box display-grid-entry","itemtype","box", "entryid",entry.getId(), "style", boxStyle,"index",i],"");
                 }
-                this.jq(ID_AXIS_LEFT).html(axis.v.html);
-                this.jq(ID_CANVAS).html(axis.v.lines+axis.h.lines+items);
-                this.jq(ID_AXIS_BOTTOM).html(axis.h.html);
+                this.jq(ID_AXIS_LEFT).html(axis.Y.html);
+                this.jq(ID_CANVAS).html(axis.Y.lines+axis.X.lines+items);
+                this.jq(ID_AXIS_BOTTOM).html(axis.X.html);
                 this.initGrid(entries);
             },
             calculateSizeAxis:function(axisInfo) {
@@ -9226,29 +9534,36 @@ function RamaddaEntrygridDisplay(displayManager, id, properties) {
                     max = Math.max(max, entry.getSize());
                 }
             },
-             calculateDatePercent:function(entry, axisInfo) {
+            checkOrder:function(axisInfo,percents) {
+                /*
+                if(!axisInfo.ascending) {
+                    percents.p1 = 100-percents.p1;
+                    percents.p2 = 100-percents.p2;
+                    var tmp  =percents.p1;
+                    percents.p1=percents.p2;
+                    percents.p2=tmp;
+                }
+                */
+                return {p1:percents.p1,p2:percents.p2,delta:Math.abs(percents.p2-percents.p1)};
+            },
+            calculateDatePercent:function(entry, axisInfo) {
                 var p1 = 100*(entry.getStartDate().getTime()-axisInfo.min)/axisInfo.range;
                 var p2 = 100*(entry.getEndDate().getTime()-axisInfo.min)/axisInfo.range;
-                if(!axisInfo.ascending) {
-                    var tmp  =p1;
-                    p1=p2;
-                    p2=tmp;
-                }
-                return {p1:p1,p2:p2,delta:Math.abs(p2-p1)};
+                return this.checkOrder(axisInfo, {p1:p1,p2:p2,delta:Math.abs(p2-p1)});
             },
             calculateMonthPercent:function(entry, axisInfo) {
                 var d1 = entry.getStartDate();
                 var d2 = entry.getEndDate();
                 var t1 = new Date(Date.UTC(1,d1.getUTCMonth(),d1.getUTCDate()));
                 var t2 = new Date(Date.UTC(1,d2.getUTCMonth(),d2.getUTCDate()));
-                var p1 = 100*((axisInfo.max-t1.getTime())/axisInfo.range);
-                var p2 = 100*((axisInfo.max-t2.getTime())/axisInfo.range);
-                if(!axisInfo.ascending) {
-                    var tmp  =p1;
-                    p1=p2;
-                    p2=tmp;
+                var p1 = 100*((t1.getTime()-axisInfo.min)/axisInfo.range);
+                var p2 = 100*((t2.getTime()-axisInfo.min)/axisInfo.range);
+                if(entry.getName().includes("rilsd")) {
+                    console.log("t1:" + t1);
+                    console.log("t2:" + t2);
+                    console.log("before:" + p1 +" " + p2);
                 }
-                return {p1:p1,p2:p2,delta:Math.abs(p2-p1)};
+                return this.checkOrder(axisInfo, {p1:p1,p2:p2,delta:Math.abs(p2-p1)});
             },
              calculateMonthAxis:function(axisInfo) {
                 axisInfo.calculatePercent = "calculateMonthPercent";
@@ -9261,8 +9576,8 @@ function RamaddaEntrygridDisplay(displayManager, id, properties) {
                 for(var month=0;month<months.length;month++) {
                     var t1 = new Date(Date.UTC(1,month));
                     var percent = (axisInfo.maxDate.getTime()-t1.getTime())/axisInfo.range;
-                    if(!axisInfo.ascending)
-                        percent = (1-percent);
+                    if(axisInfo.ascending)
+                        percent = 1-percent;
                     axisInfo.ticks.push({percent:100*percent,label:months[month],major:false});
                 }
             },
@@ -9308,7 +9623,8 @@ function RamaddaEntrygridDisplay(displayManager, id, properties) {
                 } else {
                     tickDate  = new Date(Date.UTC(axisInfo.minDate.getUTCFullYear(),axisInfo.minDate.getUTCMonth(),axisInfo.minDate.getUTCDate()));
                 }
-                //                console.log(axisInfo.type+" skip:" + axisInfo.skip + "   min:" + Utils.formatDateYYYYMMDD(axisInfo.minDate)+"   max:" + Utils.formatDateYYYYMMDD(axisInfo.maxDate));
+                //                if(axisInfo.vertical)
+                //                    console.log(axisInfo.type+" skip:" + axisInfo.skip + "   min:" + Utils.formatDateYYYYMMDD(axisInfo.minDate)+"   max:" + Utils.formatDateYYYYMMDD(axisInfo.maxDate));
                 while(tickDate.getTime()<axisInfo.maxDate.getTime()) {
                     var percent = (tickDate.getTime()-axisInfo.minDate.getTime())/axisInfo.range;
                     if(!axisInfo.ascending)
