@@ -2799,8 +2799,9 @@ foreach {var dflt} [list  UrlRoot {} DoClean 0 Verbose 0 DoChildOverview 1 DoFin
 
 
 
+
 if {[file exists lib.tcl]} {
-#    puts "sourcing local lib.tcl"
+#    puts "*** sourcing local lib.tcl"
     source lib.tcl
 }
 

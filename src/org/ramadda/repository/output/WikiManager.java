@@ -321,6 +321,13 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                                               ATTR_SHOWMENU, "true", 
                                               ATTR_SHOWTITLE, "true")),
                             new WikiTag(WIKI_TAG_DISPLAY,
+                                        "Sankey",
+                                        attrs(ATTR_TYPE, "sankey", 
+                                              "#fields", "",
+                                              ATTR_LAYOUTHERE, "true", 
+                                              ATTR_SHOWMENU, "true", 
+                                              ATTR_SHOWTITLE, "true")),
+                            new WikiTag(WIKI_TAG_DISPLAY,
                                         "Table",
                                         attrs(ATTR_TYPE, "table", ATTR_HEIGHT, "400", "#fields", "",
                                               ATTR_LAYOUTHERE, "true", 
@@ -5542,6 +5549,10 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
             this.tag   = tag;
             this.label = label;
             this.attrs = attrs;
+            if(tag.equals(WIKI_TAG_DISPLAY)) {
+                System.out.println("<li> " + label);
+                System.out.println("[wiki::tagdef display {type=\"" + tag+"\" " + attrs+"}]");
+            }
         }
 
     }
