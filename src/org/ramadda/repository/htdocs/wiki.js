@@ -4,6 +4,7 @@
 
 
 function insertText(id,value) {
+    hidePopupObject();
     var editor = HtmlUtil.getAceEditor(id);
     var textComp = GuiUtils.getDomObject(id);
     if(textComp || editor) {
@@ -45,6 +46,7 @@ function insertAtCursor(id, myField, value) {
 }
 
 function insertTags(id, tagOpen, tagClose, sampleText) {
+    hidePopupObject();
     var textComp = GuiUtils.getDomObject(id);
     var editor = HtmlUtil.getAceEditor(id);
     if(textComp || editor) {
