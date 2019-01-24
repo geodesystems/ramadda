@@ -198,7 +198,8 @@ Examples at <a href="https://geodesystems.com/repository/alias/wikiexamples">htt
 
 
 <p>
-<b>Inset</b>
+<b>Inset</b><br>
+
 By default, a page has no margins on the left-side. If you have normal text layout you can make an inset with "+inset":
 <pre>
 +inset
@@ -271,15 +272,13 @@ Right column contents
 Which results in:
 
 <div class="row">
-<div class="col-md-2"  style="border: 1px #000 solid;">
+<div class="col-md-2"  style="border: 1px #ccc solid;">
 Left column contents
 </div>
-<div class="col-md-10"  style="border: 1px #000 solid;">
+<div class="col-md-10"  style="border: 1px #ccc solid;">
 Right column contents
 </div>
-
-
-
+</div>
 
 
 <a name="links"></a><p><div class="ramadda-page-heading">11.1.3 Linking to other entries</div> 
@@ -326,7 +325,7 @@ create entry form.
 <a name="properties"></a><p><div class="ramadda-page-heading">11.1.4 Wiki Properties</div> 
 You can also import content from the current Wiki Page entry or any other entry with the import  
 syntax:
-<blockquote><pre>{{property}}</pre></blockquote>
+<blockquote><pre>{{&lt;property&gt;}}</pre></blockquote>
 
 e.g., if we wanted to show the information tabs for an entry we'd do:
 <blockquote><pre>{{information}}</pre></blockquote>
@@ -339,6 +338,8 @@ This would give us:
 <div class="cimg"><a href="images/wikiinformation.png"><img  src="images/wikiinformation.png" border=0 alt="images/wikiinformation.png" ></a></div>
 
 
+<a name="entry"></a>
+<p><b>entry attribute</b><br>
 Normally, all property tags refer to the current entry. However, you can specify another entry:
 <blockquote><pre>{{information <i>entry="some other entry id or name or 'parent' or 'grandparent'"</i>}}</pre></blockquote>
 
