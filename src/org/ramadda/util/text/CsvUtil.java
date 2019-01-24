@@ -83,6 +83,7 @@ public class CsvUtil {
     /** _more_ */
     private boolean okToRun = true;
 
+    /** _more_ */
     private boolean verbose = false;
 
     /**
@@ -283,8 +284,9 @@ public class CsvUtil {
 
                 return;
             }
-            if(arg.equals("-verbose")) {
+            if (arg.equals("-verbose")) {
                 verbose = true;
+
                 continue;
             }
 
@@ -620,8 +622,8 @@ public class CsvUtil {
             if (line == null) {
                 break;
             }
-            if(verbose)  {
-                if(((++cnt)%1000) == 0) {
+            if (verbose) {
+                if (((++cnt) % 1000) == 0) {
                     System.err.println("processed:" + cnt);
                 }
             }
@@ -782,10 +784,12 @@ public class CsvUtil {
         "-cut <one or more rows. -1 to the end>",
         "-include <start row> <end row (-1 for end)>",
         "-pattern <col #> <regexp pattern> (extract rows that match the pattern)",
+        "-notpattern <col #> <regexp pattern> (extract rows that don't match the pattern)",
         "<column>=~<value> (same as -pattern)",
         "<-gt|-ge|-lt|-le> <col #> <value> (extract rows that pass the expression)",
         "-decimate <# of start rows to include> <skip factor>   (only include every <skip factor> row)",
-        "-copy <col #> <name>", "-delete <col #> (remove the columns)",
+        "-countvalue <col #> <count>", "-copy <col #> <name>",
+        "-delete <col #> (remove the columns)",
         "-insert <col #> <value> (insert a new column value)",
         "-scale <col #> <delta1> <scale> <delta2> (set value={value+delta1}*scale+delta2)",
         "-insert <col #> <comma separated values> ",
@@ -954,8 +958,9 @@ public class CsvUtil {
             if (arg.equals("-decimate")) {
                 int start = Integer.parseInt(args.get(++i));
                 int skip  = Integer.parseInt(args.get(++i));
-                if(skip>0) {
-                    info.getFilter().addFilter(new Filter.Decimate(start, skip));
+                if (skip > 0) {
+                    info.getFilter().addFilter(new Filter.Decimate(start,
+                            skip));
                 }
 
                 continue;
@@ -1495,6 +1500,24 @@ public class CsvUtil {
                 String pattern = args.get(++i);
                 handlePattern(info, filterToAddTo,
                               new Filter.PatternFilter(col, pattern));
+
+                continue;
+            }
+
+            if (arg.equals("-notpattern")) {
+                String col     = args.get(++i);
+                String pattern = args.get(++i);
+                handlePattern(info, filterToAddTo,
+                              new Filter.PatternFilter(col, pattern, true));
+
+                continue;
+            }
+
+            if (arg.equals("-countvalue")) {
+                String col = args.get(++i);
+                int    cnt = Integer.parseInt(args.get(++i));
+                handlePattern(info, filterToAddTo,
+                              new Filter.CountValue(col, cnt));
 
                 continue;
             }

@@ -383,6 +383,68 @@ public class Filter extends Converter {
 
     }
 
+
+    /**
+     * Class description
+     *
+     *
+     * @version        $version$, Wed, Jan 23, '19
+     * @author         Enter your name here...
+     */
+    public static class CountValue extends ColumnFilter {
+
+        /** _more_ */
+        int count;
+
+        /** _more_ */
+        Hashtable<Object, Integer> map = new Hashtable<Object, Integer>();
+
+        /**
+         * _more_
+         *
+         * @param col _more_
+         * @param pattern _more_
+         * @param negate _more_
+         * @param count _more_
+         */
+        public CountValue(String col, int count) {
+            super(col);
+            this.count = count;
+        }
+
+
+        /**
+         * _more_
+         *
+         *
+         * @param info _more_
+         * @param row _more_
+         *
+         * @return _more_
+         */
+        @Override
+        public boolean rowOk(TextReader info, Row row) {
+            if (cnt++ == 0) {
+                return true;
+            }
+            int     idx   = getIndex(info);
+            String  v     = row.getString(idx);
+            Integer count = map.get(v);
+            if (count == null) {
+                count = new Integer(0);
+                map.put(v, count);
+            }
+            if (count.intValue() >= this.count) {
+                return false;
+            }
+            System.err.println(v + " cnt:" + count);
+            map.put(v, new Integer(count.intValue() + 1));
+
+            return true;
+        }
+
+    }
+
     /**
      * Class description
      *
