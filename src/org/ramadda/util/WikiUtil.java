@@ -524,17 +524,19 @@ public class WikiUtil {
             matcher = pattern.matcher(s);
         }
 
+        boolean       closeTheTag = false;
 
 
+        int           ulCnt       = 0;
+        int           olCnt       = 0;
+        StringBuffer  buff        = new StringBuffer();
 
+        String        tabId       = null;
+        StringBuilder tabTitles   = new StringBuilder();
+        StringBuilder tabContents = new StringBuilder();
+        boolean       inTabs      = false;
+        int           tabCnt      = 0;
 
-
-        boolean      closeTheTag = false;
-
-
-        int          ulCnt       = 0;
-        int          olCnt       = 0;
-        StringBuffer buff        = new StringBuffer();
         for (String line :
                 (List<String>) StringUtil.split(s, "\n", false, false)) {
             String tline = line.trim();
@@ -543,6 +545,61 @@ public class WikiUtil {
 
                 continue;
             }
+            if (tline.equals("+tabs")) {
+                inTabs      = true;
+                tabCnt      = 0;
+                tabId       = HtmlUtils.getUniqueId("tabs");
+                tabTitles   = new StringBuilder();
+                tabContents = new StringBuilder();
+                HtmlUtils.open(tabTitles, HtmlUtils.TAG_DIV, "id", tabId,
+                               "class", "ui-tabs");
+                HtmlUtils.open(tabTitles, HtmlUtils.TAG_UL);
+
+                continue;
+            }
+
+            if (tline.startsWith("+tab")) {
+                List<String> toks  = StringUtil.splitUpTo(tline, " ", 2);
+                String       title = (toks.size() > 1)
+                                     ? toks.get(1)
+                                     : "";
+                tabCnt++;
+                tabTitles.append("<li><a href=\"#" + tabId + "-" + (tabCnt)
+                                 + "\">" + title + "</a></li>\n");
+                tabContents.append(HtmlUtils.open("div",
+                        HtmlUtils.id(tabId + "-" + (tabCnt))
+                        + HtmlUtils.cssClass("ui-tabs-hide")));
+
+                continue;
+            }
+            if (inTabs) {
+                if (tline.equals("-tabs")) {
+                    tabTitles.append("</ul>");
+                    buff.append(tabTitles);
+                    buff.append(wikifyInner(tabContents.toString(), handler,
+                                            notTags));
+                    inTabs = false;
+                    String args = "activate: HtmlUtil.tabLoaded";
+                    buff.append(
+                        HtmlUtils.script(
+                            "\njQuery(function(){\njQuery('#" + tabId
+                            + "').tabs({" + args + "})});\n\n"));
+
+                    continue;
+                }
+
+
+                if (tline.equals("-tab")) {
+                    tabContents.append(HtmlUtils.close("div"));
+
+                    continue;
+                }
+                tabContents.append(tline);
+                tabContents.append("\n");
+
+                continue;
+            }
+
             if (tline.equals("-row")) {
                 buff.append("</div>");
 
