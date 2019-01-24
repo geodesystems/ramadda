@@ -318,7 +318,9 @@ public class ServiceOutputHandler extends OutputHandler {
 
         if ( !request.defined(ARG_EXECUTE)) {
             StringBuffer sb = new StringBuffer();
+            getPageHandler().entrySectionOpen(request, entry, sb, "");
             makeForm(request, service, entry, entries, outputType, sb);
+            getPageHandler().entrySectionClose(request, entry, sb);
 
             return new Result(outputType.getLabel(), sb);
         }
@@ -338,7 +340,8 @@ public class ServiceOutputHandler extends OutputHandler {
      */
     public boolean doExecute(Request request) {
         return request.defined(ARG_EXECUTE)
-               || request.defined(ARG_SHOWCOMMAND);
+               || ( !request.isAnonymous()
+                    && request.defined(ARG_SHOWCOMMAND));
     }
 
 
@@ -386,12 +389,13 @@ public class ServiceOutputHandler extends OutputHandler {
         final List<ServiceInput> serviceInputs =
             new ArrayList<ServiceInput>();
 
-
         boolean       asynchronous = request.get(ARG_ASYNCH, false);
         boolean       toXml        = request.get(ARG_TOXML, false);
         final boolean forDisplay   = (toXml
                                       ? true
-                                      : request.get(ARG_SHOWCOMMAND, false));
+                                      : ( !request.isAnonymous()
+                                          && request.get(ARG_SHOWCOMMAND,
+                                              false)));
         final boolean doingPublish = doingPublish(request);
 
         if (service.requiresMultipleEntries()) {
@@ -472,6 +476,7 @@ public class ServiceOutputHandler extends OutputHandler {
                     "");
         }
 
+
         StringBuffer        sb            = new StringBuffer();
         List<Entry>         outputEntries = new ArrayList<Entry>();
         List<ServiceOutput> outputs       = new ArrayList<ServiceOutput>();
@@ -481,12 +486,15 @@ public class ServiceOutputHandler extends OutputHandler {
             outputs.add(output);
 
             if ( !output.isOk()) {
+                getPageHandler().entrySectionOpen(request, baseEntry, sb, "");
                 sb.append(
                     getPageHandler().showDialogError(
                         "An error has occurred:<pre>" + output.getResults()
                         + "</pre>"));
                 makeForm(request, service, baseEntry, entries, requestUrl,
                          outputType, sb, extraForm);
+
+                getPageHandler().entrySectionClose(request, baseEntry, sb);
 
                 return new Result(actionName, sb);
             }
@@ -513,6 +521,8 @@ public class ServiceOutputHandler extends OutputHandler {
 
         if (forDisplay) {
             StringBuffer commands = new StringBuffer();
+            getPageHandler().entrySectionOpen(request, baseEntry, commands,
+                    "");
             commands.append("<div class=service-output>");
             commands.append("<pre>");
             commands.append(sb);
@@ -520,6 +530,7 @@ public class ServiceOutputHandler extends OutputHandler {
             commands.append("</div>");
             makeForm(request, service, baseEntry, entries, requestUrl,
                      outputType, commands, extraForm);
+            getPageHandler().entrySectionClose(request, baseEntry, commands);
 
             return new Result(actionName, commands);
         }
@@ -567,7 +578,7 @@ public class ServiceOutputHandler extends OutputHandler {
             sb.append(HtmlUtils.hr());
         }
         Appendable results = new StringBuilder();
-
+        getPageHandler().entrySectionOpen(request, baseEntry, results, "");
         makeForm(request, service, baseEntry, entries, requestUrl,
                  outputType, results, extraForm);
         if (sb.length() > 0) {
@@ -582,6 +593,7 @@ public class ServiceOutputHandler extends OutputHandler {
             results.append(sb);
             results.append(HtmlUtils.close(HtmlUtils.TAG_DIV));
         }
+        getPageHandler().entrySectionClose(request, baseEntry, results);
 
         return new Result(actionName, results);
 
@@ -719,8 +731,11 @@ public class ServiceOutputHandler extends OutputHandler {
                 "Go to products page"));
         extraSubmit.add(HtmlUtils.labeledCheckbox(ARG_WRITEWORKFLOW, "true",
                 request.get(ARG_WRITEWORKFLOW, false), "Write workflow"));
-        extraSubmit.add(HtmlUtils.labeledCheckbox(ARG_SHOWCOMMAND, "true",
-                request.get(ARG_SHOWCOMMAND, false), "Show command"));
+        if ( !request.isAnonymous()) {
+            extraSubmit.add(HtmlUtils.labeledCheckbox(ARG_SHOWCOMMAND,
+                    "true", request.get(ARG_SHOWCOMMAND, false),
+                    "Show command"));
+        }
         extraSubmit.add(HtmlUtils.labeledCheckbox(ARG_TOXML, "true",
                 request.get(ARG_TOXML, false), msg("Export full XML")));
         if (haveAnyOutputs) {
@@ -818,6 +833,7 @@ public class ServiceOutputHandler extends OutputHandler {
         if (desc == null) {
             desc = "";
         }
+        desc = "<wiki>\n+section title={{name}}\n" + desc + "\n-section\n";
         xml.append(
             XmlUtil.tag(
                 "entry",
