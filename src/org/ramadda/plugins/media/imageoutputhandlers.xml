@@ -93,6 +93,7 @@
 
 
 
+<!--
   <outputhandler>
    <service id="imagemagick_convert_test" label="Test Convert Image" command="${service.imagemagick}/convert">
        <service link="imagemagick_convert"><param name="newtype">png</param><param name="resize">50</param></service>
@@ -101,5 +102,5 @@
     </service>
   </outputhandler>
 
-
+-->
 </outputhandlers>
