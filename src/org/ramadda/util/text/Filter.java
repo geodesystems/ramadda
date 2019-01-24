@@ -437,7 +437,6 @@ public class Filter extends Converter {
             if (count.intValue() >= this.count) {
                 return false;
             }
-            System.err.println(v + " cnt:" + count);
             map.put(v, new Integer(count.intValue() + 1));
 
             return true;
