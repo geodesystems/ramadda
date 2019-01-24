@@ -5166,18 +5166,16 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
             sb.append(HtmlUtils.div("", HtmlUtils.id(mainDivId)));
             sb.append("\n");
 
-            js.append("var displayManager = getOrCreateDisplayManager("
+            request.putExtraProperty("added group", "true");
+            js.append("\nvar displayManager = getOrCreateDisplayManager("
                       + HtmlUtils.quote(mainDivId) + ","
                       + Json.map(topProps, false) + ",true);\n");
             sb.append(HtmlUtils.script(js.toString()));
-
             return;
         }
 
 
-        boolean needToCreateGroup = request.getExtraProperty("added group")
-                                    == null;
-        request.putExtraProperty("added group", "true");
+
 
         String fields = Utils.getProperty(props, "fields", (String) null);
         if (fields != null) {
@@ -5267,10 +5265,16 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
         HtmlUtils.commentJS(
             js,
             "This gets the global display manager or creates it if not created");
-        Utils.concatBuff(js,
-                         "var displayManager = getOrCreateDisplayManager(",
-                         HtmlUtils.quote(mainDivId), ",",
-                         Json.map(topProps, false), ");\n");
+
+        boolean needToCreateGroup = request.getExtraProperty("added group")
+                                    == null;
+        if(needToCreateGroup) {
+            request.putExtraProperty("added group", "true");
+            Utils.concatBuff(js,
+                             "\nvar displayManager = getOrCreateDisplayManager(",
+                             HtmlUtils.quote(mainDivId), ",",
+                             Json.map(topProps, false), ");\n");
+        }
         Utils.add(propList, "entryId", HtmlUtils.quote(entry.getId()));
         if ((url != null) && Utils.getProperty(props, "includeData", true)) {
             Utils.add(propList, "data",
@@ -5395,7 +5399,6 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                 sb, getHtdocsUrl("/lib/jquery.handsontable.full.min.css"));
 
             //Put this here after the google load
-            HtmlUtils.importJS(sb, getHtdocsUrl("/db/dom-drag.js"));
             HtmlUtils.importJS(sb, getHtdocsUrl("/db/dom-drag.js"));
             if (getRepository().getMinifiedOk()) {
                 HtmlUtils.importJS(

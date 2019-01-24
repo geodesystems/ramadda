@@ -532,8 +532,13 @@ public class WikiUtil {
         StringBuffer  buff        = new StringBuffer();
 
         String        tabId       = null;
-        StringBuilder tabTitles   = new StringBuilder();
-        StringBuilder tabContents = new StringBuilder();
+
+        List<StringBuilder> tabTitles = null;
+        List<String> tabIds = null;
+        StringBuilder tabTitle= null;
+
+
+
         boolean       inTabs      = false;
         int           tabCnt      = 0;
 
@@ -542,62 +547,59 @@ public class WikiUtil {
             String tline = line.trim();
             if (tline.equals("+row")) {
                 buff.append("<div class=\"row\">");
-
                 continue;
             }
             if (tline.equals("+tabs")) {
+                if(tabTitles == null) {
+                    tabTitles = new ArrayList<StringBuilder>();
+                    tabIds = new ArrayList<String>();
+                }
                 inTabs      = true;
                 tabCnt      = 0;
+                tabTitle=new StringBuilder();
                 tabId       = HtmlUtils.getUniqueId("tabs");
-                tabTitles   = new StringBuilder();
-                tabContents = new StringBuilder();
-                HtmlUtils.open(tabTitles, HtmlUtils.TAG_DIV, "id", tabId,
-                               "class", "ui-tabs");
-                HtmlUtils.open(tabTitles, HtmlUtils.TAG_UL);
+                tabIds.add(tabId);
+                tabTitles.add(tabTitle);
 
+                buff.append(HtmlUtils.open(tabTitle, HtmlUtils.TAG_DIV, "id", tabId,
+                                               "class", "ui-tabs"));
+                HtmlUtils.open(tabTitle, HtmlUtils.TAG_UL);
+                buff.append("${" + tabId+"}");
                 continue;
             }
-
             if (tline.startsWith("+tab")) {
+                if(tabTitle == null) {
+                    buff.append("No +tabs tag");
+                    continue;
+                }
                 List<String> toks  = StringUtil.splitUpTo(tline, " ", 2);
                 String       title = (toks.size() > 1)
                                      ? toks.get(1)
                                      : "";
                 tabCnt++;
-                tabTitles.append("<li><a href=\"#" + tabId + "-" + (tabCnt)
+                tabTitle.append("<li><a href=\"#" + tabId + "-" + (tabCnt)
                                  + "\">" + title + "</a></li>\n");
-                tabContents.append(HtmlUtils.open("div",
+                buff.append(HtmlUtils.open("div",
                         HtmlUtils.id(tabId + "-" + (tabCnt))
                         + HtmlUtils.cssClass("ui-tabs-hide")));
-
                 continue;
             }
             if (inTabs) {
                 if (tline.equals("-tabs")) {
-                    tabTitles.append("</ul>");
-                    buff.append(tabTitles);
-                    buff.append(wikifyInner(tabContents.toString(), handler,
-                                            notTags));
+                    tabTitle.append("</ul>");
+                    tabTitle = null;
                     inTabs = false;
-                    String args = "activate: HtmlUtil.tabLoaded";
-                    buff.append(
-                        HtmlUtils.script(
-                            "\njQuery(function(){\njQuery('#" + tabId
-                            + "').tabs({" + args + "})});\n\n"));
-
                     continue;
                 }
-
 
                 if (tline.equals("-tab")) {
-                    tabContents.append(HtmlUtils.close("div"));
-
+                    buff.append(HtmlUtils.close("div"));
+                    buff.append(
+                                HtmlUtils.script(
+                                                 "\njQuery(function(){\njQuery('#" + tabId
+                                                 + "').tabs({activate: HtmlUtil.tabLoaded})});\n\n"));
                     continue;
                 }
-                tabContents.append(tline);
-                tabContents.append("\n");
-
-                continue;
             }
 
             if (tline.equals("-row")) {
@@ -658,39 +660,12 @@ public class WikiUtil {
                 buff.append(HtmlUtils.open("div",
                                            HtmlUtils.cssClass("inset")
                                            + extra));
-
                 continue;
             }
             if (tline.equals("-inset")) {
                 buff.append("</div>");
-
                 continue;
             }
-
-
-            /*
-
-            if (tline.startsWith(":heading-small")) {
-                List<String> toks = StringUtil.splitUpTo(tline, " ", 2);
-                if (toks.size() > 1) {
-                    buff.append(HtmlUtils.div(toks.get(1),
-                            HtmlUtils.cssClass("ramadda-page-heading-small")));
-                }
-
-                continue;
-            }
-
-            if (tline.startsWith(":heading")) {
-                List<String> toks = StringUtil.splitUpTo(tline, " ", 2);
-                if (toks.size() > 1) {
-                    buff.append(HtmlUtils.div(toks.get(1),
-                            HtmlUtils.cssClass("ramadda-page-heading")));
-                }
-
-                continue;
-            }
-            */
-
 
 
             if (tline.startsWith("+info-sec")
@@ -747,24 +722,20 @@ public class WikiUtil {
                     buff.append(HtmlUtils.div(getTitle(title),
                             HtmlUtils.cssClass("ramadda-page-title")));
                 }
-
                 continue;
             }
             if (tline.startsWith("-info-sec")
                     || tline.startsWith("-section")) {
                 buff.append("</div>");
-
                 continue;
             }
 
             if (tline.equals("+info-text")) {
                 buff.append("<div class=\"info-text\">");
-
                 continue;
             }
             if (tline.equals("-info-text")) {
                 buff.append("</div>");
-
                 continue;
             }
 
@@ -799,11 +770,8 @@ public class WikiUtil {
                     closeTheTag = false;
                 }
                 buff.append("</div>");
-
                 continue;
             }
-
-
 
             if (tline.startsWith(":heading") || tline.startsWith(":block")
                     || tline.startsWith(":note") || tline.startsWith(":box")
@@ -982,7 +950,6 @@ public class WikiUtil {
                 buff.append("<li> ");
                 buff.append(tline);
                 buff.append("\n");
-
                 continue;
             }
 
@@ -994,20 +961,24 @@ public class WikiUtil {
             buff.append(line);
             buff.append("\n");
         }
+
         while (ulCnt > 0) {
             buff.append("</ul>\n");
             ulCnt--;
         }
-
         while (olCnt > 0) {
             buff.append("</ol>\n");
             olCnt--;
         }
-
         s = buff.toString();
 
+        if(tabIds!=null) {
+            for(int i=0;i<tabIds.size();i++) {
+                s=  s.replace("${" + tabIds.get(i)+"}", tabTitles.get(i).toString());
+            }
+        }
 
-        //        System.err.println("S:" + s.trim()+"\n***********************");
+
         StringBuffer sb      = new StringBuffer();
         int          baseIdx = 0;
         while (true) {
