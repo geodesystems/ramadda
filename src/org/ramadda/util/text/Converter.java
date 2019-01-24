@@ -160,11 +160,11 @@ public abstract class Converter extends Processor {
      *
      *
      * @version        $version$, Fri, Jan 11, '19
-     * @author         Enter your name here...    
+     * @author         Enter your name here...
      */
     public static class ColumnWidth extends Converter {
 
-        /** _more_          */
+        /** _more_ */
         int size;
 
         /**
@@ -310,6 +310,100 @@ public abstract class Converter extends Processor {
             }
 
             return row;
+        }
+
+    }
+
+    /**
+     * Class description
+     *
+     *
+     * @version        $version$, Thu, Jan 24, '19
+     * @author         Enter your name here...
+     */
+    public static class PrintHeader extends Converter {
+
+        /** _more_ */
+        private boolean asPoint = false;
+
+        /**
+         * _more_
+         *
+         */
+        public PrintHeader() {}
+
+        /**
+         * _more_
+         *
+         * @param asPoint _more_
+         */
+        public PrintHeader(boolean asPoint) {
+            this.asPoint = asPoint;
+        }
+
+
+        /**
+         * _more_
+         *
+         *
+         * @param info _more_
+         * @param row _more_
+         * @param line _more_
+         *
+         * @return _more_
+         */
+        @Override
+        public Row processRow(TextReader info, Row row, String line) {
+            PrintWriter writer    = info.getWriter();
+            String      delimiter = info.getDelimiter();
+            if (delimiter == null) {
+                delimiter = ",";
+            }
+            if (asPoint) {
+                writer.println("skiplines=1");
+                writer.print("fields=");
+            }
+            for (int i = 0; i < row.size(); i++) {
+                String col = ((String) row.get(i).toString()).trim();
+                col = col.replaceAll("\n", " ");
+                if (asPoint) {
+                    if (i > 0) {
+                        writer.print(", ");
+                    }
+                    String label =
+                        Utils.makeLabel(col.replaceAll("\\([^\\)]+\\)", ""));
+                    String unit = StringUtil.findPattern(col,
+                                      ".*?\\(([^\\)]+)\\).*");
+                    StringBuffer attrs = new StringBuffer();
+                    attrs.append("label=\"" + label + "\" ");
+                    if (unit != null) {
+                        attrs.append("unit=\"" + unit + "\" ");
+
+                    }
+                    String id = label.replaceAll(
+                                    "\\([^\\)]+\\)", "").replaceAll(
+                                    "-", "_").trim().toLowerCase().replaceAll(
+                                    " ", "_").replaceAll(":", "_");
+                    id = id.replaceAll("/+", "_");
+                    id = id.replaceAll("\\.", "_");
+                    id = id.replaceAll("_+_", "_");
+                    id = id.replaceAll("_+$", "");
+                    id = id.replaceAll("^_+", "");
+                    if (id.indexOf("date") >= 0) {
+                        attrs.append("type=\"date\" format=\"\" ");
+                    }
+                    writer.print(id + "[" + attrs + "] ");
+                } else {
+                    writer.println("#" + i + " " + col);
+                }
+            }
+            if (asPoint) {
+                writer.println("");
+            }
+            writer.flush();
+            writer.close();
+
+            return null;
         }
 
     }

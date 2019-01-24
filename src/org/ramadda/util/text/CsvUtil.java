@@ -19,6 +19,8 @@ package org.ramadda.util.text;
 
 import org.ramadda.util.Utils;
 
+import org.ramadda.util.XlsUtil;
+
 import ucar.unidata.util.IOUtil;
 import ucar.unidata.util.Misc;
 import ucar.unidata.util.StringUtil;
@@ -271,50 +273,34 @@ public class CsvUtil {
             String arg = args.get(i);
             if (arg.equals("-help")) {
                 usage("", null, false);
-
                 return;
             }
             if (arg.equals("-helpraw")) {
                 usage("", null, true);
-
                 return;
             }
             if (arg.startsWith("-help:")) {
                 usage("", arg.substring("-help:".length()), false);
-
                 return;
             }
             if (arg.equals("-verbose")) {
                 verbose = true;
-
                 continue;
             }
 
             if (arg.equals("-cat")) {
                 doConcat = true;
-
                 continue;
             }
-            if (arg.equals("-header")) {
-                doHeader = true;
 
-                continue;
-            }
             if (arg.equals("-raw")) {
                 doRaw = true;
-
                 continue;
             }
-            if (arg.equals("-pointheader")) {
-                doHeader = true;
-                doPoint  = true;
 
-                continue;
-            }
             if (arg.startsWith("-iter")) {
                 iterateColumn = args.get(++i);
                 iterateValues = StringUtil.split(args.get(++i), ",");
-
                 continue;
             }
             extra.add(arg);
@@ -355,8 +341,7 @@ public class CsvUtil {
                             closeIS = false;
                             is      = System.in;
                         } else {
-                            is = new BufferedInputStream(
-                                new FileInputStream(file));
+                            is = getInputStream(file);
                         }
                     }
                     process(textReader.cloneMe(is, file, outputFile,
@@ -437,6 +422,26 @@ public class CsvUtil {
     /**
      * _more_
      *
+     * @param file _more_
+     *
+     * @return _more_
+     *
+     * @throws Exception _more_
+     */
+    public InputStream getInputStream(String file) throws Exception {
+        if (file.endsWith(".xls") || file.endsWith(".xlsx")) {
+            String csv = XlsUtil.xlsToCsv(file);
+
+            return new BufferedInputStream(
+                new ByteArrayInputStream(csv.getBytes()));
+        } else {
+            return new BufferedInputStream(new FileInputStream(file));
+        }
+    }
+
+    /**
+     * _more_
+     *
      * @param files _more_
      * @param info _more_
      * @param asPoint _more_
@@ -454,7 +459,7 @@ public class CsvUtil {
         for (String file : files) {
             readers.add(
                 new BufferedReader(
-                    new InputStreamReader(new FileInputStream(file))));
+                    new InputStreamReader(getInputStream(file))));
         }
         for (BufferedReader br : readers) {
             String line = new TextReader(br).readLine();
@@ -1196,6 +1201,21 @@ public class CsvUtil {
             if (arg.equals("-addheader")) {
                 info.getProcessor().addProcessor(
                     new Converter.HeaderMaker(parseProps(args.get(++i))));
+
+                continue;
+            }
+
+
+            if (arg.equals("-header")) {
+                info.getProcessor().addProcessor(new Converter.PrintHeader());
+
+                continue;
+            }
+
+
+            if (arg.equals("-pointheader")) {
+                info.getProcessor().addProcessor(
+                    new Converter.PrintHeader(true));
 
                 continue;
             }
