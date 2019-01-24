@@ -75,6 +75,8 @@
   position: relative;
   height:100%;
   border: 1px #000 solid;
+  overflow-x:hidden;
+  overflow-y:hidden;
 }
 
 .display-grid-action {
@@ -178,14 +180,14 @@
 
 .display-grid-entry-box:hover {
     border: 1px blue solid;
-    background: blue;
+//    background: blue;
     z-index: 100;
 }
 
 .display-grid-entry-text {
     z-index:10;
     position: absolute;
-    margin-top:-15px;
+    margin-bottom:-15px;
     font-size:8pt;
     color:#666;
 }
