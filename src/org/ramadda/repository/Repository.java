@@ -1760,6 +1760,11 @@ public class Repository extends RepositoryBase implements RequestHandler,
         return new PageHandler(this);
     }
 
+    /**
+     * _more_
+     *
+     * @return _more_
+     */
     protected DateHandler doMakeDateHandler() {
         return new DateHandler(this);
     }
@@ -1971,6 +1976,11 @@ public class Repository extends RepositoryBase implements RequestHandler,
         return pageHandler;
     }
 
+    /**
+     * _more_
+     *
+     * @return _more_
+     */
     public DateHandler getDateHandler() {
 
         if (dateHandler == null) {
@@ -5349,6 +5359,34 @@ public class Repository extends RepositoryBase implements RequestHandler,
         sb.append(HtmlUtils.sectionClose());
 
         return new Result("", sb);
+    }
+
+    /**
+     * _more_
+     *
+     * @param request _more_
+     *
+     * @return _more_
+     *
+     * @throws Exception _more_
+     */
+    public Result processHttpTest(Request request) throws Exception {
+        StringBuilder sb = new StringBuilder("");
+        sb.append(HtmlUtils.sectionOpen(msg("Http Test"), false));
+        sb.append(
+            "Below is the http header that was received. On reload of this page there should be a 'ramadda_repository_session' cookie.");
+        sb.append("<ul>");
+        Hashtable args = request.getHttpHeaderArgs();
+        for (Enumeration keys = args.keys(); keys.hasMoreElements(); ) {
+            String key   = (String) keys.nextElement();
+            String value = (String) args.get(key);
+            sb.append("<li>" + key + "=" + value + "<br>");
+        }
+        sb.append("</ul>");
+        sb.append(HtmlUtils.sectionClose());
+        Result result = new Result("", sb);
+
+        return result;
     }
 
 
