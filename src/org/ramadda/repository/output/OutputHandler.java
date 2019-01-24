@@ -940,6 +940,31 @@ public class OutputHandler extends RepositoryManager {
                                    String label, boolean allEntries,
                                    String type, Entry entry, boolean addClear)
             throws Exception {
+        return getSelect(request, elementId, label, allEntries, type, entry,
+                         addClear, "");
+    }
+
+    /**
+     * _more_
+     *
+     * @param request _more_
+     * @param elementId _more_
+     * @param label _more_
+     * @param allEntries _more_
+     * @param type _more_
+     * @param entry _more_
+     * @param addClear _more_
+     * @param linkExtra _more_
+     *
+     * @return _more_
+     *
+     * @throws Exception _more_
+     */
+    public static String getSelect(Request request, String elementId,
+                                   String label, boolean allEntries,
+                                   String type, Entry entry,
+                                   boolean addClear, String linkExtra)
+            throws Exception {
 
         boolean hasType    = Utils.stringDefined(type);
         String  selectorId = elementId + ( !hasType
@@ -962,7 +987,8 @@ public class OutputHandler extends RepositoryManager {
         String clearEvent = HtmlUtils.call("clearSelect",
                                            HtmlUtils.squote(selectorId));
         String link = HtmlUtils.mouseClickHref(event, label,
-                          HtmlUtils.id(selectorId + "_selectlink"));
+                          linkExtra
+                          + HtmlUtils.id(selectorId + "_selectlink"));
         if (addClear) {
             link = link + " "
                    + HtmlUtils.mouseClickHref(clearEvent, "Clear",

@@ -474,7 +474,7 @@ function EntryRow (entryId, rowId, cbxId,cbxWrapperId, showDetails) {
         text = getChildText(xmlDoc);
         var leftSide  = entryRow.getRow().offset().left;
         var offset = entryRow.lastClick-leftSide;
-        getTooltip().html("<div class=ramadda-tooltip-inner><div id=\"tooltipwrapper\" ><table><tr valign=top><img width=\"16\" onmousedown=\"hideEntryPopup();\" id=\"tooltipclose\"  src=" + icon_close +"></td><td>" + text+"</table></div></div>");
+        getTooltip().html("<div class=ramadda-tooltip-inner><div id=\"tooltipwrapper\" ><table><tr valign=top><img width=\"16\" class=\"ramadda-popup-close\" onmousedown=\"hideEntryPopup();\" id=\"tooltipclose\"  src=" + icon_close +"></td><td>" + text+"</table></div></div>");
         checkTabs(text);
 
         var pos = entryRow.getRow().offset();    
@@ -837,7 +837,7 @@ function handleSelect(request, id) {
     selector = selectors[id];
     var xmlDoc=request.responseXML.documentElement;
     text = getChildText(xmlDoc);
-    var close = "<a href=\"javascript:selectCancel();\"><img border=0 src=" + icon_close + "></a>";
+    var close = "<a href=\"javascript:selectCancel();\"><img class=\"ramadda-popup-close\" border=0 src=" + icon_close + "></a>";
     selector.div.obj.innerHTML = "<table width=100%><tr><td align=right>" + close +"</table>" +text;
 }
 
@@ -899,10 +899,10 @@ function showPopup(event, srcId, popupId, alignLeft, myalign, atalign) {
     if(!myalign)
         myalign = 'left top';
     if(!atalign)
-        atalign = 'left top';
+        atalign = 'left bottom';
     if(alignLeft) {
         myalign = 'right top';
-        atalign =  'left top';
+        atalign =  'left bottom';
     }
     showObject(popup);
     jQuery("#"+popupId ).position({

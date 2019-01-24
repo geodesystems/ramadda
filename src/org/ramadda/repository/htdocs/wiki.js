@@ -61,7 +61,9 @@ function insertTagsInner(id, txtarea, tagOpen, tagClose, sampleText) {
     tagOpen = tagOpen.replace(/&quote;/gi,'\"');
     tagClose = tagClose.replace(/&quote;/gi,'\"');
 
+    tagOpen = tagOpen.replace(/_newline_/gi,'\n');
     tagOpen = tagOpen.replace(/newline/gi,'\n');
+    tagClose = tagClose.replace(/_newline_/gi,'\n');
     tagClose = tagClose.replace(/newline/gi,'\n');
     var editor = HtmlUtil.getAceEditor(id);
     if(editor) {

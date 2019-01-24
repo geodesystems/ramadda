@@ -52,7 +52,7 @@ public class RepositoryUtil {
     public static final double MAJOR_VERSION = 2.2;
 
     /** _more_ */
-    public static final int MINOR_VERSION = 75;
+    public static final int MINOR_VERSION = 76;
 
 
     //When we make any real change to the css or javascript change this version
@@ -75,7 +75,8 @@ public class RepositoryUtil {
 
 
     /** timezone */
-    public static final TimeZone TIMEZONE_DEFAULT =  TimeZone.getTimeZone("UTC");
+    public static final TimeZone TIMEZONE_DEFAULT =
+        TimeZone.getTimeZone("UTC");
 
 
     /** the file separator id */
@@ -171,11 +172,23 @@ public class RepositoryUtil {
         return makeDateFormat(formatString, null);
     }
 
-    public static SimpleDateFormat makeDateFormat(String formatString, TimeZone timezone) {
-        if(timezone == null) timezone  = TIMEZONE_DEFAULT;
+    /**
+     * _more_
+     *
+     * @param formatString _more_
+     * @param timezone _more_
+     *
+     * @return _more_
+     */
+    public static SimpleDateFormat makeDateFormat(String formatString,
+            TimeZone timezone) {
+        if (timezone == null) {
+            timezone = TIMEZONE_DEFAULT;
+        }
         SimpleDateFormat dateFormat = new SimpleDateFormat();
         dateFormat.setTimeZone(timezone);
         dateFormat.applyPattern(formatString);
+
         return dateFormat;
     }
 

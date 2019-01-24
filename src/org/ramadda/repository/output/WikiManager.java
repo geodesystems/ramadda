@@ -4165,68 +4165,72 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
 
 
         StringBuilder buttons = new StringBuilder();
-        buttons.append(
+
+        StringBuilder tags    = new StringBuilder();
+        tags.append(
             addWikiEditButton(
                 textAreaId, "button_section.png", "Section",
-                "+section title={{name}}newlinenewline", "-section",
+                "+section title={{name}}_newline__newline_", "-section",
                 "Section", "mw-editbutton-bold"));
-        buttons.append(addWikiEditButton(textAreaId, "button_blockquote.png",
-                                         "Insert row and column",
-                                         "+rownewline+col-6newline", "-colnewline+col-6newline-row",
-                                         "Row/Column",
-                                         "mw-editbutton-headline"));
+        tags.append(addWikiEditButton(textAreaId, "button_blockquote.png",
+                                      "Row/Column",
+                                      "+row_newline_+col-6_newline_",
+                                      "-col_newline_+col-6_newline_-row",
+                                      "Row/Column",
+                                      "mw-editbutton-headline"));
+        tags.append(
+            addWikiEditButton(
+                textAreaId, "button_blockquote.png", "Tabs",
+                "+tabs_newline_+tab tab title_newline_",
+                "-tab_newline_-tabs_newline_", "Row/Column",
+                "mw-editbutton-headline"));
 
-        buttons.append(addWikiEditButton(textAreaId, "button_bold.png",
-                                         "Bold text", "\\'\\'\\'",
-                                         "\\'\\'\\'", "Bold text",
-                                         "mw-editbutton-bold"));
-        buttons.append(addWikiEditButton(textAreaId, "button_italic.png",
-                                         "Italic text", "\\'\\'", "\\'\\'",
-                                         "Italic text",
-                                         "mw-editbutton-italic"));
-        buttons.append(addWikiEditButton(textAreaId, "button_link.png",
-                                         "Internal link", "[[", "]]",
-                                         "Link title", "mw-editbutton-link"));
-        buttons.append(
+        tags.append(addWikiEditButton(textAreaId, "button_bold.png",
+                                      "Bold text", "\\'\\'\\'", "\\'\\'\\'",
+                                      "Bold text", "mw-editbutton-bold"));
+        tags.append(addWikiEditButton(textAreaId, "button_italic.png",
+                                      "Italic text", "\\'\\'", "\\'\\'",
+                                      "Italic text", "mw-editbutton-italic"));
+        tags.append(addWikiEditButton(textAreaId, "button_link.png",
+                                      "Internal link", "[[", "]]",
+                                      "Link title", "mw-editbutton-link"));
+        tags.append(
             addWikiEditButton(
                 textAreaId, "button_extlink.png",
                 "External link (remember http:// prefix)", "[", "]",
                 "http://www.example.com link title",
                 "mw-editbutton-extlink"));
-        buttons.append(addWikiEditButton(textAreaId, "button_headline.png",
-                                         "Level 2 headline", "\\n== ",
-                                         " ==\\n", "Headline text",
-                                         "mw-editbutton-headline"));
-        buttons.append(addWikiEditButton(textAreaId, "button_linebreak.png",
-                                         "Line break", "<br>", "", "",
-                                         "mw-editbutton-headline"));
+        tags.append(addWikiEditButton(textAreaId, "button_headline.png",
+                                      "Level 2 headline", "\\n== ", " ==\\n",
+                                      "Headline text",
+                                      "mw-editbutton-headline"));
+        tags.append(addWikiEditButton(textAreaId, "button_linebreak.png",
+                                      "Line break", "<br>", "", "",
+                                      "mw-editbutton-headline"));
         /*
-        buttons.append(addWikiEditButton(textAreaId, "button_strike.png",
+        tags.append(addWikiEditButton(textAreaId, "button_strike.png",
                                          "Strike Through", "<s>", "</s>",
                                          "Strike-through text",
                                          "mw-editbutton-headline"));
-        buttons.append(addWikiEditButton(textAreaId,
+        tags.append(addWikiEditButton(textAreaId,
                                          "button_upper_letter.png",
                                          "Super Script", "<sup>", "</sup>",
                                          "Super script text",
                                          "mw-editbutton-headline"));
-        buttons.append(addWikiEditButton(textAreaId,
+        tags.append(addWikiEditButton(textAreaId,
                                          "button_lower_letter.png",
                                          "Sub Script", "<sub>", "</sub>",
                                          "Subscript script text",
                                          "mw-editbutton-headline"));
         */
-        buttons.append(addWikiEditButton(textAreaId, "button_small.png",
-                                         "Small text", "<small>", "</small>",
-                                         "Small text",
-                                         "mw-editbutton-headline"));
-        //        buttons.append(addWikiEditButton(textAreaId,"button_image.png","Embedded file","[[File:","]]","Example.jpg","mw-editbutton-image"));
-        //        buttons.append(addWikiEditButton(textAreaId,"button_media.png","File link","[[Media:","]]","Example.ogg","mw-editbutton-media"));
-        //        buttons.append(addWikiEditButton(textAreaId,"button_nowiki.png","Ignore wiki formatting","\\x3cnowiki\\x3e","\\x3c/nowiki\\x3e","Insert non-formatted text here","mw-editbutton-nowiki"));
-        //        buttons.append(addWikiEditButton(textAreaId,"button_sig.png","Your signature with timestamp","--~~~~","","","mw-editbutton-signature"));
-        buttons.append(addWikiEditButton(textAreaId, "button_hr.png",
-                                         "Horizontal line", "\\n----\\n", "",
-                                         "", "mw-editbutton-hr"));
+
+        tags.append(addWikiEditButton(textAreaId, "button_small.png",
+                                      "Small text", "<small>", "</small>",
+                                      "Small text",
+                                      "mw-editbutton-headline"));
+        tags.append(addWikiEditButton(textAreaId, "button_hr.png",
+                                      "Horizontal line", "\\n----\\n", "",
+                                      "", "mw-editbutton-hr"));
 
 
         StringBuilder importMenu = new StringBuilder();
@@ -4271,7 +4275,6 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                                new OutputHandler.State(entry));
 
 
-
         for (Link link : links) {
             if (link.getOutputType() == null) {
                 continue;
@@ -4302,21 +4305,27 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
         */
 
 
-        String importMenuLabel = msg("Add property");
-        //            HtmlUtils.img(getIconUrl("/icons/wiki/button_import.png"),
-        //                         "Import Entry Property");
-        String importButton = getPageHandler().makePopupLink(importMenuLabel,
-                                  HtmlUtils.hbox(importMenu.toString(),
-                                      importOutputMenu.toString()));
+        String buttonClass = " class=\"ramadda-button\" ";
+        String tagsButton = getPageHandler().makePopupLink(msg("Add tag"),
+                                tags.toString(), buttonClass);
+
+        String importButton =
+            getPageHandler().makePopupLink(
+                msg("Add property"),
+                HtmlUtils.hbox(
+                    importMenu.toString(),
+                    importOutputMenu.toString()), buttonClass);
 
         String addEntry = OutputHandler.getSelect(request, textAreaId,
-                              "Add entry id", true, "entryid", entry, false);
+                              "Add entry id", true, "entryid", entry, false,
+                              buttonClass);
 
 
         String addLink = OutputHandler.getSelect(request, textAreaId,
                              "Add entry link", true, "wikilink", entry,
-                             false);
+                             false, buttonClass);
 
+        buttons.append(tagsButton);
         buttons.append(HtmlUtils.space(2));
         buttons.append(importButton);
         buttons.append(HtmlUtils.space(2));
@@ -4363,9 +4372,8 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                  + ");";
         }
 
-        return HtmlUtils.href(js,
-                              HtmlUtils.img(getIconUrl("/icons/wiki/"
-                                  + icon), label));
+        return HtmlUtils.href(js, label) + "<br>";
+        //                              HtmlUtils.img(getIconUrl("/icons/wiki/" + icon), label));
 
     }
 
@@ -5171,6 +5179,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                       + HtmlUtils.quote(mainDivId) + ","
                       + Json.map(topProps, false) + ",true);\n");
             sb.append(HtmlUtils.script(js.toString()));
+
             return;
         }
 
@@ -5268,12 +5277,12 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
 
         boolean needToCreateGroup = request.getExtraProperty("added group")
                                     == null;
-        if(needToCreateGroup) {
+        if (needToCreateGroup) {
             request.putExtraProperty("added group", "true");
-            Utils.concatBuff(js,
-                             "\nvar displayManager = getOrCreateDisplayManager(",
-                             HtmlUtils.quote(mainDivId), ",",
-                             Json.map(topProps, false), ");\n");
+            Utils.concatBuff(
+                js, "\nvar displayManager = getOrCreateDisplayManager(",
+                HtmlUtils.quote(mainDivId), ",", Json.map(topProps, false),
+                ");\n");
         }
         Utils.add(propList, "entryId", HtmlUtils.quote(entry.getId()));
         if ((url != null) && Utils.getProperty(props, "includeData", true)) {

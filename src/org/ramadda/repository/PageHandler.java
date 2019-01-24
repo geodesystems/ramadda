@@ -419,7 +419,12 @@ public class PageHandler extends RepositoryManager {
         String userLinkTemplate =
             "<div onClick=\"document.location=\'${url}\'\"  class=\"ramadda-user-link\">${label}</div>";
         List<String> allLinks = new ArrayList<String>();
-        String searchLink = HtmlUtils.href(getRepository().getUrlBase()+"/search/textform",HtmlUtils.img(getIconUrl("/icons/magnifier.png"),"Search"),HtmlUtils.cssClass("ramadda-user-settings-link"));
+        String searchLink = HtmlUtils.href(
+                                getRepository().getUrlBase()
+                                + "/search/textform", HtmlUtils.img(
+                                    getIconUrl("/icons/magnifier.png"),
+                                    "Search"), HtmlUtils.cssClass(
+                                        "ramadda-user-settings-link"));
 
         List<String> navLinks = getNavLinks(request, userLinkTemplate);
         List<String> userLinks = getUserLinks(request, userLinkTemplate,
@@ -1741,7 +1746,9 @@ public class PageHandler extends RepositoryManager {
      */
     public String makePopupLink(String link, String menuContents,
                                 boolean makeClose, boolean alignLeft) {
-        return makePopupLink(link, menuContents, "", makeClose, alignLeft);
+        return makePopupLink(link, menuContents,
+                             " class=\"ramadda-popup-link\" ", makeClose,
+                             alignLeft);
     }
 
 
@@ -2215,11 +2222,22 @@ public class PageHandler extends RepositoryManager {
      * @return _more_
      */
     public String showDialogError(String h) {
-        return showDialogError(h,true);
+        return showDialogError(h, true);
     }
+
+    /**
+     * _more_
+     *
+     * @param h _more_
+     * @param cleanString _more_
+     *
+     * @return _more_
+     */
     public String showDialogError(String h, boolean cleanString) {
-        if(cleanString)
+        if (cleanString) {
             h = getDialogString(h);
+        }
+
         return getMessage(h, Constants.ICON_ERROR, false);
     }
 
@@ -3634,6 +3652,7 @@ Time:14625 cnt:7000
         String mini = getRepository().getMinifiedOk()
                       ? ".mini"
                       : "";
+
         //        System.err.println(mini +" " + getRepository().getMinifiedOk());
         return s.replace(MACRO_URLROOT, getRepository().getUrlBase()).replace(
             "${baseentry}", getEntryManager().getRootEntry().getId()).replace(
