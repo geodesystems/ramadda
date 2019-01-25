@@ -5,6 +5,14 @@
 .display input {
 }
 
+.display-colortable {
+   font-size:10px;
+  max-width:100%;
+  overflow-x:auto;
+}
+
+
+
 .display .formlabel {
 //   font-size: 80%;
 //   font-weight: normal;
@@ -37,7 +45,7 @@
    border-collapse: separate;
 }
 
-.display-correlation td {
+.display-correlation-element {
     padding-left: 3px;
     padding-right: 3px;
     border: 0px #888 solid;
@@ -1068,5 +1076,11 @@ height:100%;
      padding-top:2px;
      padding-bottom:2px;
      border-bottom: 1px #ccc solid;
+}
+
+.display-colortable-slice {
+   padding:0px;
+   padding-right:0px;
+   padding-left:0px;
 }
 

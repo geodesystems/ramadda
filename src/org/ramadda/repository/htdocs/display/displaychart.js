@@ -918,7 +918,6 @@ function RamaddaMultiChart(displayManager, id, properties) {
 
 
                         var step = (max-min)/bins;
-                        console.log("min:" + min +" max:" + max + " step:" + step);
                         for(var binIdx=0;binIdx<bins;binIdx++) {
                             binList.push({min:min+binIdx*step,max:min+(binIdx+1)*step,values:[]});
                         }
@@ -2105,6 +2104,7 @@ function RamaddaCrosstabDisplay(displayManager, id, properties) {
 
 function RamaddaCorrelationDisplay(displayManager, id, properties) {
     var SUPER;
+    var ID_BOTTOM = "bottom";
     $.extend(this, {
             colorTable:"red_white_blue",
             colorByMin:"-1",
@@ -2181,7 +2181,6 @@ function RamaddaCorrelationDisplay(displayManager, id, properties) {
                 var fields = this.getSelectedFields([]);
                 if(fields.length==0) fields = allFields;
                 var html = HtmlUtil.openTag("table",["border", "0" ,"class","display-correlation"]);
-
                 html+="<tr valign=bottom><td class=display-heading>&nbsp;</td>";
                 for(var fieldIdx=0;fieldIdx<fields.length;fieldIdx++) {
                     var field1 = fields[fieldIdx];
@@ -2194,9 +2193,11 @@ function RamaddaCorrelationDisplay(displayManager, id, properties) {
                 colorByMin = parseFloat(this.colorByMin);
                 colorByMax = parseFloat(this.colorByMax);
                 colors = this.getColorTable();
+                var colCnt = 0;
                 for(var fieldIdx1=0;fieldIdx1<fields.length;fieldIdx1++) {
                     var field1 = fields[fieldIdx1];
                     if(!field1.isFieldNumeric() || field1.isFieldGeo())  continue;
+                    colCnt++;
                     html+="<tr><td>" + HtmlUtil.tag("div",["class","side-heading"], field1.getLabel().replace(/ /g,"&nbsp;")) +"</td>";
                     var rowName = field1.getLabel();
                     for(var fieldIdx2=0;fieldIdx2<fields.length;fieldIdx2++) {
@@ -2238,12 +2239,14 @@ function RamaddaCorrelationDisplay(displayManager, id, properties) {
                             else if(index<0) index = 0;
                             style = "background-color:" + colors[index];
                         }
-                        html+="<td align=right style=\"" + style +"\">" + HtmlUtil.tag("div",["title","&rho;(" + rowName +"," + colName+")"], r.toFixed(3)) +"</td>";
+                        html+="<td align=right style=\"" + style +"\">" + HtmlUtil.tag("div",["class","display-correlation-element", "title","&rho;(" + rowName +"," + colName+")"], r.toFixed(3)) +"</td>";
                     }
                     html+="</tr>";
                 }
+                html+="<tr><td></td><td colspan = " + colCnt+">" + HtmlUtil.div(["id",this.getDomId(ID_BOTTOM)],"") +"</td></tr>";
                 html += "</table>";
                 this.setContents(html);
+                this.displayColorTable(ID_BOTTOM, colorByMin, colorByMax);
                 this.initTooltip();
 
             },

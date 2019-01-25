@@ -117,16 +117,18 @@ colorTable=&quot;rainbow|grayscale|inversegrayscale|blues|blue_green_red|white_b
 
 
 <a name="fields"></a><p><div class="ramadda-help-heading">11.2.1 Specifying Fields</div> 
+Most of these displays are based on <a href="pointdata.html">point data</a> in RAMADDA. The point data model
+is based on a series of records (or rows) that are made up of a set of fields (or columns). 
 Many of the displays below use a <i>fields</i> attribute to specify the fields that are displayed. 
-These are either the field ids of the point data or 
+These are either the field ids of the point data or a 1-based index into the field list.
 
 <pre>
 fields="active_voters,total_ballots"
 fields="#1,#2,#3"
 </pre>
 
-The field ids for a point data entry can be viewed with the 
-<a href="https://geodesystems.com/repository/entry/show/Home/RAMADDA+Information/Site+Content/Development/Example+Charts?entryid=e8af924a-2194-4fd0-83be-92d006837c00&output=points.metadata">Metadata view</a>.
+The field ids for a point data entry can be viewed with the  Metadata view, 
+(<a href="https://geodesystems.com/repository/entry/show/Home/RAMADDA+Information/Site+Content/Development/Example+Charts?entryid=e8af924a-2194-4fd0-83be-92d006837c00&output=points.metadata">example</a>).
 
 Derived data can be calculated by specifying a javascript function with the field ids. For example, in the 
 <a href="https://geodesystems.com/repository/entry/show?entryid=e8af924a-2194-4fd0-83be-92d006837c00">election data example</a> 
@@ -305,11 +307,14 @@ More info at <a href="https://developers.google.com/chart/interactive/docs/galle
 <a name="display"></a><pre>{{display type=&quot;calendar&quot;  #fields=&quot;&quot;  #cellSize=&quot;15&quot;  #missingValue=&quot;0&quot;}}</pre>
 
 Displays point data based on the date of each record. The calendar entry is color coded based on the specified field.
+<br>
+If <i>missingValue</i> is specified than any point value with that value won't be shown.
 
 <a name="image11"></a><div class="cimg"><a href="images/charts/calendar.png"><img  src="images/charts/calendar.png"  alt="Calendar Chart" ></a><br><span class="caption">Image 11: Calendar Chart</span></div>
 
 <div class="ramadda-help-subheading"> Gauge</div> 
-<a name="display"></a><pre>{{display type=&quot;gauge&quot;  #fields=&quot;&quot;  #gaugeMin=&quot;&quot;  #gaugeMax=&quot;&quot;  #gaugeLabel=&quot;&quot;}}</pre>
+<a name="display"></a><pre>{{display type=&quot;gauge&quot;  #fields=&quot;&quot;  
+#gaugeMin=&quot;&quot;  #gaugeMax=&quot;&quot;  #gaugeLabel=&quot;&quot;}}</pre>
 
 This shows a single value from a series of point data.
 

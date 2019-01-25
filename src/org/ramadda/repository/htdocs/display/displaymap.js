@@ -33,6 +33,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	var ID_LATFIELD = "latfield";
 	var ID_LONFIELD = "lonfield";
 	var ID_MAP = "map";
+	var ID_BOTTOM = "bottom";
 	var SUPER;
 	RamaddaUtil.defineMembers(this, {
                 showLocationReadout: false,
@@ -80,6 +81,8 @@ function RamaddaMapDisplay(displayManager, id, properties) {
                     
                     html += HtmlUtil.div([ ATTR_CLASS, "display-map-map", "style",
                                            extraStyle, ATTR_ID, this.getDomId(ID_MAP) ]);
+                    html += HtmlUtil.div([ ATTR_CLASS, "",  ATTR_ID, this.getDomId(ID_BOTTOM) ]);
+
                     if(this.showLocationReadout) {
                         html += HtmlUtil.openTag(TAG_DIV, [ ATTR_CLASS,
                                                             "display-map-latlon" ]);
@@ -764,7 +767,6 @@ function RamaddaMapDisplay(displayManager, id, properties) {
                     var colorByAttr = this.getDisplayProp(source, "colorBy", null);
                     var colors = this.getColorTable();
                     var sizeByAttr = this.getDisplayProp(source, "sizeBy",null);
-                    var colors = null;
                     var isTrajectory =  this.getDisplayProp(source,"isTrajectory",false);
                     if(isTrajectory) {
                         this.map.addPolygon("id", points, null,null);
@@ -837,7 +839,9 @@ function RamaddaMapDisplay(displayManager, id, properties) {
                     colorBy.maxValue = this.getDisplayProp(source, "colorByMax", colorBy.maxValue);
 
                     //                    console.log("Color by:" + " Min: " + colorBy.minValue +" Max: " + colorBy.maxValue);
+
                     var dontAddPoint = this.doDisplayMap();
+                    var didColorBy = false;
                     for(var i=0;i<points.length;i++) {
                         var pointRecord  = records[i];
                         var point = points[i];
@@ -896,6 +900,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 
                             props.fillOpacity=0.8;
                             props.fillColor = colors[index];
+                            didColorBy = true;
                         }
                         var html = this.getRecordHtml(pointRecord,fields);
                         point = this.map.addPoint("pt-"  + i, point, props, html,dontAddPoint);
@@ -903,6 +908,8 @@ function RamaddaMapDisplay(displayManager, id, properties) {
                             this.points=[];
                         this.points.push(point);
                     }
+                    if(didColorBy)
+                        this.displayColorTable(ID_BOTTOM, colorBy.minValue, colorBy.maxValue);
                     this.applyVectorMap();
                 },
 		handleEventRemoveDisplay : function(source, display) {

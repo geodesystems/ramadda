@@ -382,9 +382,25 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             },
             getColorTable: function() {
                 var colorTable = this.getColorTableName();
-                if(colorTable)
+                if(colorTable) {
                     return  Utils.ColorTables[colorTable];
+                }
                 return null;
+            },
+            displayColorTable: function(domId, min,max) {
+                min = parseFloat(min);
+                max = parseFloat(max);
+                var ct = this.getColorTable();
+                if(!ct) return;
+                var html = HtmlUtil.openTag("div",["class","display-colortable"]) + "<table cellpadding=0 cellspacing=0 width=100% border=0><tr><td width=1%>" + this.formatNumber(min)+"&nbsp;</td>";
+                var step = (max-min)/ct.length;
+                for(var i=0;i<ct.length;i++) {
+                    html+=HtmlUtil.td(["class","display-colortable-slice","style","background:" + ct[i]+";","width","1"],HtmlUtil.div(["style","background:" + ct[i]+";" + "width:100%;height:10px;min-width:1px;","title",this.formatNumber(min+step*i)],""));
+                }
+                html+="<td width=1%>&nbsp;" + this.formatNumber(max)+"</td>";
+                html+="</tr></table>";
+                html+= HtmlUtil.closeTag("div");
+                this.jq(domId).html(html);
             },
             toString: function() {
                  return "RamaddaDisplay:" + this.type +" - " + this.getId();
@@ -2294,6 +2310,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
                     this.getDisplayManager().handleEventPointDataLoaded(this, pointData);
                 }
             },
+
             getDateFormatter: function() {
                 var date_formatter = null;
                 if (this.googleLoaded()) {
@@ -2614,7 +2631,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             },
             initDateFormats: function() {
                 if (!this.googleLoaded()) {
-                    console.log("google hasn't loaded");
+                    //                    console.log("google hasn't loaded");
                     return false;
                 }
                 if(this.fmt_yyyy) return true;
