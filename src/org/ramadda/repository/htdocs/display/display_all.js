@@ -457,6 +457,7 @@ function DisplayThing(argId, argProperties) {
 
 
 function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
+    var ID_DISPLAY = "display";
     RamaddaUtil.initMembers(this, {
             orientation: "horizontal",
         });
@@ -516,6 +517,15 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             },
             getLayoutManager: function() {
                 return this.getDisplayManager().getLayoutManager();
+            },
+            displayError: function(msg) {
+                this.displayHtml(HtmlUtil.getErrorDialog(msg));
+            },
+           clearHtml: function() {
+                this.displayHtml("");
+            },
+            displayHtml: function(html) {
+                this.jq(this.ID_DISPLAY).html(html);
             },
             notifyEvent:function(func, source, data) {
                 if(this[func] == null) { return;}
@@ -873,6 +883,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
                 var theDisplay = this;
                 //Listen for changes to the checkboxes
                 $("." + checkboxClass).click(function(event) {
+                        console.log("field selected");
                         theDisplay.fieldSelected(event);
                     });
 
@@ -901,6 +912,8 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             },
             getSelectedFields:function(dfltList) {
                 this.lastSelectedFields =  this.getSelectedFieldsInner(dfltList);
+                var fixedFields = this.getProperty(PROP_FIELDS);
+                if(fixedFields) fixedFields.length = 0;
                 this.setDisplayTitle();
                 return this.lastSelectedFields;
             },
@@ -912,16 +925,10 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
                 var dataList =  this.dataCollection.getList();
                 //If we have fixed fields then clear them after the first time
                 var fixedFields = this.getProperty(PROP_FIELDS);
-                if(fixedFields!=null) {
-                    if(fixedFields.length==0) {
-                        fixedFields = null;
-                    } 
-                }
-
                 for(var collectionIdx=0;collectionIdx<dataList.length;collectionIdx++) {             
                     var pointData = dataList[collectionIdx];
                     var fields = this.getFieldsToSelect(pointData);
-                    if(fixedFields !=null) {
+                    if(fixedFields !=null && fixedFields.length>0) {
                         for(var i=0;i<fixedFields.length;i++) {
                             var sfield = fixedFields[i];
                             for(var j=0;j<fields.length;j++) { 
@@ -956,9 +963,10 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
                         var cbx = $("#" + cbxId);
                         if(cbx.size()) {
                             cbxExists  = true;
+                        } else {
+                            continue;
                         }
                         if(cbx.is(':checked')) {
-                            //                            console.log("cbx is on " + field.getId());
                             this.selectedCbx.push(field.getId());
                             df.push(field);
                         }
@@ -970,7 +978,6 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
                         return this.lastSelectedFields;
                     }
                 }
-                //                console.log("selectedCbx:" + this.selectedCbx +" exists:" + cbxExists +" df:" + df.length);
 
                 if(df.length == 0) {
                     return this.getDefaultSelectedFields(fieldsToSelect, dfltList);
@@ -998,7 +1005,52 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
                 }
                 return [];
             },
+            getFieldOfType: function(fields,type) {
+                fields = this.getFieldsOfType(fields,type);
+                if(fields.length==0) return null;
+                return fields[0];
+            },
+            getFieldsOfType: function(fields,type) {
+                var  list =[];
+                var numeric = type == "numeric";
+                for(a in fields) {
+                    var field = fields[a];
+                    if(numeric) {
+                        if(field.isFieldNumeric()) {
+                            list.push(field);
+                        }
+                    } else if(field.getType() == type) {
+                        list.push(field);
+                    }
+                }
+                return list;
+            },
+            getColumnValues: function(records, field) {
+                var values=[];
+                var min = Number.MAX_VALUE;
+                var max = Number.MIN_VALUE;
+                for(var rowIdx=0;rowIdx<records.length;rowIdx++)  {
+                    var record = records[rowIdx];
+                    var row = record.getData();
+                    var value = row[field.getIndex()];
+                    values.push(value);
+                    if(Utils.isNumber(value)) {
+                        min = Math.min(min,value);
+                        max = Math.max(max,value);
+                    }
+                }
+                return {values:values,min:min, max:max};
+            },
             filterData: function(dataList, fields) {
+                if(!dataList) {
+                    var pointData = this.getData();
+                    if(pointData == null) return null;
+                    dataList=  pointData.getRecords();
+
+                 }
+                if(!fields) {
+                    fields = pointData.getRecordFields();
+                }
                 var patternFieldId = this.getProperty("patternFilterField");
                 var numericFieldId = this.getProperty("numericFilterField");
                 var pattern = this.getProperty("filterPattern");
@@ -1124,7 +1176,6 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
                     wiki += "-section\n\n";
                 } else if(type == "blogentry") {
                 }
-                //                console.log(wiki);
                 var from = "";
                 var entries = this.getChildEntries();
                 for(var i=0;i<entries.length;i++) {
@@ -1142,7 +1193,6 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
                 }
 
                 args.push("description_encoded");
-                //                console.log(wiki);
                 args.push(window.btoa(wiki));
         
 
@@ -2512,10 +2562,8 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
                 }
                 this.setContents(this.getMessage(msg));
             },
-
             //callback from the pointData.loadData call
             pointDataLoaded: function(pointData, url, reload)  {
-                //console.log("pointDataLoaded  reload:" + reload);
                 if(!reload) {
                     this.addData(pointData);
                 }
@@ -5401,6 +5449,10 @@ function RamaddaMultiChart(displayManager, id, properties) {
                     this.setContents(this.getLoadingMessage());
                     return;
                 }
+
+                var err = new Error();
+                console.log("displayData:" + err.stack);
+
                 this.setContents(HtmlUtil.div([ATTR_CLASS,"display-message"],
                                               "Building display..."));
 
@@ -12500,138 +12552,3 @@ function RamaddaXlsDisplay(displayManager, id, properties) {
         });
 
      }
-/**
-Copyright 2008-2015 Geode Systems LLC
-*/
-
-var DISPLAY_PLOTLY_RADAR = "radar";
-
-addGlobalDisplayType({type: DISPLAY_PLOTLY_RADAR, label:"Radar",requiresData:true,forUser:true,category:"Charts"});
-
-
-
-
-function RamaddaRadarDisplay(displayManager, id, properties) {
-    var SUPER;
-    RamaddaUtil.inherit(this, SUPER  = new RamaddaFieldsDisplay(displayManager, id, DISPLAY_PLOTLY_RADAR, properties));
-
-    //Dom id for example
-    var ID_DATA = "data";
-
-    this.foo  = "FOO";
-    //Add this display to the list of global displays
-    addRamaddaDisplay(this);
-
-    //Define the methods
-    RamaddaUtil.defineMembers(this, {
-            //gets called by displaymanager after the displays are layed out
-            initDisplay: function() {
-                //Call base class to init menu, etc
-                this.initUI();
-
-                //I've been calling back to this display with the following
-                //this returns "getRamaddaDisplay('" + this.getId() +"')";
-                var get = this.getGet();
-                var html =  "";
-                html += HtmlUtil.div([ATTR_ID, this.getDomId(ID_DATA),"style","width:" + this.getProperty("width","400px")+";" +
-                                      "height:" + this.getProperty("height","400px")+";"],"");
-
-                //Set the contents
-                this.setContents(html);
-
-                //Add the data
-                this.updateUI();
-            },
-            //this tells the base display class to loadInitialData
-            needsData: function() {
-                return true;
-            },
-            fieldSelectionChanged: function() {
-                SUPER.fieldSelectionChanged.call(this);
-                this.updateUI();
-            },
-            //this gets called after the data has been loaded
-            updateUI: function() {
-                var pointData = this.getData();
-                if(pointData == null) return;
-                var recordFields = pointData.getRecordFields();
-                var selectedFields = this.getSelectedFields([]);
-                var records = pointData.getRecords();
-                records = this.filterData(records, recordFields);
-                if(selectedFields.length == 0)
-                    selectedFields = recordFields;
-                var stringField = null;
-                var numericFields = [];
-                var rs= [];
-                var mins = [];
-                var maxs = [];
-                var min = Number.MAX_VALUE;
-                var max = Number.MIN_VALUE;
-
-                for(a in selectedFields) {
-                    var field = selectedFields[a];
-                    if(stringField == null && field.getType() == "string") {
-                        stringField = field;
-                        continue;
-                    }
-                    if(field.isFieldNumeric()) {
-                        numericFields.push(field);
-                        rs.push([]);
-                        mins.push(Number.MAX_VALUE);
-                        maxs.push(Number.MIN_VALUE);
-                    }
-                }
-                if(!stringField) {
-                    this.jq(ID_DATA).html("No string field specified");
-                    return;
-                }
-                if(numericFields.length==0) {
-                    this.jq(ID_DATA).html("No numeric fields specified");
-                    return;
-                }
-
-                var theta = [];
-                for(var rowIdx=0;rowIdx<records.length;rowIdx++)  {
-                    var record = records[rowIdx];
-                    var row = record.getData();
-                    var string = row[stringField.getIndex()];
-                    theta.push(string);
-                    for(var i=0;i<numericFields.length;i++) {
-                        var field = numericFields[i];
-                        var value =row[field.getIndex()]; 
-                        rs[i].push(value);
-                        mins[i] = Math.min(mins[i],value);
-                        maxs[i] = Math.max(maxs[i],value);
-                        min = Math.min(min,value);
-                        max = Math.max(max,value);
-                    }
-                }
-
-                var data = [];
-                for(var i=0;i<numericFields.length;i++) {
-                    var field = numericFields[i];
-                    data.push({
-                            type: 'scatterpolar',
-                                r: rs[i],
-                                theta: theta,
-                                fill: 'toself',
-                                name: field.getLabel()
-                                });
-                }
-               layout = {
-                   width:"100%",
-                   height:"100%",
-                   polar: {
-                       radialaxis: {
-                           visible: true,
-                           range: [min, max]
-                       }
-                   },
-               }
-               Plotly.plot(this.getDomId(ID_DATA), data, layout)
-
-            },
-        });
-}
-
-

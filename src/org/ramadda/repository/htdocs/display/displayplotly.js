@@ -3,13 +3,13 @@ Copyright 2008-2015 Geode Systems LLC
 */
 
 var DISPLAY_PLOTLY_RADAR = "radar";
-var DISPLAY_PLOTLY_WINDROSE = "windroser";
-var DISPLAY_PLOTLY_TREEMAP = "treemap";
+var DISPLAY_PLOTLY_WINDROSE = "windrose";
 var DISPLAY_PLOTLY_DENSITY = "density";
 var DISPLAY_PLOTLY_DOTPLOT  = "dotplot";
-var DISPLAY_PLOTLY_TERNARY = "ternary";
 var DISPLAY_PLOTLY_3DSCATTER = "3dscatter";
 var DISPLAY_PLOTLY_3DMESH = "3dmesh";
+var DISPLAY_PLOTLY_TREEMAP = "treemap";
+var DISPLAY_PLOTLY_TERNARY = "ternary";
 
 addGlobalDisplayType({type: DISPLAY_PLOTLY_RADAR, label:"Radar",requiresData:true,forUser:true,category:"Charts"});
 addGlobalDisplayType({type: DISPLAY_PLOTLY_WINDROSE, label:"Wind Rose",requiresData:true,forUser:true,category:"Charts"});
