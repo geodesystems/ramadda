@@ -86,7 +86,6 @@ function RamaddaRadialDisplay(displayManager, id, type, properties) {
             updateUI: function() {
                 var records = this.filterData();
                 if(!records) {
-                    console.log("no records");
                     return;
                 }
                 var selectedFields = this.getSelectedFields(this.getData().getRecordFields());
@@ -118,7 +117,6 @@ function RamaddaRadialDisplay(displayManager, id, type, properties) {
                                 name: field.getLabel()
                                 });
                 }
-                console.log("updateUI");
 
                layout = {
                    width:"100%",

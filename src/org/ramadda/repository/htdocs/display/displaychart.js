@@ -441,10 +441,6 @@ function RamaddaMultiChart(displayManager, id, properties) {
                     this.setContents(this.getLoadingMessage());
                     return;
                 }
-
-                var err = new Error();
-                console.log("displayData:" + err.stack);
-
                 this.setContents(HtmlUtil.div([ATTR_CLASS,"display-message"],
                                               "Building display..."));
 
