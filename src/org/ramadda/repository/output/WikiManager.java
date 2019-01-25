@@ -5241,6 +5241,12 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
         }
 
         String displayType = Utils.getProperty(props, "type", "linechart");
+        if((displayType.equals("radar") || displayType.equals("windrose") ||displayType.equals("dotplot") || displayType.equals("3dscatter") ||displayType.equals("3dmesh") ||  displayType.equals("density")) && request.getExtraProperty("added plotly")==null) {
+            HtmlUtils.importJS(sb, getHtdocsUrl("/lib/plotly/plotly.min.js"));
+            HtmlUtils.importJS(sb, getHtdocsUrl("/display/displayplotly.js"));
+            request.putExtraProperty("added plotly","true");
+        }
+
         if (displayType.equals("entrygallery")
                 || displayType.equals("entrygrid")) {
             List<Entry> children = getEntries(request, originalEntry, entry,
@@ -5416,7 +5422,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
 
             //Put this here after the google load
             HtmlUtils.importJS(sb, getHtdocsUrl("/db/dom-drag.js"));
-            HtmlUtils.importJS(sb, getHtdocsUrl("/lib/plotly/plotly.min.js"));
+
 
             if (getRepository().getMinifiedOk()) {
                 HtmlUtils.importJS(
@@ -5436,7 +5442,6 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                                    getHtdocsUrl("/display/displaymap.js"));
                 HtmlUtils.importJS(sb,
                                    getHtdocsUrl("/display/displaychart.js"));
-                HtmlUtils.importJS(sb, getHtdocsUrl("/display/displayplotly.js"));
                 HtmlUtils.importJS(sb,
                                    getHtdocsUrl("/display/displaytable.js"));
                 HtmlUtils.importJS(sb, getHtdocsUrl("/display/control.js"));

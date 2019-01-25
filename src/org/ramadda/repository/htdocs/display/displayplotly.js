@@ -3,119 +3,123 @@ Copyright 2008-2015 Geode Systems LLC
 */
 
 var DISPLAY_PLOTLY_RADAR = "radar";
+var DISPLAY_PLOTLY_WINDROSE = "windroser";
+var DISPLAY_PLOTLY_TREEMAP = "treemap";
+var DISPLAY_PLOTLY_DENSITY = "density";
+var DISPLAY_PLOTLY_DOTPLOT  = "dotplot";
+var DISPLAY_PLOTLY_TERNARY = "ternary";
+var DISPLAY_PLOTLY_3DSCATTER = "3dscatter";
+var DISPLAY_PLOTLY_3DMESH = "3dmesh";
 
 addGlobalDisplayType({type: DISPLAY_PLOTLY_RADAR, label:"Radar",requiresData:true,forUser:true,category:"Charts"});
+addGlobalDisplayType({type: DISPLAY_PLOTLY_WINDROSE, label:"Wind Rose",requiresData:true,forUser:true,category:"Charts"});
+addGlobalDisplayType({type: DISPLAY_PLOTLY_DENSITY, label:"Density",requiresData:true,forUser:true,category:"Charts"});
+addGlobalDisplayType({type: DISPLAY_PLOTLY_DOTPLOT, label:"Dot Plot",requiresData:true,forUser:true,category:"Charts"});
+addGlobalDisplayType({type: DISPLAY_PLOTLY_3DSCATTER, label:"3D Scatter",requiresData:true,forUser:true,category:"Charts"});
+addGlobalDisplayType({type: DISPLAY_PLOTLY_3DMESH, label:"3D Mesh",requiresData:true,forUser:true,category:"Charts"});
+//Ternary doesn't work
+//addGlobalDisplayType({type: DISPLAY_PLOTLY_TERNARY, label:"Ternary",requiresData:true,forUser:true,category:"Charts"});
+//Treempap doesn't work
+//addGlobalDisplayType({type: DISPLAY_PLOTLY_TREEMAP, label:"Tree Map",requiresData:true,forUser:true,category:"Charts"});
 
 
-
-
-function RamaddaRadarDisplay(displayManager, id, properties) {
+function RamaddaPlotlyDisplay(displayManager, id, type, properties) {
     var SUPER;
-    RamaddaUtil.inherit(this, SUPER  = new RamaddaFieldsDisplay(displayManager, id, DISPLAY_PLOTLY_RADAR, properties));
-
-    //Dom id for example
-    var ID_DATA = "data";
-
-    this.foo  = "FOO";
-    //Add this display to the list of global displays
-    addRamaddaDisplay(this);
-
-    //Define the methods
+    RamaddaUtil.inherit(this, SUPER  = new RamaddaFieldsDisplay(displayManager, id, type, properties));
     RamaddaUtil.defineMembers(this, {
-            //gets called by displaymanager after the displays are layed out
+            needsData: function() {
+                return true;
+            },
             initDisplay: function() {
                 //Call base class to init menu, etc
                 this.initUI();
-
-                //I've been calling back to this display with the following
-                //this returns "getRamaddaDisplay('" + this.getId() +"')";
-                var get = this.getGet();
-                var html =  "";
-                html += HtmlUtil.div([ATTR_ID, this.getDomId(ID_DATA),"style","width:" + this.getProperty("width","400px")+";" +
-                                      "height:" + this.getProperty("height","400px")+";"],"");
-
-                //Set the contents
+                var html =   HtmlUtil.div([ATTR_ID, this.getDomId(this.ID_DISPLAY),"style","width:" + this.getProperty("width","400px")+";" +
+                                           "height:" + this.getProperty("height","400px")+";"],this.getLoadingMessage());
                 this.setContents(html);
-
-                //Add the data
                 this.updateUI();
-            },
-            //this tells the base display class to loadInitialData
-            needsData: function() {
-                return true;
             },
             fieldSelectionChanged: function() {
                 SUPER.fieldSelectionChanged.call(this);
                 this.updateUI();
             },
-            //this gets called after the data has been loaded
+                makeAxis: function(title, tickangle) {
+                    return {
+                        title: title,
+                            titlefont: { size: 20 },
+                            tickangle: tickangle,
+                            tickfont: { size: 15 },
+                            tickcolor: 'rgba(0,0,0,0)',
+                            ticklen: 5,
+                            showline: true,
+                            showgrid: true
+                            };
+            },
+             getDisplayStyle:function() {
+                return  "";
+            },
+            makePlot:function(data,layout) {
+               this.clearHtml();
+               //For some reason plotly won't display repeated times in the DISPLAY div
+               this.jq(this.ID_DISPLAY).html(HtmlUtil.div(["id",this.getDomId("tmp"),"style",this.getDisplayStyle()],""));
+               //               Plotly.plot(this.getDomId(this.ID_DISPLAY), data, layout)
+               var plot = Plotly.plot(this.getDomId("tmp"), data, layout);
+               var myPlot = document.getElementById(this.getDomId("tmp"));
+               this.addEvents(plot, myPlot);
+            },
+            addEvents: function(plot, myPlot) {} 
+        });
+}
+
+
+
+function RamaddaRadialDisplay(displayManager, id, type, properties) {
+    var SUPER;
+    RamaddaUtil.inherit(this, SUPER  = new RamaddaPlotlyDisplay(displayManager, id, type, properties));
+    $.extend(this, {
+            width:"400px",
+            height:"400px",
+                });
+    RamaddaUtil.defineMembers(this, {
+            getPlotType: function() {
+                return 'barpolar';
+            },
             updateUI: function() {
-                var pointData = this.getData();
-                if(pointData == null) return;
-                var recordFields = pointData.getRecordFields();
-                var selectedFields = this.getSelectedFields([]);
-                var records = pointData.getRecords();
-                records = this.filterData(records, recordFields);
-                if(selectedFields.length == 0)
-                    selectedFields = recordFields;
-                var stringField = null;
-                var numericFields = [];
-                var rs= [];
-                var mins = [];
-                var maxs = [];
+                var records = this.filterData();
+                if(!records) {
+                    console.log("no records");
+                    return;
+                }
+                var selectedFields = this.getSelectedFields(this.getData().getRecordFields());
+                var stringField = this.getFieldOfType(selectedFields,"string");
+                if(!stringField) {
+                    this.displayError("No string field specified");
+                    return;
+                }
+                var numericFields = this.getFieldsOfType(selectedFields,"numeric");
+                if(numericFields.length==0) {
+                    this.displayError("No numeric fields specified");
+                    return;
+                }
+                var theta = this.getColumnValues(records, stringField).values;
+                var values= [];
                 var min = Number.MAX_VALUE;
                 var max = Number.MIN_VALUE;
-
-                for(a in selectedFields) {
-                    var field = selectedFields[a];
-                    if(stringField == null && field.getType() == "string") {
-                        stringField = field;
-                        continue;
-                    }
-                    if(field.isFieldNumeric()) {
-                        numericFields.push(field);
-                        rs.push([]);
-                        mins.push(Number.MAX_VALUE);
-                        maxs.push(Number.MIN_VALUE);
-                    }
-                }
-                if(!stringField) {
-                    this.jq(ID_DATA).html("No string field specified");
-                    return;
-                }
-                if(numericFields.length==0) {
-                    this.jq(ID_DATA).html("No numeric fields specified");
-                    return;
-                }
-
-                var theta = [];
-                for(var rowIdx=0;rowIdx<records.length;rowIdx++)  {
-                    var record = records[rowIdx];
-                    var row = record.getData();
-                    var string = row[stringField.getIndex()];
-                    theta.push(string);
-                    for(var i=0;i<numericFields.length;i++) {
-                        var field = numericFields[i];
-                        var value =row[field.getIndex()]; 
-                        rs[i].push(value);
-                        mins[i] = Math.min(mins[i],value);
-                        maxs[i] = Math.max(maxs[i],value);
-                        min = Math.min(min,value);
-                        max = Math.max(max,value);
-                    }
-                }
-
-                var data = [];
+                var plotData = [];
                 for(var i=0;i<numericFields.length;i++) {
                     var field = numericFields[i];
-                    data.push({
-                            type: 'scatterpolar',
-                                r: rs[i],
+                    var column = this.getColumnValues(records,field);
+                    min = Math.min(min, column.min);
+                    max = Math.max(max,column.max);
+                    plotData.push({
+                            type: this.getPlotType(),
+                                r: column.values,
                                 theta: theta,
                                 fill: 'toself',
                                 name: field.getLabel()
                                 });
                 }
+                console.log("updateUI");
+
                layout = {
                    width:"100%",
                    height:"100%",
@@ -126,10 +130,543 @@ function RamaddaRadarDisplay(displayManager, id, properties) {
                        }
                    },
                }
-               Plotly.plot(this.getDomId(ID_DATA), data, layout)
-
+               this.makePlot(plotData, layout);
             },
         });
+}
+
+function RamaddaRadarDisplay(displayManager, id, properties) {
+    var SUPER;
+    RamaddaUtil.inherit(this, SUPER  = new RamaddaRadialDisplay(displayManager, id, DISPLAY_PLOTLY_RADAR, properties));
+    RamaddaUtil.defineMembers(this, {
+            getPlotType: function() {
+                return 'scatterpolar';
+            },
+        });
+    addRamaddaDisplay(this);
+}
+
+function RamaddaWindroseDisplay(displayManager, id, properties) {
+    var SUPER;
+    RamaddaUtil.inherit(this, SUPER  = new RamaddaRadialDisplay(displayManager, id, DISPLAY_PLOTLY_WINDROSE, properties));
+    RamaddaUtil.defineMembers(this, {
+            getPlotType: function() {
+                return 'barpolar';
+            },
+        });
+    addRamaddaDisplay(this);
+}
+
+
+
+
+function RamaddaDensityDisplay(displayManager, id, properties) {
+    var SUPER;
+    RamaddaUtil.inherit(this, SUPER  = new RamaddaPlotlyDisplay(displayManager, id, DISPLAY_PLOTLY_DENSITY, properties));
+    $.extend(this, {
+            width:"400px",
+            height:"400px",
+             });
+    addRamaddaDisplay(this);
+    RamaddaUtil.defineMembers(this, {
+            updateUI: function() {
+                var records = this.filterData();
+                if(!records)return;
+                var fields = this.getSelectedFields(this.getData().getRecordFields());
+                var numericFields = this.getFieldsOfType(fields,"numeric");
+                if(numericFields.length<2) {
+                    this.displayError("No numeric fields specified");
+                    return;
+                }
+
+                var x = this.getColumnValues(records, numericFields[0]);
+                var y = this.getColumnValues(records, numericFields[1]);
+                var markers = {
+                    x: x.values,
+                    y: y.values,
+                    mode: 'markers',
+                    name:"",
+                    marker: {
+                        color: this.getProperty("pointColor", 'rgb(102,0,0)'),
+                        size: parseInt(this.getProperty("markerSize","4")),
+                        opacity: 0.4
+                    },
+                    type: 'scatter'
+                };
+                var density = {
+                    x: x.values,
+                    y: y.values,
+                    name: 'density',
+                    ncontours: 20,
+                    colorscale: 'Hot',
+                    reversescale: true,
+                    type: 'histogram2dcontour'
+                };
+                var plotData = [];
+                if(this.getProperty("showDensity", true)) 
+                    plotData.push(density);
+                if(this.getProperty("showPoints", true)) 
+                    plotData.push(markers);
+                var layout = {
+                    showlegend: true,
+                    autosize: true,
+                    width: "100%",
+                    height: "100%",
+                    margin: {t: 50},
+                    hovermode: 'closest',
+                    bargap: 0,
+                    xaxis: {
+                        domain: [x.min, x.max],
+                        showline: this.getProperty("showLines",true),
+                        showgrid: this.getProperty("showLines",true),
+                        title:fields[0].getLabel()
+                    },
+                    yaxis: {
+                        domain: [y.min, y.max],
+                        showline: this.getProperty("showLines",true),
+                        showgrid: this.getProperty("showLines",true),
+                        title:fields[1].getLabel()
+                    },
+                };
+                this.makePlot(plotData, layout);
+            },
+        });
+}
+
+
+function RamaddaPlotly3DDisplay(displayManager, id, type, properties) {
+    var SUPER;
+    RamaddaUtil.inherit(this, SUPER  = new RamaddaPlotlyDisplay(displayManager, id, type, properties));
+    $.extend(this, {
+            width:"100%",
+            height:"100%",
+             });
+    RamaddaUtil.defineMembers(this, {
+            addEvents: function(plot, myPlot) {
+                myPlot.on('plotly_click', function(){
+                        //                        alert('You clicked this Plotly chart!');
+                    });
+            },
+
+             getDisplayStyle:function() {
+                return  "border: 1px #ccc solid;";
+            },
+                get3DType: function() {
+                //                'mesh3d'
+                return 'scatter3d';
+            },
+            updateUI: function() {
+                var records = this.filterData();
+                if(!records)return;
+                var fields = this.getSelectedFields(this.getData().getRecordFields());
+                var stringField = this.getFieldOfType(fields,"string");
+                var fields = this.getFieldsOfType(fields,"numeric");
+                if(fields.length==0) {
+                    this.displayError("No numeric fields specified");
+                    return;
+                }
+                if(fields.length<3) {
+                    this.displayError("Don't have 3 numeric fields specified");
+                    return;
+                }
+
+                var x = this.getColumnValues(records, fields[0]);
+                var y = this.getColumnValues(records, fields[1]);
+                var z = this.getColumnValues(records, fields[2]);
+
+                var trace1 = {
+                    x:x.values,y:y.values,z:z.values,
+                    mode: 'markers',
+                    marker: {
+                        size: 12,
+                        line: {
+                            color: 'rgba(217, 217, 217, 0.14)',
+                            width: 0.5},
+                        opacity: 0.8},
+                    type: this.get3DType()
+                };
+
+
+                var plotData = [trace1];
+                var layout = {
+                    width: "90%",
+                    height: "90%",
+                    scene: {
+                    xaxis: {
+                        backgroundcolor: "rgb(200, 200, 230)",
+                        gridcolor: "rgb(255, 255, 255)",
+                        showbackground: true,
+                        zerolinecolor: "rgb(255, 255, 255)",
+                        title: fields[0].getLabel(),
+                    }, 
+                    yaxis: {
+                        backgroundcolor: "rgb(230, 200,230)",
+                        gridcolor: "rgb(255, 255, 255)",
+                        showbackground: true,
+                        zerolinecolor: "rgb(255, 255, 255)",
+                        title: fields[1].getLabel(),
+                    }, 
+                    zaxis: {
+                        backgroundcolor: "rgb(230, 230,200)",
+                        gridcolor: "rgb(255, 255, 255)",
+                        showbackground: true,
+                        zerolinecolor: "rgb(255, 255, 255)",
+                        title: fields[2].getLabel(),
+                    }},
+                    margin: {
+                    l: 0,
+                        r: 0,
+                        b: 50,
+                        t: 50,
+                        pad: 4
+                        },
+                    };
+
+
+
+                this.makePlot(plotData, layout);
+            },
+        });
+}
+
+
+function Ramadda3dmeshDisplay(displayManager, id, properties) {
+    var SUPER;
+    RamaddaUtil.inherit(this, SUPER  = new RamaddaPlotly3DDisplay(displayManager, id, DISPLAY_PLOTLY_3DMESH, properties));
+    $.extend(this, {
+            width:"100%",
+            height:"100%",
+             });
+    addRamaddaDisplay(this);
+    RamaddaUtil.defineMembers(this, {
+            get3DType: function() {
+                return 'mesh3d';
+            },
+                });
+}
+
+
+
+function Ramadda3dscatterDisplay(displayManager, id, properties) {
+    var SUPER;
+    RamaddaUtil.inherit(this, SUPER  = new RamaddaPlotly3DDisplay(displayManager, id, DISPLAY_PLOTLY_3DSCATTER, properties));
+    $.extend(this, {
+            width:"100%",
+            height:"100%",
+             });
+    addRamaddaDisplay(this);
+    RamaddaUtil.defineMembers(this, {
+            get3DType: function() {
+                return 'scatter3d';
+            },
+                });
+}
+
+
+
+
+function RamaddaTernaryDisplay(displayManager, id, properties) {
+    var SUPER;
+    RamaddaUtil.inherit(this, SUPER  = new RamaddaPlotlyDisplay(displayManager, id, DISPLAY_PLOTLY_TERNARY, properties));
+    $.extend(this, {
+            width:"400px",
+            height:"400px",
+             });
+    addRamaddaDisplay(this);
+    RamaddaUtil.defineMembers(this, {
+            updateUI: function() {
+                var records = this.filterData();
+                if(!records)return;
+                var fields = this.getSelectedFields(this.getData().getRecordFields());
+                var stringField = this.getFieldOfType(fields,"string");
+                var fields = this.getFieldsOfType(fields,"numeric");
+                if(fields.length==0) {
+                    this.displayError("No numeric fields specified");
+                    return;
+                }
+                if(fields.length<3) {
+                    this.displayError("Don't have 3 numeric fields specified");
+                    return;
+                }
+
+                var rawData = [];
+                var a = this.getColumnValues(records, fields[0]);
+                var b = this.getColumnValues(records, fields[1]);
+                var c = this.getColumnValues(records, fields[2]);
+                for(var i=0;i<a.length;i++) {
+                    rawData.push({
+                            a:100*a[i]/a.max,
+                            b:100*b[i]/b.max,
+                                c:100*c[i]/c.max,
+
+                                label:stringField?stringField.getLabel():"Point " +(i+1)
+                                });
+                                }
+                var xrawData = [
+               {a:75,b:25,c:0,label:'point 1'},
+               {a:70,b:10,c:20,label:'point 2'},
+               {a:75,b:20,c:5,label:'point 3'},
+               {a:5,b:60,c:35,label:'point 4'},
+               {a:10,b:80,c:10,label:'point 5'},
+               {a:10,b:90,c:0,label:'point 6'},
+               {a:20,b:70,c:10,label:'point 7'},
+               {a:10,b:20,c:70,label:'point 8'},
+               {a:15,b:5,c:80,label:'point 9'},
+               {a:10,b:10,c:80,label:'point 10'},
+               {a:20,b:10,c:70,label:'point 11'},
+               ];
+
+
+                var plotData = [{
+                        type: 'scatterternary',
+                        mode: 'markers',
+                        a: rawData.map(function(d) { return d.a; }),
+                        b: rawData.map(function(d) { return d.b; }),
+                        c: rawData.map(function(d) { return d.c; }),
+                        text: rawData.map(function(d) { return d.label; }),
+                        marker: {
+                            symbol: 100,
+                            color: '#DB7365',
+                            size: 14,
+                            line: { width: 2 }
+                        },
+                    }];
+                var layout  = {
+                    ternary: {
+                        sum: 100,
+                        aaxis: this.makeAxis(fields[0].getLabel(), 0),
+                        baxis: this.makeAxis(fields[1].getLabel(), 45),
+                        caxis: this.makeAxis(fields[2].getLabel(),-45),
+                        bgcolor: '#fff1e0'
+                    },
+                    annotations: [{
+                            showarrow: false,
+                            text: this.getProperty("chartTitle",""),
+                            x: 1.0,
+                            y: 1.3,
+                            font: { size: 15 }
+                        }],
+                    paper_bgcolor: '#fff1e0',
+                };
+
+
+                this.makePlot(plotData, layout);
+            },
+        });
+}
+
+
+function RamaddaDotplotDisplay(displayManager, id, properties) {
+    var SUPER;
+    RamaddaUtil.inherit(this, SUPER  = new RamaddaPlotlyDisplay(displayManager, id, DISPLAY_PLOTLY_DOTPLOT, properties));
+    $.extend(this, {
+            width:"750px",
+            height:"500px",
+             });
+
+    addRamaddaDisplay(this);
+    RamaddaUtil.defineMembers(this, {
+            updateUI: function() {
+                var records = this.filterData();
+                if(!records)return;
+                var fields = this.getSelectedFields(this.getData().getRecordFields());
+                var stringField = this.getFieldOfType(fields,"string");
+                var fields = this.getFieldsOfType(fields,"numeric");
+                if(fields.length==0) {
+                    this.displayError("No numeric fields specified");
+                    return;
+                }
+
+                var labels = null;
+                var labelName ="";
+                if(stringField) {
+                    labels = this.getColumnValues(records, stringField).values;
+                    labelName  = stringField.getLabel();
+                }
+                var colors = ['rgba(156, 165, 196, 0.95)','rgba(204,204,204,0.95)','rgba(255,255,255,0.85)','rgba(150,150,150,0.95)']
+                var plotData = [];
+                for(i in  fields) {
+                    var color = i>=colors.length?colors[0]:colors[i];
+                    var field = fields[i];
+                    var values = this.getColumnValues(records, field).values;
+                    if(!labels) {
+                        labels = [];
+                        for(var j=0;j<values.length;j++) {
+                            labels.push("Point " + (j+1));
+                        }
+                    }
+ 
+                    plotData.push({
+                            type: 'scatter',
+                                x: values,
+                                y: labels,
+                                mode: 'markers',
+                                name: field.getLabel(),
+                                marker: {
+                                color: color,
+                                    line: {
+                                    color: 'rgba(156, 165, 196, 1.0)',
+                                        width: 1,
+                                        },
+                                    symbol: 'circle',
+                                    size: 16
+                                    }
+                        });
+                }
+
+
+
+
+                var layout = {
+                    title: '',
+                    xaxis: {
+                        showgrid: false,
+                        showline: true,
+                        linecolor: 'rgb(102, 102, 102)',
+                        titlefont: {
+                            font: {
+                                color: 'rgb(204, 204, 204)'
+                            }
+                        },
+                        tickfont: {
+                            font: {
+                                color: 'rgb(102, 102, 102)'
+                            }
+                        },
+                        autotick: true,
+                        //                        dtick: 10,
+                        ticks: 'outside',
+                        tickcolor: 'rgb(102, 102, 102)'
+                    },
+                    margin: {
+                        l: 140,
+                        r: 40,
+                        b: 50,
+                        t: 20
+                    },
+                    legend: {
+                        font: {
+                            size: 10,
+                        },
+                        yanchor: 'middle',
+                        xanchor: 'right'
+                    },
+                    width: "100%",
+                    height: "100%",
+                    paper_bgcolor: 'rgb(254, 247, 234)',
+                    plot_bgcolor: 'rgb(254, 247, 234)',
+                    hovermode: 'closest'
+                };
+
+
+                this.makePlot(plotData, layout);
+            },
+        });
+}
+
+
+
+function RamaddaTreemapDisplay(displayManager, id, properties) {
+    var SUPER;
+    $.extend(this, {
+            width:"400px",
+            height:"400px",
+                });
+    RamaddaUtil.inherit(this, SUPER  = new RamaddaPlotlyDisplay(displayManager, id, DISPLAY_PLOTLY_TREEMAP, properties));
+    addRamaddaDisplay(this);
+    RamaddaUtil.defineMembers(this, {
+            updateUI: function() {
+                var records = this.filterData();
+                if(!records)return;
+                var selectedFields = this.getSelectedFields(this.getData().getRecordFields());
+                var field = this.getFieldOfType(selectedFields,"numeric");
+                if(!field) {
+                    this.displayError("No numeric field specified");
+                    return;
+                }
+                var values = this.getColumnValues(records, field).data;
+                // declaring arrays
+                var shapes = [];
+                var annotations = [];
+                var counter = 0;
+
+                // For Hover Text
+                var x_trace = [];
+                var y_trace = [];
+                var text = [];
+
+                //colors
+                var colors = this.getColorTable();
+
+                // Generate Rectangles using Treemap-Squared
+                var rectangles = Treemap.generate(values, 100, 100);
+
+                for (var i in rectangles) {
+                    var shape = {
+                        type: 'rect',
+                        x0: rectangles[i][0],
+                        y0: rectangles[i][1],
+                        x1: rectangles[i][2],
+                        y1: rectangles[i][3],
+                        line: {
+                            width: 2
+                        },
+                        fillcolor: colors[counter]
+                    };
+                    shapes.push(shape);
+                    var annotation = {
+                        x: (rectangles[i][0] + rectangles[i][2]) / 2,
+                        y: (rectangles[i][1] + rectangles[i][3]) / 2,
+                        text: String(values[counter]),
+                        showarrow: false
+                    };
+                    annotations.push(annotation);
+                    
+                    // For Hover Text
+                    x_trace.push((rectangles[i][0] + rectangles[i][2]) / 2);
+                    y_trace.push((rectangles[i][1] + rectangles[i][3]) / 2);
+                    text.push(String(values[counter]));
+                    
+                    // Incrementing Counter
+                    counter++;
+                }
+
+                // Generating Trace for Hover Text
+                var trace0 = {
+                    x: x_trace,
+                    y: y_trace,
+                    text: text,
+                    mode: 'text',
+                    type: 'scatter'
+                };
+
+                var layout = {
+                    height: 700,
+                    width: 700,
+                    shapes: shapes,
+                    hovermode: 'closest',
+                    annotations: annotations,
+                    xaxis: {
+                        showgrid: false,
+                        zeroline: false
+                    },
+                    yaxis: {
+                        showgrid: false,
+                        zeroline: false
+                    }
+                };
+
+                var data = {
+                    data: [trace0]
+                };
+               this.makePlot([trace0], layout);
+            },
+        });
+
+
+
+
+
 }
 
 

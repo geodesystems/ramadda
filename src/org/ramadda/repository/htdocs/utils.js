@@ -573,6 +573,9 @@ var HtmlUtil =  {
             ramaddaDisplayCheckLayout();
         }
     },
+    getErrorDialog:function(msg) {
+        return "<div class=\"ramadda-message\"><table><tr valign=top><td><div class=\"ramadda-message-link\"><img border=\"0\"  src=\"/repository/icons/error.png\"  /></div></td><td><div class=\"ramadda-message-inner\">" + msg +"</div></td></tr></table></div>";
+    },
     getAceEditor: function(id) {
         if(!this.aceEditors) return null;
         var info = this.aceEditors[id];

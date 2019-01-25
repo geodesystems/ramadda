@@ -311,6 +311,7 @@ function DisplayThing(argId, argProperties) {
 
 
 function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
+    var ID_DISPLAY = "display";
     RamaddaUtil.initMembers(this, {
             orientation: "horizontal",
         });
@@ -370,6 +371,15 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             },
             getLayoutManager: function() {
                 return this.getDisplayManager().getLayoutManager();
+            },
+            displayError: function(msg) {
+                this.displayHtml(HtmlUtil.getErrorDialog(msg));
+            },
+           clearHtml: function() {
+                this.displayHtml("");
+            },
+            displayHtml: function(html) {
+                this.jq(this.ID_DISPLAY).html(html);
             },
             notifyEvent:function(func, source, data) {
                 if(this[func] == null) { return;}
@@ -727,6 +737,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
                 var theDisplay = this;
                 //Listen for changes to the checkboxes
                 $("." + checkboxClass).click(function(event) {
+                        console.log("field selected");
                         theDisplay.fieldSelected(event);
                     });
 
@@ -755,6 +766,8 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             },
             getSelectedFields:function(dfltList) {
                 this.lastSelectedFields =  this.getSelectedFieldsInner(dfltList);
+                var fixedFields = this.getProperty(PROP_FIELDS);
+                if(fixedFields) fixedFields.length = 0;
                 this.setDisplayTitle();
                 return this.lastSelectedFields;
             },
@@ -766,16 +779,10 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
                 var dataList =  this.dataCollection.getList();
                 //If we have fixed fields then clear them after the first time
                 var fixedFields = this.getProperty(PROP_FIELDS);
-                if(fixedFields!=null) {
-                    if(fixedFields.length==0) {
-                        fixedFields = null;
-                    } 
-                }
-
                 for(var collectionIdx=0;collectionIdx<dataList.length;collectionIdx++) {             
                     var pointData = dataList[collectionIdx];
                     var fields = this.getFieldsToSelect(pointData);
-                    if(fixedFields !=null) {
+                    if(fixedFields !=null && fixedFields.length>0) {
                         for(var i=0;i<fixedFields.length;i++) {
                             var sfield = fixedFields[i];
                             for(var j=0;j<fields.length;j++) { 
@@ -810,9 +817,10 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
                         var cbx = $("#" + cbxId);
                         if(cbx.size()) {
                             cbxExists  = true;
+                        } else {
+                            continue;
                         }
                         if(cbx.is(':checked')) {
-                            //                            console.log("cbx is on " + field.getId());
                             this.selectedCbx.push(field.getId());
                             df.push(field);
                         }
@@ -824,7 +832,6 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
                         return this.lastSelectedFields;
                     }
                 }
-                //                console.log("selectedCbx:" + this.selectedCbx +" exists:" + cbxExists +" df:" + df.length);
 
                 if(df.length == 0) {
                     return this.getDefaultSelectedFields(fieldsToSelect, dfltList);
@@ -852,7 +859,52 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
                 }
                 return [];
             },
+            getFieldOfType: function(fields,type) {
+                fields = this.getFieldsOfType(fields,type);
+                if(fields.length==0) return null;
+                return fields[0];
+            },
+            getFieldsOfType: function(fields,type) {
+                var  list =[];
+                var numeric = type == "numeric";
+                for(a in fields) {
+                    var field = fields[a];
+                    if(numeric) {
+                        if(field.isFieldNumeric()) {
+                            list.push(field);
+                        }
+                    } else if(field.getType() == type) {
+                        list.push(field);
+                    }
+                }
+                return list;
+            },
+            getColumnValues: function(records, field) {
+                var values=[];
+                var min = Number.MAX_VALUE;
+                var max = Number.MIN_VALUE;
+                for(var rowIdx=0;rowIdx<records.length;rowIdx++)  {
+                    var record = records[rowIdx];
+                    var row = record.getData();
+                    var value = row[field.getIndex()];
+                    values.push(value);
+                    if(Utils.isNumber(value)) {
+                        min = Math.min(min,value);
+                        max = Math.max(max,value);
+                    }
+                }
+                return {values:values,min:min, max:max};
+            },
             filterData: function(dataList, fields) {
+                if(!dataList) {
+                    var pointData = this.getData();
+                    if(pointData == null) return null;
+                    dataList=  pointData.getRecords();
+
+                 }
+                if(!fields) {
+                    fields = pointData.getRecordFields();
+                }
                 var patternFieldId = this.getProperty("patternFilterField");
                 var numericFieldId = this.getProperty("numericFilterField");
                 var pattern = this.getProperty("filterPattern");
@@ -978,7 +1030,6 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
                     wiki += "-section\n\n";
                 } else if(type == "blogentry") {
                 }
-                //                console.log(wiki);
                 var from = "";
                 var entries = this.getChildEntries();
                 for(var i=0;i<entries.length;i++) {
@@ -996,7 +1047,6 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
                 }
 
                 args.push("description_encoded");
-                //                console.log(wiki);
                 args.push(window.btoa(wiki));
         
 
@@ -2366,10 +2416,8 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
                 }
                 this.setContents(this.getMessage(msg));
             },
-
             //callback from the pointData.loadData call
             pointDataLoaded: function(pointData, url, reload)  {
-                //console.log("pointDataLoaded  reload:" + reload);
                 if(!reload) {
                     this.addData(pointData);
                 }
