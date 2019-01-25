@@ -279,6 +279,13 @@ proc ifInclude {if s} {
 
 
 
+proc ug::subheading {l {href ""}} {
+    set html "";
+    if {$href !=""} {
+        set html "$href\n";
+    }
+    set html "$html<div class=\"ramadda-help-subheading\">$l</div> "
+}
 
 proc ug::attr {attr} {
     return "<i>$attr</i>"
@@ -303,7 +310,7 @@ proc ug::xml {args} {
 #     regsub -all "lt;$t" $xml "lt;<a[ug::tagref $t]" xml
 #     regsub -all "/$t" $xml "/<a[ug::tagref $t]" xml
 #  }
-  return "<blockquote>$xml</blockquote>"
+  return "<div style=\"margin:10p;\">$xml</div>"
 }
 
 
@@ -622,7 +629,7 @@ proc gen::addSubHead {from content} {
                 append body "<a name=\"$id\"></a>"
             }
             append body "<p>"
-            append body "<div class=\"ramadda-page-heading\">$levelLabel.$cnt $label</div> "
+            append body "<div class=\"ramadda-help-heading\">$levelLabel.$cnt $label</div> "
             incr cnt
             if {$intoc != "false"} {set intoc 1} else {set intoc 0}
             #set intoc 1

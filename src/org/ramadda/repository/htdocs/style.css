@@ -41,6 +41,24 @@ h2 a,   h2 a:visited, h2 a:link  {color: black;}
 
 
 
+.ramadda-help-heading {
+   font-size:140%;
+   font-weight: bold;
+   padding: 0px;
+   margin-top: 20px;
+   margin-bottom: 2px;
+   color: #000;
+}
+
+.ramadda-help-subheading {
+   font-size:120%;
+   font-weight: bold;
+   padding: 0px;
+   margin-top: 20px;
+   margin-bottom: 2px;
+   color: #000;
+}
+
 .ramadda-page-heading, .ramadda-heading, .ramadda-blurb {
   font-size:140%;
 }

@@ -3,10 +3,74 @@
 <%nochildlist%>
 
 RAMADDA provides a set of information and data display components in the wiki facility. 
-There are a number of <a href="https://geodesystems.com/repository/entry/show?entryid=e8af924a-2194-4fd0-83be-92d006837c00">examples</a> available.
+There are a number of  <a href="https://geodesystems.com/repository/entry/show?entryid=e8af924a-2194-4fd0-83be-92d006837c00">examples</a> available.
+The underlying wiki text for any entry can be seen with the Information page.
 
-Each of these components belongs to some group. A group can layout its children component (see below) and also supports
-sharing of events among components (e.g., record selection in a chart).
+
+<subhead intoc="false" id="group">Display Groups</subhead>
+
+There is a <i>group</i> tag that can manage a number of children displays. Each child display
+may be located in a fixed location (using layoutHere=false) in the web page or the group can manage the layout of the children displays.
+The group allows different displays to communicate with each other 
+(e.g., creating a new chart, map click, animation, etc) and to layout the set of children displays.
+If there is a wiki page that does not have a group but only one or more display tags then a group will be
+added automatically. 
+
+
+
+[ug::subheading {Display Layout}]
+
+Different layouts can be specified with the <i>layoutType</i> attribute. The available layouts are:
+<pre>
+layoutType=tabs
+layoutType=table
+layoutType=columns
+layoutType=rows
+</pre>
+
+Using the table layout the number of columns is specified with the <i>layoutColumns</i> attibute.
+
+For the <i>columns</i> and <i>rows</i> layout type each child display can specify the <i>column</i> number of
+<i>row</i> number it should be placed in. For example, for the <i>rows</i> layout if you had:
+<pre>
+{{group layoutType="rows"}}
+{{display display1  row="1"}}
+{{display display2  row="1"}}
+{{display display3  row="1"}}
+{{display display4  row="2"}}
+{{display display5  row="2"}}
+{{display display6  row="3"}}
+</pre>
+
+Would result in (without the border):
+<p>
+<table width="50%" border=1><tr><td width=33%>display1</td><td width=33%>display2</td><td width=33%>display3</td></table>
+<table width="50%" border=1><tr><td width=50%>display4</td><td width=50%>display5</td></table>
+<table width="50%" border=1><tr><td width=100%>display6</td></table>
+<p>
+
+The <i>divid</i> attribute allows you to specify a div tag that is in the wiki page as the location for the group and the displays
+to place themselves in. For example, below is the (abbreviated) wiki text used to create
+this <a href="http://ramadda.org/repository/entry/show/Home/RAMADDA+Examples/Rich+Content+Wikis/Display+Wikis/General+purpose+file+viewer?entryid=a98aa183-939b-471d-b31d-382e10657f2f">page</a> on ramadda.org.
+
+We want to have a fixed layout where the entry list is on the left and the map is on the right. Any charts or other display components that are interactively created by the user are managed by the group and layed out below the list and map.
+To do this we define a regular html table layout that contains a couple of div tags - one for the list and one for the map. We set the IDs of the div tags and then reference those IDs in the display wiki tags below.
+
+Likewise, the group has a divid=maindiv which corresponds to the div at the bottom of the page.
+
+[ug::xml {
+<table width=100% border=0 cellpadding=10>
+<tr valign=top>
+<td width=50%><div id="listdiv"></div></td>
+<td width=50%><div id="mapdiv"></div></td>
+</table>
+
+<div id=maindiv></div>
+{{group  layoutType="table"  layoutColumns="1" divid="maindiv"}}
+{{display   type="entrylist"   divid="listdiv" }}
+{{display   type="map"  layoutHere="true" height="250" divid="mapdiv"}}
+}]
+
 
 Each of these tags support the following attributes:
 <pre>
@@ -16,153 +80,286 @@ showTitle=&quot;true&quot
 title=Title to display
 </pre>
 If layoutHere is set to false then the component is laid out by its group. Otherwise it is displayed in place.
+<br>
+Some of the displays use a color table. There are a number of pre-defined color tables available:
+<pre>
+colorTable=&quot;rainbow|grayscale|inversegrayscale|blues|blue_green_red|white_blue|blue_red&quot;
+</pre>
 
 <p>
 [proc displayType  {name} {
-return "<br>\n<li> <b>$name</b><br>"
+return [ug::subheading $name]
 }]
 
+<subhead intoc="false" id="fields">Specifying Fields</subhead>
+Most of these displays are based on <a href="pointdata.html">point data</a> in RAMADDA. The point data model
+is based on a series of records (or rows) that are made up of a set of fields (or columns). 
+Many of the displays below use a <i>fields</i> attribute to specify the fields that are displayed. 
+These are either the field ids of the point data or a 1-based index into the field list.
+
+<pre>
+fields="active_voters,total_ballots"
+fields="#1,#2,#3"
+</pre>
+
+The field ids for a point data entry can be viewed with the  Metadata view, 
+(<a href="https://geodesystems.com/repository/entry/show/Home/RAMADDA+Information/Site+Content/Development/Example+Charts?entryid=e8af924a-2194-4fd0-83be-92d006837c00&output=points.metadata">example</a>).
+
+Derived data can be calculated by specifying a javascript function with the field ids. For example, in the 
+<a href="https://geodesystems.com/repository/entry/show?entryid=e8af924a-2194-4fd0-83be-92d006837c00">election data example</a> 
+one of the displays shows the turnout percentage using the following attributes:
+[ht::pre {function="total_ballots/active_voters" 
+functionName="turnout"}]
+
+The full wiki text is:
+[ht::pre {{{display  type="areachart"  column="0" layoutHere="true"  showTitle="true"  title="Line Chart with Function"  
+vAxisMinValue="0" vAxisMaxValue="1.0" padRight="true"
+function="total_ballots/active_voters" functionName="turnout"}}}]
+
+Percentage values can be calculated with the <i>showPercent</i> attribute. This sums up the values of all of the specified fields and uses the
+percent value.
+
+[ht::pre {{{display  type="linechart"  column="0" layoutHere="true"  showTitle="true"   
+fields="#5,#6,#7,#8,#9,#10" 
+showPercent="true" 
+vAxisMinValue="0" vAxisMaxValue="100"  title="Line Chart Showing %"}}}]
+
+
+
 <subhead intoc="false" id="displays">The Displays</subhead>
+
+[displayType { Search form}]
+[wiki::tagdefBlock display {type=&quot;entrylist&quot;  
+width=&quot;800&quot;  height=&quot;400&quot;  orientation=&quot;vertical&quot;  
+showForm=&quot;true&quot;  formOpen=&quot;true&quot;         
+provider="google,arxiv,wolfram,..."
+}]
+
+Supports an embedded and configurable search form.
+The <i>provider</i> attribute allows you to specify alternative search providers.
+
+[ht::cimg images/charts/searchform.png {Search Form} {width=700}]
+
+
+[displayType {Map}]
+[wiki::tagdefBlock display {  type=&quot;map&quot;  width=&quot;100%&quot;  #height=&quot;400&quot;
+geojsonLayer="entry id of a geojson file" 
+geojsonLayerName="Layer name"
+kmlLayer="entry id of a kml file" 
+kmlLayerName="Layer name"
+pruneFeatures="true" 
+colorBy="total_ballots"
+colorTable="inversegrayscale"
+colorByMin="min value"
+colorByMax="max value"
+displayDiv="mapDisplay${entryid}"
+}]
+
+A map that shows georeferenced point data. This can be integrated with other displays, e.g., clicking on a point will highlight that location in
+a line chart.
+
+<table width=100%><tr valign=bottom>
+<td width=50%>
+[ht::cimg images/charts/mappoints.png {Point Display in Map} {width=100%} ]
+</td>
+<td width=50%>
+[ht::cimg images/charts/map.png {Chloropleth Map} {width=100%} ]
+</td>
+</tr>
+</table>
+
+The map in the above image can be viewed <a href="https://geodesystems.com/repository/entry/show?entryid=e8af924a-2194-4fd0-83be-92d006837c00#map">here</a>. Below is the wiki text that creates the display. 
+
 <ul>
-[displayType  Group]
-[wiki::tagdef group {layoutType="columns"  layoutColumns="2"}]
-<p>
-The layoutType can be one of:
-<ul>
-
-<li> table<br>
-The layoutColumns attribute specifies how many columns to use for the table.
-
-<li> rows<br>
-Each child display specifies the row they are placed in.
-
-<li> columns<br>
-Each child display specifies the column they are placed in.
-
-<li> tabs<br>
-Each child display is placed in a tab.
-
+<li> If a Geojson or Kml layer is specified then the layer is displayed instead of the points. The location of each point is used to
+find a containing map feature. That map feature is then colored as defined below.
+<li> <i>pruneFeatures</i>. If set to true than any map feature that does not have a corresponding point will not be shown.
+<li> The <i>colorBy</i> attribute specifies the field that is used to color the points or the map segments. 
+The <i>colorTable</i> attribute specifies a color table to
+use and the <i>colorByMin</i> and <i>colorByMax</i> attributes are option and are used to define a color range.
+<li> The displayDiv, when specified, is the id of a div tag (shown below) that the map will display the details of
+a point or map segment as the user mouses over it.
 </ul>
 
+This is the wiki text used in the above example:
+
+[ht::pre { 
+:heading Map
++row
++col-md-6
+{{display  type="map" column="1"  width="-100" height="500"   layoutHere="true" includeData="false"   showTitle="false" 
+title="Colored by total ballots" 
+geojsonLayer="7c8f5e25-e569-4ca9-b389-5bb03cdb138b" 
+geojsonLayerName="Precincts"
+displayAsMap="true"
+pruneFeatures="true"
+colorBy="total_ballots"
+colorBar="inversegrayscale"
+displayDiv="mapDisplay${entryid}"
+}}
+-col
++col-6
+<br>
+:heading Map Details
+<div id="mapDisplay{{entryid}}" style="max-height:500px;"></div>
+-col
+-row
+}]
 
 
-<br>
-[displayType { Search form}]
-[wiki::tagdef display {  type=&quot;entrylist&quot;  width=&quot;800&quot;  height=&quot;400&quot;  orientation=&quot;vertical&quot;  showForm=&quot;true&quot;  formOpen=&quot;true&quot;         }]
-<br>
-Supports an embedded and configurable search form.<br>
-[ht::img images/charts/searchform.png {Search Form} {width=500}]
-
-[displayType { Map}]
-[wiki::tagdef display {  type=&quot;map&quot;  width=&quot;100%&quot;  #height=&quot;400&quot;       }]
-<br>
-A map that shows georeferenced point data. This can be integrated with other displays, e.g., clicking on a point will highlight that location in
-a line chart.<br>
-[ht::img images/charts/map.png {Map}]
 
 [displayType { Line chart}]
-[wiki::tagdef display {  type=&quot;linechart&quot;  #width=&quot;800&quot;  #height=&quot;400&quot;  #fields=&quot;&quot;       }]
-<br>
-Displays time series or indexed point data.<br>
-[ht::img images/charts/linechart.png ]
+[wiki::tagdefBlock display {type=&quot;linechart&quot;  #width=&quot;800&quot;  #height=&quot;400&quot;  
+#fields=&quot;&quot;       
+#vAxisMinValue="0" #vAxisMaxValue="1.0" #padRight="true"
+}]
 
-[displayType { Area chart}]
-[wiki::tagdef display {  type=&quot;areachart&quot;  #width=&quot;800&quot;  #height=&quot;400&quot;  #fields=&quot;&quot;  #isStacked=&quot;true&quot;       }]
+Displays time series or indexed point data. The vAxisMinValue and vAxisMaxValue are used as the range instead of the min/max from the data.
+<br>
+If <i>padRight</i> is set to true than the chart is padded on the right with the same space as what is used for the second axis legend. This allows
+for two or more charts to be aligned that have one or more fields being displayed.
+
+[ht::cimg images/charts/linechart.png {Line Chart} ]
+
+
+[displayType {Bar chart and stacked bar chart}]
+[wiki::tagdefBlock display  {type="barchart"    #fields=""  padRight="true" layoutHere="true"  showMenu="true"  showTitle="true"  title="Bar Chart"}]
+
+[wiki::tagdefBlock display {type="barstack"    #fields=""  layoutHere="true"  showMenu="true"  showTitle="true"  title="Stacked Bar Chart"}]
+
+
+[ht::cimg images/charts/barchart.png {Bar Chart} ]
+
+
+[displayType {Area chart}]
+[wiki::tagdefBlock display {  type=&quot;areachart&quot;  #width=&quot;800&quot;  #height=&quot;400&quot;  #fields=&quot;&quot;  
+#vAxisMinValue="0" #vAxisMaxValue="1.0" #padRight="true"
+#isStacked=&quot;true&quot;}]
+[ht::cimg images/charts/areachart.png {Area Chart} ]
 
 
 [displayType { Scatter Plot}]
-[wiki::tagdef display {  type=&quot;scatterplot&quot;  #width=&quot;800&quot;  #height=&quot;400&quot;  #fields=&quot;&quot;       }]
-<br>
-[ht::img images/charts/scatterplot.png {} {width=300}]
+[wiki::tagdefBlock display {  type=&quot;scatterplot&quot;  #width=&quot;800&quot;  #height=&quot;400&quot;  #fields=&quot;&quot;       }]
+
+[ht::cimg images/charts/scatterplot.png {Scatter Plot} {width=300}]
 
 [displayType { Histogram}]
-[wiki::tagdef display {  type=&quot;histogram&quot;  #width=&quot;800&quot;  #height=&quot;400&quot;  #fields=&quot;&quot;  #colors=&quot;comma separated color list&quot;  #legendPosition=&quot;none|top|right|left|bottom&quot;  #textPosition=&quot;out|in|none&quot;  #isStacked=&quot;false|true|percent|relative&quot;  #logScale=&quot;true|false&quot;  #scaleType=&quot;log|mirrorLog&quot;  #vAxisMinValue=&quot;&quot;  #vAxisMaxValue=&quot;&quot;  #minValue=&quot;&quot;  #maxValue=&quot;&quot;       }]
-<br>
-[ht::img images/charts/histogram.png]
+[wiki::tagdefBlock display {  type=&quot;histogram&quot;  #width=&quot;800&quot;  #height=&quot;400&quot;  #fields=&quot;&quot;  
+#colors=&quot;comma separated color list&quot;  
+#legendPosition=&quot;none|top|right|left|bottom&quot;  
+#textPosition=&quot;out|in|none&quot;  
+#isStacked=&quot;false|true|percent|relative&quot;  
+#logScale=&quot;true|false&quot;  #scaleType=&quot;log|mirrorLog&quot;  
+#vAxisMinValue=&quot;&quot;  #vAxisMaxValue=&quot;&quot;  
+#minValue=&quot;&quot;  #maxValue=&quot;&quot;}]
+
+The   <i>minValue</i> and <i>maxValue</i> attributes are used to specify the  maximum and minimum evertical data value to render.
+More info at <a href="https://developers.google.com/chart/interactive/docs/gallery/histogram">Google charts histogram documentation</a>.
+
+
+[ht::cimg images/charts/histogram.png {Histogram}]
 
 
 [displayType { Bubble Chart}]
-[wiki::tagdef display {  type=&quot;bubble&quot;  width=&quot;500&quot;  height=&quot;500&quot;  #fields=&quot;label|x|y|color|size&quot;  #colorTable=&quot;rainbow|grayscale|inversegrayscale|blues|blue_green_red|white_blue|blue_red&quot;  #colors=&quot;comma separated color list&quot;  #legendPosition=&quot;none|top|right|left|bottom&quot;  #hAxisFormat=&quot;none|decimal|scientific|percent|short|long&quot;  #vAxisFormat=&quot;none|decimal|scientific|percent|short|long&quot;  #hAxisTitle=&quot;&quot;  #vAxisTitle=&quot;&quot;       }]
-<br>
+[wiki::tagdefBlock display {  type=&quot;bubble&quot;  width=&quot;500&quot;  height=&quot;500&quot;  
+#fields=&quot;label|x|y|color|size&quot;  
+#colorTable=&quot;rainbow|grayscale|inversegrayscale|blues|blue_green_red|white_blue|blue_red&quot;  #colors=&quot;comma separated color list&quot;  #legendPosition=&quot;none|top|right|left|bottom&quot;  #hAxisFormat=&quot;none|decimal|scientific|percent|short|long&quot;  #vAxisFormat=&quot;none|decimal|scientific|percent|short|long&quot;  #hAxisTitle=&quot;&quot;  #vAxisTitle=&quot;&quot;       }]
 
-[ht::img images/charts/bubble.png]
+The <i>fields</i> specify a text field for the label and the numeric value fields used for the x and y axis, the bubble color and bubble  size.
+
+[ht::cimg images/charts/bubble.png {Bubble Chart}]
 
 
 [displayType { Pie chart}]
-[wiki::tagdef display {  type=&quot;piechart&quot;  #pieHole=&quot;0.5&quot;  #is3D=&quot;true&quot;  #fields=&quot;&quot;  #bins=&quot;bin count&quot;  #binMin=&quot;min&quot;  #binMax=&quot;max&quot;  #sliceVisibilityThreshold=&quot;0.01&quot;  width=&quot;500&quot;  height=&quot;250&quot;       }]
-<br>
-[ht::img images/charts/piechart.png]
+[wiki::tagdefBlock display {type=&quot;piechart&quot;  #fields=&quot;&quot;
+#pieHole=&quot;0.5&quot;  #is3D=&quot;true&quot;    
+#bins=&quot;bin count&quot;  #binMin=&quot;min&quot;  #binMax=&quot;max&quot;  
+#sliceVisibilityThreshold=&quot;0.01&quot;  
+width=&quot;500&quot;  height=&quot;250&quot;}]
+
+More info at <a href="https://developers.google.com/chart/interactive/docs/gallery/piechart">Google charts pie chart documentation</a>
+
+[ht::cimg images/charts/piechart.png {Pie Chart}]
 
 [displayType { Calendar}]
-[wiki::tagdef display {  type=&quot;calendar&quot;  #fields=&quot;&quot;  #cellSize=&quot;15&quot;  #missingValue=&quot;0&quot;       }]
-<br>
+[wiki::tagdefBlock display {  type=&quot;calendar&quot;  #fields=&quot;&quot;  #cellSize=&quot;15&quot;  #missingValue=&quot;0&quot;       }]
+
 Displays point data based on the date of each record. The calendar entry is color coded based on the specified field.
-[ht::img images/charts/calendar.png]
+<br>
+If <i>missingValue</i> is specified than any point value with that value won't be shown.
+
+[ht::cimg images/charts/calendar.png {Calendar Chart}]
 
 [displayType { Gauge}]
-[wiki::tagdef display {  type=&quot;gauge&quot;  #fields=&quot;&quot;  #gaugeMin=&quot;&quot;  #gaugeMax=&quot;&quot;  #gaugeLabel=&quot;&quot;       }]
-<br>
+[wiki::tagdefBlock display {  type=&quot;gauge&quot;  #fields=&quot;&quot;  
+#gaugeMin=&quot;&quot;  #gaugeMax=&quot;&quot;  #gaugeLabel=&quot;&quot;       }]
+
 This shows a single value from a series of point data.
-<br>
-[ht::img images/charts/gauge.png]
+
+[ht::cimg images/charts/gauge.png {Gauge}]
 
 [displayType { Sankey}]
-[wiki::tagdef display {  type=&quot;sankey&quot;  #fields=&quot;&quot;       }]
-<br>
+[wiki::tagdefBlock display {  type=&quot;sankey&quot;  #fields=&quot;&quot;       }]
+
 Displays flow data. The point data needs to have 2 string fields (the from and to) and a numeric value field.
-<br>
-[ht::img images/charts/sankey.png {} {width=300}]
+
+[ht::cimg images/charts/sankey.png {Sankey Display} {width=300}]
 
 [displayType { Table}]
-[wiki::tagdef display {  type=&quot;table&quot;  height=&quot;400&quot;  #fields=&quot;&quot;       }]
-<br>
+[wiki::tagdefBlock display {  type=&quot;table&quot;  height=&quot;400&quot;  #fields=&quot;&quot;       }]
+
 Shows tabular data. This is integrated with other charts so clicking on a row highlights the corresponding record in a chart.
-<br>
-[ht::img images/charts/table.png]
+
+[ht::cimg images/charts/table.png {Table}]
 
 [displayType { Heatmap}]
-[wiki::tagdef display {  type=&quot;heatmap&quot;  #height=&quot;400&quot;  #fields=&quot;&quot;  #colorTables=&quot;temperature,blues&quot;  #colorByMins=&quot;-90,0&quot;  #colorByMaxes=&quot;45,100&quot;  #showIndex=&quot;false&quot;  #showValue=&quot;true&quot;  #showBorder=&quot;true&quot;  #cellHeight=&quot;30&quot;  #textColor=&quot;white&quot;       }]
-<br>
+[wiki::tagdefBlock display {  type=&quot;heatmap&quot;  #height=&quot;400&quot;  #fields=&quot;&quot;  
+#colorTables=&quot;temperature,blues&quot;  
+#colorByMins=&quot;-90,0&quot;  #colorByMaxes=&quot;45,100&quot;  
+#showIndex=&quot;false&quot;  #showValue=&quot;true&quot;  #showBorder=&quot;true&quot;  
+#cellHeight=&quot;30&quot;  #textColor=&quot;white&quot;       }]
+
 Displays the records, one row per record, with each cell color coded based on the field value and the specified color table.
-<br>
-[ht::img images/charts/heatmap.png]
+
+[ht::cimg images/charts/heatmap.png {Heat Map}]
 
 [displayType { Correlation}]
-[wiki::tagdef display {  type=&quot;correlation&quot;  #fields=&quot;&quot;       }]
-<br>
+[wiki::tagdefBlock display {  type=&quot;correlation&quot;  #fields=&quot;&quot;       }]
+
 Displays a statistical correlation of a set of fields.
-<br>
-[ht::img images/charts/correlation.png {} {width=600}]
+[ht::cimg images/charts/correlation.png {Correlation} {width=600}]
 
 
 
 [displayType { Text Readout}]
-[wiki::tagdef display {  type=&quot;text&quot;       }]
-<br>
+[wiki::tagdefBlock display {  type=&quot;text&quot;       }]
+
 Displays the record selected in other charts.
-<br>
-[ht::img images/charts/textreadout.png]
+
+[ht::cimg images/charts/textreadout.png {Text Readout}]
 
 [displayType { Summary Stats}]
-[wiki::tagdef display {  type=&quot;stats&quot;  loadData=&quot;false&quot;  showDefault=&quot;true&quot;  #showMin=&quot;true&quot;  #showMax=&quot;true&quot;  #showAverage=&quot;true&quot;  #showStd=&quot;true&quot;  #showPercentile=&quot;true&quot;  #showCount=&quot;true&quot;  #showTotal=&quot;true&quot;  #showPercentile=&quot;true&quot;  #showMissing=&quot;true&quot;  #showUnique=&quot;true&quot;  #  #showText=&quot;true&quot;       }]
-<br>
-Displays a summary statistics including average, min, max, number of missing, etc.
-<br>
+[wiki::tagdefBlock display {  type=&quot;stats&quot;  loadData=&quot;false&quot;  
+showDefault=&quot;true&quot;  
+#showMin=&quot;true&quot;  #showMax=&quot;true&quot;  
+#showAverage=&quot;true&quot;  #showStd=&quot;true&quot;  #showPercentile=&quot;true&quot;  
+#showCount=&quot;true&quot;  #showTotal=&quot;true&quot;  
+#showMissing=&quot;true&quot;  #showUnique=&quot;true&quot;    
+#showText=&quot;true&quot;       }]
 
-[ht::img images/charts/stats.png]
+Displays a summary statistics including average, min, max, number of missing, etc.
+
+[ht::cimg images/charts/stats.png {Statistics Display} {width=700}]
 
 [displayType { Animation}]
-[wiki::tagdef display {  type=&quot;animation&quot;       }]
-<br>
+[wiki::tagdefBlock display {  type=&quot;animation&quot;       }]
+
 Controls time or index based animation. Other charts will highlight the record of  the current time.
-<br>
-[ht::img images/charts/animation.png]
-<br>
 
-
+[ht::cimg images/charts/animation.png {Animation}]
 
 [displayType {Entry Grid}]
-[wiki::tagdef display {  type=&quot;entrygrid&quot;  
+[wiki::tagdefBlock display {  type=&quot;entrygrid&quot;  
 showIcon=&quot;true&quot;  showName=&quot;true&quot;  scaleWidth=&quot;true&quot;  scaleHeight=&quot;false&quot;  
 #xAxisAscending=&quot;true&quot;  
 #xAxisScale=&quot;true&quot;  
@@ -172,12 +369,12 @@ showIcon=&quot;true&quot;  showName=&quot;true&quot;  scaleWidth=&quot;true&quot
 #height=&quot;400&quot;  #width=&quot;100%&quot;  
 #entries=&quot;&quot;  
      }]
-<br>
-[ht::img images/charts/entrygrid.png {} {width=600}]
+The entrygrid display shows a set of entries based on their date.
+
+[ht::cimg images/charts/entrygrid.png {Entry Grid} {width=700}]
 
 
 
-</ul>
 
 
 <subhead intoc="false" id="filters">Filtering Data</subhead>

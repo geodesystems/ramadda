@@ -65,8 +65,8 @@ See the <a href=" http://en.wikipedia.org/wiki/Help:Wiki_markup">Wikipedia page 
 <subhead intoc="false" id="display">Layout and Display Markup</subhead>
 There are a number of helper layout tags that make it easy to do page layout and display.
 
-<p>
-<b>Sections</b><br>
+
+[ug::subheading {Sections}]
 
 To get the full page layout like on <a href="http://ramadda.org/repository">ramadda.org</a> use the "+section" tag:
 <pre>
@@ -129,7 +129,8 @@ You can also add a CSS style descriptor
 
 
 <p>
-<b>Tabs</b><br>
+[ug::subheading {Tabs}]
+
 You can create a set of tabs with:
 <pre>
 +tabs
@@ -147,7 +148,8 @@ Tab N content
 </pre>
 
 
-<b>Titles and headings</b><br>
+[ug::subheading {Titles and headings}]
+
 There are a number of block display elements - 
 title, heading, blurb, note, and block that can be used as:
 <pre>
@@ -175,8 +177,7 @@ Examples at <a href="https://geodesystems.com/repository/alias/wikiexamples">htt
 
 
 
-<p>
-<b>Inset</b><br>
+[ug::subheading {Inset}]
 
 By default, a page has no margins on the left-side. If you have normal text layout you can make an inset with "+inset":
 <pre>
@@ -195,9 +196,7 @@ This by default gives a 20px left and right margin. To change this you can add a
 
 
 
-<a name="layout"></a>
-<p>
-<b>Grid Layout</b><br>
+[ug::subheading {Grid Layout} layout]
 There is support for the <a href="http://getbootstrap.com/">Bootstrap</a> CSS grid system. To do a row layout use the following. The "+col-md-..." correspond to Bootstraps column widths, e.g., col-md-\[2,3,4,6,8,9,10,12\].
 Basically you can have any number of columns within a row.
 Each column has a width, the sum of which adds up to 12.
@@ -316,8 +315,8 @@ This would give us:
 [ht::cimg images/wikiinformation.png {} {border=0}]
 
 
-<a name="entry"></a>
-<p><b>entry attribute</b><br>
+
+[ug::subheading {entry attribute} {entry}]
 Normally, all property tags refer to the current entry. However, you can specify another entry:
 [wiki::text [wiki::tag information {entry="some other entry id or name or 'parent' or 'grandparent'"}]]
 
@@ -499,126 +498,7 @@ Show the menu actions in a popup:
 
 
 <subhead intoc="false" id="displays">Display Components</subhead>
-There is a set of new "display" wiki tags that allow you to develop rich 
-integrated and interactive search, map and charting wiki pages.
-
-There are numerous examples of this facility available at <a href="http://ramadda.org/repository/alias/displays">ramadda.org</a>. You can always see the underlying wiki text from the Information or Wiki Text entry menu item.
-
-
-
-The idea is that there is a new <i>group</i> tag that can manage a number of children displays. Each child display
-may be located in a fixed location (using layoutHere=false) in the web page or the group can manage the layout of the children displays.
-
-
-
-
-
-
-The group is defined as:
-
-[wiki::tagdef group {showTitle="true"  showMenu="false"  layoutType="table"  layoutColumns="1" divid="maindiv"}]
-
-And the displays are defined as:
-[wiki::tagdef display {type="display type"   layoutHere="true"  ...}]
-
-Where type may be one of:
-<ul>
-<li> <i>entrylist</i> A search form and a list of entries. 
-
-Specify alternative search providers with the <i>provider</i> argument, e.g.:
-<pre>
-provider=google,arxiv,wolfram
-</pre>
-
-<li> <i>table</i> Tabular display of data
-
-<li> <i>linechart</i> A line chart
-
-<li> <i>barchart</i> A bar chart
-
-<li> <i>map</i> A map
-
-</pre>
-
-
-If you have a wiki page that does not have a group but only one or more display tags then a group will be
-added automatically.
-
-The major role for the group is to allow for the different displays to communicate with each other 
-(e.g., creating a new chart, map click, animation, etc) and to layout the set of children displays.
-
-<h3>Display Layout</h3>
-
-You can specify different layouts with the <i>layoutType</i> attribute. The available layouts are:
-<pre>
-layoutType=table
-layoutType=columns
-layoutType=rows
-</pre>
-
-Using the table layout you also specify a number of columns with the <i>layoutColumns</i> attibute.
-
-For the <i>columns</i> and <i>rows</i> layout type each child display can specify the <i>column</i> number of
-<i>row</i> number it should be placed in. 
-
-For example, for the <i>rows</i> layout if you had:
-<pre>
-{{group layoutType="rows"}}
-{{display display1  row="1"}}
-{{display display2  row="1"}}
-{{display display3  row="1"}}
-{{display display4  row="2"}}
-{{display display5  row="2"}}
-{{display display6  row="3"}}
-</pre>
-
-Would result in (without the border):
-<table width="50%" border=1><tr><td width=33%>display1</td><td width=33%>display2</td><td width=33%>display3</td></table>
-<table width="50%" border=1><tr><td width=50%>display4</td><td width=50%>display5</td></table>
-<table width="50%" border=1><tr><td width=100%>display6</td></table>
-
-
-The <i>divid</i> attribute allows you to specify a div tag that is in the wiki page as the location for the group and the displays
-to place themselves in. For example, below is the (abbreviated) wiki text used to create
-this <a href="http://ramadda.org/repository/entry/show/Home/RAMADDA+Examples/Rich+Content+Wikis/Display+Wikis/General+purpose+file+viewer?entryid=a98aa183-939b-471d-b31d-382e10657f2f">page</a> on ramadda.org.
-
-We want to have a fixed layout where the entry list is on the left and the map is on the right. Any charts or other display components that are interactively created by the user are managed by the group and layed out below the list and map.
-To do this we define a regular html table layout that contains a couple of div tags - one for the list and one for the map. We set the IDs of the div tags and then reference those IDs in the display wiki tags below.
-
-Likewise, the group has a divid=maindiv which corresponds to the div at the bottom of the page.
-
-[xml {
-<table width=100% border=0 cellpadding=10>
-<tr valign=top>
-<td width=50%><div id="listdiv"></div></td>
-<td width=50%><div id="mapdiv"></div></td>
-</table>
-
-<div id=maindiv></div>
-
-{{group  layoutType="table"  layoutColumns="1" divid="maindiv"}}
-
-{{display   type="entrylist"   divid="listdiv" }}
-
-{{display   type="map"  layoutHere="true" height="250" divid="mapdiv"}}
-}]
-
-
-
-
-When using the display tag you need to specify the type of display.
-
-[wiki::tagdef display {type="entrylist"   layoutHere="true"   orientation="vertical"  showMetadata="false" showTypes="true" name="list1" innerHeight="200" divid="listdiv" formOpen="false"}
-]:
-
-<h3>Entry List Display</h3>
-
-
-<pre>
-entryType="type_point_pbo_position_time_series"
-ramaddaBaseUrl="http://community.ramadda.org/repository/repos/data"
-</pre>
-
+See the <a href="wikidisplay.html">wikidisplay.html</a> page.
 
 <subhead intoc="false" id="collection">Collection Wiki Properties</subhead>
 
@@ -1050,10 +930,7 @@ want to include and look at the url for the output=... url argument
 and use that.
 
 
-
-<p>
-<a name="snippet"></a>
-<b>Snippet</b><br>
+[ug::subheading {Snippet} snippet]
 A number of the layouts below (e.g,, table layout) will include a snippet of descriptive text from the entry that is being displayed. The snippet text is defined in the description of the entry with:
 <pre>
 Some description here.

@@ -288,6 +288,7 @@ function DisplayThing(argId, argProperties) {
           return Utils.formatNumber(number);
             },
        getProperty: function(key, dflt) {
+           if(this[key]) return this[key];
             var value = this.properties[key];
             if(value != null) {
                 return value;
@@ -373,6 +374,17 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             notifyEvent:function(func, source, data) {
                 if(this[func] == null) { return;}
                 this[func].apply(this, [source,data]);
+            },
+            getColorTableName: function() {
+                var ct =   this.getProperty("colorBar", this.getProperty("colorTable"));
+                if(ct == "none") return null;
+                return ct;
+            },
+            getColorTable: function() {
+                var colorTable = this.getColorTableName();
+                if(colorTable)
+                    return  Utils.ColorTables[colorTable];
+                return null;
             },
             toString: function() {
                  return "RamaddaDisplay:" + this.type +" - " + this.getId();

@@ -1337,12 +1337,14 @@ function RamaddaMultiChart(displayManager, id, properties) {
                     }
                     this.chart = new google.visualization.Gauge(document.getElementById(chartId));
                 } else  if(chartType == DISPLAY_BUBBLE) {
-                    if(this.colorTable)
-                        chartOptions.colors=Utils.getColorTable(properties.colorTable);
+                    var ct = this.getColorTable();
+                    if(ct)
+                        chartOptions.colors=ct;
                     else if(!this.colors)
-                        chartOptions.colors=Utils.getColorTable("rainbow");
-                    else
                         chartOptions.colors=this.colorList;
+                    if(chartOptions.colors)
+                       chartOptions.colors=Utils.getColorTable("rainbow");
+
                     chartOptions.chartArea = {left:100,top:10,width:'98%',height:'90%'}
                     chartOptions.colorAxis  = {
                         legend: {
@@ -2104,7 +2106,7 @@ function RamaddaCrosstabDisplay(displayManager, id, properties) {
 function RamaddaCorrelationDisplay(displayManager, id, properties) {
     var SUPER;
     $.extend(this, {
-            colorBar:"red_white_blue",
+            colorTable:"red_white_blue",
             colorByMin:"-1",
             colorByMax:"1",
                 });
@@ -2121,9 +2123,10 @@ function RamaddaCorrelationDisplay(displayManager, id, properties) {
                 SUPER.getMenuItems.call(this,menuItems);
                 var get = this.getGet();
                 var tmp = HtmlUtil.formTable();
-                var ct = "<select id=" + this.getDomId("colorbar")+">";
+                var colorTable = this.getColorTableName();
+                var ct = "<select id=" + this.getDomId("colortable")+">";
                 for(table in Utils.ColorTables) {
-                    if(table == this.colorBar)
+                    if(table == colorTable)
                         ct+="<option selected>"+ table+"</option>";
                     else
                         ct+="<option>"+ table+"</option>";
@@ -2147,13 +2150,13 @@ function RamaddaCorrelationDisplay(displayManager, id, properties) {
                     
                 };
                 var func2  = function() {
-                    _this.colorBar = _this.jq("colorbar").val();
+                    _this.colorTable = _this.jq("colortable").val();
                     _this.updateUI();
                     
                 };
                 this.jq("colorbymin").blur(updateFunc);
                 this.jq("colorbymax").blur(updateFunc);
-                this.jq("colorbar").change(func2);
+                this.jq("colortable").change(func2);
         },
 
             handleEventPointDataLoaded : function(source, pointData) {
@@ -2190,10 +2193,7 @@ function RamaddaCorrelationDisplay(displayManager, id, properties) {
                 var colors = null;
                 colorByMin = parseFloat(this.colorByMin);
                 colorByMax = parseFloat(this.colorByMax);
-                if(this.colorBar && this.colorBar !="none")
-                    colors = Utils.ColorTables[this.colorBar];
-                else if(this.colorTable && this.colorTable !="none")
-                    colors = Utils.ColorTables[this.colorTable];
+                colors = this.getColorTable();
                 for(var fieldIdx1=0;fieldIdx1<fields.length;fieldIdx1++) {
                     var field1 = fields[fieldIdx1];
                     if(!field1.isFieldNumeric() || field1.isFieldGeo())  continue;
@@ -2254,7 +2254,7 @@ function RamaddaCorrelationDisplay(displayManager, id, properties) {
 function RamaddaHeatmapDisplay(displayManager, id, properties) {
     var SUPER;
     $.extend(this, {
-            colorBar:"red_white_blue",
+            colorTable:"red_white_blue",
                 });
 
     RamaddaUtil.inherit(this, SUPER = new RamaddaFieldsDisplay(displayManager, id, DISPLAY_HEATMAP, properties));
@@ -2269,16 +2269,17 @@ function RamaddaHeatmapDisplay(displayManager, id, properties) {
                 SUPER.getMenuItems.call(this,menuItems);
                 var get = this.getGet();
                 var tmp = HtmlUtil.formTable();
-                var ct = "<select id=" + this.getDomId("colorbar")+">";
-                for(table in Utils.ColorTables) {
-                    if(table == this.colorBar)
+                var colorTable = this.getColorTableName();
+                var ct = "<select id=" + this.getDomId("colortable")+">";
+                for(table in Utils.ColorTable) {
+                    if(table == colorTabler)
                         ct+="<option selected>"+ table+"</option>";
                     else
                         ct+="<option>"+ table+"</option>";
                 }
                 ct+= "</select>";
 
-                tmp += HtmlUtil.formEntry("Color Bar:",ct);
+                tmp += HtmlUtil.formEntry("Color Table:",ct);
                                           
                 tmp += HtmlUtil.formEntry("Color By Range:", HtmlUtil.input("", this.colorByMin, ["size","7",ATTR_ID,  this.getDomId("colorbymin")]) + " - " +
                                           HtmlUtil.input("", this.colorByMax, ["size","7",ATTR_ID,  this.getDomId("colorbymax")]));
@@ -2295,13 +2296,13 @@ function RamaddaHeatmapDisplay(displayManager, id, properties) {
                     
                 };
                 var func2  = function() {
-                    _this.colorBar = _this.jq("colorbar").val();
+                    _this.colorTable = _this.jq("colortable").val();
                     _this.updateUI();
                     
                 };
                 this.jq("colorbymin").blur(updateFunc);
                 this.jq("colorbymax").blur(updateFunc);
-                this.jq("colorbar").change(func2);
+                this.jq("colortable").change(func2);
         },
 
             handleEventPointDataLoaded : function(source, pointData) {
@@ -2388,14 +2389,9 @@ function RamaddaHeatmapDisplay(displayManager, id, properties) {
                         //                        console.log("ct:" + name +" " +(ct!=null));
                         colors.push(ct);
                     }
-                }  else if(this.colorTable && this.colorTable !="none") {
-                    colors = [Utils.ColorTables[this.colorTable]];
-                } else if(this.colorBar && this.colorBar !="none") {
-                    colors = [Utils.ColorTables[this.colorBar]];
+                }  else {
+                    colors  = [this.getColorTable()];
                 }
-
-                
-                
                 var mins = null;
                 var maxs = null;
                 for(var rowIdx=1;rowIdx<tuples.length;rowIdx++) {

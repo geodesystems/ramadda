@@ -30,10 +30,74 @@ pre {
 
 
 RAMADDA provides a set of information and data display components in the wiki facility. 
-There are a number of <a href="https://geodesystems.com/repository/entry/show?entryid=e8af924a-2194-4fd0-83be-92d006837c00">examples</a> available.
+There are a number of  <a href="https://geodesystems.com/repository/entry/show?entryid=e8af924a-2194-4fd0-83be-92d006837c00">examples</a> available.
+The underlying wiki text for any entry can be seen with the Information page.
 
-Each of these components belongs to some group. A group can layout its children component (see below) and also supports
-sharing of events among components (e.g., record selection in a chart).
+
+<a name="group"></a><p><div class="ramadda-help-heading">11.2.0 Display Groups</div> 
+
+There is a <i>group</i> tag that can manage a number of children displays. Each child display
+may be located in a fixed location (using layoutHere=false) in the web page or the group can manage the layout of the children displays.
+The group allows different displays to communicate with each other 
+(e.g., creating a new chart, map click, animation, etc) and to layout the set of children displays.
+If there is a wiki page that does not have a group but only one or more display tags then a group will be
+added automatically. 
+
+
+
+<div class="ramadda-help-subheading">Display Layout</div> 
+
+Different layouts can be specified with the <i>layoutType</i> attribute. The available layouts are:
+<pre>
+layoutType=tabs
+layoutType=table
+layoutType=columns
+layoutType=rows
+</pre>
+
+Using the table layout the number of columns is specified with the <i>layoutColumns</i> attibute.
+
+For the <i>columns</i> and <i>rows</i> layout type each child display can specify the <i>column</i> number of
+<i>row</i> number it should be placed in. For example, for the <i>rows</i> layout if you had:
+<pre>
+{{group layoutType="rows"}}
+{{display display1  row="1"}}
+{{display display2  row="1"}}
+{{display display3  row="1"}}
+{{display display4  row="2"}}
+{{display display5  row="2"}}
+{{display display6  row="3"}}
+</pre>
+
+Would result in (without the border):
+<p>
+<table width="50%" border=1><tr><td width=33%>display1</td><td width=33%>display2</td><td width=33%>display3</td></table>
+<table width="50%" border=1><tr><td width=50%>display4</td><td width=50%>display5</td></table>
+<table width="50%" border=1><tr><td width=100%>display6</td></table>
+<p>
+
+The <i>divid</i> attribute allows you to specify a div tag that is in the wiki page as the location for the group and the displays
+to place themselves in. For example, below is the (abbreviated) wiki text used to create
+this <a href="http://ramadda.org/repository/entry/show/Home/RAMADDA+Examples/Rich+Content+Wikis/Display+Wikis/General+purpose+file+viewer?entryid=a98aa183-939b-471d-b31d-382e10657f2f">page</a> on ramadda.org.
+
+We want to have a fixed layout where the entry list is on the left and the map is on the right. Any charts or other display components that are interactively created by the user are managed by the group and layed out below the list and map.
+To do this we define a regular html table layout that contains a couple of div tags - one for the list and one for the map. We set the IDs of the div tags and then reference those IDs in the display wiki tags below.
+
+Likewise, the group has a divid=maindiv which corresponds to the div at the bottom of the page.
+
+<div style="margin:10p;"><pre>
+&lt;table width=100% border=0 cellpadding=10&gt;
+&lt;tr valign=top&gt;
+&lt;td width=50%&gt;&lt;div id=&quot;listdiv&quot;&gt;&lt;/div&gt;&lt;/td&gt;
+&lt;td width=50%&gt;&lt;div id=&quot;mapdiv&quot;&gt;&lt;/div&gt;&lt;/td&gt;
+&lt;/table&gt;
+
+&lt;div id=maindiv&gt;&lt;/div&gt;
+{{group  layoutType=&quot;table&quot;  layoutColumns=&quot;1&quot; divid=&quot;maindiv&quot;}}
+{{display   type=&quot;entrylist&quot;   divid=&quot;listdiv&quot; }}
+{{display   type=&quot;map&quot;  layoutHere=&quot;true&quot; height=&quot;250&quot; divid=&quot;mapdiv&quot;}}
+</pre></div>
+
 
 Each of these tags support the following attributes:
 <pre>
@@ -43,170 +107,276 @@ showTitle=&quot;true&quot
 title=Title to display
 </pre>
 If layoutHere is set to false then the component is laid out by its group. Otherwise it is displayed in place.
-
-<p>
-
-
-<a name="displays"></a><p><div class="ramadda-page-heading">11.2.0 The Displays</div> 
-<ul>
 <br>
-<li> <b>Group</b><br>
-<a name="group"></a>{{group <i>layoutType="columns"  layoutColumns="2"</i>}}
+Some of the displays use a color table. There are a number of pre-defined color tables available:
+<pre>
+colorTable=&quot;rainbow|grayscale|inversegrayscale|blues|blue_green_red|white_blue|blue_red&quot;
+</pre>
+
 <p>
-The layoutType can be one of:
+
+
+<a name="fields"></a><p><div class="ramadda-help-heading">11.2.1 Specifying Fields</div> 
+Many of the displays below use a <i>fields</i> attribute to specify the fields that are displayed. 
+These are either the field ids of the point data or 
+
+<pre>
+fields="active_voters,total_ballots"
+fields="#1,#2,#3"
+</pre>
+
+The field ids for a point data entry can be viewed with the 
+<a href="https://geodesystems.com/repository/entry/show/Home/RAMADDA+Information/Site+Content/Development/Example+Charts?entryid=e8af924a-2194-4fd0-83be-92d006837c00&output=points.metadata">Metadata view</a>.
+
+Derived data can be calculated by specifying a javascript function with the field ids. For example, in the 
+<a href="https://geodesystems.com/repository/entry/show?entryid=e8af924a-2194-4fd0-83be-92d006837c00">election data example</a> 
+one of the displays shows the turnout percentage using the following attributes:
+<pre>function=&quot;total_ballots/active_voters&quot; 
+functionName=&quot;turnout&quot;</pre>
+
+The full wiki text is:
+<pre>{{display  type=&quot;areachart&quot;  column=&quot;0&quot; layoutHere=&quot;true&quot;  showTitle=&quot;true&quot;  title=&quot;Line Chart with Function&quot;  
+vAxisMinValue=&quot;0&quot; vAxisMaxValue=&quot;1.0&quot; padRight=&quot;true&quot;
+function=&quot;total_ballots/active_voters&quot; functionName=&quot;turnout&quot;}}</pre>
+
+Percentage values can be calculated with the <i>showPercent</i> attribute. This sums up the values of all of the specified fields and uses the
+percent value.
+
+<pre>{{display  type=&quot;linechart&quot;  column=&quot;0&quot; layoutHere=&quot;true&quot;  showTitle=&quot;true&quot;   
+fields=&quot;#5,#6,#7,#8,#9,#10&quot; 
+showPercent=&quot;true&quot; 
+vAxisMinValue=&quot;0&quot; vAxisMaxValue=&quot;100&quot;  title=&quot;Line Chart Showing %&quot;}}</pre>
+
+
+
+<a name="displays"></a><p><div class="ramadda-help-heading">11.2.2 The Displays</div> 
+
+<div class="ramadda-help-subheading"> Search form</div> 
+<a name="display"></a><pre>{{display type=&quot;entrylist&quot;  
+width=&quot;800&quot;  height=&quot;400&quot;  orientation=&quot;vertical&quot;  
+showForm=&quot;true&quot;  formOpen=&quot;true&quot;         
+provider=&quot;google,arxiv,wolfram,...&quot;}}</pre>
+
+Supports an embedded and configurable search form.
+The <i>provider</i> attribute allows you to specify alternative search providers.
+
+<a name="image1"></a><div class="cimg"><a href="images/charts/searchform.png"><img  src="images/charts/searchform.png" width=700 alt="Search Form" ></a><br><span class="caption">Image 1: Search Form</span></div>
+
+
+<div class="ramadda-help-subheading">Map</div> 
+<a name="display"></a><pre>{{display type=&quot;map&quot;  width=&quot;100%&quot;  #height=&quot;400&quot;
+geojsonLayer=&quot;entry id of a geojson file&quot; 
+geojsonLayerName=&quot;Layer name&quot;
+kmlLayer=&quot;entry id of a kml file&quot; 
+kmlLayerName=&quot;Layer name&quot;
+pruneFeatures=&quot;true&quot; 
+colorBy=&quot;total_ballots&quot;
+colorTable=&quot;inversegrayscale&quot;
+colorByMin=&quot;min value&quot;
+colorByMax=&quot;max value&quot;
+displayDiv=&quot;mapDisplay${entryid}&quot;}}</pre>
+
+A map that shows georeferenced point data. This can be integrated with other displays, e.g., clicking on a point will highlight that location in
+a line chart.
+
+<table width=100%><tr valign=bottom>
+<td width=50%>
+<a name="image2"></a><div class="cimg"><a href="images/charts/mappoints.png"><img  src="images/charts/mappoints.png" width=100% alt="Point Display in Map" ></a><br><span class="caption">Image 2: Point Display in Map</span></div>
+</td>
+<td width=50%>
+<a name="image3"></a><div class="cimg"><a href="images/charts/map.png"><img  src="images/charts/map.png" width=100% alt="Chloropleth Map" ></a><br><span class="caption">Image 3: Chloropleth Map</span></div>
+</td>
+</tr>
+</table>
+
+The map in the above image can be viewed <a href="https://geodesystems.com/repository/entry/show?entryid=e8af924a-2194-4fd0-83be-92d006837c00#map">here</a>. Below is the wiki text that creates the display. 
+
 <ul>
-
-<li> table<br>
-The layoutColumns attribute specifies how many columns to use for the table.
-
-<li> rows<br>
-Each child display specifies the row they are placed in.
-
-<li> columns<br>
-Each child display specifies the column they are placed in.
-
-<li> tabs<br>
-Each child display is placed in a tab.
-
+<li> If a Geojson or Kml layer is specified then the layer is displayed instead of the points. The location of each point is used to
+find a containing map feature. That map feature is then colored as defined below.
+<li> <i>pruneFeatures</i>. If set to true than any map feature that does not have a corresponding point will not be shown.
+<li> The <i>colorBy</i> attribute specifies the field that is used to color the points or the map segments. 
+The <i>colorTable</i> attribute specifies a color table to
+use and the <i>colorByMin</i> and <i>colorByMax</i> attributes are option and are used to define a color range.
+<li> The displayDiv, when specified, is the id of a div tag (shown below) that the map will display the details of
+a point or map segment as the user mouses over it.
 </ul>
 
+This is the wiki text used in the above example:
+
+<pre> 
+:heading Map
++row
++col-md-6
+{{display  type=&quot;map&quot; column=&quot;1&quot;  width=&quot;-100&quot; height=&quot;500&quot;   layoutHere=&quot;true&quot; includeData=&quot;false&quot;   showTitle=&quot;false&quot; 
+title=&quot;Colored by total ballots&quot; 
+geojsonLayer=&quot;7c8f5e25-e569-4ca9-b389-5bb03cdb138b&quot; 
+geojsonLayerName=&quot;Precincts&quot;
+displayAsMap=&quot;true&quot;
+pruneFeatures=&quot;true&quot;
+colorBy=&quot;total_ballots&quot;
+colorBar=&quot;inversegrayscale&quot;
+displayDiv=&quot;mapDisplay${entryid}&quot;
+}}
+-col
++col-6
+&lt;br&gt;
+:heading Map Details
+&lt;div id=&quot;mapDisplay{{entryid}}&quot; style=&quot;max-height:500px;&quot;&gt;&lt;/div&gt;
+-col
+-row
+</pre>
 
 
-<br>
-<br>
-<li> <b> Search form</b><br>
-<a name="display"></a>{{display <i>  type=&quot;entrylist&quot;  width=&quot;800&quot;  height=&quot;400&quot;  orientation=&quot;vertical&quot;  showForm=&quot;true&quot;  formOpen=&quot;true&quot;         </i>}}
-<br>
-Supports an embedded and configurable search form.<br>
-<a name="image1"></a><div class="img"><a href="images/charts/searchform.png"><img  src="images/charts/searchform.png" width=500 alt="Search Form" ></a><br><span class="caption">Image 1: Search Form</span></div>
 
-<br>
-<li> <b> Map</b><br>
-<a name="display"></a>{{display <i>  type=&quot;map&quot;  width=&quot;100%&quot;  #height=&quot;400&quot;       </i>}}
-<br>
-A map that shows georeferenced point data. This can be integrated with other displays, e.g., clicking on a point will highlight that location in
-a line chart.<br>
-<a name="image2"></a><div class="img"><a href="images/charts/map.png"><img  src="images/charts/map.png"  alt="Map" ></a><br><span class="caption">Image 2: Map</span></div>
+<div class="ramadda-help-subheading"> Line chart</div> 
+<a name="display"></a><pre>{{display type=&quot;linechart&quot;  #width=&quot;800&quot;  #height=&quot;400&quot;  
+#fields=&quot;&quot;       
+#vAxisMinValue=&quot;0&quot; #vAxisMaxValue=&quot;1.0&quot; #padRight=&quot;true&quot;}}</pre>
 
+Displays time series or indexed point data. The vAxisMinValue and vAxisMaxValue are used as the range instead of the min/max from the data.
 <br>
-<li> <b> Line chart</b><br>
-<a name="display"></a>{{display <i>  type=&quot;linechart&quot;  #width=&quot;800&quot;  #height=&quot;400&quot;  #fields=&quot;&quot;       </i>}}
-<br>
-Displays time series or indexed point data.<br>
-<div class="img"><a href="images/charts/linechart.png"><img  src="images/charts/linechart.png"  alt="images/charts/linechart.png" ></a></div>
+If <i>padRight</i> is set to true than the chart is padded on the right with the same space as what is used for the second axis legend. This allows
+for two or more charts to be aligned that have one or more fields being displayed.
 
-<br>
-<li> <b> Area chart</b><br>
-<a name="display"></a>{{display <i>  type=&quot;areachart&quot;  #width=&quot;800&quot;  #height=&quot;400&quot;  #fields=&quot;&quot;  #isStacked=&quot;true&quot;       </i>}}
+<a name="image4"></a><div class="cimg"><a href="images/charts/linechart.png"><img  src="images/charts/linechart.png"  alt="Line Chart" ></a><br><span class="caption">Image 4: Line Chart</span></div>
 
 
-<br>
-<li> <b> Scatter Plot</b><br>
-<a name="display"></a>{{display <i>  type=&quot;scatterplot&quot;  #width=&quot;800&quot;  #height=&quot;400&quot;  #fields=&quot;&quot;       </i>}}
-<br>
-<div class="img"><a href="images/charts/scatterplot.png"><img  src="images/charts/scatterplot.png" width=300 alt="images/charts/scatterplot.png" ></a></div>
+<div class="ramadda-help-subheading">Bar chart and stacked bar chart</div> 
+<a name="display"></a><pre>{{display type=&quot;barchart&quot;    #fields=&quot;&quot;  padRight=&quot;true&quot; layoutHere=&quot;true&quot;  showMenu=&quot;true&quot;  showTitle=&quot;true&quot;  title=&quot;Bar Chart&quot;}}</pre>
 
-<br>
-<li> <b> Histogram</b><br>
-<a name="display"></a>{{display <i>  type=&quot;histogram&quot;  #width=&quot;800&quot;  #height=&quot;400&quot;  #fields=&quot;&quot;  #colors=&quot;comma separated color list&quot;  #legendPosition=&quot;none|top|right|left|bottom&quot;  #textPosition=&quot;out|in|none&quot;  #isStacked=&quot;false|true|percent|relative&quot;  #logScale=&quot;true|false&quot;  #scaleType=&quot;log|mirrorLog&quot;  #vAxisMinValue=&quot;&quot;  #vAxisMaxValue=&quot;&quot;  #minValue=&quot;&quot;  #maxValue=&quot;&quot;       </i>}}
-<br>
-<div class="img"><a href="images/charts/histogram.png"><img  src="images/charts/histogram.png"  alt="images/charts/histogram.png" ></a></div>
+<a name="display"></a><pre>{{display type=&quot;barstack&quot;    #fields=&quot;&quot;  layoutHere=&quot;true&quot;  showMenu=&quot;true&quot;  showTitle=&quot;true&quot;  title=&quot;Stacked Bar Chart&quot;}}</pre>
 
 
-<br>
-<li> <b> Bubble Chart</b><br>
-<a name="display"></a>{{display <i>  type=&quot;bubble&quot;  width=&quot;500&quot;  height=&quot;500&quot;  #fields=&quot;label|x|y|color|size&quot;  #colorTable=&quot;rainbow|grayscale|inversegrayscale|blues|blue_green_red|white_blue|blue_red&quot;  #colors=&quot;comma separated color list&quot;  #legendPosition=&quot;none|top|right|left|bottom&quot;  #hAxisFormat=&quot;none|decimal|scientific|percent|short|long&quot;  #vAxisFormat=&quot;none|decimal|scientific|percent|short|long&quot;  #hAxisTitle=&quot;&quot;  #vAxisTitle=&quot;&quot;       </i>}}
-<br>
-
-<div class="img"><a href="images/charts/bubble.png"><img  src="images/charts/bubble.png"  alt="images/charts/bubble.png" ></a></div>
+<a name="image5"></a><div class="cimg"><a href="images/charts/barchart.png"><img  src="images/charts/barchart.png"  alt="Bar Chart" ></a><br><span class="caption">Image 5: Bar Chart</span></div>
 
 
-<br>
-<li> <b> Pie chart</b><br>
-<a name="display"></a>{{display <i>  type=&quot;piechart&quot;  #pieHole=&quot;0.5&quot;  #is3D=&quot;true&quot;  #fields=&quot;&quot;  #bins=&quot;bin count&quot;  #binMin=&quot;min&quot;  #binMax=&quot;max&quot;  #sliceVisibilityThreshold=&quot;0.01&quot;  width=&quot;500&quot;  height=&quot;250&quot;       </i>}}
-<br>
-<div class="img"><a href="images/charts/piechart.png"><img  src="images/charts/piechart.png"  alt="images/charts/piechart.png" ></a></div>
+<div class="ramadda-help-subheading">Area chart</div> 
+<a name="display"></a><pre>{{display type=&quot;areachart&quot;  #width=&quot;800&quot;  #height=&quot;400&quot;  #fields=&quot;&quot;  
+#vAxisMinValue=&quot;0&quot; #vAxisMaxValue=&quot;1.0&quot; #padRight=&quot;true&quot;
+#isStacked=&quot;true&quot;}}</pre>
+<a name="image6"></a><div class="cimg"><a href="images/charts/areachart.png"><img  src="images/charts/areachart.png"  alt="Area Chart" ></a><br><span class="caption">Image 6: Area Chart</span></div>
 
-<br>
-<li> <b> Calendar</b><br>
-<a name="display"></a>{{display <i>  type=&quot;calendar&quot;  #fields=&quot;&quot;  #cellSize=&quot;15&quot;  #missingValue=&quot;0&quot;       </i>}}
-<br>
+
+<div class="ramadda-help-subheading"> Scatter Plot</div> 
+<a name="display"></a><pre>{{display type=&quot;scatterplot&quot;  #width=&quot;800&quot;  #height=&quot;400&quot;  #fields=&quot;&quot;}}</pre>
+
+<a name="image7"></a><div class="cimg"><a href="images/charts/scatterplot.png"><img  src="images/charts/scatterplot.png" width=300 alt="Scatter Plot" ></a><br><span class="caption">Image 7: Scatter Plot</span></div>
+
+<div class="ramadda-help-subheading"> Histogram</div> 
+<a name="display"></a><pre>{{display type=&quot;histogram&quot;  #width=&quot;800&quot;  #height=&quot;400&quot;  #fields=&quot;&quot;  
+#colors=&quot;comma separated color list&quot;  
+#legendPosition=&quot;none|top|right|left|bottom&quot;  
+#textPosition=&quot;out|in|none&quot;  
+#isStacked=&quot;false|true|percent|relative&quot;  
+#logScale=&quot;true|false&quot;  #scaleType=&quot;log|mirrorLog&quot;  
+#vAxisMinValue=&quot;&quot;  #vAxisMaxValue=&quot;&quot;  
+#minValue=&quot;&quot;  #maxValue=&quot;&quot;}}</pre>
+
+The   <i>minValue</i> and <i>maxValue</i> attributes are used to specify the  maximum and minimum evertical data value to render.
+More info at <a href="https://developers.google.com/chart/interactive/docs/gallery/histogram">Google charts histogram documentation</a>.
+
+
+<a name="image8"></a><div class="cimg"><a href="images/charts/histogram.png"><img  src="images/charts/histogram.png"  alt="Histogram" ></a><br><span class="caption">Image 8: Histogram</span></div>
+
+
+<div class="ramadda-help-subheading"> Bubble Chart</div> 
+<a name="display"></a><pre>{{display type=&quot;bubble&quot;  width=&quot;500&quot;  height=&quot;500&quot;  
+#fields=&quot;label|x|y|color|size&quot;  
+#colorTable=&quot;rainbow|grayscale|inversegrayscale|blues|blue_green_red|white_blue|blue_red&quot;  #colors=&quot;comma separated color list&quot;  #legendPosition=&quot;none|top|right|left|bottom&quot;  #hAxisFormat=&quot;none|decimal|scientific|percent|short|long&quot;  #vAxisFormat=&quot;none|decimal|scientific|percent|short|long&quot;  #hAxisTitle=&quot;&quot;  #vAxisTitle=&quot;&quot;}}</pre>
+
+The <i>fields</i> specify a text field for the label and the numeric value fields used for the x and y axis, the bubble color and bubble  size.
+
+<a name="image9"></a><div class="cimg"><a href="images/charts/bubble.png"><img  src="images/charts/bubble.png"  alt="Bubble Chart" ></a><br><span class="caption">Image 9: Bubble Chart</span></div>
+
+
+<div class="ramadda-help-subheading"> Pie chart</div> 
+<a name="display"></a><pre>{{display type=&quot;piechart&quot;  #fields=&quot;&quot;
+#pieHole=&quot;0.5&quot;  #is3D=&quot;true&quot;    
+#bins=&quot;bin count&quot;  #binMin=&quot;min&quot;  #binMax=&quot;max&quot;  
+#sliceVisibilityThreshold=&quot;0.01&quot;  
+width=&quot;500&quot;  height=&quot;250&quot;}}</pre>
+
+More info at <a href="https://developers.google.com/chart/interactive/docs/gallery/piechart">Google charts pie chart documentation</a>
+
+<a name="image10"></a><div class="cimg"><a href="images/charts/piechart.png"><img  src="images/charts/piechart.png"  alt="Pie Chart" ></a><br><span class="caption">Image 10: Pie Chart</span></div>
+
+<div class="ramadda-help-subheading"> Calendar</div> 
+<a name="display"></a><pre>{{display type=&quot;calendar&quot;  #fields=&quot;&quot;  #cellSize=&quot;15&quot;  #missingValue=&quot;0&quot;}}</pre>
+
 Displays point data based on the date of each record. The calendar entry is color coded based on the specified field.
-<div class="img"><a href="images/charts/calendar.png"><img  src="images/charts/calendar.png"  alt="images/charts/calendar.png" ></a></div>
 
-<br>
-<li> <b> Gauge</b><br>
-<a name="display"></a>{{display <i>  type=&quot;gauge&quot;  #fields=&quot;&quot;  #gaugeMin=&quot;&quot;  #gaugeMax=&quot;&quot;  #gaugeLabel=&quot;&quot;       </i>}}
-<br>
+<a name="image11"></a><div class="cimg"><a href="images/charts/calendar.png"><img  src="images/charts/calendar.png"  alt="Calendar Chart" ></a><br><span class="caption">Image 11: Calendar Chart</span></div>
+
+<div class="ramadda-help-subheading"> Gauge</div> 
+<a name="display"></a><pre>{{display type=&quot;gauge&quot;  #fields=&quot;&quot;  #gaugeMin=&quot;&quot;  #gaugeMax=&quot;&quot;  #gaugeLabel=&quot;&quot;}}</pre>
+
 This shows a single value from a series of point data.
-<br>
-<div class="img"><a href="images/charts/gauge.png"><img  src="images/charts/gauge.png"  alt="images/charts/gauge.png" ></a></div>
 
-<br>
-<li> <b> Sankey</b><br>
-<a name="display"></a>{{display <i>  type=&quot;sankey&quot;  #fields=&quot;&quot;       </i>}}
-<br>
+<a name="image12"></a><div class="cimg"><a href="images/charts/gauge.png"><img  src="images/charts/gauge.png"  alt="Gauge" ></a><br><span class="caption">Image 12: Gauge</span></div>
+
+<div class="ramadda-help-subheading"> Sankey</div> 
+<a name="display"></a><pre>{{display type=&quot;sankey&quot;  #fields=&quot;&quot;}}</pre>
+
 Displays flow data. The point data needs to have 2 string fields (the from and to) and a numeric value field.
-<br>
-<div class="img"><a href="images/charts/sankey.png"><img  src="images/charts/sankey.png" width=300 alt="images/charts/sankey.png" ></a></div>
 
-<br>
-<li> <b> Table</b><br>
-<a name="display"></a>{{display <i>  type=&quot;table&quot;  height=&quot;400&quot;  #fields=&quot;&quot;       </i>}}
-<br>
+<a name="image13"></a><div class="cimg"><a href="images/charts/sankey.png"><img  src="images/charts/sankey.png" width=300 alt="Sankey Display" ></a><br><span class="caption">Image 13: Sankey Display</span></div>
+
+<div class="ramadda-help-subheading"> Table</div> 
+<a name="display"></a><pre>{{display type=&quot;table&quot;  height=&quot;400&quot;  #fields=&quot;&quot;}}</pre>
+
 Shows tabular data. This is integrated with other charts so clicking on a row highlights the corresponding record in a chart.
-<br>
-<div class="img"><a href="images/charts/table.png"><img  src="images/charts/table.png"  alt="images/charts/table.png" ></a></div>
 
-<br>
-<li> <b> Heatmap</b><br>
-<a name="display"></a>{{display <i>  type=&quot;heatmap&quot;  #height=&quot;400&quot;  #fields=&quot;&quot;  #colorTables=&quot;temperature,blues&quot;  #colorByMins=&quot;-90,0&quot;  #colorByMaxes=&quot;45,100&quot;  #showIndex=&quot;false&quot;  #showValue=&quot;true&quot;  #showBorder=&quot;true&quot;  #cellHeight=&quot;30&quot;  #textColor=&quot;white&quot;       </i>}}
-<br>
+<a name="image14"></a><div class="cimg"><a href="images/charts/table.png"><img  src="images/charts/table.png"  alt="Table" ></a><br><span class="caption">Image 14: Table</span></div>
+
+<div class="ramadda-help-subheading"> Heatmap</div> 
+<a name="display"></a><pre>{{display type=&quot;heatmap&quot;  #height=&quot;400&quot;  #fields=&quot;&quot;  
+#colorTables=&quot;temperature,blues&quot;  
+#colorByMins=&quot;-90,0&quot;  #colorByMaxes=&quot;45,100&quot;  
+#showIndex=&quot;false&quot;  #showValue=&quot;true&quot;  #showBorder=&quot;true&quot;  
+#cellHeight=&quot;30&quot;  #textColor=&quot;white&quot;}}</pre>
+
 Displays the records, one row per record, with each cell color coded based on the field value and the specified color table.
-<br>
-<div class="img"><a href="images/charts/heatmap.png"><img  src="images/charts/heatmap.png"  alt="images/charts/heatmap.png" ></a></div>
 
-<br>
-<li> <b> Correlation</b><br>
-<a name="display"></a>{{display <i>  type=&quot;correlation&quot;  #fields=&quot;&quot;       </i>}}
-<br>
+<a name="image15"></a><div class="cimg"><a href="images/charts/heatmap.png"><img  src="images/charts/heatmap.png"  alt="Heat Map" ></a><br><span class="caption">Image 15: Heat Map</span></div>
+
+<div class="ramadda-help-subheading"> Correlation</div> 
+<a name="display"></a><pre>{{display type=&quot;correlation&quot;  #fields=&quot;&quot;}}</pre>
+
 Displays a statistical correlation of a set of fields.
-<br>
-<div class="img"><a href="images/charts/correlation.png"><img  src="images/charts/correlation.png" width=600 alt="images/charts/correlation.png" ></a></div>
+<a name="image16"></a><div class="cimg"><a href="images/charts/correlation.png"><img  src="images/charts/correlation.png" width=600 alt="Correlation" ></a><br><span class="caption">Image 16: Correlation</span></div>
 
 
 
-<br>
-<li> <b> Text Readout</b><br>
-<a name="display"></a>{{display <i>  type=&quot;text&quot;       </i>}}
-<br>
+<div class="ramadda-help-subheading"> Text Readout</div> 
+<a name="display"></a><pre>{{display type=&quot;text&quot;}}</pre>
+
 Displays the record selected in other charts.
-<br>
-<div class="img"><a href="images/charts/textreadout.png"><img  src="images/charts/textreadout.png"  alt="images/charts/textreadout.png" ></a></div>
 
-<br>
-<li> <b> Summary Stats</b><br>
-<a name="display"></a>{{display <i>  type=&quot;stats&quot;  loadData=&quot;false&quot;  showDefault=&quot;true&quot;  #showMin=&quot;true&quot;  #showMax=&quot;true&quot;  #showAverage=&quot;true&quot;  #showStd=&quot;true&quot;  #showPercentile=&quot;true&quot;  #showCount=&quot;true&quot;  #showTotal=&quot;true&quot;  #showPercentile=&quot;true&quot;  #showMissing=&quot;true&quot;  #showUnique=&quot;true&quot;  #  #showText=&quot;true&quot;       </i>}}
-<br>
+<a name="image17"></a><div class="cimg"><a href="images/charts/textreadout.png"><img  src="images/charts/textreadout.png"  alt="Text Readout" ></a><br><span class="caption">Image 17: Text Readout</span></div>
+
+<div class="ramadda-help-subheading"> Summary Stats</div> 
+<a name="display"></a><pre>{{display type=&quot;stats&quot;  loadData=&quot;false&quot;  
+showDefault=&quot;true&quot;  
+#showMin=&quot;true&quot;  #showMax=&quot;true&quot;  
+#showAverage=&quot;true&quot;  #showStd=&quot;true&quot;  #showPercentile=&quot;true&quot;  
+#showCount=&quot;true&quot;  #showTotal=&quot;true&quot;  
+#showMissing=&quot;true&quot;  #showUnique=&quot;true&quot;    
+#showText=&quot;true&quot;}}</pre>
+
 Displays a summary statistics including average, min, max, number of missing, etc.
-<br>
 
-<div class="img"><a href="images/charts/stats.png"><img  src="images/charts/stats.png"  alt="images/charts/stats.png" ></a></div>
+<a name="image18"></a><div class="cimg"><a href="images/charts/stats.png"><img  src="images/charts/stats.png" width=700 alt="Statistics Display" ></a><br><span class="caption">Image 18: Statistics Display</span></div>
 
-<br>
-<li> <b> Animation</b><br>
-<a name="display"></a>{{display <i>  type=&quot;animation&quot;       </i>}}
-<br>
+<div class="ramadda-help-subheading"> Animation</div> 
+<a name="display"></a><pre>{{display type=&quot;animation&quot;}}</pre>
+
 Controls time or index based animation. Other charts will highlight the record of  the current time.
-<br>
-<div class="img"><a href="images/charts/animation.png"><img  src="images/charts/animation.png"  alt="images/charts/animation.png" ></a></div>
-<br>
 
+<a name="image19"></a><div class="cimg"><a href="images/charts/animation.png"><img  src="images/charts/animation.png"  alt="Animation" ></a><br><span class="caption">Image 19: Animation</span></div>
 
-
-<br>
-<li> <b>Entry Grid</b><br>
-<a name="display"></a>{{display <i>  type=&quot;entrygrid&quot;  
+<div class="ramadda-help-subheading">Entry Grid</div> 
+<a name="display"></a><pre>{{display type=&quot;entrygrid&quot;  
 showIcon=&quot;true&quot;  showName=&quot;true&quot;  scaleWidth=&quot;true&quot;  scaleHeight=&quot;false&quot;  
 #xAxisAscending=&quot;true&quot;  
 #xAxisScale=&quot;true&quot;  
@@ -214,17 +384,16 @@ showIcon=&quot;true&quot;  showName=&quot;true&quot;  scaleWidth=&quot;true&quot
 #yAxisScale=&quot;true&quot;  
 #urlTemplate=&quot;{url}|{entryid}|{resource}&quot;  
 #height=&quot;400&quot;  #width=&quot;100%&quot;  
-#entries=&quot;&quot;  
-     </i>}}
-<br>
-<div class="img"><a href="images/charts/entrygrid.png"><img  src="images/charts/entrygrid.png" width=600 alt="images/charts/entrygrid.png" ></a></div>
+#entries=&quot;&quot;}}</pre>
+The entrygrid display shows a set of entries based on their date.
+
+<a name="image20"></a><div class="cimg"><a href="images/charts/entrygrid.png"><img  src="images/charts/entrygrid.png" width=700 alt="Entry Grid" ></a><br><span class="caption">Image 20: Entry Grid</span></div>
 
 
 
-</ul>
 
 
-<a name="filters"></a><p><div class="ramadda-page-heading">11.2.1 Filtering Data</div> 
+<a name="filters"></a><p><div class="ramadda-help-heading">11.2.3 Filtering Data</div> 
 You can filter the data that is shown based on string pattern matching or numeric operators.
 You do this with the attributes:
 <pre>

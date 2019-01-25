@@ -762,7 +762,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
                     var strokeWidth = parseFloat(this.getDisplayProp(source,"strokeWidth","1"));
                     var strokeColor = this.getDisplayProp(source, "strokeColor", "#000");
                     var colorByAttr = this.getDisplayProp(source, "colorBy", null);
-                    var colorBar = this.getDisplayProp(source, "colorBar", null);
+                    var colors = this.getColorTable();
                     var sizeByAttr = this.getDisplayProp(source, "sizeBy",null);
                     var colors = null;
                     var isTrajectory =  this.getDisplayProp(source,"isTrajectory",false);
@@ -770,10 +770,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
                         this.map.addPolygon("id", points, null,null);
                         return;
                     }
-
-                    if(colorBar) {
-                        colors = Utils.ColorTables[colorBar];
-                    } else if(source.colors && source.colors.length>0) {
+                     if(!colors && source.colors && source.colors.length>0) {
                         colors = source.colors;
                         if(colors.length==1 &&  Utils.ColorTables[colors[0]]) {
                             colors = Utils.ColorTables[colors[0]];

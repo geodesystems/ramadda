@@ -11,11 +11,25 @@ gen::defineMacro {<%ramadda.version%>} {2.2}
 namespace eval wiki {}
 
 proc wiki::tagdef {t {attrs {}}} {
+    set block  ""
+    set attrs [string trim $attrs]
     if {$attrs==""} {
-        return "<a name=\"$t\"></a>{{$t}}"
+        set   block  "{{$t}}"
     } else {
-        return "<a name=\"$t\"></a>{{$t <i>$attrs</i>}}"
+        set block   "{{$t <i>$attrs</i>}}"
     }
+    return "<a name=\"$t\"></a>$block"
+}
+
+proc wiki::tagdefBlock {t {attrs {}}} {
+    set block  ""
+    set attrs [string trim $attrs]
+    if {$attrs==""} {
+        set   block  [ht::pre "{{$t}}"]
+    } else {
+        set block   [ht::pre "{{$t $attrs}}"]
+    }
+    return "<a name=\"$t\"></a>$block"
 }
 
 proc wiki::tag {t {attrs {}}} {
@@ -27,7 +41,7 @@ proc wiki::tag {t {attrs {}}} {
 }
 
 proc wiki::text {t} {
-    return "<blockquote><pre>$t</pre></blockquote>"
+    return "<div style=\"margin:10px;\"><pre>$t</pre></div>"
 }
 
 proc class {c} {
