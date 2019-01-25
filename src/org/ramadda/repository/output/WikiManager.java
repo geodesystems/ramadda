@@ -5416,6 +5416,8 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
 
             //Put this here after the google load
             HtmlUtils.importJS(sb, getHtdocsUrl("/db/dom-drag.js"));
+            HtmlUtils.importJS(sb, getHtdocsUrl("/lib/plotly/plotly.min.js"));
+
             if (getRepository().getMinifiedOk()) {
                 HtmlUtils.importJS(
                     sb, getHtdocsUrl("/display/display_all_mini.js"));
@@ -5427,12 +5429,14 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                 HtmlUtils.importJS(
                     sb, getHtdocsUrl("/display/displaymanager.js"));
                 HtmlUtils.importJS(sb, getHtdocsUrl("/display/display.js"));
+
                 HtmlUtils.importJS(sb,
                                    getHtdocsUrl("/display/displayentry.js"));
                 HtmlUtils.importJS(sb,
                                    getHtdocsUrl("/display/displaymap.js"));
                 HtmlUtils.importJS(sb,
                                    getHtdocsUrl("/display/displaychart.js"));
+                HtmlUtils.importJS(sb, getHtdocsUrl("/display/displayplotly.js"));
                 HtmlUtils.importJS(sb,
                                    getHtdocsUrl("/display/displaytable.js"));
                 HtmlUtils.importJS(sb, getHtdocsUrl("/display/control.js"));

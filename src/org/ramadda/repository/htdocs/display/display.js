@@ -736,11 +736,9 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
                             theDisplay.displayData();
                         }
                     });
-
-
-
             },
             fieldSelectionChanged: function() {
+                var name  = "the display";
                 this.setDisplayTitle();
                 if(this.displayData) {
                     this.clearCachedData();
@@ -854,6 +852,85 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
                 }
                 return [];
             },
+            filterData: function(dataList, fields) {
+                var patternFieldId = this.getProperty("patternFilterField");
+                var numericFieldId = this.getProperty("numericFilterField");
+                var pattern = this.getProperty("filterPattern");
+                var notPattern = false;
+                if(pattern) {
+                    notPattern= pattern.startsWith("!");
+                    if(notPattern)  {
+                        pattern=pattern.substring(1);
+                    }
+                }
+                    
+                var filterSValue = this.getProperty("numericFilterValue");
+                var filterOperator = this.getProperty("numericFilterOperator","<");
+               
+                if((numericFieldId || patternFieldId)  && (pattern || (filterSValue && filterOperator))) {
+                    var patternField = null;
+                    var numericField = null;
+                    for(var i=0;i<fields.length;i++) {
+                        if(!patternField && (fields[i].getId() == patternFieldId || patternFieldId == "#"+(i+1))) {
+                            patternField = fields[i];
+                        }
+                        if(!numericField && (fields[i].getId() == numericFieldId || numericFieldId == "#"+(i+1))) {
+                            numericField = fields[i];
+                        }
+                        if(patternField && numericField) break;
+                    }
+                    if(patternField || numericField) {
+                        var list = [];
+                        var filterValue;
+                        if(filterSValue) {
+                            filterValue = parseFloat(filterSValue);
+                        }
+                        var standard = true;
+                        for(var i=0;i<dataList.length;i++) {
+                            var row = dataList[i];
+                            var array  = row;
+                            if(row.getData) {
+                                standard = false;
+                                array = row.getData();
+                            }
+                            if(standard  && i==0) {
+                                list.push(row);
+                                continue;
+                            }
+                            var ok = false;
+                            if(numericField && filterSValue && filterOperator) {
+                                var value = parseFloat(array[numericField.getIndex()]);
+                                var filterValue = parseFloat(filterSValue);
+                                if(filterOperator == "<") {
+                                    ok  = value<filterValue;
+                                } else  if(filterOperator == "<=") {
+                                    ok  = value<=filterValue;
+                                } else  if(filterOperator == "==") {
+                                    ok  = value==filterValue;
+                                } else  if(filterOperator == ">") {
+                                    ok  = value>filterValue;
+                                } else  if(filterOperator == ">=") {
+                                    ok  = value>=filterValue;
+                                }
+                                if(!ok) 
+                                    continue;
+                            }
+                            if(patternField && pattern) {
+                                var value = ""+array[patternField.getIndex()];
+                                ok = value.match(pattern);
+                                if(notPattern) ok = !ok;
+                            }
+                            if(ok) {
+                                list.push(row);
+                            }
+                        }
+                        dataList = list;
+                    }
+                }
+                return dataList;
+            },
+
+
             canDoGroupBy: function() {
                 return false;
             },

@@ -764,70 +764,8 @@ function RamaddaMultiChart(displayManager, id, properties) {
             tableHeaderMouseover: function(i,tooltip) {
                 //alert("new:" + tooltip);
             },
-            filterDate: function(dataList, fields) {
-                var patternFieldId = this.getProperty("patternFilterField");
-                var numericFieldId = this.getProperty("numericFilterField");
-                var pattern = this.getProperty("filterPattern");
-                var filterSValue = this.getProperty("numericFilterValue");
-                var filterOperator = this.getProperty("numericFilterOperator","<");
-               
-                if((numericFieldId || patternFieldId)  && (pattern || (filterSValue && filterOperator))) {
-                    var patternField = null;
-                    var numericField = null;
-                    for(var i=0;i<fields.length;i++) {
-                        if(fields[i].getId() == patternFieldId || patternFieldId == "#"+(i+1)) {
-                            patternField = fields[i];
-                        }
-                        if(fields[i].getId() == numericFieldId || numericFieldId == "#"+(i+1)) {
-                            numericField = fields[i];
-                        }
-                        if(patternField && numericField) break;
-                    }
-                    if(patternField || numericField) {
-                        var list = [];
-                        var filterValue;
-                        if(filterSValue) {
-                            filterValue = parseFloat(filterSValue);
-                        }
-                        for(var i=0;i<dataList.length;i++) {
-                            var row = dataList[i];
-                            if(i==0) {
-                                list.push(row);
-                                continue;
-                            }
-                            var ok = false;
-                            if(numericField && filterSValue && filterOperator) {
-                                var value = parseFloat(row[numericField.getIndex()]);
-                                var filterValue = parseFloat(filterSValue);
-                                if(filterOperator == "<") {
-                                    ok  = value<filterValue;
-                                } else  if(filterOperator == "<=") {
-                                    ok  = value<=filterValue;
-                                } else  if(filterOperator == "==") {
-                                    ok  = value==filterValue;
-                                } else  if(filterOperator == ">") {
-                                    ok  = value>filterValue;
-                                } else  if(filterOperator == ">=") {
-                                    ok  = value>=filterValue;
-                                }
-                                if(!ok) 
-                                    continue;
-                            }
-                            if(patternField && pattern) {
-                                var value = ""+row[patternField.getIndex()];
-                                ok = value.match(pattern);
-                            }
-                            if(ok) {
-                                list.push(row);
-                            }
-                        }
-                        dataList = list;
-                    }
-                }
-                return dataList;
-            },
             makeDataTable:function(chartType,dataList,props,selectedFields) {
-                dataList = this.filterDate(dataList, selectedFields);
+                dataList = this.filterData(dataList, selectedFields);
 
                 if(dataList.length==1 || this.chartType == DISPLAY_TABLE || this.chartType == DISPLAY_SANKEY) {
                     return  google.visualization.arrayToDataTable(dataList);
