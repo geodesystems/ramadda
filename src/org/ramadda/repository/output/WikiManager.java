@@ -491,6 +491,84 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
 
 
     /**
+     * _more_
+     *
+     * @param wikiUtil _more_
+     * @param props _more_
+     * @param prop _more_
+     *
+     * @return _more_
+     */
+    public String getProperty(WikiUtil wikiUtil, Hashtable props,
+                              String prop) {
+        return getProperty(wikiUtil, props, prop, null);
+    }
+
+    /**
+     * _more_
+     *
+     * @param wikiUtil _more_
+     * @param props _more_
+     * @param prop _more_
+     * @param dflt _more_
+     *
+     * @return _more_
+     */
+    public String getProperty(WikiUtil wikiUtil, Hashtable props,
+                              String prop, String dflt) {
+        String value = Utils.getProperty(props, prop, (String) null);
+        if ((value == null) && (wikiUtil != null)) {
+            value = (String) wikiUtil.getWikiProperty(prop);
+        }
+        if (value == null) {
+            return dflt;
+        }
+
+        return value;
+    }
+
+    /**
+     * _more_
+     *
+     * @param wikiUtil _more_
+     * @param props _more_
+     * @param prop _more_
+     * @param dflt _more_
+     *
+     * @return _more_
+     */
+    public boolean getProperty(WikiUtil wikiUtil, Hashtable props,
+                               String prop, boolean dflt) {
+        String value = getProperty(wikiUtil, props, prop, null);
+        if (value == null) {
+            return dflt;
+        }
+
+        return value.equals("true");
+    }
+
+    /**
+     * _more_
+     *
+     * @param wikiUtil _more_
+     * @param props _more_
+     * @param prop _more_
+     * @param dflt _more_
+     *
+     * @return _more_
+     */
+    public int getProperty(WikiUtil wikiUtil, Hashtable props, String prop,
+                           int dflt) {
+        String value = getProperty(wikiUtil, props, prop, null);
+        if (value == null) {
+            return dflt;
+        }
+
+        return Integer.parseInt(value);
+    }
+
+
+    /**
      * Get a wiki property value
      *
      * @param wikiUtil The wiki util
@@ -575,7 +653,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                 }
             }
 
-            String entryId = (String) props.get(ATTR_ENTRY);
+            String entryId = getProperty(wikiUtil, props, ATTR_ENTRY, null);
             if (Utils.stringDefined(entryId)) {
                 theEntry = findEntryFromId(request, entry, wikiUtil,
                                            entryId.trim());
@@ -757,9 +835,9 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
             throws Exception {
 
 
-        boolean       inDiv = Utils.getProperty(props, "inDiv", true);
-        String        align = (String) props.get(ATTR_ALIGN);
-        String        width = (String) props.get(ATTR_WIDTH);
+        boolean       inDiv = getProperty(wikiUtil, props, "inDiv", true);
+        String        align = getProperty(wikiUtil, props, ATTR_ALIGN, null);
+        String        width = getProperty(wikiUtil, props, ATTR_WIDTH, null);
         StringBuilder extra = new StringBuilder();
 
         //imagewidth says to resize and cache the image on the server
@@ -777,9 +855,9 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
             //            extra.append(HtmlUtils.attr("align", align));
         }
 
-        String alt = (String) props.get(HtmlUtils.ATTR_ALT);
+        String alt = getProperty(wikiUtil, props, HtmlUtils.ATTR_ALT, null);
         if (alt == null) {
-            alt = (String) props.get(HtmlUtils.ATTR_TITLE);
+            alt = getProperty(wikiUtil, props, HtmlUtils.ATTR_TITLE, null);
         }
 
         if (alt == null) {
@@ -811,12 +889,12 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
         if (border > 0) {
             style += " border: " + border + "px solid " + bordercolor + ";";
         }
-        String left = (String) props.get("left");
+        String left = getProperty(wikiUtil, props, "left", null);
         if (left != null) {
             style += " position:absolute; left: " + left + ";";
         }
 
-        String top = (String) props.get("top");
+        String top = getProperty(wikiUtil, props, "top", null);
         if (top != null) {
             style += " position:absolute;  top: " + top + ";";
         }
@@ -850,7 +928,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                         entry);
             }
             StringBuilder buf = new StringBuilder();
-            addImagePopupJS(request, buf, props);
+            addImagePopupJS(request, wikiUtil, buf, props);
             HtmlUtils.href(buf, hrefUrl, img,
                            HtmlUtils.cssClass("popup_image"));
 
@@ -1219,8 +1297,8 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
         } else if (theTag.equals(WIKI_TAG_TOOLBAR)) {
             return getPageHandler().getEntryToolbar(request, entry);
         } else if (theTag.equals(WIKI_TAG_BREADCRUMBS)) {
-            List<Entry> children = getEntries(request, originalEntry, entry,
-                                       props);
+            List<Entry> children = getEntries(request, wikiUtil,
+                                       originalEntry, entry, props);
             List<String> breadcrumbs =
                 getPageHandler().makeBreadcrumbList(request, children, null);
 
@@ -1481,23 +1559,33 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                    + dateFormat.format(date2);
         } else if (theTag.equals(WIKI_TAG_ENTRYID)) {
             return entry.getId();
+        } else if (theTag.equals(WIKI_TAG_PROPERTY)) {
+            String name  = (String) props.get("name");
+            String value = (String) props.get("value");
+            if (name != null) {
+                if (value != null) {
+                    wikiUtil.putWikiProperty(name, value);
+                } else {
+                    wikiUtil.removeWikiProperty(name);
+                }
+            }
+
+            return "";
         } else if (theTag.equals(WIKI_TAG_PROPERTIES)) {
-            return makeEntryTabs(request, entry, props);
+            return makeEntryTabs(request, wikiUtil, entry, props);
         } else if (theTag.equals(WIKI_TAG_STREETVIEW)) {
             ImageOutputHandler ioh =
                 (ImageOutputHandler) getRepository().getOutputHandler(
                     ImageOutputHandler.OUTPUT_PLAYER);
             if ( !ioh.isStreetviewEnabled()) {
-                String message = Utils.getProperty(props, ATTR_MESSAGE,
-                                     "Streetview not enabled");
+                String message = getProperty(wikiUtil, props, ATTR_MESSAGE,
+                                             "Streetview not enabled");
 
                 return message;
             }
-            String width = Utils.getProperty(props, ATTR_WIDTH, "100%");
-            String caption = Utils.getProperty(props, ATTR_CAPTION,
-                                 (String) null);
-            String heading = Utils.getProperty(props, "heading",
-                                 (String) null);
+            String width   = getProperty(wikiUtil, props, ATTR_WIDTH, "100%");
+            String caption = getProperty(wikiUtil, props, ATTR_CAPTION);
+            String heading = getProperty(wikiUtil, props, "heading");
             String imageUrl =
                 request.entryUrl(getRepository().URL_ENTRY_SHOW, entry,
                                  ARG_OUTPUT,
@@ -1520,9 +1608,9 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
             return getWikiUrl(wikiUtil, request, entry, props);
         } else if (theTag.equals(WIKI_TAG_HTML)) {
             Request newRequest = makeRequest(request, props);
-            if (Utils.getProperty(props, ATTR_CHILDREN, false)) {
-                List<Entry> children = getEntries(request, originalEntry,
-                                           entry, props);
+            if (getProperty(wikiUtil, props, ATTR_CHILDREN, false)) {
+                List<Entry> children = getEntries(request, wikiUtil,
+                                           originalEntry, entry, props);
                 for (Entry child : children) {
                     Result result =
                         getHtmlOutputHandler().getHtmlResult(request,
@@ -1550,9 +1638,9 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
 
             return new String(result.getContent());
         } else if (theTag.equals(WIKI_TAG_CALENDAR)) {
-            List<Entry> children = getEntries(request, originalEntry, entry,
-                                       props);
-            boolean doDay = Utils.getProperty(props, ATTR_DAY, false);
+            List<Entry> children = getEntries(request, wikiUtil,
+                                       originalEntry, entry, props);
+            boolean doDay = getProperty(wikiUtil, props, ATTR_DAY, false);
             getCalendarOutputHandler().outputCalendar(request,
                     getCalendarOutputHandler().makeCalendarEntries(request,
                         children), sb, doDay);
@@ -1576,30 +1664,30 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                             props);
                 }
             }
-            getEntryDisplay(request, entry, originalEntry, theTag,
+            getEntryDisplay(request, wikiUtil, entry, originalEntry, theTag,
                             entry.getName(), jsonUrl, sb, props);
 
             return sb.toString();
         } else if (theTag.equals(WIKI_TAG_GROUP)
                    || theTag.equals(WIKI_TAG_GROUP_OLD)) {
-            getEntryDisplay(request, entry, originalEntry, theTag,
+            getEntryDisplay(request, wikiUtil, entry, originalEntry, theTag,
                             entry.getName(), null, sb, props);
 
             return sb.toString();
         } else if (theTag.equals(WIKI_TAG_GRAPH)) {
             int width  = getDimension(props, ATTR_WIDTH, 400);
             int height = getDimension(props, ATTR_HEIGHT, 300);
-            List<Entry> children = getEntries(request, originalEntry, entry,
-                                       props);
+            List<Entry> children = getEntries(request, wikiUtil,
+                                       originalEntry, entry, props);
             getGraphOutputHandler().getGraph(request, entry, children, sb,
                                              width, height);
 
             return sb.toString();
         } else if (theTag.equals(WIKI_TAG_TIMELINE)) {
             Entry mainEntry = entry;
-            List<Entry> children = getEntries(request, originalEntry,
-                                       mainEntry, props);
-            int    height = Utils.getProperty(props, ATTR_HEIGHT, 150);
+            List<Entry> children = getEntries(request, wikiUtil,
+                                       originalEntry, mainEntry, props);
+            int    height = getProperty(wikiUtil, props, ATTR_HEIGHT, 150);
             String style  = Utils.concatString("height: ", height, "px;");
             getCalendarOutputHandler().makeTimeline(request, mainEntry,
                     children, sb, style, props);
@@ -1608,7 +1696,8 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
         } else if (theTag.equals(WIKI_TAG_MAP)
                    || theTag.equals(WIKI_TAG_EARTH)
                    || theTag.equals(WIKI_TAG_MAPENTRY)) {
-            handleMapTag(request, entry, originalEntry, theTag, props, sb);
+            handleMapTag(request, wikiUtil, entry, originalEntry, theTag,
+                         props, sb);
 
             return sb.toString();
         } else if (theTag.equals(WIKI_TAG_TOOLS)) {
@@ -1628,20 +1717,21 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
             if (cnt == 0) {
                 return "";
             }
-            String title = Utils.getProperty(props, ATTR_TITLE, "Services");
+            String title = getProperty(wikiUtil, props, ATTR_TITLE,
+                                       "Services");
             HtmlUtils.div(sb, title, HtmlUtils.cssClass("wiki-h4"));
             HtmlUtils.div(sb, links.toString(),
                           HtmlUtils.cssClass("entry-tools-box"));
 
             return sb.toString();
         } else if (theTag.equals(WIKI_TAG_MENU)) {
-            String menus = Utils.getProperty(props, ATTR_MENUS, "");
+            String menus = getProperty(wikiUtil, props, ATTR_MENUS, "");
             int type = OutputType.getTypeMask(StringUtil.split(menus, ",",
                            true, true));
 
             String links = getEntryManager().getEntryActionsTable(request,
                                entry, type);
-            if (Utils.getProperty(props, "popup", false)) {
+            if (getProperty(wikiUtil, props, "popup", false)) {
                 StringBuilder popup = new StringBuilder();
                 String menuLinkImg =
                     HtmlUtils.img(
@@ -1659,12 +1749,12 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
             return links;
         } else if (theTag.equals(WIKI_TAG_SEARCH)) {
 
-            String type = Utils.getProperty(props, ATTR_TYPE,
-                                            Utils.getProperty(props, ATTR_ID,
-                                                TypeHandler.TYPE_ANY));
+            String type = getProperty(wikiUtil, props, ATTR_TYPE,
+                                      getProperty(wikiUtil, props, ATTR_ID,
+                                          TypeHandler.TYPE_ANY));
 
-            String provider = Utils.getProperty(props,
-                                  SearchManager.ARG_PROVIDER, (String) null);
+            String provider = getProperty(wikiUtil, props,
+                                          SearchManager.ARG_PROVIDER);
             TypeHandler typeHandler = getRepository().getTypeHandler(type);
 
             if (typeHandler == null) {
@@ -1678,8 +1768,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
             }
 
             //Pass the wiki attribute into the request to the special search
-            String fields = Utils.getProperty(props, ATTR_FIELDS,
-                                (String) null);
+            String fields = getProperty(wikiUtil, props, ATTR_FIELDS);
             if (fields == null) {
                 fields = entry.getTypeHandler().getTypeProperty(
                     "map.chart.fields", (String) null);
@@ -1689,8 +1778,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                 myRequest.put(SpecialSearch.ARG_FIELDS, fields);
             }
 
-            String metadata = Utils.getProperty(props, ATTR_METADATA,
-                                  (String) null);
+            String metadata = getProperty(wikiUtil, props, ATTR_METADATA);
             if (metadata != null) {
                 myRequest.put(SpecialSearch.ARG_METADATA, metadata);
             }
@@ -1705,7 +1793,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                 myRequest.put(ARG_SHOWCATEGORIES, "false");
             }
 
-            addSearchTerms(myRequest, props, entry);
+            addSearchTerms(myRequest, wikiUtil, props, entry);
 
             if (incomingMax != null) {
                 myRequest.put(ARG_MAX, incomingMax);
@@ -1719,16 +1807,17 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
 
             return sb.toString();
         } else if (theTag.equals(WIKI_TAG_APPLY)) {
-            StringBuilder style = new StringBuilder(Utils.getProperty(props,
-                                      APPLY_PREFIX + ATTR_STYLE, ""));
-            int padding = Utils.getProperty(props,
-                                            APPLY_PREFIX + ATTR_PADDING, 5);
-            int margin = Utils.getProperty(props, APPLY_PREFIX + ATTR_MARGIN,
-                                           5);
-            int border = Utils.getProperty(props, APPLY_PREFIX + ATTR_BORDER,
-                                           -1);
-            String bordercolor = Utils.getProperty(props,
-                                     APPLY_PREFIX + ATTR_BORDERCOLOR, "#000");
+            StringBuilder style = new StringBuilder(getProperty(wikiUtil,
+                                      props, APPLY_PREFIX + ATTR_STYLE, ""));
+            int padding = getProperty(wikiUtil, props,
+                                      APPLY_PREFIX + ATTR_PADDING, 5);
+            int margin = getProperty(wikiUtil, props,
+                                     APPLY_PREFIX + ATTR_MARGIN, 5);
+            int border = getProperty(wikiUtil, props,
+                                     APPLY_PREFIX + ATTR_BORDER, -1);
+            String bordercolor = getProperty(wikiUtil, props,
+                                             APPLY_PREFIX + ATTR_BORDERCOLOR,
+                                             "#000");
 
             if (border > 0) {
                 Utils.append(style, " border: ", border, "px solid ",
@@ -1744,15 +1833,15 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
             }
 
 
-            int maxHeight = Utils.getProperty(props,
-                                APPLY_PREFIX + "maxheight", -1);
+            int maxHeight = getProperty(wikiUtil, props,
+                                        APPLY_PREFIX + "maxheight", -1);
             if (maxHeight > 0) {
                 Utils.append(style, " max-height: ", maxHeight,
                              "px;  overflow-y: auto; ");
             }
 
-            int minHeight = Utils.getProperty(props,
-                                APPLY_PREFIX + "minheight", -1);
+            int minHeight = getProperty(wikiUtil, props,
+                                        APPLY_PREFIX + "minheight", -1);
             if (minHeight > 0) {
                 Utils.append(style, " min-height: ", minHeight, "px; ");
             }
@@ -1763,21 +1852,22 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
             Request newRequest = makeRequest(request, props);
             //            System.err.println("cloned:" + newRequest);
             //            {{apply tag="tree" apply.layout="grid" apply.columns="2"}}
-            String tag = Utils.getProperty(props, ATTR_APPLY_TAG, "html");
-            String prefixTemplate = Utils.getProperty(props,
+            String tag = getProperty(wikiUtil, props, ATTR_APPLY_TAG, "html");
+            String prefixTemplate = getProperty(wikiUtil, props,
                                         APPLY_PREFIX + "header", "");
-            String suffixTemplate = Utils.getProperty(props,
+            String suffixTemplate = getProperty(wikiUtil, props,
                                         APPLY_PREFIX + "footer", "");
 
-            List<Entry> children = getEntries(request, originalEntry, entry,
-                                       props, false, APPLY_PREFIX);
+            List<Entry> children = getEntries(request, wikiUtil,
+                                       originalEntry, entry, props, false,
+                                       APPLY_PREFIX);
             if (children.size() == 0) {
                 return null;
             }
-            String layout = Utils.getProperty(props, APPLY_PREFIX + "layout",
-                                "table");
-            int columns = Utils.getProperty(props,
-                                            APPLY_PREFIX + ATTR_COLUMNS, 1);
+            String layout = getProperty(wikiUtil, props,
+                                        APPLY_PREFIX + "layout", "table");
+            int columns = getProperty(wikiUtil, props,
+                                      APPLY_PREFIX + ATTR_COLUMNS, 1);
             if (columns > children.size()) {
                 columns = children.size();
             }
@@ -1794,10 +1884,10 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
             List<String> titles   = new ArrayList<String>();
 
 
-            boolean includeIcon = Utils.getProperty(props,
+            boolean includeIcon = getProperty(wikiUtil, props,
                                       APPLY_PREFIX + ATTR_INCLUDEICON, false);
-            String divClass = Utils.getProperty(props,
-                                  APPLY_PREFIX + "divclass", "");
+            String divClass = getProperty(wikiUtil, props,
+                                          APPLY_PREFIX + "divclass", "");
 
 
             boolean includeLinkAfter = false;
@@ -1891,8 +1981,8 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                 sb.append(OutputHandler.makeTabs(titles, contents, true,
                         false));
             } else if (layout.equals("accordian")) {
-                int     showBorder = Utils.getProperty(props, "border", 0);
-                boolean collapse = Utils.getProperty(props, "collapse",
+                int showBorder = getProperty(wikiUtil, props, "border", 0);
+                boolean collapse = getProperty(wikiUtil, props, "collapse",
                                        false);
                 HtmlUtils.makeAccordian(sb, titles, contents, collapse,
                                         ((showBorder == 0)
@@ -1905,16 +1995,17 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
 
             return sb.toString();
         } else if (theTag.equals(WIKI_TAG_SIMPLE)) {
-            return makeSimpleDisplay(request, props, originalEntry, entry);
+            return makeSimpleDisplay(request, wikiUtil, props, originalEntry,
+                                     entry);
         } else if (theTag.equals(WIKI_TAG_TABS)
                    || theTag.equals(WIKI_TAG_ACCORDIAN)
                    || theTag.equals(WIKI_TAG_SLIDESHOW)
                    || theTag.equals(WIKI_TAG_BOOTSTRAP)
                    || theTag.equals(WIKI_TAG_GRID)) {
-            List<Entry> children = getEntries(request, originalEntry, entry,
-                                       props);
-            String message = Utils.getProperty(props, ATTR_MESSAGE,
-                                 (String) null);
+            List<Entry> children = getEntries(request, wikiUtil,
+                                       originalEntry, entry, props);
+            String message = getProperty(wikiUtil, props, ATTR_MESSAGE,
+                                         (String) null);
             if ((children.size() == 0) && (message != null)) {
                 return message;
             }
@@ -1926,8 +2017,8 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
             List<String> contents = new ArrayList<String>();
             String       dfltTag  = WIKI_TAG_SIMPLE;
 
-            if (props.get(ATTR_USEDESCRIPTION) != null) {
-                boolean useDescription = Utils.getProperty(props,
+            if (getProperty(wikiUtil, props, ATTR_USEDESCRIPTION) != null) {
+                boolean useDescription = getProperty(wikiUtil, props,
                                              ATTR_USEDESCRIPTION, true);
 
                 if (useDescription) {
@@ -1937,19 +2028,22 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                 }
             }
 
-            boolean showLink = Utils.getProperty(props, ATTR_SHOWLINK, true);
-            boolean includeIcon = Utils.getProperty(props, ATTR_INCLUDEICON,
-                                      false);
-            boolean includeUrl = Utils.getProperty(props, "includeurl",
-                                     false);
+            boolean showLink = getProperty(wikiUtil, props, ATTR_SHOWLINK,
+                                           true);
+            boolean includeIcon = getProperty(wikiUtil, props,
+                                      ATTR_INCLUDEICON, false);
+            boolean includeUrl = getProperty(wikiUtil, props, "includeurl",
+                                             false);
             if (doingGrid) {
                 includeIcon = false;
             }
-            boolean useCookies = Utils.getProperty(props, "cookie", false);
-            String  linklabel  = Utils.getProperty(props, ATTR_LINKLABEL, "");
+            boolean useCookies = getProperty(wikiUtil, props, "cookie",
+                                             false);
+            String linklabel = getProperty(wikiUtil, props, ATTR_LINKLABEL,
+                                           "");
 
-            String  width      = Utils.getProperty(props, ATTR_WIDTH, "400");
-            int     height     = Utils.getProperty(props, ATTR_HEIGHT, 270);
+            String width  = getProperty(wikiUtil, props, ATTR_WIDTH, "400");
+            int    height = getProperty(wikiUtil, props, ATTR_HEIGHT, 270);
 
             if (doingSlideshow) {
                 props.put(ATTR_WIDTH, width);
@@ -1962,12 +2056,11 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
             }
 
 
-            boolean linkResource = Utils.getProperty(props,
+            boolean linkResource = getProperty(wikiUtil, props,
                                        ATTR_LINKRESOURCE, false);
 
 
-            String    tag        = Utils.getProperty(props, ATTR_TAG,
-                                       dfltTag);
+            String    tag = getProperty(wikiUtil, props, ATTR_TAG, dfltTag);
             Request   newRequest = makeRequest(request, props);
             Hashtable tmpProps   = new Hashtable(props);
             tmpProps.remove(ATTR_ENTRY);
@@ -1976,7 +2069,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
 
 
             if (children.size() > 0) {
-                checkHeading(request, props, sb);
+                checkHeading(request, wikiUtil, props, sb);
             }
 
             for (Entry child : children) {
@@ -2017,9 +2110,9 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
 
 
             if (theTag.equals(WIKI_TAG_ACCORDIAN)) {
-                int border = Utils.getProperty(props, ATTR_BORDER, 0);
-                boolean collapse = Utils.getProperty(props, ATTR_COLLAPSE,
-                                       false);
+                int border = getProperty(wikiUtil, props, ATTR_BORDER, 0);
+                boolean collapse = getProperty(wikiUtil, props,
+                                       ATTR_COLLAPSE, false);
                 HtmlUtils.makeAccordian(sb, titles, contents, collapse,
                                         ((border == 0)
                                          ? "ramadda-accordian"
@@ -2028,21 +2121,20 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                 return sb.toString();
             } else if (doingGrid) {
                 List<String> weights = null;
-                boolean      doLine = Utils.getProperty(props, "doline",
-                                          true);
-                String ws = Utils.getProperty(props, "weights",
-                                (String) null);
+                boolean doLine = getProperty(wikiUtil, props, "doline", true);
+                String ws = getProperty(wikiUtil, props, "weights",
+                                        (String) null);
                 if (ws != null) {
                     weights = StringUtil.split(ws, ",", true, true);
                 }
 
-                int columns     = Utils.getProperty(props, "columns", 3);
-                int innerHeight = Utils.getProperty(props, "inner-height",
-                                      -1);
-                int minHeight = Utils.getProperty(props, "inner-minheight",
-                                    -1);
-                int maxHeight = Utils.getProperty(props, "inner-maxheight",
-                                    300);
+                int columns = getProperty(wikiUtil, props, "columns", 3);
+                int innerHeight = getProperty(wikiUtil, props,
+                                      "inner-height", -1);
+                int minHeight = getProperty(wikiUtil, props,
+                                            "inner-minheight", -1);
+                int maxHeight = getProperty(wikiUtil, props,
+                                            "inner-maxheight", 300);
 
                 StringBuilder innerStyle = new StringBuilder();
                 if (innerHeight > 0) {
@@ -2124,10 +2216,11 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                 return sb.toString();
             } else if (doingSlideshow) {
                 // for slideshow
-                boolean shownav  = Utils.getProperty(props, "shownav", false);
-                boolean autoplay = Utils.getProperty(props, "autoplay",
+                boolean shownav = getProperty(wikiUtil, props, "shownav",
+                                      false);
+                boolean autoplay = getProperty(wikiUtil, props, "autoplay",
                                        false);
-                int    playSpeed   = Utils.getProperty(props, "speed", 5);
+                int    playSpeed   = getProperty(wikiUtil, props, "speed", 5);
 
                 String arrowWidth  = "24";
                 String arrowHeight = "43";
@@ -2140,8 +2233,8 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                                  width + "; height: " + (height + 30), "}\n");
 
 
-                int border = Utils.getProperty(props, ATTR_BORDER, 1);
-                String borderColor = Utils.getProperty(props,
+                int border = getProperty(wikiUtil, props, ATTR_BORDER, 1);
+                String borderColor = getProperty(wikiUtil, props,
                                          ATTR_BORDERCOLOR, "#aaa");
                 sb.append(
                     "#" + slideId + " .slides_container {border: " + border
@@ -2238,21 +2331,21 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
             }
         } else if (false && theTag.equals(WIKI_TAG_GRID)) {
             getHtmlOutputHandler().makeGrid(request,
-                                            getEntries(request,
+                                            getEntries(request, wikiUtil,
                                                 originalEntry, entry,
                                                     props), sb);
 
             return sb.toString();
         } else if (theTag.equals(WIKI_TAG_TABLE)) {
-            List<Entry> entries = getEntries(request, originalEntry, entry,
-                                             props);
+            List<Entry> entries = getEntries(request, wikiUtil,
+                                             originalEntry, entry, props);
             getHtmlOutputHandler().makeTable(request, entries, sb);
 
             return sb.toString();
         } else if (theTag.equals(WIKI_TAG_RECENT)) {
-            List<Entry> children = getEntries(request, originalEntry, entry,
-                                       props);
-            int numDays = Utils.getProperty(props, ATTR_DAYS, 3);
+            List<Entry> children = getEntries(request, wikiUtil,
+                                       originalEntry, entry, props);
+            int numDays = getProperty(wikiUtil, props, ATTR_DAYS, 3);
             BufferMapList<Date> map = new BufferMapList<Date>();
             SimpleDateFormat dateFormat =
                 new SimpleDateFormat("EEEEE MMMMM d");
@@ -2307,11 +2400,11 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
 
         } else if (theTag.equals(WIKI_TAG_PLAYER)
                    || theTag.equals(WIKI_TAG_PLAYER_OLD)) {
-            boolean useAttachment = Utils.getProperty(props, "useAttachment",
-                                        false);
+            boolean useAttachment = getProperty(wikiUtil, props,
+                                        "useAttachment", false);
 
-            List<Entry> children = getEntries(request, originalEntry, entry,
-                                       props, true);
+            List<Entry> children = getEntries(request, wikiUtil,
+                                       originalEntry, entry, props, true);
             if (children.size() == 0) {
                 return null;
             }
@@ -2320,11 +2413,13 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                     ImageOutputHandler.OUTPUT_PLAYER);
             Request imageRequest = request.cloneMe();
 
-            int     width        = Utils.getProperty(props, ATTR_WIDTH, 0);
+            int     width        = getProperty(wikiUtil, props, ATTR_WIDTH,
+                                       0);
             if (width != 0) {
                 imageRequest.put(ARG_WIDTH, "" + width);
             }
-            boolean loopStart = Utils.getProperty(props, "loopstart", false);
+            boolean loopStart = getProperty(wikiUtil, props, "loopstart",
+                                            false);
             if (loopStart) {
                 imageRequest.put("loopstart", "true");
             }
@@ -2333,40 +2428,40 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                 imageRequest.put("useAttachment", "true");
             }
 
-            int delay = Utils.getProperty(props, "loopdelay", 0);
+            int delay = getProperty(wikiUtil, props, "loopdelay", 0);
             if (delay > 0) {
                 imageRequest.put("loopdelay", "" + delay);
             }
 
-            String iwidth = Utils.getProperty(props, "imageWidth",
-                                (String) null);
+            String iwidth = getProperty(wikiUtil, props, "imageWidth",
+                                        (String) null);
             if (iwidth != null) {
                 imageRequest.put(ARG_WIDTH, iwidth);
             }
-            int height = Utils.getProperty(props, ATTR_HEIGHT, 0);
+            int height = getProperty(wikiUtil, props, ATTR_HEIGHT, 0);
             if (height > 0) {
                 imageRequest.put(ARG_HEIGHT, "" + height);
             }
             imageOutputHandler.makePlayer(imageRequest, entry, children, sb,
-                                          Utils.getProperty(props,
+                                          getProperty(wikiUtil, props,
                                               "show_sort_links",
                                                   false), false);
 
             return sb.toString();
         } else if (theTag.equals(WIKI_TAG_GALLERY)) {
-            List<Entry> children = getEntries(request, originalEntry, entry,
-                                       props, true);
+            List<Entry> children = getEntries(request, wikiUtil,
+                                       originalEntry, entry, props, true);
             if (children.size() == 0) {
-                String message = Utils.getProperty(props, ATTR_MESSAGE,
-                                     (String) null);
+                String message = getProperty(wikiUtil, props, ATTR_MESSAGE,
+                                             (String) null);
                 if (message != null) {
                     return message;
                 }
             }
             if (children.size() > 0) {
-                checkHeading(request, props, sb);
+                checkHeading(request, wikiUtil, props, sb);
             }
-            makeGallery(request, children, props, sb);
+            makeGallery(request, wikiUtil, children, props, sb);
 
             return sb.toString();
         } else if (theTag.equals(WIKI_TAG_ROOT)) {
@@ -2382,19 +2477,20 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                 props.put(ATTR_FILES, "true");
             }
 
-            List<Entry> children = getEntries(request, originalEntry, entry,
-                                       props);
+            List<Entry> children = getEntries(request, wikiUtil,
+                                       originalEntry, entry, props);
 
             if (children.size() == 0) {
                 return null;
             }
-            boolean showCategories = Utils.getProperty(props,
+            boolean showCategories = getProperty(wikiUtil, props,
                                          ARG_SHOWCATEGORIES, false);
             if (showCategories) {
                 request.put(ARG_SHOWCATEGORIES, "true");
             }
-            boolean decorate = Utils.getProperty(props, ATTR_DECORATE, true);
-            boolean showDetails = Utils.getProperty(props, ATTR_DETAILS,
+            boolean decorate = getProperty(wikiUtil, props, ATTR_DECORATE,
+                                           true);
+            boolean showDetails = getProperty(wikiUtil, props, ATTR_DETAILS,
                                       true);
 
             Request newRequest = request.cloneMe();
@@ -2407,12 +2503,12 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
             }
 
             if (children.size() > 0) {
-                checkHeading(request, props, sb);
+                checkHeading(request, wikiUtil, props, sb);
             }
 
             String link = getHtmlOutputHandler().getEntriesList(newRequest,
                               sb, children, true, false, showDetails);
-            if (Utils.getProperty(props, "form", false)) {
+            if (getProperty(wikiUtil, props, "form", false)) {
                 return link + HtmlUtils.br() + sb.toString();
             } else {
                 return sb.toString();
@@ -2422,8 +2518,8 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
             int width  = getDimension(props, ATTR_WIDTH, -100);
             int height = getDimension(props, ATTR_HEIGHT, 500);
 
-            List<Entry> children = getEntries(request, originalEntry, entry,
-                                       props);
+            List<Entry> children = getEntries(request, wikiUtil,
+                                       originalEntry, entry, props);
             if (children.size() == 0) {
                 return null;
             }
@@ -2434,29 +2530,30 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
         } else if (theTag.equals(WIKI_TAG_LINKS)
                    || theTag.equals(WIKI_TAG_LIST)) {
             boolean isList = theTag.equals(WIKI_TAG_LIST);
-            List<Entry> children = getEntries(request, originalEntry, entry,
-                                       props);
+            List<Entry> children = getEntries(request, wikiUtil,
+                                       originalEntry, entry, props);
             if (children.size() == 0) {
                 return null;
             }
-            boolean includeIcon = Utils.getProperty(props, ATTR_INCLUDEICON,
-                                      false);
-            boolean linkResource = Utils.getProperty(props,
+            boolean includeIcon = getProperty(wikiUtil, props,
+                                      ATTR_INCLUDEICON, false);
+            boolean linkResource = getProperty(wikiUtil, props,
                                        ATTR_LINKRESOURCE, false);
             String separator = (isList
                                 ? ""
-                                : Utils.getProperty(props, ATTR_SEPARATOR,
-                                    ""));
-            String cssClass = Utils.getProperty(props, ATTR_CLASS, "");
-            String style    = Utils.getProperty(props, ATTR_STYLE, "");
+                                : getProperty(wikiUtil, props,
+                                    ATTR_SEPARATOR, ""));
+            String cssClass = getProperty(wikiUtil, props, ATTR_CLASS, "");
+            String style    = getProperty(wikiUtil, props, ATTR_STYLE, "");
             String tagOpen  = (isList
                                ? "<li>"
-                               : Utils.getProperty(props, ATTR_TAGOPEN,
-                                   "<li>"));
+                               : getProperty(wikiUtil, props, ATTR_TAGOPEN,
+                                             "<li>"));
 
             String tagClose = (isList
                                ? ""
-                               : Utils.getProperty(props, ATTR_TAGCLOSE, ""));
+                               : getProperty(wikiUtil, props, ATTR_TAGCLOSE,
+                                             ""));
 
             if (includeIcon) {
                 tagOpen  = "";
@@ -2494,10 +2591,10 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
             }
 
             StringBuilder contentsSB = new StringBuilder();
-            String prefix = Utils.getProperty(props, ATTR_LIST_PREFIX,
-                                (String) null);
-            String suffix = Utils.getProperty(props, ATTR_LIST_SUFFIX,
-                                (String) null);
+            String prefix = getProperty(wikiUtil, props, ATTR_LIST_PREFIX,
+                                        (String) null);
+            String suffix = getProperty(wikiUtil, props, ATTR_LIST_SUFFIX,
+                                        (String) null);
             if (prefix != null) {
                 contentsSB.append(prefix);
             } else if (tagOpen.equals("<li>")) {
@@ -2510,12 +2607,12 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                 contentsSB.append("</ul>");
             }
 
-            String title = Utils.getProperty(props, ATTR_TITLE,
-                                             (String) null);
-            boolean showTitle = Utils.getProperty(props, ATTR_SHOWTITLE,
-                                    false);
-            String innerClass = Utils.getProperty(props, ATTR_INNERCLASS,
-                                    "ramadda-links-inner");
+            String title = getProperty(wikiUtil, props, ATTR_TITLE,
+                                       (String) null);
+            boolean showTitle = getProperty(wikiUtil, props, ATTR_SHOWTITLE,
+                                            false);
+            String innerClass = getProperty(wikiUtil, props, ATTR_INNERCLASS,
+                                            "ramadda-links-inner");
 
             String contents = HtmlUtils.div(contentsSB.toString(),
                                             HtmlUtils.cssClass(innerClass));
@@ -2609,6 +2706,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
      * _more_
      *
      * @param request _more_
+     * @param wikiUtil _more_
      * @param entry _more_
      * @param originalEntry _more_
      * @param theTag _more_
@@ -2619,20 +2717,22 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
      *
      * @throws Exception _more_
      */
-    public MapInfo handleMapTag(Request request, Entry entry,
-                                Entry originalEntry, String theTag,
-                                Hashtable props, Appendable sb)
+    public MapInfo handleMapTag(Request request, WikiUtil wikiUtil,
+                                Entry entry, Entry originalEntry,
+                                String theTag, Hashtable props, Appendable sb)
             throws Exception {
 
         int     width      = getDimension(props, ATTR_WIDTH, -100);
         int     height     = getDimension(props, ATTR_HEIGHT, 300);
-        boolean justPoints = Utils.getProperty(props, "justpoints", false);
-        boolean listEntries = Utils.getProperty(props, ATTR_LISTENTRIES,
-                                  false);
-        boolean showCheckbox = Utils.getProperty(props, "showCheckbox",
-                                   false);
-        boolean showSearch = Utils.getProperty(props, "showSearch", false);
-        boolean checkboxOn = Utils.getProperty(props, "checkboxOn", true);
+        boolean justPoints = getProperty(wikiUtil, props, "justpoints",
+                                         false);
+        boolean listEntries = getProperty(wikiUtil, props, ATTR_LISTENTRIES,
+                                          false);
+        boolean showCheckbox = getProperty(wikiUtil, props, "showCheckbox",
+                                           false);
+        boolean showSearch = getProperty(wikiUtil, props, "showSearch",
+                                         false);
+        boolean checkboxOn = getProperty(wikiUtil, props, "checkboxOn", true);
         boolean googleEarth =
             theTag.equals(WIKI_TAG_EARTH)
             && getMapManager().isGoogleEarthEnabled(request);
@@ -2642,16 +2742,16 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
             children = new ArrayList<Entry>();
             children.add(entry);
         } else {
-            children = getEntries(request, originalEntry, entry, props,
-                                  false, "");
+            children = getEntries(request, wikiUtil, originalEntry, entry,
+                                  props, false, "");
             if (children.isEmpty()) {
                 children.add(entry);
             }
         }
 
         if (children.size() == 0) {
-            String message = Utils.getProperty(props, ATTR_MESSAGE,
-                                 (String) null);
+            String message = getProperty(wikiUtil, props, ATTR_MESSAGE,
+                                         (String) null);
             if (message != null) {
                 sb.append(message);
 
@@ -2667,8 +2767,8 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                 }
             }
             if ( !anyHaveLatLon) {
-                String message = Utils.getProperty(props, ATTR_MESSAGE,
-                                     (String) null);
+                String message = getProperty(wikiUtil, props, ATTR_MESSAGE,
+                                             (String) null);
                 if (message != null) {
                     sb.append(message);
 
@@ -2677,14 +2777,16 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
             }
         }
 
-        checkHeading(request, props, sb);
+        checkHeading(request, wikiUtil, props, sb);
         Request newRequest = makeRequest(request, props);
         if (googleEarth) {
-            getMapManager().getGoogleEarth(
-                newRequest, children, sb,
-                Utils.getProperty(props, ATTR_WIDTH, -1),
-                Utils.getProperty(props, ATTR_HEIGHT, -1), listEntries,
-                justPoints);
+            getMapManager().getGoogleEarth(newRequest, children, sb,
+                                           getProperty(wikiUtil, props,
+                                               ATTR_WIDTH,
+                                                   -1), getProperty(wikiUtil,
+                                                       props, ATTR_HEIGHT,
+                                                           -1), listEntries,
+                                                               justPoints);
         } else {
             MapOutputHandler mapOutputHandler =
                 (MapOutputHandler) getRepository().getOutputHandler(
@@ -2695,14 +2797,14 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                 return null;
             }
 
-            String icon = Utils.getProperty(props, ATTR_ICON);
+            String icon = getProperty(wikiUtil, props, ATTR_ICON);
             if ((icon != null) && icon.startsWith("#")) {
                 icon = null;
             }
             if (icon != null) {
                 newRequest.put(ARG_ICON, icon);
             }
-            if (Utils.getProperty(props, ARG_MAP_ICONSONLY, false)) {
+            if (getProperty(wikiUtil, props, ARG_MAP_ICONSONLY, false)) {
                 newRequest.put(ARG_MAP_ICONSONLY, "true");
             }
 
@@ -2720,15 +2822,15 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                     mapArg = toks.get(0);
                     key    = toks.get(1);
                 }
-                String v = Utils.getProperty(props, key);
+                String v = getProperty(wikiUtil, props, key);
                 if (v != null) {
                     v = v.replace("${entryid}", entry.getId());
                     mapProps.put(mapArg, Json.quote(v));
                 }
             }
 
-            String mapSet = Utils.getProperty(props, "mapSettings",
-                                (String) null);
+            String mapSet = getProperty(wikiUtil, props, "mapSettings",
+                                        (String) null);
             if (mapSet != null) {
                 List<String> msets = StringUtil.split(mapSet, ",");
                 for (int i = 0; i < msets.size() - 1; i += 2) {
@@ -2753,14 +2855,17 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
      * _more_
      *
      * @param request _more_
+     * @param wikiUtil _more_
      * @param props _more_
      * @param sb _more_
      *
      * @throws Exception _more_
      */
-    public void checkHeading(Request request, Hashtable props, Appendable sb)
+    public void checkHeading(Request request, WikiUtil wikiUtil,
+                             Hashtable props, Appendable sb)
             throws Exception {
-        String heading = Utils.getProperty(props, "heading", (String) null);
+        String heading = getProperty(wikiUtil, props, "heading",
+                                     (String) null);
         if (heading != null) {
             sb.append(
                 HtmlUtils.div(
@@ -2828,14 +2933,15 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
      * Add the image popup javascript
      *
      * @param request  the Request
+     * @param wikiUtil _more_
      * @param buf      the page StringBuilder
      * @param props    the properties
      */
-    public void addImagePopupJS(Request request, StringBuilder buf,
-                                Hashtable props) {
+    public void addImagePopupJS(Request request, WikiUtil wikiUtil,
+                                StringBuilder buf, Hashtable props) {
         if (request.getExtraProperty("added fancybox") == null) {
-            String captionpos = Utils.getProperty(props, ATTR_POPUPCAPTION,
-                                    "none");
+            String captionpos = getProperty(wikiUtil, props,
+                                            ATTR_POPUPCAPTION, "none");
             StringBuilder options = new StringBuilder("{");
             if ( !captionpos.equals("none")) {
                 options.append(HtmlUtils.squote("titlePosition"));
@@ -2943,6 +3049,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
      * Make entry tabs html
      *
      * @param request The request
+     * @param wikiUtil _more_
      * @param entry  the entry
      * @param props _more_
      *
@@ -2950,8 +3057,8 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
      *
      * @throws Exception  problems
      */
-    private String makeEntryTabs(Request request, Entry entry,
-                                 Hashtable props)
+    private String makeEntryTabs(Request request, WikiUtil wikiUtil,
+                                 Entry entry, Hashtable props)
             throws Exception {
 
         request = request.cloneMe();
@@ -2961,7 +3068,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
         List<String> onlyTheseTypes = null;
         List<String> notTheseTypes  = null;
 
-        String metadataTypesAttr = Utils.getProperty(props,
+        String metadataTypesAttr = getProperty(wikiUtil, props,
                                        ATTR_METADATA_TYPES, (String) null);
         if (metadataTypesAttr != null) {
             onlyTheseTypes = new ArrayList<String>();
@@ -2977,8 +3084,8 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
         }
         List tabTitles   = new ArrayList<String>();
         List tabContents = new ArrayList<String>();
-        boolean includeTitle = Utils.getProperty(props,
-                                   ATTR_METADATA_INCLUDE_TITLE, true);
+        boolean includeTitle = getProperty(wikiUtil, props,
+                                           ATTR_METADATA_INCLUDE_TITLE, true);
 
 
 
@@ -3079,6 +3186,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
      * Get the entries for the request
      *
      * @param request The request
+     * @param wikiUtil _more_
      * @param originalEntry _more_
      * @param entry  the parent entry
      * @param props  properties
@@ -3087,11 +3195,13 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
      *
      * @throws Exception problems
      */
-    public List<Entry> getEntries(Request request, Entry originalEntry,
-                                  Entry entry, Hashtable props)
+    public List<Entry> getEntries(Request request, WikiUtil wikiUtil,
+                                  Entry originalEntry, Entry entry,
+                                  Hashtable props)
             throws Exception {
 
-        return getEntries(request, originalEntry, entry, props, false, "");
+        return getEntries(request, wikiUtil, originalEntry, entry, props,
+                          false, "");
     }
 
 
@@ -3100,6 +3210,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
      * Get the entries for the request
      *
      * @param request  the request
+     * @param wikiUtil _more_
      * @param originalEntry _more_
      * @param entry    the entry
      * @param props    properties
@@ -3109,12 +3220,12 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
      *
      * @throws Exception  problems making list
      */
-    public List<Entry> getEntries(Request request, Entry originalEntry,
-                                  Entry entry, Hashtable props,
-                                  boolean onlyImages)
+    public List<Entry> getEntries(Request request, WikiUtil wikiUtil,
+                                  Entry originalEntry, Entry entry,
+                                  Hashtable props, boolean onlyImages)
             throws Exception {
-        return getEntries(request, originalEntry, entry, props, onlyImages,
-                          "");
+        return getEntries(request, wikiUtil, originalEntry, entry, props,
+                          onlyImages, "");
     }
 
 
@@ -3122,6 +3233,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
      * Get the entries for the request
      *
      * @param request  the request
+     * @param wikiUtil _more_
      * @param originalEntry _more_
      * @param entry    the entry
      * @param props    properties
@@ -3132,9 +3244,10 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
      *
      * @throws Exception  problems making list
      */
-    public List<Entry> getEntries(Request request, Entry originalEntry,
-                                  Entry entry, Hashtable props,
-                                  boolean onlyImages, String attrPrefix)
+    public List<Entry> getEntries(Request request, WikiUtil wikiUtil,
+                                  Entry originalEntry, Entry entry,
+                                  Hashtable props, boolean onlyImages,
+                                  String attrPrefix)
             throws Exception {
         if (props == null) {
             props = new Hashtable();
@@ -3144,12 +3257,12 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
             props = tmp;
         }
 
-        String userDefinedEntries = Utils.getProperty(props,
+        String userDefinedEntries = getProperty(wikiUtil, props,
                                         attrPrefix + ATTR_ENTRIES,
                                         ID_CHILDREN);
 
-        return getEntries(request, originalEntry, entry, userDefinedEntries,
-                          props, onlyImages, attrPrefix);
+        return getEntries(request, wikiUtil, originalEntry, entry,
+                          userDefinedEntries, props, onlyImages, attrPrefix);
     }
 
 
@@ -3157,6 +3270,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
      * _more_
      *
      * @param request _more_
+     * @param wikiUtil _more_
      * @param entry _more_
      * @param filter _more_
      * @param props _more_
@@ -3165,13 +3279,14 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
      *
      * @throws Exception _more_
      */
-    public List<Entry> applyFilter(Request request, Entry entry,
-                                   String filter, Hashtable props)
+    public List<Entry> applyFilter(Request request, WikiUtil wikiUtil,
+                                   Entry entry, String filter,
+                                   Hashtable props)
             throws Exception {
         List<Entry> entries = new ArrayList<Entry>();
         entries.add(entry);
 
-        return applyFilter(request, entries, filter, props);
+        return applyFilter(request, wikiUtil, entries, filter, props);
     }
 
 
@@ -3179,6 +3294,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
      * _more_
      *
      * @param request _more_
+     * @param wikiUtil _more_
      * @param entries _more_
      * @param filter _more_
      * @param props _more_
@@ -3187,8 +3303,9 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
      *
      * @throws Exception _more_
      */
-    public List<Entry> applyFilter(Request request, List<Entry> entries,
-                                   String filter, Hashtable props)
+    public List<Entry> applyFilter(Request request, WikiUtil wikiUtil,
+                                   List<Entry> entries, String filter,
+                                   Hashtable props)
             throws Exception {
         if (filter == null) {
             return entries;
@@ -3199,8 +3316,8 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
             filter = filter.substring(1);
         }
         if (filter.equals(FILTER_IMAGE)) {
-            boolean useAttachment = Utils.getProperty(props, "useAttachment",
-                                        false);
+            boolean useAttachment = getProperty(wikiUtil, props,
+                                        "useAttachment", false);
             entries = getImageEntriesOrNot(request, entries, doNot,
                                            useAttachment);
         } else if (filter.equals(FILTER_FILE)) {
@@ -3283,6 +3400,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
      * _more_
      *
      * @param request _more_
+     * @param wikiUtil _more_
      * @param originalEntry _more_
      * @param entry _more_
      * @param userDefinedEntries _more_
@@ -3294,10 +3412,10 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
      *
      * @throws Exception _more_
      */
-    public List<Entry> getEntries(Request request, Entry originalEntry,
-                                  Entry entry, String userDefinedEntries,
-                                  Hashtable props, boolean onlyImages,
-                                  String attrPrefix)
+    public List<Entry> getEntries(Request request, WikiUtil wikiUtil,
+                                  Entry originalEntry, Entry entry,
+                                  String userDefinedEntries, Hashtable props,
+                                  boolean onlyImages, String attrPrefix)
             throws Exception {
 
 
@@ -3310,48 +3428,50 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
 
         //If there is a max property then clone the request and set the max
         //For some reason we are using both count and max as attrs
-        int count = Utils.getProperty(props, attrPrefix + ATTR_COUNT, -1);
-        int max   = Utils.getProperty(props, attrPrefix + ATTR_MAX, count);
+        int count = getProperty(wikiUtil, props, attrPrefix + ATTR_COUNT, -1);
+        int max   = getProperty(wikiUtil, props, attrPrefix + ATTR_MAX,
+                                count);
         if (max > 0) {
             request.put(ARG_MAX, "" + max);
         }
 
 
-        List<Entry> entries = getEntries(request, entry, userDefinedEntries,
-                                         props);
-        String filter = Utils.getProperty(props,
-                                          attrPrefix + ATTR_ENTRIES
-                                          + ".filter", (String) null);
+        List<Entry> entries = getEntries(request, wikiUtil, entry,
+                                         userDefinedEntries, props);
+        String filter = getProperty(wikiUtil, props,
+                                    attrPrefix + ATTR_ENTRIES + ".filter",
+                                    (String) null);
 
-        if (Utils.getProperty(props, attrPrefix + ATTR_FOLDERS, false)) {
+        if (getProperty(wikiUtil, props, attrPrefix + ATTR_FOLDERS, false)) {
             filter = FILTER_FOLDER;
         }
 
-        if (Utils.getProperty(props, attrPrefix + ATTR_FILES, false)) {
+        if (getProperty(wikiUtil, props, attrPrefix + ATTR_FILES, false)) {
             filter = FILTER_FILE;
         }
 
 
         //TODO - how do we combine filters? what kind of or/and logic?
         if (filter != null) {
-            entries = applyFilter(request, entries, filter, props);
+            entries = applyFilter(request, wikiUtil, entries, filter, props);
         }
 
 
 
         if (onlyImages
-                || Utils.getProperty(props, attrPrefix + ATTR_IMAGES,
-                                     false)) {
-            boolean useAttachment = Utils.getProperty(props, "useAttachment",
-                                        false);
-            entries = applyFilter(request,
+                || getProperty(wikiUtil, props, attrPrefix + ATTR_IMAGES,
+                               false)) {
+            boolean useAttachment = getProperty(wikiUtil, props,
+                                        "useAttachment", false);
+            entries = applyFilter(request, wikiUtil,
                                   getImageEntries(request, entries,
                                       useAttachment), filter, props);
         }
 
 
-        String excludeEntries = Utils.getProperty(props,
-                                    attrPrefix + ATTR_EXCLUDE, (String) null);
+        String excludeEntries = getProperty(wikiUtil, props,
+                                            attrPrefix + ATTR_EXCLUDE,
+                                            (String) null);
 
         if (excludeEntries != null) {
             HashSet seen = new HashSet();
@@ -3373,12 +3493,12 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
         }
 
 
-        String sort = Utils.getProperty(props, attrPrefix + ATTR_SORT,
-                                        (String) null);
+        String sort = getProperty(wikiUtil, props, attrPrefix + ATTR_SORT,
+                                  (String) null);
         if (sort != null) {
-            boolean ascending = Utils.getProperty(props,
-                                    attrPrefix + ATTR_SORT_ORDER,
-                                    "up").equals("up");
+            boolean ascending = getProperty(wikiUtil, props,
+                                            attrPrefix + ATTR_SORT_ORDER,
+                                            "up").equals("up");
             if (sort.equals(SORT_DATE)) {
                 entries = getEntryUtil().sortEntriesOnDate(entries,
                         !ascending);
@@ -3397,8 +3517,9 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
             }
         }
 
-        String firstEntries = Utils.getProperty(props,
-                                  attrPrefix + ATTR_FIRST, (String) null);
+        String firstEntries = getProperty(wikiUtil, props,
+                                          attrPrefix + ATTR_FIRST,
+                                          (String) null);
 
         if (firstEntries != null) {
             Hashtable<String, Entry> map = new Hashtable<String, Entry>();
@@ -3417,8 +3538,9 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
         }
 
 
-        String lastEntries = Utils.getProperty(props, attrPrefix + ATTR_LAST,
-                                 (String) null);
+        String lastEntries = getProperty(wikiUtil, props,
+                                         attrPrefix + ATTR_LAST,
+                                         (String) null);
 
         if (lastEntries != null) {
             Hashtable<String, Entry> map = new Hashtable<String, Entry>();
@@ -3436,8 +3558,8 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
             }
         }
 
-        String name = Utils.getProperty(props, attrPrefix + ATTR_NAME,
-                                        (String) null);
+        String name = getProperty(wikiUtil, props, attrPrefix + ATTR_NAME,
+                                  (String) null);
         String pattern = (name == null)
                          ? null
                          : getPattern(name);
@@ -3473,6 +3595,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
      * Get the entries corresponding to the ids
      *
      * @param request the Request
+     * @param wikiUtil _more_
      * @param baseEntry _more_
      * @param ids  list of comma separated ids
      * @param props _more_
@@ -3481,8 +3604,9 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
      *
      * @throws Exception problem getting entries
      */
-    public List<Entry> getEntries(Request request, Entry baseEntry,
-                                  String ids, Hashtable props)
+    public List<Entry> getEntries(Request request, WikiUtil wikiUtil,
+                                  Entry baseEntry, String ids,
+                                  Hashtable props)
             throws Exception {
 
         if (props == null) {
@@ -3533,7 +3657,8 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                     tmp.add(0, parent);
                     parent = parent.getParentEntry();
                 }
-                entries.addAll(applyFilter(request, tmp, filter, props));
+                entries.addAll(applyFilter(request, wikiUtil, tmp, filter,
+                                           props));
 
                 continue;
             }
@@ -3553,7 +3678,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                     } else {
                         continue;
                     }
-                    entries.addAll(applyFilter(request,
+                    entries.addAll(applyFilter(request, wikiUtil,
                             getEntryManager().getEntry(request, id), filter,
                             props));
                 }
@@ -3562,8 +3687,9 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
             }
 
             if (entryid.equals(ID_ROOT)) {
-                entries.addAll(applyFilter(request, request.getRootEntry(),
-                                           filter, props));
+                entries.addAll(applyFilter(request, wikiUtil,
+                                           request.getRootEntry(), filter,
+                                           props));
 
                 continue;
             }
@@ -3577,8 +3703,8 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
             }
 
             if (entryid.equals(ID_THIS)) {
-                entries.addAll(applyFilter(request, theBaseEntry, filter,
-                                           props));
+                entries.addAll(applyFilter(request, wikiUtil, theBaseEntry,
+                                           filter, props));
 
                 continue;
             }
@@ -3620,7 +3746,8 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                 myRequest.put(ARG_MAX,
                               Utils.getProperty(searchProps,
                                   PREFIX_SEARCH + ARG_MAX, "100"));
-                addSearchTerms(myRequest, searchProps, theBaseEntry);
+                addSearchTerms(myRequest, wikiUtil, searchProps,
+                               theBaseEntry);
 
                 if (isRemote) {
                     List<String> tokens = (entryid.indexOf("=") >= 0)
@@ -3644,8 +3771,10 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                                          new SearchInfo());
                 //                if(myRequest.defined(ARG_PROVIDER)) {
                 //List<Entry>[] pair = getEntryManager().getEntries(myRequest);
-                entries.addAll(applyFilter(request, pair[0], filter, props));
-                entries.addAll(applyFilter(request, pair[1], filter, props));
+                entries.addAll(applyFilter(request, wikiUtil, pair[0],
+                                           filter, props));
+                entries.addAll(applyFilter(request, wikiUtil, pair[1],
+                                           filter, props));
 
                 continue;
             }
@@ -3654,7 +3783,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
             if (entryid.equals(ID_PARENT)) {
                 entries.addAll(
                     applyFilter(
-                        request,
+                        request, wikiUtil,
                         getEntryManager().getEntry(
                             request,
                             theBaseEntry.getParentEntryId()), filter, props));
@@ -3675,8 +3804,8 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                                     continue;
                                 }
                             }
-                            entries.addAll(applyFilter(request, sibling,
-                                    filter, props));
+                            entries.addAll(applyFilter(request, wikiUtil,
+                                    sibling, filter, props));
                         }
                     }
                 }
@@ -3692,8 +3821,8 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                     Entry grandparent = getEntryManager().getEntry(request,
                                             parent.getParentEntryId());
                     if (grandparent != null) {
-                        entries.addAll(applyFilter(request, grandparent,
-                                filter, props));
+                        entries.addAll(applyFilter(request, wikiUtil,
+                                grandparent, filter, props));
                     }
                 }
 
@@ -3743,7 +3872,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
 
                 entries.addAll(
                     applyFilter(
-                        request,
+                        request, wikiUtil,
                         getEntryUtil().sortEntriesOnDate(
                             grandChildren, true), filter, props));
 
@@ -3762,11 +3891,11 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                     List<Entry> children =
                         getEntryManager().getChildrenAll(request, entry,
                             null);
-                    entries.addAll(applyFilter(request, children, filter,
-                            props));
+                    entries.addAll(applyFilter(request, wikiUtil, children,
+                            filter, props));
                 } else {
-                    entries.addAll(applyFilter(request, entry, filter,
-                            props));
+                    entries.addAll(applyFilter(request, wikiUtil, entry,
+                            filter, props));
                 }
             }
         }
@@ -3793,13 +3922,14 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
      * _more_
      *
      * @param request _more_
+     * @param wikiUtil _more_
      * @param props _more_
      * @param baseEntry _more_
      *
      * @throws Exception _more_
      */
-    private void addSearchTerms(Request request, Hashtable props,
-                                Entry baseEntry)
+    private void addSearchTerms(Request request, WikiUtil wikiUtil,
+                                Hashtable props, Entry baseEntry)
             throws Exception {
         String[] args = new String[] {
             ARG_TEXT, ARG_TYPE, ARG_GROUP, ARG_FILESUFFIX, ARG_BBOX,
@@ -3815,9 +3945,9 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
             DateArgument.ARG_CHANGE.getRelative(),
         };
         for (String arg : args) {
-            String text = (String) props.get(PREFIX_SEARCH + arg);
+            String text = getProperty(wikiUtil, props, PREFIX_SEARCH + arg);
             if (text == null) {
-                text = (String) props.get(arg);
+                text = getProperty(wikiUtil, props, arg);
             }
 
             if (text != null) {
@@ -3837,31 +3967,35 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
      * Make the gallery
      *
      * @param request   the request
+     * @param wikiUtil _more_
      * @param imageEntries  the list of image entries
      * @param props         the tag properties
      * @param sb            the string buffer to add to
      *
      * @throws Exception  problem making the gallery
      */
-    public void makeGallery(Request request, List<Entry> imageEntries,
-                            Hashtable props, StringBuilder sb)
+    public void makeGallery(Request request, WikiUtil wikiUtil,
+                            List<Entry> imageEntries, Hashtable props,
+                            StringBuilder sb)
             throws Exception {
 
-        int     width        = Utils.getProperty(props, ATTR_WIDTH, -100);
-        int serverImageWidth = Utils.getProperty(props, ATTR_IMAGEWIDTH, -1);
+        int width = getProperty(wikiUtil, props, ATTR_WIDTH, -100);
+        int serverImageWidth = getProperty(wikiUtil, props, ATTR_IMAGEWIDTH,
+                                           -1);
 
-        int     columns      = Utils.getProperty(props, ATTR_COLUMNS, 3);
-        boolean random       = Utils.getProperty(props, ATTR_RANDOM, false);
-        boolean popup        = Utils.getProperty(props, ATTR_POPUP, true);
-        boolean thumbnail    = Utils.getProperty(props, ATTR_THUMBNAIL,
-                                   false);
-        String  caption = Utils.getProperty(props, ATTR_CAPTION, "${name}");
-        String captionPos = Utils.getProperty(props, ATTR_POPUPCAPTION,
-                                "none");
-        boolean showDesc = Utils.getProperty(props, ATTR_SHOWDESCRIPTION,
-                                             false);
+        int     columns = getProperty(wikiUtil, props, ATTR_COLUMNS, 3);
+        boolean random  = getProperty(wikiUtil, props, ATTR_RANDOM, false);
+        boolean popup   = getProperty(wikiUtil, props, ATTR_POPUP, true);
+        boolean thumbnail = getProperty(wikiUtil, props, ATTR_THUMBNAIL,
+                                        false);
+        String caption = getProperty(wikiUtil, props, ATTR_CAPTION,
+                                     "${name}");
+        String captionPos = getProperty(wikiUtil, props, ATTR_POPUPCAPTION,
+                                        "none");
+        boolean showDesc = getProperty(wikiUtil, props, ATTR_SHOWDESCRIPTION,
+                                       false);
         if (popup) {
-            addImagePopupJS(request, sb, props);
+            addImagePopupJS(request, wikiUtil, sb, props);
         }
         int size = imageEntries.size();
         if (random && (size > 1)) {
@@ -4054,8 +4188,8 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                 if (originalEntry.getId().equals(importEntry.getId())) {
                     return "<b>Error: Circular import</b>";
                 }
-                tag = Utils.getProperty(props, ATTR_OUTPUT,
-                                        OutputHandler.OUTPUT_HTML.getId());
+                tag = getProperty(wikiUtil, props, ATTR_OUTPUT,
+                                  OutputHandler.OUTPUT_HTML.getId());
             }
 
             OutputHandler handler = getRepository().getOutputHandler(tag);
@@ -4091,14 +4225,14 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
             }
 
             String content = result.getStringContent();
-            String title = Utils.getProperty(props, ATTR_TITLE,
-                                             result.getTitle());
+            String title = getProperty(wikiUtil, props, ATTR_TITLE,
+                                       result.getTitle());
 
-            boolean inBlock = Utils.getProperty(props, ATTR_SHOWTOGGLE,
-                                  Utils.getProperty(props, ATTR_SHOWHIDE,
-                                      false));
+            boolean inBlock = getProperty(wikiUtil, props, ATTR_SHOWTOGGLE,
+                                          getProperty(wikiUtil, props,
+                                              ATTR_SHOWHIDE, false));
             if (inBlock && (title != null)) {
-                boolean open = Utils.getProperty(props, ATTR_OPEN, true);
+                boolean open = getProperty(wikiUtil, props, ATTR_OPEN, true);
 
                 return HtmlUtils.makeShowHideBlock(title, content, open,
                         HtmlUtils.cssClass(CSS_CLASS_HEADING_2), "",
@@ -4723,6 +4857,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
      * _more_
      *
      * @param request _more_
+     * @param wikiUtil _more_
      * @param props _more_
      * @param originalEntry _more_
      * @param entry _more_
@@ -4731,11 +4866,12 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
      *
      * @throws Exception _more_
      */
-    private String getDescription(Request request, Hashtable props,
-                                  Entry originalEntry, Entry entry)
+    private String getDescription(Request request, WikiUtil wikiUtil,
+                                  Hashtable props, Entry originalEntry,
+                                  Entry entry)
             throws Exception {
         String  content;
-        boolean wikify = Utils.getProperty(props, ATTR_WIKIFY, false);
+        boolean wikify = getProperty(wikiUtil, props, ATTR_WIKIFY, false);
         if (entry.getTypeHandler().isType(TYPE_WIKIPAGE)) {
             content = entry.getValue(0, entry.getDescription());
             wikify  = true;
@@ -4761,6 +4897,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
      * _more_
      *
      * @param request _more_
+     * @param wikiUtil _more_
      * @param props _more_
      * @param originalEntry _more_
      * @param entry _more_
@@ -4769,8 +4906,9 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
      *
      * @throws Exception _more_
      */
-    public String makeSimpleDisplay(Request request, Hashtable props,
-                                    Entry originalEntry, Entry entry)
+    public String makeSimpleDisplay(Request request, WikiUtil wikiUtil,
+                                    Hashtable props, Entry originalEntry,
+                                    Entry entry)
             throws Exception {
 
 
@@ -4781,10 +4919,10 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
         }
 
 
-        boolean sizeConstrained = Utils.getProperty(props,
+        boolean sizeConstrained = getProperty(wikiUtil, props,
                                       ATTR_CONSTRAINSIZE, false);;
-        String  content = getDescription(request, props, originalEntry,
-                                         entry);
+        String content = getDescription(request, wikiUtil, props,
+                                        originalEntry, entry);
         boolean haveText = Utils.stringDefined(content);
         String  imageUrl = null;
 
@@ -4809,15 +4947,15 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
             int imageWidth = 0;
 
             if (sizeConstrained) {
-                imageWidth = Utils.getProperty(props, ATTR_WIDTH, 400);
+                imageWidth = getProperty(wikiUtil, props, ATTR_WIDTH, 400);
                 //Give some space to the text on the side
                 if (haveText && layoutHorizontal) {
                     imageWidth -= 200;
                 }
             }
 
-            imageWidth = Utils.getProperty(props, ATTR_IMAGEWIDTH,
-                                           imageWidth);
+            imageWidth = getProperty(wikiUtil, props, ATTR_IMAGEWIDTH,
+                                     imageWidth);
 
             if (imageWidth > 0) {
                 extra.append(HtmlUtils.attr(HtmlUtils.ATTR_WIDTH,
@@ -4849,7 +4987,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
 
             String extraDiv = "";
             if (haveText && sizeConstrained) {
-                int height = Utils.getProperty(props, ATTR_HEIGHT, -1);
+                int height = getProperty(wikiUtil, props, ATTR_HEIGHT, -1);
                 if ((height > 0) && position.equals(POS_BOTTOM)) {
                     extraDiv =
                         HtmlUtils.style("overflow-y: hidden; max-height:"
@@ -4988,6 +5126,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
      * _more_
      *
      * @param request _more_
+     * @param wikiUtil _more_
      * @param entry _more_
      * @param originalEntry _more_
      * @param tag _more_
@@ -4998,9 +5137,10 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
      *
      * @throws Exception _more_
      */
-    public void getEntryDisplay(Request request, Entry entry,
-                                Entry originalEntry, String tag, String name,
-                                String url, StringBuilder sb, Hashtable props)
+    public void getEntryDisplay(Request request, WikiUtil wikiUtil,
+                                Entry entry, Entry originalEntry, String tag,
+                                String name, String url, StringBuilder sb,
+                                Hashtable props)
             throws Exception {
 
         this.addDisplayImports(request, sb);
@@ -5011,16 +5151,16 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
 
         for (String showArg : new String[] { ATTR_SHOWMAP, ATTR_SHOWMENU }) {
             topProps.add(showArg);
-            topProps.add("" + Utils.getProperty(props, showArg, false));
+            topProps.add("" + getProperty(wikiUtil, props, showArg, false));
         }
 
-        if (props.get(ATTR_SHOWMENU) != null) {
+        if (getProperty(wikiUtil, props, ATTR_SHOWMENU) != null) {
             propList.add(ATTR_SHOWMENU);
-            propList.add(Utils.getProperty(props, ATTR_SHOWMENU, "true"));
+            propList.add(getProperty(wikiUtil, props, ATTR_SHOWMENU, "true"));
             props.remove(ATTR_SHOWMENU);
         }
 
-        String derived = (String) props.get("derived");
+        String derived = getProperty(wikiUtil, props, "derived");
         if (derived != null) {
             //derived=temp_f:Temp F:temperature;pressure:v1*9/5+32:isRow:true:decimals:2
             //{'name':'temp_f','label':'Temp F', 'columns':'temperature','function':'v1*9/5+32', 'isRow':true,'decimals':2,},
@@ -5052,7 +5192,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
             props.put("derived", json);
         }
 
-        String providers = (String) props.get("providers");
+        String providers = getProperty(wikiUtil, props, "providers");
         if (providers != null) {
             List<String> processed = new ArrayList<String>();
             for (String tok : StringUtil.split(providers, ",")) {
@@ -5138,7 +5278,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
         }
 
 
-        String entryParent = (String) props.get("entryParent");
+        String entryParent = getProperty(wikiUtil, props, "entryParent");
         if (entryParent != null) {
             Entry theEntry = findEntryFromId(request, entry, null,
                                              entryParent);
@@ -5148,7 +5288,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
         }
 
 
-        String colors = (String) props.get(ATTR_COLORS);
+        String colors = getProperty(wikiUtil, props, ATTR_COLORS);
         if (colors != null) {
             propList.add(ATTR_COLORS);
             propList.add(Json.list(StringUtil.split(colors, ","), true));
@@ -5156,19 +5296,23 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
         }
 
         boolean showTitle = false;
-        if (props.get(ATTR_SHOWTITLE) != null) {
+        if (getProperty(wikiUtil, props, ATTR_SHOWTITLE) != null) {
             propList.add(ATTR_SHOWTITLE);
-            propList.add(Utils.getProperty(props, ATTR_SHOWTITLE, "true"));
+            propList.add(getProperty(wikiUtil, props, ATTR_SHOWTITLE,
+                                     "true"));
             showTitle = Misc.equals("true",
-                                    Utils.getProperty(props, ATTR_SHOWTITLE,
-                                        "true"));
+                                    getProperty(wikiUtil, props,
+                                        ATTR_SHOWTITLE, "true"));
             topProps.add(ATTR_SHOWTITLE);
-            topProps.add(Utils.getProperty(props, ATTR_SHOWTITLE, "true"));
+            topProps.add(getProperty(wikiUtil, props, ATTR_SHOWTITLE,
+                                     "true"));
             props.remove(ATTR_SHOWTITLE);
         }
 
-        String title   = Utils.getProperty(props, ATTR_TITLE, (String) null);
-        String titleId = Utils.getProperty(props, "titleId", (String) null);
+        String title = getProperty(wikiUtil, props, ATTR_TITLE,
+                                   (String) null);
+        String titleId = getProperty(wikiUtil, props, "titleId",
+                                     (String) null);
         if (titleId != null) {
             title = getWikiMetadataLabel(request, entry, titleId, title);
         }
@@ -5182,28 +5326,29 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
             propList.add(Json.quote(entry.getName()));
         }
         topProps.add("layoutType");
-        topProps.add(Json.quote(Utils.getProperty(props, "layoutType",
-                "table")));
+        topProps.add(Json.quote(getProperty(wikiUtil, props, "layoutType",
+                                            "table")));
         props.remove("layoutType");
         topProps.add("layoutColumns");
-        topProps.add(Utils.getProperty(props, "layoutColumns", "1"));
+        topProps.add(getProperty(wikiUtil, props, "layoutColumns", "1"));
         props.remove("layoutColumns");
 
         //Always add the default map layer to the displaymanager properties so any new maps pick it up
-        String defaultLayer = Utils.getProperty(props, "defaultMapLayer",
-                                  getMapManager().getDefaultMapLayer());
+        String defaultLayer =
+            getProperty(wikiUtil, props, "defaultMapLayer",
+                        getMapManager().getDefaultMapLayer());
 
         topProps.add("defaultMapLayer");
         topProps.add(Json.quote(defaultLayer));
 
-        String displayDiv = (String) props.get("displayDiv");
+        String displayDiv = getProperty(wikiUtil, props, "displayDiv");
         if (displayDiv != null) {
             displayDiv = displayDiv.replace("${entryid}", entry.getId());
             Utils.add(propList, "displayDiv", Json.quote(displayDiv));
             props.remove("displayDiv");
         }
 
-        String mainDivId = (String) props.get("divid");
+        String mainDivId = getProperty(wikiUtil, props, "divid");
         if (mainDivId == null) {
             mainDivId = HtmlUtils.getUniqueId("displaydiv");
         }
@@ -5235,7 +5380,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
 
 
 
-        String fields = Utils.getProperty(props, "fields", (String) null);
+        String fields = getProperty(wikiUtil, props, "fields", (String) null);
         if (fields != null) {
             List<String> toks = StringUtil.split(fields, ",", true, true);
             if (toks.size() > 0) {
@@ -5245,8 +5390,8 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
             props.remove("fields");
         }
 
-        String  anotherDivId = (String) props.get("divid");
-        boolean layoutHere   = Utils.getProperty(props, "layoutHere", true);
+        String  anotherDivId = getProperty(wikiUtil, props, "divid");
+        boolean layoutHere = getProperty(wikiUtil, props, "layoutHere", true);
         if ((anotherDivId != null) || layoutHere) {
             Utils.add(propList, "layoutHere", "true");
             if (anotherDivId == null) {
@@ -5266,7 +5411,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
             "eventSource", "name", "displayFilter", "chartMin", ARG_WIDTH,
             ARG_HEIGHT, ARG_FROMDATE, ARG_TODATE, "column", "row"
         }) {
-            String value = Utils.getProperty(props, arg, (String) null);
+            String value = getProperty(wikiUtil, props, arg, (String) null);
             if (value != null) {
                 Utils.add(propList, arg, Json.quote(value));
             }
@@ -5275,24 +5420,31 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
 
 
         //Only add the default layer to the display if its been specified
-        defaultLayer = Utils.getProperty(props, "defaultLayer",
-                                         (String) null);
+        defaultLayer = getProperty(wikiUtil, props, "defaultLayer",
+                                   (String) null);
         if (defaultLayer != null) {
             Utils.add(propList, "defaultMapLayer", Json.quote(defaultLayer));
             props.remove("defaultLayer");
         }
 
-        String displayType = Utils.getProperty(props, "type", "linechart");
-        if((displayType.equals("radar") || displayType.equals("windrose") ||displayType.equals("dotplot") || displayType.equals("3dscatter") ||displayType.equals("3dmesh") ||  displayType.equals("density")) && request.getExtraProperty("added plotly")==null) {
+        String displayType = getProperty(wikiUtil, props, "type",
+                                         "linechart");
+        if ((displayType.equals("radar") || displayType.equals(
+                "windrose") || displayType.equals(
+                "dotplot") || displayType.equals(
+                "3dscatter") || displayType.equals(
+                "3dmesh") || displayType.equals(
+                "density")) && (request.getExtraProperty(
+                    "added plotly") == null)) {
             HtmlUtils.importJS(sb, getHtdocsUrl("/lib/plotly/plotly.min.js"));
             HtmlUtils.importJS(sb, getHtdocsUrl("/display/displayplotly.js"));
-            request.putExtraProperty("added plotly","true");
+            request.putExtraProperty("added plotly", "true");
         }
 
         if (displayType.equals("entrygallery")
                 || displayType.equals("entrygrid")) {
-            List<Entry> children = getEntries(request, originalEntry, entry,
-                                       props);
+            List<Entry> children = getEntries(request, wikiUtil,
+                                       originalEntry, entry, props);
             StringBuilder ids = new StringBuilder();
             for (Entry child : children) {
                 if (ids.length() > 0) {
@@ -5315,14 +5467,15 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
         boolean isMap = displayType.equals("map");
         //Don't do this now
         if (false && isMap) {
-            String mapVar = Utils.getProperty(props, ATTR_MAPVAR);
+            String mapVar = getProperty(wikiUtil, props, ATTR_MAPVAR);
             if (mapVar == null) {
                 mapVar = MapInfo.makeMapVar();
                 props.put(ATTR_MAPVAR, mapVar);
             }
             props.put("mapHidden", "true");
-            MapInfo mapInfo = handleMapTag(request, entry, originalEntry,
-                                           WIKI_TAG_MAPENTRY, props, sb);
+            MapInfo mapInfo = handleMapTag(request, wikiUtil, entry,
+                                           originalEntry, WIKI_TAG_MAPENTRY,
+                                           props, sb);
             Utils.add(propList, "theMap", mapVar);
         }
 
@@ -5340,7 +5493,8 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                 ");\n");
         }
         Utils.add(propList, "entryId", HtmlUtils.quote(entry.getId()));
-        if ((url != null) && Utils.getProperty(props, "includeData", true)) {
+        if ((url != null)
+                && getProperty(wikiUtil, props, "includeData", true)) {
             Utils.add(propList, "data",
                       Utils.concatString("new PointData(",
                                          HtmlUtils.quote(name),
@@ -5600,7 +5754,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
             this.tag   = tag;
             this.label = label;
             this.attrs = attrs;
-            if(tag.equals(WIKI_TAG_DISPLAY)) {
+            if (tag.equals(WIKI_TAG_DISPLAY)) {
                 //                System.out.println("<li> " + label);
                 //                System.out.println("[wiki::tagdef display {type=\"" + tag+"\" " + attrs+"}]");
             }

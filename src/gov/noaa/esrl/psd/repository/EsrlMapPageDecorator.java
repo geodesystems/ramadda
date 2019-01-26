@@ -71,7 +71,7 @@ public class EsrlMapPageDecorator extends PageDecorator implements WikiConstants
                             -100);
             int height = getWikiManager().getDimension(props, ATTR_HEIGHT,
                              300);
-            List<Entry> children = getWikiManager().getEntries(request,
+            List<Entry> children = getWikiManager().getEntries(request,null,
                                        originalEntry, entry, props, false,
                                        "");
             MapOutputHandler mapOutputHandler =

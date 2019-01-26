@@ -487,6 +487,8 @@ public interface WikiConstants {
     /** wiki import */
     public static final String WIKI_TAG_PROPERTIES = "properties";
 
+    public static final String WIKI_TAG_PROPERTY = "property";
+
     /** _more_ */
     public static final String WIKI_TAG_LABEL = "label";
 

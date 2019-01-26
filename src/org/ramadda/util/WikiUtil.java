@@ -82,6 +82,8 @@ public class WikiUtil {
     /** _more_ */
     private Hashtable properties;
 
+    private Hashtable wikiProperties = new Hashtable();
+
     /** _more_ */
     private Hashtable<String, String> myVars = new Hashtable<String,
                                                    String>();
@@ -145,6 +147,30 @@ public class WikiUtil {
         }
         properties.put(key, value);
     }
+
+    public void putWikiProperty(Object key, Object value) {
+        wikiProperties.put(key, value);
+    }
+
+    /**
+     * _more_
+     *
+     * @param key _more_
+     *
+     * @return _more_
+     */
+    public Object getWikiProperty(Object key) {
+        return wikiProperties.get(key);
+    }
+
+    public void removeWikiProperty(Object key) {
+        wikiProperties.remove(key);
+    }
+
+
+
+
+
 
     /**
      * _more_

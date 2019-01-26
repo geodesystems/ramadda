@@ -109,7 +109,7 @@ public class SlackChannelTypeHandler extends ExtensibleGroupTypeHandler {
             (String) teamEntry.getValue(SlackTeamTypeHandler.IDX_TOKEN);
 
 
-        List<Entry> children = getWikiManager().getEntries(request,
+        List<Entry> children = getWikiManager().getEntries(request, null,
                                    originalEntry, entry, props);
         StringBuilder sb = new StringBuilder();
         sb.append(HtmlUtils.cssLink(getRepository().getUrlBase()

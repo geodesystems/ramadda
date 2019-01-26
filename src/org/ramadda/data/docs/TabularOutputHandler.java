@@ -485,7 +485,7 @@ public class TabularOutputHandler extends OutputHandler {
                 List<Entry> entries = new ArrayList<Entry>();
                 if (request.get("applysiblings", false)) {
                     entries.add(theEntry);
-                    entries.addAll(getWikiManager().getEntries(request,
+                    entries.addAll(getWikiManager().getEntries(request,null,
                             theEntry, WikiManager.ID_SIBLINGS, null));
                 } else {
                     entries.add(theEntry);

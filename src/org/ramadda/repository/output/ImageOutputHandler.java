@@ -796,7 +796,7 @@ public class ImageOutputHandler extends OutputHandler {
         if (output.equals(OUTPUT_GALLERY)) {
             boolean useAttachment = request.get("useAttachment", false);
             getWikiManager().makeGallery(
-                request,
+                                         request, null,
                 getWikiManager().getImageEntries(
                     request, entries, useAttachment), new Hashtable(), sb);
 

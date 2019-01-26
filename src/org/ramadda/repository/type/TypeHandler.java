@@ -3012,7 +3012,7 @@ public class TypeHandler extends RepositoryManager {
                                        HtmlUtils.cssClass("popup_image"));
                     //                    sb.append(HtmlUtils.col(img, " colspan=2 "));
                     sb.append(HtmlUtils.col(outer, " colspan=2 "));
-                    getWikiManager().addImagePopupJS(request, sb,
+                    getWikiManager().addImagePopupJS(request, null, sb,
                             new Hashtable());
                 }
             }
