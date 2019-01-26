@@ -4362,7 +4362,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
         tags.append(addWikiEditButton(textAreaId, "button_blockquote.png",
                                       "Row/Column",
                                       "+row_newline_+col-6_newline_",
-                                      "-col_newline_+col-6_newline_-row",
+                                      "-col_newline_+col-6_newline_-col_newline_-row",
                                       "Row/Column",
                                       "mw-editbutton-headline"));
         tags.append(

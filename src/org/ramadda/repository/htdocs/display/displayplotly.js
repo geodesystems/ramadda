@@ -74,11 +74,11 @@ function RamaddaPlotlyDisplay(displayManager, id, type, properties) {
 
 function RamaddaRadialDisplay(displayManager, id, type, properties) {
     var SUPER;
-    RamaddaUtil.inherit(this, SUPER  = new RamaddaPlotlyDisplay(displayManager, id, type, properties));
     $.extend(this, {
             width:"400px",
             height:"400px",
                 });
+    RamaddaUtil.inherit(this, SUPER  = new RamaddaPlotlyDisplay(displayManager, id, type, properties));
     RamaddaUtil.defineMembers(this, {
             getPlotType: function() {
                 return 'barpolar';
@@ -160,11 +160,11 @@ function RamaddaWindroseDisplay(displayManager, id, properties) {
 
 function RamaddaDensityDisplay(displayManager, id, properties) {
     var SUPER;
-    RamaddaUtil.inherit(this, SUPER  = new RamaddaPlotlyDisplay(displayManager, id, DISPLAY_PLOTLY_DENSITY, properties));
     $.extend(this, {
             width:"400px",
             height:"400px",
              });
+    RamaddaUtil.inherit(this, SUPER  = new RamaddaPlotlyDisplay(displayManager, id, DISPLAY_PLOTLY_DENSITY, properties));
     addRamaddaDisplay(this);
     RamaddaUtil.defineMembers(this, {
             updateUI: function() {
@@ -234,11 +234,11 @@ function RamaddaDensityDisplay(displayManager, id, properties) {
 
 function RamaddaPlotly3DDisplay(displayManager, id, type, properties) {
     var SUPER;
-    RamaddaUtil.inherit(this, SUPER  = new RamaddaPlotlyDisplay(displayManager, id, type, properties));
     $.extend(this, {
             width:"100%",
             height:"100%",
              });
+    RamaddaUtil.inherit(this, SUPER  = new RamaddaPlotlyDisplay(displayManager, id, type, properties));
     RamaddaUtil.defineMembers(this, {
             addEvents: function(plot, myPlot) {
                 myPlot.on('plotly_click', function(){
@@ -330,11 +330,11 @@ function RamaddaPlotly3DDisplay(displayManager, id, type, properties) {
 
 function Ramadda3dmeshDisplay(displayManager, id, properties) {
     var SUPER;
-    RamaddaUtil.inherit(this, SUPER  = new RamaddaPlotly3DDisplay(displayManager, id, DISPLAY_PLOTLY_3DMESH, properties));
     $.extend(this, {
             width:"100%",
             height:"100%",
              });
+    RamaddaUtil.inherit(this, SUPER  = new RamaddaPlotly3DDisplay(displayManager, id, DISPLAY_PLOTLY_3DMESH, properties));
     addRamaddaDisplay(this);
     RamaddaUtil.defineMembers(this, {
             get3DType: function() {
@@ -347,11 +347,11 @@ function Ramadda3dmeshDisplay(displayManager, id, properties) {
 
 function Ramadda3dscatterDisplay(displayManager, id, properties) {
     var SUPER;
-    RamaddaUtil.inherit(this, SUPER  = new RamaddaPlotly3DDisplay(displayManager, id, DISPLAY_PLOTLY_3DSCATTER, properties));
     $.extend(this, {
             width:"100%",
             height:"100%",
              });
+    RamaddaUtil.inherit(this, SUPER  = new RamaddaPlotly3DDisplay(displayManager, id, DISPLAY_PLOTLY_3DSCATTER, properties));
     addRamaddaDisplay(this);
     RamaddaUtil.defineMembers(this, {
             get3DType: function() {
@@ -365,11 +365,11 @@ function Ramadda3dscatterDisplay(displayManager, id, properties) {
 
 function RamaddaTernaryDisplay(displayManager, id, properties) {
     var SUPER;
-    RamaddaUtil.inherit(this, SUPER  = new RamaddaPlotlyDisplay(displayManager, id, DISPLAY_PLOTLY_TERNARY, properties));
     $.extend(this, {
             width:"400px",
             height:"400px",
              });
+    RamaddaUtil.inherit(this, SUPER  = new RamaddaPlotlyDisplay(displayManager, id, DISPLAY_PLOTLY_TERNARY, properties));
     addRamaddaDisplay(this);
     RamaddaUtil.defineMembers(this, {
             updateUI: function() {
@@ -456,11 +456,11 @@ function RamaddaTernaryDisplay(displayManager, id, properties) {
 
 function RamaddaDotplotDisplay(displayManager, id, properties) {
     var SUPER;
-    RamaddaUtil.inherit(this, SUPER  = new RamaddaPlotlyDisplay(displayManager, id, DISPLAY_PLOTLY_DOTPLOT, properties));
     $.extend(this, {
             width:"750px",
             height:"500px",
              });
+    RamaddaUtil.inherit(this, SUPER  = new RamaddaPlotlyDisplay(displayManager, id, DISPLAY_PLOTLY_DOTPLOT, properties));
 
     addRamaddaDisplay(this);
     RamaddaUtil.defineMembers(this, {
