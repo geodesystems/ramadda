@@ -1273,7 +1273,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
         if (criteria != null) {}
 
         StringBuilder sb = new StringBuilder();
-        System.err.println("theTag:" + theTag);
+        //        System.err.println("theTag:" + theTag);
         if (theTag.equals(WIKI_TAG_INFORMATION)) {
             Request myRequest = request.cloneMe();
             myRequest.put(ATTR_SHOWTITLE,
