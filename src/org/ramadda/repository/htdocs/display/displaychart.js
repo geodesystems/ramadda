@@ -1305,6 +1305,10 @@ function RamaddaMultiChart(displayManager, id, properties) {
                     chartOptions.calendar = {
                         cellSize: parseInt(this.getProperty("cellSize",15))
                     };
+                    //If a calendar is show in tabs then it never returns from the draw
+                    if(this.jq(ID_CHART).width() == 0) {
+                        return;
+                    }
                     this.chart = new google.visualization.Calendar(document.getElementById(chartId));
                 } else  if(chartType == DISPLAY_PIECHART) {
                     chartOptions.tooltip = {textStyle: {color: '#000000'}, showColorCode: true};
