@@ -1168,6 +1168,8 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
         String suffix = Utils.getProperty(props, attrPrefix + ATTR_SUFFIX,
                                           (String) null);
 
+        System.err.println("********");
+
         String result = getWikiIncludeInner(wikiUtil, request, originalEntry,
                                             entry, tag, props);
         if (result == null) {
