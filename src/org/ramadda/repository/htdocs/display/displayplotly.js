@@ -174,7 +174,7 @@ function RamaddaWindroseDisplay(displayManager, id, properties) {
 function RamaddaDensityDisplay(displayManager, id, properties) {
     var SUPER;
     $.extend(this, {
-            width:"400px",
+            width:"600px",
             height:"400px",
              });
     RamaddaUtil.inherit(this, SUPER  = new RamaddaPlotlyDisplay(displayManager, id, DISPLAY_PLOTLY_DENSITY, properties));
