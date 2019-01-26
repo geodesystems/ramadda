@@ -33,10 +33,23 @@ function RamaddaPlotlyDisplay(displayManager, id, type, properties) {
             initDisplay: function() {
                 //Call base class to init menu, etc
                 this.initUI();
-                var html =   HtmlUtil.div([ATTR_ID, this.getDomId(this.ID_DISPLAY),"style","width:" + this.getProperty("width","400px")+";" +
-                                           "height:" + this.getProperty("height","400px")+";"],this.getLoadingMessage());
+                var width = this.getProperty("width","400px");
+                if(!width.endsWith("px") && !width.endsWith("%"))
+                    width = width+"px";
+                var height = this.getProperty("height","400px");
+                if(!height.endsWith("px") && !height.endsWith("%"))
+                    height = height+"px";
+
+                var html =   HtmlUtil.div([ATTR_ID, this.getDomId(ID_DISPLAY),"style","width:" + width+";" +
+                                           "height:" + height+";"],this.getLoadingMessage());
                 this.setContents(html);
                 this.updateUI();
+            },
+            setDimensions: function(layout, widthDelta) {
+                var width  = parseInt(this.getProperty("width","400").replace("px","").replace("%",""));
+                var height  = parseInt(this.getProperty("height","400").replace("px","").replace("%",""));
+                layout.width = width-widthDelta;
+                layout.height = height;
             },
             fieldSelectionChanged: function() {
                 SUPER.fieldSelectionChanged.call(this);
@@ -60,8 +73,8 @@ function RamaddaPlotlyDisplay(displayManager, id, type, properties) {
             makePlot:function(data,layout) {
                this.clearHtml();
                //For some reason plotly won't display repeated times in the DISPLAY div
-               this.jq(this.ID_DISPLAY).html(HtmlUtil.div(["id",this.getDomId("tmp"),"style",this.getDisplayStyle()],""));
-               //               Plotly.plot(this.getDomId(this.ID_DISPLAY), data, layout)
+               this.jq(ID_DISPLAY).html(HtmlUtil.div(["id",this.getDomId("tmp"),"style",this.getDisplayStyle()],""));
+               //               Plotly.plot(this.getDomId(ID_DISPLAY), data, layout)
                var plot = Plotly.plot(this.getDomId("tmp"), data, layout);
                var myPlot = document.getElementById(this.getDomId("tmp"));
                this.addEvents(plot, myPlot);
@@ -88,15 +101,15 @@ function RamaddaRadialDisplay(displayManager, id, type, properties) {
                 if(!records) {
                     return;
                 }
-                var selectedFields = this.getSelectedFields(this.getData().getRecordFields());
-                var stringField = this.getFieldOfType(selectedFields,"string");
+                var fields = this.getSelectedFields(this.getData().getRecordFields());
+                var stringField = this.getFieldOfType(fields,"string");
                 if(!stringField) {
                     this.displayError("No string field specified");
                     return;
                 }
-                var numericFields = this.getFieldsOfType(selectedFields,"numeric");
+                var numericFields = this.getFieldsOfType(fields,"numeric");
                 if(numericFields.length==0) {
-                    this.displayError("No numeric fields specified");
+                   this.displayError("No numeric fields specified");
                     return;
                 }
                 var theta = this.getColumnValues(records, stringField).values;
@@ -119,8 +132,6 @@ function RamaddaRadialDisplay(displayManager, id, type, properties) {
                 }
 
                layout = {
-                   width:"100%",
-                   height:"100%",
                    polar: {
                        radialaxis: {
                            visible: true,
@@ -128,6 +139,7 @@ function RamaddaRadialDisplay(displayManager, id, type, properties) {
                        }
                    },
                }
+               this.setDimensions(layout,2);
                this.makePlot(plotData, layout);
             },
         });
@@ -136,6 +148,7 @@ function RamaddaRadialDisplay(displayManager, id, type, properties) {
 function RamaddaRadarDisplay(displayManager, id, properties) {
     var SUPER;
     RamaddaUtil.inherit(this, SUPER  = new RamaddaRadialDisplay(displayManager, id, DISPLAY_PLOTLY_RADAR, properties));
+
     RamaddaUtil.defineMembers(this, {
             getPlotType: function() {
                 return 'scatterpolar';
@@ -208,8 +221,6 @@ function RamaddaDensityDisplay(displayManager, id, properties) {
                 var layout = {
                     showlegend: true,
                     autosize: true,
-                    width: "100%",
-                    height: "100%",
                     margin: {t: 50},
                     hovermode: 'closest',
                     bargap: 0,
@@ -226,6 +237,7 @@ function RamaddaDensityDisplay(displayManager, id, properties) {
                         title:fields[1].getLabel()
                     },
                 };
+                this.setDimensions(layout,2);
                 this.makePlot(plotData, layout);
             },
         });
@@ -235,10 +247,11 @@ function RamaddaDensityDisplay(displayManager, id, properties) {
 function RamaddaPlotly3DDisplay(displayManager, id, type, properties) {
     var SUPER;
     $.extend(this, {
-            width:"100%",
-            height:"100%",
+            width:"400px",
+            height:"400px",
              });
     RamaddaUtil.inherit(this, SUPER  = new RamaddaPlotlyDisplay(displayManager, id, type, properties));
+
     RamaddaUtil.defineMembers(this, {
             addEvents: function(plot, myPlot) {
                 myPlot.on('plotly_click', function(){
@@ -267,7 +280,6 @@ function RamaddaPlotly3DDisplay(displayManager, id, type, properties) {
                     this.displayError("Don't have 3 numeric fields specified");
                     return;
                 }
-
                 var x = this.getColumnValues(records, fields[0]);
                 var y = this.getColumnValues(records, fields[1]);
                 var z = this.getColumnValues(records, fields[2]);
@@ -286,9 +298,9 @@ function RamaddaPlotly3DDisplay(displayManager, id, type, properties) {
 
 
                 var plotData = [trace1];
+
+
                 var layout = {
-                    width: "90%",
-                    height: "90%",
                     scene: {
                     xaxis: {
                         backgroundcolor: "rgb(200, 200, 230)",
@@ -319,9 +331,7 @@ function RamaddaPlotly3DDisplay(displayManager, id, type, properties) {
                         pad: 4
                         },
                     };
-
-
-
+                this.setDimensions(layout,2);
                 this.makePlot(plotData, layout);
             },
         });
@@ -448,6 +458,7 @@ function RamaddaTernaryDisplay(displayManager, id, properties) {
                 };
 
 
+                this.setDimensions(layout,2);
                 this.makePlot(plotData, layout);
             },
         });
@@ -457,13 +468,17 @@ function RamaddaTernaryDisplay(displayManager, id, properties) {
 function RamaddaDotplotDisplay(displayManager, id, properties) {
     var SUPER;
     $.extend(this, {
-            width:"750px",
-            height:"500px",
+            width:"600px",
+            height:"400px",
              });
     RamaddaUtil.inherit(this, SUPER  = new RamaddaPlotlyDisplay(displayManager, id, DISPLAY_PLOTLY_DOTPLOT, properties));
 
     addRamaddaDisplay(this);
     RamaddaUtil.defineMembers(this, {
+             getDisplayStyle:function() {
+                return  "border: 1px #ccc solid;";
+            },
+
             updateUI: function() {
                 var records = this.filterData();
                 if(!records)return;
@@ -514,7 +529,6 @@ function RamaddaDotplotDisplay(displayManager, id, properties) {
 
 
 
-
                 var layout = {
                     title: '',
                     xaxis: {
@@ -549,14 +563,11 @@ function RamaddaDotplotDisplay(displayManager, id, properties) {
                         yanchor: 'middle',
                         xanchor: 'right'
                     },
-                    width: "100%",
-                    height: "100%",
                     paper_bgcolor: 'rgb(254, 247, 234)',
                     plot_bgcolor: 'rgb(254, 247, 234)',
                     hovermode: 'closest'
                 };
-
-
+                this.setDimensions(layout,2);
                 this.makePlot(plotData, layout);
             },
         });
@@ -657,6 +668,7 @@ function RamaddaTreemapDisplay(displayManager, id, properties) {
                 var data = {
                     data: [trace0]
                 };
+                this.setDimensions(layout,2);
                this.makePlot([trace0], layout);
             },
         });

@@ -12,6 +12,7 @@ var ID_DETAILS = "details";
 var ID_DISPLAY_CONTENTS = "contents";
 var ID_GROUP_CONTENTS = "group_contents";
 var ID_DETAILS_MAIN = "detailsmain";
+var ID_DISPLAY = "display";
 
 var ID_TOOLBAR = "toolbar";
 var ID_TOOLBAR_INNER = "toolbarinner";
@@ -311,7 +312,6 @@ function DisplayThing(argId, argProperties) {
 
 
 function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
-    var ID_DISPLAY = "display";
     RamaddaUtil.initMembers(this, {
             orientation: "horizontal",
         });
@@ -379,7 +379,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
                 this.displayHtml("");
             },
             displayHtml: function(html) {
-                this.jq(this.ID_DISPLAY).html(html);
+                this.jq(ID_DISPLAY).html(html);
             },
             notifyEvent:function(func, source, data) {
                 if(this[func] == null) { return;}
