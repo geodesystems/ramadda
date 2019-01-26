@@ -1244,7 +1244,7 @@ function initMapFunctions(theMap) {
         layer.events.on({"loadend": function(e) {
                     _this.hideLoadingImage();
                     if(e.response && Utils.isDefined(e.response.code) && e.response.code == OpenLayers.Protocol.Response.FAILURE) {
-                        alert("An error occurred loading the map");
+                        console.log("An error occurred loading the map");
                         return;
                     }
                     if(_this.centerOnMarkersCalled) {
