@@ -82,6 +82,7 @@ public class WikiUtil {
     /** _more_ */
     private Hashtable properties;
 
+    /** _more_          */
     private Hashtable wikiProperties = new Hashtable();
 
     /** _more_ */
@@ -148,6 +149,12 @@ public class WikiUtil {
         properties.put(key, value);
     }
 
+    /**
+     * _more_
+     *
+     * @param key _more_
+     * @param value _more_
+     */
     public void putWikiProperty(Object key, Object value) {
         wikiProperties.put(key, value);
     }
@@ -163,6 +170,11 @@ public class WikiUtil {
         return wikiProperties.get(key);
     }
 
+    /**
+     * _more_
+     *
+     * @param key _more_
+     */
     public void removeWikiProperty(Object key) {
         wikiProperties.remove(key);
     }
@@ -550,89 +562,148 @@ public class WikiUtil {
             matcher = pattern.matcher(s);
         }
 
-        boolean       closeTheTag = false;
+        boolean       closeTheTag  = false;
 
 
-        int           ulCnt       = 0;
-        int           olCnt       = 0;
-        StringBuffer  buff        = new StringBuffer();
+        int           ulCnt        = 0;
+        int           olCnt        = 0;
+        StringBuffer  buff         = new StringBuffer();
 
-        String        tabId       = null;
+        List<TabInfo> allTabInfos  = new ArrayList<TabInfo>();
 
-        List<StringBuilder> tabTitles = null;
-        List<String> tabIds = null;
-        StringBuilder tabTitle= null;
-
-
-
-        boolean       inTabs      = false;
-        int           tabCnt      = 0;
+        List<TabInfo> tabInfos     = new ArrayList<TabInfo>();
+        List<String>  accordianIds = new ArrayList<String>();
 
         for (String line :
                 (List<String>) StringUtil.split(s, "\n", false, false)) {
             String tline = line.trim();
-            if (tline.equals("+row")) {
-                buff.append("<div class=\"row\">");
-                continue;
-            }
             if (tline.equals("+tabs")) {
-                if(tabTitles == null) {
-                    tabTitles = new ArrayList<StringBuilder>();
-                    tabIds = new ArrayList<String>();
-                }
-                inTabs      = true;
-                tabCnt      = 0;
-                tabTitle=new StringBuilder();
-                tabId       = HtmlUtils.getUniqueId("tabs");
-                tabIds.add(tabId);
-                tabTitles.add(tabTitle);
+                TabInfo tabInfo = new TabInfo();
+                tabInfos.add(tabInfo);
+                allTabInfos.add(tabInfo);
+                buff.append(HtmlUtils.open(tabInfo.title, HtmlUtils.TAG_DIV,
+                                           "id", tabInfo.id, "class",
+                                           "ui-tabs"));
+                HtmlUtils.open(tabInfo.title, HtmlUtils.TAG_UL);
+                buff.append("${" + tabInfo.id + "}");
 
-                buff.append(HtmlUtils.open(tabTitle, HtmlUtils.TAG_DIV, "id", tabId,
-                                               "class", "ui-tabs"));
-                HtmlUtils.open(tabTitle, HtmlUtils.TAG_UL);
-                buff.append("${" + tabId+"}");
                 continue;
             }
             if (tline.startsWith("+tab")) {
-                if(tabTitle == null) {
+                if (tabInfos.size() == 0) {
                     buff.append("No +tabs tag");
+
                     continue;
                 }
-                List<String> toks  = StringUtil.splitUpTo(tline, " ", 2);
-                String       title = (toks.size() > 1)
-                                     ? toks.get(1)
-                                     : "";
-                tabCnt++;
-                tabTitle.append("<li><a href=\"#" + tabId + "-" + (tabCnt)
-                                 + "\">" + title + "</a></li>\n");
-                buff.append(HtmlUtils.open("div",
-                        HtmlUtils.id(tabId + "-" + (tabCnt))
+                List<String> toks    = StringUtil.splitUpTo(tline, " ", 2);
+                String       title   = (toks.size() > 1)
+                                       ? toks.get(1)
+                                       : "";
+                TabInfo      tabInfo = tabInfos.get(tabInfos.size() - 1);
+                tabInfo.cnt++;
+                tabInfo.title.append("<li><a href=\"#" + tabInfo.id + "-"
+                                     + (tabInfo.cnt) + "\">" + title
+                                     + "</a></li>\n");
+                buff.append(
+                    HtmlUtils.open(
+                        "div",
+                        HtmlUtils.id(tabInfo.id + "-" + (tabInfo.cnt))
                         + HtmlUtils.cssClass("ui-tabs-hide")));
+
                 continue;
             }
-            if (inTabs) {
+            if (tabInfos.size() > 0) {
                 if (tline.equals("-tabs")) {
-                    tabTitle.append("</ul>");
-                    tabTitle = null;
-                    inTabs = false;
+                    TabInfo tabInfo = tabInfos.get(tabInfos.size() - 1);
+                    tabInfo.title.append("</ul>");
+                    tabInfos.remove(tabInfos.size() - 1);
+
                     continue;
                 }
 
                 if (tline.equals("-tab")) {
+                    TabInfo tabInfo = tabInfos.get(tabInfos.size() - 1);
                     buff.append(HtmlUtils.close("div"));
                     buff.append(
-                                HtmlUtils.script(
-                                                 "\njQuery(function(){\njQuery('#" + tabId
-                                                 + "').tabs({activate: HtmlUtil.tabLoaded})});\n\n"));
+                        HtmlUtils.script(
+                            "\njQuery(function(){\njQuery('#" + tabInfo.id
+                            + "').tabs({activate: HtmlUtil.tabLoaded})});\n\n"));
+
                     continue;
                 }
             }
 
-            if (tline.equals("-row")) {
-                buff.append("</div>");
+            if (tline.equals("+accordian")) {
+                String accordianId = HtmlUtils.getUniqueId("accordian");
+                accordianIds.add(accordianId);
+                buff.append("\n");
+                buff.append(
+                    HtmlUtils.open(
+                        HtmlUtils.TAG_DIV,
+                        HtmlUtils.cssClass(
+                            " ui-accordion ui-widget ui-helper-reset") + HtmlUtils.id(
+                            accordianId)));
+                buff.append("\n");
 
                 continue;
             }
+            if (accordianIds.size() > 0) {
+                if (tline.equals("-accordian")) {
+                    buff.append("\n");
+                    buff.append("</div>");
+                    buff.append("\n");
+                    String accordianId = accordianIds.get(accordianIds.size()
+                                             - 1);
+                    accordianIds.remove(accordianIds.size() - 1);
+                    String args =
+                        "{autoHeight: false, navigation: true, collapsible: true, active: 0}";
+                    HtmlUtils.script(buff,
+                                     "HtmlUtil.makeAccordian(\"#"
+                                     + accordianId + "\" " + "," + args
+                                     + ");\n");
+                    buff.append("\n");
+
+                    continue;
+                }
+
+                if (tline.startsWith("+segment")) {
+                    List<String> toks  = StringUtil.splitUpTo(tline, " ", 2);
+                    String       title = (toks.size() > 1)
+                                         ? toks.get(1)
+                                         : "";
+
+                    buff.append("\n");
+                    buff.append(
+                        HtmlUtils.open(
+                            HtmlUtils.TAG_H3,
+                            HtmlUtils.cssClass(
+                                " ui-accordion-header ui-helper-reset ui-state-active ui-corner-top")));
+                    buff.append("\n");
+                    buff.append("<a href=\"#\">");
+                    buff.append(title);
+                    buff.append("</a></h3>");
+                    buff.append("\n");
+                    String contentsId =
+                        HtmlUtils.getUniqueId("accordion_contents_");
+                    buff.append(
+                        HtmlUtils.open(
+                            "div",
+                            HtmlUtils.id(contentsId)
+                            + HtmlUtils.cssClass(
+                                "ramadda-accordian-contents")));
+                    buff.append("\n");
+
+                    continue;
+                }
+                if (tline.startsWith("-segment")) {
+                    buff.append("\n");
+                    buff.append("</div>");
+                    buff.append("\n");
+
+                    continue;
+                }
+            }
+
             if (tline.equals("-div")) {
                 buff.append("</div>");
 
@@ -686,10 +757,12 @@ public class WikiUtil {
                 buff.append(HtmlUtils.open("div",
                                            HtmlUtils.cssClass("inset")
                                            + extra));
+
                 continue;
             }
             if (tline.equals("-inset")) {
                 buff.append("</div>");
+
                 continue;
             }
 
@@ -748,20 +821,24 @@ public class WikiUtil {
                     buff.append(HtmlUtils.div(getTitle(title),
                             HtmlUtils.cssClass("ramadda-page-title")));
                 }
+
                 continue;
             }
             if (tline.startsWith("-info-sec")
                     || tline.startsWith("-section")) {
                 buff.append("</div>");
+
                 continue;
             }
 
             if (tline.equals("+info-text")) {
                 buff.append("<div class=\"info-text\">");
+
                 continue;
             }
             if (tline.equals("-info-text")) {
                 buff.append("</div>");
+
                 continue;
             }
 
@@ -796,6 +873,7 @@ public class WikiUtil {
                     closeTheTag = false;
                 }
                 buff.append("</div>");
+
                 continue;
             }
 
@@ -890,6 +968,16 @@ public class WikiUtil {
             }
 
 
+            if (tline.equals("+row")) {
+                buff.append("<div class=\"row\">");
+
+                continue;
+            }
+            if (tline.equals("-row")) {
+                buff.append("</div>");
+
+                continue;
+            }
 
             if (tline.startsWith("+col-")) {
                 List<String>  toks  = StringUtil.splitUpTo(tline, " ", 2);
@@ -976,6 +1064,7 @@ public class WikiUtil {
                 buff.append("<li> ");
                 buff.append(tline);
                 buff.append("\n");
+
                 continue;
             }
 
@@ -998,10 +1087,9 @@ public class WikiUtil {
         }
         s = buff.toString();
 
-        if(tabIds!=null) {
-            for(int i=0;i<tabIds.size();i++) {
-                s=  s.replace("${" + tabIds.get(i)+"}", tabTitles.get(i).toString());
-            }
+        for (int i = 0; i < allTabInfos.size(); i++) {
+            TabInfo tabInfo = allTabInfos.get(i);
+            s = s.replace("${" + tabInfo.id + "}", tabInfo.title.toString());
         }
 
 
@@ -1134,7 +1222,6 @@ public class WikiUtil {
                                        false);
                 String title = Misc.getProperty(props, ATTR_TITLE, "");
                 //<block show="ismobile"
-
                 if (shouldShow) {
                     if (decorate) {
                         sb.append(HtmlUtils.makeShowHideBlock(title, inner,
@@ -1472,6 +1559,33 @@ public class WikiUtil {
     }
 
 
+    /**
+     * Class description
+     *
+     *
+     * @version        $version$, Sun, Jan 27, '19
+     * @author         Enter your name here...    
+     */
+    public static class TabInfo {
 
+        /** _more_          */
+        String id;
+
+        /** _more_          */
+        StringBuilder title = new StringBuilder();
+
+        /** _more_          */
+        int cnt = 0;
+
+        /**
+         * _more_
+         */
+        public TabInfo() {
+            this.id = HtmlUtils.getUniqueId("tabs");
+        }
+
+
+
+    }
 
 }

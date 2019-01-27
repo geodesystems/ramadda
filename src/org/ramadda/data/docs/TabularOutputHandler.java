@@ -429,6 +429,9 @@ public class TabularOutputHandler extends OutputHandler {
                 lines.get(lines.size() - 1).append(" "
                           + request.getString("csvoutput"));
             }
+            CsvUtil prevCsvUtil = null;
+
+
             for (StringBuilder lineSB : lines) {
                 String line = lineSB.toString();
                 if (line.startsWith("#")) {
@@ -498,6 +501,9 @@ public class TabularOutputHandler extends OutputHandler {
                 newFiles = new ArrayList<String>();
                 //                System.err.println("args:" + args + " entries:"+ entries);
                 CsvUtil csvUtil = new CsvUtil(args, runDir);
+                if(prevCsvUtil!=null)
+                    csvUtil.initWith(prevCsvUtil);
+                prevCsvUtil = csvUtil;
                 getSessionManager().putSessionProperty(request, "csvutil",
                         csvUtil);
                 for (Entry e : entries) {
@@ -785,11 +791,9 @@ public class TabularOutputHandler extends OutputHandler {
                         final Appendable buffer, final List<FileInfo> files)
             throws Exception {
 
-
         if (args.contains("-help") || args.contains("?")) {
             buffer.append(
                 "For tabular data:\n\t-maxrows <# rows to show>\n\t-columns <comma separated columns to show e.g., 1,3,4,6> \n\t-startcol col# -endcol col# \n\t-startrow row # -endrow row #\n");
-
             return false;
         }
 

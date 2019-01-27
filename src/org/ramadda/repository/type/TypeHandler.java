@@ -4289,7 +4289,7 @@ public class TypeHandler extends RepositoryManager {
                             }
                             addWikiEditor(
                                 request, entry, sb, formInfo,
-                                ARG_DESCRIPTION, desc, "Description",
+                                ARG_DESCRIPTION, desc, "Description", false,
                                 EntryManager.MAX_DESCRIPTION_LENGTH);
                         }
                     }
@@ -4608,25 +4608,28 @@ public class TypeHandler extends RepositoryManager {
      * @param id _more_
      * @param text _more_
      * @param label _more_
+     * @param readOnly _more_
      * @param length _more_
      *
      * @throws Exception _more_
      */
     public void addWikiEditor(Request request, Entry entry, Appendable sb,
                               FormInfo formInfo, String id, String text,
-                              String label, int length)
+                              String label, boolean readOnly, int length)
             throws Exception {
         String editorId = id + "_editor";
-        String buttons =
-            getRepository().getWikiManager().makeWikiEditBar(request, entry,
-                editorId) + HtmlUtils.br();
-        if (label != null) {
-            sb.append("<tr><td colspan=2>");
-            sb.append(HtmlUtils.b(msgLabel(label)));
-            sb.append(HtmlUtils.br());
+        if ( !readOnly) {
+            String buttons =
+                getRepository().getWikiManager().makeWikiEditBar(request,
+                    entry, editorId) + HtmlUtils.br();
+            if (label != null) {
+                sb.append("<tr><td colspan=2>");
+                sb.append(HtmlUtils.b(msgLabel(label)));
+                sb.append(HtmlUtils.br());
+            }
+            sb.append(buttons);
         }
-        sb.append(buttons);
-        if (length > 0) {
+        if ((length > 0) && (formInfo != null)) {
             formInfo.addMaxSizeValidation(label, id, length);
         }
 
@@ -4645,12 +4648,16 @@ public class TypeHandler extends RepositoryManager {
             request.putExtraProperty("didace", "true");
             HtmlUtils.importJS(
                 sb, getRepository().getHtdocsUrl("/lib/ace/src-min/ace.js"));
-            formInfo.appendExtraJS("HtmlUtil.handleAceEditorSubmit();\n");
+            if ((formInfo != null) && !readOnly) {
+                formInfo.appendExtraJS("HtmlUtil.handleAceEditorSubmit();\n");
+            }
         }
 
         sb.append(HtmlUtils.script("HtmlUtil.initAceEditor('"
-                                   + formInfo.getId() + "','" + editorId
-                                   + "','" + id + "');"));
+                                   + ((formInfo == null)
+                                      ? "null"
+                                      : formInfo.getId()) + "','" + editorId
+                                      + "','" + id + "');"));
         if (label != null) {
             sb.append("</td></tr>");
         }

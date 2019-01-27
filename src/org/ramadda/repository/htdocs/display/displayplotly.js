@@ -531,9 +531,15 @@ function RamaddaDotplotDisplay(displayManager, id, properties) {
 
                 var layout = {
                     title: '',
+                    yaxis: {
+                        title:this.getProperty("yAxisTitle", stringField.getLabel()),
+                        showline: this.getProperty("yAxisShowLine",true),
+                        showgrid: this.getProperty("yAxisShowGrid",true),
+                    },
                     xaxis: {
-                        showgrid: false,
-                        showline: true,
+                        title:this.getProperty("xAxisTitle",fields[i].getLabel()),
+                        showgrid: this.getProperty("xAxisShowGrid",false),
+                        showline: this.getProperty("xAxisShowLine",true),
                         linecolor: 'rgb(102, 102, 102)',
                         titlefont: {
                             font: {
@@ -546,15 +552,14 @@ function RamaddaDotplotDisplay(displayManager, id, properties) {
                             }
                         },
                         autotick: true,
-                        //                        dtick: 10,
                         ticks: 'outside',
                         tickcolor: 'rgb(102, 102, 102)'
                     },
                     margin: {
-                        l: 140,
-                        r: 40,
-                        b: 50,
-                        t: 20
+                        l: this.getProperty("marginLeft",140),
+                        r: this.getProperty("marginRight",40),
+                        b: this.getProperty("marginBottom",50),
+                        t: this.getProperty("marginTop",20),
                     },
                     legend: {
                         font: {

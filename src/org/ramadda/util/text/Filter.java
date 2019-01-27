@@ -93,23 +93,6 @@ public class Filter extends Converter {
         return true;
     }
 
-    /**
-     * _more_
-     *
-     * @param info _more_
-     * @param line _more_
-     *
-     * @return _more_
-     */
-    public boolean lineOk(TextReader info, String line) {
-        if ((commentPrefix != null) && line.startsWith(commentPrefix)) {
-            return false;
-        }
-
-        return true;
-    }
-
-
 
     /**
      * Class description
@@ -701,7 +684,6 @@ public class Filter extends Converter {
                     break;
                 }
             }
-            //            System.err.println ("row cnt:" + rowCnt + " in range:" + inRange +" " + cut +" " + rows + " " +(rowCnt<3?row.getValues():(Object)""));
             rowCnt++;
             boolean rowOk = true;
             if (cut) {

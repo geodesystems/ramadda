@@ -741,6 +741,65 @@ public abstract class Converter extends Processor {
      * Class description
      *
      *
+     * @version        $version$, Fri, Jan 16, '15
+     * @author         Enter your name here...
+     */
+    public static class ColumnDebugger extends Converter {
+
+        /** _more_ */
+        private String pattern;
+
+
+        /**
+         * _more_
+         *
+         * @param cols _more_
+         * @param pattern _more_
+         */
+        public ColumnDebugger(List<String> cols, String pattern) {
+            super(cols);
+            this.pattern = pattern;
+        }
+
+        /**
+         * _more_
+         *
+         *
+         * @param info _more_
+         * @param row _more_
+         * @param line _more_
+         *
+         * @return _more_
+         */
+        @Override
+        public Row processRow(TextReader info, Row row, String line) {
+            //Don't process the first row
+            if (rowCnt++ == 0) {
+                return row;
+            }
+            List<Integer> indices = getIndices(info);
+            for (Integer idx : indices) {
+                int index = idx.intValue();
+                if ((index >= 0) && (index < row.size())) {
+                    String s = row.getString(index);
+                    if ((pattern.length() > 0) && (s.indexOf(pattern) < 0)) {
+                        continue;
+                    }
+                    System.err.println("column: " + idx + "=" + s);
+                }
+            }
+
+            return row;
+        }
+
+    }
+
+
+
+    /**
+     * Class description
+     *
+     *
      * @version        $version$, Sat, Jan 26, '19
      * @author         Enter your name here...
      */
@@ -799,7 +858,8 @@ public abstract class Converter extends Processor {
                     throw new IllegalArgumentException(
                         "Bad parse date format:" + value);
                 }
-                row.set(index, to.format(index));
+                String toDate = to.format(dttm);
+                row.set(index, toDate);
             }
 
             return row;
@@ -856,7 +916,9 @@ public abstract class Converter extends Processor {
         @Override
         public Row processRow(TextReader info, Row row, String line) {
             if (rowCnt++ == 0) {
-                row.getValues().add(name);
+                if (name.length() > 0) {
+                    row.getValues().add(name);
+                }
 
                 return row;
             }
@@ -870,10 +932,16 @@ public abstract class Converter extends Processor {
                 if ((index >= 0) && (index < row.size())) {
                     String s        = row.getString(index);
                     String newValue = map.get(s);
-                    if (newValue != null) {
-                        row.getValues().add(newValue);
+                    if (name.length() > 0) {
+                        if (newValue != null) {
+                            row.getValues().add(newValue);
+                        } else {
+                            row.getValues().add(na);
+                        }
                     } else {
-                        row.getValues().add(na);
+                        if (newValue != null) {
+                            row.set(index, newValue);
+                        }
                     }
                 }
             }

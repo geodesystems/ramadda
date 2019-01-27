@@ -859,6 +859,19 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
                 }
                 return [];
             },
+            getFieldById : function(fields, id) {
+                if(!id) return null;
+                if(!fields) {
+                    var pointData = this.getData();
+                    if(pointData == null) return null;
+                    fields=  pointData.getRecordFields();
+                }
+                for(a in fields) {
+                    var field = fields[a];
+                    if(field.getId() == id) return field;
+                }
+                return null;
+            },
             getFieldOfType: function(fields,type) {
                 fields = this.getFieldsOfType(fields,type);
                 if(fields.length==0) return null;
@@ -939,14 +952,15 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
                         }
                         var standard = true;
                         for(var i=0;i<dataList.length;i++) {
-                            var row = dataList[i];
+                            var obj = dataList[i];
+                            var row = this.getDataValues(obj);
                             var array  = row;
                             if(row.getData) {
                                 standard = false;
                                 array = row.getData();
                             }
                             if(standard  && i==0) {
-                                list.push(row);
+                                list.push(obj);
                                 continue;
                             }
                             var ok = false;
@@ -973,7 +987,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
                                 if(notPattern) ok = !ok;
                             }
                             if(ok) {
-                                list.push(row);
+                                list.push(obj);
                             }
                         }
                         dataList = list;
@@ -2251,12 +2265,31 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
                 this.popup(this.getDomId(ID_DIALOG_BUTTON), dialog);
                 this.initDialog();
             },
-            getDimensionsStyle: function() {
+            getWidthForStyle: function(dflt) {
+                var width = this.getProperty("width",-1);
+                if(width == -1) return dflt;
+                if(!width.endsWith("px") && !width.endsWith("%"))
+                    width = width+"px";
+                return width;
+            },
+            getHeightForStyle: function(dflt) {
                 var height = this.getProperty("height",-1);
-                if(height>0) {
-                    return  " height:" + height +"px; " + " max-height:" + height +"px; /*overflow-y: auto;*/";
+                if(height == -1) return dflt;
+                if(!height.endsWith("px") && !height.endsWith("%"))
+                    height = height+"px";
+                return height;
+            },
+            getDimensionsStyle: function() {
+                var style = "";
+                var height = this.getHeightForStyle();
+                if(height) {
+                    style+=  " height:" + height;
                 }
-                return "";
+                var width = this.getWidthForStyle();
+                if(width) {
+                    style+=  " width:" + width;
+                }
+                return style;
             },
             getContentsDiv: function() {
                 var extraStyle = "";
@@ -2488,19 +2521,42 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
                 return  this.dataCollection.getList()[0];
             },
             //get an array of arrays of data 
-            getStandardData : function(fields, props) {
+                getDataValues : function(obj) {
+                if(obj.tuple) return obj.tuple;
+                else if(obj.getData) return obj.getData();
+                return obj;
+            },
+            makeDataArray : function(dataList) {
+                if(dataList.length==0) return dataList;
+                var data = [];
+                if(dataList[0].getData) {
+                    for(var i=0;i<dataList.length;i++) 
+                        data.push(dataList[i].getData());
+                } else if(dataList[0].tuple) {
+                    for(var i=0;i<dataList.length;i++) 
+                        data.push(dataList[i].tuple);
+                } else {
+                    data = dataList;
+                }
+                return data;
+            },
+
+            getStandardData : function(fields, args) {
                 var pointData = this.getPointData();
                 var excludeZero = this.getProperty(PROP_EXCLUDE_ZERO,false);
                 if(fields == null) {
                     fields = pointData.getRecordFields();
                 }
-                if(props == null) {
-                    props = {
-                        includeIndex: true,
-                        includeIndexIfDate: false,
-                        groupByIndex:-1,
-                        raw: false,
-                    };
+
+                props = {
+                    makeObject:true,
+                    includeIndex: true,
+                    includeIndexIfDate: false,
+                    groupByIndex:-1,
+                    raw: false,
+                };
+                if(args!=null) {
+                    $.extend(props, args);
                 }
 
 
@@ -2528,7 +2584,11 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
                     name = name.replace(/!!/g," -- ")
                     fieldNames.push(name);
                 }
-                dataList.push(fieldNames);
+                if(props.makeObject)  {
+                    dataList.push({tuple:fieldNames, record:null});
+                }  else  {
+                    dataList.push(fieldNames);
+                }
                 //console.log(fieldNames);
 
 
@@ -2637,7 +2697,10 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
                     if(groupByIndex>=0) {
                         groupByList.push(record.getValue(groupByIndex));
                     }
-                    dataList.push(values);
+                    if(props.makeObject) 
+                        dataList.push({tuple:values, record:record});
+                    else
+                        dataList.push(values);
                     //                    console.log("values:" + values);
                     if(!allNull) {
                         nonNullRecords++;

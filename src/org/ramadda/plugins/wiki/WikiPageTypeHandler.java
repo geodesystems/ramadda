@@ -443,7 +443,7 @@ public class WikiPageTypeHandler extends ExtensibleGroupTypeHandler {
         help.append("<i>{{&lt;output identifier&gt;}}</i><br>");
 
 
-        addWikiEditor(request, entry,  sb, formInfo, ARG_WIKI_TEXTAREA, wikiText, "Wiki Text",256000);
+        addWikiEditor(request, entry,  sb, formInfo, ARG_WIKI_TEXTAREA, wikiText, "Wiki Text",false,256000);
 
 
         /*

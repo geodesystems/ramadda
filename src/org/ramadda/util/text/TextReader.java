@@ -100,6 +100,9 @@ public class TextReader implements Cloneable {
     /** _more_ */
     private String delimiter = ",";
 
+    /** _more_          */
+    private String comment = "#";
+
     /** _more_ */
     private String outputDelimiter = ",";
 
@@ -203,6 +206,26 @@ public class TextReader implements Cloneable {
     public TextReader(BufferedReader reader) {
         this.reader = reader;
     }
+
+    /**
+     * Set the Comment property.
+     *
+     * @param value The new value for Comment
+     */
+    public void setComment(String value) {
+        comment = value;
+    }
+
+    /**
+     * Get the Comment property.
+     *
+     * @return The Comment
+     */
+    public String getComment() {
+        return comment;
+    }
+
+
 
     /**
      * Set the VisitedRows property.
@@ -406,6 +429,25 @@ public class TextReader implements Cloneable {
             cnt++;
         }
     }
+
+    /**
+     * _more_
+     *
+     * @param info _more_
+     * @param line _more_
+     *
+     * @return _more_
+     */
+    public boolean lineOk(TextReader info, String line) {
+        if ((comment != null) && line.startsWith(comment)) {
+            return false;
+        }
+
+        return true;
+    }
+
+
+
 
     /**
      * _more_

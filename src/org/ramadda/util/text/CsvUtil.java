@@ -91,6 +91,13 @@ public class CsvUtil {
     /** _more_ */
     private boolean verbose = false;
 
+
+    /** _more_          */
+    private String delimiter;
+
+    /** _more_          */
+    private String comment;
+
     /**
      * _more_
      *
@@ -162,6 +169,16 @@ public class CsvUtil {
         this.outputStream = out;
     }
 
+
+    /**
+     * _more_
+     *
+     * @param csvUtil _more_
+     */
+    public void initWith(CsvUtil csvUtil) {
+        this.comment   = csvUtil.comment;
+        this.delimiter = csvUtil.delimiter;
+    }
 
     /**
      * _more_
@@ -354,6 +371,7 @@ public class CsvUtil {
                     iteratePattern.setPattern(pattern);
                 }
                 for (String file : files) {
+                    //                    System.err.println("FILE:" + file);
                     textReader.getProcessor().reset();
                     InputStream is      = null;
                     boolean     closeIS = true;
@@ -564,7 +582,10 @@ public class CsvUtil {
         boolean   debug = false;
         List<Row> rows  = new ArrayList<Row>();
         String    s     = IOUtil.readContents(file);
-        String[]  toks;
+        //        System.err.println("HTML:" + file);
+        //        System.out.println("TABLE:" + s);
+
+        String[] toks;
         if (Utils.stringDefined(pattern)) {
             int idx = s.indexOf(pattern);
             if (idx < 0) {
@@ -572,6 +593,7 @@ public class CsvUtil {
             }
             s = s.substring(idx + pattern.length());
         }
+
         while (true) {
             toks = Utils.tokenizeChunk(s, "<table", "</table");
             if (toks == null) {
@@ -582,6 +604,8 @@ public class CsvUtil {
             if (debug) {
                 System.out.println("table");
             }
+
+
 
             while (true) {
                 toks = Utils.tokenizeChunk(table, "<tr", "</tr");
@@ -616,6 +640,7 @@ public class CsvUtil {
                         }
                         //                        System.out.println("not skipping:" +td );
                     }
+
                     td = td.substring(idx + 1);
                     td = StringUtil.stripTags(td);
                     td = td.replaceAll("&nbsp;", " ");
@@ -737,18 +762,19 @@ public class CsvUtil {
      * @throws Exception On badness
      */
     public void process(TextReader textReader) throws Exception {
-        int       rowIdx   = 0;
+        int       rowCnt   = 0;
         int       cnt      = 0;
         List<Row> rows     = textReader.getRows();
         Row       firstRow = textReader.getFirstRow();
         textReader.setFirstRow(null);
         if (firstRow != null) {
             processRow(textReader, firstRow);
+            rowCnt++;
         }
         if (rows != null) {
             for (Row row : rows) {
-                rowIdx++;
-                if (rowIdx <= textReader.getSkip()) {
+                rowCnt++;
+                if (rowCnt <= textReader.getSkip()) {
                     continue;
                 }
                 if ( !processRow(textReader, row)) {
@@ -768,15 +794,15 @@ public class CsvUtil {
                     }
                 }
                 theLine = line;
-                rowIdx++;
-                if (rowIdx <= textReader.getSkip()) {
+                rowCnt++;
+                if (rowCnt <= textReader.getSkip()) {
                     textReader.addHeaderLine(line);
 
                     continue;
                 }
 
-                if ((textReader.getFilter() != null)
-                        && !textReader.getFilter().lineOk(textReader, line)) {
+
+                if ( !textReader.lineOk(textReader, line)) {
                     continue;
                 }
 
@@ -971,6 +997,7 @@ public class CsvUtil {
         "-strict (be strict on columns. any rows that are not the size of the other rows are dropped)",
         "-flag (be strict on columns. any rows that are not the size of the other rows are shown)",
         "-rotate", "-flip", "-delimiter (specify an alternative delimiter)",
+        "-comment  <string>",
         "-db {<props>} (generate the RAMADDA db xml from the header, props are a set of name value pairs:)\n\ttable.id <new id> table.name <new name> table.cansearch <true|false> table.canlist <true|false> table.icon <icon, e.g., /db/database.png>\n\t<column name>.id <new id for column> <column name>.label <new label>\n\t<column name>.type <string|enumeration|double|int|date>\n\t<column name>.format <yyyy MM dd HH mm ss format for dates>\n\t<column name>.canlist <true|false> <column name>.cansearch <true|false>\n\tinstall <true|false install the new db table>\n\tnukedb <true|false careful! this deletes any prior created dbs>",
         "-print (print to stdout)", "-raw (print the file raw)",
         "-record (print records)", "-cat <*.csv>  (one or more csv files)",
@@ -1066,6 +1093,12 @@ public class CsvUtil {
 
         boolean doHtml    = false;
         String  htmlProps = null;
+        if (comment != null) {
+            info.setComment(comment);
+        }
+        if (delimiter != null) {
+            info.setDelimiter(delimiter);
+        }
 
 
         for (int i = 0; i < args.size(); i++) {
@@ -1221,7 +1254,13 @@ public class CsvUtil {
 
 
             if (arg.equals("-delimiter")) {
-                info.setDelimiter(args.get(++i));
+                info.setDelimiter(delimiter = args.get(++i));
+
+                continue;
+            }
+
+            if (arg.equals("-comment")) {
+                info.setComment(comment = args.get(++i));
 
                 continue;
             }
@@ -1490,6 +1529,17 @@ public class CsvUtil {
             }
 
 
+            if (arg.equals("-debug")) {
+                i++;
+                List<String> cols    = getCols(args.get(i));
+                String       pattern = args.get(++i);
+                info.getProcessor().addProcessor(
+                    new Converter.ColumnDebugger(cols, pattern));
+
+                continue;
+            }
+
+
             if (arg.equals("-formatdate")) {
                 List<String> cols = getCols(args.get(++i));
                 info.getProcessor().addProcessor(
@@ -1750,7 +1800,6 @@ public class CsvUtil {
             }
             if (arg.equals("-quit")) {
                 String last = args.get(args.size() - 1);
-                System.err.println(args);
                 if (last.equals("-print")) {
                     info.getProcessor().addProcessor(
                         new Processor.Printer(printFields, trim));

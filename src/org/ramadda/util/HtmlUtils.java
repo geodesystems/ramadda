@@ -5057,7 +5057,6 @@ public class HtmlUtils {
             sb.append(HtmlUtils.div(content));
         }
         sb.append("</div>");
-
         String args =
             "{autoHeight: false, navigation: true, collapsible: true";
         if (collapse) {

@@ -298,6 +298,13 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                                               ATTR_SHOWMENU, "true", 
                                               ATTR_SHOWTITLE, "true")),
                             new WikiTag(WIKI_TAG_DISPLAY,
+                                        "Bar chart",
+                                        attrs(ATTR_TYPE, "barchart", "#" +ATTR_WIDTH, "800",
+                                              "#" +ATTR_HEIGHT, "400", "#fields", "",
+                                              ATTR_LAYOUTHERE, "true", 
+                                              ATTR_SHOWMENU, "true", 
+                                              ATTR_SHOWTITLE, "true")),
+                            new WikiTag(WIKI_TAG_DISPLAY,
                                         "Area chart",
                                         attrs(ATTR_TYPE, "areachart", "#" +ATTR_WIDTH, "800",
                                               "#" +ATTR_HEIGHT, "400", "#fields", "",
@@ -1370,18 +1377,20 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
             }
 
 
+            boolean simple = Utils.getProperty(props, "simple", false);
+
             boolean includeIcon = Utils.getProperty(props, ATTR_INCLUDEICON,
                                       false);
             if (includeIcon) {
                 label = HtmlUtils.img(getIconUrl("/icons/download.png"))
                         + HtmlUtils.space(2) + label;
+            }
 
+            if ( !simple) {
                 return HtmlUtils.div(HtmlUtils.href(url, label,
                         HtmlUtils.cssClass("btn btn-primary btn-lg")
                         + HtmlUtils.attr("role", "button")));
-
             }
-
             String extra = "";
 
             return HtmlUtils.href(url, label, extra);
@@ -2337,6 +2346,13 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
             getHtmlOutputHandler().makeTable(request, entries, sb);
 
             return sb.toString();
+        } else if (theTag.equals(WIKI_TAG_WIKITEXT)) {
+            StringBuilder editor = new StringBuilder();
+            entry.getTypeHandler().addWikiEditor(request, entry, editor,
+                    null, HtmlUtils.getUniqueId(""), entry.getDescription(),
+                    null, true, 0);
+
+            return editor.toString();
         } else if (theTag.equals(WIKI_TAG_RECENT)) {
             List<Entry> children = getEntries(request, wikiUtil,
                                        originalEntry, entry, props);
@@ -4360,7 +4376,13 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
             addWikiEditButton(
                 textAreaId, "button_blockquote.png", "Tabs",
                 "+tabs_newline_+tab tab title_newline_",
-                "-tab_newline_-tabs_newline_", "Row/Column",
+                "-tab_newline_-tabs_newline_", "Tabs",
+                "mw-editbutton-headline"));
+        tags.append(
+            addWikiEditButton(
+                textAreaId, "button_blockquote.png", "Accordian",
+                "+accordians_newline_+segment segment  title_newline_",
+                "-segment_newline_-accordians_newline_", "Accordian",
                 "mw-editbutton-headline"));
 
         tags.append(addWikiEditButton(textAreaId, "button_bold.png",
