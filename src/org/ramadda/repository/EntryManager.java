@@ -1078,12 +1078,22 @@ public class EntryManager extends RepositoryManager {
         return entry.getTypeHandler().processEntryAccess(request, entry);
     }
 
+    /**
+     * _more_
+     *
+     * @param request _more_
+     *
+     * @return _more_
+     *
+     * @throws Exception _more_
+     */
     public Result processEntryTypeAction(Request request) throws Exception {
         Entry entry = getEntry(request);
-        if(entry == null) {
-                throw new RepositoryUtil.MissingEntryException(
-                                                               "Could not find entry");
+        if (entry == null) {
+            throw new RepositoryUtil.MissingEntryException(
+                "Could not find entry");
         }
+
         return entry.getTypeHandler().processEntryAction(request, entry);
     }
 
@@ -2198,7 +2208,8 @@ public class EntryManager extends RepositoryManager {
                         dateRange = new Date(formTimestamp) + ":"
                                     + new Date(currentTimestamp);
                     } catch (Exception ignore) {}
-                    getPageHandler().entrySectionOpen(request, entry, sb, "Entry Edit");
+                    getPageHandler().entrySectionOpen(request, entry, sb,
+                            "Entry Edit");
                     sb.append(
                         getPageHandler().showDialogError(
                             msg(
@@ -2312,11 +2323,9 @@ public class EntryManager extends RepositoryManager {
                 filename = serverFile.toString();
             }
 
-
             if (resourceName.length() == 0) {
                 resourceName = IOUtil.getFileTail(resource);
             }
-
 
             //The type might accept a .zip file - e.g., shapefiles
             if (typeHandler.getTypeProperty("upload.zip", false)) {
@@ -2326,7 +2335,6 @@ public class EntryManager extends RepositoryManager {
                                 ? false
                                 : request.get(ARG_FILE_UNZIP, false));
             }
-
 
             if (serverFile != null) {
                 isFile   = true;
@@ -2348,47 +2356,20 @@ public class EntryManager extends RepositoryManager {
                 if ( !request.get(ARG_RESOURCE_DOWNLOAD, false)) {
                     unzipArchive = false;
                 } else {
-                    String url = resource;
-                    if ( !url.toLowerCase().startsWith("http:")
-                            && !url.toLowerCase().startsWith("https:")
-                            && !url.toLowerCase().startsWith("ftp:")) {
-                        fatalError(request, "Cannot download url:" + url);
-                    }
-                    getStorageManager().checkPath(url);
                     isFile = true;
-                    String tail = IOUtil.getFileTail(resource);
-                    File newFile = getStorageManager().getTmpFile(request,
-                                       tail);
-                    resourceName = tail;
-                    resource     = newFile.toString();
-                    URL           fromUrl    = new URL(url);
-                    URLConnection connection = fromUrl.openConnection();
-                    InputStream   fromStream = connection.getInputStream();
-                    if (actionId != null) {
-                        ucar.unidata.util.JobManager.getManager().startLoad(
-                            "File copy", actionId);
+                    File newFile = downloadUrl(request, resource, actionId,
+                                       parentEntry);
+                    if (newFile == null) {
+                        return new Result(
+                            request.entryUrl(
+                                getRepository().URL_ENTRY_SHOW, parentEntry,
+                                ARG_MESSAGE,
+                                getRepository().translate(
+                                    request, "Error downloading URL")));
                     }
-                    int length = connection.getContentLength();
-                    if (length > 0 & actionId != null) {
-                        getActionManager().setActionMessage(actionId,
-                                msg("Downloading") + " " + length + " "
-                                + msg("bytes"));
-                    }
-                    OutputStream toStream =
-                        getStorageManager().getFileOutputStream(newFile);
-                    try {
-                        long bytes = IOUtil.writeTo(fromStream, toStream,
-                                         actionId, length);
-                        if (bytes < 0) {
-                            return new Result(
-                                request.entryUrl(
-                                    getRepository().URL_ENTRY_SHOW,
-                                    parentEntry));
-                        }
-                    } finally {
-                        IOUtil.close(toStream);
-                        IOUtil.close(fromStream);
-                    }
+                    resourceName =
+                        getStorageManager().getFileTail(newFile.toString());
+                    resource = newFile.toString();
                 }
             }
 
@@ -2700,8 +2681,6 @@ public class EntryManager extends RepositoryManager {
             String  newResourceName = request.getUploadedFile(ARG_FILE);
             String  newResourceType = null;
 
-            //TODO: If they select a URL to download we don't handle that now
-
             //Did they upload a new file???
             if (newResourceName != null) {
                 newResourceName = getStorageManager().moveToStorage(request,
@@ -2711,9 +2690,26 @@ public class EntryManager extends RepositoryManager {
                 newResourceName = serverFile.toString();
                 newResourceType = Resource.TYPE_LOCAL_FILE;
             } else if (request.defined(ARG_URL)) {
-                newResourceName = request.getAnonymousEncodedString(ARG_URL,
-                        null);
-                newResourceType = Resource.TYPE_URL;
+                String url = request.getAnonymousEncodedString(ARG_URL, null);
+                if (request.get(ARG_RESOURCE_DOWNLOAD, false)) {
+                    File newFile = downloadUrl(request, url, actionId, entry);
+                    if (newFile == null) {
+                        return new Result(
+                            request.entryUrl(
+                                getRepository().URL_ENTRY_SHOW, entry,
+                                ARG_MESSAGE,
+                                getRepository().translate(
+                                    request, "Error downloading URL")));
+
+                    }
+                    newResourceName =
+                        getStorageManager().moveToStorage(request,
+                            newFile).toString();
+                    newResourceType = Resource.TYPE_LOCAL_FILE;
+                } else {
+                    newResourceName = url;
+                    newResourceType = Resource.TYPE_URL;
+                }
             }
 
             if (newResourceName != null) {
@@ -2745,14 +2741,6 @@ public class EntryManager extends RepositoryManager {
                 }
             } else {
                 entry.setCategory(category);
-            }
-
-
-            if (request.defined(ARG_URL)) {
-                entry.setResource(new Resource(request.getString(ARG_URL,
-                        BLANK), Resource.TYPE_URL,
-                                request.getString(ARG_MD5, null),
-                                request.get(ARG_FILESIZE, (long) -1)));
             }
 
 
@@ -2843,6 +2831,59 @@ public class EntryManager extends RepositoryManager {
                               new StringBuilder(msg("No entries created")));
         }
 
+    }
+
+
+    /**
+     * _more_
+     *
+     * @param request _more_
+     * @param url _more_
+     * @param actionId _more_
+     * @param entry _more_
+     *
+     * @return _more_
+     *
+     * @throws Exception _more_
+     */
+    private File downloadUrl(Request request, String url, Object actionId,
+                             Entry entry)
+            throws Exception {
+        if ( !url.toLowerCase().startsWith("http:")
+                && !url.toLowerCase().startsWith("https:")
+                && !url.toLowerCase().startsWith("ftp:")) {
+            fatalError(request, "Cannot download url:" + url);
+        }
+        getStorageManager().checkPath(url);
+        String        tail       = IOUtil.getFileTail(url);
+        File          newFile = getStorageManager().getTmpFile(request, tail);
+
+        URL           fromUrl    = new URL(url);
+        URLConnection connection = fromUrl.openConnection();
+        InputStream   fromStream = connection.getInputStream();
+        if (actionId != null) {
+            ucar.unidata.util.JobManager.getManager().startLoad("File copy",
+                    actionId);
+        }
+        int length = connection.getContentLength();
+        if (length > 0 & actionId != null) {
+            getActionManager().setActionMessage(actionId,
+                    msg("Downloading") + " " + length + " " + msg("bytes"));
+        }
+        OutputStream toStream =
+            getStorageManager().getFileOutputStream(newFile);
+        try {
+            long bytes = IOUtil.writeTo(fromStream, toStream, actionId,
+                                        length);
+            if (bytes < 0) {
+                return null;
+            }
+        } finally {
+            IOUtil.close(toStream);
+            IOUtil.close(fromStream);
+        }
+
+        return newFile;
     }
 
 

@@ -2764,6 +2764,7 @@ public class Utils {
         boolean       inQuote    = false;
         boolean       inBracket  = false;
         boolean       prevEscape = false;
+        //        System.out.println("line:" + s);
         //        System.err.println("s:" + s);
         for (int i = 0; i < s.length(); i++) {
             char    c            = s.charAt(i);
@@ -2772,7 +2773,7 @@ public class Utils {
             boolean closeBracket = (c == '}');
             boolean isEscape     = (c == '\\');
             //        s = " -db  {rhl_0000005.id \"test it\" }";
-            //            System.err.println("char:" + c + " prev escape:" + prevEscape +" isquote:" + isQuote +" inquote:"+ inQuote);
+            //            System.out.println("char:" + c + " prev escape:" + prevEscape +" isquote:" + isQuote +" inquote:"+ inQuote);
             if (prevEscape) {
                 sb.append(c);
                 prevEscape = false;
@@ -2994,7 +2995,35 @@ public class Utils {
      *
      * @throws Exception _more_
      */
-    public static void main(String args[]) throws Exception {
+    public static void main(String[] args) throws Exception {
+        String           dt  = "Aug. 20, 1842";
+        SimpleDateFormat sdf = new SimpleDateFormat("MMM. dd, yyyy");
+
+        System.err.println(sdf.parse(dt));
+        if (true) {
+            return;
+        }
+
+        String s       = "          England (UK) ";
+        String pattern = "_leftparen_.*_rightparen_";
+        pattern = pattern.replaceAll("_leftparen_",
+                                     "\\\\(").replaceAll("_rightparen_",
+                                         "\\\\)");
+        System.err.println("P:" + pattern);
+        System.err.println("S:" + s);
+        s = s.replaceAll(pattern, "FOO");
+        System.err.println("S:" + s);
+        if (true) {
+            return;
+        }
+
+        /*
+        String str = "(?s)colspan=\"2\" class=\"xl239\" style=\"border-right:.5pt solid black;border-left:\n  none\">Age";
+        String pattern = ".*colspan=\"2\".*";
+        Pattern p = Pattern.compile(pattern, Pattern.MULTILINE);
+        System.err.println(        p.matcher(str).find());
+        if(true) return;
+
         byte[] bytes = decodeBase64(args[0]);
         for (int i = 0; i < bytes.length; i += 4) {
             int asInt = (bytes[i] & 0xFF) | ((bytes[i + 1] & 0xFF) << 8)
@@ -3015,9 +3044,10 @@ public class Utils {
         s = "-db {\nrhl_0000005.id foo\n40_00485165555076 { }\n}\nanother line\n{and another line}";
         //        s = "should\\\n be \\\non same line";
         parseMultiLineCommandLine(s);
-        //        s = "-maxrows 30 -db \" rhl_0000005.id {test it} \" ";                    
+        //        s = "-maxrows 30 -db \" rhl_0000005.id {test it} \" ";
         //        System.err.println(s);
         //        System.err.println(parseCommandLine(s));
+        */
     }
 
     /**
@@ -3031,7 +3061,7 @@ public class Utils {
         //        doMakeInputStream("https://www-static.bouldercolorado.gov/docs/webcams/bouldercreek/camera0.jpg",true);
         String dt = "2018-12-31 20:01:59.0000000 +00:00";
         //String dt = "2018-12-31 20:01:59.0000000";
-        //        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS Z");
+
         SimpleDateFormat sdf =
             new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS XXX");
         sdf.parse(dt);
@@ -3767,6 +3797,34 @@ public class Utils {
         public double getValue() {
             return value;
         }
+    }
+
+
+    /**
+     * _more_
+     *
+     * @param s _more_
+     * @param start _more_
+     * @param end _more_
+     *
+     * @return _more_
+     */
+    public static String[] tokenizeChunk(String s, String start, String end) {
+        int idx1 = s.indexOf(start);
+        if (idx1 < 0) {
+            //            System.err.println("no 1");
+            return null;
+        }
+        int idx2 = s.indexOf(end, idx1);
+        if (idx2 < 0) {
+            //            System.err.println("no 2");
+            return null;
+        }
+        String chunk = s.substring(idx1 + start.length() + 1, idx2);
+        //        System.err.println("chunk:"+ chunk);
+        s = s.substring(idx2 + start.length());
+
+        return new String[] { chunk, s };
     }
 
 

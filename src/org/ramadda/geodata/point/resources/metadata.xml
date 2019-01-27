@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<metadata>
+
+  <handler category="Miscellaneous">
+    <type
+       name="Point Data Chart"
+       showinhtml="false"       
+       id="point_chart_wiki">
+      <help>
+<![CDATA[
+Specify a wiki template to use for the chart view of point data
+]]>
+</help>
+      <element name="wikitemplate" label="Wiki Template" datatype="wiki" rows="20"/>
+    </type>
+
+</handler>
+</metadata>

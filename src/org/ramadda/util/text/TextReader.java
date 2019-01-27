@@ -107,6 +107,9 @@ public class TextReader implements Cloneable {
     private int skip = 0;
 
     /** _more_ */
+    private int visitedRows = 0;
+
+    /** _more_ */
     private int maxRows = -1;
 
     /** _more_ */
@@ -142,6 +145,10 @@ public class TextReader implements Cloneable {
     private List<String> headerLines = new ArrayList<String>();
 
     /** _more_ */
+    private Row firstRow;
+
+
+    /** _more_ */
     private List header;
 
 
@@ -162,6 +169,10 @@ public class TextReader implements Cloneable {
 
     /** _more_ */
     private boolean okToRun = true;
+
+    /** _more_ */
+    private List<Row> rows;
+
 
     /**
      * _more_
@@ -192,6 +203,63 @@ public class TextReader implements Cloneable {
     public TextReader(BufferedReader reader) {
         this.reader = reader;
     }
+
+    /**
+     * Set the VisitedRows property.
+     *
+     * @param value The new value for VisitedRows
+     */
+    public void setVisitedRows(int value) {
+        visitedRows = value;
+    }
+
+    /**
+     * Get the VisitedRows property.
+     *
+     * @return The VisitedRows
+     */
+    public int getVisitedRows() {
+        return visitedRows;
+    }
+
+    /**
+     * Set the FirstRow property.
+     *
+     * @param value The new value for FirstRow
+     */
+    public void setFirstRow(Row value) {
+        firstRow = value;
+    }
+
+    /**
+     * Get the FirstRow property.
+     *
+     * @return The FirstRow
+     */
+    public Row getFirstRow() {
+        return firstRow;
+    }
+
+
+
+    /**
+     * Set the Rows property.
+     *
+     * @param value The new value for Rows
+     */
+    public void setRows(List<Row> value) {
+        rows = value;
+    }
+
+    /**
+     * Get the Rows property.
+     *
+     * @return The Rows
+     */
+    public List<Row> getRows() {
+        return rows;
+    }
+
 
 
     /**
@@ -669,6 +737,18 @@ public class TextReader implements Cloneable {
      */
     public void setHeader(List header) {
         this.header = header;
+    }
+
+    /**
+     * _more_
+     *
+     * @param row _more_
+     */
+    public void initRow(Row row) {
+        if (this.header == null) {
+            this.header = row.getValues();
+        }
+        visitedRows++;
     }
 
 

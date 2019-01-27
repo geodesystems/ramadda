@@ -737,6 +737,78 @@ public abstract class Converter extends Processor {
 
 
 
+    /**
+     * Class description
+     *
+     *
+     * @version        $version$, Sat, Jan 26, '19
+     * @author         Enter your name here...
+     */
+    public static class DateFormatter extends Converter {
+
+        /** _more_ */
+        private SimpleDateFormat from;
+
+        /** _more_ */
+        private SimpleDateFormat to;
+
+        /**
+         * _more_
+         *
+         * @param cols _more_
+         * @param from _more_
+         * @param to _more_
+         *
+         * @throws Exception _more_
+         */
+        public DateFormatter(List<String> cols, String from, String to)
+                throws Exception {
+            super(cols);
+            this.from = new SimpleDateFormat(from);
+            if (to.length() == 0) {
+                to = "yyyyMMdd'T'HHmmss Z";
+            }
+            this.to = new SimpleDateFormat(to);
+        }
+
+        /**
+         * _more_
+         *
+         *
+         * @param info _more_
+         * @param row _more_
+         * @param line _more_
+         *
+         * @return _more_
+         */
+        @Override
+        public Row processRow(TextReader info, Row row, String line) {
+            //Don't process the first row
+            if (rowCnt++ == 0) {
+                return row;
+            }
+
+            List<Integer> indices = getIndices(info);
+            for (Integer idx : indices) {
+                int    index = idx.intValue();
+                String value = row.getString(index);
+                Date   dttm  = null;
+                try {
+                    dttm = from.parse(value);
+                } catch (java.text.ParseException exc) {
+                    throw new IllegalArgumentException(
+                        "Bad parse date format:" + value);
+                }
+                row.set(index, to.format(index));
+            }
+
+            return row;
+        }
+
+    }
+
+
+
 
     /**
      * Class description

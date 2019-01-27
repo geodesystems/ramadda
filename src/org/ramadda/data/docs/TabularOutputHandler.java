@@ -397,19 +397,21 @@ public class TabularOutputHandler extends OutputHandler {
             String processEntryId =
                 getStorageManager().getProcessDirEntryId(destDir.getName());
 
-            List<String>        newFiles   = new ArrayList<String>();
-            String              lastResult = "";
-            Entry               theEntry   = entry;
-            String commandString           = request.getString("commands",
-                                                 "");
+            List<String> newFiles   = new ArrayList<String>();
+            String       lastResult = "";
+            Entry        theEntry   = entry;
+            String commandString    = request.getString("commands", "");
 
-            List<StringBuilder> lines      = Utils.parseMultiLineCommandLine(commandString);
+            List<StringBuilder> lines =
+                Utils.parseMultiLineCommandLine(commandString);
 
             if ( !download) {
                 StringBuilder sb = new StringBuilder();
                 for (StringBuilder lineSB : lines) {
                     String line = lineSB.toString().trim();
-                    if(line.length()==0) continue;
+                    if (line.length() == 0) {
+                        continue;
+                    }
                     if (line.startsWith("#")) {
                         continue;
                     }
@@ -485,7 +487,7 @@ public class TabularOutputHandler extends OutputHandler {
                 List<Entry> entries = new ArrayList<Entry>();
                 if (request.get("applysiblings", false)) {
                     entries.add(theEntry);
-                    entries.addAll(getWikiManager().getEntries(request,null,
+                    entries.addAll(getWikiManager().getEntries(request, null,
                             theEntry, WikiManager.ID_SIBLINGS, null));
                 } else {
                     entries.add(theEntry);
@@ -627,6 +629,7 @@ public class TabularOutputHandler extends OutputHandler {
             }
             newFiles.addAll(csvUtil.getNewFiles());
             if (csvUtil.getNukeDb()) {
+                request.ensureAdmin();
                 String sql = "drop table db_" + csvUtil.getDbId();
                 try {
                     getRepository().getDatabaseManager().executeAndClose(sql);

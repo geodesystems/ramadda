@@ -14,9 +14,6 @@
 * limitations under the License.
 */
 
-
-
-
 package org.ramadda.repository.output;
 
 
@@ -1166,8 +1163,6 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
         String suffix = Utils.getProperty(props, attrPrefix + ATTR_SUFFIX,
                                           (String) null);
 
-        System.err.println("********");
-
         String result = getWikiIncludeInner(wikiUtil, request, originalEntry,
                                             entry, tag, props);
         if (result == null) {
@@ -1569,6 +1564,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                     wikiUtil.removeWikiProperty(name);
                 }
             }
+
             return "";
         } else if (theTag.equals(WIKI_TAG_PROPERTIES)) {
             return makeEntryTabs(request, wikiUtil, entry, props);
@@ -4354,12 +4350,12 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                 textAreaId, "button_section.png", "Section",
                 "+section title={{name}}_newline__newline_", "-section",
                 "Section", "mw-editbutton-bold"));
-        tags.append(addWikiEditButton(textAreaId, "button_blockquote.png",
-                                      "Row/Column",
-                                      "+row_newline_+col-6_newline_",
-                                      "-col_newline_+col-6_newline_-col_newline_-row",
-                                      "Row/Column",
-                                      "mw-editbutton-headline"));
+        tags.append(
+            addWikiEditButton(
+                textAreaId, "button_blockquote.png", "Row/Column",
+                "+row_newline_+col-6_newline_",
+                "-col_newline_+col-6_newline_-col_newline_-row",
+                "Row/Column", "mw-editbutton-headline"));
         tags.append(
             addWikiEditButton(
                 textAreaId, "button_blockquote.png", "Tabs",
@@ -5080,34 +5076,40 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
             (RecordTypeHandler) entry.getTypeHandler();
         String        name = entry.getName();
         StringBuilder wiki = new StringBuilder();
-        wiki.append(
-            "{{group  showTitle=\"true\"  showMenu=\"true\"  layoutType=\"columns\"  layoutColumns=\"2\"  }}\n");
-        String chartType = typeHandler.getChartProperty(request, entry,
-                               "chart.type", "linechart");
-        wiki.append(
-            "{{display  xwidth=\"600\"  height=\"400\"   type=\"" + chartType
-            + "\"  name=\"\"  layoutHere=\"false\"  showMenu=\"true\"  showTitle=\"true\"  row=\"0\"  column=\"0\"  }}");
 
-        if (entry.isGeoreferenced()
-        /*|| getEntryManager().isSynthEntry(entry.getId())*/
-        ) {
-            String mapLayers = getMapManager().getMapLayers();
-            String layerVar  = "";
-            if (mapLayers != null) {
-                mapLayers = mapLayers.replaceAll(";", ",");
-                layerVar  = "mapLayers=\"" + mapLayers + "\"";
-            }
-            String entryAttrs = typeHandler.getChartProperty(request, entry,
-                                    "chart.wiki.map", "");
-            if (entry.getTypeHandler().getTypeProperty("isTrajectory", false)
-                    || entry.getTypeHandler().getProperty(entry,
-                        "isTrajectory", false)) {
-                entryAttrs += " isTrajectory=\"true\" ";
-            }
+        List<Metadata> metadataList =
+            getMetadataManager().findMetadata(request, entry,
+                "point_chart_wiki", true);
+        if ((metadataList != null) && (metadataList.size() > 0)) {
+            wiki.append(metadataList.get(0).getAttr1());
+        } else {
             wiki.append(
-                "{{display  width=\"600\"  height=\"400\"   type=\"map\" "
-                + layerVar + entryAttrs
-                + " name=\"\"  layoutHere=\"false\"  showMenu=\"true\"  showTitle=\"true\"  row=\"0\"  column=\"1\"  }}");
+                "{{group  showTitle=\"true\"  showMenu=\"true\"  layoutType=\"columns\"  layoutColumns=\"2\"  }}\n");
+            String chartType = typeHandler.getChartProperty(request, entry,
+                                   "chart.type", "linechart");
+            wiki.append(
+                "{{display  xwidth=\"600\"  height=\"400\"   type=\""
+                + chartType
+                + "\"  name=\"\"  layoutHere=\"false\"  showMenu=\"true\"  showTitle=\"true\"  row=\"0\"  column=\"0\"  }}");
+            if (entry.isGeoreferenced()) {
+                String mapLayers = getMapManager().getMapLayers();
+                String layerVar  = "";
+                if (mapLayers != null) {
+                    mapLayers = mapLayers.replaceAll(";", ",");
+                    layerVar  = "mapLayers=\"" + mapLayers + "\"";
+                }
+                String entryAttrs = typeHandler.getChartProperty(request,
+                                        entry, "chart.wiki.map", "");
+                if (entry.getTypeHandler().getTypeProperty("isTrajectory",
+                        false) || entry.getTypeHandler().getProperty(entry,
+                            "isTrajectory", false)) {
+                    entryAttrs += " isTrajectory=\"true\" ";
+                }
+                wiki.append(
+                    "{{display  width=\"600\"  height=\"400\"   type=\"map\" "
+                    + layerVar + entryAttrs
+                    + " name=\"\"  layoutHere=\"false\"  showMenu=\"true\"  showTitle=\"true\"  row=\"0\"  column=\"1\"  }}");
+            }
         }
 
         Hashtable props = new Hashtable();
@@ -5434,7 +5436,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                 "3dscatter") || displayType.equals(
                 "3dmesh") || displayType.equals(
                 "density")) && (request.getExtraProperty(
-                    "added plotly") == null)) {
+                "added plotly") == null)) {
             HtmlUtils.importJS(sb, getHtdocsUrl("/lib/plotly/plotly.min.js"));
             HtmlUtils.importJS(sb, getHtdocsUrl("/display/displayplotly.js"));
             request.putExtraProperty("added plotly", "true");

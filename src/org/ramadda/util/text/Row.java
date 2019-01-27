@@ -55,6 +55,13 @@ public class Row {
 
     /**
      * _more_
+     */
+    public Row() {
+        values = new ArrayList();
+    }
+
+    /**
+     * _more_
      *
      * @param values _more_
      */

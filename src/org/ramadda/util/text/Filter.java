@@ -403,8 +403,6 @@ public class Filter extends Converter {
          * _more_
          *
          * @param col _more_
-         * @param pattern _more_
-         * @param negate _more_
          * @param count _more_
          */
         public CountValue(String col, int count) {
@@ -663,20 +661,20 @@ public class Filter extends Converter {
 
         /**
          * _more_
-         * @param toks _more_
+         * @param rows _more_
          */
-        public Cutter(List<String> toks) {
-            this.rows = Utils.toInt(toks);
+        public Cutter(List<Integer> rows) {
+            this.rows = rows;
         }
 
         /**
          * _more_
          *
-         * @param toks _more_
+         * @param rows _more_
          * @param cut _more_
          */
-        public Cutter(List<String> toks, boolean cut) {
-            this(toks);
+        public Cutter(List<Integer> rows, boolean cut) {
+            this(rows);
             this.cut = cut;
         }
 

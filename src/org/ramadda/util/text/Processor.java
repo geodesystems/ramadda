@@ -1744,7 +1744,9 @@ public abstract class Processor extends CsvOperator {
             cnt++;
             info.getWriter().println("#" + cnt);
             for (int i = 0; i < values.size(); i++) {
-                String label = headerValues.get(i).toString();
+                String label = (i < headerValues.size())
+                               ? headerValues.get(i).toString()
+                               : "NA";
                 label = StringUtil.padLeft(label, 20);
                 info.getWriter().println(label + ":" + values.get(i));
             }
