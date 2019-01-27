@@ -6161,11 +6161,11 @@ function RamaddaMultiChart(displayManager, id, properties) {
                     divAttrs.push("style");
                     var style = "";
                     if(this.getProperty("width"))  
-                       style += "width:" + this.getPropery("width") +";" ;                    
+                       style += "width:" + this.getProperty("width") +";" ;                    
                     else 
                         style += "width:" + "100%;";
-                    if(this.getPropery("height"))
-                        style += "height:" + this.getPropery("height") +";" ;                    
+                    if(this.getProperty("height"))
+                        style += "height:" + this.getProperty("height") +";" ;                    
                     else 
                         style += "height:" + "100%;";
                     divAttrs.push(style);
