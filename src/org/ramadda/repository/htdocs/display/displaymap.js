@@ -2,7 +2,6 @@
 Copyright 2008-2018 Geode Systems LLC
 */
 
-
 var DISPLAY_MAP = "map";
 
 var displayMapMarkers = ["marker.png", "marker-blue.png","marker-gold.png","marker-green.png"];
@@ -68,6 +67,8 @@ function RamaddaMapDisplay(displayManager, id, properties) {
                     if(Utils.isDefined(width)) {
                         if (width > 0) {
                             extraStyle += "width:" + width + "px; ";
+                        } else if(width<0) {
+                            extraStyle += "width:" + (-width)+"%;";
                         } else if(width !="") {
                             extraStyle += "width:" + width+";";
                         }
@@ -77,8 +78,11 @@ function RamaddaMapDisplay(displayManager, id, properties) {
                     // var height = this.getProperty("height",-1);
                     if (height > 0) {
                         extraStyle += " height:" + height + "px; ";
+                    } else if(height<0) {
+                        extraStyle += " height:" + (-height) + "%; ";
                     }
                     
+
                     html += HtmlUtil.div([ ATTR_CLASS, "display-map-map", "style",
                                            extraStyle, ATTR_ID, this.getDomId(ID_MAP) ]);
                     html += HtmlUtil.div([ ATTR_CLASS, "",  ATTR_ID, this.getDomId(ID_BOTTOM) ]);
