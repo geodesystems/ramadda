@@ -6,8 +6,22 @@
 #makekeystore.sh new -> make a new certificate
 #makekeystore.sh renew -> renew the certificates (default)
 
+#This assumes the directory structure:
+#the github source tree
+#/some/dir/source/ramadda  
+
+#the  ramadda home dir
+#/some/dir/repository 
+
+MYDIR=`dirname $0`
+PARENT=`dirname $MYDIR`
+GRANDPARENT=`dirname $PARENT`
+GREATPARENT=`dirname $GRANDPARENT`
+BASEDIR=${GREATPARENT}
+
 #Change this to point to your RAMADDA home dir
-RAMADDA_HOME=/mnt/ramadda/repository
+RAMADDA_HOME=${BASEDIR}/repository
+echo "RAMADDA_HOME=${RAMADDA_HOME}"
 
 #This file should exist in your RAMADDA home dir and should contain the 2 passwords (without the '#' comment delimiter):
 #ramadda.ssl.password=some password
