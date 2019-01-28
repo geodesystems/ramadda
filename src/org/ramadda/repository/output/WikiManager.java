@@ -5474,7 +5474,11 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                 "added plotly") == null)) {
             HtmlUtils.importJS(sb, getHtdocsUrl("/lib/plotly/plotly.min.js"));
             HtmlUtils.importJS(sb, getHtdocsUrl("https://cdn.plot.ly/plotly-latest.min.js"));
-            HtmlUtils.importJS(sb, getHtdocsUrl("/display/displayplotly.js"));
+            if (getRepository().getMinifiedOk()) {
+                HtmlUtils.importJS(sb, getHtdocsUrl("/min/displayplotly.min.js"));
+            } else {
+                HtmlUtils.importJS(sb, getHtdocsUrl("/display/displayplotly.js"));
+            }
             request.putExtraProperty("added plotly", "true");
         }
 
@@ -5659,8 +5663,8 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
 
             if (getRepository().getMinifiedOk()) {
                 HtmlUtils.importJS(
-                    sb, getHtdocsUrl("/display/display_all_mini.js"));
-                HtmlUtils.cssLink(sb, getHtdocsUrl("/display.mini.css"));
+                    sb, getHtdocsUrl("/min/display_all.min.js"));
+                HtmlUtils.cssLink(sb, getHtdocsUrl("/min/display.min.css"));
             } else {
                 HtmlUtils.cssLink(sb, getHtdocsUrl("/display.css"));
                 HtmlUtils.importJS(sb, getHtdocsUrl("/display/pointdata.js"));

@@ -1030,9 +1030,6 @@ public class PageHandler extends RepositoryManager {
             }
 
             imports = applyBaseMacros(imports);
-            imports = imports.replace("${htdocs_version}",
-                                      RepositoryUtil.getHtdocsVersion());
-
             theTemplates = new ArrayList<HtmlTemplate>();
 
             String defaultId =
@@ -3650,13 +3647,13 @@ Time:14625 cnt:7000
     public String applyBaseMacros(String s) {
 
         String mini = getRepository().getMinifiedOk()
-                      ? ".mini"
+                      ? ".min"
                       : "";
-
         //        System.err.println(mini +" " + getRepository().getMinifiedOk());
-        return s.replace(MACRO_URLROOT, getRepository().getUrlBase()).replace(
+        String path = getRepository().getUrlBase()+"/" +RepositoryUtil.getHtdocsVersion();
+        return s.replace("${path}",path).replace(MACRO_URLROOT, getRepository().getUrlBase()).replace(
             "${baseentry}", getEntryManager().getRootEntry().getId()).replace(
-            "${mini}", mini);
+            "${min}", mini);
     }
 
     /**
