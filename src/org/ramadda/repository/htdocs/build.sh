@@ -16,5 +16,6 @@ ${yui} ${dir}/repositories.js > ${dest}/repositories.min.js
 ${yui} ${dir}/selectform.js > ${dest}/selectform.min.js
 ${yui} ${dir}/entry.js > ${dest}/entry.min.js
 ${yui} ${dir}/style.css > ${dest}/style.min.css
+${yui} ${dir}/ramaddamap.css > ${dest}/ramaddamap.min.css
 ${yui} ${dir}/display.css > ${dest}/display.min.css
 

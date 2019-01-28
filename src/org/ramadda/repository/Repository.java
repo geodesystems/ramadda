@@ -1205,6 +1205,8 @@ public class Repository extends RepositoryBase implements RequestHandler,
         if (getUrlBase() == null) {
             setUrlBase(BLANK);
         }
+        setIsMinified(getProperty(PROP_MINIFIED, true));
+
         String derbyHome = getLocalProperty(PROP_DB_DERBY_HOME,
                                             (String) null);
         if (derbyHome != null) {

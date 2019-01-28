@@ -304,6 +304,7 @@ public class RepositoryBase implements Constants, RepositorySource {
     /** _more_ */
     private String urlBase = "/repository";
 
+    private boolean isMinified;
 
     /** _more_ */
     private String hostname = "";
@@ -608,7 +609,6 @@ public class RepositoryBase implements Constants, RepositorySource {
         if (f == null) {
             return null;
         }
-
         return urlBase + f;
     }
 
@@ -631,6 +631,24 @@ public class RepositoryBase implements Constants, RepositorySource {
         return urlBase;
     }
 
+
+/**
+Set the IsMinified property.
+
+@param value The new value for IsMinified
+**/
+public void setIsMinified (boolean value) {
+	isMinified = value;
+}
+
+/**
+Get the IsMinified property.
+
+@return The IsMinified
+**/
+public boolean getIsMinified () {
+	return isMinified;
+}
 
     /**
      * _more_

@@ -435,7 +435,7 @@ public class MapManager extends RepositoryManager implements WikiConstants {
         if (OPENLAYERS_VERSION == OPENLAYERS_V2) {
             if (minified) {
                 HtmlUtils.importJS(
-                    sb, getRepository().getHtdocsUrl("/ramaddamap.mini.js"));
+                    sb, getRepository().getHtdocsUrl("/min/ramaddamap.min.js"));
             } else {
                 HtmlUtils.importJS(
                     sb, getRepository().getHtdocsUrl("/ramaddamap.js"));
@@ -444,8 +444,13 @@ public class MapManager extends RepositoryManager implements WikiConstants {
             HtmlUtils.importJS(
                 sb, getRepository().getHtdocsUrl("/ramaddamap3.js"));
         }
-        HtmlUtils.cssLink(sb,
-                          getRepository().getHtdocsUrl("/ramaddamap.css"));
+        if (minified) {
+            HtmlUtils.cssLink(sb,
+                              getRepository().getHtdocsUrl("/min/ramaddamap.min.css"));
+        } else {
+            HtmlUtils.cssLink(sb,
+                              getRepository().getHtdocsUrl("/ramaddamap.css"));
+        }
 
         return sb.toString();
     }
