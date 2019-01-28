@@ -35,7 +35,7 @@ git pull --no-edit origin master
 ant -Dbuild.compiler=javac1.7
 
 if [ ! -d "${DIST}/ramaddaserver" ]; then
-    echo "Build seemed to fail. Exiting"
+    echo "Build seemed to fail. No ${DIST}/ramaddaserver dir. Exiting"
     exit
 fi
 
