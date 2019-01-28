@@ -414,7 +414,6 @@ public class TextRecord extends DataRecord {
 
 
                 if (indices[tokenCnt] >= 0) {
-                    System.err.println("indices:" + indices[tokenCnt]);
                     tok = tokens[indices[tokenCnt]];
                 } else {
                     tok = tokens[tokenCnt];
@@ -432,7 +431,6 @@ public class TextRecord extends DataRecord {
                 if (field.isTypeDate()) {
                     tok                    = tok.replaceAll("\"", "");
                     objectValues[fieldCnt] = parseDate(field, tok);
-
                     continue;
                 }
                 if (tok == null) {

@@ -366,6 +366,19 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                                               ATTR_LAYOUTHERE, "true", 
                                               ATTR_SHOWMENU, "true", 
                                               ATTR_SHOWTITLE, "true")),
+
+                            new WikiTag(WIKI_TAG_DISPLAY,
+                                        "Timeline chart",
+                                        attrs(ATTR_TYPE, "timelinechart", 
+                                              "fields", "name,date1,date2",
+                                              "#labelFields", "fields to show in bar label",
+                                              "#labelFieldTemplate","field:{field_name} ... ",
+                                              "#showLabel","true",
+                                              "width","100%",
+                                              "height","300",
+                                              ATTR_LAYOUTHERE, "true", 
+                                              ATTR_SHOWMENU, "true", 
+                                              ATTR_SHOWTITLE, "true")),
                             new WikiTag(WIKI_TAG_DISPLAY,
                                         "Calendar",
                                         attrs(ATTR_TYPE, "calendar",
@@ -5460,6 +5473,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                 "density")) && (request.getExtraProperty(
                 "added plotly") == null)) {
             HtmlUtils.importJS(sb, getHtdocsUrl("/lib/plotly/plotly.min.js"));
+            HtmlUtils.importJS(sb, getHtdocsUrl("https://cdn.plot.ly/plotly-latest.min.js"));
             HtmlUtils.importJS(sb, getHtdocsUrl("/display/displayplotly.js"));
             request.putExtraProperty("added plotly", "true");
         }
@@ -5632,7 +5646,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
             //                    "google.load(\"visualization\", \"1\", {packages:['corechart','table','bar']});\n"));
             HtmlUtils.script(
                 sb,
-                "google.charts.load(\"43\", {packages:['corechart','calendar','table','bar','sankey','gauge']});\n");
+                "google.charts.load(\"43\", {packages:['corechart','calendar','table','bar','sankey','timeline','gauge']});\n");
             HtmlUtils.importJS(sb, getHtdocsUrl("/lib/d3/d3.min.js"));
             HtmlUtils.importJS(
                 sb, getHtdocsUrl("/lib/jquery.handsontable.full.min.js"));

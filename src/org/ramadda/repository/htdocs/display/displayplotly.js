@@ -40,7 +40,7 @@ function RamaddaPlotlyDisplay(displayManager, id, type, properties) {
                 if(!height.endsWith("px") && !height.endsWith("%"))
                     height = height+"px";
 
-                var html =   HtmlUtil.div([ATTR_ID, this.getDomId(ID_DISPLAY),"style","width:" + width+";" +
+                var html =   HtmlUtil.div([ATTR_ID, this.getDomId(ID_DISPLAY_CONTENTS),"style","width:" + width+";" +
                                            "height:" + height+";"],this.getLoadingMessage());
                 this.setContents(html);
                 this.updateUI();
@@ -73,8 +73,8 @@ function RamaddaPlotlyDisplay(displayManager, id, type, properties) {
             makePlot:function(data,layout) {
                this.clearHtml();
                //For some reason plotly won't display repeated times in the DISPLAY div
-               this.jq(ID_DISPLAY).html(HtmlUtil.div(["id",this.getDomId("tmp"),"style",this.getDisplayStyle()],""));
-               //               Plotly.plot(this.getDomId(ID_DISPLAY), data, layout)
+               this.jq(ID_DISPLAY_CONTENTS).html(HtmlUtil.div(["id",this.getDomId("tmp"),"style",this.getDisplayStyle()],""));
+               //               Plotly.plot(this.getDomId(ID_DISPLAY_CONTENTS), data, layout)
                var plot = Plotly.plot(this.getDomId("tmp"), data, layout);
                var myPlot = document.getElementById(this.getDomId("tmp"));
                this.addEvents(plot, myPlot);

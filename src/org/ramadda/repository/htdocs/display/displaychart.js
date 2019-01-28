@@ -9,6 +9,7 @@ var DISPLAY_BARCHART = "barchart";
 var DISPLAY_BARTABLE = "bartable";
 var DISPLAY_BARSTACK = "barstack";
 var DISPLAY_PIECHART = "piechart";
+var DISPLAY_TIMELINECHART = "timelinechart";
 var DISPLAY_SANKEY = "sankey";
 var DISPLAY_CALENDAR = "calendar";
 var DISPLAY_SCATTERPLOT = "scatterplot";
@@ -49,6 +50,7 @@ addGlobalDisplayType({type:DISPLAY_SCATTERPLOT,label: "Scatter Plot",requiresDat
 addGlobalDisplayType({type:DISPLAY_HISTOGRAM,label: "Histogram",requiresData:true,forUser:true,category:CHARTS_CATEGORY});
 addGlobalDisplayType({type:DISPLAY_BUBBLE,label: "Bubble Chart",requiresData:true,forUser:true,category:CHARTS_CATEGORY});
 addGlobalDisplayType({type:DISPLAY_GAUGE,label: "Gauge",requiresData:true,forUser:true,category:CHARTS_CATEGORY});
+addGlobalDisplayType({type:DISPLAY_TIMELINECHART,label: "Timeline",requiresData:true,forUser:true,category:CHARTS_CATEGORY});
 addGlobalDisplayType({type:DISPLAY_PIECHART,label: "Pie Chart",requiresData:true,forUser:true,category:CHARTS_CATEGORY});
 addGlobalDisplayType({type:DISPLAY_SANKEY,label: "Sankey Chart",requiresData:true,forUser:true,category:CHARTS_CATEGORY});
 
@@ -402,7 +404,7 @@ function RamaddaMultiChart(displayManager, id, properties) {
             },
             getFieldsToSelect: function(pointData) {
                 var chartType = this.getProperty(PROP_CHART_TYPE,DISPLAY_LINECHART);
-                if(this.chartType == DISPLAY_TABLE || this.chartType == DISPLAY_BARTABLE || this.chartType == DISPLAY_BUBBLE || this.chartType == DISPLAY_SANKEY) {
+                if(this.chartType == DISPLAY_TABLE || this.chartType == DISPLAY_BARTABLE || this.chartType == DISPLAY_BUBBLE || this.chartType == DISPLAY_SANKEY || this.chartType == DISPLAY_TIMELINECHART) {
                     //                    return pointData.getRecordFields();
                     return pointData.getNonGeoFields();
                 } 
@@ -483,7 +485,7 @@ function RamaddaMultiChart(displayManager, id, properties) {
                 var props = {
                     includeIndex: true,
                 };
-                if(this.chartType == DISPLAY_TABLE || this.chartType == DISPLAY_BARTABLE || chartType == DISPLAY_PIECHART || chartType == DISPLAY_SCATTERPLOT || chartType == DISPLAY_HISTOGRAM|| chartType == DISPLAY_BUBBLE|| chartType == DISPLAY_GAUGE || chartType==DISPLAY_SANKEY)  {
+                if(this.chartType == DISPLAY_TABLE || this.chartType == DISPLAY_BARTABLE || chartType == DISPLAY_PIECHART || chartType == DISPLAY_SCATTERPLOT || chartType == DISPLAY_HISTOGRAM|| chartType == DISPLAY_BUBBLE|| chartType == DISPLAY_GAUGE || chartType==DISPLAY_SANKEY || chartType==DISPLAY_TIMELINECHART)  {
                     props.includeIndex = false;
                 }
                 props.groupByIndex = -1;
@@ -705,7 +707,13 @@ function RamaddaMultiChart(displayManager, id, properties) {
                     dataList = newList;
                 }
 
-                this.makeChart(chartType, dataList, props, selectedFields);
+                try {
+                    this.makeChart(chartType, dataList, props, selectedFields);
+                } catch(e) {
+                    console.log(e.stack);
+                    this.displayError(""+e);
+                    return;
+                }
 
                 var d = _this.jq(ID_CHART);
                 this.lastWidth = d.width();
@@ -808,6 +816,74 @@ function RamaddaMultiChart(displayManager, id, properties) {
                 if(dataList.length==1) {
                     return  google.visualization.arrayToDataTable(this.makeDataArray(dataList));
                 }
+
+
+                if(this.chartType == DISPLAY_TIMELINECHART) {
+                    var records = this.filterData();
+                    var strings = [];
+                    var stringField = this.getFieldOfType(selectedFields,"string");
+                    if(!stringField)
+                        stringField = this.getFieldOfType(null,"string");
+                    var showLabel = this.getProperty("showLabel",true);
+                    var labelFields = [];
+                    var labelFieldsTemplate = this.getProperty("labelFieldsTemplate");
+                    var toks =  this.getProperty("labelFields","").split(",");
+                    for(var i=0;i<toks.length;i++ ) {
+                        var field = this.getFieldById(null,toks[i]);
+                        if(field) 
+                            labelFields.push(field);
+                    }
+                    
+
+
+                    var dateFields = this.getFieldsOfType(selectedFields,"date");
+                    if(dateFields.length==0) 
+                        dateFields = this.getFieldsOfType(null,"date");
+                    var values = [];
+                    var dataTable = new google.visualization.DataTable();
+                    if(dateFields.length<2) {
+                        throw new Error("Need to have at least 2 date fields");
+                    }
+                    if(stringField)
+                        dataTable.addColumn({ type: 'string', id: stringField.getLabel() });
+                    else
+                        dataTable.addColumn({ type: 'string', id: "Index"});
+                    if(labelFields.length>0)
+                        dataTable.addColumn({ type: 'string', id: "Label"});
+                    dataTable.addColumn({ type: 'date', id: dateFields[0].getLabel()});
+                    dataTable.addColumn({ type: 'date', id: dateFields[1].getLabel()});
+                    for(var r=0;r<records.length;r++) {
+                        var row = this.getDataValues(records[r]);
+                        var tuple=[];
+                        values.push(tuple);
+                        if(stringField && showLabel)
+                            tuple.push(row[stringField.getIndex()]);
+                        else
+                            tuple.push("#"+(r+1));
+                        if(labelFields.length>0) {
+                            var label = "";
+                            if(labelFieldsTemplate)
+                                label = labelFieldsTemplate;
+                            for(var l=0;l<labelFields.length;l++) {
+                                var f = labelFields[l];
+                                var value = row[f.getIndex()]; 
+                                if(labelFieldsTemplate) {
+                                    label= label.replace("{" + f.getId() +"}", value);
+                                } else {
+                                    label+=value +" ";
+                                }
+
+                            }
+                            tuple.push(label);
+                        }
+                        tuple.push(row[dateFields[0].getIndex()]);
+                        tuple.push(row[dateFields[1].getIndex()]);
+                    }
+                    dataTable.addRows(values);
+                    return  dataTable;
+                }
+
+
 
                 if(this.chartType == DISPLAY_TABLE) {
                     return  google.visualization.arrayToDataTable(this.makeDataArray(dataList));
@@ -1369,6 +1445,8 @@ function RamaddaMultiChart(displayManager, id, properties) {
                         return;
                     }
                     this.chart = new google.visualization.Calendar(document.getElementById(chartId));
+                } else  if(chartType == DISPLAY_TIMELINECHART) {
+                    this.chart = new google.visualization.Timeline(document.getElementById(chartId));
                 } else  if(chartType == DISPLAY_PIECHART) {
                     chartOptions.tooltip = {textStyle: {color: '#000000'}, showColorCode: true};
                     if(this.getProperty("bins",null)) {
@@ -1502,6 +1580,12 @@ function BarstackDisplay(displayManager, id, properties) {
 
 function PiechartDisplay(displayManager, id, properties) {
     properties = $.extend({"chartType": DISPLAY_PIECHART}, properties);
+    RamaddaUtil.inherit(this, new RamaddaMultiChart(displayManager, id, properties));
+    addRamaddaDisplay(this);
+}
+
+function TimelinechartDisplay(displayManager, id, properties) {
+    properties = $.extend({"chartType": DISPLAY_TIMELINECHART}, properties);
     RamaddaUtil.inherit(this, new RamaddaMultiChart(displayManager, id, properties));
     addRamaddaDisplay(this);
 }

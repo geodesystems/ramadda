@@ -12,7 +12,7 @@ var ID_DETAILS = "details";
 var ID_DISPLAY_CONTENTS = "contents";
 var ID_GROUP_CONTENTS = "group_contents";
 var ID_DETAILS_MAIN = "detailsmain";
-var ID_DISPLAY = "display";
+
 
 var ID_TOOLBAR = "toolbar";
 var ID_TOOLBAR_INNER = "toolbarinner";
@@ -379,7 +379,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
                 this.displayHtml("");
             },
             displayHtml: function(html) {
-                this.jq(ID_DISPLAY).html(html);
+                this.jq(ID_DISPLAY_CONTENTS).html(html);
             },
             notifyEvent:function(func, source, data) {
                 if(this[func] == null) { return;}
@@ -2283,21 +2283,16 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
                 var style = "";
                 var height = this.getHeightForStyle();
                 if(height) {
-                    style+=  " height:" + height;
+                    style +=  " height:" + height +";";
                 }
                 var width = this.getWidthForStyle();
                 if(width) {
-                    style+=  " width:" + width;
+                    style +=  " width:" + width+";";
                 }
                 return style;
             },
             getContentsDiv: function() {
-                var extraStyle = "";
-                var width = this.getWidth();
-                if(width>0) {
-                    extraStyle += "width:" + width +"px; /*overflow-x: auto;*/";
-                }
-                extraStyle += this.getDimensionsStyle();
+                var extraStyle =  this.getDimensionsStyle();
                 return  HtmlUtil.div([ATTR_CLASS,"display-contents-inner display-" +this.type, "style", extraStyle, ATTR_ID, this.getDomId(ID_DISPLAY_CONTENTS)],"");
             },
             copyDisplay: function() {
@@ -2568,8 +2563,6 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
                 //The first entry in the dataList is the array of names
                 //The first field is the domain, e.g., time or index
                 var fieldNames = [];
-
-
                 for(i=0;i<fields.length;i++) { 
                     var field = fields[i];
                     if(field.isFieldNumeric() && field.isFieldDate()) {

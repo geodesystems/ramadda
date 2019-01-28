@@ -491,6 +491,7 @@ function makePointData(json, derived,source) {
     var longitudeIdx = -1;
     var elevationIdx = -1;
     var dateIdx = -1;
+    var dateIndexes= [];
 
     var lastField = null;
     for(var i=0;i<json.fields.length;i++) {
@@ -509,7 +510,7 @@ function makePointData(json, derived,source) {
             //            console.log("Elevation idx:" + elevationIdx);
         } else if(recordField.isFieldDate()) {
             dateIdx = recordField.getIndex();
-            //            console.log("Date idx:" + dateIdx);
+            dateIndexes.push(dateIdx);
         }
 
     }
@@ -583,6 +584,9 @@ function makePointData(json, derived,source) {
                 tuple.elevation = NaN;
         }
 
+        for(var j=0;j<dateIndexes.length;j++) {
+            values[dateIndexes[j]] = new Date(values[dateIndexes[j]]);
+        }
 
 
         if(derived) {
