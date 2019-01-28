@@ -5359,6 +5359,9 @@ public class Repository extends RepositoryBase implements RequestHandler,
         }
 
 
+        sb.append(HtmlUtils.formEntry(msgLabel("Port"),""+ getPort()));
+        sb.append(HtmlUtils.formEntry(msgLabel("Https Port"),""+ getHttpsPort()));
+
         sb.append(HtmlUtils.formTableClose());
         sb.append(HtmlUtils.sectionClose());
 
