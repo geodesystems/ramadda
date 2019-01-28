@@ -17,7 +17,7 @@ mydir=`dirname $0`
 #install new server and plugins, service start ramadda
 
 #The location of the source, runtime and ramadda home dirs
-BASEDIR=${mydir}/../..
+BASEDIR=${mydir}/../../..
 echo "BASE=${BASEDIR}"
 
 RUNTIME_DIR=${BASEDIR}/runtime
