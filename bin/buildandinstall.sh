@@ -1,5 +1,5 @@
 #!/bin/sh                                                                                                             
-mydir=`dirname $0`
+MYDIR=`dirname $0`
 
 #This is used for building and restarting RAMADDA on geodesystems.com
 #This assumes the directory structure:
@@ -17,7 +17,11 @@ mydir=`dirname $0`
 #install new server and plugins, service start ramadda
 
 #The location of the source, runtime and ramadda home dirs
-BASEDIR=${mydir}/../../..
+
+PARENT=`dirname $MYDIR`
+GRANDPARENT=`dirname $PARENT`
+GREATPARENT=`dirname $GRANDPARENT`
+BASEDIR=${GREATPARENT}
 echo "BASE=${BASEDIR}"
 
 RUNTIME_DIR=${BASEDIR}/runtime
