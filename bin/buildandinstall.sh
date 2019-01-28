@@ -18,6 +18,7 @@ mydir=`dirname $0`
 
 #The location of the source, runtime and ramadda home dirs
 BASEDIR=${mydir}/../..
+echo "BASE=${BASEDIR}"
 
 RUNTIME_DIR=${BASEDIR}/runtime
 SOURCE=${BASEDIR}/source/ramadda
