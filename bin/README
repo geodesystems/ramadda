@@ -1,7 +1,8 @@
 
 I use these scripts to build and release RAMADDA.
 
-#################  Client side  ################# 
+
+#################  Client side  environment  ################# 
 I set up my environment with:
 export SRC=${HOME}/source
 export RAMADDA_GIT_ROOT=${SRC}/ramadda
@@ -16,7 +17,7 @@ export GEODESYSTEMS_IP=52.88.245.74
 #Path to the PEM file for logging in to geodesystems.com
 export GEODESYSTEMS_PEM=${HOME}/work/amazon/geodesystems.pem
 
-
+#################  Client side  scripts  ################# 
 #This script does a git commit/push of the source tree then 
 #rebuilds RAMADDA on AWS. It uses any argument as the git commit message
 gitem.sh
@@ -31,13 +32,11 @@ alias gitem="sh ${RAMADDA_BIN}/gitem.sh"
 alias gitall="sh ${RAMADDA_BIN}/gitall.sh"
 
 #The script to do a git update, build and server restart on geodesystems.com
-#You need to have the env vars set:
-#export GEODESYSTEMS_IP=52.88.245.74
-#export GEODESYSTEMS_PEM=/path/to/geodesystems.pem
+#You need to have the env vars set: GEODESYSTEMS_IP GEODESYSTEMS_PEM
 makerelease.sh
 
 #alias to run the makerelease.sh script
-alias buildgeode="sh ~/work/bin/makerelease.sh ${GEODESYSTEMS_IP}"
+alias buildgeode="sh ${RAMADDA_BIN}/makerelease.sh ${GEODESYSTEMS_IP}"
 
 
 #Other useful aliases
@@ -46,7 +45,6 @@ alias sshgeode="ssh -i ${GEODESYSTEMS_PEM} ec2-user@${GEODESYSTEMS_IP}"
 
 #alias to scp files to geodesystems.com
 alias scpgeode="sh ~/work/bin/scpgeode.sh ${GEODESYSTEMS_IP}"
-
 
 
 
@@ -60,7 +58,6 @@ makekeystore.sh
 
 #Used on the AWS server to release the code
 releasecode.sh
-
 
 
 ################# Jindent ##################
