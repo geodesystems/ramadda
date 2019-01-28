@@ -73,6 +73,17 @@ function addRamaddaDisplay(display) {
     }
 }
 
+function ramaddaDisplayCheckLayout() {
+    for(var i=0;i<window.globalDisplaysList.length;i++) {
+        if(window.globalDisplaysList[i].checkLayout) {
+            window.globalDisplaysList[i].checkLayout();
+        }
+    }
+
+
+}
+
+
 
 function ramaddaCheckForResize() {
     var redisplayPending = false;
@@ -108,15 +119,6 @@ function ramaddaCheckForResize() {
 
 
 
-function ramaddaDisplayCheckLayout() {
-    for(var i=0;i<window.globalDisplaysList.length;i++) {
-        if(window.globalDisplaysList[i].checkLayout) {
-            window.globalDisplaysList[i].checkLayout();
-        }
-    }
-
-
-}
 
 function getRamaddaDisplay(id) {
     if(window.globalDisplays == null) {

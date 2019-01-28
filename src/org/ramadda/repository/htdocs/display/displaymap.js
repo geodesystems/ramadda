@@ -116,6 +116,14 @@ function RamaddaMapDisplay(displayManager, id, properties) {
                         setTimeout(callback,1);
                     }
 		},
+               checkLayout: function() {
+                    var d = this.jq(ID_MAP);
+                    if(d.width()>0 && this.lastWidth!=d.width() && this.map) {
+                        this.lastWidth = d.width();
+                        this.map.getMap().updateSize();
+                    }
+                },
+
                 createMap: function() {
                     var theDisplay  =this;
 
@@ -138,6 +146,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
                         this.map.setMapDiv(this.getDomId(ID_MAP));
                     } else {
                         this.map = new RepositoryMap(this.getDomId(ID_MAP), params);
+                        this.lastWidth = this.jq(ID_MAP).width();
                     }
                     if(this.doDisplayMap()) {
                         this.map.setDefaultCanSelect(false);
