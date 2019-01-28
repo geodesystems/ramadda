@@ -1,11 +1,23 @@
 #!/bin/sh                                                                                                             
+mydir=`dirname $0`
+
 #This is used for building and restarting RAMADDA on geodesystems.com
+#This assumes the directory structure:
+
+#the github source tree
+#/some/dir/source/ramadda  
+
+#the  ramadda home dir
+#/some/dir/repository 
+
+#where the server is run from, holds logs, the compiled release, etc:
+#/some/dir/runtime  
 
 ##This will do a git update, ramadda build, stop ramadda service, 
 #install new server and plugins, service start ramadda
 
 #The location of the source, runtime and ramadda home dirs
-BASEDIR=/mnt/ramadda/
+BASEDIR=${mydir}/../..
 
 RUNTIME_DIR=${BASEDIR}/runtime
 SOURCE=${BASEDIR}/source/ramadda
