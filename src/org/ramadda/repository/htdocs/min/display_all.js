@@ -766,7 +766,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
                 var badFields = {};
                 var flags=null;
                 for(var rowIdx=1;rowIdx<tuples.length;rowIdx++) {
-                    var tuple = tuples[rowIdx];
+                    var tuple = this.getDataValues(tuples[rowIdx]);
                     if(flags == null) {
                         flags = [];
                         for(var tupleIdx=0;tupleIdx<tuple.length;tupleIdx++) {
