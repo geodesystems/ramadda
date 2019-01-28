@@ -1,1 +1,77 @@
 
+I use these scripts to build and release RAMADDA.
+
+#################  Client side  ################# 
+I set up my environment with:
+export SRC=${HOME}/source
+export RAMADDA_GIT_ROOT=${SRC}/ramadda
+export RAMADDA_SRC=${RAMADDA_GIT_ROOT}/src
+export RAMADDA_BIN=${RAMADDA_GIT_ROOT}/bin
+export RAMADDA_LIB=${RAMADDA_GIT_ROOT}/lib
+export RAMADDA_DIST=${RAMADDA_GIT_ROOT}/dist
+
+#IP of geodesystems.com
+export GEODESYSTEMS_IP=52.88.245.74
+
+#Path to the PEM file for logging in to geodesystems.com
+export GEODESYSTEMS_PEM=${HOME}/work/amazon/geodesystems.pem
+
+
+#This script does a git commit/push of the source tree then 
+#rebuilds RAMADDA on AWS. It uses any argument as the git commit message
+gitem.sh
+
+#This script builds the the minified versions of the javascript and css files 
+#then does a git commit & push of the source tree then rebuilds RAMADDA on AWS
+#It uses any argument as the git commit message
+gitall.sh
+
+#I use these  aliases to call gitem.sh and gitall.sh
+alias gitem="sh ${RAMADDA_BIN}/gitem.sh"
+alias gitall="sh ${RAMADDA_BIN}/gitall.sh"
+
+#The script to do a git update, build and server restart on geodesystems.com
+#You need to have the env vars set:
+#export GEODESYSTEMS_IP=52.88.245.74
+#export GEODESYSTEMS_PEM=/path/to/geodesystems.pem
+makerelease.sh
+
+#alias to run the makerelease.sh script
+alias buildgeode="sh ~/work/bin/makerelease.sh ${GEODESYSTEMS_IP}"
+
+
+#Other useful aliases
+#alias to ssh to geodesystems.com
+alias sshgeode="ssh -i ${GEODESYSTEMS_PEM} ec2-user@${GEODESYSTEMS_IP}"
+
+#alias to scp files to geodesystems.com
+alias scpgeode="sh ~/work/bin/scpgeode.sh ${GEODESYSTEMS_IP}"
+
+
+
+
+
+#################  Server side  ################# 
+
+#This is used on the AWS server to create the SSL certificates used on geodesystems.com. It can 
+#be modified to create certs for other servers. Run this as sudo makekeystore.sh
+makekeystore.sh
+
+
+#Used on the AWS server to release the code
+releasecode.sh
+
+
+
+################# Jindent ##################
+The jindent template:
+style.xjs
+A script that runs jindent on the entire source tree
+jindent.sh
+
+I normally jindent individual files. On the Mac I use this in my env:
+export JINDENT_HOME=/Applications/Jindent
+export JINDENT_JARS=${JINDENT_HOME}/lib/Jindent.jar
+export JINDENT=${JINDENT_HOME}/Jindent
+alias jindent="${JINDENT} -p ${RAMADDA_BIN}/style.xjs "
+

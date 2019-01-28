@@ -18,5 +18,5 @@ git commit -m "${text}" -a
 echo "pushing";
 git push
 echo "building";
-sh ${mydir}/makerelease.sh ${geodesystems_ip}
+sh ${mydir}/makerelease.sh ${GEODESYSTEMS_IP}
 popd

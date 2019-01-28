@@ -1,25 +1,26 @@
 #!/bin/sh
-
+mydir=`dirname $0`
 
 #This is the script I use to build and restart the main RAMADDA server on AWS
-#I run this script with the alias buildgeode:
+#You need to set the following in your environment to point to the geode systems 
+#server and the .pem file (for logging in)
+#export GEODESYSTEMS_IP=52.88.245.74
+#export GEODESYSTEMS_PEM=/path/to/geodesystems.pem
 
-#export geodesystems_ip=52.88.245.74
+
+#I run this script with the alias buildgeode:
 #alias buildgeode="sh ~/work/bin/makerelease.sh ${geodesystems_ip}"
 
-#All you need to do is change the location of the PEM file
-
 #Location of the PEM file to log in to the AWS server
-PEM=/Users/jeffmc/work/amazon/geodesystems.pem
+PEM=${GEODESYSTEMS_PEM}
 
-
-myDir=`dirname $0`
-ipAddress=$1
-user=ec2-user
 
 ##TODO: process args for dest ip and pem file
+ipaddress=$1
+user=ec2-user
 
-ssh -tq -i  ${PEM}  ${user}@${ipAddress} "sudo sh /home/ec2-user/ramadda/buildandinstall.sh"
+
+ssh -tq -i  ${PEM}  ${user}@${ipaddress} "sudo sh /mnt/ramadda/source/ramadda/bin/buildandinstall.sh"
 
 
 

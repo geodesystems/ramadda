@@ -1,7 +1,10 @@
 #!/bin/sh                                                                                                             
+#This is used for building and restarting RAMADDA on geodesystems.com
+
 ##This will do a git update, ramadda build, stop ramadda service, 
 #install new server and plugins, service start ramadda
 
+#The location of the source, runtime and ramadda home dirs
 BASEDIR=/mnt/ramadda/
 
 RUNTIME_DIR=${BASEDIR}/runtime
