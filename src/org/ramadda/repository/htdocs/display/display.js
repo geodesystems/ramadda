@@ -52,6 +52,7 @@ var PROP_WIDTH  = "width";
 
 
 function initRamaddaDisplays() {
+    ramaddaCheckForResize();
     if(window.globalDisplaysList == null) {
         return;
     }
@@ -71,6 +72,40 @@ function addRamaddaDisplay(display) {
         window.globalDisplays[display.displayId] = display;
     }
 }
+
+
+function ramaddaCheckForResize() {
+    var redisplayPending = false;
+    var redisplayPendingCnt = 0;
+    //A hack to redraw the chart after the window is resized
+    $(window).resize(function() {
+            if(window.globalDisplaysList == null) {
+                return;
+            }
+            //This handles multiple resize events but keeps only having one timeout pending at a time
+            if(redisplayPending) {
+                redisplayPendingCnt++;
+                return;
+            }
+            var timeoutFunc = function(myCnt){
+                if(myCnt == redisplayPendingCnt) {
+                    redisplayPending = false;
+                    redisplayPendingCnt=0;
+                    for(var i=0;i<window.globalDisplaysList.length;i++) {
+                        var display  =  window.globalDisplaysList[i];
+                        if(display.displayData)
+                            display.displayData();
+                    }
+                } else {
+                    //Had a resize event during the previous timeout
+                    setTimeout(timeoutFunc.bind(null, redisplayPendingCnt),1000);
+                }
+            }
+            redisplayPending = true;
+            setTimeout(timeoutFunc.bind(null,redisplayPendingCnt),1000);
+        });
+}
+
 
 
 function ramaddaDisplayCheckLayout() {
@@ -172,7 +207,7 @@ function DisplayThing(argId, argProperties) {
                 if(!suffix && timeZone) suffix = timeZone;
                 return Utils.formatDate(date,args.options,{timeZone:timeZone,suffix:suffix});
             },
-        getUniqueId: function(base) {
+                getUniqueId: function(base) {
                 return HtmlUtil.getUniqueId(base);
         },
         handleError: function(code, message) {
@@ -361,12 +396,6 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             entries: [],
             wikiAttrs: ["title","showTitle","showDetails","minDate","maxDate"],
 
-            setDisplayReady: function() {
-                this.displayReady = true;
-            },
-            getDisplayReady: function() {
-                return this.displayReady;
-            },
             getDisplayManager: function() {
                return this.displayManager;
             },
@@ -2097,8 +2126,13 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             createUI:function() {
                 this.checkFixedLayout();
             },
+            setDisplayReady: function() {
+                this.displayReady = true;
+            },
+            getDisplayReady: function() {
+                return this.displayReady;
+            },
             pageHasLoaded:function() {
-                //                console.log("pageHasLoaded:" +this.getType());
                 this.setDisplayReady(true);
             },
             initDisplay:function() {

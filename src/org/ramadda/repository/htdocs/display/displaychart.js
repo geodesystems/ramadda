@@ -80,37 +80,6 @@ function RamaddaFieldsDisplay(displayManager, id, type, properties) {
     var SUPER;
     RamaddaUtil.inherit(this, this.RamaddaDisplay = SUPER = new RamaddaDisplay(displayManager, id, type, properties));
 
-    _this.redisplayPending = false;
-    _this.redisplayPendingCnt = 0;
-
-    //A hack to redraw the chart after the window is resized
-    $(window).resize(function() {
-        var theDisplay = _this.getThis();
-         if(!theDisplay.getDisplayReady())  {
-             //             console.log("not ready:" + _this.getType());
-             return;
-         }
-	//This handles multiple resize events but keeps only having one timeout pending at a time
-	if(theDisplay.redisplayPending) {
-	    theDisplay.redisplayPendingCnt++;
-	    return;
-	}
-	var timeoutFunc = function(myCnt){
-            if(myCnt == theDisplay.redisplayPendingCnt) {
-		//Ready to redisplay
-		theDisplay.redisplayPending = false;
-		theDisplay.redisplayPendingCnt=0;
-                //                console.log("calling displayData:" + _this.getType());
-		theDisplay.displayData();
-            } else {
-		//Had a resize event during the previous timeout
-		setTimeout(timeoutFunc.bind(null,theDisplay.redisplayPendingCnt),1000);
-	    }
-	}
-	theDisplay.redisplayPending = true;
-        setTimeout(timeoutFunc.bind(null,theDisplay.redisplayPendingCnt),1000);
-    });
-
 
 
     RamaddaUtil.defineMembers(this, {

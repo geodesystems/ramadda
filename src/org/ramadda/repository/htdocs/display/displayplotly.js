@@ -37,13 +37,11 @@ function RamaddaPlotlyDisplay(displayManager, id, type, properties) {
                 layout.height = height;
             },
             displayData:  function() {
-                console.log("plotly displayData");
                 this.updateUI();
             },
             pageHasLoaded:function() {
                 SUPER.pageHasLoaded.call(this);
                 this.updateUI();
-                //if(!Utils.getPageLoaded()) return;
             },
 
             fieldSelectionChanged: function() {
