@@ -4621,7 +4621,7 @@ public class TypeHandler extends RepositoryManager {
         if ( !readOnly) {
             String buttons =
                 getRepository().getWikiManager().makeWikiEditBar(request,
-                    entry, editorId) + HtmlUtils.br();
+                                                                 entry, editorId);
             if (label != null) {
                 sb.append("<tr><td colspan=2>");
                 sb.append(HtmlUtils.b(msgLabel(label)));

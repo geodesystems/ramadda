@@ -908,10 +908,16 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
                 return fields[0];
             },
             getFieldsOfType: function(fields,type) {
+                if(!fields) {
+                    var pointData = this.getData();
+                    if(pointData == null) return null;
+                    fields=  pointData.getRecordFields();
+                }
                 var  list =[];
                 var numeric = type == "numeric";
                 for(a in fields) {
                     var field = fields[a];
+                    if(type == null) return field;
                     if(numeric) {
                         if(field.isFieldNumeric()) {
                             list.push(field);
@@ -2579,7 +2585,8 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
                 var excludeZero = this.getProperty(PROP_EXCLUDE_ZERO,false);
                 if(fields == null) {
                     fields = pointData.getRecordFields();
-                }
+                } 
+
 
                 props = {
                     makeObject:true,
@@ -2686,6 +2693,9 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
                         }
                     }
 
+
+
+
                     var allNull  = true;
                     var allZero  = true;
                     var hasNumber = false;
@@ -2713,6 +2723,8 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
                         }
                         values.push(value);
                     }
+
+
 
                     if(hasNumber && allZero && excludeZero) {
                         //                        console.log(" skipping due to zero: " + values);
@@ -2744,7 +2756,6 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 
 
                 if(groupByIndex>=0) {
-                    //                    console.log("index:" +groupByIndex);
                     var groupToTuple  ={};
                     var groups  =[];
                     var agg = [];
@@ -2752,49 +2763,41 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
                     title.push(props.groupByField.getLabel());
                     for(var j=0;j<fields.length;j++) {
                         var field = fields[j];
-                        if(field.getIndex() == groupByIndex) {
-                            continue;
+                        if(field.getIndex() != groupByIndex) {
+                            title.push(field.getLabel());
                         }
-                        title.push(field.getLabel());
                     }
                     agg.push(title);
 
-                    for(var i=0;i< dataList.length;i++) {
-                        var data = dataList[i];
-                        if(i == 0) {
+                    for(var rowIdx=0;rowIdx< dataList.length;rowIdx++) {
+                        var data = this.getDataValues(dataList[rowIdx]);
+                        if(rowIdx == 0) {
                             continue;
                         }
-                        var groupBy = groupByList[i];
-                        var debug = false;
+                        var groupBy = groupByList[rowIdx];
                         var tuple = groupToTuple[groupBy];
                         if(tuple == null) {
                             groups.push(groupBy);
                             tuple = new Array();
                             agg.push(tuple);
                             tuple.push(groupBy);
-                            //props.includeIndex?1:0
-                            for(var j=0;j<data.length;j++) {
-                                var field = fields[j];
+                            for(var fieldIdx=0;fieldIdx<fields.length;fieldIdx++) {
+                                var field = fields[fieldIdx];
                                 if(field.getIndex() == groupByIndex) {
                                     continue;
                                 }
                                 tuple.push(0);
                             }
-                            //                            console.log("new group:" + groupBy+" tuple:" + tuple);
                             groupToTuple[groupBy]= tuple;
-                        } else {
-                            //                            console.log("old group:" + groupBy+" tuple:" + tuple);
                         }
                         var index =0;
-                        //                        console.log("data:" + data);
-                        for(var j=0;j<data.length;j++) {
-                            var field = fields[j];
+                        for(var fieldIdx=0;fieldIdx<fields.length;fieldIdx++) {
+                            var field = fields[fieldIdx];
                             if(field.getIndex() == groupByIndex) {
                                 continue;
                             }
-                            var dataValue = data[j];
+                            var dataValue = data[fieldIdx];
                             index++;
-                            //                            console.log("data value:" + dataValue);
                             if(Utils.isNumber(dataValue)) {
                                 if(typeof tuple[index] == "string") {
                                     tuple[index] = 0;
@@ -2813,9 +2816,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
                                     if(!Utils.isDefined(dataValue)) {
                                         dataValue = "";
                                     }
-
                                     var sv =(""+dataValue);
-                                    //                                    console.log("   sv:" + groupBy+" sv:" + sv);
                                     if(s.indexOf(sv)<0) {
                                         if(s!="") {
                                             s+=", ";
@@ -2827,15 +2828,6 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 
                             }
                         }
-                    }
-                    for(var j=0;j<agg.length; j++) {
-                        var row = agg[j];
-                        var s = null;
-                        for(var h=0;h<row.length; h++) {
-                            if(s) s+=",";
-                            s +=  row[h];
-                        }
-                        //                        console.log(s);
                     }
                    return agg;
                 }
@@ -3194,7 +3186,7 @@ function DisplayGroup(argDisplayManager, argId, argProperties) {
                     } catch(e) {
                         this.displays[i].displayError("Error creating display:<br>" + e);
                         console.log("error creating display: " + this.displays[i].getType());
-                        console.log(e.stack)
+                        //                        console.log(e.stack)
                     }
                 }
             },

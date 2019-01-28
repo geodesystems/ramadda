@@ -382,7 +382,7 @@ function RamaddaMultiChart(displayManager, id, properties) {
             },
             getFieldsToSelect: function(pointData) {
                 var chartType = this.getProperty(PROP_CHART_TYPE,DISPLAY_LINECHART);
-                if(this.chartType == DISPLAY_TABLE || this.chartType == DISPLAY_BARTABLE || this.chartType == DISPLAY_BUBBLE || this.chartType == DISPLAY_SANKEY || this.chartType == DISPLAY_TIMELINECHART) {
+                if(this.chartType == DISPLAY_TABLE || this.chartType == DISPLAY_BARTABLE || this.chartType == DISPLAY_BUBBLE || this.chartType == DISPLAY_SANKEY || this.chartType == DISPLAY_TIMELINECHART || this.chartType == DISPLAY_PIECHART) {
                     //                    return pointData.getRecordFields();
                     return pointData.getNonGeoFields();
                 } 
@@ -439,6 +439,7 @@ function RamaddaMultiChart(displayManager, id, properties) {
                     return;
                 }
 
+
                 //Check for the skip
                 var tmpFields = [];
                 for(var i=0;i<selectedFields.length;i++) {
@@ -460,12 +461,9 @@ function RamaddaMultiChart(displayManager, id, properties) {
 
                 if(chartType == DISPLAY_PIECHART) {
                     if(!this.groupBy && this.groupBy!="") {
-                        for(var i=0;i<this.allFields.length;i++) {
-                            var field = this.allFields[i];
-                            if(field.getType() == "string") {
-                                this.groupBy = field.getId();
-                                break;
-                            }
+                        var stringField = this.getFieldOfType(this.allField,"string");
+                        if(stringField) {
+                            this.groupBy = stringField.getId();
                         }
                     }
 
@@ -483,6 +481,7 @@ function RamaddaMultiChart(displayManager, id, properties) {
                         }
                     }
                 }
+
 
                 var fieldsToSelect =selectedFields;
                 if(this.raw) {
@@ -555,8 +554,6 @@ function RamaddaMultiChart(displayManager, id, properties) {
                     }
                     dataList = newList;
                 }
-
-                
 
                 if(dataList == null) {
                     dataList = this.getStandardData(fieldsToSelect, props);
@@ -903,7 +900,6 @@ function RamaddaMultiChart(displayManager, id, properties) {
                     var dataTable = new google.visualization.DataTable();
                     var list = [];
                     var groupBy = this.groupByField;
-                    var data = selectedFields[0];
                     var header = this.getDataValues(dataList[0]);
                     dataTable.addColumn("string",header[0]);
                     dataTable.addColumn("number",header[1]);
@@ -923,32 +919,32 @@ function RamaddaMultiChart(displayManager, id, properties) {
                             haveMax = true;
                         }
 
-                        var goodRows = [];
+                        var goodValues = [];
                         for(var i=1;i<dataList.length;i++) {
-                            var value  = this.getDataValues(dataList[i])[1];
-                            //                            console.log(value +" " + isNaN(value));
-                            if(value == Number.POSITIVE_INFINITY || isNaN(value) || !Utils.isNumber(value) ||!Utils.isDefined(value) || value == null) {
-                                //                                console.log("bad value:" + value);
+                            var tuple = this.getDataValues(dataList[i]);
+                            var value  = tuple[1];
+                            if(!Utils.isRealNumber(value)) {
                                 continue;
                             }
                             if(!haveMin)
                                 min = Math.min(value, min);
                             if(!haveMax)
                                 max = Math.max(value, max);
-                            goodRows.push(this.getDataValues(dataList[i]));
-                            //                            console.log(value +" " + min +" " + max);
+                            goodValues.push(value);
                         }
+
+                            
                         var binList = [];
-
-
                         var step = (max-min)/bins;
                         for(var binIdx=0;binIdx<bins;binIdx++) {
                             binList.push({min:min+binIdx*step,max:min+(binIdx+1)*step,values:[]});
                         }
-                        for(var rowIdx=1;rowIdx<goodRows.length;rowIdx++) {
-                            var value =  goodRows[rowIdx][1];
+
+                        for(var rowIdx=0;rowIdx<goodValues.length;rowIdx++) {
+                            var value = goodValues[rowIdx];
                             var ok = false;
-                            for(var binIdx=0;binIdx<bins;binIdx++) {
+                           
+                            for(var binIdx=0;binIdx<binList.length;binIdx++) {
                                 if(value<binList[binIdx].min || (value>=binList[binIdx].min && value<=binList[binIdx].max)) {
                                     binList[binIdx].values.push(value);
                                     ok = true;
@@ -961,13 +957,15 @@ function RamaddaMultiChart(displayManager, id, properties) {
                         }
                         for(var binIdx=0;binIdx<bins;binIdx++) {
                             var bin = binList[binIdx];
-                            //                            console.log("bin:" + bin.min +" " + bin.max + " count:" + bin.values.length);
                             list.push(["Bin:" +this.formatNumber(bin.min)+"-" + this.formatNumber(bin.max),
                                        bin.values.length]);
                         }
                     } else {
                         for(var i=1;i<dataList.length;i++) {
-                            list.push([this.getDataValues(dataList[i])[0],this.getDataValues(dataList[i])[1]]);
+                            var tuple = this.getDataValues(dataList[i]);
+                            var s = ""+(tuple.length==1?"#" +i:tuple[0]);
+                            var v = tuple.length==1?tuple[0]:tuple[1];
+                            list.push([s,v]);
                         }
                     }
                     dataTable.addRows(list);
@@ -1133,14 +1131,28 @@ function RamaddaMultiChart(displayManager, id, properties) {
                 if(chartType == DISPLAY_PIECHART) {
                     divAttrs.push("style");
                     var style = "";
-                    if(this.getProperty("width"))  
-                       style += "width:" + this.getProperty("width") +";" ;                    
-                    else 
+                    if(this.getProperty("width"))  {
+                        var width = this.getProperty("width");
+                        if(width>0) 
+                            style += "width:" + width+"px;";
+                        else if(width<0) 
+                            style += "width:" + (-width)+"%;";
+                        else
+                            style += "width:" + width;
+                    } else {
                         style += "width:" + "100%;";
-                    if(this.getProperty("height"))
-                        style += "height:" + this.getProperty("height") +";" ;                    
-                    else 
+                    }
+                    if(this.getProperty("height")) {
+                        var height = this.getProperty("height");
+                        if(height>0) 
+                            style += "height:" + height+"px;";
+                        else if(height<0) 
+                            style += "height:" + (-height)+"%;";
+                        else
+                            style += "height:" + height;
+                    } else {
                         style += "height:" + "100%;";
+                    }
                     divAttrs.push(style);
                 } else {
                     //                    divAttrs.push("style");

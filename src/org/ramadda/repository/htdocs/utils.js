@@ -175,6 +175,9 @@ var Utils = {
             return s;
         }
     },
+    isRealNumber: function(value) {
+        return !(value == Number.POSITIVE_INFINITY || isNaN(value) || !Utils.isNumber(value) ||!Utils.isDefined(value) || value == null);
+    },
     isNumber: function(value) {
         if ((undefined === value) || (null === value)) {
             return false;

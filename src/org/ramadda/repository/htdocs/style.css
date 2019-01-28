@@ -32,6 +32,34 @@ h2 a,   h2 a:visited, h2 a:link  {color: black;}
     text-decoration:none;
 }
 
+.ramadda-menubar {
+  display:inline-block;
+  border-top-left-radius: 8px;
+  border-top-right-radius: 8px;  
+  background:#F0F0F0;
+  margin-top:6px;
+  padding:5px;
+}
+
+
+a.ramadda-menubar-button:link, a.ramadda-menubar-button {
+    color:rgb(85, 85, 85);
+    text-decoration:none;
+}
+
+a.ramadda-menubar-button:hover {
+    color:#000;
+    text-decoration:underline;
+}
+
+
+.ramadda-menubar-button {
+#    font-weight: bold;
+    padding-left:8px;
+    padding-right:8px;
+    #padding:5px;
+}
+
 .ramadda-page-title  {
   font-size:200%;
   text-align:center;
@@ -997,6 +1025,7 @@ td.entry-table-block {
 
 
 .ramadda-popup, .ramadda-selectdiv {
+   padding:4px;
    position: absolute; 
    display: none;
    z-index: 1000;

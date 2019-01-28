@@ -359,6 +359,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                                               "#fields", "",
                                               "#bins","bin count",
                                               "#binMin","min",
+                                              "#groupBy","group by field",
                                               "#binMax","max",
                                               "#sliceVisibilityThreshold","0.01",
                                               "width","500",
@@ -4518,7 +4519,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
         */
 
 
-        String buttonClass = " class=\"ramadda-button\" ";
+        String buttonClass = " class=\"ramadda-menubar-button xramadda-button\" ";
         String tagsButton = getPageHandler().makePopupLink(msg("Add tag"),
                                 tags.toString(), buttonClass);
 
@@ -4538,14 +4539,12 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                              "Add entry link", true, "wikilink", entry,
                              false, buttonClass);
 
+        HtmlUtils.open(buttons, "div",HtmlUtils.cssClass("ramadda-menubar"));
         buttons.append(tagsButton);
-        buttons.append(HtmlUtils.space(2));
         buttons.append(importButton);
-        buttons.append(HtmlUtils.space(2));
         buttons.append(addEntry);
-        buttons.append(HtmlUtils.space(2));
         buttons.append(addLink);
-
+        HtmlUtils.close(buttons, "div");
         return buttons.toString();
 
     }
