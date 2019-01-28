@@ -3189,7 +3189,11 @@ function DisplayGroup(argDisplayManager, argId, argProperties) {
             },
             initDisplays: function() {
                 for(var i=0;i<this.displays.length;i++) {
-                    this.displays[i].initDisplay();
+                    try {
+                        this.displays[i].initDisplay();
+                    } catch(e) {
+                        this.displays[i].displayError("Error creating display:" + e);
+                    }
                 }
             },
             displayData: function() {
