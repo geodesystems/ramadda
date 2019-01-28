@@ -3339,6 +3339,8 @@ function DisplayGroup(argDisplayManager, argId, argProperties) {
                         this.displays[i].initDisplay();
                     } catch(e) {
                         this.displays[i].displayError("Error creating display:" + e);
+                        console.log("error creating display:" + this.displays[i].getType());
+                        console.log(e.stack)
                     }
                 }
             },
