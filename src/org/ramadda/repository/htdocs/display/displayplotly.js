@@ -30,25 +30,10 @@ function RamaddaPlotlyDisplay(displayManager, id, type, properties) {
             needsData: function() {
                 return true;
             },
-            initDisplay: function() {
-                //Call base class to init menu, etc
-                this.initUI();
-                var width = this.getProperty("width","400px");
-                if(!width.endsWith("px") && !width.endsWith("%"))
-                    width = width+"px";
-                var height = this.getProperty("height","400px");
-                if(!height.endsWith("px") && !height.endsWith("%"))
-                    height = height+"px";
-
-                var html =   HtmlUtil.div([ATTR_ID, this.getDomId(ID_DISPLAY_CONTENTS),"style","width:" + width+";" +
-                                           "height:" + height+";"],this.getLoadingMessage());
-                this.setContents(html);
-                this.updateUI();
-            },
             setDimensions: function(layout, widthDelta) {
-                var width  = parseInt(this.getProperty("width","400").replace("px","").replace("%",""));
+                //                var width  = parseInt(this.getProperty("width","400").replace("px","").replace("%",""));
                 var height  = parseInt(this.getProperty("height","400").replace("px","").replace("%",""));
-                layout.width = width-widthDelta;
+                //                layout.width = width-widthDelta;
                 layout.height = height;
             },
             fieldSelectionChanged: function() {
@@ -262,7 +247,7 @@ function RamaddaPlotly3DDisplay(displayManager, id, type, properties) {
              getDisplayStyle:function() {
                 return  "border: 1px #ccc solid;";
             },
-                get3DType: function() {
+             get3DType: function() {
                 //                'mesh3d'
                 return 'scatter3d';
             },

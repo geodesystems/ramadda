@@ -5154,6 +5154,9 @@ function RamaddaFieldsDisplay(displayManager, id, type, properties) {
             initDisplay:function() {
                 this.initUI();
                 this.updateUI();
+                if(this.needsData()) {
+                    this.setContents(this.getLoadingMessage());
+                }
             },
             updateUI: function() {
                 this.addFieldsCheckboxes();
