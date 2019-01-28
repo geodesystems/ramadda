@@ -47,7 +47,7 @@ function RamaddaXlsDisplay(displayManager, id, properties) {
 
     RamaddaUtil.defineMembers(this, {
             initDisplay: function() {
-                this.initUI();
+                this.createUI();
                 this.setDisplayTitle("Table Data");
                 var body = 
                     HtmlUtil.div(["id", this.getDomId(ID_SEARCH_HEADER)]) +

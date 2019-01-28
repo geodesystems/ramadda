@@ -29,7 +29,7 @@ function RamaddaExampleDisplay(displayManager, id, properties) {
             //gets called by displaymanager after the displays are layed out
             initDisplay: function() {
                 //Call base class to init menu, etc
-                this.initUI();
+                this.createUI();
 
                 //I've been calling back to this display with the following
                 //this returns "getRamaddaDisplay('" + this.getId() +"')";

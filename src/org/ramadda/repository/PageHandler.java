@@ -629,7 +629,7 @@ public class PageHandler extends RepositoryManager {
     public String getTemplateJavascriptContent() {
         if (templateJavascriptContent == null) {
             StringBuilder js = new StringBuilder();
-            js.append(HtmlUtils.call("Utils.initPage"));
+            js.append("$( document ).ready(function() {Utils.initPage(); });");
 
             //j-
             StringBuilder sb = new StringBuilder();

@@ -21,7 +21,7 @@ function RamaddaFilterDisplay(displayManager, id, properties) {
     RamaddaUtil.defineMembers(this, {
             html: "<p>&nbsp;&nbsp;&nbsp;Nothing selected&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<p>",
             initDisplay: function() {
-                this.initUI();
+                this.createUI();
                 this.setContents(this.html);
             },
         });
@@ -127,7 +127,7 @@ function RamaddaAnimationDisplay(displayManager, id, properties) {
                 $("#"+this.getDomId(ID_START)).attr("src",this.iconStart);
             },
             initDisplay: function() {
-                this.initUI();
+                this.createUI();
                 this.stop();
 
                 var get = this.getGet();
@@ -169,7 +169,7 @@ function RamaddaLabelDisplay(displayManager, id, properties) {
     RamaddaUtil.defineMembers(this, {
             initDisplay: function() {
                 var theDisplay = this;
-                this.initUI();
+                this.createUI();
                 var textClass = this["class"];
                 if(this.editMode) {
                     textClass += " display-text-edit ";
@@ -230,7 +230,7 @@ function RamaddaShellDisplay(displayManager, id, properties) {
             currentInput: null,
             initDisplay: function() {
                 var _this = this;
-                this.initUI();
+                this.createUI();
                 var msg  = HtmlUtil.div([ATTR_CLASS,"display-shell-message",ATTR_ID,this.getDomId(ID_MESSAGE)], "");
                 var output  = HtmlUtil.div([ATTR_CLASS,"display-shell-output",ATTR_ID,this.getDomId(ID_OUTPUT)], "");
                 var input  = HtmlUtil.tag(TAG_INPUT, ["placeholder","Enter JS here", ATTR_CLASS,"display-shell-input",ATTR_ID,this.getDomId(ID_INPUT)]);

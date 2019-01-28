@@ -899,7 +899,7 @@ function RamaddaEntrylistDisplay(displayManager, id, properties, theType) {
                     return;
                 }
                 this.haveDisplayed =true;
-                this.initUI();
+                this.createUI();
                 this.setContents(this.getDefaultHtml());
                 if(this.dateRangeWidget) {
                     this.dateRangeWidget.initHtml();
@@ -1055,7 +1055,7 @@ function RamaddaEntrygalleryDisplay(displayManager, id, properties) {
             entries: properties.entries,
             initDisplay: function() {
                 var _this =this;
-                this.initUI();
+                this.createUI();
                 var html =    HtmlUtil.div([ATTR_ID,this.getDomId(ID_GALLERY)],"Gallery");
                 this.setContents(html);
 
@@ -1178,7 +1178,7 @@ function RamaddaEntrygridDisplay(displayManager, id, properties) {
             entries: properties.entries,
             initDisplay: function() {
                 var _this =this;
-                this.initUI();
+                this.createUI();
                 var html =    HtmlUtil.div([ATTR_ID,this.getDomId(ID_CONTENTS)],this.getLoadingMessage("Loading entries..."));
                 this.setContents(html);
                 if(!this.entryIds) {
@@ -1898,7 +1898,7 @@ function RamaddaMetadataDisplay(displayManager, id, properties) {
     RamaddaUtil.defineMembers(this, {
             haveDisplayed: false,
             initDisplay: function() {
-                this.initUI();
+                this.createUI();
                 this.setContents(this.getDefaultHtml());
                 SUPER.initDisplay.apply(this);
                 if(this.haveDisplayed && this.entryList) {
@@ -2061,7 +2061,7 @@ function RamaddaTimelineDisplay(displayManager, id, properties) {
     addRamaddaDisplay(this);
     RamaddaUtil.defineMembers(this, {
             initDisplay: function() {
-                this.initUI();
+                this.createUI();
                 this.setContents(this.getDefaultHtml());
                 SUPER.initDisplay.apply(this);
             },
@@ -2188,7 +2188,7 @@ function RamaddaEntrydisplayDisplay(displayManager, id, properties) {
     $.extend(this, {
             selectedEntry: null,
                 initDisplay: function() {
-                this.initUI();
+                this.createUI();
                 var title = this.title;
                 if(this.sourceEntry!=null) {
                     this.addEntryHtml(this.sourceEntry);
@@ -2253,7 +2253,7 @@ function RamaddaOperandsDisplay(displayManager, id, properties) {
     $.extend(this, {
             baseUrl: null,
             initDisplay: function() {
-                this.initUI();
+                this.createUI();
                 this.baseUrl = this.getRamadda().getSearchUrl(this.searchSettings, OUTPUT_JSON);
                 if(this.entryList == null) {
                     this.entryList = new EntryList(this.getRamadda(), jsonUrl, this);
@@ -2346,7 +2346,7 @@ function RamaddaRepositoriesDisplay(displayManager, id, properties) {
     RamaddaUtil.defineMembers(this, {
             initDisplay: function() {
                 var theDisplay = this;
-                this.initUI();
+                this.createUI();
                 var html = "";
                 if(this.ramaddas.length==0) {
                     html += this.getMessage("No repositories specified");

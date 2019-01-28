@@ -60,7 +60,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		sourceToPoints : {},
 		snarf : true,
 		initDisplay : function() {
-                    this.initUI();
+                    this.createUI();
                     var _this = this;
                     var html = "";
                     var extraStyle = "min-height:200px;";

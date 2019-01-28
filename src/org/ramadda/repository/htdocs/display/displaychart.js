@@ -79,16 +79,50 @@ function RamaddaFieldsDisplay(displayManager, id, type, properties) {
     this.TYPE = "RamaddaFieldsDisplay";
     var SUPER;
     RamaddaUtil.inherit(this, this.RamaddaDisplay = SUPER = new RamaddaDisplay(displayManager, id, type, properties));
+
+    _this.redisplayPending = false;
+    _this.redisplayPendingCnt = 0;
+
+    //A hack to redraw the chart after the window is resized
+    $(window).resize(function() {
+        var theDisplay = _this.getThis();
+         if(!theDisplay.getDisplayReady())  {
+             //             console.log("not ready:" + _this.getType());
+             return;
+         }
+	//This handles multiple resize events but keeps only having one timeout pending at a time
+	if(theDisplay.redisplayPending) {
+	    theDisplay.redisplayPendingCnt++;
+	    return;
+	}
+	var timeoutFunc = function(myCnt){
+            if(myCnt == theDisplay.redisplayPendingCnt) {
+		//Ready to redisplay
+		theDisplay.redisplayPending = false;
+		theDisplay.redisplayPendingCnt=0;
+                //                console.log("calling displayData:" + _this.getType());
+		theDisplay.displayData();
+            } else {
+		//Had a resize event during the previous timeout
+		setTimeout(timeoutFunc.bind(null,theDisplay.redisplayPendingCnt),1000);
+	    }
+	}
+	theDisplay.redisplayPending = true;
+        setTimeout(timeoutFunc.bind(null,theDisplay.redisplayPendingCnt),1000);
+    });
+
+
+
     RamaddaUtil.defineMembers(this, {
             needsData: function() {
                 return true;
             },
             initDisplay:function() {
-                this.initUI();
-                this.updateUI();
+                this.createUI();
                 if(this.needsData()) {
                     this.setContents(this.getLoadingMessage());
                 }
+                this.updateUI();
             },
             updateUI: function() {
                 this.addFieldsCheckboxes();
@@ -150,34 +184,6 @@ function RamaddaMultiChart(displayManager, id, properties) {
 
     var _this = this;
 
-    _this.redisplayPending = false;
-    _this.redisplayPendingCnt = 0;
-
-    //Another hack to redraw the chart after the window is resized
-    $(window).resize(function() {
-        var theDisplay = _this.getThis();
-         if(!theDisplay.getDisplayReady())  {
-             return;
-         }
-	//This handles multiple resize events but keeps only having one timeout pending at a time
-	if(theDisplay.redisplayPending) {
-	    theDisplay.redisplayPendingCnt++;
-	    return;
-	}
-	var timeoutFunc = function(myCnt){
-            if(myCnt == theDisplay.redisplayPendingCnt) {
-		//Ready to redisplay
-		theDisplay.redisplayPending = false;
-		theDisplay.redisplayPendingCnt=0;
-		theDisplay.displayData();
-            } else {
-		//Had a resize event during the previous timeout
-		setTimeout(timeoutFunc.bind(null,theDisplay.redisplayPendingCnt),1000);
-	    }
-	}
-	theDisplay.redisplayPending = true;
-        setTimeout(timeoutFunc.bind(null,theDisplay.redisplayPendingCnt),1000);
-    });
 
     //Init the defaults first
     $.extend(this, {
@@ -202,7 +208,7 @@ function RamaddaMultiChart(displayManager, id, properties) {
                 return this.getProperty(PROP_CHART_TYPE,DISPLAY_LINECHART);
             },
             initDisplay:function() {
-                this.initUI();
+                this.createUI();
                 this.updateUI();
             },
             clearCachedData: function() {
@@ -416,7 +422,6 @@ function RamaddaMultiChart(displayManager, id, properties) {
             canDoGroupBy: function() {
                 return this.chartType == DISPLAY_PIECHART || this.chartType == DISPLAY_TABLE;
             },
-            xcnt:0,
             displayData: function() {
                 var _this =this;
                 if(!this.getDisplayReady()) {
@@ -426,18 +431,13 @@ function RamaddaMultiChart(displayManager, id, properties) {
                     return;
                 }
                 if(!haveGoogleChartsLoaded ()) {
-                    //console.log("charts not loaded");
                     var func = function() {
                         _this.displayData();
                     }
-                    //                    this.xcnt++;
-                    //                    this.setContents(this.getLoadingMessage() + " waiting on charts " + this.xcnt);
                     this.setContents(this.getLoadingMessage());
-                    setTimeout(func,1000);
+                    setTimeout(func,500);
                     return;
                 }
-
-
                 if(this.inError) {
                     return;
                 }
@@ -450,12 +450,8 @@ function RamaddaMultiChart(displayManager, id, properties) {
                                               "Building display..."));
 
                 this.allFields =  this.dataCollection.getList()[0].getRecordFields();
-
-
                 var chartType = this.getProperty(PROP_CHART_TYPE,DISPLAY_LINECHART);
                 var selectedFields = this.getSelectedFields([]);
-                //                console.log(chartType +"  selectedFields 1:" + selectedFields +" "+ (selectedFields!=null?selectedFields.length:"null"));
-
                 if(selectedFields.length==0 && this.lastSelectedFields!=null) { 
                     selectedFields = this.lastSelectedFields;
                 }
@@ -1742,7 +1738,7 @@ function RamaddaTextDisplay(displayManager, id, properties) {
     RamaddaUtil.defineMembers(this, {
             lastHtml:"<p>&nbsp;<p>&nbsp;<p>",
             initDisplay: function() {
-                this.initUI();
+                this.createUI();
                 this.setContents(this.lastHtml);
             },
             handleEventRecordSelection: function(source,  args) {

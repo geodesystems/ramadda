@@ -196,6 +196,7 @@ var PROP_WIDTH  = "width";
 
 
 
+
 function initRamaddaDisplays() {
     if(window.globalDisplaysList == null) {
         return;
@@ -2237,14 +2238,17 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             },
             checkLayout: function() {
             },
-            initUI:function() {
+            displayData: function() {
+            },
+            createUI:function() {
                 this.checkFixedLayout();
             },
             pageHasLoaded:function() {
+                //                console.log("pageHasLoaded:" +this.getType());
+                this.setDisplayReady(true);
             },
             initDisplay:function() {
-                this.initUI();
-                this.setContents("<p>default html<p>");
+                this.createUI();
             },
             updateUI: function() {
             },
@@ -3300,7 +3304,8 @@ function DisplayGroup(argDisplayManager, argId, argProperties) {
                     this.displays[i].initDisplay();
                 }
             },
-
+            displayData: function() {
+            },
             setLayout:function(layout, columns) {
                 this.layout  = layout;
                 if(columns) {
@@ -4555,7 +4560,7 @@ function RamaddaFilterDisplay(displayManager, id, properties) {
     RamaddaUtil.defineMembers(this, {
             html: "<p>&nbsp;&nbsp;&nbsp;Nothing selected&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<p>",
             initDisplay: function() {
-                this.initUI();
+                this.createUI();
                 this.setContents(this.html);
             },
         });
@@ -4661,7 +4666,7 @@ function RamaddaAnimationDisplay(displayManager, id, properties) {
                 $("#"+this.getDomId(ID_START)).attr("src",this.iconStart);
             },
             initDisplay: function() {
-                this.initUI();
+                this.createUI();
                 this.stop();
 
                 var get = this.getGet();
@@ -4703,7 +4708,7 @@ function RamaddaLabelDisplay(displayManager, id, properties) {
     RamaddaUtil.defineMembers(this, {
             initDisplay: function() {
                 var theDisplay = this;
-                this.initUI();
+                this.createUI();
                 var textClass = this["class"];
                 if(this.editMode) {
                     textClass += " display-text-edit ";
@@ -4764,7 +4769,7 @@ function RamaddaShellDisplay(displayManager, id, properties) {
             currentInput: null,
             initDisplay: function() {
                 var _this = this;
-                this.initUI();
+                this.createUI();
                 var msg  = HtmlUtil.div([ATTR_CLASS,"display-shell-message",ATTR_ID,this.getDomId(ID_MESSAGE)], "");
                 var output  = HtmlUtil.div([ATTR_CLASS,"display-shell-output",ATTR_ID,this.getDomId(ID_OUTPUT)], "");
                 var input  = HtmlUtil.tag(TAG_INPUT, ["placeholder","Enter JS here", ATTR_CLASS,"display-shell-input",ATTR_ID,this.getDomId(ID_INPUT)]);
@@ -5147,16 +5152,50 @@ function RamaddaFieldsDisplay(displayManager, id, type, properties) {
     this.TYPE = "RamaddaFieldsDisplay";
     var SUPER;
     RamaddaUtil.inherit(this, this.RamaddaDisplay = SUPER = new RamaddaDisplay(displayManager, id, type, properties));
+
+    _this.redisplayPending = false;
+    _this.redisplayPendingCnt = 0;
+
+    //A hack to redraw the chart after the window is resized
+    $(window).resize(function() {
+        var theDisplay = _this.getThis();
+         if(!theDisplay.getDisplayReady())  {
+             //             console.log("not ready:" + _this.getType());
+             return;
+         }
+	//This handles multiple resize events but keeps only having one timeout pending at a time
+	if(theDisplay.redisplayPending) {
+	    theDisplay.redisplayPendingCnt++;
+	    return;
+	}
+	var timeoutFunc = function(myCnt){
+            if(myCnt == theDisplay.redisplayPendingCnt) {
+		//Ready to redisplay
+		theDisplay.redisplayPending = false;
+		theDisplay.redisplayPendingCnt=0;
+                //                console.log("calling displayData:" + _this.getType());
+		theDisplay.displayData();
+            } else {
+		//Had a resize event during the previous timeout
+		setTimeout(timeoutFunc.bind(null,theDisplay.redisplayPendingCnt),1000);
+	    }
+	}
+	theDisplay.redisplayPending = true;
+        setTimeout(timeoutFunc.bind(null,theDisplay.redisplayPendingCnt),1000);
+    });
+
+
+
     RamaddaUtil.defineMembers(this, {
             needsData: function() {
                 return true;
             },
             initDisplay:function() {
-                this.initUI();
-                this.updateUI();
+                this.createUI();
                 if(this.needsData()) {
                     this.setContents(this.getLoadingMessage());
                 }
+                this.updateUI();
             },
             updateUI: function() {
                 this.addFieldsCheckboxes();
@@ -5218,34 +5257,6 @@ function RamaddaMultiChart(displayManager, id, properties) {
 
     var _this = this;
 
-    _this.redisplayPending = false;
-    _this.redisplayPendingCnt = 0;
-
-    //Another hack to redraw the chart after the window is resized
-    $(window).resize(function() {
-        var theDisplay = _this.getThis();
-         if(!theDisplay.getDisplayReady())  {
-             return;
-         }
-	//This handles multiple resize events but keeps only having one timeout pending at a time
-	if(theDisplay.redisplayPending) {
-	    theDisplay.redisplayPendingCnt++;
-	    return;
-	}
-	var timeoutFunc = function(myCnt){
-            if(myCnt == theDisplay.redisplayPendingCnt) {
-		//Ready to redisplay
-		theDisplay.redisplayPending = false;
-		theDisplay.redisplayPendingCnt=0;
-		theDisplay.displayData();
-            } else {
-		//Had a resize event during the previous timeout
-		setTimeout(timeoutFunc.bind(null,theDisplay.redisplayPendingCnt),1000);
-	    }
-	}
-	theDisplay.redisplayPending = true;
-        setTimeout(timeoutFunc.bind(null,theDisplay.redisplayPendingCnt),1000);
-    });
 
     //Init the defaults first
     $.extend(this, {
@@ -5270,7 +5281,7 @@ function RamaddaMultiChart(displayManager, id, properties) {
                 return this.getProperty(PROP_CHART_TYPE,DISPLAY_LINECHART);
             },
             initDisplay:function() {
-                this.initUI();
+                this.createUI();
                 this.updateUI();
             },
             clearCachedData: function() {
@@ -5484,7 +5495,6 @@ function RamaddaMultiChart(displayManager, id, properties) {
             canDoGroupBy: function() {
                 return this.chartType == DISPLAY_PIECHART || this.chartType == DISPLAY_TABLE;
             },
-            xcnt:0,
             displayData: function() {
                 var _this =this;
                 if(!this.getDisplayReady()) {
@@ -5494,18 +5504,13 @@ function RamaddaMultiChart(displayManager, id, properties) {
                     return;
                 }
                 if(!haveGoogleChartsLoaded ()) {
-                    //console.log("charts not loaded");
                     var func = function() {
                         _this.displayData();
                     }
-                    //                    this.xcnt++;
-                    //                    this.setContents(this.getLoadingMessage() + " waiting on charts " + this.xcnt);
                     this.setContents(this.getLoadingMessage());
-                    setTimeout(func,1000);
+                    setTimeout(func,500);
                     return;
                 }
-
-
                 if(this.inError) {
                     return;
                 }
@@ -5518,12 +5523,8 @@ function RamaddaMultiChart(displayManager, id, properties) {
                                               "Building display..."));
 
                 this.allFields =  this.dataCollection.getList()[0].getRecordFields();
-
-
                 var chartType = this.getProperty(PROP_CHART_TYPE,DISPLAY_LINECHART);
                 var selectedFields = this.getSelectedFields([]);
-                //                console.log(chartType +"  selectedFields 1:" + selectedFields +" "+ (selectedFields!=null?selectedFields.length:"null"));
-
                 if(selectedFields.length==0 && this.lastSelectedFields!=null) { 
                     selectedFields = this.lastSelectedFields;
                 }
@@ -6810,7 +6811,7 @@ function RamaddaTextDisplay(displayManager, id, properties) {
     RamaddaUtil.defineMembers(this, {
             lastHtml:"<p>&nbsp;<p>&nbsp;<p>",
             initDisplay: function() {
-                this.initUI();
+                this.createUI();
                 this.setContents(this.lastHtml);
             },
             handleEventRecordSelection: function(source,  args) {
@@ -7786,7 +7787,7 @@ function RamaddaD3Display(displayManager, id, properties) {
 
     RamaddaUtil.defineMembers(this, {
             initDisplay: function() {
-                this.initUI();
+                this.createUI();
                 this.setDisplayTitle(properties.graph.title);
 
                 //Note: use innerHeight/innerWidth wiki attributes
@@ -8998,7 +8999,7 @@ function RamaddaEntrylistDisplay(displayManager, id, properties, theType) {
                     return;
                 }
                 this.haveDisplayed =true;
-                this.initUI();
+                this.createUI();
                 this.setContents(this.getDefaultHtml());
                 if(this.dateRangeWidget) {
                     this.dateRangeWidget.initHtml();
@@ -9154,7 +9155,7 @@ function RamaddaEntrygalleryDisplay(displayManager, id, properties) {
             entries: properties.entries,
             initDisplay: function() {
                 var _this =this;
-                this.initUI();
+                this.createUI();
                 var html =    HtmlUtil.div([ATTR_ID,this.getDomId(ID_GALLERY)],"Gallery");
                 this.setContents(html);
 
@@ -9277,7 +9278,7 @@ function RamaddaEntrygridDisplay(displayManager, id, properties) {
             entries: properties.entries,
             initDisplay: function() {
                 var _this =this;
-                this.initUI();
+                this.createUI();
                 var html =    HtmlUtil.div([ATTR_ID,this.getDomId(ID_CONTENTS)],this.getLoadingMessage("Loading entries..."));
                 this.setContents(html);
                 if(!this.entryIds) {
@@ -9997,7 +9998,7 @@ function RamaddaMetadataDisplay(displayManager, id, properties) {
     RamaddaUtil.defineMembers(this, {
             haveDisplayed: false,
             initDisplay: function() {
-                this.initUI();
+                this.createUI();
                 this.setContents(this.getDefaultHtml());
                 SUPER.initDisplay.apply(this);
                 if(this.haveDisplayed && this.entryList) {
@@ -10160,7 +10161,7 @@ function RamaddaTimelineDisplay(displayManager, id, properties) {
     addRamaddaDisplay(this);
     RamaddaUtil.defineMembers(this, {
             initDisplay: function() {
-                this.initUI();
+                this.createUI();
                 this.setContents(this.getDefaultHtml());
                 SUPER.initDisplay.apply(this);
             },
@@ -10287,7 +10288,7 @@ function RamaddaEntrydisplayDisplay(displayManager, id, properties) {
     $.extend(this, {
             selectedEntry: null,
                 initDisplay: function() {
-                this.initUI();
+                this.createUI();
                 var title = this.title;
                 if(this.sourceEntry!=null) {
                     this.addEntryHtml(this.sourceEntry);
@@ -10352,7 +10353,7 @@ function RamaddaOperandsDisplay(displayManager, id, properties) {
     $.extend(this, {
             baseUrl: null,
             initDisplay: function() {
-                this.initUI();
+                this.createUI();
                 this.baseUrl = this.getRamadda().getSearchUrl(this.searchSettings, OUTPUT_JSON);
                 if(this.entryList == null) {
                     this.entryList = new EntryList(this.getRamadda(), jsonUrl, this);
@@ -10445,7 +10446,7 @@ function RamaddaRepositoriesDisplay(displayManager, id, properties) {
     RamaddaUtil.defineMembers(this, {
             initDisplay: function() {
                 var theDisplay = this;
-                this.initUI();
+                this.createUI();
                 var html = "";
                 if(this.ramaddas.length==0) {
                     html += this.getMessage("No repositories specified");
@@ -10614,7 +10615,7 @@ function RamaddaExampleDisplay(displayManager, id, properties) {
             //gets called by displaymanager after the displays are layed out
             initDisplay: function() {
                 //Call base class to init menu, etc
-                this.initUI();
+                this.createUI();
 
                 //I've been calling back to this display with the following
                 //this returns "getRamaddaDisplay('" + this.getId() +"')";
@@ -11208,7 +11209,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		sourceToPoints : {},
 		snarf : true,
 		initDisplay : function() {
-                    this.initUI();
+                    this.createUI();
                     var _this = this;
                     var html = "";
                     var extraStyle = "min-height:200px;";
@@ -12178,7 +12179,7 @@ function RamaddaXlsDisplay(displayManager, id, properties) {
 
     RamaddaUtil.defineMembers(this, {
             initDisplay: function() {
-                this.initUI();
+                this.createUI();
                 this.setDisplayTitle("Table Data");
                 var body = 
                     HtmlUtil.div(["id", this.getDomId(ID_SEARCH_HEADER)]) +

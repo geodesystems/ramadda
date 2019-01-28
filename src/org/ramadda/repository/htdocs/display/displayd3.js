@@ -128,7 +128,7 @@ function RamaddaD3Display(displayManager, id, properties) {
 
     RamaddaUtil.defineMembers(this, {
             initDisplay: function() {
-                this.initUI();
+                this.createUI();
                 this.setDisplayTitle(properties.graph.title);
 
                 //Note: use innerHeight/innerWidth wiki attributes

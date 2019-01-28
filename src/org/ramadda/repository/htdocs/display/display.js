@@ -50,6 +50,7 @@ var PROP_WIDTH  = "width";
 
 
 
+
 function initRamaddaDisplays() {
     if(window.globalDisplaysList == null) {
         return;
@@ -2091,14 +2092,17 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             },
             checkLayout: function() {
             },
-            initUI:function() {
+            displayData: function() {
+            },
+            createUI:function() {
                 this.checkFixedLayout();
             },
             pageHasLoaded:function() {
+                //                console.log("pageHasLoaded:" +this.getType());
+                this.setDisplayReady(true);
             },
             initDisplay:function() {
-                this.initUI();
-                this.setContents("<p>default html<p>");
+                this.createUI();
             },
             updateUI: function() {
             },
@@ -3154,7 +3158,8 @@ function DisplayGroup(argDisplayManager, argId, argProperties) {
                     this.displays[i].initDisplay();
                 }
             },
-
+            displayData: function() {
+            },
             setLayout:function(layout, columns) {
                 this.layout  = layout;
                 if(columns) {
