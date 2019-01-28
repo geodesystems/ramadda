@@ -9,7 +9,7 @@ mydir=`dirname $0`
 
 
 #I run this script with the alias buildgeode:
-#alias buildgeode="sh ~/work/bin/makerelease.sh ${geodesystems_ip}"
+#alias buildgeode="sh ${RAMADDA_BIN}/makerelease.sh ${GEODESYSTEMS_IP}"
 
 #Location of the PEM file to log in to the AWS server
 PEM=${GEODESYSTEMS_PEM}
@@ -18,7 +18,6 @@ PEM=${GEODESYSTEMS_PEM}
 ##TODO: process args for dest ip and pem file
 ipaddress=$1
 user=ec2-user
-
 
 ssh -tq -i  ${PEM}  ${user}@${ipaddress} "sudo sh /mnt/ramadda/source/ramadda/bin/buildandinstall.sh"
 
