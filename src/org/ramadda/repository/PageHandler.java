@@ -3646,14 +3646,17 @@ Time:14625 cnt:7000
      */
     public String applyBaseMacros(String s) {
 
-        String mini = getRepository().getMinifiedOk()
+        String dotmini = getRepository().getMinifiedOk()
                       ? ".min"
+                      : "";
+        String mini = getRepository().getMinifiedOk()
+                      ? "min"
                       : "";
         //        System.err.println(mini +" " + getRepository().getMinifiedOk());
         String path = getRepository().getUrlBase()+"/" +RepositoryUtil.getHtdocsVersion();
         return s.replace("${path}",path).replace(MACRO_URLROOT, getRepository().getUrlBase()).replace(
             "${baseentry}", getEntryManager().getRootEntry().getId()).replace(
-            "${min}", mini);
+                                                                              "${min}", mini).replace("${dotmin}",dotmini);
     }
 
     /**
