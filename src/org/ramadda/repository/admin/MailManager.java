@@ -52,17 +52,30 @@ import java.util.Properties;
 
 import java.util.Properties;
 
-import javax.mail.*;
+import javax.activation.DataHandler;
+import javax.activation.DataSource;
+import javax.activation.FileDataSource;
 
 import javax.mail.Address;
+import javax.mail.BodyPart;
+import javax.mail.Message;
 
 import javax.mail.Message;
+import javax.mail.MessagingException;
+import javax.mail.Multipart;
+import javax.mail.PasswordAuthentication;
+import javax.mail.Session;
+import javax.mail.Transport;
 import javax.mail.Transport;
 import javax.mail.internet.*;
+
+
+import javax.mail.internet.*;
 import javax.mail.internet.InternetAddress;
-
-
+import javax.mail.internet.InternetAddress;
+import javax.mail.internet.MimeBodyPart;
 import javax.mail.internet.MimeMessage;
+import javax.mail.internet.MimeMultipart;
 
 
 /**
@@ -207,9 +220,28 @@ public class MailManager extends RepositoryManager {
     public void sendEmail(String to, String from, String subject,
                           String contents, boolean asHtml)
             throws Exception {
+
+        sendEmail(to, from, subject, contents, asHtml, null);
+    }
+
+    /**
+     * _more_
+     *
+     * @param to _more_
+     * @param from _more_
+     * @param subject _more_
+     * @param contents _more_
+     * @param asHtml _more_
+     * @param file _more_
+     *
+     * @throws Exception _more_
+     */
+    public void sendEmail(String to, String from, String subject,
+                          String contents, boolean asHtml, File file)
+            throws Exception {
         sendEmail((List<Address>) Misc.newList(new InternetAddress(to)),
                   new InternetAddress(from), subject, contents, false,
-                  asHtml);
+                  asHtml, file);
     }
 
 
@@ -222,18 +254,19 @@ public class MailManager extends RepositoryManager {
      * @param contents _more_
      * @param bcc _more_
      * @param asHtml _more_
+     * @param file _more_
      *
      * @throws Exception _more_
      */
     public void sendEmail(List<Address> to, InternetAddress from,
                           String subject, String contents, boolean bcc,
-                          boolean asHtml)
+                          boolean asHtml, File file)
             throws Exception {
 
         //Defer to the parent
         if (getRepository().getParentRepository() != null) {
             getRepository().getParentRepository().getMailManager().sendEmail(
-                to, from, subject, contents, bcc, asHtml);
+                to, from, subject, contents, bcc, asHtml, null);
 
             //Make sure we return!!!!
             return;
@@ -292,9 +325,26 @@ public class MailManager extends RepositoryManager {
                            : Message.RecipientType.TO), array);
         msg.setSubject(subject);
         msg.setSentDate(new Date());
-        msg.setContent(contents, (asHtml
-                                  ? "text/html"
-                                  : "text/plain"));
+        if (file == null) {
+            msg.setContent(contents, (asHtml
+                                      ? "text/html"
+                                      : "text/plain"));
+
+        } else {
+            Multipart    multipart       = new MimeMultipart();
+            MimeBodyPart messageBodyPart = new MimeBodyPart();
+            messageBodyPart.setText(contents);
+            multipart.addBodyPart(messageBodyPart);
+            messageBodyPart = new MimeBodyPart();
+            String filename =
+                getStorageManager().getFileTail(file.toString());
+            DataSource source = new FileDataSource(file.toString());
+            messageBodyPart.setDataHandler(new DataHandler(source));
+            messageBodyPart.setFileName(filename);
+            multipart.addBodyPart(messageBodyPart);
+            msg.setContent(multipart);
+        }
+
 
 
         // Create a transport.        

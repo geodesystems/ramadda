@@ -5714,6 +5714,15 @@ public class Repository extends RepositoryBase implements RequestHandler,
         return request;
     }
 
+
+    public Request getAdminRequest() throws Exception {
+        User user = getUserManager().getAdminUser();
+        Request request = new Request(getRepository(), "", new Hashtable());
+        request.setUser(user);
+        request.setSessionId(getGUID());
+        return request;
+    }
+
     /**
      * _more_
      *

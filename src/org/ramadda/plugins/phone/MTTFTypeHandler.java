@@ -33,8 +33,32 @@ import java.util.List;
  *
  *
  */
-public class TTTFTypeHandler extends GenericTypeHandler {
+public class MTTFTypeHandler extends GenericTypeHandler {
 
+    /** _more_ */
+    private static int IDX_FIRST = 0;
+
+    /** _more_ */
+    public static final int IDX_ENABLED = IDX_FIRST++;
+
+    /** _more_ */
+    public static final int IDX_SUBJECT = IDX_FIRST++;
+
+    /** _more_ */
+    public static final int IDX_FROM_EMAIL = IDX_FIRST++;
+
+    /** _more_ */
+    public static final int IDX_TO_EMAIL = IDX_FIRST++;
+
+
+    /** _more_ */
+    public static final int IDX_TO_PHONE = IDX_FIRST++;
+
+    /** _more_ */
+    public static final int IDX_MESSAGE = IDX_FIRST++;
+
+    /** _more_ */
+    public static final int IDX_STATUS = IDX_FIRST++;
 
 
     /**
@@ -45,7 +69,7 @@ public class TTTFTypeHandler extends GenericTypeHandler {
      *
      * @throws Exception _more_
      */
-    public TTTFTypeHandler(Repository repository, Element entryNode)
+    public MTTFTypeHandler(Repository repository, Element entryNode)
             throws Exception {
         super(repository, entryNode);
     }

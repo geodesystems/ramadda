@@ -1717,7 +1717,7 @@ public class Admin extends RepositoryManager {
                           boolean asHtml)
             throws Exception {
         getRepository().getMailManager().sendEmail(to, from, subject,
-                contents, bcc, asHtml);
+                                                   contents, bcc, asHtml,null);
     }
 
     /**

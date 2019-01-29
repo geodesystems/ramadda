@@ -109,7 +109,7 @@ public class TypeHandler extends RepositoryManager {
     };
 
     /** _more_ */
-    private String[] FIELDS_NOENTRY = { ARG_RESOURCE, ARG_NAME,
+    private String[] FIELDS_NOENTRY = { ARG_NAME, ARG_RESOURCE,
                                         ARG_DESCRIPTION, ARG_DATE,
                                         ARG_LOCATION };
 
@@ -4387,9 +4387,11 @@ public class TypeHandler extends RepositoryManager {
                                     ARG_SERVERFILE_PATTERN, "",
                                     HtmlUtils.SIZE_10)));
                         localFilesSB.append(HtmlUtils.formTableClose());
-                        tabTitles.add(msg("Files on Server"));
-                        tabContent.add(
-                            HtmlUtils.inset(localFilesSB.toString(), 8));
+                        if (okToShowInForm(entry, "filesonserver",true)) {
+                            tabTitles.add(msg("Files on Server"));
+                            tabContent.add(
+                                           HtmlUtils.inset(localFilesSB.toString(), 8));
+                        }
                     }
 
                     String addMetadata =
@@ -4457,6 +4459,7 @@ public class TypeHandler extends RepositoryManager {
                     if (forUpload || !showDownload) {
                         extra = "";
                     }
+
                     if ( !okToShowInForm(entry, "resource.extra")) {
                         extra = "";
                     }

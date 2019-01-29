@@ -6,6 +6,7 @@ var DISPLAY_PLOTLY_RADAR = "radar";
 var DISPLAY_PLOTLY_WINDROSE = "windrose";
 var DISPLAY_PLOTLY_DENSITY = "density";
 var DISPLAY_PLOTLY_DOTPLOT  = "dotplot";
+var DISPLAY_PLOTLY_SPLOM  = "splom";
 var DISPLAY_PLOTLY_3DSCATTER = "3dscatter";
 var DISPLAY_PLOTLY_3DMESH = "3dmesh";
 var DISPLAY_PLOTLY_TREEMAP = "treemap";
@@ -15,6 +16,7 @@ addGlobalDisplayType({type: DISPLAY_PLOTLY_RADAR, label:"Radar",requiresData:tru
 addGlobalDisplayType({type: DISPLAY_PLOTLY_WINDROSE, label:"Wind Rose",requiresData:true,forUser:true,category:"Charts"});
 addGlobalDisplayType({type: DISPLAY_PLOTLY_DENSITY, label:"Density",requiresData:true,forUser:true,category:"Charts"});
 addGlobalDisplayType({type: DISPLAY_PLOTLY_DOTPLOT, label:"Dot Plot",requiresData:true,forUser:true,category:"Charts"});
+addGlobalDisplayType({type: DISPLAY_PLOTLY_SPLOM, label:"Splom",requiresData:true,forUser:true,category:"Charts"});
 addGlobalDisplayType({type: DISPLAY_PLOTLY_3DSCATTER, label:"3D Scatter",requiresData:true,forUser:true,category:"Charts"});
 addGlobalDisplayType({type: DISPLAY_PLOTLY_3DMESH, label:"3D Mesh",requiresData:true,forUser:true,category:"Charts"});
 //Ternary doesn't work
@@ -525,7 +527,7 @@ function RamaddaDotplotDisplay(displayManager, id, properties) {
                 var layout = {
                     title: '',
                     yaxis: {
-                        title:this.getProperty("yAxisTitle", stringField.getLabel()),
+                        title:this.getProperty("yAxisTitle", labelName),
                         showline: this.getProperty("yAxisShowLine",true),
                         showgrid: this.getProperty("yAxisShowGrid",true),
                     },
@@ -565,6 +567,99 @@ function RamaddaDotplotDisplay(displayManager, id, properties) {
                     plot_bgcolor: 'rgb(254, 247, 234)',
                     hovermode: 'closest'
                 };
+                this.setDimensions(layout,2);
+                this.makePlot(plotData, layout);
+            },
+        });
+}
+
+
+
+function RamaddaSplomDisplay(displayManager, id, properties) {
+    var SUPER;
+    $.extend(this, {
+            width:"600px",
+            height:"400px",
+             });
+    RamaddaUtil.inherit(this, SUPER  = new RamaddaPlotlyDisplay(displayManager, id, DISPLAY_PLOTLY_SPLOM, properties));
+
+    addRamaddaDisplay(this);
+    RamaddaUtil.defineMembers(this, {
+             makeAxis: function() {
+                return {
+                        showline:false,
+                        zeroline:false,
+                        gridcolor:'#ffff',
+                        ticklen:2,
+                        tickfont:{size:10},
+                        titlefont:{size:12}
+                }
+            },
+            updateUI: function() {
+                var records = this.filterData();
+                if(!records)return;
+                var fields = this.getSelectedFields(this.getData().getRecordFields());
+                if(fields.length==0) {
+                    fields = this.getData().getRecordFields();
+                }
+
+                var pl_colorscale=[
+                                   [0.0, '#19d3f3'],
+                                   [0.333, '#19d3f3'],
+                                   [0.333, '#e763fa'],
+                                   [0.666, '#e763fa'],
+                                   [0.666, '#636efa'],
+                                   [1, '#636efa']
+                                   ];
+
+                var dataObj = {
+                    type: 'splom',
+                    dimensions: [],
+                    //                        text:text,
+                    marker: {
+                        //                            color: unpack(rows, 'Outcome'),
+                        colorscale:pl_colorscale,
+                        size: 5,
+                        line: {
+                            color: 'white',
+                            width: 0.5
+                        }
+                    }
+                };
+
+
+                var plotData = [dataObj];
+                var layout = {
+                    //title:"Scatterplot Matrix (SPLOM) for Diabetes Dataset Data source: [1]",
+
+                    autosize: false,
+                    hovermode:'closest',
+                    dragmode:'select',
+                    plot_bgcolor:'rgba(240,240,240, 0.95)',
+                }
+                var text = null;
+                var colors = null;
+                var cnt = 0;
+                for(var i =0;i<fields.length;i++) {
+                    var field = fields[i];
+                    if(!field.isFieldNumeric()) continue;
+                    var values = this.getColumnValues(records, field).values;
+                    if(text == null)  {
+                        colors = [];
+                        text = [];
+                        for(var j=0;j<values.length;j++)  {
+                            text.push("x");
+                            colors.push(0.5);
+                        }
+                        dataObj.text = text;
+                        dataObj.marker.color= colors;
+                    }
+                    dataObj.dimensions.push({label:field.getLabel(),values:values});
+                    var key = "axis"+(cnt==0?"":""+(cnt+1));
+                    layout["x"+key] = this.makeAxis();
+                    layout["y" + key] = this.makeAxis();
+                    cnt++;
+                }
                 this.setDimensions(layout,2);
                 this.makePlot(plotData, layout);
             },

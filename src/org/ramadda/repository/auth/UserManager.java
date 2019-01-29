@@ -843,6 +843,11 @@ public class UserManager extends RepositoryManager {
         return findUser(USER_DEFAULT);
     }
 
+    public User getAdminUser() throws Exception {
+        User user  = new User("admin", true);
+        return user;
+    }
+
     /**
      * _more_
      *

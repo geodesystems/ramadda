@@ -846,8 +846,8 @@ public class GenericTypeHandler extends TypeHandler {
                             PreparedStatement stmt, boolean isNew)
             throws Exception {
 
-        //        System.err.println("setStatement:" + values.length +" " + values[0]);
-
+        //        System.err.println("setStatement:" + values.length);
+        //        for(Object o: values)   System.err.println("  value::" + o);
         int stmtIdx = 1;
         stmt.setString(stmtIdx++, entry.getId());
         if (values != null) {

@@ -24,8 +24,8 @@ import org.ramadda.repository.search.*;
 import org.ramadda.repository.type.*;
 
 import org.ramadda.util.HtmlUtils;
-import org.ramadda.util.HtmlUtils;
 import org.ramadda.util.TTLCache;
+import org.ramadda.util.Utils;
 
 import org.w3c.dom.*;
 
@@ -133,8 +133,6 @@ public class TwilioApiHandler extends RepositoryManager implements RequestHandle
      *     ctor
      *
      *     @param repository the repository
-     *     @param node xml from api.xml
-     *     @param props propertiesn
      *
      *     @throws Exception on badness
      */
@@ -147,6 +145,26 @@ public class TwilioApiHandler extends RepositoryManager implements RequestHandle
             );
         }
 
+    }
+
+    /**
+     * _more_
+     *
+     * @return _more_
+     */
+    public boolean sendingEnabled() {
+        return isEnabled()
+               && Utils.stringDefined(getRepository().getProperty(PROP_PHONE,
+                   ""));
+    }
+
+    /**
+     * _more_
+     *
+     * @return _more_
+     */
+    public boolean isEnabled() {
+        return Utils.stringDefined(repository.getProperty(PROP_APPID, null));
     }
 
     /**
@@ -559,6 +577,19 @@ public class TwilioApiHandler extends RepositoryManager implements RequestHandle
      */
     public void sendTextMessage(String fromPhone, String toPhone, String msg)
             throws Exception {
+        if (fromPhone == null) {
+            fromPhone = getRepository().getProperty(PROP_PHONE, "");
+        }
+
+        fromPhone = fromPhone.replaceAll("-", "").replaceAll(" ", "");
+        toPhone   = toPhone.replaceAll("-", "").replaceAll(" ", "");
+
+        if ( !fromPhone.startsWith("+1")) {
+            fromPhone = "+1" + fromPhone;
+        }
+        if ( !toPhone.startsWith("+1")) {
+            toPhone = "+1" + toPhone;
+        }
         String appId     = getRepository().getProperty(PROP_APPID, null);
         String authToken = getRepository().getProperty(PROP_AUTHTOKEN, null);
         String smsUrl = "https://api.twilio.com/2010-04-01/Accounts/" + appId
@@ -669,6 +700,7 @@ public class TwilioApiHandler extends RepositoryManager implements RequestHandle
 
         }
     }
+
 
 
 
