@@ -577,6 +577,22 @@ public class TwilioApiHandler extends RepositoryManager implements RequestHandle
      */
     public void sendTextMessage(String fromPhone, String toPhone, String msg)
             throws Exception {
+        sendTextMessage(fromPhone, toPhone, msg, null);
+    }
+
+    /**
+     * _more_
+     *
+     * @param fromPhone _more_
+     * @param toPhone _more_
+     * @param msg _more_
+     * @param url _more_
+     *
+     * @throws Exception _more_
+     */
+    public void sendTextMessage(String fromPhone, String toPhone, String msg,
+                                String url)
+            throws Exception {
         if (fromPhone == null) {
             fromPhone = getRepository().getProperty(PROP_PHONE, "");
         }
@@ -600,8 +616,12 @@ public class TwilioApiHandler extends RepositoryManager implements RequestHandle
                                "From="
                                + URLEncoder.encode(fromPhone, "UTF-8") + "&"
                                + "To=" + URLEncoder.encode(toPhone, "UTF-8")
-                               + "&" + "Body="
-                               + URLEncoder.encode(msg, "UTF-8"));
+                               + ((url == null)
+                                  ? ""
+                                  : "&" + "MediaUrl="
+                                    + URLEncoder.encode(url, "UTF-8")) + "&"
+                                        + "Body="
+                                        + URLEncoder.encode(msg, "UTF-8"));
         //        System.err.println("Result:" + result);
     }
 

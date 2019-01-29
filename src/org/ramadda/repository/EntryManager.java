@@ -4139,7 +4139,6 @@ public class EntryManager extends RepositoryManager {
 
 
         String path = entry.getResource().getPath();
-
         String mimeType = getRepository().getMimeTypeFromSuffix(
                               IOUtil.getFileExtension(path));
 

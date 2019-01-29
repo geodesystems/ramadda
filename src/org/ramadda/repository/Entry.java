@@ -644,6 +644,11 @@ public class Entry implements Cloneable {
         startDate = value;
     }
 
+    public void setStartAndEndDate(long value) {
+        startDate = value;
+        endDate = value;
+    }
+
     /**
      * Get the StartDate property.
      *

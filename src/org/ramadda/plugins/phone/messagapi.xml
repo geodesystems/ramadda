@@ -1,5 +1,5 @@
 
 
 <api handler="org.ramadda.plugins.phone.MessageApiHandler" id="message">
-      <api request="/phone/message"    method="processDummy" admin="false"/>
+      <api request="/phone/message/image"    method="processImage" admin="false"/>
 </api>

@@ -45,6 +45,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.regex.*;
@@ -83,8 +84,30 @@ public class MessageApiHandler extends RepositoryManager implements RequestHandl
      *
      * @throws Exception _more_
      */
-    public Result processDummy(Request request) throws Exception {
-        return new Result("", new StringBuffer());
+    public Result processImage(Request request) throws Exception {
+        Request adminRequest = getRepository().getAdminRequest();
+        Entry entry = getEntryManager().getEntry(adminRequest,
+                          request.getString("entryid", ""));
+        if (entry == null) {
+            throw new IllegalArgumentException("no entry found");
+        }
+        if ( !entry.getTypeHandler().isType("phone_mttf")) {
+            throw new IllegalArgumentException("bad type");
+        }
+        if ( !entry.getResource().isImage()) {
+            throw new IllegalArgumentException("not an image");
+        }
+        String path = entry.getResource().getPath();
+        String mimeType = getRepository().getMimeTypeFromSuffix(
+                              IOUtil.getFileExtension(path));
+
+        String fileName = getStorageManager().getFileTail(entry);
+        InputStream inputStream =
+            getStorageManager().getFileInputStream(entry.getFile());
+        Result result = new Result(BLANK, inputStream, mimeType);
+        result.setReturnFilename(fileName);
+
+        return result;
     }
 
     /**
@@ -92,16 +115,22 @@ public class MessageApiHandler extends RepositoryManager implements RequestHandl
      */
     private void runMessages() {
         Misc.sleepSeconds(30);
-        if(!repository.getProperty("messages.enabled",false)) return;
+        if ( !repository.getProperty("messages.enabled", false)) {
+            return;
+        }
         while (true) {
             try {
-                if(!repository.getProperty("messages.enabled",false)) return;
+                if ( !repository.getProperty("messages.enabled", false)) {
+                    return;
+                }
                 checkMessages();
             } catch (Exception exc) {
                 System.err.println("MessageApiHandler got error:" + exc);
+
                 break;
             }
-            Misc.sleepSeconds(repository.getProperty("messages.timeout",60*5));
+            //            Misc.sleepSeconds(repository.getProperty("messages.timeout",60*5));
+            Misc.sleepSeconds(30);
         }
     }
 
@@ -111,6 +140,7 @@ public class MessageApiHandler extends RepositoryManager implements RequestHandl
      * @throws Exception _more_
      */
     private void checkMessages() throws Exception {
+
         TwilioApiHandler twilio =
             (TwilioApiHandler) getRepository().getApiManager().getApiHandler(
                 "twilio");
@@ -119,6 +149,7 @@ public class MessageApiHandler extends RepositoryManager implements RequestHandl
                 twilio = null;
             }
         }
+
 
         Request request = getRepository().getAdminRequest();
         request.put(Constants.ARG_TYPE, "phone_mttf");
@@ -135,8 +166,17 @@ public class MessageApiHandler extends RepositoryManager implements RequestHandl
 
                 continue;
             }
+            if (entry.getStartDate() > entry.getEndDate()) {
+                System.err.println("\tpast time");
+                entry.setValue(MTTFTypeHandler.IDX_ENABLED,
+                               new Boolean(false));
+                getEntryManager().updateEntry(request, entry);
+
+                continue;
+            }
             if (entry.getStartDate() >= now.getTime()) {
-                //                System.err.println("\tnot ready");
+                System.err.println("\tnot ready");
+
                 continue;
             }
             String originalStatus =
@@ -147,18 +187,53 @@ public class MessageApiHandler extends RepositoryManager implements RequestHandl
             String    status       = null;
 
             try {
-                status = processMessage(twilio, entry, sent);
+                status = processMessage(request, twilio, entry, sent);
             } catch (Exception exc) {
                 inError = true;
                 status  = exc.getMessage();
             }
+            System.err.println("\tstatus:" + status + " sent:" + sent[0]);
 
-            if (sent[0] || inError) {
+            if (sent[0]) {
+                String recurrence =
+                    entry.getValue(MTTFTypeHandler.IDX_RECURRENCE, "").trim();
+                double value =
+                    entry.getValue(MTTFTypeHandler.IDX_RECURRENCE_VALUE, 0.0);
+                if (Misc.equals(recurrence, "days") && (value > 0)) {
+                    GregorianCalendar cal = new GregorianCalendar();
+                    cal.setTimeInMillis(now.getTime());
+                    int offset = (int) (value * 24);
+                    cal.add(cal.HOUR, offset);
+                    entry.setStartDate(cal.getTimeInMillis());
+                    System.err.println(" next:"
+                                       + new Date(entry.getStartDate()));
+                } else if (Misc.equals(recurrence, "dayofmonth")
+                           && (value > 0)) {
+                    int               dom = (int) value;
+                    GregorianCalendar cal = new GregorianCalendar();
+                    cal.setTimeInMillis(now.getTime());
+                    cal.add(cal.MONTH, 1);
+                    cal.add(cal.DAY_OF_MONTH, dom);
+                    entry.setStartDate(cal.getTimeInMillis());
+                    System.err.println(" next:"
+                                       + new Date(entry.getStartDate()));
+                } else {
+                    entry.setValue(MTTFTypeHandler.IDX_ENABLED,
+                                   new Boolean(false));
+                }
+                needToUpdate = true;
+            }
+
+            if (inError) {
                 entry.setValue(MTTFTypeHandler.IDX_ENABLED,
                                new Boolean(false));
                 needToUpdate = true;
             }
-
+            if (entry.getStartDate() > entry.getEndDate()) {
+                entry.setValue(MTTFTypeHandler.IDX_ENABLED,
+                               new Boolean(false));
+                needToUpdate = true;
+            }
             if (Misc.equals(status, originalStatus)) {
                 status = null;
             }
@@ -173,11 +248,14 @@ public class MessageApiHandler extends RepositoryManager implements RequestHandl
                 getEntryManager().updateEntry(request, entry);
             }
         }
+
     }
 
     /**
      * _more_
      *
+     *
+     * @param request _more_
      * @param twilio _more_
      * @param entry _more_
      * @param sent _more_
@@ -186,8 +264,8 @@ public class MessageApiHandler extends RepositoryManager implements RequestHandl
      *
      * @throws Exception _more_
      */
-    private String processMessage(TwilioApiHandler twilio, Entry entry,
-                                  boolean[] sent)
+    private String processMessage(Request request, TwilioApiHandler twilio,
+                                  Entry entry, boolean[] sent)
             throws Exception {
         String subject = entry.getValue(MTTFTypeHandler.IDX_SUBJECT,
                                         "").trim();
@@ -199,14 +277,24 @@ public class MessageApiHandler extends RepositoryManager implements RequestHandl
                                         "").trim();
         String message = entry.getValue(MTTFTypeHandler.IDX_MESSAGE, "");
 
+
         if (Utils.stringDefined(toPhone)) {
             if (twilio == null) {
                 return "SMS not enabled";
             }
-            twilio.sendTextMessage(null, toPhone, message);
+            String url = null;
+            if (entry.getResource().isImage()) {
+                url = request.getAbsoluteUrl(
+                    getRepository().getUrlBase()
+                    + "/phone/message/image?entryid=" + entry.getId());
+                System.err.println("url:" + url);
+            }
+
+            twilio.sendTextMessage(null, toPhone, message, url);
             sent[0] = true;
 
-            return "SMS sent @ " + new Date();
+            return "SMS sent @ "
+                   + getRepository().getDateHandler().formatDate(new Date());
         }
         if (Utils.stringDefined(toEmail)) {
             if ( !getAdmin().isEmailCapable()) {
@@ -216,8 +304,8 @@ public class MessageApiHandler extends RepositoryManager implements RequestHandl
                 return "Need to specify a from email";
             }
             sent[0] = true;
-            getRepository().getMailManager().sendEmail(toEmail, fromEmail, subject,
-                                       message,false,entry.getFile());
+            getRepository().getMailManager().sendEmail(toEmail, fromEmail,
+                    subject, message, false, entry.getFile());
 
             return "Email sent @ " + new Date();
         }

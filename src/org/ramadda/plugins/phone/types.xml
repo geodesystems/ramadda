@@ -14,7 +14,7 @@
    </type>
 
 
-  <type name="phone_message"  description="Voice Message" handler="org.ramadda.plugins.phone.VoiceMailTypeHandler" category="Information" foruser="false">
+  <type name="phone_message"  description="Voice Message" handler="org.ramadda.plugins.phone.VoiceMailTypeHandler"  foruser="false">
      <property name="icon" value="/phone/voicemail.png"/>
 <!--
      <property name="form.name.label" value="Message"/>
@@ -36,17 +36,21 @@
      <property name="form.description.show" value="false"/>
      <property name="form.filesonserver.show" value="false"/>
      <property name="form.file.label" value="File to attach (email)"/>
-     <property name="form.date.label" value="Date/Time to send message"/>
+     <property name="form.date.label" value="Date Range"/>
+     <property name="form.fromdate.label" value="Date to send message"/>
+     <property name="form.todate.label" value="Date to stop"/>
+     <property name="form.todate.show" value="true"/>
      <property name="form.file.show" value="true"/>
      <property name="form.url.show" value="false"/>
      <property name="form.description.label" value="Message"/>
-     <property name="form.fromdate.label" value="Date to send message"/>
-     <property name="form.todate.show" value="false"/>
+
      <column name="enabled" type="boolean"  default="false" label="Enabled"  />
+     <column name="recurrence" type="enumeration"  values="once:Once,days:Every N Days,dayofmonth:Day of month" default="none" label="Reurrence"  />
+     <column name="recurrencevalue" type="double"   default="0" label="Reurrence Value" suffix="N days or day in month" />
      <column name="subject" type="string"  label="Subject"  />
+     <column name="to_phone" type="string"  label="To Phone"  />
      <column name="from_email" type="string"  label="From Email"  />
      <column name="to_email" type="string"  label="To Email"  />
-     <column name="to_phone" type="string"  label="To Phone"  />
      <column name="message" type="string"  label="Message"  size="5000" rows="10"/>
      <column name="status" type="string"  label="Status"  />
    </type>
