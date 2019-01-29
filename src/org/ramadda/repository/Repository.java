@@ -3868,7 +3868,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
                 if (path.endsWith(".js") || path.endsWith(".css")
                         || path.endsWith(".json")) {
                     String js = IOUtil.readInputStream(inputStream);
-                    js = js.replace("${root}", urlBase).replace(
+                    js = js.replace("${root}", urlBase).replace("${urlroot}", urlBase).replace(
                         "${baseentry}",
                         getEntryManager().getRootEntry().getId());
                     js    = js.replace("${hostname}",

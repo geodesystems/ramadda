@@ -463,7 +463,6 @@ public class PageHandler extends RepositoryManager {
             repository.getUrlBase(), "", ""
         };
 
-        //        System.err.println(htmlTemplate.getName() +" " + htmlTemplate.getTemplate());
 
         long                      t2     = System.currentTimeMillis();
         String                    html   = template;
@@ -491,7 +490,6 @@ public class PageHandler extends RepositoryManager {
                 String macroValue = values.get(v);
                 if (macroValue == null) {
                     System.err.println("Whoa, no macro value:" + v);
-                    sb.append(v);
                 } else {
                     sb.append(macroValue);
                 }
@@ -1011,7 +1009,7 @@ public class PageHandler extends RepositoryManager {
      */
     public String makeHtdocsUrl(String url) {
         return getRepository().getUrlBase() + "/"
-               + RepositoryUtil.getHtdocsVersion() + "/" + url;
+               + RepositoryUtil.getHtdocsVersion() + url;
     }
 
     /**
@@ -3667,9 +3665,9 @@ Time:14625 cnt:7000
         }
 
         return s.replace("${cdnpath}", path).replace(
-            MACRO_ROOT, getRepository().getUrlBase()).replace(
-            "${baseentry}", getEntryManager().getRootEntry().getId()).replace(
-            "${min}", mini).replace("${dotmin}", dotmini);
+                                                     "${root}", getRepository().getUrlBase()).replace(
+                                                                                                      "${baseentry}", getEntryManager().getRootEntry().getId()).replace(
+                                                                                                                                                                        "${min}", mini).replace("${dotmin}", dotmini);
     }
 
     /**

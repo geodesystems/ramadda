@@ -403,7 +403,7 @@ a.ramadda-menubar-button:hover {
 
 
 .ramadda-section-map {
-     background: URL(${urlroot}/images/background.png);
+     background: URL(${root}/images/background.png);
 }
 
 .ramadda-section-lightpink, .ramadda-section-rose {
@@ -1207,7 +1207,7 @@ label {
 
 .ramadda-header {
    background-repeat: repeat; 
-   background-image:url(${urlroot}/images/background.png);
+   background-image:url(${root}/images/background.png);
 //   padding: 6px;
    padding-bottom: 0px;
    border-bottom : 1px #e0e0e0 solid;
@@ -1273,14 +1273,14 @@ label {
 
 
 .breadCrumb ul li {
-   background: url(${urlroot}/icons/arrow_right_blue.png) no-repeat 100% center;
+   background: url(${root}/icons/arrow_right_blue.png) no-repeat 100% center;
    margin: 0px 4px 0px 0px;
    padding: 0px 8px 0px 0px;
    font-size: inherit;
 }
 
 .chevronOverlay {
-   background: url(${urlroot}/icons/arrow_right_blue.png) no-repeat 100% center;
+   background: url(${root}/icons/arrow_right_blue.png) no-repeat 100% center;
 }
 
 .ramadda-breadcrumbs-list {
@@ -1294,7 +1294,7 @@ label {
    width: 16px;
    height:13px;
    padding:0px;
-   background: url(${urlroot}/icons/menu_arrow_down.png) no-repeat 50% center;
+   background: url(${root}/icons/menu_arrow_down.png) no-repeat 50% center;
    margin:0px;
    border: 1px #fff solid;
    border-color: #aaa;
@@ -1426,7 +1426,7 @@ label {
 .ramadda-user-field {
    padding-left: 18px;
    border : 1px #888888 solid;
-   background: URL(${urlroot}/icons/user.png) no-repeat;
+   background: URL(${root}/icons/user.png) no-repeat;
    background-position: 1px 1px;
 }
 
@@ -2870,7 +2870,7 @@ a.toggleblocklabellink:visited {
 
 
 .wiki-link-external {
-    background: url(${urlroot}/icons/wiki/external.png) center right no-repeat;
+    background: url(${root}/icons/wiki/external.png) center right no-repeat;
    padding-right: 13px;
 }
 
