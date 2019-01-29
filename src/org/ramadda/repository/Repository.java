@@ -504,6 +504,9 @@ public class Repository extends RepositoryBase implements RequestHandler,
     /** _more_ */
     private boolean minifiedOk = true;
 
+    /** _more_          */
+    private boolean cdnOk = false;
+
     /** _more_ */
     private boolean enableHostnameMapping = true;
 
@@ -3862,10 +3865,6 @@ public class Repository extends RepositoryBase implements RequestHandler,
                 InputStream inputStream =
                     getStorageManager().getInputStream(fullPath);
                 htdocsPathCache.put(path, fullPath);
-                //If its just sitting on the server then don't decorate
-                if (new File(fullPath).exists()) {
-                    decorate = false;
-                }
                 if (path.endsWith(".js") || path.endsWith(".css")
                         || path.endsWith(".json")) {
                     String js = IOUtil.readInputStream(inputStream);
@@ -3896,6 +3895,10 @@ public class Repository extends RepositoryBase implements RequestHandler,
                                         new StringBuilder(html));
 
 
+                    //If its just sitting on the server then don't decorate
+                    if (new File(fullPath).exists()) {
+                        decorate = false;
+                    }
                     if (decorate) {
                         return getEntryManager().addHeaderToAncillaryPage(
                             request, result);
@@ -4026,6 +4029,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
         languageDefault       = getProperty(PROP_LANGUAGE_DEFAULT, "default");
         downloadOk            = getProperty(PROP_DOWNLOAD_OK, true);
         minifiedOk            = getProperty(PROP_MINIFIED, true);
+        cdnOk                 = getProperty(PROP_CDNOK, false);
         enableHostnameMapping = getProperty(PROP_ENABLE_HOSTNAME_MAPPING,
                                             false);
 
@@ -4093,6 +4097,36 @@ public class Repository extends RepositoryBase implements RequestHandler,
      */
     public boolean getMinifiedOk() {
         return minifiedOk;
+    }
+
+    /**
+     * _more_
+     *
+     * @param f _more_
+     *
+     * @return _more_
+     */
+    @Override
+    public String getIconUrl(String f) {
+        if (f == null) {
+            return null;
+        }
+        if (getCdnOk()) {
+            if (f.startsWith("/icons")) {
+                return getPageHandler().getCdnPath(f);
+            }
+        }
+
+        return getUrlBase() + f;
+    }
+
+    /**
+     * _more_
+     *
+     * @return _more_
+     */
+    public boolean getCdnOk() {
+        return cdnOk;
     }
 
     /**
@@ -5357,8 +5391,9 @@ public class Repository extends RepositoryBase implements RequestHandler,
         }
 
 
-        sb.append(HtmlUtils.formEntry(msgLabel("Port"),""+ getPort()));
-        sb.append(HtmlUtils.formEntry(msgLabel("Https Port"),""+ getHttpsPort()));
+        sb.append(HtmlUtils.formEntry(msgLabel("Port"), "" + getPort()));
+        sb.append(HtmlUtils.formEntry(msgLabel("Https Port"),
+                                      "" + getHttpsPort()));
 
         sb.append(HtmlUtils.formTableClose());
         sb.append(HtmlUtils.sectionClose());

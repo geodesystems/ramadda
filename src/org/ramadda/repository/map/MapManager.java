@@ -311,9 +311,10 @@ public class MapManager extends RepositoryManager implements WikiConstants {
 
         String mapLayer = null;
         if (entry != null) {
-            List<Metadata> layers = getMetadataManager().findMetadata(request, entry,
-                                        "map_layer", true);
-            if (layers!=null && layers.size() > 0) {
+            List<Metadata> layers =
+                getMetadataManager().findMetadata(request, entry,
+                    "map_layer", true);
+            if ((layers != null) && (layers.size() > 0)) {
                 mapLayer = layers.get(0).getAttr1();
             }
         }
@@ -435,21 +436,22 @@ public class MapManager extends RepositoryManager implements WikiConstants {
         if (OPENLAYERS_VERSION == OPENLAYERS_V2) {
             if (minified) {
                 HtmlUtils.importJS(
-                    sb, getRepository().getHtdocsUrl("/min/ramaddamap.min.js"));
+                    sb,
+                    getPageHandler().getCdnPath("/min/ramaddamap.min.js"));
             } else {
                 HtmlUtils.importJS(
-                    sb, getRepository().getHtdocsUrl("/ramaddamap.js"));
+                    sb, getPageHandler().getCdnPath("/ramaddamap.js"));
             }
         } else {
             HtmlUtils.importJS(
-                sb, getRepository().getHtdocsUrl("/ramaddamap3.js"));
+                sb, getPageHandler().getCdnPath("/ramaddamap3.js"));
         }
         if (minified) {
-            HtmlUtils.cssLink(sb,
-                              getRepository().getHtdocsUrl("/min/ramaddamap.min.css"));
+            HtmlUtils.cssLink(
+                sb, getPageHandler().getCdnPath("/min/ramaddamap.min.css"));
         } else {
             HtmlUtils.cssLink(sb,
-                              getRepository().getHtdocsUrl("/ramaddamap.css"));
+                              getPageHandler().getCdnPath("/ramaddamap.css"));
         }
 
         return sb.toString();

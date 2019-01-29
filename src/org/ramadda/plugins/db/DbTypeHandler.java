@@ -4827,7 +4827,7 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
         int poscnt = 0;
         sb.append(
             HtmlUtils.importJS(
-                getRepository().getFileUrl("/db/dom-drag.js")));
+                getRepository().getFileUrl("/lib/dom-drag.js")));
         SimpleDateFormat sdf = getDateFormat(entry);
         for (Object[] values : valueList) {
             Hashtable props = getProps(values);

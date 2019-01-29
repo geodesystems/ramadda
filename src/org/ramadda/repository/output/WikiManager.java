@@ -4519,7 +4519,8 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
         */
 
 
-        String buttonClass = " class=\"ramadda-menubar-button xramadda-button\" ";
+        String buttonClass =
+            " class=\"ramadda-menubar-button xramadda-button\" ";
         String tagsButton = getPageHandler().makePopupLink(msg("Add tag"),
                                 tags.toString(), buttonClass);
 
@@ -4539,12 +4540,13 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                              "Add entry link", true, "wikilink", entry,
                              false, buttonClass);
 
-        HtmlUtils.open(buttons, "div",HtmlUtils.cssClass("ramadda-menubar"));
+        HtmlUtils.open(buttons, "div", HtmlUtils.cssClass("ramadda-menubar"));
         buttons.append(tagsButton);
         buttons.append(importButton);
         buttons.append(addEntry);
         buttons.append(addLink);
         HtmlUtils.close(buttons, "div");
+
         return buttons.toString();
 
     }
@@ -5472,11 +5474,14 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                 "density")) && (request.getExtraProperty(
                 "added plotly") == null)) {
             HtmlUtils.importJS(sb, getHtdocsUrl("/lib/plotly/plotly.min.js"));
-            HtmlUtils.importJS(sb, getHtdocsUrl("https://cdn.plot.ly/plotly-latest.min.js"));
+            HtmlUtils.importJS(
+                sb, getHtdocsUrl("https://cdn.plot.ly/plotly-latest.min.js"));
             if (getRepository().getMinifiedOk()) {
-                HtmlUtils.importJS(sb, getHtdocsUrl("/min/displayplotly.min.js"));
+                HtmlUtils.importJS(sb,
+                                   getHtdocsUrl("/min/displayplotly.min.js"));
             } else {
-                HtmlUtils.importJS(sb, getHtdocsUrl("/display/displayplotly.js"));
+                HtmlUtils.importJS(sb,
+                                   getHtdocsUrl("/display/displayplotly.js"));
             }
             request.putExtraProperty("added plotly", "true");
         }
@@ -5650,42 +5655,63 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
             HtmlUtils.script(
                 sb,
                 "google.charts.load(\"43\", {packages:['corechart','calendar','table','bar','sankey','timeline','gauge']});\n");
-            HtmlUtils.importJS(sb, getHtdocsUrl("/lib/d3/d3.min.js"));
             HtmlUtils.importJS(
-                sb, getHtdocsUrl("/lib/jquery.handsontable.full.min.js"));
+                sb, getPageHandler().getCdnPath("/lib/d3/d3.min.js"));
+            HtmlUtils.importJS(
+                sb,
+                getPageHandler().getCdnPath(
+                    "/lib/jquery.handsontable.full.min.js"));
             HtmlUtils.cssLink(
-                sb, getHtdocsUrl("/lib/jquery.handsontable.full.min.css"));
+                sb,
+                getPageHandler().getCdnPath(
+                    "/lib/jquery.handsontable.full.min.css"));
 
             //Put this here after the google load
-            HtmlUtils.importJS(sb, getHtdocsUrl("/db/dom-drag.js"));
-
+            HtmlUtils.importJS(
+                sb, getPageHandler().getCdnPath("/lib/dom-drag.js"));
 
             if (getRepository().getMinifiedOk()) {
                 HtmlUtils.importJS(
-                    sb, getHtdocsUrl("/min/display_all.min.js"));
-                HtmlUtils.cssLink(sb, getHtdocsUrl("/min/display.min.css"));
+                    sb,
+                    getPageHandler().getCdnPath("/min/display_all.min.js"));
+                HtmlUtils.cssLink(
+                    sb, getPageHandler().getCdnPath("/min/display.min.css"));
             } else {
-                HtmlUtils.cssLink(sb, getHtdocsUrl("/display.css"));
-                HtmlUtils.importJS(sb, getHtdocsUrl("/display/pointdata.js"));
-                HtmlUtils.importJS(sb, getHtdocsUrl("/display/utils.js"));
+                HtmlUtils.cssLink(
+                    sb, getPageHandler().getCdnPath("/display.css"));
                 HtmlUtils.importJS(
-                    sb, getHtdocsUrl("/display/displaymanager.js"));
-                HtmlUtils.importJS(sb, getHtdocsUrl("/display/display.js"));
+                    sb, getPageHandler().getCdnPath("/display/pointdata.js"));
+                HtmlUtils.importJS(
+                    sb, getPageHandler().getCdnPath("/display/utils.js"));
+                HtmlUtils.importJS(
+                    sb,
+                    getPageHandler().getCdnPath(
+                        "/display/displaymanager.js"));
+                HtmlUtils.importJS(
+                    sb, getPageHandler().getCdnPath("/display/display.js"));
 
-                HtmlUtils.importJS(sb,
-                                   getHtdocsUrl("/display/displayentry.js"));
-                HtmlUtils.importJS(sb,
-                                   getHtdocsUrl("/display/displaymap.js"));
-                HtmlUtils.importJS(sb,
-                                   getHtdocsUrl("/display/displaychart.js"));
-                HtmlUtils.importJS(sb,
-                                   getHtdocsUrl("/display/displaytable.js"));
-                HtmlUtils.importJS(sb, getHtdocsUrl("/display/control.js"));
-                HtmlUtils.importJS(sb, getHtdocsUrl("/display/displayd3.js"));
-                HtmlUtils.importJS(sb,
-                                   getHtdocsUrl("/display/displayext.js"));
+                HtmlUtils.importJS(
+                    sb,
+                    getPageHandler().getCdnPath("/display/displayentry.js"));
+                HtmlUtils.importJS(
+                    sb,
+                    getPageHandler().getCdnPath("/display/displaymap.js"));
+                HtmlUtils.importJS(
+                    sb,
+                    getPageHandler().getCdnPath("/display/displaychart.js"));
+                HtmlUtils.importJS(
+                    sb,
+                    getPageHandler().getCdnPath("/display/displaytable.js"));
+                HtmlUtils.importJS(
+                    sb, getPageHandler().getCdnPath("/display/control.js"));
+                HtmlUtils.importJS(
+                    sb, getPageHandler().getCdnPath("/display/displayd3.js"));
+                HtmlUtils.importJS(
+                    sb,
+                    getPageHandler().getCdnPath("/display/displayext.js"));
             }
-            HtmlUtils.importJS(sb, getHtdocsUrl("/repositories.js"));
+            HtmlUtils.importJS(
+                sb, getPageHandler().getCdnPath("/repositories.js"));
 
             String includes =
                 getRepository().getProperty("ramadda.display.includes",

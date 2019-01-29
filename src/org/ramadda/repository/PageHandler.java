@@ -629,7 +629,8 @@ public class PageHandler extends RepositoryManager {
     public String getTemplateJavascriptContent() {
         if (templateJavascriptContent == null) {
             StringBuilder js = new StringBuilder();
-            js.append("$( document ).ready(function() {Utils.initPage(); });");
+            js.append(
+                "$( document ).ready(function() {Utils.initPage(); });");
 
             //j-
             StringBuilder sb = new StringBuilder();
@@ -1029,7 +1030,7 @@ public class PageHandler extends RepositoryManager {
                 throw new RuntimeException(exc);
             }
 
-            imports = applyBaseMacros(imports);
+            imports      = applyBaseMacros(imports);
             theTemplates = new ArrayList<HtmlTemplate>();
 
             String defaultId =
@@ -3636,6 +3637,10 @@ Time:14625 cnt:7000
         return stripped.toString();
     }
 
+    /** _more_          */
+    private static final String CDN =
+        "https://cdn.jsdelivr.net/gh/geodesystems/ramadda/src/org/ramadda/repository/htdocs";
+
 
     /**
      * _more_
@@ -3647,16 +3652,39 @@ Time:14625 cnt:7000
     public String applyBaseMacros(String s) {
 
         String dotmini = getRepository().getMinifiedOk()
-                      ? ".min"
-                      : "";
-        String mini = getRepository().getMinifiedOk()
-                      ? "min"
-                      : "";
+                         ? ".min"
+                         : "";
+        String mini    = getRepository().getMinifiedOk()
+                         ? "min"
+                         : "";
         //        System.err.println(mini +" " + getRepository().getMinifiedOk());
-        String path = getRepository().getUrlBase()+"/" +RepositoryUtil.getHtdocsVersion();
-        return s.replace("${path}",path).replace(MACRO_URLROOT, getRepository().getUrlBase()).replace(
+        String path;
+        if (getRepository().getCdnOk()) {
+            path = CDN;
+        } else {
+            path = getRepository().getUrlBase() + "/"
+                   + RepositoryUtil.getHtdocsVersion();
+        }
+
+        return s.replace("${cdnpath}", path).replace(
+            MACRO_URLROOT, getRepository().getUrlBase()).replace(
             "${baseentry}", getEntryManager().getRootEntry().getId()).replace(
-                                                                              "${min}", mini).replace("${dotmin}",dotmini);
+            "${min}", mini).replace("${dotmin}", dotmini);
+    }
+
+    /**
+     * _more_
+     *
+     * @param path _more_
+     *
+     * @return _more_
+     */
+    public String getCdnPath(String path) {
+        if (getRepository().getCdnOk()) {
+            return CDN + path;
+        } else {
+            return getRepository().getHtdocsUrl(path);
+        }
     }
 
     /**
