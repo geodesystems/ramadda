@@ -136,8 +136,8 @@ public class MessageApiHandler extends RepositoryManager implements RequestHandl
                 continue;
             }
             if (entry.getStartDate() >= now.getTime()) {
-                System.err.println("\tnot ready");
-                //                continue;
+                //                System.err.println("\tnot ready");
+                continue;
             }
             String originalStatus =
                 entry.getValue(MTTFTypeHandler.IDX_STATUS, "");
