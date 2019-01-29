@@ -9,7 +9,7 @@
 dest=/mnt/ramadda/release/ramadda_2.2
 
 #Where the build products are put
-dist=/mnt/ramadda/source/ramadda-git/ramadda/dist
+dist=/mnt/ramadda/source/ramadda/dist
 
 
 mkdir -p $dest
