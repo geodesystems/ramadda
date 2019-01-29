@@ -19,6 +19,8 @@ GRANDPARENT=`dirname $PARENT`
 GREATPARENT=`dirname $GRANDPARENT`
 BASEDIR=${GREATPARENT}
 
+#For now hard code this
+BASEDIR=/mnt/ramadda
 #Change this to point to your RAMADDA home dir
 RAMADDA_HOME=${BASEDIR}/repository
 echo "RAMADDA_HOME=${RAMADDA_HOME}"
@@ -26,7 +28,7 @@ echo "RAMADDA_HOME=${RAMADDA_HOME}"
 #This file should exist in your RAMADDA home dir and should contain the 2 passwords (without the '#' comment delimiter):
 #ramadda.ssl.password=some password
 #ramadda.ssl.keypassword=some password
-PROPERTY_FILE=${RAMADDA_HOME}/ssl.properties
+PROPERTY_FILE=${RAMADDA_HOME}/repository.properties
 
 ##Set your first domain and any other domains
 FIRST_DOMAIN=geodesystems.com
@@ -42,17 +44,24 @@ CERTBOT=${BIN_DIR}/certbot-auto
 
 case $1 in
     ""|"renew")
-	${CERTBOT} renew
+	${CERTBOT} --debug renew
 	;;
     "new")
-	${CERTBOT}  certonly --webroot -w ${RAMADDA_HOME}/htdocs -d ${FIRST_DOMAIN} -d ${OTHER_DOMAINS}
+	${CERTBOT}  --debug certonly --webroot -w ${RAMADDA_HOME}/htdocs -d ${FIRST_DOMAIN} -d ${OTHER_DOMAINS}
 	;;
 esac
 
 
 
+#Check for the -0001 dir. Note sure why certbot makes this
+LETSENCRYPT_DIR="/etc/letsencrypt/live/${FIRST_DOMAIN}-0001"
+if [! -d "$LETSENCRYPT_DIR" ]; then
+    LETSENCRYPT_DIR="/etc/letsencrypt/live/${FIRST_DOMAIN}"
+fi
 
-openssl pkcs12 -export -out ${SRCKEYSTORE} -in /etc/letsencrypt/live/${FIRST_DOMAIN}/fullchain.pem  -inkey /etc/letsencrypt/live/${FIRST_DOMAIN}/privkey.pem  -password pass:${PASSWORD}
+echo "letsencrypt dir: ${LETSENCRYPT_DIR}"
+
+openssl pkcs12 -export -out ${SRCKEYSTORE} -in /etc/letsencrypt/live/${LETSENCRYPT_DIR}/fullchain.pem  -inkey /etc/letsencrypt/live/${LETSENCRYPT_DIR}/privkey.pem  -password pass:${PASSWORD}
 rm -f ${KEYSTORE}
 echo "$PASSWORD
 $PASSWORD
