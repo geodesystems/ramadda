@@ -305,6 +305,8 @@ public class TypeHandler extends RepositoryManager {
     /** _more_ */
     private String description;
 
+    private String editHelp = "";
+
     /** _more_ */
     private String iconPath;
 
@@ -472,6 +474,7 @@ public class TypeHandler extends RepositoryManager {
                     ATTR_SUPERCATEGORY, superCategory);
             filePattern = Utils.getAttributeOrTag(node, ATTR_PATTERN,
                     (String) null);
+            editHelp = Utils.getAttributeOrTag(node, "edithelp", "");
             String tmp = Utils.getAttributeOrTag(node,
                              PROP_FIELD_FILE_PATTERN, (String) null);
 
@@ -2914,6 +2917,7 @@ public class TypeHandler extends RepositoryManager {
         }
 
         boolean showDate = typeHandler.okToShowInHtml(entry, ARG_DATE, true);
+        boolean showCreateDate = showDate && typeHandler.okToShowInHtml(entry, "createdate", true);
 
         boolean entryIsImage = isImage(entry);
         boolean showImage    = false;
@@ -3094,7 +3098,7 @@ public class TypeHandler extends RepositoryManager {
             }
 
             if ( !request.isAnonymous()) {
-                if (showDate) {
+                if (showCreateDate) {
                     sb.append(formEntry(request, msgLabel("Created"),
                                         getDateHandler().formatDate(request,
                                             entry, entry.getCreateDate())));
@@ -3872,6 +3876,9 @@ public class TypeHandler extends RepositoryManager {
                                FormInfo formInfo)
             throws Exception {
 
+        sb.append(HtmlUtils.formEntry("",
+                                      getWikiManager().wikifyEntry(request, entry!=null?entry:parentEntry, editHelp)));
+
         addBasicToEntryForm(request, sb, parentEntry, entry, formInfo, this);
         addSpecialToEntryForm(request, sb, parentEntry, entry, formInfo,
                               this);
@@ -4422,6 +4429,10 @@ public class TypeHandler extends RepositoryManager {
                         HtmlUtils.checkbox(ARG_MAKENAME, "true", true)
                         + HtmlUtils.space(1) + msg("Make name from filename");
 
+                    String deleteFileWidget =(entry != null &&  entry.isFile()) ?
+                        HtmlUtils.checkbox(ARG_DELETEFILE, "true", false)
+                        + HtmlUtils.space(1) + msg("Delete file"):"";
+
 
                     /*
                       String datePatternWidget = msgLabel("Date pattern")
@@ -4450,8 +4461,11 @@ public class TypeHandler extends RepositoryManager {
                     }
 
                     String extras = extraMore + addMetadata + HtmlUtils.br()
-                                    + unzipWidget + HtmlUtils.br()
-                                    + makeNameWidget;  /*datePatternWidget*/
+                        + unzipWidget + HtmlUtils.br()
+                        + makeNameWidget 
+                        + HtmlUtils.br()
+                        + deleteFileWidget;
+                     /*datePatternWidget*/
 
                     String extra =
                         HtmlUtils.makeShowHideBlock(msg("More..."), extras,

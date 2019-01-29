@@ -2566,7 +2566,6 @@ public class EntryManager extends RepositoryManager {
 
 
                 if (name.indexOf("${") >= 0) {}
-
                 if (name.trim().length() == 0) {
                     name = IOUtil.getFileTail(origName);
                     if (request.get(ARG_MAKENAME, false)) {
@@ -2712,13 +2711,19 @@ public class EntryManager extends RepositoryManager {
                 }
             }
 
-            if (newResourceName != null) {
+
+
+
+            if (newResourceName != null ||  request.get(ARG_DELETEFILE, false)) {
                 //If it was a stored file then remove the old one
                 if (entry.getResource().isStoredFile()) {
                     getStorageManager().removeFile(entry.getResource());
                 }
-                entry.setResource(new Resource(newResourceName,
-                        newResourceType));
+                if(newResourceName!=null)
+                    entry.setResource(new Resource(newResourceName,
+                                                   newResourceType));
+                else
+                    entry.setResource(new Resource());
             }
 
             if (entry.isTopEntry()) {

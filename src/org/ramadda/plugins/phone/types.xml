@@ -3,7 +3,6 @@
   <type name="phone_sms"  description="Text Message" xxxhandler="org.ramadda.repository.type.GenericTypeHandler" category="Information" foruser="false">
      <property name="icon" value="/phone/sms.png"/>
      <property name="form.name.label" value="Message"/>
-     <property name="form.description.label" value="Abstract"/>
      <property name="form.file.show" value="false"/>
      <property name="form.area.show" value="false"/>
      <property name="form.location.show" value="true"/>
@@ -32,10 +31,14 @@
 
   <type name="phone_mttf"  description="Message to the future" handler="org.ramadda.plugins.phone.MTTFTypeHandler" category="Information" foruser="false">
      <property name="icon" value="/phone/sms.png"/>
+     <property name="form.description.label" value="Abstract"/>
+     <property name="html.type.show" value="false"/>
+     <property name="html.createdate.show" value="false"/>
+     <property name="html.owner.show" value="false"/>
      <property name="form.area.show" value="false"/>
      <property name="form.description.show" value="false"/>
      <property name="form.filesonserver.show" value="false"/>
-     <property name="form.file.label" value="File to attach (email)"/>
+     <property name="form.file.label" value="File to attach"/>
      <property name="form.date.label" value="Date Range"/>
      <property name="form.fromdate.label" value="Date to send message"/>
      <property name="form.todate.label" value="Date to stop"/>
@@ -48,11 +51,33 @@
      <column name="recurrence" type="enumeration"  values="once:Once,days:Every N Days,dayofmonth:Day of month" default="none" label="Reurrence"  />
      <column name="recurrencevalue" type="double"   default="0" label="Reurrence Value" suffix="N days or day in month" />
      <column name="subject" type="string"  label="Subject"  />
-     <column name="to_phone" type="string"  label="To Phone"  />
+     <column name="to_phone" type="list"  rows="5" label="To Phone"  changetype="true" size="2000" suffix="one per line"/>
      <column name="from_email" type="string"  label="From Email"  />
-     <column name="to_email" type="string"  label="To Email"  />
+     <column name="to_email" type="list"  rows="5" label="To Email"  changetype="true" size="2000" suffix="one per line"/>
      <column name="message" type="string"  label="Message"  size="5000" rows="10"/>
-     <column name="status" type="string"  label="Status"  />
+     <column name="status" type="string"  label="Status"  canedit="false"/>
+     <edithelp><![CDATA[
++box-yellow
+To send a message in the future set the start date to the begin time of the message. 
+Set the end date to when the message shouldn't be sent anymore. By default the message is sent 
+one time.
+<p>
+To repeat the message specify set the recurrence type to either "Every N Day"s or "Day of Month".
+For example, if you wanted the message sent every 12 hours then choose a recurrence of "Every N Days" and
+a value of 0.5. If you wanted it to be sent every 7 days then specify a value of 7.
+<p>
+If you add a file then that file will be sent as an attachment. If you are sending a text message and if the file is an image then the image will be sent as an MMS message.
+-box-yellow
+]]>
+</edithelp>
+
+     <wiki><![CDATA[
++section title={{name}}
+{{information details="false" showResource="false"}}
+-section
+]]>
+</wiki>
+
    </type>
 
 

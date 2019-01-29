@@ -833,6 +833,8 @@ public interface Constants {
     /** _more_ */
     public static final String ARG_MAKENAME = "makename";
 
+    public static final String ARG_DELETEFILE = "deletefile";
+
     /** _more_ */
     public static final String ARG_FILE_PRESERVEDIRECTORY =
         "file.preservedirectoryfile";

@@ -1291,9 +1291,10 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                           "" + Utils.getProperty(props, ATTR_SHOWTITLE,
                               false));
             boolean details = Utils.getProperty(props, ATTR_DETAILS, false);
+            boolean showResource = Utils.getProperty(props, "showResource", true);
             if ( !details) {
                 return entry.getTypeHandler().getEntryContent(myRequest,
-                        entry, false, true).toString();
+                        entry, false, showResource).toString();
             }
 
             return getRepository().getHtmlOutputHandler().getInformationTabs(

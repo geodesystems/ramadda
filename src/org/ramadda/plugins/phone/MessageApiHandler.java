@@ -129,6 +129,7 @@ public class MessageApiHandler extends RepositoryManager implements RequestHandl
 
                 break;
             }
+            //            Misc.sleepSeconds(30);
             Misc.sleepSeconds(repository.getProperty("messages.timeout",60*5));
         }
     }
@@ -242,7 +243,6 @@ public class MessageApiHandler extends RepositoryManager implements RequestHandl
             }
 
             if (needToUpdate) {
-                System.err.println("\tsaving entry");
                 getEntryManager().updateEntry(request, entry);
             }
         }
@@ -269,14 +269,14 @@ public class MessageApiHandler extends RepositoryManager implements RequestHandl
                                         "").trim();
         String fromEmail = entry.getValue(MTTFTypeHandler.IDX_FROM_EMAIL,
                                           "").trim();
-        String toEmail = entry.getValue(MTTFTypeHandler.IDX_TO_EMAIL,
-                                        "").trim();
-        String toPhone = entry.getValue(MTTFTypeHandler.IDX_TO_PHONE,
-                                        "").trim();
+        List<String> toEmail = StringUtil.split(entry.getValue(MTTFTypeHandler.IDX_TO_EMAIL,
+                                                               ""),",",true,true);
+        List<String> toPhone = StringUtil.split(entry.getValue(MTTFTypeHandler.IDX_TO_PHONE,
+                                                               ""),",",true,true);
         String message = entry.getValue(MTTFTypeHandler.IDX_MESSAGE, "");
 
 
-        if (Utils.stringDefined(toPhone)) {
+        if (toPhone.size()>0) {
             if (twilio == null) {
                 return "SMS not enabled";
             }
@@ -287,14 +287,14 @@ public class MessageApiHandler extends RepositoryManager implements RequestHandl
                     + "/phone/message/image?entryid=" + entry.getId());
                 System.err.println("url:" + url);
             }
-
-            twilio.sendTextMessage(null, toPhone, message, url);
+            for(String phone: toPhone) {
+                twilio.sendTextMessage(null, phone, message, url);
+            }
             sent[0] = true;
-
             return "SMS sent @ "
                    + getRepository().getDateHandler().formatDate(new Date());
         }
-        if (Utils.stringDefined(toEmail)) {
+        if (toEmail.size()>0) {
             if ( !getAdmin().isEmailCapable()) {
                 return "Email not enabled";
             }
@@ -302,9 +302,10 @@ public class MessageApiHandler extends RepositoryManager implements RequestHandl
                 return "Need to specify a from email";
             }
             sent[0] = true;
-            getRepository().getMailManager().sendEmail(toEmail, fromEmail,
-                    subject, message, false, entry.getFile());
-
+            for(String email: toEmail) {
+                getRepository().getMailManager().sendEmail(email, fromEmail,
+                                                           subject, message, false, entry.getFile());
+            }
             return "Email sent @ " + new Date();
         }
 
