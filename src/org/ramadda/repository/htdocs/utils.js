@@ -3,8 +3,7 @@
 */
 
 
-var ramaddaBaseUrl = "${urlroot}";
-var ramaddaBaseEntry = "${baseentry}";
+
 var root = ramaddaBaseUrl;
 var urlroot = ramaddaBaseUrl;
 var icon_close = ramaddaBaseUrl +"/icons/close.gif";
