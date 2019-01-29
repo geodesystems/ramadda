@@ -91,19 +91,17 @@ public class MessageApiHandler extends RepositoryManager implements RequestHandl
      * _more_
      */
     private void runMessages() {
-        System.err.println("runMessages");
-        Misc.sleepSeconds(10);
+        Misc.sleepSeconds(30);
+        if(!repository.getProperty("messages.enabled",false)) return;
         while (true) {
             try {
+                if(!repository.getProperty("messages.enabled",false)) return;
                 checkMessages();
             } catch (Exception exc) {
                 System.err.println("MessageApiHandler got error:" + exc);
-
                 break;
             }
-            Misc.sleepSeconds(10);
-            //            Misc.sleepSeconds(60*5);
-
+            Misc.sleepSeconds(repository.getProperty("messages.timeout",60*5));
         }
     }
 
