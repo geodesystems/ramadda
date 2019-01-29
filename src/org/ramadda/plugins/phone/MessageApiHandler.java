@@ -129,8 +129,7 @@ public class MessageApiHandler extends RepositoryManager implements RequestHandl
 
                 break;
             }
-            //            Misc.sleepSeconds(repository.getProperty("messages.timeout",60*5));
-            Misc.sleepSeconds(30);
+            Misc.sleepSeconds(repository.getProperty("messages.timeout",60*5));
         }
     }
 
@@ -192,7 +191,6 @@ public class MessageApiHandler extends RepositoryManager implements RequestHandl
                 inError = true;
                 status  = exc.getMessage();
             }
-            System.err.println("\tstatus:" + status + " sent:" + sent[0]);
 
             if (sent[0]) {
                 String recurrence =
