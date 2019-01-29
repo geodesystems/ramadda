@@ -698,7 +698,7 @@ public class SlideshowTypeHandler extends GenericTypeHandler {
         template = template.replace("${head}",
                                     HtmlUtils.script("setEscapeUrl('" + url
                                         + "');"));
-        template = template.replace("${urlroot}",
+        template = template.replace("${root}",
                                     getRepository().getUrlBase());
         template = template.replace("${title}", entry.getName());
         template = template.replace("${header}", header);

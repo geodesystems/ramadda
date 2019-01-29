@@ -195,7 +195,7 @@ public class HtmlDocTypeHandler extends GenericTypeHandler {
         InputStream fis  = getStorageManager().getFileInputStream(file);
         String      html = IOUtil.readInputStream(fis);
         IOUtil.close(fis);
-        html = html.replace("${urlroot}", getRepository().getUrlBase());
+        html = html.replace("${urlroot}", getRepository().getUrlBase()).replace("${root}", getRepository().getUrlBase());
 
         return html;
     }

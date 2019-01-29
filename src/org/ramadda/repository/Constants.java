@@ -2237,6 +2237,6 @@ public interface Constants {
 
 
     /** _more_ */
-    public static final String MACRO_URLROOT = "${root}";
+    public static final String MACRO_ROOT = "${root}";
 
 }

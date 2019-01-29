@@ -2,9 +2,9 @@
 <title>Slack Shell</title>
 <body>
 <div class="ramadda-section">
-<center><a href="${urlroot}/slack/index.html">Slack Documentation</a></center>
+<center><a href="${root}/slack/index.html">Slack Documentation</a></center>
 <h2>Slack Shell</h2>
-<img src="${urlroot}/slack/slack-logo.jpg" align="right" width="450">
+<img src="${root}/slack/slack-logo.jpg" align="right" width="450">
 The RAMADDA Slack Shell lets you access content and  data in your RAMADDA site directly from Slack. 
 <br clear=all><p>
 
@@ -14,7 +14,7 @@ To set this up  -
 <li> Create a Slack Slash Command. In Slack go to the Integrations page for your team. Under Configured Integrations select Slash Commands and add a new Slash Commands integration. You can choose any command (I've used "/r" or "/ramadda"). 
 
 <li> To configure this Slash Command enter your RAMADDA URL  - 
-<a href="https://${hostname}${urlroot}//slack/api">https://${hostname}${urlroot}/slack/api</a>
+<a href="https://${hostname}${root}//slack/api">https://${hostname}${root}/slack/api</a>
 - in the Configuration page. 
 <center><img src="images/slashcommand.png" width="600"></center>
 
@@ -105,13 +105,13 @@ Create wiki pages, web logs and other entries
 <p>
 You can also define a slash command that has the RAMADDA command predefined. So you can add a slash command, e.g. "/cd", that maps to the URL:
 <pre>
-<a href="https://${hostname}${urlroot}/slack/slack/api">https://${hostname}${urlroot}/slack/slack/api?ramadda_command=cd</a>
+<a href="https://${hostname}${root}/slack/slack/api">https://${hostname}${root}/slack/slack/api?ramadda_command=cd</a>
 </pre>
 Create multiple slash commands, e.g.:
 <pre>
-<a href="https://${hostname}${urlroot}/slack/slack/api">https://${hostname}${urlroot}/slack/slack/api?ramadda_command=ls</a>
-<a href="https://${hostname}${urlroot}/slack/slack/api">https://${hostname}${urlroot}/slack/slack/api?ramadda_command=pwd</a>
-<a href="https://${hostname}${urlroot}/slack/slack/api">https://${hostname}${urlroot}/slack/slack/api?ramadda_command=new</a>
+<a href="https://${hostname}${root}/slack/slack/api">https://${hostname}${root}/slack/slack/api?ramadda_command=ls</a>
+<a href="https://${hostname}${root}/slack/slack/api">https://${hostname}${root}/slack/slack/api?ramadda_command=pwd</a>
+<a href="https://${hostname}${root}/slack/slack/api">https://${hostname}${root}/slack/slack/api?ramadda_command=new</a>
 </pre>
 
 Now in Slack you would just do:

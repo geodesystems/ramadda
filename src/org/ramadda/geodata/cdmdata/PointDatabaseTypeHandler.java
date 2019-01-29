@@ -1062,11 +1062,11 @@ public class PointDatabaseTypeHandler extends BlobTypeHandler {
                 if (chartTemplate == null) {
                     chartTemplate = getRepository().getResource(
                         "/org/ramadda/repository/resources/chart/amline.html");
-                    chartTemplate = chartTemplate.replace("${urlroot}",
+                    chartTemplate = chartTemplate.replace("${root}",
                             getRepository().getUrlBase());
-                    chartTemplate = chartTemplate.replace("${urlroot}",
+                    chartTemplate = chartTemplate.replace("${root}",
                             getRepository().getUrlBase());
-                    chartTemplate = chartTemplate.replace("${urlroot}",
+                    chartTemplate = chartTemplate.replace("${root}",
                             getRepository().getUrlBase());
                 }
                 */
@@ -1074,7 +1074,7 @@ public class PointDatabaseTypeHandler extends BlobTypeHandler {
                 //  for dycharts javascript
                 chartTemplate = getRepository().getResource(
                     "/org/ramadda/repository/resources/chart/dycharts.html");
-                chartTemplate = chartTemplate.replace("${urlroot}",
+                chartTemplate = chartTemplate.replace("${root}",
                         getRepository().getUrlBase());
                 String title = request.getString(ARG_POINT_TIMESERIES_TITLE,
                                    entry.getName());

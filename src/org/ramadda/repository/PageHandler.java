@@ -3667,7 +3667,7 @@ Time:14625 cnt:7000
         }
 
         return s.replace("${cdnpath}", path).replace(
-            MACRO_URLROOT, getRepository().getUrlBase()).replace(
+            MACRO_ROOT, getRepository().getUrlBase()).replace(
             "${baseentry}", getEntryManager().getRootEntry().getId()).replace(
             "${min}", mini).replace("${dotmin}", dotmini);
     }

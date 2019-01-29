@@ -3885,6 +3885,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
                 } else if (path.endsWith(".html")) {
                     String html = IOUtil.readInputStream(inputStream);
                     html = html.replace("${urlroot}", urlBase);
+                    html = html.replace("${root}", urlBase);
                     html = html.replace("${version}",
                                         getProperty(PROP_BUILD_VERSION,
                                             "1.0"));
@@ -3924,6 +3925,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
                     || pluginPath.endsWith(".json")) {
                 String js = IOUtil.readInputStream(inputStream);
                 js    = js.replace("${urlroot}", urlBase);
+                js    = js.replace("${root}", urlBase);
                 js    = js.replace("${hostname}", request.getServerName());
                 bytes = js.getBytes();
                 putHtdocsCache(path, bytes);
@@ -3936,6 +3938,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
             } else if (path.endsWith(".html")) {
                 String html = IOUtil.readInputStream(inputStream);
                 html = html.replace("${urlroot}", urlBase);
+                html = html.replace("${root}", urlBase);
                 html = html.replace("${hostname}", request.getServerName());
 
                 return getEntryManager().addHeaderToAncillaryPage(request,
