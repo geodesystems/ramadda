@@ -579,7 +579,7 @@ function RamaddaSplomDisplay(displayManager, id, properties) {
     var SUPER;
     $.extend(this, {
             width:"600px",
-            height:"400px",
+            height:"600px",
              });
     RamaddaUtil.inherit(this, SUPER  = new RamaddaPlotlyDisplay(displayManager, id, DISPLAY_PLOTLY_SPLOM, properties));
 
@@ -603,60 +603,92 @@ function RamaddaSplomDisplay(displayManager, id, properties) {
                     fields = this.getData().getRecordFields();
                 }
 
-                var pl_colorscale=[
-                                   [0.0, '#19d3f3'],
-                                   [0.333, '#19d3f3'],
-                                   [0.333, '#e763fa'],
-                                   [0.666, '#e763fa'],
-                                   [0.666, '#636efa'],
-                                   [1, '#636efa']
-                                   ];
 
                 var dataObj = {
                     type: 'splom',
                     dimensions: [],
-                    //                        text:text,
                     marker: {
-                        //                            color: unpack(rows, 'Outcome'),
-                        colorscale:pl_colorscale,
-                        size: 5,
+                        size: parseInt(this.getProperty("markerSize", 5)),
                         line: {
-                            color: 'white',
+                            color: this.getProperty("lineColor", 'white'),
                             width: 0.5
                         }
                     }
                 };
 
 
+                var colorByField = this.getFieldById(fields, this.getProperty("colorBy"));
+                var colorBy = this.getProperty("colorBy");
+                if(colorBy) {
+                    var colorByField = this.getFieldById(fields, colorBy);
+                    if(colorByField) {
+                        var obj = this.getColumnValues(records, colorByField);
+                        var colors = this.getColorTable();
+                        if(!colors)  colors = Utils.getColorTable("blue_white_red");
+                        var colorscale=[];
+                        var min = parseFloat(this.getProperty("colorByMin",obj.min));
+                        var max = parseFloat(this.getProperty("colorByMax",obj.max));
+                        if(Utils.isDefined(colors.min)) {
+                            var clippedColors = [];
+                            for(var i=0;i<colors.colors.length;i++) {
+                                var percent = i/colors.colors.length;
+                                var value = colors.min+(colors.max-colors.min)*percent;
+                                if(value>=min && value<=max) 
+                                    clippedColors.push(colors.colors[i]);
+                            }
+                            colors = clippedColors;
+                        }
+                        if(colors.colors) colors = colors.colors;
+                        var range = max-min;
+                        var colorValues = [];
+                        for(var i=0;i<obj.values.length;i++) {
+                            var value = obj.values[i];
+                            var percent = (value-min)/range;
+                            colorValues.push(percent);
+                        }
+                        for(var i=0;i<colors.length;i++) {
+                            var value = i/colors.length;
+                            var next = (i+1)/colors.length;
+                            colorscale.push([value,colors[i]]);
+                            colorscale.push([next,colors[i]]);
+                        }
+                        dataObj.marker.color = colorValues;
+                        dataObj.marker.colorscale =colorscale;
+                    }
+
+                    this.displayColorTable(colors,ID_DISPLAY_BOTTOM,min,max);
+                }
+
+                var stringField = this.getFieldOfType(fields,"string");
+                if(stringField) { 
+                    var l =  this.getColumnValues(records, stringField).values;
+                   dataObj.text = [];
+                   for(var i=0;i<l.length;i++)
+                       dataObj.text.push(stringField.getLabel()+": " + l[i]);
+                }
+                                   
                 var plotData = [dataObj];
                 var layout = {
-                    //title:"Scatterplot Matrix (SPLOM) for Diabetes Dataset Data source: [1]",
-
                     autosize: false,
                     hovermode:'closest',
                     dragmode:'select',
-                    plot_bgcolor:'rgba(240,240,240, 0.95)',
+                    plot_bgcolor:this.getProperty("bgColor",'rgba(240,240,240, 0.95)'),
+                    margin: {
+                        l: this.getProperty("marginLeft",140),
+                        r: this.getProperty("marginRight",40),
+                        b: this.getProperty("marginBottom",50),
+                        t: this.getProperty("marginTop",20),
+                    },
                 }
-                var text = null;
-                var colors = null;
+
                 var cnt = 0;
                 for(var i =0;i<fields.length;i++) {
                     var field = fields[i];
                     if(!field.isFieldNumeric()) continue;
                     var values = this.getColumnValues(records, field).values;
-                    if(text == null)  {
-                        colors = [];
-                        text = [];
-                        for(var j=0;j<values.length;j++)  {
-                            text.push("x");
-                            colors.push(0.5);
-                        }
-                        dataObj.text = text;
-                        dataObj.marker.color= colors;
-                    }
-                    dataObj.dimensions.push({label:field.getLabel(),values:values});
+                    dataObj.dimensions.push({label:field.getUnitLabel(),values:values});
                     var key = "axis"+(cnt==0?"":""+(cnt+1));
-                    layout["x"+key] = this.makeAxis();
+                    layout["x" + key] = this.makeAxis();
                     layout["y" + key] = this.makeAxis();
                     cnt++;
                 }
@@ -699,6 +731,7 @@ function RamaddaTreemapDisplay(displayManager, id, properties) {
 
                 //colors
                 var colors = this.getColorTable();
+                if(colors.colors) colors =colors.colors;
 
                 // Generate Rectangles using Treemap-Squared
                 var rectangles = Treemap.generate(values, 100, 100);

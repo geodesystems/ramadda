@@ -778,7 +778,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
                     var strokeWidth = parseFloat(this.getDisplayProp(source,"strokeWidth","1"));
                     var strokeColor = this.getDisplayProp(source, "strokeColor", "#000");
                     var colorByAttr = this.getDisplayProp(source, "colorBy", null);
-                    var colors = this.getColorTable();
+                    var colors = this.getColorTable(true);
                     var sizeByAttr = this.getDisplayProp(source, "sizeBy",null);
                     var isTrajectory =  this.getDisplayProp(source,"isTrajectory",false);
                     if(isTrajectory) {
@@ -788,12 +788,12 @@ function RamaddaMapDisplay(displayManager, id, properties) {
                      if(!colors && source.colors && source.colors.length>0) {
                         colors = source.colors;
                         if(colors.length==1 &&  Utils.ColorTables[colors[0]]) {
-                            colors = Utils.ColorTables[colors[0]];
+                            colors = Utils.ColorTables[colors[0]].colors;
                         }
                     }
 
                     if(colors == null) {
-                        colors = Utils.ColorTables.grayscale;
+                        colors = Utils.ColorTables.grayscale.colors;
                     }
                     var records = pointData.getRecords();
 
@@ -922,7 +922,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
                         this.points.push(point);
                     }
                     if(didColorBy)
-                        this.displayColorTable(ID_BOTTOM, colorBy.minValue, colorBy.maxValue);
+                        this.displayColorTable(colors, ID_BOTTOM, colorBy.minValue, colorBy.maxValue);
                     this.applyVectorMap();
                 },
 		handleEventRemoveDisplay : function(source, display) {

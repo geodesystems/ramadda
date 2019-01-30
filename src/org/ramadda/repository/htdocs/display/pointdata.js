@@ -395,6 +395,13 @@ function RecordField(props) {
              getId: function() {
                  return this.id;
              },
+             getUnitLabel: function() { 
+               var label = this.getLabel();
+               if(this.unit && this.unit!="")
+                   label = label +" [" + this.unit +"]";
+               return label;
+           },
+
              getLabel: function() { 
                 if(this.label == null || this.label.length==0) return this.id;
                  return this.label;

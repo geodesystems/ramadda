@@ -4615,6 +4615,12 @@ public class TypeHandler extends RepositoryManager {
 
 
 
+    public String getWikiEditorSidebar(Request request, Entry entry) throws Exception {
+        return "";
+    }
+
+
+
     /**
      * _more_
      *
@@ -4635,7 +4641,9 @@ public class TypeHandler extends RepositoryManager {
                               String label, boolean readOnly, int length)
             throws Exception {
         String editorId = id + "_editor";
+        String sidebar = "";
         if ( !readOnly) {
+            sidebar = getWikiEditorSidebar(request,  entry);
             String buttons =
                 getRepository().getWikiManager().makeWikiEditBar(request,
                                                                  entry, editorId);
@@ -4656,8 +4664,8 @@ public class TypeHandler extends RepositoryManager {
                                           + HtmlUtils.attr("class",
                                               "ace_editor"));
         sb.append(HtmlUtils.hidden(id, "", HtmlUtils.id(id)));
-        if (label != null) {
-            sb.append(textWidget);
+        if(Utils.stringDefined(sidebar)) {
+            sb.append(HtmlUtils.table(HtmlUtils.row(HtmlUtils.cols(new String[]{HtmlUtils.td(textWidget),HtmlUtils.td(sidebar," width=10%")}))));
         } else {
             sb.append(textWidget);
         }

@@ -1025,7 +1025,6 @@ td.entry-table-block {
 
 
 .ramadda-popup, .ramadda-selectdiv {
-   padding:4px;
    position: absolute; 
    display: none;
    z-index: 1000;

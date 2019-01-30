@@ -10,6 +10,8 @@ var ID_TITLE = ATTR_TITLE;
 var ID_TITLE_EDIT = "title_edit";
 var ID_DETAILS = "details";
 var ID_DISPLAY_CONTENTS = "contents";
+var ID_DISPLAY_TOP = "top";
+var ID_DISPLAY_BOTTOM = "bottom";
 var ID_GROUP_CONTENTS = "group_contents";
 var ID_DETAILS_MAIN = "detailsmain";
 
@@ -422,18 +424,22 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
                 if(ct == "none") return null;
                 return ct;
             },
-            getColorTable: function() {
+            getColorTable: function(justColors) {
                 var colorTable = this.getColorTableName();
                 if(colorTable) {
-                    return  Utils.ColorTables[colorTable];
+                    var ct =  Utils.ColorTables[colorTable]; 
+                    if(ct && justColors) return ct.colors;
+                    return ct;
                 }
                 return null;
             },
-            displayColorTable: function(domId, min,max) {
+            displayColorTable: function(ct,domId, min,max) {
                 min = parseFloat(min);
                 max = parseFloat(max);
-                var ct = this.getColorTable();
+                if(!ct)
+                    ct = this.getColorTable();
                 if(!ct) return;
+                if(ct.colors) ct = ct.colors;
                 var html = HtmlUtil.openTag("div",["class","display-colortable"]) + "<table cellpadding=0 cellspacing=0 width=100% border=0><tr><td width=1%>" + this.formatNumber(min)+"&nbsp;</td>";
                 var step = (max-min)/ct.length;
                 for(var i=0;i<ct.length;i++) {
@@ -1030,6 +1036,18 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
                         }
                         dataList = list;
                     }
+                }
+
+                var stride = parseInt(this.getProperty("stride",-1));
+                if(stride>0) {
+                    var list = [];
+                    var cnt = 0;
+                    //
+                    //1,2,3,4,5,6,7,8,9,10
+                    for(var i=0;i<dataList.length;i+=(stride+1)) {
+                        list.push(dataList[i]);
+                    }
+                    dataList = list;
                 }
                 return dataList;
             },
@@ -2339,7 +2357,14 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             },
             getContentsDiv: function() {
                 var extraStyle =  this.getDimensionsStyle();
-                return  HtmlUtil.div([ATTR_CLASS,"display-contents-inner display-" +this.type, "style", extraStyle, ATTR_ID, this.getDomId(ID_DISPLAY_CONTENTS)],"");
+                var topBottomStyle="";
+                var width = this.getWidthForStyle();
+                if(width) {
+                    topBottomStyle +=  " width:" + width+";";
+                }
+                var top = HtmlUtil.div([ATTR_STYLE,topBottomStyle,ATTR_ID, this.getDomId(ID_DISPLAY_TOP)],"");
+                var bottom = HtmlUtil.div([ATTR_STYLE,topBottomStyle,ATTR_ID, this.getDomId(ID_DISPLAY_BOTTOM)],"");
+                return top+ HtmlUtil.div([ATTR_CLASS,"display-contents-inner display-" +this.type, "style", extraStyle, ATTR_ID, this.getDomId(ID_DISPLAY_CONTENTS)],"")+ bottom;
             },
             copyDisplay: function() {
                 var newOne = {};

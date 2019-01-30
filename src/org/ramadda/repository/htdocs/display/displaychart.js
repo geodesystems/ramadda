@@ -1390,13 +1390,15 @@ function RamaddaMultiChart(displayManager, id, properties) {
                     }
                     this.chart = new google.visualization.Gauge(document.getElementById(chartId));
                 } else  if(chartType == DISPLAY_BUBBLE) {
-                    var ct = this.getColorTable();
-                    if(ct)
+                    var ct = this.getColorTable(true);
+                    if(ct) {
                         chartOptions.colors=ct;
-                    else if(!this.colors)
+                    }   else if(!this.colors) {
                         chartOptions.colors=this.colorList;
-                    if(chartOptions.colors)
-                       chartOptions.colors=Utils.getColorTable("rainbow");
+                    }
+                    if(chartOptions.colors) {
+                        chartOptions.colors=Utils.getColorTable("rainbow",true);
+                    }
 
                     chartOptions.chartArea = {left:100,top:10,width:'98%',height:'90%'}
                     chartOptions.colorAxis  = {
@@ -2258,7 +2260,7 @@ function RamaddaCorrelationDisplay(displayManager, id, properties) {
                 var colors = null;
                 colorByMin = parseFloat(this.colorByMin);
                 colorByMax = parseFloat(this.colorByMax);
-                colors = this.getColorTable();
+                colors = this.getColorTable(true);
                 var colCnt = 0;
                 for(var fieldIdx1=0;fieldIdx1<fields.length;fieldIdx1++) {
                     var field1 = fields[fieldIdx1];
@@ -2312,7 +2314,7 @@ function RamaddaCorrelationDisplay(displayManager, id, properties) {
                 html+="<tr><td></td><td colspan = " + colCnt+">" + HtmlUtil.div(["id",this.getDomId(ID_BOTTOM)],"") +"</td></tr>";
                 html += "</table>";
                 this.setContents(html);
-                this.displayColorTable(ID_BOTTOM, colorByMin, colorByMax);
+                this.displayColorTable(colors, ID_BOTTOM, colorByMin, colorByMax);
                 this.initTooltip();
 
             },
@@ -2341,7 +2343,7 @@ function RamaddaHeatmapDisplay(displayManager, id, properties) {
                 var colorTable = this.getColorTableName();
                 var ct = "<select id=" + this.getDomId("colortable")+">";
                 for(table in Utils.ColorTable) {
-                    if(table == colorTabler)
+                    if(table == colorTable)
                         ct+="<option selected>"+ table+"</option>";
                     else
                         ct+="<option>"+ table+"</option>";
@@ -2454,12 +2456,12 @@ function RamaddaHeatmapDisplay(displayManager, id, properties) {
                             colors.push(null);
                             continue;
                         }
-                        var ct = Utils.ColorTables[name];
+                        var ct = Utils.getColorTable(name, true);
                         //                        console.log("ct:" + name +" " +(ct!=null));
                         colors.push(ct);
                     }
                 }  else {
-                    colors  = [this.getColorTable()];
+                    colors  = [this.getColorTable(true)];
                 }
                 var mins = null;
                 var maxs = null;

@@ -210,6 +210,14 @@ public class PointTypeHandler extends RecordTypeHandler {
 
     }
 
+    public String getWikiEditorSidebar(Request request, Entry entry) throws Exception {
+        //        PointOutputHandler outputHandler =
+        //            (PointOutputHandler) getRecordOutputHandler();
+        //TODO
+        return "";
+
+    }
+
     /**
      * Gets called by the slack plugin. create a time series image
      *
