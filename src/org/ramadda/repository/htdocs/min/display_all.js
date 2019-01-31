@@ -11452,7 +11452,6 @@ function RamaddaMapDisplay(displayManager, id, properties) {
                     }
 
                     if(this.getProperty("latitude")) {
-                        console.log("ll:" +parseFloat(this.getProperty("longitude", -105)));
                         this.map.setCenter(createLonLat(parseFloat(this.getProperty("longitude", -105)),
                                                         parseFloat(this.getProperty("latitude", 40))));
                     }
