@@ -2541,6 +2541,7 @@ function initMapFunctions(theMap) {
 
     theMap.setCenter = function(latLonPoint) {
         var projPoint =  this.transformLLPoint(latLonPoint);
+        console.log("center:" + projPoint);
         this.getMap().setCenter(projPoint);
     }
 
