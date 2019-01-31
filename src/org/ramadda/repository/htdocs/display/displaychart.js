@@ -381,7 +381,7 @@ function RamaddaMultiChart(displayManager, id, properties) {
                 if(data != args.data) {
                     return;
                 }
-                //                console.log("chart index="+ args.index);
+                console.log("chart index="+ args.index);
                 this.setChartSelection(args.index);
             },
             getFieldsToSelect: function(pointData) {
@@ -1653,7 +1653,7 @@ function GaugeDisplay(displayManager, id, properties) {
                     if(h.length>20) {
                         h = h.substring(0,19)+"...";
                     }
-                    if(this.gaugeLabel) h = this.gaugeLabel;
+                    if(this.getProperty("gaugeLabel") h = this.getProperty("gaugeLabel";
                     else if(this["gaugeLabel" + (i+1)]) h = this["gaugeLabel" + (i+1)];
                     var value = row[i];
                     list.push([h,Utils.formatNumber(value,true)]);
@@ -1661,6 +1661,7 @@ function GaugeDisplay(displayManager, id, properties) {
                 return  google.visualization.arrayToDataTable(list);
         },
         setChartSelection: function(index) {
+                            console.log("gauge.setChartSelection:" + this.chart);
                 if(this.chart) {
                     this.index  = index;
                     var dataTable = this.makeGaugeDataTable(this.dataList);
