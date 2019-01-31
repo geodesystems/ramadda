@@ -1358,6 +1358,13 @@ public abstract class Converter extends Processor {
         /** _more_ */
         int destCol;
 
+        String newColName;
+
+
+        String mode;
+
+        boolean doDelete;
+
         /**
          * _more_
          *
@@ -1367,9 +1374,12 @@ public abstract class Converter extends Processor {
          *
          * @throws Exception _more_
          */
-        public Denormalizer(String mapFile, int col) throws Exception {
+        public Denormalizer(String mapFile, int col, String newName, String mode) throws Exception {
             makeMap(mapFile);
             this.destCol = col;
+            this.newColName = newName;
+            this.mode = mode;
+            this.doDelete = mode.endsWith("delete");
         }
 
 
@@ -1412,12 +1422,29 @@ public abstract class Converter extends Processor {
         @Override
         public Row processRow(TextReader info, Row row, String line) {
             List   values   = row.getValues();
-            Object key      = values.get(destCol);
-            String newValue = (String) map.get(key);
+            String newValue = null;
+            if(rowCnt++ == 0) {
+                if(newColName.length()>1)
+                    newValue = newColName;
+            } else {
+                Object key      = values.get(destCol);
+                newValue = (String) map.get(key);
+                if(doDelete && newValue == null)
+                    return null;
+            }
+
+            if (newValue == null && mode.startsWith("add")) {
+                newValue = "";
+            }
+
             if (newValue != null) {
                 //                if(newValue.indexOf(",")>=0) newValue = "\"" + newValue+"\"";
-                values.set(destCol, newValue);
-            }
+                if(mode.startsWith("replace"))
+                    values.set(destCol, newValue);
+                else
+                    values.add(destCol+1, newValue);
+            } 
+
 
             return row;
         }

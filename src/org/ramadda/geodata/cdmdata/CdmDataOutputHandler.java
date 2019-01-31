@@ -22,11 +22,12 @@ import opendap.dap.DAP2Exception;
 import opendap.servlet.GuardedDataset;
 import opendap.servlet.ReqState;
 
+import org.ramadda.repository.DateHandler;
+
 
 
 import org.ramadda.repository.Entry;
 import org.ramadda.repository.Link;
-import org.ramadda.repository.DateHandler;
 import org.ramadda.repository.PageHandler;
 import org.ramadda.repository.Repository;
 import org.ramadda.repository.Request;
@@ -789,8 +790,8 @@ public class CdmDataOutputHandler extends OutputHandler implements CdmConstants 
                                        false);
         LatLonRect         llr   = dataset.getBoundingBox();
         if (llr != null) {
-            MapInfo map = getRepository().getMapManager().createMap(request,entry,
-                              true, null);
+            MapInfo map = getRepository().getMapManager().createMap(request,
+                              entry, true, null);
             map.addBox("", "", "", llr,
                        new MapBoxProperties("blue", false, true));
             String[] points = new String[] { "" + llr.getLatMax(),
@@ -1231,8 +1232,8 @@ public class CdmDataOutputHandler extends OutputHandler implements CdmConstants 
             throws Exception {
 
 
-        MapInfo map = getRepository().getMapManager().createMap(request,entry,
-                          false, null);
+        MapInfo map = getRepository().getMapManager().createMap(request,
+                          entry, false, null);
         String              path = getPath(request, entry);
         FeatureDatasetPoint pod = getCdmManager().getPointDataset(entry,
                                       path);
@@ -1444,8 +1445,8 @@ public class CdmDataOutputHandler extends OutputHandler implements CdmConstants 
             getCdmManager().getTrajectoryDataset(path);
         StringBuffer         sb   = new StringBuffer();
 
-        MapInfo map = getRepository().getMapManager().createMap(request, entry, 800,
-                          600, false, null);
+        MapInfo map = getRepository().getMapManager().createMap(request,
+                          entry, 800, 600, false, null);
         List trajectories = tod.getTrajectories();
         //TODO: Use new openlayers map
         for (int i = 0; i < trajectories.size(); i++) {
@@ -1538,8 +1539,8 @@ public class CdmDataOutputHandler extends OutputHandler implements CdmConstants 
                 msgLabel("Format"),
                 HtmlUtils.select(CdmConstants.ARG_FORMAT, formats, format)));
 
-        MapInfo map = getRepository().getMapManager().createMap(request,entry,
-                          true, null);
+        MapInfo map = getRepository().getMapManager().createMap(request,
+                          entry, true, null);
         map.addBox(entry, new MapBoxProperties("blue", false, true));
         map.centerOn(entry);
         String llb = map.makeSelector(ARG_POINT_BBOX, true, null);

@@ -12,7 +12,7 @@ addGlobalDisplayType({type:DISPLAY_FILTER , label: "Filter",requiresData:false,c
 addGlobalDisplayType({type:DISPLAY_ANIMATION , label: "Animation",requiresData:false,category:"Controls"});
 addGlobalDisplayType({type:DISPLAY_LABEL , label: "Text",requiresData:false,category:"Misc"});
 
-addGlobalDisplayType({type:DISPLAY_SHELL , label: "Analysis Shell",requiresData:false,category:"Misc"});
+//addGlobalDisplayType({type:DISPLAY_SHELL , label: "Analysis Shell",requiresData:false,category:"Misc"});
 
 
 function RamaddaFilterDisplay(displayManager, id, properties) {

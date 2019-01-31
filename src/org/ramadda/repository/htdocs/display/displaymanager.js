@@ -74,6 +74,7 @@ function DisplayManager(argId,argProperties) {
 
 
     var ID_MENU_BUTTON = "menu_button";
+    var ID_MENU_CONTAINER =  "menu_container";
     var ID_MENU_OUTER =  "menu_outer";
     var ID_MENU_INNER =  "menu_inner";
 
@@ -86,12 +87,6 @@ function DisplayManager(argId,argProperties) {
                 initMapBounds : null,
                 });
 
-    if(window.globalDisplayTypes!=null) {
-        for(var i=0;i<window.globalDisplayTypes.length;i++) {
-            this.displayTypes.push(window.globalDisplayTypes[i]);
-        }
-    }
-
 
 
 
@@ -100,11 +95,7 @@ function DisplayManager(argId,argProperties) {
            showmap : this.getProperty(PROP_SHOW_MAP,null),
            setDisplayReady: function() {
                 SUPER.setDisplayReadyCall(this);
-                console.log("displaymanager.displayReady");
                 this.getLayoutManager().setDisplayReady();
-           },
-           addDisplayType: function(type,label) {
-               this.displayTypes.push({type:label});
            },
            getLayoutManager: function () {
                return this.group;
@@ -145,7 +136,7 @@ function DisplayManager(argId,argProperties) {
                 if(closest!=null) {
                     this.propagateEventRecordSelection(mapDisplay, pointData, {index:indexObj.index});
                 }
-                this.notifyEvent("handleEventMapClick", mapDisplay, {mapDisplay:mapDisplay,lon:lon,lat:lat});
+                this.notifyEvent("handleEventMapClick", mapDisplay, {display:mapDisplay,lon:lon,lat:lat});
             },
             propagateEventRecordSelection: function(source, pointData, args) {
                 var index = args.index;
@@ -212,12 +203,18 @@ function DisplayManager(argId,argProperties) {
                 var newMenus = {};
                 var cats = [];
                 var chartMenu = "";
-                for(var i=0;i<this.displayTypes.length;i++) {
+                var displayTypes = [];
+                if(window.globalDisplayTypes!=null) {
+                    displayTypes = window.globalDisplayTypes;
+                }
+                for(var i=0;i<displayTypes.length;i++) {
                     //The ids (.e.g., 'linechart' have to match up with some class function with the name 
-                    var type = this.displayTypes[i];
-                    if(Utils.isDefined(type.forUser) && !type.forUser) continue;
+                    var type = displayTypes[i];
+                    if(Utils.isDefined(type.forUser) && !type.forUser) {
+                        continue;
+                    }
                     var category = type.category;
-                    if(category == null) {
+                    if(!category) {
                         category = "Misc";
                     }
                     if(newMenus[category] == null) {
@@ -291,7 +288,7 @@ function DisplayManager(argId,argProperties) {
                                         HtmlUtil.tag("ul", [ATTR_ID, this.getDomId(ID_MENU_INNER),ATTR_CLASS, "sf-menu"], menuBar));
 
                 html += menu;
-                html += HtmlUtil.tag(TAG_A, [ATTR_CLASS, "display-menu-button", ATTR_ID, this.getDomId(ID_MENU_BUTTON)],"&nbsp;");
+                //                html += HtmlUtil.tag(TAG_A, [ATTR_CLASS, "display-menu-button", ATTR_ID, this.getDomId(ID_MENU_BUTTON)],"&nbsp;");
                 //                html+="<br>";
                 return html;
             },
@@ -452,7 +449,11 @@ function DisplayManager(argId,argProperties) {
 
     var displaysHtml = HtmlUtil.div([ATTR_ID, this.getDomId(ID_DISPLAYS),ATTR_CLASS,"display-container"]);
     var html = HtmlUtil.openTag(TAG_DIV);
-    html += this.makeMainMenu();
+    html+=HtmlUtil.div(["id",this.getDomId(ID_MENU_CONTAINER)]);
+                       //    html += this.makeMainMenu();
+    if(this.getProperty(PROP_SHOW_MENU, true))  {
+        html+= HtmlUtil.tag(TAG_A, [ATTR_CLASS, "display-menu-button", ATTR_ID, this.getDomId(ID_MENU_BUTTON)],"&nbsp;");
+    }
     var targetDiv = this.getProperty("target");
     var _this = this;
     if(targetDiv!=null) {
@@ -465,7 +466,6 @@ function DisplayManager(argId,argProperties) {
         html +=   displaysHtml;
     }
     html += HtmlUtil.closeTag(TAG_DIV);
-
     $("#"+ this.getId()).html(html)
     if(this.showmap) {
         this.createDisplay('map');
@@ -473,9 +473,11 @@ function DisplayManager(argId,argProperties) {
     var theDisplayManager = this;
 
     $("#"+this.getDomId(ID_MENU_BUTTON)).button({ icons: { primary: "ui-icon-gear", secondary: "ui-icon-triangle-1-s"}}).click(function(event) {
+            var html = theDisplayManager.makeMainMenu();
+            theDisplayManager.jq(ID_MENU_CONTAINER).html(html);
             var id =theDisplayManager.getDomId(ID_MENU_OUTER); 
             showPopup(event, theDisplayManager.getDomId(ID_MENU_BUTTON), id, false,null,"left bottom");
-            $("#"+  theDisplayManager.getDomId(ID_MENU_INNER)).superfish({
+            theDisplayManager.jq(ID_MENU_INNER).superfish({
                     //Don't set animation - it is broke on safari
                     //                    animation: {height:'show'},
                         speed: 'fast',

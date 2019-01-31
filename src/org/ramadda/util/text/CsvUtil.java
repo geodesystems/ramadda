@@ -981,6 +981,7 @@ public class CsvUtil {
         "-html \"name value properties>\"  (parse the table in the input html file, properties: pattern=<pattern to skip to>)",
         "-concat <col #s>  <delimiter> (create a new column from the given columns)",
         "-operator <col #s>  <new col name> <operator +,-,*,/> (apply the operator to the given columns and create new one)",
+        "-sum <key columns> <value columns>  sum values keying on name column value",
         "-format <columns> <decimal format, e.g. '##0.00'>",
         "-unique <columns> (pass through unique values)",
         "-percent <columns to add>",
@@ -989,7 +990,7 @@ public class CsvUtil {
         "-geocode <col idx> <csv file> <name idx> <lat idx> <lon idx>",
         "-geocodeaddress <col indices> <suffix> ",
         "-geocodeaddressdb <col indices> <suffix> ",
-        "-denormalize <col idx>  <csv file>  (read the id,value from file and substitute the value in the dest file col idx)",
+        "-denormalize <col idx>  <csv file>  <new col name> <mode replace add> (read the id,value from file and substitute the value in the dest file col idx)",
         "-count (show count)", "-maxrows <max rows to print>",
         "-skipline <pattern> (skip any line that matches the pattern)",
         "-changeline <from> <to> (change the line)",
@@ -1193,14 +1194,11 @@ public class CsvUtil {
                 continue;
             }
 
-            if (arg.equals("-mergerows")) {
-                List<String> toks    = getCols(args.get(++i));
-                int[]        indices = new int[toks.size()];
-                for (int tokIdx = 0; tokIdx < toks.size(); tokIdx++) {
-                    indices[tokIdx] = Integer.parseInt(toks.get(tokIdx));
-                }
+            if (arg.equals("-sum")) {
+                List<String> keys      = getCols(args.get(++i));
+                List<String> values      = getCols(args.get(++i));
                 info.getProcessor().addProcessor(
-                    new Processor.Summer(indices));
+                                                 new Processor.Summer(keys,values));
 
                 continue;
             }
@@ -1724,8 +1722,10 @@ public class CsvUtil {
             if (arg.equals("-denormalize")) {
                 int    col1 = Integer.parseInt(args.get(++i));
                 String file = args.get(++i);
+                String name = args.get(++i);
+                String mode = args.get(++i);
                 info.getProcessor().addProcessor(
-                    new Converter.Denormalizer(file, col1));
+                                                 new Converter.Denormalizer(file, col1,name,mode));
 
                 continue;
             }

@@ -27,6 +27,7 @@ import org.ramadda.repository.util.ServerInfo;
 import org.ramadda.util.Bounds;
 
 import org.ramadda.util.Utils;
+import org.ramadda.util.GeoUtils;
 
 import org.w3c.dom.Element;
 
@@ -1076,6 +1077,14 @@ public class Entry implements Cloneable {
         }
 
         return false;
+    }
+
+    public void normalizeLongitude() {
+        if(east>180) {
+            double delta = (east%180);
+            east-=delta;
+            west-=delta;
+        }
     }
 
     /**

@@ -89,6 +89,8 @@ public class Place {
      */
     private static class Resource {
 
+        String id;
+
         /** _more_ */
         String base;
 
@@ -102,6 +104,8 @@ public class Place {
         /** _more_ */
         String prefix;
 
+        List<Place> places = new ArrayList<Place>();
+
         /**
          * _more_
          *
@@ -111,6 +115,7 @@ public class Place {
          */
         public Resource(String file, int[] indices, String prefix) {
             this.base    = new File(file).getName();
+            this.id = IOUtil.stripExtension(this.base);
             this.file    = file;
             this.indices = indices;
             this.prefix  = prefix;
@@ -124,6 +129,15 @@ public class Place {
     /** _more_ */
     private static Hashtable<String, Place> placesMap = new Hashtable<String,
                                                             Place>();
+
+    private static Hashtable<String, Resource> resourceMap = new Hashtable<String,
+        Resource>();
+
+
+
+    private static Hashtable<String, Hashtable<String,Place>> resourcePlacesMap = 
+        new Hashtable<String, Hashtable<String,Place>>();
+
 
 
     /** _more_ */
@@ -312,6 +326,17 @@ public class Place {
         return found;
     }
 
+    public static Resource getResource(String id) throws Exception {
+        getPlaces(id);
+        return resourceMap.get(id);
+    }
+
+    public static List<Place> getPlacesForResource(String id) throws Exception {
+        Resource resource= getResource(id);
+        if(resource == null) return null;
+        return resource.places;
+    }
+
 
     /**
      * _more_
@@ -321,6 +346,10 @@ public class Place {
      * @throws Exception _more_
      */
     public static List<Place> getPlaces() throws Exception {
+        return getPlaces(null);
+    }
+
+    public static List<Place> getPlaces(String resourceId) throws Exception {
         if (places == null) {
             synchronized (MUTEX) {
                 if (places == null) {
@@ -328,6 +357,10 @@ public class Place {
                     for (int i = 0; i < RESOURCES.length; i++) {
                         Resource resource = RESOURCES[i];
                         //                System.err.println("Reading:" + resource.file +" prefix:" + resource.prefix);
+                        if(resourceId!=null && !resource.id.equals(resourceId)) continue;
+                        Hashtable<String,Place> resourceMap = new Hashtable<String,Place>();
+                        Place.resourceMap.put(resource.id, resource);
+                        resourcePlacesMap.put(resource.id, resourceMap);
                         BufferedReader br = new BufferedReader(
                                                 new InputStreamReader(
                                                     IOUtil.getInputStream(
@@ -342,12 +375,13 @@ public class Place {
                                 continue;
                             }
                             Place place = new Place();
-                            place.from = resource.base;
+                            resource.places.add(place);
+                            place.from = resource.id;
                             place.processLine(StringUtil.split(line, "\t",
                                     false, false), indices[0], indices[1],
                                         indices[2], indices[3], indices[4]);
                             if (indices.length >= 6) {
-                                place.fips = place.fips.substring(indices[5]);
+                               place.fips = place.fips.substring(indices[5]);
                             }
                             tmp.add(place);
                             for (String key :
@@ -356,6 +390,9 @@ public class Place {
                                 if (key == null) {
                                     continue;
                                 }
+                                resourceMap.put(key,place);
+                                resourceMap.put(key.toLowerCase(), place);
+                                resourceMap.put(key.toUpperCase(), place);
                                 placesMap.put(key, place);
                                 placesMap.put(key.toLowerCase(), place);
                                 placesMap.put(key.toUpperCase(), place);
@@ -394,7 +431,10 @@ public class Place {
      * @throws Exception _more_
      */
     public static Place getPlace(String id) throws Exception {
-        getPlaces();
+        return getPlace(id,null);
+    }
+    public static Place getPlace(String id, String resource) throws Exception {
+        getPlaces(resource);
         Place place = placesMap.get(id);
         if (place != null) {
             return place;
@@ -428,8 +468,15 @@ public class Place {
      * @throws Exception _more_
      */
     public static void main(String[] args) throws Exception {
-        for (String arg : args) {
-            System.err.println("result:" + getPlace(arg));
+        List<Place> places = getPlacesForResource(args[0]);
+        if(places == null) {
+            System.err.println("no resource:" + args[0]);
+            return;
+        }
+        System.out.println("fips,name");
+        for(Place place: places) {
+            if(place.fips!=null)
+                System.out.println(place.fips+"," + place.name);
         }
     }
 

@@ -46,6 +46,7 @@ import org.ramadda.repository.type.TypeHandler;
 import org.ramadda.repository.util.DateArgument;
 import org.ramadda.repository.util.ServerInfo;
 
+import org.ramadda.util.Bounds;
 import org.ramadda.util.BufferMapList;
 import org.ramadda.util.HtmlUtils;
 import org.ramadda.util.Json;
@@ -5386,6 +5387,14 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
         String defaultLayer =
             getProperty(wikiUtil, props, "defaultMapLayer",
                         getMapManager().getDefaultMapLayer());
+
+        String bounds = (String) props.get("bounds");
+        if(bounds!=null) {
+            props.remove("bounds");
+            Utils.add(propList,"bounds",Json.quote(bounds));
+        } else  if(entry.hasAreaDefined()) {
+            Utils.add(propList,"bounds",Json.quote(entry.getNorth()+"," + entry.getWest() +"," + entry.getSouth() +"," + entry.getEast()));
+        }
 
         topProps.add("defaultMapLayer");
         topProps.add(Json.quote(defaultLayer));

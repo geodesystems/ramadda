@@ -2,7 +2,9 @@
 Copyright 2008-2018 Geode Systems LLC
 */
 
-var CHARTS_CATEGORY = "Charts";
+var CATEGORY_CHARTS = "Charts";
+var CATEGORY_OTHER = "Other Charts";
+var CATEGORY_MISC = "Misc";
 var DISPLAY_LINECHART = "linechart";
 var DISPLAY_AREACHART = "areachart";
 var DISPLAY_BARCHART = "barchart";
@@ -41,25 +43,26 @@ function haveGoogleChartsLoaded () {
 }
 
 
-addGlobalDisplayType({type: DISPLAY_LINECHART, label:"Line Chart",requiresData:true,forUser:true,category:CHARTS_CATEGORY});
-addGlobalDisplayType({type:DISPLAY_BARCHART,label: "Bar Chart",requiresData:true,forUser:true,category:CHARTS_CATEGORY});
-addGlobalDisplayType({type:DISPLAY_BARSTACK,label: "Stacked Bar Chart",requiresData:true,forUser:true,category:CHARTS_CATEGORY});
-addGlobalDisplayType({type: DISPLAY_AREACHART, label:"Area Chart",requiresData:true,forUser:true,category:CHARTS_CATEGORY});
-addGlobalDisplayType({type:DISPLAY_BARTABLE,label: "Bar Table",requiresData:true,forUser:true,category:CHARTS_CATEGORY});
-addGlobalDisplayType({type:DISPLAY_SCATTERPLOT,label: "Scatter Plot",requiresData:true,forUser:true,category:CHARTS_CATEGORY});
-addGlobalDisplayType({type:DISPLAY_HISTOGRAM,label: "Histogram",requiresData:true,forUser:true,category:CHARTS_CATEGORY});
-addGlobalDisplayType({type:DISPLAY_BUBBLE,label: "Bubble Chart",requiresData:true,forUser:true,category:CHARTS_CATEGORY});
-addGlobalDisplayType({type:DISPLAY_GAUGE,label: "Gauge",requiresData:true,forUser:true,category:CHARTS_CATEGORY});
-addGlobalDisplayType({type:DISPLAY_TIMELINECHART,label: "Timeline",requiresData:true,forUser:true,category:CHARTS_CATEGORY});
-addGlobalDisplayType({type:DISPLAY_PIECHART,label: "Pie Chart",requiresData:true,forUser:true,category:CHARTS_CATEGORY});
-addGlobalDisplayType({type:DISPLAY_SANKEY,label: "Sankey Chart",requiresData:true,forUser:true,category:CHARTS_CATEGORY});
+addGlobalDisplayType({type: DISPLAY_LINECHART, label:"Line Chart",requiresData:true,forUser:true,category:CATEGORY_CHARTS});
+addGlobalDisplayType({type:DISPLAY_BARCHART,label: "Bar Chart",requiresData:true,forUser:true,category:CATEGORY_CHARTS});
+addGlobalDisplayType({type:DISPLAY_BARSTACK,label: "Stacked Bar Chart",requiresData:true,forUser:true,category:CATEGORY_CHARTS});
+addGlobalDisplayType({type: DISPLAY_AREACHART, label:"Area Chart",requiresData:true,forUser:true,category:CATEGORY_CHARTS});
+addGlobalDisplayType({type:DISPLAY_BARTABLE,label: "Bar Table",requiresData:true,forUser:true,category:CATEGORY_CHARTS});
+addGlobalDisplayType({type:DISPLAY_SCATTERPLOT,label: "Scatter Plot",requiresData:true,forUser:true,category:CATEGORY_CHARTS});
+addGlobalDisplayType({type:DISPLAY_HISTOGRAM,label: "Histogram",requiresData:true,forUser:true,category:CATEGORY_CHARTS});
+addGlobalDisplayType({type:DISPLAY_BUBBLE,label: "Bubble Chart",requiresData:true,forUser:true,category:CATEGORY_CHARTS});
+addGlobalDisplayType({type:DISPLAY_PIECHART,label: "Pie Chart",requiresData:true,forUser:true,category:CATEGORY_CHARTS});
 
-addGlobalDisplayType({type:DISPLAY_CALENDAR,label: "Calendar Chart",requiresData:true,forUser:true,category:"Misc"});
-addGlobalDisplayType({type:DISPLAY_STATS , label: "Stats Table",requiresData:false,forUser:true,category:"Misc"});
-addGlobalDisplayType({type:DISPLAY_TABLE , label: "Table",requiresData:true,forUser:true,category:"Misc"});
-addGlobalDisplayType({type:DISPLAY_TEXT , label: "Text Readout",requiresData:false,forUser:true,category:"Misc"});
-addGlobalDisplayType({type:DISPLAY_CORRELATION , label: "Correlation",requiresData:true,forUser:true,category:"Misc"});
-addGlobalDisplayType({type:DISPLAY_HEATMAP , label: "Heatmap",requiresData:true,forUser:true,category:"Misc"});
+addGlobalDisplayType({type:DISPLAY_GAUGE,label: "Gauge",requiresData:true,forUser:true,category:CATEGORY_MISC});
+addGlobalDisplayType({type:DISPLAY_TIMELINECHART,label: "Timeline",requiresData:true,forUser:true,category:CATEGORY_MISC});
+addGlobalDisplayType({type:DISPLAY_SANKEY,label: "Sankey Chart",requiresData:true,forUser:true,category:CATEGORY_MISC});
+
+addGlobalDisplayType({type:DISPLAY_CALENDAR,label: "Calendar Chart",requiresData:true,forUser:true,category:CATEGORY_MISC});
+addGlobalDisplayType({type:DISPLAY_STATS , label: "Stats Table",requiresData:false,forUser:true,category:CATEGORY_MISC});
+addGlobalDisplayType({type:DISPLAY_TABLE , label: "Table",requiresData:true,forUser:true,category:CATEGORY_MISC});
+addGlobalDisplayType({type:DISPLAY_TEXT , label: "Text Readout",requiresData:false,forUser:true,category:CATEGORY_MISC});
+addGlobalDisplayType({type:DISPLAY_CORRELATION , label: "Correlation",requiresData:true,forUser:true,category:CATEGORY_MISC});
+addGlobalDisplayType({type:DISPLAY_HEATMAP , label: "Heatmap",requiresData:true,forUser:true,category:CATEGORY_MISC});
 
 
 
@@ -85,6 +88,13 @@ function RamaddaFieldsDisplay(displayManager, id, type, properties) {
     RamaddaUtil.defineMembers(this, {
             needsData: function() {
                 return true;
+            },
+            handleEventMapClick: function (source,args) {
+                if(!this.dataCollection) return;
+                var pointData =   this.dataCollection.getList();
+                for(var i=0;i<pointData.length;i++) {
+                    pointData[i].handleEventMapClick(this, source, args.lon,args.lat);
+                }
             },
             initDisplay:function() {
                 this.createUI();
@@ -357,12 +367,6 @@ function RamaddaMultiChart(displayManager, id, properties) {
                 tabContents.push(html);
                 SUPER.RamaddaDisplay.getDialogContents.call(this,tabTitles, tabContents);
             },
-            handleEventMapClick: function (source,args) {
-                var pointData =   this.dataCollection.getList();
-                for(var i=0;i<pointData.length;i++) {
-                    pointData[i].handleEventMapClick(this, source, args.lon,args.lat);
-                }
-            },
              okToHandleEventRecordSelection: function() {
                 return true;
             },
@@ -391,8 +395,13 @@ function RamaddaMultiChart(displayManager, id, properties) {
             canDoGroupBy: function() {
                 return this.chartType == DISPLAY_PIECHART || this.chartType == DISPLAY_TABLE;
             },
+            clearCache: function() {
+                this.computedData= null;
+            },
+
             displayData: function() {
                 var _this =this;
+
                 if(!this.getDisplayReady()) {
                     return;
                 }
@@ -418,6 +427,7 @@ function RamaddaMultiChart(displayManager, id, properties) {
 
                 this.setContents(HtmlUtil.div([ATTR_CLASS,"display-message"],
                                               "Building display..."));
+
 
                 this.allFields =  this.dataCollection.getList()[0].getRecordFields();
                 var chartType = this.getProperty(PROP_CHART_TYPE,DISPLAY_LINECHART);
@@ -1516,6 +1526,9 @@ function RamaddaMultiChart(displayManager, id, properties) {
                                 }
                             }
                         });
+                    //always propagate the event when loaded
+                    theDisplay.displayManager.propagateEventRecordSelection(theDisplay, 
+                                                                            theDisplay.dataCollection.getList()[0], {index:0});
                     google.visualization.events.addListener(this.chart, 'select', function(event) {
                             if(theDisplay.chart.getSelection) {
                                 var selected = theDisplay.chart.getSelection();
@@ -2055,6 +2068,9 @@ function RamaddaStatsDisplay(displayManager, id, properties,type) {
                 html += "</table>";
                 this.setContents(html);
                 this.initTooltip();
+                //always propagate the event when loaded
+                this.displayManager.propagateEventRecordSelection(this, 
+                                                                        this.dataCollection.getList()[0], {index:0});
             },
             handleEventRecordSelection: function(source,  args) {
                 //                this.lastHtml = args.html;
@@ -2316,6 +2332,8 @@ function RamaddaCorrelationDisplay(displayManager, id, properties) {
                 this.setContents(html);
                 this.displayColorTable(colors, ID_BOTTOM, colorByMin, colorByMax);
                 this.initTooltip();
+                this.displayManager.propagateEventRecordSelection(this, 
+                                                                        this.dataCollection.getList()[0], {index:0});
 
             },
         });

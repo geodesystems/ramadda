@@ -74,6 +74,8 @@ function createProjection(name) {
 
 var defaultLocation = createLonLat(-100, 40);
 var defaultZoomLevel = 11;
+var wrapDatelineDefault = true;
+var zoomLevelsDefault = 40;
 var sphericalMercatorDefault = true;
 var maxLatValue = 85;
 var maxExtent = createBounds(-20037508, -20037508, 20037508, 20037508);
@@ -90,8 +92,7 @@ var latlonReadoutID = "ramadda-map-latlonreadout";
 //Global list of all maps on this page
 var ramaddaMaps = new Array();
 
-var wrapDatelineDefault = true;
-var zoomLevelsDefault = 30;
+
 
 
 var ramaddaMapMap = {};

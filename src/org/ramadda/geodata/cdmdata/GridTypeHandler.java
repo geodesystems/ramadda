@@ -105,9 +105,11 @@ public class GridTypeHandler extends TypeHandler {
                 lonArg = request.getString(ARG_LOCATION_LONGITUDE, lonArg);
             }
             jsonbuf.append("&");
-            jsonbuf.append(HtmlUtils.arg(ARG_LOCATION_LATITUDE, latArg));
+            jsonbuf.append(HtmlUtils.arg(ARG_LOCATION_LATITUDE, latArg,
+                                         false));
             jsonbuf.append("&");
-            jsonbuf.append(HtmlUtils.arg(ARG_LOCATION_LONGITUDE, lonArg));
+            jsonbuf.append(HtmlUtils.arg(ARG_LOCATION_LONGITUDE, lonArg,
+                                         false));
 
             // add in the list of selected variables as well
             String    VAR_PREFIX = Constants.ARG_VARIABLE + ".";

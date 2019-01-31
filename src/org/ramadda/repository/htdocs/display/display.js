@@ -672,7 +672,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
                             var idBase = "groupby_" + collectionIdx +"_" +i;
                             field.radioId  = this.getDomId(idBase);
                             html += HtmlUtil.tag(TAG_DIV, [ATTR_TITLE, field.getId()],
-                                                 HtmlUtil.radio(field.radioId, this.getDomId("groupby"), groupByClass, field.getId(), on) +" " +field.getLabel() +" (" + field.getId() +")"
+                                                 HtmlUtil.radio(field.radioId, this.getDomId("groupby"), groupByClass, field.getId(), on) +" " +field.getUnitLabel() +" (" + field.getId() +")"
                                              );
                         }
                         if(cnt >0) {
@@ -729,13 +729,9 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
                                 }
                                 //                                console.log("cbx fields:" + on + " " + field.getId());
                             }
-                            var label = field.getLabel();
+                            var label = field.getUnitLabel();
                             if(seenLabels[label]) {
-                                if(Utils.stringDefined(field.getUnit())) {
-                                    label = label +" (" +field.getUnit() +")";
-                                } else {
-                                    label = label +" " +seenLabels[label];
-                                }
+                                label = label +" " +seenLabels[label];
                                 seenLabels[label]++;
                             } else {
                                 seenLabels[label] = 1;
@@ -2516,7 +2512,12 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
                 this.setContents(this.getMessage(msg));
             },
             //callback from the pointData.loadData call
+            clearCache: function() {
+            },
+
             pointDataLoaded: function(pointData, url, reload)  {
+                this.inError = false;
+                this.clearCache();
                 if(!reload) {
                     this.addData(pointData);
                 }

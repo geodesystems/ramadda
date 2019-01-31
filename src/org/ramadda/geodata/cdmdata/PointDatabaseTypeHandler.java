@@ -39,14 +39,14 @@ import org.ramadda.repository.metadata.*;
 import org.ramadda.repository.output.OutputHandler;
 
 import org.ramadda.repository.type.*;
-import org.ramadda.util.sql.Clause;
-
-import org.ramadda.util.sql.SqlUtil;
 
 import org.ramadda.util.FormInfo;
 import org.ramadda.util.HtmlUtils;
 
 import org.ramadda.util.KmlUtil;
+import org.ramadda.util.sql.Clause;
+
+import org.ramadda.util.sql.SqlUtil;
 
 
 import org.w3c.dom.*;
@@ -2472,8 +2472,8 @@ public class PointDatabaseTypeHandler extends BlobTypeHandler {
         StringBuffer sb = new StringBuffer();
         sb.append(getHeader(request, entry));
         String icon = getIconUrl("/icons/pointdata.gif");
-        MapInfo map = getRepository().getMapManager().createMap(request,entry,
-                          request.get(ARG_WIDTH, 800),
+        MapInfo map = getRepository().getMapManager().createMap(request,
+                          entry, request.get(ARG_WIDTH, 800),
                           request.get(ARG_HEIGHT, 500), false, null);
         int cnt = 0;
         for (PointData pointData : list) {
@@ -2860,8 +2860,8 @@ public class PointDatabaseTypeHandler extends BlobTypeHandler {
                             request.getString(ARG_POINT_HOUR, ""))));
 
 
-        MapInfo map = getRepository().getMapManager().createMap(request,entry,
-                          true, null);
+        MapInfo map = getRepository().getMapManager().createMap(request,
+                          entry, true, null);
         map.addBox(entry, new MapBoxProperties("blue", false));
         map.centerOn(entry);
 

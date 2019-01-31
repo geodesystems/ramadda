@@ -2,6 +2,7 @@
 Copyright 2008-2015 Geode Systems LLC
 */
 
+var CATEGORY_PLOTLY = "More Charts";
 var DISPLAY_PLOTLY_RADAR = "radar";
 var DISPLAY_PLOTLY_WINDROSE = "windrose";
 var DISPLAY_PLOTLY_DENSITY = "density";
@@ -12,17 +13,17 @@ var DISPLAY_PLOTLY_3DMESH = "3dmesh";
 var DISPLAY_PLOTLY_TREEMAP = "treemap";
 var DISPLAY_PLOTLY_TERNARY = "ternary";
 
-addGlobalDisplayType({type: DISPLAY_PLOTLY_RADAR, label:"Radar",requiresData:true,forUser:true,category:"Charts"});
-addGlobalDisplayType({type: DISPLAY_PLOTLY_WINDROSE, label:"Wind Rose",requiresData:true,forUser:true,category:"Charts"});
-addGlobalDisplayType({type: DISPLAY_PLOTLY_DENSITY, label:"Density",requiresData:true,forUser:true,category:"Charts"});
-addGlobalDisplayType({type: DISPLAY_PLOTLY_DOTPLOT, label:"Dot Plot",requiresData:true,forUser:true,category:"Charts"});
-addGlobalDisplayType({type: DISPLAY_PLOTLY_SPLOM, label:"Splom",requiresData:true,forUser:true,category:"Charts"});
-addGlobalDisplayType({type: DISPLAY_PLOTLY_3DSCATTER, label:"3D Scatter",requiresData:true,forUser:true,category:"Charts"});
-addGlobalDisplayType({type: DISPLAY_PLOTLY_3DMESH, label:"3D Mesh",requiresData:true,forUser:true,category:"Charts"});
+addGlobalDisplayType({type: DISPLAY_PLOTLY_RADAR, label:"Radar",requiresData:true,forUser:true,category:CATEGORY_PLOTLY});
+addGlobalDisplayType({type: DISPLAY_PLOTLY_WINDROSE, label:"Wind Rose",requiresData:true,forUser:true,category:CATEGORY_PLOTLY});
+addGlobalDisplayType({type: DISPLAY_PLOTLY_DENSITY, label:"Density",requiresData:true,forUser:true,category:CATEGORY_PLOTLY});
+addGlobalDisplayType({type: DISPLAY_PLOTLY_DOTPLOT, label:"Dot Plot",requiresData:true,forUser:true,category:CATEGORY_PLOTLY});
+addGlobalDisplayType({type: DISPLAY_PLOTLY_SPLOM, label:"Splom",requiresData:true,forUser:true,category:CATEGORY_PLOTLY});
+addGlobalDisplayType({type: DISPLAY_PLOTLY_3DSCATTER, label:"3D Scatter",requiresData:true,forUser:true,category:CATEGORY_PLOTLY});
+addGlobalDisplayType({type: DISPLAY_PLOTLY_3DMESH, label:"3D Mesh",requiresData:true,forUser:true,category:CATEGORY_PLOTLY});
 //Ternary doesn't work
-//addGlobalDisplayType({type: DISPLAY_PLOTLY_TERNARY, label:"Ternary",requiresData:true,forUser:true,category:"Charts"});
+//addGlobalDisplayType({type: DISPLAY_PLOTLY_TERNARY, label:"Ternary",requiresData:true,forUser:true,category:CATEGORY_PLOTLY});
 //Treempap doesn't work
-//addGlobalDisplayType({type: DISPLAY_PLOTLY_TREEMAP, label:"Tree Map",requiresData:true,forUser:true,category:"Charts"});
+//addGlobalDisplayType({type: DISPLAY_PLOTLY_TREEMAP, label:"Tree Map",requiresData:true,forUser:true,category:CATEGORY_PLOTLY});
 
 
 function RamaddaPlotlyDisplay(displayManager, id, type, properties) {
@@ -37,6 +38,13 @@ function RamaddaPlotlyDisplay(displayManager, id, type, properties) {
                 var height  = parseInt(this.getProperty("height","400").replace("px","").replace("%",""));
                 //                layout.width = width-widthDelta;
                 layout.height = height;
+            },
+            pointDataLoaded: function(pointData, url, reload)  {
+                SUPER.pointDataLoaded.call(this, pointData, url, reload);
+                if(this.dataCollection)
+                    this.displayManager.propagateEventRecordSelection(this, 
+                                                                      this.dataCollection.getList()[0], {index:0});
+
             },
             displayData:  function() {
                 this.updateUI();
@@ -585,14 +593,20 @@ function RamaddaSplomDisplay(displayManager, id, properties) {
 
     addRamaddaDisplay(this);
     RamaddaUtil.defineMembers(this, {
+            setDimensions: function(layout, widthDelta) {
+                var width  = parseInt(this.getProperty("width","400").replace("px","").replace("%",""));
+                var height  = parseInt(this.getProperty("height","400").replace("px","").replace("%",""));
+                layout.width = width-widthDelta;
+                layout.height = height;
+            },
              makeAxis: function() {
                 return {
                         showline:false,
                         zeroline:false,
-                        gridcolor:'#ffff',
+                        gridcolor:this.getProperty("gridColor","white"),
                         ticklen:2,
-                        tickfont:{size:10},
-                        titlefont:{size:12}
+                        tickfont:{size:this.getProperty("tickFontSize",12)},
+                        titlefont:{size:this.getProperty("titleFontSize",12)}
                 }
             },
             updateUI: function() {
@@ -602,7 +616,9 @@ function RamaddaSplomDisplay(displayManager, id, properties) {
                 if(fields.length==0) {
                     fields = this.getData().getRecordFields();
                 }
-
+                var labels;
+                if(this.getProperty("labels")) 
+                    labels  = this.getProperty("labels").split(",");
 
                 var dataObj = {
                     type: 'splom',
@@ -686,7 +702,12 @@ function RamaddaSplomDisplay(displayManager, id, properties) {
                     var field = fields[i];
                     if(!field.isFieldNumeric()) continue;
                     var values = this.getColumnValues(records, field).values;
-                    dataObj.dimensions.push({label:field.getUnitLabel(),values:values});
+                    var label;
+                    if(labels && i<labels.length)
+                        label = labels[i];
+                    else 
+                        label= field.getUnitLabel();
+                    dataObj.dimensions.push({label:label,values:values});
                     var key = "axis"+(cnt==0?"":""+(cnt+1));
                     layout["x" + key] = this.makeAxis();
                     layout["y" + key] = this.makeAxis();

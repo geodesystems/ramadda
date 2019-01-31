@@ -27,9 +27,13 @@ function DataCollection() {
                 this.data.push(data);
             },
             handleEventMapClick: function (myDisplay, source, lon, lat) {
+                var anyHandled = false;
                 for(var i=0;i<this.data.length;i++ ) {
-                    this.data[i].handleEventMapClick(myDisplay, source, lon, lat);
+                    if(this.data[i].handleEventMapClick(myDisplay, source, lon, lat)) {
+                        anyHandled =true;
+                    }
                 }
+                return anyHandled;
 
             },
 
@@ -57,6 +61,7 @@ function BasePointData(name, properties) {
                 this.records = thatPointData.records;
             },
             handleEventMapClick: function (myDisplay, source, lon, lat) {
+                return false;
             },
             hasData : function() {
                 return this.records!=null;
@@ -171,7 +176,9 @@ function PointData(name, recordFields, records, url, properties) {
                 this.lat = lat;
                 if(myDisplay.getDisplayManager().hasGeoMacro(this.url)) {
                     this.loadData(myDisplay, true);
+                    return true;
                 }
+                return false;
             },
             startLoading: function() {
                 this.loadingCnt++;
@@ -478,7 +485,7 @@ function PointRecord(lat, lon, elevation, time, data) {
                 return this.longitude;
             }, 
             getTime : function() {
-            	return this.time;
+            	return this.recordTime;
             },
             getElevation : function() {
                 return this.elevation;

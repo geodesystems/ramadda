@@ -8586,6 +8586,7 @@ public class EntryManager extends RepositoryManager {
                 theEntry.setNorth(Misc.getProperty(extra, ARG_MAXLAT, 0.0));
                 theEntry.setWest(Misc.getProperty(extra, ARG_MINLON, 0.0));
                 theEntry.setEast(Misc.getProperty(extra, ARG_MAXLON, 0.0));
+                theEntry.normalizeLongitude();
                 theEntry.trimAreaResolution();
 
                 changed = true;

@@ -26,10 +26,10 @@ import org.jfree.data.xy.*;
 import org.jfree.ui.*;
 
 import org.ramadda.data.record.RecordField;
+import org.ramadda.repository.DateHandler;
 
 import org.ramadda.repository.Entry;
 import org.ramadda.repository.Link;
-import org.ramadda.repository.DateHandler;
 import org.ramadda.repository.PageHandler;
 import org.ramadda.repository.Repository;
 import org.ramadda.repository.Request;
@@ -44,6 +44,7 @@ import org.ramadda.repository.type.TypeHandler;
 import org.ramadda.util.HtmlUtils;
 
 import org.ramadda.util.Json;
+import org.ramadda.util.Utils;
 
 import org.w3c.dom.Element;
 
@@ -104,7 +105,6 @@ import java.awt.image.BufferedImage;
 
 import java.io.*;
 
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -115,6 +115,9 @@ import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Map;
+
+
+import java.util.Properties;
 import java.util.regex.Pattern;
 
 import javax.servlet.ServletConfig;
@@ -160,6 +163,40 @@ public class GridPointOutputHandler extends OutputHandler implements CdmConstant
     }
 
 
+
+    /** _more_          */
+    private Properties aliases;
+
+    /**
+     * _more_
+     *
+     * @param name _more_
+     *
+     * @return _more_
+     */
+    public String getAlias(String name) {
+        if (aliases == null) {
+            try {
+                InputStream inputStream =
+                    IOUtil.getInputStream(
+                        "/org/ramadda/geodata/cdmdata/resources/aliases.properties",
+                        getClass());
+                Properties tmp = new Properties();
+                tmp.load(inputStream);
+                IOUtil.close(inputStream);
+                aliases = tmp;
+            } catch (Exception exc) {
+                throw new IllegalArgumentException(exc);
+            }
+
+        }
+        String n = (String) aliases.get(name);
+        if (n != null) {
+            return n;
+        }
+
+        return name;
+    }
 
 
     /**
@@ -284,8 +321,9 @@ public class GridPointOutputHandler extends OutputHandler implements CdmConstant
                                            GridDataset gds, StringBuffer sb)
             throws Exception {
 
-        List<String> varNames = new ArrayList<String>();
-        Hashtable    args     = request.getArgs();
+        List<String>           varNames = new ArrayList<String>();
+        List<VariableEnhanced> vars     = new ArrayList<VariableEnhanced>();
+        Hashtable              args     = request.getArgs();
         //Look for both variable.<varname>=true  and variable=<varname> url arguments
         for (Enumeration keys = args.keys(); keys.hasMoreElements(); ) {
             String arg = (String) keys.nextElement();
@@ -294,34 +332,39 @@ public class GridPointOutputHandler extends OutputHandler implements CdmConstant
             }
         }
 
-        List<String> selectedVars = request.get(ARG_VARIABLE,
-                                        new ArrayList<String>());
-        //Support a comma separated list
-        for (String var : selectedVars) {
-            varNames.addAll(StringUtil.split(var, ",", true, true));
+        varNames.addAll((List<String>) request.get(ARG_VARIABLE,
+                new ArrayList<String>()));
+        HashSet selectedVarsMap = null;
+        if (varNames.size() > 0) {
+            selectedVarsMap = Utils.makeHashSet(varNames);
         }
 
 
         //For now add either the 2d or the 3d vars
-        if (varNames.size() == 0) {
-            List<GridDatatype> grids = sortGrids(gds);
+        List<GridDatatype> grids = sortGrids(gds);
+        for (GridDatatype grid : grids) {
+            VariableEnhanced var = grid.getVariable();
+            if ((selectedVarsMap != null)
+                    && !selectedVarsMap.contains(var.getShortName())) {
+                continue;
+            }
+            if (grid.getZDimension() == null) {
+                vars.add(var);
+            }
+        }
+        if (vars.size() == 0) {
             for (GridDatatype grid : grids) {
                 VariableEnhanced var = grid.getVariable();
-                if (grid.getZDimension() == null) {
-                    varNames.add(var.getShortName());
+                if ((selectedVarsMap != null)
+                        && !selectedVarsMap.contains(var.getShortName())) {
+                    continue;
                 }
-            }
-            if (varNames.size() == 0) {
-                for (GridDatatype grid : grids) {
-                    VariableEnhanced var = grid.getVariable();
-                    if (grid.getZDimension() != null) {
-                        varNames.add(var.getShortName());
-                    }
+                if (grid.getZDimension() != null) {
+                    vars.add(var);
                 }
             }
         }
 
-        //        System.err.println(varNames);
         LatLonRect llr    = gds.getBoundingBox();
         double     deflat = 0;
         double     deflon = 0;
@@ -385,14 +428,14 @@ public class GridPointOutputHandler extends OutputHandler implements CdmConstant
             sb.append(
                 getPageHandler().showDialogWarning(
                     "From date is after to date"));
-        } else if (varNames.size() == 0) {
+        } else if (vars.size() == 0) {
             sb.append(
                 getPageHandler().showDialogWarning("No variables selected"));
         } else {
             // modelled after thredds.server.ncSubset.controller.PointDataController
             try {
-                return processPointRequest(request, entry, gds, varNames,
-                                           llp, dates, allDates);
+                return processPointRequest(request, entry, gds, vars, llp,
+                                           dates, allDates);
             } catch (Exception exc) {
                 if (request.getString(
                         CdmConstants.ARG_FORMAT,
@@ -431,6 +474,7 @@ public class GridPointOutputHandler extends OutputHandler implements CdmConstant
      * @param entry _more_
      * @param gds _more_
      * @param varNames _more_
+     * @param vars _more_
      * @param llp _more_
      * @param dates _more_
      * @param allDates _more_
@@ -441,7 +485,7 @@ public class GridPointOutputHandler extends OutputHandler implements CdmConstant
      */
     private Result processPointRequest(Request request, Entry entry,
                                        GridDataset gds,
-                                       List<String> varNames,
+                                       List<VariableEnhanced> vars,
                                        LatLonPointImpl llp,
                                        CalendarDate[] dates,
                                        List<CalendarDate> allDates)
@@ -458,8 +502,12 @@ public class GridPointOutputHandler extends OutputHandler implements CdmConstant
             request.setCORSHeaderOnResponse();
         }
 
-        SupportedFormat sf   = getSupportedFormat(format);
-        NcssParamsBean  pdrb = new NcssParamsBean();
+        SupportedFormat sf       = getSupportedFormat(format);
+        NcssParamsBean  pdrb     = new NcssParamsBean();
+        List<String>    varNames = new ArrayList<String>();
+        for (VariableEnhanced var : vars) {
+            varNames.add(var.getShortName());
+        }
         GridAsPointDataset gapds =
             NcssRequestUtils.buildGridAsPointDataset(gds, varNames);
         pdrb.setVar(varNames);
@@ -549,10 +597,13 @@ public class GridPointOutputHandler extends OutputHandler implements CdmConstant
                                         new OutputStreamWriter(
                                             new FileOutputStream(jsonFile)));
                 List<RecordField> fields = new ArrayList<RecordField>();
-                for (int i = 0; i < varNames.size(); i++) {
-                    String var = (String) varNames.get(i);
-                    RecordField recordField = new RecordField(var, var, var,
-                                                  i, "");
+                for (int i = 0; i < vars.size(); i++) {
+                    VariableEnhanced var = vars.get(i);
+                    RecordField recordField =
+                        new RecordField(
+                            getAlias(var.getShortName()),
+                            Utils.makeLabel(getAlias(var.getShortName())),
+                            var.getShortName(), i, var.getUnitsString());
                     recordField.setChartable(true);
                     fields.add(recordField);
                 }
@@ -572,7 +623,7 @@ public class GridPointOutputHandler extends OutputHandler implements CdmConstant
                     if (cnt == 1) {
                         //                            System.err.println ("line:" + line);
                         //time/lat/lon  maybeZ vars
-                        if (toks.size() == 3 + 1 + varNames.size()) {
+                        if (toks.size() == 3 + 1 + vars.size()) {
                             hasVertical = true;
                         }
 
@@ -769,8 +820,8 @@ public class GridPointOutputHandler extends OutputHandler implements CdmConstant
             lat = Misc.format(llr.getLatMin() + llr.getHeight() / 2);
             lon = Misc.format(llr.getCenterLon());
         }
-        MapInfo map = getRepository().getMapManager().createMap(request,entry,
-                          true, null);
+        MapInfo map = getRepository().getMapManager().createMap(request,
+                          entry, true, null);
         map.addBox("", "", "", llr,
                    new MapBoxProperties("blue", false, true));
         String llb = map.makeSelector(ARG_LOCATION, true, new String[] { lat,

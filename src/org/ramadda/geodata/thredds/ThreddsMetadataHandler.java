@@ -461,28 +461,24 @@ public class ThreddsMetadataHandler extends MetadataHandler {
                 }
                 if (CdmUtil.ATTR_MAXLON.equals(name)
                         || name.equals("EastBoundingCoordinate")) {
-                    //                    System.err.println ("maxlon:" + value);
                     extra.put(ARG_MAXLON, new Double(value));
 
                     continue;
                 }
                 if (CdmUtil.ATTR_MINLON.equals(name)
                         || name.equals("WestBoundingCoordinate")) {
-                    //                    System.err.println ("minlon:" + value);
                     extra.put(ARG_MINLON, new Double(value));
 
                     continue;
                 }
                 if (CdmUtil.ATTR_MAXLAT.equals(name)
                         || name.equals("NorthBoundingCoordinate")) {
-                    //                    System.err.println ("maxlat:" + value);
                     extra.put(ARG_MAXLAT, new Double(value));
 
                     continue;
                 }
                 if (CdmUtil.ATTR_MINLAT.equals(name)
                         || name.equals("SouthBoundingCoordinate")) {
-                    //                    System.err.println ("minlat:" + value);
                     extra.put(ARG_MINLAT, new Double(value));
 
                     continue;
@@ -493,7 +489,6 @@ public class ThreddsMetadataHandler extends MetadataHandler {
 
                 if (isStartTime || isEndTime) {
                     Date date = getDate(value);
-                    //                    System.err.println(name +" " + date);
                     if (isStartTime) {
                         extra.put(ARG_FROMDATE, date);
                     } else {
@@ -605,7 +600,6 @@ public class ThreddsMetadataHandler extends MetadataHandler {
 
 
 
-            //            System.err.println("ThreddsMetadataHandler:"    + entry.getResource());
 
             for (Object obj : variables) {
                 VariableSimpleIF var = (VariableSimpleIF) obj;
@@ -619,7 +613,6 @@ public class ThreddsMetadataHandler extends MetadataHandler {
                     if (axisType.equals(AxisType.Lat)) {
                         double[] minmax = getRange(var, ca.read(),
                                               visad.CommonUnit.degree);
-                        //                        System.err.println("\t" +"lat range:" + minmax[0] + " " + minmax[1]);
                         if ((minmax[0] == minmax[0])
                                 && (minmax[1] == minmax[1])) {
                             if (extra.get(ARG_MINLAT) == null) {
@@ -634,7 +627,6 @@ public class ThreddsMetadataHandler extends MetadataHandler {
                     } else if (axisType.equals(AxisType.Lon)) {
                         double[] minmax = getRange(var, ca.read(),
                                               visad.CommonUnit.degree);
-                        //                        System.err.println("\t"+" lon range:" + minmax[0] + " " + minmax[1]);
                         if ((minmax[0] == minmax[0])
                                 && (minmax[1] == minmax[1])) {
                             if (extra.get(ARG_MINLON) == null) {
@@ -798,10 +790,12 @@ public class ThreddsMetadataHandler extends MetadataHandler {
                         haveBounds = true;
                         LatLonPointImpl ul = llr.getUpperLeftPoint();
                         LatLonPointImpl lr = llr.getLowerRightPoint();
-                        extra.put(ARG_MINLAT, llr.getLatMin());
-                        extra.put(ARG_MAXLAT, llr.getLatMax());
-                        extra.put(ARG_MINLON, ul.getLongitude());
-                        extra.put(ARG_MAXLON, lr.getLongitude());
+                        if (extra.get(ARG_MINLON) == null) {
+                            extra.put(ARG_MINLAT, llr.getLatMin());
+                            extra.put(ARG_MAXLAT, llr.getLatMax());
+                            extra.put(ARG_MINLON, ul.getLongitude());
+                            extra.put(ARG_MAXLON, lr.getLongitude());
+                        }
                     }
                 }
             }
