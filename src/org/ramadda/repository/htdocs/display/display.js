@@ -486,7 +486,12 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
                 this.clearCachedData();
                 if(this.properties.data) {
                     this.dataCollection = new DataCollection();
-                    this.properties.data= this.data= new PointData(entry.getName(), null, null, this.getRamadda().getRoot()+"/entry/show?entryid=" + entry.getId() +"&output=points.product&product=points.json&max=5000",{entryId:this.entryId});
+                    var attrs = {
+                        entryId:this.entryId,
+                        lat:this.getProperty("latitude"),
+                        lon:this.getProperty("longitude"),
+                    };
+                    this.properties.data= this.data= new PointData(entry.getName(), null, null, this.getRamadda().getRoot()+"/entry/show?entryid=" + entry.getId() +"&output=points.product&product=points.json&max=5000",attrs);
                     this.data.loadData(this);
                 }
                 this.updateUI();
@@ -1998,6 +2003,11 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
                 if(!this.needsData() || this.properties.data==null) {
                     return;
                 } 
+                if(this.getProperty("latitude")) {
+                    this.data.lat  = this.getProperty("latitude");
+                    this.data.lon = this.getProperty("longitude","-105");
+                }
+
                 if(this.properties.data.hasData()) {
                     this.addData(this.properties.data);
                     return;

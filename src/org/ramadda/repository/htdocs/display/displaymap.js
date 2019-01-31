@@ -152,9 +152,6 @@ function RamaddaMapDisplay(displayManager, id, properties) {
                     }
                     this.map.initMap(false);
 
-                    var point = new OpenLayers.LonLat(-107,40);
-                    //                    this.map.addPoint("x", point,{});
-                    //                    this.map.addMarker("x", point, null, "","");
                     this.map.addRegionSelectorControl(function(bounds) {
                             theDisplay.getDisplayManager().handleEventMapBoundsChanged(this, bounds, true);
                         });
@@ -216,6 +213,13 @@ function RamaddaMapDisplay(displayManager, id, properties) {
                         url = theDisplay.getRamadda().getEntryDownloadUrl(theDisplay.geojsonLayer);
                         theDisplay.addBaseMapLayer(url, false);
                     }
+
+                    if(this.getProperty("latitude")) {
+                        this.map.setCenter(createLonLat(parseFloat(this.getProperty("longitude", -105)),
+                                                        parseFloat(this.getProperty("latitude", 40))));
+                    }
+
+
                 },
                 addBaseMapLayer: function(url, isKml) {
                     var theDisplay = this;

@@ -632,7 +632,12 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
                 this.clearCachedData();
                 if(this.properties.data) {
                     this.dataCollection = new DataCollection();
-                    this.properties.data= this.data= new PointData(entry.getName(), null, null, this.getRamadda().getRoot()+"/entry/show?entryid=" + entry.getId() +"&output=points.product&product=points.json&max=5000",{entryId:this.entryId});
+                    var attrs = {
+                        entryId:this.entryId,
+                        lat:this.getProperty("latitude"),
+                        lon:this.getProperty("longitude"),
+                    };
+                    this.properties.data= this.data= new PointData(entry.getName(), null, null, this.getRamadda().getRoot()+"/entry/show?entryid=" + entry.getId() +"&output=points.product&product=points.json&max=5000",attrs);
                     this.data.loadData(this);
                 }
                 this.updateUI();
@@ -2144,6 +2149,11 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
                 if(!this.needsData() || this.properties.data==null) {
                     return;
                 } 
+                if(this.getProperty("latitude")) {
+                    this.data.lat  = this.getProperty("latitude");
+                    this.data.lon = this.getProperty("longitude","-105");
+                }
+
                 if(this.properties.data.hasData()) {
                     this.addData(this.properties.data);
                     return;
@@ -11379,9 +11389,6 @@ function RamaddaMapDisplay(displayManager, id, properties) {
                     }
                     this.map.initMap(false);
 
-                    var point = new OpenLayers.LonLat(-107,40);
-                    //                    this.map.addPoint("x", point,{});
-                    //                    this.map.addMarker("x", point, null, "","");
                     this.map.addRegionSelectorControl(function(bounds) {
                             theDisplay.getDisplayManager().handleEventMapBoundsChanged(this, bounds, true);
                         });
@@ -11443,6 +11450,13 @@ function RamaddaMapDisplay(displayManager, id, properties) {
                         url = theDisplay.getRamadda().getEntryDownloadUrl(theDisplay.geojsonLayer);
                         theDisplay.addBaseMapLayer(url, false);
                     }
+
+                    if(this.getProperty("latitude")) {
+                        this.map.setCenter(createLonLat(parseFloat(this.getProperty("longitude", -105)),
+                                                        parseFloat(this.getProperty("latitude", 40))));
+                    }
+
+
                 },
                 addBaseMapLayer: function(url, isKml) {
                     var theDisplay = this;
