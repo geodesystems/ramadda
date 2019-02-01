@@ -5703,7 +5703,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                     sb, getPageHandler().getCdnPath("/min/display.min.css"));
             } else {
                 HtmlUtils.cssLink(
-                    sb, getPageHandler().getCdnPath("/display.css"));
+                    sb, getPageHandler().getCdnPath("/display/display.css"));
                 HtmlUtils.importJS(
                     sb, getPageHandler().getCdnPath("/display/pointdata.js"));
                 HtmlUtils.importJS(
