@@ -63,6 +63,22 @@ function initRamaddaDisplays() {
     }
 }
 
+function addGlobalDisplayProperty(name,value) {
+    if (window.globalDisplayProperties == null) {
+        window.globalDisplayProperties = {};
+    }
+    window.globalDisplayProperties[name] = value;
+}
+
+
+function getGlobalDisplayProperty(name) {
+    if (window.globalDisplayProperties == null) {
+        return null;
+    }
+    return window.globalDisplayProperties[name];
+}
+
+
 function addRamaddaDisplay(display) {
     if (window.globalDisplays == null) {
         window.globalDisplays = {};
@@ -342,8 +358,9 @@ function DisplayThing(argId, argProperties) {
             }
             if (this.getDisplayManager) {
                 return this.getDisplayManager().getProperty(key, dflt);
-
             }
+            value = getGlobalDisplayProperty(key);
+            if(value) return value;
             return dflt;
         }
 

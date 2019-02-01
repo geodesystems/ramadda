@@ -338,6 +338,8 @@ public interface WikiConstants {
     /** _more_ */
     public static final String WIKI_TAG_DISPLAY = "display";
 
+    public static final String WIKI_TAG_DISPLAYPROPERTY = "displayProperty";
+
     /** wiki import */
     public static final String WIKI_TAG_IMPORT = "import";
 

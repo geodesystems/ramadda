@@ -1616,6 +1616,13 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
             }
 
             return "";
+        } else if (theTag.equals(WIKI_TAG_DISPLAYPROPERTY)) {
+            String name  = (String) props.get("name");
+            String value = (String) props.get("value");
+            if (name != null && value!=null) {
+                return HtmlUtils.script("addGlobalDisplayProperty('" + name +"','" + value +"');\n");
+            }
+            return "";
         } else if (theTag.equals(WIKI_TAG_PROPERTIES)) {
             return makeEntryTabs(request, wikiUtil, entry, props);
         } else if (theTag.equals(WIKI_TAG_STREETVIEW)) {
@@ -1691,6 +1698,8 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                         children), sb, doDay);
 
             return sb.toString();
+
+
         } else if (theTag.equals(WIKI_TAG_DISPLAY)
                    || theTag.equals(WIKI_TAG_CHART)) {
             String jsonUrl = entry.getTypeHandler().getUrlForWiki(request,
