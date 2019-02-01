@@ -38,7 +38,7 @@
      <property name="form.area.show" value="false"/>
      <property name="form.location.show" value="true"/>
      <property name="form.resource.show" value="false"/>
-     <column  name="stride"  label="Stride" type="int" default="7" />
+     <column  name="stride"  label="Stride" type="int" default="14" />
 <wiki>
 <![CDATA[
 +section  title="Daymet Data: {{name}}"
