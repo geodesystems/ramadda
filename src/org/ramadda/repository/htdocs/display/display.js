@@ -284,7 +284,7 @@ function DisplayThing(argId, argProperties) {
                             value = number_format(value, decimals, '.', '');
                         }
                     }
-                    values += "<tr><td align=right><b>" + label + ":</b></td><td>" + value + "</td></tr>";
+                    values += "<tr><td align=right><b>" + label + ":</b></td><td>" + value + field.getUnitSuffix() +"</td></tr>";
                 }
             }
             if (record.hasElevation()) {

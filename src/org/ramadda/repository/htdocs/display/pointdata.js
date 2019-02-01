@@ -410,6 +410,12 @@ function RecordField(props) {
             return label;
         },
 
+        getUnitSuffix: function() {
+            if (this.unit && this.unit != "")
+                return " [" + this.unit +"]";
+            return "";
+        },
+
         getLabel: function() {
             if (this.label == null || this.label.length == 0) return this.id;
             return this.label;

@@ -434,7 +434,7 @@ function DisplayThing(argId, argProperties) {
                             value = number_format(value, decimals, '.', '');
                         }
                     }
-                    values += "<tr><td align=right><b>" + label + ":</b></td><td>" + value + "</td></tr>";
+                    values += "<tr><td align=right><b>" + label + ":</b></td><td>" + value + field.getUnitSuffix() +"</td></tr>";
                 }
             }
             if (record.hasElevation()) {
@@ -3988,6 +3988,12 @@ function RecordField(props) {
             if (this.unit && this.unit != "")
                 label = label + " [" + this.unit + "]";
             return label;
+        },
+
+        getUnitSuffix: function() {
+            if (this.unit && this.unit != "")
+                return " [" + this.unit +"]";
+            return "";
         },
 
         getLabel: function() {
