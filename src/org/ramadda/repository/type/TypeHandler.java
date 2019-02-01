@@ -305,6 +305,7 @@ public class TypeHandler extends RepositoryManager {
     /** _more_ */
     private String description;
 
+    /** _more_          */
     private String editHelp = "";
 
     /** _more_ */
@@ -1033,10 +1034,20 @@ public class TypeHandler extends RepositoryManager {
         return entry.getDescription();
     }
 
-    public String getTextForWiki(Request request,
-                                Entry entry, Hashtable properties)
+    /**
+     * _more_
+     *
+     * @param request _more_
+     * @param entry _more_
+     * @param properties _more_
+     *
+     * @return _more_
+     *
+     * @throws Exception _more_
+     */
+    public String getTextForWiki(Request request, Entry entry,
+                                 Hashtable properties)
             throws Exception {
-        System.err.println("TypeHandler.getTextForWiki");
         return entry.getDescription();
     }
 
@@ -2924,7 +2935,9 @@ public class TypeHandler extends RepositoryManager {
         }
 
         boolean showDate = typeHandler.okToShowInHtml(entry, ARG_DATE, true);
-        boolean showCreateDate = showDate && typeHandler.okToShowInHtml(entry, "createdate", true);
+        boolean showCreateDate = showDate
+                                 && typeHandler.okToShowInHtml(entry,
+                                     "createdate", true);
 
         boolean entryIsImage = isImage(entry);
         boolean showImage    = false;
@@ -3884,7 +3897,10 @@ public class TypeHandler extends RepositoryManager {
             throws Exception {
 
         sb.append(HtmlUtils.formEntry("",
-                                      getWikiManager().wikifyEntry(request, entry!=null?entry:parentEntry, editHelp)));
+                                      getWikiManager().wikifyEntry(request,
+                                          (entry != null)
+                                          ? entry
+                                          : parentEntry, editHelp)));
 
         addBasicToEntryForm(request, sb, parentEntry, entry, formInfo, this);
         addSpecialToEntryForm(request, sb, parentEntry, entry, formInfo,
@@ -4401,10 +4417,10 @@ public class TypeHandler extends RepositoryManager {
                                     ARG_SERVERFILE_PATTERN, "",
                                     HtmlUtils.SIZE_10)));
                         localFilesSB.append(HtmlUtils.formTableClose());
-                        if (okToShowInForm(entry, "filesonserver",true)) {
+                        if (okToShowInForm(entry, "filesonserver", true)) {
                             tabTitles.add(msg("Files on Server"));
                             tabContent.add(
-                                           HtmlUtils.inset(localFilesSB.toString(), 8));
+                                HtmlUtils.inset(localFilesSB.toString(), 8));
                         }
                     }
 
@@ -4436,9 +4452,12 @@ public class TypeHandler extends RepositoryManager {
                         HtmlUtils.checkbox(ARG_MAKENAME, "true", true)
                         + HtmlUtils.space(1) + msg("Make name from filename");
 
-                    String deleteFileWidget =(entry != null &&  entry.isFile()) ?
-                        HtmlUtils.checkbox(ARG_DELETEFILE, "true", false)
-                        + HtmlUtils.space(1) + msg("Delete file"):"";
+                    String deleteFileWidget = ((entry != null)
+                                               && entry.isFile())
+                            ? HtmlUtils.checkbox(ARG_DELETEFILE, "true",
+                                false) + HtmlUtils.space(1)
+                                       + msg("Delete file")
+                            : "";
 
 
                     /*
@@ -4468,11 +4487,10 @@ public class TypeHandler extends RepositoryManager {
                     }
 
                     String extras = extraMore + addMetadata + HtmlUtils.br()
-                        + unzipWidget + HtmlUtils.br()
-                        + makeNameWidget 
-                        + HtmlUtils.br()
-                        + deleteFileWidget;
-                     /*datePatternWidget*/
+                                    + unzipWidget + HtmlUtils.br()
+                                    + makeNameWidget + HtmlUtils.br()
+                                    + deleteFileWidget;
+                    /*datePatternWidget*/
 
                     String extra =
                         HtmlUtils.makeShowHideBlock(msg("More..."), extras,
@@ -4622,7 +4640,18 @@ public class TypeHandler extends RepositoryManager {
 
 
 
-    public String getWikiEditorSidebar(Request request, Entry entry) throws Exception {
+    /**
+     * _more_
+     *
+     * @param request _more_
+     * @param entry _more_
+     *
+     * @return _more_
+     *
+     * @throws Exception _more_
+     */
+    public String getWikiEditorSidebar(Request request, Entry entry)
+            throws Exception {
         return "";
     }
 
@@ -4648,12 +4677,12 @@ public class TypeHandler extends RepositoryManager {
                               String label, boolean readOnly, int length)
             throws Exception {
         String editorId = id + "_editor";
-        String sidebar = "";
+        String sidebar  = "";
         if ( !readOnly) {
-            sidebar = getWikiEditorSidebar(request,  entry);
+            sidebar = getWikiEditorSidebar(request, entry);
             String buttons =
                 getRepository().getWikiManager().makeWikiEditBar(request,
-                                                                 entry, editorId);
+                    entry, editorId);
             if (label != null) {
                 sb.append("<tr><td colspan=2>");
                 sb.append(HtmlUtils.b(msgLabel(label)));
@@ -4671,8 +4700,14 @@ public class TypeHandler extends RepositoryManager {
                                           + HtmlUtils.attr("class",
                                               "ace_editor"));
         sb.append(HtmlUtils.hidden(id, "", HtmlUtils.id(id)));
-        if(Utils.stringDefined(sidebar)) {
-            sb.append(HtmlUtils.table(HtmlUtils.row(HtmlUtils.cols(new String[]{HtmlUtils.td(textWidget),HtmlUtils.td(sidebar," width=10%")}))));
+        if (Utils.stringDefined(sidebar)) {
+            sb.append(
+                HtmlUtils.table(
+                    HtmlUtils.row(
+                        HtmlUtils.cols(
+                            new String[] { HtmlUtils.td(textWidget),
+                                           HtmlUtils.td(sidebar,
+                                           " width=10%") }))));
         } else {
             sb.append(textWidget);
         }

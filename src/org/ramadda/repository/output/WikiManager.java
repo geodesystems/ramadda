@@ -2378,7 +2378,6 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
 
             String text = entry.getTypeHandler().getTextForWiki(request,
                                                                 entry,  props);
-            System.err.println("WikiManager:" + entry.getTypeHandler() +" " + text);
             entry.getTypeHandler().addWikiEditor(request, entry, editor,
                                                  null, HtmlUtils.getUniqueId(""), text,
                                                  null, true, 0);

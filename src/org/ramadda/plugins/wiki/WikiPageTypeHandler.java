@@ -22,6 +22,11 @@ import org.ramadda.repository.auth.*;
 import org.ramadda.repository.metadata.*;
 import org.ramadda.repository.output.OutputHandler;
 import org.ramadda.repository.type.*;
+import org.ramadda.util.FormInfo;
+
+import org.ramadda.util.HtmlUtils;
+
+import org.ramadda.util.WikiUtil;
 
 
 import org.ramadda.util.sql.Clause;
@@ -29,11 +34,6 @@ import org.ramadda.util.sql.Clause;
 
 import org.ramadda.util.sql.SqlUtil;
 import org.ramadda.util.sql.SqlUtil;
-import org.ramadda.util.FormInfo;
-
-import org.ramadda.util.HtmlUtils;
-
-import org.ramadda.util.WikiUtil;
 
 
 import org.w3c.dom.*;
@@ -179,11 +179,21 @@ public class WikiPageTypeHandler extends ExtensibleGroupTypeHandler {
                                     tag, props);
     }
 
+    /**
+     * _more_
+     *
+     * @param request _more_
+     * @param entry _more_
+     * @param properties _more_
+     *
+     * @return _more_
+     *
+     * @throws Exception _more_
+     */
     @Override
-    public String getTextForWiki(Request request,
-                                Entry entry, Hashtable properties)
+    public String getTextForWiki(Request request, Entry entry,
+                                 Hashtable properties)
             throws Exception {
-        System.err.println("wiki page:" +entry.getValue(0, ""));
         return (String) entry.getValue(0, "");
     }
 
@@ -357,13 +367,22 @@ public class WikiPageTypeHandler extends ExtensibleGroupTypeHandler {
 
     }
 
+    /**
+     * _more_
+     *
+     * @param request _more_
+     * @param entry _more_
+     * @param tabTitles _more_
+     * @param tabContents _more_
+     */
     @Override
-        public void addToInformationTabs(Request request, Entry entry,
+    public void addToInformationTabs(Request request, Entry entry,
                                      List<String> tabTitles,
                                      List<String> tabContents) {
-        super.addToInformationTabs(request,  entry, tabTitles,tabContents);
+        super.addToInformationTabs(request, entry, tabTitles, tabContents);
         StringBuilder sb = new StringBuilder();
-        sb.append(HtmlUtils.textArea("dummy",entry.getValue(0,""),10,120));
+        sb.append(HtmlUtils.textArea("dummy", entry.getValue(0, ""), 10,
+                                     120));
         tabTitles.add("Wiki Text");
         tabContents.add(sb.toString());
     }
@@ -451,7 +470,8 @@ public class WikiPageTypeHandler extends ExtensibleGroupTypeHandler {
         help.append("<i>{{&lt;output identifier&gt;}}</i><br>");
 
 
-        addWikiEditor(request, entry,  sb, formInfo, ARG_WIKI_TEXTAREA, wikiText, "Wiki Text",false,256000);
+        addWikiEditor(request, entry, sb, formInfo, ARG_WIKI_TEXTAREA,
+                      wikiText, "Wiki Text", false, 256000);
 
 
         /*
