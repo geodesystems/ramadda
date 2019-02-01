@@ -28,8 +28,6 @@ import org.ramadda.util.text.CsvUtil;
 
 import org.w3c.dom.*;
 
-import ucar.unidata.util.IOUtil;
-
 import java.io.*;
 
 import java.text.SimpleDateFormat;
@@ -47,9 +45,8 @@ public class DaymetTypeHandler extends PointTypeHandler {
     private SimpleDateFormat dateSDF;
 
     /** _more_ */
-    private static int IDX = RecordTypeHandler.IDX_LAST + 1;
+    private static int IDX = PointTypeHandler.IDX_LAST + 1;
     private static int IDX_STRIDE = IDX++;
-
 
 
     /**
@@ -109,7 +106,7 @@ public class DaymetTypeHandler extends PointTypeHandler {
         if (dateSDF == null) {
             dateSDF = RepositoryUtil.makeDateFormat("yyyy-MM-dd");
         }
-        String startDate = "2010-01-01";
+        String startDate = "1980-01-01";
         String endDate = dateSDF.format(cal.getTime());
         if (entry.getStartDate() < entry.getEndDate()) {
             startDate = dateSDF.format(new Date(entry.getStartDate()));
