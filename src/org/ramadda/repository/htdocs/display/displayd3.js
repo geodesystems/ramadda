@@ -164,7 +164,22 @@ function RamaddaSkewtDisplay(displayManager, id, properties) {
             this.writeHtml(ID_DISPLAY_CONTENTS,html);
             var _this = this;
             var func=function() {
-                _this.skewt1 = new D3Skewt(skewtId);
+                if(!window["D3Skewt"])  {
+                    console.log("no skewt yet");
+                    setTimeout(func,1000);
+                    return;
+                }
+                var options = {
+                };
+                if(_this.propertyDefined("showHodograph")) 
+                    options.showHodograph = _this.getProperty("showHodograph",true); 
+                if(_this.propertyDefined("showText"))  
+                    options.showText = _this.getProperty("showText",true); 
+                if(_this.propertyDefined("chartWidth")) 
+                    options.width = parseInt(_this.getProperty("chartWidth")); 
+                if(_this.propertyDefined("chartHeight")) 
+                    options.height = parseInt(_this.getProperty("chartHeight")); 
+                _this.skewt1 = new D3Skewt(skewtId, options);
             }
             setTimeout(func,1000);
             }

@@ -347,6 +347,10 @@ function DisplayThing(argId, argProperties) {
             if (!this.getProperty("format", true)) return number;
             return Utils.formatNumber(number);
         },
+        propertyDefined: function(key) {
+                return Utils.isDefined(this.getProperty(key));
+        },
+
         getProperty: function(key, dflt) {
             if (this[key]) return this[key];
             var value = this.properties[key];
