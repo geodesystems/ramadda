@@ -123,6 +123,9 @@ function RamaddaMapDisplay(displayManager, id, properties) {
             }
         },
         checkLayout: function() {
+            if (!this.map) {
+                return;
+            }
             var d = this.jq(ID_MAP);
             if (d.width() > 0 && this.lastWidth != d.width() && this.map) {
                 this.lastWidth = d.width();
@@ -446,6 +449,9 @@ function RamaddaMapDisplay(displayManager, id, properties) {
             ], "");
         },
         handleEventEntryMouseover: function(source, args) {
+            if (!this.map) {
+                return;
+            }
             id = args.entry.getId() + "_mouseover";
             attrs = {
                 lineColor: "red",
@@ -465,13 +471,22 @@ function RamaddaMapDisplay(displayManager, id, properties) {
             this.addOrRemoveEntryMarker(id, args.entry, true, attrs);
         },
         handleEventEntryMouseout: function(source, args) {
+            if (!this.map) {
+                return;
+            }
             id = args.entry.getId() + "_mouseover";
             this.addOrRemoveEntryMarker(id, args.entry, false);
         },
         handleEventAreaClear: function() {
+            if (!this.map) {
+                return;
+            }
             this.map.clearRegionSelector();
         },
         handleClick: function(theMap, lon, lat) {
+            if (!this.map) {
+                return;
+            }
             if (this.doDisplayMap()) {
                 return;
             }
@@ -494,6 +509,9 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 
         sourceToEntries: {},
         handleEventEntriesChanged: function(source, entries) {
+            if (!this.map) {
+                return;
+            }
             //debug
             if (source == this.lastSource) {
                 this.map.clearSelectionMarker();
@@ -546,6 +564,9 @@ function RamaddaMapDisplay(displayManager, id, properties) {
             //debug                    this.map.centerOnMarkers(bounds, true);
         },
         handleEventEntrySelection: function(source, args) {
+            if (!this.map) {
+                return;
+            }
             var _this = this;
             var entry = args.entry;
             if (entry == null) {
@@ -956,6 +977,9 @@ function RamaddaMapDisplay(displayManager, id, properties) {
             this.applyVectorMap();
         },
         handleEventRemoveDisplay: function(source, display) {
+            if (!this.map) {
+                return;
+            }
             var mapEntryInfo = this.mapEntryInfos[display];
             if (mapEntryInfo != null) {
                 mapEntryInfo.removeFromMap(this.map);
@@ -981,6 +1005,9 @@ function RamaddaMapDisplay(displayManager, id, properties) {
         },
 
         handleEventRecordSelection: function(source, args) {
+            if (!this.map) {
+                return;
+            }
             var record = args.record;
             if (record.hasLocation()) {
                 var latitude = record.getLatitude();
