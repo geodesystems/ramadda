@@ -7160,13 +7160,13 @@ function WordtreeDisplay(displayManager, id, properties) {
                     var prevValue  = 0;
                     for(var bucketIdx=0;bucketIdx<bucketList.length;bucketIdx++)  {
                         var v = parseFloat(bucketList[bucketIdx]);
-                        if(i==0) {
+                        if(bucketIdx==0) {
                             min = v;
                             max = v;
                         }
                         min = Math.min(min,v);
                         max = Math.max(max,v);
-                        if(i>0)  {
+                        if(bucketIdx>0)  {
                             var label;
                             if(bucketLabels && i<=bucketLabels.length)
                                 label = bucketLabels[bucketIdx-1];
@@ -7208,9 +7208,7 @@ function WordtreeDisplay(displayManager, id, properties) {
                                 break;
                             }
                         }
-                    } else {
-                        //                        value =(""+value).replace(/ /g,"_").replace(/\./g,""); 
-                    }
+                    } 
                     string+=value;
                 }
                 var data = [string.trim()];
