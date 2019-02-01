@@ -69,6 +69,7 @@ public class YouTubeVideoTypeHandler extends GenericTypeHandler {
 
     /** _more_ */
     public static final int IDX_DISPLAY = IDX++;
+    public static final int IDX_AUTOPLAY = IDX++;
 
     /** _more_ */
     private int idCnt = 0;
@@ -100,6 +101,7 @@ public class YouTubeVideoTypeHandler extends GenericTypeHandler {
     public Result getHtmlDisplay(Request request, Entry entry)
             throws Exception {
 
+        boolean autoPlay = entry.getValue(IDX_AUTOPLAY, false);
         String  sdisplay = entry.getValue(IDX_DISPLAY, "true");
         boolean display  = (sdisplay.length() == 0)
                            ? true
@@ -157,7 +159,7 @@ public class YouTubeVideoTypeHandler extends GenericTypeHandler {
         String playerId = "video_" + (idCnt++);
         String embedUrl = "//www.youtube.com/embed/" + id;
         embedUrl += "?enablejsapi=1";
-        embedUrl += "&autoplay=0";
+        embedUrl += "&autoplay=" +(autoPlay?1:0);
         embedUrl += "&playerapiid=" + playerId;
         if (start > 0) {
             embedUrl += "&start=" + ((int) (start * 60));

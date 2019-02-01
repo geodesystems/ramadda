@@ -77,6 +77,7 @@
      <column name="video_start" type="double" label="Start"  suffix="(minutes)" default="0" showinhtml="false"/>
      <column name="video_end" type="double" label="End"  suffix="(minutes)" default="-1" showinhtml="false"/>
      <column name="display" type="boolean" label="Display" default="true"  showinhtml="false"/>
+     <column name="autoplay" type="boolean" label="Auto play" default="false"  showinhtml="false"/>
 </type>
 
 
