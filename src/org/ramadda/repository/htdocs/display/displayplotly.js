@@ -1,5 +1,5 @@
 /**
-Copyright 2008-2015 Geode Systems LLC
+Copyright 2008-2019 Geode Systems LLC
 */
 
 var CATEGORY_PLOTLY = "More Charts";

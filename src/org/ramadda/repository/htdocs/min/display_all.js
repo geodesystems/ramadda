@@ -1,5 +1,5 @@
 /**
-Copyright 2008-2014 Geode Systems LLC
+Copyright 2008-2019 Geode Systems LLC
 */
 
 
@@ -149,7 +149,7 @@ function DateRangeWidget(display) {
         }
     });
 }/**
-Copyright 2008-2015 Geode Systems LLC
+Copyright 2008-2019 Geode Systems LLC
 */
 
 
@@ -3563,7 +3563,7 @@ function DisplayGroup(argDisplayManager, argId, argProperties) {
     });
 
 }/**
-Copyright 2008-2014 Geode Systems LLC
+Copyright 2008-2019 Geode Systems LLC
 */
 
 
@@ -4686,7 +4686,7 @@ var RecordUtil = {
         return result;
     }
 };/**
-Copyright 2008-2015 Geode Systems LLC
+Copyright 2008-2019 Geode Systems LLC
 */
 
 
@@ -5251,7 +5251,7 @@ function RamaddaShellDisplay(displayManager, id, properties) {
         },
     });
 }/**
-Copyright 2008-2018 Geode Systems LLC
+Copyright 2008-2019 Geode Systems LLC
 */
 
 var CATEGORY_CHARTS = "Charts";
@@ -8109,7 +8109,7 @@ function RamaddaHeatmapDisplay(displayManager, id, properties) {
         },
     });
 }/**
-Copyright 2008-2015 Geode Systems LLC
+Copyright 2008-2019 Geode Systems LLC
 */
 
 
@@ -8639,7 +8639,7 @@ function RamaddaGliderCrossSectionDisplay(displayManager, id, properties) {
 
     return new RamaddaD3Display(displayManager, id, properties);
 }/**
-Copyright 2008-2015 Geode Systems LLC
+Copyright 2008-2019 Geode Systems LLC
 */
 
 
@@ -11199,7 +11199,7 @@ function RamaddaRepositoriesDisplay(displayManager, id, properties) {
 
 
 var RamaddaGalleryDisplay = RamaddaEntrygalleryDisplay;/**
-Copyright 2008-2015 Geode Systems LLC
+Copyright 2008-2019 Geode Systems LLC
 */
 
 
@@ -11271,7 +11271,7 @@ function RamaddaExampleDisplay(displayManager, id, properties) {
         }
     });
 }/**
-Copyright 2008-2015 Geode Systems LLC
+Copyright 2008-2019 Geode Systems LLC
 */
 
 
@@ -11785,7 +11785,7 @@ function DisplayManager(argId, argProperties) {
     });
 
 }/**
-Copyright 2008-2018 Geode Systems LLC
+Copyright 2008-2019 Geode Systems LLC
 */
 
 var DISPLAY_MAP = "map";
@@ -12810,7 +12810,7 @@ function MapEntryInfo(entry) {
 
     });
 }/**
-Copyright 2008-2015 Geode Systems LLC
+Copyright 2008-2019 Geode Systems LLC
 */
 
 
