@@ -179,6 +179,12 @@ public class WikiPageTypeHandler extends ExtensibleGroupTypeHandler {
                                     tag, props);
     }
 
+    public String getTextForWiki(Request request,
+                                Entry entry, Hashtable properties)
+            throws Exception {
+        return (String) entry.getValue(0, "");
+    }
+
 
     /**
      * _more_

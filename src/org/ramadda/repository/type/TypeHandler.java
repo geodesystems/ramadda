@@ -1033,6 +1033,12 @@ public class TypeHandler extends RepositoryManager {
         return entry.getDescription();
     }
 
+    public String getTextForWiki(Request request,
+                                Entry entry, Hashtable properties)
+            throws Exception {
+        return entry.getDescription();
+    }
+
 
     /**
      * _more_
