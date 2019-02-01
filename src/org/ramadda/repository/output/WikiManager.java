@@ -408,6 +408,20 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                                               ATTR_SHOWMENU, "true", 
                                               ATTR_SHOWTITLE, "true")),
                             new WikiTag(WIKI_TAG_DISPLAY,
+                                        "Word Tree",
+                                        attrs(ATTR_TYPE, "wordtree", 
+                                              "#fields", "",
+                                              "#buckets","100,110,115,120,130",
+                                              "#bucketLabel","labels for buckets",
+                                              "#wordColors","blue,black,red",
+                                              "#colorBy","color by field",
+                                              "#headerPrefix", "prefix text",
+                                              "#header","alt header",
+                                              "#maxFontSize","14",
+                                              ATTR_LAYOUTHERE, "true", 
+                                              ATTR_SHOWMENU, "true", 
+                                              ATTR_SHOWTITLE, "true")),
+                            new WikiTag(WIKI_TAG_DISPLAY,
                                         "Density",
                                         attrs(ATTR_TYPE, "density", 
                                               "#fields", "",
@@ -5679,7 +5693,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
             //                    "google.load(\"visualization\", \"1\", {packages:['corechart','table','bar']});\n"));
             HtmlUtils.script(
                 sb,
-                "google.charts.load(\"43\", {packages:['corechart','calendar','table','bar','sankey','timeline','gauge']});\n");
+                "google.charts.load(\"43\", {packages:['corechart','calendar','table','bar','sankey','wordtree','timeline','gauge']});\n");
             HtmlUtils.importJS(
                 sb, getPageHandler().getCdnPath("/lib/d3/d3.min.js"));
             HtmlUtils.importJS(

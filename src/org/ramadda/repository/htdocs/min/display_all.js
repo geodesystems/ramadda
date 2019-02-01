@@ -5276,6 +5276,7 @@ var DISPLAY_TEXT = "text";
 var DISPLAY_CROSSTAB = "crosstab";
 var DISPLAY_CORRELATION = "correlation";
 var DISPLAY_HEATMAP = "heatmap";
+var DISPLAY_WORDTREE = "wordtree";
 
 var googleChartsLoaded = false;
 
@@ -5420,6 +5421,13 @@ addGlobalDisplayType({
 addGlobalDisplayType({
     type: DISPLAY_HEATMAP,
     label: "Heatmap",
+    requiresData: true,
+    forUser: true,
+    category: CATEGORY_MISC
+});
+addGlobalDisplayType({
+    type: DISPLAY_WORDTREE,
+    label: "Word Tree",
     requiresData: true,
     forUser: true,
     category: CATEGORY_MISC
@@ -5652,7 +5660,7 @@ function RamaddaMultiChart(displayManager, id, properties) {
             return this.getProperty(PROP_CHART_TYPE, DISPLAY_LINECHART);
         },
         defaultSelectedToAll: function() {
-            if (this.chartType == DISPLAY_TABLE || this.chartType == DISPLAY_SANKEY) {
+            if (this.chartType == DISPLAY_TABLE || this.chartType == DISPLAY_SANKEY|| this.chartType == DISPLAY_WORDTREE) {
                 return true;
             }
             return SUPER.defaultSelectedToAll.call(this);
@@ -5747,7 +5755,7 @@ function RamaddaMultiChart(displayManager, id, properties) {
         },
         getFieldsToSelect: function(pointData) {
             var chartType = this.getProperty(PROP_CHART_TYPE, DISPLAY_LINECHART);
-            if (this.chartType == DISPLAY_TABLE || this.chartType == DISPLAY_BARTABLE || this.chartType == DISPLAY_BUBBLE || this.chartType == DISPLAY_SANKEY || this.chartType == DISPLAY_TIMELINECHART || this.chartType == DISPLAY_PIECHART) {
+            if (this.chartType == DISPLAY_TABLE || this.chartType == DISPLAY_BARTABLE || this.chartType == DISPLAY_BUBBLE || this.chartType == DISPLAY_SANKEY || this.chartType == DISPLAY_WORDTREE || this.chartType == DISPLAY_TIMELINECHART || this.chartType == DISPLAY_PIECHART) {
                 //                    return pointData.getRecordFields();
                 return pointData.getNonGeoFields();
             }
@@ -5826,7 +5834,7 @@ function RamaddaMultiChart(displayManager, id, properties) {
             var props = {
                 includeIndex: true,
             };
-            if (this.chartType == DISPLAY_TABLE || this.chartType == DISPLAY_BARTABLE || chartType == DISPLAY_PIECHART || chartType == DISPLAY_SCATTERPLOT || chartType == DISPLAY_HISTOGRAM || chartType == DISPLAY_BUBBLE || chartType == DISPLAY_GAUGE || chartType == DISPLAY_SANKEY || chartType == DISPLAY_TIMELINECHART) {
+            if (this.chartType == DISPLAY_TABLE || this.chartType == DISPLAY_BARTABLE || chartType == DISPLAY_PIECHART || chartType == DISPLAY_SCATTERPLOT || chartType == DISPLAY_HISTOGRAM || chartType == DISPLAY_BUBBLE || chartType == DISPLAY_GAUGE || chartType == DISPLAY_SANKEY || chartType == DISPLAY_WORDTREE ||chartType == DISPLAY_TIMELINECHART) {
                 props.includeIndex = false;
             }
             props.groupByIndex = -1;
@@ -6098,6 +6106,7 @@ function RamaddaMultiChart(displayManager, id, properties) {
         },
         setChartSelection: function(index) {
             if (this.chart != null) {
+                console.log("index:" + index +" " + this.chartType);
                 if (this.chart.setSelection) {
                     this.chart.setSelection([{
                         row: index,
@@ -6732,6 +6741,36 @@ function RamaddaMultiChart(displayManager, id, properties) {
                 this.chart = new google.visualization.BarChart(document.getElementById(chartId));
             } else if (chartType == DISPLAY_SANKEY) {
                 this.chart = new google.visualization.Sankey(document.getElementById(chartId));
+            } else if (chartType == DISPLAY_WORDTREE) {
+                if(this.getProperty("chartHeight")) 
+                    chartOptions.height= parseInt(this.getProperty("chartHeight"));
+                if(this.getProperty("wordColors")) {
+                    var tmp = this.getProperty("wordColors").split(",");
+                    var colors = [];
+                    for(var i=0;i<3 && i<tmp.length;i++) {
+                        colors.push(tmp[i]);
+                    }
+                    if(colors.length==3)
+                        chartOptions.colors= colors;
+                }
+
+                if(this.getProperty("chartWidth"))  {
+                    chartOptions.width= parseInt(this.getProperty("chartWidth"));
+                }
+
+                chartOptions.wordtree  = {
+                    format: 'implicit',
+                    wordSeparator:"_SEP_",
+                    word: this.getProperty("treeRoot","root"),
+                    //                    type: this.getProperty("treeType","double")
+
+                }
+                if(this.getProperty("maxFontSize")) {
+                    chartOptions.maxFontSize = parseInt(this.getProperty("maxFontSize"));
+                    console.log(chartOptions.wordtree.maxFontSize+ " " + this.getProperty("maxFontSize"));
+                }
+
+                this.chart = new google.visualization.WordTree(document.getElementById(chartId));
             } else if (chartType == DISPLAY_SCATTERPLOT) {
                 var height = 400;
                 if (Utils.isDefined(this.chartHeight)) {
@@ -7073,6 +7112,124 @@ function SankeyDisplay(displayManager, id, properties) {
     }, properties);
     RamaddaUtil.inherit(this, new RamaddaMultiChart(displayManager, id, properties));
     addRamaddaDisplay(this);
+}
+
+function WordtreeDisplay(displayManager, id, properties) {
+    properties = $.extend({
+        "chartType": DISPLAY_WORDTREE
+    }, properties);
+    RamaddaUtil.inherit(this, new RamaddaMultiChart(displayManager, id, properties));
+    addRamaddaDisplay(this);
+    $.extend(this, {
+            handleEventRecordSelection: function(source, args) {
+          },
+          makeDataTable: function(chartType, dataList, props, selectedFields) {
+                //null ->get all data
+            var root = this.getProperty("treeRoot","root");
+            var records = this.filterData(null, selectedFields);
+            var fields = this.getSelectedFields(this.getData().getRecordFields());
+            var valueField = this.getFieldById(null, this.getProperty("colorBy"));
+            var values = [];
+            var typeTuple=["phrases"];
+            values.push(typeTuple);
+            var fixedSize = this.getProperty("fixedSize");
+            if(valueField)
+                fixedSize=1;
+            if(fixedSize) typeTuple.push("size");
+            if(valueField)
+                typeTuple.push("value");
+            var fieldInfo = {};
+
+            var header="";
+            for (var i = 0; i < fields.length; i++) {
+                var field = fields[i];
+                if(header!="")
+                    header+=" -&gt;";
+                header+=field.getLabel();
+                if(!field.isFieldNumeric()) continue;
+                var column = this.getColumnValues(records, field);
+                var buckets = [];
+                var argBuckets = this.getProperty("buckets." + field.getId(),this.getProperty("buckets",null));
+                var min,max;
+                if(argBuckets) {
+                    var argBucketLabels = this.getProperty("bucketLabels." + field.getId(),this.getProperty("bucketLabels",null));
+                    var bucketLabels;
+                    if(argBucketLabels)
+                        bucketLabels = argBucketLabels.split(",");
+                    var bucketList  = argBuckets.split(",");
+                    var prevValue  = 0;
+                    for(var bucketIdx=0;bucketIdx<bucketList.length;bucketIdx++)  {
+                        var v = parseFloat(bucketList[bucketIdx]);
+                        if(i==0) {
+                            min = v;
+                            max = v;
+                        }
+                        min = Math.min(min,v);
+                        max = Math.max(max,v);
+                        if(i>0)  {
+                            var label;
+                            if(bucketLabels && i<=bucketLabels.length)
+                                label = bucketLabels[bucketIdx-1];
+                            else
+                                label = Utils.formatNumber(prevValue, true) +"-" + Utils.formatNumber(v, true);
+                            buckets.push({min:prevValue,max:v,label:label});
+                        }
+                        prevValue = v;
+                    }
+                } else {
+                    var numBuckets = parseInt(this.getProperty("numBuckets." + field.getId(),this.getProperty("numBuckets",10)));
+                    min = column.min;
+                    max = column.max;
+                    var step = (column.max-column.min)/numBuckets;
+                    for(var bucketIdx=0;bucketIdx<numBuckets;bucketIdx++) {
+                        var r1 = column.min+(bucketIdx*step);
+                        var r2 = column.min+((bucketIdx+1)*step);
+                        var label = Utils.formatNumber(r1, true) +"-" + Utils.formatNumber(r2, true);
+                        buckets.push({min:r1,max:r2,label:label});
+                    }
+                }
+                fieldInfo[field.getId()] = {min:min,max:max,buckets:buckets};
+            }
+
+            var sep = "_SEP_";
+            for (var rowIdx = 0; rowIdx < records.length; rowIdx++) {
+                var row = this.getDataValues(records[rowIdx]);
+                var string = root;
+                for (var fieldIdx = 0; fieldIdx < fields.length; fieldIdx++) {
+                    var field = fields[fieldIdx];
+                    string +=sep;
+                    var value = row[field.getIndex()];
+                    if(field.isFieldNumeric()) {
+                        var info = fieldInfo[field.getId()];
+                        for(var bucketIdx=0;bucketIdx<info.buckets.length;bucketIdx++) {
+                            var bucket  = info.buckets[bucketIdx]; 
+                            if(value>=bucket.min && value<=bucket.max) {
+                                value=bucket.label;
+                                break;
+                            }
+                        }
+                    } else {
+                        //                        value =(""+value).replace(/ /g,"_").replace(/\./g,""); 
+                    }
+                    string+=value;
+                }
+                var data = [string.trim()];
+                if(fixedSize) data.push(parseInt(fixedSize));
+                if(valueField)
+                    data.push(row[valueField.getIndex()]);
+                values.push(data);
+            }
+            if(this.getProperty("header")) {
+                header = this.getProperty("header","");
+            } else {
+                header = "<b>Fields: </b>" +header;
+                if(this.getProperty("headerPrefix")) 
+                    header = this.getProperty("headerPrefix") + " " + header;
+            }
+            this.writeHtml(ID_DISPLAY_TOP,header);
+            return google.visualization.arrayToDataTable(values);
+            },
+                });
 }
 
 function CalendarDisplay(displayManager, id, properties) {
