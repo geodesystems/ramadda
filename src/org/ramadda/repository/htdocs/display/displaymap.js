@@ -174,7 +174,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
                 theDisplay.mapBoundsChanged();
             });
 
-            if (this.getProperty("bounds")) {
+            if (this.getProperty("bounds") && this.getProperty("showBounds",true)) {
                 var toks = this.getProperty("bounds", "").split(",");
                 if (toks.length == 4) {
                     if (this.getProperty("showBounds"), true) {
