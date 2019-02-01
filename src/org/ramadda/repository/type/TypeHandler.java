@@ -1036,6 +1036,7 @@ public class TypeHandler extends RepositoryManager {
     public String getTextForWiki(Request request,
                                 Entry entry, Hashtable properties)
             throws Exception {
+        System.err.println("TypeHandler.getTextForWiki");
         return entry.getDescription();
     }
 
