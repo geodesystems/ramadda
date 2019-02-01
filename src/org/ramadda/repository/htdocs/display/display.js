@@ -2730,7 +2730,6 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             }
 
 
-
             var offset = 0;
             if (Utils.isDefined(this.offset)) {
                 offset = parseFloat(this.offset);

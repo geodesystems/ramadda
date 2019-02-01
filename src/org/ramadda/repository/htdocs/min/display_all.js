@@ -2880,7 +2880,6 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             }
 
 
-
             var offset = 0;
             if (Utils.isDefined(this.offset)) {
                 offset = parseFloat(this.offset);
@@ -4072,10 +4071,33 @@ function makePointData(json, derived, source) {
     var dateIdx = -1;
     var dateIndexes = [];
 
+    var offsetFields  = [];
     var lastField = null;
     for (var i = 0; i < json.fields.length; i++) {
         var field = json.fields[i];
         var recordField = new RecordField(field);
+        if(recordField.isFieldNumeric()) {
+            if(source.getProperty) {
+                var offset1 =  source.getProperty(recordField.getId()+".offset1", source.getProperty("offset1"));
+                var offset2 =  source.getProperty(recordField.getId()+".offset2", source.getProperty("offset2"));
+                var scale =  source.getProperty(recordField.getId()+".scale", source.getProperty("scale"));
+
+                if(offset1 || offset2 || scale) {
+                    var unit = source.getProperty(recordField.getId()+".unit", source.getProperty("unit"));
+                    if(unit) {
+                        recordField.unit = unit;
+                    }
+                    var o = {offset1:0,offset2:0,scale:1};
+                    if(offset1) o.offset1 = parseFloat(offset1);
+                    if(offset2) o.offset2 = parseFloat(offset2);
+                    if(scale) o.scale = parseFloat(scale);
+                    recordField.offset = o;
+                    offsetFields.push(recordField);
+                }
+            }
+        }
+
+
         lastField = recordField;
         fields.push(recordField);
         //        console.log("field:" + recordField.getId());
@@ -4239,6 +4261,17 @@ function makePointData(json, derived, source) {
                 }
             }
         }
+
+
+        for(var fieldIdx=0;fieldIdx<offsetFields.length;fieldIdx++) {
+            var field = offsetFields[fieldIdx];
+            var offset = field.offset;
+            var value = values[field.getIndex()];
+            value = (value + offset.offset1) * offset.scale + offset.offset2;
+            values[field.getIndex()] =value;
+        }
+
+
         rows.push(values);
         var record = new PointRecord(tuple.latitude, tuple.longitude, tuple.elevation, date, values);
         pointRecords.push(record);
