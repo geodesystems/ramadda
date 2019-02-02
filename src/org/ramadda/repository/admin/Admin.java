@@ -25,13 +25,13 @@ import org.ramadda.repository.database.*;
 import org.ramadda.repository.harvester.*;
 
 import org.ramadda.repository.output.*;
+import org.ramadda.util.HtmlUtils;
+import org.ramadda.util.JQuery;
+import org.ramadda.util.Utils;
 
 import org.ramadda.util.sql.Clause;
 
 import org.ramadda.util.sql.SqlUtil;
-import org.ramadda.util.HtmlUtils;
-import org.ramadda.util.JQuery;
-import org.ramadda.util.Utils;
 
 
 import org.w3c.dom.*;
@@ -1717,7 +1717,7 @@ public class Admin extends RepositoryManager {
                           boolean asHtml)
             throws Exception {
         getRepository().getMailManager().sendEmail(to, from, subject,
-                                                   contents, bcc, asHtml,null);
+                contents, bcc, asHtml, null);
     }
 
     /**

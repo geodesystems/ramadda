@@ -88,6 +88,7 @@ public class RecordField {
     /** _more_ */
     public static final String TYPE_DATE = "date";
 
+    /** _more_          */
     public static final String TYPE_DOUBLE = "double";
 
     /** _more_ */
@@ -745,7 +746,9 @@ public class RecordField {
      * @return The RawType
      */
     public String getRawType() {
-        return rawType!=null&&rawType.length()>0?rawType:getTypeName();
+        return ((rawType != null) && (rawType.length() > 0))
+               ? rawType
+               : getTypeName();
     }
 
 
@@ -987,8 +990,9 @@ public class RecordField {
      */
     public void setType(String value) {
         type = value;
-        isTypeNumeric = value.equals("numeric") || value.equals("integer")||
-            value.equals(TYPE_DOUBLE)    || value.equals(TYPE_INT);
+        isTypeNumeric = value.equals("numeric") || value.equals("integer")
+                        || value.equals(TYPE_DOUBLE)
+                        || value.equals(TYPE_INT);
         isTypeString = value.equals(TYPE_STRING);
         isTypeDate   = value.equals(TYPE_DATE);
     }

@@ -2170,18 +2170,26 @@ public abstract class Processor extends CsvOperator {
 
         /** _more_ */
         private List<Integer> uniqueIndices;
+
+        /** _more_          */
         private List<Integer> valueIndices;
 
+        /** _more_          */
         private List<String> keys;
+
+        /** _more_          */
         private List<String> values;
 
         /**
          * _more_
          *
          *
+         *
+         * @param keys _more_
+         * @param values _more_
          */
         public Summer(List<String> keys, List<String> values) {
-            this.keys = keys;
+            this.keys   = keys;
             this.values = values;
         }
 
@@ -2200,7 +2208,7 @@ public abstract class Processor extends CsvOperator {
         public List<Row> finish(TextReader info, List<Row> rows)
                 throws Exception {
             uniqueIndices = getIndices(keys);
-            valueIndices = getIndices(values);
+            valueIndices  = getIndices(values);
             int          rowIndex = 0;
             List<String> keys     = new ArrayList<String>();
             Hashtable<String, List<Row>> rowMap = new Hashtable<String,
@@ -2291,8 +2299,10 @@ public abstract class Processor extends CsvOperator {
                     newRows.add(new Row(array));
                 }
             }
-            for(Object o: newRows)
+            for (Object o : newRows) {
                 System.err.println(o);
+            }
+
             return newRows;
 
         }

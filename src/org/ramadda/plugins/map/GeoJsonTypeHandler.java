@@ -124,9 +124,18 @@ public class GeoJsonTypeHandler extends GenericTypeHandler implements WikiConsta
     }
 
 
-@Override
-    public void metadataChanged(Request request, Entry entry)  throws Exception {
-        super.metadataChanged(request, entry) ;
+    /**
+     * _more_
+     *
+     * @param request _more_
+     * @param entry _more_
+     *
+     * @throws Exception _more_
+     */
+    @Override
+    public void metadataChanged(Request request, Entry entry)
+            throws Exception {
+        super.metadataChanged(request, entry);
         getEntryManager().updateEntry(request, entry);
     }
 

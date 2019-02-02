@@ -43,10 +43,10 @@ public class MTTFTypeHandler extends GenericTypeHandler {
     /** _more_ */
     public static final int IDX_ENABLED = IDX_FIRST++;
 
-    /** _more_          */
+    /** _more_ */
     public static final int IDX_RECURRENCE = IDX_FIRST++;
 
-    /** _more_          */
+    /** _more_ */
     public static final int IDX_RECURRENCE_VALUE = IDX_FIRST++;
 
     /** _more_ */
@@ -83,7 +83,7 @@ public class MTTFTypeHandler extends GenericTypeHandler {
     }
 
 
-    /** _more_          */
+    /** _more_ */
     private static Boolean twilioEnabled;
 
 

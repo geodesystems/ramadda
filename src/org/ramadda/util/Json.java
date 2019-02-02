@@ -1088,9 +1088,9 @@ public class Json {
      * @throws Exception _more_
      */
     public static void main(String[] args) throws Exception {
-        String file = args[0];
+        String  file = args[0];
         boolean html = true;
-        if(file.equals("-plain")) {
+        if (file.equals("-plain")) {
             html = false;
             file = args[1];
         }

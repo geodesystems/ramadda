@@ -141,7 +141,7 @@ public class LogManager extends RepositoryManager {
     /** _more_ */
     private int requestCount = 0;
 
-    /** _more_          */
+    /** _more_ */
     private SimpleDateFormat sdf;
 
     /**

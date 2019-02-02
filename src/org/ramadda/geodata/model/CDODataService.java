@@ -35,8 +35,8 @@ import org.ramadda.repository.util.RequestArgument;
 import org.ramadda.service.Service;
 import org.ramadda.service.ServiceInput;
 import org.ramadda.service.ServiceOperand;
-import org.ramadda.util.sql.Clause;
 import org.ramadda.util.HtmlUtils;
+import org.ramadda.util.sql.Clause;
 
 import ucar.nc2.dt.grid.GridDataset;
 import ucar.nc2.time.Calendar;

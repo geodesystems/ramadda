@@ -21,6 +21,10 @@ import org.ramadda.repository.*;
 import org.ramadda.repository.auth.*;
 import org.ramadda.repository.database.*;
 import org.ramadda.repository.util.FileWriter;
+import org.ramadda.util.HtmlUtils;
+import org.ramadda.util.JQuery;
+import org.ramadda.util.Json;
+import org.ramadda.util.Utils;
 
 
 
@@ -28,10 +32,6 @@ import org.ramadda.repository.util.FileWriter;
 import org.ramadda.util.sql.Clause;
 
 import org.ramadda.util.sql.SqlUtil;
-import org.ramadda.util.HtmlUtils;
-import org.ramadda.util.JQuery;
-import org.ramadda.util.Json;
-import org.ramadda.util.Utils;
 
 import org.w3c.dom.*;
 
@@ -1178,7 +1178,7 @@ public class MetadataManager extends RepositoryManager {
                     }
                     parent.setMetadata(null);
                     parent.getTypeHandler().metadataChanged(request, parent);
-                    
+
                     return new Result(request.makeUrl(URL_METADATA_FORM,
                             ARG_ENTRYID, parent.getId(), ARG_MESSAGE,
                             cnt + " "
@@ -1688,7 +1688,7 @@ public class MetadataManager extends RepositoryManager {
             groupSB.append(HtmlUtils.hidden(ARG_METADATA_TYPE, type.getId()));
             groupSB.append(HtmlUtils.submit(msg("Add") + HtmlUtils.space(1)
                                             + type.getLabel()));
-            if(Utils.stringDefined(type.getHelp())) {
+            if (Utils.stringDefined(type.getHelp())) {
                 groupSB.append(HtmlUtils.space(2));
                 groupSB.append(type.getHelp());
             }

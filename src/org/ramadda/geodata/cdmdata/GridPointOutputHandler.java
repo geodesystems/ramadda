@@ -164,7 +164,7 @@ public class GridPointOutputHandler extends OutputHandler implements CdmConstant
 
 
 
-    /** _more_          */
+    /** _more_ */
     private Properties aliases;
 
     /**

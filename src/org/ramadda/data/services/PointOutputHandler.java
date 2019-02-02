@@ -60,10 +60,10 @@ import org.w3c.dom.Element;
 
 import ucar.unidata.ui.ImageUtils;
 import ucar.unidata.util.IOUtil;
-import ucar.unidata.util.StringUtil;
 
 import ucar.unidata.util.LogUtil;
 import ucar.unidata.util.Misc;
+import ucar.unidata.util.StringUtil;
 import ucar.unidata.xml.XmlUtil;
 //import ucar.nc2.ft.point.writer.CFPointObWriter;
 //import ucar.nc2.ft.point.writer.PointObVar;
@@ -86,8 +86,8 @@ import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Enumeration;
-import java.util.Hashtable;
 import java.util.HashSet;
+import java.util.Hashtable;
 import java.util.List;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
@@ -884,34 +884,43 @@ public class PointOutputHandler extends RecordOutputHandler {
      *
      * @param request _more_
      * @param entry _more_
+     * @param props _more_
      *
      *
      * @return _more_
      * @throws Exception _more_
      */
-    public String getJsonUrl(Request request, Entry entry, Hashtable props) throws Exception {
+    public String getJsonUrl(Request request, Entry entry, Hashtable props)
+            throws Exception {
         String max = null;
-        PointTypeHandler typeHandler=(PointTypeHandler)entry.getTypeHandler();
-        String extra = "";
-        String extraArgs = (String)props.get("extraArgs");
-        if(extraArgs!=null) {
-            for(String tuple: StringUtil.split(extraArgs,",",true,true)) {
-                List<String> toks = StringUtil.splitUpTo(tuple,":",2);
-                String arg = toks.get(0);
-                String value = (toks.size()>1?toks.get(1):"");
-                extra+="&";
-                extra+=HtmlUtils.arg(arg,value);
+        PointTypeHandler typeHandler =
+            (PointTypeHandler) entry.getTypeHandler();
+        String extra     = "";
+        String extraArgs = (String) props.get("extraArgs");
+        if (extraArgs != null) {
+            for (String tuple :
+                    StringUtil.split(extraArgs, ",", true, true)) {
+                List<String> toks  = StringUtil.splitUpTo(tuple, ":", 2);
+                String       arg   = toks.get(0);
+                String       value = ((toks.size() > 1)
+                                      ? toks.get(1)
+                                      : "");
+                extra += "&";
+                extra += HtmlUtils.arg(arg, value);
             }
         }
-        if(props!=null) {
-            max = (String)props.get("max");
+        if (props != null) {
+            max = (String) props.get("max");
         }
-        if(max == null) max = "5000";
+        if (max == null) {
+            max = "5000";
+        }
+
         return request.entryUrl(getRepository().URL_ENTRY_SHOW, entry,
                                 ARG_OUTPUT, OUTPUT_PRODUCT.getId(),
                                 ARG_PRODUCT, OUTPUT_JSON.toString()) + "&"
-                                    + RecordFormHandler.ARG_MAX + "=" + max+
-            extra;
+                                    + RecordFormHandler.ARG_MAX + "=" + max
+                                    + extra;
 
     }
 
@@ -2029,8 +2038,8 @@ public class PointOutputHandler extends RecordOutputHandler {
 
         ColorTable colorTable =
             ColorTable.getColorTable(request.getString(ARG_COLORTABLE, ""));
-        min = request.get(RecordConstants.ARG_GRID_RANGE_MIN,min);
-        max = request.get(RecordConstants.ARG_GRID_RANGE_MAX,max);
+        min = request.get(RecordConstants.ARG_GRID_RANGE_MIN, min);
+        max = request.get(RecordConstants.ARG_GRID_RANGE_MAX, max);
         double[] range =
             ColorTable.getRange(request.getString(ARG_COLORTABLE, ""), min,
                                 max);

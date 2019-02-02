@@ -24,10 +24,10 @@ import org.ramadda.repository.metadata.JpegMetadataHandler;
 import org.ramadda.repository.metadata.Metadata;
 import org.ramadda.repository.metadata.MetadataHandler;
 import org.ramadda.repository.type.*;
+import org.ramadda.util.HtmlUtils;
 
 
 import org.ramadda.util.sql.SqlUtil;
-import org.ramadda.util.HtmlUtils;
 
 
 import org.w3c.dom.*;

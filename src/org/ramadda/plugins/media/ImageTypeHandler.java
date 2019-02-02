@@ -20,6 +20,7 @@ package org.ramadda.plugins.media;
 import org.ramadda.repository.*;
 import org.ramadda.repository.type.*;
 import org.ramadda.util.Utils;
+
 import org.w3c.dom.*;
 
 import ucar.unidata.util.IOUtil;
@@ -63,12 +64,12 @@ public class ImageTypeHandler extends GenericTypeHandler {
         String   path     = Utils.normalizeTemplateUrl(resource.getPath());
         boolean  useProxy = entry.getValue(0, false);
         if (useProxy) {
-            String filename = entry.getValue(1, (String)null);
-            String tail = IOUtil.getFileTail(path);
-            if(Utils.stringDefined(filename)) {
+            String filename = entry.getValue(1, (String) null);
+            String tail     = IOUtil.getFileTail(path);
+            if (Utils.stringDefined(filename)) {
                 tail = filename;
             }
-            path=  getRepository().getUrlBase() + "/proxy/" + tail
+            path = getRepository().getUrlBase() + "/proxy/" + tail
                    + "?entryid=" + entry.getId();
         }
 

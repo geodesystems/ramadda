@@ -48,8 +48,8 @@ public class GeoJsonOutputHandler extends OutputHandler {
 
     /** Map output type */
     public static final OutputType OUTPUT_GEOJSONTABLE =
-        new OutputType("Map Table", "geojsontable", OutputType.TYPE_VIEW,
-                       "", ICON_TABLE);
+        new OutputType("Map Table", "geojsontable", OutputType.TYPE_VIEW, "",
+                       ICON_TABLE);
 
     /** Map output type */
     public static final OutputType OUTPUT_GEOJSONCSV =
@@ -83,12 +83,12 @@ public class GeoJsonOutputHandler extends OutputHandler {
      * @throws Exception  problem creating links
      */
     public void getEntryLinks(Request request, State state, List<Link> links)
-        throws Exception {
-        if(state.getEntry()!=null && state.getEntry().getTypeHandler().isType("geo_geojson")) {
+            throws Exception {
+        if ((state.getEntry() != null)
+                && state.getEntry().getTypeHandler().isType("geo_geojson")) {
             links.add(makeLink(request, state.getEntry(),
                                OUTPUT_GEOJSONTABLE));
-            links.add(makeLink(request, state.getEntry(),
-                               OUTPUT_GEOJSONCSV));
+            links.add(makeLink(request, state.getEntry(), OUTPUT_GEOJSONCSV));
 
         }
     }
@@ -132,8 +132,7 @@ public class GeoJsonOutputHandler extends OutputHandler {
             new ByteArrayInputStream(sb.toString().getBytes()));
         csvUtil.run(null);
         sb = new StringBuilder();
-        getPageHandler().entrySectionOpen(request, entry, sb,
-                                          "Map Table");
+        getPageHandler().entrySectionOpen(request, entry, sb, "Map Table");
         sb.append("\n");
         sb.append(new String(bos2.toByteArray()));
         sb.append("\n");

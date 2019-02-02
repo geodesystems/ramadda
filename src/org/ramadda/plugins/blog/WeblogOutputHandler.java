@@ -20,9 +20,9 @@ package org.ramadda.plugins.blog;
 import org.ramadda.repository.*;
 import org.ramadda.repository.auth.*;
 import org.ramadda.repository.output.*;
+import org.ramadda.util.HtmlUtils;
 
 import org.ramadda.util.sql.SqlUtil;
-import org.ramadda.util.HtmlUtils;
 
 import org.w3c.dom.*;
 
@@ -182,6 +182,7 @@ public class WeblogOutputHandler extends OutputHandler {
         boolean embedded = request.get(ARG_EMBEDDED, false);
         if (embedded) {
             sb.append(content);
+
             return;
         }
         List<String> links = new ArrayList<String>();

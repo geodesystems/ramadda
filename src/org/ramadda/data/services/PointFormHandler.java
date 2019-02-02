@@ -646,17 +646,15 @@ public class PointFormHandler extends RecordFormHandler {
             initialDegrees = request.getString(ARG_GRID_RADIUS_DEGREES, "");
         }
 
-        String initialCells =  request.getString(ARG_GRID_RADIUS_CELLS, "5");
+        String initialCells = request.getString(ARG_GRID_RADIUS_CELLS, "5");
         extra.append(
             HtmlUtils.formEntry(
                 msgLabel("IDW Grid Radius"),
                 msgLabel("Grid cells")
-                        + HtmlUtils.input(ARG_GRID_RADIUS_CELLS, initialCells, 4)
-                + HtmlUtils.space(4) + 
-                msgLabel("or degrees")
+                + HtmlUtils.input(ARG_GRID_RADIUS_CELLS, initialCells, 4)
+                + HtmlUtils.space(4) + msgLabel("or degrees")
                 + HtmlUtils.input(
-                    ARG_GRID_RADIUS_DEGREES, initialDegrees,
-                    12)));
+                    ARG_GRID_RADIUS_DEGREES, initialDegrees, 12)));
 
         extra.append(
             HtmlUtils.formEntry(
@@ -945,8 +943,8 @@ public class PointFormHandler extends RecordFormHandler {
                     formatPointCount(numRecords)));
         }
 
-        MapInfo map = getRepository().getMapManager().createMap(request,entry,
-                          true, null);
+        MapInfo map = getRepository().getMapManager().createMap(request,
+                          entry, true, null);
         List<Metadata> metadataList = getMetadataManager().getMetadata(entry);
         boolean didMetadata = map.addSpatialMetadata(entry, metadataList);
         if ( !didMetadata) {
@@ -1388,8 +1386,8 @@ public class PointFormHandler extends RecordFormHandler {
         StringBuffer mapSB = new StringBuffer();
         boolean showMap = pointEntry.isCapable(PointFile.ACTION_MAPINCHART)
                           && request.get(ARG_MAP_SHOW, true);
-        MapInfo map = getRepository().getMapManager().createMap(request, entry, 500,
-                          300, false, null);
+        MapInfo map = getRepository().getMapManager().createMap(request,
+                          entry, 500, 300, false, null);
         if (showMap) {
             makeMapLines(request, pointEntry, map, 0);
             map.centerOn(entry);

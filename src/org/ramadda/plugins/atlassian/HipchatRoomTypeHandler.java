@@ -110,7 +110,7 @@ public class HipchatRoomTypeHandler extends ExtensibleGroupTypeHandler {
             (String) groupEntry.getValue(HipchatGroupTypeHandler.IDX_TOKEN);
 
 
-        List<Entry> children = getWikiManager().getEntries(request,null,
+        List<Entry> children = getWikiManager().getEntries(request, null,
                                    originalEntry, entry, props);
         StringBuilder sb = new StringBuilder();
         /*

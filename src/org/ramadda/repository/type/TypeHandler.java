@@ -305,7 +305,7 @@ public class TypeHandler extends RepositoryManager {
     /** _more_ */
     private String description;
 
-    /** _more_          */
+    /** _more_ */
     private String editHelp = "";
 
     /** _more_ */

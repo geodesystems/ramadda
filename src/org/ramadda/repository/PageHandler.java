@@ -3635,7 +3635,7 @@ Time:14625 cnt:7000
         return stripped.toString();
     }
 
-    /** _more_          */
+    /** _more_ */
     private static final String CDN =
         "https://cdn.jsdelivr.net/gh/geodesystems/ramadda/src/org/ramadda/repository/htdocs";
 
@@ -3665,9 +3665,9 @@ Time:14625 cnt:7000
         }
 
         return s.replace("${cdnpath}", path).replace(
-                                                     "${root}", getRepository().getUrlBase()).replace(
-                                                                                                      "${baseentry}", getEntryManager().getRootEntry().getId()).replace(
-                                                                                                                                                                        "${min}", mini).replace("${dotmin}", dotmini);
+            "${root}", getRepository().getUrlBase()).replace(
+            "${baseentry}", getEntryManager().getRootEntry().getId()).replace(
+            "${min}", mini).replace("${dotmin}", dotmini);
     }
 
     /**

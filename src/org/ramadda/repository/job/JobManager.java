@@ -32,9 +32,6 @@ import org.ramadda.repository.type.TypeHandler;
 
 import org.ramadda.service.Service;
 import org.ramadda.service.ServiceTypeHandler;
-
-import org.ramadda.util.sql.Clause;
-import org.ramadda.util.sql.SqlUtil;
 import org.ramadda.util.CategoryBuffer;
 
 
@@ -43,6 +40,9 @@ import org.ramadda.util.ProcessRunner;
 import org.ramadda.util.StreamEater;
 import org.ramadda.util.TTLCache;
 import org.ramadda.util.Utils;
+
+import org.ramadda.util.sql.Clause;
+import org.ramadda.util.sql.SqlUtil;
 
 
 import org.w3c.dom.*;

@@ -146,8 +146,18 @@ public abstract class RecordTypeHandler extends BlobTypeHandler implements Recor
     }
 
 
-    public void addToProcessingForm(Request request, Entry entry, Appendable sb) throws Exception {
-    }
+    /**
+     * _more_
+     *
+     * @param request _more_
+     * @param entry _more_
+     * @param sb _more_
+     *
+     * @throws Exception _more_
+     */
+    public void addToProcessingForm(Request request, Entry entry,
+                                    Appendable sb)
+            throws Exception {}
 
     /**
      * _more_
@@ -567,7 +577,18 @@ public abstract class RecordTypeHandler extends BlobTypeHandler implements Recor
         return request.getAbsoluteUrl(getRepository().getIconUrl(icon));
     }
 
-    public String getChartProperty(Request request, Entry entry, String prop, String dflt) {
+    /**
+     * _more_
+     *
+     * @param request _more_
+     * @param entry _more_
+     * @param prop _more_
+     * @param dflt _more_
+     *
+     * @return _more_
+     */
+    public String getChartProperty(Request request, Entry entry, String prop,
+                                   String dflt) {
         return getTypeProperty(prop, dflt);
     }
 

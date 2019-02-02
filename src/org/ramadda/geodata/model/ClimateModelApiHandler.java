@@ -30,10 +30,10 @@ import org.ramadda.service.Service;
 import org.ramadda.service.ServiceInput;
 import org.ramadda.service.ServiceOperand;
 import org.ramadda.service.ServiceOutput;
-import org.ramadda.util.sql.Clause;
 import org.ramadda.util.HtmlUtils;
 import org.ramadda.util.JQuery;
 import org.ramadda.util.Json;
+import org.ramadda.util.sql.Clause;
 
 import org.w3c.dom.Element;
 

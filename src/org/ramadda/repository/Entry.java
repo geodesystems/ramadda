@@ -25,9 +25,9 @@ import org.ramadda.repository.type.Column;
 import org.ramadda.repository.type.TypeHandler;
 import org.ramadda.repository.util.ServerInfo;
 import org.ramadda.util.Bounds;
+import org.ramadda.util.GeoUtils;
 
 import org.ramadda.util.Utils;
-import org.ramadda.util.GeoUtils;
 
 import org.w3c.dom.Element;
 
@@ -645,9 +645,14 @@ public class Entry implements Cloneable {
         startDate = value;
     }
 
+    /**
+     * _more_
+     *
+     * @param value _more_
+     */
     public void setStartAndEndDate(long value) {
         startDate = value;
-        endDate = value;
+        endDate   = value;
     }
 
     /**
@@ -1079,11 +1084,14 @@ public class Entry implements Cloneable {
         return false;
     }
 
+    /**
+     * _more_
+     */
     public void normalizeLongitude() {
-        if(east>180) {
-            double delta = (east%180);
-            east-=delta;
-            west-=delta;
+        if (east > 180) {
+            double delta = (east % 180);
+            east -= delta;
+            west -= delta;
         }
     }
 

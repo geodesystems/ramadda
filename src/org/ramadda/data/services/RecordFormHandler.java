@@ -230,10 +230,11 @@ public class RecordFormHandler extends RepositoryManager implements RecordConsta
             throws Exception {
         StringBuffer sb = new StringBuffer();
         request.getRepository().getPageHandler().entrySectionOpen(request,
-                                                                  recordEntry.getEntry(), sb, "Metadata");
+                recordEntry.getEntry(), sb, "Metadata");
         getEntryMetadata(request, recordEntry, sb);
         request.getRepository().getPageHandler().entrySectionClose(request,
                 recordEntry.getEntry(), sb);
+
         return new Result("", sb);
     }
 
@@ -313,6 +314,7 @@ public class RecordFormHandler extends RepositoryManager implements RecordConsta
 
         if (fields == null) {
             sb.append("No metadata available");
+
             return;
         }
         long numRecords = recordEntry.getNumRecords();
@@ -338,7 +340,9 @@ public class RecordFormHandler extends RepositoryManager implements RecordConsta
             if (unit == null) {
                 unit = "";
             }
-            String typeLabel = Utils.stringDefined(type)?type:field.getType();
+            String typeLabel = Utils.stringDefined(type)
+                               ? type
+                               : field.getType();
             sb.append(HtmlUtils.rowTop(HtmlUtils.cols(new Object[] {
                 field.getName(),
                 field.getLabel(), field.getDescription(), unit,
@@ -377,7 +381,7 @@ public class RecordFormHandler extends RepositoryManager implements RecordConsta
         final List<RecordField> fields =
             recordEntry.getRecordFile().getFields();
         request.getRepository().getPageHandler().entrySectionOpen(request,
-                                                                  recordEntry.getEntry(), sb, "View Data");
+                recordEntry.getEntry(), sb, "View Data");
         int start = request.get(ARG_START, 0);
         request.put(ARG_START, start + 50);
         int step = 50;
@@ -513,7 +517,7 @@ public class RecordFormHandler extends RepositoryManager implements RecordConsta
 
         sb.append("</table>");
         request.getRepository().getPageHandler().entrySectionClose(request,
-                                                                   recordEntry.getEntry(), sb);
+                recordEntry.getEntry(), sb);
 
         return new Result("", sb);
 

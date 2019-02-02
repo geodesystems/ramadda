@@ -55,10 +55,6 @@ import org.ramadda.repository.type.*;
 import org.ramadda.repository.util.DateArgument;
 import org.ramadda.repository.util.ServerInfo;
 
-import org.ramadda.util.sql.Clause;
-
-import org.ramadda.util.sql.SqlUtil;
-
 import org.ramadda.util.CategoryBuffer;
 import org.ramadda.util.HtmlUtils;
 import org.ramadda.util.JQuery;
@@ -66,6 +62,10 @@ import org.ramadda.util.OpenSearchUtil;
 
 import org.ramadda.util.TTLObject;
 import org.ramadda.util.WadlUtil;
+
+import org.ramadda.util.sql.Clause;
+
+import org.ramadda.util.sql.SqlUtil;
 
 
 import org.w3c.dom.*;
@@ -1494,6 +1494,7 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
      */
     public List<Entry>[] doSearch(Request request, SearchInfo searchInfo)
             throws Exception {
+
         HashSet<String> providers = new HashSet<String>();
 
 
@@ -1507,29 +1508,34 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
             providers.add("this");
         }
 
-        boolean              doAll           = providers.contains("all");
+        boolean     doAll      = providers.contains("all");
 
-        List<Entry>          folders         = new ArrayList<Entry>();
-        List<Entry>          entries         = new ArrayList<Entry>();
-        List<Entry>          allEntries      = new ArrayList<Entry>();
+        List<Entry> folders    = new ArrayList<Entry>();
+        List<Entry> entries    = new ArrayList<Entry>();
+        List<Entry> allEntries = new ArrayList<Entry>();
 
-        boolean doSearch = true;
+        boolean     doSearch   = true;
 
 
-        if(request.defined("entries")) {
-            for(String id: StringUtil.split(request.getString("entries",""),",",true,true)) {
+        if (request.defined("entries")) {
+            for (String id :
+                    StringUtil.split(request.getString("entries", ""), ",",
+                                     true, true)) {
                 Entry e = getEntryManager().getEntry(request, id);
-                if(e==null)  continue;
+                if (e == null) {
+                    continue;
+                }
                 allEntries.add(e);
             }
             doSearch = false;
         }
 
-        if(doSearch) {
+        if (doSearch) {
             List<SearchProvider> searchProviders =
                 new ArrayList<SearchProvider>();
             for (SearchProvider searchProvider : getSearchProviders()) {
-                if ( !doAll && (providers != null) && (providers.size() > 0)) {
+                if ( !doAll && (providers != null)
+                        && (providers.size() > 0)) {
                     if ( !providers.contains(searchProvider.getId())) {
                         continue;
                     }
@@ -1544,8 +1550,8 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
             List<Runnable>  runnables   = new ArrayList<Runnable>();
             for (SearchProvider searchProvider : searchProviders) {
                 Runnable runnable = makeRunnable(request, searchProvider,
-                                                 allEntries, searchInfo, running,
-                                                 runnableCnt);
+                                        allEntries, searchInfo, running,
+                                        runnableCnt);
                 runnables.add(runnable);
             }
 
@@ -1608,6 +1614,7 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
 
 
         return (List<Entry>[]) new List[] { folders, entries };
+
     }
 
 

@@ -144,9 +144,18 @@ public class ShapefileTypeHandler extends GenericTypeHandler implements WikiCons
         }
     }
 
-@Override
-    public void metadataChanged(Request request, Entry entry)  throws Exception {
-        super.metadataChanged(request, entry) ;
+    /**
+     * _more_
+     *
+     * @param request _more_
+     * @param entry _more_
+     *
+     * @throws Exception _more_
+     */
+    @Override
+    public void metadataChanged(Request request, Entry entry)
+            throws Exception {
+        super.metadataChanged(request, entry);
         getEntryManager().updateEntry(request, entry);
     }
 
@@ -241,7 +250,8 @@ public class ShapefileTypeHandler extends GenericTypeHandler implements WikiCons
         String fields = request.getString(ATTR_SELECTFIELDS,
                                           map.getSelectFields());
         if (fields != null) {
-            kmlUrl += "&mapsubset=true&" + HtmlUtils.arg("selectFields", fields, false);
+            kmlUrl += "&mapsubset=true&"
+                      + HtmlUtils.arg("selectFields", fields, false);
         }
         String bounds = map.getSelectBounds();
         if (bounds != null) {

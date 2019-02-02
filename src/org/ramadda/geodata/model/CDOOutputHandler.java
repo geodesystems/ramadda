@@ -18,10 +18,10 @@ package org.ramadda.geodata.model;
 
 
 import org.ramadda.geodata.cdmdata.CdmDataOutputHandler;
+import org.ramadda.repository.DateHandler;
 
 import org.ramadda.repository.Entry;
 import org.ramadda.repository.Link;
-import org.ramadda.repository.DateHandler;
 import org.ramadda.repository.PageHandler;
 import org.ramadda.repository.Repository;
 import org.ramadda.repository.Request;
@@ -755,7 +755,7 @@ public class CDOOutputHandler extends OutputHandler implements ServiceProvider {
         }
         if (date instanceof CalendarDate) {
             String dateFormat = getRepository().getProperty(PROP_DATE_FORMAT,
-                                                            DateHandler.DEFAULT_TIME_FORMAT);
+                                    DateHandler.DEFAULT_TIME_FORMAT);
 
             return new CalendarDateFormatter(dateFormat).toString(
                 (CalendarDate) date);
@@ -934,8 +934,8 @@ public class CDOOutputHandler extends OutputHandler implements ServiceProvider {
 
         MapInfo map;
         if ( !usePopup) {
-            map = getRepository().getMapManager().createMap(request, null, 250,
-                    150, true, null);
+            map = getRepository().getMapManager().createMap(request, null,
+                    250, 150, true, null);
             String maplayers = getRepository().getProperty(PROP_MAP_LAYERS,
                                    null);
             String defaultMap =
@@ -953,8 +953,8 @@ public class CDOOutputHandler extends OutputHandler implements ServiceProvider {
             map.addProperty("showZoomPanControl", "false");
             map.addProperty("showZoomOnlyControl", "true");
         } else {
-            map = getRepository().getMapManager().createMap(request, null, true,
-                    null);
+            map = getRepository().getMapManager().createMap(request, null,
+                    true, null);
         }
 
         map.setMapRegions(getPageHandler().getMapRegions(mapRegionGroup));

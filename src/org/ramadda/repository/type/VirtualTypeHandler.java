@@ -159,8 +159,9 @@ public class VirtualTypeHandler extends ExtensibleGroupTypeHandler {
         }
         idString = StringUtil.join(",", lines);
 
-        List<Entry> entries = getWikiManager().getEntries(request, null, mainEntry,
-                                  mainEntry, idString, null, false, "");
+        List<Entry> entries = getWikiManager().getEntries(request, null,
+                                  mainEntry, mainEntry, idString, null,
+                                  false, "");
 
 
         String by = request.getString(ARG_ORDERBY, (String) null);

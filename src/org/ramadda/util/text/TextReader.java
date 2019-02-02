@@ -100,7 +100,7 @@ public class TextReader implements Cloneable {
     /** _more_ */
     private String delimiter = ",";
 
-    /** _more_          */
+    /** _more_ */
     private String comment = "#";
 
     /** _more_ */

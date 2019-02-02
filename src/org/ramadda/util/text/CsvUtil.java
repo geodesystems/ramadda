@@ -92,10 +92,10 @@ public class CsvUtil {
     private boolean verbose = false;
 
 
-    /** _more_          */
+    /** _more_ */
     private String delimiter;
 
-    /** _more_          */
+    /** _more_ */
     private String comment;
 
     /**
@@ -1195,10 +1195,10 @@ public class CsvUtil {
             }
 
             if (arg.equals("-sum")) {
-                List<String> keys      = getCols(args.get(++i));
-                List<String> values      = getCols(args.get(++i));
-                info.getProcessor().addProcessor(
-                                                 new Processor.Summer(keys,values));
+                List<String> keys   = getCols(args.get(++i));
+                List<String> values = getCols(args.get(++i));
+                info.getProcessor().addProcessor(new Processor.Summer(keys,
+                        values));
 
                 continue;
             }
@@ -1725,7 +1725,7 @@ public class CsvUtil {
                 String name = args.get(++i);
                 String mode = args.get(++i);
                 info.getProcessor().addProcessor(
-                                                 new Converter.Denormalizer(file, col1,name,mode));
+                    new Converter.Denormalizer(file, col1, name, mode));
 
                 continue;
             }

@@ -23,12 +23,12 @@ import org.apache.log4j.Logger;
 
 import org.ramadda.repository.*;
 import org.ramadda.repository.type.*;
-
-import org.ramadda.util.sql.Clause;
-import org.ramadda.util.sql.SqlUtil;
 import org.ramadda.util.HtmlUtils;
 import org.ramadda.util.Log4jPrintWriter;
 import org.ramadda.util.Utils;
+
+import org.ramadda.util.sql.Clause;
+import org.ramadda.util.sql.SqlUtil;
 
 
 import org.w3c.dom.*;
@@ -314,10 +314,10 @@ public class DatabaseManager extends RepositoryManager implements SqlUtil
                     getRepository().getProperty("db.name", "repository"));
 
             connectionURL = connectionURL.trim();
-            System.err.println("RAMADDA: JDBC url:"
-                               + connectionURL + ((userName != null)
-                    ? " user name:" + userName
-                    : ""));
+            System.err.println("RAMADDA: JDBC url:" + connectionURL
+                               + ((userName != null)
+                                  ? " user name:" + userName
+                                  : ""));
 
             String encryptPassword =
                 getStorageManager().getEncryptionPassword();

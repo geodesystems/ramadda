@@ -25,10 +25,6 @@ import org.ramadda.repository.metadata.*;
 import org.ramadda.repository.output.*;
 
 import org.ramadda.repository.type.*;
-
-
-import org.ramadda.util.sql.Clause;
-import org.ramadda.util.sql.SqlUtil;
 import org.ramadda.util.HtmlTemplate;
 
 import org.ramadda.util.HtmlUtils;
@@ -37,6 +33,10 @@ import org.ramadda.util.TTLObject;
 
 import org.ramadda.util.TempDir;
 import org.ramadda.util.Utils;
+
+
+import org.ramadda.util.sql.Clause;
+import org.ramadda.util.sql.SqlUtil;
 
 import org.w3c.dom.*;
 

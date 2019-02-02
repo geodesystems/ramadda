@@ -64,25 +64,25 @@ public class BlsSeriesTypeHandler extends PointTypeHandler {
     /** _more_ */
     private static int IDX_BASE = 2;
 
-    /** _more_          */
+    /** _more_ */
     public static final int IDX_SERIESID = IDX_BASE++;
 
-    /** _more_          */
+    /** _more_ */
     public static final int IDX_SURVEY = IDX_BASE++;
 
-    /** _more_          */
+    /** _more_ */
     public static final int IDX_MEASURE = IDX_BASE++;
 
-    /** _more_          */
+    /** _more_ */
     public static final int IDX_INDUSTRY = IDX_BASE++;
 
-    /** _more_          */
+    /** _more_ */
     public static final int IDX_SECTOR = IDX_BASE++;
 
-    /** _more_          */
+    /** _more_ */
     public static final int IDX_AREA = IDX_BASE++;
 
-    /** _more_          */
+    /** _more_ */
     public static final int IDX_ITEM = IDX_BASE++;
 
 
@@ -150,14 +150,14 @@ public class BlsSeriesTypeHandler extends PointTypeHandler {
      *
      *
      * @version        $version$, Thu, Jan 3, '19
-     * @author         Enter your name here...    
+     * @author         Enter your name here...
      */
     public static class BlsRecordFile extends CsvFile {
 
-        /** _more_          */
+        /** _more_ */
         private Entry entry;
 
-        /** _more_          */
+        /** _more_ */
         private Repository repository;
 
         /**
@@ -244,7 +244,7 @@ public class BlsSeriesTypeHandler extends PointTypeHandler {
                                                     "Jul").replace("Qtr4",
                                                         "Oct");
                         //Check for just a year
-                        if(time.matches("^\\d\\d\\d\\d$")) {
+                        if (time.matches("^\\d\\d\\d\\d$")) {
                             time = "Jan " + time;
                         }
                         times.add(time);

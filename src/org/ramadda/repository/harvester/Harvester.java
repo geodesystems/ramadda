@@ -22,10 +22,10 @@ import org.ramadda.repository.*;
 import org.ramadda.repository.auth.*;
 import org.ramadda.repository.output.OutputHandler;
 import org.ramadda.repository.type.*;
+import org.ramadda.util.HtmlUtils;
 
 
 import org.ramadda.util.sql.SqlUtil;
-import org.ramadda.util.HtmlUtils;
 
 
 import org.w3c.dom.*;
@@ -666,7 +666,8 @@ public abstract class Harvester extends RepositoryManager {
             long sleepTime = Misc.getPauseEveryTime((int) sleepMinutes);
             Date now       = new Date();
             Date then      = new Date(now.getTime() + sleepTime);
-            sleepLbl += msg("Would run at") + " " + getDateHandler().formatDate(then);
+            sleepLbl += msg("Would run at") + " "
+                        + getDateHandler().formatDate(then);
         }
 
         StringBuffer runWidgets = new StringBuffer();
@@ -922,7 +923,8 @@ public abstract class Harvester extends RepositoryManager {
      * @param msg _more_
      */
     public void logStatus(String msg) {
-        status.append("[<i>" + getDateHandler().formatDate(new Date()) + "</i>]: " + msg + "<br>");
+        status.append("[<i>" + getDateHandler().formatDate(new Date())
+                      + "</i>]: " + msg + "<br>");
     }
 
 
@@ -1083,6 +1085,7 @@ public abstract class Harvester extends RepositoryManager {
         double minutes = getSleepMinutes();
         if (minutes < 1) {
             Misc.sleep((long) (1000 * 60 * minutes));
+
             return;
         }
         Misc.pauseEvery((int) minutes);

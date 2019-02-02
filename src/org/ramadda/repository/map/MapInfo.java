@@ -368,9 +368,10 @@ public class MapInfo {
             HtmlUtils.div("&nbsp;",
                           HtmlUtils.id("ramadda-map-latlonreadout")
                           + HtmlUtils.style("font-style:italic; " + swidth));
-        String footer = HtmlUtils.div("",
-                      HtmlUtils.cssClass("ramadda-map-footer")
-                      + HtmlUtils.id(mapVarName + "_footer"));
+        String footer =
+            HtmlUtils.div("",
+                          HtmlUtils.cssClass("ramadda-map-footer")
+                          + HtmlUtils.id(mapVarName + "_footer"));
         HtmlUtils.div(result, "",
                       HtmlUtils.cssClass("ramadda-map-search")
                       + HtmlUtils.id(mapVarName + "_search"));

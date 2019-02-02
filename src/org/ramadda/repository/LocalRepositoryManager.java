@@ -23,8 +23,6 @@ import org.ramadda.repository.auth.User;
 import org.ramadda.repository.auth.UserManager;
 import org.ramadda.repository.database.DatabaseManager;
 import org.ramadda.repository.database.Tables;
-import org.ramadda.util.sql.Clause;
-import org.ramadda.util.sql.SqlUtil;
 import org.ramadda.util.HtmlUtils;
 
 
@@ -32,6 +30,8 @@ import org.ramadda.util.MyTrace;
 
 
 import org.ramadda.util.Utils;
+import org.ramadda.util.sql.Clause;
+import org.ramadda.util.sql.SqlUtil;
 
 import ucar.unidata.util.IOUtil;
 

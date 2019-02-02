@@ -504,7 +504,8 @@ public class FeatureCollection {
                     String operator   = fieldValues.get(i + 1);
                     String fieldValue = fieldValues.get(i + 2);
                     for (DbaseDataWrapper wrapper : fieldDatum) {
-                        if (wrapper.getName().trim().equalsIgnoreCase(fieldName)) {
+                        if (wrapper.getName().trim().equalsIgnoreCase(
+                                fieldName)) {
                             Object obj = wrapper.getData(cnt);
                             if ((obj instanceof Double)
                                     || (obj instanceof Integer)) {

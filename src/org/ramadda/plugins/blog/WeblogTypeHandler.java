@@ -23,14 +23,14 @@ import org.ramadda.repository.metadata.*;
 import org.ramadda.repository.output.OutputHandler;
 import org.ramadda.repository.type.*;
 
+import org.ramadda.util.HtmlUtils;
+
 
 import org.ramadda.util.sql.Clause;
 
 
 import org.ramadda.util.sql.SqlUtil;
 import org.ramadda.util.sql.SqlUtil;
-
-import org.ramadda.util.HtmlUtils;
 
 
 import org.w3c.dom.*;

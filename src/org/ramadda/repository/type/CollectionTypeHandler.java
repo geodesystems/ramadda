@@ -24,13 +24,13 @@ import org.ramadda.repository.Result;
 import org.ramadda.repository.database.Tables;
 import org.ramadda.repository.output.BulkDownloadOutputHandler;
 import org.ramadda.repository.output.ZipOutputHandler;
-import org.ramadda.util.sql.Clause;
-import org.ramadda.util.sql.SqlUtil;
 import org.ramadda.util.HtmlUtils;
 import org.ramadda.util.JQuery;
 import org.ramadda.util.Json;
 import org.ramadda.util.TTLCache;
 import org.ramadda.util.Utils;
+import org.ramadda.util.sql.Clause;
+import org.ramadda.util.sql.SqlUtil;
 
 import org.w3c.dom.Element;
 
@@ -682,7 +682,7 @@ public class CollectionTypeHandler extends ExtensibleGroupTypeHandler {
         BulkDownloadOutputHandler bdoh = getBulkDownloadOutputHandler();
         bdoh.process(request, sb, getEntryManager().getDummyGroup(),
                      processSearch(request, entry, true), false, true,
-                     new HashSet<String>(),false);
+                     new HashSet<String>(), false);
 
         return new Result(
             "", sb, bdoh.getMimeType(BulkDownloadOutputHandler.OUTPUT_CURL));

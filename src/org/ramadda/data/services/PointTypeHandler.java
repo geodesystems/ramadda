@@ -75,6 +75,7 @@ import java.util.Properties;
  */
 public class PointTypeHandler extends RecordTypeHandler {
 
+    /** _more_          */
     public static final int IDX_LAST = RecordTypeHandler.IDX_LAST;
 
     /** _more_ */
@@ -212,7 +213,18 @@ public class PointTypeHandler extends RecordTypeHandler {
 
     }
 
-    public String getWikiEditorSidebar(Request request, Entry entry) throws Exception {
+    /**
+     * _more_
+     *
+     * @param request _more_
+     * @param entry _more_
+     *
+     * @return _more_
+     *
+     * @throws Exception _more_
+     */
+    public String getWikiEditorSidebar(Request request, Entry entry)
+            throws Exception {
         //        PointOutputHandler outputHandler =
         //            (PointOutputHandler) getRecordOutputHandler();
         //TODO
@@ -451,20 +463,34 @@ public class PointTypeHandler extends RecordTypeHandler {
         if (tag.equals(WikiConstants.WIKI_TAG_CHART)
                 || tag.equals(WikiConstants.WIKI_TAG_DISPLAY)) {
             try {
-                if(props.get("max")==null) {
-                    props.put("max",""+getDefaultMax(request, entry, tag, props));
+                if (props.get("max") == null) {
+                    props.put("max",
+                              "" + getDefaultMax(request, entry, tag, props));
                 }
+
                 return ((PointOutputHandler) getRecordOutputHandler())
                     .getJsonUrl(request, entry, props);
             } catch (Exception exc) {
                 throw new RuntimeException(exc);
             }
         }
+
         return super.getUrlForWiki(request, entry, tag, props);
     }
 
 
-    public int getDefaultMax(Request request, Entry entry, String tag, Hashtable props) {
+    /**
+     * _more_
+     *
+     * @param request _more_
+     * @param entry _more_
+     * @param tag _more_
+     * @param props _more_
+     *
+     * @return _more_
+     */
+    public int getDefaultMax(Request request, Entry entry, String tag,
+                             Hashtable props) {
         return 5000;
     }
 

@@ -46,10 +46,10 @@ public class IdwGrid extends LatLonGrid {
     /** _more_ */
     private int numCells = 0;
 
-    /** _more_          */
+    /** _more_ */
     private double power = 1.0;
 
-    /** _more_          */
+    /** _more_ */
     private int minPoints = 1;
 
     /**

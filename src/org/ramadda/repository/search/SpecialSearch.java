@@ -28,12 +28,12 @@ import org.ramadda.repository.output.*;
 import org.ramadda.repository.type.*;
 
 import org.ramadda.repository.util.DateArgument;
-import org.ramadda.util.sql.Clause;
 
 
 import org.ramadda.util.HtmlUtils;
 import org.ramadda.util.JQuery;
 import org.ramadda.util.Utils;
+import org.ramadda.util.sql.Clause;
 
 import org.w3c.dom.*;
 
@@ -434,8 +434,8 @@ public class SpecialSearch extends RepositoryManager implements RequestHandler {
         makeSearchForm(request, formSB);
 
 
-        MapInfo map = getRepository().getMapManager().createMap(request,null,
-                          contentsWidth, contentsHeight, true, null);
+        MapInfo map = getRepository().getMapManager().createMap(request,
+                          null, contentsWidth, contentsHeight, true, null);
 
 
         getMapManager().addToMap(request, map, allEntries,
@@ -683,8 +683,8 @@ public class SpecialSearch extends RepositoryManager implements RequestHandler {
                                 request.getString(ARG_AREA_EAST, ""), };
 
             MapInfo selectMap =
-                getRepository().getMapManager().createMap(request, null, true,
-                    null);
+                getRepository().getMapManager().createMap(request, null,
+                    true, null);
             String mapSelector = selectMap.makeSelector(ARG_AREA, true, nwse);
             formSB.append(formEntry(request, msgLabel("Location"),
                                     mapSelector));

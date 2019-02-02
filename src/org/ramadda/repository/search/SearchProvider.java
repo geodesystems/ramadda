@@ -23,9 +23,9 @@ import org.ramadda.repository.*;
 import org.ramadda.repository.output.XmlOutputHandler;
 import org.ramadda.repository.type.*;
 import org.ramadda.repository.util.ServerInfo;
+import org.ramadda.util.HtmlUtils;
 
 import org.ramadda.util.sql.Clause;
-import org.ramadda.util.HtmlUtils;
 
 import org.w3c.dom.*;
 

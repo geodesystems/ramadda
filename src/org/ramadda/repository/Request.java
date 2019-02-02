@@ -1002,7 +1002,7 @@ public class Request implements Constants, Cloneable {
                     }
                     for (int i = 0; i < l.size(); i++) {
                         String svalue = (String) l.get(i);
-                        if(svalue.equals(VALUE_BLANK)) {
+                        if (svalue.equals(VALUE_BLANK)) {
                             svalue = "";
                         } else if (svalue.length() == 0) {
                             continue;
@@ -1016,8 +1016,8 @@ public class Request implements Constants, Cloneable {
                     continue;
                 }
                 String svalue = value.toString();
-                if(svalue.equals(VALUE_BLANK)) {
-                    svalue= "";
+                if (svalue.equals(VALUE_BLANK)) {
+                    svalue = "";
                 } else if (svalue.length() == 0) {
                     continue;
                 }
@@ -1353,6 +1353,7 @@ public class Request implements Constants, Cloneable {
         }
         List tmp = new ArrayList();
         tmp.add(result);
+
         return tmp;
     }
 
@@ -1608,10 +1609,11 @@ public class Request implements Constants, Cloneable {
             //Don't run the checker for now
             //checker =  Pattern.compile(repository.getProperty(PROP_REQUEST_PATTERN));
         }
+
         return getCheckedString(key, dflt, checker);
     }
 
-    
+
     /**
      * _more_
      *
@@ -1636,13 +1638,14 @@ public class Request implements Constants, Cloneable {
         }
 
 
-        if(pattern!=null) {
+        if (pattern != null) {
             Matcher matcher = pattern.matcher(v);
             if ( !matcher.find()) {
                 throw new BadInputException("Incorrect input for:" + key
                                             + " value:" + v + ":");
             }
         }
+
         return v;
     }
 

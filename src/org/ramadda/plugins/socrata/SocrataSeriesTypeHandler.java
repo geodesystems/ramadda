@@ -268,11 +268,11 @@ public class SocrataSeriesTypeHandler extends PointTypeHandler {
      *
      *
      * @version        $version$, Fri, Jan 4, '19
-     * @author         Enter your name here...    
+     * @author         Enter your name here...
      */
     private static class SimpleSocrataFile extends CsvFile {
 
-        /** _more_          */
+        /** _more_ */
         int locationIndex = -1;
 
         /**

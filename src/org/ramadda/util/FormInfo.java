@@ -35,7 +35,7 @@ public class FormInfo {
     /** _more_ */
     private String formId;
 
-    /** _more_          */
+    /** _more_ */
     private StringBuilder extraJS = new StringBuilder();
 
     /**

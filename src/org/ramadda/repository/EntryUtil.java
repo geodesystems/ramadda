@@ -22,14 +22,14 @@ import org.ramadda.repository.database.*;
 
 import org.ramadda.repository.metadata.*;
 import org.ramadda.repository.type.*;
-import org.ramadda.util.sql.Clause;
-import org.ramadda.util.sql.SqlUtil;
 
 
 
 
 import org.ramadda.util.TTLCache;
 import org.ramadda.util.TTLObject;
+import org.ramadda.util.sql.Clause;
+import org.ramadda.util.sql.SqlUtil;
 
 import ucar.unidata.util.Misc;
 import ucar.unidata.util.StringUtil;
@@ -410,6 +410,7 @@ public class EntryUtil extends RepositoryManager {
                     ContentMetadataHandler.TYPE_TIMEZONE, true);
             if ((metadataList != null) && (metadataList.size() > 0)) {
                 Metadata metadata = metadataList.get(0);
+
                 return metadata.getAttr1();
             }
         } catch (Exception exc) {

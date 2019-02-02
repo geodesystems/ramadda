@@ -21,14 +21,14 @@ import org.ramadda.repository.*;
 import org.ramadda.repository.database.*;
 import org.ramadda.repository.output.*;
 import org.ramadda.repository.type.*;
-
-import org.ramadda.util.sql.Clause;
-import org.ramadda.util.sql.SqlUtil;
 import org.ramadda.util.FormInfo;
 
 import org.ramadda.util.HtmlTemplate;
 import org.ramadda.util.HtmlUtils;
 import org.ramadda.util.Utils;
+
+import org.ramadda.util.sql.Clause;
+import org.ramadda.util.sql.SqlUtil;
 
 
 import ucar.unidata.ui.ImageUtils;
@@ -843,8 +843,16 @@ public class UserManager extends RepositoryManager {
         return findUser(USER_DEFAULT);
     }
 
+    /**
+     * _more_
+     *
+     * @return _more_
+     *
+     * @throws Exception _more_
+     */
     public User getAdminUser() throws Exception {
-        User user  = new User("admin", true);
+        User user = new User("admin", true);
+
         return user;
     }
 

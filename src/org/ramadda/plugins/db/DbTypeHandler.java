@@ -3654,8 +3654,8 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
             props.put("defaultMapLayer", request.getString("mapLayer", ""));
         }
 
-        MapInfo map = getRepository().getMapManager().createMap(request,entry, 
-                          width, height, false, props);
+        MapInfo map = getRepository().getMapManager().createMap(request,
+                          entry, width, height, false, props);
         boolean       makeRectangles = valueList.size() <= 20;
 
         String        leftWidth      = "300";
@@ -4461,11 +4461,13 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
                                       (String) valuesArray[IDX_DBID])
                          : getViewUrl(request, entry,
                                       (String) valuesArray[IDX_DBID]);
-            String label = getLabel(entry, valuesArray, sdf);
-            String href = HtmlUtils.href(url,label);
+            String label    = getLabel(entry, valuesArray, sdf);
+            String href     = HtmlUtils.href(url, label);
 
             String rowValue = (String) valuesArray[gridColumn.getOffset()];
-            if(rowValue == null) rowValue = "&lt;blank&gt;";
+            if (rowValue == null) {
+                rowValue = "&lt;blank&gt;";
+            }
             StringBuilder buffer = map.get(rowValue);
             if (buffer == null) {
                 map.put(rowValue, buffer = new StringBuilder());
@@ -5540,7 +5542,7 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
     public String getLabel(Entry entry, Object[] values, SimpleDateFormat sdf)
             throws Exception {
         String lbl = getLabelInner(entry, values, sdf);
-        if (!Utils.stringDefined(lbl)) {
+        if ( !Utils.stringDefined(lbl)) {
             lbl = "---";
         }
 

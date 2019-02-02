@@ -141,7 +141,7 @@ public class Gtfs implements Constants {
             throws Exception {
         return request.getRepository().getDateHandler()
             .formatYYYYMMDD(new Date(trip.getStartDate())) + " - "
-            + request.getRepository().getDateHandler()
+                + request.getRepository().getDateHandler()
                     .formatYYYYMMDD(new Date(trip.getEndDate()));
     }
 

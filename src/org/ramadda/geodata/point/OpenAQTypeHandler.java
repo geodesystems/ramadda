@@ -77,13 +77,13 @@ public class OpenAQTypeHandler extends PointTypeHandler {
     /** _more_ */
     private static int IDX_LOCATION = IDX++;
 
-    /** _more_          */
+    /** _more_ */
     private static int IDX_COUNTRY = IDX++;
 
-    /** _more_          */
+    /** _more_ */
     private static int IDX_CITY = IDX++;
 
-    /** _more_          */
+    /** _more_ */
     private static int IDX_HOURS_OFFSET = IDX++;
 
 
@@ -153,6 +153,7 @@ public class OpenAQTypeHandler extends PointTypeHandler {
         String url = "https://api.openaq.org/v1/measurements?format=csv&"
                      + HtmlUtils.arg("date_from", startDate) + "&"
                      + HtmlUtils.arg("location", location);
+
         return url;
     }
 

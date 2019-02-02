@@ -942,8 +942,8 @@ public class IdvOutputHandler extends OutputHandler implements IdvConstants {
         tabContents.add(basic.toString());
 
         StringBuffer bounds = new StringBuffer();
-        MapInfo map = getRepository().getMapManager().createMap(request,entry,
-                          true, null);
+        MapInfo map = getRepository().getMapManager().createMap(request,
+                          entry, true, null);
         map.addBox(entry, new MapBoxProperties("blue", false));
         map.centerOn(entry);
         String llb = map.makeSelector(ARG_VIEW_BOUNDS, true, null,

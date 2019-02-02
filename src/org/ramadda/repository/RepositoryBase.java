@@ -105,6 +105,7 @@ public class RepositoryBase implements Constants, RepositorySource {
     public final RequestUrl URL_ENTRY_IMPORT = new RequestUrl(this,
                                                    "/entry/import");
 
+    /** _more_          */
     public final RequestUrl URL_ENTRY_ACTION = new RequestUrl(this,
                                                    "/entry/action");
 
@@ -304,6 +305,7 @@ public class RepositoryBase implements Constants, RepositorySource {
     /** _more_ */
     private String urlBase = "/repository";
 
+    /** _more_          */
     private boolean isMinified;
 
     /** _more_ */
@@ -609,6 +611,7 @@ public class RepositoryBase implements Constants, RepositorySource {
         if (f == null) {
             return null;
         }
+
         return urlBase + f;
     }
 
@@ -632,23 +635,23 @@ public class RepositoryBase implements Constants, RepositorySource {
     }
 
 
-/**
-Set the IsMinified property.
+    /**
+     * Set the IsMinified property.
+     *
+     * @param value The new value for IsMinified
+     */
+    public void setIsMinified(boolean value) {
+        isMinified = value;
+    }
 
-@param value The new value for IsMinified
-**/
-public void setIsMinified (boolean value) {
-	isMinified = value;
-}
-
-/**
-Get the IsMinified property.
-
-@return The IsMinified
-**/
-public boolean getIsMinified () {
-	return isMinified;
-}
+    /**
+     * Get the IsMinified property.
+     *
+     * @return The IsMinified
+     */
+    public boolean getIsMinified() {
+        return isMinified;
+    }
 
     /**
      * _more_

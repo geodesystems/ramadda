@@ -2714,16 +2714,18 @@ public class EntryManager extends RepositoryManager {
 
 
 
-            if (newResourceName != null ||  request.get(ARG_DELETEFILE, false)) {
+            if ((newResourceName != null)
+                    || request.get(ARG_DELETEFILE, false)) {
                 //If it was a stored file then remove the old one
                 if (entry.getResource().isStoredFile()) {
                     getStorageManager().removeFile(entry.getResource());
                 }
-                if(newResourceName!=null)
+                if (newResourceName != null) {
                     entry.setResource(new Resource(newResourceName,
-                                                   newResourceType));
-                else
+                            newResourceType));
+                } else {
                     entry.setResource(new Resource());
+                }
             }
 
             if (entry.isTopEntry()) {

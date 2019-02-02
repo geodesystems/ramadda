@@ -93,7 +93,7 @@ public class HtmlTemplate {
     /** _more_ */
     private List<String> toks;
 
-   /** _more_ */
+    /** _more_ */
     private HashSet hasMacro = new HashSet();
 
     /**

@@ -474,7 +474,7 @@ public class DataRecord extends PointRecord {
             if (objectValues[idx] == null) {
                 return "" + values[idx];
             }
-            if(objectValues[idx] instanceof Date) {
+            if (objectValues[idx] instanceof Date) {
                 return Utils.format((Date) objectValues[idx]);
             }
 

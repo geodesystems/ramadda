@@ -176,6 +176,7 @@ public class ShapefileOutputHandler extends OutputHandler implements WikiConstan
         } else if (outputType.equals(OUTPUT_FIELDS_TABLE)) {
             return outputFields(request, entry, true, OUTPUT_FIELDS_TABLE);
         }
+
         return null;
     }
 
@@ -530,6 +531,7 @@ public class ShapefileOutputHandler extends OutputHandler implements WikiConstan
             Result result = new Result(new FileInputStream(file),
                                        KmlOutputHandler.MIME_KML);
             result.setReturnFilename(returnFile);
+
             return result;
         }
 

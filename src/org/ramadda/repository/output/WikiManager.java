@@ -1317,7 +1317,8 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                           "" + Utils.getProperty(props, ATTR_SHOWTITLE,
                               false));
             boolean details = Utils.getProperty(props, ATTR_DETAILS, false);
-            boolean showResource = Utils.getProperty(props, "showResource", true);
+            boolean showResource = Utils.getProperty(props, "showResource",
+                                       true);
             if ( !details) {
                 return entry.getTypeHandler().getEntryContent(myRequest,
                         entry, false, showResource).toString();
@@ -1619,9 +1620,11 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
         } else if (theTag.equals(WIKI_TAG_DISPLAYPROPERTY)) {
             String name  = (String) props.get("name");
             String value = (String) props.get("value");
-            if (name != null && value!=null) {
-                return HtmlUtils.script("addGlobalDisplayProperty('" + name +"','" + value +"');\n");
+            if ((name != null) && (value != null)) {
+                return HtmlUtils.script("addGlobalDisplayProperty('" + name
+                                        + "','" + value + "');\n");
             }
+
             return "";
         } else if (theTag.equals(WIKI_TAG_PROPERTIES)) {
             return makeEntryTabs(request, wikiUtil, entry, props);
@@ -2400,10 +2403,9 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
             StringBuilder editor = new StringBuilder();
 
             String text = entry.getTypeHandler().getTextForWiki(request,
-                                                                entry,  props);
+                              entry, props);
             entry.getTypeHandler().addWikiEditor(request, entry, editor,
-                                                 null, HtmlUtils.getUniqueId(""), text,
-                                                 null, true, 0);
+                    null, HtmlUtils.getUniqueId(""), text, null, true, 0);
 
             return editor.toString();
         } else if (theTag.equals(WIKI_TAG_RECENT)) {
@@ -5415,11 +5417,14 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                         getMapManager().getDefaultMapLayer());
 
         String bounds = (String) props.get("bounds");
-        if(bounds!=null) {
+        if (bounds != null) {
             props.remove("bounds");
-            Utils.add(propList,"bounds",Json.quote(bounds));
-        } else  if(entry.hasAreaDefined()) {
-            Utils.add(propList,"bounds",Json.quote(entry.getNorth()+"," + entry.getWest() +"," + entry.getSouth() +"," + entry.getEast()));
+            Utils.add(propList, "bounds", Json.quote(bounds));
+        } else if (entry.hasAreaDefined()) {
+            Utils.add(propList, "bounds",
+                      Json.quote(entry.getNorth() + "," + entry.getWest()
+                                 + "," + entry.getSouth() + ","
+                                 + entry.getEast()));
         }
 
         topProps.add("defaultMapLayer");

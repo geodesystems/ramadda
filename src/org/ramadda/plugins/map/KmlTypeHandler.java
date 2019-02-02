@@ -129,15 +129,29 @@ public class KmlTypeHandler extends GenericTypeHandler {
     }
 
 
+    /**
+     * _more_
+     *
+     * @param request _more_
+     * @param entry _more_
+     *
+     * @return _more_
+     *
+     * @throws Exception _more_
+     */
     @Override
-    public Result getHtmlDisplay(Request request, Entry entry) throws Exception {
-        if(!Misc.equals(entry.getValue(0,"false"),"true")) {
+    public Result getHtmlDisplay(Request request, Entry entry)
+            throws Exception {
+        if ( !Misc.equals(entry.getValue(0, "false"), "true")) {
             return null;
         }
         StringBuffer sb = new StringBuffer();
-        String wiki ="+section title={{name}}\n{{description wikify=\"true\"}}\n+row\n+col-md-8\n{{map width=\"100%\" height=\"450\" viewBounds=\"<bounds>\" details=\"true\" displayDiv=\"mapDisplay\" showSearch=\"true\" }}\n-col\n+col-md-4\n<div style=\"padding-top:20px;\"></div>\n<div id=\"mapDisplay\" style=\"max-height:450px; overflow-y:auto;\"></div>\n-col\n-row\n-section\n";
-        sb.append(getRepository().getWikiManager().wikifyEntry(request, entry, wiki));
-        return new Result("",sb);
+        String wiki =
+            "+section title={{name}}\n{{description wikify=\"true\"}}\n+row\n+col-md-8\n{{map width=\"100%\" height=\"450\" viewBounds=\"<bounds>\" details=\"true\" displayDiv=\"mapDisplay\" showSearch=\"true\" }}\n-col\n+col-md-4\n<div style=\"padding-top:20px;\"></div>\n<div id=\"mapDisplay\" style=\"max-height:450px; overflow-y:auto;\"></div>\n-col\n-row\n-section\n";
+        sb.append(getRepository().getWikiManager().wikifyEntry(request,
+                entry, wiki));
+
+        return new Result("", sb);
     }
 
 

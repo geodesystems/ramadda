@@ -1358,11 +1358,14 @@ public abstract class Converter extends Processor {
         /** _more_ */
         int destCol;
 
+        /** _more_          */
         String newColName;
 
 
+        /** _more_          */
         String mode;
 
+        /** _more_          */
         boolean doDelete;
 
         /**
@@ -1371,15 +1374,19 @@ public abstract class Converter extends Processor {
          *
          * @param col _more_
          * @param mapFile _more_
+         * @param newName _more_
+         * @param mode _more_
          *
          * @throws Exception _more_
          */
-        public Denormalizer(String mapFile, int col, String newName, String mode) throws Exception {
+        public Denormalizer(String mapFile, int col, String newName,
+                            String mode)
+                throws Exception {
             makeMap(mapFile);
-            this.destCol = col;
+            this.destCol    = col;
             this.newColName = newName;
-            this.mode = mode;
-            this.doDelete = mode.endsWith("delete");
+            this.mode       = mode;
+            this.doDelete   = mode.endsWith("delete");
         }
 
 
@@ -1423,27 +1430,30 @@ public abstract class Converter extends Processor {
         public Row processRow(TextReader info, Row row, String line) {
             List   values   = row.getValues();
             String newValue = null;
-            if(rowCnt++ == 0) {
-                if(newColName.length()>1)
+            if (rowCnt++ == 0) {
+                if (newColName.length() > 1) {
                     newValue = newColName;
+                }
             } else {
-                Object key      = values.get(destCol);
+                Object key = values.get(destCol);
                 newValue = (String) map.get(key);
-                if(doDelete && newValue == null)
+                if (doDelete && (newValue == null)) {
                     return null;
+                }
             }
 
-            if (newValue == null && mode.startsWith("add")) {
+            if ((newValue == null) && mode.startsWith("add")) {
                 newValue = "";
             }
 
             if (newValue != null) {
                 //                if(newValue.indexOf(",")>=0) newValue = "\"" + newValue+"\"";
-                if(mode.startsWith("replace"))
+                if (mode.startsWith("replace")) {
                     values.set(destCol, newValue);
-                else
-                    values.add(destCol+1, newValue);
-            } 
+                } else {
+                    values.add(destCol + 1, newValue);
+                }
+            }
 
 
             return row;

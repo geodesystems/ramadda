@@ -19,9 +19,9 @@ package org.ramadda.repository.metadata;
 
 import org.ramadda.repository.*;
 import org.ramadda.repository.database.*;
+import org.ramadda.util.HtmlUtils;
 
 import org.ramadda.util.sql.SqlUtil;
-import org.ramadda.util.HtmlUtils;
 
 
 import org.w3c.dom.*;

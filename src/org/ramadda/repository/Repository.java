@@ -504,7 +504,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
     /** _more_ */
     private boolean minifiedOk = true;
 
-    /** _more_          */
+    /** _more_ */
     private boolean cdnOk = false;
 
     /** _more_ */
@@ -3868,7 +3868,8 @@ public class Repository extends RepositoryBase implements RequestHandler,
                 if (path.endsWith(".js") || path.endsWith(".css")
                         || path.endsWith(".json")) {
                     String js = IOUtil.readInputStream(inputStream);
-                    js = js.replace("${root}", urlBase).replace("${urlroot}", urlBase).replace(
+                    js = js.replace("${root}", urlBase).replace(
+                        "${urlroot}", urlBase).replace(
                         "${baseentry}",
                         getEntryManager().getRootEntry().getId());
                     js    = js.replace("${hostname}",
@@ -5715,11 +5716,19 @@ public class Repository extends RepositoryBase implements RequestHandler,
     }
 
 
+    /**
+     * _more_
+     *
+     * @return _more_
+     *
+     * @throws Exception _more_
+     */
     public Request getAdminRequest() throws Exception {
-        User user = getUserManager().getAdminUser();
+        User    user    = getUserManager().getAdminUser();
         Request request = new Request(getRepository(), "", new Hashtable());
         request.setUser(user);
         request.setSessionId(getGUID());
+
         return request;
     }
 

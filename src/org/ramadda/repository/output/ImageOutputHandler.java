@@ -1,4 +1,3 @@
-
 /*
 * Copyright (c) 2008-2019 Geode Systems LLC
 *
@@ -796,7 +795,7 @@ public class ImageOutputHandler extends OutputHandler {
         if (output.equals(OUTPUT_GALLERY)) {
             boolean useAttachment = request.get("useAttachment", false);
             getWikiManager().makeGallery(
-                                         request, null,
+                request, null,
                 getWikiManager().getImageEntries(
                     request, entries, useAttachment), new Hashtable(), sb);
 
@@ -819,7 +818,7 @@ public class ImageOutputHandler extends OutputHandler {
         if (output.equals(OUTPUT_PLAYER)) {
             sb = new StringBuilder();
             getPageHandler().entrySectionOpen(request, group, sb,
-                                          "Image Player");
+                    "Image Player");
             makePlayer(request, group, entries, sb, true, true);
             getPageHandler().entrySectionClose(request, group, sb);
         } else if (output.equals(OUTPUT_SLIDESHOW)) {
@@ -1876,8 +1875,8 @@ public class ImageOutputHandler extends OutputHandler {
                 Json.map(playerArgs));
 
         String widthAttr = "";
-        String    width     = request.getString(ARG_WIDTH, "600");
-        if (width !=null) {
+        String width     = request.getString(ARG_WIDTH, "600");
+        if (width != null) {
             widthAttr = HtmlUtils.attr(HtmlUtils.ATTR_WIDTH, width);
         }
         String imageHtml = "<img class=\"imageplayer-image\" id=\""
@@ -1896,7 +1895,7 @@ public class ImageOutputHandler extends OutputHandler {
         if (addHeader) {
             String fullUrl       = "";
             String originalWidth = request.getString(ARG_WIDTH, null);
-            if (false/*width > 0*/) {
+            if (false /*width > 0*/) {
                 request.put(ARG_WIDTH, "0");
                 fullUrl = HtmlUtils.href(request.getUrl(),
                                          msg("Use image width"));

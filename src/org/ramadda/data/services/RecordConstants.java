@@ -81,15 +81,20 @@ public interface RecordConstants extends Constants {
     /** _more_ */
     public static final String ARG_THRESHOLD = "threshold";
 
-    /** _more_          */
+    /** _more_ */
     public static final String ARG_GRID_POWER = ARG_GRID_PREFIX + "power";
 
-    /** _more_          */
+    /** _more_ */
     public static final String ARG_GRID_MINPOINTS = ARG_GRID_PREFIX
                                                     + "minpoints";
 
-    public static final String ARG_GRID_RANGE_MIN = ARG_GRID_PREFIX + "range_min";
-    public static final String ARG_GRID_RANGE_MAX = ARG_GRID_PREFIX + "range_max";
+    /** _more_          */
+    public static final String ARG_GRID_RANGE_MIN = ARG_GRID_PREFIX
+                                                    + "range_min";
+
+    /** _more_          */
+    public static final String ARG_GRID_RANGE_MAX = ARG_GRID_PREFIX
+                                                    + "range_max";
 
     /** _more_ */
     public static final String ARG_GRID_SUM = ARG_GRID_PREFIX + "sum";
@@ -244,7 +249,8 @@ public interface RecordConstants extends Constants {
     /** defines the different gridding functions the user can choose */
     public static final String[] GRID_ARGS = {
         ARG_GRID_SUM, ARG_GRID_MIN, ARG_GRID_MAX, ARG_GRID_AVERAGE,
-        ARG_GRID_COUNT, ARG_GRID_IDW /*,ARG_GRID_BARNES*/
+        ARG_GRID_COUNT,
+        ARG_GRID_IDW  /*,ARG_GRID_BARNES*/
     };
 
     /** corresponds toe the GRID_ARGS */
@@ -262,7 +268,8 @@ public interface RecordConstants extends Constants {
     /** corresponds toe the GRID_ARGS */
     public static final String[] GRID_LABELS = {
         "Sum of Values", "Minimum value", "Maximum value", "Average value",
-        "Point count", "IDW average"/*, "Barnes Grid"*/
+        "Point count",
+        "IDW average"  /*, "Barnes Grid"*/
     };
 
 

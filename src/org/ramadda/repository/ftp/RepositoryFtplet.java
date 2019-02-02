@@ -28,11 +28,11 @@ import org.apache.log4j.config.PropertyPrinter;
 import org.ramadda.repository.Constants;
 import org.ramadda.repository.Entry;
 import org.ramadda.repository.EntryManager;
-import org.ramadda.repository.RepositoryUtil;
 
 
 
 import org.ramadda.repository.Repository;
+import org.ramadda.repository.RepositoryUtil;
 import org.ramadda.repository.Request;
 import org.ramadda.repository.Resource;
 import org.ramadda.repository.Result;
@@ -191,7 +191,7 @@ public class RepositoryFtplet extends DefaultFtplet {
      */
     public RepositoryFtplet(FtpManager ftpManager) {
         this.ftpManager = ftpManager;
-        sdf = RepositoryUtil.makeDateFormat("MMM dd HH:mm");
+        sdf             = RepositoryUtil.makeDateFormat("MMM dd HH:mm");
     }
 
     /**

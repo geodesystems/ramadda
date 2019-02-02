@@ -501,8 +501,9 @@ public class TabularOutputHandler extends OutputHandler {
                 newFiles = new ArrayList<String>();
                 //                System.err.println("args:" + args + " entries:"+ entries);
                 CsvUtil csvUtil = new CsvUtil(args, runDir);
-                if(prevCsvUtil!=null)
+                if (prevCsvUtil != null) {
                     csvUtil.initWith(prevCsvUtil);
+                }
                 prevCsvUtil = csvUtil;
                 getSessionManager().putSessionProperty(request, "csvutil",
                         csvUtil);
@@ -794,6 +795,7 @@ public class TabularOutputHandler extends OutputHandler {
         if (args.contains("-help") || args.contains("?")) {
             buffer.append(
                 "For tabular data:\n\t-maxrows <# rows to show>\n\t-columns <comma separated columns to show e.g., 1,3,4,6> \n\t-startcol col# -endcol col# \n\t-startrow row # -endrow row #\n");
+
             return false;
         }
 

@@ -383,21 +383,21 @@ public class GeoUtils {
             return null;
         }
         Place place = Place.getPlace(address);
-        if(place==null) {
+        if (place == null) {
             int index = address.indexOf("-");
-            if(index>0) {
-                String tmp = address.substring(0,index);
+            if (index > 0) {
+                String tmp = address.substring(0, index);
                 place = Place.getPlace(tmp);
             }
         }
-        if(place==null && address.length()>5) {
-            String tmp = address.substring(0,5);
+        if ((place == null) && (address.length() > 5)) {
+            String tmp = address.substring(0, 5);
             place = Place.getPlace(tmp);
         }
 
-        if(place!=null) {
+        if (place != null) {
             //            System.err.println("got place:" + address +" " + place.getLatitude()+" " + place.getLongitude());
-            return new double[]{place.getLatitude(),place.getLongitude()};
+            return new double[] { place.getLatitude(), place.getLongitude() };
         }
 
         if (googleKey == null) {
