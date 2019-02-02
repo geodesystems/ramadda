@@ -480,6 +480,7 @@ public class ImageOutputHandler extends OutputHandler {
 
         if (request.exists("imagecontents")) {
             try {
+                System.err.println("save");
                 if ( !getAccessManager().canEditEntry(request, entry)) {
                     return new Result(
                         new StringBuilder(
@@ -513,10 +514,12 @@ public class ImageOutputHandler extends OutputHandler {
                     IOUtil.writeBytes(f, bytes);
                 }
 
+                System.err.println("OK");
                 return new Result(
                     new StringBuilder(
                         "{\"code\":\"ok\",\"message\":\"Image saved\"}"), "text/plain", false);
             } catch (Exception e) {
+                System.err.println("Error: " + e);
                 return new Result(
                     new StringBuilder(
                         "{\"code\":\"error\",\"message\":\"" + e.getMessage()
@@ -546,9 +549,9 @@ public class ImageOutputHandler extends OutputHandler {
                 getRepository().getUrlBase() + "/lib/tui/tui",
                 HtmlUtils.id("imageeditform")));
         sb.append(HtmlUtils.hidden(ARG_ENTRYID, entry.getId()));
-        sb.append(HtmlUtils.hidden(ARG_OUTPUT, OUTPUT_EDIT));
-        sb.append(HtmlUtils.hidden("imagecontents", "",
-                                   HtmlUtils.id("imagecontents")));
+        //        sb.append(HtmlUtils.hidden(ARG_OUTPUT, OUTPUT_EDIT));
+        //        sb.append(HtmlUtils.hidden("imagecontents", "", HtmlUtils.id("imagecontents")));
+
         String template =
             repository.getResource(
                 "/org/ramadda/repository/resources/web/imageeditor.js");
