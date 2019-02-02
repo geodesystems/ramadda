@@ -480,7 +480,6 @@ public class ImageOutputHandler extends OutputHandler {
 
         if (request.exists("imagecontents")) {
             try {
-                System.err.println("save");
                 if ( !getAccessManager().canEditEntry(request, entry)) {
                     return new Result(
                         new StringBuilder(
@@ -514,7 +513,6 @@ public class ImageOutputHandler extends OutputHandler {
                     IOUtil.writeBytes(f, bytes);
                 }
 
-                System.err.println("OK");
                 return new Result(
                     new StringBuilder(
                         "{\"code\":\"ok\",\"message\":\"Image saved\"}"), "text/plain", false);
