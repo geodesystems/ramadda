@@ -49,6 +49,7 @@ label {
             var message  = $("#imageeditor_message");
             var data = new FormData(form[0]);
             data.append("imagecontents", image);
+            message.html("Saving image...");
             $.ajax({
                     type: "POST",
                         enctype: 'multipart/form-data',
