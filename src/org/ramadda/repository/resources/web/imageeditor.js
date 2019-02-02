@@ -42,7 +42,9 @@ label {
 
 
         function imageEditorSave()  {
+            if(!imageEditor) return;
             var form = $("#imageeditform");
+            if(form.size()==0) return;
             var contents = $("#imagecontents");
             var message  = $("#imageeditor_message");
             var entryid =form.children(":input[name=entryid]").val();
@@ -90,6 +92,7 @@ label {
 
         function imageEditorUndo()  {
             var form = $("#imageeditform");
+            if(form.size()==0) return;
             var entryid =form.children(":input[name=entryid]").val();
             var message  = $("#imageeditor_message");
             console.log(entryid +" " + form.attr('action') +" " + message.size());
