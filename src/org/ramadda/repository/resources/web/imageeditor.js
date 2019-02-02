@@ -50,11 +50,11 @@ label {
             var entryid =form.children(":input[name=entryid]").val();
             message.html("Saving image...");
             function imageEditorSaveInner()  {
-                console.log("inner");
+                console.log("getting image from editor");
                 var image = imageEditor.toDataURL();
                 var data = new FormData(form[0]);
                 data.append("imagecontents", image);
-                console.log("posting");
+                console.log("saving image");
                 $.ajax({
                         type: "POST",
                             enctype: 'multipart/form-data',
@@ -65,7 +65,6 @@ label {
                             cache: false,
                             timeout: 600000,
                             success: function (data) {
-                            console.log("success");
                             try {
                                 var result = JSON.parse(data);
                                 if(result.code == 'error') 
