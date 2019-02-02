@@ -50,40 +50,43 @@ label {
             var entryid =form.children(":input[name=entryid]").val();
             message.html("Saving image...");
             function imageEditorSaveInner()  {
-            var image = imageEditor.toDataURL();
-            var data = new FormData(form[0]);
-            data.append("imagecontents", image);
-            $.ajax({
-                    type: "POST",
-                        enctype: 'multipart/form-data',
-                        url: form.attr('action'),
-                        data: data,
-                        processData: false,
-                        contentType: false,
-                        cache: false,
-                        timeout: 600000,
-                        success: function (data) {
-                    try {
-                        var result = JSON.parse(data);
-                        if(result.code == 'error') 
-                            message.html("<span class='ramadda-error-label'>" + result.message+"</span>");
-                        else
-                            message.html(result.message);
-                    } catch(e) {
-                           console.log(data);
-                           message.html("Error saving image:"+ e);
-                    }
-                    },
-                        error: function (e) {
-                       try {
-                           var result = JSON.parse(data.responseText);
-                           message.html(result);
-                       } catch(e) {
-                           console.log("bad result:" + data);
-                           message.html("Error:"+ e);
-                       }
-                    }
-                });
+                console.log("inner");
+                var image = imageEditor.toDataURL();
+                var data = new FormData(form[0]);
+                data.append("imagecontents", image);
+                console.log("posting");
+                $.ajax({
+                        type: "POST",
+                            enctype: 'multipart/form-data',
+                            url: form.attr('action'),
+                            data: data,
+                            processData: false,
+                            contentType: false,
+                            cache: false,
+                            timeout: 600000,
+                            success: function (data) {
+                            console.log("success");
+                            try {
+                                var result = JSON.parse(data);
+                                if(result.code == 'error') 
+                                    message.html("<span class='ramadda-error-label'>" + result.message+"</span>");
+                                else
+                                    message.html(result.message);
+                            } catch(e) {
+                                console.log(data);
+                                message.html("Error saving image:"+ e);
+                            }
+                        },
+                            error: function (e) {
+                            try {
+                                var result = JSON.parse(data.responseText);
+                                message.html(result);
+                            } catch(e) {
+                                console.log("bad result:" + data);
+                                message.html("Error:"+ e);
+                            }
+                        }
+                    });
             }
             setTimeout(imageEditorSaveInner,10);
             return;
