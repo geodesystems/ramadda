@@ -82,7 +82,7 @@ public class WikiUtil {
     /** _more_ */
     private Hashtable properties;
 
-    /** _more_          */
+    /** _more_ */
     private Hashtable wikiProperties = new Hashtable();
 
     /** _more_ */
@@ -467,7 +467,6 @@ public class WikiUtil {
                                String[] notTags) {
 
         s = s.replace("\\\\[", "_BRACKETOPEN_");
-
         if (getReplaceNewlineWithP()) {
             s = s.replaceAll("\r\n\r\n", "\n<p></p>\n");
             s = s.replaceAll("\r\r", "\n<p></p>\n");
@@ -478,12 +477,7 @@ public class WikiUtil {
         s = s.replaceAll("''([^']+)''", "<i>$1</i>");
         Pattern pattern;
         Matcher matcher;
-
-
         //<nowiki>
-
-
-
         pattern = Pattern.compile("\\[\\[([^\\]|]+)\\|?([^\\]]*)\\]\\]");
         matcher = pattern.matcher(s);
         while (matcher.find()) {
@@ -569,8 +563,8 @@ public class WikiUtil {
         int           olCnt        = 0;
         StringBuffer  buff         = new StringBuffer();
 
+        StringBuilder js           = new StringBuilder();
         List<TabInfo> allTabInfos  = new ArrayList<TabInfo>();
-
         List<TabInfo> tabInfos     = new ArrayList<TabInfo>();
         List<String>  accordianIds = new ArrayList<String>();
 
@@ -581,11 +575,15 @@ public class WikiUtil {
                 TabInfo tabInfo = new TabInfo();
                 tabInfos.add(tabInfo);
                 allTabInfos.add(tabInfo);
-                buff.append(HtmlUtils.open(tabInfo.title, HtmlUtils.TAG_DIV,
-                                           "id", tabInfo.id, "class",
-                                           "ui-tabs"));
+                buff.append("\n");
+                HtmlUtils.open(buff, HtmlUtils.TAG_DIV, "id", tabInfo.id,
+                               "class", "ui-tabs");
+                buff.append("\n");
                 HtmlUtils.open(tabInfo.title, HtmlUtils.TAG_UL);
+                tabInfo.title.append("\n");
+                buff.append("\n");
                 buff.append("${" + tabInfo.id + "}");
+                buff.append("\n");
 
                 continue;
             }
@@ -609,28 +607,33 @@ public class WikiUtil {
                         "div",
                         HtmlUtils.id(tabInfo.id + "-" + (tabInfo.cnt))
                         + HtmlUtils.cssClass("ui-tabs-hide")));
+                buff.append("\n");
 
                 continue;
             }
             if (tabInfos.size() > 0) {
-                if (tline.equals("-tabs")) {
-                    TabInfo tabInfo = tabInfos.get(tabInfos.size() - 1);
-                    tabInfo.title.append("</ul>");
-                    tabInfos.remove(tabInfos.size() - 1);
-
-                    continue;
-                }
-
                 if (tline.equals("-tab")) {
                     TabInfo tabInfo = tabInfos.get(tabInfos.size() - 1);
                     buff.append(HtmlUtils.close("div"));
-                    buff.append(
-                        HtmlUtils.script(
-                            "\njQuery(function(){\njQuery('#" + tabInfo.id
-                            + "').tabs({activate: HtmlUtil.tabLoaded})});\n\n"));
+                    buff.append("\n");
+                    js.append(
+                        "jQuery(function(){\njQuery('#" + tabInfo.id
+                        + "').tabs({activate: HtmlUtil.tabLoaded})});\n");
 
                     continue;
                 }
+                if (tline.equals("-tabs")) {
+                    TabInfo tabInfo = tabInfos.get(tabInfos.size() - 1);
+                    tabInfo.title.append("\n");
+                    tabInfo.title.append("</ul>");
+                    tabInfo.title.append("\n");
+                    tabInfos.remove(tabInfos.size() - 1);
+                    buff.append(HtmlUtils.close("div"));
+
+                    continue;
+                }
+
+
             }
 
             if (tline.equals("+accordian")) {
@@ -657,10 +660,8 @@ public class WikiUtil {
                     accordianIds.remove(accordianIds.size() - 1);
                     String args =
                         "{autoHeight: false, navigation: true, collapsible: true, active: 0}";
-                    HtmlUtils.script(buff,
-                                     "HtmlUtil.makeAccordian(\"#"
-                                     + accordianId + "\" " + "," + args
-                                     + ");\n");
+                    js.append("HtmlUtil.makeAccordian(\"#" + accordianId
+                              + "\" " + "," + args + ");\n");
                     buff.append("\n");
 
                     continue;
@@ -1085,8 +1086,10 @@ public class WikiUtil {
             buff.append("</ol>\n");
             olCnt--;
         }
+        if (js.length() > 0) {
+            HtmlUtils.script(buff, js.toString());
+        }
         s = buff.toString();
-
         for (int i = 0; i < allTabInfos.size(); i++) {
             TabInfo tabInfo = allTabInfos.get(i);
             s = s.replace("${" + tabInfo.id + "}", tabInfo.title.toString());
@@ -1564,17 +1567,17 @@ public class WikiUtil {
      *
      *
      * @version        $version$, Sun, Jan 27, '19
-     * @author         Enter your name here...    
+     * @author         Enter your name here...
      */
     public static class TabInfo {
 
-        /** _more_          */
+        /** _more_ */
         String id;
 
-        /** _more_          */
+        /** _more_ */
         StringBuilder title = new StringBuilder();
 
-        /** _more_          */
+        /** _more_ */
         int cnt = 0;
 
         /**
