@@ -528,7 +528,7 @@ public class ImageOutputHandler extends OutputHandler {
 
 
         StringBuilder sb = new StringBuilder();
-        getPageHandler().entrySectionOpen(request, entry, sb, "Image Edit");
+        getPageHandler().entrySectionOpen(request, entry, sb, "");
 
         if (getAccessManager().canEditEntry(request, entry)) {
             String save =
