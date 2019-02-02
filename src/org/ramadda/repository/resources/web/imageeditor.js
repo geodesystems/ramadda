@@ -47,6 +47,7 @@ label {
             var message  = $("#imageeditor_message");
             var entryid =form.children(":input[name=entryid]").val();
             message.html("Saving image...");
+            function imageEditorSaveInner()  {
             var image = imageEditor.toDataURL();
             var data = new FormData(form[0]);
             data.append("imagecontents", image);
@@ -81,6 +82,8 @@ label {
                        }
                     }
                 });
+            }
+            setTimeout(imageEditorSaveInner,10);
             return;
         }
 
