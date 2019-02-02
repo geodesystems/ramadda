@@ -102,6 +102,8 @@ import ucar.unidata.util.TwoFacedObject;
 import ucar.unidata.xml.XmlEncoder;
 import ucar.unidata.xml.XmlUtil;
 
+import java.awt.Toolkit;
+
 import java.io.*;
 
 import java.lang.reflect.Constructor;
@@ -1005,6 +1007,11 @@ public class Repository extends RepositoryBase implements RequestHandler,
         statusMsg.append("  Java version: "
                          + getProperty(PROP_JAVA_VERSION, "N/A"));
         getLogManager().logInfoAndPrint(statusMsg.toString());
+
+        if (getProperty("ramadda.beep", false)) {
+            Toolkit.getDefaultToolkit().beep();
+        }
+
     }
 
     /**
@@ -4678,6 +4685,10 @@ public class Repository extends RepositoryBase implements RequestHandler,
      * @return _more_
      */
     public boolean isOutputTypeOK(OutputType outputType) {
+        if (outputType == null) {
+            return true;
+        }
+
         return outputType.getOkToUse();
     }
 

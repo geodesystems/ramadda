@@ -112,7 +112,7 @@ public class ImageOutputHandler extends OutputHandler {
         "image.applytogroup";
 
     /** _more_ */
-    public static final String ARG_IMAGE_UNDO = "image.undo";
+    public static final String ARG_IMAGE_UNDO = "image_undo";
 
     /** _more_ */
     public static final String ARG_IMAGE_EDIT_RESIZE = "image.edit.resize";
@@ -281,16 +281,16 @@ public class ImageOutputHandler extends OutputHandler {
                                        OUTPUT_VIDEO));
                 }
             }
-            if (getAccessManager().canDoAction(request, state.entry,
-                    Permission.ACTION_EDIT)) {
-                if (state.entry.getResource().isEditableImage()) {
-                    File f = state.entry.getFile();
-                    if ((f != null) && f.canWrite()) {
-                        Link link = makeLink(request, state.getEntry(),
-                                             OUTPUT_EDIT);
-                        link.setLinkType(OutputType.TYPE_EDIT);
-                        links.add(link);
-                    }
+            if (state.entry.getResource().isEditableImage()) {
+                File f = state.entry.getFile();
+                if ((f != null) && f.canWrite()) {
+                    Link link = new Link(
+                                    repository.getUrlBase()
+                                    + "/lib/tui/tui?entryid="
+                                    + state.entry.getId(), getIconUrl(
+                                        ICON_IMAGES), "Edit Image");
+                    link.setLinkType(OutputType.TYPE_EDIT);
+                    links.add(link);
                 }
             }
 
@@ -419,132 +419,297 @@ public class ImageOutputHandler extends OutputHandler {
             return new Result("Video", sb);
         }
 
-        String  url            = getImageUrl(request, entry, true);
-        Image   image          = null;
-        boolean shouldRedirect = false;
+        return new Result("", new StringBuilder("NA"));
+    }
 
-        boolean applyToGroup   = request.get(ARG_IMAGE_APPLY_TO_GROUP, false);
 
-        if ( !applyToGroup) {
-            image          = getImage(entry);
-            shouldRedirect = processImage(request, entry, image);
-        } else {
-            List<Entry> entries = getEntryManager().getChildren(request,
-                                      entry.getParentEntry());
-            for (Entry childEntry : entries) {
-                if ( !childEntry.getResource().isEditableImage()) {
-                    continue;
+    /**
+     * _more_
+     *
+     * @param request _more_
+     *
+     * @return _more_
+     *
+     * @throws Exception _more_
+     */
+    public Result processTui(Request request) throws Exception {
+
+        Entry entry = getEntryManager().getEntry(request,
+                          request.getString(ARG_ENTRYID, ""));
+
+        if (request.exists(ARG_IMAGE_UNDO)) {
+            try {
+                if ( !getAccessManager().canEditEntry(request, entry)) {
+                    return new Result(
+                        new StringBuilder(
+                            "{\"code\":\"error\",\"message\":\"Cannot edit image\"}"), "text/plain", false);
                 }
-                image          = getImage(childEntry);
-                shouldRedirect = processImage(request, childEntry, image);
+                File f = entry.getFile();
+                if ((f != null) && f.canWrite()) {
+                    File entryDir =
+                        getStorageManager().getEntryDir(entry.getId(), true);
+                    int    version     = 0;
+                    File   versionFile = null;
+                    String extension   =
+                        IOUtil.getFileExtension(f.toString());
+                    while (true) {
+                        File file = new File(entryDir + "/" + "version"
+                                             + version + "." + extension);
+                        if ( !file.exists()) {
+                            break;
+                        }
+                        versionFile = file;
+                        version++;
+                    }
+                    if (versionFile != null) {
+                        IOUtil.copyFile(versionFile, f);
+                        versionFile.delete();
+                    }
+                }
+
+                return new Result(
+                    new StringBuilder(
+                        "{\"code\":\"ok\",\"message\":\"Image undone\"}"), "text/plain", false);
+            } catch (Exception e) {
+                return new Result(
+                    new StringBuilder(
+                        "{\"code\":\"error\",\"message\":\"" + e.getMessage()
+                        + "\"}"), "text/plain", false);
+            }
+        }
+
+        if (request.exists("imagecontents")) {
+            try {
+                if ( !getAccessManager().canEditEntry(request, entry)) {
+                    return new Result(
+                        new StringBuilder(
+                            "{\"code\":\"error\",\"message\":\"Cannot edit image\"}"), "text/plain", false);
+                }
+                String contents = request.getString("imagecontents", "");
+                int    index    = contents.indexOf("base64,");
+                contents = contents.substring(index + 7);
+                byte[] bytes = RepositoryUtil.decodeBase64(contents);
+                File   f     = entry.getFile();
+                getStorageManager().checkReadFile(f);
+                if ((f != null) && f.canWrite()) {
+                    File entryDir =
+                        getStorageManager().getEntryDir(entry.getId(), true);
+
+                    int    version     = 0;
+                    File   versionFile = null;
+                    String extension   =
+                        IOUtil.getFileExtension(f.toString());
+                    while (true) {
+                        File file = new File(entryDir + "/" + "version"
+                                             + version + "." + extension);
+                        if ( !file.exists()) {
+                            versionFile = file;
+
+                            break;
+                        }
+                        version++;
+                    }
+                    IOUtil.copyFile(f, versionFile);
+                    IOUtil.writeBytes(f, bytes);
+                }
+
+                return new Result(
+                    new StringBuilder(
+                        "{\"code\":\"ok\",\"message\":\"Image saved\"}"), "text/plain", false);
+            } catch (Exception e) {
+                return new Result(
+                    new StringBuilder(
+                        "{\"code\":\"error\",\"message\":\"" + e.getMessage()
+                        + "\"}"), "text/plain", false);
             }
         }
 
 
-        if (shouldRedirect) {
-            request.remove(ARG_IMAGE_EDIT_RESIZE);
-            request.remove(ARG_IMAGE_EDIT_REDEYE);
-            request.remove(ARG_IMAGE_EDIT_TRANSPARENT);
-            request.remove(ARG_IMAGE_EDIT_CROP);
-            request.remove(ARG_IMAGE_EDIT_ROTATE_LEFT);
-            request.remove(ARG_IMAGE_EDIT_ROTATE_RIGHT);
-            request.remove(ARG_IMAGE_EDIT_ROTATE_LEFT_X);
-            request.remove(ARG_IMAGE_EDIT_ROTATE_RIGHT_X);
-            request.remove(ARG_IMAGE_EDIT_ROTATE_LEFT_Y);
-            request.remove(ARG_IMAGE_EDIT_ROTATE_RIGHT_Y);
-            request.remove(ARG_IMAGE_UNDO);
 
-            return new Result(request.getUrl());
-        }
-
-
-
-        if (image == null) {
-            image = getImage(entry);
-        }
-        int imageWidth  = image.getWidth(null);
-        int imageHeight = image.getHeight(null);
-
+        StringBuilder sb = new StringBuilder();
         getPageHandler().entrySectionOpen(request, entry, sb, "Image Edit");
-        sb.append(request.formPost(getRepository().URL_ENTRY_SHOW));
+
+        if (getAccessManager().canEditEntry(request, entry)) {
+            String save =
+                "<div style='display:inline-block;' class='ramadda-button' onclick='imageEditorSave();'>Save Image</div>"
+                + "&nbsp;&nbsp;<div style='display:inline-block;' id='imageeditor_message'></div>";
+            String undo =
+                " <div style='display:inline-block;' class='ramadda-button' onclick='imageEditorUndo();'>Undo</div>";
+
+            sb.append(HtmlUtils.leftRight(save, undo));
+        }
 
 
+        String url = getImageUrl(request, entry, true);
+        sb.append(
+            HtmlUtils.formPost(
+                getRepository().getUrlBase() + "/lib/tui/tui",
+                HtmlUtils.id("imageeditform")));
         sb.append(HtmlUtils.hidden(ARG_ENTRYID, entry.getId()));
         sb.append(HtmlUtils.hidden(ARG_OUTPUT, OUTPUT_EDIT));
-        sb.append(HtmlUtils.submit(msgLabel("Change width"),
-                                   ARG_IMAGE_EDIT_RESIZE));
-        sb.append(HtmlUtils.input(ARG_IMAGE_EDIT_WIDTH, "" + imageWidth,
-                                  HtmlUtils.SIZE_5));
-        sb.append(HtmlUtils.space(2));
+        sb.append(HtmlUtils.hidden("imagecontents", "",
+                                   HtmlUtils.id("imagecontents")));
+        String template =
+            repository.getResource(
+                "/org/ramadda/repository/resources/web/imageeditor.js");
 
-        sb.append(HtmlUtils.submit(msg("Crop"), ARG_IMAGE_EDIT_CROP));
-        sb.append(HtmlUtils.submit(msg("Remove Redeye"),
-                                   ARG_IMAGE_EDIT_REDEYE));
-        sb.append(HtmlUtils.submit(msg("Make Transparent"),
-                                   ARG_IMAGE_EDIT_TRANSPARENT));
-        sb.append(HtmlUtils.hidden(ARG_IMAGE_CROPX1, "",
-                                   HtmlUtils.SIZE_3
-                                   + HtmlUtils.id(ARG_IMAGE_CROPX1)));
-        sb.append(HtmlUtils.hidden(ARG_IMAGE_CROPY1, "",
-                                   HtmlUtils.SIZE_3
-                                   + HtmlUtils.id(ARG_IMAGE_CROPY1)));
-        sb.append(HtmlUtils.hidden(ARG_IMAGE_CROPX2, "",
-                                   HtmlUtils.SIZE_3
-                                   + HtmlUtils.id(ARG_IMAGE_CROPX2)));
-        sb.append(HtmlUtils.hidden(ARG_IMAGE_CROPY2, "",
-                                   HtmlUtils.SIZE_3
-                                   + HtmlUtils.id(ARG_IMAGE_CROPY2)));
-        sb.append(HtmlUtils.div("",
-                                HtmlUtils.cssClass("image_edit_box")
-                                + HtmlUtils.id("image_edit_box")));
-
-
-
-        sb.append(HtmlUtils.space(2));
-        sb.append(HtmlUtils.submitImage(getIconUrl(ICON_ANTIROTATE),
-                                        ARG_IMAGE_EDIT_ROTATE_LEFT,
-                                        msg("Rotate Left"), ""));
-        sb.append(HtmlUtils.space(2));
-        sb.append(HtmlUtils.submitImage(getIconUrl(ICON_ROTATE),
-                                        ARG_IMAGE_EDIT_ROTATE_RIGHT,
-                                        msg("Rotate Right"), ""));
-        File entryDir = getStorageManager().getEntryDir(entry.getId(), false);
-        File original = new File(entryDir + "/" + "originalimage");
-        if (original.exists()) {
-            sb.append(HtmlUtils.space(2));
-            sb.append(HtmlUtils.submit(msg("Undo all edits"),
-                                       ARG_IMAGE_UNDO));
-        }
-
-        sb.append(HtmlUtils.space(20));
-        sb.append(HtmlUtils.checkbox(ARG_IMAGE_APPLY_TO_GROUP, "true",
-                                     applyToGroup));
-        sb.append(HtmlUtils.space(1));
-        sb.append(msg("Apply to siblings"));
-
-
+        template = IOUtil.readContents(
+            "/org/ramadda/repository/resources/web/imageeditor.js",
+            getClass());
+        template = template.replace("${imageurl}",
+                                    url).replace("${imagename}",
+                                        entry.getName());
+        template = getPageHandler().applyBaseMacros(template);
+        sb.append(template);
         sb.append(HtmlUtils.formClose());
 
 
-        String clickParams =
-            "event,'imgid',"
-            + HtmlUtils.comma(HtmlUtils.squote(ARG_IMAGE_CROPX1),
-                              HtmlUtils.squote(ARG_IMAGE_CROPY1),
-                              HtmlUtils.squote(ARG_IMAGE_CROPX2),
-                              HtmlUtils.squote(ARG_IMAGE_CROPY2));
-
-        sb.append(
-            HtmlUtils.importJS(getRepository().getFileUrl("/editimage.js")));
-
-        String call = HtmlUtils.onMouseClick(HtmlUtils.call("editImageClick",
-                          clickParams));
-        sb.append(HtmlUtils.img(url, "", HtmlUtils.id("imgid") + call));
-
         getPageHandler().entrySectionClose(request, entry, sb);
+        Result result = new Result("", sb);
+        getEntryManager().addEntryHeader(request, entry, result);
 
-        return new Result("Image Edit", sb);
+        return result;
 
     }
+
+
+
+
+    /**
+     * old edit code
+     *       String  url            = getImageUrl(request, entry, true);
+     *       Image   image          = null;
+     *       boolean shouldRedirect = false;
+     *
+     *       boolean applyToGroup   = request.get(ARG_IMAGE_APPLY_TO_GROUP, false);
+     *
+     *       if ( !applyToGroup) {
+     *           image          = getImage(entry);
+     *           shouldRedirect = processImage(request, entry, image);
+     *       } else {
+     *           List<Entry> entries = getEntryManager().getChildren(request,
+     *                                     entry.getParentEntry());
+     *           for (Entry childEntry : entries) {
+     *               if ( !childEntry.getResource().isEditableImage()) {
+     *                   continue;
+     *               }
+     *               image          = getImage(childEntry);
+     *               shouldRedirect = processImage(request, childEntry, image);
+     *           }
+     *       }
+     *
+     *
+     *       if (shouldRedirect) {
+     *           request.remove(ARG_IMAGE_EDIT_RESIZE);
+     *           request.remove(ARG_IMAGE_EDIT_REDEYE);
+     *           request.remove(ARG_IMAGE_EDIT_TRANSPARENT);
+     *           request.remove(ARG_IMAGE_EDIT_CROP);
+     *           request.remove(ARG_IMAGE_EDIT_ROTATE_LEFT);
+     *           request.remove(ARG_IMAGE_EDIT_ROTATE_RIGHT);
+     *           request.remove(ARG_IMAGE_EDIT_ROTATE_LEFT_X);
+     *           request.remove(ARG_IMAGE_EDIT_ROTATE_RIGHT_X);
+     *           request.remove(ARG_IMAGE_EDIT_ROTATE_LEFT_Y);
+     *           request.remove(ARG_IMAGE_EDIT_ROTATE_RIGHT_Y);
+     *           request.remove(ARG_IMAGE_UNDO);
+     *
+     *           return new Result(request.getUrl());
+     *       }
+     *
+     *
+     *       if (image == null) {
+     *           image = getImage(entry);
+     *       }
+     *       int imageWidth  = image.getWidth(null);
+     *       int imageHeight = image.getHeight(null);
+     *
+     *       getPageHandler().entrySectionOpen(request, entry, sb, "Image Edit");
+     *       sb.append(request.formPost(getRepository().URL_ENTRY_SHOW));
+     *
+     *
+     *       sb.append(HtmlUtils.hidden(ARG_ENTRYID, entry.getId()));
+     *       sb.append(HtmlUtils.hidden(ARG_OUTPUT, OUTPUT_EDIT));
+     *       sb.append(HtmlUtils.submit(msgLabel("Change width"),
+     *                                  ARG_IMAGE_EDIT_RESIZE));
+     *       sb.append(HtmlUtils.input(ARG_IMAGE_EDIT_WIDTH, "" + imageWidth,
+     *                                 HtmlUtils.SIZE_5));
+     *       sb.append(HtmlUtils.space(2));
+     *
+     *       sb.append(HtmlUtils.submit(msg("Crop"), ARG_IMAGE_EDIT_CROP));
+     *       sb.append(HtmlUtils.submit(msg("Remove Redeye"),
+     *                                  ARG_IMAGE_EDIT_REDEYE));
+     *       sb.append(HtmlUtils.submit(msg("Make Transparent"),
+     *                                  ARG_IMAGE_EDIT_TRANSPARENT));
+     *       sb.append(HtmlUtils.hidden(ARG_IMAGE_CROPX1, "",
+     *                                  HtmlUtils.SIZE_3
+     *                                  + HtmlUtils.id(ARG_IMAGE_CROPX1)));
+     *       sb.append(HtmlUtils.hidden(ARG_IMAGE_CROPY1, "",
+     *                                  HtmlUtils.SIZE_3
+     *                                  + HtmlUtils.id(ARG_IMAGE_CROPY1)));
+     *       sb.append(HtmlUtils.hidden(ARG_IMAGE_CROPX2, "",
+     *                                  HtmlUtils.SIZE_3
+     *                                  + HtmlUtils.id(ARG_IMAGE_CROPX2)));
+     *       sb.append(HtmlUtils.hidden(ARG_IMAGE_CROPY2, "",
+     *                                  HtmlUtils.SIZE_3
+     *                                  + HtmlUtils.id(ARG_IMAGE_CROPY2)));
+     *       sb.append(HtmlUtils.div("",
+     *                               HtmlUtils.cssClass("image_edit_box")
+     *                               + HtmlUtils.id("image_edit_box")));
+     *
+     *
+     *
+     *       sb.append(HtmlUtils.space(2));
+     *       sb.append(HtmlUtils.submitImage(getIconUrl(ICON_ANTIROTATE),
+     *                                       ARG_IMAGE_EDIT_ROTATE_LEFT,
+     *                                       msg("Rotate Left"), ""));
+     *       sb.append(HtmlUtils.space(2));
+     *       sb.append(HtmlUtils.submitImage(getIconUrl(ICON_ROTATE),
+     *                                       ARG_IMAGE_EDIT_ROTATE_RIGHT,
+     *                                       msg("Rotate Right"), ""));
+     *       File entryDir = getStorageManager().getEntryDir(entry.getId(), false);
+     *       File original = new File(entryDir + "/" + "originalimage");
+     *       if (original.exists()) {
+     *           sb.append(HtmlUtils.space(2));
+     *           sb.append(HtmlUtils.submit(msg("Undo all edits"),
+     *                                      ARG_IMAGE_UNDO));
+     *       }
+     *
+     *       sb.append(HtmlUtils.space(20));
+     *       sb.append(HtmlUtils.checkbox(ARG_IMAGE_APPLY_TO_GROUP, "true",
+     *                                    applyToGroup));
+     *       sb.append(HtmlUtils.space(1));
+     *       sb.append(msg("Apply to siblings"));
+     *
+     *
+     *       sb.append(HtmlUtils.formClose());
+     *
+     *
+     *       String clickParams =
+     *           "event,'imgid',"
+     *           + HtmlUtils.comma(HtmlUtils.squote(ARG_IMAGE_CROPX1),
+     *                             HtmlUtils.squote(ARG_IMAGE_CROPY1),
+     *                             HtmlUtils.squote(ARG_IMAGE_CROPX2),
+     *                             HtmlUtils.squote(ARG_IMAGE_CROPY2));
+     *
+     *       sb.append(
+     *           HtmlUtils.importJS(getRepository().getFileUrl("/editimage.js")));
+     *
+     *       String call = HtmlUtils.onMouseClick(HtmlUtils.call("editImageClick",
+     *                         clickParams));
+     *       sb.append(HtmlUtils.img(url, "", HtmlUtils.id("imgid") + call));
+     *
+     *       getPageHandler().entrySectionClose(request, entry, sb);
+     *
+     *       return new Result("Image Edit", sb);
+     *
+     * @param request _more_
+     * @param entry _more_
+     *
+     * @return _more_
+     *
+     * @throws Exception _more_
+     */
+
+
 
 
     /**

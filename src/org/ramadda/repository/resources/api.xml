@@ -179,4 +179,8 @@
   <group handler="org.ramadda.repository.services.OaiManager">
       <api request="/oai/*"           method="processRequest"          admin="false" />
   </group>
+
+  <group handler="org.ramadda.repository.output.ImageOutputHandler">
+      <api request="/lib/tui/tui"      method="processTui"          admin="false" />
+  </group>
 </api>

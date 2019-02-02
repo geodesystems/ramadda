@@ -196,6 +196,13 @@ public class Result {
         stringContent = content.toString();
     }
 
+
+    public Result(Appendable content, String mimeType, boolean decorate) {
+        this("", (byte[]) null, mimeType);
+        stringContent = content.toString();
+        this.shouldDecorate = decorate;
+    }
+
     /**
      * Create a Result with the title, content and mimetype
      *
