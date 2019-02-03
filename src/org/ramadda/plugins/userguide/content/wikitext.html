@@ -1,35 +1,13 @@
-
 [ht::head {Wiki Text} ]
-
 <%nochildlist%>
 
-All of the display in RAMADDA is accomplished through its  wiki facility. This supports both regular wiki markup as well as special 
-RAMADDA wiki tags that allow for displaying maps, lists, charts, etc. The <a href="http://geodesystems.com/repository/alias/wikis">geodesystems.com site</a> has many examples of the wiki facility.
+The web pages in RAMADDA are created through its  wiki facility. The wiki facility supports both regular wiki markup like Wikipedia uses
+as well as special  RAMADDA wiki tags that allow for page payout, displaying maps, lists, charts, etc. 
+The <a href="http://geodesystems.com/repository/alias/wikis">geodesystems.com site</a> has many examples of the wiki facility.
 
 
-<subhead intoc="false" id="editor">Wiki Editor</subhead>
-RAMADDA provides a wiki text editor:
-[ht::cimg images/wikiedit.png {Wiki Text Editor} {border=0 width=600}]
-
-<ul>
-<li>
-The  buttons allow you to add basic wiki markup.
-<p>
-<li>
-The Add property menu adds RAMADDA specific properties from the entry that is being displayed 
-(e.g., name, description, children entries, etc).
-<p>
-<li>
-The Add entry id menu allows you to specify the entry to use in properties (see below).
-<p>
-<li>
-The Add entry link menu adds wiki links to other entries.
-</ul>
-
-<subhead intoc="false" id="markup">Basic Markup</subhead>
-
-The RAMADDA Wiki facility generally follows the format
-that Wikipedia follows. For example:
+[ug::subheading {Basic Markup} basicmarkup]
+The RAMADDA Wiki facility generally follows the format that Wikipedia follows. For example:
 [wiki::text {
 ==Section Heading 1==
 ===Section Heading 2===
@@ -40,7 +18,7 @@ A horizontal line:
 ----
 }]
 
-Lists:
+Bulleted lists:
 [wiki::text {
 * bullet 1
 * bullet 2
@@ -62,11 +40,40 @@ more wiki text
 See the <a href=" http://en.wikipedia.org/wiki/Help:Wiki_markup">Wikipedia page on Wiki Markup</a> for more information on basic Wiki markup. 
 
 
-<subhead intoc="false" id="display">Layout and Display Markup</subhead>
+
+[ug::subheading {Layout and Display Markup} layout]
 There are a number of helper layout tags that make it easy to do page layout and display.
 
+[ug::subsubheading {Titles and headings} titles]
+There are a number of block display elements - 
+title, heading, blurb, note, and block that can be used as:
+<pre>
+One line forms:
+:title Some title
+:heading Some heading
+:blurb Some blurb
+:note Some note
+:block A block
 
-[ug::subheading {Sections}]
+Multi line forms:
++note
+Some lengthy text
+and more
+-note
+</pre>
+
+You can change the background color with:
+<pre>
+:blurb-green Some green background
+:note-rose Rose colored background
+</pre>
+
+Examples at <a href="https://geodesystems.com/repository/alias/wikiexamples">https://geodesystems.com/repository/alias/wikiexamples</a>.
+
+
+
+
+[ug::subsubheading {Sections} sections]
 
 To get the full page layout like on <a href="http://ramadda.org/repository">ramadda.org</a> use the "+section" tag:
 <pre>
@@ -128,57 +135,8 @@ You can also add a CSS style descriptor
 </pre>
 
 
-<p>
-[ug::subheading {Tabs}]
 
-You can create a set of tabs with:
-<pre>
-+tabs
-+tab Tab 1 title
-Tab 1 content
--tab
-+tab Tab 2 title
-Tab 2 content
--tab
-...
-+tab Tab N title
-Tab N content
--tab
--tabs
-</pre>
-
-
-[ug::subheading {Titles and headings}]
-
-There are a number of block display elements - 
-title, heading, blurb, note, and block that can be used as:
-<pre>
-One line forms:
-:title Some title
-:heading Some heading
-:blurb Some blurb
-:note Some note
-:block A block
-
-Multi line forms:
-+note
-Some lengthy text
-and more
--note
-</pre>
-
-You can change the background color with:
-<pre>
-:blurb-green Some green background
-:note-rose Rose colored background
-</pre>
-
-Examples at <a href="https://geodesystems.com/repository/alias/wikiexamples">https://geodesystems.com/repository/alias/wikiexamples</a>.
-
-
-
-[ug::subheading {Inset}]
-
+[ug::subsubheading {Inset} inset]
 By default, a page has no margins on the left-side. If you have normal text layout you can make an inset with "+inset":
 <pre>
 +inset
@@ -196,7 +154,7 @@ This by default gives a 20px left and right margin. To change this you can add a
 
 
 
-[ug::subheading {Grid Layout} layout]
+[ug::subsubheading {Grid Layout} gridlayout]
 There is support for the <a href="http://getbootstrap.com/">Bootstrap</a> CSS grid system. To do a row layout use the following. The "+col-md-..." correspond to Bootstraps column widths, e.g., col-md-\[2,3,4,6,8,9,10,12\].
 Basically you can have any number of columns within a row.
 Each column has a width, the sum of which adds up to 12.
@@ -258,7 +216,43 @@ Right column contents
 </div>
 
 
-<subhead intoc="false" id="links">Linking to other entries</subhead>
+
+[ug::subsubheading {Tabs} tabs]
+You can create a set of tabs with:
+<pre>
++tabs
++tab Tab 1 title
+Tab 1 content
+-tab
++tab Tab 2 title
+Tab 2 content
+-tab
+...
++tab Tab N title
+Tab N content
+-tab
+-tabs
+</pre>
+
+
+<p>
+[ug::subsubheading {Accordian} accordian]
+
+You can create an accordian:
+<pre>
++accordian
++segment Accordian 1 title
+Accordian 1 content
+-segment
++segment Accordian 2 title
+Accordian 2 content
+-segment
+-accordian
+</pre>
+
+
+
+[ug::subsubheading {Linking to other entries} entry]
 Normally in a wiki a link to another page is of the form:
 [wiki::text {
 [[Page name]]
@@ -299,7 +293,7 @@ If the entry with the given name does not exist then the link will take one to t
 create entry form.
 
 
-<subhead intoc="false" id="properties">Wiki Properties</subhead>
+[ug::subsubheading {Wiki Properties} properties]
 You can also import content from the current Wiki Page entry or any other entry with the import  
 syntax:
 [wiki::text [wiki::tag {&lt;property&gt;}]]
@@ -315,12 +309,9 @@ This would give us:
 [ht::cimg images/wikiinformation.png {} {border=0}]
 
 
-
-[ug::subheading {entry attribute} {entry}]
-Normally, all property tags refer to the current entry. However, you can specify another entry:
+[ug::subsubheading {Specify other entries with the <i>entry</i> attribute} entry]
+Normally, all property tags refer to the current entry. However, you can specify another entry with the "entry" attribute, e.g:
 [wiki::text [wiki::tag information {entry="some other entry id or name or 'parent' or 'grandparent'"}]]
-
-
 
 The entry value can be:
 <ul>
@@ -374,7 +365,7 @@ Note: you can specify a prefix and suffix attributes that are only used if the t
 This would only show when there is a Links sub-folder.
 
 
-<subhead intoc="false" id="basic">Basic Wiki Properties</subhead>
+[ug::subsubheading {Basic Wiki Properties} basic]
 
 The first set of property tags show some information for the entry. Note: the attributes are all optional.
 
@@ -496,11 +487,7 @@ Show the menu actions in a popup:
 </ul>
 
 
-
-<subhead intoc="false" id="displays">Display Components</subhead>
-See the <a href="wikidisplay.html">wikidisplay.html</a> page.
-
-<subhead intoc="false" id="collection">Collection Wiki Properties</subhead>
+[ug::subsubheading {Collection Wiki Properties} entries]
 
 The following properties display a collection of entries. By default they
 are the children entries of the wiki entry but you can specify
@@ -632,9 +619,7 @@ You can also:
 </ul>
 
 
-<a name="virtual_group"></a>
-<h3>Virtual Groups</h3>
-
+[ug::subsubheading {Virtual Groups} virtual_groups]
 RAMADDA provides a "Virtual Group" entry type. This acts as a Folder except a set of entry IDs or searches can be specified. There are a number of examples available <a href="http://ramadda.org/repository/entry/show/Home/RAMADDA+Examples/Miscellany/Virtual+Groups?entryid=f5ccdc47-62f7-481a-b67d-bf76e5b34359">here</a>.
 
 The Entry IDs field of the Virtual Group can be a list of specific entries, e.g.:
@@ -663,8 +648,7 @@ search
 
 
 
-<h3>Collection Tags</h3>
-
+[ug::subsubheading {Collection Tags} collection_tags]
 <ul>
 
 <li> [wiki::tagdef tree]:
@@ -855,9 +839,7 @@ apply.header="${url}"
 
 </ul>
 
-
-
-<subhead intoc="false" id="block">Hiding and showing content</subhead>
+[ug::subsubheading {Hiding and showing content} {hiding}]
 
 The &lt;block&gt; tag allows you to easily create a toggle block and/or show or hide content
 based on the user's device.
@@ -914,7 +896,7 @@ This will not show the content in place. Rather you can reference and insert the
 
 
 
-<subhead intoc="false" id="import">Importing any page</subhead>
+[ug::subsubheading {Importing any page}]
 
 You can also import any of the views of an entry, e.g., the map view, 
 the calendar view, etc., with the  
@@ -930,7 +912,7 @@ want to include and look at the url for the output=... url argument
 and use that.
 
 
-[ug::subheading {Snippet} snippet]
+[ug::subsubheading {Snippet} snippet]
 A number of the layouts below (e.g,, table layout) will include a snippet of descriptive text from the entry that is being displayed. The snippet text is defined in the description of the entry with:
 <pre>
 Some description here.

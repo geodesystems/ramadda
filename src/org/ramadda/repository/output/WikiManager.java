@@ -4567,10 +4567,32 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
         help.append(HtmlUtils.href(getRepository().getUrlBase()
                                    + "/userguide/wikitext.html", "Wiki Text",
                                        "target=_help") + "<br>");
+
+        help.append(HtmlUtils.href(getRepository().getUrlBase()
+                                   + "/userguide/wikitext.html#sections", "Sections",
+                                       "target=_help") + "<br>");
+
+
+        help.append(HtmlUtils.href(getRepository().getUrlBase()
+                                   + "/userguide/wikitext.html#gridlayout", "Grid layout",
+                                       "target=_help") + "<br>");
+
         help.append(
             HtmlUtils.href(
                 getRepository().getUrlBase() + "/userguide/wikidisplay.html",
                 "Wiki Displays", "target=_help") + "<br>");
+
+
+
+
+
+        help.append(HtmlUtils.href(getRepository().getUrlBase()
+                                   + "/userguide/wikitext.html#entry", "Specifying another other entry",
+                                       "target=_help") + "<br>");
+
+        help.append(HtmlUtils.href(getRepository().getUrlBase()
+                                   + "/userguide/wikitext.html#entries", "Specifying multiple entries",
+                                       "target=_help") + "<br>");
         help.append(HtmlUtils.href(getRepository().getUrlBase()
                                    + "/colortables", "Color Tables",
                                        "target=_help") + "<br>");

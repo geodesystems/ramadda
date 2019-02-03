@@ -5,33 +5,30 @@
 RAMADDA uses wiki text in a number of ways. You can  create Wiki Page entries, you can style any entry
 using wiki text and you can also add in a Page Style metadata element that allows you
 to define the style used for a whole collection of entries.
+
+
+[ug::subheading {Wiki Editor} editor]
+RAMADDA provides a wiki text editor:
+[ht::cimg images/wikiedit.png {Wiki Text Editor} {border=0 width=70%}]
+
+<ul>
+<li>
+The  buttons allow you to add basic wiki markup.
 <p>
-
-<subhead  id="wikipage"  intoc="false">Wiki Page Entries</subhead>
-
-One of the entry types that RAMADDA provides is a Wiki Page entry.
-You create a new Wiki Page just like you create any entry - in a folder
-that you have create privileges for go to  File-&gt;New Entry menu.
-In the form select &quot;Wiki Page&quot; to go to the Wiki Page create form:
-
-[ht::cimg images/wikicreate.gif {Wiki Page Create Form} {border=0 width=600}]
-
-See the help on <a href="wikitext.html">Wiki Text</a> for more information
-on how to use wiki text markup.
+<li>
+The Add property menu adds RAMADDA specific properties from the entry that is being displayed 
+(e.g., name, description, children entries, etc).
 <p>
-The default HTML view of a Wiki Page entry  looks like:
-[ht::cimg images/wikiexample.gif {Wiki Page} {border=0 width=600}]
-
-The &quot;Details&quot; link in the upper right will show the default html view of this page.
+<li>
+The Add entry id menu allows you to specify the entry to use in properties (see below).
 <p>
-The &quot;Wiki History&quot; link in the top tabs will take you to the history page for the entry.
-[ht::cimg images/wikihistory.gif {Wiki History Page} {border=0 width=600}]
-This shows the history of past edits and allows you to view and compare versions and to revert 
-back to past versions.
+<li>
+The Add entry link menu adds wiki links to other entries.
+</ul>
 
 
 
-<subhead intoc="false" id="wikidesc">Wiki Text in Other Entries</subhead>
+[ug::subheading {Wiki Text in Entries} wikidesc]
 You can use the wiki text display capabilities to customize the default
 HTML view of any other entry or folder types. If the description of the entry
 begins with &quot;&lt;wiki&gt;&quot; then we treat the description as wiki text
@@ -57,6 +54,17 @@ Presentation Schedule:
 </pre>
 
 In this case we use html and the import tags to come up with the page layout.
+
+
+
+[ug::subheading {Wiki Page Entries} wikipage]
+One of the entry types that RAMADDA provides is a Wiki Page entry.
+You create a new Wiki Page just like you create any entry - in a folder
+that you have create privileges for go to  File-&gt;New Entry menu.
+In the form select &quot;Wiki Page&quot; to go to the Wiki Page create form:
+[ht::cimg images/wikicreate.png {Wiki Page Create Form} {border=0 width=70%}]
+
+
 
 
 

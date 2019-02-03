@@ -8,10 +8,10 @@
 <body>
 <div class="ramadda-documentation">
 <table width=100% cellspacing=0 cellpadding=0 ><tr><td width=30%>
-<a href="wikitext.html"><img src="images/PreviousArrow.gif" border="0"   alt="Previous: Wiki Text" title="Previous: Wiki Text"></a> <a href="gridaggregation.html"><img src="images/NextArrow.gif" border="0"   alt="Next: Grid Aggregation" title="Next: Grid Aggregation"></a>  <a href="toc.html#wikidisplay.html"><img src="images/TOCIcon.gif" border="0"   alt="Table of contents" title="Table of contents"></a>
+<a href="wikitext.html"><img src="images/previous.png" border="0"   alt="Previous: Wiki Text" title="Previous: Wiki Text"></a> <a href="page_entries.html"><img src="images/next.png" border="0"   alt="Next: Entries" title="Next: Entries"></a>  <a href="toc.html#wikidisplay.html"><img src="images/table.png" border="0"   alt="Table of contents" title="Table of contents"></a>
 </td>
 <td width=40% align=center>
-<div class="ramadda-page-title">RAMADDA User Guide</div>
+<div class="ramadda-page-title"><a href="${root}/userguide/index.html">RAMADDA User Guide</a></div>
 </td>
 <td width=30%>&nbsp;</td>
 </tr></table>
@@ -34,7 +34,9 @@ There are a number of  <a href="https://geodesystems.com/repository/entry/show?e
 The underlying wiki text for any entry can be seen with the Information page.
 
 
-<a name="group"></a><p><div class="ramadda-help-heading">11.2.0 Display Groups</div> 
+
+
+<a name="groups"></a><p><div class="ramadda-help-heading">11.2.1 <a href="#groups">Display Groups</a></div> 
 
 There is a <i>group</i> tag that can manage a number of children displays. Each child display
 may be located in a fixed location (using layoutHere=false) in the web page or the group can manage the layout of the children displays.
@@ -45,7 +47,7 @@ added automatically.
 
 
 
-<div class="ramadda-help-subheading">Display Layout</div> 
+<div class="ramadda-help-subsubheading">Display Layout</div> 
 
 Different layouts can be specified with the <i>layoutType</i> attribute. The available layouts are:
 <pre>
@@ -116,7 +118,7 @@ colorTable=&quot;rainbow|grayscale|inversegrayscale|blues|blue_green_red|white_b
 <p>
 
 
-<a name="fields"></a><p><div class="ramadda-help-heading">11.2.1 Specifying Fields</div> 
+<a name="fields"></a><p><div class="ramadda-help-heading">11.2.1 <a href="#fields">Specifying Fields</a></div> 
 Most of these displays are based on <a href="pointdata.html">point data</a> in RAMADDA. The point data model
 is based on a series of records (or rows) that are made up of a set of fields (or columns). 
 Many of the displays below use a <i>fields</i> attribute to specify the fields that are displayed. 
@@ -151,9 +153,9 @@ vAxisMinValue=&quot;0&quot; vAxisMaxValue=&quot;100&quot;  title=&quot;Line Char
 
 
 
-<a name="displays"></a><p><div class="ramadda-help-heading">11.2.2 The Displays</div> 
+<a name="displays"></a><p><div class="ramadda-help-heading">11.2.1 <a href="#displays">The Displays</a></div> 
 
-<div class="ramadda-help-subheading"> Search form</div> 
+<div class="ramadda-help-subsubheading"> Search form</div> 
 <a name="display"></a><pre>{{display type=&quot;entrylist&quot;  
 width=&quot;800&quot;  height=&quot;400&quot;  orientation=&quot;vertical&quot;  
 showForm=&quot;true&quot;  formOpen=&quot;true&quot;         
@@ -165,7 +167,7 @@ The <i>provider</i> attribute allows you to specify alternative search providers
 <a name="image1"></a><div class="cimg"><a href="images/charts/searchform.png"><img  src="images/charts/searchform.png" width=700 alt="Search Form" ></a><br><span class="caption">Image 1: Search Form</span></div>
 
 
-<div class="ramadda-help-subheading">Map</div> 
+<div class="ramadda-help-subsubheading">Map</div> 
 <a name="display"></a><pre>{{display type=&quot;map&quot;  width=&quot;100%&quot;  #height=&quot;400&quot;
 geojsonLayer=&quot;entry id of a geojson file&quot; 
 geojsonLayerName=&quot;Layer name&quot;
@@ -231,7 +233,7 @@ displayDiv=&quot;mapDisplay${entryid}&quot;
 
 
 
-<div class="ramadda-help-subheading"> Line chart</div> 
+<div class="ramadda-help-subsubheading"> Line chart</div> 
 <a name="display"></a><pre>{{display type=&quot;linechart&quot;  #width=&quot;800&quot;  #height=&quot;400&quot;  
 #fields=&quot;&quot;       
 #vAxisMinValue=&quot;0&quot; #vAxisMaxValue=&quot;1.0&quot; #padRight=&quot;true&quot;}}</pre>
@@ -244,7 +246,7 @@ for two or more charts to be aligned that have one or more fields being displaye
 <a name="image4"></a><div class="cimg"><a href="images/charts/linechart.png"><img  src="images/charts/linechart.png"  alt="Line Chart" ></a><br><span class="caption">Image 4: Line Chart</span></div>
 
 
-<div class="ramadda-help-subheading">Bar chart and stacked bar chart</div> 
+<div class="ramadda-help-subsubheading">Bar chart and stacked bar chart</div> 
 <a name="display"></a><pre>{{display type=&quot;barchart&quot;    #fields=&quot;&quot;  padRight=&quot;true&quot; layoutHere=&quot;true&quot;  showMenu=&quot;true&quot;  showTitle=&quot;true&quot;  title=&quot;Bar Chart&quot;}}</pre>
 
 <a name="display"></a><pre>{{display type=&quot;barstack&quot;    #fields=&quot;&quot;  layoutHere=&quot;true&quot;  showMenu=&quot;true&quot;  showTitle=&quot;true&quot;  title=&quot;Stacked Bar Chart&quot;}}</pre>
@@ -253,19 +255,19 @@ for two or more charts to be aligned that have one or more fields being displaye
 <a name="image5"></a><div class="cimg"><a href="images/charts/barchart.png"><img  src="images/charts/barchart.png"  alt="Bar Chart" ></a><br><span class="caption">Image 5: Bar Chart</span></div>
 
 
-<div class="ramadda-help-subheading">Area chart</div> 
+<div class="ramadda-help-subsubheading">Area chart</div> 
 <a name="display"></a><pre>{{display type=&quot;areachart&quot;  #width=&quot;800&quot;  #height=&quot;400&quot;  #fields=&quot;&quot;  
 #vAxisMinValue=&quot;0&quot; #vAxisMaxValue=&quot;1.0&quot; #padRight=&quot;true&quot;
 #isStacked=&quot;true&quot;}}</pre>
 <a name="image6"></a><div class="cimg"><a href="images/charts/areachart.png"><img  src="images/charts/areachart.png"  alt="Area Chart" ></a><br><span class="caption">Image 6: Area Chart</span></div>
 
 
-<div class="ramadda-help-subheading"> Scatter Plot</div> 
+<div class="ramadda-help-subsubheading"> Scatter Plot</div> 
 <a name="display"></a><pre>{{display type=&quot;scatterplot&quot;  #width=&quot;800&quot;  #height=&quot;400&quot;  #fields=&quot;&quot;}}</pre>
 
 <a name="image7"></a><div class="cimg"><a href="images/charts/scatterplot.png"><img  src="images/charts/scatterplot.png" width=300 alt="Scatter Plot" ></a><br><span class="caption">Image 7: Scatter Plot</span></div>
 
-<div class="ramadda-help-subheading"> Histogram</div> 
+<div class="ramadda-help-subsubheading"> Histogram</div> 
 <a name="display"></a><pre>{{display type=&quot;histogram&quot;  #width=&quot;800&quot;  #height=&quot;400&quot;  #fields=&quot;&quot;  
 #colors=&quot;comma separated color list&quot;  
 #legendPosition=&quot;none|top|right|left|bottom&quot;  
@@ -282,7 +284,7 @@ More info at <a href="https://developers.google.com/chart/interactive/docs/galle
 <a name="image8"></a><div class="cimg"><a href="images/charts/histogram.png"><img  src="images/charts/histogram.png"  alt="Histogram" ></a><br><span class="caption">Image 8: Histogram</span></div>
 
 
-<div class="ramadda-help-subheading"> Bubble Chart</div> 
+<div class="ramadda-help-subsubheading"> Bubble Chart</div> 
 <a name="display"></a><pre>{{display type=&quot;bubble&quot;  width=&quot;500&quot;  height=&quot;500&quot;  
 #fields=&quot;label|x|y|color|size&quot;  
 #colorTable=&quot;rainbow|grayscale|inversegrayscale|blues|blue_green_red|white_blue|blue_red&quot;  #colors=&quot;comma separated color list&quot;  #legendPosition=&quot;none|top|right|left|bottom&quot;  #hAxisFormat=&quot;none|decimal|scientific|percent|short|long&quot;  #vAxisFormat=&quot;none|decimal|scientific|percent|short|long&quot;  #hAxisTitle=&quot;&quot;  #vAxisTitle=&quot;&quot;}}</pre>
@@ -292,7 +294,7 @@ The <i>fields</i> specify a text field for the label and the numeric value field
 <a name="image9"></a><div class="cimg"><a href="images/charts/bubble.png"><img  src="images/charts/bubble.png"  alt="Bubble Chart" ></a><br><span class="caption">Image 9: Bubble Chart</span></div>
 
 
-<div class="ramadda-help-subheading"> Pie chart</div> 
+<div class="ramadda-help-subsubheading"> Pie chart</div> 
 <a name="display"></a><pre>{{display type=&quot;piechart&quot;  #fields=&quot;&quot;
 #pieHole=&quot;0.5&quot;  #is3D=&quot;true&quot;    
 #bins=&quot;bin count&quot;  #binMin=&quot;min&quot;  #binMax=&quot;max&quot;  
@@ -303,7 +305,7 @@ More info at <a href="https://developers.google.com/chart/interactive/docs/galle
 
 <a name="image10"></a><div class="cimg"><a href="images/charts/piechart.png"><img  src="images/charts/piechart.png"  alt="Pie Chart" ></a><br><span class="caption">Image 10: Pie Chart</span></div>
 
-<div class="ramadda-help-subheading"> Calendar</div> 
+<div class="ramadda-help-subsubheading"> Calendar</div> 
 <a name="display"></a><pre>{{display type=&quot;calendar&quot;  #fields=&quot;&quot;  #cellSize=&quot;15&quot;  #missingValue=&quot;0&quot;}}</pre>
 
 Displays point data based on the date of each record. The calendar entry is color coded based on the specified field.
@@ -312,7 +314,7 @@ If <i>missingValue</i> is specified than any point value with that value won't b
 
 <a name="image11"></a><div class="cimg"><a href="images/charts/calendar.png"><img  src="images/charts/calendar.png"  alt="Calendar Chart" ></a><br><span class="caption">Image 11: Calendar Chart</span></div>
 
-<div class="ramadda-help-subheading"> Gauge</div> 
+<div class="ramadda-help-subsubheading"> Gauge</div> 
 <a name="display"></a><pre>{{display type=&quot;gauge&quot;  #fields=&quot;&quot;  
 #gaugeMin=&quot;&quot;  #gaugeMax=&quot;&quot;  #gaugeLabel=&quot;&quot;}}</pre>
 
@@ -320,21 +322,21 @@ This shows a single value from a series of point data.
 
 <a name="image12"></a><div class="cimg"><a href="images/charts/gauge.png"><img  src="images/charts/gauge.png"  alt="Gauge" ></a><br><span class="caption">Image 12: Gauge</span></div>
 
-<div class="ramadda-help-subheading"> Sankey</div> 
+<div class="ramadda-help-subsubheading"> Sankey</div> 
 <a name="display"></a><pre>{{display type=&quot;sankey&quot;  #fields=&quot;&quot;}}</pre>
 
 Displays flow data. The point data needs to have 2 string fields (the from and to) and a numeric value field.
 
 <a name="image13"></a><div class="cimg"><a href="images/charts/sankey.png"><img  src="images/charts/sankey.png" width=300 alt="Sankey Display" ></a><br><span class="caption">Image 13: Sankey Display</span></div>
 
-<div class="ramadda-help-subheading"> Table</div> 
+<div class="ramadda-help-subsubheading"> Table</div> 
 <a name="display"></a><pre>{{display type=&quot;table&quot;  height=&quot;400&quot;  #fields=&quot;&quot;}}</pre>
 
 Shows tabular data. This is integrated with other charts so clicking on a row highlights the corresponding record in a chart.
 
 <a name="image14"></a><div class="cimg"><a href="images/charts/table.png"><img  src="images/charts/table.png"  alt="Table" ></a><br><span class="caption">Image 14: Table</span></div>
 
-<div class="ramadda-help-subheading"> Heatmap</div> 
+<div class="ramadda-help-subsubheading"> Heatmap</div> 
 <a name="display"></a><pre>{{display type=&quot;heatmap&quot;  #height=&quot;400&quot;  #fields=&quot;&quot;  
 #colorTables=&quot;temperature,blues&quot;  
 #colorByMins=&quot;-90,0&quot;  #colorByMaxes=&quot;45,100&quot;  
@@ -345,7 +347,7 @@ Displays the records, one row per record, with each cell color coded based on th
 
 <a name="image15"></a><div class="cimg"><a href="images/charts/heatmap.png"><img  src="images/charts/heatmap.png"  alt="Heat Map" ></a><br><span class="caption">Image 15: Heat Map</span></div>
 
-<div class="ramadda-help-subheading"> Correlation</div> 
+<div class="ramadda-help-subsubheading"> Correlation</div> 
 <a name="display"></a><pre>{{display type=&quot;correlation&quot;  #fields=&quot;&quot;}}</pre>
 
 Displays a statistical correlation of a set of fields.
@@ -353,14 +355,14 @@ Displays a statistical correlation of a set of fields.
 
 
 
-<div class="ramadda-help-subheading"> Text Readout</div> 
+<div class="ramadda-help-subsubheading"> Text Readout</div> 
 <a name="display"></a><pre>{{display type=&quot;text&quot;}}</pre>
 
 Displays the record selected in other charts.
 
 <a name="image17"></a><div class="cimg"><a href="images/charts/textreadout.png"><img  src="images/charts/textreadout.png"  alt="Text Readout" ></a><br><span class="caption">Image 17: Text Readout</span></div>
 
-<div class="ramadda-help-subheading"> Summary Stats</div> 
+<div class="ramadda-help-subsubheading"> Summary Stats</div> 
 <a name="display"></a><pre>{{display type=&quot;stats&quot;  loadData=&quot;false&quot;  
 showDefault=&quot;true&quot;  
 #showMin=&quot;true&quot;  #showMax=&quot;true&quot;  
@@ -373,14 +375,14 @@ Displays a summary statistics including average, min, max, number of missing, et
 
 <a name="image18"></a><div class="cimg"><a href="images/charts/stats.png"><img  src="images/charts/stats.png" width=700 alt="Statistics Display" ></a><br><span class="caption">Image 18: Statistics Display</span></div>
 
-<div class="ramadda-help-subheading"> Animation</div> 
+<div class="ramadda-help-subsubheading"> Animation</div> 
 <a name="display"></a><pre>{{display type=&quot;animation&quot;}}</pre>
 
 Controls time or index based animation. Other charts will highlight the record of  the current time.
 
 <a name="image19"></a><div class="cimg"><a href="images/charts/animation.png"><img  src="images/charts/animation.png"  alt="Animation" ></a><br><span class="caption">Image 19: Animation</span></div>
 
-<div class="ramadda-help-subheading">Entry Grid</div> 
+<div class="ramadda-help-subsubheading">Entry Grid</div> 
 <a name="display"></a><pre>{{display type=&quot;entrygrid&quot;  
 showIcon=&quot;true&quot;  showName=&quot;true&quot;  scaleWidth=&quot;true&quot;  scaleHeight=&quot;false&quot;  
 #xAxisAscending=&quot;true&quot;  
@@ -398,7 +400,7 @@ The entrygrid display shows a set of entries based on their date.
 
 
 
-<a name="filters"></a><p><div class="ramadda-help-heading">11.2.3 Filtering Data</div> 
+<a name="filters"></a><p><div class="ramadda-help-heading">11.2.1 <a href="#filters">Filtering Data</a></div> 
 You can filter the data that is shown based on string pattern matching or numeric operators.
 You do this with the attributes:
 <pre>
@@ -420,7 +422,7 @@ numericFilterField="#3" numericFilterValue="5000" filterOperator=">"
 <p>
 
 <p>&nbsp;<p>
-<a href="wikitext.html"><img src="images/PreviousArrow.gif" border="0"   alt="Previous: Wiki Text" title="Previous: Wiki Text"></a> <a href="gridaggregation.html"><img src="images/NextArrow.gif" border="0"   alt="Next: Grid Aggregation" title="Next: Grid Aggregation"></a>  <a href="toc.html#wikidisplay.html"><img src="images/TOCIcon.gif" border="0"   alt="Table of contents" title="Table of contents"></a>
+<a href="wikitext.html"><img src="images/previous.png" border="0"   alt="Previous: Wiki Text" title="Previous: Wiki Text"></a> <a href="page_entries.html"><img src="images/next.png" border="0"   alt="Next: Entries" title="Next: Entries"></a>  <a href="toc.html#wikidisplay.html"><img src="images/table.png" border="0"   alt="Table of contents" title="Table of contents"></a>
 <p>
 </div>
 </body>

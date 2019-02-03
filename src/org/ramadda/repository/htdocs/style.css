@@ -78,7 +78,15 @@ a.ramadda-menubar-button:hover {
    color: #000;
 }
 
-.ramadda-help-subheading {
+.ramadda-help-heading a  {
+color:#000;
+}
+
+.ramadda-help-subsubheading a  {
+color:#000;
+}
+
+.ramadda-help-subsubheading {
    font-size:120%;
    font-weight: bold;
    padding: 0px;

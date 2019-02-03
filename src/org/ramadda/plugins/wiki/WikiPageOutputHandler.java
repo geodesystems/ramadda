@@ -150,10 +150,10 @@ public class WikiPageOutputHandler extends HtmlOutputHandler {
         if (canAccessDetails(request)) {
             if (stateEntry.getType().equals(
                     WikiPageTypeHandler.TYPE_WIKIPAGE)) {
-                links.add(makeLink(request, stateEntry, OUTPUT_WIKI));
-                links.add(makeLink(request, stateEntry, OUTPUT_WIKI_DETAILS));
+                //                links.add(makeLink(request, stateEntry, OUTPUT_WIKI));
+                //                links.add(makeLink(request, stateEntry, OUTPUT_WIKI_DETAILS));
                 links.add(makeLink(request, stateEntry, OUTPUT_WIKI_HISTORY));
-                links.add(makeLink(request, stateEntry, OUTPUT_WIKI_TEXT));
+                //                links.add(makeLink(request, stateEntry, OUTPUT_WIKI_TEXT));
             }
         }
     }
@@ -384,6 +384,7 @@ public class WikiPageOutputHandler extends HtmlOutputHandler {
         }
 
 
+        getPageHandler.entrySectionOpen(request, entry,sb,"Wiki History");
 
 
         sb.append(request.form(getRepository().URL_ENTRY_SHOW));
@@ -443,6 +444,7 @@ public class WikiPageOutputHandler extends HtmlOutputHandler {
         sb.append(HtmlUtils.submit("Compare Selected Versions"));
         sb.append(HtmlUtils.formClose());
 
+        getPageHandler.entrySectionClose(request, entry,sb);
         return makeLinksResult(request, msg("Wiki History"), sb,
                                new State(entry));
     }

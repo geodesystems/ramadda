@@ -7,7 +7,9 @@ There are a number of  <a href="https://geodesystems.com/repository/entry/show?e
 The underlying wiki text for any entry can be seen with the Information page.
 
 
-<subhead intoc="false" id="group">Display Groups</subhead>
+
+
+[ug::subheading {Display Groups} groups]
 
 There is a <i>group</i> tag that can manage a number of children displays. Each child display
 may be located in a fixed location (using layoutHere=false) in the web page or the group can manage the layout of the children displays.
@@ -18,7 +20,7 @@ added automatically.
 
 
 
-[ug::subheading {Display Layout}]
+[ug::subsubheading {Display Layout}]
 
 Different layouts can be specified with the <i>layoutType</i> attribute. The available layouts are:
 <pre>
@@ -88,10 +90,10 @@ colorTable=&quot;rainbow|grayscale|inversegrayscale|blues|blue_green_red|white_b
 
 <p>
 [proc displayType  {name} {
-return [ug::subheading $name]
+return [ug::subsubheading $name]
 }]
 
-<subhead intoc="false" id="fields">Specifying Fields</subhead>
+[ug::subheading {Specifying Fields} fields]
 Most of these displays are based on <a href="pointdata.html">point data</a> in RAMADDA. The point data model
 is based on a series of records (or rows) that are made up of a set of fields (or columns). 
 Many of the displays below use a <i>fields</i> attribute to specify the fields that are displayed. 
@@ -126,7 +128,7 @@ vAxisMinValue="0" vAxisMaxValue="100"  title="Line Chart Showing %"}}}]
 
 
 
-<subhead intoc="false" id="displays">The Displays</subhead>
+[ug::subheading {The Displays} displays]
 
 [displayType { Search form}]
 [wiki::tagdefBlock display {type=&quot;entrylist&quot;  

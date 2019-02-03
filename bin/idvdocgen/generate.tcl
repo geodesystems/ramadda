@@ -279,12 +279,17 @@ proc ifInclude {if s} {
 
 
 
-proc ug::subheading {l {href ""}} {
+proc ug::subheading {label id {extra {}}} {
+    return "<subhead [ht::attrs id $id] $extra>$label</subhead>"
+}
+
+proc ug::subsubheading {l {href ""}} {
     set html "";
     if {$href !=""} {
-        set html "$href\n";
+        set html "<a name=\"$href\"></a>\n";
+        set l "<a href=\"#$href\">$l</a>\n";
     }
-    set html "$html<div class=\"ramadda-help-subheading\">$l</div> "
+    set html "$html<div class=\"ramadda-help-subsubheading\">$l</div> "
 }
 
 proc ug::attr {attr} {
@@ -625,8 +630,13 @@ proc gen::addSubHead {from content} {
 		set $attr [string trim [set $attr]]
 	    }
 
+            set cnt 0
             foreach id [split $id ,] {
+                if {$cnt == 0} {
+                       set label "<a href=\"#$id\">$label</a>"
+                 }
                 append body "<a name=\"$id\"></a>"
+                incr cnt
             }
             append body "<p>"
             append body "<div class=\"ramadda-help-heading\">$levelLabel.$cnt $label</div> "
@@ -1827,11 +1837,11 @@ proc gen::createGeneralFile {to title body} {
 proc gen::nav::getPrev {from fileIdx} {
     if {$fileIdx<0} {return ""}
     if {$fileIdx ==0} {
-        return [gen::getIconImg $from PreviousArrowDisabled.gif ""]
+        return [gen::getIconImg $from previous.png ""]
     } 
     set prevFile [lindex [gen::getAllNavFiles] [expr $fileIdx-1]]
     set title [gen::getTitle $prevFile]
-    set img [gen::getIconImg $from PreviousArrow.gif "Previous: $title"]
+    set img [gen::getIconImg $from previous.png "Previous: $title"]
     return  "<a href=\"[gen::getLink $from $prevFile]\">$img</a>"
 }
 
@@ -1841,11 +1851,11 @@ proc gen::nav::getNext {from fileIdx} {
     set files [gen::getAllNavFiles]
 
     if {$fileIdx ==[expr [llength $files]-1]} {
-        return  [gen::getIconImg $from NextArrowDisabled.gif ""]
+        return  [gen::getIconImg $from next.png ""]
     } 
     set nextFile [lindex $files [expr $fileIdx+1]]
     set title [gen::getTitle $nextFile]
-    set img [gen::getIconImg $from NextArrow.gif "Next: $title"]
+    set img [gen::getIconImg $from next.png "Next: $title"]
     return  "<a href=\"[gen::getLink $from $nextFile]\">$img</a> "
 }
 
@@ -1859,7 +1869,7 @@ proc gen::nav::getTop {from} {
 
 proc gen::nav::getToc {from} {
     set top [gen::getLink $from "images"]
-    set img [gen::getIconImg $from TOCIcon.gif "Table of contents"]
+    set img [gen::getIconImg $from table.png "Table of contents"]
     return "<a href=\"[gen::getLink $from toc.html]\#$from\">$img</a>"
 }
 

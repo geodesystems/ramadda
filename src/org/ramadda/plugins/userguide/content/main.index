@@ -25,12 +25,14 @@ index.html
 -exampletemplate.jar
 
 
->title:Entries:Documentation for how to use the different types of entries available
-#>>localfileview.html
-#>>ftpview.html
+>title:RAMADDA Wiki
 >>wiki.html
 >>wikitext.html
 >>wikidisplay.html
+
+>title:Entries:Documentation for how to use the different types of entries available
+#>>localfileview.html
+#>>ftpview.html
 >>gridaggregation.html
 >>pagestyle.html
 
