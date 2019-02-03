@@ -5476,6 +5476,27 @@ public class Repository extends RepositoryBase implements RequestHandler,
     /**
      * _more_
      *
+     * @param request _more_
+     *
+     * @return _more_
+     *
+     * @throws Exception _more_
+     */
+    public Result processColorTables(Request request) throws Exception {
+        StringBuilder sb = new StringBuilder();
+        sb.append(HtmlUtils.sectionOpen("Available Color Tables", false));
+        sb.append(HtmlUtils.div("", "id='colortables'"));
+        sb.append(
+            HtmlUtils.script("Utils.displayAllColorTables('colortables');"));
+        sb.append(HtmlUtils.sectionClose());
+
+        return new Result("", sb);
+    }
+
+
+    /**
+     * _more_
+     *
      * @param request The request
      *
      * @return _more_

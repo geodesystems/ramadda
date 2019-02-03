@@ -10,6 +10,7 @@
      <api request="/robots.txt"       method="processRobotsTxt"/>
      <api request="/clearstate"       method="processClearState"/>
      <api request="/docs"             method="processDocs"/>
+     <api request="/colortables"      method="processColorTables"/>
   </group>
 
   <group handler="entrymanager">

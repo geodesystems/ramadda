@@ -1984,7 +1984,7 @@ function CalendarDisplay(displayManager, id, properties) {
     RamaddaUtil.inherit(this, new RamaddaMultiChart(displayManager, id, properties));
     addRamaddaDisplay(this);
     RamaddaUtil.inherit(this, {
-        xgetDimensionsStyle: function() {
+        xgetContentsStyle: function() {
             var height = this.getProperty("height", 200);
             if (height > 0) {
                 return " height:" + height + "px; " + " max-height:" + height + "px; overflow-y: auto;";
@@ -2830,7 +2830,7 @@ function RamaddaHeatmapDisplay(displayManager, id, properties) {
         fieldSelectionChanged: function() {
             this.updateUI();
         },
-        getDimensionsStyle: function() {
+        getContentsStyle: function() {
             var height = this.getProperty("height", -1);
             if (height > 0) {
                 return " height:" + height + "px; " + " max-height:" + height + "px; overflow-y: auto;";

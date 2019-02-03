@@ -4562,6 +4562,24 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
 
         String buttonClass =
             " class=\"ramadda-menubar-button xramadda-button\" ";
+
+        StringBuilder help = new StringBuilder();
+        help.append(HtmlUtils.href(getRepository().getUrlBase()
+                                   + "/userguide/wikitext.html", "Wiki Text",
+                                       "target=_help") + "<br>");
+        help.append(
+            HtmlUtils.href(
+                getRepository().getUrlBase() + "/userguide/wikidisplay.html",
+                "Wiki Displays", "target=_help") + "<br>");
+        help.append(HtmlUtils.href(getRepository().getUrlBase()
+                                   + "/colortables", "Color Tables",
+                                       "target=_help") + "<br>");
+
+        String helpButton = getPageHandler().makePopupLink(msg("Help"),
+                                HtmlUtils.div(help.toString(),
+                                    "style='padding:5px;'"), buttonClass);
+
+
         String tagsButton = getPageHandler().makePopupLink(msg("Add tag"),
                                 tags.toString(), buttonClass);
 
@@ -4586,6 +4604,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
         buttons.append(importButton);
         buttons.append(addEntry);
         buttons.append(addLink);
+        buttons.append(helpButton);
         HtmlUtils.close(buttons, "div");
 
         return buttons.toString();

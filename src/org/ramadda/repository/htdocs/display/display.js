@@ -447,7 +447,10 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             }
             this[func].apply(this, [source, data]);
         },
-        getColorTableName: function() {
+        displayColorTable: function(ct, domId, min, max) {
+                Utils.displayColorTable(ct, this.getDomId(domId), min,max);
+       },
+       getColorTableName: function() {
             var ct = this.getProperty("colorBar", this.getProperty("colorTable"));
             if (ct == "none") return null;
             return ct;
@@ -459,25 +462,35 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
                 if (ct && justColors) return ct.colors;
                 return ct;
             }
+            if (this.getProperty("colors")) {
+                return this.getProperty("colors").split(",");
+            }
             return null;
         },
-        displayColorTable: function(ct, domId, min, max) {
-            min = parseFloat(min);
-            max = parseFloat(max);
-            if (!ct)
-                ct = this.getColorTable();
-            if (!ct) return;
-            if (ct.colors) ct = ct.colors;
-            var html = HtmlUtil.openTag("div", ["class", "display-colortable"]) + "<table cellpadding=0 cellspacing=0 width=100% border=0><tr><td width=1%>" + this.formatNumber(min) + "&nbsp;</td>";
-            var step = (max - min) / ct.length;
-            for (var i = 0; i < ct.length; i++) {
-                html += HtmlUtil.td(["class", "display-colortable-slice", "style", "background:" + ct[i] + ";", "width", "1"], HtmlUtil.div(["style", "background:" + ct[i] + ";" + "width:100%;height:10px;min-width:1px;", "title", this.formatNumber(min + step * i)], ""));
-            }
-            html += "<td width=1%>&nbsp;" + this.formatNumber(max) + "</td>";
-            html += "</tr></table>";
-            html += HtmlUtil.closeTag("div");
-            this.jq(domId).html(html);
-        },
+        getColorByColors: function(records, dfltColorTable) {
+                var colorBy = this.getProperty("colorBy");
+                if (!colorBy) { return null;}
+                var colorByField = this.getFieldById(fields, colorBy);
+                if (!colorByField) {return null;}
+                var obj = this.getColumnValues(records, colorByField);
+                var colors = this.getColorTable();
+                if (!colors) colors = Utils.getColorTable(dfltColorTable||"blue_white_red");
+                if (!colors) return  null;
+                var min = parseFloat(this.getProperty("colorByMin", obj.min));
+                var max = parseFloat(this.getProperty("colorByMax", obj.max));
+                if (colors.colors) colors = colors.colors;
+                var range = max - min;
+                var colorValues = [];
+                for (var i = 0; i < obj.values.length; i++) {
+                    var value = obj.values[i];
+                    var percent = (value - min) / range;
+                    var index = parseInt(percent * colors.length);
+                    if (index >= colors.length) index = colors.length - 1;
+                    else if (index < 0) index = 0;
+                    colorValues.push(colors[index]);
+                }
+                return {colors: colorValues,min:min,max:max};
+            },
         toString: function() {
             return "RamaddaDisplay:" + this.type + " - " + this.getId();
         },
@@ -2411,7 +2424,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
                 height = height + "px";
             return height;
         },
-        getDimensionsStyle: function() {
+        getContentsStyle: function() {
             var style = "";
             var height = this.getHeightForStyle();
             if (height) {
@@ -2424,7 +2437,9 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             return style;
         },
         getContentsDiv: function() {
-            var extraStyle = this.getDimensionsStyle();
+            var extraStyle = this.getContentsStyle();
+            if(this.getProperty("background")) 
+                extraStyle+="background: " + this.getProperty("background") +";";
             var topBottomStyle = "";
             var width = this.getWidthForStyle();
             if (width) {

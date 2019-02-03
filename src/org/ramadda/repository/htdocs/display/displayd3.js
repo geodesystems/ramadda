@@ -559,13 +559,10 @@ function RamaddaGliderCrossSectionDisplay(displayManager, id, properties) {
 function RamaddaWordcloudDisplay(displayManager, id, properties) {
     var ID_WORDCLOUD = "wordcloud";;
     var SUPER;
-    if (properties.colors) {
-        this.colorList = ("" + properties.colors).split(",");
-    }
     RamaddaUtil.inherit(this, SUPER = new RamaddaFieldsDisplay(displayManager, id, DISPLAY_WORDCLOUD, properties));
     addRamaddaDisplay(this);
     $.extend(this, {
-        getDimensionsStyle: function() {
+        getContentsStyle: function() {
             return "";
         },
         checkLayout: function() {
@@ -596,6 +593,11 @@ function RamaddaWordcloudDisplay(displayManager, id, properties) {
                 return;
             }
             var fieldInfo = {};
+
+
+
+
+
             for (var rowIdx = 0; rowIdx < records.length; rowIdx++) {
                 var row = this.getDataValues(records[rowIdx]);
                 for (var fieldIdx = 0; fieldIdx < strings.length; fieldIdx++) {
@@ -616,6 +618,7 @@ function RamaddaWordcloudDisplay(displayManager, id, properties) {
                     fi.counts[value]++;
                 }
             }
+
             let _this = this;
             var divs = "";
             var words = [];
@@ -630,29 +633,39 @@ function RamaddaWordcloudDisplay(displayManager, id, properties) {
                     }
                 };
                 for (word in fi.counts) {
-                    fi.words.push({
+                    var obj1 = {
+                        weight: fi.counts[word],
+                        handlers: handlers,
                         text: word,
+                    };
+                    var obj2 = {
                         weight: fi.counts[word],
-                        handlers: handlers
-                    });
-                    words.push({
-                        text: field.getLabel() + ":" + word,
-                        weight: fi.counts[word],
-                        handlers: handlers
-                    });
+                        handlers: handlers,
+                        text: field.getLabel() + ":" +word,
+                    };
+                    fi.words.push(obj1);
+                    words.push(obj2);
                 }
                 divs += "<div style='display:inline-block;width:" + width + "'><b>" + fi.field.getLabel() + "</b>" + HtmlUtil.div(["style", "border: 1px #ccc solid;height:300px;", "id", fi.divId], "") + "</div>";
             }
+
             this.writeHtml(ID_DISPLAY_CONTENTS, "");
             var options = {
-                //classPattern: null,
                 autoResize: true,
             };
-            if (this.colorList)
-                options.colors = this.colorList;
+
+
+            var colors = this.getColorTable(true);
+            if (colors) {
+                options.colors = colors,
+                options.classPattern= null;
+                options.fontSize = {
+                    from: 0.1,
+                    to: 0.02
+                };
+            }
             if (this.getProperty("shape"))
                 options.shape = this.getProperty("shape");
-            options = {};
             if (this.getProperty("combined", false)) {
                 this.writeHtml(ID_DISPLAY_CONTENTS, HtmlUtil.div(["id", this.getDomId("words"), "style", "height:300px;"], ""));
                 $("#" + this.getDomId("words")).jQCloud(words, options);
