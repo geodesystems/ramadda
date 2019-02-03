@@ -19,11 +19,11 @@ label {
 <link rel='stylesheet' href='https://uicdn.toast.com/tui-image-editor/latest/tui-image-editor.css'>
 <script src='https://uicdn.toast.com/tui-image-editor/latest/tui-image-editor.js'></script>
      
-     
 
 <script LANGUAGE="JavaScript">
          // Image editor
          var imageEditor = new tui.ImageEditor('#tui-image-editor-container', {
+             usageStatistics: false,
              includeUI: {
                  loadImage: {
                      path: '${imageurl}',
@@ -42,99 +42,104 @@ label {
 
 
 
-        var numberOfVersions = ${versions};
-        function imageEditorMessage(msg)  {
-            var message  = $("#imageeditor_message");
-            message.html(msg);
-        }
+         var numberOfVersions = $ {
+             versions
+         };
+
+         function imageEditorMessage(msg) {
+             var message = $("#imageeditor_message");
+             message.html(msg);
+         }
 
 
-        function imageEditorSave()  {
-            if(!imageEditor) return;
-            var form = $("#imageeditform");
-            if(form.size()==0) return;
-            var contents = $("#imagecontents");
-            var entryid =form.children(":input[name=entryid]").val();
-            imageEditorMessage("Saving image...");
-            function imageEditorSaveInner()  {
-                console.log("getting image from editor");
-                var image = imageEditor.toDataURL();
-                var data = new FormData(form[0]);
-                data.append("imagecontents", image);
-                console.log("saving image");
-                $.ajax({
-                        type: "POST",
-                            enctype: 'multipart/form-data',
-                            url: form.attr('action'),
-                            data: data,
-                            processData: false,
-                            contentType: false,
-                            cache: false,
-                            timeout: 600000,
-                            success: function (data) {
-                            try {
-                                var result = JSON.parse(data);
-                                if(result.code == 'error') 
-                                    mimageEditorMessage("<span class='ramadda-error-label'>" + result.message+"</span>");
-                                else {
-                                    imageEditorMessage(result.message);
-                                    deltaVersions(1);
+         function imageEditorSave() {
+             if (!imageEditor) return;
+             var form = $("#imageeditform");
+             if (form.size() == 0) return;
+             var contents = $("#imagecontents");
+             var entryid = form.children(":input[name=entryid]").val();
+             imageEditorMessage("Saving image...");
 
-                                }
-                            } catch(e) {
-                                console.log(data);
-                                imageEditorMessage("Error saving image:"+ e);
-                            }
-                        },
-                            error: function (e) {
-                            try {
-                                var result = JSON.parse(data.responseText);
-                                imageEditorMessage(result);
-                            } catch(e) {
-                                console.log("bad result:" + data);
-                                imageEditorMessage("Error:"+ e);
-                            }
-                        }
-                    });
-            }
-            setTimeout(imageEditorSaveInner,10);
-            return;
-        }
+             function imageEditorSaveInner() {
+                 console.log("getting image from editor");
+                 var image = imageEditor.toDataURL();
+                 var data = new FormData(form[0]);
+                 data.append("imagecontents", image);
+                 console.log("saving image");
+                 $.ajax({
+                     type: "POST",
+                     enctype: 'multipart/form-data',
+                     url: form.attr('action'),
+                     data: data,
+                     processData: false,
+                     contentType: false,
+                     cache: false,
+                     timeout: 600000,
+                     success: function(data) {
+                         try {
+                             var result = JSON.parse(data);
+                             if (result.code == 'error')
+                                 mimageEditorMessage("<span class='ramadda-error-label'>" + result.message + "</span>");
+                             else {
+                                 imageEditorMessage(result.message);
+                                 deltaVersions(1);
 
-        function deltaVersions(d) {
-            numberOfVersions+=d;
-            if(numberOfVersions<0)
-                numberOfVersions = 0;
-            if(numberOfVersions==0)            
-                $("#imageversions").html("");
-            else
-                $("#imageversions").html(numberOfVersions +" version" + (numberOfVersions>1?"s ":""));
-        }
+                             }
+                         } catch (e) {
+                             console.log(data);
+                             imageEditorMessage("Error saving image:" + e);
+                         }
+                     },
+                     error: function(e) {
+                         try {
+                             var result = JSON.parse(data.responseText);
+                             imageEditorMessage(result);
+                         } catch (e) {
+                             console.log("bad result:" + data);
+                             imageEditorMessage("Error:" + e);
+                         }
+                     }
+                 });
+             }
+             setTimeout(imageEditorSaveInner, 10);
+             return;
+         }
 
-        var undoCounts = 0;
-        function imageEditorUndo()  {
-            var form = $("#imageeditform");
-            if(form.size()==0) return;
-            var entryid =form.children(":input[name=entryid]").val();
-            $.post(form.attr("action"), { entryid: entryid, image_undo: "true"} ) .done(function(data) {
-                    try {
-                        var result = JSON.parse(data);
-                        if(result.code == 'error') 
-                            imageEditorMessage("<span class='ramadda-error-label'>" + result.message+"</span>");
-                        else {
-                            deltaVersions(-1);
-                            imageEditorMessage("");
-                            imageEditor.loadImageFromURL('${imageurl}&undo=' +(undoCounts++),'${imagename}');
-                        }
-                    } catch(e) {
-                           console.log(data);
-                           imageEditorMessage("Error saving image:"+ e);
-                       }
-                })
-                .fail(function(data) {
+         function deltaVersions(d) {
+             numberOfVersions += d;
+             if (numberOfVersions < 0)
+                 numberOfVersions = 0;
+             if (numberOfVersions == 0)
+                 $("#imageversions").html("");
+             else
+                 $("#imageversions").html(numberOfVersions + " version" + (numberOfVersions > 1 ? "s " : ""));
+         }
 
-                    });
-        }
+         var undoCounts = 0;
 
+         function imageEditorUndo() {
+             var form = $("#imageeditform");
+             if (form.size() == 0) return;
+             var entryid = form.children(":input[name=entryid]").val();
+             $.post(form.attr("action"), {
+                     entryid: entryid,
+                     image_undo: "true"
+                 }).done(function(data) {
+                     try {
+                         var result = JSON.parse(data);
+                         if (result.code == 'error')
+                             imageEditorMessage("<span class='ramadda-error-label'>" + result.message + "</span>");
+                         else {
+                             deltaVersions(-1);
+                             imageEditorMessage("");
+                             imageEditor.loadImageFromURL('${imageurl}&undo=' + (undoCounts++), '${imagename}');
+                         }
+                     } catch (e) {
+                         console.log(data);
+                         imageEditorMessage("Error saving image:" + e);
+                     }
+                 })
+                 .fail(function(data) {
 
-</script>
+                 });
+         }</script>
