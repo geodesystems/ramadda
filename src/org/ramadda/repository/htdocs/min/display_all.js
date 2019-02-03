@@ -4320,7 +4320,6 @@ function makePointData(json, derived, source) {
                 //                console.log("F:" + f.getId() +" " + f.getLabel() );
                 if (f.getId() == params[i] || f.getLabel() == params[i]) {
                     index = f.getIndex();
-                    console.log("index:" + index + " f:" + f.getId());
                     break;
                 }
             }
@@ -6166,7 +6165,6 @@ function RamaddaMultiChart(displayManager, id, properties) {
         },
         setChartSelection: function(index) {
             if (this.chart != null) {
-                console.log("index:" + index +" " + this.chartType);
                 if (this.chart.setSelection) {
                     this.chart.setSelection([{
                         row: index,

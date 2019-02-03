@@ -736,7 +736,6 @@ function makePointData(json, derived, source) {
                 //                console.log("F:" + f.getId() +" " + f.getLabel() );
                 if (f.getId() == params[i] || f.getLabel() == params[i]) {
                     index = f.getIndex();
-                    console.log("index:" + index + " f:" + f.getId());
                     break;
                 }
             }

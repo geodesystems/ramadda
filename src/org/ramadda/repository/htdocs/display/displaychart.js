@@ -854,7 +854,6 @@ function RamaddaMultiChart(displayManager, id, properties) {
         },
         setChartSelection: function(index) {
             if (this.chart != null) {
-                console.log("index:" + index +" " + this.chartType);
                 if (this.chart.setSelection) {
                     this.chart.setSelection([{
                         row: index,
