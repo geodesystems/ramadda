@@ -1,3 +1,4 @@
+
 /**
 Copyright 2008-2019 Geode Systems LLC
 */
@@ -571,14 +572,14 @@ function RamaddaWordcloudDisplay(displayManager, id, properties) {
             var includes = "<link rel='stylesheet' href='" + ramaddaBaseUrl + "/lib/jqcloud.min.css'>";
             includes += "<script src='" + ramaddaBaseUrl + "/lib/jqcloud.min.js'></script>";
             this.writeHtml(ID_DISPLAY_TOP, includes);
-            const _this = this;
+            let _this = this;
             var func = function() {
                 _this.updateUIInner();
             };
             setTimeout(func, 10);
         },
         updateUIInner: function() {
-            const records = this.filterData();
+            let records = this.filterData();
             if (!records) {
                 return;
             }
@@ -612,13 +613,13 @@ function RamaddaWordcloudDisplay(displayManager, id, properties) {
                     fi.counts[value]++;
                 }
             }
-            const _this = this;
+            let _this = this;
             var divs = "";
             var words = [];
             var width = (100 * 1 / strings.length) + "%;";
             for (a in fieldInfo) {
                 var fi = fieldInfo[a];
-                const field = fi.field;
+                let field = fi.field;
                 var handlers = {
                     click: function(w) {
                         var word = w.target.innerText;
