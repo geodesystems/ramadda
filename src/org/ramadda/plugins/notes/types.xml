@@ -21,10 +21,10 @@
      <wiki><![CDATA[
 {{noheading}}
 +section # title="{{name}}"
-+note
++block-yellow
 {{description wikify="true"}}
 -section
--note
+-block-yellow
 ]]>
 </wiki>
 

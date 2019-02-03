@@ -23,14 +23,10 @@ import org.ramadda.repository.harvester.*;
 import org.ramadda.repository.metadata.*;
 import org.ramadda.repository.type.*;
 import org.ramadda.util.HtmlUtils;
-
 import org.ramadda.util.MailUtil;
-
 import org.ramadda.util.Utils;
 
-
 import org.w3c.dom.*;
-
 import ucar.unidata.util.IOUtil;
 
 import ucar.unidata.util.Misc;
@@ -953,7 +949,7 @@ public class MailHarvester extends Harvester {
      * @return _more_
      */
     private String cleanUpText(String text) {
-        text = RepositoryUtil.encodeUntrustedText(text);
+        text = Utils.encodeUntrustedText(text);
 
         return text;
     }

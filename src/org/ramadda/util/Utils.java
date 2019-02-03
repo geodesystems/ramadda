@@ -3828,4 +3828,29 @@ public class Utils {
     }
 
 
+    /**
+     * Encode the input string
+     *
+     * @param s  the string to encode
+     *
+     * @return  the encoded String
+     */
+    public static final String encodeUntrustedText(String s) {
+        //        s = s.replaceAll("&","&amp;;");
+        //
+        //Note: if this is wrong then we can get an XSS attack from the anonymous upload.
+        //If we encode possible attack vectors (<,>) as entities then we edit the entry they
+        //get turned into the raw character and we're owned.
+        s = s.replaceAll("&", "_AMP_");
+        s = s.replaceAll("<", "_LT_");
+        s = s.replaceAll(">", "_GT_");
+        s = s.replaceAll("\"", "&quot;");
+
+        //        s = HtmlUtils.urlEncode(s);
+        //       s = s.replace("+", " ");
+        return s;
+    }
+
+
+
 }

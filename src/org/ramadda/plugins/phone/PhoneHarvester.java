@@ -289,7 +289,7 @@ public class PhoneHarvester extends Harvester {
      * @return _more_
      */
     private String cleanUpText(String text) {
-        text = RepositoryUtil.encodeUntrustedText(text);
+        text = Utils.encodeUntrustedText(text);
         text = text.replaceAll("\n", "<br>");
 
         return text;

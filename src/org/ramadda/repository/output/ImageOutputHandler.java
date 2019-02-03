@@ -466,7 +466,6 @@ public class ImageOutputHandler extends OutputHandler {
                         versionFile.delete();
                     }
                 }
-
                 return new Result(
                     new StringBuilder(
                         "{\"code\":\"ok\",\"message\":\"Image undone\"}"), "text/plain", false);
@@ -530,11 +529,25 @@ public class ImageOutputHandler extends OutputHandler {
         StringBuilder sb = new StringBuilder();
         getPageHandler().entrySectionOpen(request, entry, sb, "");
 
+
+        int    versions     = 0;
+        String extension   =
+            IOUtil.getFileExtension(entry.getResource().getPath());
+        File entryDir =
+            getStorageManager().getEntryDir(entry.getId(), true);
+        while (true) {
+            File file = new File(entryDir + "/" + "version"
+                                 + versions + "." + extension);
+            if ( !file.exists()) {
+                break;
+            }
+            versions++;
+        }
         if (getAccessManager().canEditEntry(request, entry)) {
             String save =
                 "<div style='display:inline-block;' class='ramadda-button' onclick='imageEditorSave();'>Save Image</div>"
-                + "&nbsp;&nbsp;<div style='display:inline-block;' id='imageeditor_message'></div>";
-            String undo =
+                + "&nbsp;&nbsp;<div style='display:inline-block;' id='imageeditor_message'></div>"; 
+            String undo = HtmlUtils.span((versions>0?(versions+" version" + (versions>1?"s ":" ")):""), HtmlUtils.id("imageversions")) +
                 " <div style='display:inline-block;' class='ramadda-button' onclick='imageEditorUndo();'>Undo</div>";
 
             sb.append(HtmlUtils.leftRight(save, undo));
@@ -552,14 +565,16 @@ public class ImageOutputHandler extends OutputHandler {
 
         String template =
             repository.getResource(
-                "/org/ramadda/repository/resources/web/imageeditor.js");
+                "/org/ramadda/repository/resources/web/imageeditor.html");
 
+        /*
         template = IOUtil.readContents(
-            "/org/ramadda/repository/resources/web/imageeditor.js",
+            "/org/ramadda/repository/resources/web/imageeditor.html",
             getClass());
+        */
         template = template.replace("${imageurl}",
                                     url).replace("${imagename}",
-                                        entry.getName());
+                                                 entry.getName()).replace("${versions}",""+versions);
         template = getPageHandler().applyBaseMacros(template);
         sb.append(template);
         sb.append(HtmlUtils.formClose());
