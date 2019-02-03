@@ -8891,6 +8891,9 @@ function RamaddaWordcloudDisplay(displayManager, id, properties) {
         getDimensionsStyle: function() {
             return "";
         },
+        checkLayout: function() {
+                this.updateUIInner();
+            },
         updateUI: function() {
             var includes = "<link rel='stylesheet' href='" + ramaddaBaseUrl + "/lib/jqcloud.min.css'>";
             includes += "<script src='" + ramaddaBaseUrl + "/lib/jqcloud.min.js'></script>";
