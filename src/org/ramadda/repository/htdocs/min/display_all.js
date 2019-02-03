@@ -1104,7 +1104,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
                 fields = pointData.getRecordFields();
             }
             var list = [];
-            var numeric = type == "numeric";
+            var numeric = (type == "numeric");
             for (a in fields) {
                 var field = fields[a];
                 if (type == null) return field;
@@ -3456,7 +3456,7 @@ function DisplayGroup(argDisplayManager, argId, argProperties) {
                 } catch (e) {
                     this.displays[i].displayError("Error creating display:<br>" + e);
                     console.log("error creating display: " + this.displays[i].getType());
-                    //                        console.log(e.stack)
+                    console.log(e.stack)
                 }
             }
         },
@@ -8334,6 +8334,7 @@ var DISPLAY_D3_GLIDER_CROSS_SECTION = "GliderCrossSection";
 var DISPLAY_D3_PROFILE = "profile";
 var DISPLAY_D3_LINECHART = "D3LineChart";
 var DISPLAY_SKEWT = "skewt";
+var DISPLAY_WORDCLOUD = "wordcloud";
 
 //Note: Added requiresData and category
 addGlobalDisplayType({
@@ -8354,6 +8355,14 @@ addGlobalDisplayType({
     type: DISPLAY_D3_GLIDER_CROSS_SECTION,
     forUser: false,
     label: "Glider cross section",
+    requiresData: true,
+    category: "Charts"
+});
+
+addGlobalDisplayType({
+    type: DISPLAY_WORDCLOUD,
+    forUser: true,
+    label: "Word Cloud",
     requiresData: true,
     category: "Charts"
 });
@@ -8483,32 +8492,31 @@ function RamaddaSkewtDisplay(displayManager, id, properties) {
         initDisplay: function() {
             this.createUI();
             var html = "<p><script src='/repository/skewt/d3skewt.js'></script>\n";
-            html+="<link rel='stylesheet' type='text/css' href='/skewt/sounding.css'>\n";
+            html += "<link rel='stylesheet' type='text/css' href='/skewt/sounding.css'>\n";
             var skewtId = this.getDomId(ID_SKEWT);
-            html+=HtmlUtil.div(["id",skewtId ],"");
-            this.writeHtml(ID_DISPLAY_CONTENTS,html);
+            html += HtmlUtil.div(["id", skewtId], "");
+            this.writeHtml(ID_DISPLAY_CONTENTS, html);
             var _this = this;
-            var func=function() {
-                if(!window["D3Skewt"])  {
+            var func = function() {
+                if (!window["D3Skewt"]) {
                     console.log("no skewt yet");
-                    setTimeout(func,1000);
+                    setTimeout(func, 1000);
                     return;
                 }
-                var options = {
-                };
-                if(_this.propertyDefined("showHodograph")) 
-                    options.showHodograph = _this.getProperty("showHodograph",true); 
-                if(_this.propertyDefined("showText"))  
-                    options.showText = _this.getProperty("showText",true); 
-                if(_this.propertyDefined("chartWidth")) 
-                    options.width = parseInt(_this.getProperty("chartWidth")); 
-                if(_this.propertyDefined("chartHeight")) 
-                    options.height = parseInt(_this.getProperty("chartHeight")); 
+                var options = {};
+                if (_this.propertyDefined("showHodograph"))
+                    options.showHodograph = _this.getProperty("showHodograph", true);
+                if (_this.propertyDefined("showText"))
+                    options.showText = _this.getProperty("showText", true);
+                if (_this.propertyDefined("chartWidth"))
+                    options.width = parseInt(_this.getProperty("chartWidth"));
+                if (_this.propertyDefined("chartHeight"))
+                    options.height = parseInt(_this.getProperty("chartHeight"));
                 _this.skewt1 = new D3Skewt(skewtId, options);
             }
-            setTimeout(func,1000);
-            }
-        });
+            setTimeout(func, 1000);
+        }
+    });
 }
 
 
@@ -8868,6 +8876,157 @@ function RamaddaGliderCrossSectionDisplay(displayManager, id, properties) {
     properties = $.extend(dfltProperties, properties);
 
     return new RamaddaD3Display(displayManager, id, properties);
+}
+
+
+
+function RamaddaWordcloudDisplay(displayManager, id, properties) {
+    var ID_WORDCLOUD = "wordcloud";;
+    var SUPER;
+    if (properties.colors) {
+        this.colorList = ("" + properties.colors).split(",");
+    }
+    RamaddaUtil.inherit(this, SUPER = new RamaddaFieldsDisplay(displayManager, id, DISPLAY_WORDCLOUD, properties));
+    addRamaddaDisplay(this);
+    $.extend(this, {
+        getDimensionsStyle: function() {
+            return "";
+        },
+        updateUI: function() {
+            var includes = "<link rel='stylesheet' href='" + ramaddaBaseUrl + "/lib/jqcloud.min.css'>";
+            includes += "<script src='" + ramaddaBaseUrl + "/lib/jqcloud.min.js'></script>";
+            this.writeHtml(ID_DISPLAY_TOP, includes);
+            const _this = this;
+            var func = function() {
+                _this.updateUIInner();
+            };
+            setTimeout(func, 10);
+        },
+        updateUIInner: function() {
+            const records = this.filterData();
+            if (!records) {
+                return;
+            }
+            var allFields = this.getData().getRecordFields();
+            var fields = this.getSelectedFields(allFields);
+            if (fields.length == 0)
+                fields = allFields;
+            var strings = this.getFieldsOfType(fields, "string");
+            if (strings.length == 0) {
+                this.displayError("No string fields specified");
+                return;
+            }
+            var fieldInfo = {};
+            for (var rowIdx = 0; rowIdx < records.length; rowIdx++) {
+                var row = this.getDataValues(records[rowIdx]);
+                for (var fieldIdx = 0; fieldIdx < strings.length; fieldIdx++) {
+                    var field = strings[fieldIdx];
+                    if (!fieldInfo[field.getId()]) {
+                        fieldInfo[field.getId()] = {
+                            field: field,
+                            words: [],
+                            counts: {},
+                            divId: this.getDomId(ID_WORDCLOUD + (field.getIndex())),
+                        }
+                    }
+                    var fi = fieldInfo[field.getId()];
+                    var value = row[field.getIndex()];
+                    if (!Utils.isDefined(fi.counts[value])) {
+                        fi.counts[value] = 0;
+                    }
+                    fi.counts[value]++;
+                }
+            }
+            const _this = this;
+            var divs = "";
+            var words = [];
+            var width = (100 * 1 / strings.length) + "%;";
+            for (a in fieldInfo) {
+                var fi = fieldInfo[a];
+                const field = fi.field;
+                var handlers = {
+                    click: function(w) {
+                        var word = w.target.innerText;
+                        _this.showRows(records, field, word);
+                    }
+                };
+                for (word in fi.counts) {
+                    fi.words.push({
+                        text: word,
+                        weight: fi.counts[word],
+                        handlers: handlers
+                    });
+                    words.push({
+                        text: field.getLabel() + ":" + word,
+                        weight: fi.counts[word],
+                        handlers: handlers
+                    });
+                }
+                divs += "<div style='display:inline-block;width:" + width + "'><b>" + fi.field.getLabel() + "</b>" + HtmlUtil.div(["style", "border: 1px #ccc solid;height:300px;", "id", fi.divId], "") + "</div>";
+            }
+            this.writeHtml(ID_DISPLAY_CONTENTS, "");
+            var options = {
+                //classPattern: null,
+                autoResize: true,
+            };
+            if (this.colorList)
+                options.colors = this.colorList;
+            if (this.getProperty("shape"))
+                options.shape = this.getProperty("shape");
+            options = {};
+            if (this.getProperty("combined", false)) {
+                this.writeHtml(ID_DISPLAY_CONTENTS, HtmlUtil.div(["id", this.getDomId("words"), "style", "height:300px;"], ""));
+                $("#" + this.getDomId("words")).jQCloud(words, options);
+            } else {
+                this.writeHtml(ID_DISPLAY_CONTENTS, divs);
+                for (a in fieldInfo) {
+                    var fi = fieldInfo[a];
+                    $("#" + fi.divId).jQCloud(fi.words, options);
+                }
+            }
+        },
+        showRows: function(records, field, word) {
+            if (word.startsWith(field.getLabel() + ":")) {
+                word = word.replace(field.getLabel() + ":", "");
+            }
+            var tableFields;
+            if (this.getProperty("tableFields")) {
+                tableFields = {};
+                var list = this.getProperty("tableFields").split(",");
+                for (a in list) {
+                    tableFields[list[a]] = true;
+                }
+            }
+            var fields = this.getData().getRecordFields();
+            var html = "";
+            var data = [];
+            var header = [];
+            data.push(header);
+            for (var fieldIdx = 0; fieldIdx < fields.length; fieldIdx++) {
+                var f = fields[fieldIdx];
+                if (tableFields && !tableFields[f.getId()]) continue;
+                header.push(fields[fieldIdx].getLabel());
+            }
+            for (var rowIdx = 0; rowIdx < records.length; rowIdx++) {
+                var row = this.getDataValues(records[rowIdx]);
+                if (word != row[field.getIndex()]) {
+                    continue;
+                }
+                var tuple = [];
+                data.push(tuple);
+                for (var col = 0; col < fields.length; col++) {
+                    var f = fields[col];
+                    if (tableFields && !tableFields[f.getId()]) continue;
+                    tuple.push(row[f.getIndex()]);
+                }
+                html += "<br>";
+            }
+            this.writeHtml(ID_DISPLAY_BOTTOM, field.getLabel() + "=" + word + HtmlUtil.div(["id", this.getDomId("table"), "style", "height:300px"], ""));
+            var dataTable = google.visualization.arrayToDataTable(data);
+            this.chart = new google.visualization.Table(document.getElementById(this.getDomId("table")));
+            this.chart.draw(dataTable, {});
+        }
+    });
 }/**
 Copyright 2008-2019 Geode Systems LLC
 */

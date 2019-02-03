@@ -954,7 +954,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
                 fields = pointData.getRecordFields();
             }
             var list = [];
-            var numeric = type == "numeric";
+            var numeric = (type == "numeric");
             for (a in fields) {
                 var field = fields[a];
                 if (type == null) return field;
@@ -3306,7 +3306,7 @@ function DisplayGroup(argDisplayManager, argId, argProperties) {
                 } catch (e) {
                     this.displays[i].displayError("Error creating display:<br>" + e);
                     console.log("error creating display: " + this.displays[i].getType());
-                    //                        console.log(e.stack)
+                    console.log(e.stack)
                 }
             }
         },
