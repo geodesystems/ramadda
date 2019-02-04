@@ -1010,6 +1010,8 @@ public class Repository extends RepositoryBase implements RequestHandler,
 
         if (getProperty("ramadda.beep", false)) {
             Toolkit.getDefaultToolkit().beep();
+            Misc.sleep(200);
+            Toolkit.getDefaultToolkit().beep();
         }
 
     }

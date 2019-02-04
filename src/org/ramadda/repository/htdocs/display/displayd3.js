@@ -40,7 +40,7 @@ addGlobalDisplayType({
     forUser: true,
     label: "Word Cloud",
     requiresData: true,
-    category: "Charts"
+    category: "Misc"
 });
 
 addGlobalDisplayType({

@@ -992,7 +992,7 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
             String cbx = HtmlUtils.labeledCheckbox(ARG_PROVIDER,
                              searchProvider.getId(), selected,
                              cbxCall + HtmlUtils.id(cbxId),
-                             searchProvider.getFormLabel() + (showProviders
+                             searchProvider.getFormLabel(false) + (showProviders
                     ? " -- " + searchProvider.getId()
                     : ""));
             cbx += anchor;
@@ -1171,8 +1171,12 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
      * @throws Exception _more_
      */
     public Result processSearchInfo(Request request) throws Exception {
-        StringBuffer sb = new StringBuffer();
-        sb.append(header(msg("Entry Types")));
+        StringBuilder sb = new StringBuilder();
+        getPageHandler().sectionOpen(request, sb, "Search Information", false);
+
+        sb.append("<a name=entrytypes></a>");
+        sb.append(HtmlUtils.b("Entry Types"));
+        sb.append(HtmlUtils.open("div",HtmlUtils.style("max-height: 300px;overflow-y:auto;")));
         sb.append(HtmlUtils.formTable());
         for (TypeHandler typeHandler : getRepository().getTypeHandlers()) {
             String link =
@@ -1182,9 +1186,13 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
                     typeHandler.getDescription())));
         }
         sb.append(HtmlUtils.formTableClose());
+        sb.append(HtmlUtils.close("div"));
 
 
-        sb.append(header(msg("Output Types")));
+        sb.append(HtmlUtils.close("<p>"));
+        sb.append("<a name=outputtypes></a>");
+        sb.append(HtmlUtils.b("Output Types"));
+        sb.append(HtmlUtils.open("div",HtmlUtils.style("max-height: 300px;overflow-y:auto;")));
         sb.append(HtmlUtils.formTable());
         for (OutputHandler outputHandler :
                 getRepository().getOutputHandlers()) {
@@ -1194,8 +1202,13 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
             }
         }
         sb.append(HtmlUtils.formTableClose());
+        sb.append(HtmlUtils.close("div"));
 
 
+        sb.append(HtmlUtils.close("<p>"));
+        sb.append("<a name=metadatatypes></a>");
+        sb.append(HtmlUtils.b("Metadata Types"));
+        sb.append(HtmlUtils.open("div",HtmlUtils.style("max-height: 300px;overflow-y:auto;")));
         sb.append(header(msg("Metadata Types")));
         sb.append(HtmlUtils.formTable());
         for (MetadataType type :
@@ -1207,13 +1220,35 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
                     type.getName())));
         }
         sb.append(HtmlUtils.formTableClose());
+        sb.append(HtmlUtils.close("div"));
 
-
-
+        getPageHandler().sectionClose(request, sb);
         return makeResult(request, msg("Search Metadata"), sb);
     }
 
 
+    /**
+     * _more_
+     *
+     * @param request _more_
+     *
+     * @return _more_
+     *
+     * @throws Exception _more_
+     */
+    public Result processSearchProviders(Request request) throws Exception {
+        StringBuilder sb = new StringBuilder();
+        getPageHandler().sectionOpen(request, sb, "Search Providers", false);
+        sb.append("<ul>");
+        List<SearchProvider> searchProviders = getSearchProviders();
+        for (SearchProvider provider: searchProviders) {
+            sb.append("<li> ");
+            sb.append(provider.getFormLabel(true));
+        }
+        sb.append("</ul>");
+        getPageHandler().sectionClose(request, sb);
+        return makeResult(request, msg("Search Providers"), sb);
+    }
 
     /**
      * _more_

@@ -16,10 +16,10 @@ h1 {font-size: 170%;}
 h2 {font-size:150%;}
 h3 {font-size: 125%;}
 p {margin-top:1.5em;}
-a {color: #0000FF; text-decoration: none;}
-a:link {color: #0000FF;}
-a:hover {color: #FF0000;text-decoration: underline;}
-a.btn:link {color: #ffffFF;}
+a {color: #000; text-decoration: underline;}
+a:link {color: #000;}
+a:hover {color: #000;text-decoration: underline;}
+a.btn:link {color: #000;}
 .row {margin-right:0px;margin-left:0px;}
 h2 a,   h2 a:visited, h2 a:link  {color: black;}
 

@@ -277,6 +277,37 @@ proc ifInclude {if s} {
     return ""
 }
 
+
+proc displayType {name id desc args {img ""} {url ""} } {
+   set id [string trim $id]
+   if {$id  == ""} {
+     set id [string tolower $name]
+     regsub -all { } $id _ id
+   }
+   gen::addInpageToc "<a href='#$id'>$name</a>"
+   set args [string trim $args]
+   set h [ug::subsubheading $name $id]
+   append h $desc
+   append h [wiki::tagdefBlock display "type=\"$id\" $args"]
+   set url [string trim $url]
+   if {$url !=""} {
+      append h "<a href='$url'>Example</a>"
+   }
+   set img [string trim $img]
+   if {$img!=""} {
+         set toks [split $img " "]
+         set extra ""
+          if {[llength $toks]>1} {
+               set img [lindex $toks 0]
+               set extra [lindex $toks 1]
+          }
+        append h [ht::cimg $img $name $extra]
+    }
+    set h
+}
+
+
+
 proc ug::subheading {label {id ""}  {extra {}}} {
     set attrs ""
     if {$id!=""} {

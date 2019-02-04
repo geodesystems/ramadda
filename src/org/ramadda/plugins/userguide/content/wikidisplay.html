@@ -2,30 +2,93 @@
 
 <%nochildlist%>
 
-RAMADDA provides a set of information and data display components in the wiki facility. 
+RAMADDA provides a number of information and data display components in the wiki facility. 
 There are a number of  
-<a href="https://geodesystems.com/repository/entry/show?entryid=049a8297-58d7-4646-b689-b188ac274640">examples</a> available. The wiki text used for any RAMADDA entry can be viewed with the
-Menu-&gt;View-&gt;Information page  - 
+<a href="https://geodesystems.com/repository/entry/show?entryid=049a8297-58d7-4646-b689-b188ac274640">examples</a> available. An easy way to figure out what is going on is to the the  wiki text of working examples. The wikitext used for any RAMADDA entry can be viewed with the Menu-&gt;View-&gt;Information page  - 
 <a href="https://geodesystems.com/repository/entry/show/Home/Content/Miscellany/Example+Charts/World%27s+Oldest+People+Data+is+Beautiful?entryid=d7c23939-dbfe-4bbf-9045-70e2422c3117&output=html.info">example</a>.
 
 
 [ug::subheading {Available Displays} ]
 <%inpagetoc%>
 
+[ug::subheading {The Basics} basics]
+The charts and information displays follow the RAMADDA wiki tag format:
+
+[ht::pre {{{display  type="&lt;display type&gt;"  &lt;name=value pairs&gt;}}}]
+
+Each of these tags support the following attributes:
+<pre>
+layoutHere=&quot;true&quot;  
+showMenu=&quot;true&quot;  
+showTitle=&quot;true&quot;
+title=&quot;Title to display&quot;
+</pre>
+If [ug::attr layoutHere] is set to false then the component is laid out by the container group (below). 
+Otherwise it is displayed in place.
+<p>
+
+Some of the displays use a color table: 
+<pre>
+colorTable=&quot;rainbow|grayscale|inversegrayscale|blues|blue_green_red|white_blue|blue_red&quot;
+</pre>
+The full set of color tables can be viewed at 
+<a href="${root}/colortables">here</a>.
+
+
+[ug::subheading {Specifying Fields} fields]
+Most of these displays are based on <a href="pointdata.html">point data</a> in RAMADDA. The point data model
+is based on a series of records (or rows) that are made up of a set of fields (or columns). 
+Each field has  a certain type - double, integer, string,  date.
+Many of the displays below use a <i>fields</i> attribute to specify the fields that are displayed. 
+These are either the field ids of the point data or a 1-based index into the field list.
+
+<pre>
+fields="active_voters,total_ballots"
+fields="#1,#2,#3"
+</pre>
+
+The field ids for a point data entry can be viewed with the  Metadata view, e.g. -  
+(<a href="https://geodesystems.com/repository/entry/show/Home/RAMADDA+Information/Site+Content/Development/Example+Charts?entryid=e8af924a-2194-4fd0-83be-92d006837c00&output=points.metadata">example</a>).
+
+
+[ht::pre {{{display  type="linechart" fields="#5,#6,#7,#8,#9,#10" }}}]
+
+
 
 [ug::subheading {Display Groups} groups]
-There is a <i>group</i> tag that can manage a number of children displays. Each child display
-may be located in a fixed location (using layoutHere=false) in the web page or the group can manage the layout of the children displays.
-The group allows different displays to communicate with each other 
-(e.g., creating a new chart, map click, animation, etc) and to layout the set of children displays.
+There is a <i>group</i> tag that can manage a number of children displays. The general use is of the form below where displays 1-3 are part of group 1 and displays 4,5 are part of group 2. 
+The group allows for different displays to communicate with each other 
+(e.g., creating a new chart, map click, animation, etc), the inheritance of
+certain attributes (e.g., showMenu, showTitle) 
+and the layout of the children displays.
 If there is a wiki page that does not have a group but only one or more display tags then a group will be
 added automatically. 
 
 
+<pre>
+{{group group 1 ...}}
+{{display display 1}}
+{{display display 2}}
+{{display display 3}}
+
+{{group group 2...}}
+{{display display 4}}
+{{display display 5}}
+</pre>
+
+If [ug::attr  showMenu] is set to true for a group then the below menu is displayed. This supports the interactive creation of new charts and displays. The layout of these displays can be changed interactively, their state can be changed and they
+can be deleted. 
+
+[ht::cimg images/charts/groupmenu.png {Group menu}]
+
+If the user is logged in then the set of dynamically created displays can be saved (e.g., as a wiki page) 
+through the group menu as seen below:
+[ht::cimg images/charts/groupmenu2.png {File save menu}]
 
 [ug::subsubheading {Display Layout}]
-
-Different layouts can be specified with the <i>layoutType</i> attribute. The available layouts are:
+Each child display may be located in a fixed location (using [ug::attr layoutHere=false]) in the web page 
+or the group can manage the layout of the children displays. Different layouts can be 
+specified with the <i>layoutType</i> attribute. The available layouts are:
 <pre>
 layoutType=tabs
 layoutType=table
@@ -33,8 +96,7 @@ layoutType=columns
 layoutType=rows
 </pre>
 
-Using the table layout the number of columns is specified with the <i>layoutColumns</i> attibute.
-
+Using the table layout the number of columns is specified with the <i>layoutColumns</i> attribute.
 For the <i>columns</i> and <i>rows</i> layout type each child display can specify the <i>column</i> number of
 <i>row</i> number it should be placed in. For example, for the <i>rows</i> layout if you had:
 <pre>
@@ -77,50 +139,7 @@ Likewise, the group has a divid=maindiv which corresponds to the div at the bott
 }]
 
 
-Each of these tags support the following attributes:
-<pre>
-layoutHere=&quot;true&quot;  
-showMenu=&quot;true&quot;  
-showTitle=&quot;true&quot
-title=Title to display
-</pre>
-If layoutHere is set to false then the component is laid out by its group. Otherwise it is displayed in place.
-<br>
-Some of the displays use a color table. There are a number of pre-defined color tables available:
-<pre>
-colorTable=&quot;rainbow|grayscale|inversegrayscale|blues|blue_green_red|white_blue|blue_red&quot;
-</pre>
 
-<p>
-[
-proc displayType {name id desc args {img ""} {url ""} } {
-   set id [string trim $id]
-   if {$id  == ""} {
-     set id [string tolower $name]
-     regsub -all { } $id _ id
-   }
-   gen::addInpageToc "<a href='#$id'>$name</a>"
-   set args [string trim $args]
-   set h [ug::subsubheading $name $id]
-   append h $desc
-   append h [wiki::tagdefBlock display "type=\"$id\" $args"]
-   set url [string trim $url]
-   if {$url !=""} {
-      append h "<a href='$url'>Example</a>"
-   }
-   set img [string trim $img]
-   if {$img!=""} {
-         set toks [split $img " "]
-         set extra ""
-          if {[llength $toks]>1} {
-               set img [lindex $toks 0]
-               set extra [lindex $toks 1]
-          }
-        append h [ht::cimg $img $name $extra]
-    }
-    set h
-}
-]
 
 [ug::subheading {Specifying Fields} fields]
 Most of these displays are based on <a href="pointdata.html">point data</a> in RAMADDA. The point data model
@@ -136,21 +155,8 @@ fields="#1,#2,#3"
 The field ids for a point data entry can be viewed with the  Metadata view, 
 (<a href="https://geodesystems.com/repository/entry/show/Home/RAMADDA+Information/Site+Content/Development/Example+Charts?entryid=e8af924a-2194-4fd0-83be-92d006837c00&output=points.metadata">example</a>).
 
-Derived data can be calculated by specifying a javascript function with the field ids. For example, in the 
-<a href="https://geodesystems.com/repository/entry/show?entryid=e8af924a-2194-4fd0-83be-92d006837c00">election data example</a> 
-one of the displays shows the turnout percentage using the following attributes:
-[ht::pre {function="total_ballots/active_voters" 
-functionName="turnout"}]
 
-The full wiki text is:
-[ht::pre {{{display  type="areachart"  column="0" layoutHere="true"  showTitle="true"  title="Line Chart with Function"  
-vAxisMinValue="0" vAxisMaxValue="1.0" padRight="true"
-function="total_ballots/active_voters" functionName="turnout"}}}]
-
-Percentage values can be calculated with the <i>showPercent</i> attribute. This sums up the values of all of the specified fields and uses the
-percent value.
-
-[ht::pre {{{display  type="linechart"  column="0" layoutHere="true"  showTitle="true"   
+[ht::pre {{{display  type="linechart"  column="0" 
 fields="#5,#6,#7,#8,#9,#10" 
 showPercent="true" 
 vAxisMinValue="0" vAxisMaxValue="100"  title="Line Chart Showing %"}}}]
@@ -160,19 +166,37 @@ vAxisMinValue="0" vAxisMaxValue="100"  title="Line Chart Showing %"}}}]
 [ug::subheading {The Displays} displays]
 
 [displayType {Search form} {entrylist} {
-Supports an embedded and configurable search form.
-The <i>provider</i> attribute allows you to specify alternative search providers.
+Supports an embedded and configurable search form. 
 } {  
-width=&quot;800&quot;  height=&quot;400&quot;  orientation=&quot;vertical&quot;  
-showForm=&quot;true&quot;  formOpen=&quot;true&quot;         
+width="800"  
+height="400"  
+orientation="vertical|horizontal"  
+showForm="true|false - is form shown"
+formOpen="true|false - is form open"
+showSearchSettings="true|false"
+showType="true|false - show the type selector menu" 
+types="comma separated list of entry types to show"
+doSearch="true|false - perform the search when the page is first displayed"
+showToggle="true|false - show the form toggle"
+showText="true|false - show the search text input"
+showArea="true|false - show the map selector"
+showDate="true|false - show the data selector"
+showMetadata="true|false - show the metadata search fields"
+metadataTypes="comma separated list of metadata types to show"
+formWidth="width of the search form"
+entriesWidth="width of the results list"
 provider="google,arxiv,wolfram,..."
 } {
 images/charts/searchform.png
 }]
 
+The entries displayed in the results list can be interactively displayed. 
 
-
-
+The [ug::attr provider] attribute allows you to specify alternative search providers.
+The list of available search providers can be viewed <a href="${root}/search/providers">here</a>.
+<p>
+The [ug::attr metadataTypes] attribute allows you to specify what metadata to show.
+The list of available metadata types can be viewed <a href="${root}/search/info#metadatatypes">here</a>.
 
 
 
@@ -217,7 +241,7 @@ This is the wiki text used in the above example:
 :heading Map
 +row
 +col-md-6
-{{display  type="map" column="1"  width="-100" height="500"   layoutHere="true" includeData="false"   showTitle="false" 
+{{display  type="map" column="1"  width="-100" height="500"   includeData="false"   showTitle="false" 
 title="Colored by total ballots" 
 geojsonLayer="7c8f5e25-e569-4ca9-b389-5bb03cdb138b" 
 geojsonLayerName="Precincts"
@@ -256,14 +280,14 @@ images/charts/linechart.png
 
 [displayType {Bar chart} {barchart}  {
 } {
-#fields=""  padRight="true" layoutHere="true"  showMenu="true"  showTitle="true"  title="Bar Chart"
+fields=""  padRight="true" 
 } {
 images/charts/barchart.png
 } ]
 
 [displayType {Stacked bar chart} {barstack}  {
 } {
-fields=""  layoutHere="true"  showMenu="true"  showTitle="true"  title="Stacked Bar Chart"
+fields=""  
 } {}]
 
 
@@ -337,7 +361,7 @@ images/charts/piechart.png
 
 [displayType {Radar Display} radar {
 } {
-layoutHere="true"  showMenu="true"  showTitle="true"  title="Radar Plot" 
+fields="" 
 } {
 images/charts/radar.png
 } {
@@ -346,7 +370,7 @@ https://geodesystems.com/repository/entry/show?entryid=1f7c455f-1518-42cf-8701-8
 
 [displayType {Wind Rose} windrose {
 } {
-fields=""   layoutHere="true"  showMenu="true"  showTitle="true"
+fields="" 
 } {
 images/charts/windrose.png
 } {
@@ -356,7 +380,7 @@ https://geodesystems.com/repository/entry/show?entryid=1f7c455f-1518-42cf-8701-8
 
 [displayType {Density Display} density {
 } {
-fields=""  fields="tmax,vp" layoutHere="true" showMenu="true"  showTitle="true" 
+fields="tmax,vp" 
 } {
 images/charts/density.png
 } {
@@ -367,7 +391,7 @@ https://geodesystems.com/repository/entry/show?entryid=1f7c455f-1518-42cf-8701-8
 
 [displayType {3D Scatter} 3dscatter {
 } {
-fields="" layoutHere="true"  showMenu="true"  showTitle="true"
+fields="" 
 } {
 images/charts/3dscatter.png
 } {
@@ -405,7 +429,7 @@ images/charts/gauge.png
 [displayType {Table} table {
 Shows tabular data. This is integrated with other charts so clicking on a row highlights the corresponding record in a chart.
 } {
-{type="table"  height="400"  #fields=""  layoutHere="true"  showMenu="true"  showTitle="true"  }
+height="400"  
 } {
 images/charts/table.png}]
 
@@ -457,7 +481,6 @@ images/charts/stats.png
      The Dot plot shows 2 selected field values and is specified with:
 } {
 fields="race,years_decimal" marginLeft="200" xAxisTitle="Age"  
-layoutHere="true"  showMenu="false"  showTitle="false"  
 width="100%" height="300"
 }  {
 images/charts/dotplot.png}]
@@ -514,7 +537,6 @@ width="100%"  height="800"
 showLabel="true" 
 labelFieldsTemplate="{name}  Age: {years}  Birth Place: {birth_place}  Race: {race}"
 labelFields="name,race,birth_place,years" 
-layoutHere="true"  showMenu="false"  showTitle="false"
 } {
 images/charts/timeline.png
 } {
@@ -554,6 +576,23 @@ images/charts/entrygrid.png
 }]
 
 
+
+[ug::subheading {Derived Data} derived]
+
+Derived data can be calculated by specifying a javascript function with the field ids. For example, in the 
+<a href="https://geodesystems.com/repository/entry/show?entryid=e8af924a-2194-4fd0-83be-92d006837c00">election data example</a> 
+one of the displays shows the turnout percentage using the following attributes:
+[ht::pre {function="total_ballots/active_voters" 
+functionName="turnout"}]
+
+The full wiki text is:
+[ht::pre {{{display  type="areachart"  column="0" 
+layoutHere="true"  showTitle="true"  title="Line Chart with Function"  
+vAxisMinValue="0" vAxisMaxValue="1.0" padRight="true"
+function="total_ballots/active_voters" functionName="turnout"}}}]
+
+Percentage values can be calculated with the <i>showPercent</i> attribute. This sums up the values of all of the specified fields and uses the
+percent value.
 
 
 [ug::subheading {Scaling and offset of data} scaleoffset]
@@ -607,7 +646,7 @@ filterOperator="&gt;|&gt;=|==|&lt;|&lt;="
 </pre>
 e.g.: below would only show data where the 1st matches the string "Texas" and the 3rd needs to be less that 5000.
 <pre>
-{{display  type="sankey" showMenu="true" height="800" 
+{{display  type="sankey" height="800" 
 patternFilterField="#1" filterPattern="Texas"
 numericFilterField="#3" numericFilterValue="5000" filterOperator=">" 
 }}

@@ -3460,6 +3460,20 @@ public class PageHandler extends RepositoryManager {
         return new Result("", sb);
     }
 
+    public void sectionOpen(Request request, Appendable sb,
+                            String title, boolean showLine)
+            throws Exception {
+        sb.append(HtmlUtils.sectionOpen(null, showLine));
+        if(title!=null)            
+            HtmlUtils.sectionTitle(sb, title);
+    }
+
+    public void sectionClose(Request request, Appendable sb)
+            throws Exception {
+        sb.append(HtmlUtils.sectionClose());
+    }
+
+
     /**
      * _more_
      *

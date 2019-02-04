@@ -1547,7 +1547,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 
         getEntriesTree: function(entries, props) {
             if (!props) props = {};
-            var columns = this.getProperty("columns", null);
+            var columns = this.getProperty("entryColumns", null);
             if (columns != null) {
                 var columnNames = this.getProperty("columnNames", null);
                 if (columnNames != null) {
@@ -8378,7 +8378,7 @@ addGlobalDisplayType({
     forUser: true,
     label: "Word Cloud",
     requiresData: true,
-    category: "Charts"
+    category: "Misc"
 });
 
 addGlobalDisplayType({
