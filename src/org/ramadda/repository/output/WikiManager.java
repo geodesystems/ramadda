@@ -1624,6 +1624,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                 return HtmlUtils.script("addGlobalDisplayProperty('" + name
                                         + "','" + value + "');\n");
             }
+
             return "";
         } else if (theTag.equals(WIKI_TAG_PROPERTIES)) {
             return makeEntryTabs(request, wikiUtil, entry, props);
@@ -4487,44 +4488,10 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                                       "", "mw-editbutton-hr"));
 
 
-        StringBuilder importMenu = new StringBuilder();
-        String        inset      = "&nbsp;&nbsp;";
-        int           rowCnt     = 0;
-        importMenu.append("<table border=0><tr valign=top><td valign=top>\n");
-        for (int i = 0; i < WIKITAGS.length; i++) {
-            WikiTagCategory cat = WIKITAGS[i];
-            if (rowCnt + cat.tags.length > 10) {
-                rowCnt = 0;
-                if (i > 0) {
-                    importMenu.append(
-                        "</td><td>&nbsp;</td><td valign=top>\n");
-                }
-            }
-            importMenu.append("\n");
 
-            importMenu.append(HtmlUtils.b(cat.category));
-            importMenu.append(HtmlUtils.br());
-            rowCnt += cat.tags.length;
-            for (int tagIdx = 0; tagIdx < cat.tags.length; tagIdx++) {
-                WikiTag tag          = cat.tags[tagIdx];
-                String  textToInsert = tag.tag;
-                if (tag.attrs.length() > 0) {
-                    textToInsert += " " + tag.attrs;
-                }
 
-                String js2 = "javascript:insertTags("
-                             + HtmlUtils.squote(textAreaId) + ","
-                             + HtmlUtils.squote("{{" + textToInsert + " ")
-                             + "," + HtmlUtils.squote("}}") + ","
-                             + HtmlUtils.squote("") + ");";
-                importMenu.append(inset);
-                importMenu.append(HtmlUtils.href(js2, tag.label));
-                importMenu.append(HtmlUtils.br());
-                importMenu.append("\n");
-            }
-            importMenu.append(HtmlUtils.br());
-        }
-        importMenu.append("</td></tr></table>\n");
+
+
         List<Link> links = getRepository().getOutputLinks(request,
                                new OutputHandler.State(entry));
 
@@ -4543,22 +4510,6 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
         }
 
 
-        StringBuilder importOutputMenu = new StringBuilder();
-        /*
-                List<OutputType> allTypes = getRepository().getOutputTypes();
-                //        importMenu.append("<hr>");
-                for(OutputType type: allTypes) {
-                    String prop = type.getId();
-                    String js = "javascript:insertTags(" + HtmlUtils.squote(textAreaId)+"," +
-                        HtmlUtils.squote("{{import ") +","+
-                        HtmlUtils.squote(" " + type.getId()+" }}") +","+
-                        HtmlUtils.squote("entryid")+");";
-                    importOutputMenu.append(HtmlUtils.href(js,type.getLabel()));
-                    importOutputMenu.append(HtmlUtils.br());
-                }
-        */
-
-
         String buttonClass =
             " class=\"ramadda-menubar-button xramadda-button\" ";
 
@@ -4567,30 +4518,35 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                                    + "/userguide/wikitext.html", "Wiki text",
                                        "target=_help") + "<br>");
 
-        help.append(HtmlUtils.href(getRepository().getUrlBase()
-                                   + "/userguide/wikitext.html#sections", "Sections",
-                                       "target=_help") + "<br>");
-
-        help.append(HtmlUtils.href(getRepository().getUrlBase()
-                                   + "/userguide/wikitext.html#gridlayout", "Grid layout",
-                                       "target=_help") + "<br>");
-
         help.append(
             HtmlUtils.href(
                 getRepository().getUrlBase() + "/userguide/wikidisplay.html",
-                "Wiki displays", "target=_help") + "<br>");
+                "Displays and charts", "target=_help") + "<br>");
+
+        help.append(
+            HtmlUtils.href(
+                getRepository().getUrlBase()
+                + "/userguide/wikitext.html#sections", "Sections",
+                    "target=_help") + "<br>");
+
+        help.append(
+            HtmlUtils.href(
+                getRepository().getUrlBase()
+                + "/userguide/wikitext.html#gridlayout", "Grid layout",
+                    "target=_help") + "<br>");
 
 
 
+        help.append(
+            HtmlUtils.href(
+                getRepository().getUrlBase()
+                + "/userguide/wikitext.html#entry", "Specifying the entry",
+                    "target=_help") + "<br>");
 
-
-        help.append(HtmlUtils.href(getRepository().getUrlBase()
-                                   + "/userguide/wikitext.html#entry", "Specifying the entry",
-                                       "target=_help") + "<br>");
-
-        help.append(HtmlUtils.href(getRepository().getUrlBase()
-                                   + "/userguide/wikitext.html#entries", "Specifying multiple entries",
-                                       "target=_help") + "<br>");
+        help.append(
+            HtmlUtils.href(
+                getRepository().getUrlBase()
+                + "/userguide/wikitext.html#entries", "Specifying multiple entries", "target=_help") + "<br>");
         help.append(HtmlUtils.href(getRepository().getUrlBase()
                                    + "/colortables", "Color Tables",
                                        "target=_help") + "<br>");
@@ -4603,12 +4559,19 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
         String tagsButton = getPageHandler().makePopupLink(msg("Add tag"),
                                 tags.toString(), buttonClass);
 
-        String importButton =
-            getPageHandler().makePopupLink(
-                msg("Add property"),
-                HtmlUtils.hbox(
-                    importMenu.toString(),
-                    importOutputMenu.toString()), buttonClass);
+        StringBuilder tags1 = new StringBuilder();
+        makeTagsMenu(false, tags1, textAreaId);
+
+        StringBuilder tags2 = new StringBuilder();
+        makeTagsMenu(true, tags2, textAreaId);
+
+        String tagsButton1 =
+            getPageHandler().makePopupLink(msg("Add property"),
+                                           tags1.toString(), buttonClass);
+
+        String tagsButton2 =
+            getPageHandler().makePopupLink(msg("Add charts"),
+                                           tags2.toString(), buttonClass);
 
         String addEntry = OutputHandler.getSelect(request, textAreaId,
                               "Add entry id", true, "entryid", entry, false,
@@ -4621,7 +4584,8 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
 
         HtmlUtils.open(buttons, "div", HtmlUtils.cssClass("ramadda-menubar"));
         buttons.append(tagsButton);
-        buttons.append(importButton);
+        buttons.append(tagsButton1);
+        buttons.append(tagsButton2);
         buttons.append(addEntry);
         buttons.append(addLink);
         buttons.append(helpButton);
@@ -4631,6 +4595,66 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
 
     }
 
+
+    /**
+     * _more_
+     *
+     * @param charts _more_
+     * @param sb _more_
+     * @param textAreaId _more_
+     */
+    private void makeTagsMenu(boolean charts, StringBuilder sb,
+                              String textAreaId) {
+        String inset  = "&nbsp;&nbsp;";
+        int    rowCnt = 0;
+        sb.append("<table border=0><tr valign=top><td valign=top>\n");
+        for (int i = 0; i < WIKITAGS.length; i++) {
+            WikiTagCategory cat = WIKITAGS[i];
+            if ( !charts) {
+                if (cat.category.equals("Displays")
+                        || cat.category.equals("Charts")) {
+                    continue;
+                }
+            } else {
+                if ( !(cat.category.equals("Displays")
+                        || cat.category.equals("Charts"))) {
+                    continue;
+                }
+            }
+
+            if (rowCnt + cat.tags.length > 10) {
+                rowCnt = 0;
+                if (i > 0) {
+                    sb.append("</td><td>&nbsp;</td><td valign=top>\n");
+                }
+            }
+            sb.append("\n");
+
+            sb.append(HtmlUtils.b(cat.category));
+            sb.append(HtmlUtils.br());
+            rowCnt += cat.tags.length;
+            for (int tagIdx = 0; tagIdx < cat.tags.length; tagIdx++) {
+                WikiTag tag          = cat.tags[tagIdx];
+                String  textToInsert = tag.tag;
+                if (tag.attrs.length() > 0) {
+                    textToInsert += " " + tag.attrs;
+                }
+
+                String js2 = "javascript:insertTags("
+                             + HtmlUtils.squote(textAreaId) + ","
+                             + HtmlUtils.squote("{{" + textToInsert + " ")
+                             + "," + HtmlUtils.squote("}}") + ","
+                             + HtmlUtils.squote("") + ");";
+                sb.append(inset);
+                sb.append(HtmlUtils.href(js2, tag.label));
+                sb.append(HtmlUtils.br());
+                sb.append("\n");
+            }
+            sb.append(HtmlUtils.br());
+        }
+        sb.append("</td></tr></table>\n");
+
+    }
 
 
 
