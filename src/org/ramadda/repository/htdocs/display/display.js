@@ -1399,6 +1399,10 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             if (!props) props = {};
             var columns = this.getProperty("columns", null);
             if (columns != null) {
+                console.log("columns:" + (typeof columns));
+                for(a in columns) {
+                    console.log(a +"=" + columns[a]);
+                }
                 var columnNames = this.getProperty("columnNames", null);
                 if (columnNames != null) {
                     columnNames = columnNames.split(",");
