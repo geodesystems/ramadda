@@ -78,10 +78,7 @@ public class FaqTypeHandler extends ExtensibleGroupTypeHandler {
         }
 
         StringBuffer sb = new StringBuffer();
-        getPageHandler().entrySectionOpen(request, group, sb,
-                                          "FAQ");
-
-
+        getPageHandler().entrySectionOpen(request, group, sb,null);
         boolean canAdd = getAccessManager().canDoAction(request, group,
                              Permission.ACTION_NEW);
 
