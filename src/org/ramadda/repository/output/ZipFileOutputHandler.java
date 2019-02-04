@@ -140,6 +140,8 @@ public class ZipFileOutputHandler extends OutputHandler {
             throw new AccessException("Cannot access data", request);
         }
         StringBuffer sb = new StringBuffer();
+        getPageHandler().entrySectionOpen(request, entry, sb,
+                                          "Zip File Listing");
 
         InputStream fis = getStorageManager().getFileInputStream(
                               entry.getResource().getPath());
@@ -185,7 +187,7 @@ public class ZipFileOutputHandler extends OutputHandler {
             IOUtil.close(zin);
             IOUtil.close(fis);
         }
-
+        getPageHandler().entrySectionClose(request, entry, sb);
         return makeLinksResult(request, msg("Zip File Listing"), sb,
                                new State(entry));
     }
