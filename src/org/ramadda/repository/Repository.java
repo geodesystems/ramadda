@@ -3047,6 +3047,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
                     sb.append(
                         child.getTypeHandler().getEntryResourceHref(
                             request, child));
+                    sb.append(formatFileLength(entry.getResource().getFileSize(),true));
                     sb.append(HtmlUtils.br());
                     didOne = true;
                 }

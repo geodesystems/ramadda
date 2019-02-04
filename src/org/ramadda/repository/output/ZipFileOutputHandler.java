@@ -155,7 +155,6 @@ public class ZipFileOutputHandler extends OutputHandler {
                     continue;
                 }
                 String path = ze.getName();
-                long size = ze.getSize();
                 if ((fileToFetch != null) && path.equals(fileToFetch)) {
                     HttpServletResponse response =
                         request.getHttpServletResponse();
@@ -182,9 +181,8 @@ public class ZipFileOutputHandler extends OutputHandler {
                                     ARG_FILE, path, ARG_OUTPUT,
                                     OUTPUT_LIST.getId());
                 sb.append(HtmlUtils.href(url, path));
-                sb.append(" (");
-                sb.append(formatFileLength(size));
-                sb.append(")");
+                long size = ze.getSize();
+                sb.append(formatFileLength(size,true));
             }
             sb.append("</ul>");
         } finally {
