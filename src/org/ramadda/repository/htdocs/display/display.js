@@ -1486,7 +1486,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 
                 var line;
                 if (this.getProperty("showToolbar", true)) {
-                    line = HtmlUtil.leftRight(left, toolbar, "8", "4");
+                    line = HtmlUtil.leftCenterRight(left, "", toolbar, "80%", "1%", "19%");
                 } else {
                     line = left;
                 }
@@ -1494,7 +1494,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 
 
                 var mainLine = HtmlUtil.div(["onclick", toggleCall2, ATTR_ID, this.getDomId(ID_DETAILS_MAIN + entryIdForDom), ATTR_CLASS, "display-entrylist-entry-main" + " " + "entry-main-display-entrylist-" + (even ? "even" : "odd"), ATTR_ENTRYID, entryId], line);
-                var line = HtmlUtil.div([ATTR_ID, this.getDomId("entryinner_" + entryIdForDom)], mainLine + details);
+                var line = HtmlUtil.div(["class", (even?"ramadda-row-even":"ramadda-row-odd"),ATTR_ID, this.getDomId("entryinner_" + entryIdForDom)], mainLine + details);
 
                 html += HtmlUtil.tag(TAG_DIV, [ATTR_ID,
                     this.getDomId("entry_" + entryIdForDom),
@@ -1671,10 +1671,6 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
         makeEntryToolbar: function(entry) {
             var get = this.getGet();
             var toolbarItems = [];
-
-
-
-
             //                 toolbarItems.push(HtmlUtil.tag(TAG_A, [ATTR_HREF, entry.getEntryUrl(),"target","_"], 
             //                                                HtmlUtil.image(ramaddaBaseUrl +"/icons/application-home.png",["border",0,ATTR_TITLE,"View Entry"])));
             if (entry.getType().getId() == "type_wms_layer") {
@@ -1983,6 +1979,8 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
                     HtmlUtil.onClick(get + ".fetchUrl('csv');", "CSV")));
             }
 
+            var newMenu = "<a>New</a><ul>";
+            newMenu += HtmlUtil.tag(TAG_LI, [], HtmlUtil.onClick(get + ".createDisplay('" + entry.getFullId() + "','entrydisplay');", "New Entry Display"));
             newMenuItems.push(HtmlUtil.tag(TAG_LI, [], HtmlUtil.onClick(get + ".createDisplay('" + entry.getFullId() + "','entrydisplay');", "New Entry Display")));
 
 
@@ -1991,22 +1989,29 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             //            console.log("entry:" + entry.getName() + " url:" + pointUrl);
 
             if (pointUrl != null) {
-                var newMenu = "";
                 var types = window.globalDisplayTypes;
+                var catMap = {};
                 if(types) {
                     for (var i = 0; i < types.length; i++) {
                         var type = types[i];
 
                         if (!type.requiresData || !type.forUser) continue;
-
+                        if(!Utils.isDefined(catMap[type.category])) {
+                            catMap[type.category] = "<li> <a>" + type.category +"</a><ul>\n";
+                        }
                         pointUrl = pointUrl.replace(/\'/g,"_");
                         var call = get + ".createDisplay(" + HtmlUtil.sqt(entry.getFullId()) + "," + HtmlUtil.sqt(type.type) + "," + HtmlUtil.sqt(pointUrl) + ");";
-
-                        newMenuItems.push(HtmlUtil.tag(TAG_LI, [], HtmlUtil.tag(TAG_A, ["onclick", call], type.label)));
+                        var li = HtmlUtil.tag(TAG_LI, [], HtmlUtil.tag(TAG_A, ["onclick", call], type.label));
+                        catMap[type.category] +=li +"\n";
+                        newMenuItems.push(li);
                     }
                 }
-                //                    menus.push("<a>New Chart</a>" + HtmlUtil.tag(TAG_UL,[], newMenu));
+
+                for(a in catMap) {
+                    newMenu+=catMap[a]+"</li></ul>";
+                }
             }
+
 
 
             if (fileMenuItems.length > 0)
@@ -2014,7 +2019,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             if (viewMenuItems.length > 0)
                 menus.push("<a>View</a>" + HtmlUtil.tag(TAG_UL, [], HtmlUtil.join(viewMenuItems)));
             if (newMenuItems.length > 0)
-                menus.push("<a>New</a>" + HtmlUtil.tag(TAG_UL, [], HtmlUtil.join(newMenuItems)));
+                menus.push(newMenu);
 
 
             var topMenus = "";

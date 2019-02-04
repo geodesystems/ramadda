@@ -365,6 +365,12 @@ public class Utils {
     }
 
 
+    public static boolean isReal(double d) {
+        if(!Double.isNaN(d) && d != Double.POSITIVE_INFINITY && d != Double.NEGATIVE_INFINITY ) {
+            return true;
+        }
+        return false;
+    }
 
 
 

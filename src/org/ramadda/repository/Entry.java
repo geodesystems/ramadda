@@ -1012,8 +1012,9 @@ public class Entry implements Cloneable {
      * @return true if this entry has a location defined
      */
     public boolean hasLocationDefined() {
-        if ((south != NONGEO) && (east != NONGEO) && !hasAreaDefined()) {
-            return true;
+        if ((south != NONGEO) && (east != NONGEO) && Utils.isReal(south) && Utils.isReal(east) && !hasAreaDefined()) {
+            if(Utils.between(east, -180,180) && Utils.between(south,-90,90)) 
+                return true;
         }
 
         return false;
@@ -1072,6 +1073,11 @@ public class Entry implements Cloneable {
      * @return true if this entry has an area defined
      */
     public boolean hasAreaDefined() {
+        if(!Utils.isReal(south) || !Utils.isReal(east)  || !Utils.isReal(north)  || !Utils.isReal(west)) return false;
+        if(!(Utils.between(east, -180,180) && Utils.between(south,-90,90) &&
+             Utils.between(west, -180,180) && Utils.between(north,-90,90)))
+            return false;
+             
         if ((south != NONGEO) && (east != NONGEO) && (north != NONGEO)
                 && (west != NONGEO)) {
             if ((south == north) && (east == west)) {

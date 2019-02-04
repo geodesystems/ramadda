@@ -838,9 +838,9 @@ var HtmlUtil = {
 
         return this.tag("table", ["border", "0", "width", "100%", "cellspacing", "0", "cellpadding", "0"],
             this.tr(["valign", "top"],
-                this.td(["align", "center", "width", leftWidth], left) +
+                this.td(["align", "left", "width", leftWidth], left) +
                 this.td(["align", "center", "width", centerWidth], center) +
-                this.td(["align", "center", "width", rightWidth], right)));
+                this.td(["align", "right", "width", rightWidth], right)));
     },
 
     div: function(attrs, inner) {

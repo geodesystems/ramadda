@@ -1605,6 +1605,13 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                    + dateFormat.format(date2);
         } else if (theTag.equals(WIKI_TAG_ENTRYID)) {
             return entry.getId();
+        } else if (theTag.equals(WIKI_TAG_JAVASCRIPT)) {
+            String path = (String) props.get("path");
+            if(path == null) {
+                return "No path attribute specified";
+            }
+            if(path.startsWith("/")) path = getRepository().getUrlBase() +path;
+            return HtmlUtils.importJS(path);
         } else if (theTag.equals(WIKI_TAG_PROPERTY)) {
             String name  = (String) props.get("name");
             String value = (String) props.get("value");
@@ -4551,6 +4558,12 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                                    + "/search/provider", "Search Providers",
                                        "target=_help") + "<br>");
         help.append(HtmlUtils.href(getRepository().getUrlBase()
+                                   + "/search/info#entrytypes", "Entry Types",
+                                       "target=_help") + "<br>");
+        help.append(HtmlUtils.href(getRepository().getUrlBase()
+                                   + "/search/info#metadatatypes", "Metadata Types",
+                                       "target=_help") + "<br>");
+        help.append(HtmlUtils.href(getRepository().getUrlBase()
                                    + "/colortables", "Color Tables",
                                        "target=_help") + "<br>");
 
@@ -5596,6 +5609,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
             HtmlUtils.importJS(sb, getHtdocsUrl("/lib/plotly/plotly.min.js"));
             HtmlUtils.importJS(
                 sb, getHtdocsUrl("https://cdn.plot.ly/plotly-latest.min.js"));
+            /*
             if (getRepository().getMinifiedOk()) {
                 HtmlUtils.importJS(sb,
                                    getHtdocsUrl("/min/displayplotly.min.js"));
@@ -5603,6 +5617,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                 HtmlUtils.importJS(sb,
                                    getHtdocsUrl("/display/displayplotly.js"));
             }
+            */
             request.putExtraProperty("added plotly", "true");
         }
 
@@ -5824,6 +5839,8 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                     getPageHandler().getCdnPath("/display/displaytable.js"));
                 HtmlUtils.importJS(
                     sb, getPageHandler().getCdnPath("/display/control.js"));
+                HtmlUtils.importJS(
+                    sb, getPageHandler().getCdnPath("/display/displayplotly.js"));
                 HtmlUtils.importJS(
                     sb, getPageHandler().getCdnPath("/display/displayd3.js"));
                 HtmlUtils.importJS(

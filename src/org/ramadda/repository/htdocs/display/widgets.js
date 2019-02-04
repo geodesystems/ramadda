@@ -33,20 +33,20 @@ function AreaWidget(display) {
             areaForm += HtmlUtil.tr([],
                 HtmlUtil.td(["align", "center"],
                     HtmlUtil.leftCenterRight(mylocation,
-                        HtmlUtil.input(ID_NORTH, "", ["placeholder", "N", ATTR_CLASS, "input display-area-input", "size", "5", ATTR_ID,
+                        HtmlUtil.input(ID_NORTH, "", ["placeholder", " N", ATTR_CLASS, "input display-area-input", "size", "5", ATTR_ID,
                             this.display.getDomId(ID_NORTH), ATTR_TITLE, "North"
                         ]), link, "20%", "60%", "20%")));
 
             areaForm += HtmlUtil.tr([], HtmlUtil.td([],
-                HtmlUtil.input(ID_WEST, "", ["placeholder", "W", ATTR_CLASS, "input  display-area-input", "size", "5", ATTR_ID,
+                HtmlUtil.input(ID_WEST, "", ["placeholder", " W", ATTR_CLASS, "input  display-area-input", "size", "5", ATTR_ID,
                     this.display.getDomId(ID_WEST), ATTR_TITLE, "West"
                 ]) +
-                HtmlUtil.input(ID_EAST, "", ["placeholder", "E", ATTR_CLASS, "input  display-area-input", "size", "5", ATTR_ID,
+                HtmlUtil.input(ID_EAST, "", ["placeholder", " E", ATTR_CLASS, "input  display-area-input", "size", "5", ATTR_ID,
                     this.display.getDomId(ID_EAST), ATTR_TITLE, "East"
                 ])));
             areaForm += HtmlUtil.tr([],
                 HtmlUtil.td(["align", "center"],
-                    HtmlUtil.leftCenterRight(erase, HtmlUtil.input(ID_SOUTH, "", ["placeholder", "S", ATTR_CLASS, "input  display-area-input", "size", "5", ATTR_ID,
+                    HtmlUtil.leftCenterRight(erase, HtmlUtil.input(ID_SOUTH, "", ["placeholder", " S", ATTR_CLASS, "input  display-area-input", "size", "5", ATTR_ID,
                         this.display.getDomId(ID_SOUTH), ATTR_TITLE, "South"
                     ]), cbx)));
 
@@ -139,10 +139,10 @@ function DateRangeWidget(display) {
             settings.setDateRange(start, end);
         },
         getHtml: function() {
-            var html = HtmlUtil.input(ID_DATE_START, "", ["placeholder", "Start date", ATTR_ID,
+                var html = HtmlUtil.input(ID_DATE_START, "", ["class","display-date-input", "placeholder", " start date", ATTR_ID,
                     display.getDomId(ID_DATE_START), "size", "10"
                 ]) + " - " +
-                HtmlUtil.input(ID_DATE_END, "", ["placeholder", "End date", ATTR_ID,
+                HtmlUtil.input(ID_DATE_END, "", ["class","display-date-input", "placeholder", " end date", ATTR_ID,
                     display.getDomId(ID_DATE_END), "size", "10"
                 ]);
             return html;

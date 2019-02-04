@@ -44,7 +44,8 @@ These are either the field ids of the point data or a 1-based index into the fie
 
 <pre>
 fields="active_voters,total_ballots"
-fields="#1,#2,#3"
+Or:
+fields="1,#2,#3"
 </pre>
 
 The field ids for a point data entry can be viewed with the  Metadata view, e.g. -  
@@ -199,23 +200,63 @@ The list of available search providers can be viewed <a href="${root}/search/pro
 The [ug::attr metadataTypes] attribute allows you to specify what metadata to show.
 The list of available metadata types can be viewed <a href="${root}/search/info#metadatatypes">here</a>.
 
+<p>
+In the search results list new displays can be created through the pull down menu:
+
+[ht::cimg images/charts/entrylist.png]
+
+
+[displayType {Entry Grid} entrygrid {
+The entrygrid display shows a set of entries based on their date.
+} {
+showIcon=&quot;true&quot;  showName=&quot;true&quot;  scaleWidth=&quot;true&quot;  scaleHeight=&quot;false&quot;  
+#xAxisAscending=&quot;true&quot;  
+#xAxisScale=&quot;true&quot;  
+#yAxisAscending=&quot;true&quot;  
+#yAxisScale=&quot;true&quot;  
+#urlTemplate=&quot;{url}|{entryid}|{resource}&quot;  
+#height=&quot;400&quot;  #width=&quot;100%&quot;  
+#entries=&quot;&quot;  
+} {
+images/charts/entrygrid.png
+}]
+
+[displayType {Animation} {} {
+Controls time or index based animation. Other charts will highlight the record of  the current time.
+} {
+} {
+images/charts/animation.png
+} {
+}]
+
+
+
 
 
 [displayType {Map} {map} {
 A map that shows georeferenced point data. This can be integrated with other displays, e.g., clicking on a point will highlight that location in
 a line chart.
 <ul>
+
 <li> If a Geojson or Kml layer is specified then the layer is displayed instead of the points. The location of each point is used to
 find a containing map feature. That map feature is then colored as defined below.
+
 <li> <i>pruneFeatures</i>. If set to true than any map feature that does not have a corresponding point will not be shown.
+
 <li> The <i>colorBy</i> attribute specifies the field that is used to color the points or the map segments. 
 The <i>colorTable</i> attribute specifies a color table to
 use and the <i>colorByMin</i> and <i>colorByMax</i> attributes are option and are used to define a color range.
-<li> The displayDiv, when specified, is the id of a div tag (shown below) that the map will display the details of
-a point or map segment as the user mouses over it.
+
+<li> The displayDiv, when specified, is the id of a div tag  that the map will display the details of
+a point or map segment as the user mouses over it. The [ug::attr {displayDiv="mapDisplay${entryid}"}] macro
+allows one to specify a unique div id for pages that may have multiple map displays. The div looks like:
+<pre>
+&lt;div id="mapDisplay{{entryid}}" style="max-height:500px;"&gt;&lt;/div&gt;
+</pre>
+There is a full example shown below.
 </ul>
 } {
-width=&quot;100%&quot;  #height=&quot;400&quot;
+width=&quot;100%&quot;  height=&quot;400&quot;
 geojsonLayer="entry id of a geojson file" 
 geojsonLayerName="Layer name"
 kmlLayer="entry id of a kml file" 
@@ -229,7 +270,7 @@ displayDiv="mapDisplay${entryid}"
 } {
 images/charts/mappoints.png
 } {
-https://geodesystems.com/repository/entry/show?entryid=e8af924a-2194-4fd0-83be-92d006837c00#map
+https://geodesystems.com/repository/entry/show?entryid=1c99bcff-94a9-43a8-beb5-45a87adb2cc4
 }]
 
 [ht::cimg images/charts/map.png {Chloropleth Map} {width=50%} ]
@@ -269,9 +310,9 @@ Displays time series or indexed point data. The vAxisMinValue and vAxisMaxValue 
 If <i>padRight</i> is set to true than the chart is padded on the right with the same space as what is used for the second axis legend. This allows
 for two or more charts to be aligned that have one or more fields being displayed.
 } {
-#width=&quot;800&quot;  #height=&quot;400&quot;  
-#fields=&quot;&quot;       
-#vAxisMinValue="0" #vAxisMaxValue="1.0" #padRight="true"
+width=&quot;800&quot;  height=&quot;400&quot;  
+fields=&quot;&quot;       
+vAxisMinValue="0" vAxisMaxValue="1.0" padRight="true"
 } {
 images/charts/linechart.png
 }]
@@ -321,7 +362,7 @@ colors=&quot;comma separated color list&quot;
 legendPosition=&quot;none|top|right|left|bottom&quot;  
 textPosition=&quot;out|in|none&quot;  
 isStacked=&quot;false|true|percent|relative&quot;  
-logScale=&quot;true|false&quot;  #scaleType=&quot;log|mirrorLog&quot;  
+logScale=&quot;true|false&quot;  scaleType=&quot;log|mirrorLog&quot;  
 vAxisMinValue=&quot;&quot;  vAxisMaxValue=&quot;&quot;  
 minValue=&quot;&quot;  maxValue=&quot;&quot;
 } {
@@ -438,11 +479,13 @@ images/charts/table.png}]
 [displayType {Heatmap} heatmap {
 Displays the records, one row per record, with each cell color coded based on the field value and the specified color table.
 } {
-type=&quot;heatmap&quot;  #height=&quot;400&quot;  #fields=&quot;&quot;  
-#colorTables=&quot;temperature,blues&quot;  
-#colorByMins=&quot;-90,0&quot;  #colorByMaxes=&quot;45,100&quot;  
-#showIndex=&quot;false&quot;  #showValue=&quot;true&quot;  #showBorder=&quot;true&quot;  
-#cellHeight=&quot;30&quot;  #textColor=&quot;white&quot;} {
+type=&quot;heatmap&quot;  height=&quot;400&quot;  fields=&quot;&quot;  
+colorTables=&quot;temperature,blues&quot;  
+colorByMins=&quot;-90,0&quot;  colorByMaxes=&quot;45,100&quot;  
+showIndex=&quot;false&quot;  showValue=&quot;true&quot;  
+showBorder=&quot;true&quot;  
+cellHeight=&quot;30&quot;  
+textColor=&quot;white&quot;} {
 images/charts/heatmap.png
 }]
 
@@ -465,23 +508,32 @@ images/charts/textreadout.png
 }]
 
 [displayType { Summary Stats} stats {
-Displays a summary statistics including average, min, max, number of missing, etc.
+Displays a summary statistics including average, min, max, number of missing, etc. There are a number of values that are shown. To turn all of them off and only set a few set the [ug::attr showDefault] to false.
 } {
 loadData=&quot;false&quot;  
 showDefault=&quot;true&quot;  
-#showMin=&quot;true&quot;  #showMax=&quot;true&quot;  
-#showAverage=&quot;true&quot;  #showStd=&quot;true&quot;  #showPercentile=&quot;true&quot;  
-#showCount=&quot;true&quot;  #showTotal=&quot;true&quot;  
-#showMissing=&quot;true&quot;  #showUnique=&quot;true&quot;    
+#showMin=&quot;true&quot;  
+#showMax=&quot;true&quot;  
+#showAverage=&quot;true&quot;  
+#showStd=&quot;true&quot;  
+#showPercentile=&quot;true&quot;  
+#showCount=&quot;true&quot;  
+#showTotal=&quot;true&quot;  
+#showMissing=&quot;true&quot;  
+#showUnique=&quot;true&quot;    
 #showText=&quot;true&quot;
 } {
 images/charts/stats.png
 }]
 
 [displayType {Dot Plot} dotplot {
-     The Dot plot shows 2 selected field values and is specified with:
+The Dot plot requires a string value field and a numeric field.
+It uses the string values as the Y-axis and shows the value
+field along the X-axis.
 } {
-fields="race,years_decimal" marginLeft="200" xAxisTitle="Age"  
+fields="race,years_decimal" 
+xAxisTitle="Age"  
+marginLeft="200" 
 width="100%" height="300"
 }  {
 images/charts/dotplot.png}]
@@ -490,8 +542,12 @@ images/charts/dotplot.png}]
 
 [displayType {Sankey} {sankey} {
 Displays flow data. The point data needs to have 2 string fields (the from and to) and a numeric value field.
+If [ug::attr doCategories] is set to true then the display requires 2 string fields and a count of the
+unique pair values of the strings are used for the values.
 } {
-  type=&quot;sankey&quot;  height=&quot;400&quot;  #fields=&quot;&quot;      
+doCategories="true|false"
+height=&quot;400&quot;  
+#fields=&quot;&quot;      
 } {
 images/charts/sankey.png
 } {
@@ -506,18 +562,35 @@ the data that matches the word value is shown in a table. The <i>tableFields</i>
 fields to show in the table. If combined=true then all of the selected fields
 are shown in one word cloud. 
 } {
-fields="sex,race"  tableFields="rank,name,years,birth_place,sex,race" 
-combined="false"
+fields="sex,race"  
+tableFields="rank,name,years,birth_place,sex,race" 
+combined="true|false"
 } {images/charts/wordcloud.png} {
 https://geodesystems.com/repository/entry/show?entryid=d7c23939-dbfe-4bbf-9045-70e2422c3117
 }]
 
 [displayType {Word Tree} wordtree {
+This creates a tree of the selected fields. Each row in the data is essentially converted to a "sentence", the 
+words of  which are  then displayed  in tree form. If a field is numeric then the data is subvidided
+by the numbero of buckets (the default is 10) and the "word" is the bucket range.  
+This can be overridden with the [ug::attr numBuckets] attribute. For a specific field append the 
+field ID to the attribute. 
+The bucket ranges can be specified with the [ug::attr buckets] attribute. The text label
+to use can be specified with the [ug::attr bucketLabels] attribute.
+The [ug::attr treeRoot] attribute is the text used to start the tree.
 } {
 treeRoot="People"
 fields="years,sex,race,name" 
+
+numBuckets="number of buckets to use for all numeric fields"
+numBuckets.&lt;field id&gt;="number of buckets to use for a specific field"
+
 buckets="100,110,115,120,130" 
 bucketLabels="Young,Middle,Old,Really old" 
+Or:
+buckets.&lt;field id&gt;="100,110,115,120,130" 
+bucketLabels.&lt;field id&gt;="Young,Middle,Old,Really old" 
+
 height="800px" 
 chartWidth="900"
 } {
@@ -543,39 +616,6 @@ images/charts/timeline.png
 } {
 https://geodesystems.com/repository/entry/show?entryid=d7c23939-dbfe-4bbf-9045-70e2422c3117
 }]
-
-
-
-
-
-
-
-
-[displayType {Animation} {} {
-Controls time or index based animation. Other charts will highlight the record of  the current time.
-} {
-attrs
-} {
-images/charts/animation.png
-} {
-}]
-
-
-[displayType {Entry Grid} entrygrid {
-The entrygrid display shows a set of entries based on their date.
-} {
-showIcon=&quot;true&quot;  showName=&quot;true&quot;  scaleWidth=&quot;true&quot;  scaleHeight=&quot;false&quot;  
-#xAxisAscending=&quot;true&quot;  
-#xAxisScale=&quot;true&quot;  
-#yAxisAscending=&quot;true&quot;  
-#yAxisScale=&quot;true&quot;  
-#urlTemplate=&quot;{url}|{entryid}|{resource}&quot;  
-#height=&quot;400&quot;  #width=&quot;100%&quot;  
-#entries=&quot;&quot;  
-} {
-images/charts/entrygrid.png
-}]
-
 
 
 [ug::subheading {Derived Data} derived]

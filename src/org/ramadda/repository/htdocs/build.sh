@@ -4,10 +4,10 @@ dir=`dirname $0`
 yui="java -jar ${dir}/../../../../../lib/yuicompressor-2.4.8.jar"
 dest="${dir}/min"
 
-cat ${dir}/display/widgets.js ${dir}/display/display.js ${dir}/display/pointdata.js ${dir}/display/control.js ${dir}/display/displaychart.js ${dir}/display/displayd3.js ${dir}/display/displayentry.js ${dir}/display/displayext.js ${dir}/display/displaymanager.js ${dir}/display/displaymap.js ${dir}/display/displaytable.js > ${dest}/display_all.js
+cat ${dir}/display/widgets.js ${dir}/display/display.js ${dir}/display/pointdata.js ${dir}/display/control.js ${dir}/display/displaychart.js ${dir}/display/displayd3.js ${dir}/display/displayentry.js ${dir}/display/displayext.js ${dir}/display/displaymanager.js ${dir}/display/displaymap.js ${dir}/display/displaytable.js ${dir}/display/displayplotly.js > ${dest}/display_all.js
 ${yui} ${dest}/display_all.js > ${dest}/display_all.min.js
 ${yui} ${dest}/display_all.js > ${dest}/display_all.min.js
-${yui} ${dir}/display/displayplotly.js > ${dest}/displayplotly.min.js
+#${yui} ${dir}/display/displayplotly.js > ${dest}/displayplotly.min.js
 ${yui} ${dir}/ramadda.js > ${dest}/ramadda.min.js
 ${yui} ${dir}/ramaddamap.js > ${dest}/ramaddamap.min.js
 ${yui} ${dir}/utils.js > ${dest}/utils.min.js

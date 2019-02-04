@@ -35,8 +35,8 @@ google.charts.setOnLoadCallback(googleChartsHaveLoaded);
 
 function haveGoogleChartsLoaded() {
     if (!googleChartsLoaded) {
-        if (typeof google.visualization !== "undefined") {
-            if (typeof google.visualization.Gauge !== "undefined") {
+        if (Utils.isDefined(google.visualization)) {
+            if (Utils.isDefined(google.visualization.Gauge)) {
                 googleChartsLoaded = true;
             }
         }

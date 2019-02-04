@@ -350,17 +350,17 @@ function RamaddaSearcher(displayManager, id, type, properties) {
             var nextPrev = [];
             var lessMore = [];
             if (this.searchSettings.skip > 0) {
-                nextPrev.push(HtmlUtil.onClick(this.getGet() + ".loadPrevUrl();", "Previous", [ATTR_CLASS, "display-link"]));
+                nextPrev.push(HtmlUtil.onClick(this.getGet() + ".loadPrevUrl();", HtmlUtil.image(ramaddaBaseUrl + "/icons/arrow_left.png", [ ATTR_TITLE, "Previous", "border", "0"]), [ATTR_CLASS, "display-link"]));
             }
             var addMore = false;
             if (entries.length == this.searchSettings.getMax()) {
-                nextPrev.push(HtmlUtil.onClick(this.getGet() + ".loadNextUrl();", "Next", [ATTR_CLASS, "display-link"]));
+                nextPrev.push(HtmlUtil.onClick(this.getGet() + ".loadNextUrl();", HtmlUtil.image(ramaddaBaseUrl + "/icons/arrow_right.png", [ ATTR_TITLE, "Next", "border", "0"]), [ATTR_CLASS, "display-link"]));
                 addMore = true;
             }
 
-            lessMore.push(HtmlUtil.onClick(this.getGet() + ".loadLess();", HtmlUtil.image(ramaddaBaseUrl + "/icons/minus-small-white.png", [ATTR_ALT, "View less", ATTR_TITLE, "View less", "border", "0"]), [ATTR_CLASS, "display-link"]));
+            lessMore.push(HtmlUtil.onClick(this.getGet() + ".loadLess();", HtmlUtil.image(ramaddaBaseUrl + "/icons/greenminus.png", [ATTR_ALT, "View less", ATTR_TITLE, "View less", "border", "0"]), [ATTR_CLASS, "display-link"]));
             if (addMore) {
-                lessMore.push(HtmlUtil.onClick(this.getGet() + ".loadMore();", HtmlUtil.image(ramaddaBaseUrl + "/icons/plus-small-white.png", [ATTR_ALT, "View more", ATTR_TITLE, "View more", "border", "0"]), [ATTR_CLASS, "display-link"]));
+                lessMore.push(HtmlUtil.onClick(this.getGet() + ".loadMore();", HtmlUtil.image(ramaddaBaseUrl + "/icons/greenplus.png", [ATTR_ALT, "View more", ATTR_TITLE, "View more", "border", "0"]), [ATTR_CLASS, "display-link"]));
             }
             var results = "";
             var spacer = "&nbsp;&nbsp;&nbsp;"
@@ -464,7 +464,8 @@ function RamaddaSearcher(displayManager, id, type, properties) {
                 msg = "Searching " + msg;
             }
 
-            this.showMessage(msg, HtmlUtil.div([ATTR_STYLE, "margin:20px;"], this.getWaitImage()));
+            //            this.showMessage(msg, HtmlUtil.div([ATTR_STYLE, "margin:20px;"], this.getWaitImage()));
+            this.showMessage(this.getWaitImage() +" " + msg, HtmlUtil.div([ATTR_STYLE, "margin:20px;"], ""));
             this.hideEntryDetails();
         },
         showMessage: function(title, inner) {
@@ -508,9 +509,9 @@ function RamaddaSearcher(displayManager, id, type, properties) {
                 text = "";
             }
 
-            var eg = "search text";
+            var eg = " search text";
             if (this.eg) {
-                eg = this.eg;
+                eg = " " +this.eg;
             }
             var textField = HtmlUtil.input("", text, ["placeholder", eg, ATTR_CLASS, "display-search-input", ATTR_SIZE, "30", ATTR_ID, this.getDomId(ID_TEXT_FIELD)]);
 

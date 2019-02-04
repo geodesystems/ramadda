@@ -1280,7 +1280,6 @@ public class MetadataManager extends RepositoryManager {
         boolean         doJson  = request.responseAsJson();
         MetadataHandler handler = findMetadataHandler(metadataType);
         MetadataType    type    = handler.findType(metadataType);
-        System.err.println("type:" + metadataType + ": type obj:" + type);
         if ((type == null) || (type.getChildren() == null)) {
             if (doJson) {
                 sb.append(Json.list(new ArrayList<String>()));
