@@ -1436,11 +1436,13 @@ public class HtmlOutputHandler extends OutputHandler {
                               List<Entry> subGroups, List<Entry> entries)
             throws Exception {
         StringBuffer sb         = new StringBuffer();
+        getPageHandler().entrySectionOpen(request, group, sb,
+                                          "Table");
         List<Entry>  allEntries = new ArrayList<Entry>();
         allEntries.addAll(subGroups);
         allEntries.addAll(entries);
         makeTable(request, allEntries, sb);
-
+        getPageHandler().entrySectionClose(request, group, sb);
         return makeLinksResult(request, group.getName(), sb,
                                new State(group, subGroups, entries));
     }
