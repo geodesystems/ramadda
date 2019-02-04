@@ -16,6 +16,7 @@
 
 package org.ramadda.plugins.phone;
 
+import org.ramadda.util.WikiUtil;
 
 import org.ramadda.repository.*;
 import org.ramadda.repository.type.*;
@@ -26,6 +27,7 @@ import org.w3c.dom.*;
 
 import ucar.unidata.util.StringUtil;
 
+import java.util.Hashtable;
 import java.util.List;
 
 
@@ -54,28 +56,37 @@ public class VoiceMailTypeHandler extends GenericTypeHandler {
     /**
      * _more_
      *
+     * @param wikiUtil _more_
      * @param request _more_
+     * @param originalEntry _more_
      * @param entry _more_
+     * @param tag _more_
+     * @param props _more_
      *
      * @return _more_
      *
      * @throws Exception _more_
      */
-    public Result getHtmlDisplay(Request request, Entry entry)
+    @Override
+    public String getWikiInclude(WikiUtil wikiUtil, Request request,
+                                 Entry originalEntry, Entry entry,
+                                 String tag, Hashtable props)
             throws Exception {
-        StringBuffer sb = new StringBuffer();
+        if ( !tag.equals("voicemail")) {
+            return super.getWikiInclude(wikiUtil, request, originalEntry,
+                                        entry, tag, props);
+        }
         String html =
             "<table><tr><td><div class=\"audio-player\"><object>\n<param name=\"autostart\" value=\"false\">\n<param name=\"src\" value=\"${url}\">\n<param name=\"autoplay\" value=\"false\">\n<param name=\"controller\" value=\"true\">\n<embed src=\"${url}\" controller=\"true\" autoplay=\"false\" autostart=\"False\" type=\"audio/wav\" /\n></object></div></td></tr></table>\n";
 
         String getFileUrl =
             entry.getTypeHandler().getEntryResourceUrl(request, entry);
         html = html.replace("${url}", getFileUrl);
-        sb.append(html);
-        sb.append(HtmlUtils.p());
-        sb.append(entry.getDescription());
+        return html;
 
-        return new Result(msg("Voice Mail"), sb);
     }
+
+
 
 
 

@@ -25,6 +25,17 @@
      <property name="form.todate.show" value="false"/>
      <column name="from_number" type="string"  label="From Number"  />
      <column name="to_number" type="string"  label="To Number"  />
+     <wiki><![CDATA[
++section title={{name}}
+{{voicemail}}
+
++note
+{{description}}
+-note
+
+-section
+]]>
+xxx
    </type>
 
 
