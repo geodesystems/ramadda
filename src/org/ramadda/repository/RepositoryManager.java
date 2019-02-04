@@ -249,7 +249,7 @@ public class RepositoryManager implements RepositorySource, Constants,
     public static String formatFileLength(double bytes, boolean decorate) {
         String s  = formatFileLength(bytes);
         if(decorate && s.length()>0) {
-            return "(" + s +")";
+            return " (" + s +")";
         }
         return s;
     }
