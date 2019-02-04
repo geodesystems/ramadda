@@ -85,7 +85,7 @@
      <property name="icon" value="/media/folder-open-film.png"/>
      <property name="form.resource.show" value="false"/>
      <wiki><![CDATA[
-+section # title="{{name}}"
++section  title={{name}}
 {{description wikify="true"}}
 {{grid columns="3"}}
 -section
@@ -146,8 +146,10 @@
      <property name="icon" value="/media/film.png"/>
      <wiki><![CDATA[
 {{noheading}}
++section title={{name}}
 {{description}}
 {{imageplayer show_sort_links="true"}}
+-section
 ]]>
 </wiki>
      <column name="autostart" type="boolean" label="Auto Start"  default="false" showinhtml="false"/>
