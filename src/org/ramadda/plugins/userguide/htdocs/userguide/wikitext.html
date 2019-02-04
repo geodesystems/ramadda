@@ -104,10 +104,10 @@ Examples at <a href="https://geodesystems.com/repository/alias/wikiexamples">htt
 <div class="ramadda-help-subsubheading"><a href="#sections">Sections</a>
 </div> 
 
-To get the full page layout like on <a href="http://ramadda.org/repository">ramadda.org</a> use the "+section" tag:
+To make page sections use the +section/-section tags.
 <pre>
 +section 
-...
+section content
 -section
 </pre>
 
@@ -138,6 +138,14 @@ If you add title="..." then a title is added. If you add label="..." then a head
 -section
 </pre>
 
+Using the {{name}} wiki tag will use the entry name for the title:
+<pre>
++section  title={{name}}
+...
+-section
+</pre>
+
+
 You can change the background color/image by specifying one of the classes:
 
 <pre>
@@ -164,11 +172,10 @@ You can also add a CSS style descriptor
 </pre>
 
 
-
 <a name="inset"></a>
 <div class="ramadda-help-subsubheading"><a href="#inset">Inset</a>
 </div> 
-By default, a page has no margins on the left-side. If you have normal text layout you can make an inset with "+inset":
+The +inset tag supports margins.
 <pre>
 +inset
 ...
@@ -191,19 +198,21 @@ This by default gives a 20px left and right margin. To change this you can add a
 There is support for the <a href="http://getbootstrap.com/">Bootstrap</a> CSS grid system. To do a row layout use the following. The "+col-md-..." correspond to Bootstraps column widths, e.g., col-md-[2,3,4,6,8,9,10,12].
 Basically you can have any number of columns within a row.
 Each column has a width, the sum of which adds up to 12.
-Note: you can also use +col-&lt;some number&gt; as a short hand, dropping the %quot;-md&quot;
+Note: you can also use +col-&lt;some number&gt; as a short hand, 
+dropping the &quot;-md&quot;
 
 <p>
-Here is three equally spaced columns:
+Here are three equally spaced columns:
+
 
 <pre>+row
-+col-md-4 
++col-4 
 Left column contents
 -col
-+col-md-4 
++col-4 
 Center column contents
 -col
-+col-md-4
++col-4
 Right column contents
 -col
 -row
@@ -228,10 +237,10 @@ Right column contents
 You can set the widths of different columns:
 <pre>
 +row
-+col-md-2 
++col-2 
 Left column contents
 -col
-+col-md-10
++col-10
 Right column contents
 -col
 -row
@@ -265,6 +274,23 @@ Tab 2 content
 ...
 +tab Tab N title
 Tab N content
+-tab
+-tabs
+</pre>
+
+
+Tabs can also be nested:
+<pre>
++tabs
++tab Tab 1 title
++tabs
++tab another tab title
+...
+-tab
+-tabs
+-tab
++tab Tab 2 title
+Tab 2 content
 -tab
 -tabs
 </pre>
@@ -337,7 +363,7 @@ create entry form.
 </div> 
 You can also import content from the current Wiki Page entry or any other entry with the import  
 syntax:
-<div style="margin:10px;"><pre>{{&lt;property&gt;}}</pre></div>
+<div style="margin:10px;"><pre>{{&lt;property&gt;  &lt;name="value" pairs&gt;}}</pre></div>
 
 e.g., if we wanted to show the information tabs for an entry we'd do:
 <div style="margin:10px;"><pre>{{information}}</pre></div>
@@ -353,8 +379,10 @@ This would give us:
 <a name="entry"></a>
 <div class="ramadda-help-subsubheading"><a href="#entry">Specify other entries with the <i>entry</i> attribute</a>
 </div> 
-Normally, all property tags refer to the current entry. However, you can specify another entry with the "entry" attribute, e.g:
+Normally, all property tags refer to the current entry. However, another entry can be specified  with the "entry" attribute, e.g:
 <div style="margin:10px;"><pre>{{information <i>entry="some other entry id or name or 'parent' or 'grandparent'"</i>}}</pre></div>
+
+
 
 The entry value can be:
 <ul>
@@ -375,6 +403,18 @@ The entry value can be:
 
 The <i>Add Entry ID</i> menu in the editor toolbar allows you to select the entry to use. As a convenience this
 adds both the ID of the entry as well as its name. 
+
+<p>
+<a name="property"></a>
+The <i>property</i> tag supports defining 
+an attribute property that is shared by all tags in the page. 
+
+<div style="margin:10px;"><pre>{{property <i>name="property name" value="property value"</i>}}</pre></div>
+
+For example, if you are creating a wiki page full of charts 
+(e.g., <a href="https://geodesystems.com/repository/entry/form?entryid=1f7c455f-1518-42cf-8701-8edc2a1e9ecb">here</a>) 
+that refer to another point data entry for their data then you use the property like, e.g.:
+<div style="margin:10px;"><pre>{{property <i>name="entry" value="9b2f87fc-91f2-485c-8035-7ef588c35fda"</i>}}</pre></div>
 
 <p>
 Some of the properties can result in an error message (e.g., image not found, entry not found, etc). You can specify a different message (or blank) with message attribute:
@@ -474,7 +514,7 @@ If you have a Folder (or other group) and want to just show the Folder and nots 
 
 <li> <a name="earth"></a>{{earth <i>width="width of map" height="height of map"</i>}}: 
 Display the Google Earth plugin. 
-
+<p>
 <li> <a name="comments"></a>{{comments}}: Show the comments.
 <p>
 <li> <a name="breadcrumbs"></a>{{breadcrumbs}}: Show the breadcrumb path.
