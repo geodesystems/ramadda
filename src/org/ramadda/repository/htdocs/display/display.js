@@ -1453,6 +1453,8 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
                 var entry = entries[i];
                 this.entriesMap[entry.getId()] = entry;
                 var toolbar = this.makeEntryToolbar(entry);
+                var entryMenuButton = this.getEntryMenuButton(entry);
+
                 var entryName = entry.getDisplayName();
                 if (entryName.length > 100) {
                     entryName = entryName.substring(0, 99) + "...";
@@ -1477,7 +1479,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
                 if (showIndex) {
                     extra = "#" + (i + 1) + " ";
                 }
-                var left = HtmlUtil.div([ATTR_CLASS, "display-entrylist-name"], open + " " + extra + link + " " + entryName);
+                var left = HtmlUtil.div([ATTR_CLASS, "display-entrylist-name"], entryMenuButton +" "+open + " " + extra + link + " " + entryName);
                 var details = HtmlUtil.div([ATTR_ID, this.getDomId(ID_DETAILS + entryIdForDom), ATTR_CLASS, "display-entrylist-details"], HtmlUtil.div([ATTR_CLASS, "display-entrylist-details-inner", ATTR_ID, this.getDomId(ID_DETAILS_INNER + entryIdForDom)], ""));
 
                 //                    console.log("details:" + details);
@@ -1718,8 +1720,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
                                                          [ATTR_CLASS, "display-dialog-button", ATTR_ID,  this.getDomId(ID_MENU_BUTTON + entry.getId())]));
 
             */
-
-            toolbarItems.push(entryMenuButton);
+            //            toolbarItems.push(entryMenuButton);
 
             var tmp = [];
             for (var i = 0; i < toolbarItems.length; i++) {
@@ -1909,9 +1910,13 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             this.getDisplayManager().addMapLayer(this, entry);
 
         },
+        doit:function() {
+                console.log("doit");
+        },
         createDisplay: function(entryId, displayType, jsonUrl) {
-            var entry = this.getEntry(entryId);
             console.log("createDisplay: " + entryId + " " + displayType + " " + jsonUrl);
+         
+            var entry = this.getEntry(entryId);
             if (entry == null) {
                 console.log("No entry:" + entryId);
                 return null;
@@ -1963,7 +1968,6 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
                 return "null entry";
             }
 
-
             var get = this.getGet();
             var menus = [];
             var fileMenuItems = [];
@@ -1984,15 +1988,22 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 
             //check if it has point data
             var pointUrl = this.getPointUrl(entry);
-            console.log("entry:" + entry.getName() + " url:" + pointUrl);
+            //            console.log("entry:" + entry.getName() + " url:" + pointUrl);
 
             if (pointUrl != null) {
                 var newMenu = "";
-                for (var i = 0; i < this.getDisplayManager().displayTypes.length; i++) {
-                    var type = this.getDisplayManager().displayTypes[i];
-                    if (!type.requiresData || !type.forUser) continue;
+                var types = window.globalDisplayTypes;
+                if(types) {
+                    for (var i = 0; i < types.length; i++) {
+                        var type = types[i];
 
-                    newMenuItems.push(HtmlUtil.tag(TAG_LI, [], HtmlUtil.tag(TAG_A, ["onclick", get + ".createDisplay(" + HtmlUtil.sqt(entry.getFullId()) + "," + HtmlUtil.sqt(type.type) + "," + HtmlUtil.sqt(pointUrl) + ");"], type.label)));
+                        if (!type.requiresData || !type.forUser) continue;
+
+                        pointUrl = pointUrl.replace(/\'/g,"_");
+                        var call = get + ".createDisplay(" + HtmlUtil.sqt(entry.getFullId()) + "," + HtmlUtil.sqt(type.type) + "," + HtmlUtil.sqt(pointUrl) + ");";
+
+                        newMenuItems.push(HtmlUtil.tag(TAG_LI, [], HtmlUtil.tag(TAG_A, ["onclick", call], type.label)));
+                    }
                 }
                 //                    menus.push("<a>New Chart</a>" + HtmlUtil.tag(TAG_UL,[], newMenu));
             }
@@ -2020,7 +2031,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             this.writeHtml(ID_MENU_OUTER, menu);
             var srcId = this.getDomId(ID_MENU_BUTTON + Utils.cleanId(entryId));
 
-            showPopup(event, srcId, this.getDomId(ID_MENU_OUTER), false, "right top", "left bottom+9");
+            showPopup(event, srcId, this.getDomId(ID_MENU_OUTER), false, "left top", "left bottom");
 
 
             $("#" + this.getDomId(ID_MENU_INNER + Utils.cleanId(entryId))).superfish({

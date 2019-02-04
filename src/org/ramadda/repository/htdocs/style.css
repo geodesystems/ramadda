@@ -16,8 +16,7 @@ h1 {font-size: 170%;}
 h2 {font-size:150%;}
 h3 {font-size: 125%;}
 p {margin-top:1.5em;}
-a {color: #000; text-decoration: underline;}
-a:link {color: #000;}
+a:link, a {color: #000; text-decoration: none;}
 a:hover {color: #000;text-decoration: underline;}
 a.btn:link {color: #000;}
 .row {margin-right:0px;margin-left:0px;}
@@ -557,7 +556,9 @@ border: 1px #ccc solid;
 }
 
 
-.entry-link {
+
+.entry-link  a {
+     text-decoration:none;
      max-width: 200px;
      overflow-x:hidden;
 }
@@ -1029,6 +1030,16 @@ td.entry-table-block {
     overflow-x: auto;
 }
 
+
+
+.ramadda-popup  a {
+     text-decoration:none;
+}
+
+
+.ramadda-selectdiv  a {
+     text-decoration:none;
+}
 
 
 .ramadda-popup, .ramadda-selectdiv {
