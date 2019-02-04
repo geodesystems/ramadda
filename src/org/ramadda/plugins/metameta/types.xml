@@ -48,7 +48,7 @@ wiki=wiki
 <column  name="missing"  label="Missing Value"  type="string"  columns="10"  cansearch="true"  canlist="false"  size="200" ></column>
 <column  name="unit"  label="Unit"  type="string"  columns="10"  cansearch="true"  canlist="false"  size="200" ></column>
 <wiki><![CDATA[
-+section title={{name}
++section title={{name}}
 {{information}}
 -section
 ]]></wiki>

@@ -27,8 +27,7 @@
      <column name="state" type="enumeration" label="State"  showinhtml="true" values="file:/org/ramadda/plugins/incident/resources/states.txt" cansearch="true" canlist="true" />
 
      <wiki><![CDATA[
-+section
-:title {{name}}
++section title={{name}}
 <table border=0 xwidth=100% cellspacing=0 cellpadding=0>
 <tr valign=top>
 <td>
