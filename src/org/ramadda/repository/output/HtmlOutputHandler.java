@@ -1116,12 +1116,12 @@ public class HtmlOutputHandler extends OutputHandler {
                 sb.append(getSelectLink(request, entry, target));
             }
         }
-
         sb.append(HtmlUtils.close("div"));
-
+        String s = sb.toString();
+        s = HtmlUtils.div(s, HtmlUtils.style("padding-left:5px;padding-right:5px;padding-bottom:5px;"));
         return makeAjaxResult(request,
                               getRepository().translate(request,
-                                  sb.toString()));
+                                                        s));
 
     }
 
