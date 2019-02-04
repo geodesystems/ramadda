@@ -234,10 +234,10 @@ public class TextOutputHandler extends OutputHandler {
         StringBuffer head = new StringBuffer();
         head.append("\n");
         head.append(
-            "<link rel=\"stylesheet\" type=\"text/css\" href=\"http://visapi-gadgets.googlecode.com/svn/trunk/wordcloud/wc.css\">\n");
+            "<link rel=\"stylesheet\" type=\"text/css\" href=\"https://visapi-gadgets.googlecode.com/svn/trunk/wordcloud/wc.css\">\n");
         head.append(
             HtmlUtils.importJS(
-                "http://visapi-gadgets.googlecode.com/svn/trunk/wordcloud/wc.js"));
+                "https://visapi-gadgets.googlecode.com/svn/trunk/wordcloud/wc.js"));
         head.append("\n");
         getPageHandler().addGoogleJSImport(request, head);
         head.append("\n");
@@ -297,7 +297,7 @@ public class TextOutputHandler extends OutputHandler {
         StringBuffer head = new StringBuffer();
         head.append("\n");
         head.append(
-            "<link rel=\"stylesheet\" type=\"text/css\" href=\"http://visapi-gadgets.googlecode.com/svn/trunk/wordcloud/wc.css\">\n");
+            "<link rel=\"stylesheet\" type=\"text/css\" href=\"https://visapi-gadgets.googlecode.com/svn/trunk/wordcloud/wc.css\">\n");
         head.append(
             HtmlUtils.importJS(
                 getRepository().getHtdocsUrl("/lib/prettify/prettify.js")));
