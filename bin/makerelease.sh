@@ -14,12 +14,12 @@ mydir=`dirname $0`
 #Location of the PEM file to log in to the AWS server
 PEM=${GEODESYSTEMS_PEM}
 
-
 ##TODO: process args for dest ip and pem file
 ipaddress=$1
 user=ec2-user
 
 ssh -tq -i  ${PEM}  ${user}@${ipaddress} "sudo sh /mnt/ramadda/source/ramadda/bin/buildandinstall.sh"
 
-
+tput bel
+tput bel
 

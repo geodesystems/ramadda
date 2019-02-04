@@ -37,6 +37,8 @@ There are a number of
 
 <p><div class="ramadda-help-heading">11.2.0 Available Displays</div> 
 <ul><li> <a href='#entrylist'>Search form</a>
+<li> <a href='#entrygrid'>Entry Grid</a>
+<li> <a href='#animation'>Animation</a>
 <li> <a href='#map'>Map</a>
 <li> <a href='#linechart'> Line chart</a>
 <li> <a href='#barchart'>Bar chart</a>
@@ -62,8 +64,6 @@ There are a number of
 <li> <a href='#wordcloud'>Word Cloud</a>
 <li> <a href='#wordtree'>Word Tree</a>
 <li> <a href='#timelinechart'>Timeline</a>
-<li> <a href='#animation'>Animation</a>
-<li> <a href='#entrygrid'>Entry Grid</a>
 </ul>
 
 <a name="basics"></a><p><div class="ramadda-help-heading">11.2.1 <a href="#basics">The Basics</a></div> 
@@ -259,6 +259,28 @@ In the search results list new displays can be created through the pull down men
 <div class="cimg"><a href="images/charts/entrylist.png"><img  src="images/charts/entrylist.png"  alt="images/charts/entrylist.png" ></a></div>
 
 
+<a name="entrygrid"></a>
+<div class="ramadda-help-subsubheading"><a href="#entrygrid">Entry Grid</a>
+</div> 
+The entrygrid display shows a set of entries based on their date.
+<a name="display"></a><pre>{{display type=&quot;entrygrid&quot; showIcon=&quot;true&quot;  showName=&quot;true&quot;  scaleWidth=&quot;true&quot;  scaleHeight=&quot;false&quot;  
+#xAxisAscending=&quot;true&quot;  
+#xAxisScale=&quot;true&quot;  
+#yAxisAscending=&quot;true&quot;  
+#yAxisScale=&quot;true&quot;  
+#urlTemplate=&quot;{url}|{entryid}|{resource}&quot;  
+#height=&quot;400&quot;  #width=&quot;100%&quot;  
+#entries=&quot;&quot;}}</pre><a name="image5"></a><div class="cimg"><a href="images/charts/entrygrid.png"><img  src="images/charts/entrygrid.png"  alt="Entry Grid" ></a><br><span class="caption">Image 5: Entry Grid</span></div>
+
+<a name="animation"></a>
+<div class="ramadda-help-subsubheading"><a href="#animation">Animation</a>
+</div> 
+Controls time or index based animation. Other charts will highlight the record of  the current time.
+<a name="display"></a><pre>{{display type=&quot;animation&quot;}}</pre><a name="image6"></a><div class="cimg"><a href="images/charts/animation.png"><img  src="images/charts/animation.png"  alt="Animation" ></a><br><span class="caption">Image 6: Animation</span></div>
+
+
+
+
 
 <a name="map"></a>
 <div class="ramadda-help-subsubheading"><a href="#map">Map</a>
@@ -294,9 +316,9 @@ colorBy=&quot;total_ballots&quot;
 colorTable=&quot;inversegrayscale&quot;
 colorByMin=&quot;min value&quot;
 colorByMax=&quot;max value&quot;
-displayDiv=&quot;mapDisplay${entryid}&quot;}}</pre><a href='https://geodesystems.com/repository/entry/show?entryid=1c99bcff-94a9-43a8-beb5-45a87adb2cc4'>Example</a><a name="image5"></a><div class="cimg"><a href="images/charts/mappoints.png"><img  src="images/charts/mappoints.png"  alt="Map" ></a><br><span class="caption">Image 5: Map</span></div>
+displayDiv=&quot;mapDisplay${entryid}&quot;}}</pre><a href='https://geodesystems.com/repository/entry/show?entryid=1c99bcff-94a9-43a8-beb5-45a87adb2cc4'>Example</a><a name="image7"></a><div class="cimg"><a href="images/charts/mappoints.png"><img  src="images/charts/mappoints.png"  alt="Map" ></a><br><span class="caption">Image 7: Map</span></div>
 
-<a name="image6"></a><div class="cimg"><a href="images/charts/map.png"><img  src="images/charts/map.png" width=50% alt="Chloropleth Map" ></a><br><span class="caption">Image 6: Chloropleth Map</span></div>
+<a name="image8"></a><div class="cimg"><a href="images/charts/map.png"><img  src="images/charts/map.png" width=50% alt="Chloropleth Map" ></a><br><span class="caption">Image 8: Chloropleth Map</span></div>
 
 
 
@@ -336,7 +358,7 @@ If <i>padRight</i> is set to true than the chart is padded on the right with the
 for two or more charts to be aligned that have one or more fields being displayed.
 <a name="display"></a><pre>{{display type=&quot;linechart&quot; width=&quot;800&quot;  height=&quot;400&quot;  
 fields=&quot;&quot;       
-vAxisMinValue=&quot;0&quot; vAxisMaxValue=&quot;1.0&quot; padRight=&quot;true&quot;}}</pre><a name="image7"></a><div class="cimg"><a href="images/charts/linechart.png"><img  src="images/charts/linechart.png"  alt=" Line chart" ></a><br><span class="caption">Image 7:  Line chart</span></div>
+vAxisMinValue=&quot;0&quot; vAxisMaxValue=&quot;1.0&quot; padRight=&quot;true&quot;}}</pre><a name="image9"></a><div class="cimg"><a href="images/charts/linechart.png"><img  src="images/charts/linechart.png"  alt=" Line chart" ></a><br><span class="caption">Image 9:  Line chart</span></div>
 
 
 
@@ -344,7 +366,7 @@ vAxisMinValue=&quot;0&quot; vAxisMaxValue=&quot;1.0&quot; padRight=&quot;true&qu
 <a name="barchart"></a>
 <div class="ramadda-help-subsubheading"><a href="#barchart">Bar chart</a>
 </div> 
-<a name="display"></a><pre>{{display type=&quot;barchart&quot; fields=&quot;&quot;  padRight=&quot;true&quot;}}</pre><a name="image8"></a><div class="cimg"><a href="images/charts/barchart.png"><img  src="images/charts/barchart.png"  alt="Bar chart" ></a><br><span class="caption">Image 8: Bar chart</span></div>
+<a name="display"></a><pre>{{display type=&quot;barchart&quot; fields=&quot;&quot;  padRight=&quot;true&quot;}}</pre><a name="image10"></a><div class="cimg"><a href="images/charts/barchart.png"><img  src="images/charts/barchart.png"  alt="Bar chart" ></a><br><span class="caption">Image 10: Bar chart</span></div>
 
 <a name="barstack"></a>
 <div class="ramadda-help-subsubheading"><a href="#barstack">Stacked bar chart</a>
@@ -361,12 +383,12 @@ vAxisMinValue=&quot;0&quot; vAxisMaxValue=&quot;1.0&quot; padRight=&quot;true&qu
 fields=&quot;&quot;  
 vAxisMinValue=&quot;0&quot; vAxisMaxValue=&quot;1.0&quot; 
 padRight=&quot;true&quot;
-isStacked=&quot;true&quot;}}</pre><a name="image9"></a><div class="cimg"><a href="images/charts/areachart.png"><img  src="images/charts/areachart.png"  alt="Area chart" ></a><br><span class="caption">Image 9: Area chart</span></div>
+isStacked=&quot;true&quot;}}</pre><a name="image11"></a><div class="cimg"><a href="images/charts/areachart.png"><img  src="images/charts/areachart.png"  alt="Area chart" ></a><br><span class="caption">Image 11: Area chart</span></div>
 
 <a name="scatterplot"></a>
 <div class="ramadda-help-subsubheading"><a href="#scatterplot"> Scatter Plot</a>
 </div> 
-<a name="display"></a><pre>{{display type=&quot;scatterplot&quot; width=&quot;800&quot;  height=&quot;400&quot;  fields=&quot;&quot;}}</pre><a name="image10"></a><div class="cimg"><a href="images/charts/scatterplot.png"><img  src="images/charts/scatterplot.png"  alt=" Scatter Plot" ></a><br><span class="caption">Image 10:  Scatter Plot</span></div>
+<a name="display"></a><pre>{{display type=&quot;scatterplot&quot; width=&quot;800&quot;  height=&quot;400&quot;  fields=&quot;&quot;}}</pre><a name="image12"></a><div class="cimg"><a href="images/charts/scatterplot.png"><img  src="images/charts/scatterplot.png"  alt=" Scatter Plot" ></a><br><span class="caption">Image 12:  Scatter Plot</span></div>
 
 <a name="histogram"></a>
 <div class="ramadda-help-subsubheading"><a href="#histogram"> Histogram</a>
@@ -380,7 +402,7 @@ textPosition=&quot;out|in|none&quot;
 isStacked=&quot;false|true|percent|relative&quot;  
 logScale=&quot;true|false&quot;  scaleType=&quot;log|mirrorLog&quot;  
 vAxisMinValue=&quot;&quot;  vAxisMaxValue=&quot;&quot;  
-minValue=&quot;&quot;  maxValue=&quot;&quot;}}</pre><a name="image11"></a><div class="cimg"><a href="images/charts/histogram.png"><img  src="images/charts/histogram.png"  alt=" Histogram" ></a><br><span class="caption">Image 11:  Histogram</span></div>
+minValue=&quot;&quot;  maxValue=&quot;&quot;}}</pre><a name="image13"></a><div class="cimg"><a href="images/charts/histogram.png"><img  src="images/charts/histogram.png"  alt=" Histogram" ></a><br><span class="caption">Image 13:  Histogram</span></div>
 
 
 <a name="bubble"></a>
@@ -408,30 +430,30 @@ bins=&quot;bin count&quot;
 binMin=&quot;min&quot;  
 binMax=&quot;max&quot;  
 sliceVisibilityThreshold=&quot;0.01&quot;  
-width=&quot;500&quot;  height=&quot;250&quot;}}</pre><a name="image12"></a><div class="cimg"><a href="images/charts/piechart.png"><img  src="images/charts/piechart.png"  alt=" Pie chart" ></a><br><span class="caption">Image 12:  Pie chart</span></div>
+width=&quot;500&quot;  height=&quot;250&quot;}}</pre><a name="image14"></a><div class="cimg"><a href="images/charts/piechart.png"><img  src="images/charts/piechart.png"  alt=" Pie chart" ></a><br><span class="caption">Image 14:  Pie chart</span></div>
 
 <a name="radar"></a>
 <div class="ramadda-help-subsubheading"><a href="#radar">Radar Display</a>
 </div> 
-<a name="display"></a><pre>{{display type=&quot;radar&quot; fields=&quot;&quot;}}</pre><a href='https://geodesystems.com/repository/entry/show?entryid=1f7c455f-1518-42cf-8701-8edc2a1e9ecb'>Example</a><a name="image13"></a><div class="cimg"><a href="images/charts/radar.png"><img  src="images/charts/radar.png"  alt="Radar Display" ></a><br><span class="caption">Image 13: Radar Display</span></div>
+<a name="display"></a><pre>{{display type=&quot;radar&quot; fields=&quot;&quot;}}</pre><a href='https://geodesystems.com/repository/entry/show?entryid=1f7c455f-1518-42cf-8701-8edc2a1e9ecb'>Example</a><a name="image15"></a><div class="cimg"><a href="images/charts/radar.png"><img  src="images/charts/radar.png"  alt="Radar Display" ></a><br><span class="caption">Image 15: Radar Display</span></div>
 
 <a name="windrose"></a>
 <div class="ramadda-help-subsubheading"><a href="#windrose">Wind Rose</a>
 </div> 
-<a name="display"></a><pre>{{display type=&quot;windrose&quot; fields=&quot;&quot;}}</pre><a href='https://geodesystems.com/repository/entry/show?entryid=1f7c455f-1518-42cf-8701-8edc2a1e9ecb'>Example</a><a name="image14"></a><div class="cimg"><a href="images/charts/windrose.png"><img  src="images/charts/windrose.png"  alt="Wind Rose" ></a><br><span class="caption">Image 14: Wind Rose</span></div>
+<a name="display"></a><pre>{{display type=&quot;windrose&quot; fields=&quot;&quot;}}</pre><a href='https://geodesystems.com/repository/entry/show?entryid=1f7c455f-1518-42cf-8701-8edc2a1e9ecb'>Example</a><a name="image16"></a><div class="cimg"><a href="images/charts/windrose.png"><img  src="images/charts/windrose.png"  alt="Wind Rose" ></a><br><span class="caption">Image 16: Wind Rose</span></div>
 
 
 <a name="density"></a>
 <div class="ramadda-help-subsubheading"><a href="#density">Density Display</a>
 </div> 
-<a name="display"></a><pre>{{display type=&quot;density&quot; fields=&quot;tmax,vp&quot;}}</pre><a href='https://geodesystems.com/repository/entry/show?entryid=1f7c455f-1518-42cf-8701-8edc2a1e9ecb'>Example</a><a name="image15"></a><div class="cimg"><a href="images/charts/density.png"><img  src="images/charts/density.png"  alt="Density Display" ></a><br><span class="caption">Image 15: Density Display</span></div>
+<a name="display"></a><pre>{{display type=&quot;density&quot; fields=&quot;tmax,vp&quot;}}</pre><a href='https://geodesystems.com/repository/entry/show?entryid=1f7c455f-1518-42cf-8701-8edc2a1e9ecb'>Example</a><a name="image17"></a><div class="cimg"><a href="images/charts/density.png"><img  src="images/charts/density.png"  alt="Density Display" ></a><br><span class="caption">Image 17: Density Display</span></div>
 
 
 
 <a name="3dscatter"></a>
 <div class="ramadda-help-subsubheading"><a href="#3dscatter">3D Scatter</a>
 </div> 
-<a name="display"></a><pre>{{display type=&quot;3dscatter&quot; fields=&quot;&quot;}}</pre><a href='https://geodesystems.com/repository/entry/show?entryid=1f7c455f-1518-42cf-8701-8edc2a1e9ecb'>Example</a><a name="image16"></a><div class="cimg"><a href="images/charts/3dscatter.png"><img  src="images/charts/3dscatter.png"  alt="3D Scatter" ></a><br><span class="caption">Image 16: 3D Scatter</span></div>
+<a name="display"></a><pre>{{display type=&quot;3dscatter&quot; fields=&quot;&quot;}}</pre><a href='https://geodesystems.com/repository/entry/show?entryid=1f7c455f-1518-42cf-8701-8edc2a1e9ecb'>Example</a><a name="image18"></a><div class="cimg"><a href="images/charts/3dscatter.png"><img  src="images/charts/3dscatter.png"  alt="3D Scatter" ></a><br><span class="caption">Image 18: 3D Scatter</span></div>
 
 
 
@@ -448,20 +470,20 @@ width=&quot;500&quot;  height=&quot;250&quot;}}</pre><a name="image12"></a><div 
 Displays point data based on the date of each record. The calendar entry is color coded based on the specified field.
 <br>
 If <i>missingValue</i> is specified than any point value with that value won't be shown.
-<a name="display"></a><pre>{{display type=&quot;calendar&quot; fields=&quot;&quot;  cellSize=&quot;15&quot;  missingValue=&quot;0&quot;}}</pre><a name="image17"></a><div class="cimg"><a href="images/charts/calendar.png"><img  src="images/charts/calendar.png"  alt=" Calendar" ></a><br><span class="caption">Image 17:  Calendar</span></div>
+<a name="display"></a><pre>{{display type=&quot;calendar&quot; fields=&quot;&quot;  cellSize=&quot;15&quot;  missingValue=&quot;0&quot;}}</pre><a name="image19"></a><div class="cimg"><a href="images/charts/calendar.png"><img  src="images/charts/calendar.png"  alt=" Calendar" ></a><br><span class="caption">Image 19:  Calendar</span></div>
 
 <a name="gauge"></a>
 <div class="ramadda-help-subsubheading"><a href="#gauge"> Gauge</a>
 </div> 
 This shows a single value from a series of point data.
-<a name="display"></a><pre>{{display type=&quot;gauge&quot; fields=&quot;&quot;  gaugeMin=&quot;&quot;  gaugeMax=&quot;&quot;  gaugeLabel=&quot;&quot;}}</pre><a name="image18"></a><div class="cimg"><a href="images/charts/gauge.png"><img  src="images/charts/gauge.png"  alt=" Gauge" ></a><br><span class="caption">Image 18:  Gauge</span></div>
+<a name="display"></a><pre>{{display type=&quot;gauge&quot; fields=&quot;&quot;  gaugeMin=&quot;&quot;  gaugeMax=&quot;&quot;  gaugeLabel=&quot;&quot;}}</pre><a name="image20"></a><div class="cimg"><a href="images/charts/gauge.png"><img  src="images/charts/gauge.png"  alt=" Gauge" ></a><br><span class="caption">Image 20:  Gauge</span></div>
 
 
 <a name="table"></a>
 <div class="ramadda-help-subsubheading"><a href="#table">Table</a>
 </div> 
 Shows tabular data. This is integrated with other charts so clicking on a row highlights the corresponding record in a chart.
-<a name="display"></a><pre>{{display type=&quot;table&quot; height=&quot;400&quot;}}</pre><a name="image19"></a><div class="cimg"><a href="images/charts/table.png"><img  src="images/charts/table.png"  alt="Table" ></a><br><span class="caption">Image 19: Table</span></div>
+<a name="display"></a><pre>{{display type=&quot;table&quot; height=&quot;400&quot;}}</pre><a name="image21"></a><div class="cimg"><a href="images/charts/table.png"><img  src="images/charts/table.png"  alt="Table" ></a><br><span class="caption">Image 21: Table</span></div>
 
 
 <a name="heatmap"></a>
@@ -474,7 +496,7 @@ colorByMins=&quot;-90,0&quot;  colorByMaxes=&quot;45,100&quot;
 showIndex=&quot;false&quot;  showValue=&quot;true&quot;  
 showBorder=&quot;true&quot;  
 cellHeight=&quot;30&quot;  
-textColor=&quot;white&quot;}}</pre><a name="image20"></a><div class="cimg"><a href="images/charts/heatmap.png"><img  src="images/charts/heatmap.png"  alt="Heatmap" ></a><br><span class="caption">Image 20: Heatmap</span></div>
+textColor=&quot;white&quot;}}</pre><a name="image22"></a><div class="cimg"><a href="images/charts/heatmap.png"><img  src="images/charts/heatmap.png"  alt="Heatmap" ></a><br><span class="caption">Image 22: Heatmap</span></div>
 
 
 
@@ -482,14 +504,14 @@ textColor=&quot;white&quot;}}</pre><a name="image20"></a><div class="cimg"><a hr
 <div class="ramadda-help-subsubheading"><a href="#correlation"> Correlation</a>
 </div> 
 Displays a statistical correlation of a set of fields.
-<a name="display"></a><pre>{{display type=&quot;correlation&quot; fields=&quot;&quot;}}</pre><a name="image21"></a><div class="cimg"><a href="images/charts/correlation.png"><img  src="images/charts/correlation.png"  alt=" Correlation" ></a><br><span class="caption">Image 21:  Correlation</span></div>
+<a name="display"></a><pre>{{display type=&quot;correlation&quot; fields=&quot;&quot;}}</pre><a name="image23"></a><div class="cimg"><a href="images/charts/correlation.png"><img  src="images/charts/correlation.png"  alt=" Correlation" ></a><br><span class="caption">Image 23:  Correlation</span></div>
 
 
 <a name="text"></a>
 <div class="ramadda-help-subsubheading"><a href="#text"> Text Readout</a>
 </div> 
 Displays the record selected in other charts.
-<a name="display"></a><pre>{{display type=&quot;text&quot;}}</pre><a name="image22"></a><div class="cimg"><a href="images/charts/textreadout.png"><img  src="images/charts/textreadout.png"  alt=" Text Readout" ></a><br><span class="caption">Image 22:  Text Readout</span></div>
+<a name="display"></a><pre>{{display type=&quot;text&quot;}}</pre><a name="image24"></a><div class="cimg"><a href="images/charts/textreadout.png"><img  src="images/charts/textreadout.png"  alt=" Text Readout" ></a><br><span class="caption">Image 24:  Text Readout</span></div>
 
 <a name="stats"></a>
 <div class="ramadda-help-subsubheading"><a href="#stats"> Summary Stats</a>
@@ -506,7 +528,7 @@ showDefault=&quot;true&quot;
 #showTotal=&quot;true&quot;  
 #showMissing=&quot;true&quot;  
 #showUnique=&quot;true&quot;    
-#showText=&quot;true&quot;}}</pre><a name="image23"></a><div class="cimg"><a href="images/charts/stats.png"><img  src="images/charts/stats.png"  alt=" Summary Stats" ></a><br><span class="caption">Image 23:  Summary Stats</span></div>
+#showText=&quot;true&quot;}}</pre><a name="image25"></a><div class="cimg"><a href="images/charts/stats.png"><img  src="images/charts/stats.png"  alt=" Summary Stats" ></a><br><span class="caption">Image 25:  Summary Stats</span></div>
 
 <a name="dotplot"></a>
 <div class="ramadda-help-subsubheading"><a href="#dotplot">Dot Plot</a>
@@ -517,7 +539,7 @@ field along the X-axis.
 <a name="display"></a><pre>{{display type=&quot;dotplot&quot; fields=&quot;race,years_decimal&quot; 
 xAxisTitle=&quot;Age&quot;  
 marginLeft=&quot;200&quot; 
-width=&quot;100%&quot; height=&quot;300&quot;}}</pre><a name="image24"></a><div class="cimg"><a href="images/charts/dotplot.png"><img  src="images/charts/dotplot.png"  alt="Dot Plot" ></a><br><span class="caption">Image 24: Dot Plot</span></div>
+width=&quot;100%&quot; height=&quot;300&quot;}}</pre><a name="image26"></a><div class="cimg"><a href="images/charts/dotplot.png"><img  src="images/charts/dotplot.png"  alt="Dot Plot" ></a><br><span class="caption">Image 26: Dot Plot</span></div>
 
 
 
@@ -529,7 +551,7 @@ If [ug::attr doCategories] is set to true then the display requires 2 string fie
 unique pair values of the strings are used for the values.
 <a name="display"></a><pre>{{display type=&quot;sankey&quot; doCategories=&quot;true|false&quot;
 height=&quot;400&quot;  
-#fields=&quot;&quot;}}</pre><a href='https://geodesystems.com/repository/entry/show?entryid=d7c23939-dbfe-4bbf-9045-70e2422c3117'>Example</a><a name="image25"></a><div class="cimg"><a href="images/charts/sankey.png"><img  src="images/charts/sankey.png"  alt="Sankey" ></a><br><span class="caption">Image 25: Sankey</span></div>
+#fields=&quot;&quot;}}</pre><a href='https://geodesystems.com/repository/entry/show?entryid=d7c23939-dbfe-4bbf-9045-70e2422c3117'>Example</a><a name="image27"></a><div class="cimg"><a href="images/charts/sankey.png"><img  src="images/charts/sankey.png"  alt="Sankey" ></a><br><span class="caption">Image 27: Sankey</span></div>
 
 
 
@@ -542,7 +564,7 @@ fields to show in the table. If combined=true then all of the selected fields
 are shown in one word cloud. 
 <a name="display"></a><pre>{{display type=&quot;wordcloud&quot; fields=&quot;sex,race&quot;  
 tableFields=&quot;rank,name,years,birth_place,sex,race&quot; 
-combined=&quot;true|false&quot;}}</pre><a href='https://geodesystems.com/repository/entry/show?entryid=d7c23939-dbfe-4bbf-9045-70e2422c3117'>Example</a><a name="image26"></a><div class="cimg"><a href="images/charts/wordcloud.png"><img  src="images/charts/wordcloud.png"  alt="Word Cloud" ></a><br><span class="caption">Image 26: Word Cloud</span></div>
+combined=&quot;true|false&quot;}}</pre><a href='https://geodesystems.com/repository/entry/show?entryid=d7c23939-dbfe-4bbf-9045-70e2422c3117'>Example</a><a name="image28"></a><div class="cimg"><a href="images/charts/wordcloud.png"><img  src="images/charts/wordcloud.png"  alt="Word Cloud" ></a><br><span class="caption">Image 28: Word Cloud</span></div>
 
 <a name="wordtree"></a>
 <div class="ramadda-help-subsubheading"><a href="#wordtree">Word Tree</a>
@@ -568,7 +590,7 @@ buckets.&lt;field id&gt;=&quot;100,110,115,120,130&quot;
 bucketLabels.&lt;field id&gt;=&quot;Young,Middle,Old,Really old&quot; 
 
 height=&quot;800px&quot; 
-chartWidth=&quot;900&quot;}}</pre><a href='https://geodesystems.com/repository/entry/show?entryid=9c5613e6-f9fc-4bed-b402-12d57c5d6f7e'>Example</a><a name="image27"></a><div class="cimg"><a href="images/charts/wordtree.png"><img  src="images/charts/wordtree.png"  alt="Word Tree" ></a><br><span class="caption">Image 27: Word Tree</span></div>
+chartWidth=&quot;900&quot;}}</pre><a href='https://geodesystems.com/repository/entry/show?entryid=9c5613e6-f9fc-4bed-b402-12d57c5d6f7e'>Example</a><a name="image29"></a><div class="cimg"><a href="images/charts/wordtree.png"><img  src="images/charts/wordtree.png"  alt="Word Tree" ></a><br><span class="caption">Image 29: Word Tree</span></div>
 
 
 <a name="timelinechart"></a>
@@ -582,35 +604,7 @@ attribute defines how the label is shown.
 width=&quot;100%&quot;  height=&quot;800&quot;   
 showLabel=&quot;true&quot; 
 labelFieldsTemplate=&quot;{name}  Age: {years}  Birth Place: {birth_place}  Race: {race}&quot;
-labelFields=&quot;name,race,birth_place,years&quot;}}</pre><a href='https://geodesystems.com/repository/entry/show?entryid=d7c23939-dbfe-4bbf-9045-70e2422c3117'>Example</a><a name="image28"></a><div class="cimg"><a href="images/charts/timeline.png"><img  src="images/charts/timeline.png"  alt="Timeline" ></a><br><span class="caption">Image 28: Timeline</span></div>
-
-
-
-
-
-
-
-
-<a name="animation"></a>
-<div class="ramadda-help-subsubheading"><a href="#animation">Animation</a>
-</div> 
-Controls time or index based animation. Other charts will highlight the record of  the current time.
-<a name="display"></a><pre>{{display type=&quot;animation&quot; attrs}}</pre><a name="image29"></a><div class="cimg"><a href="images/charts/animation.png"><img  src="images/charts/animation.png"  alt="Animation" ></a><br><span class="caption">Image 29: Animation</span></div>
-
-
-<a name="entrygrid"></a>
-<div class="ramadda-help-subsubheading"><a href="#entrygrid">Entry Grid</a>
-</div> 
-The entrygrid display shows a set of entries based on their date.
-<a name="display"></a><pre>{{display type=&quot;entrygrid&quot; showIcon=&quot;true&quot;  showName=&quot;true&quot;  scaleWidth=&quot;true&quot;  scaleHeight=&quot;false&quot;  
-#xAxisAscending=&quot;true&quot;  
-#xAxisScale=&quot;true&quot;  
-#yAxisAscending=&quot;true&quot;  
-#yAxisScale=&quot;true&quot;  
-#urlTemplate=&quot;{url}|{entryid}|{resource}&quot;  
-#height=&quot;400&quot;  #width=&quot;100%&quot;  
-#entries=&quot;&quot;}}</pre><a name="image30"></a><div class="cimg"><a href="images/charts/entrygrid.png"><img  src="images/charts/entrygrid.png"  alt="Entry Grid" ></a><br><span class="caption">Image 30: Entry Grid</span></div>
-
+labelFields=&quot;name,race,birth_place,years&quot;}}</pre><a href='https://geodesystems.com/repository/entry/show?entryid=d7c23939-dbfe-4bbf-9045-70e2422c3117'>Example</a><a name="image30"></a><div class="cimg"><a href="images/charts/timeline.png"><img  src="images/charts/timeline.png"  alt="Timeline" ></a><br><span class="caption">Image 30: Timeline</span></div>
 
 
 <a name="derived"></a><p><div class="ramadda-help-heading">11.2.6 <a href="#derived">Derived Data</a></div> 
