@@ -117,9 +117,11 @@ public class MapOutputHandler extends OutputHandler implements WikiConstants {
         }
         if (ok) {
             links.add(makeLink(request, state.getEntry(), OUTPUT_MAP));
+            /*
             if (getMapManager().isGoogleEarthEnabled(request)) {
                 links.add(makeLink(request, state.getEntry(), OUTPUT_GEMAP));
             }
+            */
 
         }
     }

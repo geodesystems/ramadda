@@ -239,7 +239,6 @@ public class CalendarOutputHandler extends OutputHandler {
         showNext(request, subGroups, entries, sb);
         entries.addAll(subGroups);
         Result result;
-        getPageHandler().entrySectionOpen(request, group, sb, "");
         if (outputType.equals(OUTPUT_DATE_GRID)) {
             result = outputDateGrid(request, group, entries, sb);
         } else if (outputType.equals(OUTPUT_TIMELINE)) {
@@ -247,6 +246,7 @@ public class CalendarOutputHandler extends OutputHandler {
             List allEntries = new ArrayList(entries);
             allEntries.addAll(subGroups);
             //            makeTimeline(request, allEntries, sb, "height: 300px;");
+            getPageHandler().entrySectionOpen(request, group, sb, "Timeline");
             makeTimeline(request, group, allEntries, sb, "height: 300px;",
                          new Hashtable());
             getPageHandler().entrySectionClose(request, group, sb);
@@ -258,7 +258,9 @@ public class CalendarOutputHandler extends OutputHandler {
 
             return result;
         } else {
+            getPageHandler().entrySectionOpen(request, group, sb, "Calendar");
             result = outputCalendar(request, group, entries, sb);
+            getPageHandler().entrySectionClose(request, group, sb);
         }
 
         addLinks(request, result, new State(group, subGroups, entries));
@@ -423,6 +425,7 @@ public class CalendarOutputHandler extends OutputHandler {
     private Result outputDateGrid(Request request, Entry group,
                                   List<Entry> entries, Appendable sb)
             throws Exception {
+        getPageHandler().entrySectionOpen(request, group, sb, "Date Grid");
         List             types    = new ArrayList();
         List             days     = new ArrayList();
         Hashtable        dayMap   = new Hashtable();
@@ -499,7 +502,6 @@ public class CalendarOutputHandler extends OutputHandler {
             sb.append("</tr>");
         }
         sb.append("</table>");
-
         getPageHandler().entrySectionClose(request, group, sb);
 
         return new Result(msg("Date Grid"), sb);

@@ -140,8 +140,7 @@ public class TextOutputHandler extends OutputHandler {
         for (int i = 0; i < suffixes.length; i++) {
             if (path.endsWith(suffixes[i])) {
                 links.add(makeLink(request, state.entry, OUTPUT_TEXT));
-                links.add(makeLink(request, state.entry, OUTPUT_WORDCLOUD));
-
+                //                links.add(makeLink(request, state.entry, OUTPUT_WORDCLOUD));
                 return;
             }
         }

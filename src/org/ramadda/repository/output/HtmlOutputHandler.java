@@ -1299,7 +1299,10 @@ public class HtmlOutputHandler extends OutputHandler {
         List<Entry>  allEntries = new ArrayList<Entry>();
         allEntries.addAll(subGroups);
         allEntries.addAll(entries);
+        getPageHandler().entrySectionOpen(request, group, sb,
+                                          "Tree View");
         makeTreeView(request, allEntries, sb, 750, 500);
+        getPageHandler().entrySectionClose(request, group, sb);
 
         return makeLinksResult(request, group.getName(), sb,
                                new State(group, subGroups, entries));
