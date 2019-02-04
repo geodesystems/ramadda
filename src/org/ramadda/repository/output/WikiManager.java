@@ -4557,7 +4557,8 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
 
 
         String tagsButton = getPageHandler().makePopupLink(msg("Add tag"),
-                                tags.toString(), buttonClass);
+                                                           HtmlUtils.div(tags.toString(),
+                                                                         "style='padding:5px;'"), buttonClass);
 
         StringBuilder tags1 = new StringBuilder();
         makeTagsMenu(false, tags1, textAreaId);
@@ -4570,7 +4571,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                                            tags1.toString(), buttonClass);
 
         String tagsButton2 =
-            getPageHandler().makePopupLink(msg("Add charts"),
+            getPageHandler().makePopupLink(msg("Add chart"),
                                            tags2.toString(), buttonClass);
 
         String addEntry = OutputHandler.getSelect(request, textAreaId,
