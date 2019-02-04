@@ -71,6 +71,8 @@ public class MultiSearchTypeHandler extends GenericTypeHandler {
     public Result getHtmlDisplay(Request request, Entry entry)
             throws Exception {
         StringBuffer sb      = new StringBuffer();
+        getPageHandler().entrySectionOpen(request, entry, sb,null);
+
         String       formUrl = getEntryManager().getEntryURL(request, entry);
         String       query   = request.getString(ARG_QUERY, "");
         sb.append(HtmlUtils.form(formUrl, ""));
@@ -85,12 +87,12 @@ public class MultiSearchTypeHandler extends GenericTypeHandler {
             List<String> tabs      = new ArrayList<String>();
             String[]     urls      = {
                 "Google",
-                "http://www.google.com/search?hl=en&ie=ISO-8859-1&q=${query}&btnG=Search",
+                "https://www.google.com/search?hl=en&ie=ISO-8859-1&q=${query}&btnG=Search",
                 "Bing",
-                "http://www.bing.com/search?q=${query}&go=&form=QBLH&qs=n&sk=&sc=8-5",
+                "https://www.bing.com/search?q=${query}&go=&form=QBLH&qs=n&sk=&sc=8-5",
                 "Yahoo",
-                "http://search.yahoo.com/search?p=${query}&ei=UTF-8&fr=moz35",
-                "DuckDuckGo", "http://duckduckgo.com/?q=${query}",
+                "https://search.yahoo.com/search?p=${query}&ei=UTF-8&fr=moz35",
+                "DuckDuckGo", "https://duckduckgo.com/?q=${query}",
             };
             for (int i = 0; i < urls.length; i += 2) {
                 String title = urls[i];
@@ -111,6 +113,7 @@ public class MultiSearchTypeHandler extends GenericTypeHandler {
             sb.append(OutputHandler.makeTabs(tabTitles, tabs, true));
         }
 
+        getPageHandler().entrySectionClose(request, entry, sb);
         return new Result("MultiSearch", sb);
     }
 
