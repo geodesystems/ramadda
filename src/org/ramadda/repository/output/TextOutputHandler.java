@@ -193,6 +193,8 @@ public class TextOutputHandler extends OutputHandler {
         String contents =
             getStorageManager().readSystemResource(entry.getFile());
         StringBuffer sb = new StringBuffer();
+        getPageHandler().entrySectionOpen(request, entry, sb,
+                                          "Annotated Text");
 
         sb.append("<pre>\n");
         int cnt = 0;
@@ -207,6 +209,7 @@ public class TextOutputHandler extends OutputHandler {
                       + HtmlUtils.space(1) + line + "<br>");
         }
         sb.append("</pre>");
+        getPageHandler().entrySectionClose(request, entry, sb);
 
         return makeLinksResult(request, msg("Text"), sb, new State(entry));
     }
@@ -288,6 +291,9 @@ public class TextOutputHandler extends OutputHandler {
         String contents =
             getStorageManager().readSystemResource(entry.getFile());
         StringBuffer sb   = new StringBuffer();
+        getPageHandler().entrySectionOpen(request, entry, sb,
+                                          "Pretty Print");
+
         StringBuffer head = new StringBuffer();
         head.append("\n");
         head.append(
@@ -317,6 +323,7 @@ public class TextOutputHandler extends OutputHandler {
         }
         sb.append("</pre>\n");
         sb.append(HtmlUtils.script("prettyPrint();"));
+        getPageHandler().entrySectionClose(request, entry, sb);
         Result result = makeLinksResult(request, msg("Pretty Print"), sb,
                                         new State(entry));
 
