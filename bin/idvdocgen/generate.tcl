@@ -277,10 +277,12 @@ proc ifInclude {if s} {
     return ""
 }
 
-
-
-proc ug::subheading {label id {extra {}}} {
-    return "<subhead [ht::attrs id $id] $extra>$label</subhead>"
+proc ug::subheading {label {id ""}  {extra {}}} {
+    set attrs ""
+    if {$id!=""} {
+            set attrs [ht::attrs id $id]
+    }
+    return "<subhead [ht::attrs id $id] $attrs  $extra>$label</subhead>"
 }
 
 proc ug::subsubheading {l {href ""}} {
@@ -606,6 +608,7 @@ proc gen::addSubHead {from content} {
     set cnt 0
     set levelLabel [gen::getLevelLabel $from]
 #    set levelLabel ""
+    set debug [regexp {access} $from]
     while {1} {
         set idx1 [string first  "<subhead" $content]
         if {$idx1<0} {
@@ -630,13 +633,13 @@ proc gen::addSubHead {from content} {
 		set $attr [string trim [set $attr]]
 	    }
 
-            set cnt 0
+            set idcnt 0
             foreach id [split $id ,] {
-                if {$cnt == 0} {
+                if {$idcnt == 0} {
                        set label "<a href=\"#$id\">$label</a>"
                  }
                 append body "<a name=\"$id\"></a>"
-                incr cnt
+                incr idcnt
             }
             append body "<p>"
             append body "<div class=\"ramadda-help-heading\">$levelLabel.$cnt $label</div> "
@@ -911,9 +914,18 @@ proc gen::getTitleOverviewBody {path {canUseBodyForOverview 0} {htmlRaw 0}} {
     
     if {[gen::getDoTclEvaluation]} {
         set ::currentFile $path
+            set ::inpageToc [list]
         if {[catch {set content [subst -novariables $content]} err]} {
             puts "Error evaluating $path\n$::errorInfo"
         }
+        if {[llength $::inpageToc]!=0} {
+                set s "<ul>"
+                foreach tok $::inpageToc {
+                    append s "<li> $tok\n"
+                }
+                append s "</ul>"
+                regsub -all <%inpagetoc%> $content $s content
+            } 
     }
 
     set title ""
@@ -1110,9 +1122,11 @@ proc gen::walkTree {indexFile {parent ""}} {
 	    if {[regexp {^\[} [string trim $overview]]} {
 		set overview [subst $overview]
 	    }
+
 	    if {[regexp {^\[} [string trim $body]]} {
 		set body [subst $body]
 	    }
+
             gen::definePage $fileName "" $currentParent  $includeInNav $includeInToc virtual $title $overview $body
             continue
         }
@@ -1181,7 +1195,9 @@ proc gen::walkTree {indexFile {parent ""}} {
     }
 }
 
-
+proc gen::addInpageToc {item} {
+    lappend ::inpageToc $item
+}
 
 proc gen::definePage {file actualFilePath parent includeInNav includeInToc {pageType real} {title ""} {overview ""} {dfltBody ""}} {
 

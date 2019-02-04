@@ -1624,7 +1624,6 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                 return HtmlUtils.script("addGlobalDisplayProperty('" + name
                                         + "','" + value + "');\n");
             }
-
             return "";
         } else if (theTag.equals(WIKI_TAG_PROPERTIES)) {
             return makeEntryTabs(request, wikiUtil, entry, props);
@@ -4565,13 +4564,12 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
 
         StringBuilder help = new StringBuilder();
         help.append(HtmlUtils.href(getRepository().getUrlBase()
-                                   + "/userguide/wikitext.html", "Wiki Text",
+                                   + "/userguide/wikitext.html", "Wiki text",
                                        "target=_help") + "<br>");
 
         help.append(HtmlUtils.href(getRepository().getUrlBase()
                                    + "/userguide/wikitext.html#sections", "Sections",
                                        "target=_help") + "<br>");
-
 
         help.append(HtmlUtils.href(getRepository().getUrlBase()
                                    + "/userguide/wikitext.html#gridlayout", "Grid layout",
@@ -4580,14 +4578,14 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
         help.append(
             HtmlUtils.href(
                 getRepository().getUrlBase() + "/userguide/wikidisplay.html",
-                "Wiki Displays", "target=_help") + "<br>");
+                "Wiki displays", "target=_help") + "<br>");
 
 
 
 
 
         help.append(HtmlUtils.href(getRepository().getUrlBase()
-                                   + "/userguide/wikitext.html#entry", "Specifying another other entry",
+                                   + "/userguide/wikitext.html#entry", "Specifying the entry",
                                        "target=_help") + "<br>");
 
         help.append(HtmlUtils.href(getRepository().getUrlBase()

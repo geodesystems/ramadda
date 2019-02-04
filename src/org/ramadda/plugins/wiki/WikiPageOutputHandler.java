@@ -97,7 +97,7 @@ public class WikiPageOutputHandler extends HtmlOutputHandler {
 
     /** _more_ */
     public static final OutputType OUTPUT_WIKI_HISTORY =
-        new OutputType("Wiki History", "wiki.history", OutputType.TYPE_OTHER,
+        new OutputType("Wiki History", "wiki.history", OutputType.TYPE_VIEW,
                        "", ICON_WIKI, GROUP_WIKI);
 
     /** _more_ */
