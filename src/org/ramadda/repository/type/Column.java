@@ -2772,7 +2772,10 @@ public class Column implements DataTypes, Constants {
             dateSelect.add(new TwoFacedObject(msg("Last 12 hours"),
                     "-12 hours"));
             dateSelect.add(new TwoFacedObject(msg("Last day"), "-1 day"));
-            dateSelect.add(new TwoFacedObject(msg("Last 7 days"), "-7 days"));
+            dateSelect.add(new TwoFacedObject(msg("Last week"), "-7 days"));
+            dateSelect.add(new TwoFacedObject(msg("Last 2 weeks"), "-14 days"));
+            dateSelect.add(new TwoFacedObject(msg("Last month"), "-1 month"));
+
             String dateSelectValue;
             String relativeArg = searchArg + "_relative";
             if (request.exists(relativeArg)) {

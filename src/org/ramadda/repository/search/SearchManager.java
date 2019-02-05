@@ -749,7 +749,7 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
         String value = (String) request.getString(ARG_TEXT, "");
         String textField =
             HtmlUtils.input(ARG_TEXT, value,
-                            HtmlUtils.attr("placeholder", msg("Search text"))
+                            HtmlUtils.attr("placeholder", msg(" Search text"))
                             + HtmlUtils.SIZE_50 + " autofocus ");
 
         return textField;
@@ -1020,7 +1020,7 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
                         HtmlUtils.cssClass("ramadda-search-provider-list")));
             }
         }
-        String title = msg("Where to search");
+        String title = msg("Search providers");
         if (extra.length() > 0) {
             title += HtmlUtils.space(4) + extra;
         }
@@ -1069,7 +1069,9 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
         String lastTok = toks.get(toks.size() - 1);
         if (lastTok.equals("type")) {
             sb.append(HtmlUtils.sectionOpen(null, false));
+            HtmlUtils.open(sb, "div",HtmlUtils.cssClass("ramadda-links"));
             addSearchByTypeList(request, sb);
+            HtmlUtils.close(sb, "div");
             sb.append(HtmlUtils.sectionClose());
         } else {
             String      type        = lastTok;
@@ -1383,7 +1385,6 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
         }
         sb.append(HtmlUtils.p());
         sb.append(header(msg("Search Results")));
-
         return makeResult(request, msg("Remote Form"), sb);
 
     }
@@ -1401,8 +1402,9 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
             throws Exception {
 
         StringBuffer sb = new StringBuffer();
+        HtmlUtils.open(sb, "div",HtmlUtils.cssClass("ramadda-links"));
         getMetadataManager().addToBrowseSearchForm(request, sb);
-
+        HtmlUtils.close(sb, "div");
         return makeResult(request, msg("Search Form"), sb);
     }
 
@@ -1724,9 +1726,7 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
         getPageHandler().makeLinksHeader(request, header, getSearchUrls(),
                                          "");
 
-        header.append(HtmlUtils.sectionOpen(null, false));
-        header.append(HtmlUtils.h2(msg("Search Results")));
-
+        getPageHandler().sectionOpen(request, header, "Search Results", false);
         getFormOpen(request, header);
         header.append(getTextField(request));
         header.append(" ");

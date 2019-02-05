@@ -419,13 +419,16 @@ public class PageHandler extends RepositoryManager {
         String userLinkTemplate =
             "<div onClick=\"document.location=\'${url}\'\"  class=\"ramadda-user-link\">${label}</div>";
         List<String> allLinks = new ArrayList<String>();
+        String searchImg = HtmlUtils.img(
+                                    getIconUrl("/icons/magnifier.png"),
+                                    "Search"," id='searchlink' ");
         String searchLink = HtmlUtils.href(
                                 getRepository().getUrlBase()
-                                + "/search/textform", HtmlUtils.img(
-                                    getIconUrl("/icons/magnifier.png"),
-                                    "Search"), HtmlUtils.cssClass(
-                                        "ramadda-user-settings-link"));
+                                + "/search/textform", searchImg,
+                                HtmlUtils.cssClass(
+                                                   "ramadda-user-settings-link"));
 
+        searchLink = HtmlUtils.mouseClickHref("ramaddaSearchPopup('searchlink');",searchImg,"");
         List<String> navLinks = getNavLinks(request, userLinkTemplate);
         List<String> userLinks = getUserLinks(request, userLinkTemplate,
                                      extra, true);

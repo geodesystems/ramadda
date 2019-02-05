@@ -62,6 +62,25 @@ function mouseDown(event) {
 
 
 
+function ramaddaSearchPopup(id) {
+    var html = "<form action='" +ramaddaBaseUrl+"/search/do'><input style='border: 1px #ccc solid;' placeholder=' Search text' name='text'></form>";
+    var linkAttrs  = ["style","color:#666; font-size:13px;"]
+    html+=HtmlUtil.span(["class","ramadda-links"], HtmlUtil.href(ramaddaBaseUrl +"/search/form","Advanced",linkAttrs) + "&nbsp;&nbsp; " +HtmlUtil.href(ramaddaBaseUrl +"/search/type","By Type", linkAttrs));
+    html = HtmlUtil.div(["style","padding:5px;"],html);
+    var selectDiv = $("#ramadda-selectdiv");
+    var icon =  $("#"+id);
+    selectDiv.html(html);
+    selectDiv.show();
+    selectDiv.position({
+            of:icon,
+                my: "right top",
+            at: "right bottom",
+            collision: "none none"
+        });
+
+}
+
+
 function mouseUp(event) {
     event = GuiUtils.getEvent(event);
     mouseIsDown = 0;

@@ -1344,7 +1344,7 @@ public class MapManager extends RepositoryManager implements WikiConstants {
             searchId = "search_" + map.getMapId();
             navTop += HtmlUtils.input(
                 "tmp", "", 20,
-                HtmlUtils.attr("placeholder", msg("Search text"))
+                HtmlUtils.attr("placeholder", msg(" Search text"))
                 + HtmlUtils.id(searchId)) + "<br>";
 
         }

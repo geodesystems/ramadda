@@ -994,6 +994,10 @@ var HtmlUtil = {
     },
     href: function(url, label, attrs) {
         if (attrs == null) attrs = [];
+        var a = [];
+        for(i in attrs)
+            a.push(attrs[i]);
+        attrs = a;
         attrs.push("href");
         attrs.push(url);
         if (!Utils.isDefined(label) || label == "") label = url;

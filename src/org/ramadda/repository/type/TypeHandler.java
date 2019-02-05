@@ -5187,7 +5187,7 @@ public class TypeHandler extends RepositoryManager {
         basicSB.append(HtmlUtils.formTableClose());
         advancedSB.append(HtmlUtils.formTableClose());
 
-        titles.add(msg("What to search for"));
+        titles.add(msg("Type, date, space"));
         contents.add(basicSB.toString());
 
     }
@@ -5224,7 +5224,9 @@ public class TypeHandler extends RepositoryManager {
         dateSelect.add(new TwoFacedObject(msg("Last 6 hours"), "-6 hours"));
         dateSelect.add(new TwoFacedObject(msg("Last 12 hours"), "-12 hours"));
         dateSelect.add(new TwoFacedObject(msg("Last day"), "-1 day"));
-        dateSelect.add(new TwoFacedObject(msg("Last 7 days"), "-7 days"));
+        dateSelect.add(new TwoFacedObject(msg("Last week"), "-7 days"));
+        dateSelect.add(new TwoFacedObject(msg("Last 2 weeks"), "-14 days"));
+        dateSelect.add(new TwoFacedObject(msg("Last month"), "-1 month"));
 
 
 
