@@ -191,6 +191,7 @@ public class BlsSeriesTypeHandler extends PointTypeHandler {
         @Override
         public InputStream doMakeInputStream(boolean buffered)
                 throws IOException {
+
             try {
                 File file = repository.getEntryManager().getCacheFile(entry,
                                 "bls.csv");
@@ -220,11 +221,25 @@ public class BlsSeriesTypeHandler extends PointTypeHandler {
                     /*
                       var dqtChart = {"categories":["Qtr1 2016","Qtr2 2016","Qtr3 2016","Qtr4 2016","Qtr1 2017","Qtr2 2017","Qtr3 2017","Qtr4 2017","Qtr1 2018","Qtr2 2018","Qtr3 2018"],"tickInterval":1,"chart":{"title":"Office of Productivity And Technology and Percent/Rate/Ratio and Productivity : Nonfarm Business","subTitle":"","yAxis":"Labor productivity (output per hour)"},"series":[{"data":[0.3,0.9,1.3,1.3,0.4,1.6,2.3,-0.3,0.3,3.0,2.3],"name":"PRS85006092"}]};
                     */
-                    String html = Utils.doPost(new URL(getFilename()), body);
-                    String pattern =
-                        ".*\"categories\":\\[(.*?)\\].*?\"data\":\\[(.*?)\\]";
-                    String[] result = Utils.findPatterns(html, pattern);
-                    if ((result == null) || (result.length != 2)) {
+                    String   html = Utils.doPost(new URL(getFilename()),
+                                        body);
+                    String   dataPattern     = "\"data\":\\[(.*?)\\]";
+                    String categoriesPattern = ".*\"categories\":\\[(.*?)\\]";
+                    String[] result          = null;
+                    String   categories      = null;
+                    String   data            = null;
+
+                    result = Utils.findPatterns(html, categoriesPattern);
+                    if ((result != null) && (result.length == 1)) {
+                        categories = result[0];
+                    }
+
+                    result = Utils.findPatterns(html, dataPattern);
+                    if ((result != null) && (result.length == 1)) {
+                        data = result[0];
+                    }
+
+                    if ((categories == null) || (data == null)) {
                         throw new IllegalArgumentException(
                             "Could not extract data");
                     }
@@ -233,10 +248,17 @@ public class BlsSeriesTypeHandler extends PointTypeHandler {
                     List<String>  times   = new ArrayList<String>();
                     List<String>  periods = new ArrayList<String>();
 
-                    List<String> values = StringUtil.split(result[1], ",",
-                                              true, true);
+                    List<String> values = StringUtil.split(data, ",", true,
+                                              true);
+                    Hashtable months = Utils.makeHashtable("M01", "Jan",
+                                           "M02", "Feb", "M03", "Mar", "M04",
+                                           "Apr", "M05", "May", "M06", "Jun",
+                                           "M07", "Jul", "M08", "Aug", "M09",
+                                           "Sep", "M10", "Oct", "M11", "Nov",
+                                           "M12", "Dec", "Q01", "Jan", "Q02",
+                                           "Apr", "Q03", "Jul", "Q04", "Oct");
                     for (String time :
-                            StringUtil.split(result[0], ",", true, true)) {
+                            StringUtil.split(categories, ",", true, true)) {
                         periods.add(time);
                         time = time.replace("\"", "").replace("Qtr1",
                                             "Jan").replace("Qtr2",
@@ -246,6 +268,27 @@ public class BlsSeriesTypeHandler extends PointTypeHandler {
                         //Check for just a year
                         if (time.matches("^\\d\\d\\d\\d$")) {
                             time = "Jan " + time;
+                        }
+                        List<String> toks = StringUtil.split(time, " ", true,
+                                                true);
+                        if (toks.size() == 3) {
+                            if (toks.get(2).startsWith("M")
+                                    && toks.get(1).matches(
+                                        "^\\d\\d\\d\\d$")) {
+                                String month =
+                                    (String) months.get(toks.get(2));
+                                time = month + " " + toks.get(1);
+                            } else if (toks.get(2).startsWith("A")
+                                       && toks.get(1).matches(
+                                           "^\\d\\d\\d\\d$")) {
+                                time = "Jan" + " " + toks.get(1);
+                            } else if (toks.get(2).startsWith("Q")
+                                       && toks.get(1).matches(
+                                           "^\\d\\d\\d\\d$")) {
+                                String month =
+                                    (String) months.get(toks.get(2));
+                                time = month + " " + toks.get(1);
+                            }
                         }
                         times.add(time);
                     }
@@ -264,6 +307,7 @@ public class BlsSeriesTypeHandler extends PointTypeHandler {
             } catch (Exception exc) {
                 throw new RuntimeException(exc);
             }
+
 
         }
 
@@ -301,30 +345,49 @@ public class BlsSeriesTypeHandler extends PointTypeHandler {
      * @throws Exception _more_
      */
     public static void main(String[] args) throws Exception {
-        String html =
-            "        var dqtChart = {\"categories\":[\"Qtr1 2016\",\"Qtr2 2016\",\"Qtr3 2016\",\"Qtr4 2016\",\"Qtr1 2017\",\"Qtr2 2017\",\"Qtr3 2017\",\"Qtr4 2017\",\"Qtr1 2018\",\"Qtr2 2018\",\"Qtr3 2018\"],\"tickInterval\":1,\"chart\":{\"title\":\"Office of Productivity And Technology and Percent/Rate/Ratio and Productivity : Nonfarm Business\",\"subTitle\":\"\",\"yAxis\":\"Labor productivity (output per hour)\"},\"series\":[{\"data\":[0.3,0.9,1.3,1.3,0.4,1.6,2.3,-0.3,0.3,3.0,2.3],\"name\":\"PRS85006092\"}]};";
-        String pattern =
-            ".*\"categories\":\\[(.*?)\\].*?\"data\":\\[(.*?)\\]";
-        String[] result = Utils.findPatterns(html, pattern);
-        if ((result == null) || (result.length != 2)) {
+        String html = IOUtil.readContents(args[0],
+                                          BlsSeriesTypeHandler.class);
+        /*            "        var dqtChart = {\"categories\":[\"Qtr1 2016\",\"Qtr2 2016\",\"Qtr3 2016\",\"Qtr4 2016\",\"Qtr1 2017\",\"Qtr2 2017\",\"Qtr3 2017\",\"Qtr4 2017\",\"Qtr1 2018\",\"Qtr2 2018\",\"Qtr3 2018\"],\"tickInterval\":1,\"chart\":{\"title\":\"Office of Productivity And Technology and Percent/Rate/Ratio and Productivity : Nonfarm Business\",\"subTitle\":\"\",\"yAxis\":\"Labor productivity (output per hour)\"},\"series\":[{\"data\":[0.3,0.9,1.3,1.3,0.4,1.6,2.3,-0.3,0.3,3.0,2.3],\"name\":\"PRS85006092\"}]};";
+         */
+        String   dataPattern       = "\"data\":\\[(.*?)\\]";
+        String   categoriesPattern = ".*\"categories\":\\[(.*?)\\]";
+        String[] result            = null;
+        String   categories        = null;
+        String   data              = null;
+
+        result = Utils.findPatterns(html, categoriesPattern);
+        if ((result != null) && (result.length == 1)) {
+            categories = result[0];
+        }
+
+        result = Utils.findPatterns(html, dataPattern);
+        if ((result != null) && (result.length == 1)) {
+            data = result[0];
+        }
+        System.err.println(categories);
+        System.err.println(data);
+
+        if ((categories == null) || (data == null)) {
             throw new IllegalArgumentException("Could not extract data");
         }
         SimpleDateFormat sdf   = new SimpleDateFormat("MMM yyyy");
         SimpleDateFormat sdf2  = new SimpleDateFormat("MMM yyyy");
 
         List<String>     times = new ArrayList<String>();
-        for (String time : StringUtil.split(result[0], ",", true, true)) {
+        for (String time : StringUtil.split(categories, ",", true, true)) {
             time = time.replace("\"", "").replace("Qtr1",
                                 "Jan").replace("Qtr2", "Apr").replace("Qtr3",
                                     "Jul").replace("Qtr4", "Oct");
+
+            List<String> toks = StringUtil.split(time, " ", true, true);
+            if (toks.size() == 3) {}
 
             times.add(time);
             Date dttm = sdf.parse(time);
             System.err.println("dttm:" + dttm);
         }
 
-        System.err.println("result:" + result[0]);
-        System.err.println("result:" + result[1]);
+
 
 
     }
