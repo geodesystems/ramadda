@@ -3998,7 +3998,9 @@ public class EntryManager extends RepositoryManager {
 
         getPageHandler().entrySectionOpen(request, group, sb,
                                           "Choose entry type");
+        sb.append(HtmlUtils.open("div"," class='ramadda-links' "));
         sb.append(HtmlUtils.insetDiv(inner.toString(), 10, 20, 0, 0));
+        sb.append(HtmlUtils.close("div"));
         getPageHandler().entrySectionClose(request, group, sb);
 
         return makeEntryEditResult(request, group, "Create Entry", sb);
