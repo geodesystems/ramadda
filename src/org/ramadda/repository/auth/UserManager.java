@@ -273,8 +273,8 @@ public class UserManager extends RepositoryManager {
     /** urls to use when the user is logged in */
     protected List<RequestUrl> userUrls =
         RequestUrl.toList(new RequestUrl[] {
-            getRepositoryBase().URL_USER_HOME,
             getRepositoryBase().URL_USER_FORM,
+            getRepositoryBase().URL_USER_HOME,
             getRepositoryBase().URL_USER_CART,
             getRepositoryBase().URL_USER_MONITORS });
 
