@@ -70,6 +70,12 @@ function ramaddaSearchSuggestInit(id, type, icon) {
     ramaddSearchLastInput = input.val();
     input.keyup(function(e) {
         var keyCode = e.keyCode || e.which;
+        if (keyCode == 27) {
+            var popup = $("#searchpopup");
+            popup.hide();
+            return;
+        }
+
         if (keyCode == 13) {
             var popup = $("#searchpopup");
             popup.hide();
@@ -78,15 +84,18 @@ function ramaddaSearchSuggestInit(id, type, icon) {
 
         e.stopPropagation();
         if (searching) return;
+
         var newVal = input.val();
         if (newVal != ramaddSearchLastInput) {
             ramaddSearchLastInput = newVal;
             searching = true;
-            var url = ramaddaBaseUrl + "/search/suggest?string="
+            var url = ramaddaBaseUrl + "/search/suggest?string=" +  encodeURIComponent(newVal);
             if (type) url += "&type=" + type;
+
             var jqxhr = $.getJSON(url, function(data) {
                 var popup = $("#searchpopup");
                 searching = false;
+                console.log("data:" + data.values.length);
                 if (data.values.length == 0) {
                     popup.hide();
                     return;
@@ -117,7 +126,7 @@ function ramaddaSearchSuggestInit(id, type, icon) {
                     of: input,
                     my: my,
                     at: at,
-                    collision: "fit fit"
+                    collision: "fit none"
                 });
             }).fail(function(jqxhr, textStatus, error) {
                 console.log("fail");
@@ -139,7 +148,10 @@ function ramaddaSearchLink() {
 }
 
 function ramaddaSearchPopup(id) {
-    var html = "<form action='" + ramaddaBaseUrl + "/search/do'><input autocomplete=off autofocus id='popup_search_input' size='30' style='border: 1px #ccc solid;' placeholder=' Search text' name='text'></form><div id=searchpopup class=ramadda-popup></div>";
+    var value= "";
+    if(ramaddSearchLastInput)
+        value = " value='" + ramaddSearchLastInput+"' ";
+    var html = "<form action='" + ramaddaBaseUrl + "/search/do'><input " + value +" autocomplete=off autofocus id='popup_search_input' size='30' style='border: 1px #ccc solid;' placeholder=' Search text' name='text'></form><div id=searchpopup class=ramadda-popup></div>";
     var linkStyle = "font-size:13px;";
     html += "\n";
     var linksId = HtmlUtils.getUniqueId();
