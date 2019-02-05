@@ -1686,6 +1686,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 
             var jsonUrl = this.getPointUrl(entry);
             if (jsonUrl != null) {
+                jsonUrl = jsonUrl.replace(/\'/g,"_");
                 toolbarItems.push(HtmlUtils.tag(TAG_A, ["onclick", get + ".createDisplay(" + HtmlUtils.sqt(entry.getFullId()) + "," +
                         HtmlUtils.sqt("table") + "," + HtmlUtils.sqt(jsonUrl) + ");"
                     ],
