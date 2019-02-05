@@ -104,9 +104,9 @@
 +section title="{{name}}" #
 {{noheading}}
 {{audio}}
-+note
++block
 {{description}}
--note
+-block
 -section
 ]]>
 </wiki>

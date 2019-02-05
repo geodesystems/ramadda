@@ -28,10 +28,9 @@
      <wiki><![CDATA[
 +section title={{name}}
 {{voicemail}}
-
-+note
++block
 {{description}}
--note
+-block
 
 -section
 ]]>
