@@ -1035,8 +1035,11 @@ td.entry-table-block {
      text-decoration:none;
 }
 
-.btn-primary  {
+
+
+a.btn-primary:link, a.btn-primary  {
    color:#fff;
+   text-decoration:none;
 }
 
 .ramadda-link {
