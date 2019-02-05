@@ -8,14 +8,14 @@
 <body>
 <div class="ramadda-documentation">
 <table width=100% cellspacing=0 cellpadding=0 ><tr><td width=30%>
-<a href="wikitext.html"><img src="images/previous.png" border="0"   alt="Previous: Wiki Text" title="Previous: Wiki Text"></a> <a href="entries.html"><img src="images/next.png" border="0"   alt="Next: Managing Entries" title="Next: Managing Entries"></a>  <a href="toc.html#wikidisplay.html"><img src="images/table.png" border="0"   alt="Table of contents" title="Table of contents"></a>
+<a href="wikitext.html"><img src="images/previous.png" border="0"   alt="Previous: Wiki Text" title="Previous: Wiki Text"></a> <a href="pagestyle.html"><img src="images/next.png" border="0"   alt="Next: Page Styles" title="Next: Page Styles"></a>  <a href="toc.html#wikidisplay.html"><img src="images/table.png" border="0"   alt="Table of contents" title="Table of contents"></a>
 </td>
 <td width=40% align=center>
 <div class="ramadda-page-title"><a href="${root}/userguide/index.html">RAMADDA User Guide</a></div>
 </td>
 <td width=30%>&nbsp;</td>
 </tr></table>
-<div class="ramadda-page-heading">7.2 Wiki Display Components</div>
+<div class="ramadda-page-heading">Section 5.2: Wiki Display Components</div>
 
 <style type="text/css">
 pre {
@@ -35,7 +35,7 @@ There are a number of
 <a href="https://geodesystems.com/repository/entry/show/Home/Content/Miscellany/Example+Charts/World%27s+Oldest+People+Data+is+Beautiful?entryid=d7c23939-dbfe-4bbf-9045-70e2422c3117&output=html.info">example</a>.
 
 
-<p><div class="ramadda-help-heading">7.2.0 Available Displays</div> 
+<p><div class="ramadda-help-heading">5.2.0 Available Displays</div> 
 <ul><li> <a href='#entrylist'>Search form</a>
 <li> <a href='#entrygrid'>Entry Grid</a>
 <li> <a href='#animation'>Animation</a>
@@ -66,7 +66,7 @@ There are a number of
 <li> <a href='#timelinechart'>Timeline</a>
 </ul>
 
-<a name="basics"></a><p><div class="ramadda-help-heading">7.2.1 <a href="#basics">The Basics</a></div> 
+<a name="basics"></a><p><div class="ramadda-help-heading">5.2.1 <a href="#basics">The Basics</a></div> 
 The charts and information displays follow the RAMADDA wiki tag format:
 
 <pre>{{display  type=&quot;&lt;display type&gt;&quot;  &lt;name=value pairs&gt;}}</pre>
@@ -90,7 +90,7 @@ The full set of color tables can be viewed at
 <a href="${root}/colortables">here</a>.
 
 
-<a name="fields"></a><p><div class="ramadda-help-heading">7.2.2 <a href="#fields">Specifying Fields</a></div> 
+<a name="fields"></a><p><div class="ramadda-help-heading">5.2.2 <a href="#fields">Specifying Fields</a></div> 
 Most of these displays are based on <a href="pointdata.html">point data</a> in RAMADDA. The point data model
 is based on a series of records (or rows) that are made up of a set of fields (or columns). 
 Each field has  a certain type - double, integer, string,  date.
@@ -111,7 +111,7 @@ The field ids for a point data entry can be viewed with the  Metadata view, e.g.
 
 
 
-<a name="groups"></a><p><div class="ramadda-help-heading">7.2.3 <a href="#groups">Display Groups</a></div> 
+<a name="groups"></a><p><div class="ramadda-help-heading">5.2.3 <a href="#groups">Display Groups</a></div> 
 There is a <i>group</i> tag that can manage a number of children displays. The general use is of the form below where displays 1-3 are part of group 1 and displays 4,5 are part of group 2. 
 The group allows for different displays to communicate with each other 
 (e.g., creating a new chart, map click, animation, etc), the inheritance of
@@ -197,7 +197,7 @@ Likewise, the group has a divid=maindiv which corresponds to the div at the bott
 
 
 
-<a name="fields"></a><p><div class="ramadda-help-heading">7.2.4 <a href="#fields">Specifying Fields</a></div> 
+<a name="fields"></a><p><div class="ramadda-help-heading">5.2.4 <a href="#fields">Specifying Fields</a></div> 
 Most of these displays are based on <a href="pointdata.html">point data</a> in RAMADDA. The point data model
 is based on a series of records (or rows) that are made up of a set of fields (or columns). 
 Many of the displays below use a <i>fields</i> attribute to specify the fields that are displayed. 
@@ -219,7 +219,7 @@ vAxisMinValue=&quot;0&quot; vAxisMaxValue=&quot;100&quot;  title=&quot;Line Char
 
 
 
-<a name="displays"></a><p><div class="ramadda-help-heading">7.2.5 <a href="#displays">The Displays</a></div> 
+<a name="displays"></a><p><div class="ramadda-help-heading">5.2.5 <a href="#displays">The Displays</a></div> 
 
 <a name="entrylist"></a>
 <div class="ramadda-help-subsubheading"><a href="#entrylist">Search form</a>
@@ -607,7 +607,7 @@ labelFieldsTemplate=&quot;{name}  Age: {years}  Birth Place: {birth_place}  Race
 labelFields=&quot;name,race,birth_place,years&quot;}}</pre><a href='https://geodesystems.com/repository/entry/show?entryid=d7c23939-dbfe-4bbf-9045-70e2422c3117'>Example</a><a name="image30"></a><div class="cimg"><a href="images/charts/timeline.png"><img  src="images/charts/timeline.png"  alt="Timeline" ></a><br><span class="caption">Image 30: Timeline</span></div>
 
 
-<a name="derived"></a><p><div class="ramadda-help-heading">7.2.6 <a href="#derived">Derived Data</a></div> 
+<a name="derived"></a><p><div class="ramadda-help-heading">5.2.6 <a href="#derived">Derived Data</a></div> 
 
 Derived data can be calculated by specifying a javascript function with the field ids. For example, in the 
 <a href="https://geodesystems.com/repository/entry/show?entryid=e8af924a-2194-4fd0-83be-92d006837c00">election data example</a> 
@@ -625,7 +625,7 @@ Percentage values can be calculated with the <i>showPercent</i> attribute. This 
 percent value.
 
 
-<a name="scaleoffset"></a><p><div class="ramadda-help-heading">7.2.7 <a href="#scaleoffset">Scaling and offset of data</a></div> 
+<a name="scaleoffset"></a><p><div class="ramadda-help-heading">5.2.7 <a href="#scaleoffset">Scaling and offset of data</a></div> 
 The data values and or displayed unit of the point data that is displayed in chart can be modified
 by specifying offset and scale units. For example, one can convert Kelvin to Celsius in a display
 with the following attributes:
@@ -647,7 +647,7 @@ You can specify values specific for a particular field using:
 </pre></div>
 
 
-<a name="displayProperty"></a><p><div class="ramadda-help-heading">7.2.8 <a href="#displayProperty">Setting shared properties</a></div> 
+<a name="displayProperty"></a><p><div class="ramadda-help-heading">5.2.8 <a href="#displayProperty">Setting shared properties</a></div> 
 Sometimes there are a number of displays on a single page that share the same set of properties.
 For example, this <a href="https://geodesystems.com/repository/entry/show?entryid=8fafafa0-0105-4f14-9c86-6a9902f186a9">page</a>
 shows a number of charts of atmospheric time series data. The data itself has temperature in Kelvin and pressure in Pascals. 
@@ -664,7 +664,7 @@ tag global properties can be specified that are applicable to all displays on th
 </pre></div>
 
 
-<a name="filters"></a><p><div class="ramadda-help-heading">7.2.9 <a href="#filters">Filtering data</a></div> 
+<a name="filters"></a><p><div class="ramadda-help-heading">5.2.9 <a href="#filters">Filtering data</a></div> 
 You can filter the data that is shown based on string pattern matching or numeric operators.
 You do this with the attributes:
 <pre>
@@ -686,7 +686,7 @@ numericFilterField="#3" numericFilterValue="5000" filterOperator=">"
 <p>
 
 <p>&nbsp;<p>
-<a href="wikitext.html"><img src="images/previous.png" border="0"   alt="Previous: Wiki Text" title="Previous: Wiki Text"></a> <a href="entries.html"><img src="images/next.png" border="0"   alt="Next: Managing Entries" title="Next: Managing Entries"></a>  <a href="toc.html#wikidisplay.html"><img src="images/table.png" border="0"   alt="Table of contents" title="Table of contents"></a>
+<a href="wikitext.html"><img src="images/previous.png" border="0"   alt="Previous: Wiki Text" title="Previous: Wiki Text"></a> <a href="pagestyle.html"><img src="images/next.png" border="0"   alt="Next: Page Styles" title="Next: Page Styles"></a>  <a href="toc.html#wikidisplay.html"><img src="images/table.png" border="0"   alt="Table of contents" title="Table of contents"></a>
 <p>
 </div>
 </body>

@@ -308,12 +308,12 @@ proc displayType {name id desc args {img ""} {url ""} } {
 
 
 
-proc ug::subheading {label {id ""}  {extra {}}} {
+proc ug::subheading {label {id ""}  {extra {}}   {intoc false} } {
     set attrs ""
     if {$id!=""} {
             set attrs [ht::attrs id $id]
     }
-    return "<subhead [ht::attrs id $id] $attrs  $extra>$label</subhead>"
+    return "<subhead intoc=\"$intoc\" [ht::attrs id $id] $attrs  $extra>$label</subhead>"
 }
 
 proc ug::subsubheading {l {href ""}} {
@@ -2751,7 +2751,7 @@ proc gen::writeFiles  {} {
 
     foreach {toc fulltoc  frametoc} [gen::getToc [gen::getTopFile] 1] break
     if {[gen::getDoAncillaryFiles]} {
-            gen::createGeneralFile [file join [gen::getTargetDir] toc.html] "Table of Contents" $toc
+            gen::createGeneralFile [file join [gen::getTargetDir] toc.html] "Table of Contents" "<div class=ramadda-links>$toc</div>"
             gen::createGeneralFile [file join [gen::getTargetDir] fulltoc.html] "Full Table of Contents" $fulltoc
     }
 

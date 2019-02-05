@@ -12,27 +12,27 @@ index.html
 -examples/pdfbox.sh
 -examples/README.INSTALLER
 -map.html
->overview.html
->faq.html
 >user.html
->newentry.html
->editing.html
+>title:RAMADDA Entries
+>>overview.html
+>>newentry.html
+>>editing.html
+>>access.html
+>>configuration.html
+>faq.html
 >title:RAMADDA Wiki Facilities
 >>wiki.html
 >>wikitext.html
 >>wikidisplay.html
->entries.html
->access.html
->configuration.html
 >>pagestyle.html
 -exampletemplate.html.txt
 -exampletemplate.jar
 
 
->title:Entries:Documentation for how to use the different types of entries available
+#>title:Entries:Documentation for how to use the different types of entries available
 #>>localfileview.html
 #>>ftpview.html
->>gridaggregation.html
+
 
 
 
@@ -47,6 +47,7 @@ index.html
 #>>pointdata.html
 >>gridsubset.html
 >>gridatpoint.html
+>>gridaggregation.html
 #>>gridvisualization.html
 >>idvpublisher.html
 
