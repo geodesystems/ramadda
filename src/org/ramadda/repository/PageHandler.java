@@ -2016,7 +2016,7 @@ public class PageHandler extends RepositoryManager {
             String userIcon = HtmlUtils.img(getIconUrl("/icons/user.png"),
                                             "Settings for " + label);
             String settingsUrl =
-                request.makeUrl(getRepositoryBase().URL_USER_HOME);
+                request.makeUrl(getRepositoryBase().URL_USER_FORM);
 
             if (makePopup) {
                 prefix.append(
