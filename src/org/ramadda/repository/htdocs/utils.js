@@ -278,8 +278,8 @@ var Utils = {
         var cnt = 0;
         var html = "";
         for(a in this.ColorTables) {
-            html+=HtmlUtil.b(a);
-            html+=HtmlUtil.div(["id",domId+"_" + cnt,"style","width:100%;"],"");
+            html+=HtmlUtils.b(a);
+            html+=HtmlUtils.div(["id",domId+"_" + cnt,"style","width:100%;"],"");
             html+="<br>";
             cnt++;
         }
@@ -301,7 +301,7 @@ var Utils = {
         if(args) $.extend(options, args);
         min = parseFloat(min);
         max = parseFloat(max);
-        var html = HtmlUtil.openTag("div", ["class", "display-colortable"]) + "<table cellpadding=0 cellspacing=0 width=100% border=0><tr>";
+        var html = HtmlUtils.openTag("div", ["class", "display-colortable"]) + "<table cellpadding=0 cellspacing=0 width=100% border=0><tr>";
         if(options.showRange)
             html+="<td width=1%>" + this.formatNumber(min) + "&nbsp;</td>";
         var step = (max - min) / ct.length;
@@ -312,13 +312,13 @@ var Utils = {
                 attrs.push("title");
                 attrs.push(this.formatNumber(min + step * i));
             }
-            html += HtmlUtil.td(["class", "display-colortable-slice", "style", "background:" + ct[i] + ";", "width", "1"], HtmlUtil.div(attrs, ""));
+            html += HtmlUtils.td(["class", "display-colortable-slice", "style", "background:" + ct[i] + ";", "width", "1"], HtmlUtils.div(attrs, ""));
         }
         if(options.showRange) {
             html += "<td width=1%>&nbsp;" + this.formatNumber(max) + "</td>";
         }
         html += "</tr></table>";
-        html += HtmlUtil.closeTag("div");
+        html += HtmlUtils.closeTag("div");
         $("#" + domId).html(html);
     },
     ColorTables: {
@@ -692,7 +692,7 @@ var ATTR_ALIGN = "align";
 var ATTR_VALIGN = "valign";
 
 
-var HtmlUtil = {
+var HtmlUtils = {
     tabLoaded: function(event, ui) {
         if (window["ramaddaDisplayCheckLayout"]) {
             ramaddaDisplayCheckLayout();
@@ -795,7 +795,7 @@ var HtmlUtil = {
         if (right) {
             style += "padding-right: " + right + "px; ";
         }
-        return HtmlUtil.div(["style", style], html);
+        return HtmlUtils.div(["style", style], html);
 
     },
     makeAccordian: function(id, args) {
@@ -817,9 +817,9 @@ var HtmlUtil = {
         });
     },
     hbox: function() {
-        var row = HtmlUtil.openTag("tr", ["valign", "top"]);
+        var row = HtmlUtils.openTag("tr", ["valign", "top"]);
         row += "<td>";
-        row += HtmlUtil.join(arguments, "</td><td>");
+        row += HtmlUtils.join(arguments, "</td><td>");
         row += "</td></tr>";
         return this.tag("table", ["border", "0", "cellspacing", "0", "cellpadding", "0"],
             row);
@@ -905,7 +905,7 @@ var HtmlUtil = {
         } else {
             url += "&";
         }
-        url += HtmlUtil.urlArg(arg, value);
+        url += HtmlUtils.urlArg(arg, value);
         return url;
     },
     getUrl: function(path, args) {
@@ -992,6 +992,21 @@ var HtmlUtil = {
     idAttr: function(s) {
         return this.attr("id", s);
     },
+    link: function(url, label, attrs) {
+        if (attrs == null) attrs = [];
+        var a = [];
+        for(i in attrs)
+            a.push(attrs[i]);
+        attrs = a;
+        attrs.push("url");
+        attrs.push(url);
+        attrs.push("class");
+        attrs.push("ramadda-link");
+        if(attrs.style) attrs.style+="display:inline-block;";
+        else attrs.style="style='display:inline-block;'";
+        return this.div(attrs,label);
+    },
+
     href: function(url, label, attrs) {
         if (attrs == null) attrs = [];
         var a = [];
@@ -1113,7 +1128,7 @@ var HtmlUtil = {
 
         var base = window.location.protocol + "//" + window.location.host;
         url = base + url;
-        var html = HtmlUtil.div(["class", "ramadda-form-url"], HtmlUtil.href(url, HtmlUtil.image(ramaddaBaseUrl + "/icons/link.png")) + " " + url);
+        var html = HtmlUtils.div(["class", "ramadda-form-url"], HtmlUtils.href(url, HtmlUtils.image(ramaddaBaseUrl + "/icons/link.png")) + " " + url);
         if (hook) {
             html += hook({
                 entryId: entryid,
@@ -1126,15 +1141,15 @@ var HtmlUtil = {
     },
     makeUrlShowingForm: function(entryId, formId, outputId, skip, hook) {
         $("#" + formId + " :input").change(function() {
-            HtmlUtil.handleFormChangeShowUrl(entryId, formId, outputId, skip, hook);
+            HtmlUtils.handleFormChangeShowUrl(entryId, formId, outputId, skip, hook);
         });
-        HtmlUtil.handleFormChangeShowUrl(entryId, formId, outputId, skip, hook);
+        HtmlUtils.handleFormChangeShowUrl(entryId, formId, outputId, skip, hook);
     },
     input: function(name, value, attrs) {
-        return "<input " + HtmlUtil.attrs(attrs) + HtmlUtil.attrs(["name", name, "value", value]) + ">";
+        return "<input " + HtmlUtils.attrs(attrs) + HtmlUtils.attrs(["name", name, "value", value]) + ">";
     },
     textarea: function(name, value, attrs) {
-        return "<textarea " + HtmlUtil.attrs(attrs) + HtmlUtil.attrs(["name", name]) + ">" + value + "</textarea>";
+        return "<textarea " + HtmlUtils.attrs(attrs) + HtmlUtils.attrs(["name", name]) + ">" + value + "</textarea>";
     },
     initSelect: function(s) {
         $(s).selectBoxIt({});
@@ -1156,14 +1171,14 @@ var HtmlUtil = {
 
         var img1 = ramaddaBaseUrl + "/icons/togglearrowdown.gif";
         var img2 = ramaddaBaseUrl + "/icons/togglearrowright.gif";
-        var args = HtmlUtil.join([HtmlUtil.squote(id), HtmlUtil.squote(imgid), HtmlUtil.squote(img1), HtmlUtil.squote(img2)], ",");
+        var args = HtmlUtils.join([HtmlUtils.squote(id), HtmlUtils.squote(imgid), HtmlUtils.squote(img1), HtmlUtils.squote(img2)], ",");
         var click = "toggleBlockVisibility(" + args + ");";
 
-        var header = HtmlUtil.div(["class", "entry-toggleblock-label", "onClick", click],
-            HtmlUtil.image((visible ? img1 : img2), ["align", "bottom", "id", imgid]) +
+        var header = HtmlUtils.div(["class", "entry-toggleblock-label", "onClick", click],
+            HtmlUtils.image((visible ? img1 : img2), ["align", "bottom", "id", imgid]) +
             " " + label);
         var style = (visible ? "display:block;visibility:visible" : "display:none;");
-        var body = HtmlUtil.div(["class", "hideshowblock", "id", id, "style", style],
+        var body = HtmlUtils.div(["class", "hideshowblock", "id", id, "style", style],
             contents);
         return header + body;
     }
@@ -1291,7 +1306,7 @@ $.widget("custom.iconselectmenu", $.ui.selectmenu, {
 
 window.onbeforeunload = pageIsUnloading;
 
-
+var HtmlUtil = HtmlUtils;
 
 
 /*

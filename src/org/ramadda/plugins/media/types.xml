@@ -39,16 +39,16 @@
 
 </type>
 
-  <type name="type_document_doc"  description="Microsoft Word File" pattern="(.*\.doc|.*\.docx)"  super="type_document_tika"         handler="org.ramadda.data.docs.MsDocTypeHandler" >
+  <type name="type_document_doc"  description="Word File" pattern="(.*\.doc|.*\.docx)"  super="type_document_tika"         handler="org.ramadda.data.docs.MsDocTypeHandler" >
      <property name="icon" value="/icons/doc.png"/>
 </type>
 
-  <type name="type_document_ppt"  description="Microsoft Powerpoint File" pattern="(.*\.ppt|.*\.pptx)"  super="type_document_tika"   handler="org.ramadda.data.docs.MsDocTypeHandler" >
+  <type name="type_document_ppt"  description="Powerpoint File" pattern="(.*\.ppt|.*\.pptx)"  super="type_document_tika"   handler="org.ramadda.data.docs.MsDocTypeHandler" >
      <property name="icon" value="/icons/ppt.png"/>
 </type>
 
 
-  <type name="type_document_xls"  description="Microsoft Excel File" pattern="(.*\.xls|.*\.xlsx)"  super="type_document_tabular"   handler="org.ramadda.plugins.media.XlsTypeHandler">
+  <type name="type_document_xls"  description="Excel File" pattern="(.*\.xls|.*\.xlsx)"  super="type_document_tabular"   handler="org.ramadda.plugins.media.XlsTypeHandler">
      <property name="icon" value="/icons/xls.png"/>
 
 </type>
@@ -143,7 +143,7 @@
 </type>
 
 
-  <type name="media_imageloop"  description="Image Loop" handler="org.ramadda.repository.type.ExtensibleGroupTypeHandler" category="Information">
+  <type name="media_imageloop"  description="Image Loop" handler="org.ramadda.repository.type.ExtensibleGroupTypeHandler" category="Imagery">
      <property name="form.resource.show" value="false"/>
      <property name="icon" value="/media/film.png"/>
      <wiki><![CDATA[
@@ -159,7 +159,7 @@
 </type>
 
 
-  <type name="type_image"  description="Image" foruser="true" category="Documents" pattern="(.*\.png|.*\.gif|.*\.jpg|.*\.jpeg)" handler="org.ramadda.plugins.media.ImageTypeHandler">
+  <type name="type_image"  description="Image" foruser="true" category="Imagery" pattern="(.*\.png|.*\.gif|.*\.jpg|.*\.jpeg)" handler="org.ramadda.plugins.media.ImageTypeHandler">
      <property name="icon" value="/icons/image.gif"/>
      <column   name="proxy" type="boolean" label="Proxy Image if URL"  showinhtml="false" default="false"/>
      <column   name="filename" label="Alternate filename"  showinhtml="false" />

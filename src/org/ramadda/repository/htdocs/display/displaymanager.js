@@ -242,7 +242,7 @@ function DisplayManager(argId, argProperties) {
                     newMenus[category] = "";
                     cats.push(category);
                 }
-                newMenus[category] += HtmlUtil.tag(TAG_LI, [], HtmlUtil.tag(TAG_A, ["onclick", get + ".userCreateDisplay('" + type.type + "');"], type.label));
+                newMenus[category] += HtmlUtils.tag(TAG_LI, [], HtmlUtils.tag(TAG_A, ["onclick", get + ".userCreateDisplay('" + type.type + "');"], type.label));
             }
 
             var newMenu = "";
@@ -251,65 +251,65 @@ function DisplayManager(argId, argProperties) {
                 if (cat == "Charts") {
                     chartMenu = newMenus[cat];
                 }
-                var subMenu = HtmlUtil.tag("ul", [], newMenus[cat]);
-                var catLabel = HtmlUtil.tag(TAG_A, [], cat);
-                newMenu += HtmlUtil.tag(TAG_LI, [], catLabel + subMenu);
-                //                    newMenu  += HtmlUtil.tag(TAG_LI,[], "SUB " + i);
+                var subMenu = HtmlUtils.tag("ul", [], newMenus[cat]);
+                var catLabel = HtmlUtils.tag(TAG_A, [], cat);
+                newMenu += HtmlUtils.tag(TAG_LI, [], catLabel + subMenu);
+                //                    newMenu  += HtmlUtils.tag(TAG_LI,[], "SUB " + i);
             }
             var publishMenu =
-                HtmlUtil.tag(TAG_LI, [], HtmlUtil.onClick(layout + ".publish('media_photoalbum');", "New Photo Album")) + "\n" +
-                HtmlUtil.tag(TAG_LI, [], HtmlUtil.onClick(layout + ".publish('wikipage');", "New Wiki Page")) + "\n" +
-                HtmlUtil.tag(TAG_LI, [], HtmlUtil.onClick(layout + ".publish('blogentry');", "New Blog Post")) + "\n";
+                HtmlUtils.tag(TAG_LI, [], HtmlUtils.onClick(layout + ".publish('media_photoalbum');", "New Photo Album")) + "\n" +
+                HtmlUtils.tag(TAG_LI, [], HtmlUtils.onClick(layout + ".publish('wikipage');", "New Wiki Page")) + "\n" +
+                HtmlUtils.tag(TAG_LI, [], HtmlUtils.onClick(layout + ".publish('blogentry');", "New Blog Post")) + "\n";
 
 
             var fileMenu =
-                HtmlUtil.tag(TAG_LI, [], "<a>Publish</a>" + HtmlUtil.tag("ul", [], publishMenu)) + "\n" +
-                HtmlUtil.tag(TAG_LI, [], HtmlUtil.onClick(layout + ".copyDisplayedEntries();", "Save entries")) + "\n";
+                HtmlUtils.tag(TAG_LI, [], "<a>Publish</a>" + HtmlUtils.tag("ul", [], publishMenu)) + "\n" +
+                HtmlUtils.tag(TAG_LI, [], HtmlUtils.onClick(layout + ".copyDisplayedEntries();", "Save entries")) + "\n";
 
 
-            var titles = HtmlUtil.tag(TAG_DIV, ["class", "ramadda-menu-block"], "Titles: " + HtmlUtil.onClick(layout + ".titlesOn();", "On") + "/" + HtmlUtil.onClick(layout + ".titlesOff();", "Off"));
-            var dates = HtmlUtil.tag(TAG_DIV, ["class", "ramadda-menu-block"],
+            var titles = HtmlUtils.tag(TAG_DIV, ["class", "ramadda-menu-block"], "Titles: " + HtmlUtils.onClick(layout + ".titlesOn();", "On") + "/" + HtmlUtils.onClick(layout + ".titlesOff();", "Off"));
+            var dates = HtmlUtils.tag(TAG_DIV, ["class", "ramadda-menu-block"],
                 "Set date range: " +
-                HtmlUtil.onClick(layout + ".askMinDate();", "Min") + "/" +
-                HtmlUtil.onClick(layout + ".askMaxDate();", "Max"));
+                HtmlUtils.onClick(layout + ".askMinDate();", "Min") + "/" +
+                HtmlUtils.onClick(layout + ".askMaxDate();", "Max"));
             var editMenu =
-                HtmlUtil.tag(TAG_LI, [], HtmlUtil.tag(TAG_DIV, ["class", "ramadda-menu-block"],
+                HtmlUtils.tag(TAG_LI, [], HtmlUtils.tag(TAG_DIV, ["class", "ramadda-menu-block"],
                     "Set axis range :" +
-                    HtmlUtil.onClick(layout + ".askMinZAxis();", "Min") + "/" +
-                    HtmlUtil.onClick(layout + ".askMaxZAxis();", "Max"))) +
-                HtmlUtil.tag(TAG_LI, [], dates) +
-                HtmlUtil.tag(TAG_LI, [], titles) + "\n" +
-                HtmlUtil.tag(TAG_LI, [], HtmlUtil.tag(TAG_DIV, ["class", "ramadda-menu-block"], "Details: " + HtmlUtil.onClick(layout + ".detailsOn();", "On", []) + "/" +
-                    HtmlUtil.onClick(layout + ".detailsOff();", "Off", []))) +
-                HtmlUtil.tag(TAG_LI, [], HtmlUtil.onClick(layout + ".deleteAllDisplays();", "Delete all displays")) + "\n" +
+                    HtmlUtils.onClick(layout + ".askMinZAxis();", "Min") + "/" +
+                    HtmlUtils.onClick(layout + ".askMaxZAxis();", "Max"))) +
+                HtmlUtils.tag(TAG_LI, [], dates) +
+                HtmlUtils.tag(TAG_LI, [], titles) + "\n" +
+                HtmlUtils.tag(TAG_LI, [], HtmlUtils.tag(TAG_DIV, ["class", "ramadda-menu-block"], "Details: " + HtmlUtils.onClick(layout + ".detailsOn();", "On", []) + "/" +
+                    HtmlUtils.onClick(layout + ".detailsOff();", "Off", []))) +
+                HtmlUtils.tag(TAG_LI, [], HtmlUtils.onClick(layout + ".deleteAllDisplays();", "Delete all displays")) + "\n" +
                 "";
 
 
-            var table = HtmlUtil.tag(TAG_DIV, ["class", "ramadda-menu-block"], "Table: " +
-                HtmlUtil.onClick(layout + ".setLayout('table',1);", "1 column") + " / " +
-                HtmlUtil.onClick(layout + ".setLayout('table',2);", "2 column") + " / " +
-                HtmlUtil.onClick(layout + ".setLayout('table',3);", "3 column") + " / " +
-                HtmlUtil.onClick(layout + ".setLayout('table',4);", "4 column"));
+            var table = HtmlUtils.tag(TAG_DIV, ["class", "ramadda-menu-block"], "Table: " +
+                HtmlUtils.onClick(layout + ".setLayout('table',1);", "1 column") + " / " +
+                HtmlUtils.onClick(layout + ".setLayout('table',2);", "2 column") + " / " +
+                HtmlUtils.onClick(layout + ".setLayout('table',3);", "3 column") + " / " +
+                HtmlUtils.onClick(layout + ".setLayout('table',4);", "4 column"));
             var layoutMenu =
-                HtmlUtil.tag(TAG_LI, [], table) +
-                HtmlUtil.tag(TAG_LI, [], HtmlUtil.onClick(layout + ".setLayout('rows');", "Rows")) + "\n" +
-                HtmlUtil.tag(TAG_LI, [], HtmlUtil.onClick(layout + ".setLayout('columns');", "Columns")) + "\n" +
-                HtmlUtil.tag(TAG_LI, [], HtmlUtil.onClick(layout + ".setLayout('tabs');", "Tabs"));
+                HtmlUtils.tag(TAG_LI, [], table) +
+                HtmlUtils.tag(TAG_LI, [], HtmlUtils.onClick(layout + ".setLayout('rows');", "Rows")) + "\n" +
+                HtmlUtils.tag(TAG_LI, [], HtmlUtils.onClick(layout + ".setLayout('columns');", "Columns")) + "\n" +
+                HtmlUtils.tag(TAG_LI, [], HtmlUtils.onClick(layout + ".setLayout('tabs');", "Tabs"));
 
 
 
-            var menuBar = HtmlUtil.tag(TAG_LI, [], "<a>File</a>" + HtmlUtil.tag("ul", [], fileMenu));
+            var menuBar = HtmlUtils.tag(TAG_LI, [], "<a>File</a>" + HtmlUtils.tag("ul", [], fileMenu));
             if (chartMenu != "") {
-                menuBar += HtmlUtil.tag(TAG_LI, [], "<a>Charts</a>" + HtmlUtil.tag("ul", [], chartMenu));
+                menuBar += HtmlUtils.tag(TAG_LI, [], "<a>Charts</a>" + HtmlUtils.tag("ul", [], chartMenu));
             }
-            menuBar += HtmlUtil.tag(TAG_LI, [], "<a>Edit</a>" + HtmlUtil.tag("ul", [], editMenu)) +
-                HtmlUtil.tag(TAG_LI, [], "<a>New</a>" + HtmlUtil.tag("ul", [], newMenu)) +
-                HtmlUtil.tag(TAG_LI, [], "<a>Layout</a>" + HtmlUtil.tag("ul", [], layoutMenu));
-            var menu = HtmlUtil.div([ATTR_CLASS, "ramadda-popup", ATTR_ID, this.getDomId(ID_MENU_OUTER)],
-                HtmlUtil.tag("ul", [ATTR_ID, this.getDomId(ID_MENU_INNER), ATTR_CLASS, "sf-menu"], menuBar));
+            menuBar += HtmlUtils.tag(TAG_LI, [], "<a>Edit</a>" + HtmlUtils.tag("ul", [], editMenu)) +
+                HtmlUtils.tag(TAG_LI, [], "<a>New</a>" + HtmlUtils.tag("ul", [], newMenu)) +
+                HtmlUtils.tag(TAG_LI, [], "<a>Layout</a>" + HtmlUtils.tag("ul", [], layoutMenu));
+            var menu = HtmlUtils.div([ATTR_CLASS, "ramadda-popup", ATTR_ID, this.getDomId(ID_MENU_OUTER)],
+                HtmlUtils.tag("ul", [ATTR_ID, this.getDomId(ID_MENU_INNER), ATTR_CLASS, "sf-menu"], menuBar));
 
             html += menu;
-            //                html += HtmlUtil.tag(TAG_A, [ATTR_CLASS, "display-menu-button", ATTR_ID, this.getDomId(ID_MENU_BUTTON)],"&nbsp;");
+            //                html += HtmlUtils.tag(TAG_A, [ATTR_CLASS, "display-menu-button", ATTR_ID, this.getDomId(ID_MENU_BUTTON)],"&nbsp;");
             //                html+="<br>";
             return html;
         },
@@ -469,12 +469,12 @@ function DisplayManager(argId, argProperties) {
 
     addDisplayManager(this);
 
-    var displaysHtml = HtmlUtil.div([ATTR_ID, this.getDomId(ID_DISPLAYS), ATTR_CLASS, "display-container"]);
-    var html = HtmlUtil.openTag(TAG_DIV);
-    html += HtmlUtil.div(["id", this.getDomId(ID_MENU_CONTAINER)]);
+    var displaysHtml = HtmlUtils.div([ATTR_ID, this.getDomId(ID_DISPLAYS), ATTR_CLASS, "display-container"]);
+    var html = HtmlUtils.openTag(TAG_DIV);
+    html += HtmlUtils.div(["id", this.getDomId(ID_MENU_CONTAINER)]);
     //    html += this.makeMainMenu();
     if (this.getProperty(PROP_SHOW_MENU, true)) {
-        html += HtmlUtil.tag(TAG_A, [ATTR_CLASS, "display-menu-button", ATTR_ID, this.getDomId(ID_MENU_BUTTON)], "&nbsp;");
+        html += HtmlUtils.tag(TAG_A, [ATTR_CLASS, "display-menu-button", ATTR_ID, this.getDomId(ID_MENU_BUTTON)], "&nbsp;");
     }
     var targetDiv = this.getProperty("target");
     var _this = this;
@@ -487,7 +487,7 @@ function DisplayManager(argId, argProperties) {
     } else {
         html += displaysHtml;
     }
-    html += HtmlUtil.closeTag(TAG_DIV);
+    html += HtmlUtils.closeTag(TAG_DIV);
     $("#" + this.getId()).html(html)
     if (this.showmap) {
         this.createDisplay('map');

@@ -106,9 +106,9 @@ function RamaddaAnimationDisplay(displayManager, id, properties) {
                 var dttm = this.formatDate(record.getDate(), {
                     suffix: this.getTimeZone()
                 });
-                label += HtmlUtil.b("Date:") + " " + dttm;
+                label += HtmlUtils.b("Date:") + " " + dttm;
             } else {
-                label += HtmlUtil.b("Index:") + " " + this.index;
+                label += HtmlUtils.b("Index:") + " " + this.index;
             }
             $("#" + this.getDomId(ID_TIME)).html(label);
             if (propagate) {
@@ -153,14 +153,14 @@ function RamaddaAnimationDisplay(displayManager, id, properties) {
 
             var get = this.getGet();
             var html = "";
-            html += HtmlUtil.onClick(get + ".setIndex(0);", HtmlUtil.image(this.iconBegin, [ATTR_TITLE, "beginning", ATTR_CLASS, "display-animation-button", "xwidth", "32"]));
-            html += HtmlUtil.onClick(get + ".deltaIndex(-1);", HtmlUtil.image(this.iconBack, [ATTR_TITLE, "back 1", ATTR_CLASS, "display-animation-button", "xwidth", "32"]));
-            html += HtmlUtil.onClick(get + ".toggle();", HtmlUtil.image(this.iconStart, [ATTR_TITLE, "play/stop", ATTR_CLASS, "display-animation-button", "xwidth", "32", ATTR_ID, this.getDomId(ID_START)]));
-            html += HtmlUtil.onClick(get + ".deltaIndex(1);", HtmlUtil.image(this.iconForward, [ATTR_TITLE, "forward 1", ATTR_CLASS, "display-animation-button", "xwidth", "32"]));
-            html += HtmlUtil.onClick(get + ".setIndex();", HtmlUtil.image(this.iconEnd, [ATTR_TITLE, "end", ATTR_CLASS, "display-animation-button", "xwidth", "32"]));
-            html += HtmlUtil.onClick(get + ".faster();", HtmlUtil.image(this.iconFaster, [ATTR_CLASS, "display-animation-button", ATTR_TITLE, "faster", "xwidth", "32"]));
-            html += HtmlUtil.onClick(get + ".slower();", HtmlUtil.image(this.iconSlower, [ATTR_CLASS, "display-animation-button", ATTR_TITLE, "slower", "xwidth", "32"]));
-            html += HtmlUtil.div(["style", "display:inline-block; min-height:24px; margin-left:10px;", ATTR_ID, this.getDomId(ID_TIME)], "&nbsp;");
+            html += HtmlUtils.onClick(get + ".setIndex(0);", HtmlUtils.image(this.iconBegin, [ATTR_TITLE, "beginning", ATTR_CLASS, "display-animation-button", "xwidth", "32"]));
+            html += HtmlUtils.onClick(get + ".deltaIndex(-1);", HtmlUtils.image(this.iconBack, [ATTR_TITLE, "back 1", ATTR_CLASS, "display-animation-button", "xwidth", "32"]));
+            html += HtmlUtils.onClick(get + ".toggle();", HtmlUtils.image(this.iconStart, [ATTR_TITLE, "play/stop", ATTR_CLASS, "display-animation-button", "xwidth", "32", ATTR_ID, this.getDomId(ID_START)]));
+            html += HtmlUtils.onClick(get + ".deltaIndex(1);", HtmlUtils.image(this.iconForward, [ATTR_TITLE, "forward 1", ATTR_CLASS, "display-animation-button", "xwidth", "32"]));
+            html += HtmlUtils.onClick(get + ".setIndex();", HtmlUtils.image(this.iconEnd, [ATTR_TITLE, "end", ATTR_CLASS, "display-animation-button", "xwidth", "32"]));
+            html += HtmlUtils.onClick(get + ".faster();", HtmlUtils.image(this.iconFaster, [ATTR_CLASS, "display-animation-button", ATTR_TITLE, "faster", "xwidth", "32"]));
+            html += HtmlUtils.onClick(get + ".slower();", HtmlUtils.image(this.iconSlower, [ATTR_CLASS, "display-animation-button", ATTR_TITLE, "slower", "xwidth", "32"]));
+            html += HtmlUtils.div(["style", "display:inline-block; min-height:24px; margin-left:10px;", ATTR_ID, this.getDomId(ID_TIME)], "&nbsp;");
             this.setDisplayTitle("Animation");
             this.setContents(html);
         },
@@ -195,9 +195,9 @@ function RamaddaLabelDisplay(displayManager, id, properties) {
             if (this.editMode) {
                 textClass += " display-text-edit ";
             }
-            var html = HtmlUtil.div([ATTR_CLASS, textClass, ATTR_ID, this.getDomId(ID_TEXT)], this.text);
+            var html = HtmlUtils.div([ATTR_CLASS, textClass, ATTR_ID, this.getDomId(ID_TEXT)], this.text);
             if (this.editMode) {
-                html += HtmlUtil.textarea(ID_EDIT, this.text, ["rows", 5, "cols", 120, ATTR_SIZE, "120", ATTR_CLASS, "display-text-input", ATTR_ID, this.getDomId(ID_EDIT)]);
+                html += HtmlUtils.textarea(ID_EDIT, this.text, ["rows", 5, "cols", 120, ATTR_SIZE, "120", ATTR_CLASS, "display-text-input", ATTR_ID, this.getDomId(ID_EDIT)]);
             }
             this.setContents(html);
             if (this.editMode) {
@@ -252,9 +252,9 @@ function RamaddaShellDisplay(displayManager, id, properties) {
         initDisplay: function() {
             var _this = this;
             this.createUI();
-            var msg = HtmlUtil.div([ATTR_CLASS, "display-shell-message", ATTR_ID, this.getDomId(ID_MESSAGE)], "");
-            var output = HtmlUtil.div([ATTR_CLASS, "display-shell-output", ATTR_ID, this.getDomId(ID_OUTPUT)], "");
-            var input = HtmlUtil.tag(TAG_INPUT, ["placeholder", "Enter JS here", ATTR_CLASS, "display-shell-input", ATTR_ID, this.getDomId(ID_INPUT)]);
+            var msg = HtmlUtils.div([ATTR_CLASS, "display-shell-message", ATTR_ID, this.getDomId(ID_MESSAGE)], "");
+            var output = HtmlUtils.div([ATTR_CLASS, "display-shell-output", ATTR_ID, this.getDomId(ID_OUTPUT)], "");
+            var input = HtmlUtils.tag(TAG_INPUT, ["placeholder", "Enter JS here", ATTR_CLASS, "display-shell-input", ATTR_ID, this.getDomId(ID_INPUT)]);
             var html = msg + output + input;
             this.setContents(html);
 
@@ -350,7 +350,7 @@ function RamaddaShellDisplay(displayManager, id, properties) {
         },
         writeResult: function(html) {
             this.writeStatusMessage(null);
-            html = HtmlUtil.div([ATTR_CLASS, "display-shell-result"], html);
+            html = HtmlUtils.div([ATTR_CLASS, "display-shell-result"], html);
             var output = this.jq(ID_OUTPUT);
             output.append(html);
             output.animate({
@@ -372,7 +372,7 @@ function RamaddaShellDisplay(displayManager, id, properties) {
             //                this.writeResult(msg);
         },
         header: function(msg) {
-            return HtmlUtil.div([ATTR_CLASS, "display-shell-header"], msg);
+            return HtmlUtils.div([ATTR_CLASS, "display-shell-header"], msg);
         },
         processCommand_help: function(line, toks, prefix) {
             var help = "";
@@ -431,7 +431,7 @@ function RamaddaShellDisplay(displayManager, id, properties) {
             var html = this.getEntriesTree([entry], {
                 suffix: "_YYY"
             });
-            //                var link  =  HtmlUtil.tag(TAG_A,[ATTR_HREF, entry.getEntryUrl()],icon+" "+ entry.getName());
+            //                var link  =  HtmlUtils.tag(TAG_A,[ATTR_HREF, entry.getEntryUrl()],icon+" "+ entry.getName());
             this.writeResult("Current entry:<br>" + html);
         },
         createPointDisplay: function(line, toks, displayType) {

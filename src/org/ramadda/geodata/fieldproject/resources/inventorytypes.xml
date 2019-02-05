@@ -81,7 +81,7 @@
      <property name="form.date.show" value="false"/>
      <property name="form.area.show" value="false"/>
      <wiki><![CDATA[
-:title Vocabulary: {{name}} 
++section title=Vocabulary: {{name}} 
 
 {{description}}
 {{display   
@@ -100,6 +100,7 @@ showType="false"
 formOpen="false"
 showSearchSettings="false"
 }}
+-section
 ]]></wiki>
 
    </type>

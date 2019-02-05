@@ -1035,7 +1035,15 @@ td.entry-table-block {
      text-decoration:none;
 }
 
-a:hover {color: #000;text-decoration: underline;}
+.ramadda-link {
+         display:inline-block;
+}
+
+.ramadda-link:hover, a:hover {
+  color: #000;
+  text-decoration: underline;
+  cursor:pointer;
+}
 
 
 

@@ -234,7 +234,7 @@ function initMapFunctions(theMap) {
             var _this = this;
             if (this.showSearch) {
                 this.searchDiv = this.mapDivId + "_search";
-                var cbx = HtmlUtil.checkbox(this.searchDiv + "_download", [], false);
+                var cbx = HtmlUtils.checkbox(this.searchDiv + "_download", [], false);
                 var input = "<input placeholder=\"Search - ? for help\" id=\"" + this.searchDiv + "_input" + "\" size=40>";
                 var search = "<table width=100%><tr><td>" + input + " <span  id=\"" + this.searchDiv + "_message\"></span></td><td align=right>" + cbx + " Download</td></tr></table>"
                 $("#" + this.searchDiv).html(search);
@@ -817,7 +817,7 @@ function initMapFunctions(theMap) {
                 didOn = true;
                 cnt++;
                 if (!onFeature) onFeature = feature;
-                html += HtmlUtil.div(["class", "ramadda-map-feature", "feature-index", "" + i], this.getFeatureName(feature));
+                html += HtmlUtils.div(["class", "ramadda-map-feature", "feature-index", "" + i], this.getFeatureName(feature));
                 var geometry = feature.geometry;
                 if (geometry) {
                     var fbounds = geometry.getBounds();
@@ -831,7 +831,7 @@ function initMapFunctions(theMap) {
         } else {
             if (didSearch || (didOn && didOff)) {
                 var id = this.mapDivId + "_features";
-                this.showText(HtmlUtil.div(["id", id, "class", "ramadda-map-features"], html));
+                this.showText(HtmlUtils.div(["id", id, "class", "ramadda-map-features"], html));
                 $("#" + id + " .ramadda-map-feature").click(function() {
                     var index = parseInt($(this).attr("feature-index"));
                     _this.handleFeatureclick(layer, layer.features[index], true);
@@ -1064,10 +1064,10 @@ function initMapFunctions(theMap) {
                 options = {
                     year: 'numeric'
                 };
-            $("#" + this.mapDivId + "_footer").html(HtmlUtil.div(["class", "ramadda-map-animation", "id", this.mapDivId + "_animation"], ""));
+            $("#" + this.mapDivId + "_footer").html(HtmlUtils.div(["class", "ramadda-map-animation", "id", this.mapDivId + "_animation"], ""));
             this.animation = $("#" + this.mapDivId + "_animation");
-            var ticksDiv = HtmlUtil.div(["class", "ramadda-map-animation-ticks", "id", this.mapDivId + "_animation_ticks"], "");
-            var infoDiv = HtmlUtil.div(["class", "ramadda-map-animation-info", "id", this.mapDivId + "_animation_info"], "");
+            var ticksDiv = HtmlUtils.div(["class", "ramadda-map-animation-ticks", "id", this.mapDivId + "_animation_ticks"], "");
+            var infoDiv = HtmlUtils.div(["class", "ramadda-map-animation-info", "id", this.mapDivId + "_animation_info"], "");
             this.animation.html(ticksDiv + infoDiv);
             var startLabel = Utils.formatDate(this.minDate, options);
             var endLabel = Utils.formatDate(this.maxDate, options);
@@ -1075,7 +1075,7 @@ function initMapFunctions(theMap) {
             this.animationInfo = $("#" + this.mapDivId + "_animation_info");
             var center = "";
             if (this.startDate && this.endDate) {
-                center = HtmlUtil.div(["id", this.mapDivId + "_ticks_reset", "class", "ramadda-map-animation-tick-reset"], "Reset");
+                center = HtmlUtils.div(["id", this.mapDivId + "_ticks_reset", "class", "ramadda-map-animation-tick-reset"], "Reset");
             }
             var info = "<table width=100%><tr valign=top><td width=40%>" + startLabel + "</td><td align=center width=20%>" + center + "</td><td align=right width=40%>" + endLabel + "</td></tr></table>";
             this.animationInfo.html(info);
@@ -1116,7 +1116,7 @@ function initMapFunctions(theMap) {
                     tooltip += fdate;
                     tooltip += "<br>shift-click: set visible range<br>cmd/ctrl-click:zoom";
                     tooltip += "";
-                    html += HtmlUtil.div(["id", this.mapDivId + "_tick" + i, "feature-index", "" + i, "style", "left:" + percent + "%", "class", "ramadda-map-animation-tick", "title", tooltip], "");
+                    html += HtmlUtils.div(["id", this.mapDivId + "_tick" + i, "feature-index", "" + i, "style", "left:" + percent + "%", "class", "ramadda-map-animation-tick", "title", tooltip], "");
                 }
             }
             this.animationTicks.html(html);

@@ -402,7 +402,7 @@ function Ramadda(repositoryRoot) {
         getSearchLinks: function(searchSettings) {
             var urls = [];
             for (var i = 0; i < OUTPUTS.length; i++) {
-                urls.push(HtmlUtil.href(this.getSearchUrl(searchSettings, OUTPUTS[i].id),
+                urls.push(HtmlUtils.href(this.getSearchUrl(searchSettings, OUTPUTS[i].id),
                     OUTPUTS[i].name));
             }
             return urls;
@@ -817,7 +817,7 @@ function Entry(props) {
             return url;
         },
         getIconImage: function(attrs) {
-            return HtmlUtil.image(this.getIconUrl(), attrs);
+            return HtmlUtils.image(this.getIconUrl(), attrs);
         },
         getColumns: function() {
             if (this.type.getColumns() == null) {
@@ -911,11 +911,11 @@ function Entry(props) {
         },
         getLink: function(label) {
             if (!label) label = this.getName();
-            return HtmlUtil.tag("a", ["href", this.getEntryUrl()], label);
+            return HtmlUtils.tag("a", ["href", this.getEntryUrl()], label);
         },
         getResourceLink: function(label) {
             if (!label) label = this.getName();
-            return HtmlUtil.tag("a", ["href", this.getResourceUrl()], label);
+            return HtmlUtils.tag("a", ["href", this.getResourceUrl()], label);
         },
         toString: function() {
             return "entry:" + this.getName();

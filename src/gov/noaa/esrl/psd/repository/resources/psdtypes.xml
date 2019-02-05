@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <types>
 
-  <type name="ushcnpointdatabase"  description="USHCN Point Database" handler="gov.noaa.esrl.psd.repository.data.UshcnPointDatabaseTypeHandler" category="Geo Data">
+  <type name="ushcnpointdatabase"  description="USHCN Point Database" handler="gov.noaa.esrl.psd.repository.data.UshcnPointDatabaseTypeHandler" category="Climate Data">
      <property name="icon" value="/icons/database.png"/>
      <property name="form.date.show" value="false"/>
 <!--     <property name="form.area.show" value="false"/> -->
@@ -10,7 +10,7 @@
 
    </type>
 
-  <type name="type_psd_station"  description="Climate Extremes Stations"  category="Geo Data">
+  <type name="type_psd_station"  description="Climate Extremes Stations"  category="Climate Data">
      <property name="icon" value="/icons/marker.png"/>
      <property name="form.date.show" value="true"/>
      <property name="form.area.show" value="false"/> 

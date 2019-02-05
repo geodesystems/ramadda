@@ -1,6 +1,6 @@
-<types  supercategory="Miscellaneous" >
+<types  supercategory="Miscellaneous"  category="Miscellaneous">
 
-  <type name="frames"  description="IFrames" handler="org.ramadda.plugins.gadgets.FramesTypeHandler" category="Gadgets">
+  <type name="frames"  description="IFrames" handler="org.ramadda.plugins.gadgets.FramesTypeHandler" >
      <property name="icon" value="/icons/application_split.png"/>
      <property name="form.area.show" value="false"/>
      <property name="form.date.show" value="false"/>
@@ -14,7 +14,7 @@
 
 
 
-  <type name="gadgets_weather"  description="Weather" handler="org.ramadda.plugins.gadgets.WeatherTypeHandler" category="Gadgets">
+  <type name="gadgets_weather"  description="Weather" handler="org.ramadda.plugins.gadgets.WeatherTypeHandler">
      <property name="icon" value="/gadgets/weather.png"/>
      <property name="form.description.show" value="false"/>
      <property name="form.area.show" value="false"/>
@@ -28,7 +28,7 @@
 
 
 
-  <type name="gadgets_countdown"  description="Countdown" handler="org.ramadda.plugins.gadgets.CountdownTypeHandler" category="Gadgets">
+  <type name="gadgets_countdown"  description="Countdown" handler="org.ramadda.plugins.gadgets.CountdownTypeHandler">
      <property name="icon" value="/gadgets/hourglass.png"/>
      <property name="form.area.show" value="false"/>
      <property name="form.todate.show" value="false"/>
@@ -38,7 +38,7 @@
      <column name="howmany" type="enumeration" values="file:/org/ramadda/plugins/gadgets/howmany.txt" label="Show"  default="4" showinhtml="false"/>
 </type>
 
-  <type name="gadgets_stock"  description="Stock Ticker" handler="org.ramadda.plugins.gadgets.StockTickerTypeHandler" category="Gadgets">
+  <type name="gadgets_stock"  description="Stock Ticker" handler="org.ramadda.plugins.gadgets.StockTickerTypeHandler">
      <property name="icon" value="/gadgets/chart_line.png"/>
      <property name="form.description.show" value="false"/>
      <property name="form.area.show" value="false"/>
@@ -51,7 +51,7 @@
      <column name="time_interval" type="int" label="Interval"  suffix="minutes" default="60"/>
 </type>
 
-  <type name="gadgets_clock"  description="Clock" handler="org.ramadda.plugins.gadgets.ClockTypeHandler" category="Gadgets">
+  <type name="gadgets_clock"  description="Clock" handler="org.ramadda.plugins.gadgets.ClockTypeHandler">
      <property name="icon" value="/gadgets/clock.png"/>
      <property name="form.area.show" value="false"/>
      <property name="form.date.show" value="false"/>
@@ -61,7 +61,7 @@
 </type>
 
 
-  <type name="twittersearch"  description="Twitter Search" handler="org.ramadda.plugins.gadgets.TwitterSearchTypeHandler" category="Events" foruser="false">
+  <type name="twittersearch"  description="Twitter Search" handler="org.ramadda.plugins.gadgets.TwitterSearchTypeHandler" foruser="false">
      <property name="icon" value="/gadgets/twitter_icon.gif"/>
      <property name="form.description.rows" value="1"/>
      <property name="form.area.show" value="false"/>

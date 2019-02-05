@@ -241,7 +241,7 @@ function RamaddaFieldsDisplay(displayManager, id, type, properties) {
         },
         getDialogContents: function(tabTitles, tabContents) {
             var height = "600";
-            var html = HtmlUtil.div([ATTR_ID, this.getDomId(ID_FIELDS), "style", "overflow-y: auto;    max-height:" + height + "px;"], " FIELDS ");
+            var html = HtmlUtils.div([ATTR_ID, this.getDomId(ID_FIELDS), "style", "overflow-y: auto;    max-height:" + height + "px;"], " FIELDS ");
             tabTitles.push("Fields");
             tabContents.push(html);
             SUPER.getDialogContents.call(this, tabTitles, tabContents);
@@ -381,7 +381,7 @@ function RamaddaMultiChart(displayManager, id, properties) {
         getMenuItems: function(menuItems) {
             SUPER.getMenuItems.call(this, menuItems);
             var get = this.getGet();
-            //                menuItems.push(HtmlUtil.onClick(get+".setColor();", "Set color"));
+            //                menuItems.push(HtmlUtils.onClick(get+".setColor();", "Set color"));
 
             var min = "0";
             if (!isNaN(this.vAxisMinValue)) {
@@ -391,15 +391,15 @@ function RamaddaMultiChart(displayManager, id, properties) {
             if (!isNaN(this.vAxisMaxValue)) {
                 max = "" + this.vAxisMaxValue;
             }
-            var tmp = HtmlUtil.formTable();
-            tmp += HtmlUtil.formEntry("Axis Range:", HtmlUtil.input("", min, ["size", "7", ATTR_ID, this.getDomId("vaxismin")]) + " - " +
-                HtmlUtil.input("", max, ["size", "7", ATTR_ID, this.getDomId("vaxismax")]));
-            tmp += HtmlUtil.formEntry("Date Range:", HtmlUtil.input("", this.minDate, ["size", "10", ATTR_ID, this.getDomId("mindate")]) + " - " +
-                HtmlUtil.input("", this.maxDate, ["size", "10", ATTR_ID, this.getDomId("maxdate")]));
+            var tmp = HtmlUtils.formTable();
+            tmp += HtmlUtils.formEntry("Axis Range:", HtmlUtils.input("", min, ["size", "7", ATTR_ID, this.getDomId("vaxismin")]) + " - " +
+                HtmlUtils.input("", max, ["size", "7", ATTR_ID, this.getDomId("vaxismax")]));
+            tmp += HtmlUtils.formEntry("Date Range:", HtmlUtils.input("", this.minDate, ["size", "10", ATTR_ID, this.getDomId("mindate")]) + " - " +
+                HtmlUtils.input("", this.maxDate, ["size", "10", ATTR_ID, this.getDomId("maxdate")]));
 
 
-            tmp += HtmlUtil.formEntry("Colors:",
-                HtmlUtil.input("", this.colorList.join(","), ["size", "35", ATTR_ID, this.getDomId(ID_COLORS)]));
+            tmp += HtmlUtils.formEntry("Colors:",
+                HtmlUtils.input("", this.colorList.join(","), ["size", "35", ATTR_ID, this.getDomId(ID_COLORS)]));
             tmp += "</table>";
             menuItems.push(tmp);
 
@@ -466,16 +466,16 @@ function RamaddaMultiChart(displayManager, id, properties) {
         },
         getDialogContents: function(tabTitles, tabContents) {
             var height = "600";
-            var html = HtmlUtil.div([ATTR_ID, this.getDomId(ID_FIELDS), "style", "overflow-y: auto;    max-height:" + height + "px;"], " FIELDS ");
+            var html = HtmlUtils.div([ATTR_ID, this.getDomId(ID_FIELDS), "style", "overflow-y: auto;    max-height:" + height + "px;"], " FIELDS ");
 
             if (this.trendLineEnabled()) {
-                html += HtmlUtil.div([ATTR_CLASS, "display-dialog-subheader"], "Other");
+                html += HtmlUtils.div([ATTR_CLASS, "display-dialog-subheader"], "Other");
 
-                html += HtmlUtil.checkbox(this.getDomId(ID_TRENDS_CBX),
+                html += HtmlUtils.checkbox(this.getDomId(ID_TRENDS_CBX),
                     [],
                     this.getProperty("showTrendLines", false)) + "  " + "Show trend line";
                 html += " ";
-                html += HtmlUtil.checkbox(this.getDomId(ID_PERCENT_CBX),
+                html += HtmlUtils.checkbox(this.getDomId(ID_PERCENT_CBX),
                     [],
                     this.showPercent) + "  " + "Show percent of displayed total" + "<br>";
                 html += "<br>";
@@ -542,7 +542,7 @@ function RamaddaMultiChart(displayManager, id, properties) {
                 return;
             }
 
-            this.setContents(HtmlUtil.div([ATTR_CLASS, "display-message"],
+            this.setContents(HtmlUtils.div([ATTR_CLASS, "display-message"],
                 "Building display..."));
 
 
@@ -715,7 +715,7 @@ function RamaddaMultiChart(displayManager, id, properties) {
 
 
             if (dataList.length == 0) {
-                this.setContents(HtmlUtil.div([ATTR_CLASS, "display-message"],
+                this.setContents(HtmlUtils.div([ATTR_CLASS, "display-message"],
                     "No data available"));
                 return;
             }
@@ -1055,7 +1055,7 @@ function RamaddaMultiChart(displayManager, id, properties) {
                     dttm = dttm.replace(/ /g, "&nbsp;");
                     var tooltip = "<center><b>" + dttm + "</b></center>" +
                         "<b>" + header[1].replace(/ /g, "&nbsp;") + "</b>:&nbsp;" + this.formatNumber(value);
-                    tooltip = HtmlUtil.tag("div", ["style", "padding:5px;"], tooltip);
+                    tooltip = HtmlUtils.tag("div", ["style", "padding:5px;"], tooltip);
                     list.push([this.getDataValues(dataList[i])[0], value, tooltip]);
                 }
                 dataTable.addRows(list);
@@ -1248,7 +1248,7 @@ function RamaddaMultiChart(displayManager, id, properties) {
                 for(var i=0;i<header.length;i++) {
                     var s = header[i];
                     var tt = "tooltip";
-                    s = HtmlUtil.tag("div",["onmouseover", get +".tableHeaderMouseover(" + i+",'" + tt +"');"],s);
+                    s = HtmlUtils.tag("div",["onmouseover", get +".tableHeaderMouseover(" + i+",'" + tt +"');"],s);
                     header[i] = s;
                 }
                 */
@@ -1340,7 +1340,7 @@ function RamaddaMultiChart(displayManager, id, properties) {
             }
             divAttrs.push("style");
             divAttrs.push("height:100%;");
-            this.setContents(HtmlUtil.div(divAttrs, ""));
+            this.setContents(HtmlUtils.div(divAttrs, ""));
 
 
             if (chartType == DISPLAY_SANKEY) {
@@ -2319,7 +2319,7 @@ function RamaddaStatsDisplay(displayManager, id, properties, type) {
                 }
             }
             var border = (justOne ? "0" : "1");
-            var html = HtmlUtil.openTag("table", ["border", border, "bordercolor", "#ccc", "class", "display-stats", "cellspacing", "1", "cellpadding", "5"]);
+            var html = HtmlUtils.openTag("table", ["border", border, "bordercolor", "#ccc", "class", "display-stats", "cellspacing", "1", "cellpadding", "5"]);
             var dummy = ["&nbsp;"];
             if (!justOne) {
                 header = [""];
@@ -2373,7 +2373,7 @@ function RamaddaStatsDisplay(displayManager, id, properties, type) {
                     header.push("Type");
                     dummy.push("&nbsp;");
                 }
-                html += HtmlUtil.tr(["valign", "bottom"], HtmlUtil.tds(["class", "display-stats-header", "align", "center"], header));
+                html += HtmlUtils.tr(["valign", "bottom"], HtmlUtils.tds(["class", "display-stats-header", "align", "center"], header));
             }
             var cats = [];
             var catMap = {};
@@ -2390,7 +2390,7 @@ function RamaddaStatsDisplay(displayManager, id, properties, type) {
                     total = this.formatNumber(stats[col].total);
                 }
                 if (justOne) {
-                    right = HtmlUtil.tds(["xalign", "right"], [this.formatNumber(stats[col].min)]);
+                    right = HtmlUtils.tds(["xalign", "right"], [this.formatNumber(stats[col].min)]);
                     continue;
                 }
                 var values = [];
@@ -2465,7 +2465,7 @@ function RamaddaStatsDisplay(displayManager, id, properties, type) {
                 if (this.showType) {
                     values.push(stats[col].type);
                 }
-                right = HtmlUtil.tds(["align", "right"], values);
+                right = HtmlUtils.tds(["align", "right"], values);
                 var align = (justOne ? "right" : "left");
                 var label = field.getLabel();
                 var toks = label.split("!!");
@@ -2475,7 +2475,7 @@ function RamaddaStatsDisplay(displayManager, id, properties, type) {
                     label += ":";
                 }
                 label = label.replace(/ /g, "&nbsp;")
-                var row = HtmlUtil.tr([], HtmlUtil.td(["align", align], "<b>" + HtmlUtil.tag("div", ["title", title], label) + "</b>") + right);
+                var row = HtmlUtils.tr([], HtmlUtils.td(["align", align], "<b>" + HtmlUtils.tag("div", ["title", title], label) + "</b>") + right);
                 if (justOne) {
                     html += row;
                 } else {
@@ -2558,7 +2558,7 @@ function RamaddaCrosstabDisplay(displayManager, id, properties) {
                     }
                 }
             }
-            var html = HtmlUtil.openTag("table", ["border", "1px", "bordercolor", "#ccc", "class", "display-stats", "cellspacing", "1", "cellpadding", "5"]);
+            var html = HtmlUtils.openTag("table", ["border", "1px", "bordercolor", "#ccc", "class", "display-stats", "cellspacing", "1", "cellpadding", "5"]);
             var uniques = {};
             var seen = {};
             for (var j = 0; j < cols.length; j++) {
@@ -2589,7 +2589,7 @@ function RamaddaCrosstabDisplay(displayManager, id, properties) {
                 for (var rowIdx = 1; rowIdx < dataList.length; rowIdx++) {
                     var tuple = this.getDataValues(dataList[rowIdx]);
                     //                        var colValue = tuple;
-                    //html += HtmlUtil.tr([],HtmlUtil.tds(["class","display-stats-header","align","center"],["","Min","Max","Total","Average"]));
+                    //html += HtmlUtils.tr([],HtmlUtils.tds(["class","display-stats-header","align","center"],["","Min","Max","Total","Average"]));
                     for (var i = 0; i < rows.length; i++) {
                         var row = rows[j];
 
@@ -2627,7 +2627,7 @@ function RamaddaCorrelationDisplay(displayManager, id, properties) {
         getMenuItems: function(menuItems) {
             SUPER.getMenuItems.call(this, menuItems);
             var get = this.getGet();
-            var tmp = HtmlUtil.formTable();
+            var tmp = HtmlUtils.formTable();
             var colorTable = this.getColorTableName();
             var ct = "<select id=" + this.getDomId("colortable") + ">";
             for (table in Utils.ColorTables) {
@@ -2638,10 +2638,10 @@ function RamaddaCorrelationDisplay(displayManager, id, properties) {
             }
             ct += "</select>";
 
-            tmp += HtmlUtil.formEntry("Color Bar:", ct);
+            tmp += HtmlUtils.formEntry("Color Bar:", ct);
 
-            tmp += HtmlUtil.formEntry("Color By Range:", HtmlUtil.input("", this.colorByMin, ["size", "7", ATTR_ID, this.getDomId("colorbymin")]) + " - " +
-                HtmlUtil.input("", this.colorByMax, ["size", "7", ATTR_ID, this.getDomId("colorbymax")]));
+            tmp += HtmlUtils.formEntry("Color By Range:", HtmlUtils.input("", this.colorByMin, ["size", "7", ATTR_ID, this.getDomId("colorbymin")]) + " - " +
+                HtmlUtils.input("", this.colorByMax, ["size", "7", ATTR_ID, this.getDomId("colorbymax")]));
             tmp += "</table>";
             menuItems.push(tmp);
         },
@@ -2687,12 +2687,12 @@ function RamaddaCorrelationDisplay(displayManager, id, properties) {
             var allFields = this.dataCollection.getList()[0].getRecordFields();
             var fields = this.getSelectedFields([]);
             if (fields.length == 0) fields = allFields;
-            var html = HtmlUtil.openTag("table", ["border", "0", "class", "display-correlation"]);
+            var html = HtmlUtils.openTag("table", ["border", "0", "class", "display-correlation"]);
             html += "<tr valign=bottom><td class=display-heading>&nbsp;</td>";
             for (var fieldIdx = 0; fieldIdx < fields.length; fieldIdx++) {
                 var field1 = fields[fieldIdx];
                 if (!field1.isFieldNumeric() || field1.isFieldGeo()) continue;
-                html += "<td align=center class=top-heading>" + HtmlUtil.tag("div", ["class", "top-heading"], field1.getLabel()) + "</td>";
+                html += "<td align=center class=top-heading>" + HtmlUtils.tag("div", ["class", "top-heading"], field1.getLabel()) + "</td>";
             }
             html += "</tr>";
 
@@ -2705,7 +2705,7 @@ function RamaddaCorrelationDisplay(displayManager, id, properties) {
                 var field1 = fields[fieldIdx1];
                 if (!field1.isFieldNumeric() || field1.isFieldGeo()) continue;
                 colCnt++;
-                html += "<tr><td>" + HtmlUtil.tag("div", ["class", "side-heading"], field1.getLabel().replace(/ /g, "&nbsp;")) + "</td>";
+                html += "<tr><td>" + HtmlUtils.tag("div", ["class", "side-heading"], field1.getLabel().replace(/ /g, "&nbsp;")) + "</td>";
                 var rowName = field1.getLabel();
                 for (var fieldIdx2 = 0; fieldIdx2 < fields.length; fieldIdx2++) {
                     var field2 = fields[fieldIdx2];
@@ -2746,11 +2746,11 @@ function RamaddaCorrelationDisplay(displayManager, id, properties) {
                         else if (index < 0) index = 0;
                         style = "background-color:" + colors[index];
                     }
-                    html += "<td align=right style=\"" + style + "\">" + HtmlUtil.tag("div", ["class", "display-correlation-element", "title", "&rho;(" + rowName + "," + colName + ")"], r.toFixed(3)) + "</td>";
+                    html += "<td align=right style=\"" + style + "\">" + HtmlUtils.tag("div", ["class", "display-correlation-element", "title", "&rho;(" + rowName + "," + colName + ")"], r.toFixed(3)) + "</td>";
                 }
                 html += "</tr>";
             }
-            html += "<tr><td></td><td colspan = " + colCnt + ">" + HtmlUtil.div(["id", this.getDomId(ID_BOTTOM)], "") + "</td></tr>";
+            html += "<tr><td></td><td colspan = " + colCnt + ">" + HtmlUtils.div(["id", this.getDomId(ID_BOTTOM)], "") + "</td></tr>";
             html += "</table>";
             this.setContents(html);
             this.displayColorTable(colors, ID_BOTTOM, colorByMin, colorByMax);
@@ -2782,7 +2782,7 @@ function RamaddaHeatmapDisplay(displayManager, id, properties) {
         getMenuItems: function(menuItems) {
             SUPER.getMenuItems.call(this, menuItems);
             var get = this.getGet();
-            var tmp = HtmlUtil.formTable();
+            var tmp = HtmlUtils.formTable();
             var colorTable = this.getColorTableName();
             var ct = "<select id=" + this.getDomId("colortable") + ">";
             for (table in Utils.ColorTable) {
@@ -2793,10 +2793,10 @@ function RamaddaHeatmapDisplay(displayManager, id, properties) {
             }
             ct += "</select>";
 
-            tmp += HtmlUtil.formEntry("Color Table:", ct);
+            tmp += HtmlUtils.formEntry("Color Table:", ct);
 
-            tmp += HtmlUtil.formEntry("Color By Range:", HtmlUtil.input("", this.colorByMin, ["size", "7", ATTR_ID, this.getDomId("colorbymin")]) + " - " +
-                HtmlUtil.input("", this.colorByMax, ["size", "7", ATTR_ID, this.getDomId("colorbymax")]));
+            tmp += HtmlUtils.formEntry("Color By Range:", HtmlUtils.input("", this.colorByMin, ["size", "7", ATTR_ID, this.getDomId("colorbymin")]) + " - " +
+                HtmlUtils.input("", this.colorByMax, ["size", "7", ATTR_ID, this.getDomId("colorbymax")]));
             tmp += "</table>";
             menuItems.push(tmp);
         },
@@ -2936,15 +2936,15 @@ function RamaddaHeatmapDisplay(displayManager, id, properties) {
                 }
             }
 
-            html += HtmlUtil.openTag("table", ["border", "0", "class", "display-heatmap"]);
+            html += HtmlUtils.openTag("table", ["border", "0", "class", "display-heatmap"]);
             html += "<tr valign=bottom>";
             if (showIndex) {
-                html += "<td align=center class=top-heading>" + HtmlUtil.tag("div", ["class", "top-heading"], header[0]) + "</td>";
+                html += "<td align=center class=top-heading>" + HtmlUtils.tag("div", ["class", "top-heading"], header[0]) + "</td>";
             }
             for (var fieldIdx = 0; fieldIdx < fields.length; fieldIdx++) {
                 var field = fields[fieldIdx];
                 if ((!field.isFieldNumeric() || field.isFieldGeo())) continue;
-                html += "<td align=center class=top-heading>" + HtmlUtil.tag("div", ["class", "top-heading"], field.getLabel()) + "</td>";
+                html += "<td align=center class=top-heading>" + HtmlUtils.tag("div", ["class", "top-heading"], field.getLabel()) + "</td>";
             }
             html += "</tr>\n";
 
@@ -2961,8 +2961,8 @@ function RamaddaHeatmapDisplay(displayManager, id, properties) {
                 var rowLabel = index;
                 html += "<tr valign='center'>\n";
                 if (showIndex) {
-                    //                        html+="<td>" + HtmlUtil.tag("div",[HtmlUtil.attr("class","side-heading")+ extraCellStyle], rowLabel) +"</td>";
-                    html += HtmlUtil.td(["class", "side-heading", "style", extraCellStyle], rowLabel);
+                    //                        html+="<td>" + HtmlUtils.tag("div",[HtmlUtils.attr("class","side-heading")+ extraCellStyle], rowLabel) +"</td>";
+                    html += HtmlUtils.td(["class", "side-heading", "style", extraCellStyle], rowLabel);
                 }
                 var colCnt = 0;
                 for (var colIdx = 0; colIdx < fields.length; colIdx++) {
@@ -2999,7 +2999,7 @@ function RamaddaHeatmapDisplay(displayManager, id, properties) {
                         number = Utils.formatNumber(value)
                     }
                     if (!showValue) number = "";
-                    html += HtmlUtil.td(["valign", "center", "align", "right", "style", style + extraCellStyle + extraTdStyle, "class", "display-heatmap-cell"], HtmlUtil.div(["title", title, "style", extraCellStyle + "color:" + textColor], number));
+                    html += HtmlUtils.td(["valign", "center", "align", "right", "style", style + extraCellStyle + extraTdStyle, "class", "display-heatmap-cell"], HtmlUtils.div(["title", title, "style", extraCellStyle + "color:" + textColor], number));
                     colCnt++;
                 }
                 html += "</tr>";

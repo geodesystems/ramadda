@@ -170,7 +170,7 @@ function RamaddaSkewtDisplay(displayManager, id, properties) {
             var html = "<p><script src='/repository/skewt/d3skewt.js'></script>\n";
             html += "<link rel='stylesheet' type='text/css' href='/skewt/sounding.css'>\n";
             var skewtId = this.getDomId(ID_SKEWT);
-            html += HtmlUtil.div(["id", skewtId], "");
+            html += HtmlUtils.div(["id", skewtId], "");
             this.writeHtml(ID_DISPLAY_CONTENTS, html);
             var _this = this;
             var func = function() {
@@ -222,7 +222,7 @@ function RamaddaD3Display(displayManager, id, properties) {
             var divStyle =
                 "height:" + height + "px;" +
                 "width:" + width + "px;";
-            var html = HtmlUtil.div([ATTR_ID, this.getDomId(ID_SVG), ATTR_STYLE, divStyle], "");
+            var html = HtmlUtils.div([ATTR_ID, this.getDomId(ID_SVG), ATTR_STYLE, divStyle], "");
             this.setContents(html);
 
             // To create dynamic size of the div
@@ -293,7 +293,7 @@ function RamaddaD3Display(displayManager, id, properties) {
         },
         getDialogContents: function() {
             var height = this.getProperty(PROP_HEIGHT, "400");
-            var html = HtmlUtil.div([ATTR_ID, this.getDomId(ID_FIELDS), ATTR_CLASS, "display-fields", ]);
+            var html = HtmlUtils.div([ATTR_ID, this.getDomId(ID_FIELDS), ATTR_CLASS, "display-fields", ]);
             html += SUPER.getDialogContents.apply(this);
             return html;
         },
@@ -310,7 +310,7 @@ function RamaddaD3Display(displayManager, id, properties) {
             //Note: if we write to the SVG dom element then we lose the svg object that got created in initDisplay
             //Not sure how to show a message to the user
             if (!this.hasData()) {
-                //this.writeHtml(ID_SVG, HtmlUtil.div([ATTR_CLASS,"display-message"], this.getLoadingMessage()));
+                //this.writeHtml(ID_SVG, HtmlUtils.div([ATTR_CLASS,"display-message"], this.getLoadingMessage()));
                 return;
             }
             test = this;
@@ -646,7 +646,7 @@ function RamaddaWordcloudDisplay(displayManager, id, properties) {
                     fi.words.push(obj1);
                     words.push(obj2);
                 }
-                divs += "<div style='display:inline-block;width:" + width + "'><b>" + fi.field.getLabel() + "</b>" + HtmlUtil.div(["style", "border: 1px #ccc solid;height:300px;", "id", fi.divId], "") + "</div>";
+                divs += "<div style='display:inline-block;width:" + width + "'><b>" + fi.field.getLabel() + "</b>" + HtmlUtils.div(["style", "border: 1px #ccc solid;height:300px;", "id", fi.divId], "") + "</div>";
             }
 
             this.writeHtml(ID_DISPLAY_CONTENTS, "");
@@ -667,7 +667,7 @@ function RamaddaWordcloudDisplay(displayManager, id, properties) {
             if (this.getProperty("shape"))
                 options.shape = this.getProperty("shape");
             if (this.getProperty("combined", false)) {
-                this.writeHtml(ID_DISPLAY_CONTENTS, HtmlUtil.div(["id", this.getDomId("words"), "style", "height:300px;"], ""));
+                this.writeHtml(ID_DISPLAY_CONTENTS, HtmlUtils.div(["id", this.getDomId("words"), "style", "height:300px;"], ""));
                 $("#" + this.getDomId("words")).jQCloud(words, options);
             } else {
                 this.writeHtml(ID_DISPLAY_CONTENTS, divs);
@@ -713,7 +713,7 @@ function RamaddaWordcloudDisplay(displayManager, id, properties) {
                 }
                 html += "<br>";
             }
-            this.writeHtml(ID_DISPLAY_BOTTOM, field.getLabel() + "=" + word + HtmlUtil.div(["id", this.getDomId("table"), "style", "height:300px"], ""));
+            this.writeHtml(ID_DISPLAY_BOTTOM, field.getLabel() + "=" + word + HtmlUtils.div(["id", this.getDomId("table"), "style", "height:300px"], ""));
             var dataTable = google.visualization.arrayToDataTable(data);
             this.chart = new google.visualization.Table(document.getElementById(this.getDomId("table")));
             this.chart.draw(dataTable, {});

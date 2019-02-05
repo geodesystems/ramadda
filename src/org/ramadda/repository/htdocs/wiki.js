@@ -5,7 +5,7 @@
 
 function insertText(id, value) {
     hidePopupObject();
-    var editor = HtmlUtil.getAceEditor(id);
+    var editor = HtmlUtils.getAceEditor(id);
     var textComp = GuiUtils.getDomObject(id);
     if (textComp || editor) {
         insertAtCursor(id, textComp.obj, value);
@@ -15,7 +15,7 @@ function insertText(id, value) {
 
 
 function insertAtCursor(id, myField, value) {
-    var editor = HtmlUtil.getAceEditor(id);
+    var editor = HtmlUtils.getAceEditor(id);
     if (editor) {
         var cursor = editor.getCursorPosition();
         editor.insert(value);
@@ -48,7 +48,7 @@ function insertAtCursor(id, myField, value) {
 function insertTags(id, tagOpen, tagClose, sampleText) {
     hidePopupObject();
     var textComp = GuiUtils.getDomObject(id);
-    var editor = HtmlUtil.getAceEditor(id);
+    var editor = HtmlUtils.getAceEditor(id);
     if (textComp || editor) {
         insertTagsInner(id, textComp.obj, tagOpen, tagClose, sampleText);
     }
@@ -67,7 +67,7 @@ function insertTagsInner(id, txtarea, tagOpen, tagClose, sampleText) {
     tagOpen = tagOpen.replace(/newline/gi, '\n');
     tagClose = tagClose.replace(/_newline_/gi, '\n');
     tagClose = tagClose.replace(/newline/gi, '\n');
-    var editor = HtmlUtil.getAceEditor(id);
+    var editor = HtmlUtils.getAceEditor(id);
     if (editor) {
         var text = tagOpen + tagClose + " ";
         var cursor = editor.getCursorPosition();

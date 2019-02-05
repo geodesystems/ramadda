@@ -21,36 +21,36 @@ function AreaWidget(display) {
         getHtml: function() {
             var callback = this.display.getGet();
             //hack, hack
-            var cbx = HtmlUtil.checkbox(this.display.getDomId(ID_CONTAINS), ["title", "Search mode: checked - contains, unchecked - overlaps"], false);
-            var link = HtmlUtil.onClick(callback + ".areaWidget.areaLinkClick();", HtmlUtil.image(root + (this.linkArea ? "/icons/link.png" : "/icons/link_break.png"), [ATTR_TITLE, "Set bounds from map", ATTR_CLASS, "display-area-link", "border", "0", ATTR_ID, this.display.getDomId(ID_AREA_LINK)]));
+            var cbx = HtmlUtils.checkbox(this.display.getDomId(ID_CONTAINS), ["title", "Search mode: checked - contains, unchecked - overlaps"], false);
+            var link = HtmlUtils.onClick(callback + ".areaWidget.areaLinkClick();", HtmlUtils.image(root + (this.linkArea ? "/icons/link.png" : "/icons/link_break.png"), [ATTR_TITLE, "Set bounds from map", ATTR_CLASS, "display-area-link", "border", "0", ATTR_ID, this.display.getDomId(ID_AREA_LINK)]));
 
-            var mylocation = HtmlUtil.onClick(callback + ".areaWidget.useMyLocation();", HtmlUtil.image(root + "/icons/compass.png"), [ATTR_TITLE, "Set my location", ATTR_CLASS, "display-area-link", "border", "0"]);
+            var mylocation = HtmlUtils.onClick(callback + ".areaWidget.useMyLocation();", HtmlUtils.image(root + "/icons/compass.png"), [ATTR_TITLE, "Set my location", ATTR_CLASS, "display-area-link", "border", "0"]);
 
 
-            var erase = HtmlUtil.onClick(callback + ".areaWidget.areaClear();", HtmlUtil.image(root + "/icons/eraser.png", [ATTR_TITLE, "Clear form", ATTR_CLASS, "display-area-link", "border", "0"]));
+            var erase = HtmlUtils.onClick(callback + ".areaWidget.areaClear();", HtmlUtils.image(root + "/icons/eraser.png", [ATTR_TITLE, "Clear form", ATTR_CLASS, "display-area-link", "border", "0"]));
 
-            var areaForm = HtmlUtil.openTag(TAG_TABLE, [ATTR_CLASS, "display-area", "border", "0", "cellpadding", "0", "cellspacing", "0"]);
-            areaForm += HtmlUtil.tr([],
-                HtmlUtil.td(["align", "center"],
-                    HtmlUtil.leftCenterRight(mylocation,
-                        HtmlUtil.input(ID_NORTH, "", ["placeholder", "N", ATTR_CLASS, "input display-area-input", "size", "5", ATTR_ID,
+            var areaForm = HtmlUtils.openTag(TAG_TABLE, [ATTR_CLASS, "display-area", "border", "0", "cellpadding", "0", "cellspacing", "0"]);
+            areaForm += HtmlUtils.tr([],
+                HtmlUtils.td(["align", "center"],
+                    HtmlUtils.leftCenterRight(mylocation,
+                        HtmlUtils.input(ID_NORTH, "", ["placeholder", "N", ATTR_CLASS, "input display-area-input", "size", "5", ATTR_ID,
                             this.display.getDomId(ID_NORTH), ATTR_TITLE, "North"
                         ]), link, "20%", "60%", "20%")));
 
-            areaForm += HtmlUtil.tr([], HtmlUtil.td([],
-                HtmlUtil.input(ID_WEST, "", ["placeholder", "W", ATTR_CLASS, "input  display-area-input", "size", "5", ATTR_ID,
+            areaForm += HtmlUtils.tr([], HtmlUtils.td([],
+                HtmlUtils.input(ID_WEST, "", ["placeholder", "W", ATTR_CLASS, "input  display-area-input", "size", "5", ATTR_ID,
                     this.display.getDomId(ID_WEST), ATTR_TITLE, "West"
                 ]) +
-                HtmlUtil.input(ID_EAST, "", ["placeholder", "E", ATTR_CLASS, "input  display-area-input", "size", "5", ATTR_ID,
+                HtmlUtils.input(ID_EAST, "", ["placeholder", "E", ATTR_CLASS, "input  display-area-input", "size", "5", ATTR_ID,
                     this.display.getDomId(ID_EAST), ATTR_TITLE, "East"
                 ])));
-            areaForm += HtmlUtil.tr([],
-                HtmlUtil.td(["align", "center"],
-                    HtmlUtil.leftCenterRight(erase, HtmlUtil.input(ID_SOUTH, "", ["placeholder", "S", ATTR_CLASS, "input  display-area-input", "size", "5", ATTR_ID,
+            areaForm += HtmlUtils.tr([],
+                HtmlUtils.td(["align", "center"],
+                    HtmlUtils.leftCenterRight(erase, HtmlUtils.input(ID_SOUTH, "", ["placeholder", "S", ATTR_CLASS, "input  display-area-input", "size", "5", ATTR_ID,
                         this.display.getDomId(ID_SOUTH), ATTR_TITLE, "South"
                     ]), cbx)));
 
-            areaForm += HtmlUtil.closeTag(TAG_TABLE);
+            areaForm += HtmlUtils.closeTag(TAG_TABLE);
             return areaForm;
         },
         areaClear: function() {
@@ -139,10 +139,10 @@ function DateRangeWidget(display) {
             settings.setDateRange(start, end);
         },
         getHtml: function() {
-            var html = HtmlUtil.input(ID_DATE_START, "", ["placeholder", "Start date", ATTR_ID,
+            var html = HtmlUtils.input(ID_DATE_START, "", ["placeholder", "Start date", ATTR_ID,
                     display.getDomId(ID_DATE_START), "size", "10"
                 ]) + " - " +
-                HtmlUtil.input(ID_DATE_END, "", ["placeholder", "End date", ATTR_ID,
+                HtmlUtils.input(ID_DATE_END, "", ["placeholder", "End date", ATTR_ID,
                     display.getDomId(ID_DATE_END), "size", "10"
                 ]);
             return html;

@@ -5066,7 +5066,7 @@ public class HtmlUtils {
         }
 
         HtmlUtils.script(sb,
-                         "HtmlUtil.makeAccordian(\"#" + accordianId + "\" "
+                         "HtmlUtils.makeAccordian(\"#" + accordianId + "\" "
                          + "," + args + ");\n");
     }
 

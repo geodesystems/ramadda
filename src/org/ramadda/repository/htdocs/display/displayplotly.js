@@ -124,7 +124,7 @@ function RamaddaPlotlyDisplay(displayManager, id, type, properties) {
         makePlot: function(data, layout) {
             this.clearHtml();
             //For some reason plotly won't display repeated times in the DISPLAY div
-            this.jq(ID_DISPLAY_CONTENTS).html(HtmlUtil.div(["id", this.getDomId("tmp"), "style", this.getDisplayStyle()], ""));
+            this.jq(ID_DISPLAY_CONTENTS).html(HtmlUtils.div(["id", this.getDomId("tmp"), "style", this.getDisplayStyle()], ""));
             //               Plotly.plot(this.getDomId(ID_DISPLAY_CONTENTS), data, layout)
             var plot = Plotly.plot(this.getDomId("tmp"), data, layout);
             var myPlot = document.getElementById(this.getDomId("tmp"));

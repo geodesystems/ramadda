@@ -3287,7 +3287,7 @@ public class PageHandler extends RepositoryManager {
                     colCnt = 1;
                 }
 
-                sb.append("<td>");
+                sb.append("<td width='25%'>");
                 sb.append(HtmlUtils.b(msg(cat)));
                 sb.append(
                     "<div style=\"solid black; max-height: 150px; overflow-y: auto\";>");

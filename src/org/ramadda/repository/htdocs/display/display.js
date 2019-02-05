@@ -231,7 +231,7 @@ function DisplayThing(argId, argProperties) {
             });
         },
         getUniqueId: function(base) {
-            return HtmlUtil.getUniqueId(base);
+            return HtmlUtils.getUniqueId(base);
         },
         handleError: function(code, message) {
             GuiUtils.handleError("An error has occurred:" + message, true, true);
@@ -433,7 +433,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             return this.getDisplayManager().getLayoutManager();
         },
         displayError: function(msg) {
-            this.displayHtml(HtmlUtil.getErrorDialog(msg));
+            this.displayHtml(HtmlUtils.getErrorDialog(msg));
         },
         clearHtml: function() {
             this.displayHtml("");
@@ -511,7 +511,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             this.setDisplayParent(cm.getLayoutManager());
         },
         setContents: function(contents) {
-            contents = HtmlUtil.div([ATTR_CLASS, "display-contents-inner display-" + this.getType() + "-inner"], contents);
+            contents = HtmlUtils.div([ATTR_CLASS, "display-contents-inner display-" + this.getType() + "-inner"], contents);
             this.writeHtml(ID_DISPLAY_CONTENTS, contents);
         },
         addEntry: function(entry) {
@@ -538,7 +538,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             var title = "";
             if (this.getShowTitle()) {
                 title = entry.getName();
-                title = HtmlUtil.href(this.getRamadda().getEntryUrl(this.entryId), title);
+                title = HtmlUtils.href(this.getRamadda().getEntryUrl(this.entryId), title);
                 this.jq(ID_TITLE).html(title);
             }
         },
@@ -597,14 +597,14 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             return this.entries != null && this.entries.length > 0;
         },
         getWaitImage: function() {
-            return HtmlUtil.image(ramaddaBaseUrl + "/icons/progress.gif");
+            return HtmlUtils.image(ramaddaBaseUrl + "/icons/progress.gif");
         },
         getLoadingMessage: function(msg) {
             if (!msg) msg = "Loading data...";
-            return HtmlUtil.div(["text-align", "center"], this.getMessage("&nbsp;" + msg));
+            return HtmlUtils.div(["text-align", "center"], this.getMessage("&nbsp;" + msg));
         },
         getMessage: function(msg) {
-            return HtmlUtil.div([ATTR_CLASS, "display-message"], msg);
+            return HtmlUtils.div([ATTR_CLASS, "display-message"], msg);
         },
         getFieldValue: function(id, dflt) {
             var jq = $("#" + id);
@@ -614,9 +614,9 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             return dflt;
         },
         getFooter: function() {
-            return HtmlUtil.div([ATTR_ID, this.getDomId(ID_FOOTER), ATTR_CLASS, "display-footer"],
-                HtmlUtil.leftRight(HtmlUtil.div([ATTR_ID, this.getDomId(ID_FOOTER_LEFT), ATTR_CLASS, "display-footer-left"], ""),
-                    HtmlUtil.div([ATTR_ID, this.getDomId(ID_FOOTER_RIGHT), ATTR_CLASS, "display-footer-right"], "")));
+            return HtmlUtils.div([ATTR_ID, this.getDomId(ID_FOOTER), ATTR_CLASS, "display-footer"],
+                HtmlUtils.leftRight(HtmlUtils.div([ATTR_ID, this.getDomId(ID_FOOTER_LEFT), ATTR_CLASS, "display-footer-left"], ""),
+                    HtmlUtils.div([ATTR_ID, this.getDomId(ID_FOOTER_RIGHT), ATTR_CLASS, "display-footer-right"], "")));
         },
         checkFixedLayout: function() {
             if (this.getIsLayoutFixed()) {
@@ -710,22 +710,22 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
                         var field = allFields[i];
                         if (field.getType() != "string") continue;
                         if (cnt == 0) {
-                            html += HtmlUtil.div([ATTR_CLASS, "display-dialog-subheader"], "Group By");
-                            html += HtmlUtil.openTag(TAG_DIV, [ATTR_CLASS, "display-fields"]);
+                            html += HtmlUtils.div([ATTR_CLASS, "display-dialog-subheader"], "Group By");
+                            html += HtmlUtils.openTag(TAG_DIV, [ATTR_CLASS, "display-fields"]);
                             var on = this.groupBy == null || this.groupBy == "";
-                            html += HtmlUtil.tag(TAG_DIV, [ATTR_TITLE, "none"],
-                                HtmlUtil.radio("none", this.getDomId("groupby"), groupByClass, "none", !on) + " None");
+                            html += HtmlUtils.tag(TAG_DIV, [ATTR_TITLE, "none"],
+                                HtmlUtils.radio("none", this.getDomId("groupby"), groupByClass, "none", !on) + " None");
                         }
                         cnt++;
                         var on = this.groupBy == field.getId();
                         var idBase = "groupby_" + collectionIdx + "_" + i;
                         field.radioId = this.getDomId(idBase);
-                        html += HtmlUtil.tag(TAG_DIV, [ATTR_TITLE, field.getId()],
-                            HtmlUtil.radio(field.radioId, this.getDomId("groupby"), groupByClass, field.getId(), on) + " " + field.getUnitLabel() + " (" + field.getId() + ")"
+                        html += HtmlUtils.tag(TAG_DIV, [ATTR_TITLE, field.getId()],
+                            HtmlUtils.radio(field.radioId, this.getDomId("groupby"), groupByClass, field.getId(), on) + " " + field.getUnitLabel() + " (" + field.getId() + ")"
                         );
                     }
                     if (cnt > 0) {
-                        html += HtmlUtil.closeTag(TAG_DIV);
+                        html += HtmlUtils.closeTag(TAG_DIV);
                     }
                 }
 
@@ -736,8 +736,8 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
                         selectedIds.push(selected[i].getId());
                     }
                     var disabledFields = "";
-                    html += HtmlUtil.div([ATTR_CLASS, "display-dialog-subheader"], "Displayed Fields");
-                    html += HtmlUtil.openTag(TAG_DIV, [ATTR_CLASS, "display-fields"]);
+                    html += HtmlUtils.div([ATTR_CLASS, "display-dialog-subheader"], "Displayed Fields");
+                    html += HtmlUtils.openTag(TAG_DIV, [ATTR_CLASS, "display-fields"]);
                     for (var tupleIdx = 0; tupleIdx < fields.length; tupleIdx++) {
                         var field = fields[tupleIdx];
                         var idBase = "cbx_" + collectionIdx + "_" + tupleIdx;
@@ -787,19 +787,19 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
                         }
 
                         if (!hasValues) {
-                            disabledFields += HtmlUtil.div([], label);
+                            disabledFields += HtmlUtils.div([], label);
                         } else {
                             if (field.derived) {
                                 label += " (derived)";
                             }
                             var widget;
                             if (this.canDoMultiFields()) {
-                                widget = HtmlUtil.checkbox(field.checkboxId, ["class", checkboxClass], on);
+                                widget = HtmlUtils.checkbox(field.checkboxId, ["class", checkboxClass], on);
                             } else {
-                                widget = HtmlUtil.radio(field.checkboxId, "field_radio", checkboxClass, "", on);
+                                widget = HtmlUtils.radio(field.checkboxId, "field_radio", checkboxClass, "", on);
                             }
 
-                            html += HtmlUtil.tag(TAG_DIV, [ATTR_TITLE, field.getId()],
+                            html += HtmlUtils.tag(TAG_DIV, [ATTR_TITLE, field.getId()],
                                 widget + " " + label
                             );
                         }
@@ -807,10 +807,10 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
                     }
                 }
                 if (disabledFields != "") {
-                    html += HtmlUtil.div(["style", "border-top:1px #888  solid;"], "<b>No Data Available</b>" + disabledFields);
+                    html += HtmlUtils.div(["style", "border-top:1px #888  solid;"], "<b>No Data Available</b>" + disabledFields);
                 }
 
-                html += HtmlUtil.closeTag(TAG_DIV);
+                html += HtmlUtils.closeTag(TAG_DIV);
             }
 
 
@@ -1168,7 +1168,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             args.push(window.btoa(wiki));
 
 
-            var url = HtmlUtil.getUrl(ramaddaBaseUrl + "/entry/publish", args);
+            var url = HtmlUtils.getUrl(ramaddaBaseUrl + "/entry/publish", args);
             window.open(url, '_blank');
         },
         getChildEntries: function(includeFixed) {
@@ -1249,7 +1249,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
                 attrs.push("entry");
                 attrs.push(entryId);
             }
-            var wiki = "{{display " + HtmlUtil.attrs(attrs) + "}}\n\n"
+            var wiki = "{{display " + HtmlUtils.attrs(attrs) + "}}\n\n"
 
             return wiki;
         },
@@ -1277,9 +1277,9 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             if (entry.getIsGroup() /* && !entry.isRemote*/ ) {
                 var theDisplay = this;
                 var callback = function(entries) {
-                    var html = HtmlUtil.openTag(TAG_OL, [ATTR_CLASS, "display-entrylist-list", ATTR_ID, theDisplay.getDomId(ID_LIST)]);
+                    var html = HtmlUtils.openTag(TAG_OL, [ATTR_CLASS, "display-entrylist-list", ATTR_ID, theDisplay.getDomId(ID_LIST)]);
                     html += theDisplay.getEntriesTree(entries);
-                    html += HtmlUtil.closeTag(TAG_OL);
+                    html += HtmlUtils.closeTag(TAG_OL);
                     theDisplay.jq(ID_GROUP_CONTENTS + entry.getIdForDom()).html(html);
                     theDisplay.addEntrySelect();
                 };
@@ -1299,12 +1299,12 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             var html = "";
             if (props.showHeader) {
                 var left = menu + " " + entry.getLink(entry.getIconImage() + " " + entry.getName());
-                if (props.headerRight) html += HtmlUtil.leftRight(left, props.headerRight);
+                if (props.headerRight) html += HtmlUtils.leftRight(left, props.headerRight);
                 else html += left;
                 //                    html += "<hr>";
             }
-            var divid = HtmlUtil.getUniqueId("entry_");
-            html += HtmlUtil.div(["id", divid], "");
+            var divid = HtmlUtils.getUniqueId("entry_");
+            html += HtmlUtils.div(["id", divid], "");
 
             if (false) {
                 var url = this.getRamadda().getRoot() + "/entry/show?entryid=" + entry.getId() + "&decorate=false&output=metadataxml&details=true";
@@ -1318,11 +1318,11 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 
             var metadata = entry.getMetadata();
             if (entry.isImage()) {
-                var img = HtmlUtil.tag(TAG_IMG, ["src", entry.getResourceUrl(), /*ATTR_WIDTH,"100%",*/
+                var img = HtmlUtils.tag(TAG_IMG, ["src", entry.getResourceUrl(), /*ATTR_WIDTH,"100%",*/
                     ATTR_CLASS, "display-entry-image"
                 ]);
 
-                html += HtmlUtil.href(entry.getResourceUrl(), img) + "<br>";
+                html += HtmlUtils.href(entry.getResourceUrl(), img) + "<br>";
             } else {
                 for (var i = 0; i < metadata.length; i++) {
                     if (metadata[i].type == "content.thumbnail") {
@@ -1334,35 +1334,35 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
                         } else {
                             url = ramaddaBaseUrl + "/metadata/view/" + image + "?element=1&entryid=" + entry.getId() + "&metadata.id=" + metadata[i].id + "&thumbnail=false";
                         }
-                        html += HtmlUtil.image(url, [ATTR_CLASS, "display-entry-thumbnail"]);
+                        html += HtmlUtils.image(url, [ATTR_CLASS, "display-entry-thumbnail"]);
                     }
                 }
             }
             if (entry.getIsGroup() /* && !entry.isRemote*/ ) {
-                html += HtmlUtil.div([ATTR_ID, this.getDomId(ID_GROUP_CONTENTS + entry.getIdForDom())], "" /*this.getWaitImage()*/ );
+                html += HtmlUtils.div([ATTR_ID, this.getDomId(ID_GROUP_CONTENTS + entry.getIdForDom())], "" /*this.getWaitImage()*/ );
             }
 
 
-            html += HtmlUtil.formTable();
+            html += HtmlUtils.formTable();
 
             if (props.showDetails) {
                 if (entry.url) {
-                    html += HtmlUtil.formEntry("URL:", HtmlUtil.href(entry.url, entry.url));
+                    html += HtmlUtils.formEntry("URL:", HtmlUtils.href(entry.url, entry.url));
                 }
 
                 if (entry.remoteUrl) {
-                    html += HtmlUtil.formEntry("URL:", HtmlUtil.href(entry.remoteUrl, entry.remoteUrl));
+                    html += HtmlUtils.formEntry("URL:", HtmlUtils.href(entry.remoteUrl, entry.remoteUrl));
                 }
                 if (entry.remoteRepository) {
-                    html += HtmlUtil.formEntry("From:", HtmlUtil.href(entry.remoteRepository.url, entry.remoteRepository.name));
+                    html += HtmlUtils.formEntry("From:", HtmlUtils.href(entry.remoteRepository.url, entry.remoteRepository.name));
                 }
             }
 
             var columns = entry.getAttributes();
 
             if (entry.getFilesize() > 0) {
-                html += HtmlUtil.formEntry("File:", entry.getFilename() + " " +
-                    HtmlUtil.href(entry.getResourceUrl(), HtmlUtil.image(ramaddaBaseUrl + "/icons/download.png")) + " " +
+                html += HtmlUtils.formEntry("File:", entry.getFilename() + " " +
+                    HtmlUtils.href(entry.getResourceUrl(), HtmlUtils.image(ramaddaBaseUrl + "/icons/download.png")) + " " +
                     entry.getFormattedFilesize());
             }
             for (var colIdx = 0; colIdx < columns.length; colIdx++) {
@@ -1381,15 +1381,15 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
                     for (var i = 0; i < toks.length; i++) {
                         var url = toks[i].trim();
                         if (url.length == 0) continue;
-                        tmp += HtmlUtil.href(url, url);
+                        tmp += HtmlUtils.href(url, url);
                         tmp += "<br>";
                     }
                     columnValue = tmp;
                 }
-                html += HtmlUtil.formEntry(column.label + ":", columnValue);
+                html += HtmlUtils.formEntry(column.label + ":", columnValue);
             }
 
-            html += HtmlUtil.closeTag(TAG_TABLE);
+            html += HtmlUtils.closeTag(TAG_TABLE);
 
 
             return html;
@@ -1460,11 +1460,11 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
                     entryName = entryName.substring(0, 99) + "...";
                 }
                 var icon = entry.getIconImage([ATTR_TITLE, "View entry"]);
-                var link = HtmlUtil.tag(TAG_A, [ATTR_HREF, entry.getEntryUrl()], icon + " " + entryName);
+                var link = HtmlUtils.tag(TAG_A, [ATTR_HREF, entry.getEntryUrl()], icon + " " + entryName);
                 entryName = "";
                 var entryIdForDom = entry.getIdForDom() + domIdSuffix;
                 var entryId = entry.getId();
-                var arrow = HtmlUtil.image(icon_tree_closed, [ATTR_BORDER, "0",
+                var arrow = HtmlUtils.image(icon_tree_closed, [ATTR_BORDER, "0",
                     "tree-open", "false",
                     ATTR_ID,
                     this.getDomId(ID_TREE_LINK + entryIdForDom)
@@ -1474,29 +1474,29 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 
                 var toggleCall = this.getGet() + ".toggleEntryDetails(event, '" + entryId + "'," + suffix + ");";
                 var toggleCall2 = this.getGet() + ".entryHeaderClick(event, '" + entryId + "'," + suffix + "); ";
-                var open = HtmlUtil.onClick(toggleCall, arrow);
+                var open = HtmlUtils.onClick(toggleCall, arrow);
                 var extra = "";
                 if (showIndex) {
                     extra = "#" + (i + 1) + " ";
                 }
-                var left = HtmlUtil.div([ATTR_CLASS, "display-entrylist-name"], entryMenuButton +" "+open + " " + extra + link + " " + entryName);
-                var details = HtmlUtil.div([ATTR_ID, this.getDomId(ID_DETAILS + entryIdForDom), ATTR_CLASS, "display-entrylist-details"], HtmlUtil.div([ATTR_CLASS, "display-entrylist-details-inner", ATTR_ID, this.getDomId(ID_DETAILS_INNER + entryIdForDom)], ""));
+                var left = HtmlUtils.div([ATTR_CLASS, "display-entrylist-name"], entryMenuButton +" "+open + " " + extra + link + " " + entryName);
+                var details = HtmlUtils.div([ATTR_ID, this.getDomId(ID_DETAILS + entryIdForDom), ATTR_CLASS, "display-entrylist-details"], HtmlUtils.div([ATTR_CLASS, "display-entrylist-details-inner", ATTR_ID, this.getDomId(ID_DETAILS_INNER + entryIdForDom)], ""));
 
                 //                    console.log("details:" + details);
 
                 var line;
                 if (this.getProperty("showToolbar", true)) {
-                    line = HtmlUtil.leftCenterRight(left, "", toolbar, "80%", "1%", "19%");
+                    line = HtmlUtils.leftCenterRight(left, "", toolbar, "80%", "1%", "19%");
                 } else {
                     line = left;
                 }
-                //                    line = HtmlUtil.leftRight(left,toolbar,"60%","30%");
+                //                    line = HtmlUtils.leftRight(left,toolbar,"60%","30%");
 
 
-                var mainLine = HtmlUtil.div(["onclick", toggleCall2, ATTR_ID, this.getDomId(ID_DETAILS_MAIN + entryIdForDom), ATTR_CLASS, "display-entrylist-entry-main" + " " + "entry-main-display-entrylist-" + (even ? "even" : "odd"), ATTR_ENTRYID, entryId], line);
-                var line = HtmlUtil.div(["class", (even?"ramadda-row-even":"ramadda-row-odd"),ATTR_ID, this.getDomId("entryinner_" + entryIdForDom)], mainLine + details);
+                var mainLine = HtmlUtils.div(["onclick", toggleCall2, ATTR_ID, this.getDomId(ID_DETAILS_MAIN + entryIdForDom), ATTR_CLASS, "display-entrylist-entry-main" + " " + "entry-main-display-entrylist-" + (even ? "even" : "odd"), ATTR_ENTRYID, entryId], line);
+                var line = HtmlUtils.div(["class", (even?"ramadda-row-even":"ramadda-row-odd"),ATTR_ID, this.getDomId("entryinner_" + entryIdForDom)], mainLine + details);
 
-                html += HtmlUtil.tag(TAG_DIV, [ATTR_ID,
+                html += HtmlUtils.tag(TAG_DIV, [ATTR_ID,
                     this.getDomId("entry_" + entryIdForDom),
                     ATTR_ENTRYID, entryId, ATTR_CLASS, "display-entrylist-entry" + rowClass
                 ], line);
@@ -1610,15 +1610,15 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             if (columnWidths != null) {
                 columnWidths = columnWidths.split(",");
             }
-            var html = HtmlUtil.openTag(TAG_TABLE, [ATTR_WIDTH, "100%", "cellpadding", "0", "cellspacing", "0"]);
-            html += HtmlUtil.openTag(TAG_TR, ["valign", "top"]);
+            var html = HtmlUtils.openTag(TAG_TABLE, [ATTR_WIDTH, "100%", "cellpadding", "0", "cellspacing", "0"]);
+            html += HtmlUtils.openTag(TAG_TR, ["valign", "top"]);
             for (var i = 0; i < columnNames.length; i++) {
-                html += HtmlUtil.td([ATTR_ALIGN, "center", ATTR_CLASS, "display-entrytable-header"], columnNames[i]);
+                html += HtmlUtils.td([ATTR_ALIGN, "center", ATTR_CLASS, "display-entrytable-header"], columnNames[i]);
             }
-            html += HtmlUtil.closeTag(TAG_TR);
+            html += HtmlUtils.closeTag(TAG_TR);
 
             for (var i = 0; i < entries.length; i++) {
-                html += HtmlUtil.openTag(TAG_TR, ["valign", "top"]);
+                html += HtmlUtils.openTag(TAG_TR, ["valign", "top"]);
                 var entry = entries[i];
                 this.entriesMap[entry.getId()] = entry;
                 for (var j = 0; j < columns.length; j++) {
@@ -1629,7 +1629,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
                     var column = columns[j];
                     var value = "";
                     if (column == "name") {
-                        value = HtmlUtil.tag(TAG_A, [ATTR_HREF, entry.getEntryUrl()], entry.getName());
+                        value = HtmlUtils.tag(TAG_A, [ATTR_HREF, entry.getEntryUrl()], entry.getName());
                     } else if (column.match(".*property:.*")) {
                         var type = column.substring("property:".length);
                         var metadata = entry.getMetadata();
@@ -1660,59 +1660,59 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
                         attrs.push(columnWidth);
                     }
 
-                    html += HtmlUtil.td(attrs, value);
+                    html += HtmlUtils.td(attrs, value);
                 }
-                html += HtmlUtil.closeTag(TAG_TR);
+                html += HtmlUtils.closeTag(TAG_TR);
             }
-            html += HtmlUtil.closeTag(TAG_TABLE);
+            html += HtmlUtils.closeTag(TAG_TABLE);
             return html;
         },
 
         makeEntryToolbar: function(entry) {
             var get = this.getGet();
             var toolbarItems = [];
-            //                 toolbarItems.push(HtmlUtil.tag(TAG_A, [ATTR_HREF, entry.getEntryUrl(),"target","_"], 
-            //                                                HtmlUtil.image(ramaddaBaseUrl +"/icons/application-home.png",["border",0,ATTR_TITLE,"View Entry"])));
+            //                 toolbarItems.push(HtmlUtils.tag(TAG_A, [ATTR_HREF, entry.getEntryUrl(),"target","_"], 
+            //                                                HtmlUtils.image(ramaddaBaseUrl +"/icons/application-home.png",["border",0,ATTR_TITLE,"View Entry"])));
             if (entry.getType().getId() == "type_wms_layer") {
-                toolbarItems.push(HtmlUtil.tag(TAG_A, ["onclick", get + ".addMapLayer(" + HtmlUtil.sqt(entry.getId()) + ");"],
-                    HtmlUtil.image(ramaddaBaseUrl + "/icons/map.png", ["border", 0, ATTR_TITLE, "Add Map Layer"])));
+                toolbarItems.push(HtmlUtils.tag(TAG_A, ["onclick", get + ".addMapLayer(" + HtmlUtils.sqt(entry.getId()) + ");"],
+                    HtmlUtils.image(ramaddaBaseUrl + "/icons/map.png", ["border", 0, ATTR_TITLE, "Add Map Layer"])));
 
             }
             if (entry.getType().getId() == "geo_shapefile") {
-                toolbarItems.push(HtmlUtil.tag(TAG_A, ["onclick", get + ".addMapLayer(" + HtmlUtil.sqt(entry.getId()) + ");"],
-                    HtmlUtil.image(ramaddaBaseUrl + "/icons/map.png", ["border", 0, ATTR_TITLE, "Add Map Layer"])));
+                toolbarItems.push(HtmlUtils.tag(TAG_A, ["onclick", get + ".addMapLayer(" + HtmlUtils.sqt(entry.getId()) + ");"],
+                    HtmlUtils.image(ramaddaBaseUrl + "/icons/map.png", ["border", 0, ATTR_TITLE, "Add Map Layer"])));
 
             }
 
             var jsonUrl = this.getPointUrl(entry);
             if (jsonUrl != null) {
-                toolbarItems.push(HtmlUtil.tag(TAG_A, ["onclick", get + ".createDisplay(" + HtmlUtil.sqt(entry.getFullId()) + "," +
-                        HtmlUtil.sqt("table") + "," + HtmlUtil.sqt(jsonUrl) + ");"
+                toolbarItems.push(HtmlUtils.tag(TAG_A, ["onclick", get + ".createDisplay(" + HtmlUtils.sqt(entry.getFullId()) + "," +
+                        HtmlUtils.sqt("table") + "," + HtmlUtils.sqt(jsonUrl) + ");"
                     ],
-                    HtmlUtil.image(ramaddaBaseUrl + "/icons/table.png", ["border", 0, ATTR_TITLE, "Create Tabular Display"])));
+                    HtmlUtils.image(ramaddaBaseUrl + "/icons/table.png", ["border", 0, ATTR_TITLE, "Create Tabular Display"])));
 
                 var x;
-                toolbarItems.push(x = HtmlUtil.tag(TAG_A, ["onclick", get + ".createDisplay(" + HtmlUtil.sqt(entry.getFullId()) + "," +
-                        HtmlUtil.sqt("linechart") + "," + HtmlUtil.sqt(jsonUrl) + ");"
+                toolbarItems.push(x = HtmlUtils.tag(TAG_A, ["onclick", get + ".createDisplay(" + HtmlUtils.sqt(entry.getFullId()) + "," +
+                        HtmlUtils.sqt("linechart") + "," + HtmlUtils.sqt(jsonUrl) + ");"
                     ],
-                    HtmlUtil.image(ramaddaBaseUrl + "/icons/chart_line_add.png", ["border", 0, ATTR_TITLE, "Create Chart"])));
+                    HtmlUtils.image(ramaddaBaseUrl + "/icons/chart_line_add.png", ["border", 0, ATTR_TITLE, "Create Chart"])));
             }
-            toolbarItems.push(HtmlUtil.tag(TAG_A, ["onclick", get + ".createDisplay(" + HtmlUtil.sqt(entry.getFullId()) + "," +
-                    HtmlUtil.sqt("entrydisplay") + "," + HtmlUtil.sqt(jsonUrl) + ");"
+            toolbarItems.push(HtmlUtils.tag(TAG_A, ["onclick", get + ".createDisplay(" + HtmlUtils.sqt(entry.getFullId()) + "," +
+                    HtmlUtils.sqt("entrydisplay") + "," + HtmlUtils.sqt(jsonUrl) + ");"
                 ],
-                HtmlUtil.image(ramaddaBaseUrl + "/icons/layout_add.png", ["border", 0, ATTR_TITLE, "Show Entry"])));
+                HtmlUtils.image(ramaddaBaseUrl + "/icons/layout_add.png", ["border", 0, ATTR_TITLE, "Show Entry"])));
 
             if (entry.getFilesize() > 0) {
-                toolbarItems.push(HtmlUtil.tag(TAG_A, [ATTR_HREF, entry.getResourceUrl()],
-                    HtmlUtil.image(ramaddaBaseUrl + "/icons/download.png", ["border", 0, ATTR_TITLE, "Download (" + entry.getFormattedFilesize() + ")"])));
+                toolbarItems.push(HtmlUtils.tag(TAG_A, [ATTR_HREF, entry.getResourceUrl()],
+                    HtmlUtils.image(ramaddaBaseUrl + "/icons/download.png", ["border", 0, ATTR_TITLE, "Download (" + entry.getFormattedFilesize() + ")"])));
 
             }
 
 
             var entryMenuButton = this.getEntryMenuButton(entry);
             /*
-            entryMenuButton =  HtmlUtil.onClick(this.getGet()+".showEntryDetails(event, '" + entry.getId() +"');", 
-                                          HtmlUtil.image(ramaddaBaseUrl+"/icons/downdart.png", 
+            entryMenuButton =  HtmlUtils.onClick(this.getGet()+".showEntryDetails(event, '" + entry.getId() +"');", 
+                                          HtmlUtils.image(ramaddaBaseUrl+"/icons/downdart.png", 
                                                          [ATTR_CLASS, "display-dialog-button", ATTR_ID,  this.getDomId(ID_MENU_BUTTON + entry.getId())]));
 
             */
@@ -1720,13 +1720,13 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 
             var tmp = [];
             for (var i = 0; i < toolbarItems.length; i++) {
-                tmp.push(HtmlUtil.div([ATTR_CLASS, "display-entry-toolbar-item"], toolbarItems[i]));
+                tmp.push(HtmlUtils.div([ATTR_CLASS, "display-entry-toolbar-item"], toolbarItems[i]));
             }
             toolbarItems = tmp;
-            return HtmlUtil.div([ATTR_CLASS, "display-entry-toolbar", ATTR_ID,
+            return HtmlUtils.div([ATTR_CLASS, "display-entry-toolbar", ATTR_ID,
                     this.getEntryToolbarId(entry.getIdForDom())
                 ],
-                HtmlUtil.join(toolbarItems, ""));
+                HtmlUtils.join(toolbarItems, ""));
         },
         getEntryToolbarId: function(entryId) {
             var id = entryId.replace(/:/g, "_");
@@ -1794,10 +1794,10 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             var hereBefore = details.attr("has-content") != null;
             details.attr("has-content", "true");
             if (hereBefore) {
-                //                    detailsInner.html(HtmlUtil.image(icon_progress));
+                //                    detailsInner.html(HtmlUtils.image(icon_progress));
             } else {
                 if (entry.getIsGroup() /* && !entry.isRemote*/ ) {
-                    detailsInner.html(HtmlUtil.image(icon_progress));
+                    detailsInner.html(HtmlUtils.image(icon_progress));
                     var theDisplay = this;
                     var callback = function(entries) {
                         theDisplay.displayChildren(entry, entries, suffix);
@@ -1853,8 +1853,8 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 
 
         getEntryMenuButton: function(entry) {
-            var menuButton = HtmlUtil.onClick(this.getGet() + ".showEntryMenu(event, '" + entry.getId() + "');",
-                HtmlUtil.image(ramaddaBaseUrl + "/icons/menu.png",
+            var menuButton = HtmlUtils.onClick(this.getGet() + ".showEntryMenu(event, '" + entry.getId() + "');",
+                HtmlUtils.image(ramaddaBaseUrl + "/icons/menu.png",
                     [ATTR_CLASS, "display-entry-toolbar-item", ATTR_ID, this.getDomId(ID_MENU_BUTTON + entry.getIdForDom())]));
             return menuButton;
         },
@@ -1969,19 +1969,19 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             var fileMenuItems = [];
             var viewMenuItems = [];
             var newMenuItems = [];
-            viewMenuItems.push(HtmlUtil.tag(TAG_LI, [], HtmlUtil.tag(TAG_A, ["href", entry.getEntryUrl(), "target", "_"], "View Entry")));
+            viewMenuItems.push(HtmlUtils.tag(TAG_LI, [], HtmlUtils.tag(TAG_A, ["href", entry.getEntryUrl(), "target", "_"], "View Entry")));
             if (entry.getFilesize() > 0) {
-                fileMenuItems.push(HtmlUtil.tag(TAG_LI, [], HtmlUtil.tag(TAG_A, ["href", entry.getResourceUrl()], "Download " + entry.getFilename() + " (" + entry.getFormattedFilesize() + ")")));
+                fileMenuItems.push(HtmlUtils.tag(TAG_LI, [], HtmlUtils.tag(TAG_A, ["href", entry.getResourceUrl()], "Download " + entry.getFilename() + " (" + entry.getFormattedFilesize() + ")")));
             }
 
             if (this.jsonUrl != null) {
-                fileMenuItems.push(HtmlUtil.tag(TAG_LI, [], "Data: " + HtmlUtil.onClick(get + ".fetchUrl('json');", "JSON") +
-                    HtmlUtil.onClick(get + ".fetchUrl('csv');", "CSV")));
+                fileMenuItems.push(HtmlUtils.tag(TAG_LI, [], "Data: " + HtmlUtils.onClick(get + ".fetchUrl('json');", "JSON") +
+                    HtmlUtils.onClick(get + ".fetchUrl('csv');", "CSV")));
             }
 
             var newMenu = "<a>New</a><ul>";
-            newMenu += HtmlUtil.tag(TAG_LI, [], HtmlUtil.onClick(get + ".createDisplay('" + entry.getFullId() + "','entrydisplay');", "New Entry Display"));
-            newMenuItems.push(HtmlUtil.tag(TAG_LI, [], HtmlUtil.onClick(get + ".createDisplay('" + entry.getFullId() + "','entrydisplay');", "New Entry Display")));
+            newMenu += HtmlUtils.tag(TAG_LI, [], HtmlUtils.onClick(get + ".createDisplay('" + entry.getFullId() + "','entrydisplay');", "New Entry Display"));
+            newMenuItems.push(HtmlUtils.tag(TAG_LI, [], HtmlUtils.onClick(get + ".createDisplay('" + entry.getFullId() + "','entrydisplay');", "New Entry Display")));
 
 
             //check if it has point data
@@ -2000,8 +2000,8 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
                             catMap[type.category] = "<li> <a>" + type.category +"</a><ul>\n";
                         }
                         pointUrl = pointUrl.replace(/\'/g,"_");
-                        var call = get + ".createDisplay(" + HtmlUtil.sqt(entry.getFullId()) + "," + HtmlUtil.sqt(type.type) + "," + HtmlUtil.sqt(pointUrl) + ");";
-                        var li = HtmlUtil.tag(TAG_LI, [], HtmlUtil.tag(TAG_A, ["onclick", call], type.label));
+                        var call = get + ".createDisplay(" + HtmlUtils.sqt(entry.getFullId()) + "," + HtmlUtils.sqt(type.type) + "," + HtmlUtils.sqt(pointUrl) + ");";
+                        var li = HtmlUtils.tag(TAG_LI, [], HtmlUtils.tag(TAG_A, ["onclick", call], type.label));
                         catMap[type.category] +=li +"\n";
                         newMenuItems.push(li);
                     }
@@ -2015,19 +2015,19 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 
 
             if (fileMenuItems.length > 0)
-                menus.push("<a>File</a>" + HtmlUtil.tag(TAG_UL, [], HtmlUtil.join(fileMenuItems)));
+                menus.push("<a>File</a>" + HtmlUtils.tag(TAG_UL, [], HtmlUtils.join(fileMenuItems)));
             if (viewMenuItems.length > 0)
-                menus.push("<a>View</a>" + HtmlUtil.tag(TAG_UL, [], HtmlUtil.join(viewMenuItems)));
+                menus.push("<a>View</a>" + HtmlUtils.tag(TAG_UL, [], HtmlUtils.join(viewMenuItems)));
             if (newMenuItems.length > 0)
                 menus.push(newMenu);
 
 
             var topMenus = "";
             for (var i = 0; i < menus.length; i++) {
-                topMenus += HtmlUtil.tag(TAG_LI, [], menus[i]);
+                topMenus += HtmlUtils.tag(TAG_LI, [], menus[i]);
             }
 
-            var menu = HtmlUtil.tag(TAG_UL, [ATTR_ID, this.getDomId(ID_MENU_INNER + entry.getIdForDom()), ATTR_CLASS, "sf-menu"],
+            var menu = HtmlUtils.tag(TAG_UL, [ATTR_ID, this.getDomId(ID_MENU_INNER + entry.getIdForDom()), ATTR_CLASS, "sf-menu"],
                 topMenus);
             return menu;
         },
@@ -2062,29 +2062,29 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
         },
         getDisplayMenuSettings: function() {
             var get = "getRamaddaDisplay('" + this.getId() + "')";
-            var moveRight = HtmlUtil.onClick(get + ".moveDisplayRight();", "Right");
-            var moveLeft = HtmlUtil.onClick(get + ".moveDisplayLeft();", "Left");
-            var moveTop = HtmlUtil.onClick(get + ".moveDisplayTop();", "Top");
-            var moveUp = HtmlUtil.onClick(get + ".moveDisplayUp();", "Up");
-            var moveDown = HtmlUtil.onClick(get + ".moveDisplayDown();", "Down");
+            var moveRight = HtmlUtils.onClick(get + ".moveDisplayRight();", "Right");
+            var moveLeft = HtmlUtils.onClick(get + ".moveDisplayLeft();", "Left");
+            var moveTop = HtmlUtils.onClick(get + ".moveDisplayTop();", "Top");
+            var moveUp = HtmlUtils.onClick(get + ".moveDisplayUp();", "Up");
+            var moveDown = HtmlUtils.onClick(get + ".moveDisplayDown();", "Down");
 
 
             var menu = "<table class=formtable>" +
                 "<tr><td align=right><b>Move:</b></td><td>" + moveTop + " " + moveUp + " " + moveDown + " " + moveRight + " " + moveLeft + "</td></tr>" +
-                "<tr><td align=right><b>Row:</b></td><td> " + HtmlUtil.input("", this.getProperty("row", ""), ["size", "7", ATTR_ID, this.getDomId("row")]) + " &nbsp;&nbsp;<b>Col:</b> " + HtmlUtil.input("", this.getProperty("column", ""), ["size", "7", ATTR_ID, this.getDomId("column")]) + "</td></tr>" +
+                "<tr><td align=right><b>Row:</b></td><td> " + HtmlUtils.input("", this.getProperty("row", ""), ["size", "7", ATTR_ID, this.getDomId("row")]) + " &nbsp;&nbsp;<b>Col:</b> " + HtmlUtils.input("", this.getProperty("column", ""), ["size", "7", ATTR_ID, this.getDomId("column")]) + "</td></tr>" +
 
-                //                    "<tr><td align=right><b>Name:</b></td><td> " + HtmlUtil.input("", this.getProperty("name",""), ["size","7",ATTR_ID,  this.getDomId("name")]) + "</td></tr>" +
+                //                    "<tr><td align=right><b>Name:</b></td><td> " + HtmlUtils.input("", this.getProperty("name",""), ["size","7",ATTR_ID,  this.getDomId("name")]) + "</td></tr>" +
                 //                    "<tr><td align=right><b>Source:</b></td><td>"  + 
-                //                    HtmlUtil.input("", this.getProperty("eventsource",""), ["size","7",ATTR_ID,  this.getDomId("eventsource")]) +
+                //                    HtmlUtils.input("", this.getProperty("eventsource",""), ["size","7",ATTR_ID,  this.getDomId("eventsource")]) +
                 //                    "</td></tr>" +
-                "<tr><td align=right><b>Width:</b></td><td> " + HtmlUtil.input("", this.getProperty("width", ""), ["size", "7", ATTR_ID, this.getDomId("width")]) + "  " + "<b>Height:</b> " + HtmlUtil.input("", this.getProperty("height", ""), ["size", "7", ATTR_ID, this.getDomId("height")]) + "</td></tr>" +
+                "<tr><td align=right><b>Width:</b></td><td> " + HtmlUtils.input("", this.getProperty("width", ""), ["size", "7", ATTR_ID, this.getDomId("width")]) + "  " + "<b>Height:</b> " + HtmlUtils.input("", this.getProperty("height", ""), ["size", "7", ATTR_ID, this.getDomId("height")]) + "</td></tr>" +
                 "</table>";
             var tmp =
-                HtmlUtil.checkbox(this.getDomId("showtitle"), [], this.showTitle) + " Title  " +
-                HtmlUtil.checkbox(this.getDomId("showdetails"), [], this.showDetails) + " Details " +
+                HtmlUtils.checkbox(this.getDomId("showtitle"), [], this.showTitle) + " Title  " +
+                HtmlUtils.checkbox(this.getDomId("showdetails"), [], this.showDetails) + " Details " +
                 "&nbsp;&nbsp;&nbsp;" +
-                HtmlUtil.onClick(get + ".askSetTitle();", "Set Title");
-            menu += HtmlUtil.formTable() + HtmlUtil.formEntry("Show:", tmp) + "</table>";
+                HtmlUtils.onClick(get + ".askSetTitle();", "Set Title");
+            menu += HtmlUtils.formTable() + HtmlUtils.formEntry("Show:", tmp) + "</table>";
 
             return menu;
         },
@@ -2214,7 +2214,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 
             form += this.getDisplayMenuSettings();
             for (var i = 0; i < menuItems.length; i++) {
-                form += HtmlUtil.div([ATTR_CLASS, "display-menu-item"], menuItems[i]);
+                form += HtmlUtils.div([ATTR_CLASS, "display-menu-item"], menuItems[i]);
             }
             form += "</form>";
             tabTitles.push("Display");
@@ -2290,21 +2290,21 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             var html = "";
             var width = this.getWidth();
             if (dobs) {
-                html += HtmlUtil.openDiv(["class", "minitron"]);
+                html += HtmlUtils.openDiv(["class", "minitron"]);
             }
             if (width > 0) {
-                html += HtmlUtil.openDiv(["class", "display-contents", "style", "width:" + width + "px;"]);
+                html += HtmlUtils.openDiv(["class", "display-contents", "style", "width:" + width + "px;"]);
             } else {
-                html += HtmlUtil.openDiv(["class", "display-contents"]);
+                html += HtmlUtils.openDiv(["class", "display-contents"]);
             }
 
-            html += HtmlUtil.div([ATTR_CLASS, "ramadda-popup", ATTR_ID, this.getDomId(ID_MENU_OUTER)], "");
-            var menu = HtmlUtil.div([ATTR_CLASS, "display-dialog", ATTR_ID, this.getDomId(ID_DIALOG)], "");
+            html += HtmlUtils.div([ATTR_CLASS, "ramadda-popup", ATTR_ID, this.getDomId(ID_MENU_OUTER)], "");
+            var menu = HtmlUtils.div([ATTR_CLASS, "display-dialog", ATTR_ID, this.getDomId(ID_DIALOG)], "");
             var get = this.getGet();
             var button = "";
             if (this.getShowMenu()) {
-                button = HtmlUtil.onClick(get + ".showDialog();",
-                    HtmlUtil.image(ramaddaBaseUrl + "/icons/downdart.png",
+                button = HtmlUtils.onClick(get + ".showDialog();",
+                    HtmlUtils.image(ramaddaBaseUrl + "/icons/downdart.png",
                         [ATTR_CLASS, "display-dialog-button", ATTR_ID, this.getDomId(ID_DIALOG_BUTTON)]));
             }
             var title = "";
@@ -2317,9 +2317,9 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
                 var titleDiv = "";
                 var label = title;
                 if (title != "" && this.entryId) {
-                    label = HtmlUtil.href(this.getRamadda().getEntryUrl(this.entryId), title);
+                    label = HtmlUtils.href(this.getRamadda().getEntryUrl(this.entryId), title);
                 }
-                titleDiv = HtmlUtil.tag("span", [ATTR_CLASS, "display-title", ATTR_ID, this.getDomId(ID_TITLE)], this.getDisplayTitle(title));
+                titleDiv = HtmlUtils.tag("span", [ATTR_CLASS, "display-title", ATTR_ID, this.getDomId(ID_TITLE)], this.getDisplayTitle(title));
                 if (button == "") {
                     html += titleDiv;
                 } else {
@@ -2331,9 +2331,9 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             //                contents  = "CONTENTS";
             html += contents;
             html += menu;
-            html += HtmlUtil.closeTag(TAG_DIV);
+            html += HtmlUtils.closeTag(TAG_DIV);
             if (dobs) {
-                html += HtmlUtil.closeTag(TAG_DIV);
+                html += HtmlUtils.closeTag(TAG_DIV);
             }
             return html;
         },
@@ -2362,20 +2362,20 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
                 labels.push("Download CSV");
             }
             for (var i = 0; i < calls.length; i++) {
-                var inner = HtmlUtil.image(images[i], [ATTR_TITLE, labels[i], ATTR_CLASS, "display-dialog-header-icon"]);
+                var inner = HtmlUtils.image(images[i], [ATTR_TITLE, labels[i], ATTR_CLASS, "display-dialog-header-icon"]);
                 if (addLabel) inner += " " + labels[i] + "<br>";
-                toolbar += HtmlUtil.onClick(calls[i], inner);
+                toolbar += HtmlUtils.onClick(calls[i], inner);
             }
             return toolbar;
         },
         makeDialog: function() {
             var html = "";
-            html += HtmlUtil.div([ATTR_ID, this.getDomId(ID_HEADER), ATTR_CLASS, "display-header"]);
-            var close = HtmlUtil.onClick("$('#" + this.getDomId(ID_DIALOG) + "').hide();", HtmlUtil.image(ramaddaBaseUrl + "/icons/close.gif", [ATTR_CLASS, "display-dialog-close", ATTR_TITLE, "Close Dialog"]));
+            html += HtmlUtils.div([ATTR_ID, this.getDomId(ID_HEADER), ATTR_CLASS, "display-header"]);
+            var close = HtmlUtils.onClick("$('#" + this.getDomId(ID_DIALOG) + "').hide();", HtmlUtils.image(ramaddaBaseUrl + "/icons/close.gif", [ATTR_CLASS, "display-dialog-close", ATTR_TITLE, "Close Dialog"]));
             var right = close;
             var left = "";
             //                var left = this.makeToolbar({addLabel:true});
-            var header = HtmlUtil.div([ATTR_CLASS, "display-dialog-header"], HtmlUtil.leftRight(left, right));
+            var header = HtmlUtils.div([ATTR_CLASS, "display-dialog-header"], HtmlUtils.leftRight(left, right));
             var tabTitles = [];
             var tabContents = [];
             this.getDialogContents(tabTitles, tabContents);
@@ -2387,15 +2387,15 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             var tabs = "";
             for (var i = 0; i < tabTitles.length; i++) {
                 var id = this.getDomId("tabs") + i;
-                tabLinks += HtmlUtil.tag("li", [], HtmlUtil.tag("a", ["href", "#" + id],
+                tabLinks += HtmlUtils.tag("li", [], HtmlUtils.tag("a", ["href", "#" + id],
                     tabTitles[i]));
                 tabLinks += "\n";
-                var contents = HtmlUtil.div([ATTR_CLASS, "display-dialog-tab"], tabContents[i]);
-                tabs += HtmlUtil.div(["id", id], contents);
+                var contents = HtmlUtils.div([ATTR_CLASS, "display-dialog-tab"], tabContents[i]);
+                tabs += HtmlUtils.div(["id", id], contents);
                 tabs += "\n";
             }
             tabLinks += "</ul>\n";
-            var tabs = HtmlUtil.div(["id", this.getDomId(ID_DIALOG_TABS)], tabLinks + tabs);
+            var tabs = HtmlUtils.div(["id", this.getDomId(ID_DIALOG_TABS)], tabLinks + tabs);
             dialogContents = header + tabs;
             return dialogContents;
         },
@@ -2461,9 +2461,9 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             if (width) {
                 topBottomStyle += " width:" + width + ";";
             }
-            var top = HtmlUtil.div([ATTR_STYLE, topBottomStyle, ATTR_ID, this.getDomId(ID_DISPLAY_TOP)], "");
-            var bottom = HtmlUtil.div([ATTR_STYLE, topBottomStyle, ATTR_ID, this.getDomId(ID_DISPLAY_BOTTOM)], "");
-            return top + HtmlUtil.div([ATTR_CLASS, "display-contents-inner display-" + this.type, "style", extraStyle, ATTR_ID, this.getDomId(ID_DISPLAY_CONTENTS)], "") + bottom;
+            var top = HtmlUtils.div([ATTR_STYLE, topBottomStyle, ATTR_ID, this.getDomId(ID_DISPLAY_TOP)], "");
+            var bottom = HtmlUtils.div([ATTR_STYLE, topBottomStyle, ATTR_ID, this.getDomId(ID_DISPLAY_BOTTOM)], "");
+            return top + HtmlUtils.div([ATTR_CLASS, "display-contents-inner display-" + this.type, "style", extraStyle, ATTR_ID, this.getDomId(ID_DISPLAY_CONTENTS)], "") + bottom;
         },
         copyDisplay: function() {
             var newOne = {};
@@ -2513,7 +2513,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             }
             var text = this.getDisplayTitle(title);
             if (this.entryId) {
-                text = HtmlUtil.href(this.getRamadda().getEntryUrl(this.entryId), text);
+                text = HtmlUtils.href(this.getRamadda().getEntryUrl(this.entryId), text);
             }
             if (this.getShowTitle()) {
                 this.jq(ID_TITLE).show();
@@ -2609,7 +2609,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             } else {
                 msg = "<b>Sorry, but an error has occurred:</b>";
                 if (!data) data = "No data returned from server";
-                msg += HtmlUtil.tag("div", ["style", "background:#fff;margin:10px;padding:10px;border:1px #ccc solid;   border-radius: 0px;"],
+                msg += HtmlUtils.tag("div", ["style", "background:#fff;margin:10px;padding:10px;border:1px #ccc solid;   border-radius: 0px;"],
                     (data.error ? data.error : data));
             }
             this.setContents(this.getMessage(msg));
@@ -3085,7 +3085,7 @@ function DisplayGroup(argDisplayManager, argId, argProperties) {
             ];
             var wiki = "";
             wiki += "<div id=\"{{entryid}}_maindiv\"></div>\n\n";
-            wiki += "{{group " + HtmlUtil.attrs(attrs) + "}}\n\n"
+            wiki += "{{group " + HtmlUtils.attrs(attrs) + "}}\n\n"
             return wiki;
         },
 
@@ -3199,7 +3199,7 @@ function DisplayGroup(argDisplayManager, argId, argProperties) {
 
             if (this.layout == LAYOUT_TABLE) {
                 if (displaysToLayout.length == 1) {
-                    html += HtmlUtil.div(["class", " display-wrapper"],
+                    html += HtmlUtils.div(["class", " display-wrapper"],
                         displaysToLayout[0].getHtml());
                 } else {
                     var weight = 12 / this.columns;
@@ -3221,9 +3221,9 @@ function DisplayGroup(argDisplayManager, argId, argProperties) {
                         colCnt++;
                         if (colCnt >= this.columns) {
                             if (i > 0) {
-                                html += HtmlUtil.closeTag(TAG_DIV);
+                                html += HtmlUtils.closeTag(TAG_DIV);
                             }
-                            html += HtmlUtil.openTag("div", ["class", "row"]);
+                            html += HtmlUtils.openTag("div", ["class", "row"]);
                             colCnt = 0;
                         }
                         var weightToUse = weight;
@@ -3234,18 +3234,18 @@ function DisplayGroup(argDisplayManager, argId, argProperties) {
                             weightToUse = weights[weightIdx];
                             weightIdx++;
                         }
-                        html += HtmlUtil.div(["class", "col-md-" + weightToUse + " display-wrapper display-cell"], displaysToLayout[i].getHtml());
+                        html += HtmlUtils.div(["class", "col-md-" + weightToUse + " display-wrapper display-cell"], displaysToLayout[i].getHtml());
                     }
 
                     if (i > 0) {
-                        html += HtmlUtil.closeTag(TAG_DIV);
+                        html += HtmlUtils.closeTag(TAG_DIV);
                     }
                 }
                 //                    console.log("HTML " + html);
             } else if (this.layout == LAYOUT_TABS) {
-                var tabId = HtmlUtil.getUniqueId("tabs_");
-                html += HtmlUtil.openTag(TAG_DIV, ["id", tabId, "class", "ui-tabs"]);
-                html += HtmlUtil.openTag(TAG_UL, []);
+                var tabId = HtmlUtils.getUniqueId("tabs_");
+                html += HtmlUtils.openTag(TAG_DIV, ["id", tabId, "class", "ui-tabs"]);
+                html += HtmlUtils.openTag(TAG_UL, []);
                 var hidden = "";
                 var cnt = 0;
                 for (var i = 0; i < displaysToLayout.length; i++) {
@@ -3254,13 +3254,13 @@ function DisplayGroup(argDisplayManager, argId, argProperties) {
                     if (label.length > 20) {
                         label = label.substring(0, 19) + "...";
                     }
-                    html += HtmlUtil.tag(TAG_LI, [], HtmlUtil.tag(TAG_A, ["href", "#" + tabId + "-" + cnt], label));
-                    hidden += HtmlUtil.div(["id", tabId + "-" + cnt, "class", "ui-tabs-hide"], display.getHtml());
+                    html += HtmlUtils.tag(TAG_LI, [], HtmlUtils.tag(TAG_A, ["href", "#" + tabId + "-" + cnt], label));
+                    hidden += HtmlUtils.div(["id", tabId + "-" + cnt, "class", "ui-tabs-hide"], display.getHtml());
                     cnt++;
                 }
-                html += HtmlUtil.closeTag(TAG_UL);
+                html += HtmlUtils.closeTag(TAG_UL);
                 html += hidden;
-                html += HtmlUtil.closeTag(TAG_DIV);
+                html += HtmlUtils.closeTag(TAG_DIV);
             } else if (this.layout == LAYOUT_ROWS) {
                 var rows = [];
                 for (var i = 0; i < displaysToLayout.length; i++) {
@@ -3275,15 +3275,15 @@ function DisplayGroup(argDisplayManager, argId, argProperties) {
                 for (var i = 0; i < rows.length; i++) {
                     var cols = rows[i];
                     var width = Math.round(100 / cols.length) + "%";
-                    html += HtmlUtil.openTag(TAG_TABLE, ["border", "0", "width", "100%", "cellpadding", "0", "cellspacing", "0"]);
-                    html += HtmlUtil.openTag(TAG_TR, ["valign", "top"]);
+                    html += HtmlUtils.openTag(TAG_TABLE, ["border", "0", "width", "100%", "cellpadding", "0", "cellspacing", "0"]);
+                    html += HtmlUtils.openTag(TAG_TR, ["valign", "top"]);
                     for (var col = 0; col < cols.length; col++) {
                         var cell = cols[col];
-                        cell = HtmlUtil.div(["class", "display-cell"], cell);
-                        html += HtmlUtil.tag(TAG_TD, ["width", width], cell);
+                        cell = HtmlUtils.div(["class", "display-cell"], cell);
+                        html += HtmlUtils.tag(TAG_TD, ["width", width], cell);
                     }
-                    html += HtmlUtil.closeTag(TAG_TR);
-                    html += HtmlUtil.closeTag(TAG_TABLE);
+                    html += HtmlUtils.closeTag(TAG_TR);
+                    html += HtmlUtils.closeTag(TAG_TABLE);
                 }
             } else if (this.layout == LAYOUT_COLUMNS) {
                 var cols = [];
@@ -3298,7 +3298,7 @@ function DisplayGroup(argDisplayManager, argId, argProperties) {
                     cols[column].push(display.getHtml());
                     //                        cols[column].push("HTML");
                 }
-                html += HtmlUtil.openTag(TAG_DIV, ["class", "row"]);
+                html += HtmlUtils.openTag(TAG_DIV, ["class", "row"]);
                 var width = Math.round(100 / cols.length) + "%";
                 var weight = 12 / cols.length;
                 for (var i = 0; i < cols.length; i++) {
@@ -3315,9 +3315,9 @@ function DisplayGroup(argDisplayManager, argId, argProperties) {
                         weightToUse = weights[weightIdx];
                         weightIdx++;
                     }
-                    html += HtmlUtil.div(["class", "col-md-" + weightToUse], contents);
+                    html += HtmlUtils.div(["class", "col-md-" + weightToUse], contents);
                 }
-                html += HtmlUtil.closeTag(TAG_DIV);
+                html += HtmlUtils.closeTag(TAG_DIV);
                 //                    console.log("HTML:" + html);
 
             } else {

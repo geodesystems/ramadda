@@ -382,7 +382,7 @@ public class CommandHarvester extends Harvester {
         }
         sb.append("\n");
         String searchUrl =
-            request.getRequest().makeUrl(getSearchManager().URL_SEARCH_TEXTFORM)
+            request.getRequest().makeUrl(getSearchManager().URL_SEARCH_FORM)
             + "?show_providers=true";
         String searchHref =
             makeLink(request, searchUrl,
@@ -856,7 +856,7 @@ public class CommandHarvester extends Harvester {
                 cmdRequest.getRequest()
                     .getAbsoluteUrl(cmdRequest.getRequest()
                         .makeUrl(getSearchManager()
-                            .URL_SEARCH_TEXTFORM) + "?show_providers=true");
+                            .URL_SEARCH_FORM) + "?show_providers=true");
 
             StringBuffer help    = new StringBuffer();
             String       command = cmdRequest.getCommand();

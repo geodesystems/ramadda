@@ -82,7 +82,7 @@ function ramaddaSearchSuggestInit(id, type, icon) {
             if(newVal!=ramaddSearchLastInput) {
                 ramaddSearchLastInput = newVal;
                 searching = true;
-                var url = ramaddaBaseUrl+"/search/suggest?string="+encodeURIComponent(newVal);
+                var url = ramaddaBaseUrl+"/search/suggest?string="
                 if(type) url +="&type=" + type;
                 var jqxhr = $.getJSON(url, function(data) {
                         var popup =     $("#searchpopup");
@@ -95,9 +95,9 @@ function ramaddaSearchSuggestInit(id, type, icon) {
                         for(var i=0;i<data.values.length;i++) {
                             var value = data.values[i];
                             var v = value.replace(/\"/g,"_quote_");
-                            html+=HtmlUtil.div(["class","ramadda-search-suggestion","suggest", v],  value);
+                            html+=HtmlUtils.div(["class","ramadda-search-suggestion","suggest", v],  value);
                         }
-                        popup.html(HtmlUtil.div(["style","padding:5px;"],html));
+                        popup.html(HtmlUtils.div(["style","padding:5px;"],html));
                         popup.find(".ramadda-search-suggestion").mousedown(function(e) {
                                 e.stopPropagation();
                             });
@@ -128,17 +128,35 @@ function ramaddaSearchSuggestInit(id, type, icon) {
 }
 
 
+function ramaddaSearchLink() {
+    var input =$("#popup_search_input");
+    var val = input.val().trim();
+    var url = $(this).attr('url');
+    if(val!="") {
+        url+="?text=" + encodeURIComponent(val);
+    }
+    window.location = url;
+}
+
 function ramaddaSearchPopup(id) {
-    var html = "<form action='" +ramaddaBaseUrl+"/search/do'><input autocomplete=off autofocus id='searchinput' style='border: 1px #ccc solid;' placeholder=' Search text' name='text'></form><div id=searchpopup class=ramadda-popup></div>";
-    var linkAttrs  = ["style","color:#666; font-size:13px;"]
-    html+=HtmlUtil.span(["class","ramadda-links"], HtmlUtil.href(ramaddaBaseUrl +"/search/form","Advanced",linkAttrs) + "&nbsp;&nbsp; " +HtmlUtil.href(ramaddaBaseUrl +"/search/type","By Type", linkAttrs));
-    html = HtmlUtil.div(["style","padding:5px;"],html);
+    var html = "<form action='" +ramaddaBaseUrl+"/search/do'><input autocomplete=off autofocus id='popup_search_input' size='30' style='border: 1px #ccc solid;' placeholder=' Search text' name='text'></form><div id=searchpopup class=ramadda-popup></div>";
+    var linkStyle  = "font-size:13px;";
+    html+="\n";
+    var linksId = HtmlUtils.getUniqueId();
+    html+=" ";
+    html+=HtmlUtils.span(["class","ramadda-links","id",linksId], 
+                        HtmlUtils.leftCenterRight(
+                                                  HtmlUtils.link(ramaddaBaseUrl +"/search/do","Search",["title","Do search","style",linkStyle]),
+                                                  HtmlUtils.link(ramaddaBaseUrl +"/search/form","Form",["title","Go to form","style",linkStyle]),
+                                                  HtmlUtils.link(ramaddaBaseUrl +"/search/type","By Type",["title","Go to search by type form","style",linkStyle])));
+    html = HtmlUtils.div(["style","padding:5px;"],html);
     var selectDiv = $("#ramadda-selectdiv");
     var icon =  $("#"+id);
     popupTime = new Date();
     popupObject = GuiUtils.getDomObject("ramadda-selectdiv");
     selectDiv.html(html);
-    var input =$("#searchinput");
+    $("#" + linksId).find(".ramadda-link").click(ramaddaSearchLink);
+    var input =$("#popup_search_input");
     input.mousedown(function(evt) {
             evt.stopPropagation();
         });
@@ -149,7 +167,7 @@ function ramaddaSearchPopup(id) {
             at: "right bottom",
             collision: "none none"
         });
-    ramaddaSearchSuggestInit('searchinput',null,true);
+    ramaddaSearchSuggestInit('popup_search_input',null,true);
     input.focus();
 }
 
@@ -1205,10 +1223,10 @@ function ramaddaJsonSetVisible(id, button, state, all) {
 
 function ramaddaJsonInit(id) {
 
-    var img = HtmlUtil.image(icon_tree_open, ["class", "ramadda-json-button", "title", "shift-click: toggle all"]);
-    var links = HtmlUtil.onClick("ramaddaJsonAllOpen('" + id + "')", "All Open", []) +
+    var img = HtmlUtils.image(icon_tree_open, ["class", "ramadda-json-button", "title", "shift-click: toggle all"]);
+    var links = HtmlUtils.onClick("ramaddaJsonAllOpen('" + id + "')", "All Open", []) +
         "&nbsp;&nbsp;" +
-        HtmlUtil.onClick("ramaddaJsonAllClose('" + id + "')", "All Close", [])
+        HtmlUtils.onClick("ramaddaJsonAllClose('" + id + "')", "All Close", [])
     $("#" + id).before(links);
     var block = $("#" + id + " .ramadda-json-block");
     block.prev(".ramadda-json-openbracket").before(img + " ");

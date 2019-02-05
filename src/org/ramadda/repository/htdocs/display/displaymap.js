@@ -85,27 +85,27 @@ function RamaddaMapDisplay(displayManager, id, properties) {
             }
 
 
-            html += HtmlUtil.div([ATTR_CLASS, "display-map-map", "style",
+            html += HtmlUtils.div([ATTR_CLASS, "display-map-map", "style",
                 extraStyle, ATTR_ID, this.getDomId(ID_MAP)
             ]);
-            html += HtmlUtil.div([ATTR_CLASS, "", ATTR_ID, this.getDomId(ID_BOTTOM)]);
+            html += HtmlUtils.div([ATTR_CLASS, "", ATTR_ID, this.getDomId(ID_BOTTOM)]);
 
             if (this.showLocationReadout) {
-                html += HtmlUtil.openTag(TAG_DIV, [ATTR_CLASS,
+                html += HtmlUtils.openTag(TAG_DIV, [ATTR_CLASS,
                     "display-map-latlon"
                 ]);
-                html += HtmlUtil.openTag("form");
+                html += HtmlUtils.openTag("form");
                 html += "Latitude: " +
-                    HtmlUtil.input(this.getDomId(ID_LATFIELD), "", ["size",
+                    HtmlUtils.input(this.getDomId(ID_LATFIELD), "", ["size",
                         "7", ATTR_ID, this.getDomId(ID_LATFIELD)
                     ]);
                 html += "  ";
                 html += "Longitude: " +
-                    HtmlUtil.input(this.getDomId(ID_LONFIELD), "", ["size",
+                    HtmlUtils.input(this.getDomId(ID_LONFIELD), "", ["size",
                         "7", ATTR_ID, this.getDomId(ID_LONFIELD)
                     ]);
-                html += HtmlUtil.closeTag("form");
-                html += HtmlUtil.closeTag(TAG_DIV);
+                html += HtmlUtils.closeTag("form");
+                html += HtmlUtils.closeTag(TAG_DIV);
             }
             this.setContents(html);
 
@@ -345,16 +345,16 @@ function RamaddaMapDisplay(displayManager, id, properties) {
                             } else {
                                 attrValue = attrs[attr];
                             }
-                            url = HtmlUtil.appendArg(url, urlArg, attrValue);
+                            url = HtmlUtils.appendArg(url, urlArg, attrValue);
                             url = url.replace("${" + urlArg + "}", attrValue);
                         }
                     }
                 }
             }
-            url = HtmlUtil.appendArg(url, "output", "json");
+            url = HtmlUtils.appendArg(url, "output", "json");
             var entryList = new EntryList(this.getRamadda(), url, null, false);
             entryList.doSearch(this);
-            this.getEntryList().showMessage("Searching", HtmlUtil.div([ATTR_STYLE, "margin:20px;"], this.getWaitImage()));
+            this.getEntryList().showMessage("Searching", HtmlUtils.div([ATTR_STYLE, "margin:20px;"], this.getWaitImage()));
         },
         getEntryList: function() {
             if (!this.entryListDisplay) {
@@ -444,7 +444,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
         },
 
         getContentsDiv: function() {
-            return HtmlUtil.div([ATTR_CLASS, "display-contents", ATTR_ID,
+            return HtmlUtils.div([ATTR_CLASS, "display-contents", ATTR_ID,
                 this.getDomId(ID_DISPLAY_CONTENTS)
             ], "");
         },
