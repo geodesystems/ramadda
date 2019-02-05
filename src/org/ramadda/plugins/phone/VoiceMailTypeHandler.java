@@ -83,7 +83,6 @@ public class VoiceMailTypeHandler extends GenericTypeHandler {
             entry.getTypeHandler().getEntryResourceUrl(request, entry);
         html = html.replace("${url}", getFileUrl);
         return html;
-
     }
 
 
