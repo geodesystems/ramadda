@@ -47,13 +47,8 @@ import org.w3c.dom.*;
 import ucar.unidata.util.Misc;
 
 
-import java.io.BufferedOutputStream;
-import java.io.ByteArrayInputStream;
-import java.io.DataOutputStream;
-
 
 import java.io.File;
-import java.io.FileOutputStream;
 
 import java.lang.reflect.*;
 
@@ -390,7 +385,15 @@ public abstract class RecordTypeHandler extends BlobTypeHandler implements Recor
      */
     private String getPathForRecordEntry(Entry entry) throws Exception {
         String path = getPathForEntry(null, entry);
-
+        if(path.indexOf("${latitude}")>0) {
+            if(entry.hasLocationDefined())  {
+                path = path.replaceAll("${latitude}", entry.getLatitude()+"");
+                path = path.replaceAll("${longitude}", entry.getLatitude()+"");
+            } else {
+                path = path.replaceAll("${latitude}", "40");
+                path = path.replaceAll("${longitude}", "-105.2");
+            }
+        }
         return path;
     }
 
