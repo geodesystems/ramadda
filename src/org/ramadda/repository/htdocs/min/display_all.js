@@ -9588,7 +9588,6 @@ function RamaddaSearcher(displayManager, id, type, properties) {
             if (this.eg) {
                 eg = " " +this.eg;
             }
-            var textField = HtmlUtils.input("", text, ["placeholder", eg, ATTR_CLASS, "display-search-input", ATTR_SIZE, "30", ATTR_ID, this.getDomId(ID_TEXT_FIELD)]);
 
 
 
@@ -9686,8 +9685,11 @@ function RamaddaSearcher(displayManager, id, type, properties) {
                 topItems.push(HtmlUtils.span([ATTR_ID, this.getDomId(ID_TYPE_DIV)], HtmlUtils.span([ATTR_CLASS, "display-loading"], "Loading types...")));
             }
 
+            var textField = HtmlUtils.input("", text, ["placeholder", eg, ATTR_CLASS, "display-search-input", ATTR_SIZE, "30", ATTR_ID, this.getDomId(ID_TEXT_FIELD)]);
+
             if (this.showText) {
                 topItems.push(textField);
+                ramaddaSearchSuggestInit(this.getDomId(ID_TEXT_FIELD));
             }
 
 
