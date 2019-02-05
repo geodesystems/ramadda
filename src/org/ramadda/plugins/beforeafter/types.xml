@@ -1,4 +1,4 @@
-<types  supercategory="Miscellaneous" category="Imagery">
+<types   category="Imagery">
 
   <type name="beforeafter"  description="Before and After Images" handler="org.ramadda.plugins.beforeafter.BeforeAfterTypeHandler" >
      <property name="icon" value="/icons/jpeg.png"/>

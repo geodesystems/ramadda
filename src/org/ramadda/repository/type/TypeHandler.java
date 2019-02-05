@@ -525,7 +525,7 @@ public class TypeHandler extends RepositoryManager {
 
             childTypes = StringUtil.split(Utils.getAttributeOrTag(node,
                     ATTR_CHILDTYPES, ""));
-            forUser = Utils.getAttributeOrTag(node, ATTR_FORUSER, forUser);
+            forUser = Utils.getAttributeOrTag(node, ATTR_FORUSER, XmlUtil.getAttributeFromTree(node, ATTR_FORUSER, forUser));
             setType(Utils.getAttributeOrTag(node, ATTR_DB_NAME, (type == null)
                     ? ""
                     : type));

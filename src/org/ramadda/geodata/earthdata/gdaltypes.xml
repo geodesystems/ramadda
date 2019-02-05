@@ -9,7 +9,7 @@
      <property name="icon" value="/icons/image.gif"/>
   </type>
 
- <type name="type_nitf"  description="NITF File"  category="Imagery" pattern="(.*\.ntf|.*\.NTF)"  supercategory="Miscellaneous">
+ <type name="type_nitf"  description="NITF File"  category="Imagery" pattern="(.*\.ntf|.*\.NTF)"  supercategory="GIS Data">
      <property name="icon" value="/icons/image.gif"/>
      <property name="form.area.show" value="true"/>
      <service link="gdal_makethumb"  target="attachment"/>
