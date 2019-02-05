@@ -1255,6 +1255,7 @@ public class Admin extends RepositoryManager {
         csb.append(HtmlUtils.formTable());
 
 
+        /*
         csb.append(HtmlUtils.row(HtmlUtils.colspan(msgHeader("Registration"),
                 2)));
 
@@ -1263,8 +1264,6 @@ public class Admin extends RepositoryManager {
         csb.append(HtmlUtils.formEntry(msgLabel("Key"),
                                        HtmlUtils.input(PROP_REGISTER_KEY,
                                            regKey, HtmlUtils.SIZE_90)));
-
-        /*
         if (isRegistered()) {
             csb.append(HtmlUtils.formEntry("",
                                            "Registered for " + numberUsers
@@ -1276,7 +1275,7 @@ public class Admin extends RepositoryManager {
                 csb.append(HtmlUtils.formEntry("", "Not registered"));
             }
             }
-        */
+*/
 
         csb.append(
             HtmlUtils.row(

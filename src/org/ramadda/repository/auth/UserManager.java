@@ -2585,6 +2585,7 @@ public class UserManager extends RepositoryManager {
 
 
         sb.append(HtmlUtils.p());
+        sb.append(HtmlUtils.open("div",HtmlUtils.cssClass("ramadda-links")));
         int cnt = 0;
         for (FavoriteEntry favorite : getFavorites(request, user)) {
             cnt++;
@@ -2604,6 +2605,7 @@ public class UserManager extends RepositoryManager {
             sb.append(HtmlUtils.br());
         }
 
+        sb.append(HtmlUtils.close("div"));
 
         if (request.getUser().canEditSettings() && (cnt == 0)) {
             sb.append(

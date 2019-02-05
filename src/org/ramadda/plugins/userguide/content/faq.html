@@ -62,6 +62,21 @@ ramadda.login.allowedips=127.0.0,201.43.72.5
 </faqitem>
 
 
+<faqitem cat="Administration" id="terms" q="I want my users to agree to certain terms when they log in" >
+When the following property is set then any user logging in must agree to the
+given terms.
+<pre>
+ramadda.user.agree= Some terms
+#.e.g:
+ramadda.user.agree= I have read and agree to the Geode Systems RAMADDA <a href="https://geodesystems.com/repository/userguide/license.html" target="_license" >End User License Agreement</a>
+</pre>
+</faqitem>
+
+
+
+
+
+
 <faqitem cat="Administration" id="fixssl" q="Oops, I told RAMADDA to use an SSL port and SSL is not working. Now I cannot access the admin page to turn off SSL and I'm stuck. What can I do?" >
 You need to comment out the ramadda.ssl.port property in your .properties file.
 Alternatively, you can run RAMADDA with the command line argument:

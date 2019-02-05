@@ -100,12 +100,14 @@ function ramaddaSearchSuggestInit(id, type, icon) {
                     return;
                 }
                 var html = "";
+                var even = true;
                 for (var i = 0; i < data.values.length; i++) {
                     var value = data.values[i];
                     var v = value.replace(/\"/g, "_quote_");
-                    html += HtmlUtils.div(["class", "ramadda-search-suggestion", "suggest", v], value);
+                    html += HtmlUtils.div(["class", "ramadda-search-suggestion " + (even?"ramadda-row-even":"ramadda-row-odd"), "title",v,"suggest", v], value);
+                    even = !even;
                 }
-                popup.html(HtmlUtils.div(["style", "padding:5px;"], html));
+                popup.html(html);
                 popup.find(".ramadda-search-suggestion").mousedown(function(e) {
                     e.stopPropagation();
                 });
@@ -151,7 +153,7 @@ function ramaddaSearchPopup(id) {
     var value= "";
     if(ramaddSearchLastInput)
         value = " value='" + ramaddSearchLastInput+"' ";
-    var html = "<form action='" + ramaddaBaseUrl + "/search/do'><input " + value +" autocomplete=off autofocus id='popup_search_input' size='30' style='border: 1px #ccc solid;' placeholder=' Search text' name='text'></form><div id=searchpopup class=ramadda-popup></div>";
+    var html = "<form action='" + ramaddaBaseUrl + "/search/do'><input " + value +" autocomplete=off autofocus id='popup_search_input' size='30' style='border: 1px #ccc solid;' placeholder=' Search text' name='text'></form><div id=searchpopup class=ramadda-popup ></div>";
     var linkStyle = "font-size:13px;";
     html += "\n";
     var linksId = HtmlUtils.getUniqueId();

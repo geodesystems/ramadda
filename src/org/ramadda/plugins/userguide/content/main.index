@@ -16,28 +16,28 @@ index.html
 >faq.html
 >user.html
 >newentry.html
->download.html
 >editing.html
->entries.html
->access.html
->configuration.html
--exampletemplate.html.txt
--exampletemplate.jar
-
-
->title:RAMADDA Wiki
+>title:RAMADDA Wiki Facilities
 >>wiki.html
 >>wikitext.html
 >>wikidisplay.html
+>entries.html
+>access.html
+>configuration.html
+>>pagestyle.html
+-exampletemplate.html.txt
+-exampletemplate.jar
+
 
 >title:Entries:Documentation for how to use the different types of entries available
 #>>localfileview.html
 #>>ftpview.html
 >>gridaggregation.html
->>pagestyle.html
 
 
->title:Data ingest,  harvesters and import
+
+>title:Data ingest,  harvesters and import/export
+>>download.html
 >>dataingest.html
 >>entrytypes.html
 >>entryxml.html

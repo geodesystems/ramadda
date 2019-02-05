@@ -767,6 +767,7 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
      */
     private String getTextField(Request request) throws Exception {
         String value = (String) request.getString(ARG_TEXT, "");
+        value = value.replaceAll("\"","&quot;");
         String textField =
             HtmlUtils.input(
                 ARG_TEXT, value,
