@@ -120,7 +120,7 @@ function ramaddaSearchSuggestInit(id, type) {
 
 
 function ramaddaSearchPopup(id) {
-    var html = "<form action='" +ramaddaBaseUrl+"/search/do'><input autocomplete=off id='searchinput' style='border: 1px #ccc solid;' placeholder=' Search text' name='text'></form><div id=searchpopup class=ramadda-popup></div>";
+    var html = "<form action='" +ramaddaBaseUrl+"/search/do'><input autocomplete=off autofocus id='searchinput' style='border: 1px #ccc solid;' placeholder=' Search text' name='text'></form><div id=searchpopup class=ramadda-popup></div>";
     var linkAttrs  = ["style","color:#666; font-size:13px;"]
     html+=HtmlUtil.span(["class","ramadda-links"], HtmlUtil.href(ramaddaBaseUrl +"/search/form","Advanced",linkAttrs) + "&nbsp;&nbsp; " +HtmlUtil.href(ramaddaBaseUrl +"/search/type","By Type", linkAttrs));
     html = HtmlUtil.div(["style","padding:5px;"],html);
