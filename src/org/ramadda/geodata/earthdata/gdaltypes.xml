@@ -1,15 +1,15 @@
-<types  supercategory="Geoscience">
+<types  supercategory="Geoscience" category="GIS Data">
 
-  <type name="geo_gdal" foruser="false" handler="org.ramadda.geodata.earthdata.GdalTypeHandler" category="Geospatial">
+  <type name="geo_gdal" foruser="false" handler="org.ramadda.geodata.earthdata.GdalTypeHandler" >
      <service link="gdal_makethumb"  target="attachment"/>
      <service link="gdal_info"/>
   </type>
 
-  <type name="geo_geotiff"  description="GeoTIFF"  super="geo_gdal"  category="Imagery" pattern="(.*\.tif|.*\.tiff)" >
+  <type name="geo_geotiff"  description="GeoTIFF"  super="geo_gdal"   pattern="(.*\.tif|.*\.tiff)" >
      <property name="icon" value="/icons/image.gif"/>
   </type>
 
- <type name="type_nitf"  description="NITF File"  category="Imagery" pattern="(.*\.ntf|.*\.NTF)"  supercategory="GIS Data">
+ <type name="type_nitf"  description="NITF File"   pattern="(.*\.ntf|.*\.NTF)" >
      <property name="icon" value="/icons/image.gif"/>
      <property name="form.area.show" value="true"/>
      <service link="gdal_makethumb"  target="attachment"/>

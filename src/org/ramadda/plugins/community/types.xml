@@ -1,6 +1,6 @@
 <types supercategory="Miscellaneous" category="Community">
 
-  <type name="type_resilience_project"  description="Resiliency Project" handler="org.ramadda.repository.type.ExtensibleGroupTypeHandler"      metadata="resilience_risk" >
+  <type foruser="false" name="type_resilience_project"  description="Resiliency Project" handler="org.ramadda.repository.type.ExtensibleGroupTypeHandler"      metadata="resilience_risk" >
      <property name="icon" value="/community/globe-share.png"/>
 
      <property name="form.file.show" value="false"/>
@@ -58,7 +58,7 @@
 
 
 
-  <type name="type_resilience_assessment"  description="Resiliency Assessment" handler="org.ramadda.repository.type.ExtensibleGroupTypeHandler"    metadata="metadata_author,assessment_purpose,assessment_practice,assessment_sponsor,assessment_interaction,assessment_output,assessment_outcome" >
+  <type foruser="false" name="type_resilience_assessment"  description="Resiliency Assessment" handler="org.ramadda.repository.type.ExtensibleGroupTypeHandler"    metadata="metadata_author,assessment_purpose,assessment_practice,assessment_sponsor,assessment_interaction,assessment_output,assessment_outcome" >
      <property name="icon" value="/community/text_list_bullets.png"/>
 
      <property name="html.date.show" value="false"/>

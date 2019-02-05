@@ -1,5 +1,5 @@
 
-<tables supercategory="Geoscience">
+<tables supercategory="Science and Education">
 
 <!--
 
@@ -42,7 +42,7 @@
 -->
 
 
-<table id="fp_equipment" name="Field Project Equipment" category="GPS Data" icon="/fieldproject/equipment.png" handler="org.ramadda.geodata.fieldproject.EquipmentDbTypeHandler">
+<table id="fp_equipment" name="Field Project Equipment" category="Science Project" icon="/fieldproject/equipment.png" handler="org.ramadda.geodata.fieldproject.EquipmentDbTypeHandler">
   Qty TypeDescriptionManufacturerOriginPart#Model#Serial#OwnerUnavcoIDNASAID
 
 

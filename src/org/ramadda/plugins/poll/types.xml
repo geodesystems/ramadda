@@ -1,7 +1,7 @@
 <types supercategory="Miscellaneous">
 
 
-  <type name="poll"  description="Poll" handler="org.ramadda.plugins.poll.PollTypeHandler" category="Miscellaneous">
+  <type name="poll"  description="Poll" handler="org.ramadda.plugins.poll.PollTypeHandler" category="Events">
      <property name="icon" value="/poll/poll.gif"/>
      <property name="form.description.rows" value="5"/>
      <property name="form.area.show" value="false"/>

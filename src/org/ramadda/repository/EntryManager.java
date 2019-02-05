@@ -3947,7 +3947,7 @@ public class EntryManager extends RepositoryManager {
                  && sessionTypes.contains(typeHandler.getType()));
             String category      = typeHandler.getCategory();
             String superCategory = typeHandler.getSuperCategory();
-
+            if(superCategory.equals("Basic")) superCategory ="";
             cats = superCatMap.get(superCategory);
             if (cats == null) {
                 cats = new CategoryBuffer();

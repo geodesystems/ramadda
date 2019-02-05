@@ -1,7 +1,7 @@
-<types supercategory="Miscellaneous"   >
+<types supercategory="Miscellaneous"   foruser="false">
 
 
-  <type  foruser="false" name="gdata"  description="Gdata"  category="Google Data" handler="org.ramadda.plugins.gdata.GdataBaseTypeHandler" >  
+  <type foruser="false"  name="gdata"  description="Gdata"  category="Google Data" handler="org.ramadda.plugins.gdata.GdataBaseTypeHandler" >  
      <property name="icon" value="/gdata/google.gif"/>
   </type>
 

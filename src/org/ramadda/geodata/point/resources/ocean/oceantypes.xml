@@ -1,6 +1,6 @@
 <types supercategory="Geoscience">
 
-  <type name="type_point_ocean"  description="" super="type_point" category="Ocean Data" foruser="false">
+  <type name="type_point_ocean"  description="" super="type_point" category="Ocean and Water Data" foruser="false">
   </type>
 
   <type name="type_point_ocean_netcdf_track"  super="type_point_ocean" description="NetCDF Track Data"  handler="org.ramadda.data.services.PointTypeHandler">

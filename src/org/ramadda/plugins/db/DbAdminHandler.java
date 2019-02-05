@@ -150,6 +150,7 @@ public class DbAdminHandler extends AdminHandlerImpl {
                 continue;
             }
 
+
             DbTypeHandler typeHandler =
                 (DbTypeHandler) ctor.newInstance(new Object[] {
                     getRepository(),

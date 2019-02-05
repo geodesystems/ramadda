@@ -1,4 +1,4 @@
-<types  supercategory="Miscellaneous"  category="Miscellaneous">
+<types  supercategory="Miscellaneous"  category="Gadgets">
 
   <type name="frames"  description="IFrames" handler="org.ramadda.plugins.gadgets.FramesTypeHandler" >
      <property name="icon" value="/icons/application_split.png"/>

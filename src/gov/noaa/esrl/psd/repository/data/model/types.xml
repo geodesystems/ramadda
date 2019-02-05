@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<types>
+<types supercategory="Geoscience">
 
   <type name="noaa_facts_climate_collection"  description="NOAA FACTS Climate Data Collection" super="climate_collection" category="Climate Data" handler="gov.noaa.esrl.psd.repository.data.model.NOAAClimateModelCollectionTypeHandler" foruser="true">
      <property name="icon" value="/noaa/noaa.gif"/>

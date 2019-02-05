@@ -1,6 +1,6 @@
 <types supercategory="Miscellaneous">
 
-  <type name="multisearch"  description="Multiple Search" handler="org.ramadda.plugins.multisearch.MultiSearchTypeHandler" category="Miscellaneous">
+  <type name="multisearch"  description="Multiple Search" handler="org.ramadda.plugins.multisearch.MultiSearchTypeHandler" category="Gadgets">
      <property name="icon" value="/multisearch/find.png"/>
      <property name="form.area.show" value="false"/>
      <property name="form.date.show" value="false"/>

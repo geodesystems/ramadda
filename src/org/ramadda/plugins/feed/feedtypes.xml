@@ -1,7 +1,6 @@
-<types supercategory="Miscellaneous">
+<types >
 
-
-  <type name="feed"  description="RSS/ATOM Feed"   handler="org.ramadda.plugins.feed.FeedTypeHandler" foruser="true" category="Information">  
+  <type name="feed"  supercategory="" description="RSS/ATOM Feed"   handler="org.ramadda.plugins.feed.FeedTypeHandler" foruser="true" category="Information">  
      <property name="icon" value="/feed/blog_icon.png"/>
      <property name="form.file.show" value="false"/>
      <property name="form.url.show" value="true"/>
@@ -11,7 +10,7 @@
      <property name="form.date.show" value="false"/>
   </type>
 
-  <type name="nwsfeed"  description="NWS Forecast Feed"   handler="org.ramadda.plugins.feed.DwmlFeedTypeHandler" foruser="true" category="Information">  
+  <type name="nwsfeed"  supercategory="Geoscience" description="NWS Forecast Feed"   handler="org.ramadda.plugins.feed.DwmlFeedTypeHandler" foruser="true" category="Geoscience Data">  
      <property name="icon" value="/feed/noaa.gif"/>
      <property name="form.resource.show" value="false"/>
      <property name="form.resource.download.show" value="false"/>
@@ -29,7 +28,7 @@
 </wiki>
   </type>
 
-  <type name="sunrisesunset"  description="Sunrise/Sunset Display"   handler="org.ramadda.plugins.feed.SunriseSunsetTypeHandler" foruser="true" category="Information">  
+  <type name="sunrisesunset"  description="Sunrise/Sunset Display"   handler="org.ramadda.plugins.feed.SunriseSunsetTypeHandler" foruser="true" category="Gadgets" supercategory="Miscellaneous">  
      <property name="icon" value="/feed/sunrise.png"/>
      <property name="form.resource.show" value="false"/>
      <property name="form.resource.download.show" value="false"/>

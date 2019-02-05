@@ -1,7 +1,7 @@
-<types supercategory="Science and Education" category="NIST Reference Data">
+<types supercategory="Science and Education" category="NIST Reference Data" foruser="false">
 
 
-  <type name="type_nist_constant"  description="CODATA Fundamental Physical Constants"   foruser="true" xhandler="org.ramadda.plugins.biz.FredCategoryTypeHandler">
+  <type name="type_nist_constant"  description="CODATA Fundamental Physical Constants"    xhandler="org.ramadda.plugins.biz.FredCategoryTypeHandler">
      <property name="icon" value="/nist/nist.png"/>
      <property name="form.resource.show" value="false"/>
      <property name="search.form.date.show" value="false"/>
@@ -39,7 +39,7 @@ This data is provided by the <a href="http://physics.nist.gov/cuu/Constants/inde
   </type>
 
 
-  <type name="type_nist_energy"  description="NIST Ionization Energy Data"   foruser="true" xhandler="org.ramadda.plugins.biz.FredCategoryTypeHandler">
+  <type name="type_nist_energy"  description="NIST Ionization Energy Data"    xhandler="org.ramadda.plugins.biz.FredCategoryTypeHandler">
      <property name="icon" value="/nist/nist.png"/>
      <property name="form.resource.show" value="false"/>
      <property name="search.form.date.show" value="false"/>
@@ -79,7 +79,7 @@ This data is provided by the <a href="http://www.nist.gov/pml/data/ion_energy.cf
 
   </type>
 
-  <type name="type_nist_isotope"  description="NIST Isotope"   foruser="true">
+  <type name="type_nist_isotope"  description="NIST Isotope"   >
      <property name="icon" value="/nist/nist.png"/>
      <property name="form.resource.show" value="false"/>
      <property name="search.form.date.show" value="false"/>

@@ -1,4 +1,4 @@
-<types>
+<types supercategory="Geoscience">
 
 <!--
   <type name="type_point_collection"  description="Point Data Collection" handler="org.ramadda.data.services.PointCollectionTypeHandler" category="Point Data">

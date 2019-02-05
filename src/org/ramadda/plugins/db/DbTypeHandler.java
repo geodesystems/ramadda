@@ -210,7 +210,7 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
         setCategory(XmlUtil.getAttributeFromTree(tableNode,
                 TypeHandler.ATTR_CATEGORY, "Database"));
         setSuperCategory(XmlUtil.getAttributeFromTree(tableNode,
-                "supercategory", ""));
+                "supercategory", "Basic"));
 
 
         myEntry = new Entry(this, true);
