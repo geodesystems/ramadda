@@ -95,7 +95,6 @@ function ramaddaSearchSuggestInit(id, type, icon) {
             var jqxhr = $.getJSON(url, function(data) {
                 var popup = $("#searchpopup");
                 searching = false;
-                console.log("data:" + data.values.length);
                 if (data.values.length == 0) {
                     popup.hide();
                     return;
@@ -114,6 +113,7 @@ function ramaddaSearchSuggestInit(id, type, icon) {
                     popupTime = new Date();
                     var v = $(this).attr("suggest");
                     v = v.replace(/_quote_/g, "\"");
+                    ramaddSearchLastInput = v;
                     input.val(v);
                     input.focus();
                     e.stopPropagation();
