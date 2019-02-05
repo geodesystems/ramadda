@@ -1,6 +1,4 @@
 <types>
-
-  
   <type name="type_document_tika"  foruser="false" description="TIKA Doc"  super="type_document" handler="org.ramadda.plugins.media.TikaTypeHandler"  metadata="enum_tag,metadata_author,metadata_publisher">
 <!--
      <service link="media_pdfbox_extracttext"/>
