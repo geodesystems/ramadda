@@ -1,6 +1,6 @@
 <types  supercategory="Geoscience">
 
-  <type name="earth_merra"  description="MERRA Data"  super="earth" category="Satellite and Model Data"
+  <type name="earth_merra"  description="MERRA Data"  super="earth" category="Geoscience Data"
         handler="org.ramadda.repository.type.GenericTypeHandler"
         field_file_pattern=".*(frequency_type:inst|tavg|const)(frequency:1|3|6|M|U|0)_(dimensions:2d|3d)_(data_group:...)_(horizontal_resolution:N|F|C)(vertical_location:x|p|v|e).*\.hdf$">
 

@@ -1,6 +1,6 @@
 <types  supercategory="Geoscience">
 
-  <type name="earth_wrf_namelist"  description="WRF Namelist File"  category="Satellite and Model Data"
+  <type name="earth_wrf_namelist"  description="WRF Namelist File"  category="Geoscience Data"
         handler="org.ramadda.repository.type.GenericTypeHandler"
         field_file_pattern=".*\.input$">
      <property name="icon" value="/earthdata/wrf.png"/>

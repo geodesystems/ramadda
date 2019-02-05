@@ -1,6 +1,6 @@
 <types  supercategory="Geoscience" category="Satellite and Model Data">
 
-  <type name="earth_satellite"  description="Satellite Data" foruser="false" super="earth" category="Satellite and Model Data">
+  <type name="earth_satellite"  description="Satellite Data" foruser="false" super="earth" category="Geoscience Data">
      <property name="icon" value="/earthdata/satellite.gif"/>
   </type>
 
