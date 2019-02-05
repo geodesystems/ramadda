@@ -1035,6 +1035,10 @@ td.entry-table-block {
      text-decoration:none;
 }
 
+.btn-primary  {
+   color:#fff;
+}
+
 .ramadda-link {
          display:inline-block;
 }
