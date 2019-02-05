@@ -1123,7 +1123,7 @@ public class PhoneHarvester extends Harvester {
 
         String name = "Voice Message  - "
                       + getDateHandler().formatDate(request, new Date());
-        String       type             = "media_audiofile";
+        String       type             = "phone_message";
         TypeHandler  typeHandler      = getRepository().getTypeHandler(type);
         Entry entry = typeHandler.createEntry(getRepository().getGUID());
         Date         date             = new Date();
