@@ -69,6 +69,13 @@ function ramaddaSearchSuggestInit(id, type) {
     let input  = $("#" + id);
     ramaddSearchLastInput = input.val();
     input.keyup(function(e){
+            var keyCode = e.keyCode || e.which;
+            if (keyCode == 13) {
+                var popup =     $("#searchpopup");
+                popup.hide();
+                return;
+            }
+
             e.stopPropagation();
             if(searching) return;
             var newVal = input.val();
@@ -129,8 +136,8 @@ function ramaddaSearchPopup(id) {
     popupTime = new Date();
     popupObject = GuiUtils.getDomObject("ramadda-selectdiv");
     selectDiv.html(html);
-    $("#searchinput").focus();
-    $("#searchinput").mousedown(function(evt) {
+    var input =$("#searchinput");
+    input.mousedown(function(evt) {
             evt.stopPropagation();
         });
     selectDiv.show();
@@ -141,7 +148,7 @@ function ramaddaSearchPopup(id) {
             collision: "none none"
         });
     ramaddaSearchSuggestInit('searchinput');
-
+    input.focus();
 }
 
 
