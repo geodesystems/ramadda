@@ -9689,7 +9689,6 @@ function RamaddaSearcher(displayManager, id, type, properties) {
 
             if (this.showText) {
                 topItems.push(textField);
-                ramaddaSearchSuggestInit(this.getDomId(ID_TEXT_FIELD));
             }
 
 
