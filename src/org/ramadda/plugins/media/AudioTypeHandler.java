@@ -86,36 +86,10 @@ public class AudioTypeHandler extends GenericTypeHandler {
             return super.getWikiInclude(wikiUtil, request, originalEntry,
                                         entry, tag, props);
         }
-        StringBuffer sb = new StringBuffer();
-        String html =
-            "<audio controls preload=\"none\" style=\"width:480px;\">\n <source src=\"${url}\" type=\"${mime}\" />\n <p>Your browser does not support HTML5 audio.</p>\n </audio>";
-
-
-
         String getFileUrl =
             entry.getTypeHandler().getEntryResourceUrl(request, entry);
-        String mime = "audio/wav";
-        String ext = IOUtil.getFileExtension(
-                         entry.getResource().getPath()).toLowerCase();
-        if (ext.equals("ogg")) {
-            mime = "audio/ogg";
-        } else if (ext.equals("oga")) {
-            mime = "audio/ogg";
-        } else if (ext.equals("wav")) {
-            mime = "audio/wav";
-        } else if (ext.equals("m4a")) {
-            mime = "audio/mp4";
-        } else if (ext.equals("mp4")) {
-            mime = "audio/mp4";
-        }
-
-        html = html.replace("${url}", getFileUrl);
-        html = html.replace("${mime}", mime);
-        sb.append(html);
-
-        return sb.toString();
+        return HtmlUtils.getAudioEmbed(getFileUrl);
     }
-
 
 
     /**

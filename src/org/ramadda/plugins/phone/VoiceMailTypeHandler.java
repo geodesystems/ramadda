@@ -76,13 +76,9 @@ public class VoiceMailTypeHandler extends GenericTypeHandler {
             return super.getWikiInclude(wikiUtil, request, originalEntry,
                                         entry, tag, props);
         }
-        String html =
-            "<table><tr><td><div class=\"audio-player\"><object>\n<param name=\"autostart\" value=\"false\">\n<param name=\"src\" value=\"${url}\">\n<param name=\"autoplay\" value=\"false\">\n<param name=\"controller\" value=\"true\">\n<embed src=\"${url}\" controller=\"true\" autoplay=\"false\" autostart=\"False\" type=\"audio/wav\"></object></div></td></tr></table>\n";
-
         String getFileUrl =
             entry.getTypeHandler().getEntryResourceUrl(request, entry);
-        html = html.replace("${url}", getFileUrl);
-        return html;
+        return HtmlUtils.getAudioEmbed(getFileUrl);
     }
 
 

@@ -5418,5 +5418,29 @@ public class HtmlUtils {
 
     }
 
+    public static String getAudioEmbed(String url) {
+        String html =
+            "<audio controls preload=\"none\" style=\"width:480px;\">\n <source src=\"${url}\" type=\"${mime}\" />\n <p>Your browser does not support HTML5 audio.</p>\n </audio>";
+
+        String mime = "audio/wav";
+        String ext = IOUtil.getFileExtension(url);
+        if (ext.equals("ogg")) {
+            mime = "audio/ogg";
+        } else if (ext.equals("oga")) {
+            mime = "audio/ogg";
+        } else if (ext.equals("wav")) {
+            mime = "audio/wav";
+        } else if (ext.equals("m4a")) {
+            mime = "audio/mp4";
+        } else if (ext.equals("mp4")) {
+            mime = "audio/mp4";
+        }
+
+        html = html.replace("${url}", url);
+        html = html.replace("${mime}", mime);
+        return html;
+    }
+
+
 
 }

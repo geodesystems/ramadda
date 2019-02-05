@@ -104,7 +104,8 @@
 +section title="{{name}}" #
 {{noheading}}
 {{audio}}
-+block
+
++block-yellow
 {{description}}
 -block
 -section
