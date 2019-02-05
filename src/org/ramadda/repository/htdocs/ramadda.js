@@ -64,7 +64,7 @@ function mouseDown(event) {
 
 var ramaddSearchLastInput = "";
 
-function ramaddaSearchSuggestInit(id, type) {
+function ramaddaSearchSuggestInit(id, type, icon) {
     let searching = false;
     let input  = $("#" + id);
     ramaddSearchLastInput = input.val();
@@ -111,11 +111,13 @@ function ramaddaSearchSuggestInit(id, type) {
                                 popup.hide();
                             });
                         popup.show();
+                        var my = "left top";
+                        var at = "left bottom+1";
                         popup.position({
                                 of:input,
-                                    my: "left top",
-                                    at: "left bottom+1",
-                                    collision: "none none"
+                                my: my,
+                                at: at,
+                                    collision: "fit fit"
                                     });
                     }).fail(function(jqxhr, textStatus, error) {
                             console.log("fail");
@@ -147,7 +149,7 @@ function ramaddaSearchPopup(id) {
             at: "right bottom",
             collision: "none none"
         });
-    ramaddaSearchSuggestInit('searchinput');
+    ramaddaSearchSuggestInit('searchinput',null,true);
     input.focus();
 }
 
