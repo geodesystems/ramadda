@@ -27,11 +27,12 @@
      <column name="to_number" type="string"  label="To Number"  />
      <wiki><![CDATA[
 +section title={{name}}
+<center>
 {{voicemail}}
-
-+block-yellow
+</center>
++note
 {{description}}
--block
+-note
 
 -section
 ]]>

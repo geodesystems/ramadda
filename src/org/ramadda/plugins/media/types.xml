@@ -105,9 +105,8 @@
 {{noheading}}
 {{audio}}
 
-+block-yellow
-{{description}}
--block
+{{description wikify="true"}}
+
 -section
 ]]>
 </wiki>
