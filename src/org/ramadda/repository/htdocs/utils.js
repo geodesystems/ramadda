@@ -277,44 +277,47 @@ var Utils = {
     displayAllColorTables: function(domId) {
         var cnt = 0;
         var html = "";
-        for(a in this.ColorTables) {
-            html+=HtmlUtils.b(a);
-            html+=HtmlUtils.div(["id",domId+"_" + cnt,"style","width:100%;"],"");
-            html+="<br>";
+        for (a in this.ColorTables) {
+            html += HtmlUtils.b(a);
+            html += HtmlUtils.div(["id", domId + "_" + cnt, "style", "width:100%;"], "");
+            html += "<br>";
             cnt++;
         }
         $("#" + domId).html(html);
         cnt = 0;
-        for(a in this.ColorTables) {
-            this.displayColorTable(this.ColorTables[a],domId +"_" + cnt,0,1,{showRange:false,height:"20px"});
+        for (a in this.ColorTables) {
+            this.displayColorTable(this.ColorTables[a], domId + "_" + cnt, 0, 1, {
+                showRange: false,
+                height: "20px"
+            });
             cnt++;
         }
     },
 
     displayColorTable: function(ct, domId, min, max, args) {
-        if (!ct)return;
+        if (!ct) return;
         if (ct.colors) ct = ct.colors;
         var options = {
-            height:"10px",
+            height: "10px",
             showRange: true
         }
-        if(args) $.extend(options, args);
+        if (args) $.extend(options, args);
         min = parseFloat(min);
         max = parseFloat(max);
         var html = HtmlUtils.openTag("div", ["class", "display-colortable"]) + "<table cellpadding=0 cellspacing=0 width=100% border=0><tr>";
-        if(options.showRange)
-            html+="<td width=1%>" + this.formatNumber(min) + "&nbsp;</td>";
+        if (options.showRange)
+            html += "<td width=1%>" + this.formatNumber(min) + "&nbsp;</td>";
         var step = (max - min) / ct.length;
         for (var i = 0; i < ct.length; i++) {
             var extra = "";
-            var attrs = ["style", "background:" + ct[i] + ";" + "width:100%;height:" + options.height +";min-width:1px;"];
-            if(options.showRange) {
+            var attrs = ["style", "background:" + ct[i] + ";" + "width:100%;height:" + options.height + ";min-width:1px;"];
+            if (options.showRange) {
                 attrs.push("title");
                 attrs.push(this.formatNumber(min + step * i));
             }
             html += HtmlUtils.td(["class", "display-colortable-slice", "style", "background:" + ct[i] + ";", "width", "1"], HtmlUtils.div(attrs, ""));
         }
-        if(options.showRange) {
+        if (options.showRange) {
             html += "<td width=1%>&nbsp;" + this.formatNumber(max) + "</td>";
         }
         html += "</tr></table>";
@@ -362,22 +365,54 @@ var Utils = {
         light_gray_scale: {
             colors: ['rgb(62,62,62)', 'rgb(69,69,69)', 'rgb(75,75,75)', 'rgb(82,82,82)', 'rgb(88,88,88)', 'rgb(95,95,95)', 'rgb(102,102,102)', 'rgb(108,108,108)', 'rgb(115,115,115)', 'rgb(121,121,121)', 'rgb(128,128,128)', 'rgb(135,135,135)', 'rgb(141,141,141)', 'rgb(148,148,148)', 'rgb(155,155,155)', 'rgb(161,161,161)', 'rgb(168,168,168)', 'rgb(174,174,174)', 'rgb(181,181,181)', 'rgb(188,188,188)', 'rgb(194,194,194)', 'rgb(201,201,201)', 'rgb(207,207,207)', 'rgb(214,214,214)', 'rgb(221,221,221)', 'rgb(227,227,227)', 'rgb(234,234,234)', 'rgb(240,240,240)', 'rgb(247,247,247)', 'rgb(254,254,254)', ]
         },
-        blue_green: {colors:['#e5f5f9','#99d8c9','#2ca25f']},
-        blue_purple: {colors:['#e0ecf4','#9ebcda','#8856a7']},
-        green_blue: {colors:['#e0f3db','#a8ddb5','#43a2ca']},
-        orange_red: {colors:['#fee8c8','#fdbb84','#e34a33']},
-        purple_blue: {colors:['#ece7f2','#a6bddb','#2b8cbe']},
-        purple_blue_green: {colors:['#ece2f0','#a6bddb','#1c9099']},
-        purple_red: {colors:['#e7e1ef','#c994c7','#dd1c77']},
-        red_purple: {colors:['#fde0dd','#fa9fb5','#c51b8a']},
-        yellow_green: {colors:['#f7fcb9','#addd8e','#31a354']},
-        yellow_green_blue: {colors:['#edf8b1','#7fcdbb','#2c7fb8']},
-        yellow_orange_brown: {colors:['#fff7bc','#fec44f','#d95f0e']},
-        yellow_orange_red: {colors:['#ffeda0','#feb24c','#f03b20']},
-        oranges:{colors:['#fee6ce','#fdae6b','#e6550d']},
-        purples:{colors: ['#efedf5','#bcbddc','#756bb1'] },
-        reds:{colors:['#fee0d2','#fc9272','#de2d26']  },
-        greens:{colors:['#e5f5e0','#a1d99b','#31a354']  },
+        blue_green: {
+            colors: ['#e5f5f9', '#99d8c9', '#2ca25f']
+        },
+        blue_purple: {
+            colors: ['#e0ecf4', '#9ebcda', '#8856a7']
+        },
+        green_blue: {
+            colors: ['#e0f3db', '#a8ddb5', '#43a2ca']
+        },
+        orange_red: {
+            colors: ['#fee8c8', '#fdbb84', '#e34a33']
+        },
+        purple_blue: {
+            colors: ['#ece7f2', '#a6bddb', '#2b8cbe']
+        },
+        purple_blue_green: {
+            colors: ['#ece2f0', '#a6bddb', '#1c9099']
+        },
+        purple_red: {
+            colors: ['#e7e1ef', '#c994c7', '#dd1c77']
+        },
+        red_purple: {
+            colors: ['#fde0dd', '#fa9fb5', '#c51b8a']
+        },
+        yellow_green: {
+            colors: ['#f7fcb9', '#addd8e', '#31a354']
+        },
+        yellow_green_blue: {
+            colors: ['#edf8b1', '#7fcdbb', '#2c7fb8']
+        },
+        yellow_orange_brown: {
+            colors: ['#fff7bc', '#fec44f', '#d95f0e']
+        },
+        yellow_orange_red: {
+            colors: ['#ffeda0', '#feb24c', '#f03b20']
+        },
+        oranges: {
+            colors: ['#fee6ce', '#fdae6b', '#e6550d']
+        },
+        purples: {
+            colors: ['#efedf5', '#bcbddc', '#756bb1']
+        },
+        reds: {
+            colors: ['#fee0d2', '#fc9272', '#de2d26']
+        },
+        greens: {
+            colors: ['#e5f5e0', '#a1d99b', '#31a354']
+        },
         bright38: {
             colors: ['rgb(254,0,225)', 'rgb(188,0,254)', 'rgb(165,0,254)', 'rgb(134,0,254)', 'rgb(111,0,254)', 'rgb(81,0,254)', 'rgb(58,0,254)', 'rgb(28,0,254)', 'rgb(0,2,254)', 'rgb(0,33,254)', 'rgb(0,56,254)', 'rgb(0,78,254)', 'rgb(0,139,254)', 'rgb(0,169,254)', 'rgb(0,208,254)', 'rgb(0,231,254)', 'rgb(0,254,231)', 'rgb(0,254,200)', 'rgb(0,254,169)', 'rgb(0,254,139)', 'rgb(0,254,109)', 'rgb(0,254,79)', 'rgb(0,254,39)', 'rgb(0,254,0)', 'rgb(42,254,0)', 'rgb(88,254,0)', 'rgb(126,254,0)', 'rgb(164,254,0)', 'rgb(195,254,0)', 'rgb(226,254,0)', 'rgb(254,243,0)', 'rgb(254,199,0)', 'rgb(254,167,0)', 'rgb(254,137,0)', 'rgb(254,106,0)', 'rgb(254,68,0)', 'rgb(254,30,0)', 'rgb(254,0,0)', ]
         },
@@ -995,22 +1030,22 @@ var HtmlUtils = {
     link: function(url, label, attrs) {
         if (attrs == null) attrs = [];
         var a = [];
-        for(i in attrs)
+        for (i in attrs)
             a.push(attrs[i]);
         attrs = a;
         attrs.push("url");
         attrs.push(url);
         attrs.push("class");
         attrs.push("ramadda-link");
-        if(attrs.style) attrs.style+="display:inline-block;";
-        else attrs.style="style='display:inline-block;'";
-        return this.div(attrs,label);
+        if (attrs.style) attrs.style += "display:inline-block;";
+        else attrs.style = "style='display:inline-block;'";
+        return this.div(attrs, label);
     },
 
     href: function(url, label, attrs) {
         if (attrs == null) attrs = [];
         var a = [];
-        for(i in attrs)
+        for (i in attrs)
             a.push(attrs[i]);
         attrs = a;
         attrs.push("href");

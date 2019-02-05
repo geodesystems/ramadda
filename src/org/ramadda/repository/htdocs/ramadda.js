@@ -66,108 +66,108 @@ var ramaddSearchLastInput = "";
 
 function ramaddaSearchSuggestInit(id, type, icon) {
     let searching = false;
-    let input  = $("#" + id);
+    let input = $("#" + id);
     ramaddSearchLastInput = input.val();
-    input.keyup(function(e){
-            var keyCode = e.keyCode || e.which;
-            if (keyCode == 13) {
-                var popup =     $("#searchpopup");
-                popup.hide();
-                return;
-            }
+    input.keyup(function(e) {
+        var keyCode = e.keyCode || e.which;
+        if (keyCode == 13) {
+            var popup = $("#searchpopup");
+            popup.hide();
+            return;
+        }
 
-            e.stopPropagation();
-            if(searching) return;
-            var newVal = input.val();
-            if(newVal!=ramaddSearchLastInput) {
-                ramaddSearchLastInput = newVal;
-                searching = true;
-                var url = ramaddaBaseUrl+"/search/suggest?string="
-                if(type) url +="&type=" + type;
-                var jqxhr = $.getJSON(url, function(data) {
-                        var popup =     $("#searchpopup");
-                        searching = false;
-                        if(data.values.length==0) {
-                            popup.hide();
-                            return;
-                        }
-                        var html = "";
-                        for(var i=0;i<data.values.length;i++) {
-                            var value = data.values[i];
-                            var v = value.replace(/\"/g,"_quote_");
-                            html+=HtmlUtils.div(["class","ramadda-search-suggestion","suggest", v],  value);
-                        }
-                        popup.html(HtmlUtils.div(["style","padding:5px;"],html));
-                        popup.find(".ramadda-search-suggestion").mousedown(function(e) {
-                                e.stopPropagation();
-                            });
-                        popup.find(".ramadda-search-suggestion").click(function(e) {
-                                popupTime = new Date();
-                                var v = $(this).attr("suggest");
-                                v = v.replace(/_quote_/g,"\"");
-                                input.val(v);
-                                input.focus();
-                                e.stopPropagation();
-                                popup.hide();
-                            });
-                        popup.show();
-                        var my = "left top";
-                        var at = "left bottom+1";
-                        popup.position({
-                                of:input,
-                                my: my,
-                                at: at,
-                                    collision: "fit fit"
-                                    });
-                    }).fail(function(jqxhr, textStatus, error) {
-                            console.log("fail");
-                        });
-                
-            }
-        });
+        e.stopPropagation();
+        if (searching) return;
+        var newVal = input.val();
+        if (newVal != ramaddSearchLastInput) {
+            ramaddSearchLastInput = newVal;
+            searching = true;
+            var url = ramaddaBaseUrl + "/search/suggest?string="
+            if (type) url += "&type=" + type;
+            var jqxhr = $.getJSON(url, function(data) {
+                var popup = $("#searchpopup");
+                searching = false;
+                if (data.values.length == 0) {
+                    popup.hide();
+                    return;
+                }
+                var html = "";
+                for (var i = 0; i < data.values.length; i++) {
+                    var value = data.values[i];
+                    var v = value.replace(/\"/g, "_quote_");
+                    html += HtmlUtils.div(["class", "ramadda-search-suggestion", "suggest", v], value);
+                }
+                popup.html(HtmlUtils.div(["style", "padding:5px;"], html));
+                popup.find(".ramadda-search-suggestion").mousedown(function(e) {
+                    e.stopPropagation();
+                });
+                popup.find(".ramadda-search-suggestion").click(function(e) {
+                    popupTime = new Date();
+                    var v = $(this).attr("suggest");
+                    v = v.replace(/_quote_/g, "\"");
+                    input.val(v);
+                    input.focus();
+                    e.stopPropagation();
+                    popup.hide();
+                });
+                popup.show();
+                var my = "left top";
+                var at = "left bottom+1";
+                popup.position({
+                    of: input,
+                    my: my,
+                    at: at,
+                    collision: "fit fit"
+                });
+            }).fail(function(jqxhr, textStatus, error) {
+                console.log("fail");
+            });
+
+        }
+    });
 }
 
 
 function ramaddaSearchLink() {
-    var input =$("#popup_search_input");
+    var input = $("#popup_search_input");
     var val = input.val().trim();
     var url = $(this).attr('url');
-    if(val!="") {
-        url+="?text=" + encodeURIComponent(val);
+    if (val != "") {
+        url += "?text=" + encodeURIComponent(val);
     }
     window.location = url;
 }
 
 function ramaddaSearchPopup(id) {
-    var html = "<form action='" +ramaddaBaseUrl+"/search/do'><input autocomplete=off autofocus id='popup_search_input' size='30' style='border: 1px #ccc solid;' placeholder=' Search text' name='text'></form><div id=searchpopup class=ramadda-popup></div>";
-    var linkStyle  = "font-size:13px;";
-    html+="\n";
+    var html = "<form action='" + ramaddaBaseUrl + "/search/do'><input autocomplete=off autofocus id='popup_search_input' size='30' style='border: 1px #ccc solid;' placeholder=' Search text' name='text'></form><div id=searchpopup class=ramadda-popup></div>";
+    var linkStyle = "font-size:13px;";
+    html += "\n";
     var linksId = HtmlUtils.getUniqueId();
-    html+=" ";
-    html+=HtmlUtils.span(["class","ramadda-links","id",linksId], 
-                        HtmlUtils.leftCenterRight(
-                                                  HtmlUtils.link(ramaddaBaseUrl +"/search/do","Search",["title","Do search","style",linkStyle]),
-                                                  HtmlUtils.link(ramaddaBaseUrl +"/search/form","Form",["title","Go to form","style",linkStyle]),
-                                                  HtmlUtils.link(ramaddaBaseUrl +"/search/type","By Type",["title","Go to search by type form","style",linkStyle])));
-    html = HtmlUtils.div(["style","padding:5px;"],html);
+    html += " ";
+    html += HtmlUtils.span(["class", "ramadda-links", "id", linksId],
+        HtmlUtils.leftCenterRight(
+            HtmlUtils.link(ramaddaBaseUrl + "/search/do", "Search", ["title", "Do search", "style", linkStyle]),
+            HtmlUtils.link(ramaddaBaseUrl + "/search/form", "Form", ["title", "Go to form", "style", linkStyle]),
+            HtmlUtils.link(ramaddaBaseUrl + "/search/type", "By Type", ["title", "Go to search by type form", "style", linkStyle])));
+    html = HtmlUtils.div(["style", "padding:5px;"], html);
     var selectDiv = $("#ramadda-selectdiv");
-    var icon =  $("#"+id);
+    var icon = $("#" + id);
     popupTime = new Date();
     popupObject = GuiUtils.getDomObject("ramadda-selectdiv");
     selectDiv.html(html);
     $("#" + linksId).find(".ramadda-link").click(ramaddaSearchLink);
-    var input =$("#popup_search_input");
+    var input = $("#popup_search_input");
     input.mousedown(function(evt) {
-            evt.stopPropagation();
-        });
+        evt.stopPropagation();
+    });
     selectDiv.show();
     selectDiv.position({
-            of:icon,
-                my: "right top",
-            at: "right bottom",
-            collision: "none none"
-        });
-    ramaddaSearchSuggestInit('popup_search_input',null,true);
+        of: icon,
+        my: "right top",
+        at: "right bottom",
+        collision: "none none"
+    });
+    ramaddaSearchSuggestInit('popup_search_input', null, true);
     input.focus();
 }
 
