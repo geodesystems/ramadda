@@ -63,13 +63,18 @@ function mouseDown(event) {
 
 
 function ramaddaSearchPopup(id) {
-    var html = "<form action='" +ramaddaBaseUrl+"/search/do'><input style='border: 1px #ccc solid;' placeholder=' Search text' name='text'></form>";
+    var html = "<form action='" +ramaddaBaseUrl+"/search/do'><input id='searchinput' style='border: 1px #ccc solid;' placeholder=' Search text' name='text'></form>";
     var linkAttrs  = ["style","color:#666; font-size:13px;"]
     html+=HtmlUtil.span(["class","ramadda-links"], HtmlUtil.href(ramaddaBaseUrl +"/search/form","Advanced",linkAttrs) + "&nbsp;&nbsp; " +HtmlUtil.href(ramaddaBaseUrl +"/search/type","By Type", linkAttrs));
     html = HtmlUtil.div(["style","padding:5px;"],html);
     var selectDiv = $("#ramadda-selectdiv");
     var icon =  $("#"+id);
+    popupTime = new Date();
+    popupObject = GuiUtils.getDomObject("ramadda-selectdiv");
     selectDiv.html(html);
+    $("#searchinput").mousedown(function(evt) {
+            evt.stopPropagation();
+        });
     selectDiv.show();
     selectDiv.position({
             of:icon,
