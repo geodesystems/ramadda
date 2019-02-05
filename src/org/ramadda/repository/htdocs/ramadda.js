@@ -129,6 +129,7 @@ function ramaddaSearchPopup(id) {
     popupTime = new Date();
     popupObject = GuiUtils.getDomObject("ramadda-selectdiv");
     selectDiv.html(html);
+    $("#searchinput").focus();
     $("#searchinput").mousedown(function(evt) {
             evt.stopPropagation();
         });
