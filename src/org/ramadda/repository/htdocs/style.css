@@ -746,7 +746,7 @@ border: 1px #ccc solid;
 }
 
 .entry-table tr {
-   border: 1px #f4f4f4 solid;
+#   border: 1px #f4f4f4 solid;
    padding:0px;
    padding-bottom:0px;
 }
@@ -2076,6 +2076,14 @@ nowiki {
 
 
 
+
+.ramadda-search-suggestion {
+  cursor:pointer;
+}
+
+.ramadda-search-suggestion:hover {
+    text-decoration:underline;
+}
 
 .ramadda-xls-search-form {
  margin-bottom:2px;

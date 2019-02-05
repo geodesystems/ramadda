@@ -62,8 +62,65 @@ function mouseDown(event) {
 
 
 
+var ramaddSearchLastInput = "";
+
+function ramaddaSearchSuggestInit(id, type) {
+    let searching = false;
+    let input  = $("#" + id);
+    ramaddSearchLastInput = input.val();
+    input.keyup(function(e){
+            e.stopPropagation();
+            if(searching) return;
+            var newVal = input.val();
+            if(newVal!=ramaddSearchLastInput) {
+                ramaddSearchLastInput = newVal;
+                searching = true;
+                var url = ramaddaBaseUrl+"/search/suggest?string="+encodeURIComponent(newVal);
+                if(type) url +="&type=" + type;
+                var jqxhr = $.getJSON(url, function(data) {
+                        var popup =     $("#searchpopup");
+                        searching = false;
+                        if(data.values.length==0) {
+                            popup.hide();
+                            return;
+                        }
+                        var html = "";
+                        for(var i=0;i<data.values.length;i++) {
+                            var value = data.values[i];
+                            var v = value.replace(/\"/g,"_quote_");
+                            html+=HtmlUtil.div(["class","ramadda-search-suggestion","suggest", v],  value);
+                        }
+                        popup.html(HtmlUtil.div(["style","padding:5px;"],html));
+                        popup.find(".ramadda-search-suggestion").mousedown(function(e) {
+                                e.stopPropagation();
+                            });
+                        popup.find(".ramadda-search-suggestion").click(function(e) {
+                                popupTime = new Date();
+                                var v = $(this).attr("suggest");
+                                v = v.replace(/_quote_/g,"\"");
+                                input.val(v);
+                                input.focus();
+                                e.stopPropagation();
+                                popup.hide();
+                            });
+                        popup.show();
+                        popup.position({
+                                of:input,
+                                    my: "left top",
+                                    at: "left bottom+1",
+                                    collision: "none none"
+                                    });
+                    }).fail(function(jqxhr, textStatus, error) {
+                            console.log("fail");
+                        });
+                
+            }
+        });
+}
+
+
 function ramaddaSearchPopup(id) {
-    var html = "<form action='" +ramaddaBaseUrl+"/search/do'><input id='searchinput' style='border: 1px #ccc solid;' placeholder=' Search text' name='text'></form>";
+    var html = "<form action='" +ramaddaBaseUrl+"/search/do'><input autocomplete=off id='searchinput' style='border: 1px #ccc solid;' placeholder=' Search text' name='text'></form><div id=searchpopup class=ramadda-popup></div>";
     var linkAttrs  = ["style","color:#666; font-size:13px;"]
     html+=HtmlUtil.span(["class","ramadda-links"], HtmlUtil.href(ramaddaBaseUrl +"/search/form","Advanced",linkAttrs) + "&nbsp;&nbsp; " +HtmlUtil.href(ramaddaBaseUrl +"/search/type","By Type", linkAttrs));
     html = HtmlUtil.div(["style","padding:5px;"],html);
@@ -82,6 +139,7 @@ function ramaddaSearchPopup(id) {
             at: "right bottom",
             collision: "none none"
         });
+    ramaddaSearchSuggestInit('searchinput');
 
 }
 

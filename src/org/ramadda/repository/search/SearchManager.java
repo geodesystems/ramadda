@@ -57,15 +57,22 @@ import org.ramadda.repository.util.ServerInfo;
 
 import org.ramadda.util.CategoryBuffer;
 import org.ramadda.util.HtmlUtils;
+import org.ramadda.util.Utils;
 import org.ramadda.util.JQuery;
+import org.ramadda.util.Json;
+   
 import org.ramadda.util.OpenSearchUtil;
 
 import org.ramadda.util.TTLObject;
 import org.ramadda.util.WadlUtil;
 
 import org.ramadda.util.sql.Clause;
-
 import org.ramadda.util.sql.SqlUtil;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
+import java.sql.SQLException;
+import java.sql.Statement;
 
 
 import org.w3c.dom.*;
@@ -492,6 +499,35 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
     }
 
 
+    public Result processEntrySuggest(Request request) throws Exception {
+        String string = request.getString("string","");
+        String type = request.getString("type",(String)null);
+        List<String> names = new ArrayList<String>();
+        if(Utils.stringDefined(string)) {
+            if(string.startsWith("name:")) {
+                string  = string.substring("name:".length());
+            } else if(string.startsWith("description:")) {
+                string  = string.substring("description:".length());
+            } else if(string.startsWith("file:")) {
+                string  = string.substring("file:".length());
+            }
+            Clause clause = getDatabaseManager().makeLikeTextClause(Tables.ENTRIES.COL_NAME,string+"%",false);
+            if(type!=null) {
+                clause = Clause.and(clause, Clause.eq(Tables.ENTRIES.COL_TYPE, type));
+            }
+            Statement statement =
+                getDatabaseManager().select("distinct " + Tables.ENTRIES.COL_NAME,
+                                            Utils.makeList(Tables.ENTRIES.NAME), clause, "",20);
+            SqlUtil.Iterator iter = getDatabaseManager().getIterator(statement);
+            ResultSet        results;
+            while ((results = iter.getNext()) != null) {
+                names.add(results.getString(1));
+            }
+        }
+        String json = Json.map("values",Json.list(names,true));
+        return new Result("",new StringBuilder(json),"text/json");
+    }
+
     /**
      * _more_
      *
@@ -750,7 +786,9 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
         String textField =
             HtmlUtils.input(ARG_TEXT, value,
                             HtmlUtils.attr("placeholder", msg(" Search text"))
-                            + HtmlUtils.SIZE_50 + " autofocus ");
+                            + HtmlUtils.id("searchinput")
+                            + HtmlUtils.SIZE_50 + " autocomplete='off' autofocus ") +"\n<div id=searchpopup class=ramadda-popup></div>" +
+            HtmlUtils.script("ramaddaSearchSuggestInit('searchinput');");
 
         return textField;
     }
@@ -1077,7 +1115,7 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
             String      type        = lastTok;
             TypeHandler typeHandler = getRepository().getTypeHandler(type);
             Result result =
-                typeHandler.getSpecialSearch().processSearchRequest(request,
+                typeHandler.getSpecialSearch().processSearchRequest(request, 
                     sb);
             //Is it non-html?
             if (result != null) {

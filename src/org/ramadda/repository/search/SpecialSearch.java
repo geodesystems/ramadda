@@ -337,7 +337,7 @@ public class SpecialSearch extends RepositoryManager implements RequestHandler {
      *
      * @throws Exception _more_
      */
-    public Result processSearchRequest(Request request, Appendable sb)
+    public Result processSearchRequest(Request request,  Appendable sb)
             throws Exception {
 
 
@@ -652,7 +652,12 @@ public class SpecialSearch extends RepositoryManager implements RequestHandler {
             formSB.append(HtmlUtils.formEntry(msgLabel("Text"),
                     HtmlUtils.input(ARG_TEXT,
                                     request.getString(ARG_TEXT, ""),
-                                    HtmlUtils.SIZE_15 + " autofocus ")));
+                                    HtmlUtils.id("searchinput")  +
+                                    HtmlUtils.SIZE_15 + " autocomplete='off'   autofocus ")));
+            formSB.append("<div id=searchpopup class=ramadda-popup></div>");
+            formSB.append(HtmlUtils.script("ramaddaSearchSuggestInit('searchinput'," + (theType==null?"null":"'" +theType +"'")+");"));
+
+
         }
 
         if (showDefault && showName) {
