@@ -2,18 +2,8 @@
  * Copyright (c) 2008-2019 Geode Systems LLC
  */
 
-var globalDebug = false;
 
-
-// google maps
-var map_google_terrain = "google.terrain";
-var map_google_streets = "google.streets";
-var map_google_hybrid = "google.hybrid";
-var map_google_satellite = "google.satellite";
-
-var map_usfs_ownership = "usfs.ownership";
-
-// ESRI Maps
+// Map ids
 var map_esri_topo = "esri.topo";
 var map_esri_street = "esri.street";
 var map_esri_worldimagery = "esri.worldimagery";
@@ -26,22 +16,17 @@ var map_blue = "blue";
 var map_black = "black";
 var map_gray = "gray";
 
+var map_usfs_ownership = "usfs.ownership";
+var map_osm = "osm";
+var map_osm_toner = "osm.toner";
+var map_ol_openstreetmap = "ol.openstreetmap";
+
 // Microsoft maps - only work for -180 to 180
 var map_ms_shaded = "ms.shaded";
 var map_ms_hybrid = "ms.hybrid";
 var map_ms_aerial = "ms.aerial";
 
-var map_osm = "osm";
-var map_osm_toner = "osm.toner";
-
-
-
-// doesn't support EPSG:900913
-var map_wms_topographic = "wms:Topo Maps,//terraservice.net/ogcmap.ashx,DRG";
-var map_ol_openstreetmap = "ol.openstreetmap";
-
 var map_default_layer = map_osm;
-
 
 var ramaddaCircleHiliteAttrs = {
     strokeColor: 'black',
@@ -62,8 +47,6 @@ function createBounds(v1, v2, v3, v4) {
     v2 = parseFloat(v2);
     v3 = parseFloat(v3);
     v4 = parseFloat(v4);
-    //    console.log("bounds:" + v1 +" " + v2 + " " + v3 + " " + v4);
-
     return new OpenLayers.Bounds(v1, v2, v3, v4);
 }
 
@@ -71,58 +54,52 @@ function createProjection(name) {
     return new OpenLayers.Projection(name);
 }
 
-
-
-var defaultLocation = createLonLat(-100, 40);
-var defaultZoomLevel = 11;
-var wrapDatelineDefault = true;
-var zoomLevelsDefault = 40;
-var sphericalMercatorDefault = true;
-var maxLatValue = 85;
-var maxExtent = createBounds(-20037508, -20037508, 20037508, 20037508);
-var earthCS = createProjection("EPSG:4326");
-var sphericalMercatorCS = createProjection("EPSG:900913");
-
-var sourceProjection = sphericalMercatorCS;
-var displayProjection = earthCS;
-
-
 var positionMarkerID = "location";
 var latlonReadoutID = "ramadda-map-latlonreadout";
 
+var mapDefaults = {
+    maxLatValue: 85,
+    zoomLevels: 40,
+    defaultZoomLevel: 11,
+    maxExtent: createBounds(-20037508, -20037508, 20037508, 20037508),
+    sourceProjection: createProjection("EPSG:900913"),
+    displayProjection: createProjection("EPSG:4326"),
+    units: "m",
+    doSphericalMercator: true,
+    wrapDateline: true,
+    location: createLonLat(-100, 40)
+}
+
+
 //Global list of all maps on this page
 var ramaddaMaps = new Array();
-
-
-
-
 var ramaddaMapMap = {};
 
 function ramaddaAddMap(map) {
     ramaddaMaps.push(map);
+    ramaddaMapMap[map.mapId] = map;
 }
 
 
-
 function RepositoryMap(mapId, params) {
-    mapId = mapId || "map";
-    ramaddaMapMap[mapId] = this;
     if (!params) params = {};
+    this.mapId = mapId || "map";
     ramaddaAddMap(this);
-    var theMap = this;
+    let theMap = this;
     $.extend(this, {
-        sourceProjection: sourceProjection,
-        displayProjection: displayProjection,
-        mapId: mapId,
-        mapDivId: mapId,
+        name: "map",
+        sourceProjection: mapDefaults.sourceProjection,
+        displayProjection: mapDefaults.displayProjection,
+        projectionUnits: mapDefaults.units,
+        mapDivId: this.mapId,
         showScaleLine: true,
         showLayerSwitcher: true,
         showZoomPanControl: true,
         showZoomOnlyControl: false,
         showLatLonPosition: true,
         enableDragPan: true,
-        defaultLocation: defaultLocation,
-        initialZoom: defaultZoomLevel,
+        defaultLocation: mapDefaults.location,
+        initialZoom: mapDefaults.defaultZoomLevel,
         latlonReadout: latlonReadoutID,
         map: null,
         defaultMapLayer: map_default_layer,
@@ -180,7 +157,6 @@ function RepositoryMap(mapId, params) {
     };
 
     this.defaults = {};
-    var theMap = this;
 
     if (Utils.isDefined(params.onSelect)) {
         this.onSelect = params.onSelect;
@@ -193,14 +169,14 @@ function RepositoryMap(mapId, params) {
         this.defaultBounds = createBounds(params.initialBounds[1], params.initialBounds[2], params.initialBounds[3], params.initialBounds[0]);
     }
 
-    this.name = "map";
+
     var options = {
         projection: this.sourceProjection,
         displayProjection: this.displayProjection,
-        units: "m",
+        units: this.projectionUnits,
         controls: [],
         maxResolution: 156543.0339,
-        maxExtent: maxExtent,
+        maxExtent: mapDefaults.maxExtent,
         div: this.mapDivId,
         eventListeners: {
             featureover: function(e) {
@@ -231,7 +207,7 @@ function RepositoryMap(mapId, params) {
 function initMapFunctions(theMap) {
     RamaddaUtil.defineMembers(theMap, {
         finishMapInit: function() {
-            var _this = this;
+            let _this = this;
             if (this.showSearch) {
                 this.searchDiv = this.mapDivId + "_search";
                 var cbx = HtmlUtils.checkbox(this.searchDiv + "_download", [], false);
@@ -414,539 +390,525 @@ function initMapFunctions(theMap) {
                 this.map.raiseLayer(this.markers, this.map.layers.length - 1);
             }
             this.map.resetLayersZIndex();
-        }
-    });
+        },
+        addImageLayer: function(layerId, name, desc, url, visible, north, west, south, east, width, height, args) {
+            var _this = this;
+            var theArgs = {
+                forSelect: false,
+                addBox: true,
+                isBaseLayer: false,
+            };
+            if (args)
+                OpenLayers.Util.extend(theArgs, args);
 
-    theMap.addImageLayer = function(layerId, name, desc, url, visible, north, west, south, east, width, height, args) {
-        var _this = this;
-        var theArgs = {
-            forSelect: false,
-            addBox: true,
-            isBaseLayer: false,
-        };
-        if (args)
-            OpenLayers.Util.extend(theArgs, args);
+            //Things go blooeey with lat up to 90
+            if (north > 88) north = 88;
+            if (south < -88) south = -88;
+            var imageBounds = createBounds(west, south, east, north);
+            imageBounds = this.transformLLBounds(imageBounds);
+            var image = new OpenLayers.Layer.Image(
+                name, url,
+                imageBounds,
+                new OpenLayers.Size(width, height), {
+                    numZoomLevels: 3,
+                    isBaseLayer: theArgs.isBaseLayer,
+                    resolutions: this.map.layers[0].resolutions,
+                    maxResolution: this.map.layers[0].resolutions[0]
+                }
+            );
 
-        //Things go blooeey with lat up to 90
-        if (north > 88) north = 88;
-        if (south < -88) south = -88;
-        var imageBounds = createBounds(west, south, east, north);
-        imageBounds = this.transformLLBounds(imageBounds);
-        var image = new OpenLayers.Layer.Image(
-            name, url,
-            imageBounds,
-            new OpenLayers.Size(width, height), {
-                numZoomLevels: 3,
-                isBaseLayer: theArgs.isBaseLayer,
-                resolutions: this.map.layers[0].resolutions,
-                maxResolution: this.map.layers[0].resolutions[0]
+            //        image.setOpacity(0.5);
+            if (theArgs.forSelect) {
+                theMap.selectImage = image;
             }
-        );
+            var lonlat = new createLonLat(west, north);
+            image.lonlat = this.transformLLPoint(lonlat);
 
-        //        image.setOpacity(0.5);
-        if (theArgs.forSelect) {
-            theMap.selectImage = image;
-        }
-        var lonlat = new createLonLat(west, north);
-        image.lonlat = this.transformLLPoint(lonlat);
-
-        image.setVisibility(visible);
-        image.id = layerId;
-        image.text = this.getPopupText(desc);
-        image.ramaddaId = layerId;
-        image.ramaddaName = name;
-        this.addLayer(image);
-        image.north = north;
-        image.west = west;
-        image.south = south;
-        image.east = east;
-        if (!this.imageLayers) this.imageLayers = {}
-        if (!theArgs.isBaseLayer) {
-            this.imageLayers[layerId] = image;
-        }
-        return image;
-    }
-
-
-    theMap.addWMSLayer = function(name, url, layer, isBaseLayer) {
-        var layer = new OpenLayers.Layer.WMS(name, url, {
-            layers: layer,
-            format: "image/png",
-            isBaseLayer: false,
-            srs: "epse:4326",
-            transparent: true
-
-        }, {
-            wrapDateLine: wrapDatelineDefault
-        });
-        if (isBaseLayer) {
-            layer.isBaseLayer = true;
-            layer.visibility = false;
-        } else {
-            layer.isBaseLayer = false;
-            layer.visibility = true;
-        }
-
-        //If we have this here we get this error: 
-        //http://lists.osgeo.org/pipermail/openlayers-users//2012-August/026025.html
-        //        layer.reproject = true;
-        this.addLayer(layer);
-    }
-
-
-
-    theMap.addMapLayer = function(name, url, layer, isBaseLayer, isDefault) {
-        var layer;
-        if (/\/tile\//.exec(url)) {
-            layer = new OpenLayers.Layer.XYZ(
-                name, url, {
-                    sphericalMercator: sphericalMercatorDefault,
-                    numZoomLevels: zoomLevelsDefault,
-                    wrapDateLine: wrapDatelineDefault
-                });
-        } else {
-            layer = new OpenLayers.Layer.WMS(name, url, {
+            image.setVisibility(visible);
+            image.id = layerId;
+            image.text = this.getPopupText(desc);
+            image.ramaddaId = layerId;
+            image.ramaddaName = name;
+            this.addLayer(image);
+            image.north = north;
+            image.west = west;
+            image.south = south;
+            image.east = east;
+            if (!this.imageLayers) this.imageLayers = {}
+            if (!theArgs.isBaseLayer) {
+                this.imageLayers[layerId] = image;
+            }
+            return image;
+        },
+        addWMSLayer: function(name, url, layer, isBaseLayer) {
+            var layer = new OpenLayers.Layer.WMS(name, url, {
                 layers: layer,
-                format: "image/png"
+                format: "image/png",
+                isBaseLayer: false,
+                srs: "epse:4326",
+                transparent: true
+
             }, {
-                wrapDateLine: wrapDatelineDefault
+                wrapDateLine: mapDefaults.wrapDateline
             });
-        }
-        if (isBaseLayer)
-            layer.isBaseLayer = true;
-        else
-            layer.isBaseLayer = false;
-        layer.visibility = false;
-        layer.reproject = true;
-        this.addLayer(layer);
-        if (isDefault) {
-            this.haveAddedDefaultLayer = true;
-            this.map.setLayerIndex(layer, 0);
-            this.map.setBaseLayer(layer);
-        }
-    }
-
-    theMap.getVectorLayerStyleMap = function(layer, args) {
-        var props = {
-            pointRadius: this.pointRadius,
-            fillOpacity: this.fillOpacity,
-            fillColor: this.fillColor,
-            fill: this.fill,
-            strokeColor: this.strokeColor,
-            strokeWidth: this.strokeWidth,
-            select_fillOpacity: this.fillOpacity,
-            select_fillColor: "#666",
-            select_strokeColor: "#666",
-            select_strokeWidth: 1
-        };
-        if (args) RamaddaUtil.inherit(props, args);
-        var temporaryStyle = OpenLayers.Util.extend({}, OpenLayers.Feature.Vector.style["temporary"]);
-        $.extend(temporaryStyle, {
-            pointRadius: props.pointRadius,
-            fillOpacity: props.fillOpacity,
-            strokeWidth: props.strokeWidth,
-            strokeColor: props.strokeColor,
-        });
-        var selectStyle = OpenLayers.Util.extend({}, OpenLayers.Feature.Vector.style["select"]);
-        $.extend(selectStyle, {
-            pointRadius: 3,
-            fillOpacity: props.select_fillOpacity,
-            fillColor: props.select_fillColor,
-            strokeColor: props.select_strokeColor,
-            strokeWidth: props.select_strokeWidth
-        });
-
-        var defaultStyle = OpenLayers.Util.extend({}, OpenLayers.Feature.Vector.style["default"]);
-        $.extend(defaultStyle, {
-            pointRadius: props.pointRadius,
-            fillOpacity: props.fillOpacity,
-            fillColor: props.fillColor,
-            fill: props.fill,
-            strokeColor: props.strokeColor,
-            strokeWidth: props.strokeWidth
-        });
-        map = new OpenLayers.StyleMap({
-            "temporary": temporaryStyle,
-            "default": defaultStyle,
-            "select": selectStyle
-        });
-        return map;
-    }
-
-    theMap.getFeatureName = function(feature) {
-        var p = feature.attributes;
-        for (var attr in p) {
-            var name = ("" + attr).toLowerCase();
-            if (!(name.includes("label"))) continue;
-            var value = this.getAttrValue(p, attr);
-            if (value) return value;
-        }
-        for (var attr in p) {
-            var name = ("" + attr).toLowerCase();
-            if (!(name.includes("name"))) continue;
-            var value = this.getAttrValue(p, attr);
-            if (value) return value;
-        }
-
-
-    }
-    theMap.getAttrValue = function(p, attr) {
-        value = "";
-        if ((typeof p[attr] == 'object') || (typeof p[attr] == 'Object')) {
-            var o = p[attr];
-            if (o) {
-                value = "" + o["value"];
+            if (isBaseLayer) {
+                layer.isBaseLayer = true;
+                layer.visibility = false;
+            } else {
+                layer.isBaseLayer = false;
+                layer.visibility = true;
             }
-        } else {
-            value = "" + p[attr];
-        }
-        return value;
-    }
 
-    theMap.searchFor = function(searchFor) {
-        var _this = this;
-        if (searchFor) searchFor = searchFor.trim();
-        if (searchFor == "") searchFor = null;
-        this.searchText = searchFor;
-        var bounds = null;
-        var toks = null;
-        var doHelp = false;
-        var download = $("#" + this.searchDiv + "_download").is(':checked');
-
-        var attrs = [];
-        if (searchFor) {
-            searchFor = searchFor.trim();
-            if (searchFor == "?") {
-                doHelp = true;
-            }
-            searchFor = searchFor.toLowerCase();
-            toks = [];
-            var doOr = true;
-            tmp = searchFor.split("|");
-            if (tmp.length == 1) {
-                tmp = searchFor.split("&");
-                doOr = tmp.length == 1;
-            }
-            for (var i = 0; i < tmp.length; i++) {
-                var not = false;
-                var equals = false;
-                var tok = tmp[i];
-                tmp2 = tok.split(":");
-                var field = "";
-                var value = tok;
-                if (tmp2.length > 1) {
-                    field = tmp2[0];
-                    value = tmp2[1];
-                }
-                if (value.startsWith("!")) {
-                    not = true;
-                    value = value.substring(1);
-                }
-                if (value.startsWith("=")) {
-                    value = value.substring(1);
-                    equals = true;
-                }
-                toks.push({
-                    field: field,
-                    value: value,
-                    not: not,
-                    equals: equals
+            //If we have this here we get this error: 
+            //http://lists.osgeo.org/pipermail/openlayers-users//2012-August/026025.html
+            //        layer.reproject = true;
+            this.addLayer(layer);
+        },
+        addMapLayer: function(name, url, layer, isBaseLayer, isDefault) {
+            var layer;
+            if (/\/tile\//.exec(url)) {
+                layer = new OpenLayers.Layer.XYZ(
+                    name, url, {
+                        sphericalMercator: mapDefaults.doSphericalMercator,
+                        numZoomLevels: mapDefaults.zoomLevels,
+                        wrapDateLine: mapDefaults.wrapDateline
+                    });
+            } else {
+                layer = new OpenLayers.Layer.WMS(name, url, {
+                    layers: layer,
+                    format: "image/png"
+                }, {
+                    wrapDateLine: mapDefaults.wrapDateline
                 });
             }
-        } else {
-            this.searchMsg.html("");
-        }
-
-        for (a in this.loadedLayers) {
-            var layer = this.loadedLayers[a];
-            if (layer.selectedFeature) {
-                this.handleNofeatureclick(layer);
+            if (isBaseLayer)
+                layer.isBaseLayer = true;
+            else
+                layer.isBaseLayer = false;
+            layer.visibility = false;
+            layer.reproject = true;
+            this.addLayer(layer);
+            if (isDefault) {
+                this.haveAddedDefaultLayer = true;
+                this.map.setLayerIndex(layer, 0);
+                this.map.setBaseLayer(layer);
             }
-            for (f in layer.features) {
-                var feature = layer.features[f];
-                var p = feature.attributes;
-                if (!searchFor) {
-                    feature.featureVisibleSearch = true;
-                    attrs.push(p);
-                    continue;
+        },
+
+        getVectorLayerStyleMap: function(layer, args) {
+            var props = {
+                pointRadius: this.pointRadius,
+                fillOpacity: this.fillOpacity,
+                fillColor: this.fillColor,
+                fill: this.fill,
+                strokeColor: this.strokeColor,
+                strokeWidth: this.strokeWidth,
+                select_fillOpacity: this.fillOpacity,
+                select_fillColor: "#666",
+                select_strokeColor: "#666",
+                select_strokeWidth: 1
+            };
+            if (args) RamaddaUtil.inherit(props, args);
+            var temporaryStyle = OpenLayers.Util.extend({}, OpenLayers.Feature.Vector.style["temporary"]);
+            $.extend(temporaryStyle, {
+                pointRadius: props.pointRadius,
+                fillOpacity: props.fillOpacity,
+                strokeWidth: props.strokeWidth,
+                strokeColor: props.strokeColor,
+            });
+            var selectStyle = OpenLayers.Util.extend({}, OpenLayers.Feature.Vector.style["select"]);
+            $.extend(selectStyle, {
+                pointRadius: 3,
+                fillOpacity: props.select_fillOpacity,
+                fillColor: props.select_fillColor,
+                strokeColor: props.select_strokeColor,
+                strokeWidth: props.select_strokeWidth
+            });
+
+            var defaultStyle = OpenLayers.Util.extend({}, OpenLayers.Feature.Vector.style["default"]);
+            $.extend(defaultStyle, {
+                pointRadius: props.pointRadius,
+                fillOpacity: props.fillOpacity,
+                fillColor: props.fillColor,
+                fill: props.fill,
+                strokeColor: props.strokeColor,
+                strokeWidth: props.strokeWidth
+            });
+            map = new OpenLayers.StyleMap({
+                "temporary": temporaryStyle,
+                "default": defaultStyle,
+                "select": selectStyle
+            });
+            return map;
+        },
+
+        getFeatureName: function(feature) {
+            var p = feature.attributes;
+            for (var attr in p) {
+                var name = ("" + attr).toLowerCase();
+                if (!(name.includes("label"))) continue;
+                var value = this.getAttrValue(p, attr);
+                if (value) return value;
+            }
+            for (var attr in p) {
+                var name = ("" + attr).toLowerCase();
+                if (!(name.includes("name"))) continue;
+                var value = this.getAttrValue(p, attr);
+                if (value) return value;
+            }
+        },
+        getAttrValue: function(p, attr) {
+            value = "";
+            if ((typeof p[attr] == 'object') || (typeof p[attr] == 'Object')) {
+                var o = p[attr];
+                if (o) {
+                    value = "" + o["value"];
                 }
-                if (doHelp) {
-                    var space = "&nbsp;&nbsp;&nbsp;"
-                    var help = "Enter, e.g.:<br>";
-                    help += space + "<i>&lt;term&gt;</i> (any match)<br>";
-                    help += space + "<i>=&lt;term&gt;</i> (exact match)<br>";
-                    help += space + "<i>!&lt;term&gt;</i> (not match)<br>";
-                    help += space + "<i>&lt;term 1&gt;|&lt;term 2&gt;</i> (match any)<br>";
-                    help += space + "<i>&lt;term 1&gt;&amp;&lt;term 2&gt;</i> (match all)<br>";
-                    help += "Or by field:<br>";
-                    for (var attr in p) {
-                        help += space + attr.toLowerCase() + ":" + "<i>&lt;term&gt;</i><br>";
+            } else {
+                value = "" + p[attr];
+            }
+            return value;
+        },
+
+        searchFor: function(searchFor) {
+            var _this = this;
+            if (searchFor) searchFor = searchFor.trim();
+            if (searchFor == "") searchFor = null;
+            this.searchText = searchFor;
+            var bounds = null;
+            var toks = null;
+            var doHelp = false;
+            var download = $("#" + this.searchDiv + "_download").is(':checked');
+
+            var attrs = [];
+            if (searchFor) {
+                searchFor = searchFor.trim();
+                if (searchFor == "?") {
+                    doHelp = true;
+                }
+                searchFor = searchFor.toLowerCase();
+                toks = [];
+                var doOr = true;
+                tmp = searchFor.split("|");
+                if (tmp.length == 1) {
+                    tmp = searchFor.split("&");
+                    doOr = tmp.length == 1;
+                }
+                for (var i = 0; i < tmp.length; i++) {
+                    var not = false;
+                    var equals = false;
+                    var tok = tmp[i];
+                    tmp2 = tok.split(":");
+                    var field = "";
+                    var value = tok;
+                    if (tmp2.length > 1) {
+                        field = tmp2[0];
+                        value = tmp2[1];
                     }
-                    this.showText(help);
-                    return
+                    if (value.startsWith("!")) {
+                        not = true;
+                        value = value.substring(1);
+                    }
+                    if (value.startsWith("=")) {
+                        value = value.substring(1);
+                        equals = true;
+                    }
+                    toks.push({
+                        field: field,
+                        value: value,
+                        not: not,
+                        equals: equals
+                    });
                 }
-                var matches = false;
-                var checkAll = false;
-                var allMatched = true;
-                var someMatched = false;
-                if (tok.not) checkAll = true;
-                for (v in toks) {
-                    var tok = toks[v];
-                    for (var attr in p) {
-                        if (tok.field != "" && tok.field != attr.toLowerCase()) {
-                            continue;
+            } else {
+                this.searchMsg.html("");
+            }
+
+            for (a in this.loadedLayers) {
+                var layer = this.loadedLayers[a];
+                if (layer.selectedFeature) {
+                    this.handleNofeatureclick(layer);
+                }
+                for (f in layer.features) {
+                    var feature = layer.features[f];
+                    var p = feature.attributes;
+                    if (!searchFor) {
+                        feature.featureVisibleSearch = true;
+                        attrs.push(p);
+                        continue;
+                    }
+                    if (doHelp) {
+                        var space = "&nbsp;&nbsp;&nbsp;"
+                        var help = "Enter, e.g.:<br>";
+                        help += space + "<i>&lt;term&gt;</i> (any match)<br>";
+                        help += space + "<i>=&lt;term&gt;</i> (exact match)<br>";
+                        help += space + "<i>!&lt;term&gt;</i> (not match)<br>";
+                        help += space + "<i>&lt;term 1&gt;|&lt;term 2&gt;</i> (match any)<br>";
+                        help += space + "<i>&lt;term 1&gt;&amp;&lt;term 2&gt;</i> (match all)<br>";
+                        help += "Or by field:<br>";
+                        for (var attr in p) {
+                            help += space + attr.toLowerCase() + ":" + "<i>&lt;term&gt;</i><br>";
                         }
-                        var value = this.getAttrValue(p, attr);
-                        value = value.toLowerCase().trim();
-                        if (tok.equals) {
-                            matches = (value == tok.value);
-                        } else {
-                            matches = value.includes(tok.value);
-                        }
-                        if (tok.not) {
-                            matches = !matches;
-                            if (!matches) {
-                                break;
+                        this.showText(help);
+                        return
+                    }
+                    var matches = false;
+                    var checkAll = false;
+                    var allMatched = true;
+                    var someMatched = false;
+                    if (tok.not) checkAll = true;
+                    for (v in toks) {
+                        var tok = toks[v];
+                        for (var attr in p) {
+                            if (tok.field != "" && tok.field != attr.toLowerCase()) {
+                                continue;
                             }
-                        } else {
-                            if (matches) break;
+                            var value = this.getAttrValue(p, attr);
+                            value = value.toLowerCase().trim();
+                            if (tok.equals) {
+                                matches = (value == tok.value);
+                            } else {
+                                matches = value.includes(tok.value);
+                            }
+                            if (tok.not) {
+                                matches = !matches;
+                                if (!matches) {
+                                    break;
+                                }
+                            } else {
+                                if (matches) break;
+                            }
                         }
+                        if (matches) someMatched = true;
+                        if (!matches) allMatched = false;
                     }
-                    if (matches) someMatched = true;
-                    if (!matches) allMatched = false;
+
+                    if ((doOr && someMatched) || (!doOr && allMatched)) {
+                        feature.featureVisibleSearch = true;
+                        if (this.getFeatureVisible(feature)) {
+                            attrs.push(p);
+                        }
+                    } else {
+                        feature.featureVisibleSearch = false;
+                    }
                 }
 
-                if ((doOr && someMatched) || (!doOr && allMatched)) {
-                    feature.featureVisibleSearch = true;
-                    if (this.getFeatureVisible(feature)) {
-                        attrs.push(p);
+                if (download) {
+                    var csv = "";
+                    for (var i in attrs) {
+                        var p = attrs[i];
+                        for (var attr in p) {
+                            if (csv != "") csv += ",";
+                            csv += attr.toLowerCase();
+                        }
+                        csv += "\n";
+                        break;
+                    }
+                    for (var i in attrs) {
+                        var p = attrs[i];
+                        var line = "";
+                        for (var attr in p) {
+                            var value = this.getAttrValue(p, attr);
+                            if (value.includes(",")) {
+                                value = "\"" + value + "\"";
+                            }
+                            if (line != "") line += ",";
+                            line += value;
+                        }
+                        line += "\n";
+                        csv += line;
+                    }
+                    Utils.makeDownloadFile("download.csv", csv);
+                }
+                this.setFeatureVisibility(layer);
+            }
+        },
+        checkFeatureVisible: function(feature, redraw) {
+            var layer = feature.layer;
+            var visible = this.getFeatureVisible(feature);
+            if (feature.originalStyle) {
+                feature.style = feature.originalStyle;
+            }
+            var style = feature.style;
+            if (!style) {
+                style = {};
+                var defaultStyle = layer.styleMap.styles["default"].defaultStyle;
+                $.extend(style, defaultStyle);
+                feature.style = style;
+            } else {}
+            if (!visible) {
+                style.display = 'none';
+            } else {
+                style.display = 'inline';
+            }
+            if (redraw) {
+                if (!feature.isSelected)
+                    feature.renderIntent = null;
+                layer.drawFeature(feature, feature.style || "default");
+            }
+            return visible;
+        },
+
+        getFeatureVisible: function(feature) {
+            var visible = true;
+            if (Utils.isDefined(feature.featureVisibleSearch) && !feature.featureVisibleSearch) {
+                visible = false;
+            }
+            if (Utils.isDefined(feature.featureVisibleDate) && !feature.featureVisibleDate) {
+                visible = false;
+            }
+            if (Utils.isDefined(feature.featureVisible) && !feature.featureVisible) {
+                visible = false;
+            }
+            return visible;
+        },
+        setFeatureVisibility: function(layer) {
+            var _this = this;
+            var didSearch = this.searchText || (this.startDate && this.endDate);
+            var bounds = null;
+            var html = "";
+            var didOn = false;
+            var didOff = false;
+            var cnt = 0;
+            var onFeature = null;
+            for (var i = 0; i < layer.features.length; i++) {
+                var feature = layer.features[i];
+                var visible = this.checkFeatureVisible(feature, false);
+                if (!visible) {
+                    this.clearDateFeature(feature);
+                    didOff = true;
+                } else {
+                    this.dateFeatureSelect(feature);
+                    didOn = true;
+                    cnt++;
+                    if (!onFeature) onFeature = feature;
+                    html += HtmlUtils.div(["class", "ramadda-map-feature", "feature-index", "" + i], this.getFeatureName(feature));
+                    var geometry = feature.geometry;
+                    if (geometry) {
+                        var fbounds = geometry.getBounds();
+                        if (bounds) bounds.extend(fbounds);
+                        else bounds = fbounds;
+                    }
+                }
+            }
+            if (cnt == 1) {
+                this.showText(this.getFeatureText(layer, onFeature));
+            } else {
+                if (didSearch || (didOn && didOff)) {
+                    var id = this.mapDivId + "_features";
+                    this.showText(HtmlUtils.div(["id", id, "class", "ramadda-map-features"], html));
+                    $("#" + id + " .ramadda-map-feature").click(function() {
+                        var index = parseInt($(this).attr("feature-index"));
+                        _this.handleFeatureclick(layer, layer.features[index], true);
+                    });
+                    $("#" + id + " .ramadda-map-feature").mouseover(function() {
+                        var index = parseInt($(this).attr("feature-index"));
+                        _this.handleFeatureover(layer.features[index], true);
+                    });
+                    $("#" + id + " .ramadda-map-feature").mouseout(function() {
+                        var index = parseInt($(this).attr("feature-index"));
+                        _this.handleFeatureout(layer.features[index], true);
+                    });
+
+                } else {
+                    this.clearDateFeature();
+                    this.showText("");
+                }
+            }
+            if (this.searchMsg) {
+                if (didSearch)
+                    this.searchMsg.html(cnt + " matched");
+                else
+                    this.searchMsg.html("");
+            }
+            layer.redraw();
+            if (bounds) {
+                this.getMap().zoomToExtent(bounds);
+                this.getMap().setCenter(bounds.getCenterLonLat());
+            } else {
+                this.centerOnMarkers(theMap.dfltBounds, this.centerOnMarkersForce);
+            }
+        },
+        getFeatureText: function(layer, feature) {
+            var style = feature.style || feature.originalStyle || layer.style;
+            var p = feature.attributes;
+            var out = feature.popupText;
+            if (!out) {
+                if (style && style["balloonStyle"]) {
+                    out = style["balloonStyle"];
+                    for (var attr in p) {
+                        //$[styleid/attr]
+                        var label = attr.replace("_", " ");
+                        var value = "";
+                        if (typeof p[attr] == 'object' || typeof p[attr] == 'Object') {
+                            var o = p[attr];
+                            value = "" + o["value"];
+                        } else {
+                            value = "" + p[attr];
+                        }
+                        out = out.replace("${" + style.id + "/" + attr + "}", value);
                     }
                 } else {
-                    feature.featureVisibleSearch = false;
-                }
-            }
-
-            if (download) {
-                var csv = "";
-                for (var i in attrs) {
-                    var p = attrs[i];
+                    out = "<table>";
                     for (var attr in p) {
-                        if (csv != "") csv += ",";
-                        csv += attr.toLowerCase();
-                    }
-                    csv += "\n";
-                    break;
-                }
-                for (var i in attrs) {
-                    var p = attrs[i];
-                    var line = "";
-                    for (var attr in p) {
-                        var value = this.getAttrValue(p, attr);
-                        if (value.includes(",")) {
-                            value = "\"" + value + "\"";
+                        var label = attr;
+                        lclabel = label.toLowerCase();
+                        if (lclabel == "objectid" ||
+                            lclabel == "feature_type" ||
+                            lclabel == "shapearea" ||
+                            lclabel == "styleurl" ||
+                            lclabel == "shapelen") continue;
+                        if (lclabel == "startdate") label = "Start Date";
+                        else if (lclabel == "enddate") label = "End Date";
+                        else if (lclabel == "aland") label = "Land Area";
+                        else if (lclabel == "awater") label = "Water Area";
+                        label = label.replace(/_/g, " ");
+                        label = Utils.camelCase(label);
+                        out += "<tr valign=top><td align=right><div style=\"margin-right:5px;margin-bottom:3px;\"><b>" + label + ":</b></div></td><td><div style=\"margin-right:5px;margin-bottom:3px;\">";
+                        var value;
+                        if (p[attr] != null && (typeof p[attr] == 'object' || typeof p[attr] == 'Object')) {
+                            var o = p[attr];
+                            value = "" + o["value"];
+                        } else {
+                            value = "" + p[attr];
                         }
-                        if (line != "") line += ",";
-                        line += value;
+                        if (value.startsWith("http:") || value.startsWith("https:")) {
+                            value = "<a href='" + value + "'>" + value + "</a>";
+                        }
+                        if (value == "null") continue;
+                        out += value;
+                        out += "</div></td></tr>";
                     }
-                    line += "\n";
-                    csv += line;
-                }
-                Utils.makeDownloadFile("download.csv", csv);
-            }
-            this.setFeatureVisibility(layer);
-        }
-    }
-
-    theMap.checkFeatureVisible = function(feature, redraw) {
-        var layer = feature.layer;
-        var visible = this.getFeatureVisible(feature);
-        if (feature.originalStyle) {
-            feature.style = feature.originalStyle;
-        }
-        var style = feature.style;
-        if (!style) {
-            style = {};
-            var defaultStyle = layer.styleMap.styles["default"].defaultStyle;
-            $.extend(style, defaultStyle);
-            feature.style = style;
-        } else {}
-        if (!visible) {
-            style.display = 'none';
-        } else {
-            style.display = 'inline';
-        }
-        if (redraw) {
-            if (!feature.isSelected)
-                feature.renderIntent = null;
-            layer.drawFeature(feature, feature.style || "default");
-        }
-        return visible;
-    }
-
-    theMap.getFeatureVisible = function(feature) {
-        var visible = true;
-        if (Utils.isDefined(feature.featureVisibleSearch) && !feature.featureVisibleSearch) {
-            visible = false;
-        }
-        if (Utils.isDefined(feature.featureVisibleDate) && !feature.featureVisibleDate) {
-            visible = false;
-        }
-        if (Utils.isDefined(feature.featureVisible) && !feature.featureVisible) {
-            visible = false;
-        }
-        return visible;
-    }
-
-    theMap.setFeatureVisibility = function(layer) {
-        var _this = this;
-        var didSearch = this.searchText || (this.startDate && this.endDate);
-        var bounds = null;
-        var html = "";
-        var didOn = false;
-        var didOff = false;
-        var cnt = 0;
-        var onFeature = null;
-        for (var i = 0; i < layer.features.length; i++) {
-            var feature = layer.features[i];
-            var visible = this.checkFeatureVisible(feature, false);
-            if (!visible) {
-                this.clearDateFeature(feature);
-                didOff = true;
-            } else {
-                this.dateFeatureSelect(feature);
-                didOn = true;
-                cnt++;
-                if (!onFeature) onFeature = feature;
-                html += HtmlUtils.div(["class", "ramadda-map-feature", "feature-index", "" + i], this.getFeatureName(feature));
-                var geometry = feature.geometry;
-                if (geometry) {
-                    var fbounds = geometry.getBounds();
-                    if (bounds) bounds.extend(fbounds);
-                    else bounds = fbounds;
+                    out += "</table>";
                 }
             }
-        }
-        if (cnt == 1) {
-            this.showText(this.getFeatureText(layer, onFeature));
-        } else {
-            if (didSearch || (didOn && didOff)) {
-                var id = this.mapDivId + "_features";
-                this.showText(HtmlUtils.div(["id", id, "class", "ramadda-map-features"], html));
-                $("#" + id + " .ramadda-map-feature").click(function() {
-                    var index = parseInt($(this).attr("feature-index"));
-                    _this.handleFeatureclick(layer, layer.features[index], true);
+            return out;
+        },
+        onFeatureSelect: function(layer) {
+            if (this.onSelect) {
+                func = window[this.onSelect];
+                func(this, layer);
+                return;
+            }
+            feature = layer.feature;
+            var out = this.getFeatureText(layer, feature);
+            if (this.currentPopup) {
+                this.map.removePopup(this.currentPopup);
+                this.currentPopup.destroy();
+            }
+            var popup = new OpenLayers.Popup.FramedCloud("popup", feature.geometry.getBounds().getCenterLonLat(),
+                null, out, null, true,
+                function() {
+                    theMap.onPopupClose()
                 });
-                $("#" + id + " .ramadda-map-feature").mouseover(function() {
-                    var index = parseInt($(this).attr("feature-index"));
-                    _this.handleFeatureover(layer.features[index], true);
-                });
-                $("#" + id + " .ramadda-map-feature").mouseout(function() {
-                    var index = parseInt($(this).attr("feature-index"));
-                    _this.handleFeatureout(layer.features[index], true);
-                });
+            feature.popup = popup;
+            popup.feature = feature;
 
-            } else {
-                this.clearDateFeature();
-                this.showText("");
-            }
+            //Use theMap instead of this because when the function is called the this object isn't the ramaddamap
+            theMap.map.addPopup(popup);
+            theMap.currentPopup = popup;
         }
-        if (this.searchMsg) {
-            if (didSearch)
-                this.searchMsg.html(cnt + " matched");
-            else
-                this.searchMsg.html("");
-        }
-        layer.redraw();
-        if (bounds) {
-            this.getMap().zoomToExtent(bounds);
-            this.getMap().setCenter(bounds.getCenterLonLat());
-        } else {
-            this.centerOnMarkers(theMap.dfltBounds, this.centerOnMarkersForce);
-        }
-
-    }
-
-
-    theMap.getFeatureText = function(layer, feature) {
-        var style = feature.style || feature.originalStyle || layer.style;
-        var p = feature.attributes;
-        var out = feature.popupText;
-        if (!out) {
-            if (style && style["balloonStyle"]) {
-                out = style["balloonStyle"];
-                for (var attr in p) {
-                    //$[styleid/attr]
-                    var label = attr.replace("_", " ");
-                    var value = "";
-                    if (typeof p[attr] == 'object' || typeof p[attr] == 'Object') {
-                        var o = p[attr];
-                        value = "" + o["value"];
-                    } else {
-                        value = "" + p[attr];
-                    }
-                    out = out.replace("${" + style.id + "/" + attr + "}", value);
-                }
-            } else {
-                out = "<table>";
-                for (var attr in p) {
-                    var label = attr;
-                    lclabel = label.toLowerCase();
-                    if (lclabel == "objectid" ||
-                        lclabel == "feature_type" ||
-                        lclabel == "shapearea" ||
-                        lclabel == "styleurl" ||
-                        lclabel == "shapelen") continue;
-                    if (lclabel == "startdate") label = "Start Date";
-                    else if (lclabel == "enddate") label = "End Date";
-                    else if (lclabel == "aland") label = "Land Area";
-                    else if (lclabel == "awater") label = "Water Area";
-                    label = label.replace(/_/g, " ");
-                    label = Utils.camelCase(label);
-                    out += "<tr valign=top><td align=right><div style=\"margin-right:5px;margin-bottom:3px;\"><b>" + label + ":</b></div></td><td><div style=\"margin-right:5px;margin-bottom:3px;\">";
-                    var value;
-                    if (p[attr] != null && (typeof p[attr] == 'object' || typeof p[attr] == 'Object')) {
-                        var o = p[attr];
-                        value = "" + o["value"];
-                    } else {
-                        value = "" + p[attr];
-                    }
-                    if (value.startsWith("http:") || value.startsWith("https:")) {
-                        value = "<a href='" + value + "'>" + value + "</a>";
-                    }
-                    if (value == "null") continue;
-                    out += value;
-                    out += "</div></td></tr>";
-                }
-                out += "</table>";
-            }
-        }
-        return out;
-    }
-
-    theMap.onFeatureSelect = function(layer) {
-        if (this.onSelect) {
-            func = window[this.onSelect];
-            func(this, layer);
-            return;
-        }
-        feature = layer.feature;
-        var out = this.getFeatureText(layer, feature);
-        if (this.currentPopup) {
-            this.map.removePopup(this.currentPopup);
-            this.currentPopup.destroy();
-        }
-        var popup = new OpenLayers.Popup.FramedCloud("popup", feature.geometry.getBounds().getCenterLonLat(),
-            null, out, null, true,
-            function() {
-                theMap.onPopupClose()
-            });
-        feature.popup = popup;
-        popup.feature = feature;
-
-        //Use theMap instead of this because when the function is called the this object isn't the ramaddamap
-        theMap.map.addPopup(popup);
-        theMap.currentPopup = popup;
-    }
+    });
 
     theMap.onFeatureUnselect = function(layer) {
         this.onPopupClose();
@@ -1317,6 +1279,17 @@ function initMapFunctions(theMap) {
         return layer;
     }
 
+    theMap.createXYZLayer = function(name, url, attribution) {
+        var options = {
+            sphericalMercator: mapDefaults.doSphericalMercator,
+            numZoomLevels: mapDefaults.zoomLevels,
+            wrapDateLine: mapDefaults.wrapDateline
+        };
+        if (attribution)
+            options.attribution = attribution;
+        return new OpenLayers.Layer.XYZ(name, url, options);
+    }
+
     theMap.addBaseLayers = function() {
         if (!this.mapLayers) {
             this.mapLayers = [
@@ -1356,35 +1329,7 @@ function initMapFunctions(theMap) {
                 continue;
             }
             var newLayer = null;
-            if (mapLayer == map_google_hybrid) {
-                this.hybridLayer = newLayer = new OpenLayers.Layer.Google("Google Hybrid", {
-                    'type': google.maps.MapTypeId.HYBRID,
-                    numZoomLevels: zoomLevelsDefault,
-                    sphericalMercator: sphericalMercatorDefault,
-                    wrapDateLine: wrapDatelineDefault
-                });
-            } else if (mapLayer == map_google_streets) {
-                newLayer = new OpenLayers.Layer.Google("Google Streets", {
-                    numZoomLevels: zoomLevelsDefault,
-                    sphericalMercator: sphericalMercatorDefault,
-                    wrapDateLine: wrapDatelineDefault
-                });
-            } else if (mapLayer == map_google_terrain) {
-                newLayer = new OpenLayers.Layer.Google("Google Terrain", {
-                    numZoomLevels: zoomLevelsDefault,
-                    'type': google.maps.MapTypeId.TERRAIN,
-                    sphericalMercator: sphericalMercatorDefault,
-                    wrapDateLine: wrapDatelineDefault
-                });
-            } else if (mapLayer == map_google_satellite) {
-                newLayer = new OpenLayers.Layer.Google(
-                    "Google Satellite", {
-                        'type': google.maps.MapTypeId.SATELLITE,
-                        numZoomLevels: zoomLevelsDefault,
-                        sphericalMercator: sphericalMercatorDefault,
-                        wrapDateLine: wrapDatelineDefault
-                    });
-            } else if (mapLayer == map_osm) {
+            if (mapLayer == map_osm) {
                 urls = [
                     '//a.tile.openstreetmap.org/${z}/${x}/${y}.png',
                     '//b.tile.openstreetmap.org/${z}/${x}/${y}.png',
@@ -1394,57 +1339,12 @@ function initMapFunctions(theMap) {
             } else if (mapLayer == map_osm_toner) {
                 urls = ["http://a.tile.stamen.com/toner/${z}/${x}/${y}.png"];
                 newLayer = new OpenLayers.Layer.OSM("OSM-Toner", urls);
-            } else if (mapLayer == map_ms_shaded) {
-                newLayer = new OpenLayers.Layer.VirtualEarth(
-                    "Virtual Earth - Shaded", {
-                        'type': VEMapStyle.Shaded,
-                        sphericalMercator: sphericalMercatorDefault,
-                        wrapDateLine: wrapDatelineDefault,
-                        numZoomLevels: zoomLevelsDefault
-                    });
-            } else if (mapLayer == map_ms_hybrid) {
-                newLayer = new OpenLayers.Layer.VirtualEarth(
-                    "Virtual Earth - Hybrid", {
-                        'type': VEMapStyle.Hybrid,
-                        sphericalMercator: sphericalMercatorDefault,
-                        numZoomLevels: zoomLevelsDefault,
-                        wrapDateLine: wrapDatelineDefault
-                    });
-            } else if (mapLayer == map_ms_aerial) {
-                newLayer = new OpenLayers.Layer.VirtualEarth(
-                    "Virtual Earth - Aerial", {
-                        'type': VEMapStyle.Aerial,
-                        sphericalMercator: sphericalMercatorDefault,
-                        numZoomLevels: zoomLevelsDefault,
-                        wrapDateLine: wrapDatelineDefault
-                    });
-                /* needs OpenLayers 2.12
-                } else if (mapLayer == map_ol_openstreetmap) {
-                newLayer  =  new OpenLayers.Layer.OSM("OpenStreetMap", null, {
-                          transitionEffect: "resize",
-                          attribution: "&copy; <a href='http://www.openstreetmap.org/copyright'>OpenStreetMap</a> contributors",
-                          sphericalMercator : sphericalMercatorDefault,
-                          wrapDateLine : wrapDatelineDefault
-                      });
-                */
             } else if (mapLayer == map_opentopo) {
-                var layerURL = "//a.tile.opentopomap.org/${z}/${x}/${y}.png}";
-                newLayer = new OpenLayers.Layer.XYZ(
-                    "OpenTopo", layerURL, {
-                        sphericalMercator: sphericalMercatorDefault,
-                        numZoomLevels: zoomLevelsDefault,
-                        wrapDateLine: wrapDatelineDefault
-                    });
-
+                newLayer = this.createXYZLayer("OpenTopo", "//a.tile.opentopomap.org/${z}/${x}/${y}.png}");
             } else if (mapLayer == map_esri_worldimagery) {
                 //Not working
-                var layerURL = "https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}";
-                newLayer = new OpenLayers.Layer.XYZ(
-                    "ESRI World Imagery", layerURL, {
-                        sphericalMercator: sphericalMercatorDefault,
-                        numZoomLevels: zoomLevelsDefault,
-                        wrapDateLine: wrapDatelineDefault
-                    });
+                newLayer = this.createXYZLayer("ESRI World Imagery",
+                    "https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}");
             } else if (mapLayer == map_white) {
                 this.addImageLayer(map_white, "White Background", "", ramaddaBaseUrl + "/images/white.png", false, 90, -180, -90, 180, 50, 50, {
                     isBaseLayer: true
@@ -1466,67 +1366,58 @@ function initMapFunctions(theMap) {
                 });
                 continue;
             } else if (mapLayer == map_usgs_topo) {
-                newLayer = new OpenLayers.Layer.XYZ(
-                    "USGS Topo",
-                    "https://basemap.nationalmap.gov/ArcGIS/rest/services/USGSTopo/MapServer/tile/${z}/${y}/${x}", {
-                        sphericalMercator: true,
-                        isBaseLayer: true,
-                        attribution: 'USGS - The National Map'
-                    }
-                );
+                newLayer = this.createXYZLayer("USGS Topo",
+                    "https://basemap.nationalmap.gov/ArcGIS/rest/services/USGSTopo/MapServer/tile/${z}/${y}/${x}",
+                    'USGS - The National Map');
             } else if (mapLayer == map_usgs_imagery) {
-                newLayer = new OpenLayers.Layer.XYZ(
-                    "USGS Imagery",
-                    "https://basemap.nationalmap.gov/ArcGIS/rest/services/USGSImageryOnly/MapServer/tile/${z}/${y}/${x}", {
-                        sphericalMercator: true,
-                        isBaseLayer: true,
-                        attribution: 'USGS - The National Map'
-                    }
-                );
+                newLayer = this.createXYZLayer("USGS Imagery",
+                    "https://basemap.nationalmap.gov/ArcGIS/rest/services/USGSImageryOnly/MapServer/tile/${z}/${y}/${x}",
+                    "USGS - The National Map");
             } else if (mapLayer == map_usgs_relief) {
-                newLayer = new OpenLayers.Layer.XYZ(
-                    "USGS Shaded Relief",
-                    "https://basemap.nationalmap.gov/ArcGIS/rest/services/USGSShadedReliefOnly/MapServer/tile/${z}/${y}/${x}", {
-                        sphericalMercator: true,
-                        isBaseLayer: true,
-                        attribution: 'USGS - The National Map'
-                    }
-                );
-
-
+                newLayer = this.createXYZLayer("USGS Shaded Relief",
+                    "https://basemap.nationalmap.gov/ArcGIS/rest/services/USGSShadedReliefOnly/MapServer/tile/${z}/${y}/${x}",
+                    'USGS - The National Map');
             } else if (mapLayer == map_esri_topo) {
-                var layerURL = "//server.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer/tile/${z}/${y}/${x}";
-                newLayer = new OpenLayers.Layer.XYZ(
-                    "ESRI Topo", layerURL, {
-                        sphericalMercator: sphericalMercatorDefault,
-                        numZoomLevels: zoomLevelsDefault,
-                        wrapDateLine: wrapDatelineDefault,
-                    });
+                newLayer = this.createXYZLayer("ESRI Topo",
+                    "https://server.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer/tile/${z}/${y}/${x}");
             } else if (mapLayer == map_usfs_ownership) {
-                var layerURL = "https://apps.fs.usda.gov/arcx/rest/services/wo_nfs_gstc/GSTC_TravelAccessBasemap_01/MapServer/tile/${z}/${y}/${x}"
-                newLayer = new OpenLayers.Layer.XYZ(
-                    "USFS Ownership", layerURL, {
-                        sphericalMercator: sphericalMercatorDefault,
-                        numZoomLevels: zoomLevelsDefault,
-                        wrapDateLine: wrapDatelineDefault,
-                    });
+                newLayer = this.createXYZLayer("USFS Ownership",
+                    "https://apps.fs.usda.gov/arcx/rest/services/wo_nfs_gstc/GSTC_TravelAccessBasemap_01/MapServer/tile/${z}/${y}/${x}");
             } else if (mapLayer == map_esri_street) {
-                var layerURL = "//server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/${z}/${y}/${x}";
-                newLayer = new OpenLayers.Layer.XYZ(
-                    "ESRI Streets", layerURL, {
-                        sphericalMercator: sphericalMercatorDefault,
-                        numZoomLevels: zoomLevelsDefault,
-                        wrapDateLine: wrapDatelineDefault
-                    });
+                newLayer = this.createXYZLayer("ESRI Streets",
+                    "https://server.arcgisonline.com/ArcGIS/rest/services/World_Street_Map/MapServer/tile/${z}/${y}/${x}");
             } else if (/\/tile\//.exec(mapLayer)) {
                 var layerURL = mapLayer;
                 newLayer = new OpenLayers.Layer.XYZ(
                     "ESRI China Map", layerURL, {
-                        sphericalMercator: sphericalMercatorDefault,
-                        numZoomLevels: zoomLevelsDefault,
-                        wrapDateLine: wrapDatelineDefault
+                        sphericalMercator: mapDefaults.doSphericalMercator,
+                        numZoomLevels: mapDefaults.zoomLevels,
+                        wrapDateLine: mapDefaults.wrapDateline
                     });
-
+            } else if (mapLayer == map_ms_shaded) {
+                newLayer = new OpenLayers.Layer.VirtualEarth(
+                    "Virtual Earth - Shaded", {
+                        'type': VEMapStyle.Shaded,
+                        sphericalMercator: mapDefaults.doSphericalMercator,
+                        wrapDateLine: mapDefaults.wrapDateline,
+                        numZoomLevels: mapDefaults.zoomLevels
+                    });
+            } else if (mapLayer == map_ms_hybrid) {
+                newLayer = new OpenLayers.Layer.VirtualEarth(
+                    "Virtual Earth - Hybrid", {
+                        'type': VEMapStyle.Hybrid,
+                        sphericalMercator: mapDefaults.doSphericalMercator,
+                        numZoomLevels: mapDefaults.zoomLevels,
+                        wrapDateLine: mapDefaults.wrapDateline
+                    });
+            } else if (mapLayer == map_ms_aerial) {
+                newLayer = new OpenLayers.Layer.VirtualEarth(
+                    "Virtual Earth - Aerial", {
+                        'type': VEMapStyle.Aerial,
+                        sphericalMercator: mapDefaults.doSphericalMercator,
+                        numZoomLevels: mapDefaults.zoomLevels,
+                        wrapDateLine: mapDefaults.wrapDateline
+                    });
             } else {
                 var match = /wms:(.*),(.*),(.*)/.exec(mapLayer);
                 if (!match) {
@@ -1634,9 +1525,6 @@ function initMapFunctions(theMap) {
             }
             this.lines.redraw();
         }
-
-
-
     }
 
     theMap.setLatLonReadout = function(llr) {
@@ -1651,11 +1539,7 @@ function initMapFunctions(theMap) {
         if (this.inited)
             return;
         this.inited = true;
-        var theMap = this;
-
-
-        //this.vectors = new OpenLayers.Layer.Vector("Drawing");
-        //this.addLayer(this.vectors);
+        let theMap = this;
 
         if (this.enableDragPan) {
             this.map.addControl(new OpenLayers.Control.Navigation({
@@ -1987,7 +1871,7 @@ function initMapFunctions(theMap) {
         if (north == "" || west == "" || south == "" || east == "")
             return;
         var bounds = createBounds(west, Math.max(south,
-            -maxLatValue), east, Math.min(north, maxLatValue));
+            -mapDefaults.maxLatValue), east, Math.min(north, mapDefaults.maxLatValue));
         if (!this.selectorBox) {
             var args = {
                 "color": "red",
@@ -2117,7 +2001,7 @@ function initMapFunctions(theMap) {
         var newRight = bounds.right;
         var extentBounds = this.map.restrictedExtent;
         if (!extentBounds) {
-            extentBounds = maxExtent;
+            extentBounds = this.maxExtent;
         }
         /*
          * if (extentBounds.left < 0) { // map is -180 to 180 if (bounds.right >
@@ -2706,7 +2590,7 @@ function initMapFunctions(theMap) {
     theMap.addBox = function(box) {
         if (!this.boxes) {
             this.boxes = new OpenLayers.Layer.Boxes("Boxes", {
-                wrapDateLine: wrapDatelineDefault,
+                wrapDateLine: mapDefaults.wrapDateline,
             });
             if (!this.getMap()) {
                 this.initialBoxes = this.boxes;
@@ -2736,8 +2620,8 @@ function initMapFunctions(theMap) {
             args[i] = params[i];
         }
 
-        var bounds = createBounds(west, Math.max(south, -maxLatValue),
-            east, Math.min(north, maxLatValue));
+        var bounds = createBounds(west, Math.max(south, -mapDefaults.maxLatValue),
+            east, Math.min(north, mapDefaults.maxLatValue));
         var projBounds = this.transformLLBounds(bounds);
         box = new OpenLayers.Marker.Box(projBounds);
         box.sticky = args.sticky;
