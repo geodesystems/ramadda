@@ -147,7 +147,6 @@
 <![CDATA[
 +section  title="{{name}}"
 {{description wikify="true"}}
-----
 +row
 +col-md-8
 {{group showMenu="true" layoutType="table" layoutColumns="1" showTitle="false"}}
@@ -156,7 +155,7 @@
 +col-md-4
 <center>
 </center>
-{{display type="map"}}
+{{display type="map" showTitle="false" showMenu="false"}}
 -col
 -row
 ]]>

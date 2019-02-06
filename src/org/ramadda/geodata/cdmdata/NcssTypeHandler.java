@@ -24,6 +24,7 @@ import org.ramadda.data.services.PointTypeHandler;
 import org.ramadda.data.services.RecordTypeHandler;
 import org.ramadda.repository.*;
 import org.ramadda.repository.type.*;
+import org.ramadda.util.HtmlUtils;
 import org.ramadda.util.Utils;
 import org.ramadda.util.text.CsvUtil;
 
@@ -231,6 +232,21 @@ public class NcssTypeHandler extends PointTypeHandler {
         double[]     loc  = new double[] { 0, 0 };
         url = parseUrl(url, loc, vars);
         entry.getResource().setPath(url);
+
+        if ( !Utils.stringDefined(entry.getDescription())) {
+            StringBuilder sb = new StringBuilder();
+            for(String var: vars) {
+                if(sb.length()==0)
+                    sb.append("Fields: ");
+                else 
+                    sb.append(", ");
+                String label = Utils.makeLabel(var);
+                sb.append(HtmlUtils.span(label,HtmlUtils.attr("title","id:" +var)));
+            }
+            sb.append("\n----\n");
+            entry.setDescription(sb.toString());
+        }
+
 
         StringBuilder properties = new StringBuilder("skiplines=1\n");
         properties.append(
