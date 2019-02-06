@@ -5,7 +5,7 @@
       <property file="${basedir}/build.properties"/>
     </target>
 
-    <target name="plugin" depends="init,docs">
+    <target name="plugin" depends="init">
 
       <property name="plugin" value="point"/>
       <property name="plugin_dir" value="org/ramadda/geodata/${plugin}"/>
