@@ -1012,9 +1012,12 @@ public class Entry implements Cloneable {
      * @return true if this entry has a location defined
      */
     public boolean hasLocationDefined() {
-        if ((south != NONGEO) && (east != NONGEO) && Utils.isReal(south) && Utils.isReal(east) && !hasAreaDefined()) {
-            if(Utils.between(east, -180,180) && Utils.between(south,-90,90)) 
+        if ((south != NONGEO) && (east != NONGEO) && Utils.isReal(south)
+                && Utils.isReal(east) && !hasAreaDefined()) {
+            if (Utils.between(east, -180, 180)
+                    && Utils.between(south, -90, 90)) {
                 return true;
+            }
         }
 
         return false;
@@ -1073,11 +1076,17 @@ public class Entry implements Cloneable {
      * @return true if this entry has an area defined
      */
     public boolean hasAreaDefined() {
-        if(!Utils.isReal(south) || !Utils.isReal(east)  || !Utils.isReal(north)  || !Utils.isReal(west)) return false;
-        if(!(Utils.between(east, -180,180) && Utils.between(south,-90,90) &&
-             Utils.between(west, -180,180) && Utils.between(north,-90,90)))
+        if ( !Utils.isReal(south) || !Utils.isReal(east)
+                || !Utils.isReal(north) || !Utils.isReal(west)) {
             return false;
-             
+        }
+        if ( !(Utils.between(east, -180, 180)
+                && Utils.between(south, -90, 90)
+                && Utils.between(west, -180, 180)
+                && Utils.between(north, -90, 90))) {
+            return false;
+        }
+
         if ((south != NONGEO) && (east != NONGEO) && (north != NONGEO)
                 && (west != NONGEO)) {
             if ((south == north) && (east == west)) {
@@ -1180,6 +1189,17 @@ public class Entry implements Cloneable {
      * @param lat  the latitude
      * @param lon  the longitude
      * @param alt  the altitude
+     */
+    public void setLocation(double lat, double lon) {
+        setLocation(lat, lon, Double.NaN);
+    }
+
+    /**
+     * _more_
+     *
+     * @param lat _more_
+     * @param lon _more_
+     * @param alt _more_
      */
     public void setLocation(double lat, double lon, double alt) {
         setNorth(lat);

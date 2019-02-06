@@ -165,7 +165,31 @@ public class GridPointOutputHandler extends OutputHandler implements CdmConstant
 
 
     /** _more_ */
-    private Properties aliases;
+    private static Properties gridProperties;
+
+    /**
+     * _more_
+     *
+     * @return _more_
+     */
+    public static Properties getProperties() {
+        if (gridProperties == null) {
+            try {
+                InputStream inputStream =
+                    IOUtil.getInputStream(
+                        "/org/ramadda/geodata/cdmdata/resources/netcdf.properties",
+                        GridPointOutputHandler.class);
+                Properties tmp = new Properties();
+                tmp.load(inputStream);
+                IOUtil.close(inputStream);
+                gridProperties = tmp;
+            } catch (Exception exc) {
+                throw new IllegalArgumentException(exc);
+            }
+        }
+
+        return gridProperties;
+    }
 
     /**
      * _more_
@@ -174,28 +198,89 @@ public class GridPointOutputHandler extends OutputHandler implements CdmConstant
      *
      * @return _more_
      */
-    public String getAlias(String name) {
-        if (aliases == null) {
-            try {
-                InputStream inputStream =
-                    IOUtil.getInputStream(
-                        "/org/ramadda/geodata/cdmdata/resources/aliases.properties",
-                        getClass());
-                Properties tmp = new Properties();
-                tmp.load(inputStream);
-                IOUtil.close(inputStream);
-                aliases = tmp;
-            } catch (Exception exc) {
-                throw new IllegalArgumentException(exc);
-            }
-
-        }
-        String n = (String) aliases.get(name);
+    public static String getAlias(String name) {
+        String n = (String) getProperties().get(name + ".alias");
         if (n != null) {
             return n;
         }
 
         return name;
+    }
+
+    /**
+     * _more_
+     *
+     * @param name _more_
+     * @param dflt _more_
+     *
+     * @return _more_
+     */
+    public static String getLabel(String name, String dflt) {
+        if (name == null) {
+            return dflt;
+        }
+        String n = (String) getProperties().get(name + ".label");
+        if (n != null) {
+            return n;
+        }
+
+        return dflt;
+    }
+
+    /**
+     * _more_
+     *
+     * @param name _more_
+     * @param dflt _more_
+     *
+     * @return _more_
+     */
+    public static String getUnit(String name, String dflt) {
+        if (name == null) {
+            return dflt;
+        }
+        String n = (String) getProperties().get(name + ".unit");
+        if (n != null) {
+            return n;
+        }
+
+        return dflt;
+    }
+
+
+    /**
+     * _more_
+     *
+     * @param name _more_
+     * @param dflt _more_
+     *
+     * @return _more_
+     */
+    public static String getProperty(String name, String dflt) {
+        String n = (String) getProperties().get(name);
+        if (n != null) {
+            return n;
+        }
+
+        return dflt;
+    }
+
+    /**
+     * _more_
+     *
+     * @param name _more_
+     * @param what _more_
+     * @param dflt _more_
+     *
+     * @return _more_
+     */
+    public static String getProperty(String name, String what, String dflt) {
+        String n = (String) getProperties().get(name + "." + what);
+        if (n != null) {
+            return n;
+        }
+
+        return dflt;
     }
 
 

@@ -1,0 +1,39 @@
+<html>
+<title>CDM Data</title>
+<category:Integration>
+<body>
+<div class="ramadda-section">
+<h2>CDM Data</h2>
+
+<h3>NetCDF Point Subset Type</h3>
+RAMADDA provides a NetCDF Point Subset entry type that takes as input the
+URL for the Thredds Data Server (TDS) Netcdf Point Subset Service. To use this 
+got to the TDS subset form, e.g.
+<a href="http://thredds.ucar.edu/thredds/ncss/grib/NCEP/GFS/Global_onedeg/GFS_Global_onedeg_20190206_0600.grib2/pointDataset.html">http://thredds.ucar.edu/thredds/ncss/grib/NCEP/GFS/Global_onedeg/GFS_Global_onedeg_20190206_0600.grib2/pointDataset.html</a>,
+enter  latitude/longitude values and specify csv for the format. Ignore the time range:
+<p><center><img src=images/ncss1.png></center><p>
+Select the fields you are interested in. 
+Note: the subset service will only work with fields that are on the same vertical coordinate system. If you choose fields that have multiple vertical levels then specify the level you'd like to use.
+<p><center><img src=images/ncss2.png></center><p>
+At the bottom of the page copy the generated URL:
+<p><center><img src=images/ncss3.png></center><p>
+Now, back in RAMADDA create a NetCDF Point Subset Type entry type. All you need to do is paste the URL
+into the URL field:
+<p><center><img src=images/ncss4.png></center><p>
+Some of the field values will be automatically converted to different units. For example, Kelvin is
+converted to Celisus, Pascals are converted to Hectopascals. 
+<p>
+The display shows the point subset at the specified lat/lon. The map is clickable, new data for the given
+lat/lon will be displayed.
+<p><center><img src=images/ncss5.png width=80%></center><p>
+
+
+
+
+
+
+
+
+</body>
+</html>
+

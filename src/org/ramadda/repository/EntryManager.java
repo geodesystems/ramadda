@@ -2566,7 +2566,8 @@ public class EntryManager extends RepositoryManager {
 
 
                 if (name.indexOf("${") >= 0) {}
-                if (name.trim().length() == 0) {
+                if ((name.trim().length() == 0)
+                        && typeHandler.okToSetNewNameDefault()) {
                     name = IOUtil.getFileTail(origName);
                     if (request.get(ARG_MAKENAME, false)) {
                         name = name.replaceAll("_", " ");
@@ -3947,7 +3948,9 @@ public class EntryManager extends RepositoryManager {
                  && sessionTypes.contains(typeHandler.getType()));
             String category      = typeHandler.getCategory();
             String superCategory = typeHandler.getSuperCategory();
-            if(superCategory.equals("Basic")) superCategory ="";
+            if (superCategory.equals("Basic")) {
+                superCategory = "";
+            }
             cats = superCatMap.get(superCategory);
             if (cats == null) {
                 cats = new CategoryBuffer();
@@ -3998,7 +4001,7 @@ public class EntryManager extends RepositoryManager {
 
         getPageHandler().entrySectionOpen(request, group, sb,
                                           "Choose entry type");
-        sb.append(HtmlUtils.open("div"," class='ramadda-links' "));
+        sb.append(HtmlUtils.open("div", " class='ramadda-links' "));
         sb.append(HtmlUtils.insetDiv(inner.toString(), 10, 20, 0, 0));
         sb.append(HtmlUtils.close("div"));
         getPageHandler().entrySectionClose(request, group, sb);

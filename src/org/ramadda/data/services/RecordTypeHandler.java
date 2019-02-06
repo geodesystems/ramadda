@@ -363,8 +363,9 @@ public abstract class RecordTypeHandler extends BlobTypeHandler implements Recor
      */
     public RecordFile doMakeRecordFile(Request request, Entry entry)
             throws Exception {
-        Hashtable  properties = getRecordProperties(entry);
-        RecordFile recordFile = doMakeRecordFile(entry, properties, request.getDefinedProperties());
+        Hashtable properties = getRecordProperties(entry);
+        RecordFile recordFile = doMakeRecordFile(entry, properties,
+                                    request.getDefinedProperties());
         if (recordFile == null) {
             return null;
         }
@@ -378,25 +379,54 @@ public abstract class RecordTypeHandler extends BlobTypeHandler implements Recor
      * _more_
      *
      * @param entry _more_
+     * @param requestProperties _more_
      *
      * @return _more_
      *
      * @throws Exception _more_
      */
-    private String getPathForRecordEntry(Entry entry, Hashtable requestProperties) throws Exception {
+    public String getPathForRecordEntry(Entry entry,
+                                        Hashtable requestProperties)
+            throws Exception {
         String path = getPathForEntry(null, entry);
-        if(path.indexOf("${latitude}")>=0) {
-            if(Utils.stringDefined((String)requestProperties.get("latitude"))) {
-                path = path.replace("${latitude}", (String) requestProperties.get("latitude"));
-                path = path.replace("${longitude}", (String) requestProperties.get("longitude"));
-            } else  if(entry.hasLocationDefined() || entry.hasAreaDefined())  {
-                path = path.replace("${latitude}", entry.getLatitude()+"");
-                path = path.replace("${longitude}", entry.getLongitude()+"");
-            } else {
-                path = path.replace("${latitude}", "40");
-                path = path.replace("${longitude}", "-105.2");
+
+        return getPathForRecordEntry(entry, path, requestProperties);
+    }
+
+
+    /**
+     * _more_
+     *
+     * @param entry _more_
+     * @param path _more_
+     * @param requestProperties _more_
+     *
+     * @return _more_
+     *
+     * @throws Exception _more_
+     */
+    public String getPathForRecordEntry(Entry entry, String path,
+                                        Hashtable requestProperties)
+            throws Exception {
+        if (path.indexOf("${latitude}") >= 0) {
+            if (Utils.stringDefined(
+                    (String) requestProperties.get("latitude"))) {
+                path = path.replace(
+                    "${latitude}",
+                    (String) requestProperties.get("latitude"));
+                path = path.replace(
+                    "${longitude}",
+                    (String) requestProperties.get("longitude"));
             }
+            if (entry.hasLocationDefined() || entry.hasAreaDefined()) {
+                path = path.replace("${latitude}", entry.getLatitude() + "");
+                path = path.replace("${longitude}",
+                                    entry.getLongitude() + "");
+            }
+            path = path.replace("${latitude}", "40");
+            path = path.replace("${longitude}", "-105.2");
         }
+
         return path;
     }
 
@@ -407,25 +437,29 @@ public abstract class RecordTypeHandler extends BlobTypeHandler implements Recor
      *
      * @param entry _more_
      * @param properties _more_
+     * @param requestProperties _more_
      *
      * @return _more_
      *
      * @throws Exception _more_
      */
-    private RecordFile doMakeRecordFile(Entry entry, Hashtable properties, Hashtable requestProperties)
+    public RecordFile doMakeRecordFile(Entry entry, Hashtable properties,
+                                       Hashtable requestProperties)
             throws Exception {
         String recordFileClass = getTypeProperty("record.file.class",
                                      (String) null);
 
 
         if (recordFileClass != null) {
-            return doMakeRecordFile(entry, recordFileClass, properties, requestProperties);
+            return doMakeRecordFile(entry, recordFileClass, properties,
+                                    requestProperties);
         }
 
 
-        
+
         return (RecordFile) getRecordFileFactory().doMakeRecordFile(
-                                                                    getPathForRecordEntry(entry, requestProperties), properties, requestProperties);
+            getPathForRecordEntry(entry, requestProperties), properties,
+            requestProperties);
     }
 
 
@@ -435,13 +469,15 @@ public abstract class RecordTypeHandler extends BlobTypeHandler implements Recor
      * @param entry _more_
      * @param className _more_
      * @param properties _more_
+     * @param requestProperties _more_
      *
      * @return _more_
      *
      * @throws Exception _more_
      */
     private RecordFile doMakeRecordFile(Entry entry, String className,
-                                        Hashtable properties,Hashtable requestProperties)
+                                        Hashtable properties,
+                                        Hashtable requestProperties)
             throws Exception {
         String path = getPathForRecordEntry(entry, requestProperties);
         if (path == null) {

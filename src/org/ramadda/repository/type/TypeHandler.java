@@ -459,6 +459,7 @@ public class TypeHandler extends RepositoryManager {
      *
      */
     public void initTypeHandler(Element node) {
+
         try {
             displayTemplatePath = Utils.getAttributeOrTag(node,
                     "displaytemplate", (String) null);
@@ -532,7 +533,9 @@ public class TypeHandler extends RepositoryManager {
                 //            System.err.println("DOT TYPE: " + getType());
             }
 
-            forUser = Utils.getAttributeOrTag(node, ATTR_FORUSER, XmlUtil.getAttributeFromTree(node, ATTR_FORUSER, forUser));
+            forUser = Utils.getAttributeOrTag(node, ATTR_FORUSER,
+                    XmlUtil.getAttributeFromTree(node, ATTR_FORUSER,
+                        forUser));
 
             setProperties(node);
             if ( !Utils.stringDefined(description)) {
@@ -558,6 +561,7 @@ public class TypeHandler extends RepositoryManager {
         } catch (Exception exc) {
             throw new RuntimeException(exc);
         }
+
 
     }
 
@@ -3377,6 +3381,15 @@ public class TypeHandler extends RepositoryManager {
     /**
      * _more_
      *
+     * @return _more_
+     */
+    public boolean okToSetNewNameDefault() {
+        return true;
+    }
+
+    /**
+     * _more_
+     *
      *
      * @param request _more_
      * @param entry _more_
@@ -4924,6 +4937,7 @@ public class TypeHandler extends RepositoryManager {
      *
      * @param request The request
      * @param sb _more_
+     * @param type _more_
      */
     public void addTextSearch(Request request, Appendable sb, String type) {
         try {
@@ -4954,10 +4968,17 @@ public class TypeHandler extends RepositoryManager {
 
             sb.append(formEntry(request, msgLabel("xxx Text"),
                                 HtmlUtils.input(ARG_TEXT, name,
-                                                HtmlUtils.id("searchinput")  
-                                                + HtmlUtils.SIZE_50 + " autocomplete='off' autofocus ") + " " + extra));
+                                    HtmlUtils.id("searchinput")
+                                    + HtmlUtils.SIZE_50
+                                    + " autocomplete='off' autofocus ") + " "
+                                        + extra));
             sb.append("<div id=searchpopup class=ramadda-popup></div>");
-            sb.append(HtmlUtils.script("ramaddaSearchSuggestInit('searchinput'," + (type==null?"null":"'" +type +"'")+");"));
+            sb.append(
+                HtmlUtils.script(
+                    "ramaddaSearchSuggestInit('searchinput',"
+                    + ((type == null)
+                       ? "null"
+                       : "'" + type + "'") + ");"));
         } catch (java.io.IOException ioe) {
             throw new RuntimeException(ioe);
         }
@@ -5011,7 +5032,7 @@ public class TypeHandler extends RepositoryManager {
         String type = null;
         if (request.defined(ARG_TYPE)) {
             TypeHandler typeHandler = getRepository().getTypeHandler(request);
-            type  = typeHandler.getType();
+            type = typeHandler.getType();
             if ( !typeHandler.isAnyHandler()) {
                 //                typeHandlers.clear();
                 //                typeHandlers.add(typeHandler);
@@ -5998,21 +6019,22 @@ public class TypeHandler extends RepositoryManager {
                                  Appendable searchCriteria,
                                  List<Clause> where)
             throws Exception {
+
         boolean doName = true;
         boolean doDesc = true;
         boolean doFile = true;
-        if(textToSearch.startsWith("name:")) {
-            doDesc = false;
-            doFile = false;
-            textToSearch  = textToSearch.substring("name:".length());
-        } else if(textToSearch.startsWith("description:")) {
-            doName = false;
-            doFile = false;
-            textToSearch  = textToSearch.substring("description:".length());
-        } else if(textToSearch.startsWith("file:")) {
-            doName = false;
-            doDesc = false;
-            textToSearch  = textToSearch.substring("file:".length());
+        if (textToSearch.startsWith("name:")) {
+            doDesc       = false;
+            doFile       = false;
+            textToSearch = textToSearch.substring("name:".length());
+        } else if (textToSearch.startsWith("description:")) {
+            doName       = false;
+            doFile       = false;
+            textToSearch = textToSearch.substring("description:".length());
+        } else if (textToSearch.startsWith("file:")) {
+            doName       = false;
+            doDesc       = false;
+            textToSearch = textToSearch.substring("file:".length());
         }
 
 
@@ -6096,40 +6118,52 @@ public class TypeHandler extends RepositoryManager {
                                 Tables.ENTRIES.COL_ID)));
                 }
                 if (doRegexp) {
-                    if(doName)
-                    ors.add(
-                        getDatabaseManager().makeRegexpClause(
-                            Tables.ENTRIES.COL_NAME, nameTok, doNot));
-                    if(doDesc)
-                    ors.add(
-                        getDatabaseManager().makeRegexpClause(
-                            Tables.ENTRIES.COL_DESCRIPTION, nameTok, doNot));
-                    if(doFile)
-                    ors.add(
-                        getDatabaseManager().makeRegexpClause(
-                            Tables.ENTRIES.COL_RESOURCE, nameTok, doNot));
+                    if (doName) {
+                        ors.add(
+                            getDatabaseManager().makeRegexpClause(
+                                Tables.ENTRIES.COL_NAME, nameTok, doNot));
+                    }
+                    if (doDesc) {
+                        ors.add(
+                            getDatabaseManager().makeRegexpClause(
+                                Tables.ENTRIES.COL_DESCRIPTION, nameTok,
+                                doNot));
+                    }
+                    if (doFile) {
+                        ors.add(
+                            getDatabaseManager().makeRegexpClause(
+                                Tables.ENTRIES.COL_RESOURCE, nameTok, doNot));
+                    }
                 } else if (doLike) {
-                    if(doName)
-                    ors.add(dbm.makeLikeTextClause(Tables.ENTRIES.COL_NAME,
-                            nameTok, doNot));
-                    if(doDesc)
-                    ors.add(
-                        dbm.makeLikeTextClause(
-                            Tables.ENTRIES.COL_DESCRIPTION, nameTok, doNot));
-                    if(doFile)
-                    ors.add(
-                        dbm.makeLikeTextClause(
-                            Tables.ENTRIES.COL_RESOURCE, nameTok, doNot));
+                    if (doName) {
+                        ors.add(
+                            dbm.makeLikeTextClause(
+                                Tables.ENTRIES.COL_NAME, nameTok, doNot));
+                    }
+                    if (doDesc) {
+                        ors.add(
+                            dbm.makeLikeTextClause(
+                                Tables.ENTRIES.COL_DESCRIPTION, nameTok,
+                                doNot));
+                    }
+                    if (doFile) {
+                        ors.add(
+                            dbm.makeLikeTextClause(
+                                Tables.ENTRIES.COL_RESOURCE, nameTok, doNot));
+                    }
                 } else {
-                    if(doName)
-                    ors.add(Clause.eq(Tables.ENTRIES.COL_NAME, nameTok,
-                                      doNot));
-                    if(doDesc)
-                    ors.add(Clause.eq(Tables.ENTRIES.COL_DESCRIPTION,
-                                      nameTok, doNot));
-                    if(doFile)
-                    ors.add(Clause.eq(Tables.ENTRIES.COL_RESOURCE, nameTok,
-                                      doNot));
+                    if (doName) {
+                        ors.add(Clause.eq(Tables.ENTRIES.COL_NAME, nameTok,
+                                          doNot));
+                    }
+                    if (doDesc) {
+                        ors.add(Clause.eq(Tables.ENTRIES.COL_DESCRIPTION,
+                                          nameTok, doNot));
+                    }
+                    if (doFile) {
+                        ors.add(Clause.eq(Tables.ENTRIES.COL_RESOURCE,
+                                          nameTok, doNot));
+                    }
 
                 }
                 ands.add(Clause.or(ors));
@@ -6148,6 +6182,7 @@ public class TypeHandler extends RepositoryManager {
         } else if (textOrs.size() == 1) {
             where.add(textOrs.get(0));
         }
+
 
     }
 
