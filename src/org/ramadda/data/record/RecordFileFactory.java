@@ -103,7 +103,7 @@ public class RecordFileFactory {
      * @throws Exception _more_
      */
     public RecordFile doMakeRecordFile(String path) throws Exception {
-        return doMakeRecordFile(path, null);
+        return doMakeRecordFile(path, null,null);
     }
 
     /**
@@ -116,12 +116,12 @@ public class RecordFileFactory {
      *
      * @throws Exception _more_
      */
-    public RecordFile doMakeRecordFile(String path, Hashtable properties)
+    public RecordFile doMakeRecordFile(String path, Hashtable properties, Hashtable requestProperties)
             throws Exception {
         for (RecordFile f : prototypes) {
             if (f.canLoad(path)) {
                 //                System.err.println("loading " +  f.getClass().getName());
-                return f.cloneMe(path, properties);
+                return f.cloneMe(path, properties, requestProperties);
             }
         }
 

@@ -94,6 +94,8 @@ public abstract class RecordFile {
     /** general properties */
     private Hashtable properties;
 
+    private Hashtable requestProperties;
+
     /** _more_ */
     private Object[] fileMetadata;
 
@@ -211,11 +213,12 @@ public abstract class RecordFile {
      * @throws CloneNotSupportedException On badness
      * @throws Exception _more_
      */
-    public RecordFile cloneMe(String filename, Hashtable properties)
+    public RecordFile cloneMe(String filename, Hashtable properties, Hashtable requestProperties)
             throws CloneNotSupportedException, Exception {
         RecordFile that = cloneMe();
         that.initAfterClone();
         that.setFilename(filename);
+        this.requestProperties = requestProperties;
         if (properties == null) {
             properties = getPropertiesForFile(filename,
                     that.getPropertiesFileName());
