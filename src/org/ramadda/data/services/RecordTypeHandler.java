@@ -385,7 +385,6 @@ public abstract class RecordTypeHandler extends BlobTypeHandler implements Recor
      */
     private String getPathForRecordEntry(Entry entry, Hashtable requestProperties) throws Exception {
         String path = getPathForEntry(null, entry);
-
         if(path.indexOf("${latitude}")>=0) {
             if(Utils.stringDefined((String)requestProperties.get("latitude"))) {
                 path = path.replace("${latitude}", (String) requestProperties.get("latitude"));
