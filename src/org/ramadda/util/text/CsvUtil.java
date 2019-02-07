@@ -18,6 +18,7 @@ package org.ramadda.util.text;
 
 
 import org.ramadda.util.Utils;
+import org.ramadda.util.HtmlUtils;
 
 import org.ramadda.util.XlsUtil;
 
@@ -573,6 +574,9 @@ public class CsvUtil {
             throws Exception {
         String  pattern     = props.get("pattern");
         String  skipAttr    = props.get("skipAttr");
+        String  removePattern = props.get("removePattern");
+        boolean removeEntity = Misc.equals(props.get("removeEntity"),"true");
+
         Pattern attrPattern = null;
         if (skipAttr != null) {
             skipAttr    = skipAttr.replaceAll("_quote_", "\"");
@@ -615,7 +619,7 @@ public class CsvUtil {
                 String tr = toks[0];
                 table = toks[1];
                 if (debug) {
-                    System.out.println("\trow");
+                    System.out.println("\trow: " + tr);
                 }
                 Row row = new Row();
                 rows.add(row);
@@ -628,9 +632,10 @@ public class CsvUtil {
                     tr = toks[1];
                     int idx = td.indexOf(">");
                     if (idx < 0) {
-                        return rows;
+                        //                        System.out.println("return-2");
+                        //                        return rows;
                     }
-                    if (attrPattern != null) {
+                    if (attrPattern != null && idx>=0) {
                         String attrs = td.substring(0, idx).toLowerCase();
                         if (attrPattern.matcher(attrs).find()) {
                             System.out.println("skipping:"
@@ -641,8 +646,17 @@ public class CsvUtil {
                         //                        System.out.println("not skipping:" +td );
                     }
 
+
                     td = td.substring(idx + 1);
                     td = StringUtil.stripTags(td);
+                    if(removeEntity) {
+                        td =td.replaceAll("&[^;]+;","");
+                    } else {
+                        td = HtmlUtils.unescapeHtml3(td);
+                    }
+                    if(removePattern!=null) {
+                        td =td.replaceAll(removePattern,"");
+                    }
                     td = td.replaceAll("&nbsp;", " ");
                     td = td.replaceAll("&quot;", "\"");
                     td = td.replaceAll("&lt;", "<");
@@ -978,7 +992,7 @@ public class CsvUtil {
         "-map <col #> <new columns name> <value newvalue ...> (change values in column to new values)",
         "-combine <col #s> <delimiter> <new column name> (combine columns with the delimiter. deleting columns)",
         "-combineinplace <col #s> <delimiter> <new column name> (combine columns with the delimiter.)",
-        "-html \"name value properties>\"  (parse the table in the input html file, properties: pattern=<pattern to skip to>)",
+        "-html \"name value properties\"  (parse the table in the input html file, properties: pattern=<pattern to skip to>)",
         "-concat <col #s>  <delimiter> (create a new column from the given columns)",
         "-operator <col #s>  <new col name> <operator +,-,*,/> (apply the operator to the given columns and create new one)",
         "-sum <key columns> <value columns>  sum values keying on name column value",
