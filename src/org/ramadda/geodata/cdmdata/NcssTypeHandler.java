@@ -30,6 +30,8 @@ import org.ramadda.util.text.CsvUtil;
 
 import org.w3c.dom.*;
 
+import ucar.unidata.util.StringUtil;
+
 import java.io.*;
 
 import java.text.SimpleDateFormat;
@@ -52,6 +54,9 @@ public class NcssTypeHandler extends PointTypeHandler {
 
     /** _more_ */
     private static int IDX_END_TIME_OFFSET = IDX++;
+
+    /** _more_          */
+    private static int IDX_DEFAULT_FIELDS = IDX++;
 
 
 
@@ -76,6 +81,37 @@ public class NcssTypeHandler extends PointTypeHandler {
             throws Exception {
         super(repository, node);
     }
+
+    /**
+     * _more_
+     *
+     * @param request _more_
+     * @param entry _more_
+     * @param wikiText _more_
+     *
+     * @return _more_
+     */
+    @Override
+    public String preProcessWikiText(Request request, Entry entry,
+                                     String wikiText) {
+        String fields = entry.getValue(IDX_DEFAULT_FIELDS, "");
+        String chart =
+            "{{display type=\"linechart\" showTitle=\"false\" layoutHere=\"false\" #fields=\"tmax,tmin\" }}";
+        if ( !Utils.stringDefined(fields)) {
+            wikiText = wikiText.replace("${charts}", chart);
+        } else {
+            String chart2 =
+                "{{display type=\"linechart\" showTitle=\"false\" layoutHere=\"false\" fields=\"{field}\" }}";
+            StringBuilder charts = new StringBuilder();
+            for (String line : StringUtil.split(fields, ",", true, true)) {
+                charts.append(chart2.replace("{field}", line));
+            }
+            wikiText = wikiText.replace("${charts}", charts.toString());
+        }
+
+        return wikiText;
+    }
+
 
     /**
      * _more_
@@ -193,6 +229,7 @@ public class NcssTypeHandler extends PointTypeHandler {
      */
     public void initializeNewEntry(Request request, Entry entry)
             throws Exception {
+
         String url = entry.getResource().getPath();
         if ( !Utils.stringDefined(entry.getName())) {
             String[] toks = Utils.findPatterns(url, "/(.*)/(.*)/[^/]+\\?");
@@ -235,13 +272,16 @@ public class NcssTypeHandler extends PointTypeHandler {
 
         if ( !Utils.stringDefined(entry.getDescription())) {
             StringBuilder sb = new StringBuilder();
-            for(String var: vars) {
-                if(sb.length()==0)
+            for (String var : vars) {
+                if (sb.length() == 0) {
                     sb.append("Fields: ");
-                else 
+                } else {
                     sb.append(", ");
+                }
                 String label = Utils.makeLabel(var);
-                sb.append(HtmlUtils.span(label,HtmlUtils.attr("title","id:" +var)));
+                sb.append(HtmlUtils.span(label,
+                                         HtmlUtils.attr("title",
+                                             "id:" + var)));
             }
             sb.append("\n----\n");
             entry.setDescription(sb.toString());
@@ -295,6 +335,7 @@ public class NcssTypeHandler extends PointTypeHandler {
         properties.append("\n");
         entry.setLocation(loc[0], loc[1]);
         entry.setValue(IDX_PROPERTIES, properties.toString());
+
     }
 
 

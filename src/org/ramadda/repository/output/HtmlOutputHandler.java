@@ -2065,6 +2065,13 @@ public class HtmlOutputHandler extends OutputHandler {
      * @throws Exception _more_
      */
     public String getWikiText(Request request, Entry entry) throws Exception {
+        String wikiText = getWikiTextInner(request, entry);
+        if(wikiText!=null) 
+            wikiText = entry.getTypeHandler().preProcessWikiText(request, entry, wikiText);
+        return wikiText;
+    }
+
+    public String getWikiTextInner(Request request, Entry entry) throws Exception {
         String description = entry.getDescription();
         String wikiInner   = null;
         //If it begins with <wiki> then it overrides anything else

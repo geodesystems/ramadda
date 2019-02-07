@@ -758,6 +758,10 @@ public class TypeHandler extends RepositoryManager {
 
 
 
+    public String preProcessWikiText(Request request, Entry entry, String wikiText) {
+        return wikiText;
+    }
+
     /**
      * _more_
      *
