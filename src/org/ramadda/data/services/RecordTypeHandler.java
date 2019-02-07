@@ -130,6 +130,24 @@ public abstract class RecordTypeHandler extends BlobTypeHandler implements Recor
     }
 
 
+    @Override
+    public String getWikiInclude(WikiUtil wikiUtil, Request request,
+                                 Entry originalEntry, Entry entry,
+                                 String tag, Hashtable props)
+            throws Exception {
+        if (tag.equals("point_metadata")) {
+            RecordOutputHandler outputHandler = getRecordOutputHandler();
+            StringBuffer sb = new StringBuffer();
+            outputHandler.getFormHandler().getEntryMetadata(request, outputHandler.doMakeEntry(request, entry),sb);
+            return sb.toString();
+        }
+        return super.getWikiInclude(wikiUtil,  request,
+                                    originalEntry, entry,
+                                    tag, props);
+    }
+
+
+
     /**
      * _more_
      *
@@ -201,21 +219,6 @@ public abstract class RecordTypeHandler extends BlobTypeHandler implements Recor
         }
     }
 
-    @Override
-    public String getWikiInclude(WikiUtil wikiUtil, Request request,
-                                 Entry originalEntry, Entry entry,
-                                 String tag, Hashtable props)
-            throws Exception {
-        if (tag.equals("point_metadata")) {
-            RecordOutputHandler outputHandler = getRecordOutputHandler();
-            StringBuffer sb = new StringBuffer();
-            outputHandler.getFormHandler().getEntryMetadata(request, new RecordEntry(outputHandler, request, entry),sb);
-            return sb.toString();
-        }
-        return super.getWikiInclude(wikiUtil,  request,
-                                    originalEntry, entry,
-                                    tag, props);
-    }
 
 
     /**

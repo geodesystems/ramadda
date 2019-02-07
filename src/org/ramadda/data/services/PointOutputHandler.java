@@ -388,6 +388,7 @@ public class PointOutputHandler extends RecordOutputHandler {
      *
      * @return _more_
      */
+    @Override
     public RecordEntry doMakeEntry(Request request, Entry entry) {
         RecordTypeHandler typeHandler =
             (RecordTypeHandler) entry.getTypeHandler();
