@@ -575,6 +575,18 @@ public class CsvUtil {
         String  pattern     = props.get("pattern");
         String  skipAttr    = props.get("skipAttr");
         String  removePattern = props.get("removePattern");
+        if(removePattern!=null) {
+            removePattern =
+                removePattern.replaceAll("_leftparen_",
+                                         "\\\\(").replaceAll("_rightparen_",
+                                                             "\\\\)");
+            removePattern =
+                removePattern.replaceAll("_leftbracket_",
+                                         "\\\\[").replaceAll("_rightbracket_",
+                                                             "\\\\]");
+            removePattern = removePattern.replaceAll("_dot_", "\\\\.");
+        }
+
         boolean removeEntity = Misc.equals(props.get("removeEntity"),"true");
 
         Pattern attrPattern = null;
