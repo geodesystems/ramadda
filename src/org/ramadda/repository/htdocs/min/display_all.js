@@ -820,12 +820,13 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             var seenLabels = {};
 
 
-            var tuples = this.getStandardData(null, {
-                includeIndex: false
-            });
             var allFields = this.dataCollection.getList()[0].getRecordFields();
             var badFields = {};
             var flags = null;
+            /*
+            var tuples = this.getStandardData(null, {
+                includeIndex: false
+            });
             for (var rowIdx = 1; rowIdx < tuples.length; rowIdx++) {
                 var tuple = this.getDataValues(tuples[rowIdx]);
                 if (flags == null) {
@@ -849,6 +850,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             for (var tupleIdx = 0; tupleIdx < tuple.length; tupleIdx++) {
                 //                    console.log("#" + tupleIdx + " " + (tupleIdx<allFields.length?allFields[tupleIdx].getId():"") +" ok:" + flags[tupleIdx] );
             }
+            */
 
             for (var collectionIdx = 0; collectionIdx < dataList.length; collectionIdx++) {
                 var pointData = dataList[collectionIdx];
@@ -1067,7 +1069,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             }
 
             if (df.length == 0) {
-                return this.getDefaultSelectedFields(fieldsToSelect, dfltList);
+                var df =  this.getDefaultSelectedFields(fieldsToSelect, dfltList);
             }
             return df;
         },
@@ -2861,14 +2863,22 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             return data;
         },
 
+       printFields: function(label,fields) {
+            console.log(label);
+            if(!fields) {
+                console.log("   null fields");
+                return;
+            }
+
+            for(a in fields)
+                console.log("   " + fields[a].getId());
+       },
         getStandardData: function(fields, args) {
             var pointData = this.getPointData();
             var excludeZero = this.getProperty(PROP_EXCLUDE_ZERO, false);
             if (fields == null) {
                 fields = pointData.getRecordFields();
             }
-
-
             props = {
                 makeObject: true,
                 includeIndex: true,
@@ -3138,7 +3148,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
                 tz = parseFloat(this.timezone);
             }
             this.fmt_yyyymmddhhmm = new google.visualization.DateFormat({
-                pattern: "yyyy-MM-dd HH:mm'Z'",
+                pattern: "yyyy-MM-dd HH:mm Z",
                 timeZone: tz
             });
             this.fmt_yyyymmdd = new google.visualization.DateFormat({
@@ -3738,11 +3748,19 @@ function BasePointData(name, properties) {
             var recordFields = this.getRecordFields();
             var numericFields = [];
             //                var skip = /(TIME|HOUR|MINUTE|SECOND|YEAR|MONTH|DAY|LATITUDE|LONGITUDE|ELEVATION)/g;
+            var hadDate = false;
             for (var i = 0; i < recordFields.length; i++) {
                 var field = recordFields[i];
                 if (field.isFieldGeo()) {
                     continue;
                 }
+                if(field.isFieldDate()) {
+                    if(hadDate && field.getId() =="recordDate")  {
+                        continue;
+                    }
+                    hadDate = true;
+                }
+
                 //                    var ID = field.getId().toUpperCase() ;
                 //                    if(ID.match(skip)) {
                 //                        continue;
@@ -5750,7 +5768,8 @@ function RamaddaMultiChart(displayManager, id, properties) {
         getChartType: function() {
             return this.getProperty(PROP_CHART_TYPE, DISPLAY_LINECHART);
         },
-        defaultSelectedToAll: function() {
+        xxxxdefaultSelectedToAll: function() {
+                //Don't do this for now
             if (this.chartType == DISPLAY_TABLE || this.chartType == DISPLAY_SANKEY|| this.chartType == DISPLAY_WORDTREE) {
                 return true;
             }
@@ -5844,11 +5863,12 @@ function RamaddaMultiChart(displayManager, id, properties) {
             }
             this.setChartSelection(args.index);
         },
-        getFieldsToSelect: function(pointData) {
+          getFieldsToSelect: function(pointData) {
             var chartType = this.getProperty(PROP_CHART_TYPE, DISPLAY_LINECHART);
             if (this.chartType == DISPLAY_TABLE || this.chartType == DISPLAY_BARTABLE || this.chartType == DISPLAY_BUBBLE || this.chartType == DISPLAY_SANKEY || this.chartType == DISPLAY_WORDTREE || this.chartType == DISPLAY_TIMELINECHART || this.chartType == DISPLAY_PIECHART) {
                 //                    return pointData.getRecordFields();
-                return pointData.getNonGeoFields();
+                var fields =  pointData.getNonGeoFields();
+                return fields;
             }
             return pointData.getChartableFields();
         },
@@ -5891,10 +5911,12 @@ function RamaddaMultiChart(displayManager, id, properties) {
 
             this.allFields = this.dataCollection.getList()[0].getRecordFields();
             var chartType = this.getProperty(PROP_CHART_TYPE, DISPLAY_LINECHART);
-            var selectedFields = this.getSelectedFields([]);
+            var pointData = this.dataCollection.getList()[0];
+            var selectedFields = this.getSelectedFields(this.getFieldsToSelect(pointData));
             if (selectedFields.length == 0 && this.lastSelectedFields != null) {
                 selectedFields = this.lastSelectedFields;
             }
+
 
             if (selectedFields == null || selectedFields.length == 0) {
                 if (this.chartType == DISPLAY_TABLE) {
@@ -6039,8 +6061,6 @@ function RamaddaMultiChart(displayManager, id, properties) {
                 }
             }
 
-
-            //                console.log("fields:" + selectedFields +" data.length = " + dataList.length +" " + dataList);
 
             if (dataList.length == 0 && !this.userHasSelectedAField) {
                 var pointData = this.dataCollection.getList()[0];
@@ -6339,9 +6359,20 @@ function RamaddaMultiChart(displayManager, id, properties) {
             }
 
 
-
             if (this.chartType == DISPLAY_TABLE) {
-                return google.visualization.arrayToDataTable(this.makeDataArray(dataList));
+                var rows = this.makeDataArray(dataList);
+                var data =[];
+                for (var rowIdx=0;rowIdx<rows.length;rowIdx++) {
+                    var row  = rows[rowIdx];
+                    for (var colIdx=0;colIdx<row.length;colIdx++) {
+                        if((typeof row[colIdx]) == "string") {
+                            row[colIdx] = row[colIdx].replace(/\n/g,"<br>");
+                        }
+                    }
+                    data.push(row);
+                    
+                }
+                return google.visualization.arrayToDataTable(data);
             }
             if (this.chartType == DISPLAY_GAUGE) {
                 return this.makeGaugeDataTable(this.makeDataArray(dataList));

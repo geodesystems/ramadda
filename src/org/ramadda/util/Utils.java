@@ -2969,6 +2969,7 @@ public class Utils {
         if (dateFormats == null) {
             String[] formats = {
                 "yyyy-MM-dd'T'HH:mm:ss", "yyyy-MM-dd HH:mm:ss z",
+                "yyyy-MM-dd'T'HH:mm", "yyyy-MM-dd HH:mm z",
                 "yyyy-MM-dd HH:mm:ss", "yyyy-MM-dd HH:mm", "yyyy-MM-dd",
                 "yyyyMMddHHmmss", "yyyyMMddHHmm", "yyyyMMddHH", "yyyyMMdd"
             };
@@ -3006,6 +3007,11 @@ public class Utils {
      * @throws Exception _more_
      */
     public static void main(String[] args) throws Exception {
+        String ds = "2019-02-20T10:00 UTC";
+        System.err.println(parseDate(ds));
+        if(true) return;
+
+
         String           dt  = "Aug. 20, 1842";
         SimpleDateFormat sdf = new SimpleDateFormat("MMM. dd, yyyy");
 

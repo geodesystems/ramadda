@@ -5467,6 +5467,13 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
             props.remove(ATTR_SHOWTITLE);
         }
 
+        String timezone = getEntryUtil().getTimezone(entry);
+        if(timezone!=null) { 
+            propList.add("timezone");
+            TimeZone tz = TimeZone.getTimeZone(timezone);
+            propList.add(Json.quote(""+(tz.getRawOffset()/1000/60/60)));
+        }
+
         String title = getProperty(wikiUtil, props, ATTR_TITLE,
                                    (String) null);
         String titleId = getProperty(wikiUtil, props, "titleId",

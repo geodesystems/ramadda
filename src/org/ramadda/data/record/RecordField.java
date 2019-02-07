@@ -709,6 +709,12 @@ public class RecordField {
         properties.put(key, value);
     }
 
+    public Object getProperty(String key, Object dflt) {
+        Object v=  properties.get(key);
+        if(v==null) return dflt;
+        return v;
+    }
+
 
 
     /**

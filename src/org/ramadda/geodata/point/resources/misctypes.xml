@@ -69,4 +69,45 @@ Data courtesy of <a href="https://daymet.ornl.gov/">ORNL Daymet</a>
 
 
 
+  <type name="type_point_simple_records"  description="Simple Records" super="type_point" category="Point Data" foruser="true" handler="org.ramadda.geodata.point.SimpleRecordsTypeHandler">
+     <property name="form.area.show" value="false"/>
+     <property name="form.location.show" value="false"/>
+     <property name="form.resource.show" value="false"/>
+<help>
+<![CDATA[
+Specify the fields, one per row:
+field 1 type=string|double|int|date
+field 2 ...
+]]>
+</help>
+     <column  name="fields"  label="Fields" type="string" rows="10" size="2000" suffix="one field per row" columns="80">
+<help>
+<![CDATA[
+Specify the fields for this simple records entry
+]]>
+</help>
+<default>
+<![CDATA[
+#field  name value attributes
+date type "date" label "The Date"
+status type string values "bad,good,great" description "The status" default good
+note type string rows "5"
+count  type integer
+value  type double
+]]>
+</default>
+</column>
+     <column  name="records_data"  showinhtml="false" editable="true" label="Raw Data" type="clob" rows="10" size="100000" columns="80"/>
+<wiki>
+<![CDATA[
++section  title="{{name}}"
+{{description wikify="true"}}
+{{simple_add}}
+{{group showMenu="true" layoutType="table"  layoutHere="true"  showTitle="false"}}
+{{display type="linechart" xfields="#1,#2,#3,#4,#5" showTitle="false" layoutHere="true" }}
+{{display  type="table"  height="400"  #fields=""  layoutHere="true"  showMenu="true"  showTitle="true"  }} 
+]]>
+</wiki>
+  </type>
+
 </types>

@@ -422,9 +422,6 @@ public class DataRecord extends PointRecord {
         if ((idx >= 0) && (idx < values.length)) {
             return values[idx];
         }
-
-
-
         return super.getValue(attrId);
     }
 

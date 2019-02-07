@@ -670,12 +670,13 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             var seenLabels = {};
 
 
-            var tuples = this.getStandardData(null, {
-                includeIndex: false
-            });
             var allFields = this.dataCollection.getList()[0].getRecordFields();
             var badFields = {};
             var flags = null;
+            /*
+            var tuples = this.getStandardData(null, {
+                includeIndex: false
+            });
             for (var rowIdx = 1; rowIdx < tuples.length; rowIdx++) {
                 var tuple = this.getDataValues(tuples[rowIdx]);
                 if (flags == null) {
@@ -699,6 +700,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             for (var tupleIdx = 0; tupleIdx < tuple.length; tupleIdx++) {
                 //                    console.log("#" + tupleIdx + " " + (tupleIdx<allFields.length?allFields[tupleIdx].getId():"") +" ok:" + flags[tupleIdx] );
             }
+            */
 
             for (var collectionIdx = 0; collectionIdx < dataList.length; collectionIdx++) {
                 var pointData = dataList[collectionIdx];
@@ -917,7 +919,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             }
 
             if (df.length == 0) {
-                return this.getDefaultSelectedFields(fieldsToSelect, dfltList);
+                var df =  this.getDefaultSelectedFields(fieldsToSelect, dfltList);
             }
             return df;
         },
@@ -2711,14 +2713,22 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             return data;
         },
 
+       printFields: function(label,fields) {
+            console.log(label);
+            if(!fields) {
+                console.log("   null fields");
+                return;
+            }
+
+            for(a in fields)
+                console.log("   " + fields[a].getId());
+       },
         getStandardData: function(fields, args) {
             var pointData = this.getPointData();
             var excludeZero = this.getProperty(PROP_EXCLUDE_ZERO, false);
             if (fields == null) {
                 fields = pointData.getRecordFields();
             }
-
-
             props = {
                 makeObject: true,
                 includeIndex: true,
@@ -2988,7 +2998,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
                 tz = parseFloat(this.timezone);
             }
             this.fmt_yyyymmddhhmm = new google.visualization.DateFormat({
-                pattern: "yyyy-MM-dd HH:mm'Z'",
+                pattern: "yyyy-MM-dd HH:mm Z",
                 timeZone: tz
             });
             this.fmt_yyyymmdd = new google.visualization.DateFormat({

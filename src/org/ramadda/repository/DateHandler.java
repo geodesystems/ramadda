@@ -394,7 +394,7 @@ public class DateHandler extends RepositoryManager {
         if (includeTime) {
             extra = " T:"
                     + HtmlUtils.input(name + ".time", timeString,
-                                      HtmlUtils.sizeAttr(6)
+                                      HtmlUtils.sizeAttr(10)
                                       + HtmlUtils.attr(HtmlUtils.ATTR_TITLE,
                                           timeHelp));
         }
@@ -509,7 +509,7 @@ public class DateHandler extends RepositoryManager {
      *
      * @return _more_
      */
-    private SimpleDateFormat getSDF(String format) {
+    public SimpleDateFormat getSDF(String format) {
         return getSDF(format, null);
     }
 
@@ -522,7 +522,7 @@ public class DateHandler extends RepositoryManager {
      *
      * @return _more_
      */
-    private SimpleDateFormat getSDF(String format, String timezone) {
+    public SimpleDateFormat getSDF(String format, String timezone) {
         String key;
         if (timezone != null) {
             key = format + "-" + timezone;

@@ -122,11 +122,19 @@ function BasePointData(name, properties) {
             var recordFields = this.getRecordFields();
             var numericFields = [];
             //                var skip = /(TIME|HOUR|MINUTE|SECOND|YEAR|MONTH|DAY|LATITUDE|LONGITUDE|ELEVATION)/g;
+            var hadDate = false;
             for (var i = 0; i < recordFields.length; i++) {
                 var field = recordFields[i];
                 if (field.isFieldGeo()) {
                     continue;
                 }
+                if(field.isFieldDate()) {
+                    if(hadDate && field.getId() =="recordDate")  {
+                        continue;
+                    }
+                    hadDate = true;
+                }
+
                 //                    var ID = field.getId().toUpperCase() ;
                 //                    if(ID.match(skip)) {
                 //                        continue;

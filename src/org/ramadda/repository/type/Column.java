@@ -160,6 +160,8 @@ public class Column implements DataTypes, Constants {
     /** _more_ */
     public static final String ATTR_SUFFIX = "suffix";
 
+    public static final String ATTR_HELP = "help";
+
     /** _more_ */
     public static final String ATTR_PROPERTIES = "properties";
 
@@ -293,6 +295,8 @@ public class Column implements DataTypes, Constants {
 
     /** _more_ */
     private String suffix;
+
+    private String help;
 
     /** _more_ */
     private String searchType = SEARCHTYPE_TEXT;
@@ -440,6 +444,7 @@ public class Column implements DataTypes, Constants {
         oldNames = StringUtil.split(XmlUtil.getAttribute(element,
                 ATTR_OLDNAMES, ""), ",", true, true);
         suffix = Utils.getAttributeOrTag(element, ATTR_SUFFIX, "");
+        help= Utils.getAttributeOrTag(element, ATTR_HELP,(String)null);
         //The suffix might have the ${root} macro in it
         if (typeHandler != null) {
             suffix =
@@ -2029,6 +2034,14 @@ public class Column implements DataTypes, Constants {
                         2)));
             state.put(group, group);
         }
+
+        if(help!=null) {
+            if(help!=null)
+                System.err.println("help:" + help);
+            formBuffer.append(typeHandler.formEntry(request, "",help));
+        }
+
+
         if (rows > 1) {
             formBuffer.append(typeHandler.formEntryTop(request,
                     getLabel() + ":", widget));

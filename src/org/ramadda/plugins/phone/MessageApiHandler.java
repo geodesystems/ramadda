@@ -160,13 +160,11 @@ public class MessageApiHandler extends RepositoryManager implements RequestHandl
         List<Entry> entries = pair[1];
         Date        now     = new Date();
         for (Entry entry : entries) {
-            System.err.println("MessageApiHandler: entry: "
-                               + entry.getName());
             if ( !entry.getValue(MTTFTypeHandler.IDX_ENABLED, false)) {
-                System.err.println("\tnot enabled");
-
+                //                System.err.println("\tnot enabled");
                 continue;
             }
+            System.err.println("MessageApiHandler: entry: "  + entry.getName());
             if (entry.getStartDate() > entry.getEndDate()) {
                 System.err.println("\tpast time");
                 entry.setValue(MTTFTypeHandler.IDX_ENABLED,

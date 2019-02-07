@@ -1424,30 +1424,6 @@ public class HtmlUtils {
 
 
 
-    /**
-     * _more_
-     *
-     * @param v1 _more_
-     *
-     * @return _more_
-     */
-    public static String th(String v1) {
-        return th(v1, "");
-    }
-
-    /**
-     * _more_
-     *
-     * @param v1 _more_
-     * @param attr _more_
-     *
-     * @return _more_
-     */
-    public static String th(String v1, String attr) {
-        return tag(TAG_TH, " " + attr + " ", v1);
-    }
-
-
 
     /**
      * _more_
@@ -1758,6 +1734,50 @@ public class HtmlUtils {
     public static Appendable td(Appendable sb, String content, String extra) {
         tag(sb, TAG_TD, extra, content);
 
+        return sb;
+    }
+
+
+
+    public static String th(String content) {
+        return th(content, "");
+    }
+
+    /**
+     * _more_
+     *
+     * @param content _more_
+     * @param extra _more_
+     *
+     * @return _more_
+     */
+    public static String th(String content, String extra) {
+        return tag(TAG_TH, extra, content);
+    }
+
+    /**
+     * _more_
+     *
+     * @param sb _more_
+     * @param content _more_
+     *
+     * @return _more_
+     */
+    public static Appendable th(Appendable sb, String content) {
+        return th(sb, content, "");
+    }
+
+    /**
+     * _more_
+     *
+     * @param sb _more_
+     * @param content _more_
+     * @param extra _more_
+     *
+     * @return _more_
+     */
+    public static Appendable th(Appendable sb, String content, String extra) {
+        tag(sb, TAG_TH, extra, content);
         return sb;
     }
 
