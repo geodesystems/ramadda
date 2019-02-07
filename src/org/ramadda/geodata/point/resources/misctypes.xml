@@ -104,7 +104,7 @@ value  type double
 {{description wikify="true"}}
 {{simple_add}}
 {{group showMenu="true" layoutType="table"  layoutHere="true"  showTitle="false"}}
-{{display type="linechart" xfields="#1,#2,#3,#4,#5" showTitle="false" layoutHere="true" }}
+{{display type="linechart" fields="#1,#2,#3,#4,#5" showTitle="false" layoutHere="true" }}
 {{display  type="table"  height="400"  #fields=""  layoutHere="true"  showMenu="true"  showTitle="true"  }} 
 ]]>
 </wiki>
