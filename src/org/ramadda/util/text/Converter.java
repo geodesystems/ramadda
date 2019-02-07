@@ -474,7 +474,7 @@ public abstract class Converter extends Processor {
                                    "_").trim().toLowerCase().replaceAll(" ",
                                        "_").replaceAll(":", "_");
 
-                id = id.replaceAll("\"", "_").replaceAll("\'",
+                id = id.replaceAll("\\+","_").replaceAll("\"", "_").replaceAll("\'",
                                    "_").replaceAll("/+",
                                        "_").replaceAll("\\.",
                                            "_").replaceAll("_+_",
