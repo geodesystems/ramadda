@@ -3358,6 +3358,7 @@ function DisplayGroup(argDisplayManager, argId, argProperties) {
                 weights = this.weights.split(",");
             }
 
+
             if (this.layout == LAYOUT_TABLE) {
                 if (displaysToLayout.length == 1) {
                     html += HtmlUtils.div(["class", " display-wrapper"],
@@ -3374,8 +3375,6 @@ function DisplayGroup(argDisplayManager, argId, argProperties) {
                             map[key].push(d);
                         }
                     }
-
-
 
                     i = 0;
                     for (; i < displaysToLayout.length; i++) {
@@ -3484,6 +3483,8 @@ function DisplayGroup(argDisplayManager, argId, argProperties) {
             } else {
                 html += "Unknown layout:" + this.layout;
             }
+
+
             this.writeHtml(ID_DISPLAYS, html);
 
             if (this.layout == LAYOUT_TABS) {
@@ -5380,6 +5381,7 @@ var DISPLAY_HISTOGRAM = "histogram";
 var DISPLAY_BUBBLE = "bubble";
 var DISPLAY_GAUGE = "gauge";
 var DISPLAY_STATS = "stats";
+var DISPLAY_RECORDS = "records";
 var DISPLAY_TABLE = "table";
 var DISPLAY_TEXT = "text";
 var DISPLAY_CROSSTAB = "crosstab";
@@ -5503,6 +5505,13 @@ addGlobalDisplayType({
     type: DISPLAY_STATS,
     label: "Stats Table",
     requiresData: false,
+    forUser: true,
+    category: CATEGORY_MISC
+});
+addGlobalDisplayType({
+    type: DISPLAY_RECORDS,
+    label: "Records",
+    requiresData: true,
     forUser: true,
     category: CATEGORY_MISC
 });
@@ -7864,6 +7873,68 @@ function RamaddaStatsDisplay(displayManager, id, properties, type) {
                 this.dataCollection.getList()[0], {
                     index: 0
                 });
+        },
+        handleEventRecordSelection: function(source, args) {
+            //                this.lastHtml = args.html;
+            //                this.setContents(args.html);
+        }
+    });
+}
+
+
+
+function RamaddaRecordsDisplay(displayManager, id, properties, type) {
+    var SUPER;
+    $.extend(this, {
+    });
+    RamaddaUtil.inherit(this, SUPER = new RamaddaFieldsDisplay(displayManager, id,  DISPLAY_RECORDS, properties));
+
+    addRamaddaDisplay(this);
+    RamaddaUtil.defineMembers(this, {
+        needsData: function() {
+            return true;
+        },
+        handleEventPointDataLoaded: function(source, pointData) {
+            if (!this.needsData()) {
+                if (this.dataCollection == null) {
+                    this.dataCollection = source.dataCollection;
+                    this.updateUI();
+                }
+            }
+        },
+        getFieldsToSelect: function(pointData) {
+            return pointData.getRecordFields();
+        },
+        defaultSelectedToAll: function() {
+            return true;
+        },
+        fieldSelectionChanged: function() {
+            SUPER.fieldSelectionChanged.call(this);
+            this.updateUI();
+        },
+        updateUI: function() {
+            SUPER.updateUI.call(this);
+            var records = this.filterData();
+            if (!records) {
+                this.setContents(this.getLoadingMessage());
+                return;
+            }
+            var fields = this.getSelectedFields(this.getData().getRecordFields());
+            var html = "";
+            for (var rowIdx = 0; rowIdx < records.length; rowIdx++) {
+                var tuple = this.getDataValues(records[rowIdx]);
+                for (var fieldIdx = 0; fieldIdx < fields.length; fieldIdx++) {
+                    var field = fields[fieldIdx];
+                    var v = tuple[field.getIndex()];
+                    html+=HtmlUtil.b(field.getLabel()) +": " + v+"</br>";
+                }
+                html+="<p>";
+            }
+            var height = this.getProperty("maxHeight", "400px");
+            if (!height.endsWith("px")) {
+                height = height + "px";
+            }
+            this.setContents(HtmlUtil.div(["style","max-height:" + height+";overflow-y:auto;"],html));
         },
         handleEventRecordSelection: function(source, args) {
             //                this.lastHtml = args.html;
@@ -12129,6 +12200,7 @@ function DisplayManager(argId, argProperties) {
             if (props == null) {
                 props = {};
             }
+
             if (props.data != null) {
                 var haveItAlready = false;
                 for (var i = 0; i < this.dataList.length; i++) {

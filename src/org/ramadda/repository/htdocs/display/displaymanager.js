@@ -388,6 +388,7 @@ function DisplayManager(argId, argProperties) {
             if (props == null) {
                 props = {};
             }
+
             if (props.data != null) {
                 var haveItAlready = false;
                 for (var i = 0; i < this.dataList.length; i++) {

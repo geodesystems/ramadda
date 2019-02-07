@@ -240,6 +240,12 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                                               ATTR_SHOWMENU, "true", 
                                               ATTR_SHOWTITLE, "true")),
                             new WikiTag(WIKI_TAG_DISPLAY,
+                                        "Records",
+                                        attrs(ATTR_TYPE, "records", "maxHeight", "400px", "#fields", "",
+                                              ATTR_LAYOUTHERE, "true", 
+                                              ATTR_SHOWMENU, "true", 
+                                              ATTR_SHOWTITLE, "true")),
+                            new WikiTag(WIKI_TAG_DISPLAY,
                                         "Entry Grid",
                                         attrs(ATTR_TYPE, "entrygrid", 
                                               "\nshowIcon","true",
@@ -5554,8 +5560,6 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
         }
 
 
-
-
         String fields = getProperty(wikiUtil, props, "fields", (String) null);
         if (fields != null) {
             List<String> toks = StringUtil.split(fields, ",", true, true);
@@ -5566,8 +5570,11 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
             props.remove("fields");
         }
 
+        String displayType = getProperty(wikiUtil, props, "type",
+                                         "linechart");
+
         String  anotherDivId = getProperty(wikiUtil, props, "divid");
-        boolean layoutHere = getProperty(wikiUtil, props, "layoutHere", true);
+        boolean layoutHere = getProperty(wikiUtil, props, "layoutHere", !displayType.equals("group"));
         if ((anotherDivId != null) || layoutHere) {
             Utils.add(propList, "layoutHere", "true");
             if (anotherDivId == null) {
@@ -5603,8 +5610,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
             props.remove("defaultLayer");
         }
 
-        String displayType = getProperty(wikiUtil, props, "type",
-                                         "linechart");
+
         if ((displayType.equals("radar") || displayType.equals(
                 "windrose") || displayType.equals(
                 "dotplot") || displayType.equals(

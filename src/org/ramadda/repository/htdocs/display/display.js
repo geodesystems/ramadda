@@ -3208,6 +3208,7 @@ function DisplayGroup(argDisplayManager, argId, argProperties) {
                 weights = this.weights.split(",");
             }
 
+
             if (this.layout == LAYOUT_TABLE) {
                 if (displaysToLayout.length == 1) {
                     html += HtmlUtils.div(["class", " display-wrapper"],
@@ -3224,8 +3225,6 @@ function DisplayGroup(argDisplayManager, argId, argProperties) {
                             map[key].push(d);
                         }
                     }
-
-
 
                     i = 0;
                     for (; i < displaysToLayout.length; i++) {
@@ -3334,6 +3333,8 @@ function DisplayGroup(argDisplayManager, argId, argProperties) {
             } else {
                 html += "Unknown layout:" + this.layout;
             }
+
+
             this.writeHtml(ID_DISPLAYS, html);
 
             if (this.layout == LAYOUT_TABS) {
