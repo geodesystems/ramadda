@@ -586,6 +586,19 @@ public class CsvUtil {
                                                              "\\\\]");
             removePattern = removePattern.replaceAll("_dot_", "\\\\.");
         }
+        String  removePattern2 = props.get("removePattern2");
+        if(removePattern2!=null) {
+            removePattern2 =
+                removePattern2.replaceAll("_leftparen_",
+                                         "\\\\(").replaceAll("_rightparen_",
+                                                             "\\\\)");
+            removePattern2 =
+                removePattern2.replaceAll("_leftbracket_",
+                                         "\\\\[").replaceAll("_rightbracket_",
+                                                             "\\\\]");
+            removePattern2 = removePattern2.replaceAll("_dot_", "\\\\.");
+        }
+
 
         boolean removeEntity = Misc.equals(props.get("removeEntity"),"true");
 
@@ -668,6 +681,9 @@ public class CsvUtil {
                     }
                     if(removePattern!=null) {
                         td =td.replaceAll(removePattern,"");
+                    }
+                    if(removePattern2!=null) {
+                        td =td.replaceAll(removePattern2,"");
                     }
                     td = td.replaceAll("&nbsp;", " ");
                     td = td.replaceAll("&quot;", "\"");
