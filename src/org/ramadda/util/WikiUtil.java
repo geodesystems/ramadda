@@ -571,8 +571,15 @@ public class WikiUtil {
         for (String line :
                 (List<String>) StringUtil.split(s, "\n", false, false)) {
             String tline = line.trim();
-            if (tline.equals("+tabs")) {
+            if (tline.startsWith("+tabs")) {
                 TabInfo tabInfo = new TabInfo();
+                List<String>  toks  = StringUtil.splitUpTo(tline, " ", 2);
+                if(toks.size()==2) {
+                    Hashtable props = StringUtil.parseHtmlProperties(toks.get(1));
+                    tabInfo.minHeight = (String) props.get("minHeight");
+                    if(tabInfo.minHeight!=null && !tabInfo.minHeight.endsWith("px"))
+                        tabInfo.minHeight = tabInfo.minHeight+"px"
+                }
                 tabInfos.add(tabInfo);
                 allTabInfos.add(tabInfo);
                 buff.append("\n");
@@ -590,7 +597,6 @@ public class WikiUtil {
             if (tline.startsWith("+tab")) {
                 if (tabInfos.size() == 0) {
                     buff.append("No +tabs tag");
-
                     continue;
                 }
                 List<String> toks    = StringUtil.splitUpTo(tline, " ", 2);
@@ -602,9 +608,13 @@ public class WikiUtil {
                 tabInfo.title.append("<li><a href=\"#" + tabInfo.id + "-"
                                      + (tabInfo.cnt) + "\">" + title
                                      + "</a></li>\n");
+                String style = "";
+                if(tabInfo.minHeight!=null)
+                    style = " style=min-height:" + tabInfo.minHeight+";";
                 buff.append(
                     HtmlUtils.open(
                         "div",
+                        style +
                         HtmlUtils.id(tabInfo.id + "-" + (tabInfo.cnt))
                         + HtmlUtils.cssClass("ui-tabs-hide")));
                 buff.append("\n");
@@ -1579,6 +1589,8 @@ public class WikiUtil {
 
         /** _more_ */
         int cnt = 0;
+
+        String minHeight;
 
         /**
          * _more_
