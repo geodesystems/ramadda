@@ -578,7 +578,7 @@ public class WikiUtil {
                     Hashtable props = StringUtil.parseHtmlProperties(toks.get(1));
                     tabInfo.minHeight = (String) props.get("minHeight");
                     if(tabInfo.minHeight!=null && !tabInfo.minHeight.endsWith("px"))
-                        tabInfo.minHeight = tabInfo.minHeight+"px"
+                        tabInfo.minHeight = tabInfo.minHeight+"px";
                 }
                 tabInfos.add(tabInfo);
                 allTabInfos.add(tabInfo);
