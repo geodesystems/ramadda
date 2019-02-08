@@ -1,0 +1,282 @@
+<html>
+<head>
+<title>ETL Tools</title>
+  <link rel="stylesheet" type="text/css" href="./default.css" title="Style">
+
+</head>
+
+<body>
+<div class="ramadda-documentation">
+<table width=100% cellspacing=0 cellpadding=0 ><tr><td width=30%>
+<a href="page_datafacilities.html"><img src="images/previous.png" border="0"   alt="Previous: Data Facilities" title="Previous: Data Facilities"></a> <a href="gridsubset.html"><img src="images/next.png" border="0"   alt="Next: Grid Subsetting" title="Next: Grid Subsetting"></a>  <a href="toc.html#etl.html"><img src="images/table.png" border="0"   alt="Table of contents" title="Table of contents"></a>
+</td>
+<td width=40% align=center>
+<div class="ramadda-page-title"><a href="${root}/userguide/index.html">RAMADDA User Guide</a></div>
+</td>
+<td width=30%>&nbsp;</td>
+</tr></table>
+<div class="ramadda-page-heading">Section 7.0: ETL Tools</div>
+
+<style type="text/css">
+pre {
+    margin-left:15px;
+}
+</style>
+
+<div style="margin-left:20px;">
+
+
+
+
+
+
+
+<a name="etl"></a><p><div class="ramadda-help-heading">7.0.0 <a href="#etl">Extract, Transform, Load CSV Files</a></div> 
+
+RAMADDA provides an interactive facility to transform CSV files, extract data from HTML files and create structured
+point data files and databases.
+<p>
+To start, upload the CSV file of interest into RAMADDA. Go to the  <code class="menu">Main Menu-&gt;View-&gt;Convert Spreadsheet</code> menu to see the conversion interface below. Clicking on the Help button will show the following help. One specifies a pipeline of commands for manipulating the rows and columns of the CSV file. The can be on the same line or on multiple lines. If on multiple lines then the intermediate processing results of each line of commands is available. Prefix a line with "#" to comment out the line.
+<p>
+The Header, Table, Records, etc., buttons runs the facility and produces different output.
+The Save checkbox saves the command text when you run the commands so you can return to it later. 
+The Do Commands checkbox applies the commands when you press one of the run buttons.
+The Select File link selects another file in RAMADDA for the commands that require another file (e.g., geolocation).
+<a name="image1"></a><div class="cimg"><a href="images/etl.png"><img  src="images/etl.png" width=90% alt="CSV Conversion Interface" ></a><br><span class="caption">Image 1: CSV Conversion Interface</span></div>
+<p>
+
+Many of the commands below take a columns specification. This takes the form of:
+<pre>
+&quot;colA,colB,colC-colD,colE,...&quot;
+e.g.:
+&quot;0,1,2,7-10,12&quot;
+</pre>
+
+
+<a name="help"></a>
+<div class="ramadda-help-subsubheading"><a href="#help">-help</a>
+</div> Usage:<pre>-help </pre>print this help<p>
+<a name="help:<topic search string>"></a>
+<div class="ramadda-help-subsubheading"><a href="#help:<topic search string>">-help:&lt;topic search string&gt;</a>
+</div> Usage:<pre>-help:&lt;topic search string&gt; </pre>print help that matches topic<p>
+<a name="columns"></a>
+<div class="ramadda-help-subsubheading"><a href="#columns">-columns</a>
+</div> Usage:<pre>-columns &lt;e.g., 0,1,2,7-10,12&gt;</pre>comma separated list of columns #s or column range, 0-based<p>
+<a name="skip"></a>
+<div class="ramadda-help-subsubheading"><a href="#skip">-skip</a>
+</div> Usage:<pre>-skip &lt;how many lines to skip&gt;</pre><p>
+<a name="cut"></a>
+<div class="ramadda-help-subsubheading"><a href="#cut">-cut</a>
+</div> Usage:<pre>-cut &lt;one or more rows. -1 to the end&gt;</pre><p>
+<a name="include"></a>
+<div class="ramadda-help-subsubheading"><a href="#include">-include</a>
+</div> Usage:<pre>-include &lt;one or more rows, -1 to the end&gt;</pre><p>
+<a name="pattern"></a>
+<div class="ramadda-help-subsubheading"><a href="#pattern">-pattern</a>
+</div> Usage:<pre>-pattern &lt;col #&gt; &lt;regexp pattern&gt;</pre>extract rows that match the pattern<p>
+<a name="notpattern"></a>
+<div class="ramadda-help-subsubheading"><a href="#notpattern">-notpattern</a>
+</div> Usage:<pre>-notpattern &lt;col #&gt; &lt;regexp pattern&gt;</pre>extract rows that don't match the pattern<p>
+<a name="<gt|-ge|-lt|-le>"></a>
+<div class="ramadda-help-subsubheading"><a href="#<gt|-ge|-lt|-le>">&lt;-gt|-ge|-lt|-le&gt;</a>
+</div> Usage:<pre>&lt;-gt|-ge|-lt|-le&gt; &lt;col #&gt; &lt;value&gt;</pre>extract rows that pass the expression<p>
+<a name="decimate"></a>
+<div class="ramadda-help-subsubheading"><a href="#decimate">-decimate</a>
+</div> Usage:<pre>-decimate &lt;# of start rows to include&gt; &lt;skip factor&gt;</pre>only include every &lt;skip factor&gt; row<p>
+<a name="countvalue"></a>
+<div class="ramadda-help-subsubheading"><a href="#countvalue">-countvalue</a>
+</div> Usage:<pre>-countvalue &lt;col #&gt; &lt;count&gt;</pre><p>
+<a name="copy"></a>
+<div class="ramadda-help-subsubheading"><a href="#copy">-copy</a>
+</div> Usage:<pre>-copy &lt;col #&gt; &lt;name&gt;</pre><p>
+<a name="delete"></a>
+<div class="ramadda-help-subsubheading"><a href="#delete">-delete</a>
+</div> Usage:<pre>-delete &lt;col #&gt;</pre>remove the columns<p>
+<a name="insert"></a>
+<div class="ramadda-help-subsubheading"><a href="#insert">-insert</a>
+</div> Usage:<pre>-insert &lt;col #&gt; &lt;value&gt;</pre>insert a new column value<p>
+<a name="scale"></a>
+<div class="ramadda-help-subsubheading"><a href="#scale">-scale</a>
+</div> Usage:<pre>-scale &lt;col #&gt; &lt;delta1&gt; &lt;scale&gt; &lt;delta2&gt;</pre>set value={value+delta1}*scale+delta2<p>
+<a name="insert"></a>
+<div class="ramadda-help-subsubheading"><a href="#insert">-insert</a>
+</div> Usage:<pre>-insert &lt;col #&gt; &lt;comma separated values&gt;</pre><p>
+<a name="addcell"></a>
+<div class="ramadda-help-subsubheading"><a href="#addcell">-addcell</a>
+</div> Usage:<pre>-addcell &lt;row #&gt;  &lt;col #&gt;  &lt;value&gt;</pre><p>
+<a name="deletecell"></a>
+<div class="ramadda-help-subsubheading"><a href="#deletecell">-deletecell</a>
+</div> Usage:<pre>-deletecell &lt;row #&gt; &lt;col #&gt;</pre><p>
+<a name="set"></a>
+<div class="ramadda-help-subsubheading"><a href="#set">-set</a>
+</div> Usage:<pre>-set &lt;col #s&gt; &lt;row #s&gt; &lt;value&gt;</pre>write the value into the cells<p>
+<a name="case"></a>
+<div class="ramadda-help-subsubheading"><a href="#case">-case</a>
+</div> Usage:<pre>-case &lt;lower|upper|camel&gt; &lt;col #&gt;</pre>change case of column<p>
+<a name="width"></a>
+<div class="ramadda-help-subsubheading"><a href="#width">-width</a>
+</div> Usage:<pre>-width &lt;columns&gt;  &lt;size&gt;</pre>limit the string size of the columns<p>
+<a name="prepend"></a>
+<div class="ramadda-help-subsubheading"><a href="#prepend">-prepend</a>
+</div> Usage:<pre>-prepend &lt;text&gt;</pre>add the text to the beginning of the file. use _nl_ to insert newlines<p>
+<a name="pad"></a>
+<div class="ramadda-help-subsubheading"><a href="#pad">-pad</a>
+</div> Usage:<pre>-pad &lt;col #&gt; &lt;pad string&gt;</pre>pad out or cut columns to achieve the count<p>
+<a name="change"></a>
+<div class="ramadda-help-subsubheading"><a href="#change">-change</a>
+</div> Usage:<pre>-change &lt;col #s&gt; &lt;pattern&gt; &lt;substitution string&gt;</pre><p>
+<a name="formatdate"></a>
+<div class="ramadda-help-subsubheading"><a href="#formatdate">-formatdate</a>
+</div> Usage:<pre>-formatdate &lt;col #s&gt; &lt;intial date format&gt; &lt;target date format&gt;</pre><p>
+<a name="map"></a>
+<div class="ramadda-help-subsubheading"><a href="#map">-map</a>
+</div> Usage:<pre>-map &lt;col #&gt; &lt;new columns name&gt; &lt;value newvalue ...&gt;</pre>change values in column to new values<p>
+<a name="combine"></a>
+<div class="ramadda-help-subsubheading"><a href="#combine">-combine</a>
+</div> Usage:<pre>-combine &lt;col #s&gt; &lt;delimiter&gt; &lt;new column name&gt;</pre>combine columns with the delimiter. deleting columns<p>
+<a name="combineinplace"></a>
+<div class="ramadda-help-subsubheading"><a href="#combineinplace">-combineinplace</a>
+</div> Usage:<pre>-combineinplace &lt;col #s&gt; &lt;delimiter&gt; &lt;new column name&gt;</pre>combine columns with the delimiter.<p>
+<a name="html"></a>
+<div class="ramadda-help-subsubheading"><a href="#html">-html</a>
+</div> Usage:<pre>-html "name value properties"</pre>parse the table in the input html file, properties: skip &lt;tables to skip&gt; pattern &lt;pattern to skip to&gt;<p>
+<a name="concat"></a>
+<div class="ramadda-help-subsubheading"><a href="#concat">-concat</a>
+</div> Usage:<pre>-concat &lt;col #s&gt;  &lt;delimiter&gt;</pre>create a new column from the given columns<p>
+<a name="operator"></a>
+<div class="ramadda-help-subsubheading"><a href="#operator">-operator</a>
+</div> Usage:<pre>-operator &lt;col #s&gt;  &lt;new col name&gt; &lt;operator +,-,*,/&gt;</pre>apply the operator to the given columns and create new one<p>
+<a name="sum"></a>
+<div class="ramadda-help-subsubheading"><a href="#sum">-sum</a>
+</div> Usage:<pre>-sum &lt;key columns&gt; &lt;value columns&gt;</pre>sum values keying on name column value<p>
+<a name="format"></a>
+<div class="ramadda-help-subsubheading"><a href="#format">-format</a>
+</div> Usage:<pre>-format &lt;columns&gt; &lt;decimal format, e.g. '##0.00'&gt;</pre><p>
+<a name="unique"></a>
+<div class="ramadda-help-subsubheading"><a href="#unique">-unique</a>
+</div> Usage:<pre>-unique &lt;columns&gt;</pre>pass through unique values<p>
+<a name="percent"></a>
+<div class="ramadda-help-subsubheading"><a href="#percent">-percent</a>
+</div> Usage:<pre>-percent &lt;columns to add&gt;</pre><p>
+<a name="explode"></a>
+<div class="ramadda-help-subsubheading"><a href="#explode">-explode</a>
+</div> Usage:<pre>-explode &lt;col #&gt; </pre>make separate files based on value of column<p>
+<a name="unfurl"></a>
+<div class="ramadda-help-subsubheading"><a href="#unfurl">-unfurl</a>
+</div> Usage:<pre>-unfurl &lt;col to get new column header#&gt; &lt;value columns&gt; &lt;unique col&gt;  &lt;other columns&gt;</pre>make columns from data values<p>
+<a name="geocode"></a>
+<div class="ramadda-help-subsubheading"><a href="#geocode">-geocode</a>
+</div> Usage:<pre>-geocode &lt;col idx&gt; &lt;csv file&gt; &lt;name idx&gt; &lt;lat idx&gt; &lt;lon idx&gt;</pre><p>
+<a name="geocodeaddress"></a>
+<div class="ramadda-help-subsubheading"><a href="#geocodeaddress">-geocodeaddress</a>
+</div> Usage:<pre>-geocodeaddress &lt;col indices&gt; &lt;suffix&gt; </pre><p>
+<a name="geocodeaddressdb"></a>
+<div class="ramadda-help-subsubheading"><a href="#geocodeaddressdb">-geocodeaddressdb</a>
+</div> Usage:<pre>-geocodeaddressdb &lt;col indices&gt; &lt;suffix&gt; </pre><p>
+<a name="denormalize"></a>
+<div class="ramadda-help-subsubheading"><a href="#denormalize">-denormalize</a>
+</div> Usage:<pre>-denormalize &lt;col idx&gt;  &lt;csv file&gt;  &lt;new col name&gt; &lt;mode replace add&gt;</pre>read the id,value from file and substitute the value in the dest file col idx<p>
+<a name="count"></a>
+<div class="ramadda-help-subsubheading"><a href="#count">-count</a>
+</div> Usage:<pre>-count </pre>show count<p>
+<a name="maxrows"></a>
+<div class="ramadda-help-subsubheading"><a href="#maxrows">-maxrows</a>
+</div> Usage:<pre>-maxrows &lt;max rows to print&gt;</pre><p>
+<a name="skipline"></a>
+<div class="ramadda-help-subsubheading"><a href="#skipline">-skipline</a>
+</div> Usage:<pre>-skipline  &lt;pattern&gt;</pre>skip any line that matches the pattern<p>
+<a name="changeline"></a>
+<div class="ramadda-help-subsubheading"><a href="#changeline">-changeline</a>
+</div> Usage:<pre>-changeline &lt;from&gt; &lt;to&gt;</pre>change the line<p>
+<a name="prune"></a>
+<div class="ramadda-help-subsubheading"><a href="#prune">-prune</a>
+</div> Usage:<pre>-prune &lt;number of leading bytes to remove&gt;</pre><p>
+<a name="strict"></a>
+<div class="ramadda-help-subsubheading"><a href="#strict">-strict</a>
+</div> Usage:<pre>-strict </pre>be strict on columns. any rows that are not the size of the other rows are dropped<p>
+<a name="flag"></a>
+<div class="ramadda-help-subsubheading"><a href="#flag">-flag</a>
+</div> Usage:<pre>-flag </pre> be strict on columns. any rows that are not the size of the other rows are shown<p>
+<a name="rotate"></a>
+<div class="ramadda-help-subsubheading"><a href="#rotate">-rotate</a>
+</div> Usage:<pre>-rotate </pre><p>
+<a name="flip"></a>
+<div class="ramadda-help-subsubheading"><a href="#flip">-flip</a>
+</div> Usage:<pre>-flip </pre><p>
+<a name="delimiter"></a>
+<div class="ramadda-help-subsubheading"><a href="#delimiter">-delimiter</a>
+</div> Usage:<pre>-delimiter </pre>specify an alternative delimiter<p>
+<a name="comment"></a>
+<div class="ramadda-help-subsubheading"><a href="#comment">-comment</a>
+</div> Usage:<pre>-comment &lt;string&gt;</pre><p>
+<a name="db"></a>
+<div class="ramadda-help-subsubheading"><a href="#db">-db</a>
+</div> Usage:<pre>-db {&lt;props&gt;}</pre>generate the RAMADDA db xml from the header, props are a set of name value pairs:<br>	table.id &lt;new id&gt; table.name &lt;new name&gt; table.cansearch &lt;true|false&gt; table.canlist &lt;true|false&gt; table.icon &lt;icon, e.g., /db/database.png&gt;<br>	&lt;column name&gt;.id &lt;new id for column&gt; &lt;column name&gt;.label &lt;new label&gt;<br>	&lt;column name&gt;.type &lt;string|enumeration|double|int|date&gt;<br>	&lt;column name&gt;.format &lt;yyyy MM dd HH mm ss format for dates&gt;<br>	&lt;column name&gt;.canlist &lt;true|false&gt; &lt;column name&gt;.cansearch &lt;true|false&gt;<br>	install &lt;true|false install the new db table&gt;<br>	nukedb &lt;true|false careful! this deletes any prior created dbs&gt;<p>
+<a name="print"></a>
+<div class="ramadda-help-subsubheading"><a href="#print">-print</a>
+</div> Usage:<pre>-print </pre>print to stdout<p>
+<a name="raw"></a>
+<div class="ramadda-help-subsubheading"><a href="#raw">-raw</a>
+</div> Usage:<pre>-raw </pre>print the file raw<p>
+<a name="record"></a>
+<div class="ramadda-help-subsubheading"><a href="#record">-record</a>
+</div> Usage:<pre>-record </pre> print records<p>
+<a name="cat"></a>
+<div class="ramadda-help-subsubheading"><a href="#cat">-cat</a>
+</div> Usage:<pre>-cat  &lt;*.csv&gt;</pre>one or more csv files<p>
+<a name="printheader"></a>
+<div class="ramadda-help-subsubheading"><a href="#printheader">-printheader</a>
+</div> Usage:<pre>-printheader </pre>print the first line<p>
+<a name="pointheader"></a>
+<div class="ramadda-help-subsubheading"><a href="#pointheader">-pointheader</a>
+</div> Usage:<pre>-pointheader </pre>generate the RAMADDA point properties<p>
+<a name="addheader"></a>
+<div class="ramadda-help-subsubheading"><a href="#addheader">-addheader</a>
+</div> Usage:<pre>-addheader &lt;name1 value1 ... nameN valueN&gt;</pre>add the RAMADDA point properties<p>
+<a name="run"></a>
+<div class="ramadda-help-subsubheading"><a href="#run">-run</a>
+</div> Usage:<pre>-run &lt;name of process directory&gt;</pre><p>
+
+
+
+
+
+<a name="html"></a><p><div class="ramadda-help-heading">7.0.1 <a href="#html">Extracting HTML</a></div> 
+The conversion service supports extracting data from an HTML table in a HTML page. Save the HTML page and upload to RAMADDA as a CSV File entry type. Then go to the conversion page.  The first command to enter is the -html command:
+<pre>
+-html &quot;name value arguments&quot;
+</pre>
+
+
+
+The name/value arguments include:
+<pre>
+-html &quot;skip &lt;how many tables in the HTML file to skip&gt;&quot;
+-html &quot;removePattern &lt;regexp pattern to remove&gt;  removePattern2 &lt;another pattern to remove&gt;&quot;
+</pre>
+
+Because there are many levels of parsing of escape characters if 
+you need to remove text that contains special regular expression characters - [,],(,) and . - use the special tags:
+_leftbracket_, _rightbracket_, _leftparent_, _rightparen_, _dot_, e.g.:
+
+<pre>
+-html &quot;removePattern _leftbracket_.*?_rightbracket_ &quot;
+</pre>
+
+
+
+
+</body>
+
+
+
+</div>
+<p>
+
+<p>&nbsp;<p>
+<a href="page_datafacilities.html"><img src="images/previous.png" border="0"   alt="Previous: Data Facilities" title="Previous: Data Facilities"></a> <a href="gridsubset.html"><img src="images/next.png" border="0"   alt="Next: Grid Subsetting" title="Next: Grid Subsetting"></a>  <a href="toc.html#etl.html"><img src="images/table.png" border="0"   alt="Table of contents" title="Table of contents"></a>
+<p>
+</div>
+</body>
+</html>
+

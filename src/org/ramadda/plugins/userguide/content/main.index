@@ -43,8 +43,10 @@ index.html
 >>entryxml.html
 >>harvesters.html
 
->title:Geodata Facilities
+
+>title:Data Facilities
 #>>pointdata.html
+>>etl.html
 >>gridsubset.html
 >>gridatpoint.html
 >>gridaggregation.html

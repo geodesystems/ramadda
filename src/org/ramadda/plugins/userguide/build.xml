@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project basedir="../../../../../" default="plugin" name="ramadda plugin">
 
-    <target name="all" depends="userguide,plugin"/>
+    <target name="all" depends="docs,plugin"/>
 
     <target name="plugin">
       <property name="plugin" value="userguide"/>
@@ -10,7 +10,7 @@
     </target>
 
 
-    <target name="userguide">
+    <target name="docs">
       <echo message="Generating user guide content"/>
       <property file="${basedir}/build.properties"/>
       <echo message="Building docs for version: ${version}"/>

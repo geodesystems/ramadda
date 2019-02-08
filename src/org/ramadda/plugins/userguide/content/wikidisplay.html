@@ -1,5 +1,4 @@
 [ht::head {Wiki Display Components}]
-
 <%nochildlist%>
 
 RAMADDA provides a number of information and data display components in the wiki facility. 
@@ -64,6 +63,7 @@ certain attributes (e.g., showMenu, showTitle)
 and the layout of the children displays.
 If there is a wiki page that does not have a group but only one or more display tags then a group will be
 added automatically. 
+
 
 
 <pre>
@@ -141,26 +141,6 @@ Likewise, the group has a divid=maindiv which corresponds to the div at the bott
 
 
 
-
-[ug::subheading {Specifying Fields} fields]
-Most of these displays are based on <a href="pointdata.html">point data</a> in RAMADDA. The point data model
-is based on a series of records (or rows) that are made up of a set of fields (or columns). 
-Many of the displays below use a <i>fields</i> attribute to specify the fields that are displayed. 
-These are either the field ids of the point data or a 1-based index into the field list.
-
-<pre>
-fields="active_voters,total_ballots"
-fields="#1,#2,#3"
-</pre>
-
-The field ids for a point data entry can be viewed with the  Metadata view, 
-(<a href="https://geodesystems.com/repository/entry/show/Home/RAMADDA+Information/Site+Content/Development/Example+Charts?entryid=e8af924a-2194-4fd0-83be-92d006837c00&output=points.metadata">example</a>).
-
-
-[ht::pre {{{display  type="linechart"  column="0" 
-fields="#5,#6,#7,#8,#9,#10" 
-showPercent="true" 
-vAxisMinValue="0" vAxisMaxValue="100"  title="Line Chart Showing %"}}}]
 
 
 
@@ -692,4 +672,5 @@ patternFilterField="#1" filterPattern="Texas"
 numericFilterField="#3" numericFilterValue="5000" filterOperator=">" 
 }}
 </pre>
+
 [ht::foot]

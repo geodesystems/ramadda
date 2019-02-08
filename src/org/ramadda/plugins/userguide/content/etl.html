@@ -1,0 +1,146 @@
+[ht::head {ETL Tools}]
+<%nochildlist%>
+
+[proc etl {cmd {args {}} {desc {}}} {
+regsub --  {-} $cmd {} id
+regsub -all {<} $cmd {\&lt;} cmd
+regsub -all {>} $cmd {\&gt;} cmd
+regsub -all {<} $args {\&lt;} args
+regsub -all {>} $args {\&gt;} args
+regsub -all {<} $desc {\&lt;} desc
+regsub -all {>} $desc {\&gt;} desc
+regsub -all {\(} $desc {} desc
+regsub -all {\)} $desc {} desc
+regsub -all {\n} $desc {<br>} desc
+set html [ug::subsubheading $cmd $id]
+append html "Usage:<pre>$cmd $args</pre>"
+append html $desc
+append html "<p>"
+set html
+}]
+
+
+[ug::subheading {Extract, Transform, Load CSV Files} etl]
+
+RAMADDA provides an interactive facility to transform CSV files, extract data from HTML files and create structured
+point data files and databases.
+<p>
+To start, upload the CSV file of interest into RAMADDA. Go to the  [ht::menu {Main Menu} View {Convert Spreadsheet}] menu to see the conversion interface below. Clicking on the Help button will show the following help. One specifies a pipeline of commands for manipulating the rows and columns of the CSV file. The can be on the same line or on multiple lines. If on multiple lines then the intermediate processing results of each line of commands is available. Prefix a line with "#" to comment out the line.
+<p>
+The Header, Table, Records, etc., buttons runs the facility and produces different output.
+The Save checkbox saves the command text when you run the commands so you can return to it later. 
+The Do Commands checkbox applies the commands when you press one of the run buttons.
+The Select File link selects another file in RAMADDA for the commands that require another file (e.g., geolocation).
+[ht::cimg images/etl.png {CSV Conversion Interface} {width=90%}]
+<p>
+
+Many of the commands below take a columns specification. This takes the form of:
+[ht::pre {
+"colA,colB,colC-colD,colE,..."
+e.g.:
+"0,1,2,7-10,12"
+}]
+
+
+[etl {-help} {} {(print this help)}]
+[etl {-help:<topic search string>} {} {(print help that matches topic)}]
+[etl {-columns} {<e.g., 0,1,2,7-10,12>} {(comma separated list of columns #s or column range, 0-based)}]
+[etl {-skip} {<how many lines to skip>} {}]
+[etl {-cut} {<one or more rows. -1 to the end>} {}]
+[etl {-include} {<one or more rows, -1 to the end>} {}]
+[etl {-pattern} {<col #> <regexp pattern>} {(extract rows that match the pattern)}]
+[etl {-notpattern} {<col #> <regexp pattern>} {(extract rows that don't match the pattern)}]
+[etl {<-gt|-ge|-lt|-le>} {<col #> <value>} {(extract rows that pass the expression)}]
+[etl {-decimate} {<# of start rows to include> <skip factor>} {(only include every <skip factor> row)}]
+[etl {-countvalue} {<col #> <count>} {}]
+[etl {-copy} {<col #> <name>} {}]
+[etl {-delete} {<col #>} {(remove the columns)}]
+[etl {-insert} {<col #> <value>} {(insert a new column value)}]
+[etl {-scale} {<col #> <delta1> <scale> <delta2>} {(set value={value+delta1}*scale+delta2)}]
+[etl {-insert} {<col #> <comma separated values>} {}]
+[etl {-addcell} {<row #>  <col #>  <value>} {}]
+[etl {-deletecell} {<row #> <col #>} {}]
+[etl {-set} {<col #s> <row #s> <value>} {(write the value into the cells)}]
+[etl {-case} {<lower|upper|camel> <col #>} {(change case of column)}]
+[etl {-width} {<columns>  <size>} {(limit the string size of the columns)}]
+[etl {-prepend} {<text>} {(add the text to the beginning of the file. use _nl_ to insert newlines)}]
+[etl {-pad} {<col #> <pad string>} {(pad out or cut columns to achieve the count)}]
+[etl {-change} {<col #s> <pattern> <substitution string>} {}]
+[etl {-formatdate} {<col #s> <intial date format> <target date format>} {}]
+[etl {-map} {<col #> <new columns name> <value newvalue ...>} {(change values in column to new values)}]
+[etl {-combine} {<col #s> <delimiter> <new column name>} {(combine columns with the delimiter. deleting columns)}]
+[etl {-combineinplace} {<col #s> <delimiter> <new column name>} {(combine columns with the delimiter.)}]
+[etl {-html} {"name value properties"} {(parse the table in the input html file, properties: skip <tables to skip> pattern <pattern to skip to>)}]
+[etl {-concat} {<col #s>  <delimiter>} {(create a new column from the given columns)}]
+[etl {-operator} {<col #s>  <new col name> <operator +,-,*,/>} {(apply the operator to the given columns and create new one)}]
+[etl {-sum} {<key columns> <value columns>} {sum values keying on name column value}]
+[etl {-format} {<columns> <decimal format, e.g. '##0.00'>} {}]
+[etl {-unique} {<columns>} {(pass through unique values)}]
+[etl {-percent} {<columns to add>} {}]
+[etl {-explode} {<col #> } {(make separate files based on value of column)}]
+[etl {-unfurl} {<col to get new column header#> <value columns> <unique col>  <other columns>} {(make columns from data values)}]
+[etl {-geocode} {<col idx> <csv file> <name idx> <lat idx> <lon idx>} {}]
+[etl {-geocodeaddress} {<col indices> <suffix> } {}]
+[etl {-geocodeaddressdb} {<col indices> <suffix> } {}]
+[etl {-denormalize} {<col idx>  <csv file>  <new col name> <mode replace add>} {(read the id,value from file and substitute the value in the dest file col idx)}]
+[etl {-count} {} {(show count)}]
+[etl {-maxrows} {<max rows to print>} {}]
+[etl {-skipline} { <pattern>} {(skip any line that matches the pattern)}]
+[etl {-changeline} {<from> <to>} {(change the line)}]
+[etl {-prune} {<number of leading bytes to remove>} {}]
+[etl {-strict} {} {(be strict on columns. any rows that are not the size of the other rows are dropped)}]
+[etl {-flag} {} { (be strict on columns. any rows that are not the size of the other rows are shown)}]
+[etl {-rotate} {} {}]
+[etl {-flip} {} {}]
+[etl {-delimiter} {} {(specify an alternative delimiter)}]
+[etl {-comment} {<string>} {}]
+[etl {-db} {{<props>}} {(generate the RAMADDA db xml from the header, props are a set of name value pairs:)
+	table.id <new id> table.name <new name> table.cansearch <true|false> table.canlist <true|false> table.icon <icon, e.g., /db/database.png>
+	<column name>.id <new id for column> <column name>.label <new label>
+	<column name>.type <string|enumeration|double|int|date>
+	<column name>.format <yyyy MM dd HH mm ss format for dates>
+	<column name>.canlist <true|false> <column name>.cansearch <true|false>
+	install <true|false install the new db table>
+	nukedb <true|false careful! this deletes any prior created dbs>}]
+[etl {-print} {} {(print to stdout)}]
+[etl {-raw} {} {(print the file raw)}]
+[etl {-record} {} { (print records)}]
+[etl {-cat} { <*.csv>} {(one or more csv files)}]
+[etl {-printheader} {} {(print the first line)}]
+[etl {-pointheader} {} {(generate the RAMADDA point properties)}]
+[etl {-addheader} {<name1 value1 ... nameN valueN>} {(add the RAMADDA point properties)}]
+[etl {-run} {<name of process directory>} {}]
+
+
+
+
+
+[ug::subheading {Extracting HTML} html]
+The conversion service supports extracting data from an HTML table in a HTML page. Save the HTML page and upload to RAMADDA as a CSV File entry type. Then go to the conversion page.  The first command to enter is the -html command:
+[ht::pre {
+-html "name value arguments"
+}]
+
+
+
+The name/value arguments include:
+[ht::pre {
+-html "skip <how many tables in the HTML file to skip>"
+-html "removePattern <regexp pattern to remove>  removePattern2 <another pattern to remove>"
+}]
+
+Because there are many levels of parsing of escape characters if 
+you need to remove text that contains special regular expression characters - \[,\],(,) and . - use the special tags:
+_leftbracket_, _rightbracket_, _leftparent_, _rightparen_, _dot_, e.g.:
+
+[ht::pre {
+-html "removePattern _leftbracket_.*?_rightbracket_ "
+}]
+
+
+
+
+[ht::foot]
+
+
+</body>

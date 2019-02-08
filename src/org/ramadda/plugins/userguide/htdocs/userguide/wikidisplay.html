@@ -28,7 +28,6 @@ pre {
 
 
 
-
 RAMADDA provides a number of information and data display components in the wiki facility. 
 There are a number of  
 <a href="https://geodesystems.com/repository/entry/show?entryid=049a8297-58d7-4646-b689-b188ac274640">examples</a> available. An easy way to figure out what is going on is to the the  wiki text of working examples. The wikitext used for any RAMADDA entry can be viewed with the Menu-&gt;View-&gt;Information page  - 
@@ -121,6 +120,7 @@ If there is a wiki page that does not have a group but only one or more display 
 added automatically. 
 
 
+
 <pre>
 {{group group 1 ...}}
 {{display display 1}}
@@ -197,29 +197,9 @@ Likewise, the group has a divid=maindiv which corresponds to the div at the bott
 
 
 
-<a name="fields"></a><p><div class="ramadda-help-heading">5.2.4 <a href="#fields">Specifying Fields</a></div> 
-Most of these displays are based on <a href="pointdata.html">point data</a> in RAMADDA. The point data model
-is based on a series of records (or rows) that are made up of a set of fields (or columns). 
-Many of the displays below use a <i>fields</i> attribute to specify the fields that are displayed. 
-These are either the field ids of the point data or a 1-based index into the field list.
-
-<pre>
-fields="active_voters,total_ballots"
-fields="#1,#2,#3"
-</pre>
-
-The field ids for a point data entry can be viewed with the  Metadata view, 
-(<a href="https://geodesystems.com/repository/entry/show/Home/RAMADDA+Information/Site+Content/Development/Example+Charts?entryid=e8af924a-2194-4fd0-83be-92d006837c00&output=points.metadata">example</a>).
 
 
-<pre>{{display  type=&quot;linechart&quot;  column=&quot;0&quot; 
-fields=&quot;#5,#6,#7,#8,#9,#10&quot; 
-showPercent=&quot;true&quot; 
-vAxisMinValue=&quot;0&quot; vAxisMaxValue=&quot;100&quot;  title=&quot;Line Chart Showing %&quot;}}</pre>
-
-
-
-<a name="displays"></a><p><div class="ramadda-help-heading">5.2.5 <a href="#displays">The Displays</a></div> 
+<a name="displays"></a><p><div class="ramadda-help-heading">5.2.4 <a href="#displays">The Displays</a></div> 
 
 <a name="entrylist"></a>
 <div class="ramadda-help-subsubheading"><a href="#entrylist">Search form</a>
@@ -607,7 +587,7 @@ labelFieldsTemplate=&quot;{name}  Age: {years}  Birth Place: {birth_place}  Race
 labelFields=&quot;name,race,birth_place,years&quot;}}</pre><a href='https://geodesystems.com/repository/entry/show?entryid=d7c23939-dbfe-4bbf-9045-70e2422c3117'>Example</a><a name="image30"></a><div class="cimg"><a href="images/charts/timeline.png"><img  src="images/charts/timeline.png"  alt="Timeline" ></a><br><span class="caption">Image 30: Timeline</span></div>
 
 
-<a name="derived"></a><p><div class="ramadda-help-heading">5.2.6 <a href="#derived">Derived Data</a></div> 
+<a name="derived"></a><p><div class="ramadda-help-heading">5.2.5 <a href="#derived">Derived Data</a></div> 
 
 Derived data can be calculated by specifying a javascript function with the field ids. For example, in the 
 <a href="https://geodesystems.com/repository/entry/show?entryid=e8af924a-2194-4fd0-83be-92d006837c00">election data example</a> 
@@ -625,7 +605,7 @@ Percentage values can be calculated with the <i>showPercent</i> attribute. This 
 percent value.
 
 
-<a name="scaleoffset"></a><p><div class="ramadda-help-heading">5.2.7 <a href="#scaleoffset">Scaling and offset of data</a></div> 
+<a name="scaleoffset"></a><p><div class="ramadda-help-heading">5.2.6 <a href="#scaleoffset">Scaling and offset of data</a></div> 
 The data values and or displayed unit of the point data that is displayed in chart can be modified
 by specifying offset and scale units. For example, one can convert Kelvin to Celsius in a display
 with the following attributes:
@@ -647,7 +627,7 @@ You can specify values specific for a particular field using:
 </pre></div>
 
 
-<a name="displayProperty"></a><p><div class="ramadda-help-heading">5.2.8 <a href="#displayProperty">Setting shared properties</a></div> 
+<a name="displayProperty"></a><p><div class="ramadda-help-heading">5.2.7 <a href="#displayProperty">Setting shared properties</a></div> 
 Sometimes there are a number of displays on a single page that share the same set of properties.
 For example, this <a href="https://geodesystems.com/repository/entry/show?entryid=8fafafa0-0105-4f14-9c86-6a9902f186a9">page</a>
 shows a number of charts of atmospheric time series data. The data itself has temperature in Kelvin and pressure in Pascals. 
@@ -664,7 +644,7 @@ tag global properties can be specified that are applicable to all displays on th
 </pre></div>
 
 
-<a name="filters"></a><p><div class="ramadda-help-heading">5.2.9 <a href="#filters">Filtering data</a></div> 
+<a name="filters"></a><p><div class="ramadda-help-heading">5.2.8 <a href="#filters">Filtering data</a></div> 
 You can filter the data that is shown based on string pattern matching or numeric operators.
 You do this with the attributes:
 <pre>
@@ -681,6 +661,7 @@ patternFilterField="#1" filterPattern="Texas"
 numericFilterField="#3" numericFilterValue="5000" filterOperator=">" 
 }}
 </pre>
+
 
 </div>
 <p>

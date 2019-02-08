@@ -298,6 +298,10 @@ public class CsvUtil {
 
                 return;
             }
+            if (arg.equals("-genhelp")) {
+                genHelp();
+                return;
+            }
             if (arg.equals("-helpraw")) {
                 usage("", null, true);
 
@@ -992,64 +996,99 @@ public class CsvUtil {
         return s;
     }
 
-    /** _more_ */
-    private static final String[] commands = {
-        "-help  or -help:<topic search string> (print this help)",
-        "-columns <e.g., 0,1,2,7-10,12> (comma separated list of columns #s or column range, 0-based)",
-        "-skip <how many lines to skip>",
-        "-cut <one or more rows. -1 to the end>",
-        "-include <one or more rows, -1 to the end>",
-        "-pattern <col #> <regexp pattern> (extract rows that match the pattern)",
-        "-notpattern <col #> <regexp pattern> (extract rows that don't match the pattern)",
-        "<column>=~<value> (same as -pattern)",
-        "<-gt|-ge|-lt|-le> <col #> <value> (extract rows that pass the expression)",
-        "-decimate <# of start rows to include> <skip factor>   (only include every <skip factor> row)",
-        "-countvalue <col #> <count>", "-copy <col #> <name>",
-        "-delete <col #> (remove the columns)",
-        "-insert <col #> <value> (insert a new column value)",
-        "-scale <col #> <delta1> <scale> <delta2> (set value={value+delta1}*scale+delta2)",
-        "-insert <col #> <comma separated values> ",
-        "-addcell <row #>  <col #>  <value> ",
-        "-deletecell <row #> <col #>  ",
-        "-set <col #s> <row #s> <value> (write the value into the cells)",
-        "-case <lower|upper|camel> <col #> (change case of column)",
-        "-width <columns>  <size> (limit the string size of the columns)",
-        "-prepend  <text> (add the text to the beginning of the file. use _nl_ to insert newlines)",
-        "-pad <col #> <pad string> (pad out or cut columns to achieve the count)",
-        "-change <col #s> <pattern> <substitution string>",
-        "-formatdate <col #s> <intial date format> <target date format>",
-        "-map <col #> <new columns name> <value newvalue ...> (change values in column to new values)",
-        "-combine <col #s> <delimiter> <new column name> (combine columns with the delimiter. deleting columns)",
-        "-combineinplace <col #s> <delimiter> <new column name> (combine columns with the delimiter.)",
-        "-html \"name value properties\"  (parse the table in the input html file, properties: pattern=<pattern to skip to>)",
-        "-concat <col #s>  <delimiter> (create a new column from the given columns)",
-        "-operator <col #s>  <new col name> <operator +,-,*,/> (apply the operator to the given columns and create new one)",
-        "-sum <key columns> <value columns>  sum values keying on name column value",
-        "-format <columns> <decimal format, e.g. '##0.00'>",
-        "-unique <columns> (pass through unique values)",
-        "-percent <columns to add>",
-        "-explode <col #>   (make separate files based on value of column)",
-        "-unfurl <col to get new column header#> <value columns> <unique col>  <other columns>  (make columns from data values)",
-        "-geocode <col idx> <csv file> <name idx> <lat idx> <lon idx>",
-        "-geocodeaddress <col indices> <suffix> ",
-        "-geocodeaddressdb <col indices> <suffix> ",
-        "-denormalize <col idx>  <csv file>  <new col name> <mode replace add> (read the id,value from file and substitute the value in the dest file col idx)",
-        "-count (show count)", "-maxrows <max rows to print>",
-        "-skipline <pattern> (skip any line that matches the pattern)",
-        "-changeline <from> <to> (change the line)",
-        "-prune <number of leading bytes to remove>",
-        "-strict (be strict on columns. any rows that are not the size of the other rows are dropped)",
-        "-flag (be strict on columns. any rows that are not the size of the other rows are shown)",
-        "-rotate", "-flip", "-delimiter (specify an alternative delimiter)",
-        "-comment  <string>",
-        "-db {<props>} (generate the RAMADDA db xml from the header, props are a set of name value pairs:)\n\ttable.id <new id> table.name <new name> table.cansearch <true|false> table.canlist <true|false> table.icon <icon, e.g., /db/database.png>\n\t<column name>.id <new id for column> <column name>.label <new label>\n\t<column name>.type <string|enumeration|double|int|date>\n\t<column name>.format <yyyy MM dd HH mm ss format for dates>\n\t<column name>.canlist <true|false> <column name>.cansearch <true|false>\n\tinstall <true|false install the new db table>\n\tnukedb <true|false careful! this deletes any prior created dbs>",
-        "-print (print to stdout)", "-raw (print the file raw)",
-        "-record (print records)", "-cat <*.csv>  (one or more csv files)",
-        "-printheader (print the first line)",
-        "-pointheader (generate the RAMADDA point properties)",
-        "-addheader <name1 value1 ... nameN valueN> (add the RAMADDA point properties)",
-        "-run <name of process directory>",
-    };
+    public static class Cmd {
+        String cmd;
+        String args;
+        String desc;
+        public Cmd(String cmd) {
+            this.cmd = cmd;
+            this.args = "";
+            this.desc  = "";
+        }
+
+        public Cmd(String cmd, String args) {
+            this.cmd = cmd;
+            this.args = args;
+            this.desc  = "";
+        }
+        public Cmd(String cmd, String args, String desc) {
+            this.cmd = cmd;
+            this.args = args;
+            this.desc  = desc;
+        }
+        public boolean match(String s) {
+            return cmd.indexOf(s)>=0;
+        }
+        public String getLine() {
+            return cmd +" " + args +" " + desc;
+        }
+
+    }
+
+    private static final Cmd[] commands = {
+        new Cmd("-help","","(print this help)"),
+        new Cmd("-help:<topic search string>","","(print help that matches topic)"),
+        new Cmd("-columns","<e.g., 0,1,2,7-10,12>","(A comma separated list of columns #s or column range, 0-based. Extract the given columns)"),
+        new Cmd("-skip","<how many lines to skip>"),
+        new Cmd("-cut","<one or more rows. -1 to the end>"),
+        new Cmd("-include","<one or more rows, -1 to the end>"),
+        new Cmd("-pattern","<col #> <regexp pattern>","(extract rows that match the pattern)"),
+        new Cmd("-notpattern","<col #> <regexp pattern>","(extract rows that don't match the pattern)"),
+        new Cmd("<column>=~<value>","", "(same as -pattern)"),
+        new Cmd("<-gt|-ge|-lt|-le>", "<col #> <value>","(extract rows that pass the expression)"),
+        new Cmd("-decimate","<# of start rows to include> <skip factor>","(only include every <skip factor> row)"),
+        new Cmd("-countvalue", "<col #> <count>"), 
+        new Cmd("-copy","<col #> <name>"),
+        new Cmd("-delete","<col #>","(remove the columns)"),
+        new Cmd("-insert","<col #> <value>","(insert a new column value)"),
+        new Cmd("-scale","<col #> <delta1> <scale> <delta2>","(set value={value+delta1}*scale+delta2)"),
+        new Cmd("-insert","<col #> <comma separated values>"),
+        new Cmd("-addcell","<row #>  <col #>  <value>"),
+        new Cmd("-deletecell","<row #> <col #>"),
+        new Cmd("-set","<col #s> <row #s> <value>","(write the value into the cells)"),
+        new Cmd("-case","<lower|upper|camel> <col #>","(change case of column)"),
+        new Cmd("-width","<columns>  <size>","(limit the string size of the columns)"),
+        new Cmd("-prepend","<text>","(add the text to the beginning of the file. use _nl_ to insert newlines)"),
+        new Cmd("-pad","<col #> <pad string>","(pad out or cut columns to achieve the count)"),
+        new Cmd("-change","<col #s> <pattern> <substitution string>"),
+        new Cmd("-formatdate","<col #s> <intial date format> <target date format>"),
+        new Cmd("-map","<col #> <new columns name> <value newvalue ...>","(change values in column to new values)"),
+        new Cmd("-combine","<col #s> <delimiter> <new column name>","(combine columns with the delimiter. deleting columns)"),
+        new Cmd("-combineinplace","<col #s> <delimiter> <new column name>","(combine columns with the delimiter.)"),
+        new Cmd("-html","\"name value properties\"","(parse the table in the input html file, properties: skip <tables to skip> pattern <pattern to skip to>)"),
+        new Cmd("-concat","<col #s>  <delimiter>","(create a new column from the given columns)"),
+        new Cmd("-operator","<col #s>  <new col name> <operator +,-,*,/>","(apply the operator to the given columns and create new one)"),
+        new Cmd("-sum","<key columns> <value columns>","sum values keying on name column value"),
+        new Cmd("-format","<columns> <decimal format, e.g. '##0.00'>"),
+        new Cmd("-unique","<columns>","(pass through unique values)"),
+        new Cmd("-percent","<columns to add>"),
+        new Cmd("-explode", "<col #> ","(make separate files based on value of column)"),
+        new Cmd("-unfurl","<col to get new column header#> <value columns> <unique col>  <other columns>","(make columns from data values)"),
+        new Cmd("-geocode","<col idx> <csv file> <name idx> <lat idx> <lon idx>"),
+        new Cmd("-geocodeaddress","<col indices> <suffix> "),
+        new Cmd("-geocodeaddressdb","<col indices> <suffix> "),
+        new Cmd("-denormalize","<col idx>  <csv file>  <new col name> <mode replace add>","(read the id,value from file and substitute the value in the dest file col idx)"),
+        new Cmd("-count","","(show count)"), 
+        new Cmd("-maxrows","<max rows to print>"),
+        new Cmd("-skipline"," <pattern>","(skip any line that matches the pattern)"),
+        new Cmd("-changeline","<from> <to>","(change the line)"),
+        new Cmd("-prune","<number of leading bytes to remove>"),
+        new Cmd("-strict","","(be strict on columns. any rows that are not the size of the other rows are dropped)"),
+        new Cmd("-flag",""," (be strict on columns. any rows that are not the size of the other rows are shown)"),
+        new Cmd("-rotate"), 
+        new Cmd("-flip"), 
+        new Cmd("-delimiter","","(specify an alternative delimiter)"),
+        new Cmd("-comment","<string>"),
+        new Cmd("-db","{<props>}","(generate the RAMADDA db xml from the header, props are a set of name value pairs:)\n\ttable.id <new id> table.name <new name> table.cansearch <true|false> table.canlist <true|false> table.icon <icon, e.g., /db/database.png>\n\t<column name>.id <new id for column> <column name>.label <new label>\n\t<column name>.type <string|enumeration|double|int|date>\n\t<column name>.format <yyyy MM dd HH mm ss format for dates>\n\t<column name>.canlist <true|false> <column name>.cansearch <true|false>\n\tinstall <true|false install the new db table>\n\tnukedb <true|false careful! this deletes any prior created dbs>"),
+        new Cmd("-print","","(print to stdout)"), 
+        new Cmd("-raw","","(print the file raw)"),
+        new Cmd("-record",""," (print records)"), 
+        new Cmd("-cat"," <*.csv>","(one or more csv files)"),
+        new Cmd("-printheader","","(print the first line)"),
+        new Cmd("-pointheader","","(generate the RAMADDA point properties)"),
+        new Cmd("-addheader","<name1 value1 ... nameN valueN>","(add the RAMADDA point properties)"),
+        new Cmd("-run","<name of process directory>")};
+
 
     /**
      * _more_
@@ -1079,7 +1118,8 @@ public class CsvUtil {
             pw.println(msg);
         }
         pw.println("CsvUtil");
-        for (String cmd : commands) {
+        for (Cmd c : commands) {
+            String cmd = c.getLine();
             if ((match != null) && (cmd.indexOf(match) < 0)) {
                 continue;
             }
@@ -1090,6 +1130,16 @@ public class CsvUtil {
             if (raw && cmd.startsWith("-db")) {
                 break;
             }
+        }
+        pw.flush();
+    }
+
+
+    public void genHelp() throws Exception {
+        PrintWriter pw = new PrintWriter(getOutputStream());
+
+        for (Cmd c : commands) {
+            pw.println("[etl {" + c.cmd +"} {" + c.args +"} {" + c.desc +"}]");
         }
         pw.flush();
     }
