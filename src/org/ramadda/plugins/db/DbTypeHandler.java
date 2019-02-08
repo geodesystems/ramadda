@@ -3098,6 +3098,7 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
         double[] max = new double[columnsToUse.size()];
 
 
+        boolean even = true;
         for (int cnt = 0; cnt < valueList.size(); cnt++) {
             Object[] values = valueList.get(cnt);
 
@@ -3107,7 +3108,7 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
                                          divId);
             hb.append("\n");
             hb.append(HtmlUtils.open(HtmlUtils.TAG_TR, "valign", "top",
-                                     "class", "dbrow", "id", rowId));
+                                     "class", (even?" ramadda-row-even ":" ramadda-row-odd ") + " dbrow ", "id", rowId));
 
             HtmlUtils.open(hb, "td", "width", "10", "style",
                            "white-space:nowrap;");
