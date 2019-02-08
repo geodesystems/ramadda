@@ -3110,6 +3110,7 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
             hb.append(HtmlUtils.open(HtmlUtils.TAG_TR, "valign", "top",
                                      "class", (even?" ramadda-row-even ":" ramadda-row-odd ") + " dbrow ", "id", rowId));
 
+            even = !even;
             HtmlUtils.open(hb, "td", "width", "10", "style",
                            "white-space:nowrap;");
             HtmlUtils.open(hb, "div", "class", "ramadda-db-div", "id", divId);

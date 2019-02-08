@@ -1,10 +1,10 @@
 
 function dbRowOver(rowId) {
-    $("#"+ rowId).css("background-color",  "#edf5ff");
+    //    $("#"+ rowId).css("background-color",  "#edf5ff");
 }
 
 function dbRowOut(rowId) {
-    $("#"+ rowId).css("background-color",  "#fff");
+    //    $("#"+ rowId).css("background-color",  "#fff");
 }
 
 function dbRowClick(event, divId, popupId, url) {
