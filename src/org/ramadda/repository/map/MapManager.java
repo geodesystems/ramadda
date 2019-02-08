@@ -937,6 +937,9 @@ public class MapManager extends RepositoryManager implements WikiConstants {
             HtmlUtils.open(sb, HtmlUtils.TAG_DIV, HtmlUtils.cssClass("row"));
             HtmlUtils.open(sb, HtmlUtils.TAG_DIV,
                            HtmlUtils.cssClass("col-md-3"));
+
+            HtmlUtils.open(sb, HtmlUtils.TAG_DIV,
+                           HtmlUtils.cssClass("ramadda-links"));
             weight -= 3;
             sb.append(
                 HtmlUtils.open(
@@ -969,6 +972,7 @@ public class MapManager extends RepositoryManager implements WikiConstants {
                     }
                 }
             }
+            sb.append(HtmlUtils.close(HtmlUtils.TAG_DIV));
             sb.append(HtmlUtils.close(HtmlUtils.TAG_DIV));
             sb.append(HtmlUtils.close(HtmlUtils.TAG_DIV));
             //            sb.append("</td>");
