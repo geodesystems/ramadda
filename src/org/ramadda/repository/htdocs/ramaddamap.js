@@ -11,6 +11,7 @@ var map_opentopo = "opentopo";
 var map_usgs_topo = "usgs.topo";
 var map_usgs_imagery = "usgs.imagery";
 var map_usgs_relief = "usgs.relief";
+var map_watercolor = "watercolor";
 var map_white = "white";
 var map_blue = "blue";
 var map_black = "black";
@@ -1302,6 +1303,7 @@ function initMapFunctions(theMap) {
                 map_usgs_imagery,
                 map_usgs_relief,
                 map_osm_toner,
+                map_watercolor,
                 map_white,
                 map_gray,
                 map_blue,
@@ -1339,6 +1341,10 @@ function initMapFunctions(theMap) {
             } else if (mapLayer == map_osm_toner) {
                 urls = ["http://a.tile.stamen.com/toner/${z}/${x}/${y}.png"];
                 newLayer = new OpenLayers.Layer.OSM("OSM-Toner", urls);
+            } else if (mapLayer == map_watercolor) {
+                urls = ["http://c.tile.stamen.com/watercolor/${z}/${x}/${y}.jpg"];
+                newLayer = new OpenLayers.Layer.OSM("Watercolor", urls);
+
             } else if (mapLayer == map_opentopo) {
                 newLayer = this.createXYZLayer("OpenTopo", "//a.tile.opentopomap.org/${z}/${x}/${y}.png}");
             } else if (mapLayer == map_esri_worldimagery) {
