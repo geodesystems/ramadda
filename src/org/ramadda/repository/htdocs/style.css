@@ -752,21 +752,16 @@ border: 1px #ccc solid;
 }
 
 .ramadda-row-odd {
-   background-color:#fff;
-}
-
-.ramadda-row-even {
    background-color:#fafafa;
 }
-
-
 .entry-table tr.odd {
+   background-color:#fafafa;
+}
+.ramadda-row-even {
    background-color:#fff;
 }
-
-
 .entry-table tr.even {
-   background-color:#fafafa;
+   background-color:#fff;
 }
 
 
