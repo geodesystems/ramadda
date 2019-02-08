@@ -463,7 +463,9 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
                 return ct;
             }
             if (this.getProperty("colors")) {
-                return this.getProperty("colors").split(",");
+                var colors =  this.getProperty("colors");
+                if((typeof colors) == "object") return colors;
+                return colors.split(",");
             }
             return null;
         },

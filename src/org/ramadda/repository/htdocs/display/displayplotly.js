@@ -611,7 +611,9 @@ function RamaddaDotplotDisplay(displayManager, id, properties) {
                 labels = this.getColumnValues(records, stringField).values;
                 labelName = stringField.getLabel();
             }
-            var colors = ['rgba(156, 165, 196, 0.95)', 'rgba(204,204,204,0.95)', 'rgba(255,255,255,0.85)', 'rgba(150,150,150,0.95)']
+            var colors = this.getColorTable(true);
+            if(!colors)
+                colors = ['rgba(156, 165, 196, 0.95)', 'rgba(204,204,204,0.95)', 'rgba(255,255,255,0.85)', 'rgba(150,150,150,0.95)']
             var plotData = [];
             for (i in fields) {
                 var color = i >= colors.length ? colors[0] : colors[i];
