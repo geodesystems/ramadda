@@ -319,6 +319,14 @@ public class Filter extends Converter {
          */
         public void setPattern(String pattern) {
             pattern = pattern.replaceAll("_dollar_","\\$");
+            pattern =
+                pattern.replaceAll("_leftbracket_",
+                                   "\\\\[").replaceAll("_rightbracket_",
+                                                       "\\\\]");
+            pattern =
+                pattern.replaceAll("_leftcurly_",
+                                   "\\{").replaceAll("_rightcurly_",
+                                                     "\\}");
             spattern = pattern;
             if (pattern.startsWith("!")) {
                 pattern = pattern.substring(1);
