@@ -699,6 +699,10 @@ function RamaddaWordcloudDisplay(displayManager, id, properties) {
                 if (tableFields && !tableFields[f.getId()]) continue;
                 header.push(fields[fieldIdx].getLabel());
             }
+            var showRecords = this.getProperty("showRecords",false);
+            if(showRecords) {
+                html+="<br>";
+            }
             for (var rowIdx = 0; rowIdx < records.length; rowIdx++) {
                 var row = this.getDataValues(records[rowIdx]);
                 if (word != row[field.getIndex()]) {
@@ -709,14 +713,25 @@ function RamaddaWordcloudDisplay(displayManager, id, properties) {
                 for (var col = 0; col < fields.length; col++) {
                     var f = fields[col];
                     if (tableFields && !tableFields[f.getId()]) continue;
-                    tuple.push(row[f.getIndex()]);
+                    var v = row[f.getIndex()];
+                    if(showRecords) {
+                        html+=HtmlUtil.b(f.getLabel()) +": " + v+"</br>";
+                    } else {
+                        tuple.push(v);
+                    }
                 }
-                html += "<br>";
+                if(showRecords) {
+                    html += "<p>";
+                }
             }
-            this.writeHtml(ID_DISPLAY_BOTTOM, field.getLabel() + "=" + word + HtmlUtils.div(["id", this.getDomId("table"), "style", "height:300px"], ""));
-            var dataTable = google.visualization.arrayToDataTable(data);
-            this.chart = new google.visualization.Table(document.getElementById(this.getDomId("table")));
-            this.chart.draw(dataTable, {});
+            if(showRecords) {
+                this.writeHtml(ID_DISPLAY_BOTTOM, html);
+            } else {
+                this.writeHtml(ID_DISPLAY_BOTTOM, field.getLabel() + "=" + word + HtmlUtils.div(["id", this.getDomId("table"), "style", "height:300px"], ""));
+                var dataTable = google.visualization.arrayToDataTable(data);
+                this.chart = new google.visualization.Table(document.getElementById(this.getDomId("table")));
+                this.chart.draw(dataTable, {});
+            }
         }
     });
 }
