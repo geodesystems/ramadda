@@ -33,7 +33,7 @@ function  dbAddUrlShowingForm(args) {
     embed+=" args=\"" + attrs +"\" ";
     embed+=" }}";
     embed = embed.replace(/\"/g,"&quot;");
-    var html = "<b>Wiki Embed:</b> <input id=dbwikiembed size=80 value=\"" +embed +"\"/>";
+    var html = "<b>Embed:</b> <input id=dbwikiembed size=80 value=\"" +embed +"\"/>";
     return HtmlUtil.div(["class","ramadda-form-url"],  html);
 
 }

@@ -1163,7 +1163,8 @@ var HtmlUtils = {
 
         var base = window.location.protocol + "//" + window.location.host;
         url = base + url;
-        var html = HtmlUtils.div(["class", "ramadda-form-url"], HtmlUtils.href(url, HtmlUtils.image(ramaddaBaseUrl + "/icons/link.png")) + " " + url);
+        var input = HtmlUtils.input("formurl",url,["size","80"]);
+        var html = HtmlUtils.div(["class", "ramadda-form-url"], HtmlUtils.href(url, HtmlUtils.image(ramaddaBaseUrl + "/icons/link.png")) + " " + input);
         if (hook) {
             html += hook({
                 entryId: entryid,
