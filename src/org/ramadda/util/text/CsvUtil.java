@@ -572,6 +572,10 @@ public class CsvUtil {
     public List<Row> tokenizeHtml(String file,
                                   Hashtable<String, String> props)
             throws Exception {
+        int skip =0;
+        String  skips        = props.get("skip");
+        if(skips!=null)
+            skip = Integer.parseInt(skips);
         String  pattern     = props.get("pattern");
         String  skipAttr    = props.get("skipAttr");
         String  removePattern = props.get("removePattern");
@@ -630,12 +634,13 @@ public class CsvUtil {
             }
             String table = toks[0];
             s = toks[1];
+            if(skip>0) {
+                skip--;
+                continue;
+            }
             if (debug) {
                 System.out.println("table");
             }
-
-
-
             while (true) {
                 toks = Utils.tokenizeChunk(table, "<tr", "</tr");
                 if (toks == null) {
@@ -670,8 +675,6 @@ public class CsvUtil {
                         }
                         //                        System.out.println("not skipping:" +td );
                     }
-
-
                     td = td.substring(idx + 1);
                     td = StringUtil.stripTags(td);
                     if(removeEntity) {
@@ -696,10 +699,8 @@ public class CsvUtil {
                     }
                 }
             }
-
             break;
         }
-
         return rows;
     }
 
