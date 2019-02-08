@@ -1387,11 +1387,13 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
         };
 
         //        if(icons == null) {
+        /*
         icons = StringUtil.split(
             getRepository().getResource("/org/ramadda/plugins/db/icons.txt"),
             "\n", true, true);
 
         HashSet baseIcons = Utils.makeHashSet(icons);
+        */
 
         //        }
 
@@ -1452,7 +1454,7 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
                     iconSB.append(msg("Custom:"));
                     iconSB.append(" ");
                     iconSB.append(HtmlUtils.input(iconArg + "_custom",
-                            baseIcons.contains(currentIcon)
+                                                  true/*baseIcons.contains(currentIcon)*/
                             ? ""
                             : currentIcon, 20));
                     iconSB.append("<br>");
