@@ -3124,7 +3124,7 @@ public class Utils {
      *
      * @return _more_
      */
-    public static HashSet makeHashSet(List<String> args) {
+    public static HashSet makeHashSet(List args) {
         HashSet h = new HashSet();
         for (Object arg : args) {
             h.add(arg);

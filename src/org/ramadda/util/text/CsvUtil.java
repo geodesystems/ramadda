@@ -854,7 +854,6 @@ public class CsvUtil {
                 }
 
                 if (textReader.getDelimiter() == null) {
-
                     String delimiter = ",";
                     //Check for the bad separator
                     int i1 = line.indexOf(",");
@@ -1050,6 +1049,8 @@ public class CsvUtil {
         new Cmd("-width","<columns>  <size>","(limit the string size of the columns)"),
         new Cmd("-prepend","<text>","(add the text to the beginning of the file. use _nl_ to insert newlines)"),
         new Cmd("-pad","<col #> <pad string>","(pad out or cut columns to achieve the count)"),
+        new Cmd("-prefix","<col #> <prefix>","(add prefix to column)"),
+        new Cmd("-suffix","<col #> <suffix>","(add suffix to column)"),
         new Cmd("-change","<col #s> <pattern> <substitution string>"),
         new Cmd("-formatdate","<col #s> <intial date format> <target date format>"),
         new Cmd("-map","<col #> <new columns name> <value newvalue ...>","(change values in column to new values)"),
@@ -1237,11 +1238,11 @@ public class CsvUtil {
                 continue;
             }
 
+            /*
             if (arg.equals("-prefix")) {
                 new PrintWriter(getOutputStream()).println(args.get(++i));
-
                 continue;
-            }
+                }*/
 
 
             if (arg.equals("-decimate")) {
@@ -1546,6 +1547,20 @@ public class CsvUtil {
                 info.getProcessor().addProcessor(new Converter.Padder(count,
                         pad));
 
+                continue;
+            }
+
+            if (arg.equals("-prefix")) {
+                List<String> cols = getCols(args.get(++i));
+                String s = args.get(++i);
+                info.getProcessor().addProcessor(new Converter.Prefixer(cols,s));
+                continue;
+            }
+
+            if (arg.equals("-suffix")) {
+                List<String> cols = getCols(args.get(++i));
+                String s = args.get(++i);
+                info.getProcessor().addProcessor(new Converter.Suffixer(cols,s));
                 continue;
             }
 

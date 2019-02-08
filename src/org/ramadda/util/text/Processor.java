@@ -2209,6 +2209,11 @@ public abstract class Processor extends CsvOperator {
                 throws Exception {
             uniqueIndices = getIndices(keys);
             valueIndices  = getIndices(values);
+            List<Integer> allIndices= new ArrayList<Integer>();
+            allIndices.addAll(uniqueIndices);
+            allIndices.addAll(valueIndices);
+            HashSet<Integer> allIndicesMap = (HashSet<Integer> ) Utils.makeHashSet(allIndices);
+
             int          rowIndex = 0;
             List<String> keys     = new ArrayList<String>();
             Hashtable<String, List<Row>> rowMap = new Hashtable<String,
@@ -2239,70 +2244,35 @@ public abstract class Processor extends CsvOperator {
 
 
             List<Row> newRows = new ArrayList<Row>();
-            newRows.add(headerRow);
+            Row newHeader = new Row();
+            for(int i=0;i<headerRow.size();i++)
+                if(allIndicesMap.contains(new Integer(i)))
+                    newHeader.add(headerRow.get(i));
 
+            newRows.add(newHeader);
             for (String key : keys) {
                 for (int i = 0; i < array.length; i++) {
                     array[i] = null;
                 }
-                for (Row row : rowMap.get(key)) {
-                    List values = row.getValues();
-                    for (int i = 0; i < array.length; i++) {
-                        Object  obj       = values.get(i);
-                        String  sobj      = obj.toString();
-                        boolean didNumber = false;
-                        boolean skipIt    = false;
-                        for (int j : uniqueIndices) {
-                            if (i == j) {
-                                skipIt = true;
-                                if (array[i] == null) {
-                                    array[i] = obj;
-                                }
+                Row newRow =null;
+                for(int i=0;i<valueIndices.size();i++) {
+                    int valueIdx = valueIndices.get(i);
+                    double sum = 0;
+                    for (Row row : rowMap.get(key)) {
+                        if(newRow == null) {
+                            newRow = new Row();
+                            for(int u=0;u<uniqueIndices.size();u++) {
+                                newRow.add(row.get(uniqueIndices.get(u)));
                             }
+                            newRows.add(newRow);
                         }
-                        if (skipIt) {
-                            continue;
-                        }
-
-                        if (sobj.matches("[\\d\\.]+")) {
-                            try {
-                                double v = Double.parseDouble(sobj);
-                                if (array[i] == null) {
-                                    array[i] = new Double(v);
-                                } else {
-                                    if ( !(array[i] instanceof Double)) {
-                                        array[i] = new Double(0);
-                                    }
-                                    array[i] =
-                                        new Double(v
-                                            + ((Double) array[i])
-                                                .doubleValue());
-                                }
-                                didNumber = true;
-                            } catch (Exception exc) {
-                                System.err.println("Bad:" + sobj);
-                            }
-                        } else {}
-                        if ( !didNumber) {
-                            if (array[i] == null) {
-                                array[i] = obj;
-                            } else {
-                                if ( !(array[i] instanceof Double)) {
-                                    if ( !array[i].equals(obj)) {
-                                        //                                        System.err.println("Clearing:" + array[i]+ " -- " + sobj);
-                                        array[i] = "";
-                                    }
-                                }
-                            }
-                        }
+                        Object value = row.get(valueIdx);
+                        if(value == null) continue;
+                        sum+=Double.parseDouble(value.toString());
                     }
-                    newRows.add(new Row(array));
+                    newRow.add(new Double(sum));
                 }
             }
-            for (Object o : newRows) {
-//                System.err.println(o);
-            }
-
             return newRows;
 
         }

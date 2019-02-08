@@ -168,6 +168,10 @@ public class Row {
         values.add(object);
     }
 
+    public void add(Object object) {
+        values.add(object);
+    }
+
     /**
      * _more_
      *

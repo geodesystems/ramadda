@@ -314,6 +314,87 @@ public abstract class Converter extends Processor {
 
     }
 
+
+    public static class Prefixer extends Converter {
+
+
+
+        /** _more_ */
+        private String pad;
+
+        /**
+         * _more_
+         *
+         *
+         * @param count _more_
+         * @param s _more_
+         */
+        public Prefixer(List<String> cols,String s) {
+            super(cols);
+            this.pad   = s;
+        }
+
+
+        /**
+         * _more_
+         *
+         *
+         * @param info _more_
+         * @param row _more_
+         * @param line _more_
+         *
+         * @return _more_
+         */
+        @Override
+        public Row processRow(TextReader info, Row row, String line) {
+            List<Integer> indices = getIndices(info);
+            for(int i: indices) {
+                row.set(i,pad+row.get(i));
+            }
+            return row;
+        }
+    }
+
+
+    public static class Suffixer extends Converter {
+        /** _more_ */
+        private String pad;
+
+        /**
+         * _more_
+         *
+         *
+         * @param count _more_
+         * @param s _more_
+         */
+        public Suffixer(List<String> cols,String s) {
+            super(cols);
+            this.pad   = s;
+        }
+
+
+        /**
+         * _more_
+         *
+         *
+         * @param info _more_
+         * @param row _more_
+         * @param line _more_
+         *
+         * @return _more_
+         */
+        @Override
+        public Row processRow(TextReader info, Row row, String line) {
+            List<Integer> indices = getIndices(info);
+            for(int i: indices) {
+                row.set(i,row.get(i)+pad);
+            }
+            return row;
+        }
+    }
+
+
+
     /**
      * Class description
      *
