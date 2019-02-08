@@ -318,6 +318,7 @@ public class Filter extends Converter {
          * @param pattern _more_
          */
         public void setPattern(String pattern) {
+            pattern = pattern.replaceAll("_dollar_","\\$");
             spattern = pattern;
             if (pattern.startsWith("!")) {
                 pattern = pattern.substring(1);
