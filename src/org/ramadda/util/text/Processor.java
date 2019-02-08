@@ -2300,7 +2300,7 @@ public abstract class Processor extends CsvOperator {
                 }
             }
             for (Object o : newRows) {
-                System.err.println(o);
+//                System.err.println(o);
             }
 
             return newRows;

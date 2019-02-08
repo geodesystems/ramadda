@@ -1486,6 +1486,7 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
                             msgLabel("Icon"),
                             HtmlUtils.makeShowHideBlock(
                                 iconMsg, iconSB.toString(), false)));
+                    formBuffer.append(HtmlUtils.formEntry("","<hr>"));
                 }
                 formBuffer.append(HtmlUtils.formEntry("", sb.toString()));
             }

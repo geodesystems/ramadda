@@ -1215,9 +1215,7 @@ public abstract class Converter extends Processor {
             long t1 = System.currentTimeMillis();
             //            System.err.println("Reading file:" + filename);
             BufferedReader br = new BufferedReader(
-                                    new InputStreamReader(
-                                        new FileInputStream(filename)));
-
+                                                   new InputStreamReader(getInputStream(filename)));
             //            System.err.println("Done Reading file:" + filename);
             String line;
             while ((line = br.readLine()) != null) {
@@ -1400,7 +1398,7 @@ public abstract class Converter extends Processor {
         private void makeMap(String filename) throws Exception {
             BufferedReader br = new BufferedReader(
                                     new InputStreamReader(
-                                        new FileInputStream(filename)));
+                                                          getInputStream(filename)));
 
             String line;
             while ((line = br.readLine()) != null) {
