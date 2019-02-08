@@ -69,8 +69,8 @@ addGlobalDisplayType({
 
 
 function RamaddaPlotlyDisplay(displayManager, id, type, properties) {
-    var SUPER;
-    RamaddaUtil.inherit(this, SUPER = new RamaddaFieldsDisplay(displayManager, id, type, properties));
+    let  SUPER = new RamaddaFieldsDisplay(displayManager, id, type, properties);
+    RamaddaUtil.inherit(this, SUPER);
     RamaddaUtil.defineMembers(this, {
         needsData: function() {
             return true;
@@ -579,12 +579,14 @@ function RamaddaTernaryDisplay(displayManager, id, properties) {
 
 
 function RamaddaDotplotDisplay(displayManager, id, properties) {
-    var SUPER;
+
     $.extend(this, {
         width: "600px",
         height: "400px",
     });
-    RamaddaUtil.inherit(this, SUPER = new RamaddaPlotlyDisplay(displayManager, id, DISPLAY_PLOTLY_DOTPLOT, properties));
+    let SUPER =  new RamaddaPlotlyDisplay(displayManager, id, DISPLAY_PLOTLY_DOTPLOT, properties);
+    RamaddaUtil.inherit(this, SUPER);
+
 
     addRamaddaDisplay(this);
     RamaddaUtil.defineMembers(this, {

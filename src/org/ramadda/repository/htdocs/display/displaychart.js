@@ -203,13 +203,10 @@ var DFLT_HEIGHT = "200px";
 /*
  */
 function RamaddaFieldsDisplay(displayManager, id, type, properties) {
-    var _this = this;
+    let _this = this;
     this.TYPE = "RamaddaFieldsDisplay";
-    var SUPER;
-    RamaddaUtil.inherit(this, this.RamaddaDisplay = SUPER = new RamaddaDisplay(displayManager, id, type, properties));
-
-
-
+    let  SUPER  = new RamaddaDisplay(displayManager, id, type, properties);
+    RamaddaUtil.inherit(this, this.RamaddaDisplay = SUPER);
     RamaddaUtil.defineMembers(this, {
         needsData: function() {
             return true;
@@ -231,6 +228,28 @@ function RamaddaFieldsDisplay(displayManager, id, type, properties) {
         updateUI: function() {
             this.addFieldsCheckboxes();
         },
+        //This keeps checking the width of the chart element if its zero
+        //we do this for displaying in tabs
+        checkLayout: function() {
+            var _this = this;
+            var d = _this.jq(ID_DISPLAY_CONTENTS);
+            //       console.log("checklayout:  widths:" + this.lastWidth +" " + d.width());
+            if (this.lastWidth != d.width()) {
+                _this.displayData();
+            }
+            if (true) return;
+
+            if (d.width() == 0) {
+                var cb = function() {
+                    _this.checkWidth(cnt + 1);
+                };
+                setTimeout(cb, 5000);
+            } else {
+                //                    console.log("checkWidth:"+ _this.getTitle() +" calling displayData");
+                _this.displayData();
+            }
+        },
+
         getWikiAttributes: function(attrs) {
             SUPER.getWikiAttributes.call(this, attrs);
             if (this.lastSelectedFields) {
@@ -304,9 +323,8 @@ function RamaddaMultiChart(displayManager, id, properties) {
     if (properties.colors) {
         this.colorList = ("" + properties.colors).split(",");
     }
-    var SUPER;
-    RamaddaUtil.inherit(this, SUPER = new RamaddaFieldsDisplay(displayManager, id, properties.chartType, properties));
-
+    let SUPER =   new RamaddaFieldsDisplay(displayManager, id, properties.chartType, properties);
+    RamaddaUtil.inherit(this, SUPER);
 
     RamaddaUtil.defineMembers(this, {
         getType: function() {
@@ -822,27 +840,6 @@ function RamaddaMultiChart(displayManager, id, properties) {
             this.lastWidth = d.width();
             if (d.width() == 0) {
                 //                    _this.checkWidth(0);
-            }
-        },
-        //This keeps checking the width of the chart element if its zero
-        //we do this for displaying in tabs
-        checkLayout: function() {
-            var _this = this;
-            var d = _this.jq(ID_CHART);
-            //       console.log("checklayout:  widths:" + this.lastWidth +" " + d.width());
-            if (this.lastWidth != d.width()) {
-                _this.displayData();
-            }
-            if (true) return;
-
-            if (d.width() == 0) {
-                var cb = function() {
-                    _this.checkWidth(cnt + 1);
-                };
-                setTimeout(cb, 5000);
-            } else {
-                //                    console.log("checkWidth:"+ _this.getTitle() +" calling displayData");
-                _this.displayData();
             }
         },
         printDataList: function(dataList) {
