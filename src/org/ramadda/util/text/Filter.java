@@ -265,12 +265,15 @@ public class Filter extends Converter {
      * @author         Jeff McWhirter
      */
     public static class PatternFilter extends ColumnFilter {
+        String spattern;
 
         /** _more_ */
         Pattern pattern;
 
         /** _more_ */
         boolean not = false;
+
+        boolean isTemplate = false;
 
         /**
          *
@@ -315,13 +318,17 @@ public class Filter extends Converter {
          * @param pattern _more_
          */
         public void setPattern(String pattern) {
+            spattern = pattern;
             if (pattern.startsWith("!")) {
                 pattern = pattern.substring(1);
                 not     = true;
             }
-            this.pattern = Pattern.compile(pattern);
-
-            this.pattern = Pattern.compile(pattern);
+            if (pattern.indexOf("${")>=0) {
+                isTemplate = true;
+            } else {
+                isTemplate = false;
+                this.pattern = Pattern.compile(pattern);
+            }
         }
 
 
@@ -343,6 +350,16 @@ public class Filter extends Converter {
             if (idx >= row.size()) {
                 return doNegate(false);
             }
+            Pattern pattern = this.pattern;
+            if(isTemplate) {
+                String tmp = spattern;
+                for (int i = 0; i < row.size(); i++) {
+                    tmp = tmp.replace("${" +i+"}",(String) row.get(i));
+                }
+                //                System.out.println("tmp:" + tmp);
+                pattern = Pattern.compile(tmp);
+            }
+
             if (idx < 0) {
                 for (int i = 0; i < row.size(); i++) {
                     String v = row.getString(i);
