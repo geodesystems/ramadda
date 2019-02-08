@@ -4843,6 +4843,18 @@ public class HtmlUtils {
     }
 
 
+    public static String urlDecode(String s) {
+        try {
+            return java.net.URLDecoder.decode(s, "UTF-8");
+        } catch (Exception exc) {
+            System.err.println("error decoding:" + s + " " + exc);
+            exc.printStackTrace();
+
+            return "";
+        }
+    }
+
+
 
     /**
      * _more_

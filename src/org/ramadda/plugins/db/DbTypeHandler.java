@@ -1916,6 +1916,7 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
                                 ? pair.get(1)
                                 : "");
                         value = value.replaceAll("\\+", " ");
+                        value = HtmlUtils.urlDecode(value);
                         //false means not singular
                         r.put(pair.get(0), value, false);
                     }
