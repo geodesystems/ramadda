@@ -3001,7 +3001,8 @@ a.wiki-link-noexist {
     font-size:12pt;
 }
 
-.ui-widget .ui-widget {
+
+.ui-widget select , .ui-widget .ui-widget {
      font-size:12pt;
 }
 
