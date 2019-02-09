@@ -866,13 +866,15 @@ var HtmlUtils = {
             this.div(["class", "col-md-" + leftWeight], left) +
             this.div(["class", "col-md-" + rightWeight, "style", "text-align:right;"], right));
     },
-    leftCenterRight: function(left, center, right, leftWidth, centerWidth, rightWidth) {
+    leftCenterRight: function(left, center, right, leftWidth, centerWidth, rightWidth,attrs) {
+        if(!attrs) attrs = {};
+        if(!attrs.valign) attrs.valign="top";
         if (leftWidth == null) leftWidth = "33%";
         if (centerWidth == null) centerWidth = "33%";
         if (rightWidth == null) rightWidth = "33%";
 
         return this.tag("table", ["border", "0", "width", "100%", "cellspacing", "0", "cellpadding", "0"],
-            this.tr(["valign", "top"],
+            this.tr(["valign", attrs.valign],
                 this.td(["align", "left", "width", leftWidth], left) +
                 this.td(["align", "center", "width", centerWidth], center) +
                 this.td(["align", "right", "width", rightWidth], right)));

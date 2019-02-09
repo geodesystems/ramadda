@@ -61,7 +61,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
         sourceToPoints: {},
         snarf: true,
         initDisplay: function() {
-            this.createUI();
+            SUPER.initDisplay.call(this);
             var _this = this;
             var html = "";
             var extraStyle = "min-height:200px;";
@@ -796,7 +796,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
             if (!this.getProperty("showData", true))
                 return;
             var pointData = this.getPointData();
-            var records = pointData.getRecords();
+            var records = this.filterData();
             if (records == null) {
                 err = new Error();
                 console.log("null records:" + err.stack);
@@ -843,8 +843,15 @@ function RamaddaMapDisplay(displayManager, id, properties) {
             if (colors == null) {
                 colors = Utils.ColorTables.grayscale.colors;
             }
-            var records = pointData.getRecords();
 
+            var latField1 = this.getFieldById(fields, this.getProperty("latField1"));
+            var latField2 = this.getFieldById(fields, this.getProperty("latField2"));
+            var lonField1 = this.getFieldById(fields, this.getProperty("lonField1"));
+            var lonField2 = this.getFieldById(fields, this.getProperty("lonField2"));
+            var showSegments = this.getProperty("showSegments", false);
+            var showEndPoints = this.getProperty("showEndPoints", false);
+            var showPoints = this.getProperty("showPoints", true);
+            var lineColor = this.getProperty("lineColor","green");
             var colorBy = {
                 id: colorByAttr,
                 minValue: 0,
@@ -899,7 +906,19 @@ function RamaddaMapDisplay(displayManager, id, properties) {
             colorBy.minValue = this.getDisplayProp(source, "colorByMin", colorBy.minValue);
             colorBy.maxValue = this.getDisplayProp(source, "colorByMax", colorBy.maxValue);
 
-            //                    console.log("Color by:" + " Min: " + colorBy.minValue +" Max: " + colorBy.maxValue);
+            if(this.points) {
+                for(var i=0;i<this.points.length;i++)
+                    this.map.removePoint(this.points[i]);
+                for(var i=0;i<this.lines.length;i++)
+                    this.map.removePolygon(this.lines[i]);
+                this.points = [];
+                this.lines = [];
+            }
+
+            if (!this.points) {
+                this.points = [];
+                this.lines = [];
+            }
 
             var dontAddPoint = this.doDisplayMap();
             var didColorBy = false;
@@ -907,8 +926,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
             for (var i = 0; i < points.length; i++) {
                 var pointRecord = records[i];
                 var point = points[i];
-                if (Utils.isDefined(seen[point])) continue;
-                seen[point] = true;
+                var values = pointRecord.getData();
                 var props = {
                     pointRadius: radius,
                     strokeWidth: strokeWidth,
@@ -916,7 +934,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
                 };
 
                 if (sizeBy.index >= 0) {
-                    var value = pointRecord.getData()[sizeBy.index];
+                    var value = values[sizeBy.index];
                     var denom = (sizeBy.maxValue - sizeBy.minValue);
                     var percent = (denom == 0 ? NaN : (value - sizeBy.minValue) / denom);
                     props.pointRadius = 6 + parseInt(15 * percent);
@@ -966,11 +984,44 @@ function RamaddaMapDisplay(displayManager, id, properties) {
                     props.fillColor = colors[index];
                     didColorBy = true;
                 }
+
                 var html = this.getRecordHtml(pointRecord, fields);
-                point = this.map.addPoint("pt-" + i, point, props, html, dontAddPoint);
-                if (!this.points)
-                    this.points = [];
-                this.points.push(point);
+                if(showSegments && latField1 && latField2 && lonField1 && lonField2) {
+                    var lat1 = values[latField1.getIndex()];
+                    var lat2 = values[latField2.getIndex()];
+                    var lon1 = values[lonField1.getIndex()];
+                    var lon2 = values[lonField2.getIndex()];
+                    var attrs ={};
+                    if(props.fillColor)
+                        attrs.strokeColor = props.fillColor;
+                    else 
+                        attrs.strokeColor = lineColor;
+                    this.lines.push(this.map.addLine("line-" + i, "", lat1, lon1, lat2, lon2, attrs,html));
+                    if(showEndPoints) {
+                        var pointProps = {};
+                        $.extend(pointProps,props);
+                        pointProps.fillColor  = attrs.strokeColor;
+                        pointProps.pointRadius = 4;
+                        var p1 = new OpenLayers.LonLat(lon1,lat1);
+                        var p2 = new OpenLayers.LonLat(lon2,lat2);
+                        if (!Utils.isDefined(seen[p1])) {
+                            seen[p1] = true;
+                            this.points.push(this.map.addPoint("endpt-" + i, p1, pointProps, html));
+                        }
+                        if (!Utils.isDefined(seen[p2])) {
+                            seen[p2] = true;
+                            this.points.push(this.map.addPoint("endpt2-" + i, p2, pointProps, html));
+                        }
+
+                    }
+                }
+
+                if(showPoints) {
+                    if (Utils.isDefined(seen[point])) continue;
+                    seen[point] = true;
+                    point = this.map.addPoint("pt-" + i, point, props, html, dontAddPoint);
+                    this.points.push(point);
+                }
             }
             if (didColorBy)
                 this.displayColorTable(colors, ID_BOTTOM, colorBy.minValue, colorBy.maxValue);

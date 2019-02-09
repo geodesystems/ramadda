@@ -2834,6 +2834,13 @@ function initMapFunctions(theMap) {
 
     theMap.addPolygon = function(id, name, points, attrs, marker) {
         var _this = this;
+        var location;
+        if(points.length>1) {
+            location = new OpenLayers.LonLat(points[0].x+(points[1].x-points[0].x)/2,
+                                             points[0].y+(points[1].y-points[0].y)/2);
+        } else  {
+            location = new OpenLayers.LonLat(points[0].x, points[0].y);
+        }
         for (var i = 0; i < points.length; i++) {
             points[i].transform(this.displayProjection, this.sourceProjection);
         }
@@ -2850,6 +2857,7 @@ function initMapFunctions(theMap) {
         }
 
         if (!this.lines) {
+   
             this.lines = new OpenLayers.Layer.Vector("Lines", {
                 style: base_style
             });
@@ -2862,9 +2870,9 @@ function initMapFunctions(theMap) {
          * line.events.register("click", line, function (e) { alert("box
          * click"); _this.showMarkerPopup(box); OpenLayers.Event.stop(evt); });
          */
-        line.markerPopup = marker;
+        line.text =marker;
         line.ramaddaId = id;
-        line.location = new OpenLayers.LonLat(points[0].x, points[0].y);
+        line.location  = location;
         line.name = name;
         var visible = this.isLayerVisible(line.ramaddaId);
         if (visible) {

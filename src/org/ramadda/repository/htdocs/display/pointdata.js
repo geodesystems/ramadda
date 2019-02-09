@@ -453,6 +453,7 @@ The main data record. This holds a lat/lon/elevation, time and an array of data
 The data array corresponds to the RecordField fields
  */
 function PointRecord(lat, lon, elevation, time, data) {
+    this.isPointRecord = true;
     RamaddaUtil.defineMembers(this, {
         latitude: lat,
         longitude: lon,

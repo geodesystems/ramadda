@@ -110,6 +110,9 @@ function DisplayManager(argId, argProperties) {
         handleEventFieldsSelected: function(source, fields) {
             this.notifyEvent("handleEventFieldsSelected", source, fields);
         },
+        handleEventPropertyChanged: function(source, prop) {
+            this.notifyEvent("handleEventPropertyChanged", source, prop);
+        },
         handleEventEntriesChanged: function(source, entries) {
             this.notifyEvent("handleEventEntriesChanged", source, entries);
         },

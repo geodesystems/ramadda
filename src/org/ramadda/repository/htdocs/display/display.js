@@ -8,6 +8,8 @@ var ID_FIELDS = "fields";
 var ID_HEADER = "header";
 var ID_TITLE = ATTR_TITLE;
 var ID_TITLE_EDIT = "title_edit";
+var ID_TOP_CENTER = "topcenter";
+var ID_TOP_RIGHT = "topright";
 var ID_DETAILS = "details";
 var ID_DISPLAY_CONTENTS = "contents";
 var ID_DISPLAY_TOP = "top";
@@ -331,9 +333,9 @@ function DisplayThing(argId, argProperties) {
             this.properties[key] = null;
         },
         setProperty: function(key, value) {
+            this[key]  = value;
             this.properties[key] = value;
         },
-
         getSelfProperty: function(key, dflt) {
             if (this[key] != null) {
                 return this[key];
@@ -350,9 +352,10 @@ function DisplayThing(argId, argProperties) {
         propertyDefined: function(key) {
                 return Utils.isDefined(this.getProperty(key));
         },
-
         getProperty: function(key, dflt) {
-            if (this[key]) return this[key];
+           if (this[key]) {
+                return this[key];
+            }
             var value = this.properties[key];
             if (value != null) {
                 return value;
@@ -543,6 +546,10 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
                 title = HtmlUtils.href(this.getRamadda().getEntryUrl(this.entryId), title);
                 this.jq(ID_TITLE).html(title);
             }
+        },
+        handleEventPropertyChanged: function(source, prop) {
+                this.setProperty(prop.property,prop.value);
+                this.updateUI();
         },
         handleEventRecordSelection: function(source, args) {
             if (!source.getEntries) {
@@ -1010,14 +1017,15 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
                 var pointData = this.getData();
                 if (pointData == null) return null;
                 dataList = pointData.getRecords();
-
             }
+
             if (!fields) {
                 fields = pointData.getRecordFields();
             }
             var patternFieldId = this.getProperty("patternFilterField");
             var numericFieldId = this.getProperty("numericFilterField");
             var pattern = this.getProperty("filterPattern");
+
             var notPattern = false;
             if (pattern) {
                 notPattern = pattern.startsWith("!");
@@ -1047,16 +1055,14 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
                     if (filterSValue) {
                         filterValue = parseFloat(filterSValue);
                     }
-                    var standard = true;
+                    var isPointRecord= false;
+                    if(dataList.length>0) 
+                        isPointRecord=dataList[0].isPointRecord;
                     for (var i = 0; i < dataList.length; i++) {
                         var obj = dataList[i];
                         var row = this.getDataValues(obj);
                         var array = row;
-                        if (row.getData) {
-                            standard = false;
-                            array = row.getData();
-                        }
-                        if (standard && i == 0) {
+                        if (!isPointRecord && i == 0) {
                             list.push(obj);
                             continue;
                         }
@@ -1075,8 +1081,9 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
                             } else if (filterOperator == ">=") {
                                 ok = value >= filterValue;
                             }
-                            if (!ok)
+                            if (!ok) {
                                 continue;
+                            }
                         }
                         if (patternField && pattern) {
                             var value = "" + array[patternField.getIndex()];
@@ -2266,6 +2273,29 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
         },
         initDisplay: function() {
             this.createUI();
+            var filterValues = this.getProperty("filterValues");
+            var filterValue  = this.getProperty("filterPattern");
+            if(filterValues) {
+                var toks = filterValues.split(",");
+                var menu = "<select class='ramadda-pulldown' id='" +this.getDomId("filterValueMenu")+"'>";
+                for(var i=0;i<toks.length;i++) {
+                    var extra = "";
+                    if(filterValue == toks[i]) extra  = "selected ";
+                    menu+="<option " + extra +">" +toks[i]+"</option>\n";
+                }
+
+                menu += "</select>";
+                let _this = this;
+                this.writeHtml(ID_TOP_RIGHT, menu);
+                this.jq("filterValueMenu").change(function(){
+                        var value = $(this).val();
+                        _this.setProperty("filterPattern",value);
+                        _this.updateUI();
+                        _this.getDisplayManager().handleEventPropertyChanged(_this, {
+                                property:"filterPattern",
+                                    value:value});
+                    });
+            }
         },
         updateUI: function() {},
         getDoBs: function() {
@@ -2319,6 +2349,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
                 title = this.getTitle(false).trim();
             }
 
+            var left = "";
             if (button != "" || title != "") {
                 this.cnt++;
                 var titleDiv = "";
@@ -2328,11 +2359,14 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
                 }
                 titleDiv = HtmlUtils.tag("span", [ATTR_CLASS, "display-title", ATTR_ID, this.getDomId(ID_TITLE)], this.getDisplayTitle(title));
                 if (button == "") {
-                    html += titleDiv;
+                    left = titleDiv;
                 } else {
-                    html += "<div class=display-header>" + button + "&nbsp;" + titleDiv + "</div>";
+                    left= "<div class=display-header>" + button + "&nbsp;" + titleDiv + "</div>";
                 }
             }
+            var center = HtmlUtils.div(["id",this.getDomId(ID_TOP_CENTER)],"");
+            var right = HtmlUtils.div(["id",this.getDomId(ID_TOP_RIGHT)],"");
+            html+=HtmlUtils.leftCenterRight(left,center,right,null,null,null,{valign:"bottom"});
 
             var contents = this.getContentsDiv();
             //                contents  = "CONTENTS";
