@@ -663,13 +663,13 @@ patternFilterField="field id"
 filterPattern="some string"
 numericFilterField="other field id" 
 numericFilterValue="number" 
-filterOperator="&gt;|&gt;=|==|&lt;|&lt;=" 
+numericFilterOperator="&gt;|&gt;=|==|&lt;|&lt;=" 
 </pre>
 e.g.: below would only show data where the 1st matches the string "Texas" and the 3rd needs to be less that 5000.
 <pre>
 {{display  type="sankey" height="800" 
 patternFilterField="#1" filterPattern="Texas"
-numericFilterField="#3" numericFilterValue="5000" filterOperator=">" 
+numericFilterField="#3" numericFilterValue="5000" numericFilterOperator=">" 
 }}
 </pre>
 

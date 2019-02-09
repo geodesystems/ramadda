@@ -448,6 +448,17 @@ public class Place {
                                 placesMap.put(key.toUpperCase(), place);
                             }
 
+                            for (String key :
+                                    new String[] {
+                                        resource.prefix + place.getName() }) {
+                                if (key == null) {
+                                    continue;
+                                }
+                                placesMap.put(key, place);
+                                placesMap.put(key.toLowerCase(), place);
+                                placesMap.put(key.toUpperCase(), place);
+                            }
+
 
 
                         }
