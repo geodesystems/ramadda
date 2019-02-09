@@ -2297,7 +2297,6 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             this.setDisplayReady(true);
         },
         initDisplay: function() {
-            console.log("initDisplay");
             this.createUI();
             var filterValues = this.getProperty("filterValues");
             var filterValuesLabel = this.getProperty("filterValuesLabel","");

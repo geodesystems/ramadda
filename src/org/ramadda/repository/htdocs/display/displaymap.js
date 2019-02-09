@@ -590,6 +590,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
             */
         },
         addOrRemoveEntryMarker: function(id, entry, add, args) {
+                console.log("entry marker");
             if (!args) {
                 args = {};
             }
@@ -849,7 +850,13 @@ function RamaddaMapDisplay(displayManager, id, properties) {
             var lonField1 = this.getFieldById(fields, this.getProperty("lonField1"));
             var lonField2 = this.getFieldById(fields, this.getProperty("lonField2"));
             var showSegments = this.getProperty("showSegments", false);
+            var sizeSegments = this.getProperty("sizeSegments", false);
+            var sizeEndPoints = this.getProperty("sizeEndPoints", true);
             var showEndPoints = this.getProperty("showEndPoints", false);
+            var endPointSize = parseInt(this.getProperty("endPointSize", "4"));
+            var dfltEndPointSize = endPointSize;
+            var segmentWidth = parseInt(this.getProperty("segmentWidth", "1"));
+            var dfltSegmentWidth = segmentWidth;
             var showPoints = this.getProperty("showPoints", true);
             var lineColor = this.getProperty("lineColor","green");
             var colorBy = {
@@ -938,6 +945,12 @@ function RamaddaMapDisplay(displayManager, id, properties) {
                     var denom = (sizeBy.maxValue - sizeBy.minValue);
                     var percent = (denom == 0 ? NaN : (value - sizeBy.minValue) / denom);
                     props.pointRadius = 6 + parseInt(15 * percent);
+                    if(sizeEndPoints) {
+                        endPointSize =  dfltEndPointSize + parseInt(10 * percent);
+                    }
+                    if(sizeSegments) {
+                        segmentWidth = dfltSegmentWidth + parseInt(10 * percent);
+                    }
                     //                            console.log("percent:" + percent +  " radius: " + props.pointRadius +" Value: " + value  + " range: " + sizeBy.minValue +" " + sizeBy.maxValue);
                 }
                 if (colorBy.index >= 0) {
@@ -996,12 +1009,15 @@ function RamaddaMapDisplay(displayManager, id, properties) {
                         attrs.strokeColor = props.fillColor;
                     else 
                         attrs.strokeColor = lineColor;
+                    attrs.strokeWidth = segmentWidth;
                     this.lines.push(this.map.addLine("line-" + i, "", lat1, lon1, lat2, lon2, attrs,html));
                     if(showEndPoints) {
                         var pointProps = {};
                         $.extend(pointProps,props);
                         pointProps.fillColor  = attrs.strokeColor;
-                        pointProps.pointRadius = 4;
+                        pointProps.strokeColor  = attrs.strokeColor;
+                        pointProps.pointRadius = dfltEndPointSize;
+                        pointProps.pointRadius = endPointSize;
                         var p1 = new OpenLayers.LonLat(lon1,lat1);
                         var p2 = new OpenLayers.LonLat(lon2,lat2);
                         if (!Utils.isDefined(seen[p1])) {
@@ -1056,6 +1072,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
         },
 
         handleEventRecordSelection: function(source, args) {
+           if(!this.getProperty("showRecordSelection",true)) return;
             if (!this.map) {
                 return;
             }

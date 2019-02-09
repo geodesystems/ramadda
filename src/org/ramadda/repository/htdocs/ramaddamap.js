@@ -355,6 +355,7 @@ function initMapFunctions(theMap) {
             feature.renderIntent = null;
             feature.isSelected = false;
             layer = feature.layer;
+            if(!layer) return;
             layer.drawFeature(layer.selectedFeature, layer.selectedFeature.style || "default");
             layer.selectedFeature.isSelected = false;
             layer.selectedFeature = null;
