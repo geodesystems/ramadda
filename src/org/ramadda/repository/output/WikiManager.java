@@ -122,7 +122,8 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                             new WikiTag(WIKI_TAG_TABS, attrs(
                                                              ATTR_TAG, WIKI_TAG_HTML, ATTR_SHOWLINK, "true", ATTR_INCLUDEICON, "false") + ATTRS_LAYOUT), 
                             new WikiTag(WIKI_TAG_GRID, attrs(
-                                                                  ATTR_TAG, WIKI_TAG_CARD, "inner-height","100", ATTR_COLUMNS, "3", ATTR_INCLUDEICON, "true", "weights","","doline","true")), 
+                                                                  ATTR_TAG, WIKI_TAG_CARD, "inner-height","100", ATTR_COLUMNS, "3", ATTR_INCLUDEICON, "true", "weights","",
+                                                                  "showLink","false","showHeading","false","doline","true")), 
                             new WikiTag(WIKI_TAG_TREE, attrs(
                                                              ATTR_DETAILS, "true")), 
                             new WikiTag(WIKI_TAG_TREEVIEW, attrs(ATTR_WIDTH,"750", ATTR_HEIGHT,"500")), 
