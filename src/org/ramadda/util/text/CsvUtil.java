@@ -481,7 +481,12 @@ public class CsvUtil {
             return new BufferedInputStream(
                 new ByteArrayInputStream(csv.getBytes()));
         } else {
-            return new BufferedInputStream(new FileInputStream(file));
+            try {
+                return new BufferedInputStream(new FileInputStream(file));
+            } catch(Exception exc) {
+                System.err.println("Error opening file:" + file);
+                throw exc;
+            }
         }
     }
 
@@ -1060,15 +1065,16 @@ public class CsvUtil {
         new Cmd("-concat","<col #s>  <delimiter>","(create a new column from the given columns)"),
         new Cmd("-operator","<col #s>  <new col name> <operator +,-,*,/>","(apply the operator to the given columns and create new one)"),
         new Cmd("-sum","<key columns> <value columns>","sum values keying on name column value"),
+        new Cmd("-join","<key columns> <value columns> <file> <key 2 columns> <value 2 columns>","Join the 2 files together"),
         new Cmd("-format","<columns> <decimal format, e.g. '##0.00'>"),
         new Cmd("-unique","<columns>","(pass through unique values)"),
         new Cmd("-percent","<columns to add>"),
+        new Cmd("-denormalize","<col idx>  <csv file>  <new col name> <mode replace add>","(read the id,value from file and substitute the value in the dest file col idx)"),
         new Cmd("-explode", "<col #> ","(make separate files based on value of column)"),
         new Cmd("-unfurl","<col to get new column header#> <value columns> <unique col>  <other columns>","(make columns from data values)"),
         new Cmd("-geocode","<col idx> <csv file> <name idx> <lat idx> <lon idx>"),
-        new Cmd("-geocodeaddress","<col indices> <suffix> "),
+        new Cmd("-geocodeaddress","<col indices> <latlabel> <lonlabel> <suffix> "),
         new Cmd("-geocodeaddressdb","<col indices> <suffix> "),
-        new Cmd("-denormalize","<col idx>  <csv file>  <new col name> <mode replace add>","(read the id,value from file and substitute the value in the dest file col idx)"),
         new Cmd("-count","","(show count)"), 
         new Cmd("-maxrows","<max rows to print>"),
         new Cmd("-skipline"," <pattern>","(skip any line that matches the pattern)"),
@@ -1284,6 +1290,23 @@ public class CsvUtil {
             if (arg.equals("-sort")) {
                 int idx = Integer.parseInt(args.get(++i));
                 info.getProcessor().addProcessor(new Processor.Sorter(idx));
+
+                continue;
+            }
+
+            if (arg.equals("-join")) {
+                List<String> keys1   = getCols(args.get(++i));
+                List<String> values1 = getCols(args.get(++i));
+                String file = args.get(++i);
+                List<String> keys2   = getCols(args.get(++i));
+                List<String> values2 = getCols(args.get(++i));
+
+                info.getProcessor().addProcessor(new Processor.Joiner(keys1,
+                                                                      values1,
+                                                                      file,
+                                                                      keys2,
+                                                                      values2));
+
 
                 continue;
             }
@@ -1587,9 +1610,11 @@ public class CsvUtil {
 
             if (arg.equals("-geocodeaddress")) {
                 List<String> cols   = getCols(args.get(++i));
+                String       lat = args.get(++i);
+                String       lon = args.get(++i);
                 String       suffix = args.get(++i);
                 info.getProcessor().addProcessor(new Converter.Geocoder(cols,
-                        suffix));
+                                                                        lat,lon,suffix));
 
                 continue;
             }

@@ -382,6 +382,8 @@ public class GeoUtils {
         if (address.length() == 0) {
             return null;
         }
+        if(address.toLowerCase().startsWith("from:")) address= address.substring(5);
+        else if(address.toLowerCase().startsWith("to:")) address= address.substring(3);
         Place place = Place.getPlace(address);
         if (place == null) {
             int index = address.indexOf("-");

@@ -548,6 +548,10 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             }
         },
         handleEventPropertyChanged: function(source, prop) {
+                if(prop.property == "filterPattern") {
+                    this.jq("filterValueMenu").val(prop.value);
+                }
+
                 this.setProperty(prop.property,prop.value);
                 this.updateUI();
         },
@@ -960,12 +964,28 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
                 if (pointData == null) return null;
                 fields = pointData.getRecordFields();
             }
-            for (a in fields) {
-                var field = fields[a];
-                if (field.getId() == id) return field;
+
+            for (var i=0;i<fields.length;i++) {
+                var field = fields[i];
+                if (field.getId() == id || id ==("#"+i)) {
+                    return field;
+                }
             }
             return null;
         },
+
+        getFieldsByIds: function(fields, ids) {
+                var  result = [];
+                if(!ids) return result;
+                if((typeof ids)=="string")
+                    ids = ids.split(",");
+                for(var i=0;i<ids.length;i++) {
+                    var f = this.getFieldById(fields, ids[i]);
+                    if(f) result.push(f);
+                }
+                return result;
+        },
+
         getFieldOfType: function(fields, type) {
             fields = this.getFieldsOfType(fields, type);
             if (fields.length == 0) return null;
@@ -1025,6 +1045,10 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             var patternFieldId = this.getProperty("patternFilterField");
             var numericFieldId = this.getProperty("numericFilterField");
             var pattern = this.getProperty("filterPattern");
+            var prefix = this.getProperty("filterPatternPrefix");
+            if(prefix) pattern  = prefix+pattern;
+            var suffix = this.getProperty("filterPatternSuffix");
+            if(suffix) pattern  = pattern+suffix;
 
             var notPattern = false;
             if (pattern) {
@@ -1038,18 +1062,15 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             var filterOperator = this.getProperty("numericFilterOperator", "<");
 
             if ((numericFieldId || patternFieldId) && (pattern || (filterSValue && filterOperator))) {
-                var patternField = null;
+                var patternFields = this.getFieldsByIds(fields, patternFieldId);
                 var numericField = null;
                 for (var i = 0; i < fields.length; i++) {
-                    if (!patternField && (fields[i].getId() == patternFieldId || patternFieldId == "#" + (i + 1))) {
-                        patternField = fields[i];
-                    }
                     if (!numericField && (fields[i].getId() == numericFieldId || numericFieldId == "#" + (i + 1))) {
                         numericField = fields[i];
                     }
                     if (patternField && numericField) break;
                 }
-                if (patternField || numericField) {
+                if (patternFields.length || numericField) {
                     var list = [];
                     var filterValue;
                     if (filterSValue) {
@@ -1085,10 +1106,14 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
                                 continue;
                             }
                         }
-                        if (patternField && pattern) {
-                            var value = "" + array[patternField.getIndex()];
-                            ok = value.match(pattern);
-                            if (notPattern) ok = !ok;
+                        if (patternFields.length && pattern) {
+                            for(var fieldIdx=0;fieldIdx<patternFields.length;fieldIdx++ ) {
+                                var patternField = patternFields[fieldIdx];
+                                var value = "" + array[patternField.getIndex()];
+                                ok = value.match(pattern);
+                                if (notPattern) ok = !ok;
+                                if(ok) break;
+                            }
                         }
                         if (ok) {
                             list.push(obj);
@@ -2272,10 +2297,13 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             this.setDisplayReady(true);
         },
         initDisplay: function() {
+            console.log("initDisplay");
             this.createUI();
             var filterValues = this.getProperty("filterValues");
+            var filterValuesLabel = this.getProperty("filterValuesLabel","");
             var filterValue  = this.getProperty("filterPattern");
             if(filterValues) {
+                filterValues = Utils.getMacro(filterValues);
                 var toks = filterValues.split(",");
                 var menu = "<select class='ramadda-pulldown' id='" +this.getDomId("filterValueMenu")+"'>";
                 for(var i=0;i<toks.length;i++) {
@@ -2286,9 +2314,10 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 
                 menu += "</select>";
                 let _this = this;
-                this.writeHtml(ID_TOP_RIGHT, menu);
+                this.writeHtml(ID_TOP_RIGHT, filterValuesLabel+menu);
                 this.jq("filterValueMenu").change(function(){
                         var value = $(this).val();
+                        if(_this.getProperty("filterPattern") == value) return;
                         _this.setProperty("filterPattern",value);
                         _this.updateUI();
                         _this.getDisplayManager().handleEventPropertyChanged(_this, {

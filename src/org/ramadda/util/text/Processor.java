@@ -2283,6 +2283,81 @@ public abstract class Processor extends CsvOperator {
     }
 
 
+    public static class Joiner extends RowCollector {
+
+        /** _more_          */
+        private List<String> keys1;
+
+        /** _more_          */
+        private List<String> values1;
+
+        /** _more_          */
+        private List<String> keys2;
+
+        /** _more_          */
+        private List<String> values2;
+
+        private String file;
+        /**
+         * _more_
+         *
+         *
+         *
+         * @param keys _more_
+         * @param values _more_
+         */
+        public Joiner(List<String> keys1, List<String> values1,String file,
+                      List<String> keys2, List<String> values2) {
+            this.keys1   = keys1;
+            this.values1 = values1;
+            this.keys2   = keys2;
+            this.values2 = values2;
+            this.file = file;
+        }
+
+
+        /**
+         * _more_
+         *
+         * @param info _more_
+         * @param rows _more_
+         *
+         *
+         * @return _more_
+         * @throws Exception On badness
+         */
+        @Override
+        public List<Row> finish(TextReader info, List<Row> rows)
+                throws Exception {
+            List<Integer> keys1Indices = getIndices(keys1);
+            List<Integer> values1Indices = getIndices(values1);
+            List<Integer> keys2Indices = getIndices(keys2);
+            List<Integer> values2Indices = getIndices(values2);
+            List<Row> newRows = new ArrayList<Row>();
+            BufferedReader br = new BufferedReader(
+                                                   new InputStreamReader(getInputStream(file)));
+            TextReader reader = new  TextReader(br);
+            List<Row>rows2 = new ArrayList<Row>();
+            while(true) {
+                String line = reader.readLine();
+                if (line == null) {
+                    break;
+                }
+                List<String> cols = Utils.tokenizeColumns(line, ",");
+                rows2.add(new Row(cols));
+            }
+
+
+
+            return newRows;
+        }
+
+
+
+
+    }
+
+
 
 
 }

@@ -330,10 +330,6 @@ function RamaddaMultiChart(displayManager, id, properties) {
         getType: function() {
             return this.getProperty(PROP_CHART_TYPE, DISPLAY_LINECHART);
         },
-        initDisplay: function() {
-            this.createUI();
-            this.updateUI();
-        },
         clearCachedData: function() {
             SUPER.clearCachedData();
             this.computedData = null;
@@ -881,7 +877,8 @@ function RamaddaMultiChart(displayManager, id, properties) {
             dataList = this.filterData(dataList, selectedFields);
             if (this.chartType == DISPLAY_SANKEY) {
                 if (!this.getProperty("doCategories", false)) {
-                    return google.visualization.arrayToDataTable(this.makeDataArray(dataList));
+                    var values = this.makeDataArray(dataList);
+                    return google.visualization.arrayToDataTable(values);
                 }
                 var strings = [];
                 for (var i = 0; i < selectedFields.length; i++) {
@@ -2153,7 +2150,7 @@ function RamaddaTextDisplay(displayManager, id, properties) {
     RamaddaUtil.defineMembers(this, {
         lastHtml: "<p>&nbsp;<p>&nbsp;<p>",
         initDisplay: function() {
-            this.createUI();
+            SUPER.initDisplay.call(this);
             this.setContents(this.lastHtml);
         },
         handleEventRecordSelection: function(source, args) {
