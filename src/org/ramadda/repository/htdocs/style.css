@@ -462,11 +462,48 @@ color:#000;
 }
 
 textarea, input, select {
-      font-size: .8em;
+#      font-size: .8em;
+      font-size: 12pt;
 }
 textarea, input {
   resize:both;
 }
+
+/* jquery resets */
+.ui-widget {
+    font-family: inherit;
+    font-size:12pt;
+}
+
+
+.ui-widget select , .ui-widget .ui-widget {
+     font-size:12pt;
+}
+
+.ui-button {
+    padding:0.2em 0.5em;
+}
+
+.ui-button-text {
+      font-size: .8em;
+}
+
+
+.ui-menu-item {
+//   background-color : #E6E6E6;
+}
+
+.ui-menu {
+}
+
+
+.ui-dialog {
+   z-index: 10000;
+}
+
+
+
+
 
 ul {
    margin-top:5px;
@@ -2993,39 +3030,6 @@ a.wiki-link-noexist {
 
 /* JQuery overrides */
 /*jeffmc: added these*/
-
-
-/* jquery resets */
-.ui-widget {
-    font-family: inherit;
-    font-size:12pt;
-}
-
-
-.ui-widget select , .ui-widget .ui-widget {
-     font-size:12pt;
-}
-
-.ui-button {
-    padding:0.2em 0.5em;
-}
-
-.ui-button-text {
-      font-size: .8em;
-}
-
-
-.ui-menu-item {
-//   background-color : #E6E6E6;
-}
-
-.ui-menu {
-}
-
-
-.ui-dialog {
-   z-index: 10000;
-}
 
 
 
