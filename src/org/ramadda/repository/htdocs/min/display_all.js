@@ -5620,7 +5620,7 @@ function RamaddaFieldsDisplay(displayManager, id, type, properties) {
             }
         },
         initDisplay: function() {
-            this.createUI();
+            SUPER.initDisplay.call(this);
             if (this.needsData()) {
                 this.setContents(this.getLoadingMessage());
             }

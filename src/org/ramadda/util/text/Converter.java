@@ -347,6 +347,9 @@ public abstract class Converter extends Processor {
          */
         @Override
         public Row processRow(TextReader info, Row row, String line) {
+            if (rowCnt++ == 0) {
+                return row;
+            }
             List<Integer> indices = getIndices(info);
             for(int i: indices) {
                 row.set(i,pad+row.get(i));
@@ -385,6 +388,9 @@ public abstract class Converter extends Processor {
          */
         @Override
         public Row processRow(TextReader info, Row row, String line) {
+            if (rowCnt++ == 0) {
+                return row;
+            }
             List<Integer> indices = getIndices(info);
             for(int i: indices) {
                 row.set(i,row.get(i)+pad);
