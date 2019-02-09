@@ -2809,9 +2809,10 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
     public String getWikiMetadataLabel(Request request, Entry entry,
                                        String id, String text)
             throws Exception {
-        for (Metadata metadata :
-                getMetadataManager().findMetadata(request, entry,
-                    "wiki_label", true)) {
+        List<Metadata> list =getMetadataManager().findMetadata(request, entry,
+                                                                   "wiki_label", true);
+        if(list==null) return text;
+        for (Metadata metadata :list) {
             if (Misc.equals(id, metadata.getAttr1())) {
                 text = metadata.getAttr2();
 
