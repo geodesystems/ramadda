@@ -122,7 +122,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                             new WikiTag(WIKI_TAG_TABS, attrs(
                                                              ATTR_TAG, WIKI_TAG_HTML, ATTR_SHOWLINK, "true", ATTR_INCLUDEICON, "false") + ATTRS_LAYOUT), 
                             new WikiTag(WIKI_TAG_GRID, attrs(
-                                                                  ATTR_TAG, WIKI_TAG_LINKS, "inner-height","100", ATTR_COLUMNS, "3", ATTR_INCLUDEICON, "true", "weights","","doline","true")), 
+                                                                  ATTR_TAG, WIKI_TAG_CARD, "inner-height","100", ATTR_COLUMNS, "3", ATTR_INCLUDEICON, "true", "weights","","doline","true")), 
                             new WikiTag(WIKI_TAG_TREE, attrs(
                                                              ATTR_DETAILS, "true")), 
                             new WikiTag(WIKI_TAG_TREEVIEW, attrs(ATTR_WIDTH,"750", ATTR_HEIGHT,"500")), 
@@ -1670,6 +1670,43 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
 
             return img;
 
+        } else if (theTag.equals(WIKI_TAG_CARD)) {
+            StringBuilder card = new StringBuilder();
+            HtmlUtils.open(card, HtmlUtils.TAG_DIV, HtmlUtils.cssClass("ramadda-card"));
+            String entryUrl = request.entryUrl(getRepository().URL_ENTRY_SHOW, entry);
+            HtmlUtils.div(card,
+                          HtmlUtils.href(entryUrl, entry.getName()),
+                          HtmlUtils.cssClass("ramadda-page-heading"));
+            String imageUrl = null;
+            if(entry.isImage()) {
+                imageUrl =
+                    getRepository().getHtmlOutputHandler().getImageUrl(request,
+                                                                       entry);
+            } else {
+                List<String> urls = new ArrayList<String>();
+                getMetadataManager().getThumbnailUrls(request, entry, urls);
+                if (urls.size() > 0) {
+                    imageUrl = urls.get(0);
+                }
+            }
+
+
+
+            if(imageUrl!=null) {
+                String img =  HtmlUtils.img(imageUrl,"", HtmlUtils.style("width:100%;"));
+                card.append(
+                            HtmlUtils.href(imageUrl,img, HtmlUtils.cssClass("popup_image")));
+
+                addImagePopupJS(request, wikiUtil, card, props);
+            }
+            String snippet     = getSnippet(request, entry);
+            if (Utils.stringDefined(snippet)) {
+                snippet = wikifyEntry(request, entry, snippet, false,
+                                      null, null, wikiUtil.getNotTags());
+                card.append(snippet);
+            }
+            HtmlUtils.close(card, HtmlUtils.TAG_DIV);
+            return card.toString();
         } else if (theTag.equals(WIKI_TAG_IMAGE)) {
             return getWikiImage(wikiUtil, request, entry, props);
         } else if (theTag.equals(WIKI_TAG_URL)) {
@@ -2098,6 +2135,9 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                 }
             }
 
+            boolean showHeading = getProperty(wikiUtil, props, "showHeading",
+                                           true);
+
             boolean showLink = getProperty(wikiUtil, props, ATTR_SHOWLINK,
                                            true);
             boolean includeIcon = getProperty(wikiUtil, props,
@@ -2253,11 +2293,13 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                                    HtmlUtils.cssClass("col-md-"
                                        + weightString));
                     HtmlUtils.open(sb, HtmlUtils.TAG_DIV,
-                                   HtmlUtils.cssClass("ramadda-box"));
+                                   HtmlUtils.cssClass("ramadda-grid-box"));
 
-                    HtmlUtils.div(sb,
-                                  HtmlUtils.href(urls.get(i), titles.get(i)),
-                                  HtmlUtils.cssClass("ramadda-page-heading"));
+                    if(showHeading) {
+                        HtmlUtils.div(sb,
+                                      HtmlUtils.href(urls.get(i), titles.get(i)),
+                                      HtmlUtils.cssClass("ramadda-page-heading"));
+                    }
 
                     String displayHtml = contents.get(i);
                     String snippet     = getSnippet(request, child);

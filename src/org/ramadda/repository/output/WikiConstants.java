@@ -453,6 +453,8 @@ public interface WikiConstants {
     /** wiki import */
     public static final String WIKI_TAG_GRID = "grid";
 
+    public static final String WIKI_TAG_CARD = "card";
+
     /** wiki import */
     public static final String WIKI_TAG_TOOLBAR = "toolbar";
 
