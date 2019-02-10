@@ -9768,6 +9768,7 @@ function RamaddaTextrawDisplay(displayManager, id, properties) {
             var maxLines = parseInt(this.getProperty("maxLines", 100000));
             var lineLength = parseInt(this.getProperty("lineLength", 10000));
             var breakLines = this.getProperty("breakLines", true);
+            var pattern = this.getProperty("pattern");
             var includeEmptyLines = this.getProperty("includeEmptyLines", false);
             var allFields = this.getData().getRecordFields();
             var fields = this.getSelectedFields(allFields);
@@ -9792,6 +9793,8 @@ function RamaddaTextrawDisplay(displayManager, id, properties) {
                     line += row[f.getIndex()];
                 }
                 line = line.trim();
+                if(pattern && !line.toLowerCase().match(pattern) continue;
+                    
                 line = line.replace(/</g, "&lt;").replace(/>/g, "&gt;");
                 if (!includeEmptyLines && line.length == 0) continue;
                 if (lineCnt >= maxLines)
