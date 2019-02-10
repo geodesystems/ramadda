@@ -186,7 +186,7 @@ addGlobalDisplayType({
     label: "Word Tree",
     requiresData: true,
     forUser: true,
-    category: CATEGORY_MISC
+    category: "Text"
 });
 
 

@@ -110,4 +110,22 @@ value  type double
 </wiki>
   </type>
 
+
+
+  <type name="type_point_text"  description="Record Text File" super="type_point" category="Point Data" foruser="true" handler="org.ramadda.data.services.PointTypeHandler">
+     <property name="record.file.class" value="org.ramadda.data.point.text.CsvFile"/>
+     <property name="form.area.show" value="false"/>
+     <property name="form.location.show" value="false"/>
+ <property name="record.properties">
+<![CDATA[
+delimiter=_none_
+fields=sentence[label="Sentence" type="string"]
+skiplines=0
+commentLineStart=#
+]]>
+     </property>
+</type>
+
+
+
 </types>

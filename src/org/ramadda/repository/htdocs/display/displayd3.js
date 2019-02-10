@@ -9,7 +9,6 @@ var DISPLAY_D3_GLIDER_CROSS_SECTION = "GliderCrossSection";
 var DISPLAY_D3_PROFILE = "profile";
 var DISPLAY_D3_LINECHART = "D3LineChart";
 var DISPLAY_SKEWT = "skewt";
-var DISPLAY_WORDCLOUD = "wordcloud";
 var DISPLAY_VENN = "venn";
 
 //Note: Added requiresData and category
@@ -35,13 +34,6 @@ addGlobalDisplayType({
     category: "Charts"
 });
 
-addGlobalDisplayType({
-    type: DISPLAY_WORDCLOUD,
-    forUser: true,
-    label: "Word Cloud",
-    requiresData: true,
-    category: "Misc"
-});
 
 addGlobalDisplayType({
     type: DISPLAY_VENN,
@@ -564,185 +556,7 @@ function RamaddaGliderCrossSectionDisplay(displayManager, id, properties) {
 
 
 
-function RamaddaWordcloudDisplay(displayManager, id, properties) {
-    var ID_WORDCLOUD = "wordcloud";;
-    var SUPER;
-    RamaddaUtil.inherit(this, SUPER = new RamaddaFieldsDisplay(displayManager, id, DISPLAY_WORDCLOUD, properties));
-    addRamaddaDisplay(this);
-    $.extend(this, {
-        getContentsStyle: function() {
-            return "";
-        },
-        checkLayout: function() {
-                this.updateUIInner();
-            },
-        updateUI: function() {
-            var includes = "<link rel='stylesheet' href='" + ramaddaBaseUrl + "/lib/jqcloud.min.css'>";
-            includes += "<script src='" + ramaddaBaseUrl + "/lib/jqcloud.min.js'></script>";
-            this.writeHtml(ID_DISPLAY_TOP, includes);
-            let _this = this;
-            var func = function() {
-                _this.updateUIInner();
-            };
-            setTimeout(func, 10);
-        },
-        updateUIInner: function() {
-            let records = this.filterData();
-            if (!records) {
-                return;
-            }
-            var allFields = this.getData().getRecordFields();
-            var fields = this.getSelectedFields(allFields);
-            if (fields.length == 0)
-                fields = allFields;
-            var strings = this.getFieldsOfType(fields, "string");
-            if (strings.length == 0) {
-                this.displayError("No string fields specified");
-                return;
-            }
-            var fieldInfo = {};
 
-
-
-
-
-            for (var rowIdx = 0; rowIdx < records.length; rowIdx++) {
-                var row = this.getDataValues(records[rowIdx]);
-                for (var fieldIdx = 0; fieldIdx < strings.length; fieldIdx++) {
-                    var field = strings[fieldIdx];
-                    if (!fieldInfo[field.getId()]) {
-                        fieldInfo[field.getId()] = {
-                            field: field,
-                            words: [],
-                            counts: {},
-                            divId: this.getDomId(ID_WORDCLOUD + (field.getIndex())),
-                        }
-                    }
-                    var fi = fieldInfo[field.getId()];
-                    var value = row[field.getIndex()];
-                    if (!Utils.isDefined(fi.counts[value])) {
-                        fi.counts[value] = 0;
-                    }
-                    fi.counts[value]++;
-                }
-            }
-
-            let _this = this;
-            var divs = "";
-            var words = [];
-            var width = (100 * 1 / strings.length) + "%;";
-            for (a in fieldInfo) {
-                var fi = fieldInfo[a];
-                let field = fi.field;
-                var handlers = {
-                    click: function(w) {
-                        var word = w.target.innerText;
-                        _this.showRows(records, field, word);
-                    }
-                };
-                for (word in fi.counts) {
-                    var obj1 = {
-                        weight: fi.counts[word],
-                        handlers: handlers,
-                        text: word,
-                    };
-                    var obj2 = {
-                        weight: fi.counts[word],
-                        handlers: handlers,
-                        text: field.getLabel() + ":" +word,
-                    };
-                    fi.words.push(obj1);
-                    words.push(obj2);
-                }
-                divs += "<div style='display:inline-block;width:" + width + "'><b>" + fi.field.getLabel() + "</b>" + HtmlUtils.div(["style", "border: 1px #ccc solid;height:300px;", "id", fi.divId], "") + "</div>";
-            }
-
-            this.writeHtml(ID_DISPLAY_CONTENTS, "");
-            var options = {
-                autoResize: true,
-            };
-
-
-            var colors = this.getColorTable(true);
-            if (colors) {
-                options.colors = colors,
-                options.classPattern= null;
-                options.fontSize = {
-                    from: 0.1,
-                    to: 0.02
-                };
-            }
-            if (this.getProperty("shape"))
-                options.shape = this.getProperty("shape");
-            if (this.getProperty("combined", false)) {
-                this.writeHtml(ID_DISPLAY_CONTENTS, HtmlUtils.div(["id", this.getDomId("words"), "style", "height:300px;"], ""));
-                $("#" + this.getDomId("words")).jQCloud(words, options);
-            } else {
-                this.writeHtml(ID_DISPLAY_CONTENTS, divs);
-                for (a in fieldInfo) {
-                    var fi = fieldInfo[a];
-                    $("#" + fi.divId).jQCloud(fi.words, options);
-                }
-            }
-        },
-        showRows: function(records, field, word) {
-            if (word.startsWith(field.getLabel() + ":")) {
-                word = word.replace(field.getLabel() + ":", "");
-            }
-            var tableFields;
-            if (this.getProperty("tableFields")) {
-                tableFields = {};
-                var list = this.getProperty("tableFields").split(",");
-                for (a in list) {
-                    tableFields[list[a]] = true;
-                }
-            }
-            var fields = this.getData().getRecordFields();
-            var html = "";
-            var data = [];
-            var header = [];
-            data.push(header);
-            for (var fieldIdx = 0; fieldIdx < fields.length; fieldIdx++) {
-                var f = fields[fieldIdx];
-                if (tableFields && !tableFields[f.getId()]) continue;
-                header.push(fields[fieldIdx].getLabel());
-            }
-            var showRecords = this.getProperty("showRecords",false);
-            if(showRecords) {
-                html+="<br>";
-            }
-            for (var rowIdx = 0; rowIdx < records.length; rowIdx++) {
-                var row = this.getDataValues(records[rowIdx]);
-                if (word != row[field.getIndex()]) {
-                    continue;
-                }
-                var tuple = [];
-                data.push(tuple);
-                for (var col = 0; col < fields.length; col++) {
-                    var f = fields[col];
-                    if (tableFields && !tableFields[f.getId()]) continue;
-                    var v = row[f.getIndex()];
-                    if(showRecords) {
-                        html+=HtmlUtil.b(f.getLabel()) +": " + v+"</br>";
-                    } else {
-                        tuple.push(v);
-                    }
-                }
-                if(showRecords) {
-                    html += "<p>";
-                }
-            }
-            if(showRecords) {
-                this.writeHtml(ID_DISPLAY_BOTTOM, html);
-            } else {
-                this.writeHtml(ID_DISPLAY_BOTTOM, field.getLabel() + "=" + word + HtmlUtils.div(["id", this.getDomId("table"), "style", "height:300px"], ""));
-                var dataTable = google.visualization.arrayToDataTable(data);
-                this.chart = new google.visualization.Table(document.getElementById(this.getDomId("table")));
-                this.chart.draw(dataTable, {});
-            }
-        }
-    });
-}
 
 
 function RamaddaVennDisplay(displayManager, id, properties) {

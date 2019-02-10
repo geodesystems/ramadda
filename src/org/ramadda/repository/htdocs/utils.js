@@ -157,6 +157,29 @@ var Utils = {
         }
         return r;
     },
+    stripTags:function(s) {
+        var regex = /(<([^>]+)>)/ig;
+        return s.replace(regex," ");
+    },
+    articles: "that,this,they,those,with,them,their,have,than,there,when,more,much,many,will,were".split(","),
+    tokenizeWords:function(s,stopWords, extraStopWords, removeArticles) {
+        if(!stopWords) {
+            stopWords = ['a','i','the','if','1','2','3','4','5','6','7','8','9','0','to','of','or','and','but','it','by','as','in','for'];
+        }
+        var words = [];
+        var toks = s.split(/[ ,\(\)\.:\;\n\?\-!\*]/);
+        for(var i=0;i<toks.length;i++) {
+            var word = toks[i].trim();
+            if(word == "") continue;
+            var _word = word.toLowerCase();
+            if(stopWords.includes(_word)) continue;
+            if(extraStopWords && extraStopWords.includes(_word)) continue;
+            if(removeArticles && this.articles.includes(_word)) continue;
+            if(word.match(/^[0-9]+$/)) continue;
+            words.push(word);
+       }
+        return words;
+    },
     stringDefined: function(v) {
         if (!Utils.isDefined(v)) return false;
         if (v == null || v == "") return false;
