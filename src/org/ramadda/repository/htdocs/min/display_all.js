@@ -2556,7 +2556,6 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             var center = HtmlUtils.div(["id",this.getDomId(ID_TOP_CENTER)],"");
             var right = HtmlUtils.div(["id",this.getDomId(ID_TOP_RIGHT)],"");
             html+=HtmlUtils.leftCenterRight(left,center,right,"80%","1%","19%",{valign:"bottom"});
-
             var contents = this.getContentsDiv();
             //                contents  = "CONTENTS";
             html += contents;
@@ -9750,6 +9749,7 @@ function RamaddaTextanalysisDisplay(displayManager, id, properties) {
 
 
 function RamaddaTextrawDisplay(displayManager, id, properties) {
+    var ID_TEXT = "text";
     let SUPER = new RamaddaBaseTextDisplay(displayManager, id, DISPLAY_TEXTRAW, properties);
     RamaddaUtil.inherit(this, SUPER);
     addRamaddaDisplay(this);
@@ -9762,13 +9762,35 @@ function RamaddaTextrawDisplay(displayManager, id, properties) {
             if (!records) {
                 return null;
             }
+
+            var pattern = this.getProperty("pattern");
+            if(pattern && pattern.length==0) pattern=null;
+            this.writeHtml(ID_TOP_RIGHT,HtmlUtils.input("pattern", (pattern?pattern:""),["placeholder", "Search text", "id" , this.getDomId("search")]));
+            let  _this = this;
+            this.jq("search").keypress(function(event) {
+                    if (event.which == 13) {
+                        _this.setProperty("pattern", $(this).val());
+                        _this.updateUI();
+                    }
+                });
+            this.writeHtml(ID_DISPLAY_CONTENTS, HtmlUtils.div(["id",this.getDomId(ID_TEXT)],""));
+            this.showText();
+            },
+         showText: function() {
+                let records = this.filterData();
+                if (!records) {
+                return null;
+            }
+            var pattern = this.getProperty("pattern");
+            if(pattern && pattern.length==0) pattern=null;
             var asHtml = this.getProperty("asHtml", true);
             var addLineNumbers = this.getProperty("addLineNumbers", true);
             if (addLineNumbers) asHtml = true;
             var maxLines = parseInt(this.getProperty("maxLines", 100000));
             var lineLength = parseInt(this.getProperty("lineLength", 10000));
             var breakLines = this.getProperty("breakLines", true);
-            var linePattern = this.getProperty("pattern");
+
+
             var includeEmptyLines = this.getProperty("includeEmptyLines", false);
             var allFields = this.getData().getRecordFields();
             var fields = this.getSelectedFields(allFields);
@@ -9784,6 +9806,12 @@ function RamaddaTextrawDisplay(displayManager, id, properties) {
                 corpus = "<table width=100%>";
             }
             var lineCnt = 0;
+            var displayedLineCnt = 0;
+            var re;
+            if(pattern) {
+                re= new RegExp("("+pattern+")");
+            }
+
             for (var rowIdx = 0; rowIdx < records.length; rowIdx++) {
                 var row = this.getDataValues(records[rowIdx]);
                 var line = "";
@@ -9793,13 +9821,16 @@ function RamaddaTextrawDisplay(displayManager, id, properties) {
                     line += row[f.getIndex()];
                 }
                 line = line.trim();
-                if(linePattern && !line.toLowerCase().match(linePattern)) continue;
-                    
-                line = line.replace(/</g, "&lt;").replace(/>/g, "&gt;");
                 if (!includeEmptyLines && line.length == 0) continue;
-                if (lineCnt >= maxLines)
-                    break;
+                line = line.replace(/</g, "&lt;").replace(/>/g, "&gt;");
                 lineCnt++;
+                if(re) {
+                    if(!line.toLowerCase().match(re)) continue;
+                    line = line.replace(re,"<span style=background:yellow;>$1</span>");
+                }
+                displayedLineCnt++;
+
+                if(displayedLineCnt>maxLines) break;
 
                 if (addLineNumbers) {
                     corpus += HtmlUtils.tr(["valign", "top"], HtmlUtils.td(["width", "10px"], "<a name=line_" + lineCnt + "></a>" +
@@ -9825,8 +9856,8 @@ function RamaddaTextrawDisplay(displayManager, id, properties) {
             var height = this.getProperty("height", "600");
             if (!asHtml)
                 corpus = HtmlUtils.tag("pre", [], corpus);
-            var html = HtmlUtils.div(["style", "margin-top:10px;padding:4px;border:1px #ccc solid;border-top:1px #ccc solid; max-height:" + height + "px;overflow-y:auto;"], corpus);
-            this.writeHtml(ID_DISPLAY_CONTENTS, html);
+            var html = HtmlUtils.div(["style", "padding:4px;border:1px #ccc solid;border-top:1px #ccc solid; max-height:" + height + "px;overflow-y:auto;"], corpus);
+            this.writeHtml(ID_TEXT, html);
         },
     });
 }/**

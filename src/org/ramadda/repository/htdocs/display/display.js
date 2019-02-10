@@ -2406,7 +2406,6 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             var center = HtmlUtils.div(["id",this.getDomId(ID_TOP_CENTER)],"");
             var right = HtmlUtils.div(["id",this.getDomId(ID_TOP_RIGHT)],"");
             html+=HtmlUtils.leftCenterRight(left,center,right,"80%","1%","19%",{valign:"bottom"});
-
             var contents = this.getContentsDiv();
             //                contents  = "CONTENTS";
             html += contents;
