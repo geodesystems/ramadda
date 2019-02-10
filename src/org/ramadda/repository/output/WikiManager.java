@@ -2687,6 +2687,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                                 ? ""
                                 : getProperty(wikiUtil, props,
                                     ATTR_SEPARATOR, ""));
+            String output = getProperty(wikiUtil, props, "output",(String)null);
             String cssClass = getProperty(wikiUtil, props, ATTR_CLASS, "");
             String style    = getProperty(wikiUtil, props, ATTR_STYLE, "");
             String tagOpen  = (isList
@@ -2704,6 +2705,8 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                 tagClose = "<br>";
             }
 
+
+
             List<String> links = new ArrayList<String>();
             for (Entry child : children) {
                 String url;
@@ -2714,8 +2717,12 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                     url = child.getTypeHandler().getEntryResourceUrl(request,
                             child);
                 } else {
-                    url = request.entryUrl(getRepository().URL_ENTRY_SHOW,
-                                           child);
+                    if(output==null) 
+                        url = request.entryUrl(getRepository().URL_ENTRY_SHOW,
+                                               child);
+                    else
+                        url = request.entryUrl(getRepository().URL_ENTRY_SHOW,
+                                               child, ARG_OUTPUT,output);
                 }
 
                 String linkLabel = getEntryDisplayName(child);
