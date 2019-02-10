@@ -1715,13 +1715,11 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                 }
             }
 
-
-
             if(imageUrl!=null) {
                 String img =  HtmlUtils.img(imageUrl,"", HtmlUtils.style("width:100%;"));
-                card.append(
-                            HtmlUtils.href(imageUrl,img, HtmlUtils.cssClass("popup_image")));
-
+                card.append(HtmlUtils.div(
+                                          HtmlUtils.href(imageUrl,img, HtmlUtils.cssClass("popup_image")),
+                                          HtmlUtils.cssClass("ramadda-imagewrap")));
                 addImagePopupJS(request, wikiUtil, card, props);
             }
             String snippet     = getSnippet(request, entry);
