@@ -1701,7 +1701,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
             String entryUrl = request.entryUrl(getRepository().URL_ENTRY_SHOW, entry);
             HtmlUtils.div(card,
                           HtmlUtils.href(entryUrl, entry.getName()),
-                          HtmlUtils.cssClass("ramadda-page-heading"));
+                          HtmlUtils.cssClass("ramadda-subheading"));
             String imageUrl = null;
             if(entry.isImage()) {
                 imageUrl =

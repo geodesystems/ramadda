@@ -109,6 +109,16 @@ color:#000;
    text-align: center;
 }
 
+
+.ramadda-subheading  {
+  font-size:115%;
+   padding: 0px;
+   margin: 0px;
+   margin-bottom: 2px;
+   color: #000;
+   text-align: center;
+}
+
 .ramadda-page-title-left, .ramadda-page-heading-left  {
     text-align:left;
 }
@@ -185,7 +195,6 @@ color:#000;
   padding-bottom:6px;
   padding-top:6px;
   border : 1px #ddd solid;
-//  background: #F3F3F3;
   background: #FbFbFb;
 }
 
