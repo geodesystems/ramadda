@@ -453,16 +453,27 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
         displayColorTable: function(ct, domId, min, max) {
                 Utils.displayColorTable(ct, this.getDomId(domId), min,max);
        },
-       getColorTableName: function() {
-            var ct = this.getProperty("colorBar", this.getProperty("colorTable"));
+       getColorTableName: function(name) {
+           var ct;
+           if(name) {
+               ct = this.getProperty(name);
+           } else {
+               ct = this.getProperty("colorBar", this.getProperty("colorTable"));
+           }
             if (ct == "none") return null;
             return ct;
         },
-        getColorTable: function(justColors) {
-            var colorTable = this.getColorTableName();
+        getColorTable: function(justColors, name, dflt) {
+            var colorTable = this.getColorTableName(name);
+            if (!colorTable) {
+                colorTable = dflt;
+            }
             if (colorTable) {
                 var ct = Utils.ColorTables[colorTable];
                 if (ct && justColors) return ct.colors;
+                if(!ct && name) {
+                    return colorTable.split(",");
+                }
                 return ct;
             }
             if (this.getProperty("colors")) {

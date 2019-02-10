@@ -4,13 +4,13 @@ Copyright 2008-2019 Geode Systems LLC
 */
 
 
-
 //Note: I put all of the chart definitions together at the top so one can see everything that is available here
 var DISPLAY_D3_GLIDER_CROSS_SECTION = "GliderCrossSection";
 var DISPLAY_D3_PROFILE = "profile";
 var DISPLAY_D3_LINECHART = "D3LineChart";
 var DISPLAY_SKEWT = "skewt";
 var DISPLAY_WORDCLOUD = "wordcloud";
+var DISPLAY_VENN = "venn";
 
 //Note: Added requiresData and category
 addGlobalDisplayType({
@@ -39,6 +39,14 @@ addGlobalDisplayType({
     type: DISPLAY_WORDCLOUD,
     forUser: true,
     label: "Word Cloud",
+    requiresData: true,
+    category: "Misc"
+});
+
+addGlobalDisplayType({
+    type: DISPLAY_VENN,
+    forUser: true,
+    label: "Venn Diagram",
     requiresData: true,
     category: "Misc"
 });
@@ -734,4 +742,125 @@ function RamaddaWordcloudDisplay(displayManager, id, properties) {
             }
         }
     });
+}
+
+
+function RamaddaVennDisplay(displayManager, id, properties) {
+    var ID_VENN= "venn";
+    let SUPER = new RamaddaFieldsDisplay(displayManager, id, DISPLAY_VENN, properties);
+    RamaddaUtil.inherit(this, SUPER);
+    addRamaddaDisplay(this);
+    $.extend(this, {
+        getContentsStyle: function() {
+            return "";
+        },
+        checkLayout: function() {
+                this.updateUIInner();
+            },
+        updateUI: function() {
+            var includes =  "<script src='" + ramaddaBaseUrl + "/lib/venn.js'></script>";
+            this.writeHtml(ID_DISPLAY_TOP, includes);
+            let _this = this;
+            var func = function() {
+                _this.updateUIInner();
+            };
+            setTimeout(func, 10);
+        },
+        updateUIInner: function() {
+            let records = this.filterData();
+            if (!records) {
+                return;
+            }
+            var allFields = this.getData().getRecordFields();
+            var fields = this.getSelectedFields(allFields);
+            if (fields.length == 0)
+                fields = allFields;
+            var strings = this.getFieldsOfType(fields, "string");
+            if (strings.length == 0) {
+                this.displayError("No string fields specified");
+                return;
+            }
+            /*
+              var sets = [{sets : [0], label : 'SE', size : 28,}, 
+              {sets : [1], label : 'Treat', size: 35},
+              {sets : [2], label : 'Anti-CCP', size : 108}, 
+              {sets : [3], label : 'DAS28', size:106},
+              {sets : [0,1], size:1},
+              {sets : [0,2], size:1},
+              {sets : [0,3], size:14},
+            */
+            var setInfos = {};
+            var setCnt = 0;
+            for (var rowIdx = 0; rowIdx < records.length; rowIdx++) {
+                var row = this.getDataValues(records[rowIdx]);
+                var keys  =[];
+                var key ="";
+                for (var fieldIdx = 0; fieldIdx < strings.length; fieldIdx++) {
+                    var field = strings[fieldIdx];
+                    var value = row[field.getIndex()];
+                    var setKey = field.getId()+"--" + value;
+                    keys.push(setKey);
+                    key+="--" + setKey;
+                    if (!Utils.isDefined(setInfos[setKey])) {
+                        setInfos[setKey] = {
+                            count:0,
+                            setIds:[setCnt],
+                            label:value,
+                        };
+                        setCnt++;
+                    }
+                    setInfos[setKey].count++;
+                }
+                var ids = [];
+                if (!Utils.isDefined(setInfos[key])) {
+                    for(var i=0;i<keys.length;i++) {
+                        ids.push(setInfos[keys[i]].setIds[0]);
+                    }
+                    setInfos[key] = {
+                        count:0,
+                        setIds:ids,
+                        label:null,
+                    };
+                }
+                setInfos[key].count++;
+            }
+
+            var sets = [];
+            for(var a in setInfos) {
+                var setInfo = setInfos[a];
+                var obj = {sets : setInfo.setIds,  size : setInfo.count};
+                if(setInfo.label)
+                    obj.label = setInfo.label;
+                sets.push(obj);
+            }
+            this.writeHtml(ID_DISPLAY_CONTENTS, HtmlUtils.div(["id", this.getDomId(ID_VENN), "style", "height:300px;"], ""));
+            var chart = venn.VennDiagram()
+                .width(600)
+                .height(400);
+            var id = "#"+this.getDomId(ID_VENN);
+            var strokeColors = this.getColorTable(true,"strokeColors","nice");
+            var fillColors = this.getColorTable(true,"fillColors","nice");
+            var textColors = this.getColorTable(true,"textColors");
+            if(!textColors)
+                textColors = strokeColors;
+            d3.select(id).datum(sets).call(chart);
+            d3.selectAll(id+" .venn-circle path")
+                .style("fill-opacity", parseFloat(this.getProperty("fillOpacity",0.5)))
+                .style("stroke-width", parseInt(this.getProperty("strokeWidth",1)))
+                .style("stroke-opacity", parseFloat(this.getProperty("strokeOpacity",0.5)))
+                .style("stroke", function(d,i) { 
+                        return i<strokeColors.length?strokeColors[i]:strokeColors[i%strokeColors.length]; 
+                    })
+                .style("fill", function(d,i) {
+                        return i<fillColors.length?fillColors[i]:fillColors[i%fillColors.length]; 
+                    })
+            d3.selectAll(id+" .venn-circle text")
+                .style("fill", function(d,i) {
+                        return i<textColors.length?textColors[i]:textColors[i%textColors.length]; 
+                    })
+                .style("font-size", this.getProperty("fontSize", "16px"))
+                .style("font-weight", this.getProperty("fontWeight","100"));
+
+            }
+        });
 }
