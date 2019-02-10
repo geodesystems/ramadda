@@ -9503,7 +9503,7 @@ function RamaddaTextstatsDisplay(displayManager, id, properties) {
             var minCount = parseInt(this.getProperty("minCount", 0));
             var showBars = this.getProperty("showBars", true);
             var scale = this.getProperty("barsScale", 10);
-            var barColor = this.getProperty("barsColor", "blue");
+            var barColor = this.getProperty("barColor", "blue");
             var height = this.getProperty("height", "400");
             var barWidth = parseInt(this.getProperty("barWidth", "400"));
             for (a in fieldInfo) {
