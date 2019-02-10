@@ -1,7 +1,7 @@
+
 /**
 Copyright 2008-2019 Geode Systems LLC
 */
-
 
 
 var DISPLAY_WORDCLOUD = "wordcloud";
@@ -344,8 +344,7 @@ function RamaddaTextstatsDisplay(displayManager, id, properties) {
                 for (var i = 0; i < counts.length; i++) {
                     var percent = Math.round(10000 * (counts[i].count / totalWords)) / 100;
                     var row = HtmlUtils.td([], counts[i].word + "&nbsp;:&nbsp;") +
-                        HtmlUtils.td([], counts[i].count + "&nbsp;&nbsp;(" + percent + "%)&nbsp;:&nbsp;") +
-                        HtmlUtils.td([], );
+                        HtmlUtils.td([], counts[i].count + "&nbsp;&nbsp;(" + percent + "%)&nbsp;:&nbsp;");
                     row += "\n";
                     if (showBars) {
                         row += HtmlUtils.td([], "&nbsp;");
