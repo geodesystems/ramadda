@@ -2012,9 +2012,10 @@ public class HtmlOutputHandler extends OutputHandler {
 
                 if ( !isSearchResults
                         && !Utils.stringDefined(group.getDescription())) {
-                    sb.append(
+                    /*                    sb.append(
                         getPageHandler().showDialogNote(
                             msg(LABEL_EMPTY_FOLDER)));
+                    */
                 }
             }
 
