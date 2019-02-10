@@ -381,8 +381,9 @@ public class WikiPageTypeHandler extends ExtensibleGroupTypeHandler {
                                      List<String> tabContents) {
         super.addToInformationTabs(request, entry, tabTitles, tabContents);
         StringBuilder sb = new StringBuilder();
-        sb.append(HtmlUtils.textArea("dummy", entry.getValue(0, ""), 10,
-                                     120));
+        addWikiEditor(request, entry, sb, null, "dummy",
+                      entry.getValue(0,""), null, false, 256000);
+        //       sb.append(HtmlUtils.textArea("dummy", entry.getValue(0, ""), 10,   120));
         tabTitles.add("Wiki Text");
         tabContents.add(sb.toString());
     }
