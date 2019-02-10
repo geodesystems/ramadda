@@ -414,32 +414,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                                               ATTR_LAYOUTHERE, "true", 
                                               ATTR_SHOWMENU, "true", 
                                               ATTR_SHOWTITLE, "true")),
-                            new WikiTag(WIKI_TAG_DISPLAY,
-                                        "Word Tree",
-                                        attrs(ATTR_TYPE, "wordtree", 
-                                              "#fields", "",
-                                              "#buckets","100,110,115,120,130",
-                                              "#bucketLabel","labels for buckets",
-                                              "#wordColors","blue,black,red",
-                                              "#colorBy","color by field",
-                                              "#headerPrefix", "prefix text",
-                                              "#header","alt header",
-                                              "#maxFontSize","14",
-                                              ATTR_LAYOUTHERE, "true", 
-                                              ATTR_SHOWMENU, "true", 
-                                              ATTR_SHOWTITLE, "true")),
-                            new WikiTag(WIKI_TAG_DISPLAY,
-                                        "Word Cloud",
-                                        attrs(ATTR_TYPE, "wordcloud", 
-                                              "#fields", "",
-                                              "#tableFields", "",
-                                              "#showRecords", "true",
-                                              "#combined","false",
-                                              "#shape","rectangular",
-                                              ATTR_LAYOUTHERE, "true", 
-                                              ATTR_SHOWMENU, "true", 
-                                              ATTR_SHOWTITLE, "true")),
-                            new WikiTag(WIKI_TAG_DISPLAY,
+                           new WikiTag(WIKI_TAG_DISPLAY,
                                         "Venn Diagram",
                                         attrs(ATTR_TYPE, "venn", 
                                               "#fields", "",
@@ -527,7 +502,56 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                                               "#fields", "",
                                               ATTR_LAYOUTHERE, "true", 
                                               ATTR_SHOWMENU, "true", 
-                                              ATTR_SHOWTITLE, "true")))
+                                              ATTR_SHOWTITLE, "true"))),
+        new WikiTagCategory("Text Displays",
+                            new WikiTag(WIKI_TAG_DISPLAY,
+                                        "Word Tree",
+                                        attrs(ATTR_TYPE, "wordtree", 
+                                              "#fields", "",
+                                              "#buckets","100,110,115,120,130",
+                                              "#bucketLabel","labels for buckets",
+                                              "#wordColors","blue,black,red",
+                                              "#colorBy","color by field",
+                                              "#headerPrefix", "prefix text",
+                                              "#header","alt header",
+                                              "#maxFontSize","14",
+                                              ATTR_LAYOUTHERE, "true", 
+                                              ATTR_SHOWMENU, "true", 
+                                              ATTR_SHOWTITLE, "true")),
+                            new WikiTag(WIKI_TAG_DISPLAY,
+                                        "Word Cloud",
+                                        attrs(ATTR_TYPE, "wordcloud", 
+                                              "#fields", "",
+                                              "#tableFields", "",
+                                              "#showRecords", "true",
+                                              "#combined","false",
+                                              "#shape","rectangular",
+                                              ATTR_LAYOUTHERE, "true", 
+                                              ATTR_SHOWMENU, "true", 
+                                              ATTR_SHOWTITLE, "true")),
+                            new WikiTag(WIKI_TAG_DISPLAY,
+                                        "Text Stats",
+                                        attrs(ATTR_TYPE, "textstats", 
+                                              "#fields", "",
+                                              ATTR_LAYOUTHERE, "true", 
+                                              ATTR_SHOWMENU, "true", 
+                                              ATTR_SHOWTITLE, "true")),
+                            new WikiTag(WIKI_TAG_DISPLAY,
+                                        "Text Analysis",
+                                        attrs(ATTR_TYPE, "textanalysis", 
+                                              "#fields", "",
+                                              ATTR_LAYOUTHERE, "true", 
+                                              ATTR_SHOWMENU, "true", 
+                                              ATTR_SHOWTITLE, "true")),
+                            new WikiTag(WIKI_TAG_DISPLAY,
+                                        "Text Raw",
+                                        attrs(ATTR_TYPE, "textraw", 
+                                              "#fields", "",
+                                              ATTR_LAYOUTHERE, "true", 
+                                              ATTR_SHOWMENU, "true", 
+                                              ATTR_SHOWTITLE, "true"))
+                            )
+
     };
     //J++
 
@@ -4708,12 +4732,14 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
             WikiTagCategory cat = WIKITAGS[i];
             if ( !charts) {
                 if (cat.category.equals("Displays")
-                        || cat.category.equals("Charts")) {
+                        || cat.category.equals("Charts")
+                    || cat.category.equals("Text Displays")) {
                     continue;
                 }
             } else {
                 if ( !(cat.category.equals("Displays")
-                        || cat.category.equals("Charts"))) {
+                        || cat.category.equals("Charts"))
+                     || cat.category.equals("Text Displays")) {
                     continue;
                 }
             }
