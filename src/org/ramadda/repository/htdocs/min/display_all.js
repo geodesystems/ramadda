@@ -9380,16 +9380,46 @@ function RamaddaWordcloudDisplay(displayManager, id, properties) {
                         }
                     }
                 };
+
+                var counts=[];
                 for (word in fi.counts) {
+                    var count = fi.counts[word];
+                    counts.push({
+                        word: word,
+                        count: count
+                    });
+                }
+                counts.sort(function(a, b) {
+                    return a.count < b.count;
+                });
+                if (minCount > 0) {
+                    var tmp = [];
+                    for (var i = 0; i < counts.length; i++) {
+                        if (counts[i].count >= minCount)
+                            tmp.push(counts[i]);
+                    }
+                    counts = tmp;
+                }
+                if (maxWords > 0) {
+                    var tmp = [];
+                    for (var i = 0; i <= maxWords && i < counts.length; i++) {
+                        if (counts[i].count >= minCount)
+                            tmp.push(counts[i]);
+                    }
+                    counts = tmp;
+                }
+
+                for (var wordIdx=0;wordIdx<counts.length;wordIdx++) {
+                    var word=counts[wordIdx];
                     var obj1 = {
-                        weight: fi.counts[word],
+                        weight: word.count,
                         handlers: handlers,
-                        text: word,
+                        text: word.word,
                     };
                     var obj2 = {
-                        weight: fi.counts[word],
+                        weight: word.count,
                         handlers: handlers,
-                        text: field.getLabel() + ":" + word,
+                        text: field.getLabel() + ":" + word.word,
                     };
                     fi.words.push(obj1);
                     words.push(obj2);
