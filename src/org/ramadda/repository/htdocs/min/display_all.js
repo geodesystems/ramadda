@@ -9485,11 +9485,12 @@ function RamaddaWordcloudDisplay(displayManager, id, properties) {
             if (showRecords) {
                 html += "<br>";
             }
+            var re= new RegExp("(\\b"+word+"\\b)",'i');
             for (var rowIdx = 0; rowIdx < records.length; rowIdx++) {
                 var row = this.getDataValues(records[rowIdx]);
-                var value = row[field.getIndex()];
+                var value = ""+row[field.getIndex()];
                 if(tokenize) {
-                    if(!(""+value).includes(word)) {
+                    if(!value.match(re)) {
                         continue;
                     }
                 } else {
@@ -9499,7 +9500,6 @@ function RamaddaWordcloudDisplay(displayManager, id, properties) {
                 }
                 var tuple = [];
                 data.push(tuple);
-                var re= new RegExp("(\\b"+word+"\\b)");
                 for (var col = 0; col < fields.length; col++) {
                     var f = fields[col];
                     if (tableFields && !tableFields[f.getId()]) continue;
