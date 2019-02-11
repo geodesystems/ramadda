@@ -9206,7 +9206,6 @@ function RamaddaVennDisplay(displayManager, id, properties) {
             }
         });
 }
-
 /**
 Copyright 2008-2019 Geode Systems LLC
 */
@@ -9460,6 +9459,7 @@ function RamaddaWordcloudDisplay(displayManager, id, properties) {
             }
         },
         showRows: function(records, field, word) {
+            var tokenize = this.getProperty("tokenize", false);
             if (word.startsWith(field.getLabel() + ":")) {
                 word = word.replace(field.getLabel() + ":", "");
             }
@@ -9487,15 +9487,26 @@ function RamaddaWordcloudDisplay(displayManager, id, properties) {
             }
             for (var rowIdx = 0; rowIdx < records.length; rowIdx++) {
                 var row = this.getDataValues(records[rowIdx]);
-                if (word != row[field.getIndex()]) {
-                    continue;
+                var value = row[field.getIndex()];
+                if(tokenize) {
+                    if(!(""+value).includes(word)) {
+                        continue;
+                    }
+                } else {
+                    if (word != value) {
+                        continue;
+                    }
                 }
                 var tuple = [];
                 data.push(tuple);
+                var re= new RegExp("(\\b"+word+"\\b)");
                 for (var col = 0; col < fields.length; col++) {
                     var f = fields[col];
                     if (tableFields && !tableFields[f.getId()]) continue;
                     var v = row[f.getIndex()];
+                    if(tokenize) {
+                        v = v.replace(re,"<span style=background:yellow;>$1</span>");
+                    }
                     if (showRecords) {
                         html += HtmlUtil.b(f.getLabel()) + ": " + v + "</br>";
                     } else {
@@ -9509,10 +9520,14 @@ function RamaddaWordcloudDisplay(displayManager, id, properties) {
             if (showRecords) {
                 this.writeHtml(ID_DISPLAY_BOTTOM, html);
             } else {
-                this.writeHtml(ID_DISPLAY_BOTTOM, field.getLabel() + "=" + word + HtmlUtils.div(["id", this.getDomId("table"), "style", "height:300px"], ""));
+                var prefix="";
+                if(!tokenize) {
+                    prefix = field.getLabel() + "=" + word
+                }
+                this.writeHtml(ID_DISPLAY_BOTTOM, prefix + HtmlUtils.div(["id", this.getDomId("table"), "style", "height:300px"], ""));
                 var dataTable = google.visualization.arrayToDataTable(data);
                 this.chart = new google.visualization.Table(document.getElementById(this.getDomId("table")));
-                this.chart.draw(dataTable, {});
+                this.chart.draw(dataTable, {allowHtml:true});
             }
         }
     });
