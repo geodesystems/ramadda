@@ -6129,12 +6129,12 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                 StringBuilder sb  = new StringBuilder();
                 int           cnt = 0;
                 for (int i = 0; i < attrs.length; i += 2) {
-                    attr(sb, attrs[i], attrs[i + 1]);
                     cnt++;
-                    if (cnt > 2) {
+                    if (cnt > 3) {
                         sb.append("_newline_");
                         cnt=0;
                     }
+                    attr(sb, attrs[i], attrs[i + 1]);
                 }
                 this.attrs = sb.toString();
             }
