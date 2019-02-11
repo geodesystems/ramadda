@@ -55,7 +55,7 @@ public class NcssTypeHandler extends PointTypeHandler {
     /** _more_ */
     private static int IDX_END_TIME_OFFSET = IDX++;
 
-    /** _more_          */
+    /** _more_ */
     private static int IDX_DEFAULT_FIELDS = IDX++;
 
 
@@ -364,6 +364,23 @@ public class NcssTypeHandler extends PointTypeHandler {
 
         return url;
     }
+
+    /**
+     * _more_
+     *
+     * @param request _more_
+     * @param entry _more_
+     *
+     * @return _more_
+     *
+     * @throws Exception _more_
+     */
+    @Override
+    public String getPathForEntry(Request request, Entry entry)
+            throws Exception {
+        return getPathForRecordEntry(entry, request.getDefinedProperties());
+    }
+
 
     /**
      * _more_
