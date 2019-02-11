@@ -63,7 +63,13 @@ function RamaddaBaseTextDisplay(displayManager, id, type, properties) {
             var minLength = parseInt(this.getProperty("minLength", 0));
             var maxLength = parseInt(this.getProperty("maxLength", 100));
             var stopWords = this.getProperty("stopWords");
-            if (stopWords) stopWords = stopWords.split(",");
+            if (stopWords) {
+                if(stopWords=="default") {
+                    stopWords = Utils.stopWords;
+                } else {
+                    stopWords = stopWords.split(",");
+                }
+            }
             var extraStopWords = this.getProperty("extraStopWords");
             if (extraStopWords) extraStopWords = extraStopWords.split(",");
 
@@ -109,6 +115,9 @@ function RamaddaBaseTextDisplay(displayManager, id, type, properties) {
                     }
                 }
             }
+
+
+
             return fieldInfo;
         }
     });
@@ -148,6 +157,8 @@ function RamaddaWordcloudDisplay(displayManager, id, properties) {
             let _this = this;
             var divs = "";
             var words = [];
+            var maxWords = parseInt(this.getProperty("maxWords", -1));
+            var minCount = parseInt(this.getProperty("minCount", 0));
             var width = (100 * 1 / strings.length) + "%;";
             for (a in fieldInfo) {
                 var fi = fieldInfo[a];
