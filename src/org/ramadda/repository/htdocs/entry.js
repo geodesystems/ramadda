@@ -724,8 +724,8 @@ function Entry(props) {
             if (!this.metadata) return null;
             for (var i = 0; i < this.metadata.length; i++) {
                 var metadata = this.metadata[i];
-                if (metadata.type == "content.thumbnail" && Utils.stringDefined(metadata.attr1))
-                    return this.getRamadda().getRoot() + "/metadata/view/" + metadata.attr1 + "?element=1&entryid=" + this.getId() + "&metadata_id=" + metadata.id;
+                if (metadata.type == "content.thumbnail" && Utils.stringDefined(metadata.value.attr1))
+                    return this.getRamadda().getRoot() + "/metadata/view/" + metadata.value.attr1 + "?element=1&entryid=" + this.getId() + "&metadata_id=" + metadata.id;
             }
             return null;
         },
