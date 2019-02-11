@@ -542,6 +542,7 @@ public class WikiUtil {
             int    end   = matcher.end(0);
             int    level = prefix.length();
             String value;
+
             if (label.startsWith(TAG_PREFIX)) {
                 value = "<div class=\"wiki-h" + level + "\">" + label
                         + "</div>";
@@ -1054,9 +1055,9 @@ public class WikiUtil {
                 ulCnt--;
             }
 
-
             int hashCnt = 0;
-            while (tline.startsWith("#")) {
+            //Check if this is a commented attribute inside a tag
+            while (tline.startsWith("#") && tline.indexOf("=")<0) {
                 tline = tline.substring(1);
                 hashCnt++;
             }

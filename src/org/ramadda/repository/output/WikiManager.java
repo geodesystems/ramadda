@@ -780,6 +780,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
             for (Enumeration keys =
                     tmpProps.keys(); keys.hasMoreElements(); ) {
                 Object key   = keys.nextElement();
+                if(key.toString().startsWith("#")) continue;
                 Object value = tmpProps.get(key);
                 props.put(key, value);
                 if (key instanceof String) {
