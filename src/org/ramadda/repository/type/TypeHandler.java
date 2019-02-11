@@ -2830,6 +2830,7 @@ public class TypeHandler extends RepositoryManager {
     public String getPathForEntry(Request request, Entry entry)
             throws Exception {
         Resource resource = entry.getResource();
+        System.err.println("entry:" + entry.getName() +" " + resource.getPath());
         String   path     = Utils.normalizeTemplateUrl(resource.getPath());
 
         return path;
