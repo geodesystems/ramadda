@@ -96,7 +96,6 @@ public class JsonVisitor extends BridgeRecordVisitor {
                                  Record record)
             throws Exception {
 
-        TextRecord textRecord = (TextRecord) record;
         if ( !getHandler().jobOK(getProcessId())) {
             return false;
         }

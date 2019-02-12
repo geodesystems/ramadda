@@ -373,7 +373,7 @@ public class DataRecord extends PointRecord {
      */
     @Override
     public long getRecordTime() {
-        if (idxTime >= 0) {
+        if (idxTime >= 0 && objectValues!=null) {
             Object obj = objectValues[idxTime];
             if (obj == null) {
                 return super.getRecordTime();
@@ -402,7 +402,7 @@ public class DataRecord extends PointRecord {
      */
     protected void addFields(List<RecordField> fields) {
         super.addFields(fields);
-        if (fields.size() == 0) {
+        if (fields.size() == 0 && this.fields!=null) {
             fields.addAll(this.fields);
         }
     }

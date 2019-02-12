@@ -47,7 +47,7 @@ generateRecordClass org.ramadda.data.point.icebridge.McordsIrmcr3Record -makefil
 ## ATM Ice
 ## ftp://n4ftl01u.ecs.nasa.gov/SAN2/ICEBRIDGE_FTP/BLATM2_ATMicessn_v01/
 ##
-generateRecordClass org.ramadda.data.point.icebridge.AtmIceSSNRecord -makefile 1 -filesuper org.ramadda.data.point.text.TextFile  -super org.ramadda.data.point.PointRecord  -lineoriented 1 -delimiter { +} -fields  { 
+generateRecordClass org.ramadda.data.point.icebridge.AtmIceSSNRecord -makefile 1 -filesuper org.ramadda.data.point.text.TextFile  -super org.ramadda.data.point.text.TextRecord  -lineoriented 1 -delimiter { +} -fields  { 
     { seconds double}
     { centerLatitude double}
     { centerLongitude double}
