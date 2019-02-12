@@ -924,7 +924,7 @@ var HtmlUtils = {
         if (centerWidth == null) centerWidth = "33%";
         if (rightWidth == null) rightWidth = "33%";
 
-        return this.tag("table", ["border", "1", "width", "100%", "cellspacing", "0", "cellpadding", "0"],
+        return this.tag("table", ["border", "0", "width", "100%", "cellspacing", "0", "cellpadding", "0"],
             this.tr(["valign", attrs.valign],
                 this.td(["align", "left", "width", leftWidth], left) +
                 this.td(["align", "center", "width", centerWidth], center) +
