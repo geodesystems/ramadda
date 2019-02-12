@@ -7554,6 +7554,9 @@ function CalendarDisplay(displayManager, id, properties) {
             return new google.visualization.Calendar(document.getElementById(this.getChartId()));
         },
 
+        defaultSelectedToAll: function() {
+            return true;
+        },
         xgetContentsStyle: function() {
             var height = this.getProperty("height", 200);
             if (height > 0) {
