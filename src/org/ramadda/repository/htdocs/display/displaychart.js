@@ -1685,6 +1685,7 @@ function TableDisplay(displayManager, id, properties) {
             return new google.visualization.Table(document.getElementById(this.getChartId()));
         },
         makeDataTable: function(dataList, props, selectedFields) {
+            dataList = this.filterData(dataList, selectedFields);
             var rows = this.makeDataArray(dataList);
             var data = [];
             for (var rowIdx = 0; rowIdx < rows.length; rowIdx++) {
