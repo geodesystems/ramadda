@@ -7117,6 +7117,9 @@ function TableDisplay(displayManager, id, properties) {
         canDoGroupBy: function() {
             return true;
         },
+        defaultSelectedToAll: function() {
+            return true;
+        },
         doMakeGoogleChart: function(dataList, props, selectedFields, chartOptions) {
             chartOptions.height = null;
             if (this.chartHeight) {
