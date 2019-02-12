@@ -2227,7 +2227,7 @@ function GaugeDisplay(displayManager, id, properties) {
         setChartSelection: function(index) {
             if (this.chart) {
                 this.index = index;
-                var dataTable = this.makeGaugeDataTable(this.dataList);
+                var dataTable = this.makeDataTable(this.dataList);
                 this.chart.draw(dataTable, this.chartOptions);
             }
         },
