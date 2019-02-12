@@ -1,6 +1,14 @@
 
 
 
+RAMADDA is a freely available data management platform that is simple to install and use - in the cloud or even on your laptop. With its open and extensible framework, RAMADDA provides a place for all of your documents, data and digital stuff.
+
+Here are some examples of what you can do with RAMADDA:
+![](content/gallery.png)
+[Link](https://geodesystems.com/repository/alias/example_charts)
+
+
+
 
 # Building
 
