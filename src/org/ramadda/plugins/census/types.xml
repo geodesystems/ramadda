@@ -58,7 +58,7 @@ This allows you to do a subsequent selection, e.g. set this to "county" and the 
      <column name="include_locales"  type="boolean"  default="false"  label="Include Locales" suffix="Include the state/county/... fields?"/>
 <wiki><![CDATA[
 +section title="{{name}}" #
-{{description}}
+{{description wikify="true" }}
 {{group  layoutType="columns"  layoutColumns="2" showMenu="true"}}
 {{display  type="bartable"  column="0" layoutHere="false" height="400" showTitle="false" }}
 {{display  type="map" column="1"  width="500" height="400"   layoutHere="false" includeData="false"   showTitle="false" }}
@@ -77,6 +77,7 @@ This allows you to do a subsequent selection, e.g. set this to "county" and the 
   <type name="type_census_age"  super="type_census_acs"  description="US Census ACS Data - Age" foruser="false">
 <wiki><![CDATA[
 +section title={{name}} #
+{{description wikify="true" }}
 {{group showMenu="true" layoutColumns="2"  layoutType="table" showTitle="false"}}
 {{display type="table" layoutHere="false" skipFields="latitude,longitude" chartHeight="600"}}
 {{display type="map" layoutHere="false"  height="600" showTitle="true" 
@@ -122,6 +123,7 @@ Median income
   <type name="type_census_children"  super="type_census_acs"  description="US Census ACS Data - Children" foruser="false">
 <wiki><![CDATA[
 +section title={{name}} #
+{{description wikify="true" }}
 {{group showMenu="true" layoutColumns="2"  layoutType="table" showTitle="false"}}
 {{display type="table" layoutHere="true" skipFields="latitude,longitude" chartHeight="350"}}
 {{label id="census.children.label" wikify="true" text=":note Blue - smaller values. Red - larger values."}}
@@ -187,6 +189,7 @@ Median income
   <type name="type_census_race"  super="type_census_acs"  description="US Census ACS Data - Race" foruser="false">
 <wiki><![CDATA[
 +section title={{name}} #
+{{description wikify="true" }}
 {{group showMenu="true" layoutColumns="2" layoutType="table" showTitle="false" }}
 {{label id="census.race.label" wikify="true" text=":note Sized by median income. Colored by percentage race from blue (higher) to white (lower)." }}
 +row
@@ -245,6 +248,7 @@ Median income
 
   <type name="type_census_poverty"  super="type_census_acs"  description="US Census ACS Data - Poverty" foruser="false">
 <wiki><![CDATA[+section title={{name}} #
+{{description wikify="true" }}
 {{group showMenu="true" layoutColumns="2"  layoutType="table" showTitle="false"}}
 {{display type="table" layoutHere="false" skipFields="latitude,longitude" chartHeight="600" }}
 {{display type="map" layoutHere="false"  height="600" showTitle="true" title="Colored by poverty levels from blue (lower) to white (middle) to red (higher)"
@@ -279,6 +283,7 @@ Median income
   <type name="type_census_nationality"  super="type_census_acs"  description="US Census ACS Data - Nationality" foruser="false">
 <wiki><![CDATA[
 +section title={{name}} #
+{{description wikify="true" }}
 {{group showMenu=true layoutColumns=2 layoutType=table showTitle="false"}}
 {{display type=table layoutHere=false skipFields="latitude,longitude" column=0 }}
 {{display type=map layoutHere=false column=1 
@@ -321,6 +326,7 @@ Median income
   <type name="type_census_housing"  super="type_census_acs"  description="US Census ACS Data - Housing" foruser="false">
 <wiki><![CDATA[
 +section title={{name}} #
+{{description wikify="true" }}
 {{group showMenu=true layoutColumns=2 layoutType=table showTitle="false"}}
 {{display type=table layoutHere=false skipFields="latitude,longitude" column=0 }}
 {{display type="map" layoutHere="false" 
@@ -370,6 +376,7 @@ Median income
   <type name="type_census_education"  super="type_census_acs"  description="US Census ACS Data - Education" foruser="false">
 <wiki><![CDATA[
 +section title={{name}} #
+{{description wikify="true" }}
 {{group showMenu=true layoutColumns=2 layoutType="table" showTitle="false"}}
 {{display type=table layoutHere=false skipFields="latitude,longitude" }}
 {{display type=map layoutHere=false showTitle="true" 
@@ -421,6 +428,7 @@ Median income
   <type name="type_census_commuting"  super="type_census_acs"  description="US Census ACS Data - Commuting" foruser="false">
 <wiki><![CDATA[
 +section title={{name}} #
+{{description wikify="true" }}
 {{group showMenu="true" layoutColumns="2" layoutType="table" showTitle="false"}}
 {{display type="table" layoutHere="false" skipFields="latitude,longitude" }}
 {{display type="map" layoutHere="false" 
