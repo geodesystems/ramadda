@@ -14289,7 +14289,12 @@ function RamaddaMapDisplay(displayManager, id, properties) {
             var sizeByAttr = this.getDisplayProp(source, "sizeBy", null);
             var isTrajectory = this.getDisplayProp(source, "isTrajectory", false);
             if (isTrajectory) {
-                this.map.addPolygon("id", points, null, null);
+                var attrs = {
+                    strokeWidth:2,
+                    strokeColor:"blue"
+                }
+
+                this.map.addPolygon("id", "", points,  attrs, null);
                 return;
             }
             if (!colors && source.colors && source.colors.length > 0) {
