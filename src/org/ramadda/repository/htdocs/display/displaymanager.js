@@ -11,6 +11,17 @@ var PROP_SHOW_MENU = "showMenu";
 var PROP_FROMDATE = "fromDate";
 var PROP_TODATE = "toDate";
 
+var DISPLAY_MULTI = "multi";
+addGlobalDisplayType({
+    type: DISPLAY_MULTI,
+    label: "Multi Chart",
+    requiresData: true,
+    forUser: false,
+    category: "Misc"
+});
+
+
+
 //
 //adds the display manager to the list of global display managers
 //
@@ -87,9 +98,6 @@ function DisplayManager(argId, argProperties) {
         initMapBounds: null,
     });
 
-
-
-
     RamaddaUtil.defineMembers(this, {
         group: new DisplayGroup(this, argId, argProperties),
         showmap: this.getProperty(PROP_SHOW_MAP, null),
@@ -106,6 +114,9 @@ function DisplayManager(argId, argProperties) {
         },
         getData: function() {
             return this.dataList;
+        },
+        handleEventFieldValueSelect: function(source, args) {
+            this.notifyEvent("handleEventFieldValueSelected", source, args);
         },
         handleEventFieldsSelected: function(source, fields) {
             this.notifyEvent("handleEventFieldsSelected", source, fields);
@@ -443,8 +454,6 @@ function DisplayManager(argId, argProperties) {
             if (!props.entryId) {
                 props.entryId = this.group.entryId;
             }
-
-
             var display = eval(" new " + funcName + "(this,'" + displayId + "', props);");
             if (display == null) {
                 console.log("Error: could not create display using:" + funcName);
@@ -516,4 +525,139 @@ function DisplayManager(argId, argProperties) {
         });
     });
 
+}
+
+
+function RamaddaMultiDisplay(displayManager, id, properties) {
+    this.props = properties;
+    let SUPER = new DisplayGroup(displayManager, id, properties, DISPLAY_MULTI);
+    RamaddaUtil.inherit(this, SUPER);
+    addRamaddaDisplay(this);
+    RamaddaUtil.defineMembers(this, {
+            inInitDisplay:false,
+            haveInited:false,
+        needsData: function() {
+            return true;
+        },
+
+
+
+             pointDataLoaded: function(pointData, url, reload) {
+                SUPER.pointDataLoaded.call(this,pointData,url,reload);
+                this.initDisplay();
+            },
+             processMacros: function(selectedFields, value,makeList) {
+                if((typeof value)!="string") return null;
+                var toks = [];
+                if(value.includes("${fieldLabel}")) {
+                    for(i=0;i<selectedFields.length;i++) {
+                        var v = value.replace("\${fieldLabel}",selectedFields[i].getLabel());
+                        toks.push(v);
+                    }
+                } else if(value.includes("${fieldId}")) {
+                    for(i=0;i<selectedFields.length;i++) {
+                        var v = value.replace("\${fieldId}",selectedFields[i].getId());
+                        toks.push(v);
+                    }
+                } else if(value.includes("${fieldCnt}")) {
+                    var v = value.replace("\${fieldCnt}",selectedFields.length);
+                    toks.push(v);
+                } else if(value.includes("${")) {
+                    
+                } else {
+                    return null;
+                }
+                if(makeList) return toks;
+                return Utils.join(toks,",");
+            },
+            initDisplay: function() {
+                try {
+                    this.initDisplayInner();
+                } catch(e) {
+                    this.setContents(this.getMessage("An error occurred:" +e));
+                    console.log("An error occurred:" +e);
+                    console.log(e.stack);
+                }
+            },
+             useChartableFields: function() {
+                return false;
+            },
+            initDisplayInner: function() {
+                SUPER.initDisplay.call(this);
+                 let records = this.filterData();
+                 if (!records) {
+                     this.setContents(this.getLoadingMessage());
+                     return null;
+                 }
+
+                 var allFields = this.getData().getRecordFields();
+                 var fields = this.getSelectedFields(allFields);
+                 if(fields.length==0) {
+                     this.setContents(this.getMessage("no fields"));
+                     return;
+                 }
+
+                if(this.inInitDisplay) return;
+                if(this.haveInited) return;
+                this.haveInited = true;
+                this.inInitDisplay = true;
+
+                var props = {};
+                var foreachMap  = {};
+                var foreachList =[];
+                var cnt = 0;
+                for(a in this.props) {
+                    if(a.startsWith("foreach_")) {
+                        var value  = this.props[a];
+                        var toks;
+                        var tmp =this.processMacros(fields, value,true);
+                        if(tmp) {
+                            toks = tmp;
+                        } else {
+                            toks = value.split(",");
+                        }
+                        a = a.substring(8);
+                        if(toks.length>cnt) cnt=toks.length;
+                        foreachMap[a] = toks;
+                        foreachList.push({attr:a,toks:toks});
+                    }
+                    if(a.startsWith("sub_")) {
+                        var value = this.props[a];
+                        a = a.substring(4);
+                        var tmp =this.processMacros(fields, value,false);
+                        if(tmp) {
+                            value = tmp;
+                        }
+                        props[a] = value;
+                    }
+                }
+                var html = HtmlUtils.div([ATTR_ID, this.getDomId(ID_DISPLAYS), ATTR_CLASS, "display-container"]);
+                this.writeHtml(ID_DISPLAY_CONTENTS, html);
+                var groupProps = {
+                    target: this.getDomId(ID_DISPLAYS),
+                }
+                groupProps[PROP_LAYOUT_TYPE] = 'table';
+                groupProps[PROP_LAYOUT_COLUMNS] = this.getProperty(PROP_LAYOUT_COLUMNS,"2");
+                this.displayManager = new DisplayManager(this.getId()+"_manager", groupProps);
+
+
+                props.layoutHere = false;
+                if(this.props['data']) 
+                    props['data'] = this.props['data'];
+                var subType = this.getProperty("subType","table");
+                if(cnt==0) cnt=1;
+                for(var i=0;i<cnt;i++) {
+                    var dprops = {};
+                    $.extend(dprops,props);
+                    for(var j=0;j<foreachList.length;j++) {
+                        if(i<foreachList[j].toks.length) {
+                            dprops[foreachList[j].attr] = foreachList[j].toks[i];
+                        }
+                    }
+                    if(dprops['fields']) dprops['fields'] =dprops['fields'].split(",");
+                    this.displayManager.createDisplay(subType,  dprops);
+                }
+                this.inInitDisplay = false;
+            }
+        });
 }

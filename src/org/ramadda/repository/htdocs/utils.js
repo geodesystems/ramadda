@@ -38,6 +38,15 @@ var Utils = {
             s = pad + s;
         return s;
     },
+    join: function(l,delimiter) {
+        var s = "";
+        for(var i=0;i<l.length;i++) {
+            if(i>0) s+=delimiter;
+            s+=l[i];
+        }
+        return s;
+    },
+
     getUniqueValues: function(l) {
         var u = [];
         var map ={};
@@ -915,11 +924,30 @@ var HtmlUtils = {
         if (centerWidth == null) centerWidth = "33%";
         if (rightWidth == null) rightWidth = "33%";
 
-        return this.tag("table", ["border", "0", "width", "100%", "cellspacing", "0", "cellpadding", "0"],
+        return this.tag("table", ["border", "1", "width", "100%", "cellspacing", "0", "cellpadding", "0"],
             this.tr(["valign", attrs.valign],
                 this.td(["align", "left", "width", leftWidth], left) +
                 this.td(["align", "center", "width", centerWidth], center) +
                 this.td(["align", "right", "width", rightWidth], right)));
+    },
+
+    leftRightTable: function(left,  right, leftWidth,rightWidth,attrs) {
+        if(!attrs) attrs = {};
+        if(!attrs.valign) attrs.valign="top";
+        var leftAttrs = ["align", "left"];
+        var rightAttrs = ["align", "right"];
+        if(leftWidth) {
+            leftAttrs.push("width");
+            leftAttrs.push(leftWidth);
+        }
+        if(rightWidth) {
+            rightAttrs.push("width");
+            rightAttrs.push(rightWidth);
+        }
+        return this.tag("table", ["border", "0", "width", "100%", "cellspacing", "0", "cellpadding", "0"],
+            this.tr(["valign", attrs.valign],
+                this.td(leftAttrs, left) +
+                this.td(rightAttrs, right)));
     },
 
     div: function(attrs, inner) {

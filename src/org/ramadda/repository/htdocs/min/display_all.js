@@ -158,7 +158,6 @@ var ID_FIELDS = "fields";
 var ID_HEADER = "header";
 var ID_TITLE = ATTR_TITLE;
 var ID_TITLE_EDIT = "title_edit";
-var ID_TOP_CENTER = "topcenter";
 var ID_TOP_RIGHT = "topright";
 var ID_DETAILS = "details";
 var ID_DISPLAY_CONTENTS = "contents";
@@ -200,6 +199,7 @@ var PROP_FIELDS = "fields";
 var PROP_LAYOUT_HERE = "layoutHere";
 var PROP_HEIGHT = "height";
 var PROP_WIDTH = "width";
+
 
 
 
@@ -585,6 +585,10 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
         getLayoutManager: function() {
             return this.getDisplayManager().getLayoutManager();
         },
+        propagateEvent: function(func,data) {
+             var dm = this.getDisplayManager();
+             dm[func](this, data);
+        },
         displayError: function(msg) {
             this.displayHtml(HtmlUtils.getErrorDialog(msg));
         },
@@ -708,6 +712,11 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
                 this.jq(ID_TITLE).html(title);
             }
         },
+        handleEventFieldValueSelected: function(source, args) {
+                this.setProperty("filterPattern",args.value);
+                this.setProperty("patternFilterField",args.field.getId());
+                this.updateUI();
+            },
         handleEventPropertyChanged: function(source, prop) {
                 if(prop.property == "filterPattern") {
                     this.jq("filterValueMenu").val(prop.value);
@@ -818,8 +827,9 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             this.removeProperty(PROP_FIELDS);
             this.fieldSelectionChanged();
             if (event.shiftKey) {
+
                 var fields = this.getSelectedFields();
-                this.getDisplayManager().handleEventFieldsSelected(this, fields);
+                this.propagateEvent("handleEventFieldsSelected", fields);
             }
         },
         addFieldsCheckboxes: function(argFields) {
@@ -1023,6 +1033,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             this.addFieldsCheckboxes(fields);
         },
         getSelectedFields: function(dfltList) {
+            this.debugSelected = false;
             this.lastSelectedFields = this.getSelectedFieldsInner(dfltList);
             var fixedFields = this.getProperty(PROP_FIELDS);
             if (fixedFields) fixedFields.length = 0;
@@ -1030,7 +1041,11 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             return this.lastSelectedFields;
         },
         getSelectedFieldsInner: function(dfltList) {
+            if(this.debugSelected)
+                console.log("getSelectedFields dflt:" + (dfltList?dfltList.length:"null"));
             if (this.selectedFields) {
+                if(this.debugSelected)
+                    console.log("\tgot this.selectedFields");
                 return this.selectedFields;
             }
             var df = [];
@@ -1041,12 +1056,20 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
                 var pointData = dataList[collectionIdx];
                 var fields = this.getFieldsToSelect(pointData);
                 if (fixedFields != null && fixedFields.length > 0) {
+                    if(this.debugSelected)
+                        console.log("\thave fixed fields:"+ fixedFields.length);
                     for (var i = 0; i < fixedFields.length; i++) {
                         var sfield = fixedFields[i];
+                        if(this.debugSelected)
+                            console.log("\t\tfield:" +sfield);
                         for (var j = 0; j < fields.length; j++) {
                             var field = fields[j];
                             var id = field.getId();
+                            if(this.debugSelected)
+                                console.log("\t\t\tid:" +id);
                             if (id == sfield || ("#" + (j + 1)) == sfield) {
+                                if(this.debugSelected)
+                                    console.log("\t\t\tgot:" +field.getLabel());
                                 df.push(field);
                                 break;
                             }
@@ -1056,6 +1079,8 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             }
 
             if (fixedFields != null && fixedFields.length > 0) {
+                if(this.debugSelected)
+                    console.log("\tfrom fixed:"+ df.length);
                 return df;
             }
 
@@ -1087,11 +1112,15 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 
             if (df.length == 0 && !cbxExists) {
                 if (this.lastSelectedFields && this.lastSelectedFields.length > 0) {
+                    if(this.debugSelected)
+                        console.log("\tlastSelectedFields");
                     return this.lastSelectedFields;
                 }
             }
             if (df.length == 0) {
                 df =  this.getDefaultSelectedFields(fieldsToSelect, dfltList);
+                    if(this.debugSelected)
+                        console.log("\tgetDefault:" + df.length);
             }
             return df;
         },
@@ -1303,8 +1332,13 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
         canDoMultiFields: function() {
             return true;
         },
+        useChartableFields: function() {
+                return true;
+        },
         getFieldsToSelect: function(pointData) {
-            return pointData.getChartableFields(this);
+                if(this.useChartableFields())
+                    return pointData.getChartableFields(this);
+                return pointData.getRecordFields();
         },
         getGet: function() {
             return "getRamaddaDisplay('" + this.getId() + "')";
@@ -1712,10 +1746,8 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
                     console.log("no entry:" + entryId);
                     return;
                 }
-                theDisplay.getDisplayManager().handleEventEntryMouseover(theDisplay, {
-                    entry: entry
-                });
-
+                theDisplay.propagateEvent("handleEventEntryMouseover", {entry: entry});
+             
 
                 if (true) return;
                 var domEntryId = Utils.cleanId(entryId);
@@ -1738,9 +1770,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
                 var entryId = $(this).attr(ATTR_ENTRYID);
                 entry = theDisplay.getEntry(entryId);
                 if (!entry) return;
-                theDisplay.getDisplayManager().handleEventEntryMouseout(theDisplay, {
-                    entry: entry
-                });
+                theDisplay.propagateEvent("handleEventEntryMouseout",  {entry: entry});
                 var domEntryId = Utils.cleanId(entryId);
                 var toolbarId = theDisplay.getEntryToolbarId(entryId);
                 var toolbar = $("#" + toolbarId);
@@ -1772,7 +1802,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
                             };
                         }
                         theDisplay.selectedEntries.push(entry);
-                        theDisplay.getDisplayManager().handleEventEntrySelection(theDisplay, {
+                        theDisplay.propagateEvent("handleEventEntrySelection",  {
                             entry: entry,
                             selected: true,
                             zoom: zoom
@@ -1787,7 +1817,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
                         //                            console.log("remove:" +  index + " " + theDisplay.selectedEntries);
                         if (index > -1) {
                             theDisplay.selectedEntries.splice(index, 1);
-                            theDisplay.getDisplayManager().handleEventEntrySelection(theDisplay, {
+                            theDisplay.propagateEvent("handleEventEntrySelection", {
                                 entry: entry,
                                 selected: false
                             });
@@ -1971,7 +2001,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
                     line.attr("ramadda-selected", "true");
                     this.selectedEntriesFromTree[entry.getId()] = entry;
                 }
-                this.getDisplayManager().handleEventEntrySelection(this, {
+                this.propagateEvent("handleEventEntrySelection", {
                     "entry": entry,
                     "selected": !selected
                 });
@@ -2460,6 +2490,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             this.checkFilterValueMenu();
         },
         checkFilterValueMenu: function() {
+            if(!this.getProperty("showFilterWidget",true)) return;
             var filterValues = this.getProperty("filterValues");
             var filterValuesLabel = this.getProperty("filterValuesLabel","");
             if(!filterValues) {
@@ -2505,7 +2536,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
                         if(value == "") value=null;
                         _this.setProperty("filterPattern",value);
                         _this.updateUI();
-                        _this.getDisplayManager().handleEventPropertyChanged(_this, {
+                        _this.propagateEvent("handleEventPropertyChanged", {
                                 property:"filterPattern",
                                     value:value});
                     });
@@ -2578,9 +2609,8 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
                     left= "<div class=display-header>" + button + "&nbsp;" + titleDiv + "</div>";
                 }
             }
-            var center = HtmlUtils.div(["id",this.getDomId(ID_TOP_CENTER)],"");
             var right = HtmlUtils.div(["id",this.getDomId(ID_TOP_RIGHT)],"");
-            html+=HtmlUtils.leftCenterRight(left,center,right,"80%","1%","19%",{valign:"bottom"});
+            html+= HtmlUtils.leftRightTable(left, right,{valign:"bottom"});
             var contents = this.getContentsDiv();
             //                contents  = "CONTENTS";
             html += contents;
@@ -2889,7 +2919,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             this.updateUI();
             if (!reload) {
                 this.lastPointData = pointData;
-                this.getDisplayManager().handleEventPointDataLoaded(this, pointData);
+                this.propagateEvent("handleEventPointDataLoaded", pointData);
             }
         },
 
@@ -3313,19 +3343,17 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 
 
 
-function DisplayGroup(argDisplayManager, argId, argProperties) {
+function DisplayGroup(argDisplayManager, argId, argProperties, type) {
     var LAYOUT_TABLE = TAG_TABLE;
     var LAYOUT_TABS = "tabs";
     var LAYOUT_COLUMNS = "columns";
     var LAYOUT_ROWS = "rows";
-
-    var SUPER;
-    RamaddaUtil.inherit(this, SUPER = new RamaddaDisplay(argDisplayManager, argId, "group", argProperties));
-
+    if(!type) type="group";
+    let SUPER =  new RamaddaDisplay(argDisplayManager, argId, type, argProperties);
+    RamaddaUtil.inherit(this, SUPER);
     RamaddaUtil.defineMembers(this, {
         layout: this.getProperty(PROP_LAYOUT_TYPE, LAYOUT_TABLE)
     });
-
 
     RamaddaUtil.defineMembers(this, {
         displays: [],
@@ -3442,6 +3470,7 @@ function DisplayGroup(argDisplayManager, argId, argProperties) {
             this.doLayout();
         },
         doLayout: function() {
+            
             var html = "";
             var colCnt = 100;
             var displaysToLayout = this.getDisplaysToLayout();
@@ -3460,11 +3489,11 @@ function DisplayGroup(argDisplayManager, argId, argProperties) {
                 weights = this.weights.split(",");
             }
 
-
             if (this.layout == LAYOUT_TABLE) {
+                //                console.log("table:" + this.columns);
                 if (displaysToLayout.length == 1) {
                     html += HtmlUtils.div(["class", " display-wrapper"],
-                        displaysToLayout[0].getHtml());
+                                          displaysToLayout[0].getHtml());
                 } else {
                     var weight = 12 / this.columns;
                     var i = 0;
@@ -3585,7 +3614,6 @@ function DisplayGroup(argDisplayManager, argId, argProperties) {
             } else {
                 html += "Unknown layout:" + this.layout;
             }
-
 
             this.writeHtml(ID_DISPLAYS, html);
 
@@ -3727,7 +3755,11 @@ function DisplayGroup(argDisplayManager, argId, argProperties) {
 
     });
 
-}/**
+}
+
+
+
+/**
 Copyright 2008-2019 Geode Systems LLC
 */
 
@@ -5767,7 +5799,7 @@ Create a chart
 id - the id of this chart. Has to correspond to a div tag id 
 pointData - A PointData object (see below)
  */
-function RamaddaMultiChart(displayManager, id, chartType, properties) {
+function RamaddaGoogleChart(displayManager, id, chartType, properties) {
     var ID_TRENDS_CBX = "trends_cbx";
     var ID_PERCENT_CBX = "percent_cbx";
     var ID_COLORS = "colors";
@@ -6535,7 +6567,7 @@ function RamaddaMultiChart(displayManager, id, chartType, properties) {
 
 
 function RamaddaAxisChart(displayManager, id, chartType, properties) {
-    let SUPER = new RamaddaMultiChart(displayManager, id, chartType, properties);
+    let SUPER = new RamaddaGoogleChart(displayManager, id, chartType, properties);
     RamaddaUtil.inherit(this, SUPER);
     $.extend(this, {
         makeChartOptions: function(dataList, props, selectedFields) {
@@ -6598,7 +6630,7 @@ function RamaddaAxisChart(displayManager, id, chartType, properties) {
 
 
 function RamaddaSeriesChart(displayManager, id, chartType, properties) {
-    let SUPER = new RamaddaMultiChart(displayManager, id, chartType, properties);
+    let SUPER = new RamaddaGoogleChart(displayManager, id, chartType, properties);
     RamaddaUtil.inherit(this, SUPER);
     $.extend(this, {
         includeIndexInData: function() {
@@ -6671,7 +6703,7 @@ function BarstackDisplay(displayManager, id, properties) {
 
 
 function HistogramDisplay(displayManager, id, properties) {
-    RamaddaUtil.inherit(this, new RamaddaMultiChart(displayManager, id, DISPLAY_HISTOGRAM, properties));
+    RamaddaUtil.inherit(this, new RamaddaGoogleChart(displayManager, id, DISPLAY_HISTOGRAM, properties));
     addRamaddaDisplay(this);
     RamaddaUtil.inherit(this, {
         okToHandleEventRecordSelection: function() {
@@ -6719,7 +6751,7 @@ function HistogramDisplay(displayManager, id, properties) {
 
 
 function RamaddaTextChart(displayManager, id, chartType, properties) {
-    let SUPER = new RamaddaMultiChart(displayManager, id, chartType, properties);
+    let SUPER = new RamaddaGoogleChart(displayManager, id, chartType, properties);
     RamaddaUtil.inherit(this, SUPER);
     $.extend(this, {
        getFieldsToSelect: function(pointData) {
@@ -7161,7 +7193,6 @@ function TableDisplay(displayManager, id, properties) {
                     }
                 }
                 data.push(row);
-
             }
             return google.visualization.arrayToDataTable(data);
         }
@@ -7360,6 +7391,11 @@ function TreemapDisplay(displayManager, id, properties) {
                return value;
             },
 
+         valueClicked: function(field, value){
+                var allFields = this.getData().getRecordFields();
+                field = this.getFieldById(allFields,field);
+                this.propagateEvent("handleEventFieldValueSelect", {field: field, value:value});
+            },
         makeDataTable: function(dataList, props, selectedFields) {
             var records = this.filterData();
             if (!records) {
@@ -7408,6 +7444,7 @@ function TreemapDisplay(displayManager, id, properties) {
            var root = strings[0].getLabel();
            this.addTuple(data, colorField, seen, root, null,0,0);
            var keys={};
+           var call = this.getGet();
            for (var rowIdx = 0; rowIdx < records.length; rowIdx++) {
                //               if(rowIdx>20) break;
                 var row = this.getDataValues(records[rowIdx]);
@@ -7434,7 +7471,10 @@ function TreemapDisplay(displayManager, id, properties) {
                 value = this.addTuple(leafs, colorField, seen, value, parent,size,color);
                 var tt = "<div class='display-treemap-tooltip-outer'><div class='display-treemap-tooltip''>";
                 for(var f=0;f<tooltipFields.length;f++) {
-                    tt+= "<b>" + tooltipFields[f].getLabel()+"</b>" + ": " + row[tooltipFields[f].getIndex()]+"<br>";
+                    var v = row[tooltipFields[f].getIndex()];
+                    var field = tooltipFields[f];
+                    v = HtmlUtils.onClick(call+".valueClicked('" + field.getId()+"','" +v+"')", v,[]);
+                    tt+= "<b>" + field.getLabel()+"</b>" + ": " + v+"<br>";
                 }
                 tt+="</div></div>";
                 tmptt.push(tt);
@@ -7541,7 +7581,7 @@ function TimelinechartDisplay(displayManager, id, properties) {
 
 
 function CalendarDisplay(displayManager, id, properties) {
-    RamaddaUtil.inherit(this, new RamaddaMultiChart(displayManager, id, DISPLAY_CALENDAR, properties));
+    RamaddaUtil.inherit(this, new RamaddaGoogleChart(displayManager, id, DISPLAY_CALENDAR, properties));
     addRamaddaDisplay(this);
     RamaddaUtil.inherit(this, {
         doMakeGoogleChart: function(dataList, props, selectedFields, chartOptions) {
@@ -7626,7 +7666,7 @@ function CalendarDisplay(displayManager, id, properties) {
 
 
 function GaugeDisplay(displayManager, id, properties) {
-    RamaddaUtil.inherit(this, new RamaddaMultiChart(displayManager, id, DISPLAY_GAUGE, properties));
+    RamaddaUtil.inherit(this, new RamaddaGoogleChart(displayManager, id, DISPLAY_GAUGE, properties));
     addRamaddaDisplay(this);
     RamaddaUtil.inherit(this, {
         doMakeGoogleChart: function(dataList, props, selectedFields, chartOptions) {
@@ -7707,7 +7747,7 @@ function GaugeDisplay(displayManager, id, properties) {
 
 
 function ScatterplotDisplay(displayManager, id, properties) {
-    RamaddaUtil.inherit(this, new RamaddaMultiChart(displayManager, id, DISPLAY_SCATTERPLOT, properties));
+    RamaddaUtil.inherit(this, new RamaddaGoogleChart(displayManager, id, DISPLAY_SCATTERPLOT, properties));
     $.extend(this, {
         doMakeGoogleChart: function(dataList, props, selectedFields, chartOptions) {
             var height = 400;
@@ -12767,6 +12807,17 @@ var PROP_SHOW_MENU = "showMenu";
 var PROP_FROMDATE = "fromDate";
 var PROP_TODATE = "toDate";
 
+var DISPLAY_MULTI = "multi";
+addGlobalDisplayType({
+    type: DISPLAY_MULTI,
+    label: "Multi Chart",
+    requiresData: true,
+    forUser: false,
+    category: "Misc"
+});
+
+
+
 //
 //adds the display manager to the list of global display managers
 //
@@ -12843,9 +12894,6 @@ function DisplayManager(argId, argProperties) {
         initMapBounds: null,
     });
 
-
-
-
     RamaddaUtil.defineMembers(this, {
         group: new DisplayGroup(this, argId, argProperties),
         showmap: this.getProperty(PROP_SHOW_MAP, null),
@@ -12862,6 +12910,9 @@ function DisplayManager(argId, argProperties) {
         },
         getData: function() {
             return this.dataList;
+        },
+        handleEventFieldValueSelect: function(source, args) {
+            this.notifyEvent("handleEventFieldValueSelected", source, args);
         },
         handleEventFieldsSelected: function(source, fields) {
             this.notifyEvent("handleEventFieldsSelected", source, fields);
@@ -13199,8 +13250,6 @@ function DisplayManager(argId, argProperties) {
             if (!props.entryId) {
                 props.entryId = this.group.entryId;
             }
-
-
             var display = eval(" new " + funcName + "(this,'" + displayId + "', props);");
             if (display == null) {
                 console.log("Error: could not create display using:" + funcName);
@@ -13272,6 +13321,141 @@ function DisplayManager(argId, argProperties) {
         });
     });
 
+}
+
+
+function RamaddaMultiDisplay(displayManager, id, properties) {
+    this.props = properties;
+    let SUPER = new DisplayGroup(displayManager, id, properties, DISPLAY_MULTI);
+    RamaddaUtil.inherit(this, SUPER);
+    addRamaddaDisplay(this);
+    RamaddaUtil.defineMembers(this, {
+            inInitDisplay:false,
+            haveInited:false,
+        needsData: function() {
+            return true;
+        },
+
+
+
+             pointDataLoaded: function(pointData, url, reload) {
+                SUPER.pointDataLoaded.call(this,pointData,url,reload);
+                this.initDisplay();
+            },
+             processMacros: function(selectedFields, value,makeList) {
+                if((typeof value)!="string") return null;
+                var toks = [];
+                if(value.includes("${fieldLabel}")) {
+                    for(i=0;i<selectedFields.length;i++) {
+                        var v = value.replace("\${fieldLabel}",selectedFields[i].getLabel());
+                        toks.push(v);
+                    }
+                } else if(value.includes("${fieldId}")) {
+                    for(i=0;i<selectedFields.length;i++) {
+                        var v = value.replace("\${fieldId}",selectedFields[i].getId());
+                        toks.push(v);
+                    }
+                } else if(value.includes("${fieldCnt}")) {
+                    var v = value.replace("\${fieldCnt}",selectedFields.length);
+                    toks.push(v);
+                } else if(value.includes("${")) {
+                    
+                } else {
+                    return null;
+                }
+                if(makeList) return toks;
+                return Utils.join(toks,",");
+            },
+            initDisplay: function() {
+                try {
+                    this.initDisplayInner();
+                } catch(e) {
+                    this.setContents(this.getMessage("An error occurred:" +e));
+                    console.log("An error occurred:" +e);
+                    console.log(e.stack);
+                }
+            },
+             useChartableFields: function() {
+                return false;
+            },
+            initDisplayInner: function() {
+                SUPER.initDisplay.call(this);
+                 let records = this.filterData();
+                 if (!records) {
+                     this.setContents(this.getLoadingMessage());
+                     return null;
+                 }
+
+                 var allFields = this.getData().getRecordFields();
+                 var fields = this.getSelectedFields(allFields);
+                 if(fields.length==0) {
+                     this.setContents(this.getMessage("no fields"));
+                     return;
+                 }
+
+                if(this.inInitDisplay) return;
+                if(this.haveInited) return;
+                this.haveInited = true;
+                this.inInitDisplay = true;
+
+                var props = {};
+                var foreachMap  = {};
+                var foreachList =[];
+                var cnt = 0;
+                for(a in this.props) {
+                    if(a.startsWith("foreach_")) {
+                        var value  = this.props[a];
+                        var toks;
+                        var tmp =this.processMacros(fields, value,true);
+                        if(tmp) {
+                            toks = tmp;
+                        } else {
+                            toks = value.split(",");
+                        }
+                        a = a.substring(8);
+                        if(toks.length>cnt) cnt=toks.length;
+                        foreachMap[a] = toks;
+                        foreachList.push({attr:a,toks:toks});
+                    }
+                    if(a.startsWith("sub_")) {
+                        var value = this.props[a];
+                        a = a.substring(4);
+                        var tmp =this.processMacros(fields, value,false);
+                        if(tmp) {
+                            value = tmp;
+                        }
+                        props[a] = value;
+                    }
+                }
+                var html = HtmlUtils.div([ATTR_ID, this.getDomId(ID_DISPLAYS), ATTR_CLASS, "display-container"]);
+                this.writeHtml(ID_DISPLAY_CONTENTS, html);
+                var groupProps = {
+                    target: this.getDomId(ID_DISPLAYS),
+                }
+                groupProps[PROP_LAYOUT_TYPE] = 'table';
+                groupProps[PROP_LAYOUT_COLUMNS] = this.getProperty(PROP_LAYOUT_COLUMNS,"2");
+                this.displayManager = new DisplayManager(this.getId()+"_manager", groupProps);
+
+
+                props.layoutHere = false;
+                if(this.props['data']) 
+                    props['data'] = this.props['data'];
+                var subType = this.getProperty("subType","table");
+                if(cnt==0) cnt=1;
+                for(var i=0;i<cnt;i++) {
+                    var dprops = {};
+                    $.extend(dprops,props);
+                    for(var j=0;j<foreachList.length;j++) {
+                        if(i<foreachList[j].toks.length) {
+                            dprops[foreachList[j].attr] = foreachList[j].toks[i];
+                        }
+                    }
+                    if(dprops['fields']) dprops['fields'] =dprops['fields'].split(",");
+                    this.displayManager.createDisplay(subType,  dprops);
+                }
+                this.inInitDisplay = false;
+            }
+        });
 }/**
 Copyright 2008-2019 Geode Systems LLC
 */

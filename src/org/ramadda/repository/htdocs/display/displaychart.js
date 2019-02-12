@@ -302,7 +302,7 @@ Create a chart
 id - the id of this chart. Has to correspond to a div tag id 
 pointData - A PointData object (see below)
  */
-function RamaddaMultiChart(displayManager, id, chartType, properties) {
+function RamaddaGoogleChart(displayManager, id, chartType, properties) {
     var ID_TRENDS_CBX = "trends_cbx";
     var ID_PERCENT_CBX = "percent_cbx";
     var ID_COLORS = "colors";
@@ -1070,7 +1070,7 @@ function RamaddaMultiChart(displayManager, id, chartType, properties) {
 
 
 function RamaddaAxisChart(displayManager, id, chartType, properties) {
-    let SUPER = new RamaddaMultiChart(displayManager, id, chartType, properties);
+    let SUPER = new RamaddaGoogleChart(displayManager, id, chartType, properties);
     RamaddaUtil.inherit(this, SUPER);
     $.extend(this, {
         makeChartOptions: function(dataList, props, selectedFields) {
@@ -1133,7 +1133,7 @@ function RamaddaAxisChart(displayManager, id, chartType, properties) {
 
 
 function RamaddaSeriesChart(displayManager, id, chartType, properties) {
-    let SUPER = new RamaddaMultiChart(displayManager, id, chartType, properties);
+    let SUPER = new RamaddaGoogleChart(displayManager, id, chartType, properties);
     RamaddaUtil.inherit(this, SUPER);
     $.extend(this, {
         includeIndexInData: function() {
@@ -1206,7 +1206,7 @@ function BarstackDisplay(displayManager, id, properties) {
 
 
 function HistogramDisplay(displayManager, id, properties) {
-    RamaddaUtil.inherit(this, new RamaddaMultiChart(displayManager, id, DISPLAY_HISTOGRAM, properties));
+    RamaddaUtil.inherit(this, new RamaddaGoogleChart(displayManager, id, DISPLAY_HISTOGRAM, properties));
     addRamaddaDisplay(this);
     RamaddaUtil.inherit(this, {
         okToHandleEventRecordSelection: function() {
@@ -1254,7 +1254,7 @@ function HistogramDisplay(displayManager, id, properties) {
 
 
 function RamaddaTextChart(displayManager, id, chartType, properties) {
-    let SUPER = new RamaddaMultiChart(displayManager, id, chartType, properties);
+    let SUPER = new RamaddaGoogleChart(displayManager, id, chartType, properties);
     RamaddaUtil.inherit(this, SUPER);
     $.extend(this, {
        getFieldsToSelect: function(pointData) {
@@ -1696,7 +1696,6 @@ function TableDisplay(displayManager, id, properties) {
                     }
                 }
                 data.push(row);
-
             }
             return google.visualization.arrayToDataTable(data);
         }
@@ -1895,6 +1894,11 @@ function TreemapDisplay(displayManager, id, properties) {
                return value;
             },
 
+         valueClicked: function(field, value){
+                var allFields = this.getData().getRecordFields();
+                field = this.getFieldById(allFields,field);
+                this.propagateEvent("handleEventFieldValueSelect", {field: field, value:value});
+            },
         makeDataTable: function(dataList, props, selectedFields) {
             var records = this.filterData();
             if (!records) {
@@ -1943,6 +1947,7 @@ function TreemapDisplay(displayManager, id, properties) {
            var root = strings[0].getLabel();
            this.addTuple(data, colorField, seen, root, null,0,0);
            var keys={};
+           var call = this.getGet();
            for (var rowIdx = 0; rowIdx < records.length; rowIdx++) {
                //               if(rowIdx>20) break;
                 var row = this.getDataValues(records[rowIdx]);
@@ -1969,7 +1974,10 @@ function TreemapDisplay(displayManager, id, properties) {
                 value = this.addTuple(leafs, colorField, seen, value, parent,size,color);
                 var tt = "<div class='display-treemap-tooltip-outer'><div class='display-treemap-tooltip''>";
                 for(var f=0;f<tooltipFields.length;f++) {
-                    tt+= "<b>" + tooltipFields[f].getLabel()+"</b>" + ": " + row[tooltipFields[f].getIndex()]+"<br>";
+                    var v = row[tooltipFields[f].getIndex()];
+                    var field = tooltipFields[f];
+                    v = HtmlUtils.onClick(call+".valueClicked('" + field.getId()+"','" +v+"')", v,[]);
+                    tt+= "<b>" + field.getLabel()+"</b>" + ": " + v+"<br>";
                 }
                 tt+="</div></div>";
                 tmptt.push(tt);
@@ -2076,7 +2084,7 @@ function TimelinechartDisplay(displayManager, id, properties) {
 
 
 function CalendarDisplay(displayManager, id, properties) {
-    RamaddaUtil.inherit(this, new RamaddaMultiChart(displayManager, id, DISPLAY_CALENDAR, properties));
+    RamaddaUtil.inherit(this, new RamaddaGoogleChart(displayManager, id, DISPLAY_CALENDAR, properties));
     addRamaddaDisplay(this);
     RamaddaUtil.inherit(this, {
         doMakeGoogleChart: function(dataList, props, selectedFields, chartOptions) {
@@ -2161,7 +2169,7 @@ function CalendarDisplay(displayManager, id, properties) {
 
 
 function GaugeDisplay(displayManager, id, properties) {
-    RamaddaUtil.inherit(this, new RamaddaMultiChart(displayManager, id, DISPLAY_GAUGE, properties));
+    RamaddaUtil.inherit(this, new RamaddaGoogleChart(displayManager, id, DISPLAY_GAUGE, properties));
     addRamaddaDisplay(this);
     RamaddaUtil.inherit(this, {
         doMakeGoogleChart: function(dataList, props, selectedFields, chartOptions) {
@@ -2242,7 +2250,7 @@ function GaugeDisplay(displayManager, id, properties) {
 
 
 function ScatterplotDisplay(displayManager, id, properties) {
-    RamaddaUtil.inherit(this, new RamaddaMultiChart(displayManager, id, DISPLAY_SCATTERPLOT, properties));
+    RamaddaUtil.inherit(this, new RamaddaGoogleChart(displayManager, id, DISPLAY_SCATTERPLOT, properties));
     $.extend(this, {
         doMakeGoogleChart: function(dataList, props, selectedFields, chartOptions) {
             var height = 400;
