@@ -86,7 +86,7 @@ dist/repositoryclient.zip  - To run the stand-alone command line client
 
 
 
-# RAMADDA SVN Tree
+# RAMADDA Source  Tree
 
 src:
 The main source of RAMADDA is in src/org/ramadda/repository
@@ -97,18 +97,11 @@ The plugins are in
 src/org/ramadda/plugins
 src/org/ramadda/geodata
 
-Some old Infocetera Java code for applets (e.g., chat, gantt chart, graph) is in:
-src/com/infocetera/
-
-
 lib:
 Contains all of the jars RAMADDA depends on.
 
 bin:
-Contains a copy of the IDV's document generation package.
-
-apps:
-Contains the start of an Android RAMADDA client.
+Contains a copy of the RAMADDA's document generation package.
 
 dist:
 This directory is  created during the build process. All build products
