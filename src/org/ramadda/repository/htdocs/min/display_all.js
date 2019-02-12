@@ -6910,6 +6910,9 @@ function SankeyDisplay(displayManager, id, properties) {
             }
             return new google.visualization.Sankey(document.getElementById(this.getChartId()));
         },
+        defaultSelectedToAll: function() {
+            return true;
+        },
         makeDataTable: function(dataList, props, selectedFields) {
             dataList = this.filterData(dataList, selectedFields);
             if (!this.getProperty("doCategories", false)) {
