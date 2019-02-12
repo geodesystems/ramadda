@@ -258,6 +258,8 @@ public abstract class BridgeRecordVisitor extends RecordVisitor {
         try {
             return doVisitRecord(file, visitInfo, record);
         } catch (Exception exc) {
+            System.err.println("Error:" +exc); 
+            exc.printStackTrace();
             throw new RuntimeException(exc);
         }
     }
