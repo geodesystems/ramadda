@@ -846,7 +846,6 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             var theDisplay = this;
             //Listen for changes to the checkboxes
             $("." + checkboxClass).click(function(event) {
-                console.log("field selected");
                 theDisplay.fieldSelected(event);
             });
 
@@ -941,9 +940,8 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
                     return this.lastSelectedFields;
                 }
             }
-
             if (df.length == 0) {
-                var df =  this.getDefaultSelectedFields(fieldsToSelect, dfltList);
+                df =  this.getDefaultSelectedFields(fieldsToSelect, dfltList);
             }
             return df;
         },
@@ -2309,17 +2307,43 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
         },
         initDisplay: function() {
             this.createUI();
+            this.checkFilterValueMenu();
+        },
+        checkFilterValueMenu: function() {
             var filterValues = this.getProperty("filterValues");
             var filterValuesLabel = this.getProperty("filterValuesLabel","");
+            if(!filterValues) {
+                var filterFieldId = this.getProperty("patternFilterField");
+                if(filterFieldId) {
+                    var filterField = this.getFieldById(null, filterFieldId);
+                    if(filterField) {
+                        var pointData = this.getData();
+                        if (pointData == null) return;
+                        if(filterValuesLabel=="") filterValuesLabel= filterField.getLabel()+": ";
+                        filterValues = this.getColumnValues(pointData.getRecords(), filterField).values;
+                        filterValues=Utils.getUniqueValues(filterValues);
+                        filterValues.unshift("");
+                    }
+                }
+            }
             var filterValue  = this.getProperty("filterPattern");
             if(filterValues) {
-                filterValues = Utils.getMacro(filterValues);
-                var toks = filterValues.split(",");
+                var toks;
+                if((typeof filterValues) =="string") {
+                    filterValues = Utils.getMacro(filterValues);
+                    toks = filterValues.split(",");
+                }  else  {
+                    toks =filterValues;
+                }
                 var menu = "<select class='ramadda-pulldown' id='" +this.getDomId("filterValueMenu")+"'>";
                 for(var i=0;i<toks.length;i++) {
                     var extra = "";
                     if(filterValue == toks[i]) extra  = "selected ";
-                    menu+="<option " + extra +">" +toks[i]+"</option>\n";
+                    if(toks[i]=="") {
+                        menu+="<option value='' " + extra +">" +"All"+"</option>\n";
+                    } else {
+                        menu+="<option " + extra +">" +toks[i]+"</option>\n";
+                    }
                 }
 
                 menu += "</select>";
@@ -2328,6 +2352,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
                 this.jq("filterValueMenu").change(function(){
                         var value = $(this).val();
                         if(_this.getProperty("filterPattern") == value) return;
+                        if(value == "") value=null;
                         _this.setProperty("filterPattern",value);
                         _this.updateUI();
                         _this.getDisplayManager().handleEventPropertyChanged(_this, {
@@ -2701,6 +2726,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             this.clearCache();
             if (!reload) {
                 this.addData(pointData);
+                this.checkFilterValueMenu();
             }
             if (url != null) {
                 this.jsonUrl = url;

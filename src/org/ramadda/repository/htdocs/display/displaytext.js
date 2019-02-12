@@ -7,6 +7,17 @@ var DISPLAY_WORDCLOUD = "wordcloud";
 var DISPLAY_TEXTSTATS = "textstats";
 var DISPLAY_TEXTANALYSIS = "textanalysis";
 var DISPLAY_TEXTRAW = "textraw";
+var DISPLAY_TEXT = "text";
+
+addGlobalDisplayType({
+    type: DISPLAY_TEXT,
+    label: "Text Readout",
+    requiresData: false,
+    forUser: true,
+    category: CATEGORY_MISC
+});
+
+
 addGlobalDisplayType({
     type: DISPLAY_WORDCLOUD,
     forUser: true,
@@ -707,5 +718,23 @@ function RamaddaTextrawDisplay(displayManager, id, properties) {
             var html = HtmlUtils.div(["style", "padding:4px;border:1px #ccc solid;border-top:1px #ccc solid; max-height:" + height + "px;overflow-y:auto;"], corpus);
             this.writeHtml(ID_TEXT, html);
         },
+    });
+}
+
+
+function RamaddaTextDisplay(displayManager, id, properties) {
+    var SUPER;
+    $.extend(this, SUPER = new RamaddaDisplay(displayManager, id, DISPLAY_TEXT, properties));
+    addRamaddaDisplay(this);
+    RamaddaUtil.defineMembers(this, {
+        lastHtml: "<p>&nbsp;<p>&nbsp;<p>",
+        initDisplay: function() {
+            SUPER.initDisplay.call(this);
+            this.setContents(this.lastHtml);
+        },
+        handleEventRecordSelection: function(source, args) {
+            this.lastHtml = args.html;
+            this.setContents(args.html);
+        }
     });
 }

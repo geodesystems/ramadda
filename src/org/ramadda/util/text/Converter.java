@@ -513,10 +513,12 @@ public abstract class Converter extends Processor {
         Hashtable<String, String> props;
 
         /** _more_ */
-        String defaultType = "double";
+        String defaultType = "string";
 
         /** _more_ */
         boolean defaultChartable = true;
+
+        Row firstRow;
 
         /**
          * _more_
@@ -546,14 +548,22 @@ public abstract class Converter extends Processor {
          */
         @Override
         public Row processRow(TextReader info, Row row, String line) {
-            if (rowCnt++ != 0) {
+            rowCnt++;
+            if (rowCnt>2) {
                 return row;
             }
+            if(firstRow == null) {
+                firstRow = row;
+                return null;
+            }
+            boolean debug = Misc.equals(props.get("debug"),"true");
+            PrintWriter writer    = info.getWriter();
             StringBuffer sb = new StringBuffer();
             sb.append("#fields=");
             List values = new ArrayList<String>();
-            for (int i = 0; i < row.getValues().size(); i++) {
-                String col = (String) row.getValues().get(i);
+            for (int i = 0; i < firstRow.getValues().size(); i++) {
+                String col = (String) firstRow.getValues().get(i);
+                String sample = (String) row.getValues().get(i);
                 col = col.replaceAll("\u00B5", "u").replaceAll("\u00B3",
                                      "^3").replaceAll("\n", " ");
                 String id =
@@ -561,7 +571,7 @@ public abstract class Converter extends Processor {
                                    "_").trim().toLowerCase().replaceAll(" ",
                                        "_").replaceAll(":", "_");
 
-                id = id.replaceAll("\\+","_").replaceAll("\"", "_").replaceAll("\'",
+                id = id.replaceAll("\\+","_").replaceAll("\"", "_").replaceAll("%","_").replaceAll("\'",
                                    "_").replaceAll("/+",
                                        "_").replaceAll("\\.",
                                            "_").replaceAll("_+_",
@@ -600,11 +610,25 @@ public abstract class Converter extends Processor {
                     type      = "double";
                     isGeo     = true;
                     chartable = false;
+                } else {
+                    try {
+                        if(sample.matches("^(\\+|-)?\\d+$")) {
+                            //                            System.out.println(label+" match int");
+                            type ="integer";
+                        } else if(sample.matches("^[-+]?[0-9]*\\.?[0-9]+([eE][-+]?[0-9]+)?$")) {
+                            //                            System.out.println(label+" match double");
+                            type ="double"; 
+                        } else {
+                            //                            System.out.println(label +" no match:" + sample);
+                        }
+                    } catch(Exception exc) {
+                    }
                 }
 
                 type   = CsvUtil.getDbProp(props, id, "type", type);
                 format = CsvUtil.getDbProp(props, id, "format", format);
 
+                attrs.append(" type=\"" + type + "\"");
                 if (format != null) {
                     attrs.append(" format=\"" + format + "\" ");
                 }
@@ -615,16 +639,26 @@ public abstract class Converter extends Processor {
                         attrs.append(" chartable=\"" + "false" + "\" ");
                     }
                 }
-                attrs.append(" type=\"" + type + "\"");
+                if(debug) {
+                    writer.println(StringUtil.padLeft(id,20) + " " + attrs +"  sample:" + sample);
+                }
+
                 String field = id + "[" + attrs + "] ";
                 if (i == 0) {
                     field = "#fields=" + field;
                 }
                 values.add(field);
             }
-            row.setValues(values);
 
-            return row;
+            firstRow.setValues(values);
+            info.setExtraRow(row);
+            Row tmp  = firstRow;
+            firstRow = null;
+            if(debug) {
+                writer.println("");
+                info.stopRunning();
+            }
+            return tmp;
         }
 
 
@@ -1850,6 +1884,56 @@ public abstract class Converter extends Processor {
             }
             row.getValues().add(value + "");
 
+            return row;
+        }
+
+    }
+
+
+
+    public static class ColumnRounder extends Converter {
+
+
+
+        /**
+         * _more_
+         *
+         * @param op _more_
+         *
+         * @param indices _more_
+         * @param name _more_
+         */
+        public ColumnRounder(List<String> indices) {
+            super(indices);
+        }
+
+        /**
+         * _more_
+         *
+         *
+         * @param info _more_
+         * @param row _more_
+         * @param line _more_
+         *
+         * @return _more_
+         */
+        @Override
+        public Row processRow(TextReader info, Row row, String line) {
+            if (rowCnt++ == 0) {
+                return row;
+            }
+            List<Integer> indices = getIndices(info);
+            for (Integer idx : indices) {
+                int index = idx.intValue();
+                if ((index < 0) || (index >= row.size())) {
+                    continue;
+                }
+                String s = (String) row.getValues().get(index);
+                double v = (s.length() == 0)
+                           ? 0
+                           : Double.parseDouble(s.replaceAll(",", ""));
+                row.set(index,""+((int)Math.round(v)));
+            }
             return row;
         }
 

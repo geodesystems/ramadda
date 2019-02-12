@@ -5959,7 +5959,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
             //                    "google.load(\"visualization\", \"1\", {packages:['corechart','table','bar']});\n"));
             HtmlUtils.script(
                 sb,
-                "google.charts.load(\"43\", {packages:['corechart','calendar','table','bar','sankey','wordtree','timeline','gauge']});\n");
+                "google.charts.load(\"43\", {packages:['corechart','calendar','table','bar','treemap', 'sankey','wordtree','timeline','gauge']});\n");
             HtmlUtils.importJS(
                 sb, getPageHandler().getCdnPath("/lib/d3/d3.min.js"));
             HtmlUtils.importJS(

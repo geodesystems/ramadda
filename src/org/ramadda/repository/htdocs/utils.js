@@ -38,6 +38,18 @@ var Utils = {
             s = pad + s;
         return s;
     },
+    getUniqueValues: function(l) {
+        var u = [];
+        var map ={};
+        for(var i=0;i<l.length;i++){
+            var value = l[i];
+            if(!this.isDefined(map[value])) {
+                map[value] = true;
+                u.push(value);
+            }
+        }
+        return u;
+    },
     formatDateYYYYMMDD: function(date, options, args) {
         return date.getUTCFullYear() + "-" + (date.getUTCMonth() + 1) + "-" + date.getUTCDate();
     },

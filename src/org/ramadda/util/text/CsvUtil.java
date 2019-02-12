@@ -178,7 +178,7 @@ public class CsvUtil {
      */
     public void initWith(CsvUtil csvUtil) {
         this.comment   = csvUtil.comment;
-        this.delimiter = csvUtil.delimiter;
+        //        this.delimiter = csvUtil.delimiter;
     }
 
     /**
@@ -909,6 +909,12 @@ public class CsvUtil {
         }
         if (textReader.getProcessor() != null) {
             row = textReader.getProcessor().processRow(textReader, row, null);
+            if(!textReader.getOkToRun()) return false;
+            if(textReader.getExtraRow()!=null) {
+                row = textReader.getProcessor().processRow(textReader, textReader.getExtraRow(), null);
+                textReader.setExtraRow(null);
+            }
+            if(!textReader.getOkToRun()) return false;
         } else {
             textReader.getWriter().println(columnsToString(row.getValues(),
                     textReader.getOutputDelimiter()));
@@ -1045,7 +1051,6 @@ public class CsvUtil {
         new Cmd("-copy","<col #> <name>"),
         new Cmd("-delete","<col #>","(remove the columns)"),
         new Cmd("-insert","<col #> <value>","(insert a new column value)"),
-        new Cmd("-scale","<col #> <delta1> <scale> <delta2>","(set value={value+delta1}*scale+delta2)"),
         new Cmd("-insert","<col #> <comma separated values>"),
         new Cmd("-addcell","<row #>  <col #>  <value>"),
         new Cmd("-deletecell","<row #> <col #>"),
@@ -1063,7 +1068,9 @@ public class CsvUtil {
         new Cmd("-combineinplace","<col #s> <delimiter> <new column name>","(combine columns with the delimiter.)"),
         new Cmd("-html","\"name value properties\"","(parse the table in the input html file, properties: skip <tables to skip> pattern <pattern to skip to>)"),
         new Cmd("-concat","<col #s>  <delimiter>","(create a new column from the given columns)"),
+        new Cmd("-scale","<col #> <delta1> <scale> <delta2>","(set value={value+delta1}*scale+delta2)"),
         new Cmd("-operator","<col #s>  <new col name> <operator +,-,*,/>","(apply the operator to the given columns and create new one)"),
+        new Cmd("-round","<columns>","round the values"),
         new Cmd("-sum","<key columns> <value columns>","sum values keying on name column value"),
         new Cmd("-join","<key columns> <value columns> <file> <key 2 columns> <value 2 columns>","Join the 2 files together"),
         new Cmd("-format","<columns> <decimal format, e.g. '##0.00'>"),
@@ -1767,6 +1774,14 @@ public class CsvUtil {
                 String       op   = args.get(++i);
                 info.getProcessor().addProcessor(
                     new Converter.ColumnMathOperator(idxs, name, op));
+
+                continue;
+            }
+
+            if (arg.equals("-round")) {
+                List<String> idxs = getCols(args.get(++i));
+                info.getProcessor().addProcessor(
+                    new Converter.ColumnRounder(idxs));
 
                 continue;
             }

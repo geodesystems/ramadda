@@ -940,7 +940,6 @@ public abstract class Processor extends CsvOperator {
          * @throws Exception _more_
          */
         private void handleRow(PrintWriter writer, Row row) throws Exception {
-
             String  theTemplate   = template;
             List    values        = row.getValues();
             boolean escapeColumns = true;

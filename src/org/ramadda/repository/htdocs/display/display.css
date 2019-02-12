@@ -61,6 +61,17 @@
     text-align:right;
 }
 
+.display-treemap-tooltip-outer  {
+   background-color : #fffeec;
+   padding:5px; 
+}
+
+.display-treemap-tooltip  {
+   max-height:200px;
+   overflow-y:auto;
+}
+
+
 .display-correlation .top-heading {
 //    background-color: #efefef;
     height:100%;

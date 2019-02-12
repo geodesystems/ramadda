@@ -10,7 +10,7 @@ var DISPLAY_PLOTLY_DOTPLOT = "dotplot";
 var DISPLAY_PLOTLY_SPLOM = "splom";
 var DISPLAY_PLOTLY_3DSCATTER = "3dscatter";
 var DISPLAY_PLOTLY_3DMESH = "3dmesh";
-var DISPLAY_PLOTLY_TREEMAP = "treemap";
+var DISPLAY_PLOTLY_TREEMAP = "ptreemap";
 var DISPLAY_PLOTLY_TERNARY = "ternary";
 
 addGlobalDisplayType({
@@ -65,7 +65,7 @@ addGlobalDisplayType({
 //Ternary doesn't work
 //addGlobalDisplayType({type: DISPLAY_PLOTLY_TERNARY, label:"Ternary",requiresData:true,forUser:true,category:CATEGORY_PLOTLY});
 //Treempap doesn't work
-//addGlobalDisplayType({type: DISPLAY_PLOTLY_TREEMAP, label:"Tree Map",requiresData:true,forUser:true,category:CATEGORY_PLOTLY});
+//addGlobalDisplayType({type: DISPLAY_PLOTLY_PTREEMAP, label:"Tree Map",requiresData:true,forUser:true,category:CATEGORY_PLOTLY});
 
 
 function RamaddaPlotlyDisplay(displayManager, id, type, properties) {
@@ -842,7 +842,7 @@ function RamaddaSplomDisplay(displayManager, id, properties) {
 
 
 
-function RamaddaTreemapDisplay(displayManager, id, properties) {
+function RamaddaPTreemapDisplay(displayManager, id, properties) {
     var SUPER;
     $.extend(this, {
         width: "400px",
