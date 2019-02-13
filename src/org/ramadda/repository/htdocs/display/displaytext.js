@@ -444,11 +444,11 @@ function RamaddaTextstatsDisplay(displayManager, id, properties) {
                 if(this.getProperty("showSummary",true)) {
                     html += HtmlUtils.openTag("table",["class","nowrap ramadda-table","id",this.getDomId("table_summary")]);
                     html += HtmlUtils.openTag("thead",[]);
-                    html += HtmlUtils.tr([], HtmlUtils.th(["width",td1Width], "Summary") + HtmlUtils.th([],"&nbsp;"));
+                    html += HtmlUtils.tr([], HtmlUtils.th(["width","50%"], "Summary") + HtmlUtils.th([],"&nbsp;"));
                     html += HtmlUtils.closeTag("thead");
                     html += HtmlUtils.openTag("tbody",[]);
-                    html += HtmlUtils.tr([], HtmlUtils.td([], "Total words:") + HtmlUtils.td([], cnt.count));
-                    html += HtmlUtils.tr([], HtmlUtils.td([], "Average word length:") + HtmlUtils.td([], Math.round(cnt.total/cnt.count)));
+                    html += HtmlUtils.tr([], HtmlUtils.td(["align","right"], "Total words:") + HtmlUtils.td([], cnt.count));
+                    html += HtmlUtils.tr([], HtmlUtils.td(["align","right"], "Average word length:") + HtmlUtils.td([], Math.round(cnt.total/cnt.count)));
                     html+= HtmlUtils.closeTag("tbody");
 
                     html+= HtmlUtils.closeTag("table");
