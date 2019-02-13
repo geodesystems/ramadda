@@ -221,7 +221,9 @@ public class DatabaseManager extends RepositoryManager implements SqlUtil
         haveInitialized = true;
         System.setProperty(
             "jdbc.drivers",
-            "org.apache.derby.jdbc.EmbeddedDriver:com.mysql.jdbc.Driver:org.postgresql.Driver:org.Oracle.Driver");
+            
+            //            "org.apache.derby.jdbc.EmbeddedDriver:com.mysql.jdbc.Driver:org.postgresql.Driver:org.Oracle.Driver");
+            "org.apache.derby.jdbc.EmbeddedDriver:com.mysql.cj.jdbc.Driver:org.postgresql.Driver:org.Oracle.Driver");
 
 
         SqlUtil.setConnectionManager(this);
