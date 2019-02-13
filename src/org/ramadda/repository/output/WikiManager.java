@@ -4587,7 +4587,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
         tags.append(
             addWikiEditButton(
                 textAreaId, "button_section.png", "Table",
-                "+table height=400 searching=false_newline_:tr &quot;heading 1&quot; &quot;heading 2&quot;_newline_+tr_newline_:td colum 1_newline_+td_newline_column 2_newline_","-td_newline_-tr_newline_-table", 
+                "+table height=400 hover=true stripe=false searching=false_newline_:tr &quot;heading 1&quot; &quot;heading 2&quot;_newline_+tr_newline_:td colum 1_newline_+td_newline_column 2_newline_","-td_newline_-tr_newline_-table", 
                 "Table", "mw-editbutton-bold"));
 
         tags.append(

@@ -234,7 +234,7 @@ This by default gives a 20px left and right margin. To change this you can add a
 </div> 
 Scrollable HTML tables are supported with the +table/-table  tags. The form is:
 <pre>
-+table  height=100  (optional height argument)
++table  height=100  stripe=false hover=true searching=false 
 +tr
 +td 
 heading 1
@@ -255,10 +255,18 @@ column 2
 -table
 </pre>
 
+The attributes of the +table tag are all optional. 
+<ul>  
+<li> height=100   - Set the height of the table and enable scrolling
+<li> stripe=false - Stripe the rows
+<li> hover=true  - Highlight the rows on hover
+<li> searching=false  - Show the search box
+</ul>
+
 
 There are shortcuts available
 <pre>
-+table  height=100  (optional height argument)
++table  height=100  
 :trow "heading 1" "heading 2"
 +trow
 :td column 1
