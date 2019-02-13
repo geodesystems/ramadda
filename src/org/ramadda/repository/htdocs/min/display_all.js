@@ -10087,7 +10087,7 @@ function RamaddaTextanalysisDisplay(displayManager, id, properties) {
         printList: function(title,l) {
             var maxWords = parseInt(this.getProperty("maxWords", 10));
             var minCount = parseInt(this.getProperty("minCount", 0));
-            var table = HtmlUtils.openTag("table",["width","100%","class","ramadda-table"]) +HtmlUtils.openTag("thead",[]);
+            var table = HtmlUtils.openTag("table",["width","100%","class","stripe hover ramadda-table"]) +HtmlUtils.openTag("thead",[]);
             table += HtmlUtils.tr([], HtmlUtils.th([],title) + HtmlUtils.th([],"&nbsp;"));
             table += HtmlUtils.closeTag("thead");
             table += HtmlUtils.openTag("tbody");
