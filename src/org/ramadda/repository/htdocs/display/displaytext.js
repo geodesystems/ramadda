@@ -444,7 +444,7 @@ function RamaddaTextstatsDisplay(displayManager, id, properties) {
                 if(this.getProperty("showSummary",true)) {
                     html += HtmlUtils.openTag("table",["class","nowrap ramadda-table","id",this.getDomId("table_summary")]);
                     html += HtmlUtils.openTag("thead",[]);
-                    html += HtmlUtils.tr([], HtmlUtils.th(["width",td1width], "Summary") + HtmlUtils.th([],"&nbsp;"));
+                    html += HtmlUtils.tr([], HtmlUtils.th(["width",td1Width], "Summary") + HtmlUtils.th([],"&nbsp;"));
                     html += HtmlUtils.closeTag("thead");
                     html += HtmlUtils.openTag("tbody",[]);
                     html += HtmlUtils.tr([], HtmlUtils.td(["align","right"], "Total words:") + HtmlUtils.td([], cnt.count));
