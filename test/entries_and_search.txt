@@ -185,6 +185,6 @@ http://geodesystems.com/repository/search/do?max=50&output=json&type=type_docume
 http://geodesystems.com/repository/search/do?max=50&output=json&type=type_point_pbo_position_time_series&skip=0
 http://geodesystems.com/repository/search/do?max=50&output=json&type=type_point_wsbb_ggp&skip=0
 http://geodesystems.com/repository/search/do?max=50&output=json&type=type_resilience_project&skip=0
-http://geodesystems.com/repository/search/textform?
+http://geodesystems.com/repository/search/form
 http://geodesystems.com/repository/search/type/project_vocabulary?max=50&type=project_vocabulary
 http://geodesystems.com/repository/search/type?
