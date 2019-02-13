@@ -167,7 +167,7 @@ This by default gives a 20px left and right margin. To change this you can add a
 [ug::subsubheading {Scrollable Tables} tables]
 Scrollable HTML tables are supported with the +table/-table  tags. The form is:
 <pre>
-+table  height=100  stripe=false hover=true searching=false 
++table  height=100  stripe=false hover=true searching=false  cellborder=false rowborder=false paging=false ordering=false
 +tr
 +td 
 heading 1
@@ -194,6 +194,10 @@ The attributes of the +table tag are all optional.
 <li> stripe=false - Stripe the rows
 <li> hover=true  - Highlight the rows on hover
 <li> searching=false  - Show the search box
+<li> cellborder=false - draw borders around the cells
+<li> rowborder=false -  draw borders around the rows
+<li> paging=false  - enable paging
+<li> ordering=false -  enable sorting
 </ul>
 
 
