@@ -354,8 +354,19 @@
         <unjar src="${lib_dir}/smtp.jar" dest="${tmpjar_dir}"/>
         <unjar src="${lib_dir}/gson-2.2.4.jar" dest="${tmpjar_dir}"/>
         <unjar src="${lib_dir}/ij.jar" dest="${tmpjar_dir}"/>
+
+<!--
         <unjar src="${lib_dir}/postgres.jar" dest="${tmpjar_dir}"/>
+-->
+
+        <unjar src="${lib_dir}/postgresql-42.2.5.jre7.jar" dest="${tmpjar_dir}"/>
+
+
+        <!--
         <unjar src="${lib_dir}/mysql-connector-java-5.1.32-bin.jar" dest="${tmpjar_dir}"/>
+-->
+        <unjar src="${lib_dir}/mysql-connector-java-8.0.15.jar" dest="${tmpjar_dir}"/>
+
         <unjar src="${lib_dir}/h2.jar" dest="${tmpjar_dir}"/>
         <unjar src="${lib_dir}/derby.jar" dest="${tmpjar_dir}"/>
         <unjar src="${lib_dir}/derbytools.jar" dest="${tmpjar_dir}"/>
@@ -375,8 +386,16 @@
         <unjar src="${lib_dir}/httpclient-4.4.1.jar" dest="${tmpjar_dir}"/>
 
 -->
+<!--
         <unjar src="${lib_dir}/httpmime-4.5.5.jar" dest="${tmpjar_dir}"/>
+-->
+        <unjar src="${lib_dir}/httpmime-4.5.7.jar" dest="${tmpjar_dir}"/>
+
+<!--
         <unjar src="${lib_dir}/httpcore-4.4.9.jar" dest="${tmpjar_dir}"/>
+-->
+        <unjar src="${lib_dir}/httpcore-4.4.1.jar" dest="${tmpjar_dir}"/>
+
 
 <!--
         <unjar src="${lib_dir}/metadata-extractor-2.6.2.jar" dest="${tmpjar_dir}"/>
