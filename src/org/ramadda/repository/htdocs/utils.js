@@ -975,6 +975,28 @@ var HtmlUtils = {
         }
         return html;
     },
+    formatTable: function(id, args) {
+        var options = {
+            paging:         false,
+            ordering: false,
+            info:     false,
+            searching: false,
+            scrollCollapse: true,
+        };
+        if(args)
+            $.extend(options, args);
+        if(Utils.isDefined(options.scrollY)) {
+            var sh = ""+options.scrollY;
+            if(!sh.endsWith("px")) options.scrollY +="px";
+        }
+        console.log(JSON.stringify(options));
+        /*
+                "scrollY":        "200px",
+                "scrollCollapse": true,
+
+        */
+        $('#' + id).DataTable( options);
+    },
     th: function(attrs, inner) {
         return this.tag("th", attrs, inner);
     },
