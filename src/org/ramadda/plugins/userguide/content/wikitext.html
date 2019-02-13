@@ -4,6 +4,11 @@
 The web pages in RAMADDA are created through its  wiki facility. The wiki facility supports both regular wiki markup like Wikipedia uses
 as well as special  RAMADDA wiki tags that allow for page payout, displaying maps, lists, charts, etc. 
 
+[ug::subheading {Available Tags} ]
+<%inpagetoc%>
+
+
+
 [ug::subheading {Basic Markup} basicmarkup]
 The RAMADDA Wiki facility generally follows the format that Wikipedia follows. For example:
 [wiki::text {
@@ -155,6 +160,45 @@ This by default gives a 20px left and right margin. To change this you can add a
 +inset top="100" left="50" right="50" bottom="100"
 ...
 -inset
+</pre>
+
+
+
+[ug::subsubheading {Scrollable Tables} tables]
+Scrollable HTML tables are supported with the +table/-table  tags. The form is:
+<pre>
++table  height=100  (optional height argument)
++tr
++td 
+heading 1
+-td
++td 
+heading 2
+-td
+-tr
++tr
++td 
+column 1
+-td
++td 
+column 2
+-td
+-tr
+...
+-table
+</pre>
+
+
+There are shortcuts available
+<pre>
++table  height=100  (optional height argument)
+:trow "heading 1" "heading 2"
++trow
+:td column 1
+:td column 2
+-trow
+...
+-table
 </pre>
 
 

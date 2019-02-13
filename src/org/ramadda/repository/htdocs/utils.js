@@ -292,6 +292,10 @@ var Utils = {
     initPage: function() {
         this.pageLoaded = true;
 
+        //tableize
+        HtmlUtils.formatTable(".ramadda-table");
+
+
         //Buttonize
         $(':submit').button().click(function(event) {});
         $('.ramadda-button').button().click(function(event) {});
@@ -976,26 +980,28 @@ var HtmlUtils = {
         return html;
     },
     formatTable: function(id, args) {
-        var options = {
-            paging:         false,
-            ordering: false,
-            info:     false,
-            searching: false,
-            scrollCollapse: true,
-        };
-        if(args)
-            $.extend(options, args);
-        if(Utils.isDefined(options.scrollY)) {
-            var sh = ""+options.scrollY;
-            if(!sh.endsWith("px")) options.scrollY +="px";
-        }
-        console.log(JSON.stringify(options));
-        /*
-                "scrollY":        "200px",
-                "scrollCollapse": true,
-
-        */
-        $('#' + id).DataTable( options);
+        $(id).each(function() {
+                var options = {
+                    paging:         false,
+                    ordering: false,
+                    info:     false,
+                    searching: false,
+                    scrollCollapse: true,
+                };
+                if(args)
+                    $.extend(options, args);
+                var height = $(this).attr("table-height");
+                if(height) 
+                    options.scrollY = height;
+                var searching = $(this).attr("table-searching");
+                if(searching) 
+                    options.searching = (searching=="true");
+                if(Utils.isDefined(options.scrollY)) {
+                    var sh = ""+options.scrollY;
+                    if(!sh.endsWith("px")) options.scrollY +="px";
+                }
+                $(this).DataTable( options);
+            });
     },
     th: function(attrs, inner) {
         return this.tag("th", attrs, inner);
@@ -1058,6 +1064,10 @@ var HtmlUtils = {
     },
 
     tag: function(tagName, attrs, inner) {
+        if(!inner && (typeof attrs) == "string") {
+            inner = attrs;
+            attrs = null;
+        }
         var html = "<" + tagName + " " + this.attrs(attrs) + ">";
         if (inner != null) {
             html += inner;
@@ -1094,6 +1104,7 @@ var HtmlUtils = {
     },
 
     attrs: function(list) {
+        if(!list) return "";
         var html = "";
         if (list == null) return html;
         if (list.length == 1) return list[0];

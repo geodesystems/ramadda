@@ -510,9 +510,15 @@ function RamaddaTextstatsDisplay(displayManager, id, properties) {
             }
             this.writeHtml(ID_DISPLAY_CONTENTS, html);
             var tableHeight = this.getProperty("tableHeight", "200");
-            HtmlUtils.formatTable(this.getDomId("table_summary"),{scrollY:tableHeight});
-            HtmlUtils.formatTable(this.getDomId("table_counts"),{scrollY:tableHeight});
-            HtmlUtils.formatTable(this.getDomId("table_frequency"),{scrollY:tableHeight,searching:true});
+            
+            if(this.getProperty("showSummary",true)) 
+                HtmlUtils.formatTable("#"+this.getDomId("table_summary"),{scrollY:this.getProperty("tableSummaryHeight", tableHeight)});
+            if(this.getProperty("showCounts",true)) 
+                HtmlUtils.formatTable("#"+this.getDomId("table_counts"),{scrollY:this.getProperty("tableCountsHeight", tableHeight)});
+            if(this.getProperty("showFrequency",true)) 
+                HtmlUtils.formatTable("#"+this.getDomId("table_frequency"),{scrollY:this.getProperty("tableFrequenecyHeight", tableHeight),
+                            searching:this.getProperty("showSearch",true)
+});
         },
     });
 }
@@ -539,6 +545,15 @@ function RamaddaTextanalysisDisplay(displayManager, id, properties) {
             if (!records) {
                 return null;
             }
+            let _this = this;
+            this.setContents(this.getMessage("Processing text..."));
+            var func = function() {
+                _this.updateUIInnerInner();
+            };
+            setTimeout(func, 10);
+         },
+        updateUIInnerInner: function() {
+            let records = this.filterData();
             var allFields = this.getData().getRecordFields();
             var fields = this.getSelectedFields(allFields);
             if (fields.length == 0)
@@ -561,131 +576,108 @@ function RamaddaTextanalysisDisplay(displayManager, id, properties) {
                 corpus += "\n";
             }
             var nlp = window.nlp(corpus);
-            var headers = [];
             var cols = [];
-            if (this.getProperty("showPeople", true)) {
-                headers.push("<b>People<b>");
-                cols.push(this.printList(nlp.people().out('topk')));
+            if (this.getProperty("showPeople", false)) {
+                cols.push(this.printList("People",nlp.people().out('topk')));
             }
-            if (this.getProperty("showPlaces", true)) {
-                headers.push("<b>Places<b>");
-                cols.push(this.printList(nlp.places().out('topk')));
+            if (this.getProperty("showPlaces", false)) {
+                cols.push(this.printList("Places",nlp.places().out('topk')));
             }
-            if (this.getProperty("showOrganizations", true)) {
-                headers.push("<b>Organizations<b>");
-                cols.push(this.printList(nlp.organizations().out('topk')));
+            if (this.getProperty("showOrganizations", false)) {
+                cols.push(this.printList("Organizations",nlp.organizations().out('topk')));
             }
             if (this.getProperty("showTopics", false)) {
-                headers.push("<b>Topics<b>");
-                cols.push(this.printList(nlp.topics().out('topk')));
+                cols.push(this.printList("Topics",nlp.topics().out('topk')));
             }
             if (this.getProperty("showNouns", false)) {
-                headers.push("<b>Nouns<b>");
-                cols.push(this.printList(nlp.nouns().out('topk')));
+                cols.push(this.printList("Nouns",nlp.nouns().out('topk')));
             }
             if (this.getProperty("showVerbs", false)) {
-                headers.push("<b>Verbs<b>");
-                cols.push(this.printList(nlp.verbs().out('topk')));
+                cols.push(this.printList("Verbs",nlp.verbs().out('topk')));
             }
             if (this.getProperty("showAdverbs", false)) {
-                headers.push("<b>Adverbs<b>");
-                cols.push(this.printList(nlp.adverbs().out('topk')));
+                cols.push(this.printList("Adverbs",nlp.adverbs().out('topk')));
             }
             if (this.getProperty("showAdjectives", false)) {
-                headers.push("<b>Adjectives<b>");
-                cols.push(this.printList(nlp.adjectives().out('topk')));
+                cols.push(this.printList("Adjectives",nlp.adjectives().out('topk')));
             }
             if (this.getProperty("showClauses", false)) {
-                headers.push("<b>Clauses<b>");
-                cols.push(this.printList(nlp.clauses().out('topk')));
+                cols.push(this.printList("Clauses",nlp.clauses().out('topk')));
             }
             if (this.getProperty("showContractions", false)) {
-                headers.push("<b>Contractions<b>");
-                cols.push(this.printList(nlp.contractions().out('topk')));
+                cols.push(this.printList("Contractions",nlp.contractions().out('topk')));
             }
             if (this.getProperty("showPhoneNumbers", false)) {
-                headers.push("<b>Phone Numbers<b>");
-                cols.push(this.printList(nlp.phoneNumbers().out('topk')));
+                cols.push(this.printList("Phone Numbers",nlp.phoneNumbers().out('topk')));
             }
             if (this.getProperty("showValues", false)) {
-                headers.push("<b>Values<b>");
-                cols.push(this.printList(nlp.values().out('topk')));
+                cols.push(this.printList("Values",nlp.values().out('topk')));
             }
             if (this.getProperty("showAcronyms", false)) {
-                headers.push("<b>Acronyms<b>");
-                cols.push(this.printList(nlp.acronyms().out('topk')));
+                cols.push(this.printList("Acronyms",nlp.acronyms().out('topk')));
             }
-
             if (this.getProperty("showNGrams", false)) {
-                headers.push("<b>NGrams<b>");
-                cols.push(this.printList(nlp.ngrams().out('topk')));
+                cols.push(this.printList("NGrams",nlp.ngrams().out('topk')));
             }
             if (this.getProperty("showDates", false)) {
-                headers.push("<b>Dates<b>");
-                cols.push(this.printList(nlp.dates().out('topk')));
+                cols.push(this.printList("Dates",nlp.dates().out('topk')));
             }
             if (this.getProperty("showQuotations", false)) {
-                headers.push("<b>Quotations<b>");
-                cols.push(this.printList(nlp.quotations().out('topk')));
+                cols.push(this.printList("Quotations",nlp.quotations().out('topk')));
             }
             if (this.getProperty("showUrls", false)) {
-                headers.push("<b>URLs<b>");
-                cols.push(this.printList(nlp.urls().out('topk')));
+                cols.push(this.printList("URLs",nlp.urls().out('topk')));
             }
             if (this.getProperty("showStatements", false)) {
-                headers.push("<b>Statements<b>");
-                cols.push(this.printList(nlp.statements().out('topk')));
+                cols.push(this.printList("Statements",nlp.statements().out('topk')));
             }
             if (this.getProperty("showTerms", false)) {
-                headers.push("<b>Terms<b>");
-                cols.push(this.printList(nlp.terms().out('topk')));
+                cols.push(this.printList("Terms",nlp.terms().out('topk')));
             }
             if (this.getProperty("showPossessives", false)) {
-                headers.push("<b>Possessives<b>");
-                cols.push(this.printList(nlp.possessives().out('topk')));
+                cols.push(this.printList("Possessives",nlp.possessives().out('topk')));
+            }
+            if(cols.length==0) {
+                this.writeHtml(ID_DISPLAY_CONTENTS, this.getMessage("No text types specified"));
+                return;
             }
             var height = this.getProperty("height", "400");
-            var html = "";
-            var colCnt = 0;
-            var row = "";
-            var header = "";
-            for (var i = 0; i < cols.length; i++) {
-                if (colCnt >= 3) {
-                    var table = "<table width=100%>";
-                    table += HtmlUtil.tr([], header);
-                    table += HtmlUtil.tr(["valign", "top"], row);
-                    table += "</table>";
-                    html += HtmlUtils.div(["style", "margin-top:10px;padding:4px;border-top:1px #ccc solid; max-height:" + height + "px;overflow-y:auto;"], table);
-                    colCnt = 0;
-                    row = "";
-                    header = "";
-                }
-                row += HtmlUtils.td(["width", "33%"], cols[i]);
-                header += HtmlUtils.td(["width", "33%"], headers[i]);
-                colCnt++;
+            var html = HtmlUtils.openTag("div",["id",this.getDomId("tables")]);
+
+            for (var i = 0; i < cols.length; i+=3) {
+                var c1 = cols[i];
+                var c2 = i+1<cols.length?cols[i+1]:null;
+                var c3 = i+2<cols.length?cols[i+2]:null;
+                var width = c2?(c3?"33%":"50%"):"100%";
+                var style = "padding:5px";
+                var row = "";
+                row += HtmlUtils.td(["width", width],HtmlUtils.div(["style",style],c1));
+                if(c2)
+                    row += HtmlUtils.td(["width", width],HtmlUtils.div(["style",style],c2));
+                if(c3)
+                    row += HtmlUtils.td(["width", width],HtmlUtils.div(["style",style],c3));
+                html += HtmlUtils.tag("table",["width","100%"],HtmlUtils.tr(row));
             }
-            if (row != "") {
-                var table = "<table width=100%>";
-                table += HtmlUtil.tr([], header);
-                table += HtmlUtil.tr(["valign", "top"], row);
-                table += "</table>";
-                html += HtmlUtils.div(["style", "margin-top:10px;padding:4px;border-top:1px #ccc solid;" + height + "px;overflow-y:auto;"], table);
-            }
+            html+= HtmlUtils.closeTag("div");
             this.writeHtml(ID_DISPLAY_CONTENTS, html);
+            HtmlUtils.formatTable("#"+this.getDomId("tables") +" .ramadda-table",{scrollY:this.getProperty("tableHeight", "200")});
         },
-        printList: function(l) {
+        printList: function(title,l) {
             var maxWords = parseInt(this.getProperty("maxWords", 10));
             var minCount = parseInt(this.getProperty("minCount", 0));
-            var table = "<table>";
+            var table = HtmlUtils.openTag("table",["width","100%","class","ramadda-table"]) +HtmlUtils.openTag("thead",[]);
+            table += HtmlUtils.tr([], HtmlUtils.th([],title) + HtmlUtils.th([],"&nbsp;"));
+            table += HtmlUtils.closeTag("thead");
+            table += HtmlUtils.openTag("tbody");
             var cnt = 0;
             for (var i = 0; i < l.length; i++) {
                 if (l[i].count < minCount) continue;
-                var row = HtmlUtils.td([], l[i].normal + "&nbsp;&nbsp;") +
+                var row = HtmlUtils.td([], l[i].normal) +
                     HtmlUtils.td([], l[i].count + " (" + l[i].percent + "%)");
                 table += HtmlUtils.tr([], row);
                 if (cnt++ > maxWords) break;
             }
-            table += "</table>"
+            table+= HtmlUtils.closeTag("tbody") + HtmlUtils.closeTag("table");
             return table;
         }
     });

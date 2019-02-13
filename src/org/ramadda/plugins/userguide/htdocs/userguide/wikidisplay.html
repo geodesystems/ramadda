@@ -36,33 +36,89 @@ There are a number of
 
 <p><div class="ramadda-help-heading">5.2.0 Available Displays</div> 
 <ul><li> <a href='#entrylist'>Search form</a>
+<li> <a href='#entrylist'><a href="#entrylist">Search form</a>
+</a>
 <li> <a href='#entrygrid'>Entry Grid</a>
+<li> <a href='#entrygrid'><a href="#entrygrid">Entry Grid</a>
+</a>
 <li> <a href='#animation'>Animation</a>
+<li> <a href='#animation'><a href="#animation">Animation</a>
+</a>
 <li> <a href='#map'>Map</a>
+<li> <a href='#map'><a href="#map">Map</a>
+</a>
 <li> <a href='#linechart'> Line chart</a>
+<li> <a href='#linechart'><a href="#linechart"> Line chart</a>
+</a>
 <li> <a href='#barchart'>Bar chart</a>
+<li> <a href='#barchart'><a href="#barchart">Bar chart</a>
+</a>
 <li> <a href='#barstack'>Stacked bar chart</a>
+<li> <a href='#barstack'><a href="#barstack">Stacked bar chart</a>
+</a>
 <li> <a href='#areachart'>Area chart</a>
+<li> <a href='#areachart'><a href="#areachart">Area chart</a>
+</a>
 <li> <a href='#scatterplot'> Scatter Plot</a>
+<li> <a href='#scatterplot'><a href="#scatterplot"> Scatter Plot</a>
+</a>
 <li> <a href='#histogram'> Histogram</a>
+<li> <a href='#histogram'><a href="#histogram"> Histogram</a>
+</a>
 <li> <a href='#bubble'>Bubble Chart</a>
+<li> <a href='#bubble'><a href="#bubble">Bubble Chart</a>
+</a>
 <li> <a href='#piechart'> Pie chart</a>
+<li> <a href='#piechart'><a href="#piechart"> Pie chart</a>
+</a>
 <li> <a href='#radar'>Radar Display</a>
+<li> <a href='#radar'><a href="#radar">Radar Display</a>
+</a>
 <li> <a href='#windrose'>Wind Rose</a>
+<li> <a href='#windrose'><a href="#windrose">Wind Rose</a>
+</a>
 <li> <a href='#density'>Density Display</a>
+<li> <a href='#density'><a href="#density">Density Display</a>
+</a>
 <li> <a href='#3dscatter'>3D Scatter</a>
+<li> <a href='#3dscatter'><a href="#3dscatter">3D Scatter</a>
+</a>
 <li> <a href='#calendar'> Calendar</a>
+<li> <a href='#calendar'><a href="#calendar"> Calendar</a>
+</a>
 <li> <a href='#gauge'> Gauge</a>
+<li> <a href='#gauge'><a href="#gauge"> Gauge</a>
+</a>
 <li> <a href='#table'>Table</a>
+<li> <a href='#table'><a href="#table">Table</a>
+</a>
 <li> <a href='#heatmap'>Heatmap</a>
+<li> <a href='#heatmap'><a href="#heatmap">Heatmap</a>
+</a>
 <li> <a href='#correlation'> Correlation</a>
+<li> <a href='#correlation'><a href="#correlation"> Correlation</a>
+</a>
 <li> <a href='#text'> Text Readout</a>
+<li> <a href='#text'><a href="#text"> Text Readout</a>
+</a>
 <li> <a href='#stats'> Summary Stats</a>
+<li> <a href='#stats'><a href="#stats"> Summary Stats</a>
+</a>
 <li> <a href='#dotplot'>Dot Plot</a>
+<li> <a href='#dotplot'><a href="#dotplot">Dot Plot</a>
+</a>
 <li> <a href='#sankey'>Sankey</a>
+<li> <a href='#sankey'><a href="#sankey">Sankey</a>
+</a>
 <li> <a href='#wordcloud'>Word Cloud</a>
+<li> <a href='#wordcloud'><a href="#wordcloud">Word Cloud</a>
+</a>
 <li> <a href='#wordtree'>Word Tree</a>
+<li> <a href='#wordtree'><a href="#wordtree">Word Tree</a>
+</a>
 <li> <a href='#timelinechart'>Timeline</a>
+<li> <a href='#timelinechart'><a href="#timelinechart">Timeline</a>
+</a>
 </ul>
 
 <a name="basics"></a><p><div class="ramadda-help-heading">5.2.1 <a href="#basics">The Basics</a></div> 
@@ -652,13 +708,13 @@ patternFilterField="field id"
 filterPattern="some string"
 numericFilterField="other field id" 
 numericFilterValue="number" 
-filterOperator="&gt;|&gt;=|==|&lt;|&lt;=" 
+numericFilterOperator="&gt;|&gt;=|==|&lt;|&lt;=" 
 </pre>
 e.g.: below would only show data where the 1st matches the string "Texas" and the 3rd needs to be less that 5000.
 <pre>
 {{display  type="sankey" height="800" 
 patternFilterField="#1" filterPattern="Texas"
-numericFilterField="#3" numericFilterValue="5000" filterOperator=">" 
+numericFilterField="#3" numericFilterValue="5000" numericFilterOperator=">" 
 }}
 </pre>
 

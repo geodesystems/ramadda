@@ -321,6 +321,7 @@ proc ug::subsubheading {l {href ""}} {
     if {$href !=""} {
         set html "<a name=\"$href\"></a>\n";
         set l "<a href=\"#$href\">$l</a>\n";
+        gen::addInpageToc "<a href='#$href'>$l</a>"
     }
     set html "$html<div class=\"ramadda-help-subsubheading\">$l</div> "
 }
@@ -945,7 +946,7 @@ proc gen::getTitleOverviewBody {path {canUseBodyForOverview 0} {htmlRaw 0}} {
     
     if {[gen::getDoTclEvaluation]} {
         set ::currentFile $path
-            set ::inpageToc [list]
+        set ::inpageToc [list]
         if {[catch {set content [subst -novariables $content]} err]} {
             puts "Error evaluating $path\n$::errorInfo"
         }

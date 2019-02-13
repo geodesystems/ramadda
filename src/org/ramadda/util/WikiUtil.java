@@ -569,9 +569,105 @@ public class WikiUtil {
         List<TabInfo> tabInfos     = new ArrayList<TabInfo>();
         List<String>  accordianIds = new ArrayList<String>();
 
+        boolean inTable = false;
+        boolean inHead = false;
+        boolean inBody = false;
+        boolean inTrow = false;
         for (String line :
                 (List<String>) StringUtil.split(s, "\n", false, false)) {
             String tline = line.trim();
+            if (tline.startsWith("+table")) {
+                List<String>  toks  = StringUtil.splitUpTo(tline, " ", 2);
+                String width = "100%";
+                String height = null;
+                String searching = "false";
+                if(toks.size()==2) {
+                    Hashtable props = StringUtil.parseHtmlProperties(toks.get(1));
+                    width  = Utils.getProperty(props, "width", width);
+                    height  = Utils.getProperty(props, "height",height);
+                    searching  = Utils.getProperty(props, "searching",height);
+
+                }
+                buff.append("<table class=ramadda-table width=" + width + " table-searching=" + searching +" "  + (height!=null?" table-height=" + height :"") +"><thead>");
+                inHead = true;
+                inTable = true;
+                continue;
+            }
+            if (tline.equals("-table")) {
+                if(inHead)
+                    buff.append("</thead>");
+                if(inBody)
+                    buff.append("</tbody>");
+                buff.append("</table>");
+                inTable = false;
+                continue;
+            }
+            if (tline.startsWith(":tr")) {
+                List<String>  toks  = StringUtil.splitUpTo(tline, " ", 2);
+                buff.append("<tr valign=top>");
+                if(toks.size()==2) {
+                    for(String td:Utils.parseCommandLine(toks.get(1))) {
+                        if(inHead)
+                            buff.append(HtmlUtils.th(td));
+                        else
+                            buff.append(HtmlUtils.td(td));
+                    }
+                }
+                if(inHead) {
+                    buff.append("</thead>");
+                    buff.append("<tbody>");
+                    inHead = false;
+                    inBody = true;
+                }
+                continue;
+            }
+            if (tline.startsWith("+tr")) {
+                buff.append("<tr valign=top>");
+                continue;
+            }
+            if (tline.startsWith("-tr")) {
+                buff.append("</tr>");
+                if(inHead) {
+                    buff.append("</thead>");
+                    buff.append("<tbody>");
+                    inHead = false;
+                    inBody = true;
+                }
+                continue;
+            }
+
+            if (tline.startsWith("+td")) {
+                List<String>  toks  = StringUtil.splitUpTo(tline, " ", 2);
+                String width = null;
+                if(toks.size()==2) {
+                    Hashtable props = StringUtil.parseHtmlProperties(toks.get(1));
+                    width  = Utils.getProperty(props, "width", width);
+                }
+
+                if(inHead)
+                    buff.append("<th " + (width!=null?" width=" + width:"")+">");
+                else
+                    buff.append("<td valign=top " + (width!=null?" width=" + width:"")+">");
+                continue;
+            }
+            if (tline.startsWith("-td")) {
+                if(inHead)
+                    buff.append("</th>");
+                else
+                    buff.append("</td>");
+                continue;
+            }
+            if (tline.startsWith(":td")) {
+                List<String>  toks  = StringUtil.splitUpTo(tline, " ", 2);
+                String td = toks.size()==2?toks.get(1):"";
+                if(inHead)
+                    buff.append(HtmlUtils.th(td));
+                else
+                    buff.append(HtmlUtils.td(td,"valign=top"));
+                continue;
+            }
+
+
             if (tline.startsWith("+tabs")) {
                 TabInfo tabInfo = new TabInfo();
                 List<String>  toks  = StringUtil.splitUpTo(tline, " ", 2);
@@ -595,7 +691,7 @@ public class WikiUtil {
 
                 continue;
             }
-            if (tline.startsWith("+tab")) {
+            if (tline.equals("+tab") || tline.startsWith("+tab ")) {
                 if (tabInfos.size() == 0) {
                     buff.append("No +tabs tag");
                     continue;

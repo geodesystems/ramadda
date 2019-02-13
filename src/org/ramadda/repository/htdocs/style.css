@@ -724,29 +724,38 @@ border: 1px #ccc solid;
 }
 
 
-.ramadda-table  {
+table.dataTable thead th, table.dataTable thead td {
+ padding: 2px 8px;
 }
 
-.ramadda-table td {
-  padding-left: 5px;
-  padding-right: 5px;
-}
-
-.ramadda-table td {
+table.dataTable tbody th, table.dataTable tbody td {
+ padding: 2px 8px;
 }
 
 table.dataTable thead th, table.dataTable thead td {
- padding: 4px 8px;
-}
-table.dataTable tbody th, table.dataTable tbody td {
- padding: 4px 8px;
+ border-bottom:1px #ccc solid;
 }
 
+table.dataTable.no-footer {
+ border-bottom:1px #ccc solid;
+}
+
+
+
+.dataTables_wrapper.no-footer .dataTables_scrollBody {
+ border-bottom:1px #ccc solid;
+}
+
+.dataTables_wrapper .dataTables_scroll div.dataTables_scrollBody > table > thead > tr > th, .dataTables_wrapper .dataTables_scroll div.dataTables_scrollBody > table > thead > tr > td, .dataTables_wrapper .dataTables_scroll div.dataTables_scrollBody > table > tbody > tr > th, .dataTables_wrapper .dataTables_scroll div.dataTables_scrollBody > table > tbody > tr > td {
+  vertical-align: top;
+}        
+
+table.dataTable tbody td {
+  vertical-align: top;
+}
 
 .ramadda-table th {
   background-color: #efefef;
-  padding-left: 5px;
-  padding-right: 5px;
 }
 
 .ramadda-table-header, .entry-list-header {

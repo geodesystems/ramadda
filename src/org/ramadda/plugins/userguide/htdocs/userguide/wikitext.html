@@ -31,7 +31,44 @@ pre {
 The web pages in RAMADDA are created through its  wiki facility. The wiki facility supports both regular wiki markup like Wikipedia uses
 as well as special  RAMADDA wiki tags that allow for page payout, displaying maps, lists, charts, etc. 
 
-<a name="basicmarkup"></a><p><div class="ramadda-help-heading">5.1.0 <a href="#basicmarkup">Basic Markup</a></div> 
+<p><div class="ramadda-help-heading">5.1.0 Available Tags</div> 
+<ul><li> <a href='#titles'><a href="#titles">Titles and headings</a>
+</a>
+<li> <a href='#sections'><a href="#sections">Sections</a>
+</a>
+<li> <a href='#inset'><a href="#inset">Inset</a>
+</a>
+<li> <a href='#tables'><a href="#tables">Scrollable Tables</a>
+</a>
+<li> <a href='#gridlayout'><a href="#gridlayout">Grid Layout</a>
+</a>
+<li> <a href='#tabs'><a href="#tabs">Tabs</a>
+</a>
+<li> <a href='#accordian'><a href="#accordian">Accordian</a>
+</a>
+<li> <a href='#entry'><a href="#entry">Linking to other entries</a>
+</a>
+<li> <a href='#properties'><a href="#properties">Wiki Properties</a>
+</a>
+<li> <a href='#entry'><a href="#entry">Specify other entries with the <i>entry</i> attribute</a>
+</a>
+<li> <a href='#basic'><a href="#basic">Basic Wiki Properties</a>
+</a>
+<li> <a href='#entries'><a href="#entries">Collection Wiki Properties</a>
+</a>
+<li> <a href='#virtual_groups'><a href="#virtual_groups">Virtual Groups</a>
+</a>
+<li> <a href='#collection_tags'><a href="#collection_tags">Collection Tags</a>
+</a>
+<li> <a href='#hiding'><a href="#hiding">Hiding and showing content</a>
+</a>
+<li> <a href='#snippet'><a href="#snippet">Snippet</a>
+</a>
+</ul>
+
+
+
+<a name="basicmarkup"></a><p><div class="ramadda-help-heading">5.1.1 <a href="#basicmarkup">Basic Markup</a></div> 
 The RAMADDA Wiki facility generally follows the format that Wikipedia follows. For example:
 <div style="margin:10px;"><pre>
 ==Section Heading 1==
@@ -66,7 +103,7 @@ See the <a href=" http://en.wikipedia.org/wiki/Help:Wiki_markup">Wikipedia page 
 
 
 
-<a name="layout"></a><p><div class="ramadda-help-heading">5.1.1 <a href="#layout">Layout and Display Markup</a></div> 
+<a name="layout"></a><p><div class="ramadda-help-heading">5.1.2 <a href="#layout">Layout and Display Markup</a></div> 
 There are a number of helper layout tags that make it easy to do page layout and display.
 
 <a name="titles"></a>
@@ -188,6 +225,47 @@ This by default gives a 20px left and right margin. To change this you can add a
 +inset top="100" left="50" right="50" bottom="100"
 ...
 -inset
+</pre>
+
+
+
+<a name="tables"></a>
+<div class="ramadda-help-subsubheading"><a href="#tables">Scrollable Tables</a>
+</div> 
+Scrollable HTML tables are supported with the +table/-table  tags. The form is:
+<pre>
++table  height=100  (optional height argument)
++tr
++td 
+heading 1
+-td
++td 
+heading 2
+-td
+-tr
++tr
++td 
+column 1
+-td
++td 
+column 2
+-td
+-tr
+...
+-table
+</pre>
+
+
+There are shortcuts available
+<pre>
++table  height=100  (optional height argument)
+:trow "heading 1" "heading 2"
++trow
+:td column 1
+:td column 2
+-trow
+...
+-table
 </pre>
 
 
