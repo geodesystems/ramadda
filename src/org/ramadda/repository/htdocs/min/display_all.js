@@ -9864,7 +9864,7 @@ function RamaddaTextstatsDisplay(displayManager, id, properties) {
                 var td1Width = "20%";
                 var td2Width = "10%";
                 if(this.getProperty("showSummary",true)) {
-                    html += HtmlUtils.openTag("table",["class","ramadda-table","id",this.getDomId("table_summary")]);
+                    html += HtmlUtils.openTag("table",["class","nowrap ramadda-table","id",this.getDomId("table_summary")]);
                     html += HtmlUtils.openTag("thead",[]);
                     html += HtmlUtils.tr([], HtmlUtils.th(["width",td1Width], "Summary") + HtmlUtils.th([],"&nbsp;"));
                     html += HtmlUtils.closeTag("thead");
@@ -9877,7 +9877,7 @@ function RamaddaTextstatsDisplay(displayManager, id, properties) {
                     html+="<br>"
                 }
                 if(this.getProperty("showCounts",true)) {
-                    html+= HtmlUtils.openTag("table",["class","row-border ramadda-table","id",this.getDomId("table_counts")]);
+                    html+= HtmlUtils.openTag("table",["class","row-border nowrap ramadda-table","id",this.getDomId("table_counts")]);
                     html+= HtmlUtils.openTag("thead",[]);
                     html += HtmlUtils.tr([], HtmlUtils.th(["width", td1Width], "Word Length") + HtmlUtils.th(["width", td2Width],"Count") + (showBars?HtmlUtils.th([],""):""));
                     html+= HtmlUtils.closeTag("thead");
