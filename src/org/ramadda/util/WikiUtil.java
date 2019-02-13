@@ -580,6 +580,8 @@ public class WikiUtil {
                 List<String>  toks  = StringUtil.splitUpTo(tline, " ", 2);
                 String width = "100%";
                 String height = null;
+                String ordering = null;
+                String paging = null;
                 String xclazz = null;
                 String searching = "false";
                 String clazz = "ramadda-table";
@@ -587,7 +589,14 @@ public class WikiUtil {
                     Hashtable props = StringUtil.parseHtmlProperties(toks.get(1));
                     width  = Utils.getProperty(props, "width", width);
                     height  = Utils.getProperty(props, "height",height);
+                    ordering  = Utils.getProperty(props, "ordering",ordering);
+                    paging  = Utils.getProperty(props, "paging",paging);
                     searching  = Utils.getProperty(props, "searching",height);
+
+                    if(Misc.equals(Utils.getProperty(props, "rowborder",null),"true"))
+                        clazz= "row-border " + clazz;
+                    if(Misc.equals(Utils.getProperty(props, "cellborder",null),"true"))
+                        clazz= "cell-border " + clazz;
                     if(Misc.equals(Utils.getProperty(props, "stripe",null),"true"))
                         clazz= "stripe " + clazz;
                     if(Misc.equals(Utils.getProperty(props, "hover",null),"true"))
@@ -595,7 +604,10 @@ public class WikiUtil {
                 }
 
                 buff.append("<table class='" + clazz  +"' width=" + width + " table-searching=" + searching +" "  + 
-(height!=null?" table-height=" + height :"") +"><thead>");
+                            (height!=null?" table-height=" + height :"") +
+                            (ordering!=null?" table-ordering=" + ordering :"") +
+                            (paging!=null?" table-paging=" + paging :"") +
+                            "><thead>");
                 inHead = true;
                 inTable = true;
                 continue;

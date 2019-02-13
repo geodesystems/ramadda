@@ -982,7 +982,7 @@ var HtmlUtils = {
     formatTable: function(id, args) {
         $(id).each(function() {
                 var options = {
-                    paging:         false,
+                    paging:  false,
                     ordering: false,
                     info:     false,
                     searching: false,
@@ -993,9 +993,15 @@ var HtmlUtils = {
                 var height = $(this).attr("table-height");
                 if(height) 
                     options.scrollY = height;
+                var ordering = $(this).attr("table-ordering");
+                if(ordering) 
+                    options.ordering = (ordering=="true");
                 var searching = $(this).attr("table-searching");
                 if(searching) 
                     options.searching = (searching=="true");
+                var paging = $(this).attr("table-paging");
+                if(paging) 
+                    options.paging = (paging=="true");
                 if(Utils.isDefined(options.scrollY)) {
                     var sh = ""+options.scrollY;
                     if(!sh.endsWith("px")) options.scrollY +="px";

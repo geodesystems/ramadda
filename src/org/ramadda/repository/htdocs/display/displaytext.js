@@ -455,7 +455,7 @@ function RamaddaTextstatsDisplay(displayManager, id, properties) {
                     html+="<br>"
                 }
                 if(this.getProperty("showCounts",true)) {
-                    html+= HtmlUtils.openTag("table",["class","ramadda-table","id",this.getDomId("table_counts")]);
+                    html+= HtmlUtils.openTag("table",["class","row-border ramadda-table","id",this.getDomId("table_counts")]);
                     html+= HtmlUtils.openTag("thead",[]);
                     html += HtmlUtils.tr([], HtmlUtils.th(["width", td1Width], "Word Length") + HtmlUtils.th(["width", td2Width],"Count") + (showBars?HtmlUtils.th([],""):""));
                     html+= HtmlUtils.closeTag("thead");
@@ -476,7 +476,7 @@ function RamaddaTextstatsDisplay(displayManager, id, properties) {
                     html+="<br>"
                 }
                 if(this.getProperty("showFrequency",true)) {
-                    html += HtmlUtils.openTag("table",["class","ramadda-table","id",this.getDomId("table_frequency")]);
+                    html += HtmlUtils.openTag("table",["class","row-border ramadda-table","id",this.getDomId("table_frequency")]);
                     html += HtmlUtils.openTag("thead",[]);
                     html += HtmlUtils.tr([], HtmlUtils.th(["width", td1Width], "Word") + HtmlUtils.th(["width", td2Width],"Frequency") + (showBars?HtmlUtils.th([],""):""));
                     html += HtmlUtils.closeTag("thead");
@@ -516,7 +516,7 @@ function RamaddaTextstatsDisplay(displayManager, id, properties) {
             if(this.getProperty("showCounts",true)) 
                 HtmlUtils.formatTable("#"+this.getDomId("table_counts"),{scrollY:this.getProperty("tableCountsHeight", tableHeight)});
             if(this.getProperty("showFrequency",true)) 
-                HtmlUtils.formatTable("#"+this.getDomId("table_frequency"),{scrollY:this.getProperty("tableFrequenecyHeight", tableHeight),
+                HtmlUtils.formatTable("#"+this.getDomId("table_frequency"),{ordering:true,scrollY:this.getProperty("tableFrequenecyHeight", tableHeight),
                             searching:this.getProperty("showSearch",true)
 });
         },

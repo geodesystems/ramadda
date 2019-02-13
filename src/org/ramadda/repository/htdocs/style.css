@@ -740,8 +740,6 @@ table.dataTable.no-footer {
  border-bottom:1px #ccc solid;
 }
 
-
-
 .dataTables_wrapper.no-footer .dataTables_scrollBody {
  border-bottom:1px #ccc solid;
 }
@@ -753,6 +751,7 @@ table.dataTable.no-footer {
 table.dataTable tbody td {
   vertical-align: top;
 }
+
 
 .ramadda-table th {
   background-color: #efefef;
@@ -766,6 +765,8 @@ table.dataTable tbody td {
   margin-top: 2px;
   padding-top: 0px;
 }
+
+
 
 .entry-list-header-column, .entry-list-header-column-last {
    font-weight:500;
