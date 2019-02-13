@@ -444,7 +444,7 @@ function RamaddaTextstatsDisplay(displayManager, id, properties) {
                 if(this.getProperty("showSummary",true)) {
                     html += HtmlUtils.openTag("table",["class","nowrap ramadda-table","id",this.getDomId("table_summary")]);
                     html += HtmlUtils.openTag("thead",[]);
-                    html += HtmlUtils.tr([], HtmlUtils.th(["width","50%"], "Summary") + HtmlUtils.th([],"&nbsp;"));
+                    html += HtmlUtils.tr([], HtmlUtils.th(["width",td1width], "Summary") + HtmlUtils.th([],"&nbsp;"));
                     html += HtmlUtils.closeTag("thead");
                     html += HtmlUtils.openTag("tbody",[]);
                     html += HtmlUtils.tr([], HtmlUtils.td(["align","right"], "Total words:") + HtmlUtils.td([], cnt.count));
@@ -516,7 +516,7 @@ function RamaddaTextstatsDisplay(displayManager, id, properties) {
             if(this.getProperty("showCounts",true)) 
                 HtmlUtils.formatTable("#"+this.getDomId("table_counts"),{scrollY:this.getProperty("tableCountsHeight", tableHeight)});
             if(this.getProperty("showFrequency",true)) 
-                HtmlUtils.formatTable("#"+this.getDomId("table_frequency"),{ordering:true,scrollY:this.getProperty("tableFrequenecyHeight", tableHeight),
+                HtmlUtils.formatTable("#"+this.getDomId("table_frequency"),{scrollY:this.getProperty("tableFrequenecyHeight", tableHeight),
                             searching:this.getProperty("showSearch",true)
 });
         },
