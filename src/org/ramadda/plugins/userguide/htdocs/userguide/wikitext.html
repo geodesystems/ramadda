@@ -232,7 +232,8 @@ This by default gives a 20px left and right margin. To change this you can add a
 <a name="tables"></a>
 <div class="ramadda-help-subsubheading"><a href="#tables">Scrollable Tables</a>
 </div> 
-Scrollable HTML tables are supported with the +table/-table  tags. The form is:
+Scrollable HTML tables are supported with the +table/-table  tags. The form is below. 
+Note: any open tr or td tags will be close with the -table tag.
 <pre>
 +table  height=100  stripe=false hover=true searching=false  cellborder=false rowborder=false paging=false ordering=false
 +tr
@@ -268,11 +269,12 @@ The attributes of the +table tag are all optional.
 </ul>
 
 
+
 There are shortcuts available
 <pre>
 +table  height=100  
-:trow "heading 1" "heading 2"
-+trow
+:tr "heading 1" "heading 2"
++tr
 :td column 1
 :td column 2
 -trow

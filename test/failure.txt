@@ -1,8 +1,8 @@
 #This is a list of URLS that should all fail
-fail:http://geodesystems.com/admin
+fail:https://geodesystems.com/admin
 fail:https://geodesystems.com/repository/admin/settings
-fail:https://geodesystems.com/repository/user/home
-fail:https://geodesystems.com/repository/user/form
+https://geodesystems.com/repository/user/home
+https://geodesystems.com/repository/user/form
 fail:https://geodesystems.com/repository/user/monitors
 fail:https://geodesystems.com/repository/user/list
 fail:https://geodesystems.com/repository/admin/stats
@@ -23,6 +23,5 @@ fail:https://geodesystems.com/repository/metadata/addform?entryid=ab7d9cae-080b-
 fail:https://geodesystems.com/repository/access/form?entryid=ab7d9cae-080b-47bf-a89c-b2b390ad1a45
 fail:https://geodesystems.com/repository/entry/extedit?entryid=ab7d9cae-080b-47bf-a89c-b2b390ad1a45
 fail:https://geodesystems.com/repository/entry/delete?entryid=ab7d9cae-080b-47bf-a89c-b2b390ad1a45
-fail:https://geodesystems.com/repository/entry/copy?from=ab7d9cae-080b-47bf-a89c-b2b390ad1a45
 
 

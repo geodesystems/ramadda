@@ -565,14 +565,11 @@ public class WikiUtil {
         StringBuffer  buff         = new StringBuffer();
 
         StringBuilder js           = new StringBuilder();
-        List<TabInfo> allTabInfos  = new ArrayList<TabInfo>();
-        List<TabInfo> tabInfos     = new ArrayList<TabInfo>();
+        List<TabState> allTabStates  = new ArrayList<TabState>();
+        List<TabState> tabInfos     = new ArrayList<TabState>();
         List<String>  accordianIds = new ArrayList<String>();
 
-        boolean inTable = false;
-        boolean inHead = false;
-        boolean inBody = false;
-        boolean inTrow = false;
+        List<TableState> tableStates  = new ArrayList<TableState>();
         for (String line :
                 (List<String>) StringUtil.split(s, "\n", false, false)) {
             String tline = line.trim();
@@ -608,54 +605,83 @@ public class WikiUtil {
                             (ordering!=null?" table-ordering=" + ordering :"") +
                             (paging!=null?" table-paging=" + paging :"") +
                             "><thead>");
-                inHead = true;
-                inTable = true;
+                tableStates.add(new TableState());
                 continue;
             }
             if (tline.equals("-table")) {
-                if(inHead)
+                TableState state=tableStates.size()>0?tableStates.get(tableStates.size()-1):null;
+                if(state==null) {
+                    buff.append("Not in a table");
+                    continue;
+                }
+                if(state.inTd)
+                    buff.append("</td>");
+                if(state.inTr)
+                    buff.append("</tr>");
+                if(state.inHead)
                     buff.append("</thead>");
-                if(inBody)
+                if(state.inBody)
                     buff.append("</tbody>");
                 buff.append("</table>");
-                inTable = false;
+                tableStates.remove(tableStates.size()-1);
+
                 continue;
             }
             if (tline.startsWith(":tr")) {
+                TableState state=tableStates.size()>0?tableStates.get(tableStates.size()-1):null;
+                if(state==null) {
+                    buff.append("Not in a table");
+                    continue;
+                }
                 List<String>  toks  = StringUtil.splitUpTo(tline, " ", 2);
                 buff.append("<tr valign=top>");
                 if(toks.size()==2) {
                     for(String td:Utils.parseCommandLine(toks.get(1))) {
-                        if(inHead)
+                        if(state.inHead)
                             buff.append(HtmlUtils.th(td));
                         else
                             buff.append(HtmlUtils.td(td));
                     }
                 }
-                if(inHead) {
+                if(state.inHead) {
                     buff.append("</thead>");
                     buff.append("<tbody>");
-                    inHead = false;
-                    inBody = true;
+                    state.inHead = false;
+                    state.inBody = true;
                 }
                 continue;
             }
             if (tline.startsWith("+tr")) {
+                TableState state=tableStates.size()>0?tableStates.get(tableStates.size()-1):null;
+                if(state==null) {
+                    buff.append("Not in a table");
+                    continue;
+                }
                 buff.append("<tr valign=top>");
                 continue;
             }
             if (tline.startsWith("-tr")) {
+                TableState state=tableStates.size()>0?tableStates.get(tableStates.size()-1):null;
+                if(state==null) {
+                    buff.append("Not in a table");
+                    continue;
+                }
                 buff.append("</tr>");
-                if(inHead) {
+                if(state.inHead) {
                     buff.append("</thead>");
                     buff.append("<tbody>");
-                    inHead = false;
-                    inBody = true;
+                    state.inHead = false;
+                    state.inBody = true;
                 }
                 continue;
             }
 
             if (tline.startsWith("+td")) {
+                TableState state=tableStates.size()>0?tableStates.get(tableStates.size()-1):null;
+                if(state==null) {
+                    buff.append("Not in a table");
+                    continue;
+                }
                 List<String>  toks  = StringUtil.splitUpTo(tline, " ", 2);
                 String width = null;
                 if(toks.size()==2) {
@@ -663,23 +689,33 @@ public class WikiUtil {
                     width  = Utils.getProperty(props, "width", width);
                 }
 
-                if(inHead)
+                if(state.inHead)
                     buff.append("<th " + (width!=null?" width=" + width:"")+">");
                 else
                     buff.append("<td valign=top " + (width!=null?" width=" + width:"")+">");
                 continue;
             }
             if (tline.startsWith("-td")) {
-                if(inHead)
+                TableState state=tableStates.size()>0?tableStates.get(tableStates.size()-1):null;
+                if(state==null) {
+                    buff.append("Not in a table");
+                    continue;
+                }
+                if(state.inHead)
                     buff.append("</th>");
                 else
                     buff.append("</td>");
                 continue;
             }
             if (tline.startsWith(":td")) {
+                TableState state=tableStates.size()>0?tableStates.get(tableStates.size()-1):null;
+                if(state==null) {
+                    buff.append("Not in a table");
+                    continue;
+                }
                 List<String>  toks  = StringUtil.splitUpTo(tline, " ", 2);
                 String td = toks.size()==2?toks.get(1):"";
-                if(inHead)
+                if(state.inHead)
                     buff.append(HtmlUtils.th(td));
                 else
                     buff.append(HtmlUtils.td(td,"valign=top"));
@@ -688,7 +724,7 @@ public class WikiUtil {
 
 
             if (tline.startsWith("+tabs")) {
-                TabInfo tabInfo = new TabInfo();
+                TabState tabInfo = new TabState();
                 List<String>  toks  = StringUtil.splitUpTo(tline, " ", 2);
                 if(toks.size()==2) {
                     Hashtable props = StringUtil.parseHtmlProperties(toks.get(1));
@@ -697,7 +733,7 @@ public class WikiUtil {
                         tabInfo.minHeight = tabInfo.minHeight+"px";
                 }
                 tabInfos.add(tabInfo);
-                allTabInfos.add(tabInfo);
+                allTabStates.add(tabInfo);
                 buff.append("\n");
                 HtmlUtils.open(buff, HtmlUtils.TAG_DIV, "id", tabInfo.id,
                                "class", "ui-tabs");
@@ -719,7 +755,7 @@ public class WikiUtil {
                 String       title   = (toks.size() > 1)
                                        ? toks.get(1)
                                        : "";
-                TabInfo      tabInfo = tabInfos.get(tabInfos.size() - 1);
+                TabState      tabInfo = tabInfos.get(tabInfos.size() - 1);
                 tabInfo.cnt++;
                 tabInfo.title.append("<li><a href=\"#" + tabInfo.id + "-"
                                      + (tabInfo.cnt) + "\">" + title
@@ -739,7 +775,7 @@ public class WikiUtil {
             }
             if (tabInfos.size() > 0) {
                 if (tline.equals("-tab")) {
-                    TabInfo tabInfo = tabInfos.get(tabInfos.size() - 1);
+                    TabState tabInfo = tabInfos.get(tabInfos.size() - 1);
                     buff.append(HtmlUtils.close("div"));
                     buff.append("\n");
                     js.append(
@@ -749,7 +785,7 @@ public class WikiUtil {
                     continue;
                 }
                 if (tline.equals("-tabs")) {
-                    TabInfo tabInfo = tabInfos.get(tabInfos.size() - 1);
+                    TabState tabInfo = tabInfos.get(tabInfos.size() - 1);
                     tabInfo.title.append("\n");
                     tabInfo.title.append("</ul>");
                     tabInfo.title.append("\n");
@@ -1216,8 +1252,8 @@ public class WikiUtil {
             HtmlUtils.script(buff, js.toString());
         }
         s = buff.toString();
-        for (int i = 0; i < allTabInfos.size(); i++) {
-            TabInfo tabInfo = allTabInfos.get(i);
+        for (int i = 0; i < allTabStates.size(); i++) {
+            TabState tabInfo = allTabStates.get(i);
             s = s.replace("${" + tabInfo.id + "}", tabInfo.title.toString());
         }
 
@@ -1695,7 +1731,7 @@ public class WikiUtil {
      * @version        $version$, Sun, Jan 27, '19
      * @author         Enter your name here...
      */
-    public static class TabInfo {
+    public static class TabState {
 
         /** _more_ */
         String id;
@@ -1711,8 +1747,27 @@ public class WikiUtil {
         /**
          * _more_
          */
-        public TabInfo() {
+        public TabState() {
             this.id = HtmlUtils.getUniqueId("tabs");
+        }
+
+
+
+    }
+
+
+    public static class TableState {
+
+        boolean inHead=true;
+        boolean inRow=false;
+        boolean inBody=false;
+        boolean inTr=false;
+        boolean inTd=false;
+
+        /**
+         * _more_
+         */
+        public TableState() {
         }
 
 
