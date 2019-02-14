@@ -153,6 +153,7 @@ public class MapManager extends RepositoryManager implements WikiConstants {
             }
         }
 
+
         if ( !didLoc) {
             String userLoc =
                 (String) getSessionManager().getSessionProperty(request,
@@ -1282,7 +1283,33 @@ public class MapManager extends RepositoryManager implements WikiConstants {
         if (bounds == null) {
             bounds = getEntryManager().getBounds(entriesToUse);
         }
-        map.centerOn(bounds, forceBounds);
+        boolean haveLocation = false;
+
+
+        if(request.defined("map_bounds")) {
+            haveLocation = true;
+            List<String> toks = StringUtil.split(request.getString("map_bounds",""),",",true,true);
+            if(toks.size()==4) {
+                map.addProperty(MapManager.PROP_INITIAL_BOUNDS,
+                          Json.list(toks.get(0),
+                                    toks.get(1),
+                                    toks.get(2),
+                                    toks.get(3)));
+            }
+        } else if(request.defined("map_location")) {
+            haveLocation = true;
+            List<String> toks = StringUtil.split(request.getString("map_location",""),",",true,true);
+            if(toks.size()==2) {
+                map.addProperty(MapManager.PROP_INITIAL_LOCATION,
+                          Json.list(toks.get(0),
+                                    toks.get(1)));
+            }
+        }
+
+
+        if(!haveLocation) {
+            map.centerOn(bounds, forceBounds);
+        }
 
         List<String> categories = new ArrayList<String>();
         Hashtable<String, StringBuilder> catMap = new Hashtable<String,
@@ -1362,6 +1389,10 @@ public class MapManager extends RepositoryManager implements WikiConstants {
         if ((map.getHtml().length() == 0) && (catMap.size() == 0)) {
             listentries = false;
         }
+        if(request.defined("map_layer")) {
+            map.addProperty("defaultMapLayer",Json.quote(request.getString("map_layer","")));
+        }
+
         String extra = map.getExtraNav();
         layoutMap(request, sb, map, listentries, numEntries, listwidth,
                   height, categories, catMap, map.getHtml(), navTop, extra);
@@ -1444,6 +1475,8 @@ public class MapManager extends RepositoryManager implements WikiConstants {
         if (request.get(ARG_MAP_ICONSONLY, false)) {
             makeRectangles = false;
         }
+
+
 
         for (Entry entry : entriesToUse) {
             boolean addMarker = true;

@@ -207,6 +207,7 @@ function RepositoryMap(mapId, params) {
 
 function initMapFunctions(theMap) {
     RamaddaUtil.defineMembers(theMap, {
+     
         finishMapInit: function() {
             let _this = this;
             if (this.showSearch) {
@@ -225,6 +226,21 @@ function initMapFunctions(theMap) {
             }
 
             this.map = new OpenLayers.Map(this.mapDivId, this.mapOptions);
+            //register the location listeners later since the map triggers a number of
+            //events at the start
+            var callback = function() {
+                _this.map.events.register("changebaselayer", "", function() {
+                        _this.baseLayerChanged();
+                    });
+                _this.map.events.register("zoomend", "", function() {
+                        _this.locationChanged();
+                    });
+                _this.map.events.register("moveend", "", function() {
+                        _this.locationChanged();
+                    });
+            };
+            setTimeout(callback,2000);
+
             if (this.mapHidden) {
                 //A hack when we are hidden
                 this.map.size = new OpenLayers.Size(1, 1);
@@ -239,6 +255,37 @@ function initMapFunctions(theMap) {
                 var url = getRamadda().getEntryDownloadUrl(this.geojsonLayer);
                 this.addGeoJsonLayer(this.geojsonLayerName, url, false, null, null, null, null);
             }
+        },
+        locationChanged:function() {
+                var latlon = this.transformProjBounds(this.map.getExtent());
+                var bounds = "map_bounds=" +latlon.top+","+latlon.left +"," + latlon.bottom +"," + latlon.right;
+                var url = ""+window.location;
+                url = url.replace(/\&?map_bounds=[-\d\.]+,[-\d\.]+,[-\d\.]+,[-\d\.]+/g,"");
+                if(!url.includes("?")) url+="?";
+                url +="&" + bounds;
+                try {
+                    if(window.history.replaceState)
+                        window.history.replaceState("", "", url);
+                } catch(e) {
+                    console.log("err:" + e);
+              }
+        },
+        baseLayerChanged:function() {
+                var baseLayer = this.map.baseLayer;
+                if(!baseLayer) return;
+                baseLayer = baseLayer.ramaddaId;
+                var latlon = this.transformProjBounds(this.map.getExtent());
+                var arg = "map_layer=" +baseLayer;
+                var url = ""+window.location;
+                url = url.replace(/\&?map_layer=[a-z\.]+/g,"");
+                if(!url.includes("?")) url+="?";
+                url +="&" + arg;
+                try {
+                    if(window.history.replaceState)
+                        window.history.replaceState("", "", url);
+                } catch(e) {
+                    console.log("err:" + e);
+                }
         },
         setMapDiv: function(divid) {
             this.mapHidden = false;
@@ -414,8 +461,8 @@ function initMapFunctions(theMap) {
                 new OpenLayers.Size(width, height), {
                     numZoomLevels: 3,
                     isBaseLayer: theArgs.isBaseLayer,
-                    resolutions: this.map.layers[0].resolutions,
-                    maxResolution: this.map.layers[0].resolutions[0]
+                        resolutions: this.map.layers[0]?this.map.layers[0].resolutions:null,
+                        maxResolution: this.map.layers[0]?this.map.layers[0].resolutions[0]:null
                 }
             );
 
@@ -1438,6 +1485,7 @@ function initMapFunctions(theMap) {
                 this.firstLayer = newLayer;
             }
             if (newLayer != null) {
+                newLayer.ramaddaId = mapLayer;
                 if (mapLayer == this.defaultMapLayer) {
                     this.defaultOLMapLayer = newLayer;
                 }

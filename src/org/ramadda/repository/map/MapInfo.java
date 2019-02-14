@@ -715,6 +715,8 @@ public class MapInfo {
 
         Hashtable<String, String> sessionProps =
             repository.getMapManager().getMapProps(request, null, null);
+
+
         if (Utils.stringDefined(nwseView[0])) {
             if (nwseView.length == 4) {
                 addProperty(MapManager.PROP_INITIAL_BOUNDS,
