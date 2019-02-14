@@ -454,6 +454,7 @@ public class GeoUtils {
                     "https://maps.googleapis.com/maps/api/geocode/json?address="
                     + encodedAddress + "&key=" + googleKey;
                 String result = IOUtil.readContents(url, GeoUtils.class);
+                System.err.println("result:" + result);
                 name = StringUtil.findPattern(result,"\"formatted_address\"\\s*:\\s*\"([^\"]+)\"");
                 latString = StringUtil.findPattern(result,
                         "\"lat\"\\s*:\\s*([-\\d\\.]+),");
