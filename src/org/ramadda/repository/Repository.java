@@ -70,6 +70,7 @@ import org.ramadda.repository.util.ServerInfo;
 
 
 import org.ramadda.service.Service;
+import org.ramadda.util.Place;
 import org.ramadda.util.CategoryBuffer;
 import org.ramadda.util.GeoUtils;
 import org.ramadda.util.HtmlUtils;
@@ -5494,6 +5495,27 @@ public class Repository extends RepositoryBase implements RequestHandler,
         sb.append(HtmlUtils.sectionClose());
 
         return new Result("", sb);
+    }
+
+    public Result processGeocode(Request request) throws Exception {
+        StringBuilder sb = new StringBuilder();
+        String q = request.getString("query","");
+        List<String> objs = new ArrayList<String>();
+        Place place1 = GeoUtils.getLocationFromAddress(q);
+        HashSet<String> seen = new HashSet<String>();
+        if(place1 !=null) {
+            seen.add(place1.getName());
+            objs.add(Json.map("name",Json.quote(place1.getName()),"latitude", ""+place1.getLatitude(),"longitude",""+place1.getLongitude()));
+        }
+        List<Place> places = Place.search(q,25);
+        for(Place place: places) {
+            if(seen.contains(place.getName())) continue;
+            seen.add(place.getName());
+            objs.add(Json.map("name",Json.quote(place.getName()),"latitude", ""+place.getLatitude(),"longitude",""+place.getLongitude()));
+        }
+
+        sb.append(Json.map("result",Json.list(objs)));
+        return  new Result("", sb, Json.MIMETYPE);
     }
 
 

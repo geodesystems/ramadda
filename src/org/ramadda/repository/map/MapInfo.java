@@ -364,6 +364,14 @@ public class MapInfo {
             styles += " height:" + height + "px; " + swidth;
         }
 
+        String footer2 =
+            HtmlUtils.div("",
+                          HtmlUtils.cssClass("ramadda-map-footer")
+                          + HtmlUtils.id(mapVarName + "_footer2"));
+        String popup =
+            HtmlUtils.div("",
+                          HtmlUtils.cssClass("ramadda-popup")
+                          + HtmlUtils.id(mapVarName + "_loc_popup"));
         String readout =
             HtmlUtils.div("&nbsp;",
                           HtmlUtils.id("ramadda-map-latlonreadout")
@@ -395,12 +403,16 @@ public class MapInfo {
 
         result.append("\n");
         result.append(footer);
+        result.append(HtmlUtils.leftRight(readout,
+                                          footer2));
+        result.append(popup);
+        /*
         if (Misc.equals(showDetailsLink, "true")) {
             result.append(HtmlUtils.leftRight(readout,
                     HtmlUtils.href(url, label)));
         } else {
             result.append(readout);
-        }
+            }*/
         result.append("\n");
 
         return result.toString();

@@ -300,11 +300,11 @@ public class GeoUtils {
 
                     continue;
                 }
-                double[] loc = getLocationFromAddress(arg, key);
-                if (loc == null) {
+                Place place = getLocationFromAddress(arg, key);
+                if (place == null) {
                     System.out.println(arg + ": NA");
                 } else {
-                    System.out.println(arg + ": " + loc[0] + "," + loc[1]);
+                    System.out.println(arg + ": " + place);
                 }
             }
         } catch (Exception exc) {
@@ -327,7 +327,7 @@ public class GeoUtils {
     }
 
     /** _more_ */
-    private static Hashtable<String, double[]> addressToLocation = null;
+    private static Hashtable<String, Place> addressToLocation = null;
 
 
 
@@ -339,7 +339,7 @@ public class GeoUtils {
      *
      * @return The location or null if not found
      */
-    public static double[] getLocationFromAddress(String address) {
+    public static Place getLocationFromAddress(String address) {
         return getLocationFromAddress(address, null);
     }
 
@@ -351,7 +351,7 @@ public class GeoUtils {
      *
      * @return _more_
      */
-    public static double[] getLocationFromAddress(String address,
+    public static Place getLocationFromAddress(String address,
             String googleKey) {
         try {
             return getLocationFromAddressInner(address, googleKey);
@@ -371,7 +371,7 @@ public class GeoUtils {
      *
      * @throws Exception _more_
      */
-    public static double[] getLocationFromAddressInner(String address,
+    public static Place getLocationFromAddressInner(String address,
             String googleKey)
             throws Exception {
 
@@ -399,7 +399,7 @@ public class GeoUtils {
 
         if (place != null) {
             //            System.err.println("got place:" + address +" " + place.getLatitude()+" " + place.getLongitude());
-            return new double[] { place.getLatitude(), place.getLongitude() };
+            return place;
         }
 
         if (googleKey == null) {
@@ -407,20 +407,20 @@ public class GeoUtils {
         }
 
         if (addressToLocation == null) {
-            addressToLocation = new Hashtable<String, double[]>();
+            addressToLocation = new Hashtable<String, Place>();
             if (cacheDir != null) {
                 File cacheFile = new File(IOUtil.joinDir(cacheDir,
-                                     "addresslocations.txt"));
+                                     "addresslocations2.txt"));
                 if (cacheFile.exists()) {
                     for (String line :
                             StringUtil.split(IOUtil.readContents(cacheFile),
                                              "\n", true, true)) {
                         List<String> toks = StringUtil.split(line,
                                                 cacheDelimiter);
-                        if (toks.size() == 3) {
-                            addressToLocation.put(toks.get(0),
-                                    new double[] { new Double(toks.get(1)),
-                                    new Double(toks.get(2)) });
+                        if (toks.size() == 4) {
+                           addressToLocation.put(toks.get(0),
+                                                 new Place(toks.get(1), new Double(toks.get(2)),
+                                                           new Double(toks.get(3))));
                         }
                     }
                 }
@@ -432,22 +432,20 @@ public class GeoUtils {
 
 
 
-        double[] location = addressToLocation.get(address);
-        if (location != null) {
-            if (Double.isNaN(location[0])) {
+        place  = addressToLocation.get(address);
+        if (place != null) {
+            if (Double.isNaN(place.getLatitude())) {
                 return null;
             }
-
-            return location;
+            return place;
         }
-
 
 
 
         String latString      = null;
         String lonString      = null;
         String encodedAddress = StringUtil.replace(address, " ", "%20");
-
+        String name = null;
 
 
         if (googleKey != null) {
@@ -456,53 +454,24 @@ public class GeoUtils {
                     "https://maps.googleapis.com/maps/api/geocode/json?address="
                     + encodedAddress + "&key=" + googleKey;
                 String result = IOUtil.readContents(url, GeoUtils.class);
-                //                System.err.println("url:" + url);
-                ///                System.err.println("result:" + result);
-
-                //                    "lng" : -105.226021
+                name = StringUtil.findPattern(result,"\"formatted_address\"\\s*:\\s*\"([^\"]+)\"");
                 latString = StringUtil.findPattern(result,
                         "\"lat\"\\s*:\\s*([-\\d\\.]+),");
                 lonString = StringUtil.findPattern(result,
                         "\"lng\"\\s*:\\s*([-\\d\\.]+)\\s*");
-                //                System.err.println(result);
-                System.err.println("address:" + address + " loc:" + latString
-                                   + " " + lonString);
             } catch (Exception exc) {
                 System.err.println("exc:" + exc);
             }
         }
-        /*
-     try {
-         String url = "http://gws2.maps.yahoo.com/findlocation?q="
-                      + encodedAddress;
-         System.err.println("yahoo:" + url);
-         String  result  = IOUtil.readContents(url, GeoUtils.class);
-         System.err.println("yahoo:" + result);
-         Element root    = XmlUtil.getRoot(result);
-         Element latNode = XmlUtil.findDescendant(root, "latitude");
-         Element lonNode = XmlUtil.findDescendant(root, "longitude");
-         if ((latNode != null) && (lonNode != null)) {
-             latString = XmlUtil.getChildText(latNode);
-             lonString = XmlUtil.getChildText(lonNode);
-         }
-     } catch (Exception exc) {
-         System.err.println("exc:" + exc);
-     }
-
-         */
-
-
         if ((latString != null) && (lonString != null)) {
-            location = new double[] { Double.parseDouble(latString),
-                                      Double.parseDouble(lonString) };
-            addressToLocation.put(address, location);
+            place  = new Place(name==null?address:name, new Double(latString), new Double(lonString));
+            addressToLocation.put(address, place);
             if (cacheWriter != null) {
-                cacheWriter.println(address + cacheDelimiter + location[0]
-                                    + cacheDelimiter + location[1]);
+                cacheWriter.println(address + cacheDelimiter + place.getName() + cacheDelimiter +place.getLatitude()
+                                    + cacheDelimiter + place.getLongitude());
                 cacheWriter.flush();
             }
-
-            return location;
+            return place;
         } else {
             if (cacheWriter != null) {
                 cacheWriter.println(address + cacheDelimiter + Double.NaN

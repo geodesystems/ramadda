@@ -240,6 +240,10 @@ color:#000;
 }
 
 
+.baseLayersDiv, .dataLayersDiv {
+   max-height:150px;
+   overflow-y: auto;
+}
 .ramadda-map-animation {
 }
 
@@ -251,6 +255,10 @@ color:#000;
    cursor:pointer;
 }
 .ramadda-map-feature:hover {
+   text-decoration: underline;
+}
+
+.ramadda-div-link:hover {
    text-decoration: underline;
 }
 

@@ -11,6 +11,7 @@
      <api request="/clearstate"       method="processClearState"/>
      <api request="/docs"             method="processDocs"/>
      <api request="/colortables"      method="processColorTables"/>
+     <api request="/geocode"          method="processGeocode"/>
   </group>
 
   <group handler="entrymanager">

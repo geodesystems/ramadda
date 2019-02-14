@@ -57,25 +57,27 @@ public class Place {
 
     /** _more_ */
     public static final Resource[] RESOURCES = {
-        //name,id,fips,lat,lon,opt state index
+        //name,id,fips,lat,lon,opt state index,suffix
+        new Resource(RESOURCE_ROOT + "/alllocations.txt", new int[] { 0, 0, -1, 1,
+                                                                2, }, ""),
         new Resource(RESOURCE_ROOT + "/states.txt", new int[] { 1, 0, 2, 3,
-                4 }, ""),
+                                                                4, }, ""),
         new Resource(RESOURCE_ROOT + "/counties.txt", new int[] { 3, 1, 1, 10,
-                11 }, ""),
+                                                                  11,-1,0 }, ""),
         new Resource(RESOURCE_ROOT + "/subdivisions.txt", new int[] { 3, 1, 1,
-                11, 12 }, ""),
+                                                                      11, 12,-1,0 }, ""),
         //new Resource(RESOURCE_ROOT +"/districts.txt",new int[]{},""),
         new Resource(RESOURCE_ROOT + "/places.txt", new int[] { 3, 1, 1, 12,
-                13 }, ""),
+                                                                13,-1,0 }, ""),
         //#GEOID        NAME    UATYPE  POP10   HU10    ALAND   AWATER  ALAND_SQMI      AWATER_SQMI     INTPTLAT        INTPTLONG
-        new Resource(RESOURCE_ROOT + "/urbanareas.txt", new int[] { 1, 0, 0,
-                9, 10 }, "urban:"),
+        //        new Resource(RESOURCE_ROOT + "/urbanareas.txt", new int[] { 1, 0, 0,
+        //                9, 10 }, "urban:"),
         //#GEOID        POP10   HU10    ALAND   AWATER  ALAND_SQMI      AWATER_SQMI     INTPTLAT        INTPTLONG
         new Resource(RESOURCE_ROOT + "/zipcodes.txt", new int[] { 0, 0, 0, 7,
                 8 }, "zip:"),
         //#USPS GEOID   POP10   HU10    ALAND   AWATER  ALAND_SQMI      AWATER_SQMI     INTPTLAT        INTPTLONG
-        new Resource(RESOURCE_ROOT + "/tracts.txt", new int[] { 1, 1, 1, 8,
-                9 }, "")
+        //        new Resource(RESOURCE_ROOT + "/tracts.txt", new int[] { 1, 1, 1, 8,
+        //                9 }, "")
     };
 
     //        { 0, 1, 0, 7, 8 }
@@ -147,8 +149,15 @@ public class Place {
     /** _more_ */
     private String from;
 
+    private String label;
+    
+
     /** _more_ */
     private String name;
+
+    private String suffix;
+    
+    private String _name;
 
     /** _more_ */
     private String id;
@@ -168,6 +177,13 @@ public class Place {
      */
     public Place() {}
 
+    public Place(String name, double lat, double lon) {
+        this.id = name;
+        this.name = name;
+        this.latitude = lat;
+        this.longitude = lon;
+    }
+
 
 
     /**
@@ -181,11 +197,12 @@ public class Place {
      * @param lonIndex _more_
      */
     public void processLine(List<String> toks, int nameIndex, int idIndex,
-                            int fipsIndex, int latIndex, int lonIndex) {
+                            int fipsIndex, int latIndex, int lonIndex, int suffixIndex) {
         if (fipsIndex >= toks.size()) {
             return;
         }
-        String fips = toks.get(fipsIndex);
+        String fips = fipsIndex<0?"":toks.get(fipsIndex);
+        suffix = suffixIndex>=0?toks.get(suffixIndex):null;
         setName(toks.get(nameIndex));
         setId(toks.get(idIndex));
         setFips(fips);
@@ -222,6 +239,7 @@ public class Place {
      */
     public void setName(String value) {
         name = value;
+        _name = name.toLowerCase();
     }
 
     /**
@@ -239,7 +257,7 @@ public class Place {
      * @return _more_
      */
     public String toString() {
-        return from + " name:" + name + " id:" + id + " fips:" + fips
+        return " name:" + name + " id:" + id + " fips:" + fips
                + " lat:" + latitude + " lon:" + longitude;
     }
 
@@ -417,10 +435,11 @@ public class Place {
                             Place place = new Place();
                             resource.places.add(place);
                             place.from = resource.id;
+                            int suffix = indices.length>=7?indices[6]:-1;
                             place.processLine(StringUtil.split(line, "\t",
                                     false, false), indices[0], indices[1],
-                                        indices[2], indices[3], indices[4]);
-                            if (indices.length >= 6) {
+                                              indices[2], indices[3], indices[4],suffix);
+                            if (indices.length >= 6 && indices[5]>=0) {
                                 place.fips = place.fips.substring(indices[5]);
                             }
                             tmp.add(place);
@@ -485,6 +504,20 @@ public class Place {
         return getPlace(id, null);
     }
 
+    public static List<Place> search(String s, int max) throws Exception {
+        getPlaces("alllocations");
+        List<Place> result = new ArrayList<Place>();
+        s = s.toLowerCase();
+        for(Place place: places) {
+            if(place._name == null)  continue;
+            if(place._name.startsWith(s)) {
+                result.add(place);
+                if(result.size()>max) break;
+            }
+        }
+        return result;
+    }
+
     /**
      * _more_
      *
@@ -531,16 +564,23 @@ public class Place {
      * @throws Exception _more_
      */
     public static void main(String[] args) throws Exception {
-        List<Place> places = getPlacesForResource(args[0]);
+        System.err.println(search("boulder",50));
+        if(true) return;
+        List<Place> places = getPlacesForResource(args.length>0?args[0]:null);
+        //        List<Place> places = getPlaces();
         if (places == null) {
-            System.err.println("no resource:" + args[0]);
+            System.err.println("no resource:");
+            
 
             return;
         }
-        System.out.println("fips,name");
+        System.out.println("#name,lat,lon");
         for (Place place : places) {
             if (place.fips != null) {
-                System.out.println(place.fips + "," + place.name);
+                String label = place.name ;
+                if(place.suffix!=null)
+                    label+="," + place.suffix;
+                System.out.println(label + "\t" +place.latitude +"\t" + place.longitude);
             }
         }
     }

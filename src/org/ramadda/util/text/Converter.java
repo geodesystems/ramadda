@@ -18,6 +18,7 @@ package org.ramadda.util.text;
 
 
 import org.ramadda.util.GeoUtils;
+import org.ramadda.util.Place;
 
 
 import org.ramadda.util.Utils;
@@ -1415,13 +1416,12 @@ public abstract class Converter extends Processor {
             double lat = Double.NaN;
             double lon = Double.NaN;
             if (key != null) {
-                double[] bounds = null;
+                Place place = null;
                 if (doAddress) {
-                    bounds = GeoUtils.getLocationFromAddress(key.toString());
-                    //                    System.err.println("key:" + key + " b:" + bounds);
+                    place = GeoUtils.getLocationFromAddress(key.toString());
                 } else {
                     String tok = key.toString();
-                    bounds = map.get(tok);
+                    double[]bounds = map.get(tok);
                     if (bounds == null) {
                         bounds = map.get(tok.replaceAll("-.*$", ""));
                     }
@@ -1443,15 +1443,13 @@ public abstract class Converter extends Processor {
                             }
                         }
                     }
-                }
-                if (bounds != null) {
-                    if (bounds.length == 2) {
-                        lat = bounds[0];
-                        lon = bounds[1];
-                    } else {
-                        lat = bounds[2] + (bounds[0] - bounds[2]) / 2.0;
-                        lon = bounds[1] + (bounds[3] - bounds[1]) / 2.0;
+                    if (bounds!= null) {
+                        place = new Place("", bounds[0],bounds[1]);
                     }
+                }
+                if (place!=null) {
+                    lat = place.getLatitude();
+                    lon = place.getLongitude();
                 }
             }
             if (writeForDb) {

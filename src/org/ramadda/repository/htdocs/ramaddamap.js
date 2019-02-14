@@ -207,7 +207,7 @@ function RepositoryMap(mapId, params) {
 
 function initMapFunctions(theMap) {
     RamaddaUtil.defineMembers(theMap, {
-     
+
         finishMapInit: function() {
             let _this = this;
             if (this.showSearch) {
@@ -230,16 +230,16 @@ function initMapFunctions(theMap) {
             //events at the start
             var callback = function() {
                 _this.map.events.register("changebaselayer", "", function() {
-                        _this.baseLayerChanged();
-                    });
+                    _this.baseLayerChanged();
+                });
                 _this.map.events.register("zoomend", "", function() {
-                        _this.locationChanged();
-                    });
+                    _this.locationChanged();
+                });
                 _this.map.events.register("moveend", "", function() {
-                        _this.locationChanged();
-                    });
+                    _this.locationChanged();
+                });
             };
-            setTimeout(callback,2000);
+            setTimeout(callback, 2000);
 
             if (this.mapHidden) {
                 //A hack when we are hidden
@@ -256,36 +256,36 @@ function initMapFunctions(theMap) {
                 this.addGeoJsonLayer(this.geojsonLayerName, url, false, null, null, null, null);
             }
         },
-        locationChanged:function() {
-                var latlon = this.transformProjBounds(this.map.getExtent());
-                var bounds = "map_bounds=" +latlon.top+","+latlon.left +"," + latlon.bottom +"," + latlon.right;
-                var url = ""+window.location;
-                url = url.replace(/\&?map_bounds=[-\d\.]+,[-\d\.]+,[-\d\.]+,[-\d\.]+/g,"");
-                if(!url.includes("?")) url+="?";
-                url +="&" + bounds;
-                try {
-                    if(window.history.replaceState)
-                        window.history.replaceState("", "", url);
-                } catch(e) {
-                    console.log("err:" + e);
-              }
+        locationChanged: function() {
+            var latlon = this.transformProjBounds(this.map.getExtent());
+            var bounds = "map_bounds=" + latlon.top + "," + latlon.left + "," + latlon.bottom + "," + latlon.right;
+            var url = "" + window.location;
+            url = url.replace(/\&?map_bounds=[-\d\.]+,[-\d\.]+,[-\d\.]+,[-\d\.]+/g, "");
+            if (!url.includes("?")) url += "?";
+            url += "&" + bounds;
+            try {
+                if (window.history.replaceState)
+                    window.history.replaceState("", "", url);
+            } catch (e) {
+                console.log("err:" + e);
+            }
         },
-        baseLayerChanged:function() {
-                var baseLayer = this.map.baseLayer;
-                if(!baseLayer) return;
-                baseLayer = baseLayer.ramaddaId;
-                var latlon = this.transformProjBounds(this.map.getExtent());
-                var arg = "map_layer=" +baseLayer;
-                var url = ""+window.location;
-                url = url.replace(/\&?map_layer=[a-z\.]+/g,"");
-                if(!url.includes("?")) url+="?";
-                url +="&" + arg;
-                try {
-                    if(window.history.replaceState)
-                        window.history.replaceState("", "", url);
-                } catch(e) {
-                    console.log("err:" + e);
-                }
+        baseLayerChanged: function() {
+            var baseLayer = this.map.baseLayer;
+            if (!baseLayer) return;
+            baseLayer = baseLayer.ramaddaId;
+            var latlon = this.transformProjBounds(this.map.getExtent());
+            var arg = "map_layer=" + baseLayer;
+            var url = "" + window.location;
+            url = url.replace(/\&?map_layer=[a-z\.]+/g, "");
+            if (!url.includes("?")) url += "?";
+            url += "&" + arg;
+            try {
+                if (window.history.replaceState)
+                    window.history.replaceState("", "", url);
+            } catch (e) {
+                console.log("err:" + e);
+            }
         },
         setMapDiv: function(divid) {
             this.mapHidden = false;
@@ -402,7 +402,7 @@ function initMapFunctions(theMap) {
             feature.renderIntent = null;
             feature.isSelected = false;
             layer = feature.layer;
-            if(!layer) return;
+            if (!layer) return;
             layer.drawFeature(layer.selectedFeature, layer.selectedFeature.style || "default");
             layer.selectedFeature.isSelected = false;
             layer.selectedFeature = null;
@@ -461,8 +461,8 @@ function initMapFunctions(theMap) {
                 new OpenLayers.Size(width, height), {
                     numZoomLevels: 3,
                     isBaseLayer: theArgs.isBaseLayer,
-                        resolutions: this.map.layers[0]?this.map.layers[0].resolutions:null,
-                        maxResolution: this.map.layers[0]?this.map.layers[0].resolutions[0]:null
+                    resolutions: this.map.layers[0] ? this.map.layers[0].resolutions : null,
+                    maxResolution: this.map.layers[0] ? this.map.layers[0].resolutions[0] : null
                 }
             );
 
@@ -1681,73 +1681,8 @@ function initMapFunctions(theMap) {
                 }));
             }
         }
-        var input = HtmlUtils.span(["style","padding-right:4px;","id",this.mapDivId+"_loc_search_wait"],"") + HtmlUtils.input("","",["placeholder","Search location","id",this.mapDivId+"_loc_search"])
-        $("#" + this.mapDivId + "_footer2").html(input);
-        let searchInput = $("#"+this.mapDivId+"_loc_search");
-        let searchPopup = $("#"+this.mapDivId+"_loc_popup");
-        let wait = $("#" + this.mapDivId + "_loc_search_wait");
-        searchInput.blur(function(e) {
-                setTimeout(function(){
-                        wait.html("");
-                        searchPopup.hide();},500);
-            });
-        searchInput.keypress(function(e) {
-                var keyCode = e.keyCode || e.which;
-                if (keyCode == 27) {
-                    searchPopup.hide();
-                    return;
-                }
-                if (keyCode != 13) {
-                    return;
-                }
-                wait.html(HtmlUtils.image(ramaddaBaseUrl+"/icons/wait.gif"));
-                var url = ramaddaBaseUrl + "/geocode?query=" +  encodeURIComponent(searchInput.val());
-                var jqxhr = $.getJSON(url, function(data) {
-                        wait.html("");
-                        var result=HtmlUtils.openTag("div",["style","max-height:400px;overflow-y:auto;"]);
-                        if(data.result.length==0) {
-                            wait.html("Nothing found");
-                            return;
-                        } else {
-                            if(data.result.length == 1) {
-                                var lat = data.result[0].latitude;
-                                var lon = data.result[0].longitude;
-                                var offset =0.05;
-                                var bounds = _this.transformLLBounds(createBounds(lon - offset, lat - offset, lon + offset, lat + offset));
-                                _this.map.zoomToExtent(bounds);
-                                return;
-                            }
-                            for(var i=0;i<data.result.length;i++) {
-                                result += HtmlUtils.div(["style","padding:4px;","class","ramadda-div-link","latitude",data.result[i].latitude,"longitude",data.result[i].longitude],data.result[i].name);
-                            }
-                        }
-                        var my = "left bottom";
-                        var at = "left top";
-                        result+=HtmlUtils.closeTag("div");
-                        searchPopup.html(result);
-                        popupObject = GuiUtils.getDomObject(_this.mapDivId+"_loc_popup");
-                        searchPopup.show();
-                        searchPopup.position({
-                                of: searchInput,
-                                    my: my,
-                                    at: at,
-                                    collision: "fit fit"
-                                    });
-                        searchPopup.find("div").click(function(){
-                                searchPopup.hide();
-                                var lat = parseFloat($(this).attr("latitude"));
-                                var lon = parseFloat($(this).attr("longitude"));
-                                var offset =0.05;
-                                var bounds = _this.transformLLBounds(createBounds(lon - offset, lat - offset, lon + offset, lat + offset));
-                                _this.map.zoomToExtent(bounds);
+        this.initLocationSearch();
 
-                            });
-                    }).fail(function(jqxhr, textStatus, error) {
-                            wait.html("Error:" + textStatus);
-                        });
-            });
-
-        //        this.defaultLocation =  createLonLat(-105,40);
         if (this.defaultLocation && !this.defaultBounds) {
             var center = this.defaultLocation;
             var offset = 10.0;
@@ -1794,6 +1729,78 @@ function initMapFunctions(theMap) {
             //                cbx.prop("checked", cbxall.is(':checked')).trigger("change");
         });
     }
+
+    theMap.initLocationSearch= function() {
+        let _this = this;
+
+        var input = HtmlUtils.span(["style", "padding-right:4px;", "id", this.mapDivId + "_loc_search_wait"], "") + HtmlUtils.input("", "", ["placeholder", "Search location", "id", this.mapDivId + "_loc_search"])
+        $("#" + this.mapDivId + "_footer2").html(input);
+        let searchInput = $("#" + this.mapDivId + "_loc_search");
+        let searchPopup = $("#" + this.mapDivId + "_loc_popup");
+        let wait = $("#" + this.mapDivId + "_loc_search_wait");
+        searchInput.blur(function(e) {
+            setTimeout(function() {
+                wait.html("");
+                searchPopup.hide();
+            }, 500);
+        });
+        searchInput.keypress(function(e) {
+            var keyCode = e.keyCode || e.which;
+            if (keyCode == 27) {
+                searchPopup.hide();
+                return;
+            }
+            if (keyCode != 13) {
+                return;
+            }
+            wait.html(HtmlUtils.image(icon_wait));
+            var url = ramaddaBaseUrl + "/geocode?query=" + encodeURIComponent(searchInput.val());
+            var jqxhr = $.getJSON(url, function(data) {
+                wait.html("");
+                var result = HtmlUtils.openTag("div", ["style", "max-height:400px;overflow-y:auto;"]);
+                if (data.result.length == 0) {
+                    wait.html("Nothing found");
+                    return;
+                } else {
+                    if (data.result.length == 1) {
+                        var lat = data.result[0].latitude;
+                        var lon = data.result[0].longitude;
+                        var offset = 0.05;
+                        var bounds = _this.transformLLBounds(createBounds(lon - offset, lat - offset, lon + offset, lat + offset));
+                        _this.map.zoomToExtent(bounds);
+                        return;
+                    }
+                    for (var i = 0; i < data.result.length; i++) {
+                        result += HtmlUtils.div(["style", "padding:4px;", "class", "ramadda-div-link", "latitude", data.result[i].latitude, "longitude", data.result[i].longitude], data.result[i].name);
+                    }
+                }
+                var my = "left bottom";
+                var at = "left top";
+                result += HtmlUtils.closeTag("div");
+                searchPopup.html(result);
+                popupObject = GuiUtils.getDomObject(_this.mapDivId + "_loc_popup");
+                searchPopup.show();
+                searchPopup.position({
+                    of: searchInput,
+                    my: my,
+                    at: at,
+                    collision: "fit fit"
+                });
+                searchPopup.find("div").click(function() {
+                    searchPopup.hide();
+                    var lat = parseFloat($(this).attr("latitude"));
+                    var lon = parseFloat($(this).attr("longitude"));
+                    var offset = 0.05;
+                    var bounds = _this.transformLLBounds(createBounds(lon - offset, lat - offset, lon + offset, lat + offset));
+                    _this.map.zoomToExtent(bounds);
+
+                });
+            }).fail(function(jqxhr, textStatus, error) {
+                wait.html("Error:" + error);
+            });
+        });
+    }
+
 
 
     theMap.addVectorLayer = function(layer, canSelect) {
@@ -2949,10 +2956,10 @@ function initMapFunctions(theMap) {
     theMap.addPolygon = function(id, name, points, attrs, marker) {
         var _this = this;
         var location;
-        if(points.length>1) {
-            location = new OpenLayers.LonLat(points[0].x+(points[1].x-points[0].x)/2,
-                                             points[0].y+(points[1].y-points[0].y)/2);
-        } else  {
+        if (points.length > 1) {
+            location = new OpenLayers.LonLat(points[0].x + (points[1].x - points[0].x) / 2,
+                points[0].y + (points[1].y - points[0].y) / 2);
+        } else {
             location = new OpenLayers.LonLat(points[0].x, points[0].y);
         }
         for (var i = 0; i < points.length; i++) {
@@ -2971,7 +2978,7 @@ function initMapFunctions(theMap) {
         }
 
         if (!this.lines) {
-   
+
             this.lines = new OpenLayers.Layer.Vector("Lines", {
                 style: base_style
             });
@@ -2984,9 +2991,9 @@ function initMapFunctions(theMap) {
          * line.events.register("click", line, function (e) { alert("box
          * click"); _this.showMarkerPopup(box); OpenLayers.Event.stop(evt); });
          */
-        line.text =marker;
+        line.text = marker;
         line.ramaddaId = id;
-        line.location  = location;
+        line.location = location;
         line.name = name;
         var visible = this.isLayerVisible(line.ramaddaId);
         if (visible) {

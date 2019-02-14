@@ -13,6 +13,7 @@ var icon_rightdart = ramaddaBaseUrl + "/icons/rightdart.gif";
 var icon_downdart = ramaddaBaseUrl + "/icons/application_side_contract.png";
 var icon_rightdart = ramaddaBaseUrl + "/icons/application_side_expand.png";
 var icon_progress = ramaddaBaseUrl + "/icons/progress.gif";
+var icon_wait = ramaddaBaseUrl + "/icons/wait.gif";
 var icon_information = ramaddaBaseUrl + "/icons/information.png";
 var icon_folderclosed = ramaddaBaseUrl + "/icons/folderclosed.png";
 var icon_folderopen = ramaddaBaseUrl + "/icons/togglearrowdown.gif";
