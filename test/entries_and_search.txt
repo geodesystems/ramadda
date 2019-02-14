@@ -175,7 +175,6 @@ https://geodesystems.com/repository/grid/json?location.longitude=%24%7Blongitude
 https://geodesystems.com/repository/grid/json?location.longitude=%24%7Blongitude%7D&output=data.gridaspoint&entryid=b835f612-5975-468f-86af-16e1a8e25219&location.latitude=%24%7Blatitude%7D&format=json
 https://geodesystems.com/repository/metadata/list?metadata.type=enum_tag&response=json&type=cloud
 https://geodesystems.com/repository/search/do?max=50&output=json&skip=0
-https://geodesystems.com/repository/search/do?max=50&output=json&skip=0&group=168bf58d-855d-4c58-8a0a-8c55ca420c7e
 https://geodesystems.com/repository/search/do?max=50&output=json&skip=0&group=66e17bbf-cdef-40b6-a875-e035c98072c3
 https://geodesystems.com/repository/search/do?max=50&output=json&skip=0&group=66e17bbf-cdef-40b6-a875-e035c98072c3&text=age
 https://geodesystems.com/repository/search/do?max=50&output=json&skip=0&group=f1e1dff1-1dfd-47be-be91-39d96f4b55f7

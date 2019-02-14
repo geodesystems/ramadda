@@ -1,4 +1,7 @@
 #This is a list of URLS that should all fail
+fail:https://geodesystems.com/repository/entry/show?entryid=2cdcb37a-0c18-4ccf-96a4-8e84b79dbefe
+fail:https://geodesystems.com/repository/entry/form?entryid=2cdcb37a-0c18-4ccf-96a4-8e84b79dbefe
+fail:https://geodesystems.com/repository/entry/form?entryid=2cdcb37a-0c18-4ccf-96a4-8e84b79dbefe
 fail:https://geodesystems.com/admin
 fail:https://geodesystems.com/repository/admin/settings
 https://geodesystems.com/repository/user/home

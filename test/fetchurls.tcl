@@ -2,7 +2,20 @@ set urls [list]
 set ::loop 0 
 
 
+set ::out /dev/null
+set nextOut 0
 foreach file $argv {
+    if {$nextOut} {
+        set ::out $file
+        set nextOut 0
+        continue
+    }
+
+    if {$file == "-out"} {
+        set nextOut 1
+        continue;
+    }
+
     if {$file == "-loop"} {
         set ::loop 1
         continue;
@@ -57,12 +70,13 @@ for {set i 0} {$i < $max} {incr i} {
         if {[regexp {fail:(.*)} $url match url]} {
             set expectingFail 1;
         }
-        set failed [catch {exec curl -f -silent -o test.out $url} err]
+        set failed [catch {exec curl -f -silent -o $::out $url} err]
         if {$failed} {
             if {$expectingFail} {
 #                puts "OK: Was expecting a failure for: $url"
             } else  {
                 puts "*** Error (failed): $err   URL: $url"
+                exit;
                 incr errors
                 if {$errors>10} {
                     puts "Too many errors"
