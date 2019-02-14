@@ -1494,6 +1494,7 @@ function initMapFunctions(theMap) {
 
         }
 
+
         this.graticule = new OpenLayers.Control.Graticule({
             layerName: "Lat/Lon Lines",
             numPoints: 2,
@@ -1605,6 +1606,8 @@ function initMapFunctions(theMap) {
             }));
         }
 
+
+
         /*this.map.addControl(new OpenLayers.Control.TouchNavigation({
             dragPanOptions: {
                 enableKinetic: true
@@ -1678,12 +1681,71 @@ function initMapFunctions(theMap) {
                 }));
             }
         }
+        var input = HtmlUtils.span(["style","padding-right:4px;","id",this.mapDivId+"_loc_search_wait"],"") + HtmlUtils.input("","",["placeholder","Search location","id",this.mapDivId+"_loc_search"])
+        $("#" + this.mapDivId + "_footer2").html(input);
+        let searchInput = $("#"+this.mapDivId+"_loc_search");
+        let searchPopup = $("#"+this.mapDivId+"_loc_popup");
+        let wait = $("#" + this.mapDivId + "_loc_search_wait");
+        searchInput.blur(function(e) {
+                setTimeout(function(){
+                        wait.html("");
+                        searchPopup.hide();},500);
+            });
+        searchInput.keypress(function(e) {
+                var keyCode = e.keyCode || e.which;
+                if (keyCode == 27) {
+                    searchPopup.hide();
+                    return;
+                }
+                if (keyCode != 13) {
+                    return;
+                }
+                wait.html(HtmlUtils.image(ramaddaBaseUrl+"/icons/wait.gif"));
+                var url = ramaddaBaseUrl + "/geocode?query=" +  encodeURIComponent(searchInput.val());
+                var jqxhr = $.getJSON(url, function(data) {
+                        wait.html("");
+                        var result=HtmlUtils.openTag("div",["style","max-height:400px;overflow-y:auto;"]);
+                        if(data.result.length==0) {
+                            wait.html("Nothing found");
+                            return;
+                        } else {
+                            if(data.result.length == 1) {
+                                var lat = data.result[0].latitude;
+                                var lon = data.result[0].longitude;
+                                var offset =0.05;
+                                var bounds = _this.transformLLBounds(createBounds(lon - offset, lat - offset, lon + offset, lat + offset));
+                                _this.map.zoomToExtent(bounds);
+                                return;
+                            }
+                            for(var i=0;i<data.result.length;i++) {
+                                result += HtmlUtils.div(["style","padding:4px;","class","ramadda-div-link","latitude",data.result[i].latitude,"longitude",data.result[i].longitude],data.result[i].name);
+                            }
+                        }
+                        var my = "left bottom";
+                        var at = "left top";
+                        result+=HtmlUtils.closeTag("div");
+                        searchPopup.html(result);
+                        popupObject = GuiUtils.getDomObject(_this.mapDivId+"_loc_popup");
+                        searchPopup.show();
+                        searchPopup.position({
+                                of: searchInput,
+                                    my: my,
+                                    at: at,
+                                    collision: "fit fit"
+                                    });
+                        searchPopup.find("div").click(function(){
+                                searchPopup.hide();
+                                var lat = parseFloat($(this).attr("latitude"));
+                                var lon = parseFloat($(this).attr("longitude"));
+                                var offset =0.05;
+                                var bounds = _this.transformLLBounds(createBounds(lon - offset, lat - offset, lon + offset, lat + offset));
+                                _this.map.zoomToExtent(bounds);
 
-
-        if (this.initialBoxes) {
-            this.initBoxes(this.initialBoxes);
-            this.initialBoxes = null;
-        }
+                            });
+                    }).fail(function(jqxhr, textStatus, error) {
+                            wait.html("Error:" + textStatus);
+                        });
+            });
 
         //        this.defaultLocation =  createLonLat(-105,40);
         if (this.defaultLocation && !this.defaultBounds) {
