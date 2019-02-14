@@ -2058,6 +2058,9 @@ function initMapFunctions(theMap) {
         if (!extentBounds) {
             extentBounds = this.maxExtent;
         }
+        if (!extentBounds) {
+            return bounds;
+        }
         /*
          * if (extentBounds.left < 0) { // map is -180 to 180 if (bounds.right >
          * 180) { //bounds is 0 to 360 newLeft = bounds.left-360; newRight =
