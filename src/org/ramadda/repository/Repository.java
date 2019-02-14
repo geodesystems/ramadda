@@ -26,6 +26,8 @@ import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.impl.client.HttpClients;
 
+import org.json.*;
+
 
 
 import org.ramadda.repository.admin.Admin;
@@ -70,12 +72,12 @@ import org.ramadda.repository.util.ServerInfo;
 
 
 import org.ramadda.service.Service;
-import org.ramadda.util.Place;
 import org.ramadda.util.CategoryBuffer;
 import org.ramadda.util.GeoUtils;
 import org.ramadda.util.HtmlUtils;
 import org.ramadda.util.Json;
 import org.ramadda.util.MyTrace;
+import org.ramadda.util.Place;
 
 
 
@@ -3050,7 +3052,9 @@ public class Repository extends RepositoryBase implements RequestHandler,
                     sb.append(
                         child.getTypeHandler().getEntryResourceHref(
                             request, child));
-                    sb.append(formatFileLength(entry.getResource().getFileSize(),true));
+                    sb.append(
+                        formatFileLength(
+                            entry.getResource().getFileSize(), true));
                     sb.append(HtmlUtils.br());
                     didOne = true;
                 }
@@ -5497,25 +5501,74 @@ public class Repository extends RepositoryBase implements RequestHandler,
         return new Result("", sb);
     }
 
+    /**
+     * _more_
+     *
+     * @param request _more_
+     *
+     * @return _more_
+     *
+     * @throws Exception _more_
+     */
     public Result processGeocode(Request request) throws Exception {
-        StringBuilder sb = new StringBuilder();
-        String q = request.getString("query","");
-        List<String> objs = new ArrayList<String>();
-        Place place1 = GeoUtils.getLocationFromAddress(q);
-        HashSet<String> seen = new HashSet<String>();
-        if(place1 !=null) {
+        StringBuilder   sb     = new StringBuilder();
+        String          q      = request.getString("query", "");
+        List<String>    objs   = new ArrayList<String>();
+        Place           place1 = GeoUtils.getLocationFromAddress(q);
+        HashSet<String> seen   = new HashSet<String>();
+        if (place1 != null) {
             seen.add(place1.getName());
-            objs.add(Json.map("name",Json.quote(place1.getName()),"latitude", ""+place1.getLatitude(),"longitude",""+place1.getLongitude()));
+            objs.add(Json.map("name", Json.quote(place1.getName()),
+                              "latitude", "" + place1.getLatitude(),
+                              "longitude", "" + place1.getLongitude()));
         }
-        List<Place> places = Place.search(q,25);
-        for(Place place: places) {
-            if(seen.contains(place.getName())) continue;
+        List<Place> places = Place.search(q, 25);
+        for (Place place : places) {
+            if (seen.contains(place.getName())) {
+                continue;
+            }
             seen.add(place.getName());
-            objs.add(Json.map("name",Json.quote(place.getName()),"latitude", ""+place.getLatitude(),"longitude",""+place.getLongitude()));
+            objs.add(Json.map("name", Json.quote(place.getName()),
+                              "latitude", "" + place.getLatitude(),
+                              "longitude", "" + place.getLongitude()));
         }
 
-        sb.append(Json.map("result",Json.list(objs)));
-        return  new Result("", sb, Json.MIMETYPE);
+        String encodedq = StringUtil.replace(q, " ", "%20");
+
+        String dbUrl =
+            "https://geodesystems.com/repository/entry/show?entryid=e71b0cc7-6740-4cf5-8e4b-61bd45bf883e&db.search=Search&search.db_us_places.feature_name="
+            + encodedq + "&db.view=json&max=50";
+
+        try {
+            JSONObject json    = Json.readUrl(dbUrl);
+            JSONArray  results = Json.readArray(json, "results");
+            if (results != null) {
+                for (int i = 0; i < results.length(); i++) {
+                    JSONObject result = results.getJSONObject(i);
+                    String     name   = result.get("feature_name").toString();
+                    String fclass     =
+                        result.get("feature_class").toString();
+                    String     state  = result.get("state_alpha").toString();
+                    String     county = result.get("county_name").toString();
+                    List<String> toks = StringUtil.splitUpTo(
+                                            result.get(
+                                                "location").toString(), "|",
+                                                    2);
+                    objs.add(Json.map("name",
+                                      Json.quote(name + " (" + fclass + ") "
+                                          + county + ", "
+                                          + state), "latitude", toks.get(0),
+                                              "longitude", toks.get(1)));
+                }
+            }
+        } catch (Exception exc) {
+            exc.printStackTrace();
+            System.err.println("Error:" + exc);
+
+        }
+        sb.append(Json.map("result", Json.list(objs)));
+
+        return new Result("", sb, Json.MIMETYPE);
     }
 
 

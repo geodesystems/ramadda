@@ -1765,7 +1765,7 @@ function initMapFunctions(theMap) {
                     if (data.result.length == 1) {
                         var lat = data.result[0].latitude;
                         var lon = data.result[0].longitude;
-                        var offset = 0.05;
+                        var offset = 0.1;
                         var bounds = _this.transformLLBounds(createBounds(lon - offset, lat - offset, lon + offset, lat + offset));
                         _this.map.zoomToExtent(bounds);
                         return;
@@ -1786,11 +1786,11 @@ function initMapFunctions(theMap) {
                     at: at,
                     collision: "fit fit"
                 });
-                searchPopup.find("div").click(function() {
+                searchPopup.find(".ramadda-div-link").click(function() {
                     searchPopup.hide();
                     var lat = parseFloat($(this).attr("latitude"));
                     var lon = parseFloat($(this).attr("longitude"));
-                    var offset = 0.05;
+                    var offset = 0.1;
                     var bounds = _this.transformLLBounds(createBounds(lon - offset, lat - offset, lon + offset, lat + offset));
                     _this.map.zoomToExtent(bounds);
 
