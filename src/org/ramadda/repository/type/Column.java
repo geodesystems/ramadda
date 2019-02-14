@@ -685,8 +685,6 @@ public class Column implements DataTypes, Constants {
         col.add(Json.quote(getName()));
         col.add("label");
         col.add(Json.quote(getLabel()));
-        col.add("name");
-        col.add(Json.quote(getName()));
         col.add("type");
         col.add(Json.quote(getType()));
         col.add("namespace");
