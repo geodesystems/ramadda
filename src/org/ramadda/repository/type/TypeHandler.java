@@ -284,8 +284,6 @@ public class TypeHandler extends RepositoryManager {
     /** _more_ */
     private static List<DateArgument> dateArgs;
 
-    /** _more_ */
-    private static String tinyMceTemplate;
 
     /** for debugging */
     static int cnt = 0;
@@ -4317,12 +4315,6 @@ public class TypeHandler extends RepositoryManager {
                     boolean isWiki = getProperty(entry,
                                          "form.description.iswiki", false);
 
-                    boolean showHtmlEditor = getProperty(
-                                                 entry,
-                                                 "form.description.html",
-                                                 getRepository().getProperty(
-                                                     "ramadda.edit.html",
-                                                     false));
                     boolean makeWidget = true;
                     if (entry != null) {
                         desc = entry.getDescription();
@@ -4330,7 +4322,6 @@ public class TypeHandler extends RepositoryManager {
                             rows = rows * 2;
                         }
                         if (isWiki || isWikiText(desc)) {
-                            showHtmlEditor = false;
                             makeWidget     = false;
                             if ( !isWiki) {
                                 rows = 50;
@@ -4353,19 +4344,8 @@ public class TypeHandler extends RepositoryManager {
                                                     ARG_DESCRIPTION))));
                     }
 
-                    if (showHtmlEditor) {
-                        sb.append(
-                            HtmlUtils.importJS(
-                                getRepository().getFileUrl(
-                                    "/lib/tiny_mce/tiny_mce.js")));
-                        if (tinyMceTemplate == null) {
-                            tinyMceTemplate = getRepository().getResource(
-                                getRepository().getProperty(
-                                    "ramadda.edit.tinymce",
-                                    "/org/ramadda/repository/resources/web/tinymce.js.template"));
-                        }
-                        sb.append(HtmlUtils.script(tinyMceTemplate));
-                    }
+
+
                 }
 
                 continue;
