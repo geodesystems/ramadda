@@ -30,6 +30,33 @@ h2 a,   h2 a:visited, h2 a:link  {color: black;}
     text-decoration:none;
 }
 
+.ramadda-button-blue {
+   background:#286090;
+   border:1px #286090 solid;
+}
+
+
+a:link.ramadda-button-blue, a:link.ramadda-button-green {
+   color: #fff;
+}
+
+a:link.ramadda-button-blue:hover, a:link.ramadda-button-green:hover {
+   color: #000;
+}
+
+.ramadda-button-green {
+   background:#188fa7;
+   border:1px #188fa7 solid;
+}
+
+
+.ramadda-button-tan {
+   background:#e1b07e;
+   border:1px #e1b07e solid;
+}
+
+
+
 .ramadda-menubar {
   display:inline-block;
   border-top-left-radius: 8px;

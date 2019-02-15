@@ -1061,6 +1061,18 @@ public class WikiUtil {
                 continue;
             }
 
+            if (tline.startsWith(":button")) {
+                List<String> toks  = StringUtil.splitUpTo(tline, " ", 3);
+                String       tag  = toks.get(0).substring(1);
+                String url  = (toks.size()>1?toks.get(1):"");
+                String label  = (toks.size()>2?toks.get(2):url);
+                List<String> toks2 = StringUtil.splitUpTo(tag, "-", 2);
+                String clazz = (toks2.size()>1?toks2.get(1):"");
+                if(clazz.length()>0) clazz= "ramadda-button-" + clazz;
+                HtmlUtils.href(buff,url,label," class='ramadda-button " + clazz +"' role='button' " );
+                continue;
+            }
+
             if (tline.startsWith(":heading") || tline.startsWith(":block")
                     || tline.startsWith(":note") || tline.startsWith(":box")
                     || tline.startsWith(":blurb")
