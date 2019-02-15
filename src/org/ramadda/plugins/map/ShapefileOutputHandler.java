@@ -812,21 +812,24 @@ public class ShapefileOutputHandler extends OutputHandler implements WikiConstan
         //        System.err.println(sb);
 
         if (table) {
-            sb.append("<table border=1>");
+            sb.append("<table border=1 class=ramadda-table>");
+            sb.append("<thead>");
             sb.append("<tr valign=top>");
-            sb.append(HtmlUtils.td(HtmlUtils.b("Field&nbsp;#"),
+            sb.append(HtmlUtils.th(HtmlUtils.b("Field&nbsp;#"),
                                    HtmlUtils.style("padding:5px;")));
             for (DbaseDataWrapper dbd : fieldDatum) {
                 String label = HtmlUtils.mouseClickHref("shapefileSearch('"
                                    + dbd.getName() + "')", dbd.getLabel());
                 sb.append(HtmlUtils
-                    .td(HtmlUtils
+                    .th(HtmlUtils
                         .div(label, HtmlUtils
                             .attr("title", "id:" + dbd.getName()) + HtmlUtils
                             .style("font-weight:bold;padding:5px;text-align:center;")), HtmlUtils
                                 .attr("align", "center")));
             }
             sb.append("</tr>");
+            sb.append("</thead>");
+            sb.append("</thead>");
         } else {
             sb.append("<ul>\n");
         }
@@ -925,6 +928,7 @@ public class ShapefileOutputHandler extends OutputHandler implements WikiConstan
             }
         }
         if (table) {
+            sb.append("</tbody>");
             sb.append("</table>");
         } else {
             sb.append("</ul>");
