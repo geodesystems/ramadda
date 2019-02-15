@@ -1731,10 +1731,11 @@ function initMapFunctions(theMap) {
     }
 
     theMap.initLocationSearch= function() {
+        if(this.selectRegion) return;
         let _this = this;
         var input = HtmlUtils.span(["style", "padding-right:4px;", "id", this.mapDivId + "_loc_search_wait"], "") + 
-        HtmlUtils.checkbox(this.mapDivId + "_loc_bounds",["title","Search in map bounds"],false) +  " In view " +
-        HtmlUtils.input("", "", ["placeholder", "Search location", "id", this.mapDivId + "_loc_search"])
+        HtmlUtils.checkbox(this.mapDivId + "_loc_bounds",["title","Search in map bounds"],false) +  HtmlUtils.span(["title", "Search in map bounds"], " In view ") +
+        HtmlUtils.input("", "", ["title", "^string - matches beginning","size","30", "placeholder", "Search location", "id", this.mapDivId + "_loc_search"])
         $("#" + this.mapDivId + "_footer2").html(input);
         let searchInput = $("#" + this.mapDivId + "_loc_search");
         let bounds = $("#" + this.mapDivId + "_loc_bounds");
@@ -1744,12 +1745,14 @@ function initMapFunctions(theMap) {
             setTimeout(function() {
                 wait.html("");
                 searchPopup.hide();
-            }, 500);
+            }, 250);
         });
-        searchInput.keypress(function(e) {
+        searchInput.on('input', function(e) {
             if(searchInput.val()==""&& _this.searchMarker) {
                  _this.removeMarker(_this.searchMarker);
             }
+        });
+        searchInput.keypress(function(e) {
             var keyCode = e.keyCode || e.which;
             if (keyCode == 27) {
                 searchPopup.hide();
@@ -1774,9 +1777,13 @@ function initMapFunctions(theMap) {
                     if (false && data.result.length == 1) {
                         var lat = data.result[0].latitude;
                         var lon = data.result[0].longitude;
-                        var offset = 0.1;
-                        var bounds = _this.transformLLBounds(createBounds(lon - offset, lat - offset, lon + offset, lat + offset));
-                        _this.map.zoomToExtent(bounds);
+                        var offset = 0.05;
+                        var b = _this.transformProjBounds(_this.map.getExtent());
+
+                        if(Math.abs(b.top-b.bottom)>offset) {
+                            var bounds = _this.transformLLBounds(createBounds(lon - offset, lat - offset, lon + offset, lat + offset));
+                            _this.map.zoomToExtent(bounds);
+                        }
                         return;
                     }
                     for (var i = 0; i < data.result.length; i++) {
@@ -1801,13 +1808,19 @@ function initMapFunctions(theMap) {
                     var name = $(this).attr("name");
                     var lat = parseFloat($(this).attr("latitude"));
                     var lon = parseFloat($(this).attr("longitude"));
-                    var offset = 0.1;
+                    var offset = 0.05;
                     var bounds = _this.transformLLBounds(createBounds(lon - offset, lat - offset, lon + offset, lat + offset));
                     var lonlat = new createLonLat(lon, lat);
                     if(_this.searchMarker) 
                         _this.removeMarker(_this.searchMarker);
                     _this.searchMarker = _this.addMarker("search", lonlat, ramaddaBaseUrl +"/icons/green-dot.png", "", name, 20, 20);
-                    _this.map.zoomToExtent(bounds);
+                    //Only zoom  if its a zoom in
+                    var b = _this.transformProjBounds(_this.map.getExtent());
+                    if(Math.abs(b.top-b.bottom)>offset) {
+                        _this.map.zoomToExtent(bounds); 
+                    } else {
+                        _this.setCenter(createLonLat(lon, lat));
+                    }
                 });
             }).fail(function(jqxhr, textStatus, error) {
                 wait.html("Error:" + error);

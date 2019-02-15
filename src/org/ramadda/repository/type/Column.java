@@ -1915,6 +1915,10 @@ public class Column implements DataTypes, Constants {
         } else if (value.startsWith("=")) {
             value = value.substring(1);
             where.add(Clause.eq(getFullName(), value));
+        } else if (!value.startsWith("%") && value.endsWith("%")) {
+            where.add(getDatabaseManager().makeLikeTextClause(getFullName(),
+                    value, false));
+            where.add(Clause.eq(getFullName(), value));
         } else {
             where.add(getDatabaseManager().makeLikeTextClause(getFullName(),
                     "%" + value + "%", false));

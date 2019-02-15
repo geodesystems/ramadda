@@ -5514,6 +5514,9 @@ public class Repository extends RepositoryBase implements RequestHandler,
     public Result processGeocode(Request request) throws Exception {
         StringBuilder   sb     = new StringBuilder();
         String          q      = request.getString("query", "");
+        boolean startsWith = q.startsWith("^");
+        if(startsWith)
+            q = q.substring(1);
         List<String>    objs   = new ArrayList<String>();
         Bounds bounds = null;
         if(request.defined("bounds")) {
@@ -5528,7 +5531,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
                               "latitude", "" + place1.getLatitude(),
                               "longitude", "" + place1.getLongitude()));
         }
-        List<Place> places = Place.search(q, 25, bounds);
+        List<Place> places = Place.search(q, 25, bounds, startsWith);
         for (Place place : places) {
             if (seen.contains(place.getName())) {
                 continue;
@@ -5539,8 +5542,9 @@ public class Repository extends RepositoryBase implements RequestHandler,
                               "longitude", "" + place.getLongitude()));
         }
 
+        if(startsWith) 
+            q = q+"%";
         String encodedq = StringUtil.replace(q, " ", "%20");
-
         String dbUrl =
             "https://geodesystems.com/repository/entry/show?entryid=e71b0cc7-6740-4cf5-8e4b-61bd45bf883e&db.search=Search&search.db_us_places.feature_name="
             + encodedq + "&db.view=json&max=50";
