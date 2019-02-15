@@ -344,6 +344,37 @@ color:#000;
 
 
 #begin colors
+ .ramadda-background-dimgray , .ramadda-block-dimgray , .ramadda-heading-dimgray , .ramadda-box-dimgray , .ramadda-note-dimgray , .ramadda-blurb-dimgray , .ramadda-callout-dimgray , .ramadda-section-dimgray  {
+   background-color: #696d7d;
+   border: 1px #fff solid;
+}
+
+
+
+ .ramadda-background-metal , .ramadda-block-metal , .ramadda-heading-metal , .ramadda-box-metal , .ramadda-note-metal , .ramadda-blurb-metal , .ramadda-callout-metal , .ramadda-section-metal  {
+   background-color: #6f9283;
+}
+
+
+
+ .ramadda-background-artichoke , .ramadda-block-artichoke , .ramadda-heading-artichoke , .ramadda-box-artichoke , .ramadda-note-artichoke , .ramadda-blurb-artichoke , .ramadda-callout-artichoke , .ramadda-section-artichoke  {
+   background-color: #8d9f87;
+}
+
+
+
+ .ramadda-background-darkvanilla , .ramadda-block-darkvanilla , .ramadda-heading-darkvanilla , .ramadda-box-darkvanilla , .ramadda-note-darkvanilla , .ramadda-blurb-darkvanilla , .ramadda-callout-darkvanilla , .ramadda-section-darkvanilla  {
+   background-color: #cdc6a5;
+}
+
+
+
+ .ramadda-background-almond , .ramadda-block-almond , .ramadda-heading-almond , .ramadda-box-almond , .ramadda-note-almond , .ramadda-blurb-almond , .ramadda-callout-almond , .ramadda-section-almond  {
+   background-color: #f0dcca;
+}
+
+
+
  .ramadda-background-tumbleweed , .ramadda-block-tumbleweed , .ramadda-heading-tumbleweed , .ramadda-box-tumbleweed , .ramadda-note-tumbleweed , .ramadda-blurb-tumbleweed , .ramadda-callout-tumbleweed , .ramadda-section-tumbleweed  {
    background-color: #e1b07e;
 }
@@ -487,6 +518,9 @@ color:#000;
  .ramadda-background-plain , .ramadda-block-plain , .ramadda-heading-plain , .ramadda-box-plain , .ramadda-note-plain , .ramadda-blurb-plain , .ramadda-callout-plain , .ramadda-section-plain  {
    background-color: inherit;
 }
+
+
+
 
 
 

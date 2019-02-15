@@ -981,7 +981,6 @@ var HtmlUtils = {
         return html;
     },
     formatTable: function(id, args) {
-        console.log("fmt");
         $(id).each(function() {
         console.log("table");
                 var options = {

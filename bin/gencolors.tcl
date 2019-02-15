@@ -1,7 +1,12 @@
 
 set colors {
-    tumbleweed:#e1b07e
-    palegold:#e5be9e
+dimgray:#696d7d:#fff
+metal:#6f9283
+artichoke:#8d9f87
+darkvanilla:#cdc6a5
+almond:#f0dcca
+tumbleweed:#e1b07e
+palegold:#e5be9e
 turquoise:#a7cdbd
 vermillion:#d56f3e
 bone:#e2dbbe
