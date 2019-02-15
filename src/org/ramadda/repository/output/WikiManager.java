@@ -993,12 +993,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
 
         String alt = getProperty(wikiUtil, props, HtmlUtils.ATTR_ALT, null);
         if (alt == null) {
-            alt = getProperty(wikiUtil, props, HtmlUtils.ATTR_TITLE, null);
-        }
-
-        if (alt != null) {
-            HtmlUtils.attr(extra, HtmlUtils.ATTR_ALT, alt);
-            HtmlUtils.attr(extra, HtmlUtils.ATTR_TITLE, alt);
+            alt = getProperty(wikiUtil, props, HtmlUtils.ATTR_TITLE, "");
         }
 
         if (wikiUtil != null) {
@@ -1035,8 +1030,8 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
 
 
         String caption = Utils.getProperty(props, "caption", (String) null);
-        String img = HtmlUtils.img(url, getEntryDisplayName(entry),
-                                   extra.toString());
+        String img = HtmlUtils.img(url, alt, extra.toString());
+
         boolean link = Utils.getProperty(props, ATTR_LINK, false);
         String iurl = Utils.getProperty(props, "url",(String) null);
         boolean linkResource = Utils.getProperty(props, ATTR_LINKRESOURCE,
