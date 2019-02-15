@@ -3754,25 +3754,17 @@ public class HtmlUtils {
      * @return _more_
      */
     public static String formTable() {
+        return formTable((String)null);
+    }
+
+    public static String formTable(String clazz) {
         return open(TAG_TABLE,
-                    cssClass("formtable")
+                    cssClass((clazz!=null?clazz:"")+" formtable")
                     + attrs(ATTR_CELLPADDING, "0", ATTR_CELLSPACING, "0"));
     }
 
 
 
-    /**
-     * _more_
-     *
-     * @param extra _more_
-     *
-     * @return _more_
-     */
-    public static String formTable(String extra) {
-        return open(TAG_TABLE,
-                    attrs(ATTR_CELLPADDING, "5", ATTR_CELLSPACING, "5") + " "
-                    + extra);
-    }
 
     /**
      * _more_

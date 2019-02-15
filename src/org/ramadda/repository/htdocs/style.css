@@ -711,9 +711,10 @@ input, password, fileinput,textarea {
    font-weight: bold;
 }
 .ace_editor  { 
-max-width:100%;
+//max-width:100%;
 overflow-x:auto;
-width: 1000px;
+width:100%;
+//width: 1000px;
 height:500px;
 border: 1px #ccc solid;
 }
@@ -2871,6 +2872,11 @@ a.toggleblocklabellink:visited {
 .entry-toggleblock-label:hover {
   background-color : #efefef;
   cursor:pointer;
+}
+
+
+.ramadda-entry-edit  {
+  width:95%;
 }
 
 

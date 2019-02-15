@@ -1811,7 +1811,7 @@ public class EntryManager extends RepositoryManager {
         }
 
 
-        sb.append(HtmlUtils.formTable());
+        sb.append(HtmlUtils.formTable("ramadda-entry-edit"));
         String title = BLANK;
 
         if (type == null) {
