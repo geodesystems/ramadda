@@ -76,8 +76,8 @@ public class Place {
         new Resource(RESOURCE_ROOT + "/zipcodes.txt", new int[] { 0, 0, 0, 7,
                 8 }, "zip:"),
         //#USPS GEOID   POP10   HU10    ALAND   AWATER  ALAND_SQMI      AWATER_SQMI     INTPTLAT        INTPTLONG
-        //        new Resource(RESOURCE_ROOT + "/tracts.txt", new int[] { 1, 1, 1, 8,
-        //                9 }, "")
+        new Resource(RESOURCE_ROOT + "/tracts.txt", new int[] { 1, 1, 1, 8,
+                                                                9 }, "")
     };
 
     //        { 0, 1, 0, 7, 8 }
