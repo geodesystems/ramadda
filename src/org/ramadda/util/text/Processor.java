@@ -1807,7 +1807,7 @@ public abstract class Processor extends CsvOperator {
         public void printRow(TextReader info, Row row) throws Exception {
             if (cnt == 0) {
                 info.getWriter().println(
-                    "<table class=\"entry-table\" border=1 cellspacing=0 cellpadding=0>");
+                    "<table  class='stripe hover ramadda-table' table-height=400>");
             }
             List   values = row.getValues();
             String open   = "<td>";
@@ -1819,11 +1819,7 @@ public abstract class Processor extends CsvOperator {
                 open  = "<th>";
                 close = "</th>";
             } else {
-                if (cnt / 2 == cnt / 2.0) {
-                    info.getWriter().println("<tr  valign=top class=even>");
-                } else {
-                    info.getWriter().println("<tr  valign=top  class=odd>");
-                }
+                info.getWriter().println("<tr  valign=top>");
             }
 
 
@@ -1852,6 +1848,7 @@ public abstract class Processor extends CsvOperator {
             if (cnt == 0) {
                 info.getWriter().println("</tr>");
                 info.getWriter().println("</thead>");
+                info.getWriter().println("</tbody>");
             } else {
                 info.getWriter().println("</tr>");
             }
@@ -1871,6 +1868,7 @@ public abstract class Processor extends CsvOperator {
         @Override
         public List<Row> finish(TextReader info, List<Row> rows)
                 throws Exception {
+            info.getWriter().println("</tbody>");
             info.getWriter().print("</table>");
 
             return rows;

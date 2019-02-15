@@ -135,6 +135,7 @@ function csvCall(cmds,args) {
                 var result = window.atob(data.result);
                 if(showHtml) {
                     $("#convertcsv_output").html(result);
+                    HtmlUtils.formatTable(".ramadda-table");
                 } else {
                     var isDb = result.startsWith("<tables");
                     if(isDb) {

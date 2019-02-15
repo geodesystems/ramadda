@@ -812,7 +812,7 @@ public class ShapefileOutputHandler extends OutputHandler implements WikiConstan
         //        System.err.println(sb);
 
         if (table) {
-            sb.append("<table border=1 class=ramadda-table>");
+            sb.append("<table class='stripe hover ramadda-table' table-height=400 >");
             sb.append("<thead>");
             sb.append("<tr valign=top>");
             sb.append(HtmlUtils.th(HtmlUtils.b("Field&nbsp;#"),
