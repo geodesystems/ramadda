@@ -1044,10 +1044,13 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
         String img = HtmlUtils.img(url, getEntryDisplayName(entry),
                                    extra.toString());
         boolean link = Utils.getProperty(props, ATTR_LINK, false);
+        String iurl = Utils.getProperty(props, "url",(String) null);
         boolean linkResource = Utils.getProperty(props, ATTR_LINKRESOURCE,
                                    false);
         boolean popup = Utils.getProperty(props, ATTR_POPUP, false);
-        if (link) {
+        if(iurl!=null) {
+            img = HtmlUtils.href(iurl, img);
+        } else if (link) {
             img = HtmlUtils.href(
                 request.entryUrl(getRepository().URL_ENTRY_SHOW, entry), img);
         } else if (linkResource) {
