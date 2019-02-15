@@ -31,7 +31,7 @@ green:honeydew
 plain:inherit
 }
 
-set classes {background block heading box note blurb callout section}
+set classes {blurb note background block heading box   callout section}
 
 set out [open wikicolors.txt w]
 
