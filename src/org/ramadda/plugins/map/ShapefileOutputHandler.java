@@ -744,6 +744,7 @@ public class ShapefileOutputHandler extends OutputHandler implements WikiConstan
 
             return new Result("", sb);
         }
+        HtmlUtils.open(sb, "div",HtmlUtils.cssClass("ramadda-links"));
         Hashtable              props = getRepository().getPluginProperties();
 
         List<DbaseDataWrapper> fieldDatum = getDatum(request, entry, dbfile);
@@ -928,6 +929,7 @@ public class ShapefileOutputHandler extends OutputHandler implements WikiConstan
         } else {
             sb.append("</ul>");
         }
+        HtmlUtils.close(sb, "div");
         HtmlUtils.close(sb, "div");
 
         return new Result("", sb);
