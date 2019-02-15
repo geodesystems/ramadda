@@ -140,7 +140,8 @@ function RepositoryMap(mapId, params) {
         strokeWidth: 1,
         scrollToZoom: false,
         selectOnHover: false,
-        highlightOnHover: true
+        highlightOnHover: true,
+        showLocationSearch:true,
     };
 
 
@@ -1682,7 +1683,9 @@ function initMapFunctions(theMap) {
                 }));
             }
         }
-        this.initLocationSearch();
+        if(this.showLocationSearch) {
+            this.initLocationSearch();
+        }
 
         if (this.defaultLocation && !this.defaultBounds) {
             var center = this.defaultLocation;

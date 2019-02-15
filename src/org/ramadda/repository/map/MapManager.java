@@ -320,6 +320,7 @@ public class MapManager extends RepositoryManager implements WikiConstants {
             }
         }
 
+
         if (mapLayer == null) {
             mapLayer = (String) props.get("defaultMapLayer");
         }
@@ -1219,6 +1220,7 @@ public class MapManager extends RepositoryManager implements WikiConstants {
         boolean cbx          = Utils.getProperty(props, "showCheckbox",
                                    false);
         boolean search       = Utils.getProperty(props, "showSearch", false);
+        boolean showLocationSearch      = Utils.getProperty(props, "showLocationSearch", true);
         boolean cbxOn        = Utils.getProperty(props, "checkboxOn", true);
         String  mapVar       = Utils.getProperty(props, ATTR_MAPVAR);
         String  selectFields = Utils.getProperty(props, ATTR_SELECTFIELDS);
@@ -1257,11 +1259,8 @@ public class MapManager extends RepositoryManager implements WikiConstants {
         if (mapProps != null) {
             map.getMapProps().putAll(mapProps);
         }
-        String showSearch = (String) props.get("showSearch");
-        if (showSearch != null) {
-            map.getMapProps().put("showSearch",
-                                  "" + showSearch.equals("true"));
-        }
+        map.getMapProps().put("showSearch","" + search);
+        map.getMapProps().put("showLocationSearch","" + showLocationSearch);
 
         Hashtable theProps = Utils.makeMap(PROP_DETAILED, "" + details,
                                            PROP_SCREENBIGRECTS, "true");

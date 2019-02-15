@@ -13680,6 +13680,9 @@ function RamaddaMapDisplay(displayManager, id, properties) {
             if (displayDiv) {
                 params.displayDiv = displayDiv;
             }
+            if(!this.getProperty("showLocationSearch",true)) {
+                params.showLocationSearch = false;
+            }
             var mapLayers = this.getProperty("mapLayers", null);
             if (mapLayers) {
                 params.mapLayers = [mapLayers];

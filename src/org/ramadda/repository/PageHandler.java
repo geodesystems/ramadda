@@ -225,6 +225,8 @@ public class PageHandler extends RepositoryManager {
     /** _more_ */
     private boolean showCreateDate;
 
+    private boolean showSearchPopup;
+
     /** _more_ */
     private String shortDateFormat;
 
@@ -277,6 +279,10 @@ public class PageHandler extends RepositoryManager {
         showCreateDate =
             getRepository().getProperty(PROP_ENTRY_TABLE_SHOW_CREATEDATE,
                                         false);
+
+        showSearchPopup =
+            getRepository().getProperty("ramadda.showsearchpopup",
+                                        true);
         createdDisplayMode =
             getRepository().getProperty(PROP_CREATED_DISPLAY_MODE,
                                         "none").trim();
@@ -422,13 +428,20 @@ public class PageHandler extends RepositoryManager {
         String searchImg = HtmlUtils.img(
                                     getIconUrl("/icons/magnifier.png"),
                                     "Search"," id='searchlink' ");
-        String searchLink = HtmlUtils.href(
-                                getRepository().getUrlBase()
-                                + "/search/textform", searchImg,
-                                HtmlUtils.cssClass(
-                                                   "ramadda-user-settings-link"));
+        String searchLink;
 
-        searchLink = HtmlUtils.mouseClickHref("ramaddaSearchPopup('searchlink');",searchImg,"");
+
+
+        if(showSearchPopup) {
+            searchLink = HtmlUtils.mouseClickHref("ramaddaSearchPopup('searchlink');",searchImg,"");
+        } else {
+            searchLink = HtmlUtils.href(
+                                        getRepository().getUrlBase()
+                                        + "/search/form", searchImg,
+                                        HtmlUtils.cssClass(
+                                                           "ramadda-user-settings-link"));
+        }
+
         List<String> navLinks = getNavLinks(request, userLinkTemplate);
         List<String> userLinks = getUserLinks(request, userLinkTemplate,
                                      extra, true);
