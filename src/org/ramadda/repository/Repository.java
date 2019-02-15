@@ -78,6 +78,7 @@ import org.ramadda.util.HtmlUtils;
 import org.ramadda.util.Json;
 import org.ramadda.util.MyTrace;
 import org.ramadda.util.Place;
+import org.ramadda.util.Bounds;
 
 
 
@@ -5514,7 +5515,12 @@ public class Repository extends RepositoryBase implements RequestHandler,
         StringBuilder   sb     = new StringBuilder();
         String          q      = request.getString("query", "");
         List<String>    objs   = new ArrayList<String>();
-        Place           place1 = GeoUtils.getLocationFromAddress(q);
+        Bounds bounds = null;
+        if(request.defined("bounds")) {
+            List<String> toks = StringUtil.split(request.getString("bounds",""),",");
+            bounds = new Bounds(Double.parseDouble(toks.get(0)),Double.parseDouble(toks.get(1)),Double.parseDouble(toks.get(2)),Double.parseDouble(toks.get(3)));
+        }
+        Place           place1 = GeoUtils.getLocationFromAddress(q, null, bounds);
         HashSet<String> seen   = new HashSet<String>();
         if (place1 != null) {
             seen.add(place1.getName());
@@ -5522,7 +5528,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
                               "latitude", "" + place1.getLatitude(),
                               "longitude", "" + place1.getLongitude()));
         }
-        List<Place> places = Place.search(q, 25);
+        List<Place> places = Place.search(q, 25, bounds);
         for (Place place : places) {
             if (seen.contains(place.getName())) {
                 continue;
@@ -5538,6 +5544,13 @@ public class Repository extends RepositoryBase implements RequestHandler,
         String dbUrl =
             "https://geodesystems.com/repository/entry/show?entryid=e71b0cc7-6740-4cf5-8e4b-61bd45bf883e&db.search=Search&search.db_us_places.feature_name="
             + encodedq + "&db.view=json&max=50";
+
+        if(bounds!=null) {
+            dbUrl+="&" + HtmlUtils.arg("search.db_us_places.location_south", ""+bounds.getSouth());
+            dbUrl+="&" + HtmlUtils.arg("search.db_us_places.location_east", ""+bounds.getEast());
+            dbUrl+="&" + HtmlUtils.arg("search.db_us_places.location_west", ""+bounds.getWest());
+            dbUrl+="&" + HtmlUtils.arg("search.db_us_places.location_north", ""+bounds.getNorth());
+        }
 
         try {
             JSONObject json    = Json.readUrl(dbUrl);

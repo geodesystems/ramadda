@@ -1732,10 +1732,12 @@ function initMapFunctions(theMap) {
 
     theMap.initLocationSearch= function() {
         let _this = this;
-
-        var input = HtmlUtils.span(["style", "padding-right:4px;", "id", this.mapDivId + "_loc_search_wait"], "") + HtmlUtils.input("", "", ["placeholder", "Search location", "id", this.mapDivId + "_loc_search"])
+        var input = HtmlUtils.span(["style", "padding-right:4px;", "id", this.mapDivId + "_loc_search_wait"], "") + 
+        HtmlUtils.checkbox(this.mapDivId + "_loc_bounds",["title","Search in map bounds"],false) +  " In view " +
+        HtmlUtils.input("", "", ["placeholder", "Search location", "id", this.mapDivId + "_loc_search"])
         $("#" + this.mapDivId + "_footer2").html(input);
         let searchInput = $("#" + this.mapDivId + "_loc_search");
+        let bounds = $("#" + this.mapDivId + "_loc_bounds");
         let searchPopup = $("#" + this.mapDivId + "_loc_popup");
         let wait = $("#" + this.mapDivId + "_loc_search_wait");
         searchInput.blur(function(e) {
@@ -1755,6 +1757,10 @@ function initMapFunctions(theMap) {
             }
             wait.html(HtmlUtils.image(icon_wait));
             var url = ramaddaBaseUrl + "/geocode?query=" + encodeURIComponent(searchInput.val());
+            if(bounds.is(':checked')) {
+                var b = _this.transformProjBounds(_this.map.getExtent());
+                url+="&bounds=" + b.top +"," + b.left +"," + b.bottom +","+b.right;
+            }
             var jqxhr = $.getJSON(url, function(data) {
                 wait.html("");
                 var result = HtmlUtils.openTag("div", ["style", "max-height:400px;overflow-y:auto;"]);
@@ -1762,7 +1768,7 @@ function initMapFunctions(theMap) {
                     wait.html("Nothing found");
                     return;
                 } else {
-                    if (data.result.length == 1) {
+                    if (false && data.result.length == 1) {
                         var lat = data.result[0].latitude;
                         var lon = data.result[0].longitude;
                         var offset = 0.1;
@@ -1771,7 +1777,8 @@ function initMapFunctions(theMap) {
                         return;
                     }
                     for (var i = 0; i < data.result.length; i++) {
-                        result += HtmlUtils.div(["style", "padding:4px;", "class", "ramadda-div-link", "latitude", data.result[i].latitude, "longitude", data.result[i].longitude], data.result[i].name);
+                        var n = data.result[i].name.replace("\"","'");
+                        result += HtmlUtils.div(["style", "padding:4px;", "class", "ramadda-div-link", "name", n, "latitude", data.result[i].latitude, "longitude", data.result[i].longitude], data.result[i].name);
                     }
                 }
                 var my = "left bottom";
@@ -1788,12 +1795,16 @@ function initMapFunctions(theMap) {
                 });
                 searchPopup.find(".ramadda-div-link").click(function() {
                     searchPopup.hide();
+                    var name = $(this).attr("name");
                     var lat = parseFloat($(this).attr("latitude"));
                     var lon = parseFloat($(this).attr("longitude"));
                     var offset = 0.1;
                     var bounds = _this.transformLLBounds(createBounds(lon - offset, lat - offset, lon + offset, lat + offset));
+                    var lonlat = new createLonLat(lon, lat);
+                    if(_this.searchMarker) 
+                        _this.removeMarker(_this.searchMarker);
+                    _this.searchMarker = _this.addMarker("search", lonlat, ramaddaBaseUrl +"/icons/green-dot.png", "", name, 20, 20);
                     _this.map.zoomToExtent(bounds);
-
                 });
             }).fail(function(jqxhr, textStatus, error) {
                 wait.html("Error:" + error);

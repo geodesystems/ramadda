@@ -352,9 +352,14 @@ public class GeoUtils {
      * @return _more_
      */
     public static Place getLocationFromAddress(String address,
-            String googleKey) {
+                                               String googleKey) {
+        return getLocationFromAddress(address, googleKey, null);
+    }
+
+    public static Place getLocationFromAddress(String address,
+                                               String googleKey, Bounds bounds) {
         try {
-            return getLocationFromAddressInner(address, googleKey);
+            return getLocationFromAddressInner(address, googleKey, bounds);
 
         } catch (Exception exc) {
             throw new RuntimeException(exc);
@@ -372,7 +377,7 @@ public class GeoUtils {
      * @throws Exception _more_
      */
     public static Place getLocationFromAddressInner(String address,
-            String googleKey)
+                                                    String googleKey, Bounds bounds)
             throws Exception {
 
         if (address == null) {
@@ -384,7 +389,9 @@ public class GeoUtils {
         }
         if(address.toLowerCase().startsWith("from:")) address= address.substring(5);
         else if(address.toLowerCase().startsWith("to:")) address= address.substring(3);
-        Place place = Place.getPlace(address);
+        Place place = null;
+        /*
+        place = Place.getPlace(address);
         if (place == null) {
             int index = address.indexOf("-");
             if (index > 0) {
@@ -396,6 +403,7 @@ public class GeoUtils {
             String tmp = address.substring(0, 5);
             place = Place.getPlace(tmp);
         }
+        */
 
         if (place != null) {
             //            System.err.println("got place:" + address +" " + place.getLatitude()+" " + place.getLongitude());
@@ -434,10 +442,12 @@ public class GeoUtils {
 
         place  = addressToLocation.get(address);
         if (place != null) {
-            if (Double.isNaN(place.getLatitude())) {
-                return null;
+            if(bounds==null || bounds.contains(place.getLatitude(),place.getLongitude())) {
+                if (Double.isNaN(place.getLatitude())) {
+                    return null;
+                }
+                return place;
             }
-            return place;
         }
 
 
@@ -450,9 +460,13 @@ public class GeoUtils {
 
         if (googleKey != null) {
             try {
+                //                https://maps.googleapis.com/maps/api/geocode/json?address=Winnetka&bounds=34.172684,118.604794|34.236144,-118.500938&key=YOUR_API_KEY
                 String url =
                     "https://maps.googleapis.com/maps/api/geocode/json?address="
                     + encodedAddress + "&key=" + googleKey;
+                if(bounds!=null) {
+                    url+="&bounds=" + bounds.getSouth()+"," + bounds.getWest() +"|"+bounds.getNorth()+"," + bounds.getEast();
+                }
                 String result = IOUtil.readContents(url, GeoUtils.class);
                 //                System.err.println("result:" + result);
 

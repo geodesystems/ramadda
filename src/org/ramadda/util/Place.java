@@ -504,12 +504,14 @@ public class Place {
         return getPlace(id, null);
     }
 
-    public static List<Place> search(String s, int max) throws Exception {
+    public static List<Place> search(String s, int max,Bounds bounds) throws Exception {
         getPlaces("alllocations");
         List<Place> result = new ArrayList<Place>();
         s = s.toLowerCase();
+
         for(Place place: places) {
             if(place._name == null)  continue;
+            if(bounds!=null && !bounds.contains(place.getLatitude(),place.getLongitude())) continue;
             if(place._name.startsWith(s)) {
                 result.add(place);
                 if(result.size()>max) break;
@@ -564,7 +566,7 @@ public class Place {
      * @throws Exception _more_
      */
     public static void main(String[] args) throws Exception {
-        System.err.println(search("boulder",50));
+        System.err.println(search("boulder",50,null));
         if(true) return;
         List<Place> places = getPlacesForResource(args.length>0?args[0]:null);
         //        List<Place> places = getPlaces();
