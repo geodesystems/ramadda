@@ -310,8 +310,14 @@ color:#000;
 }
 
 .ramadda-map-search {
-  margin-bottom:2px;
+  margin-bottom:0px;
 }
+
+.ramadda-map-search  input {
+     border:1px #aaa solid;
+}
+
+
 
 .ramadda-message {
   display: inline-block;
