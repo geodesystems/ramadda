@@ -36,7 +36,7 @@ h2 a,   h2 a:visited, h2 a:link  {color: black;}
 }
 
 
-a:link.ramadda-button-blue, a:link.ramadda-button-green {
+a:visited.ramadda-button-blue, a:visited.ramadda-button-green, a:link.ramadda-button-blue, a:link.ramadda-button-green {
    color: #fff;
 }
 
