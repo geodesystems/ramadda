@@ -1073,6 +1073,22 @@ public class WikiUtil {
                 continue;
             }
 
+            if (tline.equals("+center")) {
+                buff.append("<center>");
+                continue;
+            }
+
+            if (tline.equals("-center")) {
+                buff.append("</center>");
+                continue;
+            }
+
+            if (tline.equals(":br")) {
+                buff.append("<br>");
+                continue;
+            }
+
+
             if (tline.startsWith(":heading") || tline.startsWith(":block")
                     || tline.startsWith(":note") || tline.startsWith(":box")
                     || tline.startsWith(":blurb")
