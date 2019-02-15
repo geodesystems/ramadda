@@ -56,7 +56,6 @@ function createProjection(name) {
 }
 
 var positionMarkerID = "location";
-var latlonReadoutID = "ramadda-map-latlonreadout";
 
 var mapDefaults = {
     maxLatValue: 85,
@@ -101,7 +100,7 @@ function RepositoryMap(mapId, params) {
         enableDragPan: true,
         defaultLocation: mapDefaults.location,
         initialZoom: mapDefaults.defaultZoomLevel,
-        latlonReadout: latlonReadoutID,
+        latlonReadout: null,
         map: null,
         defaultMapLayer: map_default_layer,
         defaultCanSelect: true,
@@ -1667,6 +1666,8 @@ function initMapFunctions(theMap) {
         }
 
         if (this.showLatLonPosition) {
+            if(!this.latlonReadout)
+               this.latlonReadout = this.mapId  +"_latlonreadout";
             var latLonReadout = GuiUtils.getDomObject(this.latlonReadout);
             if (latLonReadout) {
                 this.map.addControl(new OpenLayers.Control.MousePosition({
@@ -1735,7 +1736,7 @@ function initMapFunctions(theMap) {
         let _this = this;
         var input = HtmlUtils.span(["style", "padding-right:4px;", "id", this.mapDivId + "_loc_search_wait"], "") + 
         HtmlUtils.checkbox(this.mapDivId + "_loc_bounds",["title","Search in map bounds"],false) +  HtmlUtils.span(["title", "Search in map bounds"], " In view ") +
-        HtmlUtils.input("", "", ["title", "^string - matches beginning","size","30", "placeholder", "Search location", "id", this.mapDivId + "_loc_search"])
+        HtmlUtils.input("", "", ["class","ramadda-map-loc-input","title", "^string - matches beginning","size","30", "placeholder", "Search location", "id", this.mapDivId + "_loc_search"])
         $("#" + this.mapDivId + "_footer2").html(input);
         let searchInput = $("#" + this.mapDivId + "_loc_search");
         let bounds = $("#" + this.mapDivId + "_loc_bounds");

@@ -358,7 +358,7 @@ public class MapInfo {
             styles = mapStyle;
             if (styles == null) {
                 styles =
-                    "border:1px #888888 solid; background-color:#7391ad; height:"
+                    "height:"
                     + height + "px; " + swidth;
             }
             styles += " height:" + height + "px; " + swidth;
@@ -374,8 +374,9 @@ public class MapInfo {
                           + HtmlUtils.id(mapVarName + "_loc_popup"));
         String readout =
             HtmlUtils.div("&nbsp;",
-                          HtmlUtils.id("ramadda-map-latlonreadout")
-                          + HtmlUtils.style("font-style:italic; " + swidth));
+                          HtmlUtils.cssClass("ramadda-map-latlonreadout")
+                          + HtmlUtils.id(mapVarName +"_latlonreadout") 
+                          + HtmlUtils.style(swidth));
         String footer =
             HtmlUtils.div("",
                           HtmlUtils.cssClass("ramadda-map-footer")

@@ -244,9 +244,29 @@ color:#000;
    max-height:150px;
    overflow-y: auto;
 }
-.ramadda-map-animation {
+
+.ramadda-div-link:hover {
+   text-decoration: underline;
 }
 
+.ramadda-map {
+     border:1px #aaa solid;
+//   border:1px #888888 solid; 
+   background-color:#7391ad; 
+}
+
+
+.ramadda-map-loc-input {
+     border:1px #aaa solid;
+     border-top:0px #ccc solid;
+}
+
+.ramadda-map-latlonreadout {
+//   font-size: 10pt;
+}
+
+.ramadda-map-animation {
+}
 
 .ramadda-map-features {
 }
@@ -258,14 +278,12 @@ color:#000;
    text-decoration: underline;
 }
 
-.ramadda-div-link:hover {
-   text-decoration: underline;
-}
+
 
 .ramadda-map-animation-ticks {
    position:relative;
    height:21px;
-   border-bottom: 1px #ccc solid;
+   border-bottom: 1px #aaa solid;
 //   height:100%;
 }
 
