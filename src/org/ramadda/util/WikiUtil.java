@@ -933,6 +933,19 @@ public class WikiUtil {
             if (tline.startsWith("+info-sec")
                     || tline.startsWith("+section")) {
 
+                List<String>  toks      = StringUtil.splitUpTo(tline, " ", 2);
+                String        tag       = toks.get(0).substring(1);
+                List<String>  toks2     = StringUtil.splitUpTo(tag, "-", 2);
+                String        remainder = ((toks2.size() > 1)
+                                           ? toks2.get(1)
+                                           : "");
+
+                String baseClass="ramadda-section";
+                if (remainder.length() > 0) {
+                    baseClass = baseClass+"-" + remainder;
+                }
+
+
                 String  label      = getAttribute(tline, "label");
                 String  heading    = getAttribute(tline, "heading");
                 String  title      = getAttribute(tline, "title");
@@ -974,7 +987,7 @@ public class WikiUtil {
                     extraClass = classArg;
                 }
 
-                String clazz = "ramadda-section " + extraClass;
+                String clazz = baseClass +" " + extraClass;
                 buff.append("<div class=\"");
                 buff.append(clazz);
                 buff.append("\"   " + extraAttr + ">");
