@@ -343,68 +343,154 @@ color:#000;
 }
 
 
-
-.ramadda-background-yellow,  .ramadda-block-yellow, .ramadda-heading-yellow, .ramadda-box-yellow, .ramadda-note-yellow, .ramadda-blurb-yellow, .ramadda-callout-yellow, .ramadda-section-yellow {
-  background-color : #fffeec;
-}
-
-.ramadda-background-snow, .ramadda-block-snow, .ramadda-heading-snow,.ramadda-box-snow, .ramadda-note-snow, .ramadda-blurb-snow, .ramadda-callout-snow, .ramadda-section-snow {
-  background-color : snow;
-}
-
-.ramadda-background-rose, .ramadda-heading-rose,  .ramadda-block-rose, .ramadda-box-rose, .ramadda-note-rose, .ramadda-blurb-rose, .ramadda-callout-rose, .ramadda-section-rose {
-  background-color  : mistyrose;
-}
-
-.ramadda-background-mint, .ramadda-heading-mint,  .ramadda-block-mint, .ramadda-box-mint, .ramadda-note-mint, .ramadda-blurb-mint, .ramadda-callout-mint, .ramadda-section-mint {
-  background-color : mintcream;
+#begin colors
+ .ramadda-background-tumbleweed , .ramadda-block-tumbleweed , .ramadda-heading-tumbleweed , .ramadda-box-tumbleweed , .ramadda-note-tumbleweed , .ramadda-blurb-tumbleweed , .ramadda-callout-tumbleweed , .ramadda-section-tumbleweed  {
+   background-color: #e1b07e;
 }
 
 
-.ramadda-background-floral, .ramadda-heading-floral,  .ramadda-block-floral, .ramadda-box-floral, .ramadda-note-floral, .ramadda-blurb-floral, .ramadda-callout-floral, .ramadda-section-floral {
-  background-color : floralwhite;
-}
 
-.ramadda-background-azure, .ramadda-heading-azure,  .ramadda-block-azure, .ramadda-box-azure, .ramadda-note-azure, .ramadda-blurb-azure, .ramadda-callout-azure, .ramadda-section-azure {
-  background-color : azure;
-}
-
-.ramadda-background-turquoise, .ramadda-heading-turquoise,  .ramadda-block-turquoise, .ramadda-box-turquoise, .ramadda-note-turquoise, .ramadda-blurb-turquoise, .ramadda-callout-turquoise, .ramadda-section-turquoise {
-  background-color : #afeeee;
-}
-
-.ramadda-background-gold, .ramadda-heading-gold,  .ramadda-block-gold, .ramadda-box-gold, .ramadda-note-gold, .ramadda-blurb-gold, .ramadda-callout-gold, .ramadda-section-gold {
-  background-color : #fafad2;
+ .ramadda-background-palegold , .ramadda-block-palegold , .ramadda-heading-palegold , .ramadda-box-palegold , .ramadda-note-palegold , .ramadda-blurb-palegold , .ramadda-callout-palegold , .ramadda-section-palegold  {
+   background-color: #e5be9e;
 }
 
 
-.ramadda-background-pink, .ramadda-heading-pink,  .ramadda-block-pink, .ramadda-box-pink, .ramadda-note-pink, .ramadda-blurb-pink, .ramadda-callout-pink, .ramadda-section-pink {
-  background-color : lavenderblush;
+
+ .ramadda-background-turquoise , .ramadda-block-turquoise , .ramadda-heading-turquoise , .ramadda-box-turquoise , .ramadda-note-turquoise , .ramadda-blurb-turquoise , .ramadda-callout-turquoise , .ramadda-section-turquoise  {
+   background-color: #a7cdbd;
 }
 
 
-.ramadda-background-blue, .ramadda-heading-blue,  .ramadda-block-blue, .ramadda-box-blue ,   .ramadda-note-blue, .ramadda-blurb-blue, .ramadda-callout-blue {
-  background:ghostwhite;
-  border:1px #f1f1f1  solid;
-}
 
-.ramadda-background-white, .ramadda-heading-white,  .ramadda-block-white , .ramadda-box-white , .ramadda-note-white, .ramadda-blurb-white, .ramadda-callout-white {
-  background:white;
-  border : 1px #f1f1f1 solid;
+ .ramadda-background-vermillion , .ramadda-block-vermillion , .ramadda-heading-vermillion , .ramadda-box-vermillion , .ramadda-note-vermillion , .ramadda-blurb-vermillion , .ramadda-callout-vermillion , .ramadda-section-vermillion  {
+   background-color: #d56f3e;
 }
 
 
-.ramadda-background-gray, .ramadda-heading-gray,  .ramadda-block-gray , .ramadda-box-gray , .ramadda-note-gray, .ramadda-blurb-gray, .ramadda-callout-gray, .ramadda-section-gray {
-   background: #F8F8F8;
+
+ .ramadda-background-bone , .ramadda-block-bone , .ramadda-heading-bone , .ramadda-box-bone , .ramadda-note-bone , .ramadda-blurb-bone , .ramadda-callout-bone , .ramadda-section-bone  {
+   background-color: #e2dbbe;
 }
 
-.ramadda-background-green, .ramadda-heading-green,  .ramadda-block-green , .ramadda-box-green , .ramadda-note-green, .ramadda-blurb-green, .ramadda-callout-green, .ramadda-section-green {
-  background:honeydew; 
+
+
+ .ramadda-background-platinum , .ramadda-block-platinum , .ramadda-heading-platinum , .ramadda-box-platinum , .ramadda-note-platinum , .ramadda-blurb-platinum , .ramadda-callout-platinum , .ramadda-section-platinum  {
+   background-color: #dfe0e2;
 }
 
-.ramadda-background-plain, .ramadda-heading-plain,  .ramadda-block-plain , .ramadda-box-plain , .ramadda-note-plain, .ramadda-blurb-plain, .ramadda-callout-plain {
-  background:inherit;
+
+
+ .ramadda-background-olivine , .ramadda-block-olivine , .ramadda-heading-olivine , .ramadda-box-olivine , .ramadda-note-olivine , .ramadda-blurb-olivine , .ramadda-callout-olivine , .ramadda-section-olivine  {
+   background-color: #9cb380;
 }
+
+
+
+ .ramadda-background-yellow , .ramadda-block-yellow , .ramadda-heading-yellow , .ramadda-box-yellow , .ramadda-note-yellow , .ramadda-blurb-yellow , .ramadda-callout-yellow , .ramadda-section-yellow  {
+   background-color: #fffeec;
+}
+
+
+
+ .ramadda-background-snow , .ramadda-block-snow , .ramadda-heading-snow , .ramadda-box-snow , .ramadda-note-snow , .ramadda-blurb-snow , .ramadda-callout-snow , .ramadda-section-snow  {
+   background-color: snow;
+}
+
+
+
+ .ramadda-background-rose , .ramadda-block-rose , .ramadda-heading-rose , .ramadda-box-rose , .ramadda-note-rose , .ramadda-blurb-rose , .ramadda-callout-rose , .ramadda-section-rose  {
+   background-color: mistyrose;
+}
+
+
+
+ .ramadda-background-mint , .ramadda-block-mint , .ramadda-heading-mint , .ramadda-box-mint , .ramadda-note-mint , .ramadda-blurb-mint , .ramadda-callout-mint , .ramadda-section-mint  {
+   background-color: mintcream;
+}
+
+
+
+ .ramadda-background-floral , .ramadda-block-floral , .ramadda-heading-floral , .ramadda-box-floral , .ramadda-note-floral , .ramadda-blurb-floral , .ramadda-callout-floral , .ramadda-section-floral  {
+   background-color: floralwhite;
+}
+
+
+
+ .ramadda-background-azure , .ramadda-block-azure , .ramadda-heading-azure , .ramadda-box-azure , .ramadda-note-azure , .ramadda-blurb-azure , .ramadda-callout-azure , .ramadda-section-azure  {
+   background-color: azure;
+}
+
+
+
+ .ramadda-background-gold , .ramadda-block-gold , .ramadda-heading-gold , .ramadda-box-gold , .ramadda-note-gold , .ramadda-blurb-gold , .ramadda-callout-gold , .ramadda-section-gold  {
+   background-color: #fafad2;
+}
+
+
+
+ .ramadda-background-pink , .ramadda-block-pink , .ramadda-heading-pink , .ramadda-box-pink , .ramadda-note-pink , .ramadda-blurb-pink , .ramadda-callout-pink , .ramadda-section-pink  {
+   background-color: lavenderblush;
+}
+
+
+
+ .ramadda-background-blue , .ramadda-block-blue , .ramadda-heading-blue , .ramadda-box-blue , .ramadda-note-blue , .ramadda-blurb-blue , .ramadda-callout-blue , .ramadda-section-blue  {
+   background-color: ghostwhite;
+   border: 1px #f1f1f1 solid;
+}
+
+
+
+ .ramadda-background-babypowder , .ramadda-block-babypowder , .ramadda-heading-babypowder , .ramadda-box-babypowder , .ramadda-note-babypowder , .ramadda-blurb-babypowder , .ramadda-callout-babypowder , .ramadda-section-babypowder  {
+   background-color: #fcfff7;
+}
+
+
+
+ .ramadda-background-cornflower , .ramadda-block-cornflower , .ramadda-heading-cornflower , .ramadda-box-cornflower , .ramadda-note-cornflower , .ramadda-blurb-cornflower , .ramadda-callout-cornflower , .ramadda-section-cornflower  {
+   background-color: #188fa7;
+}
+
+
+
+ .ramadda-background-whitesmoke , .ramadda-block-whitesmoke , .ramadda-heading-whitesmoke , .ramadda-box-whitesmoke , .ramadda-note-whitesmoke , .ramadda-blurb-whitesmoke , .ramadda-callout-whitesmoke , .ramadda-section-whitesmoke  {
+   background-color: #edf7f6;
+}
+
+
+
+ .ramadda-background-cambridgeblue , .ramadda-block-cambridgeblue , .ramadda-heading-cambridgeblue , .ramadda-box-cambridgeblue , .ramadda-note-cambridgeblue , .ramadda-blurb-cambridgeblue , .ramadda-callout-cambridgeblue , .ramadda-section-cambridgeblue  {
+   background-color: #9ec1a3;
+}
+
+
+
+ .ramadda-background-white , .ramadda-block-white , .ramadda-heading-white , .ramadda-box-white , .ramadda-note-white , .ramadda-blurb-white , .ramadda-callout-white , .ramadda-section-white  {
+   background-color: white;
+   border: 1px #f1f1f1 solid;
+}
+
+
+
+ .ramadda-background-gray , .ramadda-block-gray , .ramadda-heading-gray , .ramadda-box-gray , .ramadda-note-gray , .ramadda-blurb-gray , .ramadda-callout-gray , .ramadda-section-gray  {
+   background-color: #F8F8F8;
+}
+
+
+
+ .ramadda-background-green , .ramadda-block-green , .ramadda-heading-green , .ramadda-box-green , .ramadda-note-green , .ramadda-blurb-green , .ramadda-callout-green , .ramadda-section-green  {
+   background-color: honeydew;
+}
+
+
+
+ .ramadda-background-plain , .ramadda-block-plain , .ramadda-heading-plain , .ramadda-box-plain , .ramadda-note-plain , .ramadda-blurb-plain , .ramadda-callout-plain , .ramadda-section-plain  {
+   background-color: inherit;
+}
+
+
+
+
 
 
 
