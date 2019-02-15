@@ -1566,7 +1566,7 @@ var RamaddaHighlightRules = function() {
                                           regex : "\\+(center|row|col(-md)*(-[0-9]+)*|tabs|tab(-[^ ]+)*|accordian|segment(-[^ ]+)*|accordian|accordianblock(-[^ ]+)*|section(-[^ ]+)*|inset(-[^ ]+)*|blurb(-[^ ]+)*|heading(-[^ ]+)*|note(-[^ ]+)*)"
                                           },
                                   {token : "keyword",
-                                          regex : "\\:(br|note(-[^ ]+)*|blurb(-[^ ]+)*|heading(-[^ ]+)*)"
+                                          regex : "\\:(br ?|p ?|note(-[^ ]+)*|blurb(-[^ ]+)*|heading(-[^ ]+)*)"
                                           },
                                   {token : "keyword",
                                           regex : "^(-row.*|-col.*)|(-center)|(-inset|-section|-note|-heading|-tabs|-tab|-accordian|-segment).*|((-section|-blurb|-heading) +)"
