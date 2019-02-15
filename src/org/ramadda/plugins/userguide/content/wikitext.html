@@ -97,6 +97,18 @@ If you append a "#" then the row number is kept track of and an even/odd color s
 </pre>
 
 
+If you append a "----" then a top border is shown:
+
+<pre>
++section
+...
+-section
++section  ----
+...
+-section
+</pre>
+
+
 
 If you add title="..." then a title is added. If you add label="..." then a header is added. The normal use is:
 
@@ -120,7 +132,8 @@ Using the {{name}} wiki tag will use the entry name for the title:
 </pre>
 
 
-You can change the background color/image by specifying one of the classes:
+You can change the background color/image by specifying sections as below. Full list of styles <a href="https://geodesystems.com/repository/alias/wikiexamples">here</a>.
+
 
 <pre>
 +section class="ramadda-section-map"
@@ -136,6 +149,8 @@ You can change the background color/image by specifying one of the classes:
 ...
 -section
 </pre>
+
+xxx
 
 You can also add a CSS style descriptor
 
