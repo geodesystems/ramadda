@@ -998,6 +998,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
 
         if (alt != null) {
             HtmlUtils.attr(extra, HtmlUtils.ATTR_ALT, alt);
+            HtmlUtils.attr(extra, HtmlUtils.ATTR_TITLE, alt);
         }
 
         if (wikiUtil != null) {
