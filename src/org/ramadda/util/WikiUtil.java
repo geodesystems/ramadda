@@ -943,9 +943,9 @@ public class WikiUtil {
                 String  extraClass = "";
                 if(doBorderTop) {
                     if(extraArg==null)
-                        extraArg = "border-top:1px #ccc solid;";
+                        extraArg = "border-top:1px rgb(224, 224, 224) solid;";
                     else 
-                        extraArg+= "border-top:1px #ccc solid;";
+                        extraArg+= "border-top:1px rgb(224, 224, 224) solid;";
                 }
                 String  extraAttr  = ((extraArg == null)
                                       ? ""
