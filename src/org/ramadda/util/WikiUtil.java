@@ -938,11 +938,19 @@ public class WikiUtil {
                 String  title      = getAttribute(tline, "title");
                 String  classArg   = getAttribute(tline, "class");
                 String  extraArg   = getAttribute(tline, "style");
+                boolean doBorderTop  = tline.indexOf("----") >= 0;
                 boolean doEvenOdd  = tline.indexOf("#") >= 0;
                 String  extraClass = "";
+                if(doBorderTop) {
+                    if(extraArg==null)
+                        extraArg = "border-top:1px #ccc solid;";
+                    else 
+                        extraArg+= "border-top:1px #ccc solid;";
+                }
                 String  extraAttr  = ((extraArg == null)
                                       ? ""
                                       : " style=\"" + extraArg + "\" ");
+
                 if (doEvenOdd) {
                     Integer scnt  = (Integer) getProperty("section-cnt");
                     boolean first = false;
