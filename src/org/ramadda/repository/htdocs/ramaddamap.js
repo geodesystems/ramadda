@@ -1747,6 +1747,9 @@ function initMapFunctions(theMap) {
             }, 500);
         });
         searchInput.keypress(function(e) {
+            if(searchInput.val()==""&& _this.searchMarker) {
+                 _this.removeMarker(_this.searchMarker);
+            }
             var keyCode = e.keyCode || e.which;
             if (keyCode == 27) {
                 searchPopup.hide();
