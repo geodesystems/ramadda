@@ -996,13 +996,6 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
             alt = getProperty(wikiUtil, props, HtmlUtils.ATTR_TITLE, null);
         }
 
-        if (alt == null) {
-            String name = getEntryDisplayName(entry);
-            if ((name != null) && !name.isEmpty()) {
-                alt = name;
-            }
-        }
-
         if (alt != null) {
             HtmlUtils.attr(extra, HtmlUtils.ATTR_ALT, alt);
         }
