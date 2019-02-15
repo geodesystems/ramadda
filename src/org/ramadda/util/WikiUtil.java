@@ -1087,6 +1087,10 @@ public class WikiUtil {
                 buff.append("<br>");
                 continue;
             }
+            if (tline.equals(":p")) {
+                buff.append("<p>");
+                continue;
+            }
 
 
             if (tline.startsWith(":heading") || tline.startsWith(":block")
