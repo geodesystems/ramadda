@@ -1749,6 +1749,7 @@ function initMapFunctions(theMap) {
             }, 250);
         });
         searchInput.on('input', function(e) {
+            searchPopup.hide();
             if(searchInput.val()==""&& _this.searchMarker) {
                  _this.removeMarker(_this.searchMarker);
             }
