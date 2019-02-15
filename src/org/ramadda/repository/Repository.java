@@ -5544,7 +5544,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
 
         if(startsWith) 
             q = q+"%";
-        String encodedq = StringUtil.replace(q, " ", "%20");
+        String encodedq = q.replaceAll(" ", "%20").replaceAll("%","%25");
         String dbUrl =
             "https://geodesystems.com/repository/entry/show?entryid=e71b0cc7-6740-4cf5-8e4b-61bd45bf883e&db.search=Search&search.db_us_places.feature_name="
             + encodedq + "&db.view=json&max=50";
