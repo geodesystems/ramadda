@@ -225,7 +225,7 @@ public class PageHandler extends RepositoryManager {
     /** _more_ */
     private boolean showCreateDate;
 
-    private boolean showSearchPopup;
+    private boolean showSearch;
 
     /** _more_ */
     private String shortDateFormat;
@@ -280,8 +280,8 @@ public class PageHandler extends RepositoryManager {
             getRepository().getProperty(PROP_ENTRY_TABLE_SHOW_CREATEDATE,
                                         false);
 
-        showSearchPopup =
-            getRepository().getProperty("ramadda.showsearchpopup",
+        showSearch =
+            getRepository().getProperty("ramadda.showsearch",
                                         true);
         createdDisplayMode =
             getRepository().getProperty(PROP_CREATED_DISPLAY_MODE,
@@ -428,19 +428,13 @@ public class PageHandler extends RepositoryManager {
         String searchImg = HtmlUtils.img(
                                     getIconUrl("/icons/magnifier.png"),
                                     "Search"," id='searchlink' ");
-        String searchLink;
 
 
 
-        if(showSearchPopup) {
-            searchLink = HtmlUtils.mouseClickHref("ramaddaSearchPopup('searchlink');",searchImg,"");
-        } else {
-            searchLink = HtmlUtils.href(
-                                        getRepository().getUrlBase()
-                                        + "/search/form", searchImg,
-                                        HtmlUtils.cssClass(
-                                                           "ramadda-user-settings-link"));
-        }
+
+
+
+
 
         List<String> navLinks = getNavLinks(request, userLinkTemplate);
         List<String> userLinks = getUserLinks(request, userLinkTemplate,
@@ -459,8 +453,11 @@ public class PageHandler extends RepositoryManager {
                           HtmlUtils.cssClass("ramadda-user-menu"));
 
 
-        extra.append(searchLink);
-        extra.append(HtmlUtils.space(2));
+        if(showSearch) {
+            String searchLink = HtmlUtils.mouseClickHref("ramaddaSearchPopup('searchlink');",searchImg,"");
+            extra.append(searchLink);
+            extra.append(HtmlUtils.space(2));
+        }
         extra.append(makePopupLink(popupImage, menuHtml, false, true));
         menuHtml = extra.toString();
         long     t1     = System.currentTimeMillis();
