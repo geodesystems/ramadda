@@ -278,7 +278,7 @@ color:#000;
    text-decoration: underline;
 }
 
-div.olMap {
+.olButton, div.olMap {
 z-index:0;
 position:relative;
 }

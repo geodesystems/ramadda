@@ -1346,7 +1346,7 @@ public class Admin extends RepositoryManager {
                     PROP_PROPERTIES,
                     getRepository().getProperty(
                         PROP_PROPERTIES,
-                        "#add extra properties\n#name=value\n#ramadda.html.template.default=mapheader\n\n"), 5, 60)));
+                        "#add extra properties\n#name=value\n#ramadda.html.template.default=fixedmapheader\n\n"), 5, 60)));
 
 
 
