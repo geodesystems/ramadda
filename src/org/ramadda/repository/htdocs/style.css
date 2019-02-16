@@ -3,6 +3,8 @@ try a google font
 */
 @import url(//fonts.googleapis.com/css?family=Open+Sans);
 
+
+
 body {
    font-family: 'Open Sans', Helvetica Neue, Arial, Helvetica, sans-serif;
    font-size: 12pt;
@@ -272,6 +274,11 @@ color:#000;
 
 .ramadda-div-link:hover {
    text-decoration: underline;
+}
+
+div.olMap {
+z-index:0;
+position:relative;
 }
 
 .ramadda-map {
@@ -1479,6 +1486,7 @@ label {
 
 .ramadda-earth-link:hover {
 }
+
 
 .ramadda-header {
    background-repeat: repeat; 
