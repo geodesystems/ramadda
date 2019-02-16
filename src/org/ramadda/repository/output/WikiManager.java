@@ -3033,7 +3033,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
             String[]  mapArgs  = {
                 "strokeColor", "fillColor", "fillOpacity", "scrollToZoom",
                 "fill", "selectOnHover", "onSelect", "showDetailsLink",
-                "zoom:initialZoom", "layer:defaultMapLayer", "kmlLayer",
+                "initialZoom:zoom", "defaultMapLayer:layer", "kmlLayer",
                 "kmlLayerName", "displayDiv"
             };
             for (String mapArg : mapArgs) {
