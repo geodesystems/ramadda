@@ -1393,7 +1393,9 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
                 });
             }
 
-            html += entry.getDescription();
+            var desc = entry.getDescription();
+            desc = desc.replace(/\n/g,"<br>");
+            html += desc;
 
             var metadata = entry.getMetadata();
             if (entry.isImage()) {
@@ -2412,6 +2414,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
           the getDisplayContents method by default returns:
           <div id=ID_DISPLAY_CONTENTS></div>
           but can be overwritten by sub classes
+
           After getHtml is called the DisplayManager will add the html to the DOM then call
           initDisplay
           That needs to call setContents with the html contents of the display

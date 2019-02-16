@@ -1543,7 +1543,9 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
                 });
             }
 
-            html += entry.getDescription();
+            var desc = entry.getDescription();
+            desc = desc.replace(/\n/g,"<br>");
+            html += desc;
 
             var metadata = entry.getMetadata();
             if (entry.isImage()) {
@@ -2562,6 +2564,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
           the getDisplayContents method by default returns:
           <div id=ID_DISPLAY_CONTENTS></div>
           but can be overwritten by sub classes
+
           After getHtml is called the DisplayManager will add the html to the DOM then call
           initDisplay
           That needs to call setContents with the html contents of the display
@@ -12722,9 +12725,8 @@ function RamaddaEntrydisplayDisplay(displayManager, id, properties) {
     });
     RamaddaUtil.inherit(this, SUPER = new RamaddaDisplay(displayManager, id, DISPLAY_ENTRYDISPLAY, properties));
     if (properties.sourceEntry == null && properties.entryId != null) {
-        var _this = this;
-        var callback = function(entries) {
-            var entry = entries[0];
+        let _this = this;
+        var callback = function(entry) {
             _this.sourceEntry = entry;
             _this.initDisplay();
         }
@@ -12737,7 +12739,7 @@ function RamaddaEntrydisplayDisplay(displayManager, id, properties) {
         selectedEntry: null,
         initDisplay: function() {
             this.createUI();
-            var title = this.title;
+              var title = this.title;
             if (this.sourceEntry != null) {
                 this.addEntryHtml(this.sourceEntry);
                 var url = this.sourceEntry.getEntryUrl();
@@ -12782,7 +12784,10 @@ function RamaddaEntrydisplayDisplay(displayManager, id, properties) {
             var html = this.getEntryHtml(entry, {
                 showHeader: false
             });
-            this.setContents(html);
+            var height = this.getProperty("height", "400px");
+            if(!height.endsWith("px")) height+="px";
+            this.setContents(HtmlUtils.div(["class","display-entry-description","style","height:" + height+";"], 
+                                           html));
             this.entryHtmlHasBeenDisplayed(entry);
         },
     });

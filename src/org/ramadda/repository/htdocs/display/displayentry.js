@@ -2247,9 +2247,8 @@ function RamaddaEntrydisplayDisplay(displayManager, id, properties) {
     });
     RamaddaUtil.inherit(this, SUPER = new RamaddaDisplay(displayManager, id, DISPLAY_ENTRYDISPLAY, properties));
     if (properties.sourceEntry == null && properties.entryId != null) {
-        var _this = this;
-        var callback = function(entries) {
-            var entry = entries[0];
+        let _this = this;
+        var callback = function(entry) {
             _this.sourceEntry = entry;
             _this.initDisplay();
         }
@@ -2262,7 +2261,7 @@ function RamaddaEntrydisplayDisplay(displayManager, id, properties) {
         selectedEntry: null,
         initDisplay: function() {
             this.createUI();
-            var title = this.title;
+              var title = this.title;
             if (this.sourceEntry != null) {
                 this.addEntryHtml(this.sourceEntry);
                 var url = this.sourceEntry.getEntryUrl();
@@ -2307,7 +2306,10 @@ function RamaddaEntrydisplayDisplay(displayManager, id, properties) {
             var html = this.getEntryHtml(entry, {
                 showHeader: false
             });
-            this.setContents(html);
+            var height = this.getProperty("height", "400px");
+            if(!height.endsWith("px")) height+="px";
+            this.setContents(HtmlUtils.div(["class","display-entry-description","style","height:" + height+";"], 
+                                           html));
             this.entryHtmlHasBeenDisplayed(entry);
         },
     });
