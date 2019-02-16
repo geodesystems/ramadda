@@ -3279,6 +3279,14 @@ padding-bottom: 0.2em;
 }
 
 
+/** add this to hide the dotted line that the hidden "Close" label gives us*/
+.ui-button-icon-only {
+    text-indent: 100%;
+    white-space: nowrap;
+    overflow: hidden;
+}
+
+
 .ui-tabs .ui-tabs-nav .ui-tabs-anchor {
   padding-left: .5em;
   padding-right: .5em;
