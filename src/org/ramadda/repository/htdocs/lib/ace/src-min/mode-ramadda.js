@@ -1563,13 +1563,13 @@ var RamaddaHighlightRules = function() {
     for (var rule in this.$rules) {
         this.$rules[rule].unshift(
                                   {token : "keyword",
-                                          regex : "\\+(center|row|col(-md)*(-[0-9]+)*|tabs|tab(-[^ ]+)*|accordian|segment(-[^ ]+)*|accordian|accordianblock(-[^ ]+)*|section(-[^ ]+)*|inset(-[^ ]+)*|blurb(-[^ ]+)*|heading(-[^ ]+)*|note(-[^ ]+)*)"
+                                          regex : "\\+(div|center|row|col(-md)*(-[0-9]+)*|tabs|tab(-[^ ]+)*|accordian|segment(-[^ ]+)*|accordian|accordianblock(-[^ ]+)*|section(-[^ ]+)*|inset(-[^ ]+)*|blurb(-[^ ]+)*|heading(-[^ ]+)*|note(-[^ ]+)*)"
                                           },
                                   {token : "keyword",
                                           regex : "\\:(br ?|p ?|note(-[^ ]+)*|blurb(-[^ ]+)*|heading(-[^ ]+)*)"
                                           },
                                   {token : "keyword",
-                                          regex : "^(-row.*|-col.*)|(-center)|(-inset|-section|-note|-heading|-tabs|-tab|-accordian|-segment).*|((-section|-blurb|-heading) +)"
+                                          regex : "^(-row.*|-col.*)|(-center)|(-div)|(-inset|-section|-note|-heading|-tabs|-tab|-accordian|-segment).*|((-section|-blurb|-heading) +)"
                                           },
                                   {token : "tag",
                                           regex : "{{",

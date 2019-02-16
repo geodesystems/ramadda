@@ -13781,16 +13781,9 @@ Copyright 2008-2019 Geode Systems LLC
 var DISPLAY_MAP = "map";
 
 var displayMapMarkers = ["marker.png", "marker-blue.png", "marker-gold.png", "marker-green.png"];
-
 var displayMapCurrentMarker = -1;
 var displayMapUrlToVectorListeners = {};
 var displayMapMarkerIcons = {};
-
-function displayMapGetMarkerIcon() {
-    displayMapCurrentMarker++;
-    if (displayMapCurrentMarker >= displayMapMarkers.length) displayMapCurrentMarker = 0;
-    return ramaddaBaseUrl + "/lib/openlayers/v2/img/" + displayMapMarkers[displayMapCurrentMarker];
-}
 
 addGlobalDisplayType({
     type: DISPLAY_MAP,
@@ -14855,6 +14848,18 @@ function RamaddaMapDisplay(displayManager, id, properties) {
             return null;
         },
 
+        getMarkerIcon: function() {
+                if(this.getProperty("markerIcon")) {
+                    var icon = this.getProperty("markerIcon");
+                    if(icon.startsWith("/")) 
+                        return ramaddaBaseUrl +icon;
+                    else 
+                        return icon;
+                }
+                displayMapCurrentMarker++;
+                if (displayMapCurrentMarker >= displayMapMarkers.length) displayMapCurrentMarker = 0;
+                return ramaddaBaseUrl + "/lib/openlayers/v2/img/" + displayMapMarkers[displayMapCurrentMarker];
+            },
         handleEventRecordSelection: function(source, args) {
            if(!this.getProperty("showRecordSelection",true)) return;
             if (!this.map) {
@@ -14872,7 +14877,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
                 }
                 var icon = displayMapMarkerIcons[source];
                 if (icon == null) {
-                    icon = displayMapGetMarkerIcon();
+                    icon = this.getMarkerIcon();
                     displayMapMarkerIcons[source] = icon;
                 }
                 this.myMarkers[source] = this.map.addMarker(source.getId(), point, icon, "", args.html, null, 24);

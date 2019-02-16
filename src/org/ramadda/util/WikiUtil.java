@@ -1079,6 +1079,7 @@ public class WikiUtil {
                 continue;
             }
 
+
             if (tline.equals("-div")) {
                 buff.append("</div>");
                 continue;
