@@ -67,6 +67,14 @@ foreach c $colors {
 
 
 puts $out "+section title={{name}}"
+puts  $out ":button /repository :button\n<br>"
+puts  $out ":button-green /repository :button-green\n<br>"
+puts  $out ":button-blue /repository :button-blue\n<br>"
+puts  $out ":button-tan /repository :button-tan\n<br>"
+puts $out "----"
+
+
+
 foreach class  $classes {
     if {$class=="background"} continue;
     if {$class=="section"} continue;
@@ -100,3 +108,6 @@ if {0} {
 :heading-green heading-green
 :heading-plain heading-plain
 }
+
+
+exec pbcopy < wikicolors.txt

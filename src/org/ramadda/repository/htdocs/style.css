@@ -42,7 +42,7 @@ a:visited.ramadda-button-blue, a:visited.ramadda-button-green, a:link.ramadda-bu
    color: #fff;
 }
 
-a:link.ramadda-button-blue:hover, a:link.ramadda-button-green:hover {
+a:link.ramadda-button-blue:hover, a:link.ramadda-button-green:hover,.ramadda-button-green:hover {
    color: #000;
 }
 
