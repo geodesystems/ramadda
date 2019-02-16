@@ -88,8 +88,6 @@ a.ramadda-menubar-button:hover {
 .ramadda-page-title  {
   font-size:200%;
   text-align:center;
-  margin-top:8px;
-  margin-bottom:4px;
 }
 
 
@@ -272,6 +270,10 @@ color:#000;
    overflow-y: auto;
 }
 
+.ramadda-div-link {
+     cursor:pointer;
+}
+
 .ramadda-div-link:hover {
    text-decoration: underline;
 }
@@ -286,6 +288,22 @@ position:relative;
    background-color:#7391ad; 
 }
 
+
+.ramadda-map-loc:hover {
+  background:#eee;
+}
+
+.ramadda-map-loc {
+  border-bottom: 1px #ddd solid;
+  padding-left:4px;
+  padding-right:4px;
+  padding-bottom:2px;
+  padding-top:2px;
+  max-width: 300px;
+  overflow-x:hidden;
+  white-space:nowrap;
+  cursor: pointer;
+}
 
 .ramadda-map-loc-input {
      border:1px #aaa solid;

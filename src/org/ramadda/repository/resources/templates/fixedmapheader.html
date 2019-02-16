@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html>
+<head><title>${title}</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<properties>
+name=Fixed Map Header
+id=fixedmapheader
+ramadda.template.link.wrapper =<a href="${url}">${label}</a>
+ramadda.template.link.separator=&nbsp;
+ramadda.template.userlink.popup=true
+ramadda.template.favorites = <b>Favorites:</b><div class="favorites">${entries}</div>
+ramadda.template.cart = <b>Cart:</b><div class="favorites">${entries}</div>
+</properties>
+${imports}
+<style type="text/css">
+.ramadda-footer {
+   margin:0px;
+   padding:20px;
+   text-align:center;
+   background-repeat: repeat; 
+   background-image:url(${root}/images/background.png);
+   border-top: 1px #e0e0e0  solid;
+}
+.ramadda-innercontent {
+   padding-top: 0px;
+}
+.navlinks {
+  margin-top:10px;
+  border-bottom: 1px #444 solid;
+}
+.ramadda-header {
+   position:fixed;
+   padding: 1px;
+   padding-left: 6px;
+   padding-right: 6px;
+   width:100%;
+   left:0;
+   top:0;
+}
+/* the margin  should be a little more than the max-height of the logo image */
+.ramadda-outercontents {
+   margin-top:70px;
+}
+.ramadda-logo-image {
+height:60px;
+max-height:60px;
+}
+.ramadda-breadcrumbs {
+   border-bottom : 0px #e0e0e0 solid;
+}
+.ramadda-register-outer {
+text-align:inherit;
+}
+</style>
+${headfinal}
+</head>
+<body>
+<div class="ramadda-header">
+<table border="0" width="100%" cellspacing="0" cellpadding="0"><tr valign="center">
+<td width="5%" rowspan="2"><a href="${logo.url}"><img valign="bottom" class="ramadda-logo-image"  src="${logo.image}" ></a></td><td align="right" colspan="2">${register} </td></tr>
+<tr valign="bottom"><td>${entry.header} </td>
+<td align="right">${links}</td></tr></table>
+</div>
+<div class="ramadda-outercontents">
+<div class="ramadda-content">
+<div class="ramadda-innercontent">
+${content}
+</div> <!-- close ramadda-innercontent -->
+</div>  <!-- close ramadda-content -->
+</div> <!-- close ramadda-outercontents -->
+<div class="ramadda-footer">
+${footer}
+</div>
+<!-- close ramadda-footer -->
+<div class="ramadda-acknowledgement">
+Powered by <a href="http://geodesystems.com">Geode Systems and RAMADDA</a>
+</div>
+${bottom}
+<!-- close bottom -->
+</body>
+</html>

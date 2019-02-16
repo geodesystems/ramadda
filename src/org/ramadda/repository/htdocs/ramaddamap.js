@@ -1734,6 +1734,31 @@ function initMapFunctions(theMap) {
         });
     }
 
+    theMap.removeSearchMarkers = function() {
+        if(!this.searchMarkerList) return;
+        for(var i=0;i<this.searchMarkerList.length;i++) {
+            this.removeMarker(this.searchMarkerList[i]);
+        }
+    }
+    theMap.addAllLocationResults = function () {
+        this.removeSearchMarkers();
+        this.searchMarkerList = [];
+        if(!this.locationSearchResults)return;
+        var east,west,north,south;
+        for(var i=0;i<this.locationSearchResults.length;i++) {
+            var result = this.locationSearchResults[i];
+            var lonlat = new createLonLat(result.longitude, result.latitude);
+            this.searchMarkerList.push(this.addMarker("search", lonlat, ramaddaBaseUrl +"/icons/green-dot.png", "", result.name, 20, 20));
+
+            east = i==0?result.longitude:Math.max(east,result.longitude);
+            west = i==0?result.longitude:Math.min(west,result.longitude);
+            north = i==0?result.latitude:Math.max(north,result.latitude);
+            south = i==0?result.latitude:Math.min(south,result.latitude);
+        }
+        var bounds = this.transformLLBounds(createBounds(west,south,east,north));
+        this.map.zoomToExtent(bounds);
+    }
+
     theMap.initLocationSearch= function() {
         if(this.selectRegion) return;
         let _this = this;
@@ -1753,10 +1778,11 @@ function initMapFunctions(theMap) {
         });
         searchInput.on('input', function(e) {
             searchPopup.hide();
-            if(searchInput.val()==""&& _this.searchMarker) {
-                 _this.removeMarker(_this.searchMarker);
+            if(searchInput.val()=="") {
+                _this.removeSearchMarkers();
             }
-        });
+            });
+            
         searchInput.keypress(function(e) {
             var keyCode = e.keyCode || e.which;
             if (keyCode == 27) {
@@ -1791,10 +1817,12 @@ function initMapFunctions(theMap) {
                         }
                         return;
                     }
+                    _this.locationSearchResults = data.result;
                     for (var i = 0; i < data.result.length; i++) {
                         var n = data.result[i].name.replace("\"","'");
-                        result += HtmlUtils.div(["style", "padding:4px;", "class", "ramadda-div-link", "name", n, "latitude", data.result[i].latitude, "longitude", data.result[i].longitude], data.result[i].name);
+                        result += HtmlUtils.div(["class", "ramadda-map-loc", "name", n, "latitude", data.result[i].latitude, "longitude", data.result[i].longitude], data.result[i].name);
                     }
+                    result += HtmlUtils.div(["class", "ramadda-map-loc", "name", "all"],"Show all");
                 }
                 var my = "left bottom";
                 var at = "left top";
@@ -1808,17 +1836,21 @@ function initMapFunctions(theMap) {
                     at: at,
                     collision: "fit fit"
                 });
-                searchPopup.find(".ramadda-div-link").click(function() {
+                searchPopup.find(".ramadda-map-loc").click(function() {
                     searchPopup.hide();
                     var name = $(this).attr("name");
+                    if(name == "all") {
+                        _this.addAllLocationResults();
+                        return;
+                    }
                     var lat = parseFloat($(this).attr("latitude"));
                     var lon = parseFloat($(this).attr("longitude"));
                     var offset = 0.05;
                     var bounds = _this.transformLLBounds(createBounds(lon - offset, lat - offset, lon + offset, lat + offset));
                     var lonlat = new createLonLat(lon, lat);
-                    if(_this.searchMarker) 
-                        _this.removeMarker(_this.searchMarker);
-                    _this.searchMarker = _this.addMarker("search", lonlat, ramaddaBaseUrl +"/icons/green-dot.png", "", name, 20, 20);
+                    _this.removeSearchMarkers();
+                    _this.searchMarkerList = [];
+                    _this.searchMarkerList.push(_this.addMarker("search", lonlat, ramaddaBaseUrl +"/icons/green-dot.png", "", name, 20, 20));
                     //Only zoom  if its a zoom in
                     var b = _this.transformProjBounds(_this.map.getExtent());
                     if(Math.abs(b.top-b.bottom)>offset) {

@@ -75,7 +75,7 @@ public class PageHandler extends RepositoryManager {
 
 
     /** _more_ */
-    public static final String DEFAULT_TEMPLATE = "mapheader";
+    public static final String DEFAULT_TEMPLATE = "fixedmapheader";
 
     /** _more_ */
     public static final String REGISTER_MESSAGE =
@@ -1047,7 +1047,6 @@ public class PageHandler extends RepositoryManager {
             String defaultId =
                 getRepository().getProperty(PROP_HTML_TEMPLATE_DEFAULT,
                                             DEFAULT_TEMPLATE);
-
             List<String> templatePaths =
                 new ArrayList<String>(
                     getRepository().getPluginManager().getTemplateFiles());
