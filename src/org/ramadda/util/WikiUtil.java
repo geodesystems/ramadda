@@ -1073,6 +1073,18 @@ public class WikiUtil {
                 continue;
             }
 
+            if (tline.startsWith("+div")) {
+                List<String> toks  = StringUtil.splitUpTo(tline, " ", 2);
+                buff.append("<div " + (toks.size()>1?toks.get(1):"") +">");
+                continue;
+            }
+
+            if (tline.equals("-div")) {
+                buff.append("</div>");
+                continue;
+            }
+
+
             if (tline.equals("+center")) {
                 buff.append("<center>");
                 continue;
