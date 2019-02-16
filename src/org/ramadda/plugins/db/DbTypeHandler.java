@@ -861,13 +861,12 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
 
         if (fromSearch) {
             sb.append(
-                HtmlUtils.inset(
-                    HtmlUtils.makeShowHideBlock(
+                      HtmlUtils.makeShowHideBlock(
                         msg("Search again" + ( !fromSearch
                     ? ""
                     : " -- " + numValues
                       + " results")), getSearchForm(request,
-                          entry).toString(), false), 10));
+                          entry).toString(), false));
         }
 
 
@@ -879,7 +878,6 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
                         || request.defined(ARG_SKIP))) {
                 getRepository().getHtmlOutputHandler().showNext(request,
                         numValues, sb);
-                sb.append(HtmlUtils.br());
             }
         }
 
@@ -1855,7 +1853,7 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
             throws Exception {
         StringBuilder sb = new StringBuilder();
         addViewHeader(request, entry, sb, VIEW_SEARCH, 0, false);
-        sb.append(insetHtml(getSearchForm(request, entry)));
+        sb.append(getSearchForm(request, entry));
         addViewFooter(request, entry, sb);
 
         return new Result(getTitle(request, entry), sb);
@@ -1931,12 +1929,18 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
 
         StringBuilder sb    = new StringBuilder();
         List<Clause>  where = new ArrayList<Clause>();
+        StringBuilder searchCriteria = new StringBuilder();
+
         if (request.get(ARG_DB_ALL, false) && request.getUser().getAdmin()) {
             System.err.println("searching all");
         } else {
             where.add(Clause.eq(COL_ID, entry.getId()));
         }
-        StringBuilder searchCriteria = new StringBuilder();
+        String textToSearch = (String) request.getString(ARG_TEXT, "").trim();
+        if (textToSearch.length() > 0) {
+            addTextDbSearch(request, textToSearch, searchCriteria, where, false,false,false);
+        }
+
         for (Column column : getColumns()) {
             column.assembleWhereClause(request, where, searchCriteria);
         }
@@ -3027,8 +3031,6 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
                     hb.append(HtmlUtils.select(ARG_DB_ACTION, actions));
                 }
             }
-
-            hb.append(HtmlUtils.p());
             HtmlUtils.open(hb, "table", "class", "dbtable", "border", "1",
                            "cellspacing", "0", "cellpadding", "0", "width",
                            "100%");
@@ -3319,7 +3321,7 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
             }
         }
         hb.append(HtmlUtils.formClose());
-        sb.append(insetHtml(hb.toString()));
+        sb.append(hb.toString());
     }
 
 
@@ -3422,7 +3424,7 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
         } else {
             hb.append(getPageHandler().showDialogNote(msg("Nothing found")));
         }
-        sb.append(insetHtml(hb.toString()));
+        sb.append(hb.toString());
     }
 
 
@@ -5355,13 +5357,13 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
         formBuffer.append(HtmlUtils.script(script));
 
         if (doAnonForm) {
-            sb.append(insetHtml(entry.getDescription() + HtmlUtils.p()
-                                + formBuffer));
+            sb.append(entry.getDescription() + HtmlUtils.p()
+                                + formBuffer);
         } else {
             if (forEdit && (dbid == null)) {
                 createBulkForm(request, entry, sb, formBuffer);
             } else {
-                sb.append(insetHtml(formBuffer));
+                sb.append(formBuffer);
             }
         }
 
@@ -5449,7 +5451,7 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
                                         bulkSB.toString());
         String contents = OutputHandler.makeTabs(tabTitles, tabContents,
                               true);
-        Utils.append(sb, insetHtml(contents));
+        Utils.append(sb, contents);
     }
 
 

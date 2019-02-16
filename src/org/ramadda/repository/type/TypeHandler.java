@@ -5999,11 +5999,10 @@ public class TypeHandler extends RepositoryManager {
      *
      * @throws Exception _more_
      */
-    private void addTextDbSearch(Request request, String textToSearch,
+    public void addTextDbSearch(Request request, String textToSearch,
                                  Appendable searchCriteria,
                                  List<Clause> where)
             throws Exception {
-
         boolean doName = true;
         boolean doDesc = true;
         boolean doFile = true;
@@ -6021,7 +6020,16 @@ public class TypeHandler extends RepositoryManager {
             textToSearch = textToSearch.substring("file:".length());
         }
 
+        addTextDbSearch(request, textToSearch, searchCriteria, where, doName, doDesc, doFile);
+    }
 
+
+
+    public void addTextDbSearch(Request request, String textToSearch,
+                                 Appendable searchCriteria,
+                                List<Clause> where,
+                                boolean doName,boolean doDesc, boolean doFile)
+            throws Exception {
         DatabaseManager dbm     = getDatabaseManager();
         List<Clause>    textOrs = new ArrayList<Clause>();
         for (String textTok :
