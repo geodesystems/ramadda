@@ -157,6 +157,8 @@ ${charts}
 <center>
 </center>
 {{display type="map" showTitle="false" showMenu="false"}}
+:p
+{{display type="text" showTitle="false" showMenu="false"}}
 -col
 -row
 ]]>
