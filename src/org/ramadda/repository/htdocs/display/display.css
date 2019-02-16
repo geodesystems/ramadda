@@ -1105,3 +1105,37 @@ height:100%;
    padding-left:0px;
 }
 
+.display-chernoff-label {
+  margin-top:10px;
+  text-align:center;
+}
+
+.display-chernoff-face {
+  display:inline-block;
+  width:150px;
+  height:150px;
+}
+
+.display-chernoff-wrapper {
+  display:inline-block;
+  margin:5px;
+}
+.display-chernoff-legend {
+   text-align:center;
+   max-width:100%;
+   overflow-x:auto;
+   white-space:nowrap;
+   border: 1px #ccc solid;
+   padding-top:4px;
+   padding-bottom:4px;
+   font-size:80%;
+}
+
+.display-chernoff-container {
+   overflow-y:auto;
+}
+
+.chernoff  {
+        fill: none;
+        stroke: #000;
+      }
