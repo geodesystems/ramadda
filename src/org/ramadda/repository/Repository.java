@@ -3831,9 +3831,6 @@ public class Repository extends RepositoryBase implements RequestHandler,
      * @throws Exception _more_
      */
     protected Result getHtdocsFile(Request request) throws Exception {
-
-
-
         String path    = request.getRequestPath().replaceAll("//", "/");
         String urlBase = getUrlBase();
         if (path.startsWith(urlBase)) {

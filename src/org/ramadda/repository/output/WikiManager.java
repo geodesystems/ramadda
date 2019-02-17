@@ -4709,7 +4709,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                 getRepository().getUrlBase()
                 + "/userguide/wikitext.html#entries", "Specifying multiple entries", "target=_help") + "<br>");
         help.append(HtmlUtils.href(getRepository().getUrlBase()
-                                   + "/search/provider", "Search Providers",
+                                   + "/search/providers", "Search Providers",
                                        "target=_help") + "<br>");
         help.append(
             HtmlUtils.href(

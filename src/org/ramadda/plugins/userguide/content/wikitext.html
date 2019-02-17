@@ -4,7 +4,7 @@
 The web pages in RAMADDA are created through its  wiki facility. The wiki facility supports both regular wiki markup like Wikipedia uses
 as well as special  RAMADDA wiki tags that allow for page payout, displaying maps, lists, charts, etc. 
 
-[ug::subheading {Available Tags} ]
+[ug::subheading {Sections} ]
 <%inpagetoc%>
 
 
@@ -30,6 +30,55 @@ Bulleted lists:
 * bullet 3
 }]
 
+The RAMADDA wiki text supports a number of other markup methods using +tag/-tag and :tag syntax. 
+The "+/-" syntax is for multi-line and the ":" syntax is for single line.
+For example, an easy way to add a line break of paragraph (instead of doing &lt;br&gt;, &lt;p&gt;) is:
+[wiki::text {
+:br
+:pr
+}]
+
+To center text do:
+[wiki::text {
++center
+some text
+to center
+-center
+}]
+
+To wrap text in a div do:
+[wiki::text {
++div
+some text in a div
+-div
+}]
+
+
+To add attributes to the div do:
+[wiki::text {
++div style="max-height:100px;overflow-y:auto;"
+some text in a div
+-div
+}]
+
+
+
+
+To create a button do:
+[wiki::text {
+
+:button /url Some label
+
+:button-green /url Some label
+
+:button-blue /url Some label
+}]
+
+Will produce:
+[ht::cimg images/buttons.png {Buttons} {border=0}]
+
+
+
 
 You can escape your wiki text and include raw, unprocessed text with the &lt;nowiki&gt; tag:
 [wiki::text {
@@ -40,12 +89,78 @@ This is text that does not get formatted
 more wiki text
 }]
 
+
+For example, if you want to include javascript in your text do:
+[wiki::text {
+&lt;nowiki&gt;
+&lt;script  type="text/JavaScript"  &gt;
+...
+&lt;/script&gt;
+&lt;/nowiki&gt;
+
+}]
+
 See the <a href=" http://en.wikipedia.org/wiki/Help:Wiki_markup">Wikipedia page on Wiki Markup</a> for more information on basic Wiki markup. 
+
+
+[ug::subsubheading {Hiding and showing content} {hiding}]
+
+The &lt;block&gt; tag allows you to easily create a toggle block and/or show or hide content
+based on the user's device.
+
+To show a simple toggle block just do:
+[xml {
+<block>
+ any content here
+</block>
+}]
+
+You can specify the toggle label title with:
+[xml {
+<block title="Click here to open">
+ any content here
+</block>
+}]
+
+
+You can specify whether the block is open or closed:
+[xml {
+<block open="false">
+ any content here
+</block>
+}]
+
+You can specify whether to show the content or not:
+[xml {
+<block show="mobile" decorate="false">
+  this will only show for mobile users
+</block>
+<block show="!mobile" decorate="false">
+  this will only show for non-mobile users
+</block>
+}]
+
+You can also use the block tag to define a variable or macro that is used later.
+
+[xml {
+<block var="var_name">
+ any content here
+</block>
+}]
+
+
+This will not show the content in place. Rather you can reference and insert the content later with:
+[xml {
+ \${var_name}
+</block>
+}]
+
 
 
 
 [ug::subheading {Layout and Display Markup} layout]
-There are a number of helper layout tags that make it easy to do page layout and display.
+There are a number of layout tags that make it easy to do page layout and display.
+
 
 [ug::subsubheading {Titles and headings} titles]
 There are a number of block display elements - 
@@ -72,9 +187,7 @@ You can change the background color with:
 </pre>
 
 Examples at <a href="https://geodesystems.com/repository/alias/wikiexamples">https://geodesystems.com/repository/alias/wikiexamples</a>.
-
-
-
+<p>
 
 [ug::subsubheading {Sections} sections]
 
@@ -150,7 +263,8 @@ You can change the background color/image by specifying sections as below. Full 
 -section
 </pre>
 
-xxx
+
+
 
 You can also add a CSS style descriptor
 
@@ -432,8 +546,7 @@ The entry value can be:
 The <i>Add Entry ID</i> menu in the editor toolbar allows you to select the entry to use. As a convenience this
 adds both the ID of the entry as well as its name. 
 
-<p>
-<a name="property"></a>
+[ug::subsubheading {Property tag} property]
 The <i>property</i> tag supports defining 
 an attribute property that is shared by all tags in the page. 
 
@@ -444,8 +557,8 @@ For example, if you are creating a wiki page full of charts
 that refer to another point data entry for their data then you use the property like, e.g.:
 [wiki::text [wiki::tag property {name="entry" value="9b2f87fc-91f2-485c-8035-7ef588c35fda"}]]
 
-<p>
-Some of the properties can result in an error message (e.g., image not found, entry not found, etc). You can specify a different message (or blank) with message attribute:
+[ug::subsubheading {Message attribute} message]
+Some of the tags can result in an error message (e.g., image not found, entry not found, etc). You can specify a different message (or blank) with message attribute:
 
 [wiki::text [wiki::tag someproperty {message="some message"}]]
 
@@ -466,12 +579,13 @@ If, however, you specify a blank message then nothing will be shown:
 {{links entry="Links" message=""}}
 }]
 
-Note: you can specify a prefix and suffix attributes that are only used if the tag was successful. So for example you could specify a heading for the links: 
+[ug::subsubheading {Prefix and suffix attributes} prefix]
+
+You can specify  prefix and suffix attributes that are only used if the tag was successful. So for example you could specify a heading for the links: 
 
 [wiki::text {
-{{links entry="Links" message="" prefix="Here are the links:&lt;br&gt;}}
+{{links entry="Links" message="" prefix="Here are the links:&lt;br&gt;"}}
 }]
-
 
 This would only show when there is a Links sub-folder.
 
@@ -480,11 +594,11 @@ This would only show when there is a Links sub-folder.
 The first set of property tags show some information for the entry. Note: the attributes are all optional.
 
 <ul>
-<li> [wiki::tagdef name]:  Entry name
+<li> [wiki::tagdef name] Entry name
 <p>
-<li> [wiki::tagdef entryid]:  Entry ID
+<li> [wiki::tagdef entryid]  Entry ID
 <p>
-<li> [wiki::tagdef description {wikify="true|false"}]: Entry description. If wikify=true then treat the description as
+<li> [wiki::tagdef description {wikify="true|false"}] Entry description. If wikify=true then treat the description as
 wiki text.
 
 <p>
@@ -494,16 +608,16 @@ wiki text.
 [wiki::tagdef daterange {format="date time format" separator=" -- "} ]<br> 
 [wiki::tagdef createdate {format="date time format"} ]<br>  
 [wiki::tagdef changedate {format="date time format"} ]<br>  
-Show the different dates available for an entyr.
+Show the different dates available for an entry.
 If specified, format the date with the given date time format.
 This follows the
 Java <a href="http://docs.oracle.com/javase/6/docs/api/java/text/SimpleDateFormat.html">date format</a> conventions.
 
 
 <p>
-<li> [wiki::tagdef information]: The information tabs.
+<li> [wiki::tagdef information] The information tabs.
 <p>
-<li> [wiki::tagdef properties {metadata.types="types to show or not show"}]: Show the properties listing.
+<li> [wiki::tagdef properties {metadata.types="types to show or not show"}] Show the properties listing.
 The attribute metadata.types is an optional comma separated list of the metata (or property) types that should be shown or not shown.
 
 For example, if you wanted to show all of the properties except for the Project PI property do:
@@ -517,11 +631,11 @@ Then if you wanted to just show  the Project PI property then do:
 </pre>
 
 
-<li> [wiki::tagdef html]: Shows the default html view of the entry. Note: this requires an entry="..." to specify a different entry.
+<li> [wiki::tagdef html] Shows the default html view of the entry. Note: this requires an entry="..." to specify a different entry.
 <p>
-<li> [wiki::tagdef link {linkresource=true|false button=true|false output=someoutput}]: Makes a link to the entry. Set button=true to buttonize the link. Link to the file with linkresource=true. Link to some other view with output=
+<li> [wiki::tagdef link {linkresource=true|false button=true|false output=someoutput}] Makes a link to the entry. Set button=true to buttonize the link. Link to the file with linkresource=true. Link to some other view with output=
 <p>
-<li> [wiki::tagdef map {width="width of map" height="height of map" listentries="true|false" listwidth="width or percent"}]: Display a map. If the entry is a folder then display the children entries of the folder.
+<li> [wiki::tagdef map {width="width of map" height="height of map" listentries="true|false" listwidth="width or percent"}] Display a map. If the entry is a folder then display the children entries of the folder.
 
 If you do not specify a width then the map will be sized to fit its page. 
 
@@ -538,18 +652,18 @@ If you have a Folder (or other group) and want to just show the Folder and nots 
 </pre>
 
 
-<li> [wiki::tagdef earth {width="width of map" height="height of map"}]: 
+<li> [wiki::tagdef earth {width="width of map" height="height of map"}] 
 Display the Google Earth plugin. 
 <p>
-<li> [wiki::tagdef comments]: Show the comments.
+<li> [wiki::tagdef comments] Show the comments.
 <p>
-<li> [wiki::tagdef breadcrumbs]: Show the breadcrumb path.
+<li> [wiki::tagdef breadcrumbs] Show the breadcrumb path.
 <p>
-<li> [wiki::tagdef layout]: This shows the "Layout:" toolbar bar for an entry.
+<li> [wiki::tagdef layout] This shows the "Layout:" toolbar bar for an entry.
 <p>
-<li> [wiki::tagdef toolbar]: Show the entry toolbar.
+<li> [wiki::tagdef toolbar] Show the entry toolbar.
 <p>
-<li> [wiki::tagdef image {src="image source" alt="alt text" width="image width" link="true|false" left="absolute position" top="absolute position" linkresource="true|false" alt="image alt label"}]: <br>
+<li> [wiki::tagdef image {src="image source" alt="alt text" width="image width" link="true|false" left="absolute position" top="absolute position" linkresource="true|false" alt="image alt label"}] <br>
 Include an image. If src is not given then this shows the image (if there is one) 
 from the entry.  If src is specified it can take on the form: 
 <pre>
@@ -573,7 +687,7 @@ attribute will be used in place of the entry id as a label on the image
 for accessibility.
 
 <p>
-<li> [wiki::tagdef menu {popup="true|false" title="title to use" menus="file,edit,feeds,view,other"}]: 
+<li> [wiki::tagdef menu {popup="true|false" title="title to use" menus="file,edit,feeds,view,other"}] 
 Show the menu actions. If menus is not specified
 show all of the menus. If menus is specified only show those menus listed.
 Show all menus in a toggle block:
@@ -599,10 +713,10 @@ Show the menu actions in a popup:
 
 [ug::subsubheading {Collection Wiki Properties} entries]
 
-The following properties display a collection of entries. By default they
+The following tags display a collection of entries. By default they
 are the children entries of the wiki entry but you can specify
 other groups of entries with any of the following arguments:
-[wiki::text {{{property entry="some other entry" 
+[wiki::text {{{<i>tag</i> entry="some other entry" 
                entries="entryid1,entryid2,entryid3.." 
                entries.filter="file|folder|image|type:some type|geo|suffix:file suffixes"
                exclude="entryid1,entryid2,entryid3.."  
@@ -761,23 +875,23 @@ search
 [ug::subsubheading {Collection Tags} collection_tags]
 <ul>
 
-<li> [wiki::tagdef tree]:
-The [wiki::tagdef tree] tag is used to display the children entries of a folder.
+<li> [wiki::tagdef tree]
+The tree tag is used to display the children entries of a folder.
 It can take the form:
-[wiki::text [wiki::tagdef tree {title="Links" showtoggle="false" open="true" }]]
+[wiki::text {{{tree title="Links" showtoggle="false" open="true" }}}]
 
 The title attribute is used in place of "Children". 
 If showtoggle="false" then the show/hide toggle link is not shown.
 
-<li> [wiki::tagdef grid]: Show the children in a grid. e.g., show 
+<li> [wiki::tagdef grid] Show the children in a grid. e.g., show 
 the grandchildren as a grid:
 [wiki::text {{{grid entries="grandchildren"}}}]
 
 
-<li> [wiki::tagdef recent {days="number of days to show"}]:
+<li> [wiki::tagdef recent {days="number of days to show"}]
 Show the most recent N days in a list organized by day.
 
-<li> [wiki::tagdef imageplayer {width="image width" loopdelay="delay in milliseconds" loopstart="true|false" useAttachment="true|false"}]:
+<li> [wiki::tagdef imageplayer {width="image width" loopdelay="delay in milliseconds" loopstart="true|false" useAttachment="true|false"}]
 Show images in an image player, e.g.
 [wiki::text {{{imageplayer loopdelay="500" loopstart="true"}}}] </pre>
 
@@ -785,7 +899,7 @@ If <i>useAttachment</i> is true then, if the entry's file is not an image but it
 an attachment that is an image then use the attachment image.
 
 
-<li> [wiki::tagdef gallery {width="image width" columns="number of columns" showdescription="true"}]:
+<li> [wiki::tagdef gallery {width="image width" columns="number of columns" showdescription="true"}]
 Show a 3 column gallery:
 [wiki::text {{{gallery columns="3"}}}] </pre>
 
@@ -795,7 +909,7 @@ Show a vertical listing of the children entry images:
 Set the image width and only show up to 5 images:
 [wiki::text {{{gallery  width="300" max="5"}}}] </pre>
 
-<li> [wiki::tagdef tabs]: Show the children as tabs:
+<li> [wiki::tagdef tabs] Show the children as tabs:
 [wiki::text {{{tabs}}}] </pre>
 
 Show only the 3 specified entries in tabs:
@@ -819,11 +933,11 @@ Additional arguments:
 <li>linkresource="true|false" - if true, link to the entry resource
 </ul>
 
-<li> [wiki::tagdef accordian {border="0" collapse="true"}  ]: Show the children in an accordian:
+<li> [wiki::tagdef accordian {border="0" collapse="true"}  ] Show the children in an accordian:
 [wiki::text {{{accordian}}}] </pre>
 Uses the same arguments as tabs. If border is non-zero then show a border. If collapse is false then open the first section.
 
-<li> [wiki::tagdef slideshow]: Show the children in a slideshow:
+<li> [wiki::tagdef slideshow] Show the children in a slideshow:
 [wiki::text {{{slideshow}}}] </pre>
 <p>
 Uses the same arguments as tabs, plus:
@@ -843,7 +957,7 @@ Uses the same arguments as tabs, plus:
                           class="css class for the link"
                           tagopen="html to prepend to the link - default is li" 
                           tagclose="close html"
-                          linkresource="true|false if true link to the entry's file or URL; If false link to the entry"}]: Layout links to the entries.<br>
+                          linkresource="true|false if true link to the entry's file or URL; If false link to the entry"}] Layout links to the entries.<br>
 This produces a set of links to the entries. 
 
 A bulleted list:
@@ -948,58 +1062,6 @@ apply.header="${url}"
 
 
 </ul>
-
-[ug::subsubheading {Hiding and showing content} {hiding}]
-
-The &lt;block&gt; tag allows you to easily create a toggle block and/or show or hide content
-based on the user's device.
-
-To show a simple toggle block just do:
-[xml {
-<block>
- any content here
-</block>
-}]
-
-You can specify the toggle label title with:
-[xml {
-<block title="Click here to open">
- any content here
-</block>
-}]
-
-
-You can specify whether the block is open or closed:
-[xml {
-<block open="false">
- any content here
-</block>
-}]
-
-You can specify whether to show the content or not:
-[xml {
-<block show="mobile" decorate="false">
-  this will only show for mobile users
-</block>
-<block show="!mobile" decorate="false">
-  this will only show for non-mobile users
-</block>
-}]
-
-You can also use the block tag to define a variable or macro that is used later.
-
-[xml {
-<block var="var_name">
- any content here
-</block>
-}]
-
-
-This will not show the content in place. Rather you can reference and insert the content later with:
-[xml {
- \${var_name}
-</block>
-}]
 
 
 

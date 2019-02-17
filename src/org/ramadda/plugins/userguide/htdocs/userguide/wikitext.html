@@ -31,8 +31,10 @@ pre {
 The web pages in RAMADDA are created through its  wiki facility. The wiki facility supports both regular wiki markup like Wikipedia uses
 as well as special  RAMADDA wiki tags that allow for page payout, displaying maps, lists, charts, etc. 
 
-<p><div class="ramadda-help-heading">5.1.0 Available Tags</div> 
-<ul><li> <a href='#titles'><a href="#titles">Titles and headings</a>
+<p><div class="ramadda-help-heading">5.1.0 Sections</div> 
+<ul><li> <a href='#hiding'><a href="#hiding">Hiding and showing content</a>
+</a>
+<li> <a href='#titles'><a href="#titles">Titles and headings</a>
 </a>
 <li> <a href='#sections'><a href="#sections">Sections</a>
 </a>
@@ -52,6 +54,12 @@ as well as special  RAMADDA wiki tags that allow for page payout, displaying map
 </a>
 <li> <a href='#entry'><a href="#entry">Specify other entries with the <i>entry</i> attribute</a>
 </a>
+<li> <a href='#property'><a href="#property">Property tag</a>
+</a>
+<li> <a href='#message'><a href="#message">Message attribute</a>
+</a>
+<li> <a href='#prefix'><a href="#prefix">Prefix and suffix attributes</a>
+</a>
 <li> <a href='#basic'><a href="#basic">Basic Wiki Properties</a>
 </a>
 <li> <a href='#entries'><a href="#entries">Collection Wiki Properties</a>
@@ -59,8 +67,6 @@ as well as special  RAMADDA wiki tags that allow for page payout, displaying map
 <li> <a href='#virtual_groups'><a href="#virtual_groups">Virtual Groups</a>
 </a>
 <li> <a href='#collection_tags'><a href="#collection_tags">Collection Tags</a>
-</a>
-<li> <a href='#hiding'><a href="#hiding">Hiding and showing content</a>
 </a>
 <li> <a href='#snippet'><a href="#snippet">Snippet</a>
 </a>
@@ -89,6 +95,55 @@ Bulleted lists:
 * bullet 3
 </pre></div>
 
+The RAMADDA wiki text supports a number of other markup methods using +tag/-tag and :tag syntax. 
+The "+/-" syntax is for multi-line and the ":" syntax is for single line.
+For example, an easy way to add a line break of paragraph (instead of doing &lt;br&gt;, &lt;p&gt;) is:
+<div style="margin:10px;"><pre>
+:br
+:pr
+</pre></div>
+
+To center text do:
+<div style="margin:10px;"><pre>
++center
+some text
+to center
+-center
+</pre></div>
+
+To wrap text in a div do:
+<div style="margin:10px;"><pre>
++div
+some text in a div
+-div
+</pre></div>
+
+
+To add attributes to the div do:
+<div style="margin:10px;"><pre>
++div style="max-height:100px;overflow-y:auto;"
+some text in a div
+-div
+</pre></div>
+
+
+
+
+To create a button do:
+<div style="margin:10px;"><pre>
+
+:button /url Some label
+
+:button-green /url Some label
+
+:button-blue /url Some label
+</pre></div>
+
+Will produce:
+<a name="image1"></a><div class="cimg"><a href="images/buttons.png"><img  src="images/buttons.png" border=0 alt="Buttons" ></a><br><span class="caption">Image 1: Buttons</span></div>
+
+
+
 
 You can escape your wiki text and include raw, unprocessed text with the &lt;nowiki&gt; tag:
 <div style="margin:10px;"><pre>
@@ -99,12 +154,80 @@ This is text that does not get formatted
 more wiki text
 </pre></div>
 
+
+For example, if you want to include javascript in your text do:
+<div style="margin:10px;"><pre>
+&lt;nowiki&gt;
+&lt;script  type="text/JavaScript"  &gt;
+...
+&lt;/script&gt;
+&lt;/nowiki&gt;
+
+</pre></div>
+
 See the <a href=" http://en.wikipedia.org/wiki/Help:Wiki_markup">Wikipedia page on Wiki Markup</a> for more information on basic Wiki markup. 
+
+
+<a name="hiding"></a>
+<div class="ramadda-help-subsubheading"><a href="#hiding">Hiding and showing content</a>
+</div> 
+
+The &lt;block&gt; tag allows you to easily create a toggle block and/or show or hide content
+based on the user's device.
+
+To show a simple toggle block just do:
+<blockquote><pre>
+&lt;block&gt;
+ any content here
+&lt;/block&gt;
+</pre></blockquote>
+
+You can specify the toggle label title with:
+<blockquote><pre>
+&lt;block <span class="xmlattr">title</span>="Click here to open&quot;&gt;
+ any content here
+&lt;/block&gt;
+</pre></blockquote>
+
+
+You can specify whether the block is open or closed:
+<blockquote><pre>
+&lt;block <span class="xmlattr">open</span>="false&quot;&gt;
+ any content here
+&lt;/block&gt;
+</pre></blockquote>
+
+You can specify whether to show the content or not:
+<blockquote><pre>
+&lt;block <span class="xmlattr">show</span>="mobile&quot; <span class="xmlattr">decorate</span>="false&quot;&gt;
+  this will only show for mobile users
+&lt;/block&gt;
+&lt;block <span class="xmlattr">show</span>="!mobile&quot; <span class="xmlattr">decorate</span>="false&quot;&gt;
+  this will only show for non-mobile users
+&lt;/block&gt;
+</pre></blockquote>
+
+You can also use the block tag to define a variable or macro that is used later.
+
+<blockquote><pre>
+&lt;block <span class="xmlattr">var</span>="var_name&quot;&gt;
+ any content here
+&lt;/block&gt;
+</pre></blockquote>
+
+
+This will not show the content in place. Rather you can reference and insert the content later with:
+<blockquote><pre>
+ \${var_name}
+&lt;/block&gt;
+</pre></blockquote>
+
 
 
 
 <a name="layout"></a><p><div class="ramadda-help-heading">5.1.2 <a href="#layout">Layout and Display Markup</a></div> 
-There are a number of helper layout tags that make it easy to do page layout and display.
+There are a number of layout tags that make it easy to do page layout and display.
+
 
 <a name="titles"></a>
 <div class="ramadda-help-subsubheading"><a href="#titles">Titles and headings</a>
@@ -133,9 +256,7 @@ You can change the background color with:
 </pre>
 
 Examples at <a href="https://geodesystems.com/repository/alias/wikiexamples">https://geodesystems.com/repository/alias/wikiexamples</a>.
-
-
-
+<p>
 
 <a name="sections"></a>
 <div class="ramadda-help-subsubheading"><a href="#sections">Sections</a>
@@ -213,7 +334,8 @@ You can change the background color/image by specifying sections as below. Full 
 -section
 </pre>
 
-xxx
+
+
 
 You can also add a CSS style descriptor
 
@@ -511,8 +633,9 @@ The entry value can be:
 The <i>Add Entry ID</i> menu in the editor toolbar allows you to select the entry to use. As a convenience this
 adds both the ID of the entry as well as its name. 
 
-<p>
 <a name="property"></a>
+<div class="ramadda-help-subsubheading"><a href="#property">Property tag</a>
+</div> 
 The <i>property</i> tag supports defining 
 an attribute property that is shared by all tags in the page. 
 
@@ -523,8 +646,10 @@ For example, if you are creating a wiki page full of charts
 that refer to another point data entry for their data then you use the property like, e.g.:
 <div style="margin:10px;"><pre>{{property <i>name="entry" value="9b2f87fc-91f2-485c-8035-7ef588c35fda"</i>}}</pre></div>
 
-<p>
-Some of the properties can result in an error message (e.g., image not found, entry not found, etc). You can specify a different message (or blank) with message attribute:
+<a name="message"></a>
+<div class="ramadda-help-subsubheading"><a href="#message">Message attribute</a>
+</div> 
+Some of the tags can result in an error message (e.g., image not found, entry not found, etc). You can specify a different message (or blank) with message attribute:
 
 <div style="margin:10px;"><pre>{{someproperty <i>message="some message"</i>}}</pre></div>
 
@@ -545,12 +670,15 @@ If, however, you specify a blank message then nothing will be shown:
 {{links entry="Links" message=""}}
 </pre></div>
 
-Note: you can specify a prefix and suffix attributes that are only used if the tag was successful. So for example you could specify a heading for the links: 
+<a name="prefix"></a>
+<div class="ramadda-help-subsubheading"><a href="#prefix">Prefix and suffix attributes</a>
+</div> 
+
+You can specify  prefix and suffix attributes that are only used if the tag was successful. So for example you could specify a heading for the links: 
 
 <div style="margin:10px;"><pre>
-{{links entry="Links" message="" prefix="Here are the links:&lt;br&gt;}}
+{{links entry="Links" message="" prefix="Here are the links:&lt;br&gt;"}}
 </pre></div>
-
 
 This would only show when there is a Links sub-folder.
 
@@ -561,30 +689,30 @@ This would only show when there is a Links sub-folder.
 The first set of property tags show some information for the entry. Note: the attributes are all optional.
 
 <ul>
-<li> <a name="name"></a>{{name}}:  Entry name
+<li> <a name="name"></a>Tag: <a href="#name">name</a><div class='ramadda-wiki-tag'>{{name}}</div> Entry name
 <p>
-<li> <a name="entryid"></a>{{entryid}}:  Entry ID
+<li> <a name="entryid"></a>Tag: <a href="#entryid">entryid</a><div class='ramadda-wiki-tag'>{{entryid}}</div>  Entry ID
 <p>
-<li> <a name="description"></a>{{description <i>wikify="true|false"</i>}}: Entry description. If wikify=true then treat the description as
+<li> <a name="description"></a>Tag: <a href="#description">description</a><div class='ramadda-wiki-tag'>{{description <i>wikify="true|false"</i>}}</div> Entry description. If wikify=true then treat the description as
 wiki text.
 
 <p>
 <li> 
-<a name="fromdate"></a>{{fromdate <i>format="date time format"</i>}}<br> 
-<a name="todate"></a>{{todate <i>format="date time format"</i>}}<br> 
-<a name="daterange"></a>{{daterange <i>format="date time format" separator=" -- "</i>}}<br> 
-<a name="createdate"></a>{{createdate <i>format="date time format"</i>}}<br>  
-<a name="changedate"></a>{{changedate <i>format="date time format"</i>}}<br>  
-Show the different dates available for an entyr.
+<a name="fromdate"></a>Tag: <a href="#fromdate">fromdate</a><div class='ramadda-wiki-tag'>{{fromdate <i>format="date time format"</i>}}</div><br> 
+<a name="todate"></a>Tag: <a href="#todate">todate</a><div class='ramadda-wiki-tag'>{{todate <i>format="date time format"</i>}}</div><br> 
+<a name="daterange"></a>Tag: <a href="#daterange">daterange</a><div class='ramadda-wiki-tag'>{{daterange <i>format="date time format" separator=" -- "</i>}}</div><br> 
+<a name="createdate"></a>Tag: <a href="#createdate">createdate</a><div class='ramadda-wiki-tag'>{{createdate <i>format="date time format"</i>}}</div><br>  
+<a name="changedate"></a>Tag: <a href="#changedate">changedate</a><div class='ramadda-wiki-tag'>{{changedate <i>format="date time format"</i>}}</div><br>  
+Show the different dates available for an entry.
 If specified, format the date with the given date time format.
 This follows the
 Java <a href="http://docs.oracle.com/javase/6/docs/api/java/text/SimpleDateFormat.html">date format</a> conventions.
 
 
 <p>
-<li> <a name="information"></a>{{information}}: The information tabs.
+<li> <a name="information"></a>Tag: <a href="#information">information</a><div class='ramadda-wiki-tag'>{{information}}</div> The information tabs.
 <p>
-<li> <a name="properties"></a>{{properties <i>metadata.types="types to show or not show"</i>}}: Show the properties listing.
+<li> <a name="properties"></a>Tag: <a href="#properties">properties</a><div class='ramadda-wiki-tag'>{{properties <i>metadata.types="types to show or not show"</i>}}</div> Show the properties listing.
 The attribute metadata.types is an optional comma separated list of the metata (or property) types that should be shown or not shown.
 
 For example, if you wanted to show all of the properties except for the Project PI property do:
@@ -598,11 +726,11 @@ Then if you wanted to just show  the Project PI property then do:
 </pre>
 
 
-<li> <a name="html"></a>{{html}}: Shows the default html view of the entry. Note: this requires an entry="..." to specify a different entry.
+<li> <a name="html"></a>Tag: <a href="#html">html</a><div class='ramadda-wiki-tag'>{{html}}</div> Shows the default html view of the entry. Note: this requires an entry="..." to specify a different entry.
 <p>
-<li> <a name="link"></a>{{link <i>linkresource=true|false button=true|false output=someoutput</i>}}: Makes a link to the entry. Set button=true to buttonize the link. Link to the file with linkresource=true. Link to some other view with output=
+<li> <a name="link"></a>Tag: <a href="#link">link</a><div class='ramadda-wiki-tag'>{{link <i>linkresource=true|false button=true|false output=someoutput</i>}}</div> Makes a link to the entry. Set button=true to buttonize the link. Link to the file with linkresource=true. Link to some other view with output=
 <p>
-<li> <a name="map"></a>{{map <i>width="width of map" height="height of map" listentries="true|false" listwidth="width or percent"</i>}}: Display a map. If the entry is a folder then display the children entries of the folder.
+<li> <a name="map"></a>Tag: <a href="#map">map</a><div class='ramadda-wiki-tag'>{{map <i>width="width of map" height="height of map" listentries="true|false" listwidth="width or percent"</i>}}</div> Display a map. If the entry is a folder then display the children entries of the folder.
 
 If you do not specify a width then the map will be sized to fit its page. 
 
@@ -619,18 +747,18 @@ If you have a Folder (or other group) and want to just show the Folder and nots 
 </pre>
 
 
-<li> <a name="earth"></a>{{earth <i>width="width of map" height="height of map"</i>}}: 
+<li> <a name="earth"></a>Tag: <a href="#earth">earth</a><div class='ramadda-wiki-tag'>{{earth <i>width="width of map" height="height of map"</i>}}</div> 
 Display the Google Earth plugin. 
 <p>
-<li> <a name="comments"></a>{{comments}}: Show the comments.
+<li> <a name="comments"></a>Tag: <a href="#comments">comments</a><div class='ramadda-wiki-tag'>{{comments}}</div> Show the comments.
 <p>
-<li> <a name="breadcrumbs"></a>{{breadcrumbs}}: Show the breadcrumb path.
+<li> <a name="breadcrumbs"></a>Tag: <a href="#breadcrumbs">breadcrumbs</a><div class='ramadda-wiki-tag'>{{breadcrumbs}}</div> Show the breadcrumb path.
 <p>
-<li> <a name="layout"></a>{{layout}}: This shows the "Layout:" toolbar bar for an entry.
+<li> <a name="layout"></a>Tag: <a href="#layout">layout</a><div class='ramadda-wiki-tag'>{{layout}}</div> This shows the "Layout:" toolbar bar for an entry.
 <p>
-<li> <a name="toolbar"></a>{{toolbar}}: Show the entry toolbar.
+<li> <a name="toolbar"></a>Tag: <a href="#toolbar">toolbar</a><div class='ramadda-wiki-tag'>{{toolbar}}</div> Show the entry toolbar.
 <p>
-<li> <a name="image"></a>{{image <i>src="image source" alt="alt text" width="image width" link="true|false" left="absolute position" top="absolute position" linkresource="true|false" alt="image alt label"</i>}}: <br>
+<li> <a name="image"></a>Tag: <a href="#image">image</a><div class='ramadda-wiki-tag'>{{image <i>src="image source" alt="alt text" width="image width" link="true|false" left="absolute position" top="absolute position" linkresource="true|false" alt="image alt label"</i>}}</div> <br>
 Include an image. If src is not given then this shows the image (if there is one) 
 from the entry.  If src is specified it can take on the form: 
 <pre>
@@ -654,7 +782,7 @@ attribute will be used in place of the entry id as a label on the image
 for accessibility.
 
 <p>
-<li> <a name="menu"></a>{{menu <i>popup="true|false" title="title to use" menus="file,edit,feeds,view,other"</i>}}: 
+<li> <a name="menu"></a>Tag: <a href="#menu">menu</a><div class='ramadda-wiki-tag'>{{menu <i>popup="true|false" title="title to use" menus="file,edit,feeds,view,other"</i>}}</div> 
 Show the menu actions. If menus is not specified
 show all of the menus. If menus is specified only show those menus listed.
 Show all menus in a toggle block:
@@ -682,10 +810,10 @@ Show the menu actions in a popup:
 <div class="ramadda-help-subsubheading"><a href="#entries">Collection Wiki Properties</a>
 </div> 
 
-The following properties display a collection of entries. By default they
+The following tags display a collection of entries. By default they
 are the children entries of the wiki entry but you can specify
 other groups of entries with any of the following arguments:
-<div style="margin:10px;"><pre>{{property entry="some other entry" 
+<div style="margin:10px;"><pre>{{<i>tag</i> entry="some other entry" 
                entries="entryid1,entryid2,entryid3.." 
                entries.filter="file|folder|image|type:some type|geo|suffix:file suffixes"
                exclude="entryid1,entryid2,entryid3.."  
@@ -848,23 +976,23 @@ search
 </div> 
 <ul>
 
-<li> <a name="tree"></a>{{tree}}:
-The <a name="tree"></a>{{tree}} tag is used to display the children entries of a folder.
+<li> <a name="tree"></a>Tag: <a href="#tree">tree</a><div class='ramadda-wiki-tag'>{{tree}}</div>
+The tree tag is used to display the children entries of a folder.
 It can take the form:
-<div style="margin:10px;"><pre><a name="tree"></a>{{tree <i>title="Links" showtoggle="false" open="true"</i>}}</pre></div>
+<div style="margin:10px;"><pre>{{tree title="Links" showtoggle="false" open="true" }}</pre></div>
 
 The title attribute is used in place of "Children". 
 If showtoggle="false" then the show/hide toggle link is not shown.
 
-<li> <a name="grid"></a>{{grid}}: Show the children in a grid. e.g., show 
+<li> <a name="grid"></a>Tag: <a href="#grid">grid</a><div class='ramadda-wiki-tag'>{{grid}}</div> Show the children in a grid. e.g., show 
 the grandchildren as a grid:
 <div style="margin:10px;"><pre>{{grid entries="grandchildren"}}</pre></div>
 
 
-<li> <a name="recent"></a>{{recent <i>days="number of days to show"</i>}}:
+<li> <a name="recent"></a>Tag: <a href="#recent">recent</a><div class='ramadda-wiki-tag'>{{recent <i>days="number of days to show"</i>}}</div>
 Show the most recent N days in a list organized by day.
 
-<li> <a name="imageplayer"></a>{{imageplayer <i>width="image width" loopdelay="delay in milliseconds" loopstart="true|false" useAttachment="true|false"</i>}}:
+<li> <a name="imageplayer"></a>Tag: <a href="#imageplayer">imageplayer</a><div class='ramadda-wiki-tag'>{{imageplayer <i>width="image width" loopdelay="delay in milliseconds" loopstart="true|false" useAttachment="true|false"</i>}}</div>
 Show images in an image player, e.g.
 <div style="margin:10px;"><pre>{{imageplayer loopdelay="500" loopstart="true"}}</pre></div> </pre>
 
@@ -872,7 +1000,7 @@ If <i>useAttachment</i> is true then, if the entry's file is not an image but it
 an attachment that is an image then use the attachment image.
 
 
-<li> <a name="gallery"></a>{{gallery <i>width="image width" columns="number of columns" showdescription="true"</i>}}:
+<li> <a name="gallery"></a>Tag: <a href="#gallery">gallery</a><div class='ramadda-wiki-tag'>{{gallery <i>width="image width" columns="number of columns" showdescription="true"</i>}}</div>
 Show a 3 column gallery:
 <div style="margin:10px;"><pre>{{gallery columns="3"}}</pre></div> </pre>
 
@@ -882,7 +1010,7 @@ Show a vertical listing of the children entry images:
 Set the image width and only show up to 5 images:
 <div style="margin:10px;"><pre>{{gallery  width="300" max="5"}}</pre></div> </pre>
 
-<li> <a name="tabs"></a>{{tabs}}: Show the children as tabs:
+<li> <a name="tabs"></a>Tag: <a href="#tabs">tabs</a><div class='ramadda-wiki-tag'>{{tabs}}</div> Show the children as tabs:
 <div style="margin:10px;"><pre>{{tabs}}</pre></div> </pre>
 
 Show only the 3 specified entries in tabs:
@@ -906,11 +1034,11 @@ Additional arguments:
 <li>linkresource="true|false" - if true, link to the entry resource
 </ul>
 
-<li> <a name="accordian"></a>{{accordian <i>border="0" collapse="true"</i>}}: Show the children in an accordian:
+<li> <a name="accordian"></a>Tag: <a href="#accordian">accordian</a><div class='ramadda-wiki-tag'>{{accordian <i>border="0" collapse="true"</i>}}</div> Show the children in an accordian:
 <div style="margin:10px;"><pre>{{accordian}}</pre></div> </pre>
 Uses the same arguments as tabs. If border is non-zero then show a border. If collapse is false then open the first section.
 
-<li> <a name="slideshow"></a>{{slideshow}}: Show the children in a slideshow:
+<li> <a name="slideshow"></a>Tag: <a href="#slideshow">slideshow</a><div class='ramadda-wiki-tag'>{{slideshow}}</div> Show the children in a slideshow:
 <div style="margin:10px;"><pre>{{slideshow}}</pre></div> </pre>
 <p>
 Uses the same arguments as tabs, plus:
@@ -925,12 +1053,12 @@ Uses the same arguments as tabs, plus:
 
 <p>
 
-<li> <a name="links"></a>{{links <i>separator="separator text to use" 
+<li> <a name="links"></a>Tag: <a href="#links">links</a><div class='ramadda-wiki-tag'>{{links <i>separator="separator text to use" 
                           style="inline css style for the link"
                           class="css class for the link"
                           tagopen="html to prepend to the link - default is li" 
                           tagclose="close html"
-                          linkresource="true|false if true link to the entry's file or URL; If false link to the entry"</i>}}: Layout links to the entries.<br>
+                          linkresource="true|false if true link to the entry's file or URL; If false link to the entry"</i>}}</div> Layout links to the entries.<br>
 This produces a set of links to the entries. 
 
 A bulleted list:
@@ -960,16 +1088,16 @@ You can create a header with wiki text like:
 </pre></div>
 
 
-<li> <a name="search"></a>{{search <i>type="entry type" 
+<li> <a name="search"></a>Tag: <a href="#search">search</a><div class='ramadda-wiki-tag'>{{search <i>type="entry type" 
                   search.showform="true|false"
-                  search.showheader="true|false"</i>}}
+                  search.showheader="true|false"</i>}}</div>
 
 The "search" tag performs an entry type specific search and embed it into the wiki. This is the same as the top-level type specific search. You can use any of the "search." attributes defined above, e.g., search.text.
 
 The default is to not show the form.
 
 
-<li> <a name="apply"></a>{{apply}}
+<li> <a name="apply"></a>Tag: <a href="#apply">apply</a><div class='ramadda-wiki-tag'>{{apply}}</div>
 The apply tag allows you to apply some tag (e.g., links, map) to a set of entries in turn. You can then layout
 the results in a variety of ways (e.g.,  table, tabs);
 The apply tag is of the form:
@@ -1035,60 +1163,6 @@ apply.header="${url}"
 
 </ul>
 
-<a name="hiding"></a>
-<div class="ramadda-help-subsubheading"><a href="#hiding">Hiding and showing content</a>
-</div> 
-
-The &lt;block&gt; tag allows you to easily create a toggle block and/or show or hide content
-based on the user's device.
-
-To show a simple toggle block just do:
-<blockquote><pre>
-&lt;block&gt;
- any content here
-&lt;/block&gt;
-</pre></blockquote>
-
-You can specify the toggle label title with:
-<blockquote><pre>
-&lt;block <span class="xmlattr">title</span>="Click here to open&quot;&gt;
- any content here
-&lt;/block&gt;
-</pre></blockquote>
-
-
-You can specify whether the block is open or closed:
-<blockquote><pre>
-&lt;block <span class="xmlattr">open</span>="false&quot;&gt;
- any content here
-&lt;/block&gt;
-</pre></blockquote>
-
-You can specify whether to show the content or not:
-<blockquote><pre>
-&lt;block <span class="xmlattr">show</span>="mobile&quot; <span class="xmlattr">decorate</span>="false&quot;&gt;
-  this will only show for mobile users
-&lt;/block&gt;
-&lt;block <span class="xmlattr">show</span>="!mobile&quot; <span class="xmlattr">decorate</span>="false&quot;&gt;
-  this will only show for non-mobile users
-&lt;/block&gt;
-</pre></blockquote>
-
-You can also use the block tag to define a variable or macro that is used later.
-
-<blockquote><pre>
-&lt;block <span class="xmlattr">var</span>="var_name&quot;&gt;
- any content here
-&lt;/block&gt;
-</pre></blockquote>
-
-
-This will not show the content in place. Rather you can reference and insert the content later with:
-<blockquote><pre>
- \${var_name}
-&lt;/block&gt;
-</pre></blockquote>
-
 
 
 
@@ -1099,7 +1173,7 @@ This will not show the content in place. Rather you can reference and insert the
 You can also import any of the views of an entry, e.g., the map view, 
 the calendar view, etc., with the  
 {{import}} tag:<br>
-<a name="import"></a>{{import <i>output="<any of the output types>"</i>}}
+<a name="import"></a>Tag: <a href="#import">import</a><div class='ramadda-wiki-tag'>{{import <i>output="<any of the output types>"</i>}}</div>
 <p>
 
 So, if you wanted to show the calendar view of an entry you would do:

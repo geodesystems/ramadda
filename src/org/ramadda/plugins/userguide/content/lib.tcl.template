@@ -18,7 +18,7 @@ proc wiki::tagdef {t {attrs {}}} {
     } else {
         set block   "{{$t <i>$attrs</i>}}"
     }
-    return "<a name=\"$t\"></a>$block"
+    return "<a name=\"$t\"></a>Tag: <a href=\"#${t}\">$t</a><div class='ramadda-wiki-tag'>$block</div>"
 }
 
 proc wiki::tagdefBlock {t {attrs {}}} {
