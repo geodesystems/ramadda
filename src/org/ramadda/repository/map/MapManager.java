@@ -1221,7 +1221,6 @@ public class MapManager extends RepositoryManager implements WikiConstants {
                                    false);
         boolean search       = Utils.getProperty(props, "showSearch", false);
         boolean showLocationSearch      = Utils.getProperty(props, "showLocationSearch", false);
-        System.err.println("map:" + showLocationSearch +" " + props);
         boolean cbxOn        = Utils.getProperty(props, "checkboxOn", true);
         String  mapVar       = Utils.getProperty(props, ATTR_MAPVAR);
         String  selectFields = Utils.getProperty(props, ATTR_SELECTFIELDS);
