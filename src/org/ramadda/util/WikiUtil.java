@@ -587,7 +587,7 @@ public class WikiUtil {
                 }
             }
 
-            if(tline.startsWith(":var ")) {
+            if(tline.startsWith(":macro")) {
                 hasSet = true;
                 List<String> toks  = StringUtil.splitUpTo(tline, " ", 3);
                 String var  = (toks.size()>1?toks.get(1):"");
@@ -597,14 +597,14 @@ public class WikiUtil {
             }
 
 
-            if (tline.startsWith("+var")) {
+            if (tline.startsWith("+macro")) {
                 List<String> toks  = StringUtil.splitUpTo(tline, " ", 3);
                 currentVar = (toks.size()>1?toks.get(1):"");
                 currentVarValue = new StringBuilder ();
                 continue;
             }
 
-            if (tline.startsWith("-var")) {
+            if (tline.startsWith("-macro")) {
                 myVars.put(currentVar, currentVarValue.toString());
                 currentVar = null;
                 currentVarValue = null;
