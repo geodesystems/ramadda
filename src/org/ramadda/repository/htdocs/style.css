@@ -235,7 +235,8 @@ color:#000;
   padding:25px;
   padding-bottom:6px;
   padding-top:6px;
-  border : 1px #f1f1f1 solid;
+/*  border : 1px #f1f1f1 solid;*/
+  border : 1px #ddd solid;
   display: inline-block;
   background-color : #fffeec;
 }
