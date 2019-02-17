@@ -32,7 +32,9 @@ The web pages in RAMADDA are created through its  wiki facility. The wiki facili
 as well as special  RAMADDA wiki tags that allow for page payout, displaying maps, lists, charts, etc. 
 
 <p><div class="ramadda-help-heading">5.1.0 Sections</div> 
-<ul><li> <a href='#hiding'><a href="#hiding">Hiding and showing content</a>
+<ul><li> <a href='#macros'><a href="#macros">Macros</a>
+</a>
+<li> <a href='#blocks'><a href="#blocks">Blocks</a>
 </a>
 <li> <a href='#titles'><a href="#titles">Titles and headings</a>
 </a>
@@ -168,10 +170,45 @@ For example, if you want to include javascript in your text do:
 See the <a href=" http://en.wikipedia.org/wiki/Help:Wiki_markup">Wikipedia page on Wiki Markup</a> for more information on basic Wiki markup. 
 
 
-<a name="hiding"></a>
-<div class="ramadda-help-subsubheading"><a href="#hiding">Hiding and showing content</a>
+<a name="macros"></a>
+<div class="ramadda-help-subsubheading"><a href="#macros">Macros</a>
 </div> 
+Macro values can be defined and used later in the wiki page with the :macro and +macro/-macro tags.
 
+To define a macro do:
+<div style="margin:10px;"><pre>
+:macro macro_name macro body
+or:
++macro macro_name
+macro
+body
+-macro
+</pre></div>
+
+To use the macro do:
+<div style="margin:10px;"><pre>
+:macro macro_name Some text
+...
+any wiki text here ${macro_name} more text
+
+</pre></div>
+
+For example, if you have a number of buttons as described above but want to have
+one color for them do:
+<div style="margin:10px;"><pre>
+:macro buttonColor -green
+...
+:button${buttonColor} /url1 Button 1 text
+
+:button${buttonColor} /url2 Button 2 text
+</pre></div>
+
+Note: the block tag below has a similar feature with the "var" attribute. The difference is that the block tag can be placed at the bottom of the page after the
+var that it references is used. The macro tags need to be inline before they are used.
+
+<a name="blocks"></a>
+<div class="ramadda-help-subsubheading"><a href="#blocks">Blocks</a>
+</div> 
 The &lt;block&gt; tag allows you to easily create a toggle block and/or show or hide content
 based on the user's device.
 

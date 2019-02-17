@@ -103,8 +103,41 @@ For example, if you want to include javascript in your text do:
 See the <a href=" http://en.wikipedia.org/wiki/Help:Wiki_markup">Wikipedia page on Wiki Markup</a> for more information on basic Wiki markup. 
 
 
-[ug::subsubheading {Hiding and showing content} {hiding}]
+[ug::subsubheading {Macros} {macros}]
+Macro values can be defined and used later in the wiki page with the :macro and +macro/-macro tags.
 
+To define a macro do:
+[wiki::text {
+:macro macro_name macro body
+or:
++macro macro_name
+macro
+body
+-macro
+}]
+
+To use the macro do:
+[wiki::text {
+:macro macro_name Some text
+...
+any wiki text here ${macro_name} more text
+
+}]
+
+For example, if you have a number of buttons as described above but want to have
+one color for them do:
+[wiki::text {
+:macro buttonColor -green
+...
+:button${buttonColor} /url1 Button 1 text
+
+:button${buttonColor} /url2 Button 2 text
+}]
+
+Note: the block tag below has a similar feature with the "var" attribute. The difference is that the block tag can be placed at the bottom of the page after the
+var that it references is used. The macro tags need to be inline before they are used.
+
+[ug::subsubheading {Blocks} {blocks}]
 The &lt;block&gt; tag allows you to easily create a toggle block and/or show or hide content
 based on the user's device.
 
