@@ -6633,7 +6633,7 @@ function RamaddaAxisChart(displayManager, id, chartType, properties) {
 
 
 function RamaddaSeriesChart(displayManager, id, chartType, properties) {
-    let SUPER = new RamaddaGoogleChart(displayManager, id, chartType, properties);
+    let SUPER = new RamaddaAxisChart(displayManager, id, chartType, properties);
     RamaddaUtil.inherit(this, SUPER);
     $.extend(this, {
         includeIndexInData: function() {
@@ -6651,6 +6651,7 @@ function LinechartDisplay(displayManager, id, properties) {
     addRamaddaDisplay(this);
     $.extend(this, {
         doMakeGoogleChart: function(dataList, props, selectedFields, chartOptions) {
+                console.log(JSON.stringify(chartOptions));
             return new google.visualization.LineChart(document.getElementById(this.getChartId()));
         },
     });
