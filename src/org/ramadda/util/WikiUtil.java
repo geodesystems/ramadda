@@ -572,6 +572,9 @@ public class WikiUtil {
         List<String>  accordianIds = new ArrayList<String>();
 
         List<TableState> tableStates  = new ArrayList<TableState>();
+        String currentVar = null;
+        StringBuilder currentVarValue = null;
+
         for (String line :
                 (List<String>) StringUtil.split(s, "\n", false, false)) {
             String tline = line.trim();
@@ -583,6 +586,37 @@ public class WikiUtil {
                     tline = tline.replace("${" + key + "}", value.toString());
                 }
             }
+
+            if(tline.startsWith(":var ")) {
+                hasSet = true;
+                List<String> toks  = StringUtil.splitUpTo(tline, " ", 3);
+                String var  = (toks.size()>1?toks.get(1):"");
+                String value  = (toks.size()>2?toks.get(2):"");
+                myVars.put(var.trim(), value.trim());
+                continue;
+            }
+
+
+            if (tline.startsWith("+var")) {
+                List<String> toks  = StringUtil.splitUpTo(tline, " ", 3);
+                currentVar = (toks.size()>1?toks.get(1):"");
+                currentVarValue = new StringBuilder ();
+                continue;
+            }
+
+            if (tline.startsWith("-var")) {
+                myVars.put(currentVar, currentVarValue.toString());
+                currentVar = null;
+                currentVarValue = null;
+                continue;
+            }
+
+
+            if (currentVar!=null) {
+                currentVarValue.append(tline);
+                continue;
+            }
+
 
             if (tline.startsWith("+table")) {
                 List<String>  toks  = StringUtil.splitUpTo(tline, " ", 2);
@@ -1072,14 +1106,6 @@ public class WikiUtil {
                 continue;
             }
 
-            if(tline.startsWith(":set ")) {
-                hasSet = true;
-                List<String> toks  = StringUtil.splitUpTo(tline, " ", 3);
-                String var  = (toks.size()>1?toks.get(1):"");
-                String value  = (toks.size()>2?toks.get(2):"");
-                myVars.put(var.trim(), value.trim());
-                continue;
-            }
 
 
             if (tline.startsWith(":button")) {
