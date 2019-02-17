@@ -1,8 +1,6 @@
 #!/bin/sh
 mydir=`dirname $0`
 
-say "done"
-exit
 
 #This is the script I use to build and restart the main RAMADDA server on AWS
 #You need to set the following in your environment to point to the geode systems 
