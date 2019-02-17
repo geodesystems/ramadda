@@ -21,7 +21,6 @@ user=ec2-user
 
 ssh -tq -i  ${PEM}  ${user}@${ipaddress} "sudo sh /mnt/ramadda/source/ramadda/bin/buildandinstall.sh"
 
-say "done"
-#tput bel
-#tput bel
+tput bel
+tput bel
 
