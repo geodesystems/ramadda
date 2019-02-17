@@ -404,35 +404,38 @@ public abstract class Processor extends CsvOperator {
          * @throws Exception On badness
          */
         @Override
-        public List<Row> finish(TextReader info, List<Row> inputRows)
+        public List<Row> finish(TextReader textReader, List<Row> inputRows)
                 throws Exception {
             while ((remainderProcessors != null)
                     && (remainderProcessors.size() > 0)) {
                 if (firstProcessors != null) {
                     for (Processor processor : firstProcessors) {
-                        inputRows = processor.finish(info, inputRows);
+                        inputRows = processor.finish(textReader, inputRows);
                     }
                 }
                 processors          = remainderProcessors;
                 remainderProcessors = null;
                 firstProcessors     = null;
                 for (Row row : inputRows) {
-                    row = processRowInner(info, row, "");
-                    if (row == null) {
-                        return null;
+                    row = processRowInner(textReader, row, "");
+                    if(!textReader.getOkToRun()) break;
+                    if(textReader.getExtraRow()!=null) {
+                        row = processRowInner(textReader, textReader.getExtraRow(), null);
+                        textReader.setExtraRow(null);
                     }
+                    if(!textReader.getOkToRun()) break;
                 }
             }
             if (firstProcessors != null) {
                 for (Processor processor : firstProcessors) {
-                    inputRows = processor.finish(info, inputRows);
+                    inputRows = processor.finish(textReader, inputRows);
                     if (inputRows == null) {
                         return null;
                     }
                 }
             }
 
-            info.flush();
+            textReader.flush();
             this.rows = inputRows;
 
             return this.rows;

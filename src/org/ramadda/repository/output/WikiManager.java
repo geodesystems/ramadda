@@ -1516,7 +1516,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
 
             if ( !simple) {
                 return HtmlUtils.div(HtmlUtils.href(url, label,
-                        HtmlUtils.cssClass("btn btn-primary btn-lg")
+                        HtmlUtils.cssClass("ramadda-button")
                         + HtmlUtils.attr("role", "button")));
             }
             String extra = "";
