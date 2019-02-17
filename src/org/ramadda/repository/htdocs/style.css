@@ -2279,6 +2279,13 @@ nowiki {
      padding:0px;
 }
 
+
+
+.wiki-error {
+   font-weight: bold;
+   background: #ff9999;
+}
+
 .wiki-image {
     padding-bottom:0px;
 }

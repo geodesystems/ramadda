@@ -569,11 +569,13 @@ public class WikiUtil {
         StringBuilder js           = new StringBuilder();
         List<TabState> allTabStates  = new ArrayList<TabState>();
         List<TabState> tabInfos     = new ArrayList<TabState>();
+        List<RowState> rowStates     = new ArrayList<RowState>();
         List<String>  accordianIds = new ArrayList<String>();
 
         List<TableState> tableStates  = new ArrayList<TableState>();
         String currentVar = null;
         StringBuilder currentVarValue = null;
+        boolean inCss = false;
 
         for (String line :
                 (List<String>) StringUtil.split(s, "\n", false, false)) {
@@ -585,6 +587,22 @@ public class WikiUtil {
                     Object value = myVars.get(key);
                     tline = tline.replace("${" + key + "}", value.toString());
                 }
+            }
+
+            if (tline.equals("+css")) {
+                inCss=true;
+                buff.append("<style type='text/css'>\n");
+                continue;
+            }
+            if (tline.equals("-css")) {
+                inCss=false;
+                buff.append("</style>\n");
+                continue;
+            }
+            if(inCss) {
+                buff.append(tline);
+                buff.append("\n");
+                continue;
             }
 
             if(tline.startsWith(":macro")) {
@@ -1230,32 +1248,51 @@ public class WikiUtil {
                 continue;
             }
 
+
+            if (tline.equals("+row")) {
+                rowStates.add(new RowState(buff));
+                continue;
+            }
+            if (tline.equals("-row")) {
+                if(rowStates.size()==0) {
+                    wikiError(buff, "Error: unopened row");
+                    continue;
+                }
+                RowState rowState = rowStates.get(rowStates.size()-1);
+                rowState.closeRow(buff);
+                rowStates.remove(rowStates.size()-1);
+                continue;
+            }
+
             if (tline.startsWith(":col-")) {
+                RowState rowState = null;
+                if(rowStates.size()==0) {
+                    //Add a row if we're not in one
+                    rowStates.add(rowState = new RowState(buff));
+                } else {
+                    rowState = rowStates.get(rowStates.size()-1);
+                }
+
                 List<String> toks     = StringUtil.splitUpTo(tline, " ", 2);
                 String       clazz    = toks.get(0).substring(1);
                 String       contents = "";
                 if (toks.size() > 1) {
                     contents = toks.get(1);
                 }
-                buff.append(HtmlUtils.div(contents,
-                                          HtmlUtils.cssClass(clazz)));
-
-                continue;
-            }
-
-
-            if (tline.equals("+row")) {
-                buff.append("<div class=\"row\">");
-
-                continue;
-            }
-            if (tline.equals("-row")) {
-                buff.append("</div>");
-
+                rowState.openColumn(buff,HtmlUtils.cssClass(clazz+" wiki-col"));
+                buff.append(contents);
+                rowState.closeColumn(buff);
                 continue;
             }
 
             if (tline.startsWith("+col-")) {
+                RowState rowState = null;
+                if(rowStates.size()==0) {
+                    //Add a row if we're not in one
+                    rowStates.add(rowState = new RowState(buff));
+                } else {
+                    rowState = rowStates.get(rowStates.size()-1);
+                }
                 List<String>  toks  = StringUtil.splitUpTo(tline, " ", 2);
                 StringBuilder extra = new StringBuilder();
                 String        clazz = toks.get(0).substring(1);
@@ -1270,16 +1307,18 @@ public class WikiUtil {
                 if (clazz.matches("col-[0-9]+")) {
                     clazz = clazz.replace("col-", "col-md-");
                 }
-                buff.append(HtmlUtils.open("div",
-                                           HtmlUtils.cssClass(clazz)
-                                           + extra));
+                rowState.openColumn(buff,
+                                    HtmlUtils.cssClass(clazz+" wiki-col")   + extra);
 
                 continue;
             }
 
             if (tline.startsWith("-col")) {
-                buff.append("</div>");
-
+                if(rowStates.size()==0) {
+                    wikiError(buff,"Error: unopened column");
+                    continue;
+                }
+                rowStates.get(rowStates.size()-1).closeColumn(buff);
                 continue;
             }
 
@@ -1821,6 +1860,14 @@ public class WikiUtil {
     }
 
 
+    public static void wikiError(Appendable buff, String msg) {
+        try {
+            HtmlUtils.span(buff, msg+"<br>",HtmlUtils.cssClass("wiki-error"));
+        } catch(Exception exc) {
+            throw new IllegalArgumentException(exc);
+        }
+    }
+
     /**
      * _more_
      *
@@ -1862,6 +1909,70 @@ public class WikiUtil {
          */
         public TabState() {
             this.id = HtmlUtils.getUniqueId("tabs");
+        }
+
+
+
+    }
+
+
+    public static class RowState {
+
+        int colCnt = 0;
+
+
+        /**
+         * _more_
+         */
+        public RowState(Appendable buff) {
+            try {
+            buff.append("<div class=\"row wiki-row\">");
+            } catch(Exception exc) {
+                throw new IllegalArgumentException(exc);
+            }
+        }
+
+        public void closeRow(Appendable buff)  {
+            try {
+                closeColumns(buff);
+                buff.append("</div>");
+            } catch(Exception exc) {
+                throw new IllegalArgumentException(exc);
+            }
+        }
+
+        public void closeColumn(Appendable buff)  {
+            try {
+            if(colCnt==0) {
+                wikiError(buff,"Error: unopened column");
+                return;
+            }
+            colCnt--;
+            buff.append("</div>");
+            } catch(Exception exc) {
+                throw new IllegalArgumentException(exc);
+            }
+        }
+
+        public void openColumn(Appendable buff,String attrs) {
+            try {
+            closeColumns(buff);
+            HtmlUtils.open(buff, "div",attrs);
+            colCnt++;
+            } catch(Exception exc) {
+                throw new IllegalArgumentException(exc);
+            }
+        }
+
+        public void closeColumns(Appendable buff)  {
+            try {
+            while(colCnt>0) {
+                colCnt--;
+                buff.append("</div>");
+            }
+            } catch(Exception exc) {
+                throw new IllegalArgumentException(exc);
+            }
         }
 
 
