@@ -3294,10 +3294,6 @@ padding-bottom: 0.2em;
 }
 
 
-.ui-tabs-hide { 
-    display: none !important; 
- }
-
 .ui-tabs .ui-tabs-nav .ui-tabs-anchor {
   padding-left: .5em;
   padding-right: .5em;
