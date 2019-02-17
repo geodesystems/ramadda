@@ -89,6 +89,8 @@ public class WikiUtil {
     private Hashtable<String, String> myVars = new Hashtable<String,
                                                    String>();
 
+    private boolean hasSet = false;
+
     /** _more_ */
     private List categoryLinks = new ArrayList();
 
@@ -573,6 +575,15 @@ public class WikiUtil {
         for (String line :
                 (List<String>) StringUtil.split(s, "\n", false, false)) {
             String tline = line.trim();
+            if(tline.indexOf("${")>=0 && hasSet) {
+                for (java.util.Enumeration keys = myVars.keys();
+                     keys.hasMoreElements(); ) {
+                    Object key   = keys.nextElement();
+                    Object value = myVars.get(key);
+                    tline = tline.replace("${" + key + "}", value.toString());
+                }
+            }
+
             if (tline.startsWith("+table")) {
                 List<String>  toks  = StringUtil.splitUpTo(tline, " ", 2);
                 String width = "100%";
@@ -1062,6 +1073,7 @@ public class WikiUtil {
             }
 
             if(tline.startsWith(":set ")) {
+                hasSet = true;
                 List<String> toks  = StringUtil.splitUpTo(tline, " ", 3);
                 String var  = (toks.size()>1?toks.get(1):"");
                 String value  = (toks.size()>2?toks.get(2):"");
