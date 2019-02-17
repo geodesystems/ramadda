@@ -1748,7 +1748,10 @@ function initMapFunctions(theMap) {
         for(var i=0;i<this.locationSearchResults.length;i++) {
             var result = this.locationSearchResults[i];
             var lonlat = new createLonLat(result.longitude, result.latitude);
-            this.searchMarkerList.push(this.addMarker("search", lonlat, ramaddaBaseUrl +"/icons/green-dot.png", "", result.name, 20, 20));
+            var icon = result.icon;
+            if(!icon)
+                icon = ramaddaBaseUrl +"/icons/green-dot.png";
+            this.searchMarkerList.push(this.addMarker("search", lonlat, icon, "", result.name, 20, 20));
 
             east = i==0?result.longitude:Math.max(east,result.longitude);
             west = i==0?result.longitude:Math.min(west,result.longitude);
@@ -1805,22 +1808,13 @@ function initMapFunctions(theMap) {
                     wait.html("Nothing found");
                     return;
                 } else {
-                    if (false && data.result.length == 1) {
-                        var lat = data.result[0].latitude;
-                        var lon = data.result[0].longitude;
-                        var offset = 0.05;
-                        var b = _this.transformProjBounds(_this.map.getExtent());
-
-                        if(Math.abs(b.top-b.bottom)>offset) {
-                            var bounds = _this.transformLLBounds(createBounds(lon - offset, lat - offset, lon + offset, lat + offset));
-                            _this.map.zoomToExtent(bounds);
-                        }
-                        return;
-                    }
                     _this.locationSearchResults = data.result;
                     for (var i = 0; i < data.result.length; i++) {
                         var n = data.result[i].name.replace("\"","'");
-                        result += HtmlUtils.div(["class", "ramadda-map-loc", "name", n, "latitude", data.result[i].latitude, "longitude", data.result[i].longitude], data.result[i].name);
+                        var icon = data.result[i].icon;
+                        if(!icon)
+                            icon = ramaddaBaseUrl +"/icons/green-dot.png";
+                        result += HtmlUtils.div(["class", "ramadda-map-loc", "name", n, "icon",icon, "latitude", data.result[i].latitude, "longitude", data.result[i].longitude], "<img width='16' src=" + icon+"> " + data.result[i].name);
                     }
                     result += HtmlUtils.div(["class", "ramadda-map-loc", "name", "all"],"Show all");
                 }
@@ -1845,12 +1839,13 @@ function initMapFunctions(theMap) {
                     }
                     var lat = parseFloat($(this).attr("latitude"));
                     var lon = parseFloat($(this).attr("longitude"));
+                    var icon = $(this).attr("icon");
                     var offset = 0.05;
                     var bounds = _this.transformLLBounds(createBounds(lon - offset, lat - offset, lon + offset, lat + offset));
                     var lonlat = new createLonLat(lon, lat);
                     _this.removeSearchMarkers();
                     _this.searchMarkerList = [];
-                    _this.searchMarkerList.push(_this.addMarker("search", lonlat, ramaddaBaseUrl +"/icons/green-dot.png", "", name, 20, 20));
+                    _this.searchMarkerList.push(_this.addMarker("search", lonlat, icon, "", name, 20, 20));
                     //Only zoom  if its a zoom in
                     var b = _this.transformProjBounds(_this.map.getExtent());
                     if(Math.abs(b.top-b.bottom)>offset) {

@@ -5562,17 +5562,24 @@ public class Repository extends RepositoryBase implements RequestHandler,
                     String     name   = result.get("feature_name").toString();
                     String fclass     =
                         result.get("feature_class").toString();
+                    String icon = getProperty("icon." + fclass.toLowerCase(),(String)null);
                     String     state  = result.get("state_alpha").toString();
                     String     county = result.get("county_name").toString();
                     List<String> toks = StringUtil.splitUpTo(
                                             result.get(
                                                 "location").toString(), "|",
                                                     2);
+                    if(icon!=null) {
+                        icon = getUrlBase()+icon;
+                    }
                     objs.add(Json.map("name",
                                       Json.quote(name + " (" + fclass + ") "
                                           + county + ", "
-                                          + state), "latitude", toks.get(0),
-                                              "longitude", toks.get(1)));
+                                          + state), 
+                                      "icon",
+                                      (icon!=null?Json.quote(icon):null),
+                                      "latitude", toks.get(0),
+                                      "longitude", toks.get(1)));
                 }
             }
         } catch (Exception exc) {
