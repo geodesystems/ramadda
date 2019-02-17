@@ -1061,6 +1061,15 @@ public class WikiUtil {
                 continue;
             }
 
+            if(tline.startsWith(":set ")) {
+                List<String> toks  = StringUtil.splitUpTo(tline, " ", 3);
+                String var  = (toks.size()>1?toks.get(1):"");
+                String value  = (toks.size()>2?toks.get(2):"");
+                myVars.put(var.trim(), value.trim());
+                continue;
+            }
+
+
             if (tline.startsWith(":button")) {
                 List<String> toks  = StringUtil.splitUpTo(tline, " ", 3);
                 String       tag  = toks.get(0).substring(1);
