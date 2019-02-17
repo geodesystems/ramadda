@@ -1,6 +1,9 @@
 #!/bin/sh
 mydir=`dirname $0`
 
+say "done"
+exit
+
 #This is the script I use to build and restart the main RAMADDA server on AWS
 #You need to set the following in your environment to point to the geode systems 
 #server and the .pem file (for logging in)
@@ -20,6 +23,7 @@ user=ec2-user
 
 ssh -tq -i  ${PEM}  ${user}@${ipaddress} "sudo sh /mnt/ramadda/source/ramadda/bin/buildandinstall.sh"
 
-tput bel
-tput bel
+say "done"
+#tput bel
+#tput bel
 
