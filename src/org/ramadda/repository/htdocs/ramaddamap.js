@@ -141,7 +141,7 @@ function RepositoryMap(mapId, params) {
         scrollToZoom: false,
         selectOnHover: false,
         highlightOnHover: true,
-        showLocationSearch:true,
+        showLocationSearch:false,
     };
 
 

@@ -18,7 +18,7 @@
 {{resource  message="" title="Download Data"}}
 -col
 +col-md-4
-{{map}}
+{{map showSearchLocation="false" }}
 <table class="formtable">
      {{field name="location"  row.label="Location:"}}
      {{field name="city"  row.label="City:"}}
