@@ -1139,6 +1139,13 @@ td.entry-table-block {
 }
 
 
+pre {
+background:#eee;
+padding:4px;
+ border-radius: 3px;
+}
+
+
 .ramadda-pre {
    max-height: 300px; 
    overflow-y: auto;
