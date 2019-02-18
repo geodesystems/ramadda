@@ -203,6 +203,19 @@ one color for them do:
 :button${buttonColor} /url2 Button 2 text
 </pre></div>
 
+Repository wide macros can be defined in the server side properties file in the RAMADDA home directory. Add the below properties:
+<pre>
+ramadda.wiki.macros=comma separated list of macro names
+ramadda.wiki.macro.&lt;macro&gt;=&lt;macro value&gt;
+#For example
+ramadda.wiki.macros=buttonColor,blockColor
+ramadda.wiki.macro.buttonColor-green
+ramadda.wiki.macro.blockColor-olivine
+</pre>
+
+
+
+
 Note: the block tag below has a similar feature with the "var" attribute. The difference is that the block tag can be placed at the bottom of the page after the
 var that it references is used. The macro tags need to be inline before they are used.
 
