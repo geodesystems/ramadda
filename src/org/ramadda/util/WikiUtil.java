@@ -79,6 +79,9 @@ public class WikiUtil {
     public static final String TAG_SUFFIX = "}}";
 
 
+    /** _more_          */
+    private static Hashtable globalProperties;
+
     /** _more_ */
     private Hashtable properties;
 
@@ -89,6 +92,7 @@ public class WikiUtil {
     private Hashtable<String, String> myVars = new Hashtable<String,
                                                    String>();
 
+    /** _more_          */
     private boolean hasSet = false;
 
     /** _more_ */
@@ -124,6 +128,26 @@ public class WikiUtil {
     public WikiUtil(Hashtable properties) {
         this.properties = properties;
     }
+
+    /**
+     * Set the GlobalProperties property.
+     *
+     * @param value The new value for GlobalProperties
+     */
+    public static void setGlobalProperties(Hashtable value) {
+        globalProperties = value;
+    }
+
+    /**
+     * Get the GlobalProperties property.
+     *
+     * @return The GlobalProperties
+     */
+    public static Hashtable getGlobalProperties() {
+        return globalProperties;
+    }
+
+
 
     /**
      * _more_
@@ -559,241 +583,328 @@ public class WikiUtil {
             matcher = pattern.matcher(s);
         }
 
-        boolean       closeTheTag  = false;
+        boolean          closeTheTag     = false;
 
 
-        int           ulCnt        = 0;
-        int           olCnt        = 0;
-        StringBuffer  buff         = new StringBuffer();
+        int              ulCnt           = 0;
+        int              olCnt           = 0;
+        StringBuffer     buff            = new StringBuffer();
 
-        StringBuilder js           = new StringBuilder();
-        List<TabState> allTabStates  = new ArrayList<TabState>();
-        List<TabState> tabInfos     = new ArrayList<TabState>();
-        List<RowState> rowStates     = new ArrayList<RowState>();
-        List<String>  accordianIds = new ArrayList<String>();
+        StringBuilder    js              = new StringBuilder();
+        List<TabState>   allTabStates    = new ArrayList<TabState>();
+        List<TabState>   tabInfos        = new ArrayList<TabState>();
+        List<RowState>   rowStates       = new ArrayList<RowState>();
+        List<String>     accordianIds    = new ArrayList<String>();
 
-        List<TableState> tableStates  = new ArrayList<TableState>();
-        String currentVar = null;
-        StringBuilder currentVarValue = null;
-        boolean inCss = false;
+        List<TableState> tableStates     = new ArrayList<TableState>();
+        String           currentVar      = null;
+        StringBuilder    currentVarValue = null;
+        boolean          inCss           = false;
 
         for (String line :
                 (List<String>) StringUtil.split(s, "\n", false, false)) {
             String tline = line.trim();
-            if(tline.indexOf("${")>=0 && hasSet) {
-                for (java.util.Enumeration keys = myVars.keys();
-                     keys.hasMoreElements(); ) {
-                    Object key   = keys.nextElement();
-                    Object value = myVars.get(key);
-                    tline = tline.replace("${" + key + "}", value.toString());
+            if ((tline.indexOf("${") >= 0)
+                    && (hasSet || (globalProperties != null))) {
+                if (myVars != null) {
+                    for (java.util.Enumeration keys = myVars.keys();
+                            keys.hasMoreElements(); ) {
+                        Object key   = keys.nextElement();
+                        Object value = myVars.get(key);
+                        tline = tline.replace("${" + key + "}",
+                                value.toString());
+                    }
                 }
+                if (globalProperties != null) {
+                    for (java.util.Enumeration keys = globalProperties.keys();
+                            keys.hasMoreElements(); ) {
+                        Object key   = keys.nextElement();
+                        Object value = globalProperties.get(key);
+                        tline = tline.replace("${" + key + "}",
+                                value.toString());
+                    }
+                }
+
             }
 
             if (tline.equals("+css")) {
-                inCss=true;
+                inCss = true;
                 buff.append("<style type='text/css'>\n");
+
                 continue;
             }
             if (tline.equals("-css")) {
-                inCss=false;
+                inCss = false;
                 buff.append("</style>\n");
+
                 continue;
             }
-            if(inCss) {
+            if (inCss) {
                 buff.append(tline);
                 buff.append("\n");
+
                 continue;
             }
 
-            if(tline.startsWith(":macro")) {
+            if (tline.startsWith(":macro")) {
                 hasSet = true;
                 List<String> toks  = StringUtil.splitUpTo(tline, " ", 3);
-                String var  = (toks.size()>1?toks.get(1):"");
-                String value  = (toks.size()>2?toks.get(2):"");
+                String       var   = ((toks.size() > 1)
+                                      ? toks.get(1)
+                                      : "");
+                String       value = ((toks.size() > 2)
+                                      ? toks.get(2)
+                                      : "");
                 myVars.put(var.trim(), value.trim());
+
                 continue;
             }
 
 
             if (tline.startsWith("+macro")) {
-                List<String> toks  = StringUtil.splitUpTo(tline, " ", 3);
-                currentVar = (toks.size()>1?toks.get(1):"");
-                currentVarValue = new StringBuilder ();
+                List<String> toks = StringUtil.splitUpTo(tline, " ", 3);
+                currentVar      = ((toks.size() > 1)
+                                   ? toks.get(1)
+                                   : "");
+                currentVarValue = new StringBuilder();
+
                 continue;
             }
 
             if (tline.startsWith("-macro")) {
                 myVars.put(currentVar, currentVarValue.toString());
-                currentVar = null;
+                currentVar      = null;
                 currentVarValue = null;
+
                 continue;
             }
 
 
-            if (currentVar!=null) {
+            if (currentVar != null) {
                 currentVarValue.append(tline);
+
                 continue;
             }
 
 
             if (tline.startsWith("+table")) {
-                List<String>  toks  = StringUtil.splitUpTo(tline, " ", 2);
-                String width = "100%";
-                String height = null;
-                String ordering = null;
-                String paging = null;
-                String xclazz = null;
-                String searching = "false";
-                String clazz = "ramadda-table";
-                if(toks.size()==2) {
-                    Hashtable props = StringUtil.parseHtmlProperties(toks.get(1));
-                    width  = Utils.getProperty(props, "width", width);
-                    height  = Utils.getProperty(props, "height",height);
-                    ordering  = Utils.getProperty(props, "ordering",ordering);
-                    paging  = Utils.getProperty(props, "paging",paging);
-                    searching  = Utils.getProperty(props, "searching",height);
+                List<String> toks      = StringUtil.splitUpTo(tline, " ", 2);
+                String       width     = "100%";
+                String       height    = null;
+                String       ordering  = null;
+                String       paging    = null;
+                String       xclazz    = null;
+                String       searching = "false";
+                String       clazz     = "ramadda-table";
+                if (toks.size() == 2) {
+                    Hashtable props =
+                        StringUtil.parseHtmlProperties(toks.get(1));
+                    width     = Utils.getProperty(props, "width", width);
+                    height    = Utils.getProperty(props, "height", height);
+                    ordering  = Utils.getProperty(props, "ordering",
+                            ordering);
+                    paging    = Utils.getProperty(props, "paging", paging);
+                    searching = Utils.getProperty(props, "searching", height);
 
-                    if(Misc.equals(Utils.getProperty(props, "rowborder",null),"true"))
-                        clazz= "row-border " + clazz;
-                    if(Misc.equals(Utils.getProperty(props, "cellborder",null),"true"))
-                        clazz= "cell-border " + clazz;
-                    if(Misc.equals(Utils.getProperty(props, "stripe",null),"true"))
-                        clazz= "stripe " + clazz;
-                    if(Misc.equals(Utils.getProperty(props, "hover",null),"true"))
-                        clazz= "hover " + clazz;
+                    if (Misc.equals(Utils.getProperty(props, "rowborder",
+                            null), "true")) {
+                        clazz = "row-border " + clazz;
+                    }
+                    if (Misc.equals(Utils.getProperty(props, "cellborder",
+                            null), "true")) {
+                        clazz = "cell-border " + clazz;
+                    }
+                    if (Misc.equals(Utils.getProperty(props, "stripe", null),
+                                    "true")) {
+                        clazz = "stripe " + clazz;
+                    }
+                    if (Misc.equals(Utils.getProperty(props, "hover", null),
+                                    "true")) {
+                        clazz = "hover " + clazz;
+                    }
                 }
 
-                buff.append("<table class='" + clazz  +"' width=" + width + " table-searching=" + searching +" "  + 
-                            (height!=null?" table-height=" + height :"") +
-                            (ordering!=null?" table-ordering=" + ordering :"") +
-                            (paging!=null?" table-paging=" + paging :"") +
-                            "><thead>");
+                buff.append("<table class='" + clazz + "' width=" + width
+                            + " table-searching=" + searching + " "
+                            + ((height != null)
+                               ? " table-height=" + height
+                               : "") + ((ordering != null)
+                                        ? " table-ordering=" + ordering
+                                        : "") + ((paging != null)
+                        ? " table-paging=" + paging
+                        : "") + "><thead>");
                 tableStates.add(new TableState());
+
                 continue;
             }
             if (tline.equals("-table")) {
-                TableState state=tableStates.size()>0?tableStates.get(tableStates.size()-1):null;
-                if(state==null) {
+                TableState state = (tableStates.size() > 0)
+                                   ? tableStates.get(tableStates.size() - 1)
+                                   : null;
+                if (state == null) {
                     buff.append("Not in a table");
+
                     continue;
                 }
-                if(state.inTd)
+                if (state.inTd) {
                     buff.append("</td>");
-                if(state.inTr)
+                }
+                if (state.inTr) {
                     buff.append("</tr>");
-                if(state.inHead)
+                }
+                if (state.inHead) {
                     buff.append("</thead>");
-                if(state.inBody)
+                }
+                if (state.inBody) {
                     buff.append("</tbody>");
+                }
                 buff.append("</table>");
-                tableStates.remove(tableStates.size()-1);
+                tableStates.remove(tableStates.size() - 1);
 
                 continue;
             }
             if (tline.startsWith(":tr")) {
-                TableState state=tableStates.size()>0?tableStates.get(tableStates.size()-1):null;
-                if(state==null) {
+                TableState state = (tableStates.size() > 0)
+                                   ? tableStates.get(tableStates.size() - 1)
+                                   : null;
+                if (state == null) {
                     buff.append("Not in a table");
+
                     continue;
                 }
-                List<String>  toks  = StringUtil.splitUpTo(tline, " ", 2);
+                List<String> toks = StringUtil.splitUpTo(tline, " ", 2);
                 buff.append("<tr valign=top>");
-                if(toks.size()==2) {
-                    for(String td:Utils.parseCommandLine(toks.get(1))) {
-                        if(state.inHead)
+                if (toks.size() == 2) {
+                    for (String td : Utils.parseCommandLine(toks.get(1))) {
+                        if (state.inHead) {
                             buff.append(HtmlUtils.th(td));
-                        else
+                        } else {
                             buff.append(HtmlUtils.td(td));
+                        }
                     }
                 }
-                if(state.inHead) {
+                if (state.inHead) {
                     buff.append("</thead>");
                     buff.append("<tbody>");
                     state.inHead = false;
                     state.inBody = true;
                 }
+
                 continue;
             }
             if (tline.startsWith("+tr")) {
-                TableState state=tableStates.size()>0?tableStates.get(tableStates.size()-1):null;
-                if(state==null) {
+                TableState state = (tableStates.size() > 0)
+                                   ? tableStates.get(tableStates.size() - 1)
+                                   : null;
+                if (state == null) {
                     buff.append("Not in a table");
+
                     continue;
                 }
                 buff.append("<tr valign=top>");
+
                 continue;
             }
             if (tline.startsWith("-tr")) {
-                TableState state=tableStates.size()>0?tableStates.get(tableStates.size()-1):null;
-                if(state==null) {
+                TableState state = (tableStates.size() > 0)
+                                   ? tableStates.get(tableStates.size() - 1)
+                                   : null;
+                if (state == null) {
                     buff.append("Not in a table");
+
                     continue;
                 }
                 buff.append("</tr>");
-                if(state.inHead) {
+                if (state.inHead) {
                     buff.append("</thead>");
                     buff.append("<tbody>");
                     state.inHead = false;
                     state.inBody = true;
                 }
+
                 continue;
             }
 
             if (tline.startsWith("+td")) {
-                TableState state=tableStates.size()>0?tableStates.get(tableStates.size()-1):null;
-                if(state==null) {
+                TableState state = (tableStates.size() > 0)
+                                   ? tableStates.get(tableStates.size() - 1)
+                                   : null;
+                if (state == null) {
                     buff.append("Not in a table");
+
                     continue;
                 }
-                List<String>  toks  = StringUtil.splitUpTo(tline, " ", 2);
-                String width = null;
-                if(toks.size()==2) {
-                    Hashtable props = StringUtil.parseHtmlProperties(toks.get(1));
-                    width  = Utils.getProperty(props, "width", width);
+                List<String> toks  = StringUtil.splitUpTo(tline, " ", 2);
+                String       width = null;
+                if (toks.size() == 2) {
+                    Hashtable props =
+                        StringUtil.parseHtmlProperties(toks.get(1));
+                    width = Utils.getProperty(props, "width", width);
                 }
 
-                if(state.inHead)
-                    buff.append("<th " + (width!=null?" width=" + width:"")+">");
-                else
-                    buff.append("<td valign=top " + (width!=null?" width=" + width:"")+">");
+                if (state.inHead) {
+                    buff.append("<th " + ((width != null)
+                                          ? " width=" + width
+                                          : "") + ">");
+                } else {
+                    buff.append("<td valign=top " + ((width != null)
+                            ? " width=" + width
+                            : "") + ">");
+                }
+
                 continue;
             }
             if (tline.startsWith("-td")) {
-                TableState state=tableStates.size()>0?tableStates.get(tableStates.size()-1):null;
-                if(state==null) {
+                TableState state = (tableStates.size() > 0)
+                                   ? tableStates.get(tableStates.size() - 1)
+                                   : null;
+                if (state == null) {
                     buff.append("Not in a table");
+
                     continue;
                 }
-                if(state.inHead)
+                if (state.inHead) {
                     buff.append("</th>");
-                else
+                } else {
                     buff.append("</td>");
+                }
+
                 continue;
             }
             if (tline.startsWith(":td")) {
-                TableState state=tableStates.size()>0?tableStates.get(tableStates.size()-1):null;
-                if(state==null) {
+                TableState state = (tableStates.size() > 0)
+                                   ? tableStates.get(tableStates.size() - 1)
+                                   : null;
+                if (state == null) {
                     buff.append("Not in a table");
+
                     continue;
                 }
-                List<String>  toks  = StringUtil.splitUpTo(tline, " ", 2);
-                String td = toks.size()==2?toks.get(1):"";
-                if(state.inHead)
+                List<String> toks = StringUtil.splitUpTo(tline, " ", 2);
+                String       td   = (toks.size() == 2)
+                                    ? toks.get(1)
+                                    : "";
+                if (state.inHead) {
                     buff.append(HtmlUtils.th(td));
-                else
-                    buff.append(HtmlUtils.td(td,"valign=top"));
+                } else {
+                    buff.append(HtmlUtils.td(td, "valign=top"));
+                }
+
                 continue;
             }
 
 
             if (tline.startsWith("+tabs")) {
-                TabState tabInfo = new TabState();
-                List<String>  toks  = StringUtil.splitUpTo(tline, " ", 2);
-                if(toks.size()==2) {
-                    Hashtable props = StringUtil.parseHtmlProperties(toks.get(1));
+                TabState     tabInfo = new TabState();
+                List<String> toks    = StringUtil.splitUpTo(tline, " ", 2);
+                if (toks.size() == 2) {
+                    Hashtable props =
+                        StringUtil.parseHtmlProperties(toks.get(1));
                     tabInfo.minHeight = (String) props.get("minHeight");
-                    if(tabInfo.minHeight!=null && !tabInfo.minHeight.endsWith("px"))
-                        tabInfo.minHeight = tabInfo.minHeight+"px";
+                    if ((tabInfo.minHeight != null)
+                            && !tabInfo.minHeight.endsWith("px")) {
+                        tabInfo.minHeight = tabInfo.minHeight + "px";
+                    }
                 }
                 tabInfos.add(tabInfo);
                 allTabStates.add(tabInfo);
@@ -812,25 +923,27 @@ public class WikiUtil {
             if (tline.equals("+tab") || tline.startsWith("+tab ")) {
                 if (tabInfos.size() == 0) {
                     buff.append("No +tabs tag");
+
                     continue;
                 }
                 List<String> toks    = StringUtil.splitUpTo(tline, " ", 2);
                 String       title   = (toks.size() > 1)
                                        ? toks.get(1)
                                        : "";
-                TabState      tabInfo = tabInfos.get(tabInfos.size() - 1);
+                TabState     tabInfo = tabInfos.get(tabInfos.size() - 1);
                 tabInfo.cnt++;
                 tabInfo.title.append("<li><a href=\"#" + tabInfo.id + "-"
                                      + (tabInfo.cnt) + "\">" + title
                                      + "</a></li>\n");
                 String style = "";
-                if(tabInfo.minHeight!=null)
-                    style = " style=min-height:" + tabInfo.minHeight+";";
+                if (tabInfo.minHeight != null) {
+                    style = " style=min-height:" + tabInfo.minHeight + ";";
+                }
                 buff.append(
                     HtmlUtils.open(
                         "div",
-                        style +
-                        HtmlUtils.id(tabInfo.id + "-" + (tabInfo.cnt))
+                        style
+                        + HtmlUtils.id(tabInfo.id + "-" + (tabInfo.cnt))
                         + HtmlUtils.cssClass("ui-tabs-hide")));
                 buff.append("\n");
 
@@ -996,36 +1109,38 @@ public class WikiUtil {
             if (tline.startsWith("+info-sec")
                     || tline.startsWith("+section")) {
 
-                List<String>  toks      = StringUtil.splitUpTo(tline, " ", 2);
-                String        tag       = toks.get(0).substring(1);
-                List<String>  toks2     = StringUtil.splitUpTo(tag, "-", 2);
-                String        remainder = ((toks2.size() > 1)
-                                           ? toks2.get(1)
-                                           : "");
+                List<String> toks      = StringUtil.splitUpTo(tline, " ", 2);
+                String       tag       = toks.get(0).substring(1);
+                List<String> toks2     = StringUtil.splitUpTo(tag, "-", 2);
+                String       remainder = ((toks2.size() > 1)
+                                          ? toks2.get(1)
+                                          : "");
 
-                String baseClass="ramadda-section";
+                String       baseClass = "ramadda-section";
                 if (remainder.length() > 0) {
-                    baseClass = baseClass+"-" + remainder;
+                    baseClass = baseClass + "-" + remainder;
                 }
 
 
-                String  label      = getAttribute(tline, "label");
-                String  heading    = getAttribute(tline, "heading");
-                String  title      = getAttribute(tline, "title");
-                String  classArg   = getAttribute(tline, "class");
-                String  extraArg   = getAttribute(tline, "style");
-                boolean doBorderTop  = tline.indexOf("----") >= 0;
-                boolean doEvenOdd  = tline.indexOf("#") >= 0;
-                String  extraClass = "";
-                if(doBorderTop) {
-                    if(extraArg==null)
+                String  label       = getAttribute(tline, "label");
+                String  heading     = getAttribute(tline, "heading");
+                String  title       = getAttribute(tline, "title");
+                String  classArg    = getAttribute(tline, "class");
+                String  extraArg    = getAttribute(tline, "style");
+                boolean doBorderTop = tline.indexOf("----") >= 0;
+                boolean doEvenOdd   = tline.indexOf("#") >= 0;
+                String  extraClass  = "";
+                if (doBorderTop) {
+                    if (extraArg == null) {
                         extraArg = "border-top:1px rgb(224, 224, 224) solid;";
-                    else 
-                        extraArg+= "border-top:1px rgb(224, 224, 224) solid;";
+                    } else {
+                        extraArg +=
+                            "border-top:1px rgb(224, 224, 224) solid;";
+                    }
                 }
-                String  extraAttr  = ((extraArg == null)
-                                      ? ""
-                                      : " style=\"" + extraArg + "\" ");
+                String extraAttr = ((extraArg == null)
+                                    ? ""
+                                    : " style=\"" + extraArg + "\" ");
 
                 if (doEvenOdd) {
                     Integer scnt  = (Integer) getProperty("section-cnt");
@@ -1050,7 +1165,7 @@ public class WikiUtil {
                     extraClass = classArg;
                 }
 
-                String clazz = baseClass +" " + extraClass;
+                String clazz = baseClass + " " + extraClass;
                 buff.append("<div class=\"");
                 buff.append(clazz);
                 buff.append("\"   " + extraAttr + ">");
@@ -1128,45 +1243,64 @@ public class WikiUtil {
 
             if (tline.startsWith(":button")) {
                 List<String> toks  = StringUtil.splitUpTo(tline, " ", 3);
-                String       tag  = toks.get(0).substring(1);
-                String url  = (toks.size()>1?toks.get(1):"");
-                String label  = (toks.size()>2?toks.get(2):url);
+                String       tag   = toks.get(0).substring(1);
+                String       url   = ((toks.size() > 1)
+                                      ? toks.get(1)
+                                      : "");
+                String       label = ((toks.size() > 2)
+                                      ? toks.get(2)
+                                      : url);
                 List<String> toks2 = StringUtil.splitUpTo(tag, "-", 2);
-                String clazz = (toks2.size()>1?toks2.get(1):"");
-                if(clazz.length()>0) clazz= "ramadda-button-" + clazz;
-                HtmlUtils.href(buff,url,label," class='ramadda-button " + clazz +"' role='button' " );
+                String       clazz = ((toks2.size() > 1)
+                                      ? toks2.get(1)
+                                      : "");
+                if (clazz.length() > 0) {
+                    clazz = "ramadda-button-" + clazz;
+                }
+                HtmlUtils.href(buff, url, label,
+                               " class='ramadda-button " + clazz
+                               + "' role='button' ");
+
                 continue;
             }
 
             if (tline.startsWith("+div")) {
-                List<String> toks  = StringUtil.splitUpTo(tline, " ", 2);
-                buff.append("<div " + (toks.size()>1?toks.get(1):"") +">");
+                List<String> toks = StringUtil.splitUpTo(tline, " ", 2);
+                buff.append("<div " + ((toks.size() > 1)
+                                       ? toks.get(1)
+                                       : "") + ">");
+
                 continue;
             }
 
 
             if (tline.equals("-div")) {
                 buff.append("</div>");
+
                 continue;
             }
 
 
             if (tline.equals("+center")) {
                 buff.append("<center>");
+
                 continue;
             }
 
             if (tline.equals("-center")) {
                 buff.append("</center>");
+
                 continue;
             }
 
             if (tline.equals(":br")) {
                 buff.append("<br>");
+
                 continue;
             }
             if (tline.equals(":p")) {
                 buff.append("<p>");
+
                 continue;
             }
 
@@ -1251,26 +1385,29 @@ public class WikiUtil {
 
             if (tline.equals("+row")) {
                 rowStates.add(new RowState(buff));
+
                 continue;
             }
             if (tline.equals("-row")) {
-                if(rowStates.size()==0) {
+                if (rowStates.size() == 0) {
                     wikiError(buff, "Error: unopened row");
+
                     continue;
                 }
-                RowState rowState = rowStates.get(rowStates.size()-1);
+                RowState rowState = rowStates.get(rowStates.size() - 1);
                 rowState.closeRow(buff);
-                rowStates.remove(rowStates.size()-1);
+                rowStates.remove(rowStates.size() - 1);
+
                 continue;
             }
 
             if (tline.startsWith(":col-")) {
                 RowState rowState = null;
-                if(rowStates.size()==0) {
+                if (rowStates.size() == 0) {
                     //Add a row if we're not in one
                     rowStates.add(rowState = new RowState(buff));
                 } else {
-                    rowState = rowStates.get(rowStates.size()-1);
+                    rowState = rowStates.get(rowStates.size() - 1);
                 }
 
                 List<String> toks     = StringUtil.splitUpTo(tline, " ", 2);
@@ -1279,19 +1416,21 @@ public class WikiUtil {
                 if (toks.size() > 1) {
                     contents = toks.get(1);
                 }
-                rowState.openColumn(buff,HtmlUtils.cssClass(clazz+" wiki-col"));
+                rowState.openColumn(buff,
+                                    HtmlUtils.cssClass(clazz + " wiki-col"));
                 buff.append(contents);
                 rowState.closeColumn(buff);
+
                 continue;
             }
 
             if (tline.startsWith("+col-")) {
                 RowState rowState = null;
-                if(rowStates.size()==0) {
+                if (rowStates.size() == 0) {
                     //Add a row if we're not in one
                     rowStates.add(rowState = new RowState(buff));
                 } else {
-                    rowState = rowStates.get(rowStates.size()-1);
+                    rowState = rowStates.get(rowStates.size() - 1);
                 }
                 List<String>  toks  = StringUtil.splitUpTo(tline, " ", 2);
                 StringBuilder extra = new StringBuilder();
@@ -1308,17 +1447,20 @@ public class WikiUtil {
                     clazz = clazz.replace("col-", "col-md-");
                 }
                 rowState.openColumn(buff,
-                                    HtmlUtils.cssClass(clazz+" wiki-col")   + extra);
+                                    HtmlUtils.cssClass(clazz + " wiki-col")
+                                    + extra);
 
                 continue;
             }
 
             if (tline.startsWith("-col")) {
-                if(rowStates.size()==0) {
-                    wikiError(buff,"Error: unopened column");
+                if (rowStates.size() == 0) {
+                    wikiError(buff, "Error: unopened column");
+
                     continue;
                 }
-                rowStates.get(rowStates.size()-1).closeColumn(buff);
+                rowStates.get(rowStates.size() - 1).closeColumn(buff);
+
                 continue;
             }
 
@@ -1360,7 +1502,7 @@ public class WikiUtil {
 
             int hashCnt = 0;
             //Check if this is a commented attribute inside a tag
-            while (tline.startsWith("#") && tline.indexOf("=")<0) {
+            while (tline.startsWith("#") && (tline.indexOf("=") < 0)) {
                 tline = tline.substring(1);
                 hashCnt++;
             }
@@ -1860,10 +2002,17 @@ public class WikiUtil {
     }
 
 
+    /**
+     * _more_
+     *
+     * @param buff _more_
+     * @param msg _more_
+     */
     public static void wikiError(Appendable buff, String msg) {
         try {
-            HtmlUtils.span(buff, msg+"<br>",HtmlUtils.cssClass("wiki-error"));
-        } catch(Exception exc) {
+            HtmlUtils.span(buff, msg + "<br>",
+                           HtmlUtils.cssClass("wiki-error"));
+        } catch (Exception exc) {
             throw new IllegalArgumentException(exc);
         }
     }
@@ -1902,6 +2051,7 @@ public class WikiUtil {
         /** _more_ */
         int cnt = 0;
 
+        /** _more_          */
         String minHeight;
 
         /**
@@ -1916,61 +2066,93 @@ public class WikiUtil {
     }
 
 
+    /**
+     * Class description
+     *
+     *
+     * @version        $version$, Mon, Feb 18, '19
+     * @author         Enter your name here...    
+     */
     public static class RowState {
 
+        /** _more_          */
         int colCnt = 0;
 
 
         /**
          * _more_
+         *
+         * @param buff _more_
          */
         public RowState(Appendable buff) {
             try {
-            buff.append("<div class=\"row wiki-row\">");
-            } catch(Exception exc) {
+                buff.append("<div class=\"row wiki-row\">");
+            } catch (Exception exc) {
                 throw new IllegalArgumentException(exc);
             }
         }
 
-        public void closeRow(Appendable buff)  {
+        /**
+         * _more_
+         *
+         * @param buff _more_
+         */
+        public void closeRow(Appendable buff) {
             try {
                 closeColumns(buff);
                 buff.append("</div>");
-            } catch(Exception exc) {
+            } catch (Exception exc) {
                 throw new IllegalArgumentException(exc);
             }
         }
 
-        public void closeColumn(Appendable buff)  {
+        /**
+         * _more_
+         *
+         * @param buff _more_
+         */
+        public void closeColumn(Appendable buff) {
             try {
-            if(colCnt==0) {
-                wikiError(buff,"Error: unopened column");
-                return;
-            }
-            colCnt--;
-            buff.append("</div>");
-            } catch(Exception exc) {
-                throw new IllegalArgumentException(exc);
-            }
-        }
+                if (colCnt == 0) {
+                    wikiError(buff, "Error: unopened column");
 
-        public void openColumn(Appendable buff,String attrs) {
-            try {
-            closeColumns(buff);
-            HtmlUtils.open(buff, "div",attrs);
-            colCnt++;
-            } catch(Exception exc) {
-                throw new IllegalArgumentException(exc);
-            }
-        }
-
-        public void closeColumns(Appendable buff)  {
-            try {
-            while(colCnt>0) {
+                    return;
+                }
                 colCnt--;
                 buff.append("</div>");
+            } catch (Exception exc) {
+                throw new IllegalArgumentException(exc);
             }
-            } catch(Exception exc) {
+        }
+
+        /**
+         * _more_
+         *
+         * @param buff _more_
+         * @param attrs _more_
+         */
+        public void openColumn(Appendable buff, String attrs) {
+            try {
+                closeColumns(buff);
+                HtmlUtils.open(buff, "div", attrs);
+                colCnt++;
+            } catch (Exception exc) {
+                throw new IllegalArgumentException(exc);
+            }
+        }
+
+        /**
+         * _more_
+         *
+         * @param buff _more_
+         */
+        public void closeColumns(Appendable buff) {
+            try {
+                while (colCnt > 0) {
+                    colCnt--;
+                    buff.append("</div>");
+                }
+            } catch (Exception exc) {
                 throw new IllegalArgumentException(exc);
             }
         }
@@ -1980,19 +2162,34 @@ public class WikiUtil {
     }
 
 
+    /**
+     * Class description
+     *
+     *
+     * @version        $version$, Mon, Feb 18, '19
+     * @author         Enter your name here...    
+     */
     public static class TableState {
 
-        boolean inHead=true;
-        boolean inRow=false;
-        boolean inBody=false;
-        boolean inTr=false;
-        boolean inTd=false;
+        /** _more_          */
+        boolean inHead = true;
+
+        /** _more_          */
+        boolean inRow = false;
+
+        /** _more_          */
+        boolean inBody = false;
+
+        /** _more_          */
+        boolean inTr = false;
+
+        /** _more_          */
+        boolean inTd = false;
 
         /**
          * _more_
          */
-        public TableState() {
-        }
+        public TableState() {}
 
 
 

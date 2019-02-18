@@ -391,31 +391,36 @@ ramadda.ssl.port=&lt;the ssl port&gt;
 
 
 
-<a name="fromsvn"></a><p><div class="ramadda-help-heading">8.0.7 <a href="#fromsvn">Building RAMADDA from source</a></div> 
-It is easy to build and run RAMADDA from the SourceForge SVN tree. 
-This assumes you have SVN, ANT and a Java compiler installed on your machine.
+<a name="fromgit"></a><p><div class="ramadda-help-heading">8.0.7 <a href="#fromgit">Building RAMADDA from source</a></div> 
+It is easy to build and run RAMADDA from Github.
+The RAMADDA Gihub site is at <a href="https://github.com/geodesystems/ramadda">https://github.com/geodesystems/ramadda</a>. 
+
+To build RAMADDA you need to have GIT, ANT and a Java compiler (1.7 or greater)  installed on your machine.
 <p>
-To build RAMADDA SourceForge SVN:
+To build RAMADDA:
 <ul>
-<li> Check out RAMADDA from SourceForge:
+<li> Check out RAMADDA from Github:
 
 <pre>
-svn checkout svn://svn.code.sf.net/p/ramadda/code/ ramadda-code
+git clone https://github.com/geodesystems/ramadda.git
 </pre>
 
 <li> Build RAMADDA.  This creates a stand-alone version in dist/ramaddaserver
 <pre>
-cd ramadda-code
+cd ramadda
 ant
 </pre>
 
-<li> Run ramadda. This creates a ramadda home directory in: ~/.ramadda
+<li> Run ramadda. This creates a ramadda home directory in: ~/.ramadda. 
 <pre>
 cd dist/ramaddaserver
 sh ramadda.sh
 </pre>
 
+<li> Note: when you first run RAMADDA it will prompt you to add a installation password into a local .properties file in the RAMADDA home directory (~/.ramadda). This is for security purposes to disallow someone else from finishing the installation process on a publicly available server.
+
 <li>  Go to <a href="http://localhost:8080/repository">http://localhost:8080/repository</a> to finish the RAMADDA install
+
 <li>  Once configured shutdown the ramadda server (just kill the ramadda.sh run)
 </ul>
 

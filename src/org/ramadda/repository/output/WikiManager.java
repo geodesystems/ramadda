@@ -617,6 +617,10 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
     /** _more_ */
     private String displayImports;
 
+
+    /** _more_          */
+    private Hashtable<String, String> wikiMacros;
+
     /**
      * _more_
      */
@@ -624,6 +628,16 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
     public void initAttributes() {
         super.initAttributes();
         displayImports = makeDisplayImports();
+        wikiMacros     = new Hashtable<String, String>();
+        for (String macro :
+                StringUtil.split(
+                    getRepository().getProperty("ramadda.wiki.macros", ""),
+                    ",", true, true)) {
+            wikiMacros.put(macro,
+                           getRepository().getProperty("ramadda.wiki.macro."
+                               + macro, ""));
+        }
+        WikiUtil.setGlobalProperties(wikiMacros);
     }
 
 
