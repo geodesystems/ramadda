@@ -1302,7 +1302,6 @@ public class TabularOutputHandler extends OutputHandler {
         boolean showChart = entry.getValue(TabularTypeHandler.IDX_SHOWCHART,
                                            true);
 
-
         boolean useFirstRowAsHeader =
             Misc.equals("true",
                         entry.getValue(TabularTypeHandler.IDX_USEFIRSTROW,
@@ -1429,8 +1428,7 @@ public class TabularOutputHandler extends OutputHandler {
 
         getRepository().getWikiManager().addDisplayImports(request, sb);
 
-        getPageHandler().entrySectionOpen(request, entry, sb,
-                                          entry.getName(), true);
+        getPageHandler().entrySectionOpen(request, entry, sb,null, true);
 
 
         if ( !request.get(ARG_EMBEDDED, false)) {

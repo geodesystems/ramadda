@@ -411,7 +411,7 @@ function RamaddaXlsDisplay(displayManager, id, properties) {
 
             if (this.sheets.length > 1) {
                 //                    tableHtml += HtmlUtils.openTag(["class","col-md-2"]);
-                tableHtml += HtmlUtils.td(["width", "110"], HtmlUtils.div(["class", "ramadda-xls-buttons"], buttons));
+                tableHtml += HtmlUtils.td(["width", "140"], HtmlUtils.div(["class", "ramadda-xls-buttons"], buttons));
                 weight = "10";
             }
 
@@ -419,7 +419,7 @@ function RamaddaXlsDisplay(displayManager, id, properties) {
             var makeChartId = HtmlUtils.getUniqueId();
 
             var tableWidth = this.getProperty("tableWidth", "");
-            var tableHeight = this.getProperty("tableHeight", "300px");
+            var tableHeight = this.getProperty("tableHeight", "500px");
 
             var style = "";
             if (tableWidth != "") {
