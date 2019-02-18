@@ -364,6 +364,16 @@ function DisplayThing(argId, argProperties) {
             return this.getProperty("timeZone");
         },
         formatDate: function(date, args) {
+                try {
+                    return this.formatDateInner(date,args);
+                } catch(e) {
+                    console.log("Error formatting date:" +e);
+                    if (!date.getTime && date.v) date = date.v;
+                    return "" + date;
+                }
+        },
+       formatDateInner: function(date, args) {
+
             //Check for date object from charts
             if (!date.getTime && date.v) date = date.v;
             if (!date.toLocaleDateString) {
