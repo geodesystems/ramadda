@@ -203,7 +203,7 @@ color:#000;
   padding:25px;
   padding-bottom:6px;
   padding-top:6px;
-  border : 0px #ccc solid;
+  border : 1px #ddd solid;
   background: #F3F3F3;
 }
 
@@ -241,9 +241,6 @@ color:#000;
   background-color : #fffeec;
 }
 
-.ramadda-blurb {
-  border : 1px #ddd solid;
-}
 
 .ramadda-blurb-outer {
    text-align:center;
@@ -254,7 +251,7 @@ color:#000;
   margin-top:10px;
   margin-bottom:10px;
   border: 0px;
-  border: 1px #f1f1f1 solid;
+  border: 1px #ddd solid;
   background:#fff;
   padding: 8px; 
   padding-left:16px;
@@ -264,7 +261,7 @@ color:#000;
 
 .ramadda-callout { 
    display: inline-block;
-   padding: 10px;
+   padding: 5px;
    border: 1px #eee solid;
 }
 
@@ -547,7 +544,6 @@ position:relative;
 
  .ramadda-background-white , .ramadda-block-white , .ramadda-heading-white , .ramadda-box-white , .ramadda-note-white , .ramadda-blurb-white , .ramadda-callout-white , .ramadda-section-white  {
    background-color: white;
-   border: 1px #f1f1f1 solid;
 }
 
 
