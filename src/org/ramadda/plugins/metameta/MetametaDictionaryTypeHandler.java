@@ -107,10 +107,14 @@ public class MetametaDictionaryTypeHandler extends MetametaDictionaryTypeHandler
             return null;
         }
 
+
         List<String> titles   = new ArrayList<String>();
         List<String> contents = new ArrayList<String>();
 
         StringBuffer sb       = new StringBuffer();
+        getPageHandler().entrySectionOpen(request, parent, sb,parent.getName());
+
+
         subGroups.addAll(entries);
         addListForm(request, parent, subGroups, sb);
 
@@ -132,6 +136,7 @@ public class MetametaDictionaryTypeHandler extends MetametaDictionaryTypeHandler
                 "<div class=wiki-h2>{{name}} -- {{field name=\"short_name\"}}</div><p>{{description}} <p>\n"));
         sb.append(OutputHandler.makeTabs(titles, contents, false));
 
+        getPageHandler().entrySectionClose(request, parent,sb);
         return getEntryManager().addEntryHeader(request, parent,
                 new Result("Metameta Dictionary", sb));
     }
@@ -318,7 +323,7 @@ public class MetametaDictionaryTypeHandler extends MetametaDictionaryTypeHandler
             throws Exception {
         String java =
             getStorageManager().readSystemResource(
-                "/org/ramadda/plugins/metameta/TypeHandler.template");
+                "/org/ramadda/plugins/metameta/resources/TypeHandler.template");
         StringBuffer defines = new StringBuffer();
         StringBuffer methods = new StringBuffer();
         String handlerClass = (String) getEntryValue(entry,
