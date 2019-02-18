@@ -241,6 +241,9 @@ color:#000;
   background-color : #fffeec;
 }
 
+.ramadda-blurb {
+  border : 1px #ddd solid;
+}
 
 .ramadda-blurb-outer {
    text-align:center;
@@ -514,7 +517,6 @@ position:relative;
 
  .ramadda-background-blue , .ramadda-block-blue , .ramadda-heading-blue , .ramadda-box-blue , .ramadda-note-blue , .ramadda-blurb-blue , .ramadda-callout-blue , .ramadda-section-blue  {
    background-color: ghostwhite;
-   border: 1px #f1f1f1 solid;
 }
 
 
