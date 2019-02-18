@@ -4756,6 +4756,18 @@ public class Repository extends RepositoryBase implements RequestHandler,
         synchronized (outputHandlers) {
             outputHandlers.add(outputHandler);
         }
+
+        return addOutputHandlerTypes(outputHandler);
+    }
+
+    /**
+     * _more_
+     *
+     * @param outputHandler _more_
+     *
+     * @return _more_
+     */
+    public boolean addOutputHandlerTypes(OutputHandler outputHandler) {
         boolean ok   = true;
         HashSet seen = new HashSet();
         for (OutputType type : outputHandler.getTypes()) {

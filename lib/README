@@ -34,6 +34,9 @@ ramaddatds.jar:
   This unjars the war and unjars certain jars and makes repositorytds.jar
 
 
+idv.jar:
+This contains a modified JythonManager.class file
+
 ncIdv.jar:
   This should be the definitive source of the netcdf package. It gets
   included in both the repositorytds.jar and the repositorylib.jar.

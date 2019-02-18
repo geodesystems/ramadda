@@ -202,7 +202,7 @@ public class IdvOutputHandler extends OutputHandler implements IdvConstants {
     public void checkIdv() {
         //For now just don't try the IDV as the IDV init code bombs out because of the missing jythonlib.jar
         if (true) {
-            return;
+            //            return;
         }
 
         //Synchronize for the case where we have multiple ramadda  servlets under the same server
@@ -222,6 +222,7 @@ public class IdvOutputHandler extends OutputHandler implements IdvConstants {
                 addType(OUTPUT_IDV_POINT);
                 addType(OUTPUT_IDV_BUNDLE_IMAGE);
                 addType(OUTPUT_IDV_BUNDLE_MOVIE);
+                getRepository().addOutputHandlerTypes(this);
                 getRepository().getLogManager().logInfo(
                     "IDV visualization is enabled");
             } catch (java.awt.HeadlessException jahe) {
@@ -357,6 +358,7 @@ public class IdvOutputHandler extends OutputHandler implements IdvConstants {
      *
      * @throws Exception On badness
      */
+@Override
     public Result outputEntry(Request request, OutputType outputType,
                               Entry entry)
             throws Exception {
@@ -488,6 +490,7 @@ public class IdvOutputHandler extends OutputHandler implements IdvConstants {
 
         }
 
+        getPageHandler().entrySectionOpen(request, entry, sb,"Make Image");
         String formUrl = getEntryManager().getFullEntryShowUrl(request);
         sb.append(HtmlUtils.form(formUrl, ""));
         sb.append(entry.getDescription());
@@ -526,6 +529,7 @@ public class IdvOutputHandler extends OutputHandler implements IdvConstants {
         sb.append(HtmlUtils.submit(msg("Make Image"), ARG_SUBMIT));
         sb.append(HtmlUtils.formClose());
 
+        getPageHandler().entrySectionClose(request, entry, sb);
         return new Result("Bundle As Image", sb);
 
     }
@@ -668,8 +672,9 @@ public class IdvOutputHandler extends OutputHandler implements IdvConstants {
                                   DataSource dataSource)
             throws Exception {
         StringBuffer sb = new StringBuffer();
+        getPageHandler().entrySectionOpen(request, entry, sb,"Make Image");
         makeGridForm(request, sb, entry, dataSource);
-
+        getPageHandler().entrySectionClose(request, entry, sb);
         return new Result("Grid Displays", sb);
     }
 
@@ -1416,6 +1421,7 @@ public class IdvOutputHandler extends OutputHandler implements IdvConstants {
                                       DataSource dataSource)
             throws Exception {
         StringBuffer sb      = new StringBuffer();
+        getPageHandler().entrySectionOpen(request, entry, sb,"Select Fields");
 
         String       formUrl =
             request.makeUrl(getRepository().URL_ENTRY_SHOW);
@@ -1502,6 +1508,7 @@ public class IdvOutputHandler extends OutputHandler implements IdvConstants {
             sb.append(HtmlUtils.close(HtmlUtils.TAG_UL));
         }
 
+        getPageHandler().entrySectionClose(request, entry, sb);
         return new Result("Grid Displays", sb);
     }
 
@@ -1670,6 +1677,7 @@ public class IdvOutputHandler extends OutputHandler implements IdvConstants {
 
         boolean showForm = true;
 
+        getPageHandler().entrySectionOpen(request, entry, sb,"Product");
         if (product.equals(PRODUCT_IMAGE)) {
             sb.append(HtmlUtils.img(url, "Image is being processed...",
                                     HtmlUtils.attr(HtmlUtils.ATTR_WIDTH,
@@ -1711,6 +1719,7 @@ public class IdvOutputHandler extends OutputHandler implements IdvConstants {
         sb.append(HtmlUtils.makeShowHideBlock(msg("Image Settings"),
                 formSB.toString(), showForm));
 
+        getPageHandler().entrySectionClose(request, entry, sb);
         return new Result("Grid Displays", sb);
 
     }
@@ -2386,6 +2395,7 @@ public class IdvOutputHandler extends OutputHandler implements IdvConstants {
             throws Exception {
 
         StringBuffer sb      = new StringBuffer();
+        getPageHandler().entrySectionOpen(request, entry, sb,"Make Image");
         String       formUrl = getEntryManager().getFullEntryShowUrl(request);
         StringBuffer formSB  = new StringBuffer();
 
@@ -2462,6 +2472,7 @@ public class IdvOutputHandler extends OutputHandler implements IdvConstants {
 
 
 
+        getPageHandler().entrySectionClose(request, entry, sb);
         return new Result("Point Display", sb);
 
     }

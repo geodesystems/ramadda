@@ -117,8 +117,10 @@ public class RamaddaPublisher extends ucar.unidata.idv.publish
         new JCheckBox("Publish bundle and attach image", true);
 
     /** _more_ */
-    private JCheckBox doThumbnailCbx = new JCheckBox("Show as a thumbnail",
+    private JCheckBox doThumbnailCbx = new JCheckBox("Attach image as thumbnail",
                                            true);
+    private JCheckBox doImageEntryCbx = new JCheckBox("Add image as entry",
+                                           false);
 
     /** _more_ */
     private JCheckBox doZidvCbx = new JCheckBox("Save as zidv file", false);
@@ -448,7 +450,7 @@ public class RamaddaPublisher extends ucar.unidata.idv.publish
                 JComponent extra;
                 if (ImageUtils.isImage(contentFile)) {
                     isImage = true;
-                    extra   = doThumbnailCbx;
+                    extra   = GuiUtils.hbox(doThumbnailCbx,doImageEntryCbx);
                 } else {
                     extra = GuiUtils.filler(1, 1);
                 }
@@ -465,7 +467,7 @@ public class RamaddaPublisher extends ucar.unidata.idv.publish
                     GuiUtils.left(
                         GuiUtils.hbox(
                             new JLabel(IOUtil.getFileTail(contentFile)),
-                            GuiUtils.filler(10, 5), doBundleCbx, doZidvCbx)));
+                            GuiUtils.filler(10, 5), GuiUtils.hbox(doBundleCbx, extra), doZidvCbx)));
                 if (lastBundleFile != null) {
                     addAssociationCbx = myAddAssociationCbx;
                     addAssociationCbx.setText(
@@ -694,17 +696,21 @@ public class RamaddaPublisher extends ucar.unidata.idv.publish
                     String  theName = nameFld.getText().trim();
                     String  desc    = descFld.getText().trim();
                     if (contentFile != null) {
-                        node = addEntry(root, contentFile, contentId,
-                                        parentId, theName, desc);
-                        theName = "IDV Bundle for " + theName;
-                        desc    = "";
+                        if(doImageEntryCbx.isSelected()) {
+                            node = addEntry(root, contentFile, contentId,
+                                            parentId, theName, desc);
+                            theName = "IDV Bundle for " + theName;
+                            desc    = "";
+                        }
                     }
                     if (bundleFile != null) {
                         node = addEntry(root, bundleFile, bundleId, parentId,
                                         theName, desc);
                         if (contentFile != null) {
-                            repositoryClient.addAssociation(root, contentId,
-                                    bundleId, "uses bundle");
+                            if(doImageEntryCbx.isSelected()) {
+                                repositoryClient.addAssociation(root, contentId,
+                                                                bundleId, "uses bundle");
+                            }
                         }
                     }
                     System.err.println("isImage:" + isImage + " "
@@ -714,11 +720,11 @@ public class RamaddaPublisher extends ucar.unidata.idv.publish
                     if ((contentFile != null) && (node != null)) {
                         if (isImage && doThumbnailCbx.isSelected()) {
                             repositoryClient.addThumbnail(node,
-                                    IOUtil.getFileTail(contentFile));
+                                                          IOUtil.getFileTail(contentFile));
                         } else {
                             //                            repositoryClient.addAttachment(node, IOUtil.getFileTail(contentFile));
                         }
-                        if (false && isImage && doThumbnailCbx.isSelected()) {
+                        if (isImage && doThumbnailCbx.isSelected()) {
                             Image image = ImageUtils.readImage(contentFile);
                             image = ImageUtils.resize(image, 75, -1);
                             String filename =
