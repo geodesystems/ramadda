@@ -5010,11 +5010,20 @@ public class HtmlUtils {
                                      String contents, String wrapperClass,
                                      String headerClass)
             throws Exception {
+        makeAccordian(sb, title, contents, true, wrapperClass, headerClass);
+    }
+
+    public static void makeAccordian(Appendable sb, String title,
+                                     String contents, boolean collapse, String wrapperClass,
+                                     String headerClass)
+            throws Exception {
+
+
         List<String> titles = new ArrayList<String>();
         List<String> tabs   = new ArrayList<String>();
         titles.add(title);
         tabs.add(contents);
-        makeAccordian(sb, titles, tabs, true, wrapperClass, headerClass);
+        makeAccordian(sb, titles, tabs, collapse, wrapperClass, headerClass);
     }
 
     /**
