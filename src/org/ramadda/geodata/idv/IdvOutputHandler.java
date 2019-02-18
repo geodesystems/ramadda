@@ -202,7 +202,7 @@ public class IdvOutputHandler extends OutputHandler implements IdvConstants {
     public void checkIdv() {
         //For now just don't try the IDV as the IDV init code bombs out because of the missing jythonlib.jar
         if (true) {
-            //            return;
+            return;
         }
 
         //Synchronize for the case where we have multiple ramadda  servlets under the same server
