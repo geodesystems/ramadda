@@ -52,11 +52,11 @@ public class EntrezSearchProvider extends SearchProvider {
 
     /** _more_ */
     private static final String URL_SEARCH =
-        "http://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi";
+        "https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esearch.fcgi";
 
     /** _more_ */
     private static final String URL_SUMMARY =
-        "http://eutils.ncbi.nlm.nih.gov/entrez/eutils/esummary.fcgi";
+        "https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esummary.fcgi";
 
 
 
@@ -146,7 +146,6 @@ public class EntrezSearchProvider extends SearchProvider {
         InputStream is  = getInputStream(searchUrl);
         String      xml = IOUtil.readContents(is);
         IOUtil.close(is);
-
 
 
         Element      root    = XmlUtil.getRoot(xml);
