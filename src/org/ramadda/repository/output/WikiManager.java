@@ -2599,6 +2599,16 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                 return sb.toString();
             } else {
                 //TABS
+                int innerHeight = getProperty(wikiUtil, props,
+                                              "inner-height", -1);
+
+                if(innerHeight>1) {
+                    List<String> tmp = new ArrayList<String>();
+                    for(String content:contents) {
+                        tmp.add(HtmlUtils.div(content,HtmlUtils.style("max-height:" + innerHeight +";overflow-y:auto;")));
+                    }
+                    contents =tmp;
+                }
                 sb.append(OutputHandler.makeTabs(titles, contents, true,
                         useCookies));
 
