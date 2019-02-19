@@ -296,19 +296,26 @@ var Utils = {
         //tableize
         HtmlUtils.formatTable(".ramadda-table");
 
+
+
         var snippets = $(".ramadda-snippet-hover");
         snippets.each(function() {
                 let  snippet = $(this);
                 snippet.parent().hover(function() {
                         var parent  = $(this);
+                        var offset = parent.height();
+                        //Check for max-height on element
+                        if(offset>parent.parent().height()) {
+                            offset = parent.parent().height();
+                        }
                         var popup =  getTooltip();
                         popup.html(HtmlUtils.div(["class", "ramadda-popup-inner"],snippet.html()));
                         popup.show();
                         popup.position({
                                 of: parent,
                                     my: "left top",
-                                    at: "left bottom",
-                                    collision: "none none"
+                                    at: "left top+" + (offset+1),
+                                    collision: "fit fit"
                                     });
                     },
                     function() {
