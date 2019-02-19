@@ -2401,7 +2401,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                 return sb.toString();
             } else if (doingGrid) {
                 List<String> weights = null;
-                boolean showLine = getProperty(wikiUtil, props, "showline", getProperty(wikiUtil, props, "doline", true));
+                boolean showLine = getProperty(wikiUtil, props, "showLine", getProperty(wikiUtil, props, "doline", false));
                 String ws = getProperty(wikiUtil, props, "weights",
                                         (String) null);
                 if (ws != null) {
