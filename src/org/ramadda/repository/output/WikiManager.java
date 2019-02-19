@@ -2605,7 +2605,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                 if(innerHeight>1) {
                     List<String> tmp = new ArrayList<String>();
                     for(String content:contents) {
-                        tmp.add(HtmlUtils.div(content,HtmlUtils.style("max-height:" + innerHeight +";overflow-y:auto;")));
+                        tmp.add(HtmlUtils.div(content,HtmlUtils.style("max-height:" + innerHeight +"px;overflow-y:auto;")));
                     }
                     contents =tmp;
                 }
