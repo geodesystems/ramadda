@@ -1423,7 +1423,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
                         if (image.indexOf("http") == 0) {
                             url = image;
                         } else {
-                            url = ramaddaBaseUrl + "/metadata/view/" + image + "?element=1&entryid=" + entry.getId() + "&metadata.id=" + metadata[i].id + "&thumbnail=false";
+                            url = ramaddaBaseUrl + "/metadata/view/" + image + "?element=1&entryid=" + entry.getId() + "&metadata_id=" + metadata[i].id + "&thumbnail=false";
                         }
                         html += HtmlUtils.image(url, [ATTR_CLASS, "display-entry-thumbnail"]);
                     }

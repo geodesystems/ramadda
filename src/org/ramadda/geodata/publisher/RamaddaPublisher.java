@@ -123,7 +123,7 @@ public class RamaddaPublisher extends ucar.unidata.idv.publish
                                            false);
 
     /** _more_ */
-    private JCheckBox doZidvCbx = new JCheckBox("Save as zidv file", false);
+    private JCheckBox doZidvCbx = new JCheckBox("Save as ZIDV file", false);
 
     /** _more_ */
     private JCheckBox uploadZidvDataCbx = new JCheckBox("Upload ZIDV Data",
