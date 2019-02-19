@@ -185,9 +185,23 @@ color:#000;
    overflow-y: auto;
 }
 
-.ramadda-block .ramadda-snippet {
+.ramadda-block  {
     border-bottom: 1px #ccc solid;
     margin-bottom: 5px;
+}
+
+
+.ramadda-snippet {
+    margin-bottom: 5px;
+}
+
+.ramadda-snippet-hover {
+    display:none;
+}
+
+
+.ramadda-snippet-popup {
+    margin:10px;
 }
 
 .note,  .ramadda-note, .ramadda-blurb, .ramadda-callout, .ramadda-box, .ramadda-blurb {
@@ -1351,24 +1365,36 @@ a.btn-primary:link, a.btn-primary  {
 }
 
 
+.ramadda-popup-inner {
+   padding:4px;
+   background-color : #fff;
+   margin:0px;
+}
+
+
+
+.ramadda-tooltip-icon:hover { 
+  cursor:pointer;
+}
+
+
+.ramadda-tooltip-contents {
+}
+
+
+.ramadda-tooltip {
+   padding:0px;
+   padding-left:5px;
+   padding-right:5px;
+   border: 2px solid red;
+   box-shadow: 0 0 1px black;
+   font-size: 10pt;
+}
+
 .ramadda-select-inner {
    padding-right:10px;
 }
 
-
-.xxramadda-popup {
-   display: none;
-   left:-10000px; 
-   z-index: 10000;
-   text-decoration: none;
-   border : 1px #ccc solid;
-   background-color : #fff;
-   position:absolute;
-   padding-left:5px;
-   padding-right:5px;
-   box-shadow: 3px 3px 3px rgba(0, 0, 0, 0.5);
-
-}
 
 .ramadda-popup, .ramadda-popup a:visited, .ramadda-popup a {
    color:black;
@@ -1379,7 +1405,7 @@ a.btn-primary:link, a.btn-primary  {
 }
 
 .ramadda-popup-close {
-                     padding-right:4px;
+   padding-right:4px;
 }
 
 .ramadda-popup-link:hover {
@@ -2091,6 +2117,10 @@ snippet {
    display:inline;
 }
 
+snippet-hide {
+   display:none;
+}
+
 .ramadda-linksheader {
    color: #000;
    margin-top:10px;
@@ -2663,57 +2693,6 @@ nowiki {
 }
 
 
-.tooltip-outer {
-   border: 1px solid #888;
-   margin:0px;
-   position: absolute; 
-   display:none;
-   z-index: 1;
-  -webkit-box-shadow: 5px 5px 5px rgba(0, 0, 0, 0.5);
-  box-shadow: 5px 5px 5px rgba(0, 0, 0, 0.5);
-  filter:progid:DXImageTransform.Microsoft.dropshadow(OffX=5, OffY=5, Color='gray');
-  -ms-filter:"progid:DXImageTransform.Microsoft.dropshadow(OffX=5, OffY=5, Color='gray')";
-}
-
-
-.ramadda-tooltip-inner {
-   padding:2px;
-   padding-bottom:0px;
-   padding-right:0px;
-   border : 1px dotted #ccc;
-   background-color : #fff;
-   margin:0px;
-}
-
-.tooltip-link-inner {
-   border : 1px black solid;
-   margin:0px;
-   padding:1px;
-   background-color : #ffffff;
-}
-
-
-.ramadda-tooltip-icon {
-   vertical-align: text-bottom;
-}
-
-.ramadda-tooltip-icon:hover { 
-  cursor:pointer;
-}
-
-
-.ramadda-tooltip-contents {
-}
-
-
-.ramadda-tooltip {
-   padding:0px;
-   padding-left:5px;
-   padding-right:5px;
-   border: 2px solid red;
-   box-shadow: 0 0 1px black;
-   font-size: 10pt;
-}
 
 .foobar {
        border: 1px red solid;

@@ -1141,7 +1141,7 @@ function initMapFunctions(theMap) {
                     at: "left bottom+2"
                 },
                 classes: {
-                    "ui-tooltip": "ramadda-tooltip"
+                    "ui-tooltip": "ramadda-popup"
                 }
             });
             tick.mouseover(function() {

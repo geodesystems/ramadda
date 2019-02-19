@@ -1812,6 +1812,33 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                 request.entryUrl(getRepository().URL_ENTRY_SHOW, entry);
             HtmlUtils.div(card, HtmlUtils.href(entryUrl, entry.getName()),
                           HtmlUtils.cssClass("ramadda-subheading"));
+            boolean showSnippet = getProperty(wikiUtil, props, "showSnippet",
+                                              false);
+
+            boolean showSnippetHover = getProperty(wikiUtil, props, "showSnippetHover",
+                                                   false);
+            if(showSnippet|| showSnippetHover) {
+                String snippet = getSnippet(request, entry);
+                if (Utils.stringDefined(snippet)) {
+                    snippet = wikifyEntry(request, entry, snippet, false, null,
+                                          null, wikiUtil.getNotTags());
+                    if(showSnippet) {
+                        HtmlUtils.div(
+                                      card, snippet,
+                                      HtmlUtils.cssClass("ramadda-snippet"));
+
+                    } else if(showSnippetHover) {
+                        HtmlUtils.div(
+                                      card, snippet,
+                                      HtmlUtils.cssClass("ramadda-snippet-hover"));
+
+                    }
+
+                }
+            }
+
+
+
             String imageUrl = null;
             if (entry.isImage()) {
                 imageUrl = getRepository().getHtmlOutputHandler().getImageUrl(
@@ -1836,14 +1863,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                                     "ramadda-imagewrap")));
                 addImagePopupJS(request, wikiUtil, card, props);
             }
-            String snippet = getSnippet(request, entry);
-            if (Utils.stringDefined(snippet)) {
-                snippet = wikifyEntry(request, entry, snippet, false, null,
-                                      null, wikiUtil.getNotTags());
-                card.append(snippet);
-            }
             HtmlUtils.close(card, HtmlUtils.TAG_DIV);
-
             return card.toString();
         } else if (theTag.equals(WIKI_TAG_IMAGE)) {
             return getWikiImage(wikiUtil, request, entry, props);
@@ -2276,6 +2296,8 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
             boolean showHeading = getProperty(wikiUtil, props, "showHeading",
                                       true);
 
+
+
             boolean showLink = getProperty(wikiUtil, props, ATTR_SHOWLINK,
                                            true);
             boolean includeIcon = getProperty(wikiUtil, props,
@@ -2314,8 +2336,6 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
             tmpProps.remove(ATTR_ENTRY);
             tmpProps.remove(ATTR_ENTRIES);
             tmpProps.remove(ATTR_FIRST);
-
-
             if (children.size() > 0) {
                 checkHeading(request, wikiUtil, props, sb);
             }
@@ -2433,6 +2453,8 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                     HtmlUtils.open(sb, HtmlUtils.TAG_DIV,
                                    HtmlUtils.cssClass("ramadda-grid-box"));
 
+                    String snippet     = null;
+
                     if (showHeading) {
                         HtmlUtils.div(
                             sb, HtmlUtils.href(urls.get(i), titles.get(i)),
@@ -2440,12 +2462,6 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                     }
 
                     String displayHtml = contents.get(i);
-                    String snippet     = getSnippet(request, child);
-                    if (Utils.stringDefined(snippet)) {
-                        snippet = wikifyEntry(request, child, snippet, false,
-                                null, null, wikiUtil.getNotTags());
-                        displayHtml = snippet += displayHtml;
-                    }
 
                     HtmlUtils.div(sb, displayHtml,
                                   HtmlUtils.cssClass("bs-inner")
@@ -3165,7 +3181,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
 
         if (snippet == null) {
             snippet = StringUtil.findPattern(child.getDescription(),
-                                             ":blurb([^\\n]+)\\n");
+                                             "(?s)<snippet-hide>(.*)</snippet-hide>");
         }
         if (snippet != null) {
             snippet = HtmlUtils.div(snippet,

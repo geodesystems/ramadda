@@ -6,7 +6,7 @@
 
 var root = ramaddaBaseUrl;
 var urlroot = ramaddaBaseUrl;
-var icon_close = ramaddaBaseUrl + "/icons/close.gif";
+var icon_close = ramaddaBaseUrl + "/icons/cancel.png";
 var icon_rightarrow = ramaddaBaseUrl + "/icons/grayrightarrow.gif";
 var icon_downdart = ramaddaBaseUrl + "/icons/downdart.gif";
 var icon_rightdart = ramaddaBaseUrl + "/icons/rightdart.gif";
@@ -296,6 +296,25 @@ var Utils = {
         //tableize
         HtmlUtils.formatTable(".ramadda-table");
 
+        var snippets = $(".ramadda-snippet-hover");
+        snippets.each(function() {
+                let  snippet = $(this);
+                snippet.parent().hover(function() {
+                        var parent  = $(this);
+                        var popup =  getTooltip();
+                        popup.html(HtmlUtils.div(["class", "ramadda-popup-inner"],snippet.html()));
+                        popup.show();
+                        popup.position({
+                                of: parent,
+                                    my: "left top",
+                                    at: "left bottom",
+                                    collision: "none none"
+                                    });
+                    },
+                    function() {
+                        getTooltip().hide();
+                    }
+                    )});
 
         //Buttonize
         $(':submit').button().click(function(event) {});

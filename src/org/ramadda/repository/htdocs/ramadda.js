@@ -37,7 +37,6 @@ function hidePopupObject() {
 }
 
 
-
 function mouseDown(event) {
     if (popupObject) {
         if (checkToHidePopup()) {
@@ -334,26 +333,14 @@ function mouseUpOnEntry(event, entryId, targetId) {
         obj.style.borderBottom = "";
     }
     if (draggedEntry && draggedEntry != entryId) {
-        /*
-        $("#ramadda-dialog").html("what to do....");
-        $("#ramadda-dialog").dialog({
-                resizable: false,
-                modal: true,
-                buttons: {
-                   Cancel: function() {$( this ).dialog( "close" );}
-                }}
-        );
-        */
         url = ramaddaBaseUrl + "/entry/copy?action=action.move&from=" + draggedEntry + "&to=" + entryId;
-        //        alert(url);
-        //        window.open(url,'move window','') ;
         document.location = url;
     }
 }
 
 
 function getTooltip() {
-    return $("#ramadda-tooltipdiv");
+    return $("#ramadda-popupdiv");
 }
 
 function handleKeyPress(event) {
@@ -598,7 +585,7 @@ function EntryRow(entryId, rowId, cbxId, cbxWrapperId, showDetails) {
         text = getChildText(xmlDoc);
         var leftSide = entryRow.getRow().offset().left;
         var offset = entryRow.lastClick - leftSide;
-        getTooltip().html("<div class=ramadda-tooltip-inner><div id=\"tooltipwrapper\" ><table><tr valign=top><img width=\"16\" class=\"ramadda-popup-close\" onmousedown=\"hideEntryPopup();\" id=\"tooltipclose\"  src=" + icon_close + "></td><td>" + text + "</table></div></div>");
+        getTooltip().html("<div class=ramadda-popup-inner><div id=\"tooltipwrapper\" ><table><tr valign=top><img width=\"16\" class=\"ramadda-popup-close\" onmousedown=\"hideEntryPopup();\" id=\"tooltipclose\"  src=" + icon_close + "></td><td>" + text + "</table></div></div>");
         checkTabs(text);
 
         var pos = entryRow.getRow().offset();

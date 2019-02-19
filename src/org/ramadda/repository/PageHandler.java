@@ -646,11 +646,8 @@ public class PageHandler extends RepositoryManager {
             //j-
             StringBuilder sb = new StringBuilder();
             HtmlUtils.div(sb, "",
-                          HtmlUtils.attrs("id", "ramadda-tooltipdiv",
-                                          "class", "tooltip-outer"));
-            HtmlUtils.div(sb, "",
-                          HtmlUtils.attrs("id", "ramadda-dialog", "class",
-                                          "ramadda-dialog"));
+                          HtmlUtils.attrs("id", "ramadda-popupdiv",
+                                          "class", "ramadda-popup"));
             HtmlUtils.div(sb, "",
                           HtmlUtils.attrs("id", "ramadda-selectdiv", "class",
                                           "ramadda-selectdiv"));
