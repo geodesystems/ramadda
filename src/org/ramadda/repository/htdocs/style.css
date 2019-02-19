@@ -192,7 +192,8 @@ color:#000;
 
 
 .ramadda-snippet {
-    margin-bottom: 5px;
+   max-width: 400px;
+   margin-bottom: 5px;
 }
 
 .ramadda-snippet-hover {
