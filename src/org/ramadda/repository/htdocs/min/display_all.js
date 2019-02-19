@@ -12557,7 +12557,7 @@ function RamaddaMetadataDisplay(displayManager, id, properties) {
                         if (m.type == mdt) {
                             var item = null;
                             if (m.type == "content.thumbnail" || m.type == "content.logo") {
-                                var url = this.getRamadda().getRoot() + "/metadata/view/" + m.value.attr1 + "?element=1&entryid=" + entry.getId() + "&metadata.id=" + m.id;
+                                var url = this.getRamadda().getRoot() + "/metadata/view/" + m.value.attr1 + "?element=1&entryid=" + entry.getId() + "&metadata_id=" + m.id;
                                 item = HtmlUtils.image(url, [ATTR_WIDTH, "100"]);
                             } else if (m.type == "content.url" || m.type == "dif.related_url") {
                                 var label = m.value.attr2;
@@ -12568,7 +12568,7 @@ function RamaddaMetadataDisplay(displayManager, id, properties) {
                             } else if (m.type == "content.attachment") {
                                 var toks = m.value.attr1.split("_file_");
                                 var filename = toks[1];
-                                var url = this.getRamadda().getRoot() + "/metadata/view/" + m.value.attr1 + "?element=1&entryid=" + entry.getId() + "&metadata.id=" + m.id;
+                                var url = this.getRamadda().getRoot() + "/metadata/view/" + m.value.attr1 + "?element=1&entryid=" + entry.getId() + "&metadata_id=" + m.id;
                                 item = HtmlUtils.href(url, filename);
                             } else {
                                 item = m.value.attr1;

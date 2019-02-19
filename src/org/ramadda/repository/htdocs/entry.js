@@ -451,7 +451,7 @@ function Ramadda(repositoryRoot) {
 
             for (var i = 0; i < settings.metadata.length; i++) {
                 var metadata = settings.metadata[i];
-                url += "&metadata.attr1." + metadata.type + "=" + metadata.value;
+                url += "&metadata_attr1_" + metadata.type + "=" + metadata.value;
             }
             url += "&max=" + settings.getMax();
             url += "&skip=" + settings.getSkip();
