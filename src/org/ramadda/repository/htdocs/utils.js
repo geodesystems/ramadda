@@ -309,7 +309,7 @@ var Utils = {
                             offset = parent.parent().height();
                         }
                         var popup =  getTooltip();
-                        popup.html(HtmlUtils.div(["class", "ramadda-popup-inner"],snippet.html()));
+                        popup.html(HtmlUtils.div(["class", "ramadda-popup-inner ramadda-snippet-popup"],snippet.html()));
                         popup.show();
                         popup.position({
                                 of: parent,
