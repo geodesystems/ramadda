@@ -79,7 +79,7 @@ public class WikiUtil {
     public static final String TAG_SUFFIX = "}}";
 
 
-    /** _more_          */
+    /** _more_ */
     private static Hashtable globalProperties;
 
     /** _more_ */
@@ -92,7 +92,7 @@ public class WikiUtil {
     private Hashtable<String, String> myVars = new Hashtable<String,
                                                    String>();
 
-    /** _more_          */
+    /** _more_ */
     private boolean hasSet = false;
 
     /** _more_ */
@@ -1300,6 +1300,7 @@ public class WikiUtil {
             }
             if (tline.equals(":p")) {
                 buff.append("<p></p>");
+
                 continue;
             }
 
@@ -2050,7 +2051,7 @@ public class WikiUtil {
         /** _more_ */
         int cnt = 0;
 
-        /** _more_          */
+        /** _more_ */
         String minHeight;
 
         /**
@@ -2070,11 +2071,11 @@ public class WikiUtil {
      *
      *
      * @version        $version$, Mon, Feb 18, '19
-     * @author         Enter your name here...    
+     * @author         Enter your name here...
      */
     public static class RowState {
 
-        /** _more_          */
+        /** _more_ */
         int colCnt = 0;
 
 
@@ -2166,23 +2167,23 @@ public class WikiUtil {
      *
      *
      * @version        $version$, Mon, Feb 18, '19
-     * @author         Enter your name here...    
+     * @author         Enter your name here...
      */
     public static class TableState {
 
-        /** _more_          */
+        /** _more_ */
         boolean inHead = true;
 
-        /** _more_          */
+        /** _more_ */
         boolean inRow = false;
 
-        /** _more_          */
+        /** _more_ */
         boolean inBody = false;
 
-        /** _more_          */
+        /** _more_ */
         boolean inTr = false;
 
-        /** _more_          */
+        /** _more_ */
         boolean inTd = false;
 
         /**

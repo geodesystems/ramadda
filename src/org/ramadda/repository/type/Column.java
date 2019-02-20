@@ -160,6 +160,7 @@ public class Column implements DataTypes, Constants {
     /** _more_ */
     public static final String ATTR_SUFFIX = "suffix";
 
+    /** _more_          */
     public static final String ATTR_HELP = "help";
 
     /** _more_ */
@@ -296,6 +297,7 @@ public class Column implements DataTypes, Constants {
     /** _more_ */
     private String suffix;
 
+    /** _more_          */
     private String help;
 
     /** _more_ */
@@ -444,7 +446,7 @@ public class Column implements DataTypes, Constants {
         oldNames = StringUtil.split(XmlUtil.getAttribute(element,
                 ATTR_OLDNAMES, ""), ",", true, true);
         suffix = Utils.getAttributeOrTag(element, ATTR_SUFFIX, "");
-        help= Utils.getAttributeOrTag(element, ATTR_HELP,(String)null);
+        help   = Utils.getAttributeOrTag(element, ATTR_HELP, (String) null);
         //The suffix might have the ${root} macro in it
         if (typeHandler != null) {
             suffix =
@@ -1915,7 +1917,7 @@ public class Column implements DataTypes, Constants {
         } else if (value.startsWith("=")) {
             value = value.substring(1);
             where.add(Clause.eq(getFullName(), value));
-        } else if (!value.startsWith("%") && value.endsWith("%")) {
+        } else if ( !value.startsWith("%") && value.endsWith("%")) {
             where.add(getDatabaseManager().makeLikeTextClause(getFullName(),
                     value, false));
         } else {
@@ -2036,10 +2038,11 @@ public class Column implements DataTypes, Constants {
             state.put(group, group);
         }
 
-        if(help!=null) {
-            if(help!=null)
+        if (help != null) {
+            if (help != null) {
                 System.err.println("help:" + help);
-            formBuffer.append(typeHandler.formEntry(request, "",help));
+            }
+            formBuffer.append(typeHandler.formEntry(request, "", help));
         }
 
 
@@ -2787,7 +2790,8 @@ public class Column implements DataTypes, Constants {
                     "-12 hours"));
             dateSelect.add(new TwoFacedObject(msg("Last day"), "-1 day"));
             dateSelect.add(new TwoFacedObject(msg("Last week"), "-7 days"));
-            dateSelect.add(new TwoFacedObject(msg("Last 2 weeks"), "-14 days"));
+            dateSelect.add(new TwoFacedObject(msg("Last 2 weeks"),
+                    "-14 days"));
             dateSelect.add(new TwoFacedObject(msg("Last month"), "-1 month"));
 
             String dateSelectValue;

@@ -70,11 +70,11 @@ public class MultiSearchTypeHandler extends GenericTypeHandler {
      */
     public Result getHtmlDisplay(Request request, Entry entry)
             throws Exception {
-        StringBuffer sb      = new StringBuffer();
-        getPageHandler().entrySectionOpen(request, entry, sb,null);
+        StringBuffer sb = new StringBuffer();
+        getPageHandler().entrySectionOpen(request, entry, sb, null);
 
-        String       formUrl = getEntryManager().getEntryURL(request, entry);
-        String       query   = request.getString(ARG_QUERY, "");
+        String formUrl = getEntryManager().getEntryURL(request, entry);
+        String query   = request.getString(ARG_QUERY, "");
         sb.append(HtmlUtils.form(formUrl, ""));
         sb.append(HtmlUtils.hidden(ARG_ENTRYID, entry.getId()));
         sb.append(msg("Search across multiple search engines"));
@@ -114,6 +114,7 @@ public class MultiSearchTypeHandler extends GenericTypeHandler {
         }
 
         getPageHandler().entrySectionClose(request, entry, sb);
+
         return new Result("MultiSearch", sb);
     }
 

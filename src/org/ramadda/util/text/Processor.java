@@ -397,6 +397,8 @@ public abstract class Processor extends CsvOperator {
          * _more_
          *
          * @param info _more_
+         *
+         * @param textReader _more_
          * @param inputRows _more_
          *
          *
@@ -418,12 +420,17 @@ public abstract class Processor extends CsvOperator {
                 firstProcessors     = null;
                 for (Row row : inputRows) {
                     row = processRowInner(textReader, row, "");
-                    if(!textReader.getOkToRun()) break;
-                    if(textReader.getExtraRow()!=null) {
-                        row = processRowInner(textReader, textReader.getExtraRow(), null);
+                    if ( !textReader.getOkToRun()) {
+                        break;
+                    }
+                    if (textReader.getExtraRow() != null) {
+                        row = processRowInner(textReader,
+                                textReader.getExtraRow(), null);
                         textReader.setExtraRow(null);
                     }
-                    if(!textReader.getOkToRun()) break;
+                    if ( !textReader.getOkToRun()) {
+                        break;
+                    }
                 }
             }
             if (firstProcessors != null) {
@@ -2171,13 +2178,13 @@ public abstract class Processor extends CsvOperator {
         /** _more_ */
         private List<Integer> uniqueIndices;
 
-        /** _more_          */
+        /** _more_ */
         private List<Integer> valueIndices;
 
-        /** _more_          */
+        /** _more_ */
         private List<String> keys;
 
-        /** _more_          */
+        /** _more_ */
         private List<String> values;
 
         /**
@@ -2209,10 +2216,11 @@ public abstract class Processor extends CsvOperator {
                 throws Exception {
             uniqueIndices = getIndices(keys);
             valueIndices  = getIndices(values);
-            List<Integer> allIndices= new ArrayList<Integer>();
+            List<Integer> allIndices = new ArrayList<Integer>();
             allIndices.addAll(uniqueIndices);
             allIndices.addAll(valueIndices);
-            HashSet<Integer> allIndicesMap = (HashSet<Integer> ) Utils.makeHashSet(allIndices);
+            HashSet<Integer> allIndicesMap =
+                (HashSet<Integer>) Utils.makeHashSet(allIndices);
 
             int          rowIndex = 0;
             List<String> keys     = new ArrayList<String>();
@@ -2243,36 +2251,41 @@ public abstract class Processor extends CsvOperator {
             }
 
 
-            List<Row> newRows = new ArrayList<Row>();
-            Row newHeader = new Row();
-            for(int i=0;i<headerRow.size();i++)
-                if(allIndicesMap.contains(new Integer(i)))
+            List<Row> newRows   = new ArrayList<Row>();
+            Row       newHeader = new Row();
+            for (int i = 0; i < headerRow.size(); i++) {
+                if (allIndicesMap.contains(new Integer(i))) {
                     newHeader.add(headerRow.get(i));
+                }
+            }
 
             newRows.add(newHeader);
             for (String key : keys) {
                 for (int i = 0; i < array.length; i++) {
                     array[i] = null;
                 }
-                Row newRow =null;
-                for(int i=0;i<valueIndices.size();i++) {
-                    int valueIdx = valueIndices.get(i);
-                    double sum = 0;
+                Row newRow = null;
+                for (int i = 0; i < valueIndices.size(); i++) {
+                    int    valueIdx = valueIndices.get(i);
+                    double sum      = 0;
                     for (Row row : rowMap.get(key)) {
-                        if(newRow == null) {
+                        if (newRow == null) {
                             newRow = new Row();
-                            for(int u=0;u<uniqueIndices.size();u++) {
+                            for (int u = 0; u < uniqueIndices.size(); u++) {
                                 newRow.add(row.get(uniqueIndices.get(u)));
                             }
                             newRows.add(newRow);
                         }
                         Object value = row.get(valueIdx);
-                        if(value == null) continue;
-                        sum+=Double.parseDouble(value.toString());
+                        if (value == null) {
+                            continue;
+                        }
+                        sum += Double.parseDouble(value.toString());
                     }
                     newRow.add(new Double(sum));
                 }
             }
+
             return newRows;
 
         }
@@ -2283,21 +2296,30 @@ public abstract class Processor extends CsvOperator {
     }
 
 
+    /**
+     * Class description
+     *
+     *
+     * @version        $version$, Wed, Feb 20, '19
+     * @author         Enter your name here...    
+     */
     public static class Joiner extends RowCollector {
 
-        /** _more_          */
+        /** _more_ */
         private List<String> keys1;
 
-        /** _more_          */
+        /** _more_ */
         private List<String> values1;
 
-        /** _more_          */
+        /** _more_ */
         private List<String> keys2;
 
-        /** _more_          */
+        /** _more_ */
         private List<String> values2;
 
+        /** _more_          */
         private String file;
+
         /**
          * _more_
          *
@@ -2305,14 +2327,20 @@ public abstract class Processor extends CsvOperator {
          *
          * @param keys _more_
          * @param values _more_
+         *
+         * @param keys1 _more_
+         * @param values1 _more_
+         * @param file _more_
+         * @param keys2 _more_
+         * @param values2 _more_
          */
-        public Joiner(List<String> keys1, List<String> values1,String file,
+        public Joiner(List<String> keys1, List<String> values1, String file,
                       List<String> keys2, List<String> values2) {
             this.keys1   = keys1;
             this.values1 = values1;
             this.keys2   = keys2;
             this.values2 = values2;
-            this.file = file;
+            this.file    = file;
         }
 
 
@@ -2329,16 +2357,17 @@ public abstract class Processor extends CsvOperator {
         @Override
         public List<Row> finish(TextReader info, List<Row> rows)
                 throws Exception {
-            List<Integer> keys1Indices = getIndices(keys1);
+            List<Integer> keys1Indices   = getIndices(keys1);
             List<Integer> values1Indices = getIndices(values1);
-            List<Integer> keys2Indices = getIndices(keys2);
+            List<Integer> keys2Indices   = getIndices(keys2);
             List<Integer> values2Indices = getIndices(values2);
-            List<Row> newRows = new ArrayList<Row>();
+            List<Row>     newRows        = new ArrayList<Row>();
             BufferedReader br = new BufferedReader(
-                                                   new InputStreamReader(getInputStream(file)));
-            TextReader reader = new  TextReader(br);
-            List<Row>rows2 = new ArrayList<Row>();
-            while(true) {
+                                    new InputStreamReader(
+                                        getInputStream(file)));
+            TextReader reader = new TextReader(br);
+            List<Row>  rows2  = new ArrayList<Row>();
+            while (true) {
                 String line = reader.readLine();
                 if (line == null) {
                     break;

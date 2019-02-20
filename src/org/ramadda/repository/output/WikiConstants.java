@@ -326,9 +326,10 @@ public interface WikiConstants {
     /** _more_ */
     public static final String WIKI_TAG_GROUP = "group";
 
-    /** _more_          */
+    /** _more_ */
     public static final String WIKI_TAG_WIKITEXT = "wikitext";
 
+    /** _more_          */
     public static final String WIKI_TAG_JAVASCRIPT = "javascript";
 
 
@@ -341,7 +342,7 @@ public interface WikiConstants {
     /** _more_ */
     public static final String WIKI_TAG_DISPLAY = "display";
 
-    /** _more_          */
+    /** _more_ */
     public static final String WIKI_TAG_DISPLAYPROPERTY = "displayProperty";
 
     /** wiki import */
@@ -453,6 +454,7 @@ public interface WikiConstants {
     /** wiki import */
     public static final String WIKI_TAG_GRID = "grid";
 
+    /** _more_          */
     public static final String WIKI_TAG_CARD = "card";
 
     /** wiki import */
@@ -498,7 +500,7 @@ public interface WikiConstants {
     /** wiki import */
     public static final String WIKI_TAG_PROPERTIES = "properties";
 
-    /** _more_          */
+    /** _more_ */
     public static final String WIKI_TAG_PROPERTY = "property";
 
     /** _more_ */

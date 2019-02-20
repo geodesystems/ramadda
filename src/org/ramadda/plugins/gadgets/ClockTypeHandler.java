@@ -67,7 +67,7 @@ public class ClockTypeHandler extends GenericTypeHandler {
      *
      * @throws Exception _more_
      */
-@Override
+    @Override
     public Result getHtmlDisplay(Request request, Entry entry)
             throws Exception {
         //        String orient = entry.getValue(0,"");

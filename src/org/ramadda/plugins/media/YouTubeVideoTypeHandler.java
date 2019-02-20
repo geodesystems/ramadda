@@ -70,7 +70,7 @@ public class YouTubeVideoTypeHandler extends GenericTypeHandler {
     /** _more_ */
     public static final int IDX_DISPLAY = IDX++;
 
-    /** _more_          */
+    /** _more_ */
     public static final int IDX_AUTOPLAY = IDX++;
 
     /** _more_ */

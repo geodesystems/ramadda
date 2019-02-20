@@ -352,12 +352,21 @@ public class GeoUtils {
      * @return _more_
      */
     public static Place getLocationFromAddress(String address,
-                                               String googleKey) {
+            String googleKey) {
         return getLocationFromAddress(address, googleKey, null);
     }
 
+    /**
+     * _more_
+     *
+     * @param address _more_
+     * @param googleKey _more_
+     * @param bounds _more_
+     *
+     * @return _more_
+     */
     public static Place getLocationFromAddress(String address,
-                                               String googleKey, Bounds bounds) {
+            String googleKey, Bounds bounds) {
         try {
             return getLocationFromAddressInner(address, googleKey, bounds);
 
@@ -371,13 +380,14 @@ public class GeoUtils {
      *
      * @param address _more_
      * @param googleKey _more_
+     * @param bounds _more_
      *
      * @return _more_
      *
      * @throws Exception _more_
      */
     public static Place getLocationFromAddressInner(String address,
-                                                    String googleKey, Bounds bounds)
+            String googleKey, Bounds bounds)
             throws Exception {
 
         if (address == null) {
@@ -387,8 +397,11 @@ public class GeoUtils {
         if (address.length() == 0) {
             return null;
         }
-        if(address.toLowerCase().startsWith("from:")) address= address.substring(5);
-        else if(address.toLowerCase().startsWith("to:")) address= address.substring(3);
+        if (address.toLowerCase().startsWith("from:")) {
+            address = address.substring(5);
+        } else if (address.toLowerCase().startsWith("to:")) {
+            address = address.substring(3);
+        }
         Place place = null;
         /*
         place = Place.getPlace(address);
@@ -426,9 +439,10 @@ public class GeoUtils {
                         List<String> toks = StringUtil.split(line,
                                                 cacheDelimiter);
                         if (toks.size() == 4) {
-                           addressToLocation.put(toks.get(0),
-                                                 new Place(toks.get(1), new Double(toks.get(2)),
-                                                           new Double(toks.get(3))));
+                            addressToLocation.put(toks.get(0),
+                                    new Place(toks.get(1),
+                                        new Double(toks.get(2)),
+                                        new Double(toks.get(3))));
                         }
                     }
                 }
@@ -440,12 +454,15 @@ public class GeoUtils {
 
 
 
-        place  = addressToLocation.get(address);
+        place = addressToLocation.get(address);
         if (place != null) {
-            if(bounds==null || bounds.contains(place.getLatitude(),place.getLongitude())) {
+            if ((bounds == null)
+                    || bounds.contains(place.getLatitude(),
+                                       place.getLongitude())) {
                 if (Double.isNaN(place.getLatitude())) {
                     return null;
                 }
+
                 return place;
             }
         }
@@ -455,7 +472,7 @@ public class GeoUtils {
         String latString      = null;
         String lonString      = null;
         String encodedAddress = StringUtil.replace(address, " ", "%20");
-        String name = null;
+        String name           = null;
 
 
         if (googleKey != null) {
@@ -464,13 +481,16 @@ public class GeoUtils {
                 String url =
                     "https://maps.googleapis.com/maps/api/geocode/json?address="
                     + encodedAddress + "&key=" + googleKey;
-                if(bounds!=null) {
-                    url+="&bounds=" + bounds.getSouth()+"," + bounds.getWest() +"|"+bounds.getNorth()+"," + bounds.getEast();
+                if (bounds != null) {
+                    url += "&bounds=" + bounds.getSouth() + ","
+                           + bounds.getWest() + "|" + bounds.getNorth() + ","
+                           + bounds.getEast();
                 }
                 String result = IOUtil.readContents(url, GeoUtils.class);
                 //                System.err.println("result:" + result);
 
-                name = StringUtil.findPattern(result,"\"formatted_address\"\\s*:\\s*\"([^\"]+)\"");
+                name = StringUtil.findPattern(result,
+                        "\"formatted_address\"\\s*:\\s*\"([^\"]+)\"");
                 latString = StringUtil.findPattern(result,
                         "\"lat\"\\s*:\\s*([-\\d\\.]+),");
                 lonString = StringUtil.findPattern(result,
@@ -480,13 +500,19 @@ public class GeoUtils {
             }
         }
         if ((latString != null) && (lonString != null)) {
-            place  = new Place(name==null?address:name, new Double(latString), new Double(lonString));
+            place = new Place((name == null)
+                              ? address
+                              : name, new Double(latString),
+                                      new Double(lonString));
             addressToLocation.put(address, place);
             if (cacheWriter != null) {
-                cacheWriter.println(address + cacheDelimiter + place.getName() + cacheDelimiter +place.getLatitude()
-                                    + cacheDelimiter + place.getLongitude());
+                cacheWriter.println(address + cacheDelimiter
+                                    + place.getName() + cacheDelimiter
+                                    + place.getLatitude() + cacheDelimiter
+                                    + place.getLongitude());
                 cacheWriter.flush();
             }
+
             return place;
         } else {
             if (cacheWriter != null) {

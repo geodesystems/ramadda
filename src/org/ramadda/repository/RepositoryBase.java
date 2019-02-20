@@ -105,7 +105,7 @@ public class RepositoryBase implements Constants, RepositorySource {
     public final RequestUrl URL_ENTRY_IMPORT = new RequestUrl(this,
                                                    "/entry/import");
 
-    /** _more_          */
+    /** _more_ */
     public final RequestUrl URL_ENTRY_ACTION = new RequestUrl(this,
                                                    "/entry/action");
 
@@ -305,7 +305,7 @@ public class RepositoryBase implements Constants, RepositorySource {
     /** _more_ */
     private String urlBase = "/repository";
 
-    /** _more_          */
+    /** _more_ */
     private boolean isMinified;
 
     /** _more_ */

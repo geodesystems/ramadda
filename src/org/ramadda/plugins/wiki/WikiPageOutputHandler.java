@@ -384,7 +384,7 @@ public class WikiPageOutputHandler extends HtmlOutputHandler {
         }
 
 
-        getPageHandler().entrySectionOpen(request, entry,sb,"Wiki History");
+        getPageHandler().entrySectionOpen(request, entry, sb, "Wiki History");
 
 
         sb.append(request.form(getRepository().URL_ENTRY_SHOW));
@@ -444,7 +444,8 @@ public class WikiPageOutputHandler extends HtmlOutputHandler {
         sb.append(HtmlUtils.submit("Compare Selected Versions"));
         sb.append(HtmlUtils.formClose());
 
-        getPageHandler().entrySectionClose(request, entry,sb);
+        getPageHandler().entrySectionClose(request, entry, sb);
+
         return makeLinksResult(request, msg("Wiki History"), sb,
                                new State(entry));
     }

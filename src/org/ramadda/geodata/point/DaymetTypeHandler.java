@@ -47,7 +47,7 @@ public class DaymetTypeHandler extends PointTypeHandler {
     /** _more_ */
     private static int IDX = PointTypeHandler.IDX_LAST + 1;
 
-    /** _more_          */
+    /** _more_ */
     private static int IDX_STRIDE = IDX++;
 
 

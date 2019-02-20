@@ -140,6 +140,7 @@ public class TextOutputHandler extends OutputHandler {
         for (int i = 0; i < suffixes.length; i++) {
             if (path.endsWith(suffixes[i])) {
                 links.add(makeLink(request, state.entry, OUTPUT_TEXT));
+
                 //                links.add(makeLink(request, state.entry, OUTPUT_WORDCLOUD));
                 return;
             }
@@ -290,9 +291,8 @@ public class TextOutputHandler extends OutputHandler {
             throws Exception {
         String contents =
             getStorageManager().readSystemResource(entry.getFile());
-        StringBuffer sb   = new StringBuffer();
-        getPageHandler().entrySectionOpen(request, entry, sb,
-                                          "Pretty Print");
+        StringBuffer sb = new StringBuffer();
+        getPageHandler().entrySectionOpen(request, entry, sb, "Pretty Print");
 
         StringBuffer head = new StringBuffer();
         head.append("\n");

@@ -150,6 +150,7 @@ public class TextReader implements Cloneable {
     /** _more_ */
     private Row firstRow;
 
+    /** _more_          */
     private Row extraRow;
 
 
@@ -247,23 +248,23 @@ public class TextReader implements Cloneable {
         return visitedRows;
     }
 
-/**
-Set the ExtraRow property.
+    /**
+     * Set the ExtraRow property.
+     *
+     * @param value The new value for ExtraRow
+     */
+    public void setExtraRow(Row value) {
+        extraRow = value;
+    }
 
-@param value The new value for ExtraRow
-**/
-public void setExtraRow (Row value) {
-	extraRow = value;
-}
-
-/**
-Get the ExtraRow property.
-
-@return The ExtraRow
-**/
-public Row getExtraRow () {
-	return extraRow;
-}
+    /**
+     * Get the ExtraRow property.
+     *
+     * @return The ExtraRow
+     */
+    public Row getExtraRow() {
+        return extraRow;
+    }
 
 
 
@@ -315,6 +316,11 @@ public Row getExtraRow () {
         okToRun = false;
     }
 
+    /**
+     * _more_
+     *
+     * @return _more_
+     */
     public boolean getOkToRun() {
         return okToRun;
     }
@@ -434,7 +440,7 @@ public Row getExtraRow () {
                 c = prependReader.read();
                 if (c == -1) {
                     this.prependReader = null;
-                    c   = getReader().read();
+                    c                  = getReader().read();
                 }
             } else {
                 while (pruneBytes > 0) {

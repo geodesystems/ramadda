@@ -1020,10 +1020,10 @@ public class PhoneHarvester extends Harvester {
                                           values);
 
 
-        Place place  = org.ramadda.util.GeoUtils.getLocationFromAddress(
-                                info.getFromZip());
+        Place place = org.ramadda.util.GeoUtils.getLocationFromAddress(
+                          info.getFromZip());
         if (place != null) {
-            entry.setLocation(place.getLatitude(),place.getLongitude(), 0);
+            entry.setLocation(place.getLatitude(), place.getLongitude(), 0);
         }
 
         List<Entry> entries = (List<Entry>) Misc.newList(entry);
@@ -1146,9 +1146,9 @@ public class PhoneHarvester extends Harvester {
 
 
         Place place = org.ramadda.util.GeoUtils.getLocationFromAddress(
-                                info.getFromZip());
+                          info.getFromZip());
         if (place != null) {
-            entry.setLocation(place.getLatitude(),place.getLongitude(), 0);
+            entry.setLocation(place.getLatitude(), place.getLongitude(), 0);
         }
 
         List<Entry> entries = (List<Entry>) Misc.newList(entry);

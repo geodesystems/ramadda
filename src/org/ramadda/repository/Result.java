@@ -197,9 +197,16 @@ public class Result {
     }
 
 
+    /**
+     * _more_
+     *
+     * @param content _more_
+     * @param mimeType _more_
+     * @param decorate _more_
+     */
     public Result(Appendable content, String mimeType, boolean decorate) {
         this("", (byte[]) null, mimeType);
-        stringContent = content.toString();
+        stringContent       = content.toString();
         this.shouldDecorate = decorate;
     }
 

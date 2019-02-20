@@ -190,12 +190,17 @@ public abstract class SearchProvider extends GenericTypeHandler {
     /**
      * _more_
      *
+     *
+     * @param includeId _more_
      * @return _more_
      */
     public String getFormLabel(boolean includeId) {
         String url = getSiteUrl();
         if (url != null) {
-            return HtmlUtils.href(url, getName()," class=black_href ") + (includeId?" Id:" + getId():"");
+            return HtmlUtils.href(url, getName(), " class=black_href ")
+                   + (includeId
+                      ? " Id:" + getId()
+                      : "");
         }
 
         return getName();
@@ -421,11 +426,16 @@ public abstract class SearchProvider extends GenericTypeHandler {
         /**
          * _more_
          *
+         *
+         * @param includeId _more_
          * @return _more_
          */
         @Override
         public String getFormLabel(boolean includeId) {
-            return HtmlUtils.href(serverInfo.getUrl(), getName()," class=black_href ")  + (includeId?" Id:" + getId():"");
+            return HtmlUtils.href(serverInfo.getUrl(), getName(),
+                                  " class=black_href ") + (includeId
+                    ? " Id:" + getId()
+                    : "");
         }
 
 

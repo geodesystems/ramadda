@@ -76,8 +76,18 @@ public class Bounds {
         return "north:" + north + " west:" + west + " south:" + south
                + " east:" + east;
     }
+
+    /**
+     * _more_
+     *
+     * @param lat _more_
+     * @param lon _more_
+     *
+     * @return _more_
+     */
     public boolean contains(double lat, double lon) {
-        return lat<=north && lat >=south && lon>=west && lon <= east;
+        return (lat <= north) && (lat >= south) && (lon >= west)
+               && (lon <= east);
 
     }
 

@@ -91,7 +91,7 @@ public class MetametaApiHandler extends RepositoryManager implements RequestHand
         }
 
         StringBuilder sb = new StringBuilder();
-        
+
         sb.append(HtmlUtils.sectionOpen("Metameta Listing"));
         sb.append(
             "Below are RAMADDA entry import files that allow you to view and modify the entry metadata<br>");
@@ -102,6 +102,7 @@ public class MetametaApiHandler extends RepositoryManager implements RequestHand
         getPageHandler().doTableLayout(request, sb, cb);
 
         sb.append(HtmlUtils.sectionClose());
+
         return new Result("Metameta", sb);
     }
 

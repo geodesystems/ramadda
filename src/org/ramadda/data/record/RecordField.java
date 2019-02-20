@@ -88,7 +88,7 @@ public class RecordField {
     /** _more_ */
     public static final String TYPE_DATE = "date";
 
-    /** _more_          */
+    /** _more_ */
     public static final String TYPE_DOUBLE = "double";
 
     /** _more_ */
@@ -709,9 +709,20 @@ public class RecordField {
         properties.put(key, value);
     }
 
+    /**
+     * _more_
+     *
+     * @param key _more_
+     * @param dflt _more_
+     *
+     * @return _more_
+     */
     public Object getProperty(String key, Object dflt) {
-        Object v=  properties.get(key);
-        if(v==null) return dflt;
+        Object v = properties.get(key);
+        if (v == null) {
+            return dflt;
+        }
+
         return v;
     }
 

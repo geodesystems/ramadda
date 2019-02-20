@@ -1118,10 +1118,11 @@ public class HtmlOutputHandler extends OutputHandler {
         }
         sb.append(HtmlUtils.close("div"));
         String s = sb.toString();
-        s = HtmlUtils.div(s, HtmlUtils.style("padding-left:5px;padding-right:5px;padding-bottom:5px;"));
-        return makeAjaxResult(request,
-                              getRepository().translate(request,
-                                                        s));
+        s = HtmlUtils.div(
+            s, HtmlUtils.style(
+                "padding-left:5px;padding-right:5px;padding-bottom:5px;"));
+
+        return makeAjaxResult(request, getRepository().translate(request, s));
 
     }
 
@@ -1163,7 +1164,7 @@ public class HtmlOutputHandler extends OutputHandler {
 
 
             entry.getTypeHandler().addWikiEditor(request, entry, suffix,
-                                                 null, "", desc,null, true, 0);
+                    null, "", desc, null, true, 0);
 
             getPageHandler().entrySectionClose(request, entry, suffix);
         }
@@ -1299,8 +1300,7 @@ public class HtmlOutputHandler extends OutputHandler {
         List<Entry>  allEntries = new ArrayList<Entry>();
         allEntries.addAll(subGroups);
         allEntries.addAll(entries);
-        getPageHandler().entrySectionOpen(request, group, sb,
-                                          "Tree View");
+        getPageHandler().entrySectionOpen(request, group, sb, "Tree View");
         makeTreeView(request, allEntries, sb, 750, 500);
         getPageHandler().entrySectionClose(request, group, sb);
 
@@ -1435,14 +1435,14 @@ public class HtmlOutputHandler extends OutputHandler {
     public Result outputTable(Request request, Entry group,
                               List<Entry> subGroups, List<Entry> entries)
             throws Exception {
-        StringBuffer sb         = new StringBuffer();
-        getPageHandler().entrySectionOpen(request, group, sb,
-                                          "Table");
-        List<Entry>  allEntries = new ArrayList<Entry>();
+        StringBuffer sb = new StringBuffer();
+        getPageHandler().entrySectionOpen(request, group, sb, "Table");
+        List<Entry> allEntries = new ArrayList<Entry>();
         allEntries.addAll(subGroups);
         allEntries.addAll(entries);
         makeTable(request, allEntries, sb);
         getPageHandler().entrySectionClose(request, group, sb);
+
         return makeLinksResult(request, group.getName(), sb,
                                new State(group, subGroups, entries));
     }
@@ -2067,12 +2067,26 @@ public class HtmlOutputHandler extends OutputHandler {
      */
     public String getWikiText(Request request, Entry entry) throws Exception {
         String wikiText = getWikiTextInner(request, entry);
-        if(wikiText!=null) 
-            wikiText = entry.getTypeHandler().preProcessWikiText(request, entry, wikiText);
+        if (wikiText != null) {
+            wikiText = entry.getTypeHandler().preProcessWikiText(request,
+                    entry, wikiText);
+        }
+
         return wikiText;
     }
 
-    public String getWikiTextInner(Request request, Entry entry) throws Exception {
+    /**
+     * _more_
+     *
+     * @param request _more_
+     * @param entry _more_
+     *
+     * @return _more_
+     *
+     * @throws Exception _more_
+     */
+    public String getWikiTextInner(Request request, Entry entry)
+            throws Exception {
         String description = entry.getDescription();
         String wikiInner   = null;
         //If it begins with <wiki> then it overrides anything else

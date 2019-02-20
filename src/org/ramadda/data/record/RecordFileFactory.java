@@ -103,7 +103,7 @@ public class RecordFileFactory {
      * @throws Exception _more_
      */
     public RecordFile doMakeRecordFile(String path) throws Exception {
-        return doMakeRecordFile(path, null,null);
+        return doMakeRecordFile(path, null, null);
     }
 
     /**
@@ -111,12 +111,14 @@ public class RecordFileFactory {
      *
      * @param path _more_
      * @param properties _more_
+     * @param requestProperties _more_
      *
      * @return _more_
      *
      * @throws Exception _more_
      */
-    public RecordFile doMakeRecordFile(String path, Hashtable properties, Hashtable requestProperties)
+    public RecordFile doMakeRecordFile(String path, Hashtable properties,
+                                       Hashtable requestProperties)
             throws Exception {
         for (RecordFile f : prototypes) {
             if (f.canLoad(path)) {

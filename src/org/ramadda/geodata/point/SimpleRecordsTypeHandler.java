@@ -56,7 +56,7 @@ public class SimpleRecordsTypeHandler extends PointTypeHandler {
     /** _more_ */
     private static int IDX_FIELDS = IDX++;
 
-    /** _more_          */
+    /** _more_ */
     private static int IDX_DATA = IDX++;
 
 
@@ -428,7 +428,7 @@ public class SimpleRecordsTypeHandler extends PointTypeHandler {
         /** _more_ */
         Entry entry;
 
-        /** _more_          */
+        /** _more_ */
         List<RecordField> recordFields;
 
         /**

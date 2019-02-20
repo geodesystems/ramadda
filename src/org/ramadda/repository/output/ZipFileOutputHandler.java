@@ -182,7 +182,7 @@ public class ZipFileOutputHandler extends OutputHandler {
                                     OUTPUT_LIST.getId());
                 sb.append(HtmlUtils.href(url, path));
                 long size = ze.getSize();
-                sb.append(formatFileLength(size,true));
+                sb.append(formatFileLength(size, true));
             }
             sb.append("</ul>");
         } finally {
@@ -190,6 +190,7 @@ public class ZipFileOutputHandler extends OutputHandler {
             IOUtil.close(fis);
         }
         getPageHandler().entrySectionClose(request, entry, sb);
+
         return makeLinksResult(request, msg("Zip File Listing"), sb,
                                new State(entry));
     }

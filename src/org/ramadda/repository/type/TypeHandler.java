@@ -756,7 +756,17 @@ public class TypeHandler extends RepositoryManager {
 
 
 
-    public String preProcessWikiText(Request request, Entry entry, String wikiText) {
+    /**
+     * _more_
+     *
+     * @param request _more_
+     * @param entry _more_
+     * @param wikiText _more_
+     *
+     * @return _more_
+     */
+    public String preProcessWikiText(Request request, Entry entry,
+                                     String wikiText) {
         return wikiText;
     }
 
@@ -4322,7 +4332,7 @@ public class TypeHandler extends RepositoryManager {
                             rows = rows * 2;
                         }
                         if (isWiki || isWikiText(desc)) {
-                            makeWidget     = false;
+                            makeWidget = false;
                             if ( !isWiki) {
                                 rows = 50;
                             }
@@ -6000,8 +6010,7 @@ public class TypeHandler extends RepositoryManager {
      * @throws Exception _more_
      */
     public void addTextDbSearch(Request request, String textToSearch,
-                                 Appendable searchCriteria,
-                                 List<Clause> where)
+                                Appendable searchCriteria, List<Clause> where)
             throws Exception {
         boolean doName = true;
         boolean doDesc = true;
@@ -6020,16 +6029,31 @@ public class TypeHandler extends RepositoryManager {
             textToSearch = textToSearch.substring("file:".length());
         }
 
-        addTextDbSearch(request, textToSearch, searchCriteria, where, doName, doDesc, doFile);
+        addTextDbSearch(request, textToSearch, searchCriteria, where, doName,
+                        doDesc, doFile);
     }
 
 
 
+    /**
+     * _more_
+     *
+     * @param request _more_
+     * @param textToSearch _more_
+     * @param searchCriteria _more_
+     * @param where _more_
+     * @param doName _more_
+     * @param doDesc _more_
+     * @param doFile _more_
+     *
+     * @throws Exception _more_
+     */
     public void addTextDbSearch(Request request, String textToSearch,
-                                 Appendable searchCriteria,
-                                List<Clause> where,
-                                boolean doName,boolean doDesc, boolean doFile)
+                                Appendable searchCriteria,
+                                List<Clause> where, boolean doName,
+                                boolean doDesc, boolean doFile)
             throws Exception {
+
         DatabaseManager dbm     = getDatabaseManager();
         List<Clause>    textOrs = new ArrayList<Clause>();
         for (String textTok :
@@ -6174,6 +6198,7 @@ public class TypeHandler extends RepositoryManager {
         } else if (textOrs.size() == 1) {
             where.add(textOrs.get(0));
         }
+
 
 
     }

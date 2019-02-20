@@ -2585,7 +2585,7 @@ public class UserManager extends RepositoryManager {
 
 
         sb.append(HtmlUtils.p());
-        sb.append(HtmlUtils.open("div",HtmlUtils.cssClass("ramadda-links")));
+        sb.append(HtmlUtils.open("div", HtmlUtils.cssClass("ramadda-links")));
         int cnt = 0;
         for (FavoriteEntry favorite : getFavorites(request, user)) {
             cnt++;

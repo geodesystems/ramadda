@@ -20,10 +20,10 @@ package org.ramadda.plugins.incident;
 import org.ramadda.repository.*;
 import org.ramadda.repository.type.*;
 import org.ramadda.util.GeoUtils;
-import org.ramadda.util.Place;
 
 
 import org.ramadda.util.HtmlUtils;
+import org.ramadda.util.Place;
 import org.ramadda.util.Utils;
 
 
@@ -127,8 +127,8 @@ public class LocationTypeHandler extends ExtensibleGroupTypeHandler {
         if ( !Utils.stringDefined(address)) {
             return;
         }
-        String   fullAddress = address + "," + city + "," + state;
-        Place place         = GeoUtils.getLocationFromAddress(fullAddress);
+        String fullAddress = address + "," + city + "," + state;
+        Place  place       = GeoUtils.getLocationFromAddress(fullAddress);
         if (place == null) {
             System.err.println("no geo for address:" + fullAddress);
         } else {

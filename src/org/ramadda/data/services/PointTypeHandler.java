@@ -75,7 +75,7 @@ import java.util.Properties;
  */
 public class PointTypeHandler extends RecordTypeHandler {
 
-    /** _more_          */
+    /** _more_ */
     public static final int IDX_LAST = RecordTypeHandler.IDX_LAST;
 
     /** _more_ */

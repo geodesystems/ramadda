@@ -767,7 +767,7 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
      */
     private String getTextField(Request request) throws Exception {
         String value = (String) request.getString(ARG_TEXT, "");
-        value = value.replaceAll("\"","&quot;");
+        value = value.replaceAll("\"", "&quot;");
         String textField =
             HtmlUtils.input(
                 ARG_TEXT, value,
@@ -825,12 +825,11 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
         sb.append(getSearchButtons(request));
         StringBuilder searchForm = new StringBuilder();
         makeSearchForm(request, searchForm, true, false);
-        String        inner  = searchForm.toString();
-        StringBuilder formSB = new StringBuilder();
+        String        inner         = searchForm.toString();
+        StringBuilder formSB        = new StringBuilder();
         boolean       showProviders = request.get("show_providers", false);
         HtmlUtils.makeAccordian(formSB, msg("Search Options"), inner,
-                                !showProviders,
-                                "ramadda-accordian", null);
+                                !showProviders, "ramadda-accordian", null);
 
         sb.append(HtmlUtils.insetDiv(formSB.toString(), 0, 0, 0, 0));
         sb.append(HtmlUtils.formClose());

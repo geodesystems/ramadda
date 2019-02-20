@@ -17,8 +17,10 @@
 package org.ramadda.util.text;
 
 
-import org.ramadda.util.Utils;
 import org.ramadda.util.HtmlUtils;
+
+
+import org.ramadda.util.Utils;
 
 import org.ramadda.util.XlsUtil;
 
@@ -177,7 +179,7 @@ public class CsvUtil {
      * @param csvUtil _more_
      */
     public void initWith(CsvUtil csvUtil) {
-        this.comment   = csvUtil.comment;
+        this.comment = csvUtil.comment;
         //        this.delimiter = csvUtil.delimiter;
     }
 
@@ -300,6 +302,7 @@ public class CsvUtil {
             }
             if (arg.equals("-genhelp")) {
                 genHelp();
+
                 return;
             }
             if (arg.equals("-helpraw")) {
@@ -483,8 +486,9 @@ public class CsvUtil {
         } else {
             try {
                 return new BufferedInputStream(new FileInputStream(file));
-            } catch(Exception exc) {
+            } catch (Exception exc) {
                 System.err.println("Error opening file:" + file);
+
                 throw exc;
             }
         }
@@ -581,41 +585,35 @@ public class CsvUtil {
     public List<Row> tokenizeHtml(String file,
                                   Hashtable<String, String> props)
             throws Exception {
-        int skip =0;
-        String  skips        = props.get("skip");
-        if(skips!=null)
+
+        int    skip  = 0;
+        String skips = props.get("skip");
+        if (skips != null) {
             skip = Integer.parseInt(skips);
-        String  pattern     = props.get("pattern");
-        String  skipAttr    = props.get("skipAttr");
-        String  removePattern = props.get("removePattern");
-        if(removePattern!=null) {
-            removePattern =
-                removePattern.replaceAll("_leftparen_",
-                                         "\\\\(").replaceAll("_rightparen_",
-                                                             "\\\\)");
-            removePattern =
-                removePattern.replaceAll("_leftbracket_",
-                                         "\\\\[").replaceAll("_rightbracket_",
-                                                             "\\\\]");
+        }
+        String pattern       = props.get("pattern");
+        String skipAttr      = props.get("skipAttr");
+        String removePattern = props.get("removePattern");
+        if (removePattern != null) {
+            removePattern = removePattern.replaceAll("_leftparen_",
+                    "\\\\(").replaceAll("_rightparen_", "\\\\)");
+            removePattern = removePattern.replaceAll("_leftbracket_",
+                    "\\\\[").replaceAll("_rightbracket_", "\\\\]");
             removePattern = removePattern.replaceAll("_dot_", "\\\\.");
         }
-        String  removePattern2 = props.get("removePattern2");
-        if(removePattern2!=null) {
-            removePattern2 =
-                removePattern2.replaceAll("_leftparen_",
-                                         "\\\\(").replaceAll("_rightparen_",
-                                                             "\\\\)");
-            removePattern2 =
-                removePattern2.replaceAll("_leftbracket_",
-                                         "\\\\[").replaceAll("_rightbracket_",
-                                                             "\\\\]");
+        String removePattern2 = props.get("removePattern2");
+        if (removePattern2 != null) {
+            removePattern2 = removePattern2.replaceAll("_leftparen_",
+                    "\\\\(").replaceAll("_rightparen_", "\\\\)");
+            removePattern2 = removePattern2.replaceAll("_leftbracket_",
+                    "\\\\[").replaceAll("_rightbracket_", "\\\\]");
             removePattern2 = removePattern2.replaceAll("_dot_", "\\\\.");
         }
 
 
-        boolean removeEntity = Misc.equals(props.get("removeEntity"),"true");
+        boolean removeEntity = Misc.equals(props.get("removeEntity"), "true");
 
-        Pattern attrPattern = null;
+        Pattern attrPattern  = null;
         if (skipAttr != null) {
             skipAttr    = skipAttr.replaceAll("_quote_", "\"");
             attrPattern = Pattern.compile(skipAttr, Pattern.MULTILINE);
@@ -643,8 +641,9 @@ public class CsvUtil {
             }
             String table = toks[0];
             s = toks[1];
-            if(skip>0) {
+            if (skip > 0) {
                 skip--;
+
                 continue;
             }
             if (debug) {
@@ -674,7 +673,7 @@ public class CsvUtil {
                         //                        System.out.println("return-2");
                         //                        return rows;
                     }
-                    if (attrPattern != null && idx>=0) {
+                    if ((attrPattern != null) && (idx >= 0)) {
                         String attrs = td.substring(0, idx).toLowerCase();
                         if (attrPattern.matcher(attrs).find()) {
                             System.out.println("skipping:"
@@ -686,16 +685,16 @@ public class CsvUtil {
                     }
                     td = td.substring(idx + 1);
                     td = StringUtil.stripTags(td);
-                    if(removeEntity) {
-                        td =td.replaceAll("&[^;]+;","");
+                    if (removeEntity) {
+                        td = td.replaceAll("&[^;]+;", "");
                     } else {
                         td = HtmlUtils.unescapeHtml3(td);
                     }
-                    if(removePattern!=null) {
-                        td =td.replaceAll(removePattern,"");
+                    if (removePattern != null) {
+                        td = td.replaceAll(removePattern, "");
                     }
-                    if(removePattern2!=null) {
-                        td =td.replaceAll(removePattern2,"");
+                    if (removePattern2 != null) {
+                        td = td.replaceAll(removePattern2, "");
                     }
                     td = td.replaceAll("&nbsp;", " ");
                     td = td.replaceAll("&quot;", "\"");
@@ -708,9 +707,12 @@ public class CsvUtil {
                     }
                 }
             }
+
             break;
         }
+
         return rows;
+
     }
 
 
@@ -909,12 +911,17 @@ public class CsvUtil {
         }
         if (textReader.getProcessor() != null) {
             row = textReader.getProcessor().processRow(textReader, row, null);
-            if(!textReader.getOkToRun()) return false;
-            if(textReader.getExtraRow()!=null) {
-                row = textReader.getProcessor().processRow(textReader, textReader.getExtraRow(), null);
+            if ( !textReader.getOkToRun()) {
+                return false;
+            }
+            if (textReader.getExtraRow() != null) {
+                row = textReader.getProcessor().processRow(textReader,
+                        textReader.getExtraRow(), null);
                 textReader.setExtraRow(null);
             }
-            if(!textReader.getOkToRun()) return false;
+            if ( !textReader.getOkToRun()) {
+                return false;
+            }
         } else {
             textReader.getWriter().println(columnsToString(row.getValues(),
                     textReader.getOutputDelimiter()));
@@ -1006,102 +1013,195 @@ public class CsvUtil {
         return s;
     }
 
+    /**
+     * Class description
+     *
+     *
+     * @version        $version$, Wed, Feb 20, '19
+     * @author         Enter your name here...    
+     */
     public static class Cmd {
+
+        /** _more_          */
         String cmd;
+
+        /** _more_          */
         String args;
+
+        /** _more_          */
         String desc;
+
+        /**
+         * _more_
+         *
+         * @param cmd _more_
+         */
         public Cmd(String cmd) {
-            this.cmd = cmd;
+            this.cmd  = cmd;
             this.args = "";
-            this.desc  = "";
+            this.desc = "";
         }
 
+        /**
+         * _more_
+         *
+         * @param cmd _more_
+         * @param args _more_
+         */
         public Cmd(String cmd, String args) {
-            this.cmd = cmd;
+            this.cmd  = cmd;
             this.args = args;
-            this.desc  = "";
+            this.desc = "";
         }
+
+        /**
+         * _more_
+         *
+         * @param cmd _more_
+         * @param args _more_
+         * @param desc _more_
+         */
         public Cmd(String cmd, String args, String desc) {
-            this.cmd = cmd;
+            this.cmd  = cmd;
             this.args = args;
-            this.desc  = desc;
+            this.desc = desc;
         }
+
+        /**
+         * _more_
+         *
+         * @param s _more_
+         *
+         * @return _more_
+         */
         public boolean match(String s) {
-            return cmd.indexOf(s)>=0;
+            return cmd.indexOf(s) >= 0;
         }
+
+        /**
+         * _more_
+         *
+         * @return _more_
+         */
         public String getLine() {
-            return cmd +" " + args +" " + desc;
+            return cmd + " " + args + " " + desc;
         }
 
     }
 
+    /** _more_          */
     private static final Cmd[] commands = {
-        new Cmd("-help","","(print this help)"),
-        new Cmd("-help:<topic search string>","","(print help that matches topic)"),
-        new Cmd("-columns","<e.g., 0,1,2,7-10,12>","(A comma separated list of columns #s or column range, 0-based. Extract the given columns)"),
-        new Cmd("-skip","<how many lines to skip>"),
-        new Cmd("-cut","<one or more rows. -1 to the end>"),
-        new Cmd("-include","<one or more rows, -1 to the end>"),
-        new Cmd("-pattern","<col #> <regexp pattern>","(extract rows that match the pattern)"),
-        new Cmd("-notpattern","<col #> <regexp pattern>","(extract rows that don't match the pattern)"),
-        new Cmd("<column>=~<value>","", "(same as -pattern)"),
-        new Cmd("<-gt|-ge|-lt|-le>", "<col #> <value>","(extract rows that pass the expression)"),
-        new Cmd("-decimate","<# of start rows to include> <skip factor>","(only include every <skip factor> row)"),
-        new Cmd("-countvalue", "<col #> <count>"), 
-        new Cmd("-copy","<col #> <name>"),
-        new Cmd("-delete","<col #>","(remove the columns)"),
-        new Cmd("-insert","<col #> <value>","(insert a new column value)"),
-        new Cmd("-insert","<col #> <comma separated values>"),
-        new Cmd("-addcell","<row #>  <col #>  <value>"),
-        new Cmd("-deletecell","<row #> <col #>"),
-        new Cmd("-set","<col #s> <row #s> <value>","(write the value into the cells)"),
-        new Cmd("-case","<lower|upper|camel> <col #>","(change case of column)"),
-        new Cmd("-width","<columns>  <size>","(limit the string size of the columns)"),
-        new Cmd("-prepend","<text>","(add the text to the beginning of the file. use _nl_ to insert newlines)"),
-        new Cmd("-pad","<col #> <pad string>","(pad out or cut columns to achieve the count)"),
-        new Cmd("-prefix","<col #> <prefix>","(add prefix to column)"),
-        new Cmd("-suffix","<col #> <suffix>","(add suffix to column)"),
-        new Cmd("-change","<col #s> <pattern> <substitution string>"),
-        new Cmd("-formatdate","<col #s> <intial date format> <target date format>"),
-        new Cmd("-map","<col #> <new columns name> <value newvalue ...>","(change values in column to new values)"),
-        new Cmd("-combine","<col #s> <delimiter> <new column name>","(combine columns with the delimiter. deleting columns)"),
-        new Cmd("-combineinplace","<col #s> <delimiter> <new column name>","(combine columns with the delimiter.)"),
-        new Cmd("-html","\"name value properties\"","(parse the table in the input html file, properties: skip <tables to skip> pattern <pattern to skip to>)"),
-        new Cmd("-concat","<col #s>  <delimiter>","(create a new column from the given columns)"),
-        new Cmd("-scale","<col #> <delta1> <scale> <delta2>","(set value={value+delta1}*scale+delta2)"),
-        new Cmd("-operator","<col #s>  <new col name> <operator +,-,*,/>","(apply the operator to the given columns and create new one)"),
-        new Cmd("-round","<columns>","round the values"),
-        new Cmd("-sum","<key columns> <value columns>","sum values keying on name column value"),
-        new Cmd("-join","<key columns> <value columns> <file> <key 2 columns> <value 2 columns>","Join the 2 files together"),
-        new Cmd("-format","<columns> <decimal format, e.g. '##0.00'>"),
-        new Cmd("-unique","<columns>","(pass through unique values)"),
-        new Cmd("-percent","<columns to add>"),
-        new Cmd("-denormalize","<col idx>  <csv file>  <new col name> <mode replace add>","(read the id,value from file and substitute the value in the dest file col idx)"),
-        new Cmd("-explode", "<col #> ","(make separate files based on value of column)"),
-        new Cmd("-unfurl","<col to get new column header#> <value columns> <unique col>  <other columns>","(make columns from data values)"),
-        new Cmd("-geocode","<col idx> <csv file> <name idx> <lat idx> <lon idx>"),
-        new Cmd("-geocodeaddress","<col indices> <latlabel> <lonlabel> <suffix> "),
-        new Cmd("-geocodeaddressdb","<col indices> <suffix> "),
-        new Cmd("-count","","(show count)"), 
-        new Cmd("-maxrows","<max rows to print>"),
-        new Cmd("-skipline"," <pattern>","(skip any line that matches the pattern)"),
-        new Cmd("-changeline","<from> <to>","(change the line)"),
-        new Cmd("-prune","<number of leading bytes to remove>"),
-        new Cmd("-strict","","(be strict on columns. any rows that are not the size of the other rows are dropped)"),
-        new Cmd("-flag",""," (be strict on columns. any rows that are not the size of the other rows are shown)"),
-        new Cmd("-rotate"), 
-        new Cmd("-flip"), 
-        new Cmd("-delimiter","","(specify an alternative delimiter)"),
-        new Cmd("-comment","<string>"),
-        new Cmd("-db","{<props>}","(generate the RAMADDA db xml from the header, props are a set of name value pairs:)\n\ttable.id <new id> table.name <new name> table.cansearch <true|false> table.canlist <true|false> table.icon <icon, e.g., /db/database.png>\n\t<column name>.id <new id for column> <column name>.label <new label>\n\t<column name>.type <string|enumeration|double|int|date>\n\t<column name>.format <yyyy MM dd HH mm ss format for dates>\n\t<column name>.canlist <true|false> <column name>.cansearch <true|false>\n\tinstall <true|false install the new db table>\n\tnukedb <true|false careful! this deletes any prior created dbs>"),
-        new Cmd("-print","","(print to stdout)"), 
-        new Cmd("-raw","","(print the file raw)"),
-        new Cmd("-record",""," (print records)"), 
-        new Cmd("-cat"," <*.csv>","(one or more csv files)"),
-        new Cmd("-printheader","","(print the first line)"),
-        new Cmd("-pointheader","","(generate the RAMADDA point properties)"),
-        new Cmd("-addheader","<name1 value1 ... nameN valueN>","(add the RAMADDA point properties)"),
-        new Cmd("-run","<name of process directory>")};
+        new Cmd("-help", "", "(print this help)"),
+        new Cmd("-help:<topic search string>", "",
+                "(print help that matches topic)"),
+        new Cmd(
+            "-columns", "<e.g., 0,1,2,7-10,12>",
+            "(A comma separated list of columns #s or column range, 0-based. Extract the given columns)"),
+        new Cmd("-skip", "<how many lines to skip>"),
+        new Cmd("-cut", "<one or more rows. -1 to the end>"),
+        new Cmd("-include", "<one or more rows, -1 to the end>"),
+        new Cmd("-pattern", "<col #> <regexp pattern>",
+                "(extract rows that match the pattern)"),
+        new Cmd("-notpattern", "<col #> <regexp pattern>",
+                "(extract rows that don't match the pattern)"),
+        new Cmd("<column>=~<value>", "", "(same as -pattern)"),
+        new Cmd("<-gt|-ge|-lt|-le>", "<col #> <value>",
+                "(extract rows that pass the expression)"),
+        new Cmd("-decimate", "<# of start rows to include> <skip factor>",
+                "(only include every <skip factor> row)"),
+        new Cmd("-countvalue", "<col #> <count>"),
+        new Cmd("-copy", "<col #> <name>"),
+        new Cmd("-delete", "<col #>", "(remove the columns)"),
+        new Cmd("-insert", "<col #> <value>", "(insert a new column value)"),
+        new Cmd("-insert", "<col #> <comma separated values>"),
+        new Cmd("-addcell", "<row #>  <col #>  <value>"),
+        new Cmd("-deletecell", "<row #> <col #>"),
+        new Cmd("-set", "<col #s> <row #s> <value>",
+                "(write the value into the cells)"),
+        new Cmd("-case", "<lower|upper|camel> <col #>",
+                "(change case of column)"),
+        new Cmd("-width", "<columns>  <size>",
+                "(limit the string size of the columns)"),
+        new Cmd(
+            "-prepend", "<text>",
+            "(add the text to the beginning of the file. use _nl_ to insert newlines)"),
+        new Cmd("-pad", "<col #> <pad string>",
+                "(pad out or cut columns to achieve the count)"),
+        new Cmd("-prefix", "<col #> <prefix>", "(add prefix to column)"),
+        new Cmd("-suffix", "<col #> <suffix>", "(add suffix to column)"),
+        new Cmd("-change", "<col #s> <pattern> <substitution string>"),
+        new Cmd("-formatdate",
+                "<col #s> <intial date format> <target date format>"),
+        new Cmd("-map", "<col #> <new columns name> <value newvalue ...>",
+                "(change values in column to new values)"),
+        new Cmd("-combine", "<col #s> <delimiter> <new column name>",
+                "(combine columns with the delimiter. deleting columns)"),
+        new Cmd("-combineinplace", "<col #s> <delimiter> <new column name>",
+                "(combine columns with the delimiter.)"),
+        new Cmd(
+            "-html", "\"name value properties\"",
+            "(parse the table in the input html file, properties: skip <tables to skip> pattern <pattern to skip to>)"),
+        new Cmd("-concat", "<col #s>  <delimiter>",
+                "(create a new column from the given columns)"),
+        new Cmd("-scale", "<col #> <delta1> <scale> <delta2>",
+                "(set value={value+delta1}*scale+delta2)"),
+        new Cmd(
+            "-operator", "<col #s>  <new col name> <operator +,-,*,/>",
+            "(apply the operator to the given columns and create new one)"),
+        new Cmd("-round", "<columns>", "round the values"),
+        new Cmd("-sum", "<key columns> <value columns>",
+                "sum values keying on name column value"),
+        new Cmd(
+            "-join",
+            "<key columns> <value columns> <file> <key 2 columns> <value 2 columns>",
+            "Join the 2 files together"),
+        new Cmd("-format", "<columns> <decimal format, e.g. '##0.00'>"),
+        new Cmd("-unique", "<columns>", "(pass through unique values)"),
+        new Cmd("-percent", "<columns to add>"),
+        new Cmd(
+            "-denormalize",
+            "<col idx>  <csv file>  <new col name> <mode replace add>",
+            "(read the id,value from file and substitute the value in the dest file col idx)"),
+        new Cmd("-explode", "<col #> ",
+                "(make separate files based on value of column)"),
+        new Cmd(
+            "-unfurl",
+            "<col to get new column header#> <value columns> <unique col>  <other columns>",
+            "(make columns from data values)"),
+        new Cmd("-geocode",
+                "<col idx> <csv file> <name idx> <lat idx> <lon idx>"),
+        new Cmd("-geocodeaddress",
+                "<col indices> <latlabel> <lonlabel> <suffix> "),
+        new Cmd("-geocodeaddressdb", "<col indices> <suffix> "),
+        new Cmd("-count", "", "(show count)"),
+        new Cmd("-maxrows", "<max rows to print>"),
+        new Cmd("-skipline", " <pattern>",
+                "(skip any line that matches the pattern)"),
+        new Cmd("-changeline", "<from> <to>", "(change the line)"),
+        new Cmd("-prune", "<number of leading bytes to remove>"),
+        new Cmd(
+            "-strict", "",
+            "(be strict on columns. any rows that are not the size of the other rows are dropped)"),
+        new Cmd(
+            "-flag", "",
+            " (be strict on columns. any rows that are not the size of the other rows are shown)"),
+        new Cmd("-rotate"), new Cmd("-flip"),
+        new Cmd("-delimiter", "", "(specify an alternative delimiter)"),
+        new Cmd("-comment", "<string>"),
+        new Cmd(
+            "-db", "{<props>}",
+            "(generate the RAMADDA db xml from the header, props are a set of name value pairs:)\n\ttable.id <new id> table.name <new name> table.cansearch <true|false> table.canlist <true|false> table.icon <icon, e.g., /db/database.png>\n\t<column name>.id <new id for column> <column name>.label <new label>\n\t<column name>.type <string|enumeration|double|int|date>\n\t<column name>.format <yyyy MM dd HH mm ss format for dates>\n\t<column name>.canlist <true|false> <column name>.cansearch <true|false>\n\tinstall <true|false install the new db table>\n\tnukedb <true|false careful! this deletes any prior created dbs>"),
+        new Cmd("-print", "", "(print to stdout)"),
+        new Cmd("-raw", "", "(print the file raw)"),
+        new Cmd("-record", "", " (print records)"),
+        new Cmd("-cat", " <*.csv>", "(one or more csv files)"),
+        new Cmd("-printheader", "", "(print the first line)"),
+        new Cmd("-pointheader", "",
+                "(generate the RAMADDA point properties)"),
+        new Cmd("-addheader", "<name1 value1 ... nameN valueN>",
+                "(add the RAMADDA point properties)"),
+        new Cmd("-run", "<name of process directory>")
+    };
 
 
     /**
@@ -1149,11 +1249,17 @@ public class CsvUtil {
     }
 
 
+    /**
+     * _more_
+     *
+     * @throws Exception _more_
+     */
     public void genHelp() throws Exception {
         PrintWriter pw = new PrintWriter(getOutputStream());
 
         for (Cmd c : commands) {
-            pw.println("[etl {" + c.cmd +"} {" + c.args +"} {" + c.desc +"}]");
+            pw.println("[etl {" + c.cmd + "} {" + c.args + "} {" + c.desc
+                       + "}]");
         }
         pw.flush();
     }
@@ -1304,15 +1410,12 @@ public class CsvUtil {
             if (arg.equals("-join")) {
                 List<String> keys1   = getCols(args.get(++i));
                 List<String> values1 = getCols(args.get(++i));
-                String file = args.get(++i);
+                String       file    = args.get(++i);
                 List<String> keys2   = getCols(args.get(++i));
                 List<String> values2 = getCols(args.get(++i));
 
                 info.getProcessor().addProcessor(new Processor.Joiner(keys1,
-                                                                      values1,
-                                                                      file,
-                                                                      keys2,
-                                                                      values2));
+                        values1, file, keys2, values2));
 
 
                 continue;
@@ -1582,15 +1685,19 @@ public class CsvUtil {
 
             if (arg.equals("-prefix")) {
                 List<String> cols = getCols(args.get(++i));
-                String s = args.get(++i);
-                info.getProcessor().addProcessor(new Converter.Prefixer(cols,s));
+                String       s    = args.get(++i);
+                info.getProcessor().addProcessor(new Converter.Prefixer(cols,
+                        s));
+
                 continue;
             }
 
             if (arg.equals("-suffix")) {
                 List<String> cols = getCols(args.get(++i));
-                String s = args.get(++i);
-                info.getProcessor().addProcessor(new Converter.Suffixer(cols,s));
+                String       s    = args.get(++i);
+                info.getProcessor().addProcessor(new Converter.Suffixer(cols,
+                        s));
+
                 continue;
             }
 
@@ -1617,11 +1724,11 @@ public class CsvUtil {
 
             if (arg.equals("-geocodeaddress")) {
                 List<String> cols   = getCols(args.get(++i));
-                String       lat = args.get(++i);
-                String       lon = args.get(++i);
+                String       lat    = args.get(++i);
+                String       lon    = args.get(++i);
                 String       suffix = args.get(++i);
                 info.getProcessor().addProcessor(new Converter.Geocoder(cols,
-                                                                        lat,lon,suffix));
+                        lat, lon, suffix));
 
                 continue;
             }

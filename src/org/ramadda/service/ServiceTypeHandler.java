@@ -154,7 +154,7 @@ public class ServiceTypeHandler extends OrderedGroupTypeHandler {
         ServiceOutputHandler soh = new ServiceOutputHandler(repository,
                                        service);
         StringBuilder sb = new StringBuilder();
-        getPageHandler().entrySectionOpen(request, entry, sb,null);
+        getPageHandler().entrySectionOpen(request, entry, sb, null);
 
         subGroups.addAll(entries);
         addListForm(request, entry, subGroups, sb);
@@ -181,6 +181,7 @@ public class ServiceTypeHandler extends OrderedGroupTypeHandler {
                          HtmlOutputHandler.OUTPUT_HTML, sb);
 
             getPageHandler().entrySectionClose(request, entry, sb);
+
             return new Result("", sb);
         }
 

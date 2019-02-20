@@ -191,7 +191,9 @@ public class Json {
             for (int i = 0; i < values.size(); i += 2) {
                 String name  = values.get(i);
                 String value = values.get(i + 1);
-                if(value == null) continue;
+                if (value == null) {
+                    continue;
+                }
                 if (cnt > 0) {
                     row.append(",\n");
                 }

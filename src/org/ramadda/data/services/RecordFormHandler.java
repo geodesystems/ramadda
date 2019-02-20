@@ -325,7 +325,8 @@ public class RecordFormHandler extends RepositoryManager implements RecordConsta
             //            sb.append(HtmlUtils.b(msgLabel("Number of points")));
             //            sb.append(" " + msg("unknown"));
         }
-        StringBuilder forDisplay = new StringBuilder("<b>For wiki displays:</b><br>fields=\"");
+        StringBuilder forDisplay =
+            new StringBuilder("<b>For wiki displays:</b><br>fields=\"");
         sb.append(HtmlUtils.formTable());
         sb.append(HtmlUtils.row(HtmlUtils.cols(new Object[] {
             HtmlUtils.b(msg("Field Name")),
@@ -334,8 +335,9 @@ public class RecordFormHandler extends RepositoryManager implements RecordConsta
 
         int cnt = 0;
         for (RecordField field : fields) {
-            if(cnt++>0)
+            if (cnt++ > 0) {
                 forDisplay.append(",");
+            }
             forDisplay.append(field.getName());
             String type = field.getRawType();
             if (field.getArity() > 1) {

@@ -623,7 +623,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
     private String displayImports;
 
 
-    /** _more_          */
+    /** _more_ */
     private Hashtable<String, String> wikiMacros;
 
     /**
@@ -1817,29 +1817,29 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                 request.entryUrl(getRepository().URL_ENTRY_SHOW, entry);
             boolean showHeading = getProperty(wikiUtil, props, "showHeading",
                                       true);
-            if(showHeading) {
-                HtmlUtils.div(card, HtmlUtils.href(entryUrl, entry.getName()),
+            if (showHeading) {
+                HtmlUtils.div(card,
+                              HtmlUtils.href(entryUrl, entry.getName()),
                               HtmlUtils.cssClass("ramadda-subheading"));
             }
             boolean showSnippet = getProperty(wikiUtil, props, "showSnippet",
-                                              false);
+                                      false);
 
-            boolean showSnippetHover = getProperty(wikiUtil, props, "showSnippetHover",
-                                                   false);
-            if(showSnippet|| showSnippetHover) {
+            boolean showSnippetHover = getProperty(wikiUtil, props,
+                                           "showSnippetHover", false);
+            if (showSnippet || showSnippetHover) {
                 String snippet = getSnippet(request, entry);
                 if (Utils.stringDefined(snippet)) {
-                    snippet = wikifyEntry(request, entry, snippet, false, null,
-                                          null, wikiUtil.getNotTags());
-                    if(showSnippet) {
-                        HtmlUtils.div(
-                                      card, snippet,
+                    snippet = wikifyEntry(request, entry, snippet, false,
+                                          null, null, wikiUtil.getNotTags());
+                    if (showSnippet) {
+                        HtmlUtils.div(card, snippet,
                                       HtmlUtils.cssClass("ramadda-snippet"));
 
-                    } else if(showSnippetHover) {
+                    } else if (showSnippetHover) {
                         HtmlUtils.div(
-                                      card, snippet,
-                                      HtmlUtils.cssClass("ramadda-snippet-hover"));
+                            card, snippet,
+                            HtmlUtils.cssClass("ramadda-snippet-hover"));
 
                     }
 
@@ -1873,6 +1873,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                 addImagePopupJS(request, wikiUtil, card, props);
             }
             HtmlUtils.close(card, HtmlUtils.TAG_DIV);
+
             return card.toString();
         } else if (theTag.equals(WIKI_TAG_IMAGE)) {
             return getWikiImage(wikiUtil, request, entry, props);
@@ -2303,7 +2304,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
             }
 
             boolean showHeading = getProperty(wikiUtil, props, "showHeading",
-                                              true);
+                                      true);
 
 
 
@@ -2345,7 +2346,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
             tmpProps.remove(ATTR_ENTRY);
             tmpProps.remove(ATTR_ENTRIES);
             tmpProps.remove(ATTR_FIRST);
-            if(doingGrid) {
+            if (doingGrid) {
                 tmpProps.put("showHeading", "false");
             }
             if (children.size() > 0) {
@@ -2401,7 +2402,9 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                 return sb.toString();
             } else if (doingGrid) {
                 List<String> weights = null;
-                boolean showLine = getProperty(wikiUtil, props, "showLine", getProperty(wikiUtil, props, "doline", false));
+                boolean showLine = getProperty(wikiUtil, props, "showLine",
+                                       getProperty(wikiUtil, props, "doline",
+                                           false));
                 String ws = getProperty(wikiUtil, props, "weights",
                                         (String) null);
                 if (ws != null) {
@@ -2600,14 +2603,16 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
             } else {
                 //TABS
                 int innerHeight = getProperty(wikiUtil, props,
-                                              "inner-height", -1);
+                                      "inner-height", -1);
 
-                if(innerHeight>1) {
+                if (innerHeight > 1) {
                     List<String> tmp = new ArrayList<String>();
-                    for(String content:contents) {
-                        tmp.add(HtmlUtils.div(content,HtmlUtils.style("max-height:" + innerHeight +"px;overflow-y:auto;")));
+                    for (String content : contents) {
+                        tmp.add(HtmlUtils.div(content,
+                                HtmlUtils.style("max-height:" + innerHeight
+                                    + "px;overflow-y:auto;")));
                     }
-                    contents =tmp;
+                    contents = tmp;
                 }
                 sb.append(OutputHandler.makeTabs(titles, contents, true,
                         useCookies));
@@ -2631,12 +2636,13 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
             StringBuilder editor = new StringBuilder();
 
             boolean showToolbar = getProperty(wikiUtil, props, "showToolbar",
-                                           false);
+                                      false);
 
             String text = entry.getTypeHandler().getTextForWiki(request,
                               entry, props);
             entry.getTypeHandler().addWikiEditor(request, entry, editor,
-                    null, HtmlUtils.getUniqueId(""), text, null, !showToolbar, 0);
+                    null, HtmlUtils.getUniqueId(""), text, null,
+                    !showToolbar, 0);
 
             return editor.toString();
         } else if (theTag.equals(WIKI_TAG_RECENT)) {
@@ -3199,12 +3205,11 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
         }
         String text = child.getTypeHandler().getEntryText(child);
 
-        snippet = StringUtil.findPattern(text,
-                                         "(?s)<snippet>(.*)</snippet>");
+        snippet = StringUtil.findPattern(text, "(?s)<snippet>(.*)</snippet>");
 
         if (snippet == null) {
-            snippet = StringUtil.findPattern(text,
-                                             "(?s)<snippet-hide>(.*)</snippet-hide>");
+            snippet = StringUtil.findPattern(
+                text, "(?s)<snippet-hide>(.*)</snippet-hide>");
         }
         if (snippet != null) {
             snippet = HtmlUtils.div(snippet,

@@ -860,13 +860,12 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
         }
 
         if (fromSearch) {
-            sb.append(
-                      HtmlUtils.makeShowHideBlock(
-                        msg("Search again" + ( !fromSearch
-                    ? ""
-                    : " -- " + numValues
-                      + " results")), getSearchForm(request,
-                          entry).toString(), false));
+            sb.append(HtmlUtils.makeShowHideBlock(msg("Search again"
+                    + ( !fromSearch
+                        ? ""
+                        : " -- " + numValues
+                          + " results")), getSearchForm(request,
+                              entry).toString(), false));
         }
 
 
@@ -1450,7 +1449,7 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
                     iconSB.append(msg("Custom:"));
                     iconSB.append(" ");
                     iconSB.append(HtmlUtils.input(iconArg + "_custom",
-                                                  baseIcons.contains(currentIcon)
+                            baseIcons.contains(currentIcon)
                             ? ""
                             : currentIcon, 20));
                     iconSB.append("<br>");
@@ -1484,7 +1483,7 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
                             msgLabel("Icon"),
                             HtmlUtils.makeShowHideBlock(
                                 iconMsg, iconSB.toString(), false)));
-                    formBuffer.append(HtmlUtils.formEntry("","<hr>"));
+                    formBuffer.append(HtmlUtils.formEntry("", "<hr>"));
                 }
                 formBuffer.append(HtmlUtils.formEntry("", sb.toString()));
             }
@@ -1927,8 +1926,8 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
         }
 
 
-        StringBuilder sb    = new StringBuilder();
-        List<Clause>  where = new ArrayList<Clause>();
+        StringBuilder sb             = new StringBuilder();
+        List<Clause>  where          = new ArrayList<Clause>();
         StringBuilder searchCriteria = new StringBuilder();
 
         if (request.get(ARG_DB_ALL, false) && request.getUser().getAdmin()) {
@@ -1938,7 +1937,8 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
         }
         String textToSearch = (String) request.getString(ARG_TEXT, "").trim();
         if (textToSearch.length() > 0) {
-            addTextDbSearch(request, textToSearch, searchCriteria, where, false,false,false);
+            addTextDbSearch(request, textToSearch, searchCriteria, where,
+                            false, false, false);
         }
 
         for (Column column : getColumns()) {
@@ -3097,12 +3097,12 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
                                 HtmlUtils.id(popupId)
                                 + HtmlUtils.cssClass("ramadda-popup")));
 
-        double[] sum = new double[columnsToUse.size()];
-        double[] min = new double[columnsToUse.size()];
-        double[] max = new double[columnsToUse.size()];
+        double[] sum  = new double[columnsToUse.size()];
+        double[] min  = new double[columnsToUse.size()];
+        double[] max  = new double[columnsToUse.size()];
 
 
-        boolean even = true;
+        boolean  even = true;
         for (int cnt = 0; cnt < valueList.size(); cnt++) {
             Object[] values = valueList.get(cnt);
 
@@ -3112,7 +3112,9 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
                                          divId);
             hb.append("\n");
             hb.append(HtmlUtils.open(HtmlUtils.TAG_TR, "valign", "top",
-                                     "class", (even?" ramadda-row-even ":" ramadda-row-odd ") + " dbrow ", "id", rowId));
+                                     "class", (even
+                    ? " ramadda-row-even "
+                    : " ramadda-row-odd ") + " dbrow ", "id", rowId));
 
             even = !even;
             HtmlUtils.open(hb, "td", "width", "10", "style",
@@ -5357,8 +5359,7 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
         formBuffer.append(HtmlUtils.script(script));
 
         if (doAnonForm) {
-            sb.append(entry.getDescription() + HtmlUtils.p()
-                                + formBuffer);
+            sb.append(entry.getDescription() + HtmlUtils.p() + formBuffer);
         } else {
             if (forEdit && (dbid == null)) {
                 createBulkForm(request, entry, sb, formBuffer);

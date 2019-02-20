@@ -1217,10 +1217,10 @@ public class MapManager extends RepositoryManager implements WikiConstants {
                                               ATTR_MAPDETAILS, false)));
         boolean listentries = Utils.getProperty(props, ATTR_LISTENTRIES,
                                   false);
-        boolean cbx          = Utils.getProperty(props, "showCheckbox",
-                                   false);
-        boolean search       = Utils.getProperty(props, "showSearch", false);
-        boolean showLocationSearch      = Utils.getProperty(props, "showLocationSearch", false);
+        boolean cbx = Utils.getProperty(props, "showCheckbox", false);
+        boolean search = Utils.getProperty(props, "showSearch", false);
+        boolean showLocationSearch = Utils.getProperty(props,
+                                         "showLocationSearch", false);
         boolean cbxOn        = Utils.getProperty(props, "checkboxOn", true);
         String  mapVar       = Utils.getProperty(props, ATTR_MAPVAR);
         String  selectFields = Utils.getProperty(props, ATTR_SELECTFIELDS);
@@ -1260,8 +1260,8 @@ public class MapManager extends RepositoryManager implements WikiConstants {
         if (mapProps != null) {
             map.getMapProps().putAll(mapProps);
         }
-        map.getMapProps().put("showSearch","" + search);
-        map.getMapProps().put("showLocationSearch","" + showLocationSearch);
+        map.getMapProps().put("showSearch", "" + search);
+        map.getMapProps().put("showLocationSearch", "" + showLocationSearch);
 
         Hashtable theProps = Utils.makeMap(PROP_DETAILED, "" + details,
                                            PROP_SCREENBIGRECTS, "true");
@@ -1286,28 +1286,29 @@ public class MapManager extends RepositoryManager implements WikiConstants {
         boolean haveLocation = false;
 
 
-        if(request.defined("map_bounds")) {
+        if (request.defined("map_bounds")) {
             haveLocation = true;
-            List<String> toks = StringUtil.split(request.getString("map_bounds",""),",",true,true);
-            if(toks.size()==4) {
+            List<String> toks =
+                StringUtil.split(request.getString("map_bounds", ""), ",",
+                                 true, true);
+            if (toks.size() == 4) {
                 map.addProperty(MapManager.PROP_INITIAL_BOUNDS,
-                          Json.list(toks.get(0),
-                                    toks.get(1),
-                                    toks.get(2),
-                                    toks.get(3)));
+                                Json.list(toks.get(0), toks.get(1),
+                                          toks.get(2), toks.get(3)));
             }
-        } else if(request.defined("map_location")) {
+        } else if (request.defined("map_location")) {
             haveLocation = true;
-            List<String> toks = StringUtil.split(request.getString("map_location",""),",",true,true);
-            if(toks.size()==2) {
+            List<String> toks =
+                StringUtil.split(request.getString("map_location", ""), ",",
+                                 true, true);
+            if (toks.size() == 2) {
                 map.addProperty(MapManager.PROP_INITIAL_LOCATION,
-                          Json.list(toks.get(0),
-                                    toks.get(1)));
+                                Json.list(toks.get(0), toks.get(1)));
             }
         }
 
 
-        if(!haveLocation) {
+        if ( !haveLocation) {
             map.centerOn(bounds, forceBounds);
         }
 
@@ -1389,8 +1390,9 @@ public class MapManager extends RepositoryManager implements WikiConstants {
         if ((map.getHtml().length() == 0) && (catMap.size() == 0)) {
             listentries = false;
         }
-        if(request.defined("map_layer")) {
-            map.addProperty("defaultMapLayer",Json.quote(request.getString("map_layer","")));
+        if (request.defined("map_layer")) {
+            map.addProperty("defaultMapLayer",
+                            Json.quote(request.getString("map_layer", "")));
         }
 
         String extra = map.getExtraNav();

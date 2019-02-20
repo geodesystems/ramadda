@@ -42,8 +42,6 @@ import ucar.visad.display.Animation;
 
 import visad.DateTime;
 
-import javax.imageio.*;
-
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Image;
@@ -61,6 +59,8 @@ import java.util.List;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 import java.util.zip.ZipOutputStream;
+
+import javax.imageio.*;
 
 import javax.swing.JCheckBox;
 import javax.swing.JComponent;
@@ -117,10 +117,12 @@ public class RamaddaPublisher extends ucar.unidata.idv.publish
         new JCheckBox("Publish bundle and attach image", true);
 
     /** _more_ */
-    private JCheckBox doThumbnailCbx = new JCheckBox("Attach image as thumbnail",
-                                           true);
+    private JCheckBox doThumbnailCbx =
+        new JCheckBox("Attach image as thumbnail", true);
+
+    /** _more_          */
     private JCheckBox doImageEntryCbx = new JCheckBox("Add image as entry",
-                                           false);
+                                            false);
 
     /** _more_ */
     private JCheckBox doZidvCbx = new JCheckBox("Save as ZIDV file", false);
@@ -450,7 +452,7 @@ public class RamaddaPublisher extends ucar.unidata.idv.publish
                 JComponent extra;
                 if (ImageUtils.isImage(contentFile)) {
                     isImage = true;
-                    extra   = GuiUtils.hbox(doThumbnailCbx,doImageEntryCbx);
+                    extra   = GuiUtils.hbox(doThumbnailCbx, doImageEntryCbx);
                 } else {
                     extra = GuiUtils.filler(1, 1);
                 }
@@ -467,7 +469,8 @@ public class RamaddaPublisher extends ucar.unidata.idv.publish
                     GuiUtils.left(
                         GuiUtils.hbox(
                             new JLabel(IOUtil.getFileTail(contentFile)),
-                            GuiUtils.filler(10, 5), GuiUtils.hbox(doBundleCbx, extra), doZidvCbx)));
+                            GuiUtils.filler(10, 5),
+                            GuiUtils.hbox(doBundleCbx, extra), doZidvCbx)));
                 if (lastBundleFile != null) {
                     addAssociationCbx = myAddAssociationCbx;
                     addAssociationCbx.setText(
@@ -696,7 +699,7 @@ public class RamaddaPublisher extends ucar.unidata.idv.publish
                     String  theName = nameFld.getText().trim();
                     String  desc    = descFld.getText().trim();
                     if (contentFile != null) {
-                        if(doImageEntryCbx.isSelected()) {
+                        if (doImageEntryCbx.isSelected()) {
                             node = addEntry(root, contentFile, contentId,
                                             parentId, theName, desc);
                             theName = "IDV Bundle for " + theName;
@@ -707,9 +710,9 @@ public class RamaddaPublisher extends ucar.unidata.idv.publish
                         node = addEntry(root, bundleFile, bundleId, parentId,
                                         theName, desc);
                         if (contentFile != null) {
-                            if(doImageEntryCbx.isSelected()) {
-                                repositoryClient.addAssociation(root, contentId,
-                                                                bundleId, "uses bundle");
+                            if (doImageEntryCbx.isSelected()) {
+                                repositoryClient.addAssociation(root,
+                                        contentId, bundleId, "uses bundle");
                             }
                         }
                     }
@@ -720,23 +723,29 @@ public class RamaddaPublisher extends ucar.unidata.idv.publish
                     if ((contentFile != null) && (node != null)) {
                         if (isImage && doThumbnailCbx.isSelected()) {
                             repositoryClient.addThumbnail(node,
-                                                          IOUtil.getFileTail(contentFile));
+                                    IOUtil.getFileTail(contentFile));
                         } else {
                             //                            repositoryClient.addAttachment(node, IOUtil.getFileTail(contentFile));
                         }
                         if (isImage && doThumbnailCbx.isSelected()) {
                             Image image = ImageIO.read(
-                                                       new BufferedInputStream(new FileInputStream(
-                                                                                                   contentFile)));
-                            if(image!=null) {
-                                System.err.println("image size before:" + image.getWidth(null) +" " + image.getHeight(null));
+                                              new BufferedInputStream(
+                                                  new FileInputStream(
+                                                      contentFile)));
+                            if (image != null) {
+                                System.err.println("image size before:"
+                                        + image.getWidth(null) + " "
+                                        + image.getHeight(null));
                                 image = ImageUtils.resize(image, 75, -1);
-                                System.err.println("image size after:" + image.getWidth(null) +" " + image.getHeight(null));
+                                System.err.println("image size after:"
+                                        + image.getWidth(null) + " "
+                                        + image.getHeight(null));
                                 String filename =
-                                    "thumb_" + IOUtil.getFileTail(contentFile);
+                                    "thumb_"
+                                    + IOUtil.getFileTail(contentFile);
                                 String tmpFile =
                                     getIdv().getObjectStore().getTmpFile(
-                                                                         filename);
+                                        filename);
                                 ImageUtils.writeImageToFile(image, tmpFile);
                                 repositoryClient.addThumbnail(node, filename);
                                 zipEntryNames.add(filename);

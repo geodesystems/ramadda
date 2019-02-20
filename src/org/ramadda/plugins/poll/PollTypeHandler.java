@@ -268,7 +268,7 @@ public class PollTypeHandler extends BlobTypeHandler {
             responses = new ArrayList<PollResponse>();
         }
         StringBuffer sb = new StringBuffer();
-        getPageHandler().entrySectionOpen(request, entry, sb,null);
+        getPageHandler().entrySectionOpen(request, entry, sb, null);
         if (canEditEntry) {
             sb.append(msgLabel("Use this link to allow others to edit"));
             sb.append(HtmlUtils.href(getEntryManager().getEntryURL(request,

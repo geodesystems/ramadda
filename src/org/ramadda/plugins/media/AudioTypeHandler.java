@@ -88,6 +88,7 @@ public class AudioTypeHandler extends GenericTypeHandler {
         }
         String getFileUrl =
             entry.getTypeHandler().getEntryResourceUrl(request, entry);
+
         return HtmlUtils.getAudioEmbed(getFileUrl);
     }
 

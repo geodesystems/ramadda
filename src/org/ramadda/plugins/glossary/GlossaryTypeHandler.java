@@ -180,7 +180,7 @@ public class GlossaryTypeHandler extends ExtensibleGroupTypeHandler {
 
 
         StringBuffer sb = new StringBuffer();
-        getPageHandler().entrySectionOpen(request, group, sb,null);
+        getPageHandler().entrySectionOpen(request, group, sb, null);
 
         sb.append(group.getDescription());
         sb.append(HtmlUtils.p());
@@ -269,6 +269,7 @@ public class GlossaryTypeHandler extends ExtensibleGroupTypeHandler {
         }
 
         getPageHandler().entrySectionClose(request, group, sb);
+
         return new Result(msg("Glossary"), sb);
     }
 

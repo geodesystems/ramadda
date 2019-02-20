@@ -127,6 +127,12 @@ public class TextRecord extends DataRecord {
         super(file);
     }
 
+    /**
+     * _more_
+     *
+     * @param file _more_
+     * @param dummyBigEndian _more_
+     */
     public TextRecord(RecordFile file, boolean dummyBigEndian) {
         this(file);
     }

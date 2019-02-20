@@ -24,8 +24,8 @@ import org.ramadda.repository.metadata.*;
 import org.ramadda.repository.type.*;
 
 import org.ramadda.util.GeoUtils;
-import org.ramadda.util.Place;
 import org.ramadda.util.HtmlUtils;
+import org.ramadda.util.Place;
 import org.ramadda.util.TTLCache;
 
 
@@ -138,10 +138,9 @@ public class LocationPhoneHarvester extends PhoneHarvester {
                         date.getTime(), values);
 
 
-        Place place = GeoUtils.getLocationFromAddress(
-                                info.getFromZip());
+        Place place = GeoUtils.getLocationFromAddress(info.getFromZip());
         if (place != null) {
-            entry.setLocation(place.getLatitude(),place.getLongitude(), 0);
+            entry.setLocation(place.getLatitude(), place.getLongitude(), 0);
         }
 
         List<Entry> entries = (List<Entry>) Misc.newList(entry);

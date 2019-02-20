@@ -112,7 +112,8 @@ public class MetametaDictionaryTypeHandler extends MetametaDictionaryTypeHandler
         List<String> contents = new ArrayList<String>();
 
         StringBuffer sb       = new StringBuffer();
-        getPageHandler().entrySectionOpen(request, parent, sb,parent.getName());
+        getPageHandler().entrySectionOpen(request, parent, sb,
+                                          parent.getName());
 
 
         subGroups.addAll(entries);
@@ -136,7 +137,8 @@ public class MetametaDictionaryTypeHandler extends MetametaDictionaryTypeHandler
                 "<div class=wiki-h2>{{name}} -- {{field name=\"short_name\"}}</div><p>{{description}} <p>\n"));
         sb.append(OutputHandler.makeTabs(titles, contents, false));
 
-        getPageHandler().entrySectionClose(request, parent,sb);
+        getPageHandler().entrySectionClose(request, parent, sb);
+
         return getEntryManager().addEntryHeader(request, parent,
                 new Result("Metameta Dictionary", sb));
     }

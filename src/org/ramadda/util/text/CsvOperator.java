@@ -147,23 +147,35 @@ public abstract class CsvOperator {
     }
 
 
-    public static final String[]FILE_PREFIXES = {"/org/ramadda/repository/resources/geo"};
+    /** _more_          */
+    public static final String[] FILE_PREFIXES = { "/org/ramadda/repository/resources/geo" };
 
-    public static InputStream getInputStream(String filename) throws Exception {
+    /**
+     * _more_
+     *
+     * @param filename _more_
+     *
+     * @return _more_
+     *
+     * @throws Exception _more_
+     */
+    public static InputStream getInputStream(String filename)
+            throws Exception {
         try {
-            return  new FileInputStream(filename);
+            return new FileInputStream(filename);
         } catch (Exception exc) {
             try {
-                return  IOUtil.getInputStream(filename, CsvOperator.class);
+                return IOUtil.getInputStream(filename, CsvOperator.class);
             } catch (Exception exc2) {
-                for(String prefix: FILE_PREFIXES) {
+                for (String prefix : FILE_PREFIXES) {
                     try {
-                        return IOUtil.getInputStream(prefix +"/" + filename, CsvOperator.class);
-                    } catch(Exception exc3) {
-                    }
+                        return IOUtil.getInputStream(prefix + "/" + filename,
+                                CsvOperator.class);
+                    } catch (Exception exc3) {}
                 }
             }
         }
+
         throw new IllegalArgumentException("Could not open file:" + filename);
     }
 

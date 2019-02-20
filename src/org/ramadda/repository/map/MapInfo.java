@@ -69,6 +69,7 @@ public class MapInfo {
     /** the map variable name */
     private String mapVarName;
 
+    /** _more_          */
     private String mapDiv;
 
     /** _more_ */
@@ -163,7 +164,7 @@ public class MapInfo {
         this.request      = request;
         this.repository   = repository;
 
-        this.mapDiv = this.mapVarName   = makeMapVar();
+        this.mapDiv       = this.mapVarName = makeMapVar();
         this.width        = width;
         this.height       = height;
         this.forSelection = forSelection;
@@ -212,8 +213,8 @@ public class MapInfo {
      * @param mapVar _more_
      */
     public void setMapVar(String mapVar) {
-        this.mapDiv = mapVar;
-        this.mapVarName = mapVar.replaceAll("-","_");
+        this.mapDiv     = mapVar;
+        this.mapVarName = mapVar.replaceAll("-", "_");
     }
 
 
@@ -389,9 +390,7 @@ public class MapInfo {
         } else {
             styles = mapStyle;
             if (styles == null) {
-                styles =
-                    "height:"
-                    + height + "px; " + swidth;
+                styles = "height:" + height + "px; " + swidth;
             }
             styles += " height:" + height + "px; " + swidth;
         }
@@ -400,14 +399,13 @@ public class MapInfo {
             HtmlUtils.div("",
                           HtmlUtils.cssClass("ramadda-map-footer")
                           + HtmlUtils.id(mapDiv + "_footer2"));
-        String popup =
-            HtmlUtils.div("",
-                          HtmlUtils.cssClass("ramadda-popup")
-                          + HtmlUtils.id(mapDiv + "_loc_popup"));
+        String popup = HtmlUtils.div("",
+                                     HtmlUtils.cssClass("ramadda-popup")
+                                     + HtmlUtils.id(mapDiv + "_loc_popup"));
         String readout =
             HtmlUtils.div("&nbsp;",
                           HtmlUtils.cssClass("ramadda-map-latlonreadout")
-                          + HtmlUtils.id(mapDiv +"_latlonreadout") 
+                          + HtmlUtils.id(mapDiv + "_latlonreadout")
                           + HtmlUtils.style(swidth));
         String footer =
             HtmlUtils.div("",
@@ -415,12 +413,11 @@ public class MapInfo {
                           + HtmlUtils.id(mapDiv + "_footer"));
         HtmlUtils.div(result, "",
                       HtmlUtils.cssClass("ramadda-map-search")
-                      + HtmlUtils.id(mapDiv+ "_search"));
+                      + HtmlUtils.id(mapDiv + "_search"));
 
         HtmlUtils.div(result, contents,
                       HtmlUtils.cssClass("ramadda-map")
-                      + HtmlUtils.style(styles) + " "
-                      + HtmlUtils.id(mapDiv));
+                      + HtmlUtils.style(styles) + " " + HtmlUtils.id(mapDiv));
         String url = request.getUrl();
         String label;
         if (request.get("mapdetails", false)) {
@@ -436,8 +433,7 @@ public class MapInfo {
 
         result.append("\n");
         result.append(footer);
-        result.append(HtmlUtils.leftRight(readout,
-                                          footer2));
+        result.append(HtmlUtils.leftRight(readout, footer2));
         result.append(popup);
         /*
         if (Misc.equals(showDetailsLink, "true")) {

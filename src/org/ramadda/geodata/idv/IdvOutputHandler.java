@@ -358,7 +358,7 @@ public class IdvOutputHandler extends OutputHandler implements IdvConstants {
      *
      * @throws Exception On badness
      */
-@Override
+    @Override
     public Result outputEntry(Request request, OutputType outputType,
                               Entry entry)
             throws Exception {
@@ -490,7 +490,7 @@ public class IdvOutputHandler extends OutputHandler implements IdvConstants {
 
         }
 
-        getPageHandler().entrySectionOpen(request, entry, sb,"Make Image");
+        getPageHandler().entrySectionOpen(request, entry, sb, "Make Image");
         String formUrl = getEntryManager().getFullEntryShowUrl(request);
         sb.append(HtmlUtils.form(formUrl, ""));
         sb.append(entry.getDescription());
@@ -530,6 +530,7 @@ public class IdvOutputHandler extends OutputHandler implements IdvConstants {
         sb.append(HtmlUtils.formClose());
 
         getPageHandler().entrySectionClose(request, entry, sb);
+
         return new Result("Bundle As Image", sb);
 
     }
@@ -672,9 +673,10 @@ public class IdvOutputHandler extends OutputHandler implements IdvConstants {
                                   DataSource dataSource)
             throws Exception {
         StringBuffer sb = new StringBuffer();
-        getPageHandler().entrySectionOpen(request, entry, sb,"Make Image");
+        getPageHandler().entrySectionOpen(request, entry, sb, "Make Image");
         makeGridForm(request, sb, entry, dataSource);
         getPageHandler().entrySectionClose(request, entry, sb);
+
         return new Result("Grid Displays", sb);
     }
 
@@ -1420,11 +1422,11 @@ public class IdvOutputHandler extends OutputHandler implements IdvConstants {
     private Result outputGridInitForm(final Request request, Entry entry,
                                       DataSource dataSource)
             throws Exception {
-        StringBuffer sb      = new StringBuffer();
-        getPageHandler().entrySectionOpen(request, entry, sb,"Select Fields");
+        StringBuffer sb = new StringBuffer();
+        getPageHandler().entrySectionOpen(request, entry, sb,
+                                          "Select Fields");
 
-        String       formUrl =
-            request.makeUrl(getRepository().URL_ENTRY_SHOW);
+        String formUrl = request.makeUrl(getRepository().URL_ENTRY_SHOW);
         //        String       formUrl = getEntryManager().getFullEntryShowUrl(request);
         sb.append(HtmlUtils.form(formUrl, ""));
         sb.append(HtmlUtils.hidden(ARG_ENTRYID, entry.getId()));
@@ -1509,6 +1511,7 @@ public class IdvOutputHandler extends OutputHandler implements IdvConstants {
         }
 
         getPageHandler().entrySectionClose(request, entry, sb);
+
         return new Result("Grid Displays", sb);
     }
 
@@ -1677,7 +1680,7 @@ public class IdvOutputHandler extends OutputHandler implements IdvConstants {
 
         boolean showForm = true;
 
-        getPageHandler().entrySectionOpen(request, entry, sb,"Product");
+        getPageHandler().entrySectionOpen(request, entry, sb, "Product");
         if (product.equals(PRODUCT_IMAGE)) {
             sb.append(HtmlUtils.img(url, "Image is being processed...",
                                     HtmlUtils.attr(HtmlUtils.ATTR_WIDTH,
@@ -1720,6 +1723,7 @@ public class IdvOutputHandler extends OutputHandler implements IdvConstants {
                 formSB.toString(), showForm));
 
         getPageHandler().entrySectionClose(request, entry, sb);
+
         return new Result("Grid Displays", sb);
 
     }
@@ -2394,8 +2398,8 @@ public class IdvOutputHandler extends OutputHandler implements IdvConstants {
     public Result outputPointPage(final Request request, Entry entry)
             throws Exception {
 
-        StringBuffer sb      = new StringBuffer();
-        getPageHandler().entrySectionOpen(request, entry, sb,"Make Image");
+        StringBuffer sb = new StringBuffer();
+        getPageHandler().entrySectionOpen(request, entry, sb, "Make Image");
         String       formUrl = getEntryManager().getFullEntryShowUrl(request);
         StringBuffer formSB  = new StringBuffer();
 
@@ -2473,6 +2477,7 @@ public class IdvOutputHandler extends OutputHandler implements IdvConstants {
 
 
         getPageHandler().entrySectionClose(request, entry, sb);
+
         return new Result("Point Display", sb);
 
     }

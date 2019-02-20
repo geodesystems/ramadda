@@ -3754,13 +3754,22 @@ public class HtmlUtils {
      * @return _more_
      */
     public static String formTable() {
-        return formTable((String)null);
+        return formTable((String) null);
     }
 
+    /**
+     * _more_
+     *
+     * @param clazz _more_
+     *
+     * @return _more_
+     */
     public static String formTable(String clazz) {
-        return open(TAG_TABLE,
-                    cssClass((clazz!=null?clazz:"")+" formtable")
-                    + attrs(ATTR_CELLPADDING, "0", ATTR_CELLSPACING, "0"));
+        return open(TAG_TABLE, cssClass(((clazz != null)
+                                         ? clazz
+                                         : "") + " formtable") + attrs(
+                                             ATTR_CELLPADDING, "0",
+                                             ATTR_CELLSPACING, "0"));
     }
 
 
@@ -4835,6 +4844,13 @@ public class HtmlUtils {
     }
 
 
+    /**
+     * _more_
+     *
+     * @param s _more_
+     *
+     * @return _more_
+     */
     public static String urlDecode(String s) {
         try {
             return java.net.URLDecoder.decode(s, "UTF-8");
@@ -5013,9 +5029,21 @@ public class HtmlUtils {
         makeAccordian(sb, title, contents, true, wrapperClass, headerClass);
     }
 
+    /**
+     * _more_
+     *
+     * @param sb _more_
+     * @param title _more_
+     * @param contents _more_
+     * @param collapse _more_
+     * @param wrapperClass _more_
+     * @param headerClass _more_
+     *
+     * @throws Exception _more_
+     */
     public static void makeAccordian(Appendable sb, String title,
-                                     String contents, boolean collapse, String wrapperClass,
-                                     String headerClass)
+                                     String contents, boolean collapse,
+                                     String wrapperClass, String headerClass)
             throws Exception {
 
 
@@ -5594,7 +5622,7 @@ public class HtmlUtils {
         return input;
     }
 
-    /** _more_          */
+    /** _more_ */
     private static final String[][] ESCAPES = {
         { "\"", "quot" }, { "&", "amp" }, { "<", "lt" }, { ">", "gt" },
         { "\u00A0", "nbsp" }, { "\u00A1", "iexcl" }, { "\u00A2", "cent" },
@@ -5632,13 +5660,13 @@ public class HtmlUtils {
         { "\u00FD", "yacute" }, { "\u00FE", "thorn" }, { "\u00FF", "yuml" },
     };
 
-    /** _more_          */
+    /** _more_ */
     private static final int MIN_ESCAPE = 2;
 
-    /** _more_          */
+    /** _more_ */
     private static final int MAX_ESCAPE = 6;
 
-    /** _more_          */
+    /** _more_ */
     private static final HashMap<String, CharSequence> lookupMap;
     static {
         lookupMap = new HashMap<String, CharSequence>();

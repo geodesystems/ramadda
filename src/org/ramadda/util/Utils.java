@@ -365,10 +365,19 @@ public class Utils {
     }
 
 
+    /**
+     * _more_
+     *
+     * @param d _more_
+     *
+     * @return _more_
+     */
     public static boolean isReal(double d) {
-        if(!Double.isNaN(d) && d != Double.POSITIVE_INFINITY && d != Double.NEGATIVE_INFINITY ) {
+        if ( !Double.isNaN(d) && (d != Double.POSITIVE_INFINITY)
+                && (d != Double.NEGATIVE_INFINITY)) {
             return true;
         }
+
         return false;
     }
 
@@ -3009,7 +3018,9 @@ public class Utils {
     public static void main(String[] args) throws Exception {
         String ds = "2019-02-20T10:00 UTC";
         System.err.println(parseDate(ds));
-        if(true) return;
+        if (true) {
+            return;
+        }
 
 
         String           dt  = "Aug. 20, 1842";

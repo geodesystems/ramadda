@@ -88,11 +88,11 @@ public interface RecordConstants extends Constants {
     public static final String ARG_GRID_MINPOINTS = ARG_GRID_PREFIX
                                                     + "minpoints";
 
-    /** _more_          */
+    /** _more_ */
     public static final String ARG_GRID_RANGE_MIN = ARG_GRID_PREFIX
                                                     + "range_min";
 
-    /** _more_          */
+    /** _more_ */
     public static final String ARG_GRID_RANGE_MAX = ARG_GRID_PREFIX
                                                     + "range_max";
 

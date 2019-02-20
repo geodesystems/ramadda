@@ -917,10 +917,11 @@ public class PointOutputHandler extends RecordOutputHandler {
             max = "5000";
         }
 
-        String path  = entry.getResource().getPath();
-        if(path!=null && path.indexOf("${latitude}")>=0) {
-            extra+="&latitude=${latitude}&longitude=${longitude}";
+        String path = entry.getResource().getPath();
+        if ((path != null) && (path.indexOf("${latitude}") >= 0)) {
+            extra += "&latitude=${latitude}&longitude=${longitude}";
         }
+
         return request.entryUrl(getRepository().URL_ENTRY_SHOW, entry,
                                 ARG_OUTPUT, OUTPUT_PRODUCT.getId(),
                                 ARG_PRODUCT, OUTPUT_JSON.toString()) + "&"

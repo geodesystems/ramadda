@@ -16,12 +16,13 @@
 
 package org.ramadda.plugins.phone;
 
-import org.ramadda.util.WikiUtil;
 
 import org.ramadda.repository.*;
 import org.ramadda.repository.type.*;
 
 import org.ramadda.util.HtmlUtils;
+
+import org.ramadda.util.WikiUtil;
 
 import org.w3c.dom.*;
 
@@ -78,6 +79,7 @@ public class VoiceMailTypeHandler extends GenericTypeHandler {
         }
         String getFileUrl =
             entry.getTypeHandler().getEntryResourceUrl(request, entry);
+
         return HtmlUtils.getAudioEmbed(getFileUrl);
     }
 

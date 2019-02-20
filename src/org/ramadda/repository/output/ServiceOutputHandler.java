@@ -833,7 +833,8 @@ public class ServiceOutputHandler extends OutputHandler {
         if (desc == null) {
             desc = "";
         }
-        desc = "<wiki>\n+section title={{name}}\n" + desc + "\n{{tree message=\"\"}}\n-section\n";
+        desc = "<wiki>\n+section title={{name}}\n" + desc
+               + "\n{{tree message=\"\"}}\n-section\n";
         xml.append(
             XmlUtil.tag(
                 "entry",

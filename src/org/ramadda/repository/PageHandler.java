@@ -225,6 +225,7 @@ public class PageHandler extends RepositoryManager {
     /** _more_ */
     private boolean showCreateDate;
 
+    /** _more_          */
     private boolean showSearch;
 
     /** _more_ */
@@ -280,9 +281,7 @@ public class PageHandler extends RepositoryManager {
             getRepository().getProperty(PROP_ENTRY_TABLE_SHOW_CREATEDATE,
                                         false);
 
-        showSearch =
-            getRepository().getProperty("ramadda.showsearch",
-                                        true);
+        showSearch = getRepository().getProperty("ramadda.showsearch", true);
         createdDisplayMode =
             getRepository().getProperty(PROP_CREATED_DISPLAY_MODE,
                                         "none").trim();
@@ -425,9 +424,8 @@ public class PageHandler extends RepositoryManager {
         String userLinkTemplate =
             "<div onClick=\"document.location=\'${url}\'\"  class=\"ramadda-user-link\">${label}</div>";
         List<String> allLinks = new ArrayList<String>();
-        String searchImg = HtmlUtils.img(
-                                    getIconUrl("/icons/magnifier.png"),
-                                    "Search"," id='searchlink' ");
+        String searchImg = HtmlUtils.img(getIconUrl("/icons/magnifier.png"),
+                                         "Search", " id='searchlink' ");
 
 
 
@@ -453,8 +451,10 @@ public class PageHandler extends RepositoryManager {
                           HtmlUtils.cssClass("ramadda-user-menu"));
 
 
-        if(showSearch) {
-            String searchLink = HtmlUtils.mouseClickHref("ramaddaSearchPopup('searchlink');",searchImg,"");
+        if (showSearch) {
+            String searchLink =
+                HtmlUtils.mouseClickHref("ramaddaSearchPopup('searchlink');",
+                                         searchImg, "");
             extra.append(searchLink);
             extra.append(HtmlUtils.space(2));
         }
@@ -646,8 +646,8 @@ public class PageHandler extends RepositoryManager {
             //j-
             StringBuilder sb = new StringBuilder();
             HtmlUtils.div(sb, "",
-                          HtmlUtils.attrs("id", "ramadda-popupdiv",
-                                          "class", "ramadda-popup"));
+                          HtmlUtils.attrs("id", "ramadda-popupdiv", "class",
+                                          "ramadda-popup"));
             HtmlUtils.div(sb, "",
                           HtmlUtils.attrs("id", "ramadda-selectdiv", "class",
                                           "ramadda-selectdiv"));
@@ -3469,14 +3469,33 @@ public class PageHandler extends RepositoryManager {
         return new Result("", sb);
     }
 
-    public void sectionOpen(Request request, Appendable sb,
-                            String title, boolean showLine)
+    /**
+     * _more_
+     *
+     * @param request _more_
+     * @param sb _more_
+     * @param title _more_
+     * @param showLine _more_
+     *
+     * @throws Exception _more_
+     */
+    public void sectionOpen(Request request, Appendable sb, String title,
+                            boolean showLine)
             throws Exception {
         sb.append(HtmlUtils.sectionOpen(null, showLine));
-        if(title!=null)            
+        if (title != null) {
             HtmlUtils.sectionTitle(sb, title);
+        }
     }
 
+    /**
+     * _more_
+     *
+     * @param request _more_
+     * @param sb _more_
+     *
+     * @throws Exception _more_
+     */
     public void sectionClose(Request request, Appendable sb)
             throws Exception {
         sb.append(HtmlUtils.sectionClose());

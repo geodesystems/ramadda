@@ -1428,7 +1428,7 @@ public class TabularOutputHandler extends OutputHandler {
 
         getRepository().getWikiManager().addDisplayImports(request, sb);
 
-        getPageHandler().entrySectionOpen(request, entry, sb,null, true);
+        getPageHandler().entrySectionOpen(request, entry, sb, null, true);
 
 
         if ( !request.get(ARG_EMBEDDED, false)) {

@@ -258,7 +258,10 @@ public class TabularTypeHandler extends MsDocTypeHandler {
             throws Exception {
         //        Misc.printStack ("TabularTypeHandler.getInnerWikiContent");
         String s = getSimpleDisplay(request, null, entry);
-        if(s == null) return null;
+        if (s == null) {
+            return null;
+        }
+
         return new Result("", new StringBuilder(s));
     }
 

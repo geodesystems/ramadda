@@ -527,10 +527,10 @@ public class GpxTypeHandler extends PointTypeHandler {
                         ele = "" + (new Double(ele).doubleValue() * 3.28084);
                     }
                     String time = XmlUtil.getGrandChildText(trackPoint,
-                                                            "time", (String)null);
+                                      "time", (String) null);
                     long thisTime = 0;
-                    if(time!=null) {
-                        Date dttm     = sdf.parse(time);
+                    if (time != null) {
+                        Date dttm = sdf.parse(time);
                         thisTime = dttm.getTime();
                     }
                     if (lastLat != 0) {
@@ -538,9 +538,9 @@ public class GpxTypeHandler extends PointTypeHandler {
                                 lat, lon, bearing);
                         double distance = 0.621371 * bearing.getDistance();
                         totalDistance += distance;
-                        if(time!=null) {
-                            double hours = (thisTime - lastTime) / 1000.0 / 60
-                                / 60;
+                        if (time != null) {
+                            double hours = (thisTime - lastTime) / 1000.0
+                                           / 60 / 60;
                             if (hours != 0) {
                                 speed = distance / hours;
                             }
@@ -1010,8 +1010,10 @@ public class GpxTypeHandler extends PointTypeHandler {
                             }
                             String time =
                                 XmlUtil.getGrandChildText(trackPoint, "time",
-                                                          (String) null);
-                            Date dttm = (time==null?null:sdf.parse(time));
+                                    (String) null);
+                            Date dttm = ((time == null)
+                                         ? null
+                                         : sdf.parse(time));
                             if (lastLat != 0) {
                                 bearing = Bearing.calculateBearing(lastLat,
                                         lastLon, lat, lon, bearing);
@@ -1028,9 +1030,10 @@ public class GpxTypeHandler extends PointTypeHandler {
                                 }
                                 gradeWindow.add(grade);
                                 totalDistance += distance;
-                                if(dttm!=null) {
-                                    double hours = (dttm.getTime() - lastTime)
-                                        / 1000.0 / 60 / 60;
+                                if (dttm != null) {
+                                    double hours = (dttm.getTime()
+                                                    - lastTime) / 1000.0 / 60
+                                                        / 60;
                                     if (hours != 0) {
                                         speed = distance / hours;
                                     }
@@ -1050,13 +1053,17 @@ public class GpxTypeHandler extends PointTypeHandler {
                                 tmp += v;
                             }
                             grade    = tmp / gradeWindow.size();
-                            avgSpeed = (speedWindow.size()==0?0:avgSpeed / speedWindow.size());
+                            avgSpeed = ((speedWindow.size() == 0)
+                                        ? 0
+                                        : avgSpeed / speedWindow.size());
                             if (speed < 0.05) {
                                 avgSpeed = 0;
                             }
                             lastLat  = lat;
                             lastLon  = lon;
-                            lastTime = (dttm==null?0:dttm.getTime());
+                            lastTime = ((dttm == null)
+                                        ? 0
+                                        : dttm.getTime());
 
                             s.append(time);
                             s.append(",");

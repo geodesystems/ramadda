@@ -744,7 +744,7 @@ public class ShapefileOutputHandler extends OutputHandler implements WikiConstan
 
             return new Result("", sb);
         }
-        HtmlUtils.open(sb, "div",HtmlUtils.cssClass("ramadda-links"));
+        HtmlUtils.open(sb, "div", HtmlUtils.cssClass("ramadda-links"));
         Hashtable              props = getRepository().getPluginProperties();
 
         List<DbaseDataWrapper> fieldDatum = getDatum(request, entry, dbfile);
@@ -812,7 +812,8 @@ public class ShapefileOutputHandler extends OutputHandler implements WikiConstan
         //        System.err.println(sb);
 
         if (table) {
-            sb.append("<table class='stripe hover ramadda-table' table-height=400 >");
+            sb.append(
+                "<table class='stripe hover ramadda-table' table-height=400 >");
             sb.append("<thead>");
             sb.append("<tr valign=top>");
             sb.append(HtmlUtils.th(HtmlUtils.b("Field&nbsp;#"),

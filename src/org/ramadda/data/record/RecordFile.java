@@ -94,6 +94,7 @@ public abstract class RecordFile {
     /** general properties */
     private Hashtable properties;
 
+    /** _more_          */
     private Hashtable requestProperties;
 
     /** _more_ */
@@ -207,13 +208,15 @@ public abstract class RecordFile {
      *
      * @param filename _more_
      * @param properties _more_
+     * @param requestProperties _more_
      *
      * @return _more_
      *
      * @throws CloneNotSupportedException On badness
      * @throws Exception _more_
      */
-    public RecordFile cloneMe(String filename, Hashtable properties, Hashtable requestProperties)
+    public RecordFile cloneMe(String filename, Hashtable properties,
+                              Hashtable requestProperties)
             throws CloneNotSupportedException, Exception {
         RecordFile that = cloneMe();
         that.initAfterClone();

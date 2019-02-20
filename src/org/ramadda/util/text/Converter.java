@@ -316,6 +316,13 @@ public abstract class Converter extends Processor {
     }
 
 
+    /**
+     * Class description
+     *
+     *
+     * @version        $version$, Wed, Feb 20, '19
+     * @author         Enter your name here...    
+     */
     public static class Prefixer extends Converter {
 
 
@@ -328,11 +335,13 @@ public abstract class Converter extends Processor {
          *
          *
          * @param count _more_
+         *
+         * @param cols _more_
          * @param s _more_
          */
-        public Prefixer(List<String> cols,String s) {
+        public Prefixer(List<String> cols, String s) {
             super(cols);
-            this.pad   = s;
+            this.pad = s;
         }
 
 
@@ -352,15 +361,24 @@ public abstract class Converter extends Processor {
                 return row;
             }
             List<Integer> indices = getIndices(info);
-            for(int i: indices) {
-                row.set(i,pad+row.get(i));
+            for (int i : indices) {
+                row.set(i, pad + row.get(i));
             }
+
             return row;
         }
     }
 
 
+    /**
+     * Class description
+     *
+     *
+     * @version        $version$, Wed, Feb 20, '19
+     * @author         Enter your name here...    
+     */
     public static class Suffixer extends Converter {
+
         /** _more_ */
         private String pad;
 
@@ -369,11 +387,13 @@ public abstract class Converter extends Processor {
          *
          *
          * @param count _more_
+         *
+         * @param cols _more_
          * @param s _more_
          */
-        public Suffixer(List<String> cols,String s) {
+        public Suffixer(List<String> cols, String s) {
             super(cols);
-            this.pad   = s;
+            this.pad = s;
         }
 
 
@@ -393,9 +413,10 @@ public abstract class Converter extends Processor {
                 return row;
             }
             List<Integer> indices = getIndices(info);
-            for(int i: indices) {
-                row.set(i,row.get(i)+pad);
+            for (int i : indices) {
+                row.set(i, row.get(i) + pad);
             }
+
             return row;
         }
     }
@@ -519,6 +540,7 @@ public abstract class Converter extends Processor {
         /** _more_ */
         boolean defaultChartable = true;
 
+        /** _more_          */
         Row firstRow;
 
         /**
@@ -549,21 +571,23 @@ public abstract class Converter extends Processor {
          */
         @Override
         public Row processRow(TextReader info, Row row, String line) {
+
             rowCnt++;
-            if (rowCnt>2) {
+            if (rowCnt > 2) {
                 return row;
             }
-            if(firstRow == null) {
+            if (firstRow == null) {
                 firstRow = row;
+
                 return null;
             }
-            boolean debug = Misc.equals(props.get("debug"),"true");
-            PrintWriter writer    = info.getWriter();
-            StringBuffer sb = new StringBuffer();
+            boolean      debug  = Misc.equals(props.get("debug"), "true");
+            PrintWriter  writer = info.getWriter();
+            StringBuffer sb     = new StringBuffer();
             sb.append("#fields=");
             List values = new ArrayList<String>();
             for (int i = 0; i < firstRow.getValues().size(); i++) {
-                String col = (String) firstRow.getValues().get(i);
+                String col    = (String) firstRow.getValues().get(i);
                 String sample = (String) row.getValues().get(i);
                 col = col.replaceAll("\u00B5", "u").replaceAll("\u00B3",
                                      "^3").replaceAll("\n", " ");
@@ -572,14 +596,11 @@ public abstract class Converter extends Processor {
                                    "_").trim().toLowerCase().replaceAll(" ",
                                        "_").replaceAll(":", "_");
 
-                id = id.replaceAll("\\+","_").replaceAll("\"", "_").replaceAll("%","_").replaceAll("\'",
-                                   "_").replaceAll("/+",
-                                       "_").replaceAll("\\.",
-                                           "_").replaceAll("_+_",
-                                               "_").replaceAll("_+$",
-                                                   "").replaceAll("^_+",
-                                                       "").replaceAll("\\^",
-                                                           "_");
+                id = id.replaceAll("\\+", "_").replaceAll(
+                    "\"", "_").replaceAll("%", "_").replaceAll(
+                    "\'", "_").replaceAll("/+", "_").replaceAll(
+                    "\\.", "_").replaceAll("_+_", "_").replaceAll(
+                    "_+$", "").replaceAll("^_+", "").replaceAll("\\^", "_");
 
                 id = CsvUtil.getDbProp(props, id, "id", id);
 
@@ -613,17 +634,17 @@ public abstract class Converter extends Processor {
                     chartable = false;
                 } else {
                     try {
-                        if(sample.matches("^(\\+|-)?\\d+$")) {
+                        if (sample.matches("^(\\+|-)?\\d+$")) {
                             //                            System.out.println(label+" match int");
-                            type ="integer";
-                        } else if(sample.matches("^[-+]?[0-9]*\\.?[0-9]+([eE][-+]?[0-9]+)?$")) {
+                            type = "integer";
+                        } else if (sample.matches(
+                                "^[-+]?[0-9]*\\.?[0-9]+([eE][-+]?[0-9]+)?$")) {
                             //                            System.out.println(label+" match double");
-                            type ="double"; 
+                            type = "double";
                         } else {
                             //                            System.out.println(label +" no match:" + sample);
                         }
-                    } catch(Exception exc) {
-                    }
+                    } catch (Exception exc) {}
                 }
 
                 type   = CsvUtil.getDbProp(props, id, "type", type);
@@ -640,8 +661,9 @@ public abstract class Converter extends Processor {
                         attrs.append(" chartable=\"" + "false" + "\" ");
                     }
                 }
-                if(debug) {
-                    writer.println(StringUtil.padLeft(id,20) + " " + attrs +"  sample:" + sample);
+                if (debug) {
+                    writer.println(StringUtil.padLeft(id, 20) + " " + attrs
+                                   + "  sample:" + sample);
                 }
 
                 String field = id + "[" + attrs + "] ";
@@ -653,13 +675,15 @@ public abstract class Converter extends Processor {
 
             firstRow.setValues(values);
             info.setExtraRow(row);
-            Row tmp  = firstRow;
+            Row tmp = firstRow;
             firstRow = null;
-            if(debug) {
+            if (debug) {
                 writer.println("");
                 info.stopRunning();
             }
+
             return tmp;
+
         }
 
 
@@ -1262,7 +1286,10 @@ public abstract class Converter extends Processor {
         /** _more_ */
         private String suffix;
 
+        /** _more_          */
         private String latLabel = "Latitude";
+
+        /** _more_          */
         private String lonLabel = "Longitude";
 
         /**
@@ -1295,19 +1322,25 @@ public abstract class Converter extends Processor {
          * _more_
          *
          * @param cols _more_
+         * @param lat _more_
+         * @param lon _more_
          * @param suffix _more_
          *
          * @throws Exception _more_
          */
-        public Geocoder(List<String> cols, String lat, String lon, String suffix) throws Exception {
+        public Geocoder(List<String> cols, String lat, String lon,
+                        String suffix)
+                throws Exception {
             super(cols);
             this.suffix     = suffix;
             this.writeForDb = false;
-            if(lat.length()>0)
+            if (lat.length() > 0) {
                 latLabel = lat;
-            if(lon.length()>0)
+            }
+            if (lon.length() > 0) {
                 lonLabel = lon;
-            doAddress       = true;
+            }
+            doAddress = true;
         }
 
         /**
@@ -1343,7 +1376,8 @@ public abstract class Converter extends Processor {
             long t1 = System.currentTimeMillis();
             //            System.err.println("Reading file:" + filename);
             BufferedReader br = new BufferedReader(
-                                                   new InputStreamReader(getInputStream(filename)));
+                                    new InputStreamReader(
+                                        getInputStream(filename)));
             //            System.err.println("Done Reading file:" + filename);
             String line;
             while ((line = br.readLine()) != null) {
@@ -1396,6 +1430,7 @@ public abstract class Converter extends Processor {
                     values.add(lonLabel);
                 }
                 doneHeader = true;
+
                 return row;
             }
 
@@ -1420,8 +1455,8 @@ public abstract class Converter extends Processor {
                 if (doAddress) {
                     place = GeoUtils.getLocationFromAddress(key.toString());
                 } else {
-                    String tok = key.toString();
-                    double[]bounds = map.get(tok);
+                    String   tok    = key.toString();
+                    double[] bounds = map.get(tok);
                     if (bounds == null) {
                         bounds = map.get(tok.replaceAll("-.*$", ""));
                     }
@@ -1443,11 +1478,11 @@ public abstract class Converter extends Processor {
                             }
                         }
                     }
-                    if (bounds!= null) {
-                        place = new Place("", bounds[0],bounds[1]);
+                    if (bounds != null) {
+                        place = new Place("", bounds[0], bounds[1]);
                     }
                 }
-                if (place!=null) {
+                if (place != null) {
                     lat = place.getLatitude();
                     lon = place.getLongitude();
                 }
@@ -1480,14 +1515,14 @@ public abstract class Converter extends Processor {
         /** _more_ */
         int destCol;
 
-        /** _more_          */
+        /** _more_ */
         String newColName;
 
 
-        /** _more_          */
+        /** _more_ */
         String mode;
 
-        /** _more_          */
+        /** _more_ */
         boolean doDelete;
 
         /**
@@ -1522,7 +1557,7 @@ public abstract class Converter extends Processor {
         private void makeMap(String filename) throws Exception {
             BufferedReader br = new BufferedReader(
                                     new InputStreamReader(
-                                                          getInputStream(filename)));
+                                        getInputStream(filename)));
 
             String line;
             while ((line = br.readLine()) != null) {
@@ -1889,6 +1924,13 @@ public abstract class Converter extends Processor {
 
 
 
+    /**
+     * Class description
+     *
+     *
+     * @version        $version$, Wed, Feb 20, '19
+     * @author         Enter your name here...    
+     */
     public static class ColumnRounder extends Converter {
 
 
@@ -1930,8 +1972,9 @@ public abstract class Converter extends Processor {
                 double v = (s.length() == 0)
                            ? 0
                            : Double.parseDouble(s.replaceAll(",", ""));
-                row.set(index,""+((int)Math.round(v)));
+                row.set(index, "" + ((int) Math.round(v)));
             }
+
             return row;
         }
 

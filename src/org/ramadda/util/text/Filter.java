@@ -265,6 +265,8 @@ public class Filter extends Converter {
      * @author         Jeff McWhirter
      */
     public static class PatternFilter extends ColumnFilter {
+
+        /** _more_          */
         String spattern;
 
         /** _more_ */
@@ -273,6 +275,7 @@ public class Filter extends Converter {
         /** _more_ */
         boolean not = false;
 
+        /** _more_          */
         boolean isTemplate = false;
 
         /**
@@ -318,24 +321,23 @@ public class Filter extends Converter {
          * @param pattern _more_
          */
         public void setPattern(String pattern) {
-            pattern = pattern.replaceAll("_dollar_","\\$");
+            pattern = pattern.replaceAll("_dollar_", "\\$");
             pattern =
                 pattern.replaceAll("_leftbracket_",
                                    "\\\\[").replaceAll("_rightbracket_",
-                                                       "\\\\]");
-            pattern =
-                pattern.replaceAll("_leftcurly_",
-                                   "\\{").replaceAll("_rightcurly_",
-                                                     "\\}");
+                                       "\\\\]");
+            pattern = pattern.replaceAll("_leftcurly_",
+                                         "\\{").replaceAll("_rightcurly_",
+                                             "\\}");
             spattern = pattern;
             if (pattern.startsWith("!")) {
                 pattern = pattern.substring(1);
                 not     = true;
             }
-            if (pattern.indexOf("${")>=0) {
+            if (pattern.indexOf("${") >= 0) {
                 isTemplate = true;
             } else {
-                isTemplate = false;
+                isTemplate   = false;
                 this.pattern = Pattern.compile(pattern);
             }
         }
@@ -360,10 +362,10 @@ public class Filter extends Converter {
                 return doNegate(false);
             }
             Pattern pattern = this.pattern;
-            if(isTemplate) {
+            if (isTemplate) {
                 String tmp = spattern;
                 for (int i = 0; i < row.size(); i++) {
-                    tmp = tmp.replace("${" +i+"}",(String) row.get(i));
+                    tmp = tmp.replace("${" + i + "}", (String) row.get(i));
                 }
                 //                System.out.println("tmp:" + tmp);
                 pattern = Pattern.compile(tmp);
