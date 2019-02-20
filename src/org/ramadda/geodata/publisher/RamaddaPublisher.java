@@ -42,6 +42,7 @@ import ucar.visad.display.Animation;
 
 import visad.DateTime;
 
+import javax.imageio.*;
 
 import java.awt.Component;
 import java.awt.Dimension;
@@ -49,9 +50,8 @@ import java.awt.Image;
 import java.awt.Insets;
 import java.awt.geom.Rectangle2D;
 
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.FileInputStream;
+import java.io.*;
+
 
 import java.text.SimpleDateFormat;
 
@@ -725,17 +725,23 @@ public class RamaddaPublisher extends ucar.unidata.idv.publish
                             //                            repositoryClient.addAttachment(node, IOUtil.getFileTail(contentFile));
                         }
                         if (isImage && doThumbnailCbx.isSelected()) {
-                            Image image = ImageUtils.readImage(contentFile);
-                            image = ImageUtils.resize(image, 75, -1);
-                            String filename =
-                                "thumb_" + IOUtil.getFileTail(contentFile);
-                            String tmpFile =
-                                getIdv().getObjectStore().getTmpFile(
-                                    filename);
-                            ImageUtils.writeImageToFile(image, tmpFile);
-                            repositoryClient.addThumbnail(node, filename);
-                            zipEntryNames.add(filename);
-                            files.add(tmpFile);
+                            Image image = ImageIO.read(
+                                                       new BufferedInputStream(new FileInputStream(
+                                                                                                   contentFile)));
+                            if(image!=null) {
+                                System.err.println("image size before:" + image.getWidth(null) +" " + image.getHeight(null));
+                                image = ImageUtils.resize(image, 75, -1);
+                                System.err.println("image size after:" + image.getWidth(null) +" " + image.getHeight(null));
+                                String filename =
+                                    "thumb_" + IOUtil.getFileTail(contentFile);
+                                String tmpFile =
+                                    getIdv().getObjectStore().getTmpFile(
+                                                                         filename);
+                                ImageUtils.writeImageToFile(image, tmpFile);
+                                repositoryClient.addThumbnail(node, filename);
+                                zipEntryNames.add(filename);
+                                files.add(tmpFile);
+                            }
                         }
                     }
 
