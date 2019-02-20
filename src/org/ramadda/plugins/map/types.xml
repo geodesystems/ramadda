@@ -39,8 +39,9 @@
 {{gpx.stats}}
 </center>
 <p>
-  {{mapentry  width="-100" height="400" details="true" layer="esri.topo" mapVar="gpxMap" xxshowSearch="true" xxshowCheckbox="true" }}
-  {{group showMenu="true" mapVar="gpxMap"}}
+  {{mapentry  width="-100" height="400" details="true" layer="esri.topo" 
+mapVar="gpxMap${entryid}" xxshowSearch="true" xxshowCheckbox="true" }}
+  {{group showMenu="true" mapVar="gpxMap${entryid}"}}
   {{display type="linechart" showTitle="false" layoutHere="true" showMenu="true" fields="point_altitude,speed"  errorMessage=" "  }}
 
 ----
