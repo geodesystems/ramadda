@@ -3833,6 +3833,14 @@ public class Repository extends RepositoryBase implements RequestHandler,
     protected Result getHtdocsFile(Request request) throws Exception {
 
         String path    = request.getRequestPath().replaceAll("//", "/");
+        //Check for scanners
+        if(path.endsWith(".php")) {
+            Misc.sleepSeconds(60);
+            Result r = new Result("",new StringBuilder());
+            r.setResponseCode(Result.RESPONSE_NOTFOUND);
+            return r;
+        }
+
         String urlBase = getUrlBase();
         if (path.startsWith(urlBase)) {
             int length = urlBase.length();
