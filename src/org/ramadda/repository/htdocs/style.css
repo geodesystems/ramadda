@@ -247,7 +247,9 @@ color:#000;
 
 .note,  .ramadda-note {
   text-align:center;
-  padding:10px;
+  margin-top:4px;
+  margin-bottom:4px;
+  padding:6px;
   padding-left:12px;
   padding-right:12px;
   border : 1px #ddd solid;
@@ -261,6 +263,8 @@ color:#000;
 }
 
 .ramadda-blurb {
+  margin-top:4px;
+  margin-bottom:4px;
   display:inline-block;
   border: 0px;
   border: 1px #ddd solid;
