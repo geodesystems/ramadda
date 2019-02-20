@@ -141,7 +141,7 @@ function RepositoryMap(mapId, params) {
         scrollToZoom: false,
         selectOnHover: false,
         highlightOnHover: true,
-        showLocationSearch:false,
+        showLocationSearch: false,
     };
 
 
@@ -1667,8 +1667,8 @@ function initMapFunctions(theMap) {
         }
 
         if (this.showLatLonPosition) {
-            if(!this.latlonReadout)
-               this.latlonReadout = this.mapId  +"_latlonreadout";
+            if (!this.latlonReadout)
+                this.latlonReadout = this.mapId + "_latlonreadout";
             var latLonReadout = GuiUtils.getDomObject(this.latlonReadout);
             if (latLonReadout) {
                 this.map.addControl(new OpenLayers.Control.MousePosition({
@@ -1683,7 +1683,7 @@ function initMapFunctions(theMap) {
                 }));
             }
         }
-        if(this.showLocationSearch) {
+        if (this.showLocationSearch) {
             this.initLocationSearch();
         }
 
@@ -1735,39 +1735,39 @@ function initMapFunctions(theMap) {
     }
 
     theMap.removeSearchMarkers = function() {
-        if(!this.searchMarkerList) return;
-        for(var i=0;i<this.searchMarkerList.length;i++) {
+        if (!this.searchMarkerList) return;
+        for (var i = 0; i < this.searchMarkerList.length; i++) {
             this.removeMarker(this.searchMarkerList[i]);
         }
     }
-    theMap.addAllLocationResults = function () {
+    theMap.addAllLocationResults = function() {
         this.removeSearchMarkers();
         this.searchMarkerList = [];
-        if(!this.locationSearchResults)return;
-        var east,west,north,south;
-        for(var i=0;i<this.locationSearchResults.length;i++) {
+        if (!this.locationSearchResults) return;
+        var east, west, north, south;
+        for (var i = 0; i < this.locationSearchResults.length; i++) {
             var result = this.locationSearchResults[i];
             var lonlat = new createLonLat(result.longitude, result.latitude);
             var icon = result.icon;
-            if(!icon)
-                icon = ramaddaBaseUrl +"/icons/green-dot.png";
+            if (!icon)
+                icon = ramaddaBaseUrl + "/icons/green-dot.png";
             this.searchMarkerList.push(this.addMarker("search", lonlat, icon, "", result.name, 20, 20));
 
-            east = i==0?result.longitude:Math.max(east,result.longitude);
-            west = i==0?result.longitude:Math.min(west,result.longitude);
-            north = i==0?result.latitude:Math.max(north,result.latitude);
-            south = i==0?result.latitude:Math.min(south,result.latitude);
+            east = i == 0 ? result.longitude : Math.max(east, result.longitude);
+            west = i == 0 ? result.longitude : Math.min(west, result.longitude);
+            north = i == 0 ? result.latitude : Math.max(north, result.latitude);
+            south = i == 0 ? result.latitude : Math.min(south, result.latitude);
         }
-        var bounds = this.transformLLBounds(createBounds(west,south,east,north));
+        var bounds = this.transformLLBounds(createBounds(west, south, east, north));
         this.map.zoomToExtent(bounds);
     }
 
-    theMap.initLocationSearch= function() {
-        if(this.selectRegion) return;
+    theMap.initLocationSearch = function() {
+        if (this.selectRegion) return;
         let _this = this;
-        var input = HtmlUtils.span(["style", "padding-right:4px;", "id", this.mapDivId + "_loc_search_wait"], "") + 
-        HtmlUtils.checkbox(this.mapDivId + "_loc_bounds",["title","Search in map bounds"],false) +  HtmlUtils.span(["title", "Search in map bounds"], " In view ") +
-        HtmlUtils.input("", "", ["class","ramadda-map-loc-input","title", "^string - matches beginning","size","30", "placeholder", "Search location", "id", this.mapDivId + "_loc_search"])
+        var input = HtmlUtils.span(["style", "padding-right:4px;", "id", this.mapDivId + "_loc_search_wait"], "") +
+            HtmlUtils.checkbox(this.mapDivId + "_loc_bounds", ["title", "Search in map bounds"], false) + HtmlUtils.span(["title", "Search in map bounds"], " In view ") +
+            HtmlUtils.input("", "", ["class", "ramadda-map-loc-input", "title", "^string - matches beginning", "size", "30", "placeholder", "Search location", "id", this.mapDivId + "_loc_search"])
         $("#" + this.mapDivId + "_footer2").html(input);
         let searchInput = $("#" + this.mapDivId + "_loc_search");
         let bounds = $("#" + this.mapDivId + "_loc_bounds");
@@ -1781,11 +1781,11 @@ function initMapFunctions(theMap) {
         });
         searchInput.on('input', function(e) {
             searchPopup.hide();
-            if(searchInput.val()=="") {
+            if (searchInput.val() == "") {
                 _this.removeSearchMarkers();
             }
-            });
-            
+        });
+
         searchInput.keypress(function(e) {
             var keyCode = e.keyCode || e.which;
             if (keyCode == 27) {
@@ -1797,9 +1797,9 @@ function initMapFunctions(theMap) {
             }
             wait.html(HtmlUtils.image(icon_wait));
             var url = ramaddaBaseUrl + "/geocode?query=" + encodeURIComponent(searchInput.val());
-            if(bounds.is(':checked')) {
+            if (bounds.is(':checked')) {
                 var b = _this.transformProjBounds(_this.map.getExtent());
-                url+="&bounds=" + b.top +"," + b.left +"," + b.bottom +","+b.right;
+                url += "&bounds=" + b.top + "," + b.left + "," + b.bottom + "," + b.right;
             }
             var jqxhr = $.getJSON(url, function(data) {
                 wait.html("");
@@ -1810,13 +1810,13 @@ function initMapFunctions(theMap) {
                 } else {
                     _this.locationSearchResults = data.result;
                     for (var i = 0; i < data.result.length; i++) {
-                        var n = data.result[i].name.replace("\"","'");
+                        var n = data.result[i].name.replace("\"", "'");
                         var icon = data.result[i].icon;
-                        if(!icon)
-                            icon = ramaddaBaseUrl +"/icons/green-dot.png";
-                        result += HtmlUtils.div(["class", "ramadda-map-loc", "name", n, "icon",icon, "latitude", data.result[i].latitude, "longitude", data.result[i].longitude], "<img width='16' src=" + icon+"> " + data.result[i].name);
+                        if (!icon)
+                            icon = ramaddaBaseUrl + "/icons/green-dot.png";
+                        result += HtmlUtils.div(["class", "ramadda-map-loc", "name", n, "icon", icon, "latitude", data.result[i].latitude, "longitude", data.result[i].longitude], "<img width='16' src=" + icon + "> " + data.result[i].name);
                     }
-                    result += HtmlUtils.div(["class", "ramadda-map-loc", "name", "all"],"Show all");
+                    result += HtmlUtils.div(["class", "ramadda-map-loc", "name", "all"], "Show all");
                 }
                 var my = "left bottom";
                 var at = "left top";
@@ -1833,7 +1833,7 @@ function initMapFunctions(theMap) {
                 searchPopup.find(".ramadda-map-loc").click(function() {
                     searchPopup.hide();
                     var name = $(this).attr("name");
-                    if(name == "all") {
+                    if (name == "all") {
                         _this.addAllLocationResults();
                         return;
                     }
@@ -1848,8 +1848,8 @@ function initMapFunctions(theMap) {
                     _this.searchMarkerList.push(_this.addMarker("search", lonlat, icon, "", name, 20, 20));
                     //Only zoom  if its a zoom in
                     var b = _this.transformProjBounds(_this.map.getExtent());
-                    if(Math.abs(b.top-b.bottom)>offset) {
-                        _this.map.zoomToExtent(bounds); 
+                    if (Math.abs(b.top - b.bottom) > offset) {
+                        _this.map.zoomToExtent(bounds);
                     } else {
                         _this.setCenter(createLonLat(lon, lat));
                     }

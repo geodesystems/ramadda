@@ -74,7 +74,7 @@ function RamaddaBaseTextDisplay(displayManager, id, type, properties) {
             var maxLength = parseInt(this.getProperty("maxLength", 100));
             var stopWords = this.getProperty("stopWords");
             if (stopWords) {
-                if(stopWords=="default") {
+                if (stopWords == "default") {
                     stopWords = Utils.stopWords;
                 } else {
                     stopWords = stopWords.split(",");
@@ -87,10 +87,10 @@ function RamaddaBaseTextDisplay(displayManager, id, type, properties) {
             var tokenize = this.getProperty("tokenize", false);
             var lowerCase = this.getProperty("lowerCase", false);
             var removeArticles = this.getProperty("removeArticles", false);
-            if(cnt) {
-                cnt.count=0;
-                cnt.total=0;
-                cnt.lengths={};
+            if (cnt) {
+                cnt.count = 0;
+                cnt.total = 0;
+                cnt.lengths = {};
             }
             for (var rowIdx = 0; rowIdx < records.length; rowIdx++) {
                 var row = this.getDataValues(records[rowIdx]);
@@ -116,11 +116,11 @@ function RamaddaBaseTextDisplay(displayManager, id, type, properties) {
                     for (var valueIdx = 0; valueIdx < values.length; valueIdx++) {
                         var value = values[valueIdx];
                         var _value = value.toLowerCase();
-                        if(cnt) {
+                        if (cnt) {
                             cnt.count++;
-                            cnt.total+=value.length;
-                            if(!Utils.isDefined(cnt.lengths[value.length]))
-                                cnt.lengths[value.length]=0;
+                            cnt.total += value.length;
+                            if (!Utils.isDefined(cnt.lengths[value.length]))
+                                cnt.lengths[value.length] = 0;
                             cnt.lengths[value.length]++;
                         }
 
@@ -197,7 +197,7 @@ function RamaddaWordcloudDisplay(displayManager, id, properties) {
                     }
                 };
 
-                var counts=[];
+                var counts = [];
                 for (word in fi.counts) {
                     var count = fi.counts[word];
                     counts.push({
@@ -206,9 +206,9 @@ function RamaddaWordcloudDisplay(displayManager, id, properties) {
                     });
                 }
                 counts.sort(function(a, b) {
-                        if(a.count<b.count) return  -1;
-                        if(a.count>b.count) return  1;
-                        return 0;
+                    if (a.count < b.count) return -1;
+                    if (a.count > b.count) return 1;
+                    return 0;
                 });
                 if (minCount > 0) {
                     var tmp = [];
@@ -227,8 +227,8 @@ function RamaddaWordcloudDisplay(displayManager, id, properties) {
                     counts = tmp;
                 }
 
-                for (var wordIdx=0;wordIdx<counts.length;wordIdx++) {
-                    var word=counts[wordIdx];
+                for (var wordIdx = 0; wordIdx < counts.length; wordIdx++) {
+                    var word = counts[wordIdx];
                     var obj1 = {
                         weight: word.count,
                         handlers: handlers,
@@ -304,12 +304,12 @@ function RamaddaWordcloudDisplay(displayManager, id, properties) {
             if (showRecords) {
                 html += "<br>";
             }
-            var re= new RegExp("(\\b"+word+"\\b)",'i');
+            var re = new RegExp("(\\b" + word + "\\b)", 'i');
             for (var rowIdx = 0; rowIdx < records.length; rowIdx++) {
                 var row = this.getDataValues(records[rowIdx]);
-                var value = ""+row[field.getIndex()];
-                if(tokenize) {
-                    if(!value.match(re)) {
+                var value = "" + row[field.getIndex()];
+                if (tokenize) {
+                    if (!value.match(re)) {
                         continue;
                     }
                 } else {
@@ -323,8 +323,8 @@ function RamaddaWordcloudDisplay(displayManager, id, properties) {
                     var f = fields[col];
                     if (tableFields && !tableFields[f.getId()]) continue;
                     var v = row[f.getIndex()];
-                    if(tokenize) {
-                        v = v.replace(re,"<span style=background:yellow;>$1</span>");
+                    if (tokenize) {
+                        v = v.replace(re, "<span style=background:yellow;>$1</span>");
                     }
                     if (showRecords) {
                         html += HtmlUtil.b(f.getLabel()) + ": " + v + "</br>";
@@ -339,14 +339,16 @@ function RamaddaWordcloudDisplay(displayManager, id, properties) {
             if (showRecords) {
                 this.writeHtml(ID_DISPLAY_BOTTOM, html);
             } else {
-                var prefix="";
-                if(!tokenize) {
+                var prefix = "";
+                if (!tokenize) {
                     prefix = field.getLabel() + "=" + word
                 }
                 this.writeHtml(ID_DISPLAY_BOTTOM, prefix + HtmlUtils.div(["id", this.getDomId("table"), "style", "height:300px"], ""));
                 var dataTable = google.visualization.arrayToDataTable(data);
                 this.chart = new google.visualization.Table(document.getElementById(this.getDomId("table")));
-                this.chart.draw(dataTable, {allowHtml:true});
+                this.chart.draw(dataTable, {
+                    allowHtml: true
+                });
             }
         }
     });
@@ -393,9 +395,9 @@ function RamaddaTextstatsDisplay(displayManager, id, properties) {
                     });
                 }
                 counts.sort(function(a, b) {
-                        if(a.count<b.count) return  -1;
-                        if(a.count>b.count) return  1;
-                        return 0;
+                    if (a.count < b.count) return -1;
+                    if (a.count > b.count) return 1;
+                    return 0;
                 });
                 if (minCount > 0) {
                     var tmp = [];
@@ -423,45 +425,48 @@ function RamaddaTextstatsDisplay(displayManager, id, properties) {
                 }
 
                 var tmp = [];
-                for(a in cnt.lengths) {
-                    tmp.push({length:parseInt(a),count:cnt.lengths[a]});
+                for (a in cnt.lengths) {
+                    tmp.push({
+                        length: parseInt(a),
+                        count: cnt.lengths[a]
+                    });
                 }
                 tmp.sort(function(a, b) {
-                        if(a.length<b.length) return -1;
-                        if(a.length>b.length) return 1;
-                        return 0;
-                    });
+                    if (a.length < b.length) return -1;
+                    if (a.length > b.length) return 1;
+                    return 0;
+                });
                 var min = 0;
                 var max = 0;
-                for(var i=0;i<tmp.length;i++) {
-                    max = (i==0?tmp[i].count:Math.max(max,tmp[i].count));
-                    min = (i==0?tmp[i].count:Math.min(min,tmp[i].count));
+                for (var i = 0; i < tmp.length; i++) {
+                    max = (i == 0 ? tmp[i].count : Math.max(max, tmp[i].count));
+                    min = (i == 0 ? tmp[i].count : Math.min(min, tmp[i].count));
                 }
                 if (this.getProperty("showFieldLabel", true))
                     html += "<b>" + fi.field.getLabel() + "</b><br>";
                 var td1Width = "20%";
                 var td2Width = "10%";
-                if(this.getProperty("showSummary",true)) {
-                    html += HtmlUtils.openTag("table",["class","nowrap ramadda-table","id",this.getDomId("table_summary")]);
-                    html += HtmlUtils.openTag("thead",[]);
-                    html += HtmlUtils.tr([], HtmlUtils.th(["width",td1Width], "Summary") + HtmlUtils.th([],"&nbsp;"));
+                if (this.getProperty("showSummary", true)) {
+                    html += HtmlUtils.openTag("table", ["class", "nowrap ramadda-table", "id", this.getDomId("table_summary")]);
+                    html += HtmlUtils.openTag("thead", []);
+                    html += HtmlUtils.tr([], HtmlUtils.th(["width", td1Width], "Summary") + HtmlUtils.th([], "&nbsp;"));
                     html += HtmlUtils.closeTag("thead");
-                    html += HtmlUtils.openTag("tbody",[]);
-                    html += HtmlUtils.tr([], HtmlUtils.td(["align","right"], "Total words:") + HtmlUtils.td([], cnt.count));
-                    html += HtmlUtils.tr([], HtmlUtils.td(["align","right"], "Average word length:") + HtmlUtils.td([], Math.round(cnt.total/cnt.count)));
-                    html+= HtmlUtils.closeTag("tbody");
+                    html += HtmlUtils.openTag("tbody", []);
+                    html += HtmlUtils.tr([], HtmlUtils.td(["align", "right"], "Total words:") + HtmlUtils.td([], cnt.count));
+                    html += HtmlUtils.tr([], HtmlUtils.td(["align", "right"], "Average word length:") + HtmlUtils.td([], Math.round(cnt.total / cnt.count)));
+                    html += HtmlUtils.closeTag("tbody");
 
-                    html+= HtmlUtils.closeTag("table");
-                    html+="<br>"
+                    html += HtmlUtils.closeTag("table");
+                    html += "<br>"
                 }
-                if(this.getProperty("showCounts",true)) {
-                    html+= HtmlUtils.openTag("table",["class","row-border nowrap ramadda-table","id",this.getDomId("table_counts")]);
-                    html+= HtmlUtils.openTag("thead",[]);
-                    html += HtmlUtils.tr([], HtmlUtils.th(["width", td1Width], "Word Length") + HtmlUtils.th(["width", td2Width],"Count") + (showBars?HtmlUtils.th([],""):""));
-                    html+= HtmlUtils.closeTag("thead");
-                    html+= HtmlUtils.openTag("tbody",[]);
-                    for(var i=0;i<tmp.length;i++) {
-                        var row = HtmlUtils.td([], tmp[i].length) + HtmlUtils.td([],tmp[i].count);
+                if (this.getProperty("showCounts", true)) {
+                    html += HtmlUtils.openTag("table", ["class", "row-border nowrap ramadda-table", "id", this.getDomId("table_counts")]);
+                    html += HtmlUtils.openTag("thead", []);
+                    html += HtmlUtils.tr([], HtmlUtils.th(["width", td1Width], "Word Length") + HtmlUtils.th(["width", td2Width], "Count") + (showBars ? HtmlUtils.th([], "") : ""));
+                    html += HtmlUtils.closeTag("thead");
+                    html += HtmlUtils.openTag("tbody", []);
+                    for (var i = 0; i < tmp.length; i++) {
+                        var row = HtmlUtils.td([], tmp[i].length) + HtmlUtils.td([], tmp[i].count);
                         if (showBars) {
                             var wpercent = (tmp[i].count - min) / max;
                             var width = 2 + wpercent * barWidth;
@@ -471,16 +476,16 @@ function RamaddaTextstatsDisplay(displayManager, id, properties) {
                         }
                         html += HtmlUtils.tr([], row);
                     }
-                    html+= HtmlUtils.closeTag("tbody");
-                    html+= HtmlUtils.closeTag("table");
-                    html+="<br>"
+                    html += HtmlUtils.closeTag("tbody");
+                    html += HtmlUtils.closeTag("table");
+                    html += "<br>"
                 }
-                if(this.getProperty("showFrequency",true)) {
-                    html += HtmlUtils.openTag("table",["class","row-border ramadda-table","id",this.getDomId("table_frequency")]);
-                    html += HtmlUtils.openTag("thead",[]);
-                    html += HtmlUtils.tr([], HtmlUtils.th(["width", td1Width], "Word") + HtmlUtils.th(["width", td2Width],"Frequency") + (showBars?HtmlUtils.th([],""):""));
+                if (this.getProperty("showFrequency", true)) {
+                    html += HtmlUtils.openTag("table", ["class", "row-border ramadda-table", "id", this.getDomId("table_frequency")]);
+                    html += HtmlUtils.openTag("thead", []);
+                    html += HtmlUtils.tr([], HtmlUtils.th(["width", td1Width], "Word") + HtmlUtils.th(["width", td2Width], "Frequency") + (showBars ? HtmlUtils.th([], "") : ""));
                     html += HtmlUtils.closeTag("thead");
-                    html+= HtmlUtils.openTag("tbody",[]);
+                    html += HtmlUtils.openTag("tbody", []);
                     var min = 0;
                     var max = 0;
                     if (counts.length > 0) {
@@ -491,7 +496,7 @@ function RamaddaTextstatsDisplay(displayManager, id, properties) {
                     for (var i = 0; i < counts.length; i++) {
                         totalWords += counts[i].count;
                     }
-                    for (var i =  counts.length-1;i>=0; i--) {
+                    for (var i = counts.length - 1; i >= 0; i--) {
                         var percent = Math.round(10000 * (counts[i].count / totalWords)) / 100;
                         var row = HtmlUtils.td([], counts[i].word + "&nbsp;:&nbsp;") +
                             HtmlUtils.td([], counts[i].count + "&nbsp;&nbsp;(" + percent + "%)&nbsp;:&nbsp;");
@@ -504,21 +509,26 @@ function RamaddaTextstatsDisplay(displayManager, id, properties) {
                         }
                         html += HtmlUtils.tr([], row);
                     }
-                    html+= HtmlUtils.closeTag("tbody");
-                    html+= HtmlUtils.closeTag("table");
+                    html += HtmlUtils.closeTag("tbody");
+                    html += HtmlUtils.closeTag("table");
                 }
             }
             this.writeHtml(ID_DISPLAY_CONTENTS, html);
             var tableHeight = this.getProperty("tableHeight", "200");
-            
-            if(this.getProperty("showSummary",true)) 
-                HtmlUtils.formatTable("#"+this.getDomId("table_summary"),{scrollY:this.getProperty("tableSummaryHeight", tableHeight)});
-            if(this.getProperty("showCounts",true)) 
-                HtmlUtils.formatTable("#"+this.getDomId("table_counts"),{scrollY:this.getProperty("tableCountsHeight", tableHeight)});
-            if(this.getProperty("showFrequency",true)) 
-                HtmlUtils.formatTable("#"+this.getDomId("table_frequency"),{scrollY:this.getProperty("tableFrequenecyHeight", tableHeight),
-                            searching:this.getProperty("showSearch",true)
-});
+
+            if (this.getProperty("showSummary", true))
+                HtmlUtils.formatTable("#" + this.getDomId("table_summary"), {
+                    scrollY: this.getProperty("tableSummaryHeight", tableHeight)
+                });
+            if (this.getProperty("showCounts", true))
+                HtmlUtils.formatTable("#" + this.getDomId("table_counts"), {
+                    scrollY: this.getProperty("tableCountsHeight", tableHeight)
+                });
+            if (this.getProperty("showFrequency", true))
+                HtmlUtils.formatTable("#" + this.getDomId("table_frequency"), {
+                    scrollY: this.getProperty("tableFrequenecyHeight", tableHeight),
+                    searching: this.getProperty("showSearch", true)
+                });
         },
     });
 }
@@ -551,7 +561,7 @@ function RamaddaTextanalysisDisplay(displayManager, id, properties) {
                 _this.updateUIInnerInner();
             };
             setTimeout(func, 10);
-         },
+        },
         updateUIInnerInner: function() {
             let records = this.filterData();
             var allFields = this.getData().getRecordFields();
@@ -578,95 +588,97 @@ function RamaddaTextanalysisDisplay(displayManager, id, properties) {
             var nlp = window.nlp(corpus);
             var cols = [];
             if (this.getProperty("showPeople", false)) {
-                cols.push(this.printList("People",nlp.people().out('topk')));
+                cols.push(this.printList("People", nlp.people().out('topk')));
             }
             if (this.getProperty("showPlaces", false)) {
-                cols.push(this.printList("Places",nlp.places().out('topk')));
+                cols.push(this.printList("Places", nlp.places().out('topk')));
             }
             if (this.getProperty("showOrganizations", false)) {
-                cols.push(this.printList("Organizations",nlp.organizations().out('topk')));
+                cols.push(this.printList("Organizations", nlp.organizations().out('topk')));
             }
             if (this.getProperty("showTopics", false)) {
-                cols.push(this.printList("Topics",nlp.topics().out('topk')));
+                cols.push(this.printList("Topics", nlp.topics().out('topk')));
             }
             if (this.getProperty("showNouns", false)) {
-                cols.push(this.printList("Nouns",nlp.nouns().out('topk')));
+                cols.push(this.printList("Nouns", nlp.nouns().out('topk')));
             }
             if (this.getProperty("showVerbs", false)) {
-                cols.push(this.printList("Verbs",nlp.verbs().out('topk')));
+                cols.push(this.printList("Verbs", nlp.verbs().out('topk')));
             }
             if (this.getProperty("showAdverbs", false)) {
-                cols.push(this.printList("Adverbs",nlp.adverbs().out('topk')));
+                cols.push(this.printList("Adverbs", nlp.adverbs().out('topk')));
             }
             if (this.getProperty("showAdjectives", false)) {
-                cols.push(this.printList("Adjectives",nlp.adjectives().out('topk')));
+                cols.push(this.printList("Adjectives", nlp.adjectives().out('topk')));
             }
             if (this.getProperty("showClauses", false)) {
-                cols.push(this.printList("Clauses",nlp.clauses().out('topk')));
+                cols.push(this.printList("Clauses", nlp.clauses().out('topk')));
             }
             if (this.getProperty("showContractions", false)) {
-                cols.push(this.printList("Contractions",nlp.contractions().out('topk')));
+                cols.push(this.printList("Contractions", nlp.contractions().out('topk')));
             }
             if (this.getProperty("showPhoneNumbers", false)) {
-                cols.push(this.printList("Phone Numbers",nlp.phoneNumbers().out('topk')));
+                cols.push(this.printList("Phone Numbers", nlp.phoneNumbers().out('topk')));
             }
             if (this.getProperty("showValues", false)) {
-                cols.push(this.printList("Values",nlp.values().out('topk')));
+                cols.push(this.printList("Values", nlp.values().out('topk')));
             }
             if (this.getProperty("showAcronyms", false)) {
-                cols.push(this.printList("Acronyms",nlp.acronyms().out('topk')));
+                cols.push(this.printList("Acronyms", nlp.acronyms().out('topk')));
             }
             if (this.getProperty("showNGrams", false)) {
-                cols.push(this.printList("NGrams",nlp.ngrams().out('topk')));
+                cols.push(this.printList("NGrams", nlp.ngrams().out('topk')));
             }
             if (this.getProperty("showDates", false)) {
-                cols.push(this.printList("Dates",nlp.dates().out('topk')));
+                cols.push(this.printList("Dates", nlp.dates().out('topk')));
             }
             if (this.getProperty("showQuotations", false)) {
-                cols.push(this.printList("Quotations",nlp.quotations().out('topk')));
+                cols.push(this.printList("Quotations", nlp.quotations().out('topk')));
             }
             if (this.getProperty("showUrls", false)) {
-                cols.push(this.printList("URLs",nlp.urls().out('topk')));
+                cols.push(this.printList("URLs", nlp.urls().out('topk')));
             }
             if (this.getProperty("showStatements", false)) {
-                cols.push(this.printList("Statements",nlp.statements().out('topk')));
+                cols.push(this.printList("Statements", nlp.statements().out('topk')));
             }
             if (this.getProperty("showTerms", false)) {
-                cols.push(this.printList("Terms",nlp.terms().out('topk')));
+                cols.push(this.printList("Terms", nlp.terms().out('topk')));
             }
             if (this.getProperty("showPossessives", false)) {
-                cols.push(this.printList("Possessives",nlp.possessives().out('topk')));
+                cols.push(this.printList("Possessives", nlp.possessives().out('topk')));
             }
-            if(cols.length==0) {
+            if (cols.length == 0) {
                 this.writeHtml(ID_DISPLAY_CONTENTS, this.getMessage("No text types specified"));
                 return;
             }
             var height = this.getProperty("height", "400");
-            var html = HtmlUtils.openTag("div",["id",this.getDomId("tables")]);
+            var html = HtmlUtils.openTag("div", ["id", this.getDomId("tables")]);
 
-            for (var i = 0; i < cols.length; i+=3) {
+            for (var i = 0; i < cols.length; i += 3) {
                 var c1 = cols[i];
-                var c2 = i+1<cols.length?cols[i+1]:null;
-                var c3 = i+2<cols.length?cols[i+2]:null;
-                var width = c2?(c3?"33%":"50%"):"100%";
+                var c2 = i + 1 < cols.length ? cols[i + 1] : null;
+                var c3 = i + 2 < cols.length ? cols[i + 2] : null;
+                var width = c2 ? (c3 ? "33%" : "50%") : "100%";
                 var style = "padding:5px";
                 var row = "";
-                row += HtmlUtils.td(["width", width],HtmlUtils.div(["style",style],c1));
-                if(c2)
-                    row += HtmlUtils.td(["width", width],HtmlUtils.div(["style",style],c2));
-                if(c3)
-                    row += HtmlUtils.td(["width", width],HtmlUtils.div(["style",style],c3));
-                html += HtmlUtils.tag("table",["width","100%"],HtmlUtils.tr(row));
+                row += HtmlUtils.td(["width", width], HtmlUtils.div(["style", style], c1));
+                if (c2)
+                    row += HtmlUtils.td(["width", width], HtmlUtils.div(["style", style], c2));
+                if (c3)
+                    row += HtmlUtils.td(["width", width], HtmlUtils.div(["style", style], c3));
+                html += HtmlUtils.tag("table", ["width", "100%"], HtmlUtils.tr(row));
             }
-            html+= HtmlUtils.closeTag("div");
+            html += HtmlUtils.closeTag("div");
             this.writeHtml(ID_DISPLAY_CONTENTS, html);
-            HtmlUtils.formatTable("#"+this.getDomId("tables") +" .ramadda-table",{scrollY:this.getProperty("tableHeight", "200")});
+            HtmlUtils.formatTable("#" + this.getDomId("tables") + " .ramadda-table", {
+                scrollY: this.getProperty("tableHeight", "200")
+            });
         },
-        printList: function(title,l) {
+        printList: function(title, l) {
             var maxWords = parseInt(this.getProperty("maxWords", 10));
             var minCount = parseInt(this.getProperty("minCount", 0));
-            var table = HtmlUtils.openTag("table",["width","100%","class","stripe hover ramadda-table"]) +HtmlUtils.openTag("thead",[]);
-            table += HtmlUtils.tr([], HtmlUtils.th([],title) + HtmlUtils.th([],"&nbsp;"));
+            var table = HtmlUtils.openTag("table", ["width", "100%", "class", "stripe hover ramadda-table"]) + HtmlUtils.openTag("thead", []);
+            table += HtmlUtils.tr([], HtmlUtils.th([], title) + HtmlUtils.th([], "&nbsp;"));
             table += HtmlUtils.closeTag("thead");
             table += HtmlUtils.openTag("tbody");
             var cnt = 0;
@@ -677,7 +689,7 @@ function RamaddaTextanalysisDisplay(displayManager, id, properties) {
                 table += HtmlUtils.tr([], row);
                 if (cnt++ > maxWords) break;
             }
-            table+= HtmlUtils.closeTag("tbody") + HtmlUtils.closeTag("table");
+            table += HtmlUtils.closeTag("tbody") + HtmlUtils.closeTag("table");
             return table;
         }
     });
@@ -700,25 +712,25 @@ function RamaddaTextrawDisplay(displayManager, id, properties) {
             }
 
             var pattern = this.getProperty("pattern");
-            if(pattern && pattern.length==0) pattern=null;
-            this.writeHtml(ID_TOP_RIGHT,HtmlUtils.input("pattern", (pattern?pattern:""),["placeholder", "Search text", "id" , this.getDomId("search")]));
-            let  _this = this;
+            if (pattern && pattern.length == 0) pattern = null;
+            this.writeHtml(ID_TOP_RIGHT, HtmlUtils.input("pattern", (pattern ? pattern : ""), ["placeholder", "Search text", "id", this.getDomId("search")]));
+            let _this = this;
             this.jq("search").keypress(function(event) {
-                    if (event.which == 13) {
-                        _this.setProperty("pattern", $(this).val());
-                        _this.updateUI();
-                    }
-                });
-            this.writeHtml(ID_DISPLAY_CONTENTS, HtmlUtils.div(["id",this.getDomId(ID_TEXT)],""));
+                if (event.which == 13) {
+                    _this.setProperty("pattern", $(this).val());
+                    _this.updateUI();
+                }
+            });
+            this.writeHtml(ID_DISPLAY_CONTENTS, HtmlUtils.div(["id", this.getDomId(ID_TEXT)], ""));
             this.showText();
-            },
-         showText: function() {
-                let records = this.filterData();
-                if (!records) {
+        },
+        showText: function() {
+            let records = this.filterData();
+            if (!records) {
                 return null;
             }
             var pattern = this.getProperty("pattern");
-            if(pattern && pattern.length==0) pattern=null;
+            if (pattern && pattern.length == 0) pattern = null;
             var asHtml = this.getProperty("asHtml", true);
             var addLineNumbers = this.getProperty("addLineNumbers", true);
             if (addLineNumbers) asHtml = true;
@@ -744,8 +756,8 @@ function RamaddaTextrawDisplay(displayManager, id, properties) {
             var lineCnt = 0;
             var displayedLineCnt = 0;
             var re;
-            if(pattern) {
-                re= new RegExp("("+pattern+")");
+            if (pattern) {
+                re = new RegExp("(" + pattern + ")");
             }
 
             for (var rowIdx = 0; rowIdx < records.length; rowIdx++) {
@@ -760,13 +772,13 @@ function RamaddaTextrawDisplay(displayManager, id, properties) {
                 if (!includeEmptyLines && line.length == 0) continue;
                 line = line.replace(/</g, "&lt;").replace(/>/g, "&gt;");
                 lineCnt++;
-                if(re) {
-                    if(!line.toLowerCase().match(re)) continue;
-                    line = line.replace(re,"<span style=background:yellow;>$1</span>");
+                if (re) {
+                    if (!line.toLowerCase().match(re)) continue;
+                    line = line.replace(re, "<span style=background:yellow;>$1</span>");
                 }
                 displayedLineCnt++;
 
-                if(displayedLineCnt>maxLines) break;
+                if (displayedLineCnt > maxLines) break;
 
                 if (addLineNumbers) {
                     corpus += HtmlUtils.tr(["valign", "top"], HtmlUtils.td(["width", "10px"], "<a name=line_" + lineCnt + "></a>" +

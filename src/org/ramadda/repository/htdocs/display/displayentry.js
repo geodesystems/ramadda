@@ -350,11 +350,11 @@ function RamaddaSearcher(displayManager, id, type, properties) {
             var nextPrev = [];
             var lessMore = [];
             if (this.searchSettings.skip > 0) {
-                nextPrev.push(HtmlUtils.onClick(this.getGet() + ".loadPrevUrl();", HtmlUtils.image(ramaddaBaseUrl + "/icons/arrow_left.png", [ ATTR_TITLE, "Previous", "border", "0"]), [ATTR_CLASS, "display-link"]));
+                nextPrev.push(HtmlUtils.onClick(this.getGet() + ".loadPrevUrl();", HtmlUtils.image(ramaddaBaseUrl + "/icons/arrow_left.png", [ATTR_TITLE, "Previous", "border", "0"]), [ATTR_CLASS, "display-link"]));
             }
             var addMore = false;
             if (entries.length == this.searchSettings.getMax()) {
-                nextPrev.push(HtmlUtils.onClick(this.getGet() + ".loadNextUrl();", HtmlUtils.image(ramaddaBaseUrl + "/icons/arrow_right.png", [ ATTR_TITLE, "Next", "border", "0"]), [ATTR_CLASS, "display-link"]));
+                nextPrev.push(HtmlUtils.onClick(this.getGet() + ".loadNextUrl();", HtmlUtils.image(ramaddaBaseUrl + "/icons/arrow_right.png", [ATTR_TITLE, "Next", "border", "0"]), [ATTR_CLASS, "display-link"]));
                 addMore = true;
             }
 
@@ -465,7 +465,7 @@ function RamaddaSearcher(displayManager, id, type, properties) {
             }
 
             //            this.showMessage(msg, HtmlUtils.div([ATTR_STYLE, "margin:20px;"], this.getWaitImage()));
-            this.showMessage(this.getWaitImage() +" " + msg, HtmlUtils.div([ATTR_STYLE, "margin:20px;"], ""));
+            this.showMessage(this.getWaitImage() + " " + msg, HtmlUtils.div([ATTR_STYLE, "margin:20px;"], ""));
             this.hideEntryDetails();
         },
         showMessage: function(title, inner) {
@@ -511,7 +511,7 @@ function RamaddaSearcher(displayManager, id, type, properties) {
 
             var eg = " search text";
             if (this.eg) {
-                eg = " " +this.eg;
+                eg = " " + this.eg;
             }
 
 
@@ -2261,7 +2261,7 @@ function RamaddaEntrydisplayDisplay(displayManager, id, properties) {
         selectedEntry: null,
         initDisplay: function() {
             this.createUI();
-              var title = this.title;
+            var title = this.title;
             if (this.sourceEntry != null) {
                 this.addEntryHtml(this.sourceEntry);
                 var url = this.sourceEntry.getEntryUrl();
@@ -2307,9 +2307,9 @@ function RamaddaEntrydisplayDisplay(displayManager, id, properties) {
                 showHeader: false
             });
             var height = this.getProperty("height", "400px");
-            if(!height.endsWith("px")) height+="px";
-            this.setContents(HtmlUtils.div(["class","display-entry-description","style","height:" + height+";"], 
-                                           html));
+            if (!height.endsWith("px")) height += "px";
+            this.setContents(HtmlUtils.div(["class", "display-entry-description", "style", "height:" + height + ";"],
+                html));
             this.entryHtmlHasBeenDisplayed(entry);
         },
     });

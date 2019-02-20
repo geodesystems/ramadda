@@ -69,7 +69,7 @@ addGlobalDisplayType({
 
 
 function RamaddaPlotlyDisplay(displayManager, id, type, properties) {
-    let  SUPER = new RamaddaFieldsDisplay(displayManager, id, type, properties);
+    let SUPER = new RamaddaFieldsDisplay(displayManager, id, type, properties);
     RamaddaUtil.inherit(this, SUPER);
     RamaddaUtil.defineMembers(this, {
         needsData: function() {
@@ -584,7 +584,7 @@ function RamaddaDotplotDisplay(displayManager, id, properties) {
         width: "600px",
         height: "400px",
     });
-    let SUPER =  new RamaddaPlotlyDisplay(displayManager, id, DISPLAY_PLOTLY_DOTPLOT, properties);
+    let SUPER = new RamaddaPlotlyDisplay(displayManager, id, DISPLAY_PLOTLY_DOTPLOT, properties);
     RamaddaUtil.inherit(this, SUPER);
 
 
@@ -612,7 +612,7 @@ function RamaddaDotplotDisplay(displayManager, id, properties) {
                 labelName = stringField.getLabel();
             }
             var colors = this.getColorTable(true);
-            if(!colors)
+            if (!colors)
                 colors = ['rgba(156, 165, 196, 0.95)', 'rgba(204,204,204,0.95)', 'rgba(255,255,255,0.85)', 'rgba(150,150,150,0.95)']
             var plotData = [];
             for (i in fields) {

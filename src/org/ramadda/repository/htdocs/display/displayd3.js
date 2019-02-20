@@ -1,4 +1,3 @@
-
 /**
 Copyright 2008-2019 Geode Systems LLC
 */
@@ -569,7 +568,7 @@ function RamaddaGliderCrossSectionDisplay(displayManager, id, properties) {
 
 
 function RamaddaVennDisplay(displayManager, id, properties) {
-    var ID_VENN= "venn";
+    var ID_VENN = "venn";
     let SUPER = new RamaddaFieldsDisplay(displayManager, id, DISPLAY_VENN, properties);
     RamaddaUtil.inherit(this, SUPER);
     addRamaddaDisplay(this);
@@ -578,10 +577,10 @@ function RamaddaVennDisplay(displayManager, id, properties) {
             return "";
         },
         checkLayout: function() {
-                this.updateUIInner();
-            },
+            this.updateUIInner();
+        },
         updateUI: function() {
-            var includes =  "<script src='" + ramaddaBaseUrl + "/lib/venn.js'></script>";
+            var includes = "<script src='" + ramaddaBaseUrl + "/lib/venn.js'></script>";
             this.writeHtml(ID_DISPLAY_TOP, includes);
             let _this = this;
             var func = function() {
@@ -616,19 +615,19 @@ function RamaddaVennDisplay(displayManager, id, properties) {
             var setCnt = 0;
             for (var rowIdx = 0; rowIdx < records.length; rowIdx++) {
                 var row = this.getDataValues(records[rowIdx]);
-                var keys  =[];
-                var key ="";
+                var keys = [];
+                var key = "";
                 for (var fieldIdx = 0; fieldIdx < strings.length; fieldIdx++) {
                     var field = strings[fieldIdx];
                     var value = row[field.getIndex()];
-                    var setKey = field.getId()+"--" + value;
+                    var setKey = field.getId() + "--" + value;
                     keys.push(setKey);
-                    key+="--" + setKey;
+                    key += "--" + setKey;
                     if (!Utils.isDefined(setInfos[setKey])) {
                         setInfos[setKey] = {
-                            count:0,
-                            setIds:[setCnt],
-                            label:value,
+                            count: 0,
+                            setIds: [setCnt],
+                            label: value,
                         };
                         setCnt++;
                     }
@@ -636,23 +635,26 @@ function RamaddaVennDisplay(displayManager, id, properties) {
                 }
                 var ids = [];
                 if (!Utils.isDefined(setInfos[key])) {
-                    for(var i=0;i<keys.length;i++) {
+                    for (var i = 0; i < keys.length; i++) {
                         ids.push(setInfos[keys[i]].setIds[0]);
                     }
                     setInfos[key] = {
-                        count:0,
-                        setIds:ids,
-                        label:null,
+                        count: 0,
+                        setIds: ids,
+                        label: null,
                     };
                 }
                 setInfos[key].count++;
             }
 
             var sets = [];
-            for(var a in setInfos) {
+            for (var a in setInfos) {
                 var setInfo = setInfos[a];
-                var obj = {sets : setInfo.setIds,  size : setInfo.count};
-                if(setInfo.label)
+                var obj = {
+                    sets: setInfo.setIds,
+                    size: setInfo.count
+                };
+                if (setInfo.label)
                     obj.label = setInfo.label;
                 sets.push(obj);
             }
@@ -660,38 +662,38 @@ function RamaddaVennDisplay(displayManager, id, properties) {
             var chart = venn.VennDiagram()
                 .width(600)
                 .height(400);
-            var id = "#"+this.getDomId(ID_VENN);
-            var strokeColors = this.getColorTable(true,"strokeColors","nice");
-            var fillColors = this.getColorTable(true,"fillColors","nice");
-            var textColors = this.getColorTable(true,"textColors");
-            if(!textColors)
+            var id = "#" + this.getDomId(ID_VENN);
+            var strokeColors = this.getColorTable(true, "strokeColors", "nice");
+            var fillColors = this.getColorTable(true, "fillColors", "nice");
+            var textColors = this.getColorTable(true, "textColors");
+            if (!textColors)
                 textColors = strokeColors;
             d3.select(id).datum(sets).call(chart);
-            d3.selectAll(id+" .venn-circle path")
-                .style("fill-opacity", parseFloat(this.getProperty("fillOpacity",0.5)))
-                .style("stroke-width", parseInt(this.getProperty("strokeWidth",1)))
-                .style("stroke-opacity", parseFloat(this.getProperty("strokeOpacity",0.5)))
-                .style("stroke", function(d,i) { 
-                        return i<strokeColors.length?strokeColors[i]:strokeColors[i%strokeColors.length]; 
-                    })
-                .style("fill", function(d,i) {
-                        return i<fillColors.length?fillColors[i]:fillColors[i%fillColors.length]; 
-                    })
-            d3.selectAll(id+" .venn-circle text")
-                .style("fill", function(d,i) {
-                        return i<textColors.length?textColors[i]:textColors[i%textColors.length]; 
-                    })
+            d3.selectAll(id + " .venn-circle path")
+                .style("fill-opacity", parseFloat(this.getProperty("fillOpacity", 0.5)))
+                .style("stroke-width", parseInt(this.getProperty("strokeWidth", 1)))
+                .style("stroke-opacity", parseFloat(this.getProperty("strokeOpacity", 0.5)))
+                .style("stroke", function(d, i) {
+                    return i < strokeColors.length ? strokeColors[i] : strokeColors[i % strokeColors.length];
+                })
+                .style("fill", function(d, i) {
+                    return i < fillColors.length ? fillColors[i] : fillColors[i % fillColors.length];
+                })
+            d3.selectAll(id + " .venn-circle text")
+                .style("fill", function(d, i) {
+                    return i < textColors.length ? textColors[i] : textColors[i % textColors.length];
+                })
                 .style("font-size", this.getProperty("fontSize", "16px"))
-                .style("font-weight", this.getProperty("fontWeight","100"));
+                .style("font-weight", this.getProperty("fontWeight", "100"));
 
-            }
-        });
+        }
+    });
 }
 
 
 
 function RamaddaChernoffDisplay(displayManager, id, properties) {
-    var ID_VENN= "venn";
+    var ID_VENN = "venn";
     let SUPER = new RamaddaFieldsDisplay(displayManager, id, DISPLAY_VENN, properties);
     RamaddaUtil.inherit(this, SUPER);
     addRamaddaDisplay(this);
@@ -700,24 +702,26 @@ function RamaddaChernoffDisplay(displayManager, id, properties) {
             return "";
         },
         checkLayout: function() {
-                this.updateUIInner();
-            },
-        timeout:100,
+            this.updateUIInner();
+        },
+        timeout: 100,
         written: false,
         updateUI: function() {
-            if(!this.written) {
-               this.written = true;
-               var includes =  "<script src='" + ramaddaBaseUrl + "/lib/chernoff.js'></script>";
-               this.writeHtml(ID_DISPLAY_TOP, includes);
+            if (!this.written) {
+                this.written = true;
+                var includes = "<script src='" + ramaddaBaseUrl + "/lib/chernoff.js'></script>";
+                this.writeHtml(ID_DISPLAY_TOP, includes);
             }
             this.updateUIInner();
         },
         updateUIInner: function() {
             let _this = this;
-            if(!Utils.isDefined(d3.chernoff)) {
+            if (!Utils.isDefined(d3.chernoff)) {
                 console.log("not there");
-                this.timeout =this.timeout*2;
-                var func = function() {_this.updateUIInner();};
+                this.timeout = this.timeout * 2;
+                var func = function() {
+                    _this.updateUIInner();
+                };
                 setTimeout(func, this.timeout);
                 return;
             }
@@ -728,7 +732,7 @@ function RamaddaChernoffDisplay(displayManager, id, properties) {
             var allFields = this.getData().getRecordFields();
             var fields = this.getSelectedFields(allFields);
             var numericFields = this.getFieldsOfType(fields, "numeric");
-            if(numericFields.length==0) {
+            if (numericFields.length == 0) {
                 this.displayError("No numeric fields specified");
                 return;
             }
@@ -736,10 +740,10 @@ function RamaddaChernoffDisplay(displayManager, id, properties) {
                 fields = allFields;
             var string = this.getFieldOfType(fields, "string");
             var legend = "";
-            var colorField = this.getFieldById(allFields,this.getProperty("colorBy"));
+            var colorField = this.getFieldById(allFields, this.getProperty("colorBy"));
             var colorscale;
-            if(colorField) {
-                var colors = this.getColorTable(true,null,"blue_white_red");
+            if (colorField) {
+                var colors = this.getColorTable(true, null, "blue_white_red");
                 var colorValues = this.getColumnValues(records, colorField);
                 colorscale = [];
                 var min = parseFloat(this.getProperty("colorByMin", colorValues.min));
@@ -749,66 +753,107 @@ function RamaddaChernoffDisplay(displayManager, id, properties) {
                 for (var i = 0; i < colorValues.values.length; i++) {
                     var value = colorValues.values[i];
                     var percent = (value - min) / range;
-                    var idx = Math.round(percent*(colors.length-1));
+                    var idx = Math.round(percent * (colors.length - 1));
                     //                    console.log(idx+" " +colors[idx] +" " + value + " " + percent);
                     colorscale.push(colors[idx]);
                 }
                 this.displayColorTable(colors, ID_DISPLAY_BOTTOM, min, max);
-                legend+=  "<b>Colored by</b>: " + colorField.getLabel() +"&nbsp;&nbsp;";
+                legend += "<b>Colored by</b>: " + colorField.getLabel() + "&nbsp;&nbsp;";
             }
-            var attrs = [
-                         {label:  "Face width",name: "face",key:"f",min:0 ,max:1 },
-                         {label:  "Hair",name: "hair",key:"h",min:-1 ,max:1 },
-                         {label:  "Mouth",name: "mouth",key:"m",min:-1 ,max: 1 },
-                         {label:  "Nose height",name: "noseHeight",key:"nh",min:0 ,max: 1 },
-                         {label:  "Nose width",name: "noseWidth",key:"nw",min:0 ,max: 1 },
-                         {label:  "Eyes height",name: "eyesHeight",key:"eh",min:0 ,max: 1 },
-                         {label:  "Eyes width",name: "eyesWidth",key:"ew",min: 0,max: 1 },
-                         {label:  "Brow",name: "brow",key:"b",min:-1 ,max: 1 }
-                         ];
+            var attrs = [{
+                label: "Face width",
+                name: "face",
+                key: "f",
+                min: 0,
+                max: 1
+            }, {
+                label: "Hair",
+                name: "hair",
+                key: "h",
+                min: -1,
+                max: 1
+            }, {
+                label: "Mouth",
+                name: "mouth",
+                key: "m",
+                min: -1,
+                max: 1
+            }, {
+                label: "Nose height",
+                name: "noseHeight",
+                key: "nh",
+                min: 0,
+                max: 1
+            }, {
+                label: "Nose width",
+                name: "noseWidth",
+                key: "nw",
+                min: 0,
+                max: 1
+            }, {
+                label: "Eyes height",
+                name: "eyesHeight",
+                key: "eh",
+                min: 0,
+                max: 1
+            }, {
+                label: "Eyes width",
+                name: "eyesWidth",
+                key: "ew",
+                min: 0,
+                max: 1
+            }, {
+                label: "Brow",
+                name: "brow",
+                key: "b",
+                min: -1,
+                max: 1
+            }];
             var html = "";
-            var showHelp = this.getProperty("showHelp",false);
-            if(showHelp) {
-                html+="Settings:<br><table class=ramadda-table><thead><tr><th>Attribute&nbsp;</th><th>&nbsp;Default range&nbsp;</th><th>&nbsp;Set field&nbsp;</th><th>&nbsp;Set min&nbsp;</th><th>&nbsp;Set max&nbsp;</th></tr></thead><tbody>";
+            var showHelp = this.getProperty("showHelp", false);
+            if (showHelp) {
+                html += "Settings:<br><table class=ramadda-table><thead><tr><th>Attribute&nbsp;</th><th>&nbsp;Default range&nbsp;</th><th>&nbsp;Set field&nbsp;</th><th>&nbsp;Set min&nbsp;</th><th>&nbsp;Set max&nbsp;</th></tr></thead><tbody>";
             }
 
-            for(a in attrs) {
+            for (a in attrs) {
                 var attr = attrs[a];
-                if(showHelp) {
-                    html+="<tr><td>" + attr.label +"</td><td align=center>" + attr.min +" - " + attr.max +"</td><td>" + attr.name+"Field=&lt;field_id&gt;" +"</td><td>" +attr.name+"Min=&lt;min_value&gt;" + "</td><td>" + attr.name+"Max=&lt;max_value&gt;" +"</td></tr>";
+                if (showHelp) {
+                    html += "<tr><td>" + attr.label + "</td><td align=center>" + attr.min + " - " + attr.max + "</td><td>" + attr.name + "Field=&lt;field_id&gt;" + "</td><td>" + attr.name + "Min=&lt;min_value&gt;" + "</td><td>" + attr.name + "Max=&lt;max_value&gt;" + "</td></tr>";
                 }
-                attr.field =  this.getFieldById(allFields,this.getProperty(attr.name+"Field"));
-                if(attr.field) { 
-                    legend+=  "<b>" +attr.label +"</b>: " + attr.field.getLabel() +"&nbsp;&nbsp;";
-                    if(Utils.isDefined(this.getProperty(attr.name+"Min"))) {
-                        attr.min = parseFloat(this.getProperty(attr.name+"Min"));
+                attr.field = this.getFieldById(allFields, this.getProperty(attr.name + "Field"));
+                if (attr.field) {
+                    legend += "<b>" + attr.label + "</b>: " + attr.field.getLabel() + "&nbsp;&nbsp;";
+                    if (Utils.isDefined(this.getProperty(attr.name + "Min"))) {
+                        attr.min = parseFloat(this.getProperty(attr.name + "Min"));
                     }
-                    if(Utils.isDefined(this.getProperty(attr.name+"Max"))) {
-                        attr.max = parseFloat(this.getProperty(attr.name+"Max"));
+                    if (Utils.isDefined(this.getProperty(attr.name + "Max"))) {
+                        attr.max = parseFloat(this.getProperty(attr.name + "Max"));
                     }
                     attr.column = this.getColumnValues(records, attr.field);
                 }
             }
-            if(showHelp) {
-                html+="</tbody></table>";
+            if (showHelp) {
+                html += "</tbody></table>";
             }
 
-            var sortField = this.getFieldById(allFields,this.getProperty("sortBy"));
+            var sortField = this.getFieldById(allFields, this.getProperty("sortBy"));
 
             var rows = [];
             for (var rowIdx = 0; rowIdx < records.length; rowIdx++) {
-                var blob ={values:this.getDataValues(records[rowIdx])};
-                if(colorscale) blob.color = colorscale[rowIdx]
+                var blob = {
+                    values: this.getDataValues(records[rowIdx])
+                };
+                if (colorscale) blob.color = colorscale[rowIdx]
                 rows.push(blob);
             }
 
-            if(sortField) {
+            if (sortField) {
                 rows.sort(function(a, b) {
-                        var v1 = a.values[sortField.getIndex()];
-                        var v2 = b.values[sortField.getIndex()];
-                        if(v1<v2) return  1;
-                        if(v1>v2) return  -1;
-                        return 0;
+                    var v1 = a.values[sortField.getIndex()];
+                    var v2 = b.values[sortField.getIndex()];
+                    if (v1 < v2) return 1;
+                    if (v1 > v2) return -1;
+                    return 0;
                 });
             }
 
@@ -818,99 +863,122 @@ function RamaddaChernoffDisplay(displayManager, id, properties) {
                 var row = blob.values;
                 var color = blob.color;
                 var faceData = {
-                    f:0.5,  //0-1
-                    h:0,  //-1-1
+                    f: 0.5, //0-1
+                    h: 0, //-1-1
                     m: 0, //-1-1
-                    nh:0.5,//0-1
-                    nw:0.5, //0-1
-                    eh:0.5, //0-1
-                    ew:0.5, //0-1
-                    b:0//-1-1
+                    nh: 0.5, //0-1
+                    nw: 0.5, //0-1
+                    eh: 0.5, //0-1
+                    ew: 0.5, //0-1
+                    b: 0 //-1-1
                 };
                 data.push({
-                        faceData:faceData,
-                            color:color});
+                    faceData: faceData,
+                    color: color
+                });
                 var tt = "";
-                for(a in attrs) {
+                for (a in attrs) {
                     var attr = attrs[a];
                     var field = attr.field;
-                    if(!field) {
-                        faceData[attr.key] = attr.min+(attr.max-attr.min)/2;
+                    if (!field) {
+                        faceData[attr.key] = attr.min + (attr.max - attr.min) / 2;
                     } else {
                         var value = row[field.getIndex()];
                         var min = attr.column.min;
                         var max = attr.column.max;
-                        tt += field.getLabel()+": " + value  +" range: " +min +" - " + max + " (" + attr.label+")\n";
-                        if(max!=min) {
-                            var percent = (value-min)/(max-min);
-                            var adjValue  = attr.min+(attr.max-attr.min)*percent;
+                        tt += field.getLabel() + ": " + value + " range: " + min + " - " + max + " (" + attr.label + ")\n";
+                        if (max != min) {
+                            var percent = (value - min) / (max - min);
+                            var adjValue = attr.min + (attr.max - attr.min) * percent;
                             //                            console.log(" %:" + percent + " v:" + value +" min:" + min +" max:" + max +" adj:" + adjValue);
                             faceData[attr.key] = adjValue;
                         }
                     }
                 }
-                var label = (string?row[string.getIndex()]:"Row: " + rowIdx);
-                var labelValue = (string?row[string.getIndex()]:"");
-                label = HtmlUtils.div(["class","display-chernoff-label"], label);
-                var div = HtmlUtils.div(["id", this.getDomId("chernoff")+"_"+rowIdx,"class","display-chernoff-face"], "");
-                html+=HtmlUtils.div(["title",tt,"class","display-chernoff-wrapper ramadda-div-link","value",labelValue], div+label);
+                var label = (string ? row[string.getIndex()] : "Row: " + rowIdx);
+                var labelValue = (string ? row[string.getIndex()] : "");
+                label = HtmlUtils.div(["class", "display-chernoff-label"], label);
+                var div = HtmlUtils.div(["id", this.getDomId("chernoff") + "_" + rowIdx, "class", "display-chernoff-face"], "");
+                html += HtmlUtils.div(["title", tt, "class", "display-chernoff-wrapper ramadda-div-link", "value", labelValue], div + label);
             }
-            legend  = HtmlUtils.div(["class", "display-chernoff-legend"], legend);
+            legend = HtmlUtils.div(["class", "display-chernoff-legend"], legend);
             var height = this.getProperty("height", "400px");
-            if(!height.endsWith("px")) height+="px";
-            this.writeHtml(ID_DISPLAY_CONTENTS, legend+HtmlUtils.div(["style","height:" + height+";", "class","display-chernoff-container", "id", this.getDomId("chernoff")], html));
+            if (!height.endsWith("px")) height += "px";
+            this.writeHtml(ID_DISPLAY_CONTENTS, legend + HtmlUtils.div(["style", "height:" + height + ";", "class", "display-chernoff-container", "id", this.getDomId("chernoff")], html));
             for (var rowIdx = 0; rowIdx < records.length; rowIdx++) {
-                var div = "#" +this.getDomId("chernoff")+"_"+rowIdx;
-                this.makeFace(div,data[rowIdx].faceData,data[rowIdx].color);
+                var div = "#" + this.getDomId("chernoff") + "_" + rowIdx;
+                this.makeFace(div, data[rowIdx].faceData, data[rowIdx].color);
             }
 
-            if(string) {
+            if (string) {
                 $("#" + this.getDomId(ID_DISPLAY_CONTENTS)).find(".ramadda-div-link").click(function() {
-                        var value = $(this).attr("value");
-                        _this.propagateEvent("handleEventFieldValueSelect", {field: string, value:value});
+                    var value = $(this).attr("value");
+                    _this.propagateEvent("handleEventFieldValueSelect", {
+                        field: string,
+                        value: value
                     });
+                });
             }
-            },
-          makeFace: function(div, faceData, color) {
-        function chernoffFace() {
-            var width = 400,
-            height = 200;
-          var chernoff = d3.chernoff()
-              .face(function(d) { return d.f; })
-              .hair(function(d) { return d.h; })
-              .mouth(function(d) { return d.m; })
-              .nosew(function(d) { return d.nw; })
-              .noseh(function(d) { return d.nh; })
-              .eyew(function(d) { return d.ew; })
-              .eyeh(function(d) { return d.eh; })
-              .brow(function(d) { return d.b; });
-          function data() {
-            return [faceData];
-          }
-          function drawFace(selection) {
-            var svg = selection.append("svg")
-              .attr("width", width)
-              .attr("height", height);
-            var face = svg.selectAll("g.chernoff")
-                .data(data())
-              .enter().append("g")
-                .attr("class", "chernoff")
-                .call(chernoff);
-            if(color)
-                face.attr("style", "fill:" + color);
-          }
-          function draw(selection) {
-            selection.call(drawFace);
-          }
-          return draw;
+        },
+        makeFace: function(div, faceData, color) {
+            function chernoffFace() {
+                var width = 400,
+                    height = 200;
+                var chernoff = d3.chernoff()
+                    .face(function(d) {
+                        return d.f;
+                    })
+                    .hair(function(d) {
+                        return d.h;
+                    })
+                    .mouth(function(d) {
+                        return d.m;
+                    })
+                    .nosew(function(d) {
+                        return d.nw;
+                    })
+                    .noseh(function(d) {
+                        return d.nh;
+                    })
+                    .eyew(function(d) {
+                        return d.ew;
+                    })
+                    .eyeh(function(d) {
+                        return d.eh;
+                    })
+                    .brow(function(d) {
+                        return d.b;
+                    });
+
+                function data() {
+                    return [faceData];
+                }
+
+                function drawFace(selection) {
+                    var svg = selection.append("svg")
+                        .attr("width", width)
+                        .attr("height", height);
+                    var face = svg.selectAll("g.chernoff")
+                        .data(data())
+                        .enter().append("g")
+                        .attr("class", "chernoff")
+                        .call(chernoff);
+                    if (color)
+                        face.attr("style", "fill:" + color);
+                }
+
+                function draw(selection) {
+                    selection.call(drawFace);
+                }
+                return draw;
+            }
+            d3.select(div)
+                .call(chernoffFace());
         }
-        d3.select(div)
-          .call(chernoffFace());
-            }
 
 
 
 
 
-        });
+    });
 }

@@ -39,21 +39,21 @@ var Utils = {
             s = pad + s;
         return s;
     },
-    join: function(l,delimiter) {
+    join: function(l, delimiter) {
         var s = "";
-        for(var i=0;i<l.length;i++) {
-            if(i>0) s+=delimiter;
-            s+=l[i];
+        for (var i = 0; i < l.length; i++) {
+            if (i > 0) s += delimiter;
+            s += l[i];
         }
         return s;
     },
 
     getUniqueValues: function(l) {
         var u = [];
-        var map ={};
-        for(var i=0;i<l.length;i++){
+        var map = {};
+        for (var i = 0; i < l.length; i++) {
             var value = l[i];
-            if(!this.isDefined(map[value])) {
+            if (!this.isDefined(map[value])) {
                 map[value] = true;
                 u.push(value);
             }
@@ -64,7 +64,7 @@ var Utils = {
         return date.getUTCFullYear() + "-" + (date.getUTCMonth() + 1) + "-" + date.getUTCDate();
     },
     getMacro: function(v) {
-        if(v=="${states}") 
+        if (v == "${states}")
             return "Alabama,Alaska,Arizona,Arkansas,California,Colorado,Connecticut,Delaware,District of Columbia,Florida,Georgia,Hawaii,Idaho,Illinois,Indiana,Iowa,Kansas,Kentucky,Louisiana,Maine,Maryland,Massachusetts,Michigan,Minnesota,Mississippi,Missouri,Montana,Nebraska,Nevada,New Hampshire,New Jersey,New Mexico,New York,North Carolina,North Dakota,Ohio,Oklahoma,Oregon,Origin State,Pennsylvania,Rhode Island,South Carolina,South Dakota,Tennessee,Texas,Utah,Vermont,Virginia,Washington,West Virginia,Wisconsin,Wyoming";
         return v;
     },
@@ -179,28 +179,28 @@ var Utils = {
         }
         return r;
     },
-    stripTags:function(s) {
+    stripTags: function(s) {
         var regex = /(<([^>]+)>)/ig;
-        return s.replace(regex," ");
+        return s.replace(regex, " ");
     },
     articles: "that,this,they,those,with,them,their,have,than,there,when,more,much,many,will,were".split(","),
-    stopWords:["not","no","will", "must", "just", "a", "about", "above", "after", "again", "against", "all", "am", "an", "and", "any", "are", "as", "at", "be", "because", "been", "before", "being", "below", "between", "both", "but", "by", "could", "did", "do", "does", "doing", "down", "during", "each", "few", "for", "from", "further", "had", "has", "have", "having", "he", "he'd", "he'll", "he's", "her", "here", "here's", "hers", "herself", "him", "himself", "his", "how", "how's", "i", "i'd", "i'll", "i'm", "i've", "if", "in", "into", "is", "it", "it's", "its", "itself", "let's", "me", "more", "most", "my", "myself", "nor", "of", "on", "once", "only", "or", "other", "ought", "our", "ours", "ourselves", "out", "over", "own", "same", "she", "she'd", "she'll", "she's", "should", "so", "some", "such", "than", "that", "that's", "the", "their", "theirs", "them", "themselves", "then", "there", "there's", "these", "they", "they'd", "they'll", "they're", "they've", "this", "those", "through", "to", "too", "under", "until", "up", "very", "was", "we", "we'd", "we'll", "we're", "we've", "were", "what", "what's", "when", "when's", "where", "where's", "which", "while", "who", "who's", "whom", "why", "why's", "with", "would", "you", "you'd", "you'll", "you're", "you've", "your", "yours", "yourself", "yourselves" ],
-    tokenizeWords:function(s,stopWords, extraStopWords, removeArticles) {
-        if(!stopWords) {
-            stopWords=this.stopWords;
+    stopWords: ["not", "no", "will", "must", "just", "a", "about", "above", "after", "again", "against", "all", "am", "an", "and", "any", "are", "as", "at", "be", "because", "been", "before", "being", "below", "between", "both", "but", "by", "could", "did", "do", "does", "doing", "down", "during", "each", "few", "for", "from", "further", "had", "has", "have", "having", "he", "he'd", "he'll", "he's", "her", "here", "here's", "hers", "herself", "him", "himself", "his", "how", "how's", "i", "i'd", "i'll", "i'm", "i've", "if", "in", "into", "is", "it", "it's", "its", "itself", "let's", "me", "more", "most", "my", "myself", "nor", "of", "on", "once", "only", "or", "other", "ought", "our", "ours", "ourselves", "out", "over", "own", "same", "she", "she'd", "she'll", "she's", "should", "so", "some", "such", "than", "that", "that's", "the", "their", "theirs", "them", "themselves", "then", "there", "there's", "these", "they", "they'd", "they'll", "they're", "they've", "this", "those", "through", "to", "too", "under", "until", "up", "very", "was", "we", "we'd", "we'll", "we're", "we've", "were", "what", "what's", "when", "when's", "where", "where's", "which", "while", "who", "who's", "whom", "why", "why's", "with", "would", "you", "you'd", "you'll", "you're", "you've", "your", "yours", "yourself", "yourselves"],
+    tokenizeWords: function(s, stopWords, extraStopWords, removeArticles) {
+        if (!stopWords) {
+            stopWords = this.stopWords;
         }
         var words = [];
         var toks = s.split(/[ ,\(\)\.:\;\n\?\-!\*]/);
-        for(var i=0;i<toks.length;i++) {
+        for (var i = 0; i < toks.length; i++) {
             var word = toks[i].trim();
-            if(word == "") continue;
+            if (word == "") continue;
             var _word = word.toLowerCase();
-            if(stopWords.includes(_word)) continue;
-            if(extraStopWords && extraStopWords.includes(_word)) continue;
-            if(removeArticles && this.articles.includes(_word)) continue;
-            if(word.match(/^[0-9]+$/)) continue;
+            if (stopWords.includes(_word)) continue;
+            if (extraStopWords && extraStopWords.includes(_word)) continue;
+            if (removeArticles && this.articles.includes(_word)) continue;
+            if (word.match(/^[0-9]+$/)) continue;
             words.push(word);
-       }
+        }
         return words;
     },
     stringDefined: function(v) {
@@ -300,28 +300,29 @@ var Utils = {
 
         var snippets = $(".ramadda-snippet-hover");
         snippets.each(function() {
-                let  snippet = $(this);
-                snippet.parent().hover(function() {
-                        var parent  = $(this);
-                        var offset = parent.height();
-                        //Check for max-height on element
-                        if(offset>parent.parent().height()) {
-                            offset = parent.parent().height();
-                        }
-                        var popup =  getTooltip();
-                        popup.html(HtmlUtils.div(["class", "ramadda-popup-inner ramadda-snippet-popup"],snippet.html()));
-                        popup.show();
-                        popup.position({
-                                of: parent,
-                                    my: "left top",
-                                    at: "left top+" + (offset+1),
-                                    collision: "fit fit"
-                                    });
-                    },
-                    function() {
-                        getTooltip().hide();
+            let snippet = $(this);
+            snippet.parent().hover(function() {
+                    var parent = $(this);
+                    var offset = parent.height();
+                    //Check for max-height on element
+                    if (offset > parent.parent().height()) {
+                        offset = parent.parent().height();
                     }
-                    )});
+                    var popup = getTooltip();
+                    popup.html(HtmlUtils.div(["class", "ramadda-popup-inner ramadda-snippet-popup"], snippet.html()));
+                    popup.show();
+                    popup.position({
+                        of: parent,
+                        my: "left top",
+                        at: "left top+" + (offset + 1),
+                        collision: "fit fit"
+                    });
+                },
+                function() {
+                    getTooltip().hide();
+                }
+            )
+        });
 
         //Buttonize
         $(':submit').button().click(function(event) {});
@@ -433,7 +434,9 @@ var Utils = {
         rainbow: {
             colors: ["red", "orange", "yellow", "green", "blue", "indigo", "violet"]
         },
-        nice: {colors: ["#1f77b4", "#ff7f0e", "#2ca02c", "#d62728", "#9467bd", "#8c564b", "#e377c2", "#7f7f7f", "#bcbd22", "#17becf"]},
+        nice: {
+            colors: ["#1f77b4", "#ff7f0e", "#2ca02c", "#d62728", "#9467bd", "#8c564b", "#e377c2", "#7f7f7f", "#bcbd22", "#17becf"]
+        },
         blues: {
             colors: ['rgb(255,255,255)', 'rgb(246,246,255)', 'rgb(237,237,255)', 'rgb(228,228,255)', 'rgb(219,219,255)', 'rgb(211,211,255)', 'rgb(202,202,255)', 'rgb(193,193,255)', 'rgb(184,184,255)', 'rgb(175,175,255)', 'rgb(167,167,255)', 'rgb(158,158,255)', 'rgb(149,149,255)', 'rgb(140,140,255)', 'rgb(131,131,255)', 'rgb(123,123,255)', 'rgb(114,114,255)', 'rgb(105,105,255)', 'rgb(96,96,255)', 'rgb(87,87,255)', 'rgb(79,79,255)', 'rgb(70,70,255)', 'rgb(61,61,255)', 'rgb(52,52,255)', 'rgb(43,43,255)', 'rgb(35,35,255)', 'rgb(26,26,255)', 'rgb(17,17,255)', 'rgb(8,8,255)', 'rgb(0,0,255)', ]
         },
@@ -948,9 +951,9 @@ var HtmlUtils = {
             this.div(["class", "col-md-" + leftWeight], left) +
             this.div(["class", "col-md-" + rightWeight, "style", "text-align:right;"], right));
     },
-    leftCenterRight: function(left, center, right, leftWidth, centerWidth, rightWidth,attrs) {
-        if(!attrs) attrs = {};
-        if(!attrs.valign) attrs.valign="top";
+    leftCenterRight: function(left, center, right, leftWidth, centerWidth, rightWidth, attrs) {
+        if (!attrs) attrs = {};
+        if (!attrs.valign) attrs.valign = "top";
         if (leftWidth == null) leftWidth = "33%";
         if (centerWidth == null) centerWidth = "33%";
         if (rightWidth == null) rightWidth = "33%";
@@ -962,16 +965,16 @@ var HtmlUtils = {
                 this.td(["align", "right", "width", rightWidth], right)));
     },
 
-    leftRightTable: function(left,  right, leftWidth,rightWidth,attrs) {
-        if(!attrs) attrs = {};
-        if(!attrs.valign) attrs.valign="top";
+    leftRightTable: function(left, right, leftWidth, rightWidth, attrs) {
+        if (!attrs) attrs = {};
+        if (!attrs.valign) attrs.valign = "top";
         var leftAttrs = ["align", "left"];
         var rightAttrs = ["align", "right"];
-        if(leftWidth) {
+        if (leftWidth) {
             leftAttrs.push("width");
             leftAttrs.push(leftWidth);
         }
-        if(rightWidth) {
+        if (rightWidth) {
             rightAttrs.push("width");
             rightAttrs.push(rightWidth);
         }
@@ -1008,34 +1011,34 @@ var HtmlUtils = {
     },
     formatTable: function(id, args) {
         $(id).each(function() {
-        console.log("table");
-                var options = {
-                    paging:  false,
-                    ordering: false,
-                    info:     false,
-                    searching: false,
-                    scrollCollapse: true,
-                };
-                if(args)
-                    $.extend(options, args);
-                var height = $(this).attr("table-height");
-                if(height) 
-                    options.scrollY = height;
-                var ordering = $(this).attr("table-ordering");
-                if(ordering) 
-                    options.ordering = (ordering=="true");
-                var searching = $(this).attr("table-searching");
-                if(searching) 
-                    options.searching = (searching=="true");
-                var paging = $(this).attr("table-paging");
-                if(paging) 
-                    options.paging = (paging=="true");
-                if(Utils.isDefined(options.scrollY)) {
-                    var sh = ""+options.scrollY;
-                    if(!sh.endsWith("px")) options.scrollY +="px";
-                }
-                $(this).DataTable( options);
-            });
+            console.log("table");
+            var options = {
+                paging: false,
+                ordering: false,
+                info: false,
+                searching: false,
+                scrollCollapse: true,
+            };
+            if (args)
+                $.extend(options, args);
+            var height = $(this).attr("table-height");
+            if (height)
+                options.scrollY = height;
+            var ordering = $(this).attr("table-ordering");
+            if (ordering)
+                options.ordering = (ordering == "true");
+            var searching = $(this).attr("table-searching");
+            if (searching)
+                options.searching = (searching == "true");
+            var paging = $(this).attr("table-paging");
+            if (paging)
+                options.paging = (paging == "true");
+            if (Utils.isDefined(options.scrollY)) {
+                var sh = "" + options.scrollY;
+                if (!sh.endsWith("px")) options.scrollY += "px";
+            }
+            $(this).DataTable(options);
+        });
     },
     th: function(attrs, inner) {
         return this.tag("th", attrs, inner);
@@ -1098,7 +1101,7 @@ var HtmlUtils = {
     },
 
     tag: function(tagName, attrs, inner) {
-        if(!inner && (typeof attrs) == "string") {
+        if (!inner && (typeof attrs) == "string") {
             inner = attrs;
             attrs = null;
         }
@@ -1138,7 +1141,7 @@ var HtmlUtils = {
     },
 
     attrs: function(list) {
-        if(!list) return "";
+        if (!list) return "";
         var html = "";
         if (list == null) return html;
         if (list.length == 1) return list[0];
@@ -1302,7 +1305,7 @@ var HtmlUtils = {
 
         var base = window.location.protocol + "//" + window.location.host;
         url = base + url;
-        var input = HtmlUtils.input("formurl",url,["size","80"]);
+        var input = HtmlUtils.input("formurl", url, ["size", "80"]);
         var html = HtmlUtils.div(["class", "ramadda-form-url"], HtmlUtils.href(url, HtmlUtils.image(ramaddaBaseUrl + "/icons/link.png")) + " " + input);
         if (hook) {
             html += hook({

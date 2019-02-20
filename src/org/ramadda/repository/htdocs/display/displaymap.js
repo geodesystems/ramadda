@@ -138,7 +138,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
             if (displayDiv) {
                 params.displayDiv = displayDiv;
             }
-            if(!this.getProperty("showLocationSearch",true)) {
+            if (!this.getProperty("showLocationSearch", true)) {
                 params.showLocationSearch = false;
             }
             var mapLayers = this.getProperty("mapLayers", null);
@@ -170,7 +170,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
                 theDisplay.mapBoundsChanged();
             });
 
-            if (this.getProperty("bounds") && this.getProperty("showBounds",true)) {
+            if (this.getProperty("bounds") && this.getProperty("showBounds", true)) {
                 var toks = this.getProperty("bounds", "").split(",");
                 if (toks.length == 4) {
                     if (this.getProperty("showBounds"), true) {
@@ -586,7 +586,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
             */
         },
         addOrRemoveEntryMarker: function(id, entry, add, args) {
-                console.log("entry marker");
+            console.log("entry marker");
             if (!args) {
                 args = {};
             }
@@ -828,11 +828,11 @@ function RamaddaMapDisplay(displayManager, id, properties) {
             var isTrajectory = this.getDisplayProp(source, "isTrajectory", false);
             if (isTrajectory) {
                 var attrs = {
-                    strokeWidth:2,
-                    strokeColor:"blue"
+                    strokeWidth: 2,
+                    strokeColor: "blue"
                 }
 
-                this.map.addPolygon("id", "", points,  attrs, null);
+                this.map.addPolygon("id", "", points, attrs, null);
                 return;
             }
             if (!colors && source.colors && source.colors.length > 0) {
@@ -859,7 +859,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
             var segmentWidth = parseInt(this.getProperty("segmentWidth", "1"));
             var dfltSegmentWidth = segmentWidth;
             var showPoints = this.getProperty("showPoints", true);
-            var lineColor = this.getProperty("lineColor","green");
+            var lineColor = this.getProperty("lineColor", "green");
             var colorBy = {
                 id: colorByAttr,
                 minValue: 0,
@@ -914,10 +914,10 @@ function RamaddaMapDisplay(displayManager, id, properties) {
             colorBy.minValue = this.getDisplayProp(source, "colorByMin", colorBy.minValue);
             colorBy.maxValue = this.getDisplayProp(source, "colorByMax", colorBy.maxValue);
 
-            if(this.points) {
-                for(var i=0;i<this.points.length;i++)
+            if (this.points) {
+                for (var i = 0; i < this.points.length; i++)
                     this.map.removePoint(this.points[i]);
-                for(var i=0;i<this.lines.length;i++)
+                for (var i = 0; i < this.lines.length; i++)
                     this.map.removePolygon(this.lines[i]);
                 this.points = [];
                 this.lines = [];
@@ -946,10 +946,10 @@ function RamaddaMapDisplay(displayManager, id, properties) {
                     var denom = (sizeBy.maxValue - sizeBy.minValue);
                     var percent = (denom == 0 ? NaN : (value - sizeBy.minValue) / denom);
                     props.pointRadius = 6 + parseInt(15 * percent);
-                    if(sizeEndPoints) {
-                        endPointSize =  dfltEndPointSize + parseInt(10 * percent);
+                    if (sizeEndPoints) {
+                        endPointSize = dfltEndPointSize + parseInt(10 * percent);
                     }
-                    if(sizeSegments) {
+                    if (sizeSegments) {
                         segmentWidth = dfltSegmentWidth + parseInt(10 * percent);
                     }
                     //                            console.log("percent:" + percent +  " radius: " + props.pointRadius +" Value: " + value  + " range: " + sizeBy.minValue +" " + sizeBy.maxValue);
@@ -1000,27 +1000,27 @@ function RamaddaMapDisplay(displayManager, id, properties) {
                 }
 
                 var html = this.getRecordHtml(pointRecord, fields);
-                if(showSegments && latField1 && latField2 && lonField1 && lonField2) {
+                if (showSegments && latField1 && latField2 && lonField1 && lonField2) {
                     var lat1 = values[latField1.getIndex()];
                     var lat2 = values[latField2.getIndex()];
                     var lon1 = values[lonField1.getIndex()];
                     var lon2 = values[lonField2.getIndex()];
-                    var attrs ={};
-                    if(props.fillColor)
+                    var attrs = {};
+                    if (props.fillColor)
                         attrs.strokeColor = props.fillColor;
-                    else 
+                    else
                         attrs.strokeColor = lineColor;
                     attrs.strokeWidth = segmentWidth;
-                    this.lines.push(this.map.addLine("line-" + i, "", lat1, lon1, lat2, lon2, attrs,html));
-                    if(showEndPoints) {
+                    this.lines.push(this.map.addLine("line-" + i, "", lat1, lon1, lat2, lon2, attrs, html));
+                    if (showEndPoints) {
                         var pointProps = {};
-                        $.extend(pointProps,props);
-                        pointProps.fillColor  = attrs.strokeColor;
-                        pointProps.strokeColor  = attrs.strokeColor;
+                        $.extend(pointProps, props);
+                        pointProps.fillColor = attrs.strokeColor;
+                        pointProps.strokeColor = attrs.strokeColor;
                         pointProps.pointRadius = dfltEndPointSize;
                         pointProps.pointRadius = endPointSize;
-                        var p1 = new OpenLayers.LonLat(lon1,lat1);
-                        var p2 = new OpenLayers.LonLat(lon2,lat2);
+                        var p1 = new OpenLayers.LonLat(lon1, lat1);
+                        var p2 = new OpenLayers.LonLat(lon2, lat2);
                         if (!Utils.isDefined(seen[p1])) {
                             seen[p1] = true;
                             this.points.push(this.map.addPoint("endpt-" + i, p1, pointProps, html));
@@ -1033,7 +1033,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
                     }
                 }
 
-                if(showPoints) {
+                if (showPoints) {
                     if (Utils.isDefined(seen[point])) continue;
                     seen[point] = true;
                     point = this.map.addPoint("pt-" + i, point, props, html, dontAddPoint);
@@ -1073,19 +1073,19 @@ function RamaddaMapDisplay(displayManager, id, properties) {
         },
 
         getMarkerIcon: function() {
-                if(this.getProperty("markerIcon")) {
-                    var icon = this.getProperty("markerIcon");
-                    if(icon.startsWith("/")) 
-                        return ramaddaBaseUrl +icon;
-                    else 
-                        return icon;
-                }
-                displayMapCurrentMarker++;
-                if (displayMapCurrentMarker >= displayMapMarkers.length) displayMapCurrentMarker = 0;
-                return ramaddaBaseUrl + "/lib/openlayers/v2/img/" + displayMapMarkers[displayMapCurrentMarker];
-            },
+            if (this.getProperty("markerIcon")) {
+                var icon = this.getProperty("markerIcon");
+                if (icon.startsWith("/"))
+                    return ramaddaBaseUrl + icon;
+                else
+                    return icon;
+            }
+            displayMapCurrentMarker++;
+            if (displayMapCurrentMarker >= displayMapMarkers.length) displayMapCurrentMarker = 0;
+            return ramaddaBaseUrl + "/lib/openlayers/v2/img/" + displayMapMarkers[displayMapCurrentMarker];
+        },
         handleEventRecordSelection: function(source, args) {
-           if(!this.getProperty("showRecordSelection",true)) return;
+            if (!this.getProperty("showRecordSelection", true)) return;
             if (!this.map) {
                 return;
             }

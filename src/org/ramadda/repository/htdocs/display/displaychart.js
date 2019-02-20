@@ -574,7 +574,7 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 
 
             if (selectedFields == null || selectedFields.length == 0) {
-                if (this.getChartType() == DISPLAY_TABLE || this.getChartType() == DISPLAY_TREEMAP)  {
+                if (this.getChartType() == DISPLAY_TABLE || this.getChartType() == DISPLAY_TREEMAP) {
                     selectedFields = this.dataCollection.getList()[0].getNonGeoFields();
                 } else {
                     selectedFields = this.getSelectedFields();
@@ -1002,7 +1002,7 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
             this.chart = this.doMakeGoogleChart(dataList, props, selectedFields, this.chartOptions);
             if (this.chart != null) {
                 var dataTable = this.makeDataTable(dataList, props, selectedFields);
-                if(!dataTable) return;
+                if (!dataTable) return;
                 if (!Utils.isDefined(this.chartOptions.height)) {
                     this.chartOptions.height = "100%";
                 }
@@ -1216,9 +1216,9 @@ function HistogramDisplay(displayManager, id, properties) {
             return google.visualization.arrayToDataTable(this.makeDataArray(dataList));
         },
         doMakeGoogleChart: function(dataList, props, selectedFields, chartOptions) {
-                //            chartOptions = {};
+            //            chartOptions = {};
             if (this.legendPosition) {
-                if(!chartOptions.legend)
+                if (!chartOptions.legend)
                     chartOptions.legend = {};
                 chartOptions.legend.position = this.legendPosition;
             }
@@ -1257,10 +1257,10 @@ function RamaddaTextChart(displayManager, id, chartType, properties) {
     let SUPER = new RamaddaGoogleChart(displayManager, id, chartType, properties);
     RamaddaUtil.inherit(this, SUPER);
     $.extend(this, {
-       getFieldsToSelect: function(pointData) {
-                return  pointData.getNonGeoFields();
+        getFieldsToSelect: function(pointData) {
+            return pointData.getNonGeoFields();
         },
-                });
+    });
 }
 
 
@@ -1286,30 +1286,30 @@ function PiechartDisplay(displayManager, id, properties) {
             var chartId = this.getDomId(ID_CHART);
             var divAttrs = [ATTR_ID, chartId];
             divAttrs.push("style");
-                var style = "";
-                if (this.getProperty("width")) {
-                    var width = this.getProperty("width");
-                    if (width > 0)
-                        style += "width:" + width + "px;";
-                    else if (width < 0)
-                        style += "width:" + (-width) + "%;";
-                    else
-                        style += "width:" + width;
-                } else {
-                    style += "width:" + "100%;";
-                }
-                if (this.getProperty("height")) {
-                    var height = this.getProperty("height");
-                    if (height > 0)
-                        style += "height:" + height + "px;";
-                    else if (height < 0)
-                        style += "height:" + (-height) + "%;";
-                    else
-                        style += "height:" + height;
-                } else {
-                    style += "height:" + "100%;";
-                }
-                divAttrs.push(style);
+            var style = "";
+            if (this.getProperty("width")) {
+                var width = this.getProperty("width");
+                if (width > 0)
+                    style += "width:" + width + "px;";
+                else if (width < 0)
+                    style += "width:" + (-width) + "%;";
+                else
+                    style += "width:" + width;
+            } else {
+                style += "width:" + "100%;";
+            }
+            if (this.getProperty("height")) {
+                var height = this.getProperty("height");
+                if (height > 0)
+                    style += "height:" + height + "px;";
+                else if (height < 0)
+                    style += "height:" + (-height) + "%;";
+                else
+                    style += "height:" + height;
+            } else {
+                style += "height:" + "100%;";
+            }
+            divAttrs.push(style);
             return HtmlUtils.div(divAttrs, "");
         },
 
@@ -1843,62 +1843,65 @@ function TreemapDisplay(displayManager, id, properties) {
     $.extend(this, {
         handleEventRecordSelection: function(source, args) {},
         getFieldsToSelect: function(pointData) {
-             return pointData.getRecordFields();
+            return pointData.getRecordFields();
         },
         tooltips: {},
-         makeChartOptions: function(dataList, props, selectedFields) {
-                let _this = this;
-                var tooltip = function(row,size,value) {
-                    if(_this.tooltips[row]) {
-                        return _this.tooltips[row];
-                    } 
-                    return  "<div class='display-treemap-tooltip-outer'><div class='display-treemap-tooltip''><i>left-click: go down<br>right-click: go up</i></div></div>";
-                    return null;
-                };
-                var chartOptions = SUPER.makeChartOptions.call(this, dataList, props, selectedFields);
-                $.extend(chartOptions, {
-                        highlightOnMouseOver: true,
-                            generateTooltip: tooltip,
-                            maxDepth: parseInt(this.getProperty("maxDepth",2)),
-                            maxPostDepth: parseInt(this.getProperty("maxPostDepth",3)),
-                            });
+        makeChartOptions: function(dataList, props, selectedFields) {
+            let _this = this;
+            var tooltip = function(row, size, value) {
+                if (_this.tooltips[row]) {
+                    return _this.tooltips[row];
+                }
+                return "<div class='display-treemap-tooltip-outer'><div class='display-treemap-tooltip''><i>left-click: go down<br>right-click: go up</i></div></div>";
+                return null;
+            };
+            var chartOptions = SUPER.makeChartOptions.call(this, dataList, props, selectedFields);
+            $.extend(chartOptions, {
+                highlightOnMouseOver: true,
+                generateTooltip: tooltip,
+                maxDepth: parseInt(this.getProperty("maxDepth", 2)),
+                maxPostDepth: parseInt(this.getProperty("maxPostDepth", 3)),
+            });
 
-                return chartOptions;
-            },
+            return chartOptions;
+        },
         defaultSelectedToAll: function() {
             return true;
         },
 
         doMakeGoogleChart: function(dataList, props, selectedFields, chartOptions) {
             var dataTable = this.makeDataTable(dataList, props, selectedFields);
-            if(!dataTable) return;
-            return  new google.visualization.TreeMap(document.getElementById(this.getChartId()));
+            if (!dataTable) return;
+            return new google.visualization.TreeMap(document.getElementById(this.getChartId()));
         },
 
-         addTuple: function(data, colorField, seen, value, parent, n1,n2) {
-                var ovalue = value;
-                var cnt = 0;
-                if(Utils.isDefined(seen[value]) && parent) {
-                    value = parent+":" + value;
+        addTuple: function(data, colorField, seen, value, parent, n1, n2) {
+            var ovalue = value;
+            var cnt = 0;
+            if (Utils.isDefined(seen[value]) && parent) {
+                value = parent + ":" + value;
+            }
+            while (true) {
+                if (!Utils.isDefined(seen[value])) {
+                    seen[value] = true;
+                    break;
                 }
-                while (true) {
-                    if(!Utils.isDefined(seen[value])) {
-                       seen[value] = true;
-                       break;
-                   }
-                   value = ovalue+" " + (++cnt);
-               }
-               var tuple = [value,parent,n1];
-               if(colorField) tuple.push(n2);
-               data.push(tuple);
-               return value;
-            },
+                value = ovalue + " " + (++cnt);
+            }
+            var tuple = [value, parent, n1];
+            if (colorField) tuple.push(n2);
+            data.push(tuple);
+            return value;
+        },
 
-         valueClicked: function(field, value){
-                var allFields = this.getData().getRecordFields();
-                field = this.getFieldById(allFields,field);
-                this.propagateEvent("handleEventFieldValueSelect", {field: field, value:value});
-            },
+        valueClicked: function(field, value) {
+            var allFields = this.getData().getRecordFields();
+            field = this.getFieldById(allFields, field);
+            this.propagateEvent("handleEventFieldValueSelect", {
+                field: field,
+                value: value
+            });
+        },
         makeDataTable: function(dataList, props, selectedFields) {
             var records = this.filterData();
             if (!records) {
@@ -1913,13 +1916,13 @@ function TreemapDisplay(displayManager, id, properties) {
                 this.displayError("No string fields specified");
                 return null;
             }
-            var addPrefix = this.getProperty("addPrefix",true);
-            var sizeField = this.getFieldById(allFields,this.getProperty("sizeBy"));
-            var colorField = this.getFieldById(allFields,this.getProperty("colorBy"));
+            var addPrefix = this.getProperty("addPrefix", true);
+            var sizeField = this.getFieldById(allFields, this.getProperty("sizeBy"));
+            var colorField = this.getFieldById(allFields, this.getProperty("colorBy"));
             var values = this.getFieldsOfType(fields, "numeric");
-            if(!sizeField && values.length>0)
+            if (!sizeField && values.length > 0)
                 sizeField = values[0];
-            if(!colorField && values.length>1)
+            if (!colorField && values.length > 1)
                 colorField = values[1];
 
             var tooltipFields = [];
@@ -1929,64 +1932,64 @@ function TreemapDisplay(displayManager, id, properties) {
                 if (tooltipField)
                     tooltipFields.push(tooltipField);
             }
-            if(tooltipFields.length==0) tooltipFields=allFields;
+            if (tooltipFields.length == 0) tooltipFields = allFields;
 
-            this.tooltips={};
+            this.tooltips = {};
 
-           var columns = [];
-           for(var fieldIndex=0;fieldIndex<strings.length;fieldIndex++) {
-               var field = strings[fieldIndex];
-               columns.push(this.getColumnValues(records, field).values);
-           }
+            var columns = [];
+            for (var fieldIndex = 0; fieldIndex < strings.length; fieldIndex++) {
+                var field = strings[fieldIndex];
+                columns.push(this.getColumnValues(records, field).values);
+            }
 
-           var data =[];
-           var leafs =[];
-           var tmptt =[];
-           var seen={};
-           this.addTuple(data, colorField, {}, "Node","Parent","Value","Color");
-           var root = strings[0].getLabel();
-           this.addTuple(data, colorField, seen, root, null,0,0);
-           var keys={};
-           var call = this.getGet();
-           for (var rowIdx = 0; rowIdx < records.length; rowIdx++) {
-               //               if(rowIdx>20) break;
+            var data = [];
+            var leafs = [];
+            var tmptt = [];
+            var seen = {};
+            this.addTuple(data, colorField, {}, "Node", "Parent", "Value", "Color");
+            var root = strings[0].getLabel();
+            this.addTuple(data, colorField, seen, root, null, 0, 0);
+            var keys = {};
+            var call = this.getGet();
+            for (var rowIdx = 0; rowIdx < records.length; rowIdx++) {
+                //               if(rowIdx>20) break;
                 var row = this.getDataValues(records[rowIdx]);
                 var key = "";
                 var parentKey = "";
-                for(var fieldIndex=0;fieldIndex<strings.length-1;fieldIndex++) {
+                for (var fieldIndex = 0; fieldIndex < strings.length - 1; fieldIndex++) {
                     var values = columns[fieldIndex];
-                    if(key!="")
-                        key +=":";
-                    key  += values[rowIdx];
-                    if(!Utils.isDefined(keys[key])) {
-                        var parent=Utils.isDefined(keys[parentKey])?keys[parentKey]:root;
+                    if (key != "")
+                        key += ":";
+                    key += values[rowIdx];
+                    if (!Utils.isDefined(keys[key])) {
+                        var parent = Utils.isDefined(keys[parentKey]) ? keys[parentKey] : root;
                         var value = values[rowIdx];
-                        if(addPrefix && fieldIndex>0)
-                            value = parent+":" + value;
-                        keys[key] =  this.addTuple(data, colorField, seen, value, parent,0,0);
+                        if (addPrefix && fieldIndex > 0)
+                            value = parent + ":" + value;
+                        keys[key] = this.addTuple(data, colorField, seen, value, parent, 0, 0);
                     }
                     parentKey = key;
                 }
-                var parent=Utils.isDefined(keys[parentKey])?keys[parentKey]:root;
-                var value = row[strings[strings.length-1].getIndex()];
-                var size = sizeField? row[sizeField.getIndex()]:1;
-                var color =colorField?row[colorField.getIndex()]:0;
-                value = this.addTuple(leafs, colorField, seen, value, parent,size,color);
+                var parent = Utils.isDefined(keys[parentKey]) ? keys[parentKey] : root;
+                var value = row[strings[strings.length - 1].getIndex()];
+                var size = sizeField ? row[sizeField.getIndex()] : 1;
+                var color = colorField ? row[colorField.getIndex()] : 0;
+                value = this.addTuple(leafs, colorField, seen, value, parent, size, color);
                 var tt = "<div class='display-treemap-tooltip-outer'><div class='display-treemap-tooltip''>";
-                for(var f=0;f<tooltipFields.length;f++) {
+                for (var f = 0; f < tooltipFields.length; f++) {
                     var v = row[tooltipFields[f].getIndex()];
                     var field = tooltipFields[f];
-                    v = HtmlUtils.onClick(call+".valueClicked('" + field.getId()+"','" +v+"')", v,[]);
-                    tt+= "<b>" + field.getLabel()+"</b>" + ": " + v+"<br>";
+                    v = HtmlUtils.onClick(call + ".valueClicked('" + field.getId() + "','" + v + "')", v, []);
+                    tt += "<b>" + field.getLabel() + "</b>" + ": " + v + "<br>";
                 }
-                tt+="</div></div>";
+                tt += "</div></div>";
                 tmptt.push(tt);
-           }
-           for(var i=0;i<leafs.length;i++) {
-               data.push(leafs[i]);
-               this.tooltips[data.length-2] = tmptt[i];
-           }
-           return  google.visualization.arrayToDataTable(data);
+            }
+            for (var i = 0; i < leafs.length; i++) {
+                data.push(leafs[i]);
+                this.tooltips[data.length - 2] = tmptt[i];
+            }
+            return google.visualization.arrayToDataTable(data);
         },
     });
 }
@@ -2338,7 +2341,7 @@ function RamaddaStatsDisplay(displayManager, id, properties, type) {
         showType: dflt,
         showText: dflt,
     });
-    let SUPER =  new RamaddaFieldsDisplay(displayManager, id, type || DISPLAY_STATS, properties);
+    let SUPER = new RamaddaFieldsDisplay(displayManager, id, type || DISPLAY_STATS, properties);
     RamaddaUtil.inherit(this, SUPER);
 
     if (!type)
