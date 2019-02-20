@@ -33,15 +33,20 @@
      <column name="elevation_loss" label="Elevation Loss" type="double" cansearch="true" showinhtml="true"  databaseDefault="-1"/>
 <wiki>
 <![CDATA[
-+section class="ramadda-section-map" title={{name}}
++section title={{name}}
 {{description wikify="true"}}
 <center>
 {{gpx.stats}}
 </center>
 <p>
-  {{mapentry  width="-100" height="400" details="true" layer="esri.topo" 
-mapVar="gpxMap${entryid}" xxshowSearch="true" xxshowCheckbox="true" }}
-  {{group showMenu="true" mapVar="gpxMap${entryid}"}}
+  {{group showMenu="true" xmapVar="gpxMap${entryid}"}}
++row
+:col-2
++col-8
+  {{display type="map"  showMenu="false" layoutHere="true" showBounds="false" isTrajectory="true" width="-100" height="400" details="true" layer="esri.topo" 
+  mapVar="gpxMap${entryid}" }}
+-col
+-row
   {{display type="linechart" showTitle="false" layoutHere="true" showMenu="true" fields="point_altitude,speed"  errorMessage=" "  }}
 
 ----
