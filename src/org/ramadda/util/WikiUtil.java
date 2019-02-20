@@ -626,6 +626,16 @@ public class WikiUtil {
                 }
 
             }
+            if(tline.equals("+pre")) {
+                inPre = true;
+                buff.append("<pre>\n");
+                continue;
+            }
+            if(tline.equals("-pre")) {
+                inPre = false;
+                buff.append("</pre>\n");
+                continue;
+            }
 
             if(tline.startsWith("<pre")) {
                 inPre = true;
