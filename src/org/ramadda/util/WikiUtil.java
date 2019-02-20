@@ -1299,8 +1299,7 @@ public class WikiUtil {
                 continue;
             }
             if (tline.equals(":p")) {
-                buff.append("<p>");
-
+                buff.append("<p></p>");
                 continue;
             }
 
