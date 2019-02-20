@@ -69,6 +69,8 @@ public class MapInfo {
     /** the map variable name */
     private String mapVarName;
 
+    private String mapDiv;
+
     /** _more_ */
     private String mapStyle;
 
@@ -161,7 +163,7 @@ public class MapInfo {
         this.request      = request;
         this.repository   = repository;
 
-        this.mapVarName   = makeMapVar();
+        this.mapDiv = this.mapVarName   = makeMapVar();
         this.width        = width;
         this.height       = height;
         this.forSelection = forSelection;
@@ -210,8 +212,38 @@ public class MapInfo {
      * @param mapVar _more_
      */
     public void setMapVar(String mapVar) {
-        this.mapVarName = mapVar;
+        this.mapDiv = mapVar;
+        this.mapVarName = mapVar.replaceAll("-","_");
     }
+
+
+    /**
+     *  Set the MapVarName property.
+     *
+     *  @param value The new value for MapVarName
+     */
+    public void xsetMapVarName(String value) {
+        mapVarName = value;
+    }
+
+    /**
+     *  Get the MapVarName property.
+     *
+     *  @return The MapVarName
+     */
+    public String getVariableName() {
+        return mapVarName;
+    }
+
+    /**
+     * _more_
+     *
+     * @return _more_
+     */
+    public String getMapId() {
+        return mapDiv;
+    }
+
 
 
     /**
@@ -367,28 +399,28 @@ public class MapInfo {
         String footer2 =
             HtmlUtils.div("",
                           HtmlUtils.cssClass("ramadda-map-footer")
-                          + HtmlUtils.id(mapVarName + "_footer2"));
+                          + HtmlUtils.id(mapDiv + "_footer2"));
         String popup =
             HtmlUtils.div("",
                           HtmlUtils.cssClass("ramadda-popup")
-                          + HtmlUtils.id(mapVarName + "_loc_popup"));
+                          + HtmlUtils.id(mapDiv + "_loc_popup"));
         String readout =
             HtmlUtils.div("&nbsp;",
                           HtmlUtils.cssClass("ramadda-map-latlonreadout")
-                          + HtmlUtils.id(mapVarName +"_latlonreadout") 
+                          + HtmlUtils.id(mapDiv +"_latlonreadout") 
                           + HtmlUtils.style(swidth));
         String footer =
             HtmlUtils.div("",
                           HtmlUtils.cssClass("ramadda-map-footer")
-                          + HtmlUtils.id(mapVarName + "_footer"));
+                          + HtmlUtils.id(mapDiv + "_footer"));
         HtmlUtils.div(result, "",
                       HtmlUtils.cssClass("ramadda-map-search")
-                      + HtmlUtils.id(mapVarName + "_search"));
+                      + HtmlUtils.id(mapDiv+ "_search"));
 
         HtmlUtils.div(result, contents,
                       HtmlUtils.cssClass("ramadda-map")
                       + HtmlUtils.style(styles) + " "
-                      + HtmlUtils.id(mapVarName));
+                      + HtmlUtils.id(mapDiv));
         String url = request.getUrl();
         String label;
         if (request.get("mapdetails", false)) {
@@ -528,7 +560,7 @@ public class MapInfo {
             js.append("\n//map javascript\n");
             Utils.append(js, "var params = ", formatProps(), ";\n");
             Utils.append(js, "var ", mapVarName, " = new RepositoryMap(",
-                         HtmlUtils.squote(mapVarName), ", params);\n");
+                         HtmlUtils.squote(mapDiv), ", params);\n");
             Utils.append(js, "var theMap = ", mapVarName, ";\n");
             // TODO: why is this here?
             if ( !forSelection) {
@@ -844,7 +876,7 @@ public class MapInfo {
                         HtmlUtils.call(
                             "MapUtils.mapRegionSelected",
                             HtmlUtils.squote(regionSelectId),
-                            HtmlUtils.squote(mapVarName)))));
+                            HtmlUtils.squote(mapDiv)))));
         }
 
         return widget.toString();
@@ -870,7 +902,7 @@ public class MapInfo {
         }
 
         if (doRegion) {
-            widget.append(HtmlUtils.makeLatLonBox(mapVarName, arg, nwse[2],
+            widget.append(HtmlUtils.makeLatLonBox(mapDiv, arg, nwse[2],
                     nwse[0], nwse[3], nwse[1]));
 
         } else {
@@ -1430,33 +1462,6 @@ public class MapInfo {
 
 
 
-
-    /**
-     *  Set the MapVarName property.
-     *
-     *  @param value The new value for MapVarName
-     */
-    public void setMapVarName(String value) {
-        mapVarName = value;
-    }
-
-    /**
-     *  Get the MapVarName property.
-     *
-     *  @return The MapVarName
-     */
-    public String getVariableName() {
-        return mapVarName;
-    }
-
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
-    public String getMapId() {
-        return mapVarName;
-    }
 
     /**
      * Set the selection label
