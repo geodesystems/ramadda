@@ -363,6 +363,7 @@ public class WikiUtil {
         int          idx        = s.indexOf("<nowiki>");
         int          tagLength1 = "<nowiki>".length();
         int          tagLength2 = "</nowiki>".length();
+
         //.... <nowiki>.....</nowiki> ....
         while ((idx >= 0) && (s.length() > 0)) {
             content.add(s.substring(0, idx));
@@ -371,7 +372,6 @@ public class WikiUtil {
             if (idx2 < 0) {
                 content.add(s);
                 s = "";
-
                 break;
             }
             String nowiki = s.substring(0, idx2);
@@ -380,7 +380,6 @@ public class WikiUtil {
             idx = s.indexOf("<nowiki>");
         }
         content.add(s);
-
         return content;
     }
 
@@ -601,6 +600,7 @@ public class WikiUtil {
         StringBuilder    currentVarValue = null;
         boolean          inCss           = false;
 
+        boolean inPre = false;
         for (String line :
                 (List<String>) StringUtil.split(s, "\n", false, false)) {
             String tline = line.trim();
@@ -625,6 +625,25 @@ public class WikiUtil {
                     }
                 }
 
+            }
+
+            if(tline.startsWith("<pre")) {
+                inPre = true;
+                buff.append(tline);
+                buff.append("\n");
+                continue;
+            }
+            if(tline.startsWith("</pre>")) {
+                inPre = false;
+                buff.append(tline);
+                buff.append("\n");
+                continue;
+            }
+
+            if(inPre) {
+                buff.append(tline);
+                buff.append("\n");
+                continue;
             }
 
             if (tline.equals("+css")) {

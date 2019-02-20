@@ -3915,10 +3915,11 @@ public class Repository extends RepositoryBase implements RequestHandler,
                     html = html.replace("${hostname}",
                                         request.getServerName());
 
+                    if(path.indexOf(".wiki.")>=0|| html.startsWith("<wiki>")) {
+                        html = getWikiManager().wikify(request,  html);
+                    }
                     Result result = new Result(BLANK,
                                         new StringBuilder(html));
-
-
                     //If its just sitting on the server then don't decorate
                     if (new File(fullPath).exists()) {
                         decorate = false;
@@ -3963,6 +3964,9 @@ public class Repository extends RepositoryBase implements RequestHandler,
                 html = html.replace("${urlroot}", urlBase);
                 html = html.replace("${root}", urlBase);
                 html = html.replace("${hostname}", request.getServerName());
+                if(path.indexOf(".wiki.")>=0|| html.startsWith("<wiki>")) {
+                    html = getWikiManager().wikify(request,  html);
+                }
 
                 return getEntryManager().addHeaderToAncillaryPage(request,
                         new Result(BLANK, new StringBuilder(html)));
