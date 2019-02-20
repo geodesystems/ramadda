@@ -1254,6 +1254,7 @@ public class MapManager extends RepositoryManager implements WikiConstants {
         }
 
         if (mapVar != null) {
+            mapVar = mapVar.replace("${entryid}", mainEntry.getId());
             map.setMapVar(mapVar);
         }
         if (mapProps != null) {
