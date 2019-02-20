@@ -1323,6 +1323,18 @@ public class WikiUtil {
                 continue;
             }
 
+            if (tline.startsWith(":h1")) {
+                List<String> toks  = StringUtil.splitUpTo(tline, " ", 2);
+                buff.append(HtmlUtils.h1(toks.size()>1?toks.get(1):""));
+                continue;
+            }
+
+            if (tline.startsWith(":h2")) {
+                List<String> toks  = StringUtil.splitUpTo(tline, " ", 2);
+                buff.append(HtmlUtils.h2(toks.size()>1?toks.get(1):""));
+                continue;
+            }
+
 
             if (tline.startsWith(":heading") || tline.startsWith(":block")
                     || tline.startsWith(":note") || tline.startsWith(":box")
