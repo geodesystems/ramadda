@@ -1,0 +1,60 @@
+<wiki>
++section title="Simple Records"
+
+The simple records entry type supports creating a structured data set of anything you like. You can think of it as a smart spreadsheet. 
+
+:h2
+To create one go to the File menu "Pick a Type" and choose "Simple Records". The entry create form allows you to 
+define a number of  fields (or columns). You specify one field per row and the specification takes the form:
++pre
+#comment
+field_name_1 attribute1 value1  attribute2 value2 ... 
+field_name_2 attribute1 value1  attribute2 value2 ... 
+...
+field_name_N attribute1 value1  attribute2 value2 ... 
+-pre
+
+For example, here is a set of fields for tracking weight and physical activity:
++pre
+#field  name value attributes
+date type date label "The Date"
+weight default 170
+hours_gym type double  default 0
+hours_walking default 0
+hours_running default 0
+hours_biking default 0
+-pre
+
+This results in a record add form:<br>
+<img src=add1.png>
+<p>
+
+
+:h2 Field Attributes
+The attributes of a field include:
+<ul>
+<li> <i>type &lt;field type&gt;</i> The type of the field. May be "date", "double", "integer", "string"
+<li> <i>label &lt;some label&gt;</i> The label to use for the field
+<li> <i>description &lt;some description&gt;</i> Extra description for the field
+<li> <i>values &lt;value1,value2,...,valueN&gt;</i> A comma separated list of enumerated values for string fields.
+<li> <i>rows &lt;number of rows&gt;</i> This shows a text area for string fields in the edit form
+<li> <i>default  &lt;default value&gt;</i> The default value for the field.
+<li> <i>showTime &lt;true|false&gt;</i> Show time along with date in the forms.
+</ul>
+
+:h2 Overriding the display
+The default display of the simple records entry includes a link to the "Add Record" and "Edit Records" forms, a line chart and a table of the data. This display can easily be changed by simply setting the description of the entry to be "wiki" text (more info <a href="{{root}}/userguide/wikitext.html">here</a>). An example is shown below. The {<noop>{simple_add}} tag includes the "Add Record" and "Edit Records" links.
+<nowiki>
+<pre>
++section  title="{{name}}"
+{{simple_add}}
+{{group showMenu="true" layoutType="table"   showTitle="false"}}
+{{display  type="table"  height="400"   layoutHere="true"  showMenu="true"  showTitle="true"  }} 
+</pre>
+</nowiki>
+
+
+
+-section
+
+

@@ -88,6 +88,7 @@ public class RecordField {
     /** _more_ */
     public static final String TYPE_DATE = "date";
 
+
     /** _more_ */
     public static final String TYPE_DOUBLE = "double";
 

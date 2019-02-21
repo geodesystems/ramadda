@@ -3907,9 +3907,8 @@ public class Repository extends RepositoryBase implements RequestHandler,
                     inputStream = new ByteArrayInputStream(bytes);
                 } else if (path.endsWith(".html")) {
                     String html = IOUtil.readInputStream(inputStream);
-                    html = html.replace("${urlroot}", urlBase);
-                    html = html.replace("${root}", urlBase);
-                    html = html.replace("${version}",
+                    html = getPageHandler().applyBaseMacros(html);
+                    html = html.replaceAll("\\${version}",
                                         getProperty(PROP_BUILD_VERSION,
                                             "1.0"));
                     html = html.replace("${hostname}",
@@ -3961,8 +3960,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
                 inputStream = new ByteArrayInputStream(bytes);
             } else if (path.endsWith(".html")) {
                 String html = IOUtil.readInputStream(inputStream);
-                html = html.replace("${urlroot}", urlBase);
-                html = html.replace("${root}", urlBase);
+                html = getPageHandler().applyBaseMacros(html);
                 html = html.replace("${hostname}", request.getServerName());
                 if(path.indexOf(".wiki.")>=0|| html.startsWith("<wiki>")) {
                     html = getWikiManager().wikify(request,  html);

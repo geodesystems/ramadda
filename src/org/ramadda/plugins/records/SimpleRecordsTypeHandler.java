@@ -14,7 +14,7 @@
 * limitations under the License.
 */
 
-package org.ramadda.geodata.point;
+package org.ramadda.plugins.records;
 
 
 import org.ramadda.data.point.text.*;
@@ -155,9 +155,10 @@ public class SimpleRecordsTypeHandler extends PointTypeHandler {
                 line.append(":");
                 String value = request.getString(field.getName(), "");
                 if (Misc.equals(field.getType(), "date")) {
-                    value += "T"
-                             + request.getString(field.getName() + ".time",
-                                 "");
+                    String time = request.getString(field.getName() + ".time","").trim();
+                    if(time.length()>0) {
+                        value += "T" + time;
+                    }
                 }
                 value = cleanValue(value);
                 line.append(value);
@@ -188,6 +189,7 @@ public class SimpleRecordsTypeHandler extends PointTypeHandler {
                 }
                 String rows = (String) field.getProperty("rows", null);
                 String dflt = (String) field.getProperty("default", "");
+                boolean showTime = Misc.equals("true", field.getProperty("showTime", "false"));
                 String widget;
                 List   values = (List) field.getProperty("values", null);
                 if (values != null) {
@@ -198,7 +200,7 @@ public class SimpleRecordsTypeHandler extends PointTypeHandler {
                 } else if (Misc.equals(field.getType(), "date")) {
                     widget = getDateHandler().makeDateInput(request,
                             field.getName(), "flexiform", new Date(),
-                            getEntryUtil().getTimezone(entry));
+                                                            getEntryUtil().getTimezone(entry), showTime);
                 } else {
                     widget = HtmlUtils.input(field.getName(), dflt, extra);
                 }
@@ -248,6 +250,7 @@ public class SimpleRecordsTypeHandler extends PointTypeHandler {
                 sb.append(HtmlUtils.hidden("row" + cnt, "true"));
                 for (int i = 0; i < cols.size(); i++) {
                     RecordField field = fields.get(i);
+                    boolean showTime = Misc.equals("true", field.getProperty("showTime", "false"));
                     String      col   = cols.get(i);
                     sb.append("<td>");
                     col = col.replaceAll("\"", "&quote;");
@@ -266,7 +269,7 @@ public class SimpleRecordsTypeHandler extends PointTypeHandler {
                         try {
                             widget = getDateHandler().makeDateInput(request,
                                     arg, "flexiform", Utils.parseDate(col),
-                                    getEntryUtil().getTimezone(entry));
+                                                                    getEntryUtil().getTimezone(entry), showTime);
                         } catch (Exception exc) {
                             widget = "Bad date: "
                                      + HtmlUtils.input(arg, col, "");
@@ -307,7 +310,10 @@ public class SimpleRecordsTypeHandler extends PointTypeHandler {
                     }
                     String value = request.getString(arg);
                     if (Misc.equals(field.getType(), "date")) {
-                        value += "T" + request.getString(arg + ".time", "");
+                        String time = request.getString(arg + ".time", "").trim();
+                        if(time.length()>0) {
+                            value += "T" + time;
+                        }
                     }
                     csv.append(field.getName() + ":" + cleanValue(value));
                 }

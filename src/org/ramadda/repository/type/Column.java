@@ -2039,10 +2039,7 @@ public class Column implements DataTypes, Constants {
         }
 
         if (help != null) {
-            if (help != null) {
-                System.err.println("help:" + help);
-            }
-            formBuffer.append(typeHandler.formEntry(request, "", help));
+            formBuffer.append(typeHandler.formEntry(request, "", getRepository().getPageHandler().applyBaseMacros(help)));
         }
 
 
