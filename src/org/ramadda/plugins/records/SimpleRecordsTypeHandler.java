@@ -122,6 +122,22 @@ public class SimpleRecordsTypeHandler extends PointTypeHandler {
     }
 
 
+    public String getTimeValue(String time) {
+        if(time.length()==0) {
+            System.err.println(" adding time");
+            time = "00:00:00";
+        } else if(time.matches("^\\d\\d?$")) {
+            System.err.println(" adding mm:ss");
+            time +=":00:00";
+        } else if(time.matches("^\\d\\d?:\\d\\d?$")) {
+            System.err.println(" adding ss");
+            time +=":00";
+        }
+        System.err.println("time:" + time);
+        return "T" + time;
+    }
+
+
     /**
      * _more_
      *
@@ -156,10 +172,7 @@ public class SimpleRecordsTypeHandler extends PointTypeHandler {
                 String value = request.getString(field.getName(), "");
                 if (Misc.equals(field.getType(), "date")) {
                     String time = request.getString(field.getName() + ".time","").trim();
-                    if(time.length()==0) {
-                        time = "00:00";
-                    }
-                    value += "T" + time;
+                    value  +=  getTimeValue(time);
                 }
                 value = cleanValue(value);
                 line.append(value);
@@ -329,10 +342,7 @@ public class SimpleRecordsTypeHandler extends PointTypeHandler {
                     String value = request.getString(arg);
                     if (Misc.equals(field.getType(), "date")) {
                         String time = request.getString(arg + ".time", "").trim();
-                        if(time.length()==0) {
-                            time = "00:00";
-                        }
-                        value += "T" + time;
+                        value  +=  getTimeValue(time);
                     }
                     csv.append(field.getName() + ":" + cleanValue(value));
                 }
@@ -532,6 +542,7 @@ public class SimpleRecordsTypeHandler extends PointTypeHandler {
                 String       dflt   = null;
                 String       values = null;
                 String       label  = null;
+                String showTime = null;
                 if (toks.size() == 2) {
                     List<String> args = Utils.parseCommandLine(toks.get(1));
                     for (int i = 0; i < args.size(); i += 2) {
@@ -540,6 +551,8 @@ public class SimpleRecordsTypeHandler extends PointTypeHandler {
                             type = args.get(i + 1);
                         } else if (arg.equals("description")) {
                             desc = args.get(i + 1);
+                        } else if (arg.equals("showTime")) {
+                            showTime = args.get(i + 1);
                         } else if (arg.equals("label")) {
                             label = args.get(i + 1);
                         } else if (arg.equals("rows")) {
@@ -585,6 +598,9 @@ public class SimpleRecordsTypeHandler extends PointTypeHandler {
                     }
                     if (rows != null) {
                         field.setProperty("rows", rows);
+                    }
+                    if (showTime != null) {
+                        field.setProperty("showTime", showTime);
                     }
                     if (dflt != null) {
                         field.setProperty("default", dflt);
