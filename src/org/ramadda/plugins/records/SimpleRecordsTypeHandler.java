@@ -157,8 +157,9 @@ public class SimpleRecordsTypeHandler extends PointTypeHandler {
                 if (Misc.equals(field.getType(), "date")) {
                     String time = request.getString(field.getName() + ".time","").trim();
                     if(time.length()>0) {
-                        value += "T" + time;
+                        time = "00:00";
                     }
+                    value += "T" + time;
                 }
                 value = cleanValue(value);
                 line.append(value);
@@ -178,7 +179,12 @@ public class SimpleRecordsTypeHandler extends PointTypeHandler {
             sb.append(HtmlUtils.hidden("action", "new"));
             sb.append(HtmlUtils.submit("Add Record", ARG_SUBMIT));
             sb.append(HtmlUtils.formTable());
+            boolean skipNextField = false;
             for (RecordField field : fields) {
+                if(skipNextField) {
+                    skipNextField = false;
+                    continue;
+                }
                 String extra = "";
                 String desc  = field.getDescription();
                 if (desc == null) {
@@ -190,13 +196,25 @@ public class SimpleRecordsTypeHandler extends PointTypeHandler {
                 String rows = (String) field.getProperty("rows", null);
                 String dflt = (String) field.getProperty("default", "");
                 boolean showTime = Misc.equals("true", field.getProperty("showTime", "false"));
-                String widget;
+                String widget  = null;
                 List   values = (List) field.getProperty("values", null);
                 if (values != null) {
                     widget = HtmlUtils.select(field.getName(), values, dflt);
                 } else if (rows != null) {
                     widget = HtmlUtils.textArea(field.getName(), dflt,
                             Integer.parseInt(rows), 60);
+                } else if(field.getIsLatitude()) {
+                    /**
+                    MapInfo map = getRepository().getMapManager().createMap(request,
+                                                                            entry, true, null);
+                    widget = map.makeSelector(field.getName(), true,
+                                      new String[] { latLonOk(lat)
+                                                     ? lat + ""
+                                                     : "", latLonOk(lon)
+                                                     ? lon + ""
+                                                     : "" });
+                    skipNextField = true;
+                    */
                 } else if (Misc.equals(field.getType(), "date")) {
                     widget = getDateHandler().makeDateInput(request,
                             field.getName(), "flexiform", new Date(),
@@ -312,8 +330,9 @@ public class SimpleRecordsTypeHandler extends PointTypeHandler {
                     if (Misc.equals(field.getType(), "date")) {
                         String time = request.getString(arg + ".time", "").trim();
                         if(time.length()>0) {
-                            value += "T" + time;
+                            time = "00:00";
                         }
+                        value += "T" + time;
                     }
                     csv.append(field.getName() + ":" + cleanValue(value));
                 }
@@ -534,33 +553,45 @@ public class SimpleRecordsTypeHandler extends PointTypeHandler {
                         }
                     }
                 }
-                RecordField field = new RecordField(id, (label != null)
-                        ? label
-                        : Utils.makeLabel(id), desc, cnt, null);
-                if (type.equals("date")) {
-                    field.setDateFormat(
-                        getDateHandler().getSDF(
-                            "yyyy-MM-dd'T'HH:mm:ss Z",
-                            getEntryUtil().getTimezone(entry)));
-                }
+                if(type.equals("location")) {
+                    RecordField field1 = new RecordField("latitude", "Latitude", desc, cnt, null);
+                    field1.setIsLatitude(true);
+                    field1.setType("double");
+                    cnt++;
+                    RecordField field2 = new RecordField("longitude", "Longitude", desc, cnt, null);
+                    field2.setIsLongitude(true);
+                    field2.setType("double");
+                    recordFields.add(field1);
+                    recordFields.add(field2);
+                } else {
+                    RecordField field = new RecordField(id, (label != null)
+                                                        ? label
+                                                        : Utils.makeLabel(id), desc, cnt, null);
+                    field.setType(type);
+                    if (type.equals("date")) {
+                        field.setDateFormat(
+                                            getDateHandler().getSDF(
+                                                                    "yyyy-MM-dd'T'HH:mm:ss Z",
+                                                                    getEntryUtil().getTimezone(entry)));
+                    }
 
-                field.setType(type);
-                if (type.equals("date") || field.isTypeNumeric()) {
-                    field.setChartable(true);
+                    if (type.equals("date") || field.isTypeNumeric()) {
+                        field.setChartable(true);
+                    }
+                    if (values != null) {
+                        field.setProperty("values",
+                                          StringUtil.split(values, ",", true,
+                                                           true));
+                    }
+                    if (rows != null) {
+                        field.setProperty("rows", rows);
+                    }
+                    if (dflt != null) {
+                        field.setProperty("default", dflt);
+                    }
+                    recordFields.add(field);
+                    cnt++;
                 }
-                if (values != null) {
-                    field.setProperty("values",
-                                      StringUtil.split(values, ",", true,
-                                          true));
-                }
-                if (rows != null) {
-                    field.setProperty("rows", rows);
-                }
-                if (dflt != null) {
-                    field.setProperty("default", dflt);
-                }
-                recordFields.add(field);
-                cnt++;
                 //, attrFormat("yyyy-D")),  attrChartable(),  attrUnit("seconds"), attrLabel("Day Length")),
             }
 
