@@ -279,7 +279,8 @@ public class PollTypeHandler extends BlobTypeHandler {
                                     + "/poll/style.css"));
 
         sb.append(HtmlUtils.p());
-        sb.append(entry.getDescription());
+        
+        sb.append(getWikiManager().wikifyEntry(request,entry,entry.getDescription()));
         sb.append(HtmlUtils.p());
         boolean changed = false;
 
