@@ -156,7 +156,7 @@ public class SimpleRecordsTypeHandler extends PointTypeHandler {
                 String value = request.getString(field.getName(), "");
                 if (Misc.equals(field.getType(), "date")) {
                     String time = request.getString(field.getName() + ".time","").trim();
-                    if(time.length()>0) {
+                    if(time.length()==0) {
                         time = "00:00";
                     }
                     value += "T" + time;
@@ -329,7 +329,7 @@ public class SimpleRecordsTypeHandler extends PointTypeHandler {
                     String value = request.getString(arg);
                     if (Misc.equals(field.getType(), "date")) {
                         String time = request.getString(arg + ".time", "").trim();
-                        if(time.length()>0) {
+                        if(time.length()==0) {
                             time = "00:00";
                         }
                         value += "T" + time;
