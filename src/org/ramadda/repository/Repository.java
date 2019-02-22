@@ -1182,10 +1182,10 @@ public class Repository extends RepositoryBase implements RequestHandler,
                                "repository.properties");
 
             if (new File(localPropertyFile).exists()) {
-                System.err.println("loading local properties:" + localPropertyFile);
+                //                System.err.println("loading local properties:" + localPropertyFile);
                 loadProperties(localProperties, localPropertyFile);
             } else {
-                System.err.println("local properties does not exist:" + localPropertyFile);
+                //                System.err.println("local properties does not exist:" + localPropertyFile);
             }
 
             File[] localFiles =
@@ -1202,16 +1202,17 @@ public class Repository extends RepositoryBase implements RequestHandler,
 
 
             File[] vfiles = getStorageManager().getVolatileDir().listFiles();
-            for (File f : vfiles) {
-                System.err.println("volatile:" + f);
-                if(f==null) continue;
-                if ( !f.toString().endsWith(".properties")) {
-                    continue;
+            if(vfiles!=nul) {
+                for (File f : vfiles) {
+                    if(f==null) continue;
+                    if ( !f.toString().endsWith(".properties")) {
+                        continue;
+                    }
+                    loadProperties(localProperties, f.toString());
+                    System.err.println(
+                                       "RAMADDA: loaded and deleted volatile file:" + f);
+                    f.delete();
                 }
-                loadProperties(localProperties, f.toString());
-                System.err.println(
-                    "RAMADDA: loaded and deleted volatile file:" + f);
-                f.delete();
             }
 
         } catch (Exception exc) {
