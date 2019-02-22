@@ -1421,6 +1421,23 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
     }
 
 
+    public Result processWikify(Request request) throws Exception {
+        String wiki = request.getString("text","");
+        if(request.defined(ARG_ENTRYID)) {
+            if(!request.get("doImports",true)) {
+                request.putExtraProperty("initchart", "added");
+            }
+            Entry entry  = getEntryManager().getEntry(request, request.getString(ARG_ENTRYID,""));
+            wiki  = wikifyEntry(request, entry, wiki);
+        } else {
+            wiki =  wikify(request, wiki);
+        }
+        wiki = getPageHandler().translate(request, wiki);
+        Result  result =  new Result("", new StringBuilder(wiki));
+        result.setShouldDecorate(false);
+        return result;
+    }
+
     /**
      * _more_
      *
@@ -1773,10 +1790,10 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
             String name  = (String) props.get("name");
             String value = (String) props.get("value");
             if ((name != null) && (value != null)) {
-                return HtmlUtils.script("addGlobalDisplayProperty('" + name
-                                        + "','" + value + "');\n");
+                wikiUtil.appendJavascript("addGlobalDisplayProperty('" + name
+                                          + "','" + value + "');\n");
+                return  "";
             }
-
             return "";
         } else if (theTag.equals(WIKI_TAG_PROPERTIES)) {
             return makeEntryTabs(request, wikiUtil, entry, props);
@@ -2597,7 +2614,8 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                         getRepository().getHtdocsUrl(
                             "/lib/slides/slides.min.jquery.js")));
 
-                HtmlUtils.script(sb, js.toString());
+                wikiUtil.appendJavascript(js.toString());
+                //                HtmlUtils.script(sb, js.toString());
 
                 return sb.toString();
             } else {
@@ -3276,10 +3294,12 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
             }
             options.append("}");
 
-            buf.append(
-                HtmlUtils.script(
+wikiUtil.appendJavascript(
+                          //            buf.append(
+                          //                HtmlUtils.script(
                     "$(document).ready(function() {\n $(\"a.popup_image\").fancybox("
-                    + options.toString() + ");\n });\n"));
+                    + options.toString() + ");\n });\n");
+//));
 
             request.putExtraProperty("added fancybox", "yes");
         }
@@ -5197,6 +5217,15 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
         //TODO: We need to keep track of what is getting called so we prevent
         //infinite loops
         String content = wikiUtil.wikify(wikiContent, this, notTags);
+        String js = wikiUtil.getJavascript();
+        if(js.length()>0) {
+            StringBuilder sb = new StringBuilder();
+            sb.append(content);
+            sb.append("\n<!--begin wiki javascript-->\n");
+            sb.append(HtmlUtils.script(js));
+            sb.append("\n<!--end wiki javascript-->\n");
+            content = sb.toString();
+        }
         if ( !wrapInDiv) {
             return content;
         }
@@ -5803,8 +5832,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
             js.append("\nvar displayManager = getOrCreateDisplayManager("
                       + HtmlUtils.quote(mainDivId) + ","
                       + Json.map(topProps, false) + ",true);\n");
-            sb.append(HtmlUtils.script(js.toString()));
-
+            wikiUtil.appendJavascript(js.toString());
             return;
         }
 
@@ -6016,7 +6044,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                   + Json.map(propList, false) + ");\n");
 
         sb.append("\n");
-        sb.append(HtmlUtils.script(js.toString()));
+        wikiUtil.appendJavascript(js.toString());
         //        sb.append(HtmlUtils.script(JQuery.ready(js.toString())));
 
     }
@@ -6052,7 +6080,9 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
             //                    "google.load(\"visualization\", \"1\", {packages:['corechart','table','bar']});\n"));
             HtmlUtils.script(
                 sb,
-                "google.charts.load(\"43\", {packages:['corechart','calendar','table','bar','treemap', 'sankey','wordtree','timeline','gauge']});\n");
+                "HtmlUtils.loadGoogleCharts();\n");
+            //                "google.charts.load(\"43\", {packages:['corechart','calendar','table','bar','treemap', 'sankey','wordtree','timeline','gauge']});\n");
+
             HtmlUtils.importJS(
                 sb, getPageHandler().getCdnPath("/lib/d3/d3.min.js"));
             HtmlUtils.importJS(

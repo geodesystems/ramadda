@@ -42,6 +42,10 @@
   </group>
 
 
+  <group handler="wikimanager">
+      <api request="/wikify"             method="processWikify" />
+   </group>
+
   <group handler="commentmanager">
       <api request="/entry/comments/show"    method="processCommentsShow"/>
       <api request="/entry/comments/add"     method="processCommentsAdd"      actions="comment"/>

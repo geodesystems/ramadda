@@ -30,6 +30,7 @@ function RamaddaNotebookDisplay(displayManager, id, properties) {
                 this.layoutCells();
             } else {
                 this.cells.push(this.addCell("html:hello world"));
+                this.cells.push(this.addCell("wiki:hello world"));
                 this.cells.push(this.addCell("js:var x = 'hello world';\nreturn x"));
                 this.cells.push(this.addCell("sh:ls"));
             }
@@ -58,6 +59,39 @@ function RamaddaNotebookDisplay(displayManager, id, properties) {
                     cell.clearOutput();
                 }
         },
+
+       moveCellUp: function(cell) {
+          var cells = [];
+          var newCell = null;
+          var idx = 0;
+          for(var i=0;i<this.cells.length;i++) {
+               if(cell.id == this.cells[i].id) {
+                   idx = i;
+                   break;
+                }
+          }
+          if(idx==0) return;
+          this.cells.splice(idx,1);
+          this.cells.splice(idx-1,0, cell);
+          this.layoutCells();
+          cell.focus();
+       },
+       moveCellDown: function(cell) {
+          var cells = [];
+          var newCell = null;
+          var idx = 0;
+          for(var i=0;i<this.cells.length;i++) {
+               if(cell.id == this.cells[i].id) {
+                   idx = i;
+                   break;
+                }
+          }
+          if(idx==this.cells.length-1) return;
+          this.cells.splice(idx,1);
+          this.cells.splice(idx+1,0, cell);
+          this.layoutCells();
+          cell.focus();
+       },
 
        newCellAbove: function(cell) {
                 var cells = [];
@@ -180,13 +214,20 @@ function RamaddaNotebookCell(notebook, id, content) {
             this.input = this.jq(ID_INPUT);
             this.output = this.jq(ID_OUTPUT);
             this.menuButton.click(function() {
+                    var space = "&nbsp;&nbsp;";
                     var menu = "";
-                    menu += HtmlUtils.div(["class", "ramadda-link","what","run"],"Run (shift-return)")+"<br>";
-                    menu += HtmlUtils.div(["class", "ramadda-link","what","runall"],"Run All (ctrl-return)")+"<br>";
-                    menu += HtmlUtils.div(["class", "ramadda-link","what","clear"],"Clear")+"<br>";
-                    menu += HtmlUtils.div(["class", "ramadda-link","what","clearall"],"Clear All")+"<br>";
-                    menu += HtmlUtils.div(["class", "ramadda-link","what","newabove"],"New Cell Above")+"<br>";
-                    menu += HtmlUtils.div(["class", "ramadda-link","what","newbelow"],"New Cell Below")+"<br>";
+                    menu += "<b>Run:</b> ";
+                    menu += HtmlUtils.div(["title","shift-return", "class", "ramadda-link","what","run"],"This Cell")+space;
+                    menu += HtmlUtils.div(["title","ctrl-return","class", "ramadda-link","what","runall"],"All")+"<br>";
+                    menu += "<b>Clear:</b> ";
+                    menu += HtmlUtils.div(["class", "ramadda-link","what","clear"],"This Cell")+space;
+                    menu += HtmlUtils.div(["class", "ramadda-link","what","clearall"],"All")+"<br>";
+                    menu += "<b>Move:</b> ";
+                    menu += HtmlUtils.div(["title","ctrl-^", "class", "ramadda-link","what","moveup"],"Up")+space;
+                    menu += HtmlUtils.div(["title","ctrl-v","class", "ramadda-link","what","movedown"],"Down")+"<br>";
+                    menu += "<b>New Cell:</b> ";
+                    menu += HtmlUtils.div(["class", "ramadda-link","what","newabove"],"Above")+space;
+                    menu += HtmlUtils.div(["class", "ramadda-link","what","newbelow"],"Below")+"<br>";
                     menu += HtmlUtils.div(["class", "ramadda-link","what","delete"],"Delete")+"<br>";
                     menu += HtmlUtils.div(["class", "ramadda-link","what","help"],"Help")+"<br>";
                     var popup =_this.jq(ID_MENU);
@@ -209,6 +250,10 @@ function RamaddaNotebookCell(notebook, id, content) {
                             _this.clearOutput();
                         } else  if(what == "clearall") {
                             _this.notebook.clearOutput();
+                        } else  if(what == "moveup") {
+                            _this.notebook.moveCellUp(_this);
+                        } else  if(what == "movedown") {
+                            _this.notebook.moveCellDown(_this);
                         } else  if(what == "newabove") {
                             _this.notebook.newCellAbove(_this);
                         } else  if(what == "newbelow") {
@@ -239,22 +284,31 @@ function RamaddaNotebookCell(notebook, id, content) {
             this.input.on('input selectionchange propertychange', function() {
                     _this.calculateInputHeight();
                 });
-            this.input.keypress(function(e) {
-                if (e.which == 0) {
+            this.input.keydown(function(e) {
+                var key =e.key;
+                if(key =='v' && e.ctrlKey) {
+                    _this.notebook.moveCellDown(_this);
                     return;
                 }
-                if (e.which == 13  && e.shiftKey)  {
-                    if (e.preventDefault) {
-                        e.preventDefault();
-                    }
-                    _this.doProcess();
+                if(key ==6 && e.ctrlKey) {
+                    _this.notebook.moveCellUp(_this);
+                    return;
                 }
-                if (e.which == 13  && e.ctrlKey)  {
-                    if (e.preventDefault) {
-                        e.preventDefault();
+                });
+            this.input.keypress(function(e) {
+                var key =e.key;
+                if (key == 'Enter') {
+                    if(e.shiftKey)  {
+                        if (e.preventDefault) {
+                            e.preventDefault();
+                        }
+                        _this.doProcess();
+                    } else  if (e.ctrlKey)  {
+                        if (e.preventDefault) {
+                            e.preventDefault();
+                        }
+                        _this.notebook.processCells();
                     }
-
-                    _this.notebook.processCells();
                 }
 
             });
@@ -294,7 +348,7 @@ function RamaddaNotebookCell(notebook, id, content) {
             var type = "html";
             var blob = "";
             var commands = value.split("\n");
-            var types = ["html","sh","js"];
+            var types = ["html","wiki", "sh","js"];
             var ok = true;
             for (var i = 0; i < commands.length; i++) {
                 if(!ok) break;
@@ -353,6 +407,26 @@ function RamaddaNotebookCell(notebook, id, content) {
                 blob = blob.replace(/\n/g,"<br>");
                 return blob;
         },
+        processWiki: function(blob, result) {
+                let _this = this;
+                let divId = HtmlUtils.getUniqueId();
+                var callback = function(html) {
+                    var arr = html.match(/^([\S\s]*)<!--begin wiki javascript-->([\S\s]*)$/);
+                    if(arr && arr.length==3) {
+                        $("#" + divId).html("X:" + arr[1]);
+                        console.log(arr[1]);
+                        let js = arr[2];
+                        var f = function() {
+                            $("#" + divId).append(js);
+                        }
+                        setTimeout(f,1000);
+                    }
+                    Utils.initContent(_this.getDomId(ID_OUTPUT));
+                }
+                GuiUtils.loadHtml(ramaddaBaseUrl+"/wikify?doImports=false&entryid="+ this.notebook.getProperty("entryId","") +"&text=" +  encodeURIComponent(blob),
+                                  callback);
+                return  HtmlUtils.div(["style","", "id",divId],"Processing...");
+            },
         processSh: function(blob, result) {
                 var r = "";
                 var lines =blob.split("\n");
@@ -397,6 +471,8 @@ function RamaddaNotebookCell(notebook, id, content) {
                 }
                 if(type == "html") {
                     return this.processHtml(blob,result);
+                } else if(type == "wiki") {
+                    return this.processWiki(blob,result);
                 } else if(type == "js") {
                     return this.processJs(blob,result);
                 } else {

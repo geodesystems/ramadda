@@ -27,7 +27,10 @@ var icon_zoom_out = ramaddaBaseUrl + "/icons/magnifier_zoom_out.png";
 var icon_menuarrow = ramaddaBaseUrl + "/icons/downdart.gif";
 var icon_blank = ramaddaBaseUrl + "/icons/blank.gif";
 var icon_menu = ramaddaBaseUrl + "/icons/menu.png";
-var uniqueCnt = 0;
+
+if(!window["uniqueCnt"]) {
+    window["uniqueCnt"]=  1;
+}
 
 function noop() {}
 
@@ -291,15 +294,13 @@ var Utils = {
     getPageLoaded: function() {
         return this.pageLoaded;
     },
-    initPage: function() {
-        this.pageLoaded = true;
 
+    initContent: function(parent)  {
+        if(!parent) parent = "";
+        else parent = parent+" ";
         //tableize
-        HtmlUtils.formatTable(".ramadda-table");
-
-
-
-        var snippets = $(".ramadda-snippet-hover");
+        HtmlUtils.formatTable(parent + ".ramadda-table");
+        var snippets = $(parent + ".ramadda-snippet-hover");
         snippets.each(function() {
             let snippet = $(this);
             snippet.parent().hover(function() {
@@ -326,14 +327,20 @@ var Utils = {
         });
 
         //Buttonize
-        $(':submit').button().click(function(event) {});
-        $('.ramadda-button').button().click(function(event) {});
+        $(parent + ':submit').button().click(function(event) {});
+        $(parent + '.ramadda-button').button().click(function(event) {});
         //menuize
         /*
         $(".ramadda-pulldown").selectBoxIt({});
         */
         /* for select menus with icons */
-        $(".ramadda-pulldown-with-icons").iconselectmenu().iconselectmenu("menuWidget").addClass("ui-menu-icons ramadda-select-icon");
+        $(parent + ".ramadda-pulldown-with-icons").iconselectmenu().iconselectmenu("menuWidget").addClass("ui-menu-icons ramadda-select-icon");
+    },
+
+    initPage: function() {
+        this.initContent();
+        this.pageLoaded = true;
+
         if (window["initRamaddaDisplays"]) {
             initRamaddaDisplays();
         }
@@ -611,9 +618,8 @@ var GuiUtils = {
     },
     loadHtml: function(url, callback) {
         var jqxhr = $.get(url, function(data) {
-                alert("success");
-                console.log(data);
-            })
+                callback(data);
+           })
             .done(function() {})
             .fail(function() {
                 console.log("Failed to load url: " + url);
@@ -899,7 +905,8 @@ var HtmlUtils = {
         return "\'" + value + "\'";
     },
     getUniqueId: function() {
-        return "id_" + (uniqueCnt++);
+        var cnt = window["uniqueCnt"]++;
+        return "id_" + cnt;
     },
     inset: function(html, top, left, bottom, right) {
         var attrs = [];
@@ -1165,6 +1172,13 @@ var HtmlUtils = {
 
     classAttr: function(s) {
         return this.attr("class", s);
+    },
+
+    loadedGoogleCharts: false,
+    loadGoogleCharts: function() {
+        if(this.loadedGoogleCharts) return;
+        this.loadedGoogleCharts = true;
+        google.charts.load("43", {packages:['corechart','calendar','table','bar','treemap', 'sankey','wordtree','timeline','gauge']});
     },
 
     idAttr: function(s) {

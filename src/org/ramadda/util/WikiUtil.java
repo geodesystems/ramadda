@@ -88,6 +88,8 @@ public class WikiUtil {
     /** _more_ */
     private Hashtable wikiProperties = new Hashtable();
 
+    private StringBuilder js = new StringBuilder();
+
     /** _more_ */
     private Hashtable<String, String> myVars = new Hashtable<String,
                                                    String>();
@@ -127,6 +129,15 @@ public class WikiUtil {
      */
     public WikiUtil(Hashtable properties) {
         this.properties = properties;
+    }
+
+    public void appendJavascript(String code) {
+        js.append(code);
+        js.append("\n");
+    }
+
+    public String getJavascript() {
+        return js.toString();
     }
 
     /**
