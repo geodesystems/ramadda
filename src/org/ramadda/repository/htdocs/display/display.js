@@ -55,6 +55,23 @@ var PROP_WIDTH = "width";
 
 
 
+function addHandler(obj) {
+    if (window.globalHandlers == null) {
+        window.globalHandlers  = {};
+    }
+    var id = HtmlUtils.getUniqueId();
+    window.globalHandlers[id] = obj;
+    return id;
+}
+
+function getHandler(id) {
+    if (!id || window.globalHandlers == null) {
+        return null;
+    }
+    return window.globalHandlers[id];
+}
+
+
 function initRamaddaDisplays() {
     ramaddaCheckForResize();
     if (window.globalDisplaysList == null) {
@@ -1412,7 +1429,10 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             }
 
             var desc = entry.getDescription();
-            desc = desc.replace(/\n/g, "<br>");
+            if(desc)
+                desc = desc.replace(/\n/g, "<br>");
+            else
+                desc = "";
             html += desc;
 
             var metadata = entry.getMetadata();
@@ -1489,8 +1509,6 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             }
 
             html += HtmlUtils.closeTag(TAG_TABLE);
-
-
             return html;
         },
 
@@ -1540,8 +1558,8 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
                 suffix = "'" + suffix + "'";
             }
 
+            var handler = getHandler(props.handlerId);
             var showIndex = props.showIndex;
-
             var html = "";
             var rowClass = "entryrow_" + this.getId();
             var even = true;
@@ -1568,15 +1586,16 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
                     ATTR_ID,
                     this.getDomId(ID_TREE_LINK + entryIdForDom)
                 ]);
-
-                //                    console.log("ID:" + ID_TREE_LINK+entryIdForDom);
-
-                var toggleCall = this.getGet() + ".toggleEntryDetails(event, '" + entryId + "'," + suffix + ");";
+                var toggleCall = this.getGet() + ".toggleEntryDetails(event, '" + entryId + "'," + suffix + ",'" + props.handlerId +"');";
                 var toggleCall2 = this.getGet() + ".entryHeaderClick(event, '" + entryId + "'," + suffix + "); ";
                 var open = HtmlUtils.onClick(toggleCall, arrow);
                 var extra = "";
+
                 if (showIndex) {
                     extra = "#" + (i + 1) + " ";
+                }
+                if(handler && handler.getEntryPrefix) {
+                    extra += handler.getEntryPrefix(props.handlerId, entry);
                 }
                 var left = HtmlUtils.div([ATTR_CLASS, "display-entrylist-name"], entryMenuButton + " " + open + " " + extra + link + " " + entryName);
                 var details = HtmlUtils.div([ATTR_ID, this.getDomId(ID_DETAILS + entryIdForDom), ATTR_CLASS, "display-entrylist-details"], HtmlUtils.div([ATTR_CLASS, "display-entrylist-details-inner", ATTR_ID, this.getDomId(ID_DETAILS_INNER + entryIdForDom)], ""));
@@ -1849,7 +1868,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             }
             this.toggleEntryDetails(event, entryId);
         },
-        toggleEntryDetails: function(event, entryId, suffix) {
+        toggleEntryDetails: function(event, entryId, suffix, handlerId) {
             var entry = this.getEntry(entryId);
             //                console.log("toggleEntryDetails:" + entry.getName() +" " + entry.getId());
             if (suffix == null) suffix = "";
@@ -1900,7 +1919,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
                     detailsInner.html(HtmlUtils.image(icon_progress));
                     var theDisplay = this;
                     var callback = function(entries) {
-                        theDisplay.displayChildren(entry, entries, suffix);
+                        theDisplay.displayChildren(entry, entries, suffix, handlerId);
                     };
                     var entries = entry.getChildrenEntries(callback);
                 } else {
@@ -1932,7 +1951,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             }
             return selected;
         },
-        displayChildren: function(entry, entries, suffix) {
+         displayChildren: function(entry, entries, suffix, handlerId) {
             if (!suffix) suffix = "";
             var detailsInner = this.jq(ID_DETAILS_INNER + entry.getIdForDom() + suffix);
             var details = this.getEntryHtml(entry, {
@@ -1945,7 +1964,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
                 if (this.showDetailsForGroup) {
                     entriesHtml += details;
                 }
-                entriesHtml += this.getEntriesTree(entries);
+                entriesHtml += this.getEntriesTree(entries,{handlerId:handlerId});
                 detailsInner.html(entriesHtml);
                 this.addEntrySelect();
             }
@@ -1990,7 +2009,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             }
             if (entry == null) {
                 //                    var e = new Error('dummy');
-                console.log("Display.getEntry: entry not found id=" + entryId + " repository=" + ramadda.getRoot());
+                //                console.log("Display.getEntry: entry not found id=" + entryId + " repository=" + ramadda.getRoot());
                 //                    var stack = e.stack;
                 //                    console.log(stack);
                 entry = this.getRamadda().getEntry(entryId, callback);

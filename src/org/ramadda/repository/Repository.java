@@ -1030,14 +1030,17 @@ public class Repository extends RepositoryBase implements RequestHandler,
      */
     public void loadProperties(Properties props, String path)
             throws Exception {
-        //        System.out.println ("RAMADDA:  loading " + path);
         InputStream inputStream = IOUtil.getInputStream(path, getClass());
         if (inputStream == null) {
             System.err.println("RAMADDA:  null properties: " + path);
 
             return;
         }
-        props.load(inputStream);
+        Properties tmp = new Properties();
+        tmp.load(inputStream);
+        System.out.println ("RAMADDA:  loading " + path+" " +  tmp.get("ramadda.wiki.macros"));
+        //        props.load(inputStream);
+        props.putAll(tmp);
         IOUtil.close(inputStream);
     }
 

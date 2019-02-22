@@ -34,11 +34,11 @@ function RamaddaNotebookDisplay(displayManager, id, properties) {
             var html = cells;
             this.setContents(html);
             if (!this.fetchedNotebook) {
+                this.currentEntry = this.getEntry(this.getProperty("entryId",""),entry=>{_this.currentEntry=entry});
                 this.fetchedNotebook = true;
                 var id = this.getProperty("entryId", "");
                 var url = ramaddaBaseUrl + "/getnotebook?entryid=" + id;
                 url += "&id=" + this.getProperty("notebookId", "default_notebook");
-                console.log("fetching:" + url);
                 var jqxhr = $.getJSON(url, function(data) {
                     if (data.error) {
                         _this.setContents(_this.getMessage("Failed to load notebook: " + data.error));
@@ -722,13 +722,6 @@ function RamaddaNotebookCell(notebook, id, content, props) {
                 msg.html(v);
             }
         },
-        clearInput: function() {
-            this.jq(ID_INPUT).val("");
-        },
-        clearOutput: function() {
-            this.writeStatusMessage(null);
-            this.jq(ID_OUTPUT).html("");
-        },
         handleControlKey: function(event) {
             var k = event.which;
         },
@@ -771,10 +764,24 @@ function RamaddaNotebookCell(notebook, id, content, props) {
             help += "<pre>pwd, ls, cd</pre>";
             return help;
         },
+        entries: {},
+
+       cdEntry: function(entryId) {
+                this.currentEntry = this.entries[entryId];
+                this.output.html(this.processCommand_pwd("pwd", []));
+                this.outputUpdated();
+            },
+         getEntryPrefix: function(id, entry) {
+               this.entries[entry.getId()] = entry;
+                var call = "getHandler('" + id +"').cdEntry('" + entry.getId() +"')";
+                return HtmlUtils.div(["style","padding-right:4px;", "title","cd to entry", "onclick", call,"class","ramadda-link"], HtmlUtils.image(ramaddaBaseUrl+"/icons/go.png"));
+         },
         displayEntries: function(entries, divId) {
             this.currentEntries = entries;
+            var handlerId = addHandler(this);
             var html = this.notebook.getEntriesTree(entries, {
-                showIndex: true,
+                handlerId: handlerId,
+                showIndex: false,
                 suffix: "_shell_" + (this.uniqueCnt++)
             });
             $("#" + divId).html(html);
@@ -804,6 +811,9 @@ function RamaddaNotebookCell(notebook, id, content, props) {
             return dflt;
         },
         getCurrentEntry: function(dflt) {
+            if (this.currentEntry == null) {
+                this.currentEntry = this.notebook.currentEntry;
+            }
             if (this.currentEntry == null) {
                 if (Utils.isDefined(dflt)) return dflt;
                 this.rootEntry = new Entry({
@@ -857,16 +867,26 @@ function RamaddaNotebookCell(notebook, id, content, props) {
             this.getLayoutManager().publish('blogentry');
         },
         processCommand_cd: function(line, toks) {
-            if (toks.length == 0) {
-                this.currentEntry = this.rootEntry;
+                let _this = this;
+                console.log("cd:" + toks);
+            if (toks.length <= 1) {
+                this.currentEntry = this.notebook.currentEntry;
                 return this.processCommand_pwd("pwd", []);
             }
-            var index = parseInt(toks[1]) - 1;
-            if (index < 0 || index >= this.currentEntries.length) {
-                return "Out of bounds: between 1 and " + this.currentEntries.length;
+            if(toks[1]=="..") {
+                var entry = this.getCurrentEntry();
+                this.currentEntry = entry.getParentEntry(entry=>{console.log(entry);
+                                                                 if(entry) {
+                                                                     _this.currentEntry=entry;
+                                                                     _this.processCommand_cd(line, toks)
+                                                                         }});
+                if(this.currentEntry) {
+                    return this.processCommand_pwd("pwd", []);
+                }
+                return "Retrieving entry...";
             }
-            this.currentEntry = this.currentEntries[index];
-            return this.processCommand_pwd("pwd", []);
+            return "NA";
+
         },
         processCommand_ls: function(line, toks) {
             let _this = this;
@@ -903,26 +923,8 @@ function RamaddaNotebookCell(notebook, id, content, props) {
             this.entryList = new EntryList(repository, jsonUrl, this, true);
             //                this.writeResult(line);
         },
-        processCommand_taller: function(line, toks) {
-            if (!this.outputHeight) {
-                this.outputHeight = 300;
-            }
-            this.outputHeight += parseInt(this.outputHeight * .30);
-            this.jq(ID_OUTPUT).css('max-height', this.outputHeight);
-            this.jq(ID_OUTPUT).css('height', this.outputHeight);
-        },
-        processCommand_shorter: function(line, toks) {
-            if (!this.outputHeight) {
-                this.outputHeight = 300;
-            }
-            this.outputHeight -= parseInt(this.outputHeight * .30);
-            this.jq(ID_OUTPUT).css('max-height', this.outputHeight);
-            this.jq(ID_OUTPUT).css('height', this.outputHeight);
-        },
-
         processCommand_clear: function(toks) {
             this.clearOutput();
-            this.clearInput();
         },
     });
 

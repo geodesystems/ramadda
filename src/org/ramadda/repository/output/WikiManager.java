@@ -637,6 +637,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
         super.initAttributes();
         displayImports = makeDisplayImports();
         wikiMacros     = new Hashtable<String, String>();
+        System.err.println("WikiManager.initAttrbutes");
         for (String macro :
                 StringUtil.split(
                     getRepository().getProperty("ramadda.wiki.macros", ""),

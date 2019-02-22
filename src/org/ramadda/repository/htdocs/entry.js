@@ -482,7 +482,7 @@ function Ramadda(repositoryRoot) {
                 return null;
             }
             var ramadda = this;
-            var jsonUrl = this.getJsonUrl(id);
+            var jsonUrl = this.getJsonUrl(id)+"&onlyentry=true";
             var jqxhr = $.getJSON(jsonUrl, function(data) {
                     if (GuiUtils.isJsonError(data)) {
                         return;
@@ -692,6 +692,14 @@ function Entry(props) {
         },
         getIsGroup: function() {
             return this.isGroup;
+        },
+        getParentEntry: function(callback, extraArgs) {
+               let _this = this;
+               if(!this.parent) return null;
+               if(this.parentEntry) return this.parentEntry;
+               if(!callback) return null;
+               this.parentEntry = this.getRamadda().getEntry(this.parent, entry=>{_this.parentEntry=entry;callback(entry);});
+               return this.parentEntry;
         },
         getChildrenEntries: function(callback, extraArgs) {
             if (this.childrenEntries != null) {
