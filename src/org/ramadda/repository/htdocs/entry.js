@@ -650,10 +650,12 @@ function Entry(props) {
 
     this.startDate = Utils.parseDate(props.startDate);
     this.endDate = Utils.parseDate(props.endDate);
-    if (this.endDate.getTime() < this.startDate.getTime()) {
-        var tmp = this.startDate;
-        this.startDate = this.endDate;
-        this.endDate = tmp;
+    if(this.endDate && this.startDate) {
+        if (this.endDate.getTime() < this.startDate.getTime()) {
+            var tmp = this.startDate;
+            this.startDate = this.endDate;
+            this.endDate = tmp;
+        }
     }
     //    console.log(props.name +" dttm:" + this.getEndDate());
     this.attributes = [];

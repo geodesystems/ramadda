@@ -26,6 +26,7 @@ var icon_zoom_out = ramaddaBaseUrl + "/icons/magnifier_zoom_out.png";
 
 var icon_menuarrow = ramaddaBaseUrl + "/icons/downdart.gif";
 var icon_blank = ramaddaBaseUrl + "/icons/blank.gif";
+var icon_menu = ramaddaBaseUrl + "/icons/menu.png";
 var uniqueCnt = 0;
 
 function noop() {}

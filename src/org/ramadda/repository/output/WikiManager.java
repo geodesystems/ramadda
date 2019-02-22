@@ -6103,6 +6103,8 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                 HtmlUtils.importJS(
                     sb, getPageHandler().getCdnPath("/display/control.js"));
                 HtmlUtils.importJS(
+                    sb, getPageHandler().getCdnPath("/display/notebook.js"));
+                HtmlUtils.importJS(
                     sb,
                     getPageHandler().getCdnPath("/display/displayplotly.js"));
                 HtmlUtils.importJS(

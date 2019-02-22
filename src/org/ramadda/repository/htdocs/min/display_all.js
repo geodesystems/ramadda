@@ -4966,7 +4966,7 @@ Copyright 2008-2019 Geode Systems LLC
 var DISPLAY_FILTER = "filter";
 var DISPLAY_ANIMATION = "animation";
 var DISPLAY_LABEL = "label";
-var DISPLAY_SHELL = "shell";
+
 
 addGlobalDisplayType({
     type: DISPLAY_FILTER,
@@ -4987,7 +4987,7 @@ addGlobalDisplayType({
     category: "Misc"
 });
 
-//addGlobalDisplayType({type:DISPLAY_SHELL , label: "Analysis Shell",requiresData:false,category:"Misc"});
+
 
 
 function RamaddaFilterDisplay(displayManager, id, properties) {
@@ -5194,58 +5194,423 @@ function RamaddaLabelDisplay(displayManager, id, properties) {
 
 
 
-function RamaddaShellDisplay(displayManager, id, properties) {
-    var ID_INPUT = "input";
-    var ID_OUTPUT = "output";
-    var ID_MESSAGE = "message";
+/**
+Copyright 2008-2019 Geode Systems LLC
+*/
+
+
+
+var DISPLAY_NOTEBOOK = "notebook";
+
+
+addGlobalDisplayType({type:DISPLAY_NOTEBOOK , label: "Notebook",requiresData:false,category:"Misc"});
+
+
+
+function RamaddaNotebookDisplay(displayManager, id, properties) {
     var SUPER;
-    RamaddaUtil.inherit(this, SUPER = new RamaddaDisplay(displayManager, id, DISPLAY_SHELL, properties));
+    var ID_CELLS = "cells";
+    var ID_CELL = "cell";
+    RamaddaUtil.inherit(this, SUPER = new RamaddaDisplay(displayManager, id, DISPLAY_NOTEBOOK, properties));
     addRamaddaDisplay(this);
     RamaddaUtil.defineMembers(this, {
-        history: [],
-        historyIndex: -1,
-        rootEntry: null,
-        currentEntry: null,
-        currentEntries: [],
-        currentOutput: null,
-        currentInput: null,
+        cells:[],
+        cellId:0,
         initDisplay: function() {
             var _this = this;
             this.createUI();
-            var msg = HtmlUtils.div([ATTR_CLASS, "display-shell-message", ATTR_ID, this.getDomId(ID_MESSAGE)], "");
-            var output = HtmlUtils.div([ATTR_CLASS, "display-shell-output", ATTR_ID, this.getDomId(ID_OUTPUT)], "");
-            var input = HtmlUtils.tag(TAG_INPUT, ["placeholder", "Enter JS here", ATTR_CLASS, "display-shell-input", ATTR_ID, this.getDomId(ID_INPUT)]);
-            var html = msg + output + input;
+            var cells = HtmlUtils.div([ATTR_CLASS, "display-notebook-cells", ATTR_ID, this.getDomId(ID_CELLS)], "");
+            var html = cells;
             this.setContents(html);
+            if(this.cells.length>0) {
+                this.layoutCells();
+            } else {
+                this.cells.push(this.addCell("html:hello world"));
+                this.cells.push(this.addCell("js:var x = 'hello world';\nreturn x"));
+                this.cells.push(this.addCell("sh:ls"));
+            }
+            this.cells[0].focus();
+        },
+        layoutCells: function() {
+             this.jq(ID_CELLS).html("");
+             for(var i=0;i<this.cells.length;i++) {
+                  var cell = this.cells[i];
+                  this.jq(ID_CELLS).append(HtmlUtils.div([ATTR_CLASS, "display-notebook-cell", ATTR_ID, cell.id], ""));
+                  cell.createCell();
+              }
+        },
 
-            if (this.currentOutput) this.getOutput().html(this.currentOutput);
-            if (this.currentInput) this.getInput().val(this.currentInput);
+        addCell: function(content) {
+            var cellId = this.getId() +"_" + this.cellId;
+            this.cellId++;
+            this.jq(ID_CELLS).append(HtmlUtils.div([ATTR_CLASS, "display-notebook-cell", ATTR_ID, cellId], ""));
+            var cell = new RamaddaNotebookCell(this,cellId, content);
+            cell.createCell();
+            return cell;
+         },
+        clearOutput: function() {
+                for(var i=0;i<this.cells.length;i++) {
+                    var cell = this.cells[i];
+                    cell.clearOutput();
+                }
+        },
+
+       newCellAbove: function(cell) {
+                var cells = [];
+                var newCell = null;
+                for(var i=0;i<this.cells.length;i++) {
+                    if(cell.id == this.cells[i].id) {
+                        newCell = this.addCell();
+                        cells.push(newCell);
+                    }
+                    cells.push(this.cells[i]);
+                }
+                this.cells = cells;
+                this.layoutCells();
+                newCell.focus();
+            },
+
+       newCellBelow: function(cell) {
+                var cells = [];
+                var newCell = null;
+                for(var i=0;i<this.cells.length;i++) {
+                    cells.push(this.cells[i]);
+                    if(cell.id == this.cells[i].id) {
+                        newCell = this.addCell();
+                        cells.push(newCell);
+                    }
+                }
+                this.cells = cells;
+                this.layoutCells();
+                newCell.focus();
+            },
+       deleteCell: function(cell) {
+                cell.jq(ID_CELL).remove();
+                var cells = [];
+                for(var i=0;i<this.cells.length;i++) {
+                    if(cell.id != this.cells[i].id) {
+                        cells.push(this.cells[i]);
+                    }
+                }
+                this.cells = cells;
+                if(this.cells.length==0) {
+                    this.cells.push(this.addCell());
+                }
+        },
+        processCells: function() {
+                for(var i=0;i<this.cells.length;i++) {
+                    var cell = this.cells[i];
+                    if(!cell.doProcess()) {
+                        break;
+                    }
+                }
+                    
+        }
+
+    });
+}
 
 
-            this.jq(ID_INPUT).keypress(function(e) {
+function nbClear() {
+    notebookState.cell.notebook.clearOutput();
+}
+
+function nbStop() {
+    notebookState.stop = true;
+}
+
+var notebookState = {
+    cell:null,
+    stop:false,
+    displayNotebookResult:null,
+}
+
+
+function RamaddaNotebookCell(notebook, id, content) {
+    this.notebook = notebook;
+    this.id = id;
+    this.title = "";
+    var ID_CELL = "cell";
+    var ID_GUTTER = "gutter";
+    var ID_INPUT_GUTTER = "inputgutter";
+    var ID_OUTPUT_GUTTER = "inputgutter";
+    var ID_HEADER = "header";
+    var ID_INPUT = "input";
+    var ID_OUTPUT = "output";
+    var ID_MESSAGE = "message";
+    var ID_MENU_BUTTON = "menubutton";
+    var ID_MENU = "menu";
+    let SUPER  = new DisplayThing(id, {});
+    RamaddaUtil.inherit(this, SUPER);
+    RamaddaUtil.defineMembers(this, {
+        inputRows:1,
+        content:content,
+        outputHtml:"",
+        createCell: function() {
+            if(this.content == null) this.content= "html:";
+            var _this = this;
+            var gutter = HtmlUtils.div([ATTR_CLASS, "display-notebook-gutter", ATTR_ID, this.getDomId(ID_GUTTER)], "");
+            var header = HtmlUtils.div([ATTR_CLASS, "display-notebook-header", ATTR_ID, this.getDomId(ID_HEADER)], "");
+            var input = HtmlUtils.textarea(TAG_INPUT, this.content, ["rows", this.inputRows, ATTR_CLASS, "display-notebook-input", ATTR_ID, this.getDomId(ID_INPUT)]);
+
+            input = HtmlUtils.div(["class", "display-notebook-input-container"], input);
+            var output = HtmlUtils.div([ATTR_CLASS, "display-notebook-output", ATTR_ID, this.getDomId(ID_OUTPUT)], this.outputHtml);
+            output = HtmlUtils.div(["class", "display-notebook-output-container"], output);
+            var menu = HtmlUtils.div(["id", this.getDomId(ID_MENU),"class","ramadda-popup"],"");
+            var inputGutter = HtmlUtils.div(["class", "display-notebook-gutter", ATTR_ID, this.getDomId(ID_INPUT_GUTTER)],
+                                            menu +
+                                            HtmlUtils.div(["class", "display-notebook-menu-button","id", this.getDomId(ID_MENU_BUTTON)],HtmlUtils.image(icon_menu,[])));
+            var outputGutter = HtmlUtils.div(["class", "display-notebook-gutter", ATTR_ID, this.getDomId(ID_OUTPUT_GUTTER)]);
+
+            var html = header+
+                HtmlUtils.tag("table",["cellspacing","0", "cellpadding", "0", "width","100%","border","0"],HtmlUtils.tr(["valign","top"],
+                                                                                 HtmlUtils.td(["width","5","class", "display-notebook-gutter-container"],inputGutter) +
+                                                      HtmlUtils.td([],input)) +
+                              HtmlUtils.tr(["valign","top"],
+                                           HtmlUtils.td(["width","5","class", "display-notebook-gutter-container"],outputGutter) +
+                                           HtmlUtils.td([],output)));
+            html= HtmlUtils.div(["id", this.getDomId(ID_CELL)],html);
+            $("#" + this.id).html(html);
+            this.menuButton = this.jq(ID_MENU_BUTTON);
+            this.cell = this.jq(ID_CELL);
+            this.input = this.jq(ID_INPUT);
+            this.output = this.jq(ID_OUTPUT);
+            this.menuButton.click(function() {
+                    var menu = "";
+                    menu += HtmlUtils.div(["class", "ramadda-link","what","run"],"Run (shift-return)")+"<br>";
+                    menu += HtmlUtils.div(["class", "ramadda-link","what","runall"],"Run All (ctrl-return)")+"<br>";
+                    menu += HtmlUtils.div(["class", "ramadda-link","what","clear"],"Clear")+"<br>";
+                    menu += HtmlUtils.div(["class", "ramadda-link","what","clearall"],"Clear All")+"<br>";
+                    menu += HtmlUtils.div(["class", "ramadda-link","what","newabove"],"New Cell Above")+"<br>";
+                    menu += HtmlUtils.div(["class", "ramadda-link","what","newbelow"],"New Cell Below")+"<br>";
+                    menu += HtmlUtils.div(["class", "ramadda-link","what","delete"],"Delete")+"<br>";
+                    menu += HtmlUtils.div(["class", "ramadda-link","what","help"],"Help")+"<br>";
+                    var popup =_this.jq(ID_MENU);
+                    popup.html(HtmlUtils.div(["class", "ramadda-popup-inner"], menu));
+                    popup.show();
+                    popup.position({
+                            of: _this.menuButton,
+                                my: "left top",
+                                at: "right top",
+                        collision: "fit fit"
+                    });
+                    popup.find(".ramadda-link").click(function(){
+                        var what = $(this).attr("what");
+                        popup.hide();
+                        if(what == "run") {
+                            _this.doProcess();
+                        } else  if(what == "runall") {
+                            _this.notebook.processCells();
+                        } else  if(what == "clear") {
+                            _this.clearOutput();
+                        } else  if(what == "clearall") {
+                            _this.notebook.clearOutput();
+                        } else  if(what == "newabove") {
+                            _this.notebook.newCellAbove(_this);
+                        } else  if(what == "newbelow") {
+                            _this.notebook.newCellBelow(_this);
+                        } else  if(what == "help") {
+                            var win = window.open(ramaddaBaseUrl+"/userguide/wikidisplay.html#notebook", '_blank');
+                            win.focus();
+                        } else  if(what == "delete") {
+                            _this.askDelete();
+                        }
+                    });
+
+                });
+            var hoverIn = function() {
+                _this.menuButton.css("display","block");
+                _this.cell.find(".display-notebook-gutter-container").css("background","rgb(250,250,250)");
+                _this.cell.find(".display-notebook-gutter-container").css("border-right","1px #ccc solid");   
+            } 
+           var hoverOut = function() {
+               _this.jq(ID_MENU).hide();
+                _this.menuButton.css("display","none");
+                _this.cell.find(".display-notebook-gutter-container").css("background","#fff");
+                _this.cell.find(".display-notebook-gutter-container").css("border-right","1px #fff solid");   
+            }
+            this.cell.hover(hoverIn, hoverOut);
+            //            this.output.hover(hoverIn, hoverOut);
+            this.calculateInputHeight();
+            this.input.on('input selectionchange propertychange', function() {
+                    _this.calculateInputHeight();
+                });
+            this.input.keypress(function(e) {
                 if (e.which == 0) {
                     return;
                 }
-
-                if (e.ctrlKey) {
-                    _this.handleControlKey(e);
-                    return;
+                if (e.which == 13  && e.shiftKey)  {
+                    if (e.preventDefault) {
+                        e.preventDefault();
+                    }
+                    _this.doProcess();
                 }
+                if (e.which == 13  && e.ctrlKey)  {
+                    if (e.preventDefault) {
+                        e.preventDefault();
+                    }
 
-                //return
-                if (e.which != 13) {
-                    return;
+                    _this.notebook.processCells();
                 }
-
-
-                if (e.preventDefault) {
-                    e.preventDefault();
-                }
-                var input = _this.jq(ID_INPUT).val();
-                _this.processInput(input);
 
             });
+       },
+        askDelete: function() {
+                let _this = this;
+                var menu = "";
+                menu += "You sure you want to delete this cell?<br>";
+                menu += HtmlUtils.div(["class", "ramadda-link","what","yes"],"Yes")+"<br>";
+                menu += HtmlUtils.div(["class", "ramadda-link","what","cancel"],"No");
+                var popup =_this.jq(ID_MENU);
+                popup.html(HtmlUtils.div(["class", "ramadda-popup-inner"], menu));
+                popup.show();
+                popup.position({
+                        of: this.menuButton,
+                            my: "left top",
+                            at: "right top",
+                            collision: "fit fit"
+                            });
+                popup.find(".ramadda-link").click(function(){
+                        var what = $(this).attr("what");
+                        popup.hide();
+                        if(what == "yes") {
+                            _this.notebook.deleteCell(_this);
+                        }
+                    });
+
+
+         },
+        doProcess: function() {
+            var value = this.input.val();
+            value = value.trim();
+            if (value == "") {
+                return true;
+            }
+            var result = "";
+            var type = "html";
+            var blob = "";
+            var commands = value.split("\n");
+            var types = ["html","sh","js"];
+            var ok = true;
+            for (var i = 0; i < commands.length; i++) {
+                if(!ok) break;
+                value = commands[i].trim();
+                var isType = false;
+                for(var typeIdx=0;typeIdx<types.length;typeIdx++) {
+                    var t = types[typeIdx];
+                    if(value.startsWith(t+":") ) {
+                        var r = {ok:true}
+                        var blobResult = this.processBlob(type,blob,r);
+                        if(blobResult) {
+                            if(blobResult!="") {
+                                blobResult +="<br>";
+                            }
+                            result += blobResult;
+                        }
+                        ok = r.ok;
+                        blob = value.substring((t+":").length);
+                        if(blob!="") blob+="\n";
+                        type = t;
+                        isType = true;
+                        break;
+                    }
+                }
+                if(isType) continue;
+                blob= blob+value +"\n";
+            } 
+           if(ok) {
+                var r = {ok:true}
+                var blobResult = this.processBlob(type,blob,r);
+                if(blobResult) {
+                    if(blobResult!="") {
+                        blobResult +="<br>";
+                    }
+                    result += blobResult;
+                }
+                ok = r.ok;
+            }
+           this.outputHtml  = result;
+            this.output.html(result);
+            return ok;
         },
+       outputUpdated: function() {
+            this.outputHtml =  this.jq(ID_OUTPUT).html();
+            
+        },
+        focus: function() {
+            this.input.focus();
+        },
+        clearOutput: function() {
+            this.output.html("");
+            this.outputHtml  = "";
+        },
+        processHtml: function(blob, result) {
+                blob=blob.trim();
+                blob = blob.replace(/\n/g,"<br>");
+                return blob;
+        },
+        processSh: function(blob, result) {
+                var r = "";
+                var lines =blob.split("\n");
+                for(var i=0;i<lines.length;i++) {
+                    var line = lines[i];
+                    if(line == "") continue;
+                    var toks = line.split(" ");
+                    var command = toks[0].trim();
+                    if (this["processCommand_" + command]) {
+                        r+=this["processCommand_" + command](line, toks);
+                        r+="<br>";
+                    } else {
+                        r += this.processCommand_help(line, toks, "Unknown command: <i>" + command + "</i>");
+                        r+="<br>";
+                    }
+                }
+                return r;
+        },
+         processJs: function(blob, result) {
+                try {
+                    notebookState.stop = false;
+                    notebookState.cell = this;
+                    notebookState.displayNotebookResult = null;
+                    var js = "function nbFunc() {\n" + blob +"\n}\nnotebookState.displayNotebookResult = nbFunc();";
+                    var r = eval(js);
+                    if(notebookState.stop) {
+                        result.ok = false;
+                    }
+                    if(!notebookState.displayNotebookResult) return "";
+                    return notebookState.displayNotebookResult;
+                } catch(e) {
+                    result.ok = false;
+                    var lines = blob.split("\n");
+                    var line = lines[e.lineNumber-2];
+                    return "Error: " + e.message+ "<br>" +HtmlUtils.span(["class","display-notebook-error"], " &gt; " +line);
+                }
+        },
+
+        processBlob: function(type,blob,result) {
+                if(blob=="") {
+                    return "";
+                }
+                if(type == "html") {
+                    return this.processHtml(blob,result);
+                } else if(type == "js") {
+                    return this.processJs(blob,result);
+                } else {
+                    return this.processSh(blob,result);
+                }
+                return "unknown:" + blob;
+        },
+
+
+        calculateInputHeight: function() {
+              this.content = this.input.val();
+              var lines = this.content.split("\n");
+              if(lines.length!=this.inputRows) {
+                  this.inputRows = lines.length;
+                  this.input.attr("rows", Math.max(1,this.inputRows));
+              }
+        },
+
         writeStatusMessage: function(v) {
             var msg = this.jq(ID_MESSAGE);
             if (!v) {
@@ -5271,28 +5636,6 @@ function RamaddaShellDisplay(displayManager, id, properties) {
         },
         handleControlKey: function(event) {
             var k = event.which;
-            var h = this.history;
-            if (h.length <= 0) {
-                return;
-            }
-            var index = this.historyIndex;
-            var nextIndex = -1;
-            if (index < 0 || index >= h.length) {
-                index = h.length;
-            }
-
-
-            if (k == 112) {
-                //P
-                nextIndex = index - 1;
-            } else if (k == 110) {
-                //N
-                nextIndex = index + 1;
-            }
-            if (nextIndex >= 0 && nextIndex < h.length) {
-                this.historyIndex = nextIndex;
-                this.writeInput(h[nextIndex]);
-            }
         },
         writeInput: function(v) {
             var input = this.getInput();
@@ -5310,7 +5653,7 @@ function RamaddaShellDisplay(displayManager, id, properties) {
         },
         writeResult: function(html) {
             this.writeStatusMessage(null);
-            html = HtmlUtils.div([ATTR_CLASS, "display-shell-result"], html);
+            html = HtmlUtils.div([ATTR_CLASS, "display-notebook-result"], html);
             var output = this.jq(ID_OUTPUT);
             output.append(html);
             output.animate({
@@ -5320,37 +5663,28 @@ function RamaddaShellDisplay(displayManager, id, properties) {
             this.currentInput = this.getInput().val();
 
         },
-        addHistory: function(cmd) {
-            if (this.history.length > 0 && this.history[this.history.length - 1] == cmd) {
-                return;
-            }
-            this.history.push(cmd);
-            this.historyIndex = -1;
-        },
         writeError: function(msg) {
             this.writeStatusMessage(msg);
             //                this.writeResult(msg);
         },
         header: function(msg) {
-            return HtmlUtils.div([ATTR_CLASS, "display-shell-header"], msg);
+            return HtmlUtils.div([ATTR_CLASS, "display-notebook-header"], msg);
         },
         processCommand_help: function(line, toks, prefix) {
             var help = "";
             if (prefix != null) help += prefix;
-            help += this.header("RAMADDA Data Explorer Shell Help");
-            help += "Navigation commands:<pre>pwd, ls, cd</pre>";
-            help += "UI commands:<pre>history: ctrl-p, ctrl-n, !!  \nUI: clear, taller, shorter</pre>"
-            this.writeResult(help);
+            help += "<pre>pwd, ls, cd</pre>";
+            return help;
         },
-        uniqueCnt: 0,
-        displayEntries: function(entries) {
+         displayEntries: function(entries, divId) {
             this.currentEntries = entries;
-            var html = this.getEntriesTree(entries, {
+            var html = this.notebook.getEntriesTree(entries, {
                 showIndex: true,
                 suffix: "_shell_" + (this.uniqueCnt++)
             });
-            this.writeResult(html);
-        },
+            $("#"+ divId).html(html);
+            this.outputUpdated();
+            },
         getEntryFromArgs: function(args, dflt) {
             var currentEntries = this.currentEntries;
             if (currentEntries == null) {
@@ -5410,6 +5744,7 @@ function RamaddaShellDisplay(displayManager, id, properties) {
         processCommand_linechart: function(line, toks) {
             this.createPointDisplay(line, toks, DISPLAY_LINECHART);
         },
+
         processCommand_barchart: function(line, toks) {
             this.createPointDisplay(line, toks, DISPLAY_BARCHART);
         },
@@ -5440,16 +5775,16 @@ function RamaddaShellDisplay(displayManager, id, properties) {
             this.processCommand_pwd("pwd", []);
         },
         processCommand_ls: function(line, toks) {
-            var _this = this;
+            let _this = this;
+            let divId = HtmlUtils.getUniqueId();
             var callback = function(children) {
-                _this.displayEntries(children);
+                _this.displayEntries(children, divId);
             };
             var children = this.getCurrentEntry().getChildrenEntries(callback, "");
             if (children != null) {
-                this.displayEntries(children);
-            } else {
-                this.writeStatusMessage("Listing entries...");
-            }
+                setTimeout(function() {_this.displayEntries(children, divId);},1);
+            } 
+            return  HtmlUtils.div(["style","max-height:200px;overflow-y:auto;", "id",divId],"Listing entries...");
         },
         entryListChanged: function(entryList) {
             var entries = entryList.getEntries();
@@ -5493,37 +5828,11 @@ function RamaddaShellDisplay(displayManager, id, properties) {
             this.clearOutput();
             this.clearInput();
         },
-        processInput: function(value) {
-            value = value.trim();
-            if (value == "") {
-                return;
-            }
-            var input = this.jq(ID_INPUT);
-            var output = this.jq(ID_OUTPUT);
-            var commands = value.split(";");
-            for (var i = 0; i < commands.length; i++) {
-                value = commands[i];
-                if (value == "!!") {
-                    if (this.history.length == 0) {
-                        this.writeError("No commands in history");
-                        return;
-                    }
-                    value = this.history[this.history.length - 1];
-                }
-                var toks = value.split(" ");
-                var command = toks[0].trim();
-                if (this["processCommand_" + command]) {
-                    this["processCommand_" + command](value, toks);
-                    this.addHistory(value);
-                    this.clearInput();
-                } else {
-                    this.processCommand_help(value, toks, "Unknown command: <i>" + value + "</i>");
-                    return;
-                }
-            }
-        },
-    });
-}/**
+                });
+
+}
+
+/**
 Copyright 2008-2019 Geode Systems LLC
 */
 
