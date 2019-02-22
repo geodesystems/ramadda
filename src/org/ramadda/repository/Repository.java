@@ -1200,9 +1200,8 @@ public class Repository extends RepositoryBase implements RequestHandler,
                 loadProperties(localProperties, f.toString());
             }
 
-
             File[] vfiles = getStorageManager().getVolatileDir().listFiles();
-            if(vfiles!=nul) {
+            if(vfiles!=null) {
                 for (File f : vfiles) {
                     if(f==null) continue;
                     if ( !f.toString().endsWith(".properties")) {
