@@ -57,6 +57,8 @@ public class QuicktimeTypeHandler extends GenericTypeHandler {
     /** _more_ */
     public static final int IDX_HEIGHT = 1;
 
+    public static final int IDX_AUTOPLAY = 2;
+
 
     /**
      * ctor
@@ -88,6 +90,9 @@ public class QuicktimeTypeHandler extends GenericTypeHandler {
             throws Exception {
         String width  = entry.getValue(IDX_WIDTH, "320");
         String height = entry.getValue(IDX_HEIGHT, "256");
+
+        boolean autoplay = entry.getValue(IDX_AUTOPLAY, "false").equals("true");
+
         String header = getWikiManager().wikifyEntry(request, entry,
                             DFLT_WIKI_HEADER);
         StringBuffer sb = new StringBuffer(header);
@@ -104,11 +109,12 @@ Your browser does not support the video tag.
 
 
 
+        String extra = (autoplay?" autoplay ":"");
         sb.append(HtmlUtils.tag("video", HtmlUtils.attrs(new String[] {
             HtmlUtils.ATTR_SRC, url, HtmlUtils.ATTR_CLASS,
             "ramadda-video-embed", HtmlUtils.ATTR_WIDTH, width,
-            HtmlUtils.ATTR_HEIGHT, height, "autoplay", "false"
-        }) + " controls ", HtmlUtils.tag("source",
+            HtmlUtils.ATTR_HEIGHT, height, 
+        }) + " controls " + extra, HtmlUtils.tag("source",
                                          HtmlUtils.attrs(new String[] {
                                              HtmlUtils.ATTR_SRC,
                                              url }))));
