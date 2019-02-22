@@ -1175,15 +1175,20 @@ public class Repository extends RepositoryBase implements RequestHandler,
 
         MyTrace.msg("init-3");
         try {
+            System.out.println("XXXXX");
             //Now load in the local properties file
             //First load in the repository.properties file
             String localPropertyFile =
                 IOUtil.joinDir(getStorageManager().getRepositoryDir(),
                                "repository.properties");
 
+            System.out.println(" local:" + localPropertyFile);
             if (new File(localPropertyFile).exists()) {
+                System.out.println(" exists:" + localPropertyFile);
                 loadProperties(localProperties, localPropertyFile);
-            } else {}
+            } else {
+                System.out.println(" not exists:" + localPropertyFile);
+            }
 
             File[] localFiles =
                 getStorageManager().getRepositoryDir().listFiles();
@@ -1208,7 +1213,10 @@ public class Repository extends RepositoryBase implements RequestHandler,
                 f.delete();
             }
 
-        } catch (Exception exc) {}
+        } catch (Exception exc) {
+            System.out.println("error loading files:" + exc);
+            exc.printStackTrace();
+        }
 
 
         debug    = getProperty(PROP_DEBUG, false);
