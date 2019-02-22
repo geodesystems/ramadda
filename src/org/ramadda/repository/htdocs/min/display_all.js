@@ -5216,21 +5216,76 @@ function RamaddaNotebookDisplay(displayManager, id, properties) {
     RamaddaUtil.defineMembers(this, {
         cells:[],
         cellId:0,
+        fetchedNotebook: false,
         initDisplay: function() {
-            var _this = this;
+                let _this = this;
             this.createUI();
+
             var cells = HtmlUtils.div([ATTR_CLASS, "display-notebook-cells", ATTR_ID, this.getDomId(ID_CELLS)], "");
             var html = cells;
             this.setContents(html);
+            if(!this.fetchedNotebook) {
+                this.fetchedNotebook = true;
+                var id = this.getProperty("entryId","");
+                var url = ramaddaBaseUrl+"/getnotebook?entryid=" +id;
+                url+="&id=" + this.getProperty("notebookId","default_notebook");
+                console.log("fetching:" + url);
+                var jqxhr = $.getJSON(url, function(data) {
+                        if(data.error) {
+                            _this.setContents(_this.getMessage("Failed to load notebook: " + data.error));
+                            return;
+                        }
+                        if(!Utils.isDefined(data.cells)) {
+                            return;
+                        }
+                        _this.cells = [];
+                        for(var i=0;i<data.cells.length;i++) {
+                            var props = data.cells[i];
+                            _this.cells.push(_this.addCell(props.outputHtml, props));
+                        }
+                        _this.layoutCells();
+                    });
+            }
             if(this.cells.length>0) {
                 this.layoutCells();
             } else {
-                this.cells.push(this.addCell("html:hello world"));
-                this.cells.push(this.addCell("js:var x = 'hello world';\nreturn x"));
-                this.cells.push(this.addCell("sh:ls"));
+                var props = {showEdit:true,}
+                this.cells.push(this.addCell("html:{help}", props));
+                this.processCells();
             }
             this.cells[0].focus();
+
         },
+        saveNotebook: function() {
+            var json = this.getJson();
+            json = JSON.stringify(json,null,2);
+            var args = {
+                entryid:  this.getProperty("entryId",""),
+                notebookId:this.getProperty("notebookId","default_notebook"),
+                notebook: json};
+            var url = ramaddaBaseUrl+"/savenotebook";
+            $.post(url, args, function(result){
+                    if(result.error) {
+                        alert("Error saving notebook: " +result.error);
+                        return;
+                    }
+                    if(result.result!="ok") {
+                        alert("Error saving notebook: " +result.result);
+                        return;
+                    }
+                    alert("Notebook saved");
+                });
+        },
+        getJson: function() {
+                var obj = {
+                    cells:[],
+                };
+                for(var i=0;i<this.cells.length;i++) {
+                    var cell = this.cells[i];
+                    obj.cells.push(cell.getJson());
+                }
+                return obj;
+            },
         layoutCells: function() {
              this.jq(ID_CELLS).html("");
              for(var i=0;i<this.cells.length;i++) {
@@ -5239,12 +5294,12 @@ function RamaddaNotebookDisplay(displayManager, id, properties) {
                   cell.createCell();
               }
         },
-
-        addCell: function(content) {
+                addCell: function(content, props) {
+            if(!props) props = {};
             var cellId = this.getId() +"_" + this.cellId;
             this.cellId++;
             this.jq(ID_CELLS).append(HtmlUtils.div([ATTR_CLASS, "display-notebook-cell", ATTR_ID, cellId], ""));
-            var cell = new RamaddaNotebookCell(this,cellId, content);
+            var cell = new RamaddaNotebookCell(this,cellId, content, props);
             cell.createCell();
             return cell;
          },
@@ -5255,12 +5310,47 @@ function RamaddaNotebookDisplay(displayManager, id, properties) {
                 }
         },
 
+       moveCellUp: function(cell) {
+          var cells = [];
+          var newCell = null;
+          var idx = 0;
+          for(var i=0;i<this.cells.length;i++) {
+               if(cell.id == this.cells[i].id) {
+                   idx = i;
+                   break;
+                }
+          }
+          if(idx==0) return;
+          this.cells.splice(idx,1);
+          this.cells.splice(idx-1,0, cell);
+          this.layoutCells();
+          cell.focus();
+       },
+       moveCellDown: function(cell) {
+          var cells = [];
+          var newCell = null;
+          var idx = 0;
+          for(var i=0;i<this.cells.length;i++) {
+               if(cell.id == this.cells[i].id) {
+                   idx = i;
+                   break;
+                }
+          }
+          if(idx==this.cells.length-1) return;
+          this.cells.splice(idx,1);
+          this.cells.splice(idx+1,0, cell);
+          this.layoutCells();
+          cell.focus();
+       },
+
        newCellAbove: function(cell) {
                 var cells = [];
                 var newCell = null;
                 for(var i=0;i<this.cells.length;i++) {
                     if(cell.id == this.cells[i].id) {
-                        newCell = this.addCell();
+                        newCell = this.addCell(null,{
+                showEdit: true,
+                showHeader: false});
                         cells.push(newCell);
                     }
                     cells.push(this.cells[i]);
@@ -5276,7 +5366,9 @@ function RamaddaNotebookDisplay(displayManager, id, properties) {
                 for(var i=0;i<this.cells.length;i++) {
                     cells.push(this.cells[i]);
                     if(cell.id == this.cells[i].id) {
-                        newCell = this.addCell();
+                        newCell = this.addCell(null,{
+                                showEdit: true,
+                                showHeader: false});
                         cells.push(newCell);
                     }
                 }
@@ -5300,12 +5392,19 @@ function RamaddaNotebookDisplay(displayManager, id, properties) {
         processCells: function() {
                 for(var i=0;i<this.cells.length;i++) {
                     var cell = this.cells[i];
-                    if(!cell.doProcess()) {
+                    if(!cell.processCell()) {
                         break;
                     }
                 }
                     
-        }
+            },
+        toggleAll: function(on) {
+                for(var i=0;i<this.cells.length;i++) {
+                    var cell = this.cells[i];
+                    cell.showEdit = on;
+                    cell.applyStyle();
+                }
+            },
 
     });
 }
@@ -5326,10 +5425,9 @@ var notebookState = {
 }
 
 
-function RamaddaNotebookCell(notebook, id, content) {
+function RamaddaNotebookCell(notebook, id, content, props) {
     this.notebook = notebook;
-    this.id = id;
-    this.title = "";
+
     var ID_CELL = "cell";
     var ID_GUTTER = "gutter";
     var ID_INPUT_GUTTER = "inputgutter";
@@ -5340,53 +5438,133 @@ function RamaddaNotebookCell(notebook, id, content) {
     var ID_MESSAGE = "message";
     var ID_MENU_BUTTON = "menubutton";
     var ID_MENU = "menu";
+    var ID_CELLNAME_INPUT= "cellnameinput";
+    var ID_SHOWHEADER_INPUT= "showheader";
+    var ID_SHOWBORDER_INPUT= "showborder";
+    var ID_SHOWEDIT_INPUT= "showedit";
+    var ID_PINNED_INPUT= "pinned";
     let SUPER  = new DisplayThing(id, {});
     RamaddaUtil.inherit(this, SUPER);
+
     RamaddaUtil.defineMembers(this, {
-        inputRows:1,
-        content:content,
-        outputHtml:"",
+                id:id,
+                inputRows:1,
+                content:content,
+                outputHtml:"",
+                pinned:false,
+                showEdit: false,
+                showHeader: false,
+                showBorder: false,
+                cellName: "",
+                });
+
+    if(props)
+        $.extend(this, props);
+    RamaddaUtil.defineMembers(this, {
+            getJson: function() {
+                return {
+                    id:this.id,
+                        inputRows:this.inputRows,
+                        content:this.content,
+                        outputHtml:this.outputHtml,
+                        pinned:this.pinned,
+                        showEdit:this.showEdit,
+                        showHeader:this.showHeader,
+                        showBorder:this.showBorder,
+                        cellName:this.cellName,
+                        }
+            },
         createCell: function() {
             if(this.content == null) this.content= "html:";
             var _this = this;
-            var gutter = HtmlUtils.div([ATTR_CLASS, "display-notebook-gutter", ATTR_ID, this.getDomId(ID_GUTTER)], "");
-            var header = HtmlUtils.div([ATTR_CLASS, "display-notebook-header", ATTR_ID, this.getDomId(ID_HEADER)], "");
+            var header = HtmlUtils.div([ATTR_CLASS, "display-notebook-header", ATTR_ID, this.getDomId(ID_HEADER)], this.cellName);
             var input = HtmlUtils.textarea(TAG_INPUT, this.content, ["rows", this.inputRows, ATTR_CLASS, "display-notebook-input", ATTR_ID, this.getDomId(ID_INPUT)]);
 
             input = HtmlUtils.div(["class", "display-notebook-input-container"], input);
             var output = HtmlUtils.div([ATTR_CLASS, "display-notebook-output", ATTR_ID, this.getDomId(ID_OUTPUT)], this.outputHtml);
             output = HtmlUtils.div(["class", "display-notebook-output-container"], output);
             var menu = HtmlUtils.div(["id", this.getDomId(ID_MENU),"class","ramadda-popup"],"");
-            var inputGutter = HtmlUtils.div(["class", "display-notebook-gutter", ATTR_ID, this.getDomId(ID_INPUT_GUTTER)],
-                                            menu +
-                                            HtmlUtils.div(["class", "display-notebook-menu-button","id", this.getDomId(ID_MENU_BUTTON)],HtmlUtils.image(icon_menu,[])));
-            var outputGutter = HtmlUtils.div(["class", "display-notebook-gutter", ATTR_ID, this.getDomId(ID_OUTPUT_GUTTER)]);
+            var gutter = HtmlUtils.div(["class", "display-notebook-gutter", ATTR_ID, this.getDomId(ID_INPUT_GUTTER)],
+                                       menu +
+                                       HtmlUtils.div(["class", "display-notebook-menu-button","id", this.getDomId(ID_MENU_BUTTON)],HtmlUtils.image(icon_menu,[])));
 
-            var html = header+
-                HtmlUtils.tag("table",["cellspacing","0", "cellpadding", "0", "width","100%","border","0"],HtmlUtils.tr(["valign","top"],
-                                                                                 HtmlUtils.td(["width","5","class", "display-notebook-gutter-container"],inputGutter) +
-                                                      HtmlUtils.td([],input)) +
-                              HtmlUtils.tr(["valign","top"],
-                                           HtmlUtils.td(["width","5","class", "display-notebook-gutter-container"],outputGutter) +
-                                           HtmlUtils.td([],output)));
+            var table = HtmlUtils.openTag("table",["cellspacing","0", "cellpadding", "0", "width","100%","border","0"]);
+            table += HtmlUtils.tr(["valign","top"],
+                                  HtmlUtils.td(["rowspan","3", "width","5","class", "display-notebook-gutter-container"],gutter) +
+                                  HtmlUtils.td([],header));
+            table+= HtmlUtils.tr(["valign","top"],"\n" +HtmlUtils.td([],input));
+            table+= HtmlUtils.tr(["valign","top"],"\n" +HtmlUtils.td([],output));
+            table+="</table>";
+
+            //            console.log(table);
+            var html = table;
             html= HtmlUtils.div(["id", this.getDomId(ID_CELL)],html);
             $("#" + this.id).html(html);
+            this.header = this.jq(ID_HEADER);
             this.menuButton = this.jq(ID_MENU_BUTTON);
             this.cell = this.jq(ID_CELL);
             this.input = this.jq(ID_INPUT);
             this.output = this.jq(ID_OUTPUT);
+            this.inputContainer = this.cell.find(".display-notebook-input-container");
+            this.applyStyle();
             this.menuButton.click(function() {
+                    var space = "&nbsp;&nbsp;";
                     var menu = "";
-                    menu += HtmlUtils.div(["class", "ramadda-link","what","run"],"Run (shift-return)")+"<br>";
-                    menu += HtmlUtils.div(["class", "ramadda-link","what","runall"],"Run All (ctrl-return)")+"<br>";
-                    menu += HtmlUtils.div(["class", "ramadda-link","what","clear"],"Clear")+"<br>";
-                    menu += HtmlUtils.div(["class", "ramadda-link","what","clearall"],"Clear All")+"<br>";
-                    menu += HtmlUtils.div(["class", "ramadda-link","what","newabove"],"New Cell Above")+"<br>";
-                    menu += HtmlUtils.div(["class", "ramadda-link","what","newbelow"],"New Cell Below")+"<br>";
+                    menu+=HtmlUtils.input(ID_CELLNAME_INPUT,_this.cellName,["placeholder","Cell name","style","width:100%;","xsize","20","id",_this.getDomId(ID_CELLNAME_INPUT)]);
+                    menu+="<br>";
+                    menu+="<table>";
+
+                    menu += "<tr><td align=right><b>Run:</b>&nbsp;</td><td>";
+                    menu += HtmlUtils.div(["title","shift-return", "class", "ramadda-link","what","run"],"This cell")+space;
+                    menu += HtmlUtils.div(["title","ctrl-return","class", "ramadda-link","what","runall"],"All");
+                    menu+="</td></tr>"
+
+                    menu += "<tr valign=top><td align=right><b>Show:</b>&nbsp;</td><td>";
+                    menu+=HtmlUtils.checkbox(_this.getDomId(ID_SHOWEDIT_INPUT),[],
+                                             _this.showEdit) +" Edit" ;
+                    menu+=space;
+                    menu+=HtmlUtils.checkbox(_this.getDomId(ID_SHOWHEADER_INPUT),[],
+                                             _this.showHeader) +" Header" ;
+                    menu+="<br>";
+                    menu+=HtmlUtils.checkbox(_this.getDomId(ID_SHOWBORDER_INPUT),[],
+                                             _this.showBorder) +" Border" ;
+
+                    menu+=space;
+                    menu+=HtmlUtils.checkbox(_this.getDomId(ID_PINNED_INPUT),[],
+                                             _this.pinned) +" Left side" ;
+
+                    menu+="</td></tr>"
+
+
+
+                    menu += "<tr><td align=right><b>Edit:</b>&nbsp;</td><td>";
+                    menu += HtmlUtils.div(["title","ctrl-return","class", "ramadda-link","what","showall"],"Show All");
+                    menu+=space;
+                    menu += HtmlUtils.div(["title","ctrl-return","class", "ramadda-link","what","hideall"],"Hide All");
+                    menu+="</td></tr>"
+
+                    menu += "<tr><td align=right><b>Clear:</b>&nbsp;</td><td>";
+                    menu += HtmlUtils.div(["class", "ramadda-link","what","clear"],"This cell")+space;
+                    menu += HtmlUtils.div(["class", "ramadda-link","what","clearall"],"All");
+                    menu+="</td></tr>"
+
+                    menu += "<tr><td align=right><b>Move:</b>&nbsp;</td><td>";
+                    menu += HtmlUtils.div(["title","ctrl-^", "class", "ramadda-link","what","moveup"],"Up")+space;
+                    menu += HtmlUtils.div(["title","ctrl-v","class", "ramadda-link","what","movedown"],"Down");
+                    menu+="</td></tr>"
+
+                    menu += "<tr><td align=right><b>New Cell:</b>&nbsp;</td><td>";
+                    menu += HtmlUtils.div(["class", "ramadda-link","what","newabove"],"Above")+space;
+                    menu += HtmlUtils.div(["class", "ramadda-link","what","newbelow"],"Below");
+                    menu+="</td></tr>"
+
+
+                    menu+="</table>";
                     menu += HtmlUtils.div(["class", "ramadda-link","what","delete"],"Delete")+"<br>";
+                    menu += HtmlUtils.div(["class", "ramadda-link","what","save"],"Save Notebook")+"<br>";
                     menu += HtmlUtils.div(["class", "ramadda-link","what","help"],"Help")+"<br>";
                     var popup =_this.jq(ID_MENU);
-                    popup.html(HtmlUtils.div(["class", "ramadda-popup-inner"], menu));
+                    popup.html(HtmlUtils.div(["class", "ramadda-popup-inner"], menu)); 
                     popup.show();
                     popup.position({
                             of: _this.menuButton,
@@ -5394,21 +5572,64 @@ function RamaddaNotebookCell(notebook, id, content) {
                                 at: "right top",
                         collision: "fit fit"
                     });
+                    _this.jq(ID_SHOWHEADER_INPUT).focus();
+                    _this.jq(ID_SHOWHEADER_INPUT).change(function(e) {
+                            _this.showHeader= _this.jq(ID_SHOWHEADER_INPUT).is(':checked');
+                            _this.applyStyle();
+                        });
+                    _this.jq(ID_SHOWBORDER_INPUT).change(function(e) {
+                            _this.showBorder= _this.jq(ID_SHOWBORDER_INPUT).is(':checked');
+                            _this.applyStyle();
+                        });
+                    _this.jq(ID_SHOWEDIT_INPUT).change(function(e) {
+                            _this.showEdit= _this.jq(ID_SHOWEDIT_INPUT).is(':checked');
+                            _this.applyStyle();
+                        });
+                    _this.jq(ID_PINNED_INPUT).change(function(e) {
+                            _this.pinned = _this.jq(ID_PINNED_INPUT).is(':checked');
+                            _this.checkMenuButton(false);
+                        });
+
+                    _this.jq(ID_CELLNAME_INPUT).keypress(function(e) {
+                            var keyCode = e.keyCode || e.which;
+                            if (keyCode == 13) {
+                                _this.cellName = $(this).val();
+                                _this.applyStyle();
+                                popup.hide();
+                                return;
+                            }
+                        });
                     popup.find(".ramadda-link").click(function(){
                         var what = $(this).attr("what");
                         popup.hide();
                         if(what == "run") {
-                            _this.doProcess();
+                            _this.processCell();
+                        } else  if(what == "showthis") {
+                            _this.showEdit = true;
+                            _this.applyStyle();
+                        } else  if(what == "hidethis") {
+                            _this.showEdit = false;
+                            _this.applyStyle();
+                        } else  if(what == "showall") {
+                            _this.notebook.toggleAll(true);
+                        } else  if(what == "hideall") {
+                            _this.notebook.toggleAll(false);
                         } else  if(what == "runall") {
                             _this.notebook.processCells();
                         } else  if(what == "clear") {
                             _this.clearOutput();
                         } else  if(what == "clearall") {
                             _this.notebook.clearOutput();
+                        } else  if(what == "moveup") {
+                            _this.notebook.moveCellUp(_this);
+                        } else  if(what == "movedown") {
+                            _this.notebook.moveCellDown(_this);
                         } else  if(what == "newabove") {
                             _this.notebook.newCellAbove(_this);
                         } else  if(what == "newbelow") {
                             _this.notebook.newCellBelow(_this);
+                        } else  if(what == "save") {
+                            _this.notebook.saveNotebook();
                         } else  if(what == "help") {
                             var win = window.open(ramaddaBaseUrl+"/userguide/wikidisplay.html#notebook", '_blank');
                             win.focus();
@@ -5419,15 +5640,11 @@ function RamaddaNotebookCell(notebook, id, content) {
 
                 });
             var hoverIn = function() {
-                _this.menuButton.css("display","block");
-                _this.cell.find(".display-notebook-gutter-container").css("background","rgb(250,250,250)");
-                _this.cell.find(".display-notebook-gutter-container").css("border-right","1px #ccc solid");   
+               _this.checkMenuButton(true);
             } 
            var hoverOut = function() {
                _this.jq(ID_MENU).hide();
-                _this.menuButton.css("display","none");
-                _this.cell.find(".display-notebook-gutter-container").css("background","#fff");
-                _this.cell.find(".display-notebook-gutter-container").css("border-right","1px #fff solid");   
+               _this.checkMenuButton(false);
             }
             this.cell.hover(hoverIn, hoverOut);
             //            this.output.hover(hoverIn, hoverOut);
@@ -5435,25 +5652,66 @@ function RamaddaNotebookCell(notebook, id, content) {
             this.input.on('input selectionchange propertychange', function() {
                     _this.calculateInputHeight();
                 });
-            this.input.keypress(function(e) {
-                if (e.which == 0) {
+            this.input.keydown(function(e) {
+                var key =e.key;
+                if(key =='v' && e.ctrlKey) {
+                    _this.notebook.moveCellDown(_this);
                     return;
                 }
-                if (e.which == 13  && e.shiftKey)  {
-                    if (e.preventDefault) {
-                        e.preventDefault();
-                    }
-                    _this.doProcess();
+                if(key ==6 && e.ctrlKey) {
+                    _this.notebook.moveCellUp(_this);
+                    return;
                 }
-                if (e.which == 13  && e.ctrlKey)  {
-                    if (e.preventDefault) {
-                        e.preventDefault();
+                });
+            this.input.keypress(function(e) {
+                var key =e.key;
+                if (key == 'Enter') {
+                    if(e.shiftKey)  {
+                        if (e.preventDefault) {
+                            e.preventDefault();
+                        }
+                        _this.processCell();
+                    } else  if (e.ctrlKey)  {
+                        if (e.preventDefault) {
+                            e.preventDefault();
+                        }
+                        _this.notebook.processCells();
                     }
-
-                    _this.notebook.processCells();
                 }
 
             });
+       },
+       checkMenuButton: function(vis) {
+            if(vis || this.pinned) {
+                this.menuButton.css("display","block");
+                this.cell.find(".display-notebook-gutter-container").css("background","rgb(250,250,250)");
+                this.cell.find(".display-notebook-gutter-container").css("border-right","1px #ccc solid");   
+                } else {
+                this.menuButton.css("display","none");
+                this.cell.find(".display-notebook-gutter-container").css("background","#fff");
+                this.cell.find(".display-notebook-gutter-container").css("border-right","1px #fff solid");   
+            }
+       },
+       applyStyle: function() {
+                this.checkMenuButton(false);
+                if(this.showHeader) {
+                    this.header.css("display","block");
+                } else {
+                    this.header.css("display","none");
+                }
+                this.header.html(this.cellName);
+                if(this.showEdit) {
+                    this.inputContainer.css("display","block");
+                } else {
+                    this.inputContainer.css("display","none");
+                }
+                if(this.showBorder) {
+                    this.cell.css("border-top","1px #ccc solid");
+                    //                    this.cell.css("border-bottom","1px #ccc solid");
+                } else {
+                    this.cell.css("border-top","1px #fff solid");
+                    //                    this.cell.css("border-bottom","1px #fff solid");
+                }
        },
         askDelete: function() {
                 let _this = this;
@@ -5480,17 +5738,17 @@ function RamaddaNotebookCell(notebook, id, content) {
 
 
          },
-        doProcess: function() {
+         processCell: function() {
             var value = this.input.val();
             value = value.trim();
-            if (value == "") {
-                return true;
-            }
+            var help = "More information <a target=_help href='" + ramaddaBaseUrl +"/userguide/wikidisplay.html#notebook'>here</a>";
+            value = value.replace(/{cellname}/g, this.cellName);
+            value = value.replace(/{help}/g, help);
             var result = "";
             var type = "html";
             var blob = "";
             var commands = value.split("\n");
-            var types = ["html","sh","js"];
+            var types = ["html","wiki", "sh","js"];
             var ok = true;
             for (var i = 0; i < commands.length; i++) {
                 if(!ok) break;
@@ -5533,7 +5791,7 @@ function RamaddaNotebookCell(notebook, id, content) {
             this.output.html(result);
             return ok;
         },
-       outputUpdated: function() {
+        outputUpdated: function() {
             this.outputHtml =  this.jq(ID_OUTPUT).html();
             
         },
@@ -5549,6 +5807,23 @@ function RamaddaNotebookCell(notebook, id, content) {
                 blob = blob.replace(/\n/g,"<br>");
                 return blob;
         },
+        processWiki: function(blob, result) {
+                var id = this.notebook.getProperty("entryId","");
+                var entry = this.getCurrentEntry(null);
+                if(entry) id = entry.getId();
+                let _this = this;
+                let divId = HtmlUtils.getUniqueId();
+                var callback = function(html) {
+                    $("#" + divId).html(html);
+                    Utils.initContent(_this.getDomId(ID_OUTPUT));
+                    _this.outputUpdated();
+                }
+                blob = "{{group showMenu=false}}\n" + blob;
+                GuiUtils.loadHtml(ramaddaBaseUrl+"/wikify?doImports=false&entryid="+ id +"&text=" +  encodeURIComponent(blob),
+                                  callback);
+                var h = HtmlUtils.div(["id",divId],"Processing...");
+                return  h;
+            },
         processSh: function(blob, result) {
                 var r = "";
                 var lines =blob.split("\n");
@@ -5593,6 +5868,8 @@ function RamaddaNotebookCell(notebook, id, content) {
                 }
                 if(type == "html") {
                     return this.processHtml(blob,result);
+                } else if(type == "wiki") {
+                    return this.processWiki(blob,result);
                 } else if(type == "js") {
                     return this.processJs(blob,result);
                 } else {
@@ -5708,8 +5985,9 @@ function RamaddaNotebookCell(notebook, id, content) {
             }
             return dflt;
         },
-        getCurrentEntry: function() {
+          getCurrentEntry: function(dflt) {
             if (this.currentEntry == null) {
+                if(Utils.isDefined(dflt)) return dflt;
                 this.rootEntry = new Entry({
                     id: ramaddaBaseEntry,
                     name: "Root",
@@ -5722,11 +6000,11 @@ function RamaddaNotebookCell(notebook, id, content) {
         processCommand_pwd: function(line, toks) {
             var entry = this.getCurrentEntry();
             var icon = entry.getIconImage([ATTR_TITLE, "View entry"]);
-            var html = this.getEntriesTree([entry], {
+            var html = this.notebook.getEntriesTree([entry], {
                 suffix: "_YYY"
             });
             //                var link  =  HtmlUtils.tag(TAG_A,[ATTR_HREF, entry.getEntryUrl()],icon+" "+ entry.getName());
-            this.writeResult("Current entry:<br>" + html);
+            return "Current entry:<br>" + html;
         },
         createPointDisplay: function(line, toks, displayType) {
             var entry = this.getEntryFromArgs(toks, this.getCurrentEntry());
@@ -5763,16 +6041,14 @@ function RamaddaNotebookCell(notebook, id, content) {
         processCommand_cd: function(line, toks) {
             if (toks.length == 0) {
                 this.currentEntry = this.rootEntry;
-                this.processCommand_pwd("pwd", []);
-                return;
+                return this.processCommand_pwd("pwd", []);
             }
             var index = parseInt(toks[1]) - 1;
             if (index < 0 || index >= this.currentEntries.length) {
-                this.writeError("Out of bounds: between 1 and " + this.currentEntries.length);
-                return;
+                return "Out of bounds: between 1 and " + this.currentEntries.length;
             }
             this.currentEntry = this.currentEntries[index];
-            this.processCommand_pwd("pwd", []);
+            return this.processCommand_pwd("pwd", []);
         },
         processCommand_ls: function(line, toks) {
             let _this = this;

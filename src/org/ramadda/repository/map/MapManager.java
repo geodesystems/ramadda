@@ -64,6 +64,12 @@ import java.util.List;
 public class MapManager extends RepositoryManager implements WikiConstants {
 
     /** _more_ */
+    public static final String ADDED_IMPORTS = "initmap";
+
+
+
+
+    /** _more_ */
     public static final String PROP_SCREENBIGRECTS = "screenBigRects";
 
     /** _more_ */
@@ -329,7 +335,7 @@ public class MapManager extends RepositoryManager implements WikiConstants {
         }
         mapInfo.addProperty("defaultMapLayer", Json.quote(mapLayer));
 
-        String key = KEY2;
+        String key = ADDED_IMPORTS;
         if (request.getExtraProperty(key) == null) {
             mapInfo.addHtml(getHtmlImports(request));
             request.putExtraProperty(key, "");
@@ -338,12 +344,6 @@ public class MapManager extends RepositoryManager implements WikiConstants {
         return mapInfo;
     }
 
-
-    /** _more_ */
-    private static final String KEY1 = "initmap";
-
-    /** _more_ */
-    private static final String KEY2 = "initmap";
 
     /**
      * _more_
@@ -355,7 +355,7 @@ public class MapManager extends RepositoryManager implements WikiConstants {
      */
     public void addMapImports(Request request, Appendable sb)
             throws Exception {
-        String key = KEY1;
+        String key = ADDED_IMPORTS;
         if (request.getExtraProperty(key) == null) {
             sb.append(HtmlUtils.comment("map imports"));
             sb.append(getHtmlImports(request));

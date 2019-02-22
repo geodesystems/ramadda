@@ -986,6 +986,22 @@ public class MetadataManager extends RepositoryManager {
         return metadataTypes;
     }
 
+    public String[] getFileUrl(Request request, Entry entry,
+                               Metadata metadata)
+            throws Exception {
+        MetadataType type = getType(metadata);
+        return type.getFileUrl(request, entry, metadata);
+    }
+
+    public File getFile(Request request, Entry entry,
+                        Metadata metadata, int attr)
+            throws Exception {
+        MetadataType type = getType(metadata);
+        return type.getFile(entry, metadata, attr);
+    }
+
+
+
     /**
      * _more_
      *

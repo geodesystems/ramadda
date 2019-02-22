@@ -381,6 +381,12 @@ This gets draw in maps as a direction indicator.
     </type>
 
 
+    <type
+       name="Wiki Notebook"
+       id="wiki_notebook">
+      <element name="ID" />
+      <element name="File" datatype="file" thumbnail="false"/>
+    </type>
 
 
 </handler>

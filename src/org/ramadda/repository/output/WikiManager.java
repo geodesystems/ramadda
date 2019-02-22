@@ -35,6 +35,7 @@ import org.ramadda.repository.RepositoryUtil;
 import org.ramadda.repository.Request;
 import org.ramadda.repository.Result;
 import org.ramadda.repository.map.MapInfo;
+import org.ramadda.repository.map.MapManager;
 import org.ramadda.repository.metadata.Metadata;
 import org.ramadda.repository.metadata.MetadataType;
 import org.ramadda.repository.search.SearchInfo;
@@ -59,7 +60,9 @@ import ucar.unidata.util.StringUtil;
 import ucar.unidata.util.TwoFacedObject;
 
 
+import java.io.File;
 import java.io.BufferedReader;
+import java.io.FileInputStream;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 
@@ -1426,6 +1429,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
         if(request.defined(ARG_ENTRYID)) {
             if(!request.get("doImports",true)) {
                 request.putExtraProperty("initchart", "added");
+                request.putExtraProperty(MapManager.ADDED_IMPORTS, "added");
             }
             Entry entry  = getEntryManager().getEntry(request, request.getString(ARG_ENTRYID,""));
             wiki  = wikifyEntry(request, entry, wiki);
@@ -1437,6 +1441,104 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
         result.setShouldDecorate(false);
         return result;
     }
+
+    public Result processGetNotebook(Request request) throws Exception {
+        Entry entry  = getEntryManager().getEntry(request, request.getString(ARG_ENTRYID,""));
+        List<Metadata> metadataList =
+            getMetadataManager().findMetadata(request, entry,
+                                              "wiki_notebook", false);
+
+
+        Metadata metadata = null;
+        if(metadataList != null && metadataList.size()>0) {
+            String id = request.getString("id",(String)null);
+            if(!Utils.stringDefined(id)) {
+                metadata  = metadataList.get(0);
+            } else {
+                for(Metadata m: metadataList) {
+                    if(Misc.equals(m.getAttr1(), id)) {
+                        metadata = m;
+                        break;
+                    }
+                }
+            }
+        }
+
+        if(metadata == null) {
+            Result  result =  new Result("", new StringBuilder("{}"),Json.MIMETYPE);
+            result.setShouldDecorate(false);
+            return result;
+        }
+        
+        Result  result =  new Result(new FileInputStream(getMetadataManager().getFile(request, entry, metadata,2)),Json.MIMETYPE);
+        result.setShouldDecorate(false);
+        return result;
+    }
+
+
+    public Result processSaveNotebook(Request request) throws Exception {
+        try {
+            return processSaveNotebookInner(request);
+        } catch(Exception exc) {
+
+            Result  result =  new Result("", new StringBuilder("{'error':'" + exc.getMessage() +"'}"),Json.MIMETYPE);
+            return result;
+        }
+    }
+
+    public Result processSaveNotebookInner(Request request) throws Exception {
+        Entry entry  = getEntryManager().getEntry(request, request.getString(ARG_ENTRYID,""));
+        if (entry == null) {
+            return   new Result("", new StringBuilder("{\"error\":\"cannot find entry\"}"),Json.MIMETYPE);
+        }
+        if (!getAccessManager().canEditEntry(request, entry)) {
+            return   new Result("", new StringBuilder("{\"error\":\"cannot edit entry\"}"),Json.MIMETYPE);
+        }
+
+        List<Metadata> metadataList =
+            getMetadataManager().findMetadata(request, entry,
+                                              "wiki_notebook", false);
+
+        Metadata metadata = null;
+        if(metadataList != null && metadataList.size()>0) {
+            String id = request.getString("id",(String)null);
+            if(!Utils.stringDefined(id)) {
+                metadata  = metadataList.get(0);
+            } else {
+                for(Metadata m: metadataList) {
+                    if(Misc.equals(m.getAttr1(), id)) {
+                        metadata = m;
+                        break;
+                    }
+                }
+            }
+        }
+        String notebook = request.getString("notebook","");
+
+
+        if(metadata == null) {
+            File f = getStorageManager().getTmpFile(request, "notebook.json");
+            IOUtil.writeFile(f, notebook);
+            String theFile = getStorageManager().moveToEntryDir(entry,
+                                                                f).getName();
+            getMetadataManager().addMetadata(
+                                             entry,
+                                             new Metadata(
+                                                          getRepository().getGUID(), entry.getId(),
+                                                          "wiki_notebook", false, 
+                                                          request.getString("id","default_notebook"),
+                                                          theFile,
+                                                          "", "", ""));
+            getEntryManager().updateEntry(null, entry);
+            return   new Result("", new StringBuilder("{\"result\":\"ok\"}"),Json.MIMETYPE);
+        } else  {
+            File file = getMetadataManager().getFile(request, entry, metadata,2);
+            getStorageManager().writeFile(file, notebook);
+            return   new Result("", new StringBuilder("{\"result\":\"ok\"}"),Json.MIMETYPE);
+        }
+    }
+
+
 
     /**
      * _more_
@@ -5217,6 +5319,9 @@ wikiUtil.appendJavascript(
         //TODO: We need to keep track of what is getting called so we prevent
         //infinite loops
         String content = wikiUtil.wikify(wikiContent, this, notTags);
+        if (wrapInDiv) {
+            content =  HtmlUtils.div(content, HtmlUtils.cssClass("wikicontent"))+"\n";
+        }
         String js = wikiUtil.getJavascript();
         if(js.length()>0) {
             StringBuilder sb = new StringBuilder();
@@ -5226,11 +5331,7 @@ wikiUtil.appendJavascript(
             sb.append("\n<!--end wiki javascript-->\n");
             content = sb.toString();
         }
-        if ( !wrapInDiv) {
-            return content;
-        }
-
-        return HtmlUtils.div(content, HtmlUtils.cssClass("wikicontent"));
+        return content;
     }
 
     /**

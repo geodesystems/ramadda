@@ -1561,6 +1561,12 @@ public class StorageManager extends RepositoryManager {
     }
 
 
+    public void writeFile(File oldFile, String contents) throws Exception {
+        checkWriteFile(oldFile);
+        IOUtil.writeFile(oldFile, contents);
+    }
+
+
 
     /**
      * Move a file to storage

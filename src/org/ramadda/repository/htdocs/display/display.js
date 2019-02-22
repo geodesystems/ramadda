@@ -674,7 +674,6 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
                 var divid = this.getProperty(PROP_DIVID);
                 if (divid != null) {
                     var html = this.getHtml();
-                    console.log("DISPLAY:" + divid + " " + $("#" + divid).size());
                     $("#" + divid).html(html);
                 }
             }

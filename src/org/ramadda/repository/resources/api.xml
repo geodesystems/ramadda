@@ -44,6 +44,8 @@
 
   <group handler="wikimanager">
       <api request="/wikify"             method="processWikify" />
+      <api request="/getnotebook"        method="processGetNotebook" />
+      <api request="/savenotebook"        method="processSaveNotebook" />
    </group>
 
   <group handler="commentmanager">
