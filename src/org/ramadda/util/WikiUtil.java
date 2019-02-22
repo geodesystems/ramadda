@@ -612,6 +612,7 @@ public class WikiUtil {
         boolean          inCss           = false;
 
         boolean inPre = false;
+        System.err.println("globals:" + globalProperties);
         for (String line :
                 (List<String>) StringUtil.split(s, "\n", false, false)) {
             String tline = line.trim();
@@ -633,6 +634,7 @@ public class WikiUtil {
                         Object value = globalProperties.get(key);
                         tline = tline.replace("${" + key + "}",
                                 value.toString());
+                        System.err.println("tline:" + tline);
                     }
                 }
 
