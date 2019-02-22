@@ -28,8 +28,8 @@ var icon_menuarrow = ramaddaBaseUrl + "/icons/downdart.gif";
 var icon_blank = ramaddaBaseUrl + "/icons/blank.gif";
 var icon_menu = ramaddaBaseUrl + "/icons/menu.png";
 
-if(!window["uniqueCnt"]) {
-    window["uniqueCnt"]=  1;
+if (!window["uniqueCnt"]) {
+    window["uniqueCnt"] = 1;
 }
 
 function noop() {}
@@ -295,9 +295,9 @@ var Utils = {
         return this.pageLoaded;
     },
 
-    initContent: function(parent)  {
-        if(!parent) parent = "";
-        else parent = parent+" ";
+    initContent: function(parent) {
+        if (!parent) parent = "";
+        else parent = parent + " ";
         //tableize
         HtmlUtils.formatTable(parent + ".ramadda-table");
         var snippets = $(parent + ".ramadda-snippet-hover");
@@ -619,7 +619,7 @@ var GuiUtils = {
     loadHtml: function(url, callback) {
         var jqxhr = $.get(url, function(data) {
                 callback(data);
-           })
+            })
             .done(function() {})
             .fail(function() {
                 console.log("Failed to load url: " + url);
@@ -1176,9 +1176,11 @@ var HtmlUtils = {
 
     loadedGoogleCharts: false,
     loadGoogleCharts: function() {
-        if(this.loadedGoogleCharts) return;
+        if (this.loadedGoogleCharts) return;
         this.loadedGoogleCharts = true;
-        google.charts.load("43", {packages:['corechart','calendar','table','bar','treemap', 'sankey','wordtree','timeline','gauge']});
+        google.charts.load("43", {
+            packages: ['corechart', 'calendar', 'table', 'bar', 'treemap', 'sankey', 'wordtree', 'timeline', 'gauge']
+        });
     },
 
     idAttr: function(s) {
