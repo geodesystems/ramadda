@@ -1201,8 +1201,8 @@ public class Repository extends RepositoryBase implements RequestHandler,
             }
 
 
-            File[] volatile = getStorageManager().getVolatileDir().listFiles();
-            for (File f : volatile) {
+            File[] vfiles = getStorageManager().getVolatileDir().listFiles();
+            for (File f : vfiles) {
                 System.err.println("volatile:" + f);
                 if(f==null) continue;
                 if ( !f.toString().endsWith(".properties")) {
