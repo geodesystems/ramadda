@@ -43,7 +43,7 @@
 +row
 :col-2
 +col-8
-  {{display type="map"  showMenu="false" layoutHere="true" showBounds="false" isTrajectory="true" width="-100" height="400" details="true" layer="esri.topo" 
+  {{display type="map"  showMenu="false" layoutHere="true" showBounds="false" isTrajectory="true" width="-100" height="400" details="true" defaultMapLayer="esri.topo" 
   mapVar="gpxMap${entryid}" }}
 -col
 -row

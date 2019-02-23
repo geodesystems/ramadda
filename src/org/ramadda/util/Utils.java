@@ -3878,6 +3878,24 @@ public class Utils {
         return s;
     }
 
+    /**
+     * _more_
+     *
+     * @param vs _more_
+     *
+     * @return _more_
+     */
+    public static double getAverage(List<Double> vs) {
+        double total = 0;
+        for (double d : vs) {
+            total += d;
+        }
+
+        return ((vs.size() > 0)
+                ? total / vs.size()
+                : 0);
+    }
+
 
 
 }

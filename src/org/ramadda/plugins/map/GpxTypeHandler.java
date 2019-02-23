@@ -959,133 +959,69 @@ public class GpxTypeHandler extends PointTypeHandler {
                 throws IOException {
 
             try {
-                InputStream   source  = super.doMakeInputStream(buffered);
-                Element       root    = XmlUtil.getRoot(source);
+                InputStream   source   = super.doMakeInputStream(buffered);
+                Element       root     = XmlUtil.getRoot(source);
                 StringBuilder s = new StringBuilder("#converted stream\n");
-                Bearing       bearing = new Bearing();
+                boolean       didTrack = false;
+                SimpleDateFormat sdf =
+                    new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
                 for (Element track :
                         ((List<Element>) XmlUtil.findChildren(root,
                             GpxUtil.TAG_TRK))) {
-                    double lastLat  = 0;
-                    double lastLon  = 0;
-                    long   lastTime = 0;
-                    SimpleDateFormat sdf =
-                        new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss");
-                    double totalDistance = 0;
-                    double elevationGain = 0;
-                    double elevationLoss = 0;
-                    double lastElevation = 0;
+                    TrackInfo trackInfo = new TrackInfo();
                     for (Element trackSeg :
                             ((List<Element>) XmlUtil.findChildren(track,
                                 GpxUtil.TAG_TRKSEG))) {
-
-
-                        List<Double> speedWindow = new ArrayList<Double>();
-                        List<Double> gradeWindow = new ArrayList<Double>();
-                        for (Element trackPoint :
+                        didTrack = true;
+                        trackInfo.reset();
+                        for (Element pt :
                                 ((List<Element>) XmlUtil.findChildren(
                                     trackSeg, GpxUtil.TAG_TRKPT))) {
-                            double lat = XmlUtil.getAttribute(trackPoint,
+                            double lat = XmlUtil.getAttribute(pt,
                                              GpxUtil.ATTR_LAT, 0.0);
-                            double lon = XmlUtil.getAttribute(trackPoint,
+                            double lon = XmlUtil.getAttribute(pt,
                                              GpxUtil.ATTR_LON, 0.0);
-                            String ele =
-                                XmlUtil.getGrandChildText(trackPoint, "ele",
-                                    "0");
-                            double elevation = Double.parseDouble(ele);
-                            if (lastElevation != 0) {
-                                if (elevation > lastElevation) {
-                                    elevationGain += (elevation
-                                            - lastElevation);
-                                } else {
-                                    elevationLoss += (lastElevation
-                                            - elevation);
-                                }
-                            }
-                            double speed = 0;
-                            double grade = 0;
-                            if (ele != null) {
-                                ele = "" + (new Double(ele).doubleValue()
-                                            * 3.28084);
-                            }
-                            String time =
-                                XmlUtil.getGrandChildText(trackPoint, "time",
-                                    (String) null);
+                            double elevation = Double.parseDouble(
+                                                   XmlUtil.getGrandChildText(
+                                                       pt, "ele", "0"));
+                            String time = XmlUtil.getGrandChildText(pt,
+                                              "time", (String) null);
                             Date dttm = ((time == null)
                                          ? null
                                          : sdf.parse(time));
-                            if (lastLat != 0) {
-                                bearing = Bearing.calculateBearing(lastLat,
-                                        lastLon, lat, lon, bearing);
-                                double distance = 0.621371
-                                                  * bearing.getDistance();
-                                if (distance > 0) {
-                                    grade = (elevation - lastElevation)
-                                            / (distance * 5280);
-                                } else {
-                                    grade = 0;
-                                }
-                                if (gradeWindow.size() > 6) {
-                                    gradeWindow.remove(0);
-                                }
-                                gradeWindow.add(grade);
-                                totalDistance += distance;
-                                if (dttm != null) {
-                                    double hours = (dttm.getTime()
-                                                    - lastTime) / 1000.0 / 60
-                                                        / 60;
-                                    if (hours != 0) {
-                                        speed = distance / hours;
-                                    }
-                                    if (speedWindow.size() > 6) {
-                                        speedWindow.remove(0);
-                                    }
-                                    speedWindow.add(speed);
-                                }
-                            }
-                            lastElevation = elevation;
-                            double avgSpeed = 0;
-                            for (double v : speedWindow) {
-                                avgSpeed += v;
-                            }
-                            double tmp = 0;
-                            for (double v : gradeWindow) {
-                                tmp += v;
-                            }
-                            grade    = tmp / gradeWindow.size();
-                            avgSpeed = ((speedWindow.size() == 0)
-                                        ? 0
-                                        : avgSpeed / speedWindow.size());
-                            if (speed < 0.05) {
-                                avgSpeed = 0;
-                            }
-                            lastLat  = lat;
-                            lastLon  = lon;
-                            lastTime = ((dttm == null)
-                                        ? 0
-                                        : dttm.getTime());
-
-                            s.append(time);
-                            s.append(",");
-                            s.append(ele);
-                            s.append(",");
-                            s.append(grade);
-                            s.append(",");
-                            s.append(elevationGain);
-                            s.append(",");
-                            s.append(elevationLoss);
-                            s.append(",");
-                            s.append(Math.round(100 * avgSpeed) / 100.0);
-                            s.append(",");
-                            s.append(Math.round(100 * totalDistance) / 100.0);
-                            s.append(",");
-                            s.append(lat);
-                            s.append(",");
-                            s.append(lon);
-                            s.append("\n");
+                            trackInfo.setPoint(lat, lon, elevation, dttm,
+                                    time, s);
                         }
                     }
                 }
+
+                if ( !didTrack) {
+
+                    Element rte = XmlUtil.findChild(root, GpxUtil.TAG_RTE);
+                    if (rte != null) {
+                        TrackInfo trackInfo = new TrackInfo();
+                        for (Element pt :
+                                ((List<Element>) XmlUtil.findChildren(rte,
+                                    GpxUtil.TAG_RTEPT))) {
+                            double lat = XmlUtil.getAttribute(pt,
+                                             GpxUtil.ATTR_LAT, 0.0);
+                            double lon = XmlUtil.getAttribute(pt,
+                                             GpxUtil.ATTR_LON, 0.0);
+                            double elevation = Double.parseDouble(
+                                                   XmlUtil.getGrandChildText(
+                                                       pt, "ele", "0"));
+                            String time = XmlUtil.getGrandChildText(pt,
+                                              "time", (String) null);
+                            Date dttm = ((time == null)
+                                         ? null
+                                         : sdf.parse(time));
+                            trackInfo.setPoint(lat, lon, elevation, dttm,
+                                    time, s);
+                        }
+                    }
+                }
+
+
                 //                System.err.println(s);
                 ByteArrayInputStream bais =
                     new ByteArrayInputStream(s.toString().getBytes());
@@ -1153,5 +1089,212 @@ public class GpxTypeHandler extends PointTypeHandler {
     private static String sqt(String s) {
         return "'" + s + "'";
     }
+
+
+    /**
+     * Class description
+     *
+     *
+     * @version        $version$, Fri, Feb 22, '19
+     * @author         Enter your name here...
+     */
+    public static class TrackInfo {
+
+        /** _more_ */
+        double lastLat = 0;
+
+        /** _more_ */
+        double lastLon = 0;
+
+        /** _more_ */
+        long lastTime = 0;
+
+        /** _more_ */
+        double totalDistance = 0;
+
+        /** _more_ */
+        double elevationGain = 0;
+
+        /** _more_ */
+        double elevationLoss = 0;
+
+        /** _more_ */
+        double lastElevation = 0;
+
+        /** _more_ */
+        double grade;
+
+        /** _more_ */
+        double speed;
+
+        /** _more_ */
+        double avgSpeed;
+
+        /** _more_ */
+        Bearing bearing = new Bearing();
+
+        /** _more_ */
+        List<Double> speedWindow = new ArrayList<Double>();
+
+        /** _more_ */
+        List<Double> gradeWindow = new ArrayList<Double>();
+
+        /**
+         * _more_
+         */
+        void reset() {
+            speedWindow = new ArrayList<Double>();
+            gradeWindow = new ArrayList<Double>();
+        }
+
+        /**
+         * _more_
+         *
+         * @param lat _more_
+         * @param lon _more_
+         * @param elevation _more_
+         * @param dttm _more_
+         * @param time _more_
+         * @param s _more_
+         *
+         * @throws Exception _more_
+         */
+        void setPoint(double lat, double lon, double elevation, Date dttm,
+                      String time, StringBuilder s)
+                throws Exception {
+            if (lastElevation != 0) {
+                if (elevation > lastElevation) {
+                    elevationGain += (elevation - lastElevation);
+                } else {
+                    elevationLoss += (lastElevation - elevation);
+                }
+            }
+
+
+            if (lastLat != 0) {
+                double distance = calculateDistance(lat, lon, elevation);
+                if (gradeWindow.size() > 6) {
+                    gradeWindow.remove(0);
+                }
+                gradeWindow.add(this.grade);
+                if (dttm != null) {
+                    double hours = (dttm.getTime() - lastTime) / 1000.0 / 60
+                                   / 60;
+                    if (hours != 0) {
+                        speed = distance / hours;
+                    }
+                    if (speedWindow.size() > 6) {
+                        speedWindow.remove(0);
+                    }
+                    speedWindow.add(speed);
+                }
+            }
+
+            avgSpeed = Utils.getAverage(speedWindow);
+            double grade = Utils.getAverage(gradeWindow);
+            if (speed < 0.05) {
+                avgSpeed = 0;
+            }
+            lastLat       = lat;
+            lastLon       = lon;
+            lastElevation = elevation;
+            lastTime      = ((dttm == null)
+                             ? 0
+                             : dttm.getTime());
+
+            s.append((time != null)
+                     ? time
+                     : "");
+            s.append(",");
+            s.append(elevation * 3.28084);
+            s.append(",");
+            s.append(grade);
+            s.append(",");
+            s.append(elevationGain);
+            s.append(",");
+            s.append(elevationLoss);
+            s.append(",");
+            s.append(Math.round(100 * avgSpeed) / 100.0);
+            s.append(",");
+            s.append(Math.round(100 * totalDistance) / 100.0);
+            s.append(",");
+            s.append(lat);
+            s.append(",");
+            s.append(lon);
+            s.append("\n");
+        }
+
+
+
+
+        /**
+         * _more_
+         *
+         * @param lat _more_
+         * @param lon _more_
+         * @param elevation _more_
+         *
+         * @return _more_
+         *
+         * @throws Exception _more_
+         */
+        Double calculateDistance(double lat, double lon, double elevation)
+                throws Exception {
+            bearing = Bearing.calculateBearing(lastLat, lastLon, lat, lon,
+                    bearing);
+            double distance = 0.621371 * bearing.getDistance();
+            totalDistance += distance;
+            if (distance > 0) {
+                grade = (elevation - lastElevation) / (distance * 5280);
+            } else {
+                grade = 0;
+            }
+
+            return distance;
+        }
+
+    }
+
+    /**
+     * Class description
+     *
+     *
+     * @version        $version$, Fri, Feb 22, '19
+     * @author         Enter your name here...
+     */
+    public static class TrackPoint {
+
+        /** _more_ */
+        double lat;
+
+        /** _more_ */
+        double lon;
+
+        /** _more_ */
+        double elevation;
+
+        /** _more_ */
+        Date dttm;
+
+        /**
+         * _more_
+         *
+         * @param lat _more_
+         * @param lon _more_
+         * @param elevation _more_
+         * @param dttm _more_
+         */
+        public TrackPoint(double lat, double lon, double elevation,
+                          Date dttm) {
+            this.lat       = lat;
+            this.lon       = lon;
+            this.elevation = elevation;
+            this.dttm      = dttm;
+        }
+
+    }
+
+
+
 
 }

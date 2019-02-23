@@ -1038,7 +1038,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
         }
         Properties tmp = new Properties();
         tmp.load(inputStream);
-        System.out.println ("RAMADDA:  loading " + path+" " +  tmp.get("ramadda.wiki.macros"));
+        //        System.out.println ("RAMADDA:  loading " + path+" " +  tmp.get("ramadda.wiki.macros"));
         //        props.load(inputStream);
         props.putAll(tmp);
         IOUtil.close(inputStream);
