@@ -4,6 +4,7 @@
 
 
 // Map ids
+
 var map_esri_topo = "esri.topo";
 var map_esri_street = "esri.street";
 var map_esri_worldimagery = "esri.worldimagery";
@@ -12,6 +13,7 @@ var map_usgs_topo = "usgs.topo";
 var map_usgs_imagery = "usgs.imagery";
 var map_usgs_relief = "usgs.relief";
 var map_watercolor = "watercolor";
+var map_weather = "weather";
 var map_white = "white";
 var map_blue = "blue";
 var map_black = "black";
@@ -54,6 +56,23 @@ function createBounds(v1, v2, v3, v4) {
 function createProjection(name) {
     return new OpenLayers.Projection(name);
 }
+
+function get_my_url (bounds) {
+    var res = this.map.getResolution();
+    var x = Math.round ((bounds.left - this.maxExtent.left) / (res * this.tileSize.w));
+    var y = Math.round ((this.maxExtent.top - bounds.top) / (res * this.tileSize.h));
+    var z = this.map.getZoom();
+
+    var path = z + "/" + x + "/" + y + "." + this.type +"?"+ parseInt(Math.random()*9999);
+    var url = this.url;
+    if (url instanceof Array) {
+        url = this.selectUrl(path, url);
+    }
+    return url + this.service +"/"+ this.layername +"/"+ path;
+
+}
+
+
 
 var positionMarkerID = "location";
 
@@ -1352,6 +1371,7 @@ function initMapFunctions(theMap) {
                 map_usgs_relief,
                 map_osm_toner,
                 map_watercolor,
+                map_weather,
                 map_white,
                 map_gray,
                 map_blue,
@@ -1395,6 +1415,27 @@ function initMapFunctions(theMap) {
 
             } else if (mapLayer == map_opentopo) {
                 newLayer = this.createXYZLayer("OpenTopo", "//a.tile.opentopomap.org/${z}/${x}/${y}.png}");
+            } else if(mapLayer == map_weather) {
+                var wlayers = ['NWS Radar','nexrad-n0q-900913','GOES Infrared', 'goes-ir-4km-900913','GOES Water Vapor', 'goes-wv-4km-900913','GOES Visible','goes-vis-1km-900913','24 hr precip','q2-p24h-900913'];
+                              
+                for(var wi=0;wi<wlayers.length;wi+=2) {
+                    var name = wlayers[wi];
+                    var id = wlayers[wi+1];
+                    var layer  = new OpenLayers.Layer.TMS(
+                                                     name,
+                                                     'https://mesonet.agron.iastate.edu/cache/tile.py/',
+                                                     {layername      : id,
+                                                      service         : '1.0.0',
+                                                      type            : 'png',
+                                                      visibility      : false,
+                                                      getURL          : get_my_url,
+                                                      isBaseLayer     : false},
+                                                     {
+                                                     }
+                                                          );
+                    layer.ramaddaId = id;
+                    this.addLayer(layer);
+                }
             } else if (mapLayer == map_esri_worldimagery) {
                 //Not working
                 newLayer = this.createXYZLayer("ESRI World Imagery",
