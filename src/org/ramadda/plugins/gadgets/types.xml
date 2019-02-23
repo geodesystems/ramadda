@@ -61,6 +61,23 @@
 </type>
 
 
+  <type name="type_tweet"  description="Tweet" handler="org.ramadda.plugins.gadgets.TwitterTypeHandler" foruser="true"
+pattern=".*https://twitter.com.*">
+     <property name="icon" value="/gadgets/twitter_icon.gif"/>
+     <property name="form.area.show" value="false"/>
+     <property name="form.file.show" value="false"/>
+     <property name="form.date.show" value="false"/>
+
+     <wiki><![CDATA[
++section # title="{{name}}"
+{{description wikify="true"}}
+{{tweet}}
+-section
+]]>
+</wiki>
+  </type>
+
+
   <type name="twittersearch"  description="Twitter Search" handler="org.ramadda.plugins.gadgets.TwitterSearchTypeHandler" foruser="false">
      <property name="icon" value="/gadgets/twitter_icon.gif"/>
      <property name="form.description.rows" value="1"/>
