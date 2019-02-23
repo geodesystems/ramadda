@@ -205,6 +205,23 @@ var PROP_WIDTH = "width";
 
 
 
+function addHandler(obj) {
+    if (window.globalHandlers == null) {
+        window.globalHandlers  = {};
+    }
+    var id = HtmlUtils.getUniqueId();
+    window.globalHandlers[id] = obj;
+    return id;
+}
+
+function getHandler(id) {
+    if (!id || window.globalHandlers == null) {
+        return null;
+    }
+    return window.globalHandlers[id];
+}
+
+
 function initRamaddaDisplays() {
     ramaddaCheckForResize();
     if (window.globalDisplaysList == null) {
@@ -1562,7 +1579,10 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             }
 
             var desc = entry.getDescription();
-            desc = desc.replace(/\n/g, "<br>");
+            if(desc)
+                desc = desc.replace(/\n/g, "<br>");
+            else
+                desc = "";
             html += desc;
 
             var metadata = entry.getMetadata();
@@ -1639,8 +1659,6 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             }
 
             html += HtmlUtils.closeTag(TAG_TABLE);
-
-
             return html;
         },
 
@@ -1690,8 +1708,8 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
                 suffix = "'" + suffix + "'";
             }
 
+            var handler = getHandler(props.handlerId);
             var showIndex = props.showIndex;
-
             var html = "";
             var rowClass = "entryrow_" + this.getId();
             var even = true;
@@ -1718,15 +1736,16 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
                     ATTR_ID,
                     this.getDomId(ID_TREE_LINK + entryIdForDom)
                 ]);
-
-                //                    console.log("ID:" + ID_TREE_LINK+entryIdForDom);
-
-                var toggleCall = this.getGet() + ".toggleEntryDetails(event, '" + entryId + "'," + suffix + ");";
+                var toggleCall = this.getGet() + ".toggleEntryDetails(event, '" + entryId + "'," + suffix + ",'" + props.handlerId +"');";
                 var toggleCall2 = this.getGet() + ".entryHeaderClick(event, '" + entryId + "'," + suffix + "); ";
                 var open = HtmlUtils.onClick(toggleCall, arrow);
                 var extra = "";
+
                 if (showIndex) {
                     extra = "#" + (i + 1) + " ";
+                }
+                if(handler && handler.getEntryPrefix) {
+                    extra += handler.getEntryPrefix(props.handlerId, entry);
                 }
                 var left = HtmlUtils.div([ATTR_CLASS, "display-entrylist-name"], entryMenuButton + " " + open + " " + extra + link + " " + entryName);
                 var details = HtmlUtils.div([ATTR_ID, this.getDomId(ID_DETAILS + entryIdForDom), ATTR_CLASS, "display-entrylist-details"], HtmlUtils.div([ATTR_CLASS, "display-entrylist-details-inner", ATTR_ID, this.getDomId(ID_DETAILS_INNER + entryIdForDom)], ""));
@@ -1999,7 +2018,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             }
             this.toggleEntryDetails(event, entryId);
         },
-        toggleEntryDetails: function(event, entryId, suffix) {
+        toggleEntryDetails: function(event, entryId, suffix, handlerId) {
             var entry = this.getEntry(entryId);
             //                console.log("toggleEntryDetails:" + entry.getName() +" " + entry.getId());
             if (suffix == null) suffix = "";
@@ -2050,7 +2069,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
                     detailsInner.html(HtmlUtils.image(icon_progress));
                     var theDisplay = this;
                     var callback = function(entries) {
-                        theDisplay.displayChildren(entry, entries, suffix);
+                        theDisplay.displayChildren(entry, entries, suffix, handlerId);
                     };
                     var entries = entry.getChildrenEntries(callback);
                 } else {
@@ -2082,7 +2101,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             }
             return selected;
         },
-        displayChildren: function(entry, entries, suffix) {
+         displayChildren: function(entry, entries, suffix, handlerId) {
             if (!suffix) suffix = "";
             var detailsInner = this.jq(ID_DETAILS_INNER + entry.getIdForDom() + suffix);
             var details = this.getEntryHtml(entry, {
@@ -2095,7 +2114,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
                 if (this.showDetailsForGroup) {
                     entriesHtml += details;
                 }
-                entriesHtml += this.getEntriesTree(entries);
+                entriesHtml += this.getEntriesTree(entries,{handlerId:handlerId});
                 detailsInner.html(entriesHtml);
                 this.addEntrySelect();
             }
@@ -2140,7 +2159,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             }
             if (entry == null) {
                 //                    var e = new Error('dummy');
-                console.log("Display.getEntry: entry not found id=" + entryId + " repository=" + ramadda.getRoot());
+                //                console.log("Display.getEntry: entry not found id=" + entryId + " repository=" + ramadda.getRoot());
                 //                    var stack = e.stack;
                 //                    console.log(stack);
                 entry = this.getRamadda().getEntry(entryId, callback);
@@ -5230,11 +5249,11 @@ function RamaddaNotebookDisplay(displayManager, id, properties) {
             var html = cells;
             this.setContents(html);
             if (!this.fetchedNotebook) {
+                this.currentEntry = this.getEntry(this.getProperty("entryId",""),entry=>{_this.currentEntry=entry});
                 this.fetchedNotebook = true;
                 var id = this.getProperty("entryId", "");
                 var url = ramaddaBaseUrl + "/getnotebook?entryid=" + id;
                 url += "&id=" + this.getProperty("notebookId", "default_notebook");
-                console.log("fetching:" + url);
                 var jqxhr = $.getJSON(url, function(data) {
                     if (data.error) {
                         _this.setContents(_this.getMessage("Failed to load notebook: " + data.error));
@@ -5829,7 +5848,7 @@ function RamaddaNotebookCell(notebook, id, content, props) {
             let divId = HtmlUtils.getUniqueId();
             var callback = function(html) {
                 $("#" + divId).html(html);
-                Utils.initContent(_this.getDomId(ID_OUTPUT));
+                Utils.initContent("#"+_this.getDomId(ID_OUTPUT));
                 _this.outputUpdated();
             }
             blob = "{{group showMenu=false}}\n" + blob;
@@ -5918,13 +5937,6 @@ function RamaddaNotebookCell(notebook, id, content, props) {
                 msg.html(v);
             }
         },
-        clearInput: function() {
-            this.jq(ID_INPUT).val("");
-        },
-        clearOutput: function() {
-            this.writeStatusMessage(null);
-            this.jq(ID_OUTPUT).html("");
-        },
         handleControlKey: function(event) {
             var k = event.which;
         },
@@ -5967,10 +5979,24 @@ function RamaddaNotebookCell(notebook, id, content, props) {
             help += "<pre>pwd, ls, cd</pre>";
             return help;
         },
+        entries: {},
+
+       cdEntry: function(entryId) {
+                this.currentEntry = this.entries[entryId];
+                this.output.html(this.processCommand_pwd("pwd", []));
+                this.outputUpdated();
+            },
+         getEntryPrefix: function(id, entry) {
+               this.entries[entry.getId()] = entry;
+                var call = "getHandler('" + id +"').cdEntry('" + entry.getId() +"')";
+                return HtmlUtils.div(["style","padding-right:4px;", "title","cd to entry", "onclick", call,"class","ramadda-link"], HtmlUtils.image(ramaddaBaseUrl+"/icons/go.png"));
+         },
         displayEntries: function(entries, divId) {
             this.currentEntries = entries;
+            var handlerId = addHandler(this);
             var html = this.notebook.getEntriesTree(entries, {
-                showIndex: true,
+                handlerId: handlerId,
+                showIndex: false,
                 suffix: "_shell_" + (this.uniqueCnt++)
             });
             $("#" + divId).html(html);
@@ -6000,6 +6026,9 @@ function RamaddaNotebookCell(notebook, id, content, props) {
             return dflt;
         },
         getCurrentEntry: function(dflt) {
+            if (this.currentEntry == null) {
+                this.currentEntry = this.notebook.currentEntry;
+            }
             if (this.currentEntry == null) {
                 if (Utils.isDefined(dflt)) return dflt;
                 this.rootEntry = new Entry({
@@ -6053,16 +6082,26 @@ function RamaddaNotebookCell(notebook, id, content, props) {
             this.getLayoutManager().publish('blogentry');
         },
         processCommand_cd: function(line, toks) {
-            if (toks.length == 0) {
-                this.currentEntry = this.rootEntry;
+                let _this = this;
+                console.log("cd:" + toks);
+            if (toks.length <= 1) {
+                this.currentEntry = this.notebook.currentEntry;
                 return this.processCommand_pwd("pwd", []);
             }
-            var index = parseInt(toks[1]) - 1;
-            if (index < 0 || index >= this.currentEntries.length) {
-                return "Out of bounds: between 1 and " + this.currentEntries.length;
+            if(toks[1]=="..") {
+                var entry = this.getCurrentEntry();
+                this.currentEntry = entry.getParentEntry(entry=>{console.log(entry);
+                                                                 if(entry) {
+                                                                     _this.currentEntry=entry;
+                                                                     _this.processCommand_cd(line, toks)
+                                                                         }});
+                if(this.currentEntry) {
+                    return this.processCommand_pwd("pwd", []);
+                }
+                return "Retrieving entry...";
             }
-            this.currentEntry = this.currentEntries[index];
-            return this.processCommand_pwd("pwd", []);
+            return "NA";
+
         },
         processCommand_ls: function(line, toks) {
             let _this = this;
@@ -6099,26 +6138,8 @@ function RamaddaNotebookCell(notebook, id, content, props) {
             this.entryList = new EntryList(repository, jsonUrl, this, true);
             //                this.writeResult(line);
         },
-        processCommand_taller: function(line, toks) {
-            if (!this.outputHeight) {
-                this.outputHeight = 300;
-            }
-            this.outputHeight += parseInt(this.outputHeight * .30);
-            this.jq(ID_OUTPUT).css('max-height', this.outputHeight);
-            this.jq(ID_OUTPUT).css('height', this.outputHeight);
-        },
-        processCommand_shorter: function(line, toks) {
-            if (!this.outputHeight) {
-                this.outputHeight = 300;
-            }
-            this.outputHeight -= parseInt(this.outputHeight * .30);
-            this.jq(ID_OUTPUT).css('max-height', this.outputHeight);
-            this.jq(ID_OUTPUT).css('height', this.outputHeight);
-        },
-
         processCommand_clear: function(toks) {
             this.clearOutput();
-            this.clearInput();
         },
     });
 

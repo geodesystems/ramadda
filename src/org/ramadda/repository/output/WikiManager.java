@@ -646,6 +646,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                                + macro, ""));
         }
         WikiUtil.setGlobalProperties(wikiMacros);
+
     }
 
 

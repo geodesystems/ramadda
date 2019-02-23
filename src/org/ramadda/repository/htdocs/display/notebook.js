@@ -633,7 +633,7 @@ function RamaddaNotebookCell(notebook, id, content, props) {
             let divId = HtmlUtils.getUniqueId();
             var callback = function(html) {
                 $("#" + divId).html(html);
-                Utils.initContent(_this.getDomId(ID_OUTPUT));
+                Utils.initContent("#"+_this.getDomId(ID_OUTPUT));
                 _this.outputUpdated();
             }
             blob = "{{group showMenu=false}}\n" + blob;

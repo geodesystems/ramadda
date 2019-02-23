@@ -614,15 +614,14 @@ public class WikiUtil {
         boolean inPre = false;
         for (String line :
                 (List<String>) StringUtil.split(s, "\n", false, false)) {
-            String tline = line.trim();
-            if ((tline.indexOf("${") >= 0)
+            if ((line.indexOf("${") >= 0)
                     && (hasSet || (globalProperties != null))) {
                 if (myVars != null) {
                     for (java.util.Enumeration keys = myVars.keys();
                             keys.hasMoreElements(); ) {
                         Object key   = keys.nextElement();
                         Object value = myVars.get(key);
-                        tline = tline.replace("${" + key + "}",
+                        line = line.replace("${" + key + "}",
                                 value.toString());
                     }
                 }
@@ -631,12 +630,13 @@ public class WikiUtil {
                             keys.hasMoreElements(); ) {
                         Object key   = keys.nextElement();
                         Object value = globalProperties.get(key);
-                        tline = tline.replace("${" + key + "}",
+                        line = line.replace("${" + key + "}",
                                 value.toString());
                     }
                 }
-
             }
+
+            String tline = line.trim();
             if(tline.equals("+pre")) {
                 inPre = true;
                 buff.append("<pre>\n");
