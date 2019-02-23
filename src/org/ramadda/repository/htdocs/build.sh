@@ -22,7 +22,7 @@ ${minify} ${dir}/wiki.js > ${dest}/wiki.min.js
 ${minify} ${dir}/repositories.js > ${dest}/repositories.min.js
 ${minify} ${dir}/selectform.js > ${dest}/selectform.min.js
 ${minify} ${dir}/entry.js > ${dest}/entry.min.js
-${minify} ${dir}/style.css > ${dest}/style.min.css
+cp  ${dir}/style.css  ${dest}/style.min.css
 ${minify} ${dir}/ramaddamap.css > ${dest}/ramaddamap.min.css
 ${minify} ${dir}/display/display.css > ${dest}/display.min.css
 
