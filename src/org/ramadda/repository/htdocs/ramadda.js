@@ -1114,11 +1114,11 @@ function submitEntryForm(dialogId) {
 }
 
 
-function treeViewClick(entryId, url, label, noTemplate) {
+function treeViewClick(entryId, url, label, template) {
     var href = "<a href='" + url + "'> <img src=\"" + ramaddaBaseUrl + "/icons/link.png" + "\" border=0> " + label + "</a>";
     $("#treeview_header").html(href);
-    if(noTemplate)
-        url = url + "&template=empty";
+    if(template)
+        url = url + "&template=" + template;
     $('#treeview_view').attr("src", url);
 }
 

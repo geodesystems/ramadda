@@ -1578,8 +1578,9 @@ public class HtmlOutputHandler extends OutputHandler {
 
             url = Utils.concatString("javascript:",
                                      HtmlUtils.call("treeViewClick",
-                                         HtmlUtils.jsMakeArgs(true,
-                                                              child.getId(), url, label,""+noTemplate)));
+                                         HtmlUtils.jsMakeArgs(false,
+                                                              HtmlUtils.squote(child.getId()), HtmlUtils.squote(url), 
+                                                              HtmlUtils.squote(label),noTemplate?"'empty'":"null")));
             HtmlUtils.open(listSB, HtmlUtils.TAG_DIV,
                            HtmlUtils.attrs(new String[] { "class",
                     "ramadda-treeview-entry" }));
