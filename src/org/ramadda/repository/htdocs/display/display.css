@@ -766,7 +766,7 @@ height:100%;
 }
 
 .display-metadata-divider {
-     border-bottom: 1px #ccc dotted;
+/*     border-bottom: 1px #ccc dotted;*/
 }
 
 
@@ -940,8 +940,8 @@ height:100%;
    display: inline-block;
    margin:0px;
    padding: 0px;
-   padding-left: 0px;
-   padding-right: 0px;
+   padding-left: 2px;
+   padding-right: 2px;
    border: 1px #aaa solid;
    border-color: transparent;
 }

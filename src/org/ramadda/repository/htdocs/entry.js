@@ -462,10 +462,10 @@ function Ramadda(repositoryRoot) {
         addEntry: function(entry) {
             this.entryCache[entry.getId()] = entry;
         },
-        getEntry: function(id, callback) {
+        getEntry: async function(id, callback) {
             var entry = this.entryCache[id];
             if (entry != null) {
-                return entry;
+                return Utils.call(callback,entry);
             }
             //Check any others
             if (window.globalRamaddas) {
@@ -473,31 +473,32 @@ function Ramadda(repositoryRoot) {
                     var em = window.globalRamaddas[i];
                     var entry = em.entryCache[id];
                     if (entry != null) {
-                        return entry;
+                        return Utils.call(callback, entry);
                     }
                 }
             }
-
             if (callback == null) {
-                return null;
+                return Utils.call(callback, null);
             }
             var ramadda = this;
             var jsonUrl = this.getJsonUrl(id)+"&onlyentry=true";
-            var jqxhr = $.getJSON(jsonUrl, function(data) {
+            //            console.log("\tramadda.getEntry getting json");
+            await $.getJSON(jsonUrl, function(data) {
+                    //                    console.log("\tramadda.getEntry json return");
                     if (GuiUtils.isJsonError(data)) {
                         return;
                     }
                     var entryList = createEntriesFromJson(data, ramadda);
                     var first = null;
                     if (entryList.length > 0) first = entryList[0];
-                    callback(first, entryList);
+                    //                    console.log("\tramadda.getEntry: result:" + entryList.length +" " + first);
+                    Utils.call(callback,first, entryList);
                 })
                 .fail(function(jqxhr, textStatus, error) {
                     var err = textStatus + ", " + error;
                     GuiUtils.handleError("Error getting entry information: " + err, jsonUrl, false);
                 });
-            return null;
-        }
+            }
     });
 
 
@@ -693,20 +694,33 @@ function Entry(props) {
         getIsGroup: function() {
             return this.isGroup;
         },
-        getParentEntry: function(callback, extraArgs) {
-               let _this = this;
-               if(!this.parent) return null;
-               if(this.parentEntry) return this.parentEntry;
-               if(!callback) return null;
-               this.parentEntry = this.getRamadda().getEntry(this.parent, entry=>{_this.parentEntry=entry;callback(entry);});
-               return this.parentEntry;
+        getRoot: async function(callback, extraArgs) {
+                var parent  = this;
+                while(true) {
+                    var tmp;
+                    await parent.getParentEntry(e=>tmp=e);
+                    if(!tmp) {
+                        return Utils.call(callback, parent);
+                    }
+                    parent = tmp;
+                }
         },
-        getChildrenEntries: function(callback, extraArgs) {
+        getParentEntry: async function(callback, extraArgs) {
+                if(!this.parent) {
+                    //                    console.log("\tgetParent: no parent");
+                    return Utils.call(callback,null);
+                }
+                if(this.parentEntry) {
+                    //                    console.log("\tgetParent: got it");
+                    return Utils.call(callback,this.parentEntry);
+                }
+                await this.getRamadda().getEntry(this.parent, entry=>{
+                        this.parentEntry=entry;Utils.call(callback,entry);});
+        },
+        getChildrenEntries: async function(callback, extraArgs) {
             if (this.childrenEntries != null) {
-                return this.childrenEntries;
+                return Utils.call(callback, this.childrenEntries);
             }
-            var theEntry = this;
-
             var settings = new EntrySearchSettings({
                 parent: this.getId()
             });
@@ -715,12 +729,10 @@ function Entry(props) {
             if (extraArgs != null) {
                 jsonUrl += "&" + extraArgs;
             }
-
             //                console.log(jsonUrl);
             var myCallback = {
                 entryListChanged: function(list) {
-
-                    callback(list.getEntries());
+                  callback(list.getEntries());
                 }
             };
             var entryList = new EntryList(this.getRamadda(), jsonUrl, myCallback, true);
@@ -950,10 +962,10 @@ function EntryList(repository, jsonUrl, listener, doSearch) {
             this.entries = entries;
             this.haveLoaded = true;
         },
-        getEntry: function(id) {
+        getEntry: async function(id, callback) {
             var entry = this.map[id];
-            if (entry != null) return entry;
-            return this.getRepository().getEntry(id);
+            if (entry != null) return Utils.call(callback, entry);
+            await this.getRepository().getEntry(id, e=>{Utils.call(callback,e)});
         },
         getEntries: function() {
             return this.entries;
@@ -1114,10 +1126,11 @@ function EntryListHolder(ramadda) {
                 entryList.doSearch(callback);
             }
         },
-        getEntry: function(id) {
+        getEntry: async function(id) {
             for (var i = 0; i < this.entryLists.length; i++) {
                 var entryList = this.entryLists[i];
-                var entry = entryList.getEntry(id);
+                var entry;
+                await entryList.getEntry(id,e=>{entry=e});
                 if (entry != null) {
                     return entry;
                 }

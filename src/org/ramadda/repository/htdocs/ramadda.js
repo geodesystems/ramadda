@@ -3,14 +3,9 @@
  */
 
 
-//
-//This is the remnant of the original (and pretty crappy) js
-//lots of globals, not much jq
-//
-
 var popupObject;
-var popupSrcId;
 var popupTime;
+var popupId;
 
 document.onmousemove = mouseMove;
 document.onmousedown = mouseDown;
@@ -23,42 +18,29 @@ var draggedEntry;
 var draggedEntryName;
 var draggedEntryIcon;
 var mouseMoveCnt = 0;
-var objectToHide;
+
 
 function hidePopupObject() {
-    if (objectToHide != popupObject) {
-        //	return;
-    }
     if (popupObject) {
-        hideObject(popupObject);
+        popupObject.hide();
         popupObject = null;
-        popupSrcId = null;
     }
 }
 
 
 function mouseDown(event) {
     if (popupObject) {
-        if (checkToHidePopup()) {
-            theObjectToHide = popupObject;
-            thePopupSrcId = popupSrcId;
-            var callback = function() {
-                var shouldClear = (popupObject == theObjectToHide);
-                hideObject(theObjectToHide);
-                if (shouldClear) {
-                    popupSrcId = null;
-                    popupObject = null;
+        var thisId = popupObject.attr("id");
+        setTimeout(()=>{
+                if(checkToHidePopup() && popupObject && thisId == popupObject.attr("id")) {
+                    hidePopupObject()
                 }
-            }
-            setTimeout(callback, 250);
-        }
+            },250);
     }
-    event = GuiUtils.getEvent(event);
     mouseIsDown = 1;
     mouseMoveCnt = 0;
     return true;
 }
-
 
 
 var ramaddSearchLastInput = "";
@@ -166,7 +148,7 @@ function ramaddaSearchPopup(id) {
     var selectDiv = $("#ramadda-selectdiv");
     var icon = $("#" + id);
     popupTime = new Date();
-    popupObject = GuiUtils.getDomObject("ramadda-selectdiv");
+    popupObject = selectDiv;
     selectDiv.html(html);
     $("#" + linksId).find(".ramadda-link").click(ramaddaSearchLink);
     var input = $("#popup_search_input");
@@ -230,7 +212,6 @@ function flyBackAndHide(id, step, steps, fromx, fromy, dx, dy) {
         setTimeout(callback, 30);
     } else {
         setTimeout("finalHide('" + id + "')", 150);
-        //        hideObject(obj);
     }
 }
 
@@ -985,27 +966,19 @@ function checkToHidePopup() {
         var now = new Date();
         timeDiff = now - popupTime;
         if (timeDiff > 1000) {
-            return 1;
-        }
+            return true;
+        } 
+        return false;
     }
+    return true;
 }
 
 function showPopup(event, srcId, popupId, alignLeft, myalign, atalign) {
-    if (popupSrcId == srcId) {
-        if (checkToHidePopup()) {
-            hidePopupObject();
-            return;
-        }
-    }
-
-    popupTime = new Date();
     hidePopupObject();
-    var popup = GuiUtils.getDomObject(popupId);
-    var srcObj = GuiUtils.getDomObject(srcId);
-    if (!popup || !srcObj) return;
+    var popup = $("#"+ popupId);
+    popupTime = new Date();
     popupObject = popup;
-    popupSrcId = srcId;
-
+    var src = $("#"+ srcId);
     if (!myalign)
         myalign = 'left top';
     if (!atalign)
@@ -1014,20 +987,20 @@ function showPopup(event, srcId, popupId, alignLeft, myalign, atalign) {
         myalign = 'right top';
         atalign = 'left bottom';
     }
-    showObject(popup);
-    jQuery("#" + popupId).position({
-        of: jQuery("#" + srcId),
-        my: myalign,
-        at: atalign,
-        collision: "none none"
+    popup.show();
+    popup.position({
+            of:src,
+                my: myalign,
+                at: atalign,
+                collision: "none none"
     });
     //Do it again to fix a bug on safari
-    jQuery("#" + popupId).position({
-        of: jQuery("#" + srcId),
-        my: myalign,
-        at: atalign,
-        collision: "none none"
-    });
+    popup.position({
+            of: src,
+                my: myalign,
+                at: atalign,
+                collision: "none none"
+                });
 }
 
 

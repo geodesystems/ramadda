@@ -34,6 +34,7 @@ if (!window["uniqueCnt"]) {
 
 function noop() {}
 
+
 var Utils = {
     pageLoaded: false,
     padLeft: function(s, length, pad) {
@@ -165,6 +166,22 @@ var Utils = {
         document.body.appendChild(element);
         element.click();
         document.body.removeChild(element);
+    },
+    later: function(callback) {
+        if(callback) {
+            setTimeout(callback,1);
+        }
+    },
+    call: function(callback,arg1,arg2,arg3,arg4) {
+        if(callback) {
+            var args = [];
+            if(Utils.isDefined(arg1)) args.push(arg1);
+            if(Utils.isDefined(arg2)) args.push(arg2);
+            if(Utils.isDefined(arg3)) args.push(arg3);
+            if(Utils.isDefined(arg4)) args.push(arg4);
+            callback.apply(this,args);
+        }
+        return arg1;
     },
     isDefined: function(v) {
         return !(typeof v === 'undefined');
@@ -992,6 +1009,9 @@ var HtmlUtils = {
                 this.td(rightAttrs, right)));
     },
 
+    heading: function(html) {
+        return this.tag("h3",[], html);
+    },
     div: function(attrs, inner) {
         return this.tag("div", attrs, inner);
     },
@@ -1512,3 +1532,42 @@ msg = "red_white_blue:["
 msg+="]"
     //    console.log(msg);
     */
+
+
+function Div(contents) {
+    this.id = HtmlUtils.getUniqueId();
+    this.contents  = contents || "";
+    this.extra = "";
+    this.toString = function() {
+        return HtmlUtils.div(["id",this.id],this.contents);
+    }
+    this.set = function(html, attrs) {
+        if(attrs) this.extra = HtmlUtils.attrs(attrs);
+        this.contents = html;
+        $("#"+this.id).html(html);
+        return this;
+    }
+    this.msg = function(msg) {
+        return this.set(HtmlUtils.div([ATTR_CLASS, "display-message"], msg));
+    }
+
+}
+
+
+(function ($, undefined) {
+    $.fn.getCursorPosition = function() {
+        var el = $(this).get(0);
+        var pos = 0;
+        if('selectionStart' in el) {
+            pos = el.selectionStart;
+        } else if('selection' in document) {
+            el.focus();
+            var Sel = document.selection.createRange();
+            var SelLength = document.selection.createRange().text.length;
+            Sel.moveStart('character', -el.value.length);
+            pos = Sel.text.length - SelLength;
+        }
+        return pos;
+    }
+})(jQuery);
+

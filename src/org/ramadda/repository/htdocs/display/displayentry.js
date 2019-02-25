@@ -142,6 +142,7 @@ function RamaddaSearcher(displayManager, id, type, properties) {
 
     RamaddaUtil.initMembers(this, {
         showForm: true,
+        searchText:"",
         showSearchSettings: true,
         showEntries: true,
         showType: true,
@@ -311,9 +312,10 @@ function RamaddaSearcher(displayManager, id, type, properties) {
                 }
             }
         },
-        showEntryDetails: function(event, entryId, src, leftAlign) {
+        showEntryDetails: async function(event, entryId, src, leftAlign) {
             if (true) return;
-            var entry = this.getEntry(entryId);
+            var entry;
+            await this.getEntry(entryId,e=>{entry=e});
             var popupId = "#" + this.getDomId(ID_DETAILS + entryId);
             if (this.currentPopupEntry == entry) {
                 this.hideEntryDetails(entryId);
@@ -506,7 +508,7 @@ function RamaddaSearcher(displayManager, id, type, properties) {
                 text = args.text;
             }
             if (text == null) {
-                text = "";
+                text = this.searchText;
             }
 
             var eg = " search text";
@@ -2007,7 +2009,8 @@ function RamaddaMetadataDisplay(displayManager, id, properties) {
             }
 
             var html = "";
-            html += HtmlUtils.openTag(TAG_TABLE, [ATTR_CLASS, "display-metadata-table", ATTR_WIDTH, "100%", "cellpadding", "5", "cellspacing", "0"]);
+            html += HtmlUtils.openTag(TAG_TABLE, ["id",this.getDomId("table"), ATTR_CLASS, "cell-border stripe ramadda-table", ATTR_WIDTH, "100%", "cellpadding", "5", "cellspacing", "0"]);
+            html+="<thead>"
             var type = this.findEntryType(this.searchSettings.entryType);
             var typeName = "Entry";
             if (type != null) {
@@ -2036,7 +2039,7 @@ function RamaddaMetadataDisplay(displayManager, id, properties) {
                 "spatial.polygon": true,
             };
             var headerItems = [];
-            headerItems.push(HtmlUtils.th([ATTR_CLASS, "display-metadata-table-cell"], HtmlUtils.b(typeName)));
+            headerItems.push(HtmlUtils.th([], HtmlUtils.b(typeName)));
             for (var i = 0; i < mdts.length; i++) {
                 var type = mdts[i];
                 if (skip[type]) {
@@ -2044,10 +2047,11 @@ function RamaddaMetadataDisplay(displayManager, id, properties) {
                 }
                 var label = mdtmap[mdts[i]];
                 if (label == null) label = mdts[i];
-                headerItems.push(HtmlUtils.th([ATTR_CLASS, "display-metadata-table-cell"], HtmlUtils.b(label)));
+                headerItems.push(HtmlUtils.th([], HtmlUtils.b(label)));
             }
             var headerRow = HtmlUtils.tr(["valign", "bottom"], HtmlUtils.join(headerItems, ""));
             html += headerRow;
+            html+="</thead><tbody>"
             var divider = "<div class=display-metadata-divider></div>";
             var missing = this.missingMessage;
             if (missing = null) missing = "&nbsp;";
@@ -2057,7 +2061,7 @@ function RamaddaMetadataDisplay(displayManager, id, properties) {
                 var row = [];
                 var buttonId = this.getDomId("entrylink" + entry.getIdForDom());
                 var link = entry.getLink(entry.getIconImage() + " " + entry.getName());
-                row.push(HtmlUtils.td([ATTR_CLASS, "display-metadata-table-cell"], HtmlUtils.div([ATTR_CLASS, "display-metadata-entrylink"], link)));
+                row.push(HtmlUtils.td([], HtmlUtils.div([ATTR_CLASS, "display-metadata-entrylink"], link)));
                 for (var mdtIdx = 0; mdtIdx < mdts.length; mdtIdx++) {
                     var mdt = mdts[mdtIdx];
                     if (skip[mdt]) {
@@ -2106,7 +2110,7 @@ function RamaddaMetadataDisplay(displayManager, id, properties) {
                     if (cell == null) {
                         cell = "";
                     }
-                    var add = HtmlUtils.tag(TAG_A, [ATTR_STYLE, "color:#000;", ATTR_HREF, this.getRamadda().getRoot() + "/metadata/addform?entryid=" + entry.getId() + "&metadata.type=" + mdt,
+                    var add = HtmlUtils.tag(TAG_A, [ATTR_STYLE, "color:#000;", ATTR_HREF, this.getRamadda().getRoot() + "/metadata/addform?entryid=" + entry.getId() + "&metadata_type=" + mdt,
                         "target", "_blank", "alt", "Add metadata", ATTR_TITLE, "Add metadata"
                     ], "+");
                     add = HtmlUtils.div(["class", "display-metadata-table-add"], add);
@@ -2114,14 +2118,18 @@ function RamaddaMetadataDisplay(displayManager, id, properties) {
                     if (cell.length > 0) {
                         cellContents += cell;
                     }
-                    row.push(HtmlUtils.td([ATTR_CLASS, "display-metadata-table-cell"], HtmlUtils.div([ATTR_CLASS, "display-metadata-table-cell-contents"], cellContents)));
+                    row.push(HtmlUtils.td([], HtmlUtils.div([ATTR_CLASS, "display-metadata-table-cell-contents"], cellContents)));
                 }
                 html += HtmlUtils.tr(["valign", "top"], HtmlUtils.join(row, ""));
                 //Add in the header every 10 rows
                 if (((entryIdx + 1) % 10) == 0) html += headerRow;
             }
+            html+="</tbody>"
             html += HtmlUtils.closeTag(TAG_TABLE);
             this.jq(ID_ENTRIES).html(html);
+            HtmlUtils.formatTable("#" + this.getDomId("table"), {
+                    scrollY: 400
+                        });
         },
     });
 
@@ -2240,19 +2248,17 @@ function RamaddaTimelineDisplay(displayManager, id, properties) {
 
 
 
-function RamaddaEntrydisplayDisplay(displayManager, id, properties) {
+function  RamaddaEntrydisplayDisplay(displayManager, id, properties) {
     var SUPER;
     $.extend(this, {
         sourceEntry: properties.sourceEntry
     });
     RamaddaUtil.inherit(this, SUPER = new RamaddaDisplay(displayManager, id, DISPLAY_ENTRYDISPLAY, properties));
     if (properties.sourceEntry == null && properties.entryId != null) {
-        let _this = this;
-        var callback = function(entry) {
-            _this.sourceEntry = entry;
-            _this.initDisplay();
+        var f = async function() {
+            await this.getEntry(properties.entryId, entry=>{this.sourceEntry = entry; this.initDisplay()});
         }
-        properties.sourceEntry = this.getEntry(properties.entryId, callback);
+        f();
     }
 
 

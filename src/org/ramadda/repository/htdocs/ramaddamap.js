@@ -1283,7 +1283,7 @@ function initMapFunctions(theMap) {
     }
 
 
-    theMap.initMapVectorLayer = function(layer, canSelect, selectCallback, unselectCallback, loadCallback) {
+    theMap.initMapVectorLayer = function(layer, canSelect, selectCallback, unselectCallback, loadCallback,zoomToExtent) {
         var _this = this;
         this.showLoadingImage();
         layer.isMapLayer = true;
@@ -1296,8 +1296,15 @@ function initMapFunctions(theMap) {
                     console.log("An error occurred loading the map");
                     return;
                 }
-                if (_this.centerOnMarkersCalled) {
-                    _this.centerOnMarkers(_this.dfltBounds, _this.centerOnMarkersForce);
+                if(zoomToExtent) {
+                    var dataBounds = layer.getDataExtent();
+                    if (dataBounds) {
+                        _this.map.zoomToExtent(dataBounds, true);
+                    }
+                } else {
+                    if (_this.centerOnMarkersCalled) {
+                        _this.centerOnMarkers(_this.dfltBounds, _this.centerOnMarkersForce);
+                    }
                 }
                 if (loadCallback) {
                     loadCallback(_this, layer);
@@ -1313,7 +1320,7 @@ function initMapFunctions(theMap) {
         this.addSelectCallback(layer, canSelect, selectCallback, unselectCallback);
     }
 
-    theMap.addGeoJsonLayer = function(name, url, canSelect, selectCallback, unselectCallback, args, loadCallback) {
+    theMap.addGeoJsonLayer = function(name, url, canSelect, selectCallback, unselectCallback, args, loadCallback, zoomToExtent) {
         var layer = new OpenLayers.Layer.Vector(name, {
             projection: this.displayProjection,
             strategies: [new OpenLayers.Strategy.Fixed()],
@@ -1323,12 +1330,18 @@ function initMapFunctions(theMap) {
             }),
             //xxstyleMap: this.getVectorLayerStyleMap(args)
         });
+        if(!args) {
+            args  = {
+                strokeColor:'blue',
+                strokeWidth: 2
+            }
+        }
         layer.styleMap = this.getVectorLayerStyleMap(layer, args);
-        this.initMapVectorLayer(layer, canSelect, selectCallback, unselectCallback, loadCallback);
+        this.initMapVectorLayer(layer, canSelect, selectCallback, unselectCallback, loadCallback,zoomToExtent);
         return layer;
     }
 
-    theMap.addKMLLayer = function(name, url, canSelect, selectCallback, unselectCallback, args, loadCallback) {
+    theMap.addKMLLayer = function(name, url, canSelect, selectCallback, unselectCallback, args, loadCallback, zoomToExtent) {
         var layer = new OpenLayers.Layer.Vector(name, {
             projection: this.displayProjection,
             strategies: [new OpenLayers.Strategy.Fixed()],
@@ -1342,8 +1355,14 @@ function initMapFunctions(theMap) {
             }),
             //styleMap: this.getVectorLayerStyleMap(args)
         });
+        if(!args) {
+            args  = {
+                strokeColor:'blue',
+                strokeWidth: 2
+            }
+        }
         layer.styleMap = this.getVectorLayerStyleMap(layer, args);
-        this.initMapVectorLayer(layer, canSelect, selectCallback, unselectCallback, loadCallback);
+        this.initMapVectorLayer(layer, canSelect, selectCallback, unselectCallback, loadCallback,zoomToExtent);
         return layer;
     }
 
@@ -1839,7 +1858,7 @@ function initMapFunctions(theMap) {
             wait.html(HtmlUtils.image(icon_wait));
             var url = ramaddaBaseUrl + "/geocode?query=" + encodeURIComponent(searchInput.val());
             if (bounds.is(':checked')) {
-                var b = _this.transformProjBounds(_this.map.getExtent());
+               var b = _this.transformProjBounds(_this.map.getExtent());
                 url += "&bounds=" + b.top + "," + b.left + "," + b.bottom + "," + b.right;
             }
             var jqxhr = $.getJSON(url, function(data) {
@@ -1863,7 +1882,7 @@ function initMapFunctions(theMap) {
                 var at = "left top";
                 result += HtmlUtils.closeTag("div");
                 searchPopup.html(result);
-                popupObject = GuiUtils.getDomObject(_this.mapDivId + "_loc_popup");
+                popupObject = searchPopup;
                 searchPopup.show();
                 searchPopup.position({
                     of: searchInput,
@@ -2610,7 +2629,6 @@ function initMapFunctions(theMap) {
             }
         }
         this.dfltBounds = dfltBounds;
-        //        if (!bounds) {
         if (!force) {
             if (this.markers) {
                 // markers are in projection coordinates
@@ -2639,9 +2657,6 @@ function initMapFunctions(theMap) {
                 }
             }
         }
-
-        //        }
-        //        console.log("bounds:" +bounds);
 
         if (!bounds) {
             bounds = dfltBounds;

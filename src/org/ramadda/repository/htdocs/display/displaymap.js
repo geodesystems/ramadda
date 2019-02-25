@@ -388,11 +388,11 @@ function RamaddaMapDisplay(displayManager, id, properties) {
                 return;
             }
 
-            if (entry.getType().getId() == "geo_shapefile") {
+            var type = entry.getType().getId();
+            if (type == "geo_shapefile" || type == "geo_geojson") {
                 var bounds = createBounds(entry.getWest(), entry.getSouth(), entry.getEast(), entry.getNorth());
                 if (bounds.left < -180 || bounds.right > 180 || bounds.bottom < -90 || bounds.top > 90) {
-                    console.log("entry has bad bounds:" + entry.getName() + " " + bounds);
-                    return;
+                    bounds = null;
                 }
 
                 var selectCallback = function(layer) {
@@ -401,11 +401,15 @@ function RamaddaMapDisplay(displayManager, id, properties) {
                 var unselectCallback = function(layer) {
                     _this.handleLayerUnselect(layer);
                 }
-                var url = ramaddaBaseUrl + "/entry/show?output=shapefile.kml&entryid=" + entry.getId();
-                var layer = this.map.addKMLLayer(entry.getName(), url, true, selectCallback, unselectCallback);
+                var layer;
+                if(type == "geo_geojson") {
+                    var url  = entry.getRamadda().getEntryDownloadUrl(entry);
+                    layer = this.map.addGeoJsonLayer(this.geojsonLayerName, url, this.doDisplayMap(), selectCallback, unselectCallback, null,null, true);
+                } else {
+                    var url = ramaddaBaseUrl + "/entry/show?output=shapefile.kml&entryid=" + entry.getId();
+                    layer = this.map.addKMLLayer(entry.getName(), url, true, selectCallback, unselectCallback,null,null, true);
+                }
                 this.addedLayers[entry.getId()] = layer;
-                bounds = this.map.transformLLBounds(bounds);
-                this.map.map.zoomToExtent(bounds, true);
                 return;
             }
 
@@ -586,7 +590,6 @@ function RamaddaMapDisplay(displayManager, id, properties) {
             */
         },
         addOrRemoveEntryMarker: function(id, entry, add, args) {
-            console.log("entry marker");
             if (!args) {
                 args = {};
             }
