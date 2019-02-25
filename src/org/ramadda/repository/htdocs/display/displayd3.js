@@ -175,8 +175,8 @@ function RamaddaSkewtDisplay(displayManager, id, properties) {
     RamaddaUtil.defineMembers(this, {
         initDisplay: function() {
             this.createUI();
-            var html = "<p><script src='/repository/skewt/d3skewt.js'></script>\n";
-            html += "<link rel='stylesheet' type='text/css' href='/skewt/sounding.css'>\n";
+            var html = "<p><script src='/repository/lib/skewt/d3skewt.js'></script>\n";
+            html += "<link rel='stylesheet' type='text/css' href='/lib/skewt/sounding.css'>\n";
             var skewtId = this.getDomId(ID_SKEWT);
             html += HtmlUtils.div(["id", skewtId], "");
             this.writeHtml(ID_DISPLAY_CONTENTS, html);
