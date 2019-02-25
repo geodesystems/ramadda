@@ -36,6 +36,15 @@
     </target>
 
 
+    <target name="release_noplugins" depends="init">
+      <copy overwrite="true" file="${dist_plugins}/coreplugins.jar"  todir="${src_dir}/org/ramadda/repository/resources/plugins"/>
+      <copy overwrite="true" file="${dist_plugins}/geoplugins.jar"  todir="${src_dir}/org/ramadda/repository/resources/plugins"/>
+      <copy overwrite="true" file="${dist_plugins}/bioplugins.jar"  todir="${src_dir}/org/ramadda/repository/resources/plugins"/>
+      <copy overwrite="true" file="${dist_plugins}/miscplugins.jar"  todir="${src_dir}/org/ramadda/repository/resources/plugins"/>
+      <ant antfile="${src_dir}/org/ramadda/repository/build.xml" inheritAll="false" target="release"/>
+    </target>
+
+
     <target name="client" depends="init">
       <ant antfile="${src_dir}/org/ramadda/repository/build.xml" inheritAll="false" target="client"/>
     </target>

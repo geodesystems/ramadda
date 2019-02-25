@@ -6059,7 +6059,6 @@ public class TypeHandler extends RepositoryManager {
         for (String textTok :
                 (List<String>) StringUtil.split(textToSearch, ",", true,
                     true)) {
-            List<String> nameToks = StringUtil.splitWithQuotes(textTok);
             boolean      doLike   = false;
             boolean      doRegexp = false;
             if (request.get(ARG_ISREGEXP, false)) {
@@ -6084,6 +6083,9 @@ public class TypeHandler extends RepositoryManager {
                                     Tables.METADATA.COL_ATTR4*/
             };
 
+
+            List<String> nameToks = StringUtil.splitWithQuotes(textTok);
+            System.err.println("nameToks:" + nameToks);
 
             for (String nameTok : nameToks) {
                 boolean doNot = nameTok.startsWith("!");
