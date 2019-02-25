@@ -764,7 +764,7 @@ public class CdmDataOutputHandler extends OutputHandler implements CdmConstants 
 
         String formId = HtmlUtils.getUniqueId("form_");
 
-        sb.append(HtmlUtils.sectionOpen("Subset Grid"));
+        getPageHandler().entrySectionOpen(request, entry, sb, "Subset Grid");
 
         sb.append(HtmlUtils.formPost(formUrl + "/" + fileName,
                                      HtmlUtils.id(formId)));
@@ -849,7 +849,7 @@ public class CdmDataOutputHandler extends OutputHandler implements CdmConstants 
                           "[\".*OpenLayers_Control.*\",\".*original.*\"]");
         sb.append(HtmlUtils.formClose());
 
-        sb.append(HtmlUtils.sectionClose());
+        getPageHandler().entrySectionClose(request, entry, sb);
 
         getCdmManager().returnGridDataset(path, dataset);
 
