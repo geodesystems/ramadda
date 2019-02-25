@@ -17,6 +17,7 @@ if [  "$2" ]; then
     target="$2"
 fi
 
+
 pushd ${RAMADDA_SRC}
 echo "commiting";
 git commit -m "${text}" -a
