@@ -6179,7 +6179,11 @@ public class TypeHandler extends RepositoryManager {
                     }
 
                 }
-                ands.add(Clause.or(ors));
+                if(doNot) {
+                    ands.add(Clause.and(ors));
+                } else {
+                    ands.add(Clause.or(ors));
+                }
             }
             //            System.err.println("clauses:" + ands);
             if (ands.size() > 1) {
