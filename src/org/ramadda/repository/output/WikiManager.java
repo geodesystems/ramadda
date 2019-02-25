@@ -2947,8 +2947,10 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
             if (children.size() == 0) {
                 return null;
             }
+            boolean noTemplate = getProperty(wikiUtil, props,
+                                             "noTemplate", true);
             getHtmlOutputHandler().makeTreeView(request, children, sb, width,
-                    height);
+                                                height, noTemplate);
 
             return sb.toString();
         } else if (theTag.equals(WIKI_TAG_LINKS)

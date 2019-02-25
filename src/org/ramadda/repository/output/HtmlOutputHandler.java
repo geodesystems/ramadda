@@ -1301,7 +1301,7 @@ public class HtmlOutputHandler extends OutputHandler {
         allEntries.addAll(subGroups);
         allEntries.addAll(entries);
         getPageHandler().entrySectionOpen(request, group, sb, "Tree View");
-        makeTreeView(request, allEntries, sb, 750, 500);
+        makeTreeView(request, allEntries, sb, 750, 500, true);
         getPageHandler().entrySectionClose(request, group, sb);
 
         return makeLinksResult(request, group.getName(), sb,
@@ -1544,7 +1544,7 @@ public class HtmlOutputHandler extends OutputHandler {
      * @throws Exception _more_
      */
     public void makeTreeView(Request request, List<Entry> children,
-                             Appendable sb, int width, int height)
+                             Appendable sb, int width, int height, boolean noTemplate)
             throws Exception {
 
         //TODO:  make the DOM ids be unique
@@ -1579,7 +1579,7 @@ public class HtmlOutputHandler extends OutputHandler {
             url = Utils.concatString("javascript:",
                                      HtmlUtils.call("treeViewClick",
                                          HtmlUtils.jsMakeArgs(true,
-                                             child.getId(), url, label)));
+                                                              child.getId(), url, label,""+noTemplate)));
             HtmlUtils.open(listSB, HtmlUtils.TAG_DIV,
                            HtmlUtils.attrs(new String[] { "class",
                     "ramadda-treeview-entry" }));
@@ -1626,7 +1626,7 @@ public class HtmlOutputHandler extends OutputHandler {
                 }
             }
             initUrl = request.entryUrl(getRepository().URL_ENTRY_SHOW,
-                                       initEntry, "template", "empty");
+                                       initEntry, (noTemplate?"template":"dummy"), "empty");
         }
         sb.append("<div class=\"col-md-" + wtr
                   + " ramadda-treeview-right \"  \"  >");
