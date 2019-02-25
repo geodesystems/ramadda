@@ -6069,7 +6069,7 @@ public class TypeHandler extends RepositoryManager {
             } else if ( !request.get(ARG_EXACT, false)) {
                 addCriteria(request, searchCriteria, "Text like", textTok);
                 List tmp = StringUtil.split(textTok, ",", true, true);
-                textTok = "%" + StringUtil.join("%,%", tmp) + "%";
+                //                textTok = "%" + StringUtil.join("%,%", tmp) + "%";
                 doLike  = true;
             } else {
                 addCriteria(request, searchCriteria, "Text =", textToSearch);
