@@ -6055,6 +6055,7 @@ public class TypeHandler extends RepositoryManager {
             throws Exception {
 
         DatabaseManager dbm     = getDatabaseManager();
+        textToSearch = textToSearch.replaceAll("%20"," ");
         List<Clause>    textOrs = new ArrayList<Clause>();
         for (String textTok :
                 (List<String>) StringUtil.split(textToSearch, ",", true,
@@ -6084,7 +6085,7 @@ public class TypeHandler extends RepositoryManager {
             };
 
 
-            textTok = textTok.replaceAll("%20"," ");
+
             List<String> nameToks = StringUtil.splitWithQuotes(textTok);
             System.err.println("nameToks:" + nameToks);
 
