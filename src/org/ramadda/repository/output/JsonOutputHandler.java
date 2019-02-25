@@ -171,6 +171,21 @@ public class JsonOutputHandler extends OutputHandler {
     }
 
 
+    public Result outputEntry(Request request, OutputType outputType,
+                              Entry entry)
+            throws Exception {
+        request.setReturnFilename(IOUtil.stripExtension(entry.getName())
+                                  + ".json");
+        List<Entry> allEntries = new ArrayList<Entry>();
+        allEntries.add(entry);
+        StringBuilder sb = new StringBuilder();
+        makeJson(request, allEntries, sb);
+        request.setCORSHeaderOnResponse();
+        return new Result("", sb, Json.MIMETYPE);
+    }
+
+
+
     /**
      * _more_
      *

@@ -767,7 +767,6 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             var entries = source.getEntries();
             for (var i = 0; i < entries.length; i++) {
                 var entry = entries[i];
-                console.log("entries:" + this.getEntries);
                 var containsEntry = this.getEntries().indexOf(entry) >= 0;
                 if (containsEntry) {
                     this.highlightEntry(entry);
@@ -1534,7 +1533,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             window.open(url, '_blank');
 
         },
-        entryHtmlHasBeenDisplayed: function(entry) {
+        entryHtmlHasBeenDisplayed: async function(entry) {
             if (entry.getIsGroup() /* && !entry.isRemote*/ ) {
                 var theDisplay = this;
                 var callback = function(entries) {
@@ -1544,7 +1543,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
                     theDisplay.jq(ID_GROUP_CONTENTS + entry.getIdForDom()).html(html);
                     theDisplay.addEntrySelect();
                 };
-                var entries = entry.getChildrenEntries(callback);
+                await entry.getChildrenEntries(callback);
             }
         },
         getEntryHtml: function(entry, props) {
@@ -1569,7 +1568,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 
             if (false) {
                 var url = this.getRamadda().getRoot() + "/entry/show?entryid=" + entry.getId() + "&decorate=false&output=metadataxml&details=true";
-                console.log(url);
+                //                console.log(url);
                 $("#" + divid).load(url, function() {
                     alert("Load was performed.");
                 });
@@ -12618,7 +12617,6 @@ function RamaddaEntrygalleryDisplay(displayManager, id, properties) {
                 };
                 var searchSettings = new EntrySearchSettings(props);
                 var jsonUrl = this.getRamadda().getSearchUrl(searchSettings, OUTPUT_JSON, "BAR");
-                console.log(jsonUrl);
                 var myCallback = {
                     entryListChanged: function(list) {
                         var entries = list.getEntries();
@@ -13750,6 +13748,8 @@ function RamaddaTimelineDisplay(displayManager, id, properties) {
 
 function  RamaddaEntrydisplayDisplay(displayManager, id, properties) {
     var SUPER;
+    var e = new Error();
+
     $.extend(this, {
         sourceEntry: properties.sourceEntry
     });
@@ -13757,7 +13757,10 @@ function  RamaddaEntrydisplayDisplay(displayManager, id, properties) {
     if (properties.sourceEntry == null && properties.entryId != null) {
         var _this = this;
         var f = async function() {
-            await _this.getEntry(properties.entryId, entry=>{_this.sourceEntry = entry; _this.initDisplay()});
+            await _this.getEntry(properties.entryId, entry=>{
+                    _this.sourceEntry = entry; 
+                    _this.initDisplay()});
+
         }
         f();
     }

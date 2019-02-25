@@ -1118,7 +1118,6 @@ function RamaddaEntrygalleryDisplay(displayManager, id, properties) {
                 };
                 var searchSettings = new EntrySearchSettings(props);
                 var jsonUrl = this.getRamadda().getSearchUrl(searchSettings, OUTPUT_JSON, "BAR");
-                console.log(jsonUrl);
                 var myCallback = {
                     entryListChanged: function(list) {
                         var entries = list.getEntries();
@@ -2250,6 +2249,8 @@ function RamaddaTimelineDisplay(displayManager, id, properties) {
 
 function  RamaddaEntrydisplayDisplay(displayManager, id, properties) {
     var SUPER;
+    var e = new Error();
+
     $.extend(this, {
         sourceEntry: properties.sourceEntry
     });
@@ -2257,7 +2258,10 @@ function  RamaddaEntrydisplayDisplay(displayManager, id, properties) {
     if (properties.sourceEntry == null && properties.entryId != null) {
         var _this = this;
         var f = async function() {
-            await _this.getEntry(properties.entryId, entry=>{_this.sourceEntry = entry; _this.initDisplay()});
+            await _this.getEntry(properties.entryId, entry=>{
+                    _this.sourceEntry = entry; 
+                    _this.initDisplay()});
+
         }
         f();
     }

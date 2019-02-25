@@ -732,7 +732,6 @@ public class OutputHandler extends RepositoryManager {
             throws Exception {
         List<Entry> entries = new ArrayList<Entry>();
         entries.add(entry);
-
         return outputGroup(request, outputType,
                            getEntryManager().getDummyGroup(),
                            new ArrayList<Entry>(), entries);
