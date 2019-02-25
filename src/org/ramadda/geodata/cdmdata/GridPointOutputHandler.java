@@ -1251,13 +1251,16 @@ public class GridPointOutputHandler extends OutputHandler implements CdmConstant
      */
     public List<GridDatatype> sortGrids(GridDataset dataset) {
         List tuples = new ArrayList();
-        for (GridDatatype grid : dataset.getGrids()) {
+        List<GridDatatype> result = new ArrayList<GridDatatype>();
+        List<GridDatatype> grids = dataset.getGrids();
+        if(grids==null) return result;
+        for (GridDatatype grid : grids) {
+            if(grid==null) continue;
             VariableEnhanced var = grid.getVariable();
             tuples.add(new Object[] { var.getShortName().toLowerCase(),
                                       grid });
         }
         tuples = Misc.sortTuples(tuples, true);
-        List<GridDatatype> result = new ArrayList<GridDatatype>();
         for (Object[] tuple : (List<Object[]>) tuples) {
             result.add((GridDatatype) tuple[1]);
         }

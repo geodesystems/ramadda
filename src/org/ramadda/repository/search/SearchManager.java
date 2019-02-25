@@ -1121,12 +1121,14 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
         } else {
             String      type        = lastTok;
             TypeHandler typeHandler = getRepository().getTypeHandler(type);
-            Result result =
-                typeHandler.getSpecialSearch().processSearchRequest(request,
-                    sb);
-            //Is it non-html?
-            if (result != null) {
-                return result;
+            if(typeHandler !=null) {
+                Result result =
+                    typeHandler.getSpecialSearch().processSearchRequest(request,
+                                                                        sb);
+                //Is it non-html?
+                if (result != null) {
+                    return result;
+                }
             }
         }
 

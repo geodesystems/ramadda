@@ -6089,12 +6089,20 @@ public class TypeHandler extends RepositoryManager {
             List<String> nameToks = StringUtil.splitWithQuotes(textTok);
 
             for (String nameTok : nameToks) {
+                boolean nameDoLike = doLike;
                 boolean doNot = nameTok.startsWith("!");
                 if (doNot) {
                     nameTok = nameTok.substring(1);
                 }
 
-                if (doLike) {
+                boolean doEquals = nameTok.startsWith("=");
+                if (doEquals) {
+                    nameTok = nameTok.substring(1);
+                    nameDoLike = false;
+                }
+
+
+                if (nameDoLike) {
                     nameTok = "%" + nameTok + "%";
                 }
                 List<Clause> ors     = new ArrayList<Clause>();
@@ -6118,7 +6126,7 @@ public class TypeHandler extends RepositoryManager {
                             metadataOrs.add(
                                 getDatabaseManager().makeRegexpClause(
                                     attrCol, nameTok, doNot));
-                        } else if (doLike) {
+                        } else if (nameDoLike) {
                             metadataOrs.add(dbm.makeLikeTextClause(attrCol,
                                     nameTok, doNot));
                         } else {
@@ -6150,7 +6158,7 @@ public class TypeHandler extends RepositoryManager {
                             getDatabaseManager().makeRegexpClause(
                                 Tables.ENTRIES.COL_RESOURCE, nameTok, doNot));
                     }
-                } else if (doLike) {
+                } else if (nameDoLike) {
                     if (doName) {
                         ors.add(
                             dbm.makeLikeTextClause(
