@@ -21,6 +21,7 @@ user=ec2-user
 
 target="release"
 if [  "$2" ]; then
+    echo "TARGXXX:${2}"
     target="$2"
 fi
 echo "TARG:${target}"
