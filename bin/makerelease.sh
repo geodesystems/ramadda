@@ -21,13 +21,8 @@ user=ec2-user
 
 target="release"
 if [  "$2" ]; then
-    echo "TARGXXX:${2}"
     target="$2"
 fi
-echo "TARG:${target}"
-exit
-
-
 ssh -tq -i  ${PEM}  ${user}@${ipaddress} "sudo sh /mnt/ramadda/source/ramadda/bin/buildandinstall.sh ${target}"
 
 tput bel
