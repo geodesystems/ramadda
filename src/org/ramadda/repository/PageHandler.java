@@ -574,6 +574,7 @@ public class PageHandler extends RepositoryManager {
                     favoriteLinks.add("<nobr>" + link + "</nobr>");
                 }
             }
+            favoritesTemplate = applyBaseMacros(favoritesTemplate);
             favorites.append(favoritesTemplate.replace("${entries}",
                     StringUtil.join(favoritesSeparator, favoriteLinks)));
         }

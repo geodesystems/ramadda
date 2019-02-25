@@ -1539,18 +1539,13 @@ public class MetadataManager extends RepositoryManager {
                                         HtmlUtils.squote(cbxId)))));
 
                 StringBuilder metadataEntry = new StringBuilder();
-                metadataEntry.append(
-                    HtmlUtils.comment("Metadata part begin"));
-                metadataEntry.append(HtmlUtils.formEntry("",
-                        cbx + HtmlUtils.space(2) + msg("Select")));
-                metadataEntry.append("\n");
+                HtmlUtils.comment(metadataEntry, "Metadata part begin");
                 metadataEntry.append(HtmlUtils.formTable());
+                metadataEntry.append(HtmlUtils.formEntry("",  cbx + HtmlUtils.space(2) + msg("Select")));
                 metadataEntry.append("\n");
                 metadataEntry.append(html[1]);
-                metadataEntry.append(
-                    HtmlUtils.comment("Metadata form table close"));
-                metadataEntry.append(HtmlUtils.formTableClose());
-                metadataEntry.append(HtmlUtils.comment("Metadata part end"));
+                HtmlUtils.formTableClose(metadataEntry);
+                HtmlUtils.comment(metadataEntry, "Metadata part end");
                 titles.add(html[0]);
                 String content = HtmlUtils.div(
                                      metadataEntry.toString(),
@@ -1559,13 +1554,10 @@ public class MetadataManager extends RepositoryManager {
                 contents.add(content);
             }
             sb.append(HtmlUtils.beginInset(10, 10, 10, 10));
-            sb.append(HtmlUtils.comment("Metadata accordian begin"));
             HtmlUtils.makeAccordian(sb, titles, contents);
-            sb.append(HtmlUtils.comment("Metadata accordian end"));
             sb.append(HtmlUtils.endInset());
             sb.append(buttons);
-            sb.append("\n");
-            sb.append(HtmlUtils.comment("Metadata form end"));
+            HtmlUtils.comment(sb, "Metadata form end");
             sb.append(HtmlUtils.formClose());
             sb.append("\n");
         }
