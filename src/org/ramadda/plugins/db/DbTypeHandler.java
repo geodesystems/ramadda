@@ -1936,6 +1936,7 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
             where.add(Clause.eq(COL_ID, entry.getId()));
         }
         String textToSearch = (String) request.getString(ARG_TEXT, "").trim();
+        System.err.println("text:"+ textToSearch);
         if (textToSearch.length() > 0) {
             addTextDbSearch(request, textToSearch, searchCriteria, where,
                             false, false, false);
