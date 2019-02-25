@@ -13,8 +13,8 @@ ramadda.template.link.separator=
 ramadda.template.userlink.wrapper =<div class="navlink"><a href="${url}">${label}</a></div>
 ramadda.template.userlink.separator=
 	
-ramadda.template.favorites = <span class="linkslabel"><a href="${root}/user/home" ><img border="0"  src="${root}/icons/star.png" align="center" /> Favorites</a></spam><div class="favorites">${entries}</div>
-ramadda.template.cart = <span class="linkslabel"><a href="${root}/user/cart"><img border="0"  src="${root}/icons/cart.png" align="center" /> Cart</a></spam><div class="favorites">${entries}</div>
+ramadda.template.favorites = <span class="linkslabel"><a href="{{root}}/user/home" ><img border="0"  src="${root}/icons/star.png" align="center" /> Favorites</a></spam><div class="favorites">${entries}</div>
+ramadda.template.cart = <span class="linkslabel"><a href="{{root}}/user/cart"><img border="0"  src="{{root}}/icons/cart.png" align="center" /> Cart</a></spam><div class="favorites">${entries}</div>
 </properties>
 
 ${imports}
@@ -400,10 +400,10 @@ ${headfinal}
 					<a href="${logo.url}" ><img border="0" width="150px" src="${logo.image}" alt="${logo.url}" /></a>
 				</div>
 				<div class="leftcolumn">
-					<span class="linkslabel"><a href="${root}" ><img border="0"  src="${root}/icons/folderclosed.png" alt="Home"  /> Home </a></span>
+					<span class="linkslabel"><a href="{{root}}" ><img border="0"  src="{{root}}/icons/folderclosed.png" alt="Home"  /> Home </a></span>
 					<br />
 
-					<span class="linkslabel"><a href="${root}/user/login" ><img border="0"  src="${root}/icons/user.png" alt="User Home" /> User </a> </span>
+					<span class="linkslabel"><a href="{{root}}/user/login" ><img border="0"  src="{{root}}/icons/user.png" alt="User Home" /> User </a> </span>
 					<div class="leftbox">${links}</div>
 					<br />
 					${favorites}
