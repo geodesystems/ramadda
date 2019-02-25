@@ -2070,15 +2070,6 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                             entry.getName(), null, sb, props);
 
             return sb.toString();
-        } else if (theTag.equals(WIKI_TAG_GRAPH)) {
-            int width = getDimension(wikiUtil, props, ATTR_WIDTH, 400);
-            int height = getDimension(wikiUtil, props, ATTR_HEIGHT, 300);
-            List<Entry> children = getEntries(request, wikiUtil,
-                                       originalEntry, entry, props);
-            getGraphOutputHandler().getGraph(request, entry, children, sb,
-                                             width, height);
-
-            return sb.toString();
         } else if (theTag.equals(WIKI_TAG_TIMELINE)) {
             Entry mainEntry = entry;
             List<Entry> children = getEntries(request, wikiUtil,
