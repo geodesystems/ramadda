@@ -14,7 +14,6 @@
       <ant antfile="${src_dir}/org/ramadda/projects/10000cities/build.xml" inheritAll="false"/>
       <ant antfile="${src_dir}/org/ramadda/projects/dmt/build.xml" inheritAll="false"/>
       <ant antfile="${src_dir}/org/ramadda/projects/bocofo/build.xml" inheritAll="false"/>
-      <ant antfile="${src_dir}/org/ramadda/projects/etc/build.xml" inheritAll="false"/>
       <ant antfile="${src_dir}/org/ramadda/projects/cma/build.xml" inheritAll="false"/>
       <ant antfile="${src_dir}/org/ramadda/projects/aap/build.xml" inheritAll="false"/>
       <ant antfile="${src_dir}/org/ramadda/projects/ou/build.xml" inheritAll="false"/>
