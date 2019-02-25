@@ -131,6 +131,7 @@ public class NotebookTypeHandler extends ExtensibleGroupTypeHandler {
      *
      * @throws Exception _more_
      */
+    /*
     @Override
     public void getChildrenEntries(Request request, Entry group,
                                    List<Entry> entries,
@@ -141,7 +142,7 @@ public class NotebookTypeHandler extends ExtensibleGroupTypeHandler {
         }
         super.getChildrenEntries(request, group, entries, subGroups, select);
     }
-
+    */
 
 
     /**
@@ -194,7 +195,7 @@ public class NotebookTypeHandler extends ExtensibleGroupTypeHandler {
             if(e.getName().length()>0)
                 seen.add(e.getName().substring(0,1).toUpperCase());
         }
-
+        System.err.println("seen:" + seen);
 
         String[]     ltrs      = {
             "A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M",
@@ -226,6 +227,8 @@ public class NotebookTypeHandler extends ExtensibleGroupTypeHandler {
             if (name.length() > 0) {
                 letter = name.substring(0, 1).toUpperCase();
             }
+            if(theLetter.length()>0 && !theLetter.equals("all") && !theLetter.equals(letter)) continue;
+
             StringBuffer letterBuffer = letterToBuffer.get(letter);
             if (letterBuffer == null) {
                 letterToBuffer.put(letter, letterBuffer = new StringBuffer());
