@@ -24,5 +24,7 @@ git commit -m "${text}" -a
 echo "pushing";
 git push
 echo "building";
+echo sh ${mydir}/makerelease.sh ${GEODESYSTEMS_IP} ${target}
+exit
 sh ${mydir}/makerelease.sh ${GEODESYSTEMS_IP} ${target}
 popd
