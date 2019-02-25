@@ -124,7 +124,7 @@ myLocationOffset="0.008"
 :title Stop: {{name}}
 ----
 +section 
-{{description wikify="true" prefix="+box-yellow" suffix="-box"}}
+{{description wikify="true" prefix="+note" suffix="-note"}}
 +row
 +col-md-8
 {{gtfs.stop.schedule}}
