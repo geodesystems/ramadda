@@ -166,10 +166,8 @@ public class NotebookTypeHandler extends ExtensibleGroupTypeHandler {
         StringBuffer sb = new StringBuffer();
         getPageHandler().entrySectionOpen(request, group, sb, "");
         sb.append(getWikiManager().wikifyEntry(request, group, group.getDescription()));
-        sb.append(HtmlUtils.p());
         boolean canAdd = getAccessManager().canDoAction(request, group,
                              Permission.ACTION_NEW);
-
         if (canAdd) {
             String label =
                 HtmlUtils.img(getRepository().getIconUrl(ICON_NEW),
@@ -187,13 +185,12 @@ public class NotebookTypeHandler extends ExtensibleGroupTypeHandler {
         Hashtable<String, StringBuffer> letterToBuffer =
             new Hashtable<String, StringBuffer>();
         subGroups.addAll(entries);
-        sb.append(HtmlUtils.p());
         sb.append("<center>");
         List<String> header    = new ArrayList<String>();
         String       theLetter = request.getString(ARG_LETTER, "");
         HashSet seen = new HashSet();
         seen.add("all");
-        for(Entry e: entries) {
+        for(Entry e: subGroups) {
             if(e.getName().length()>0)
                 seen.add(e.getName().substring(0,1).toUpperCase());
         }
