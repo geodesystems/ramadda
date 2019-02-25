@@ -19,7 +19,13 @@ PEM=${GEODESYSTEMS_PEM}
 ipaddress=$1
 user=ec2-user
 
-ssh -tq -i  ${PEM}  ${user}@${ipaddress} "sudo sh /mnt/ramadda/source/ramadda/bin/buildandinstall.sh"
+target="release"
+if [  "$2" ]; then
+    target="$2"
+fi
+
+
+ssh -tq -i  ${PEM}  ${user}@${ipaddress} "sudo sh /mnt/ramadda/source/ramadda/bin/buildandinstall.sh ${target}"
 
 tput bel
 tput bel

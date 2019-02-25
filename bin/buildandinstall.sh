@@ -9,6 +9,11 @@ MYDIR=`dirname $0`
 
 #the  ramadda home dir
 #/some/dir/repository 
+target="release"
+if [  "$1" ]; then
+    target="$1"
+fi
+
 
 #where the server is run from, holds logs, the compiled release, etc:
 #/some/dir/runtime  
@@ -36,7 +41,7 @@ echo "Updating GIT and running build"
 pushd ${SOURCE}
 #svn update
 git pull --no-edit origin master
-ant -Dbuild.compiler=javac1.7
+ant -Dbuild.compiler=javac1.7 ${target}
 
 if [ ! -d "${DIST}/ramaddaserver" ]; then
     echo "Build seemed to fail. No ${DIST}/ramaddaserver dir. Exiting"
