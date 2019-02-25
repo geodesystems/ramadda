@@ -14,6 +14,11 @@ if [  "$1" ]; then
     text="$1"
 fi
 
+target="release"
+if [  "$2" ]; then
+    target="$2"
+fi
+
 pushd ${RAMADDA_SRC}
 echo "making htdocs";
 ant -buildfile ${RAMADDA_SRC}/src/org/ramadda/repository/build.xml htdocs
@@ -22,5 +27,5 @@ git commit -m "${text}" -a
 echo "pushing";
 git push
 echo "building";
-sh ${mydir}/makerelease.sh ${GEODESYSTEMS_IP}
+sh ${mydir}/makerelease.sh ${GEODESYSTEMS_IP} ${target}
 popd

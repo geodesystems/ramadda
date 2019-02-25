@@ -6084,6 +6084,7 @@ public class TypeHandler extends RepositoryManager {
             };
 
 
+            textTok = textTok.replaceAll("%20"," ");
             List<String> nameToks = StringUtil.splitWithQuotes(textTok);
             System.err.println("nameToks:" + nameToks);
 
