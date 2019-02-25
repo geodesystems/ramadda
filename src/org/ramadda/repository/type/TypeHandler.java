@@ -6087,7 +6087,6 @@ public class TypeHandler extends RepositoryManager {
 
 
             List<String> nameToks = StringUtil.splitWithQuotes(textTok);
-            System.err.println("nameToks:" + nameToks);
 
             for (String nameTok : nameToks) {
                 boolean doNot = nameTok.startsWith("!");
@@ -6198,7 +6197,7 @@ public class TypeHandler extends RepositoryManager {
                 textOrs.add(ands.get(0));
             }
         }
-        System.err.println ("ors:" + textOrs.get(0));
+        //        System.err.println ("ors:" + textOrs.get(0));
         if (textOrs.size() > 1) {
             where.add(Clause.or(textOrs));
         } else if (textOrs.size() == 1) {
