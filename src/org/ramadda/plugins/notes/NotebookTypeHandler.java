@@ -195,7 +195,7 @@ public class NotebookTypeHandler extends ExtensibleGroupTypeHandler {
         seen.add("all");
         for(Entry e: entries) {
             if(e.getName().length()>0)
-                seen.add(e.getName().substring(0,0).toUpperCase());
+                seen.add(e.getName().substring(0,1).toUpperCase());
         }
 
 
