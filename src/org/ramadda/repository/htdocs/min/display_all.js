@@ -13755,8 +13755,9 @@ function  RamaddaEntrydisplayDisplay(displayManager, id, properties) {
     });
     RamaddaUtil.inherit(this, SUPER = new RamaddaDisplay(displayManager, id, DISPLAY_ENTRYDISPLAY, properties));
     if (properties.sourceEntry == null && properties.entryId != null) {
+        var _this = this;
         var f = async function() {
-            await this.getEntry(properties.entryId, entry=>{this.sourceEntry = entry; this.initDisplay()});
+            await _this.getEntry(properties.entryId, entry=>{_this.sourceEntry = entry; _this.initDisplay()});
         }
         f();
     }
