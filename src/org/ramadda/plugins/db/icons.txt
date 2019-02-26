@@ -27,6 +27,7 @@ br
 /db/icons/sportvenue.png
 /db/icons/ski.png
 /db/icons/hotsprings.png
+/db/icons/hammer.png
 br
 /db/icons/mountain.png
 /db/icons/fishing.png
