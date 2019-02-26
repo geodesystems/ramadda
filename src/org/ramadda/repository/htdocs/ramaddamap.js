@@ -121,6 +121,7 @@ function RepositoryMap(mapId, params) {
         initialZoom: mapDefaults.defaultZoomLevel,
         latlonReadout: null,
         map: null,
+        showBounds: true,
         defaultMapLayer: map_default_layer,
         defaultCanSelect: true,
         haveAddedDefaultLayer: false,
