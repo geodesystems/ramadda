@@ -125,6 +125,14 @@
      <property name="icon" value="/icons/mov.png"/>
      <column name="autoplay" type="boolean" label="Auto play" default="false"  showinhtml="false"/>
      <service link="media.qttools.thumbnail" id="initmov"  target="attachment"/>
+     <wiki><![CDATA[
++section title="{{name}}" #
+{{noheading}}
+{{description wikify=true}}
+{{video}}
+-section
+]]>
+</wiki>
 </type>
 
 

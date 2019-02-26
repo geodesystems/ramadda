@@ -28,6 +28,7 @@ import org.ramadda.service.*;
 import org.ramadda.service.Service;
 
 import org.ramadda.util.HtmlUtils;
+import org.ramadda.util.WikiUtil;
 
 
 import org.w3c.dom.*;
@@ -57,6 +58,7 @@ public class QuicktimeTypeHandler extends GenericTypeHandler {
     /** _more_ */
     public static final int IDX_HEIGHT = 1;
 
+    /** _more_          */
     public static final int IDX_AUTOPLAY = 2;
 
 
@@ -76,7 +78,11 @@ public class QuicktimeTypeHandler extends GenericTypeHandler {
     /**
      * _more_
      *
+     *
+     * @param wikiUtil _more_
      * @param request _more_
+     * @param originalEntry _more_
+     * @param tag _more_
      * @param props _more_
      * @param entry _more_
      *
@@ -85,13 +91,19 @@ public class QuicktimeTypeHandler extends GenericTypeHandler {
      * @throws Exception _more_
      */
     @Override
-    public String getSimpleDisplay(Request request, Hashtable props,
-                                   Entry entry)
+    public String getWikiInclude(WikiUtil wikiUtil, Request request,
+                                 Entry originalEntry, Entry entry,
+                                 String tag, Hashtable props)
             throws Exception {
+        if ( !tag.equals("video")) {
+            return super.getWikiInclude(wikiUtil, request, originalEntry,
+                                        entry, tag, props);
+        }
         String width  = entry.getValue(IDX_WIDTH, "320");
         String height = entry.getValue(IDX_HEIGHT, "256");
 
-        boolean autoplay = entry.getValue(IDX_AUTOPLAY, "false").equals("true");
+        boolean autoplay = entry.getValue(IDX_AUTOPLAY,
+                                          "false").equals("true");
 
         String header = getWikiManager().wikifyEntry(request, entry,
                             DFLT_WIKI_HEADER);
@@ -109,15 +121,18 @@ Your browser does not support the video tag.
 
 
 
-        String extra = (autoplay?" autoplay ":"");
+        String extra = (autoplay
+                        ? " autoplay "
+                        : "");
         sb.append(HtmlUtils.tag("video", HtmlUtils.attrs(new String[] {
             HtmlUtils.ATTR_SRC, url, HtmlUtils.ATTR_CLASS,
             "ramadda-video-embed", HtmlUtils.ATTR_WIDTH, width,
-            HtmlUtils.ATTR_HEIGHT, height, 
-        }) + " controls " + extra, HtmlUtils.tag("source",
-                                         HtmlUtils.attrs(new String[] {
-                                             HtmlUtils.ATTR_SRC,
-                                             url }))));
+            HtmlUtils.ATTR_HEIGHT, height,
+        }) + " controls "
+           + extra, HtmlUtils.tag("source",
+                                  HtmlUtils.attrs(new String[] {
+                                      HtmlUtils.ATTR_SRC,
+                                      url }))));
 
         /*
        sb.append(HtmlUtils.tag(HtmlUtils.TAG_EMBED,
@@ -129,27 +144,25 @@ Your browser does not support the video tag.
                                      })));
          */
         return sb.toString();
-
     }
-
 
 
     /**
      * _more_
      *
      * @param request _more_
+     * @param props _more_
      * @param entry _more_
-     * @param wikiTemplate _more_
      *
      * @return _more_
      *
      * @throws Exception _more_
      */
-    @Override
-    public String getInnerWikiContent(Request request, Entry entry,
-                                      String wikiTemplate)
+    public String getSimpleDisplay(Request request, Hashtable props,
+                                   Entry entry)
             throws Exception {
-        return getSimpleDisplay(request, null, entry);
+        return getWikiInclude(null, request, entry, entry, "video",
+                              new Hashtable());
     }
 
 
