@@ -81,7 +81,7 @@ myLocationOffset="0.008"
 <p>
 +row
 +col-md-12
-{{display  type="map"  width="100%"  height="500"  layoutHere="true"  showMenu="false"  showTitle="false"  showBoxes="false"}}
+{{display  type="map"  width="100%"  height="500"  layoutHere="true"  showMenu="false"  showTitle="false"  showBoxes="false" showBounds="false"}}
 -col
 -row
 -section
@@ -133,7 +133,7 @@ myLocationOffset="0.008"
 <center>
 {{properties  message="" metadata.types="content.alias" includeTitle="false"}}
 <br>
-{{mapentry width="95%" initialZoom="16" details="true"}}
+{{mapentry width="95%" initialZoom="16" details="true" showBounds="false"}}
 <br>
 {{image src="::*" message="" width="90%"}}
 {{streetview message="" caption="Google Streetview - North<p>" width="90%" heading="0"}}
@@ -198,7 +198,7 @@ myLocationOffset="0.008"
 {{gtfs.route.trips }}
 -col
 +col-md-6
-{{mapentry width="100%" initialZoom="16" details="true" mapVar="gtfsTripMap"}}
+{{mapentry width="100%" initialZoom="16" details="true" mapVar="gtfsTripMap" showBounds="false"}}
 :heading Route Summary
 {{gtfs.route.info}}
 -col
@@ -254,7 +254,7 @@ myLocationOffset="0.008"
 {{gtfs.trip.list}}
 -col
 +col-md-6
-{{mapentry width="100%" height="400" initialZoom="15" details="true" mapVar="gtfsTripMap"}}
+{{mapentry width="100%" height="400" initialZoom="15" details="true" mapVar="gtfsTripMap" showBounds="false"}}
 :heading Trip Information
 {{gtfs.trip.info}}
 <br>
@@ -291,7 +291,7 @@ myLocationOffset="0.008"
 }}
 -col
 +col-md-6
-{{display type="map"  listentries="true" width="100%" height="500" showBoxes="false"}}
+{{display type="map"  listentries="true" width="100%" height="500" showBoxes="false" showBounds="false"}}
 -col
 -row
 ]]>
@@ -325,7 +325,7 @@ showFooter="false"
 }}
 -col
 +col-md-6
-{{display type="map"  listentries="true" width="100%" height="500" showBoxes="false"}}
+{{display type="map"  listentries="true" width="100%" height="500" showBoxes="false" showBounds="false"}}
 -col
 -row
 -section
