@@ -1267,6 +1267,10 @@ public class MapManager extends RepositoryManager implements WikiConstants {
         Hashtable theProps = Utils.makeMap(PROP_DETAILED, "" + details,
                                            PROP_SCREENBIGRECTS, "true");
 
+        if(mapProps!=null) 
+            theProps.putAll(mapProps);
+        if(props!=null) 
+            theProps.putAll(props);
         addToMap(request, map, entriesToUse, theProps);
 
         Rectangle2D.Double bounds = null;
