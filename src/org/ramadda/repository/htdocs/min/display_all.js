@@ -12103,7 +12103,7 @@ function RamaddaSearcher(displayManager, id, type, properties) {
                         options += "</optgroup>";
 
                 }
-                topItems.push(HtmlUtils.tag("select", ["id", this.getDomId(ID_PROVIDERS), ATTR_CLASS, "display-search-providers"], options));
+                topItems.push(HtmlUtils.tag("select", ["multiple",null,"id", this.getDomId(ID_PROVIDERS), ATTR_CLASS, "display-search-providers"], options));
             }
 
 

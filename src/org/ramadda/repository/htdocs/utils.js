@@ -1178,7 +1178,7 @@ var HtmlUtils = {
             if (!name) continue;
             var value = list[i + 1];
             if (value == null) {
-                html += name;
+                html += " " + name +" ";
             } else {
                 html += this.attr(name, value);
             }

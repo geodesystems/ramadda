@@ -23,7 +23,7 @@ org.ramadda.plugins.search.NdnpSearchProvider
 
 
 ##This isn't an OpenSearch provider but keep it around for future reference
-org.ramadda.repository.search.OpenSearchProvider;nature;http://www.nature.com/opensearch/request?httpAccept=application/atom%2Bxml&query=${searchterms};nature.com Search;/search/nature.png
+org.ramadda.repository.search.OpenSearchProvider;nature;https://www.nature.com/opensearch/request?httpAccept=application/atom%2Bxml&query=${searchterms};nature.com Search;/search/nature.png
 
 
 

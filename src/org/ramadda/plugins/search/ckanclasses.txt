@@ -1,3 +1,8 @@
+org.ramadda.plugins.search.CkanSearchProvider;https://catalog.data.gov;USA - Data.gov 
+org.ramadda.plugins.search.CkanSearchProvider;https://opendatadc.org;USA - Washington DC - OpenDataDC 
+org.ramadda.plugins.search.CkanSearchProvider;https://www.civicdata.io;United States - CivicData 
+org.ramadda.plugins.search.CkanSearchProvider;https://edx.netl.doe.gov;United States - Energy Data eXchange 
+
 org.ramadda.plugins.search.CkanSearchProvider;https://data.humdata.org;Humanitarian Data Exchange
 org.ramadda.plugins.search.CkanSearchProvider;https://africaopendata.org;Africa - Africa Open Data 
 org.ramadda.plugins.search.CkanSearchProvider;http://data.edostate.gov.ng;Africa - Nigeria - Edo
@@ -23,7 +28,6 @@ org.ramadda.plugins.search.CkanSearchProvider;http://data.kk.dk;Denmark - Copenh
 org.ramadda.plugins.search.CkanSearchProvider;http://drdsi.jrc.ec.europa.eu;EU - Danube Reference Data and Service Infrastructure 
 org.ramadda.plugins.search.CkanSearchProvider;http://datosabiertos.ec;Ecuador - datosabiertos.ec 
 org.ramadda.plugins.search.CkanSearchProvider;http://data.salzburgerland.com;Europe - data.salzburgerland.com 
-org.ramadda.plugins.search.CkanSearchProvider;http://publicdata.eu;Europe - publicdata.eu 
 org.ramadda.plugins.search.CkanSearchProvider;http://www.hri.fi;Finland - Helsinki - Helsinki Region Infoshare 
 org.ramadda.plugins.search.CkanSearchProvider;http://www.nosdonnees.fr;France - NosDonnes.fr 
 org.ramadda.plugins.search.CkanSearchProvider;http://www.offene-daten.me;Germany - Mettmann - Offene Daten Mettmann 
@@ -42,8 +46,6 @@ org.ramadda.plugins.search.CkanSearchProvider;http://dataforjapan.org;Japan - Da
 org.ramadda.plugins.search.CkanSearchProvider;http://ckan.gsi.go.jp;Japan - Geospatial Information Clearinghouse 
 org.ramadda.plugins.search.CkanSearchProvider;http://opendata.lisra.jp;Japan - Opendata Lisra 
 org.ramadda.plugins.search.CkanSearchProvider;http://udct-data.aigid.jp;Japan - Tokyo - Urban Data Challenge on CKAN 
-org.ramadda.plugins.search.CkanSearchProvider;http://datos.codeandomexico.org;Mexico - Codeando Mexico 
-org.ramadda.plugins.search.CkanSearchProvider;http://datamx.io;Mexico - atamx.io 
 org.ramadda.plugins.search.CkanSearchProvider;http://rotterdamopendata.nl;Netherlands - Rotterdam - Rotterdam Open Data Store 
 org.ramadda.plugins.search.CkanSearchProvider;http://data.gov.ro;Romania - data.gov.ro 
 org.ramadda.plugins.search.CkanSearchProvider;http://hubofdata.ru;Russia - OpenGovData.ru 
@@ -56,17 +58,12 @@ org.ramadda.plugins.search.CkanSearchProvider;http://datosabiertos.malaga.eu;Spa
 org.ramadda.plugins.search.CkanSearchProvider;http://oppnadata.se;Sweden - Oppna Data 
 org.ramadda.plugins.search.CkanSearchProvider;http://opendata.admin.ch;Switzerland - Swiss Open Government Data 
 org.ramadda.plugins.search.CkanSearchProvider;http://data.tainan.gov.tw;Taiwan - Tainan - Taipei City Open Data 
-org.ramadda.plugins.search.CkanSearchProvider;https://catalog.data.gov;USA - Data.gov 
-org.ramadda.plugins.search.CkanSearchProvider;https://data.grcity.us;USA - MI - Grand Rapids - Grand Rapids Open Data 
-org.ramadda.plugins.search.CkanSearchProvider;https://opendatareno.org;USA - NV - Reno - OpenDataReno 
-org.ramadda.plugins.search.CkanSearchProvider;https://data.openva.com;USA - Virginia - Open Virginia 
-org.ramadda.plugins.search.CkanSearchProvider;https://opendatadc.org;USA - Washington DC - OpenDataDC 
+
+
 org.ramadda.plugins.search.CkanSearchProvider;http://data.bris.ac.uk/data;United Kingdom - Bristol - data.bris Research Data Repository 
 org.ramadda.plugins.search.CkanSearchProvider;http://data.gov.uk;United Kingdom - Data.gov.uk 
 org.ramadda.plugins.search.CkanSearchProvider;http://datagm.org.uk;United Kingdom - Greater Manchester - DataGM 
 org.ramadda.plugins.search.CkanSearchProvider;http://dartportal.leeds.ac.uk;United Kingdom - Leeds - DART 
-org.ramadda.plugins.search.CkanSearchProvider;https://www.civicdata.io;United States - CivicData 
-org.ramadda.plugins.search.CkanSearchProvider;https://edx.netl.doe.gov;United States - Energy Data eXchange 
 org.ramadda.plugins.search.CkanSearchProvider;https://catalogodatos.gub.uy;Uruguay - Catalogo de Datos Abiertos 
-org.ramadda.plugins.search.CkanSearchProvider;http://datahub.io;Worldwide - The Datahub 
-org.ramadda.plugins.search.CkanSearchProvider;http://iatiregistry.org;Worldwide - The International Aid Transparency Initiative 
+org.ramadda.plugins.search.CkanSearchProvider;https://datahub.io;Worldwide - The Datahub 
+org.ramadda.plugins.search.CkanSearchProvider;https://iatiregistry.org;Worldwide - The International Aid Transparency Initiative 

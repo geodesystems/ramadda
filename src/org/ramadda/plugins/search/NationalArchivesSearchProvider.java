@@ -127,7 +127,7 @@ public class NationalArchivesSearchProvider extends SearchProvider {
         InputStream is   = getInputStream(url);
         String      json = IOUtil.readContents(is);
         IOUtil.close(is);
-        System.out.println(json);
+        //        System.out.println(json);
         JSONObject obj = new JSONObject(new JSONTokener(json));
         if ( !obj.has("items")) {
             System.err.println(

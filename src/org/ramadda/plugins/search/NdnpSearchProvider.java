@@ -52,7 +52,7 @@ public class NdnpSearchProvider extends OpenSearchProvider {
 
     /** _more_ */
     public static final String URL =
-        "http://chroniclingamerica.loc.gov/search/pages/results/?andtext=${searchterms}&format=atom";
+        "https://chroniclingamerica.loc.gov/search/pages/results/?andtext=${searchterms}&format=atom";
 
 
     /**

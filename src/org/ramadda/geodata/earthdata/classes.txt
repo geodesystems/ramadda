@@ -2,8 +2,8 @@
 #classpath;ID;opensearch URL;Label
 #The URL should have the macro: ${searchterms}
 #
-org.ramadda.repository.search.OpenSearchProvider;nasa;https://api-test.echo.nasa.gov/opensearch/datasets.atom?keyword=${searchterms};NASA Open Search;/search/nasa.png
-org.ramadda.repository.search.OpenSearchProvider;tdar;http://core.tdar.org/search/rss?query=${searchterms};tDAR: Digital Archeological Record
+#org.ramadda.repository.search.OpenSearchProvider;nasa;https://api-test.echo.nasa.gov/opensearch/datasets.atom?keyword=${searchterms};NASA Open Search;/search/nasa.png
+org.ramadda.repository.search.OpenSearchProvider;tdar;https://core.tdar.org/search/rss?query=${searchterms};tDAR: Digital Archeological Record
 
 
 #org.ramadda.repository.search.OpenSearchProvider;nsdc;http://nsidc.org/api/opensearch/1.1/dataset?searchterms=${searchterms};NSIDC Open Search

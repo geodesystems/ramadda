@@ -54,7 +54,7 @@ public class ArxivSearchProvider extends SearchProvider {
 
     /** _more_ */
     private static final String URL =
-        "http://export.arxiv.org/api/query?search_query=all:";
+        "https://export.arxiv.org/api/query?search_query=all:";
 
 
     /**
