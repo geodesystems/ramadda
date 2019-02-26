@@ -2630,7 +2630,7 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
             for (int i = 0; i < dbInfo.getColumnsToUse().size(); i++) {
                 StringBuilder cb = new StringBuilder();
                 dbInfo.getColumnsToUse().get(i).formatValue(entry, cb,
-                                             Column.OUTPUT_CSV, values);
+                                                            Column.OUTPUT_CSV, values,true);
                 String colValue = cb.toString();
                 colValue = colValue.replaceAll(",", "_");
                 colValue = colValue.replaceAll("\n", " ");
@@ -2696,7 +2696,7 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
             for (int i = 0; i < dbInfo.getColumnsToUse().size(); i++) {
                 cb.setLength(0);
                 dbInfo.getColumnsToUse().get(i).formatValue(entry, cb,
-                                             Column.OUTPUT_CSV, values);
+                                                            Column.OUTPUT_CSV, values,true);
                 String colValue = cb.toString();
                 attrs.add(dbInfo.getColumnsToUse().get(i).getName());
                 attrs.add(Json.quote(colValue));
@@ -3473,7 +3473,7 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
                                    Object[] values, SimpleDateFormat sdf)
             throws Exception {
         StringBuilder htmlSB = new StringBuilder();
-        column.formatValue(entry, htmlSB, Column.OUTPUT_HTML, values, sdf);
+        column.formatValue(entry, htmlSB, Column.OUTPUT_HTML, values, sdf, false);
         String html = htmlSB.toString();
 
         if (column.getCanSearch()) {
@@ -5628,7 +5628,7 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
         if (dbInfo.getLabelColumns() != null) {
             for (Column labelColumn : dbInfo.getLabelColumns()) {
                 labelColumn.formatValue(entry, sb, Column.OUTPUT_HTML,
-                                        values, sdf);
+                                        values, sdf,false);
                 sb.append(" ");
             }
 
@@ -5644,7 +5644,7 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
                     || type.equals(Column.DATATYPE_URL)
                     || type.equals(Column.DATATYPE_EMAIL)
                     || type.equals(Column.DATATYPE_ENUMERATIONPLUS)) {
-                column.formatValue(entry, sb, Column.OUTPUT_HTML, values);
+                column.formatValue(entry, sb, Column.OUTPUT_HTML, values,false);
                 String label = sb.toString();
                 if (label.length() > 0) {
                     return label;

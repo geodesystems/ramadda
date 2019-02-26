@@ -914,7 +914,7 @@ public class Column implements DataTypes, Constants {
      *
      * @return _more_
      */
-    private String toLatLonString(Object[] values, int idx) {
+    private String toLatLonString(Object[] values, int idx, boolean raw) {
         if (values == null) {
             return ((dflt != null)
                     ? dflt
@@ -929,7 +929,7 @@ public class Column implements DataTypes, Constants {
             return "NA";
         }
         double d = ((Double) values[idx]).doubleValue();
-
+        if(raw) return ""+d;
         return latLonFormat.format(d);
     }
 
@@ -966,9 +966,9 @@ public class Column implements DataTypes, Constants {
      * @throws Exception _more_
      */
     public void formatValue(Entry entry, Appendable sb, String output,
-                            Object[] values)
+                            Object[] values, boolean raw)
             throws Exception {
-        formatValue(entry, sb, output, values, null);
+        formatValue(entry, sb, output, values, null, raw);
     }
 
 
@@ -984,28 +984,29 @@ public class Column implements DataTypes, Constants {
      * @throws Exception _more_
      */
     public void formatValue(Entry entry, Appendable result, String output,
-                            Object[] values, SimpleDateFormat sdf)
+                            Object[] values, SimpleDateFormat sdf,boolean raw)
             throws Exception {
 
         Appendable sb        = new StringBuilder();
         boolean    csv       = Misc.equals(output, OUTPUT_CSV);
+        if(csv) raw = true;
         String     delimiter = csv
                                ? "|"
                                : ",";
         if (isType(DATATYPE_LATLON)) {
-            sb.append(toLatLonString(values, offset));
+            sb.append(toLatLonString(values, offset, raw));
             sb.append(delimiter);
-            sb.append(toLatLonString(values, offset + 1));
+            sb.append(toLatLonString(values, offset + 1, raw));
         } else if (isType(DATATYPE_LATLONBBOX)) {
-            sb.append(toLatLonString(values, offset));
+            sb.append(toLatLonString(values, offset,raw));
             sb.append(delimiter);
-            sb.append(toLatLonString(values, offset + 1));
+            sb.append(toLatLonString(values, offset + 1,raw));
             sb.append(delimiter);
-            sb.append(toLatLonString(values, offset + 2));
+            sb.append(toLatLonString(values, offset + 2,raw));
             sb.append(delimiter);
-            sb.append(toLatLonString(values, offset + 3));
+            sb.append(toLatLonString(values, offset + 3,raw));
         } else if (isType(DATATYPE_PERCENTAGE)) {
-            if (csv) {
+            if (raw) {
                 sb.append(toString(values, offset));
             } else {
                 //                System.err.println("offset:" + offset +" values:");
@@ -1015,7 +1016,7 @@ public class Column implements DataTypes, Constants {
             }
 
         } else if (isType(DATATYPE_DOUBLE)) {
-            if (csv) {
+            if (raw) {
                 sb.append(toString(values, offset));
             } else {
                 Double v = (Double) values[offset];
@@ -1058,7 +1059,7 @@ public class Column implements DataTypes, Constants {
                     throw new RuntimeException(exc);
                 }
             }
-            if (csv) {
+            if (raw) {
                 sb.append(entryId);
             } else {
                 if (theEntry != null) {
@@ -1079,14 +1080,14 @@ public class Column implements DataTypes, Constants {
             }
         } else if (isType(DATATYPE_EMAIL)) {
             String s = toString(values, offset);
-            if (csv) {
+            if (raw) {
                 sb.append(s);
             } else {
                 sb.append("<a href=\"mailto:" + s + "\">" + s + "</a>");
             }
         } else if (isType(DATATYPE_JSONLIST)) {
             String s = toString(values, offset);
-            if (csv) {
+            if (raw) {
                 sb.append(s);
             } else {
                 if (s.length() > 0) {
@@ -1116,7 +1117,7 @@ public class Column implements DataTypes, Constants {
         } else if (isType(DATATYPE_URL)) {
             String       s    = toString(values, offset);
             List<String> urls = StringUtil.split(s, "\n");
-            if (csv) {
+            if (raw) {
                 s = StringUtil.join(delimiter, urls);
                 sb.append(s);
             } else {
@@ -1134,7 +1135,7 @@ public class Column implements DataTypes, Constants {
 
         } else {
             String s = toString(values, offset);
-            if (csv) {
+            if (raw) {
                 s = s.replaceAll(",", "_COMMA_");
                 s = s.replaceAll("\n", " ");
             } else {
@@ -1152,7 +1153,7 @@ public class Column implements DataTypes, Constants {
                 s = getRepository().getWikiManager().wikifyEntry(
                     getRepository().getTmpRequest(), entry, s, false, null,
                     null);
-            } else if (isEnumeration() && !csv) {
+            } else if (isEnumeration() && !raw) {
                 String label = getEnumLabel(s);
                 if (label != null) {
                     s = label;

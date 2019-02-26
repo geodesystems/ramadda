@@ -170,7 +170,7 @@ public class GranuleTypeHandler extends GenericTypeHandler {
             }
             tmpSb.append(s);
         } else {
-            column.formatValue(entry, tmpSb, Column.OUTPUT_HTML, values);
+            column.formatValue(entry, tmpSb, Column.OUTPUT_HTML, values, false);
         }
     }
 
