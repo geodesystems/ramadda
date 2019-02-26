@@ -1221,8 +1221,7 @@ public class MapManager extends RepositoryManager implements WikiConstants {
         boolean search = Utils.getProperty(props, "showSearch", false);
         boolean showLocationSearch = Utils.getProperty(props,
                                          "showLocationSearch", false);
-        boolean showBounds = Utils.getProperty(props,
-                                         "showBounds", false);
+
         boolean cbxOn        = Utils.getProperty(props, "checkboxOn", true);
         String  mapVar       = Utils.getProperty(props, ATTR_MAPVAR);
         String  selectFields = Utils.getProperty(props, ATTR_SELECTFIELDS);
@@ -1264,7 +1263,6 @@ public class MapManager extends RepositoryManager implements WikiConstants {
         }
         map.getMapProps().put("showSearch", "" + search);
         map.getMapProps().put("showLocationSearch", "" + showLocationSearch);
-        map.getMapProps().put("showBounds", "" + showBounds);
 
         Hashtable theProps = Utils.makeMap(PROP_DETAILED, "" + details,
                                            PROP_SCREENBIGRECTS, "true");
@@ -1433,8 +1431,8 @@ public class MapManager extends RepositoryManager implements WikiConstants {
             throws Exception {
 
         boolean detailed = Misc.getProperty(props, PROP_DETAILED, false);
-        boolean showBounds = Utils.getProperty(props,
-                                         "showBounds", false);
+        boolean showBounds = Utils.getProperty(props,  "showBounds", true);
+        boolean showMarkers = Utils.getProperty(props,  "showMarkers", true);
         boolean screenBigRects = Misc.getProperty(props, PROP_SCREENBIGRECTS,
                                      false);
 
@@ -1541,7 +1539,7 @@ public class MapManager extends RepositoryManager implements WikiConstants {
                     }
                 }
 
-                if (addMarker) {
+                if (addMarker && showMarkers) {
                     if (entry.getTypeHandler().getTypeProperty("map.circle",
                             false)) {
                         map.addCircle(request, entry);
