@@ -776,6 +776,12 @@ border: 1px #ccc solid;
 
 .entry-simple-image {
   text-align: center;
+  overflow-y:auto;
+  max-height:100%;
+}
+
+.entry-simple {
+   text-align:center;
 }
 
 .entry-simple-text {
@@ -2528,6 +2534,10 @@ nowiki {
 
 .graph-div {
    border: 1px solid #000;
+}
+
+.slides_control {
+               width:100% !important;
 }
 
 .slide {

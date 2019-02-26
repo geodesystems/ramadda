@@ -180,7 +180,13 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                                               ATTR_SHOWLINK, "true") + ATTRS_LAYOUT
                                         + attrs(ATTR_WIDTH, "400",
                                                 ATTR_HEIGHT,
-                                                "270")), 
+                                                "270",
+                                                "#textClass","note",
+                                                "#textStyle","margin:8px;",
+                                                "#showlink","true",
+                                                "bordercolor","#efefef",
+                                                "#textposition","top|left|right|bottom"
+                                                )), 
                             new WikiTag(WIKI_TAG_PLAYER, null, "loopdelay","1000","loopstart","false","imageWidth","600")),
         new WikiTagCategory("Misc",
                             new WikiTag(WIKI_TAG_CALENDAR, null, ATTR_DAY, "false"),
@@ -2651,12 +2657,12 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                                 + startSpeed + ", width: \"" + width + "\""
                                 + ", pause: 2500, hoverPause: true"
                                 + ", generatePagination: " + shownav + "\n";
-                StringBuilder js = new StringBuilder();
-
+                StringBuilder js = new StringBuilder("$(document).ready(function(){\n");
                 js.append(
                     "$(function(){\n$(" + HtmlUtils.squote("#" + slideId)
                     + ").slides({" + slideParams
                     + ",\nslidesLoaded: function() {$('.caption').animate({ bottom:0 },200); }\n});\n});\n");
+                js.append("\n});");
                 HtmlUtils.open(sb, HtmlUtils.TAG_DIV, HtmlUtils.id(slideId));
 
 
@@ -5454,7 +5460,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
 
 
         boolean sizeConstrained = getProperty(wikiUtil, props,
-                                      ATTR_CONSTRAINSIZE, false);;
+                                      ATTR_CONSTRAINSIZE, false);
         String content = getDescription(request, wikiUtil, props,
                                         originalEntry, entry);
         boolean haveText = Utils.stringDefined(content);
@@ -5478,25 +5484,23 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
             String position = request.getString(ATTR_TEXTPOSITION, POS_LEFT);
             boolean layoutHorizontal = position.equals(POS_RIGHT)
                                        || position.equals(POS_LEFT);
-            int imageWidth = 0;
+            String imageWidth = null;
+            String divStyle = "";
 
             if (sizeConstrained) {
-                imageWidth = getProperty(wikiUtil, props, ATTR_WIDTH, 400);
-                //Give some space to the text on the side
-                if (haveText && layoutHorizontal) {
-                    imageWidth -= 200;
-                }
+                imageWidth = getProperty(wikiUtil, props, ATTR_WIDTH, "400");
             }
 
             imageWidth = getProperty(wikiUtil, props, ATTR_IMAGEWIDTH,
                                      imageWidth);
 
-            if (imageWidth > 0) {
-                extra.append(HtmlUtils.attr(HtmlUtils.ATTR_WIDTH,
-                                            "" + imageWidth));
-            } else if (imageWidth < 0) {
-                extra.append(HtmlUtils.attr(HtmlUtils.ATTR_WIDTH,
-                                            "" + (-imageWidth) + "%"));
+            extra.append(HtmlUtils.attr(HtmlUtils.ATTR_WIDTH, "95%"));
+
+            if (imageWidth != null) {
+                if(imageWidth.startsWith("-")) {
+                    imageWidth=imageWidth.substring(1)+"%";
+                }
+                //                divStyle +="width:" + imageWidth+";";
             }
 
             String alt = request.getString(ATTR_ALT,
@@ -5519,32 +5523,35 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                 */
             }
 
-            String extraDiv = "";
             if (haveText && sizeConstrained) {
                 int height = getProperty(wikiUtil, props, ATTR_HEIGHT, -1);
                 if ((height > 0) && position.equals(POS_BOTTOM)) {
-                    extraDiv =
-                        HtmlUtils.style("overflow-y: hidden; max-height:"
-                                        + (height - 75) + "px;");
+                    divStyle +=  "overflow-y: auto; max-height:"  + (height - 75) + "px;";
                 }
             }
+
             image = HtmlUtils.div(image,
-                                  HtmlUtils.cssClass("entry-simple-image")
-                                  + extraDiv);
+                                  HtmlUtils.cssClass("entry-simple-image") +
+                                  HtmlUtils.style(divStyle));
             if ( !haveText) {
                 return image;
             }
 
-            String textClass = "entry-simple-text";
+            String textClass = "entry-simple-text " + getProperty(wikiUtil,props,"textClass","note");
+            String textStyle = getProperty(wikiUtil,props,"textStyle","margin:8px;");
+            String textExtra = HtmlUtils.cssClass(textClass);
             if (position.equals(POS_NONE)) {
                 content = image;
             } else if (position.equals(POS_BOTTOM)) {
                 content = image
                           + HtmlUtils.div(content,
-                                          HtmlUtils.cssClass(textClass));
+                                          HtmlUtils.style(textStyle) +
+                                          textExtra);
             } else if (position.equals(POS_TOP)) {
                 content =
-                    HtmlUtils.div(content, HtmlUtils.cssClass(textClass))
+                    HtmlUtils.div(content, 
+                                  HtmlUtils.style(textStyle) +
+                                  textExtra)
                     + image;
             } else if (position.equals(POS_RIGHT)) {
                 content =
@@ -5554,6 +5561,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                             + HtmlUtils.col(
                                 HtmlUtils.div(
                                     content,
+                                    HtmlUtils.style("width:" + getProperty(wikiUtil, props, "textWidth","150px;")+textStyle) +
                                     HtmlUtils.cssClass(
                                         textClass))), HtmlUtils.attr(
                                             HtmlUtils.ATTR_VALIGN,
@@ -5567,6 +5575,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                             HtmlUtils.col(
                                 HtmlUtils.div(
                                     content,
+                                    HtmlUtils.style("width:" + getProperty(wikiUtil, props, "textWidth","150px;")+textStyle) +
                                     HtmlUtils.cssClass(
                                         textClass))) + HtmlUtils.col(
                                             image), HtmlUtils.attr(

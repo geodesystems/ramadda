@@ -1118,7 +1118,7 @@ function initMapFunctions(theMap) {
                     _this.endDate = null;
                     _this.startFeature = null;
                     _this.endFeature = null;
-                    _this.setFeatureDateRange(layer);
+                    _this.setFeatureDateRange(layer,"Resetting range...");
                 });
             }
             var width = this.animationTicks.width();
@@ -1195,7 +1195,6 @@ function initMapFunctions(theMap) {
                         _this.endFeature = null;
                         _this.dateFeatureSelect(feature);
                     }
-                    console.log("date:" + _this.startDate + " " + _this.endDate);
                     if (_this.startDate != null && _this.endDate != null) {
                         if (_this.startDate.getTime() == _this.endDate.getTime()) {
                             _this.startDate = null;
@@ -1219,7 +1218,7 @@ function initMapFunctions(theMap) {
                     if (_this.startDate != null || _this.endDate != null) {
                         _this.startDate = null;
                         _this.endDate = null;
-                        _this.setFeatureDateRange(feature.layer, feature.featureDate);
+                        //                        _this.setFeatureDateRange(feature.layer, feature.featureDate,"Resetting range...");
                         //                            center = true;
                     }
                     _this.clearDateFeature();
@@ -1229,9 +1228,14 @@ function initMapFunctions(theMap) {
         }
     }
 
-    theMap.setFeatureDateRange = function(layer) {
+    theMap.setFeatureDateRange = function(layer, msg) {
         this.dateFeatureSelect(null);
-        console.log("set range:" + this.startDate + " " + this.endDate);
+        if(!msg) msg = "Setting range...";
+        this.animationTicks.html(msg);
+        setTimeout(()=>this.setFeatureDateRangeInner(layer),100);
+    }
+
+    theMap.setFeatureDateRangeInner = function(layer) {
         var features = layer.features;
         if (layer.selectedFeature) {
             this.unselectFeature(layer.selectedFeature);
@@ -1258,7 +1262,9 @@ function initMapFunctions(theMap) {
         tick.css("background-color", this.tickHoverColor);
         tick.css("zIndex", "100");
         //In case some aren't closed
-        this.getFeatureTick(null).tooltip("close");
+        //        this.getFeatureTick(null).tooltip("close");
+        if(this.tickOpen) this.tickOpen.tooltip("close");
+        this.tickOpen  = tick;
         tick.tooltip("open");
     }
     theMap.dateFeatureOut = function(feature) {
@@ -1270,6 +1276,7 @@ function initMapFunctions(theMap) {
             tick.css("background-color", "");
             tick.css("zIndex", "0");
         }
+        this.tickOpen  = null;
         tick.tooltip("close");
     }
     theMap.getFeatureTick = function(feature) {
