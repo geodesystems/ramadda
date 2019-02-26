@@ -157,7 +157,7 @@
 {{noheading}}
 +section title={{name}}
 {{description}}
-{{imageplayer show_sort_links="true"}}
+{{imageplayer show_sort_links="true" imagewidth="90%"}}
 -section
 ]]>
 </wiki>
