@@ -1433,6 +1433,8 @@ public class MapManager extends RepositoryManager implements WikiConstants {
             throws Exception {
 
         boolean detailed = Misc.getProperty(props, PROP_DETAILED, false);
+        boolean showBounds = Utils.getProperty(props,
+                                         "showBounds", false);
         boolean screenBigRects = Misc.getProperty(props, PROP_SCREENBIGRECTS,
                                      false);
 
