@@ -1068,6 +1068,7 @@ function initMapFunctions(theMap) {
                 if (!(isDate || isYear)) continue;
                 var value = this.getAttrValue(p, attr);
                 if (!value) continue;
+                if(value == "0") continue;
                 try {
                     var date = Utils.parseDate(value);
                     if (isYear) didYear = true;
