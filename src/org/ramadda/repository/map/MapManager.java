@@ -1481,6 +1481,7 @@ public class MapManager extends RepositoryManager implements WikiConstants {
             makeRectangles = false;
         }
 
+        if(!showBounds) makeRectangles = false;
 
 
         for (Entry entry : entriesToUse) {
