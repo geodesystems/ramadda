@@ -1472,20 +1472,17 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
 
         Metadata metadata = null;
         if(metadataList != null && metadataList.size()>0) {
-            String id = request.getString("id",(String)null);
-            if(!Utils.stringDefined(id)) {
-                metadata  = metadataList.get(0);
-            } else {
-                for(Metadata m: metadataList) {
-                    if(Misc.equals(m.getAttr1(), id)) {
-                        metadata = m;
-                        break;
-                    }
+            String id = request.getString("notebookId","default_notebook");
+            for(Metadata m: metadataList) {
+                if(Misc.equals(m.getAttr1(), id)) {
+                    metadata = m;
+                    break;
                 }
             }
         }
 
         if(metadata == null) {
+            System.err.println("none");
             Result  result =  new Result("", new StringBuilder("{}"),Json.MIMETYPE);
             result.setShouldDecorate(false);
             return result;
@@ -1520,14 +1517,14 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
             getMetadataManager().findMetadata(request, entry,
                                               "wiki_notebook", false);
 
+        String notebookId = request.getString("notebookId","default_notebook");
         Metadata metadata = null;
         if(metadataList != null && metadataList.size()>0) {
-            String id = request.getString("id",(String)null);
-            if(!Utils.stringDefined(id)) {
+            if(!Utils.stringDefined(notebookId)) {
                 metadata  = metadataList.get(0);
             } else {
                 for(Metadata m: metadataList) {
-                    if(Misc.equals(m.getAttr1(), id)) {
+                    if(Misc.equals(m.getAttr1(), notebookId)) {
                         metadata = m;
                         break;
                     }
@@ -1535,8 +1532,6 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
             }
         }
         String notebook = request.getString("notebook","");
-
-
         if(metadata == null) {
             File f = getStorageManager().getTmpFile(request, "notebook.json");
             IOUtil.writeFile(f, notebook);
@@ -1547,7 +1542,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                                              new Metadata(
                                                           getRepository().getGUID(), entry.getId(),
                                                           "wiki_notebook", false, 
-                                                          request.getString("id","default_notebook"),
+                                                          notebookId,
                                                           theFile,
                                                           "", "", ""));
             getEntryManager().updateEntry(null, entry);

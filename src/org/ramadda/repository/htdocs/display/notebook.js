@@ -17,14 +17,14 @@ addGlobalDisplayType({
 
 
 function RamaddaNotebookDisplay(displayManager, id, properties) {
-    var SUPER;
     var ID_CELLS = "cells";
     var ID_CELL = "cell";
-    RamaddaUtil.inherit(this, SUPER = new RamaddaDisplay(displayManager, id, DISPLAY_NOTEBOOK, properties));
+    let SUPER =  new RamaddaDisplay(displayManager, id, DISPLAY_NOTEBOOK, properties);
+    RamaddaUtil.inherit(this, SUPER);
     addRamaddaDisplay(this);
     RamaddaUtil.defineMembers(this, {
         cells: [],
-        cellId: 0,
+        cellCount: 0,
         runOnLoad: true,
         showGutterForAnonymous:true,
         fetchedNotebook: false, 
@@ -33,7 +33,7 @@ function RamaddaNotebookDisplay(displayManager, id, properties) {
         initDisplay: async function() {
             let _this = this;
             this.createUI();
-            this.setContents(HtmlUtils.div([ATTR_CLASS, "display-notebook-cells", ATTR_ID, this.getDomId(ID_CELLS)], ""));
+            this.setContents(HtmlUtils.div([ATTR_CLASS, "display-notebook-cells", ATTR_ID, this.getDomId(ID_CELLS)], "Loading..."));
             if (!this.fetchedNotebook) {
                 this.fetchedNotebook = true;
                 await this.getEntry(this.getProperty("entryId",""),entry=> {
@@ -64,24 +64,22 @@ function RamaddaNotebookDisplay(displayManager, id, properties) {
                 
                 var id = this.getProperty("entryId", "");
                 var url = ramaddaBaseUrl + "/getnotebook?entryid=" + id;
-                url += "&id=" + this.getProperty("notebookId", "default_notebook");
+                url += "&notebookId=" + this.getProperty("notebookId", "default_notebook");
                 var jqxhr = $.getJSON(url,  function(data) {
                         _this.loadJson(data);
-                    });
-
-            }
-            if (this.cells.length > 0) {
-                this.layoutCells();
+                    }).fail(function() {
+                            var props = {
+                                showEdit: true,
+                            }
+                            this.addCell("init cell", props,false).run();
+                            this.cells[0].focus();
+                        });
+                
             } else {
-                var props = {
-                    showEdit: true,
-                }
-                this.addCell("", props,false).run();
+                this.layoutCells();
             }
-            this.cells[0].focus();
         },
         loadJson: async function(data) {
-
                 if (data.error) {
                     this.setContents(_this.getMessage("Failed to load notebook: " + data.error));
                     return;
@@ -111,6 +109,15 @@ function RamaddaNotebookDisplay(displayManager, id, properties) {
                     }
                     this.layoutCells();
                 }
+                if(this.cells.length==0) {
+                    var props = {
+                        showEdit: true,
+                    }
+                    this.addCell("", props,false);
+                    this.layoutCells();
+                    this.cells[0].focus();
+                }
+
                 if(this.runOnLoad) {
                     this.runAll();
                 }
@@ -192,8 +199,10 @@ function RamaddaNotebookDisplay(displayManager, id, properties) {
             if (!props) props = {
                     showEdit:true
                 };
-            var cellId = this.getId() + "_" + this.cellId;
-            this.cellId++;
+            var cellId = this.getId() + "_" + this.cellCount;
+            //Override any saved id
+            props.id  = cellId;
+            this.cellCount++;
             this.jq(ID_CELLS).append(HtmlUtils.div([ATTR_CLASS, "display-notebook-cell", ATTR_ID, cellId], ""));
             var cell = new RamaddaNotebookCell(this, cellId, content, props);
             return cell;

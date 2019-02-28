@@ -39,6 +39,23 @@ A notebook can be created for any entry with the following wiki text:
 {{display type=&quot;notebook&quot;}}
 </pre></div>
 
+Notebooks are always associated with an entry. You can have multiple notebooks for an entry using the notebookId attribute:
+
+<div style="margin:10p;"><pre>
+//This is the default notebook
+{{display type=&quot;notebook&quot;}}
+
+{{display type=&quot;notebook&quot; notebookId=&quot;notebook2&quot;}}
+
+{{display type=&quot;notebook&quot; notebookId=&quot;notebook3&quot;}}
+</pre></div>
+
+
+When a notebook is saved (see below) it is saved as a JSON file and is  attached to the entry as a property. 
+The notebook file be accessed and/or deleted through the entry's Edit Properties menu.
+
+<p>
+
 When first created a notebook looks like:
 <a name="image1"></a><div class="cimg"><a href="images/notebook1.png"><img  src="images/notebook1.png"  alt="Initial Notebook" ></a><br><span class="caption">Image 1: Initial Notebook</span></div>
 
@@ -57,11 +74,11 @@ The input of a notebook cell can be any combination of html, wiki text, special 
 The input can either be all one type or a mix of different input types.
 
 <pre>
-<i>wiki:</i>
-RAMADDA wiki text
-
 <i>html:</i>
 Regular html text
+
+<i>wiki:</i>
+RAMADDA wiki text
 
 <i>sh:</i>
 Shell commands
@@ -71,27 +88,51 @@ Javascript
 
 </pre>
 
+<a name="html"></a><p><div class="ramadda-help-heading">5.3.2 <a href="#html">Html Input</a></div> 
+To specify html text start the input with "html:".  
+<pre>
+<i>html:</i>
+html text
+</pre>
 
-<a name="wiki"></a><p><div class="ramadda-help-heading">5.3.2 <a href="#wiki">Wiki Input</a></div> 
+
+<a name="wiki"></a><p><div class="ramadda-help-heading">5.3.3 <a href="#wiki">Wiki Input</a></div> 
 To specify wiki text start the input with "wiki:" - 
 <pre>
 <i>wiki:</i>
 RAMADDA wiki text
 </pre>
 
+The wiki text is just regular RAMADDA wiki text. More information <a href="wikitext.html">here</a>.
 
-<a name="html"></a><p><div class="ramadda-help-heading">5.3.3 <a href="#html">Html Input</a></div> 
-To specify html text start the input with "html:" - 
-<pre>
-<i>html:</i>
-RAMADDA html text
-</pre>
 
 <a name="sh"></a><p><div class="ramadda-help-heading">5.3.4 <a href="#sh">Shell Input</a></div> 
 To specify shell text start the input with "sh:" - 
 <pre>
 <i>sh:</i>
 shell commands
+</pre>
+
+The following shell commands are supported:
+<pre>
+<i>sh:</i>
+#change current entry to the root
+cd  /
+
+#change current entry to the parent of the current entry
+cd  ..
+
+#change current entry to the default
+cd  
+
+#print the current entry
+pwd
+
+#show the children tree of the current entry
+ls
+
+#print output
+print any output
 </pre>
 
 

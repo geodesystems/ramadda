@@ -12,6 +12,23 @@ A notebook can be created for any entry with the following wiki text:
 {{display type="notebook"}}
 }]
 
+Notebooks are always associated with an entry. You can have multiple notebooks for an entry using the notebookId attribute:
+
+[ug::xml {
+//This is the default notebook
+{{display type="notebook"}}
+
+{{display type="notebook" notebookId="notebook2"}}
+
+{{display type="notebook" notebookId="notebook3"}}
+}]
+
+
+When a notebook is saved (see below) it is saved as a JSON file and is  attached to the entry as a property. 
+The notebook file be accessed and/or deleted through the entry's Edit Properties menu.
+
+<p>
+
 When first created a notebook looks like:
 [ht::cimg images/notebook1.png {Initial Notebook}]
 
