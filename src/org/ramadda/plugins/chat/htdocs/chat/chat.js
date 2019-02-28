@@ -1,5 +1,4 @@
 
-console.log("HELLO");
 function RamaddaChat(entryId, chatId) {
     var ID_INPUT_TOOLBAR = "inputtoolbar";
     var ID_MENU = "menu";
