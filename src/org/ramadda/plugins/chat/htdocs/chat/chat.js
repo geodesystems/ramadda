@@ -1,7 +1,9 @@
 
+console.log("HELLO");
 function RamaddaChat(entryId, chatId) {
     var ID_INPUT_TOOLBAR = "inputtoolbar";
     var ID_MENU = "menu";
+    var ID_GUTTER = "gutter";
     var ID_OUTPUT = "output";
     var ID_INPUT= "input";
     var ID_INPUT_CONTAINER= "inputcontainer";
@@ -22,34 +24,30 @@ function RamaddaChat(entryId, chatId) {
                 addHandler(this,this.handlerId+"_entryid");
                 addHandler(this,this.handlerId+"_wikilink");
                 this.editToolbar = "";
-                var html  = HtmlUtils.div(["id",this.getDomId(ID_MENU),"class","ramadda-chat-menu"],"") +
-                    HtmlUtils.div(["id",this.getDomId(ID_OUTPUT),"class","ramadda-chat-output"],"") +
-                    HtmlUtils.div(["id",this.getDomId(ID_INPUT_CONTAINER),"class","ramadda-chat-input-container"],"");
+                var html  = 
+                    "<table border=0 width=100% cellspacing=0 cellpadding=0><tr valign=top><td rowspan=2 width=18>" +
+                    HtmlUtils.div(["id",this.getDomId(ID_GUTTER),"class","ramadda-chat-gutter"],"GG") +
+                    "</td><td>" +
+                    HtmlUtils.div(["id",this.getDomId(ID_INPUT_CONTAINER),"class","ramadda-chat-input-container"],"") +
+                    "</td></tr><tr valign=top><td>" +
+                    HtmlUtils.div(["id",this.getDomId(ID_OUTPUT),"class","ramadda-chat-output"],"")+
+                    "</td></tr></table>";
 
                 this.chat.html(html);
-                this.menu = this.jq(ID_MENU);
-                var toolbar =  HtmlUtils.image(ramaddaBaseUrl+"/icons/eraser.png",["class","ramadda-chat-menuitem","title","Clear","command","clear"]);
-                this.menu.html(toolbar);
-                this.menu.find(".ramadda-chat-menuitem").click(function() {
-                        var command = $(this).attr("commmand");
-                        if(command = "clear") {
-                            _this.output.html("");
-                        }
-                    });
 
+                this.gutter  = this.jq(ID_GUTTER);
                 this.inputContainer  = this.jq(ID_INPUT_CONTAINER);
                 this.output  = this.jq(ID_OUTPUT);
                 this.showTextArea  = false;
                 this.toggleInput();
-                this.receive();
-
                 var url = ramaddaBaseUrl +"/wikitoolbar?entryid=" + this.entryId +"&handler=" + this.handlerId;
                 GuiUtils.loadHtml(url,  h=> {
                         //                        console.log(h);
                         this.editToolbar =h; 
                         this.jq(ID_INPUT_TOOLBAR).html(h);
                     });
-
+                this.connect();
+                this.receive();
             },
             jq: function(id) {
                 return  $("#"+this.getDomId(id));
@@ -78,15 +76,21 @@ function RamaddaChat(entryId, chatId) {
                 }
             },
             toggleInput: function() {
+               let _this = this;
                 this.showTextArea  = !this.showTextArea;
                 var id = this.getDomId(ID_INPUT);
-                var toggle = HtmlUtils.image(ramaddaBaseUrl+(this.showTextArea?"/icons/chevron.png":"/icons/chevron-expand.png"),
+                var gutter = HtmlUtils.image(ramaddaBaseUrl+(this.showTextArea?"/icons/chevron.png":"/icons/chevron-expand.png"),
                                              ["id",this.getDomId(ID_TOGGLE),"title","toggle input"]);
                 
+                gutter +="\n";
+                gutter+="<br>" +  HtmlUtils.image(ramaddaBaseUrl+"/chat/mail-send.png",["class","ramadda-chat-menuitem","title","Send","data-command","send"]);
+                gutter +="\n";
+                gutter+="<br>" +  HtmlUtils.image(ramaddaBaseUrl+"/icons/eraser.png",["class","ramadda-chat-menuitem","title","Clear","data-command","clear"]);
+
                 if(this.showTextArea) {
                     var text = this.input?this.input.val():"";
                     var inputToolbar = HtmlUtils.div(["id",this.getDomId(ID_INPUT_TOOLBAR)],this.editToolbar);
-                    var input = "<table width=100%  border=0 cellpadding=0 cellspacing=0><tr valign=top><td width=1%>" + toggle+"</td><td>" +inputToolbar + HtmlUtils.textarea("input", text||"", ["style","display:inline-block;","placeholder","shift-return to send","rows", "8", ATTR_CLASS, "ramadda-chat-input", ATTR_ID, id]) +"</td><tr></table>"
+                    var input =  inputToolbar + HtmlUtils.textarea("input", text||"", ["placeholder","shift-return to send","rows", "8", ATTR_CLASS, "ramadda-chat-input", ATTR_ID, id]);
                     this.inputContainer.html(input);
                     this.input  = $("#"+id);
                     this.input.focus();
@@ -99,8 +103,7 @@ function RamaddaChat(entryId, chatId) {
                             }});
 
                 } else {
-                    var input = "<table width=100% border=0 cellpadding=0 cellspacing=0><tr valign=top><td width=1%>" + toggle+"</td><td>" +HtmlUtils.input("chatinput","",["placeholder","chat text","id",id,"class","ramadda-chat-input"]) +
-                        "</td></tr></table>";
+                    var input = HtmlUtils.input("chatinput","",["placeholder","chat text","id",id,"class","ramadda-chat-input"]);
                     this.inputContainer.html(input);
                     this.input  = $("#"+id);
                     this.input.focus();
@@ -111,19 +114,36 @@ function RamaddaChat(entryId, chatId) {
                                 this.input.val("");
                             }});
                 }
+                this.gutter.html(gutter);
+                this.gutter.find(".ramadda-chat-menuitem").click(function() {
+                        //For some reason I'm not getting the command here
+                        var command = $(this).attr("data-commmand");
+                        var title = $(this).attr("title");
+                        if(title == "Clear") {
+                            _this.output.html("");
+                        } else  if(title == "Send") {
+                            _this.send(_this.input.val());
+                        }
+                    });
                 this.jq(ID_TOGGLE).click(()=>this.toggleInput());
             },
-            receive: function(wait) {
+           processMessages: function(data) {
+               if(data.code!="ok") {
+                   this.writeError("Error:" + data.message);
+               } else {
+                   for(var i=0;i<data.messages.length;i++) {
+                       var message = data.messages[i];
+                       this.write(message.message, message.user);
+                   }
+               }
+           },
+           receive: function(wait) {
                 if(!Utils.isDefined(wait)) wait = 0;
                 let _this = this;
                 var url = ramaddaBaseUrl +"/chat/output?entryid=" + this.entryId;
                 this.connected = true;
                 var jqxhr = $.getJSON(url,  data=> {
-                        if(data.code!="ok") {
-                            this.writeError("Error:" + data.message);
-                        } else {
-                            this.write(data.result,data.user);
-                        }
+                        this.processMessages(data);
                         this.receive();
                     }).fail(() => {
                             _this.connected = false;
@@ -136,13 +156,28 @@ function RamaddaChat(entryId, chatId) {
                         });
 
             },
+            connect: function() {
+                var json = {
+                    command:"connect",
+                }
+                msg  =encodeURIComponent(JSON.stringify(json));
+                var url = ramaddaBaseUrl +"/chat/input?entryid=" + this.entryId+"&input=" + msg;
+                var jqxhr = $.getJSON(url,  data=> {
+                        this.processMessages(data);
+                    });
+
+           },
             send: function(msg) {
                 if(!this.connected) {
                     this.writeError("Not connected to server");
                     return;
                 }
                 if(msg == "") msg = ":br";
-                msg  =encodeURIComponent(msg);
+                var json = {
+                    command:"message",
+                    message:msg
+                }
+                msg  =encodeURIComponent(JSON.stringify(json));
                 var url = ramaddaBaseUrl +"/chat/input?entryid=" + this.entryId+"&input=" + msg;
                 var jqxhr = $.getJSON(url,  data=> {
                         //                        console.log("send result:" + JSON.stringify(data));
