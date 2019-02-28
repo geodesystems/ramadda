@@ -82,11 +82,12 @@ public class TwitterTypeHandler extends GenericTypeHandler {
             return super.getWikiInclude(wikiUtil, request, originalEntry,
                                         entry, tag, props);
         }
+        StringBuilder sb = new StringBuilder();
+        sb.append(HtmlUtils.importCss(".timeline-Tweet-text {font-size:16pt !important;}"));
         JSONObject obj = Json.readUrl(URL+entry.getResource().getPath());
         System.err.println(obj);
-        String html = obj.optString("html", "");
-        return html;
-
+        sb.append(obj.optString("html", ""));
+        return sb.toString();
     }
 
 
