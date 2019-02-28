@@ -1,0 +1,77 @@
+
+.ramadda-chat  {
+width:100%;
+height:400px;
+}
+
+.ramadda-chat-menu  {
+}
+
+.ramadda-chat-menuitem:hover  {
+    cursor:pointer;
+}
+
+.ramadda-chat-menuitem  {
+  border:1px #fff solid;
+  padding:2px;
+}
+
+
+.ramadda-chat-menuitem:hover  {
+  border:1px #ccc solid;
+
+}
+
+.ramadda-chat .ramadda-menubar  {
+        margin-top:0px;
+}
+
+.ramadda-chat-output  {
+width:100%;
+height:400px;
+max-height:400px;
+overflow-y:auto;
+border:1px #ccc solid;
+border-top:1px #000 solid;
+}
+
+.ramadda-chat-message-container  {
+width:100%;
+border-bottom:1px #efefef solid;
+}
+
+.ramadda-chat-user  {
+width:150px;
+height:100%;
+max-width:150px;
+overflow-x:hidden;
+white-space:nowrap;
+padding-left:4px;
+padding-right:2px;
+}
+
+.ramadda-chat-message  {
+max-height:200px;
+overflow-y:auto;
+margin-left:2px;
+}
+
+.ramadda-chat-message-error {
+    background:#ccc;
+   margin:0px;
+}
+
+.ramadda-chat-input-container  {
+}
+
+.ramadda-chat-input:focus  {
+ border:1px #ccc solid;
+ border-bottom:0px #ccc solid;
+}
+
+.ramadda-chat-input  {
+ outline:none;
+ width:100%;
+ border:1px #ccc solid;
+ border-bottom:0px #ccc solid;
+}
