@@ -651,8 +651,8 @@ var GuiUtils = {
             req.send("");
         }
     },
-    loadHtml: function(url, callback) {
-        var jqxhr = $.get(url, function(data) {
+    loadHtml: async function(url, callback) {
+        await $.get(url, function(data) {
                 callback(data);
             })
             .done(function() {})

@@ -5558,11 +5558,22 @@ function nbSetEntry(name,entryId) {
     nbNotebook.addEntry(name,entryId);
 }
 
+
+async function  nbWiki(s, entry, callback) {
+    var write = false;
+    if(!callback)
+        callback = h=>nbWrite(h);
+    if(entry == null) entry= nbCell.getCurrentEntry();
+    if((typeof entry)!="string") entry = entry.getId();
+    await GuiUtils.loadHtml(ramaddaBaseUrl + "/wikify?doImports=false&entryid=" + entry + "&text=" + encodeURIComponent(s),
+                            callback);
+}
+
 function nbWrite(s) {
     if(notebookState.prefix==null) {
         notebookState.prefix = s;
     } else {
-        notebookState.prefix += "<br>";
+        //        notebookState.prefix += "<br>";
         notebookState.prefix += s;
     }
 }
@@ -5607,8 +5618,8 @@ function RamaddaNotebookCell(notebook, id, content, props) {
     var ID_MENU = "menu";
     var ID_CELLNAME_INPUT = "cellnameinput";
     var ID_SHOWHEADER_INPUT = "showheader";
-    var ID_SHOWBORDER_INPUT = "showborder";
-    var ID_SHOWEDIT_INPUT = "showedit";
+    var ID_SHOWBORDER = "showborder";
+    var ID_SHOWEDIT = "showedit";
     var ID_RUN_ON_LOAD = "runonload";
     var ID_SHOW_GUTTER = "showgutter";
 
@@ -5710,6 +5721,7 @@ function RamaddaNotebookCell(notebook, id, content, props) {
             }
             this.cell.hover(hoverIn, hoverOut);
             this.calculateInputHeight();
+            this.input.focus(()=>this.jq(ID_MENU).hide());
             this.input.on('input selectionchange propertychange', function() {
                 _this.calculateInputHeight();
             });
@@ -5773,6 +5785,7 @@ function RamaddaNotebookCell(notebook, id, content, props) {
              let _this = this;
                 var space = "&nbsp;&nbsp;";
                 var line =  "<tr><td colspan=2 style='border-top:1px #ccc solid;'</td></tr>";
+                var line2 =  "<div style='border-top:1px #ccc solid;'</div>"
                 var menu = "";
                 menu += HtmlUtils.input(ID_CELLNAME_INPUT, _this.cellName, ["placeholder", "Cell name", "style", "width:100%;", "xsize", "20", "id", _this.getDomId(ID_CELLNAME_INPUT)]);
                 menu += "<br>";
@@ -5801,13 +5814,13 @@ function RamaddaNotebookCell(notebook, id, content, props) {
                 menu += line;
 
                 menu += "<tr valign=top><td align=right><b>Show:</b>&nbsp;</td><td>";
-                menu += HtmlUtils.checkbox(_this.getDomId(ID_SHOWEDIT_INPUT), [],
+                menu += HtmlUtils.checkbox(_this.getDomId(ID_SHOWEDIT), [],
                     _this.showEdit) + " Input";
                 menu += space;
                 menu += HtmlUtils.checkbox(_this.getDomId(ID_SHOWHEADER_INPUT), [],
                     _this.showHeader) + " Header";
                 menu += "<br>";
-                menu += HtmlUtils.checkbox(_this.getDomId(ID_SHOWBORDER_INPUT), [],
+                menu += HtmlUtils.checkbox(_this.getDomId(ID_SHOWBORDER), [],
                     _this.showBorder) + " Border";
 
                 menu += space;
@@ -5823,15 +5836,15 @@ function RamaddaNotebookCell(notebook, id, content, props) {
                 menu += "</td></tr>";
 
                 menu += line;
-
-
                 menu += "</table>";
                 menu += HtmlUtils.checkbox(_this.getDomId(ID_RUN_ON_LOAD), [],_this.notebook.runOnLoad) +" Run on load" +"<br>";
                 menu += HtmlUtils.div(["title","Show left side menu for anonymous users"],HtmlUtils.checkbox(_this.getDomId(ID_SHOW_GUTTER), [],_this.notebook.showGutterForAnonymous) +" Show left side for anon." +"<br>");
 
 
+                menu += line2;
                 menu += HtmlUtils.div(["class", "ramadda-link", "what", "savewithout"], "Save Notebook (w/o output)") + "<br>";
                 menu += HtmlUtils.div(["class", "ramadda-link", "what", "savewith"], "Save Notebook (with output)") + "<br>";
+                menu += line2;
                 menu += HtmlUtils.div(["class", "ramadda-link", "what", "delete"], "Delete") + "<br>";
                 menu += HtmlUtils.div(["class", "ramadda-link", "what", "help"], "Help") + "<br>";
                 var popup = _this.jq(ID_MENU);
@@ -5856,12 +5869,12 @@ function RamaddaNotebookCell(notebook, id, content, props) {
                 _this.jq(ID_SHOW_GUTTER).change(function(e) {
                         _this.notebook.showGutterForAnonymous = _this.jq(ID_SHOW_GUTTER).is(':checked');
                     });
-                _this.jq(ID_SHOWBORDER_INPUT).change(function(e) {
-                    _this.showBorder = _this.jq(ID_SHOWBORDER_INPUT).is(':checked');
+                _this.jq(ID_SHOWBORDER).change(function(e) {
+                    _this.showBorder = _this.jq(ID_SHOWBORDER).is(':checked');
                     _this.applyStyle();
                 });
-                _this.jq(ID_SHOWEDIT_INPUT).change(function(e) {
-                    _this.showEdit = _this.jq(ID_SHOWEDIT_INPUT).is(':checked');
+                _this.jq(ID_SHOWEDIT).change(function(e) {
+                    _this.showEdit = _this.jq(ID_SHOWEDIT).is(':checked');
                     _this.applyStyle();
                 });
                 _this.jq(ID_PINNED_INPUT).change(function(e) {
@@ -5923,11 +5936,11 @@ function RamaddaNotebookCell(notebook, id, content, props) {
             if (vis || this.pinned) {
                 this.menuButton.css("display", "block");
                 this.cell.find(".display-notebook-gutter-container").css("background", "rgb(250,250,250)");
-                this.cell.find(".display-notebook-gutter-container").css("border-right", "1px #ccc solid");
+                //                this.cell.find(".display-notebook-gutter-container").css("border-right", "1px #ccc solid");
             } else {
                 this.menuButton.css("display", "none");
                 this.cell.find(".display-notebook-gutter-container").css("background", "#fff");
-                this.cell.find(".display-notebook-gutter-container").css("border-right", "1px #fff solid");
+                //                this.cell.find(".display-notebook-gutter-container").css("border-right", "1px #fff solid");
             }
         },
         applyStyle: function() {
@@ -5998,14 +6011,15 @@ function RamaddaNotebookCell(notebook, id, content, props) {
             value = value.replace(/{cellname}/g, this.cellName);
             value = value.replace(/{help}/g, help);
             var result = "";
-            var type = "html";
+            var type = "wiki";
             var blob = "";
             var commands = value.split("\n");
-            var types = ["html", "wiki", "sh", "js"];
+            var types = ["wiki", "html", "sh", "js"];
             var ok = true;
             for (var i = 0; i < commands.length; i++) {
                 if (!ok) break;
                 value = commands[i].trim();
+                if(value.startsWith("//")) continue;
                 var isType = false;
                 for (var typeIdx = 0; typeIdx < types.length; typeIdx++) {
                     var t = types[typeIdx];
@@ -6170,7 +6184,7 @@ function RamaddaNotebookCell(notebook, id, content, props) {
                 }
 
                 var html = "";
-                if (notebookState.prefix) html +=notebookState.prefix+ "<br>";
+                if (Utils.stringDefined(notebookState.prefix)) html +=notebookState.prefix;
                 if (jsReturn) html +=jsReturn;
                 return Utils.call(callback, html);
             } catch (e) {
@@ -6431,6 +6445,7 @@ function RamaddaNotebookCell(notebook, id, content, props) {
         },
         processCommand_printEntries: function(line, toks, div) {
                 var h = "";
+                h += "current" +"=" + this.getCurrentEntry().getName()+"<br>";
                 var entries = this.notebook.getCurrentEntries();
                 for(var name in entries) {
                     var e = entries[name];
@@ -6452,7 +6467,8 @@ function RamaddaNotebookCell(notebook, id, content, props) {
             if(div==null) div = new Div();
             if (toks.length <= 1) {
                 this.setCurrentEntry(this.notebook.currentEntry);
-                return this.getEntryHeading(this.currentEntry, div);
+                return;
+                //                return this.getEntryHeading(this.currentEntry, div);
             }
             if(toks[1].startsWith("/")) {
                 //                toks = toks[1].split("/");
@@ -6462,7 +6478,7 @@ function RamaddaNotebookCell(notebook, id, content, props) {
                 await entry.getRoot(e=>{root = e});
 
                 this.setCurrentEntry(root);
-                this.getEntryHeading(root, div);
+                //                this.getEntryHeading(root, div);
                 return;
 
             }
@@ -6472,7 +6488,7 @@ function RamaddaNotebookCell(notebook, id, content, props) {
                 await entry.getParentEntry(entry=>{
                         if(entry) { 
                             this.setCurrentEntry(entry);
-                            this.getEntryHeading(entry, div);
+                            //                            this.getEntryHeading(entry, div);
                         } else {
                             div.msg("No parent entry");
                         }});
