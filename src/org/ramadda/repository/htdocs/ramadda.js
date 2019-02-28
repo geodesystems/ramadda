@@ -868,6 +868,12 @@ function Selector(event, selectorId, elementId, allEntries, selecttype, localeId
 
 function selectClick(id, entryId, value) {
     selector = selectors[id];
+    var handler = getHandler(id);
+    if(handler) {
+        handler.selectClick(selector.selecttype, id, entryId,value);
+        selectCancel();
+        return;
+    }
     if (selector.selecttype == "wikilink") {
         insertAtCursor(selector.elementId, selector.textComp.obj, "[[" + entryId + "|" + value + "]]");
     } else if (selector.selecttype == "entryid") {

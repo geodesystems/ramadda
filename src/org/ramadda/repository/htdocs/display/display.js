@@ -55,22 +55,6 @@ var PROP_WIDTH = "width";
 
 
 
-function addHandler(obj) {
-    if (window.globalHandlers == null) {
-        window.globalHandlers  = {};
-    }
-    var id = HtmlUtils.getUniqueId();
-    window.globalHandlers[id] = obj;
-    return id;
-}
-
-function getHandler(id) {
-    if (!id || window.globalHandlers == null) {
-        return null;
-    }
-    return window.globalHandlers[id];
-}
-
 
 function initRamaddaDisplays() {
     ramaddaCheckForResize();

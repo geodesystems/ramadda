@@ -34,6 +34,24 @@ if (!window["uniqueCnt"]) {
 
 function noop() {}
 
+function addHandler(obj, id) {
+    if (window.globalHandlers == null) {
+        window.globalHandlers  = {};
+    }
+    if(!id) id = HtmlUtils.getUniqueId();
+    window.globalHandlers[id] = obj;
+    return id;
+}
+
+function getHandler(id) {
+    if (!id || window.globalHandlers == null) {
+        return null;
+    }
+    return window.globalHandlers[id];
+}
+
+
+
 
 var Utils = {
     pageLoaded: false,
@@ -1039,7 +1057,6 @@ var HtmlUtils = {
     },
     formatTable: function(id, args) {
         $(id).each(function() {
-            console.log("table");
             var options = {
                 paging: false,
                 ordering: false,

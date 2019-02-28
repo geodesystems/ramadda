@@ -1,0 +1,185 @@
+[ht::head {RAMADDA Notebooks}]
+<%nochildlist%>
+
+
+
+The Notebook display provides an interactive notebook that can display html, execute javascript and perform other "shell" functions.
+
+[ug::subheading {Creating a notebook} creating]
+
+A notebook can be created for any entry with the following wiki text:
+[ug::xml {
+{{display type="notebook"}}
+}]
+
+When first created a notebook looks like:
+[ht::cimg images/notebook1.png {Initial Notebook}]
+
+A notebook is made up of a number of notebook cells. Each cell has an input area, output area and cell menu. The menu can either be accessed through
+the Notebook menu or from the left side link:
+
+[ht::cimg images/notebook2.png {Notebook Menu}]
+
+
+
+[ug::subheading {Editing a notebook} editing]
+The menubar at the top of the input area is just RAMADADA's wiki text <a href="wiki.html#menubar">menu bar</a>.
+Use the following tags to denote and separate the contents within a notebook cell:
+<p>
+The input of a notebook cell can be any combination of html, wiki text, special "shell" commands or javascript.
+The input can either be all one type or a mix of different input types.
+
+<pre>
+<i>html:</i>
+Regular html text
+
+<i>wiki:</i>
+RAMADDA wiki text
+
+<i>sh:</i>
+Shell commands
+
+<i>js:</i>
+Javascript
+
+</pre>
+
+[ug::subheading {Html Input} html]
+To specify html text start the input with "html:".  
+<pre>
+<i>html:</i>
+html text
+</pre>
+
+
+[ug::subheading {Wiki Input} wiki]
+To specify wiki text start the input with "wiki:" - 
+<pre>
+<i>wiki:</i>
+RAMADDA wiki text
+</pre>
+
+The wiki text is just regular RAMADDA wiki text. More information <a href="wikitext.html">here</a>.
+
+
+[ug::subheading {Shell Input} sh]
+To specify shell text start the input with "sh:" - 
+<pre>
+<i>sh:</i>
+shell commands
+</pre>
+
+The following shell commands are supported:
+<pre>
+<i>sh:</i>
+#change current entry to the root
+cd  /
+
+#change current entry to the parent of the current entry
+cd  ..
+
+#change current entry to the default
+cd  
+
+#print the current entry
+pwd
+
+#show the children tree of the current entry
+ls
+
+#print output
+print any output
+</pre>
+
+
+[ug::subheading {Javascript Input} js]
+To specify javascript start the input with "js:" - 
+<pre>
+<i>js:</i>
+javascript code
+</pre>
+
+Javacsript input comes in 3 forms - single line expression, single line with a return  or multiple lines with a return.
+For example, the below will display the number "3":
+<pre>
+<i>js:</i>
+1+2
+</pre>
+
+Here is a single line with a return:
+<pre>
+<i>js:</i>
+return "some string"
+</pre>
+
+Here is a multiple line input:
+<pre>
+<i>js:</i>
+var x;
+x = 1+2;
+return x;
+</pre>
+
+The javascript input can have function definitions:
+<pre>
+<i>js:</i>
+function result() {
+   return "the result";
+}
+return result();
+</pre>
+
+There are a number of helper functions and pre-defined variables that can be accessed from javascript:
+<pre>
+<i>js:</i>
+//TODO
+</pre>
+
+
+
+[ug::subheading {Running a notebook} running]
+To run a notebook cell either press shift-return in the cell input area or choose "Run This Cell" in the notebook menu.
+All of the cells can be run through the notebook menu with the "Run All" command.
+A notebook can be configured to run all of the cells when the notebook is first loaded through the "Run on load"
+command in the notebook menu.
+
+
+[ug::subheading {Notebook Menu Commands} commands]
+The notebook menu allows one to configure the display and behavior of individual cells or all of the cells.
+
+[ht::cimg images/notebookmenu.png {Notebook Menu}]
+
+<ul>
+<li> Cell name: Name the current cell. The name is shown in the header (see below)
+<li> Run: Either run the current cell or run all cells
+<li> New cell: Create a new cell either above the current cell or below the current cell
+<li> Clear: Clear the output for the current cell or for all cells
+<li> Move: Move the current cell either up or down. Note: when in the cell input pressing control-^ will move the cell up. Pressing control-v will move the cell down.
+<li> Show
+<ul>
+<li> Edit: Show the input edit field
+<li> Header: Show the header. Only the cell name is shown in the header
+<li> Border: display a line border between cells
+<li> Left side: Pin the left side. Normally this is only shown when hovered over.
+</ul>
+<li> Inputs: Show or hide all of the input fields
+<li> Run on load: Run all of the cells when the notebook is first viewed
+<li> Show left side for anon.: Show the left side menu when the user viewing the page is not logged in. i.e., only show the hover menu link when the
+user is logged in
+<li> Save notebook: Save the notebook either without or with the generated output. It is suggested that notebooks are saved without output
+and that the cells are ran on notebook load. This is due to that some of the notebook operations (notably javascript) don't get recreated correctly
+with just the notebook output saved
+<li> Delete: Delete this cell
+<li> Help: Show this help
+</ul>
+
+
+
+
+
+
+
+
+
+
+[ht::foot]

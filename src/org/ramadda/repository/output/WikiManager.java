@@ -1433,6 +1433,18 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
     }
 
 
+    public Result processGetWikiToolbar(Request request) throws Exception {
+        Entry entry  = getEntryManager().getEntry(request, request.getString(ARG_ENTRYID,""));
+        String handlerId = request.getString("handler","");
+        String toolbar = makeWikiEditBar(request, entry, handlerId);
+        toolbar = getPageHandler().translate(request, toolbar);
+        Result  result =  new Result("", new StringBuilder(toolbar));
+        result.setShouldDecorate(false);
+        return result;
+    }
+
+
+
     public Result processWikify(Request request) throws Exception {
         String wiki = request.getString("text","");
         if(request.defined(ARG_ENTRYID)) {
@@ -4897,6 +4909,14 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
             " class=\"ramadda-menubar-button xramadda-button\" ";
 
         StringBuilder help = new StringBuilder();
+        for(String extraHelp:StringUtil.split(request.getString("extrahelp",""),",",true,true)) {
+            List<String> toks = StringUtil.splitUpTo(extraHelp,"|",2);
+            if(toks.size()==2) {
+                help.append(HtmlUtils.href(Utils.encodeUntrustedText(toks.get(0)), Utils.encodeUntrustedText(toks.get(1)), "target=_help") + "<br>");
+            }
+        }
+
+
         help.append(HtmlUtils.href(getRepository().getUrlBase()
                                    + "/userguide/wikitext.html", "Wiki text",
                                        "target=_help") + "<br>");
@@ -4977,12 +4997,14 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                              false, buttonClass);
 
         HtmlUtils.open(buttons, "div", HtmlUtils.cssClass("ramadda-menubar"));
+        buttons.append(HtmlUtils.span("",HtmlUtils.id(textAreaId+"_prefix")));
         buttons.append(tagsButton);
         buttons.append(tagsButton1);
         buttons.append(tagsButton2);
         buttons.append(addEntry);
         buttons.append(addLink);
         buttons.append(helpButton);
+        buttons.append(HtmlUtils.span("",HtmlUtils.id(textAreaId+"_suffix")));
         HtmlUtils.close(buttons, "div");
 
         return buttons.toString();
@@ -5837,6 +5859,10 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
             }
         }
 
+
+        if(!request.isAnonymous()) {
+            props.put("user",request.getUser().getId());
+        }
 
         String colors = getProperty(wikiUtil, props, ATTR_COLORS);
         if (colors != null) {

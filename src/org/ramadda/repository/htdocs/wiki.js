@@ -5,6 +5,12 @@
 
 function insertText(id, value) {
     hidePopupObject();
+    var handler = getHandler(id);
+    if(handler) {
+        handler.insertText(value);
+        return;
+    }
+
     var editor = HtmlUtils.getAceEditor(id);
     var textComp = GuiUtils.getDomObject(id);
     if (textComp || editor) {
@@ -22,7 +28,6 @@ function insertAtCursor(id, myField, value) {
         editor.focus();
         return;
     }
-
 
     var textScroll = myField.scrollTop;
 
@@ -47,6 +52,13 @@ function insertAtCursor(id, myField, value) {
 
 function insertTags(id, tagOpen, tagClose, sampleText) {
     hidePopupObject();
+
+    var handler = getHandler(id);
+    if(handler) {
+        handler.insertTags(tagOpen,tagClose, sampleText);
+        return;
+    }
+
     var textComp = GuiUtils.getDomObject(id);
     var editor = HtmlUtils.getAceEditor(id);
     if (textComp || editor) {

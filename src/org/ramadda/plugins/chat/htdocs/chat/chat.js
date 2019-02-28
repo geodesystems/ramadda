@@ -1,0 +1,175 @@
+
+function RamaddaChat(entryId, chatId) {
+    var ID_INPUT_TOOLBAR = "inputtoolbar";
+    var ID_MENU = "menu";
+    var ID_OUTPUT = "output";
+    var ID_INPUT= "input";
+    var ID_INPUT_CONTAINER= "inputcontainer";
+    var ID_TOGGLE = "inputtoggle";
+
+    $.extend(this,{
+            messageCnt:0,
+            entryId: entryId,
+                chatId: chatId
+                });
+
+    this.chat = $("#"+this.chatId);
+
+    $.extend(this, {
+            initChat: function() {
+                let _this = this;
+                this.handlerId = addHandler(this);
+                addHandler(this,this.handlerId+"_entryid");
+                addHandler(this,this.handlerId+"_wikilink");
+                this.editToolbar = "";
+                var html  = HtmlUtils.div(["id",this.getDomId(ID_MENU),"class","ramadda-chat-menu"],"") +
+                    HtmlUtils.div(["id",this.getDomId(ID_OUTPUT),"class","ramadda-chat-output"],"") +
+                    HtmlUtils.div(["id",this.getDomId(ID_INPUT_CONTAINER),"class","ramadda-chat-input-container"],"");
+
+                this.chat.html(html);
+                this.menu = this.jq(ID_MENU);
+                var toolbar =  HtmlUtils.image(ramaddaBaseUrl+"/icons/eraser.png",["class","ramadda-chat-menuitem","title","Clear","command","clear"]);
+                this.menu.html(toolbar);
+                this.menu.find(".ramadda-chat-menuitem").click(function() {
+                        var command = $(this).attr("commmand");
+                        if(command = "clear") {
+                            _this.output.html("");
+                        }
+                    });
+
+                this.inputContainer  = this.jq(ID_INPUT_CONTAINER);
+                this.output  = this.jq(ID_OUTPUT);
+                this.showTextArea  = false;
+                this.toggleInput();
+                this.receive();
+
+                var url = ramaddaBaseUrl +"/wikitoolbar?entryid=" + this.entryId +"&handler=" + this.handlerId;
+                GuiUtils.loadHtml(url,  h=> {
+                        //                        console.log(h);
+                        this.editToolbar =h; 
+                        this.jq(ID_INPUT_TOOLBAR).html(h);
+                    });
+
+            },
+            jq: function(id) {
+                return  $("#"+this.getDomId(id));
+            },
+            getDomId: function(id) {
+                return this.chatId+"_"+id;
+            },
+           selectClick(type,id, entryId, value) {
+                 if(type == "entryid") {
+                     this.insertText(entryId);
+                 } else {
+                     this.insertText("[[" + entryId +"|" + value+"]]");
+                 }
+                 this.input.focus();
+            },
+            insertTags: function(tagOpen, tagClose, sampleText) {
+                var id = this.getDomId(ID_INPUT);
+                var textComp = GuiUtils.getDomObject(id);
+                insertTagsInner(id, textComp.obj, tagOpen, tagClose, sampleText);
+            },
+            insertText: function(value) {
+                var id = this.getDomId(ID_INPUT);
+                var textComp = GuiUtils.getDomObject(id);
+                if (textComp || editor) {
+                    insertAtCursor(id, textComp.obj, value);
+                }
+            },
+            toggleInput: function() {
+                this.showTextArea  = !this.showTextArea;
+                var id = this.getDomId(ID_INPUT);
+                var toggle = HtmlUtils.image(ramaddaBaseUrl+(this.showTextArea?"/icons/chevron.png":"/icons/chevron-expand.png"),
+                                             ["id",this.getDomId(ID_TOGGLE),"title","toggle input"]);
+                
+                if(this.showTextArea) {
+                    var text = this.input?this.input.val():"";
+                    var inputToolbar = HtmlUtils.div(["id",this.getDomId(ID_INPUT_TOOLBAR)],this.editToolbar);
+                    var input = "<table width=100%  border=0 cellpadding=0 cellspacing=0><tr valign=top><td width=1%>" + toggle+"</td><td>" +inputToolbar + HtmlUtils.textarea("input", text||"", ["style","display:inline-block;","placeholder","shift-return to send","rows", "8", ATTR_CLASS, "ramadda-chat-input", ATTR_ID, id]) +"</td><tr></table>"
+                    this.inputContainer.html(input);
+                    this.input  = $("#"+id);
+                    this.input.focus();
+                    this.input.keypress(event => {
+                            if (event.shiftKey && event.which == 13) {
+                                this.send(this.input.val());
+                                event.preventDefault();
+                                //                                this.input.val("");
+                                //                                this.input.focus();
+                            }});
+
+                } else {
+                    var input = "<table width=100% border=0 cellpadding=0 cellspacing=0><tr valign=top><td width=1%>" + toggle+"</td><td>" +HtmlUtils.input("chatinput","",["placeholder","chat text","id",id,"class","ramadda-chat-input"]) +
+                        "</td></tr></table>";
+                    this.inputContainer.html(input);
+                    this.input  = $("#"+id);
+                    this.input.focus();
+                    this.input.keypress(event => {
+                            if (event.which == 13) {
+                                this.send(this.input.val());
+                                this.input.attr("placeholder","");
+                                this.input.val("");
+                            }});
+                }
+                this.jq(ID_TOGGLE).click(()=>this.toggleInput());
+            },
+            receive: function(wait) {
+                if(!Utils.isDefined(wait)) wait = 0;
+                let _this = this;
+                var url = ramaddaBaseUrl +"/chat/output?entryid=" + this.entryId;
+                this.connected = true;
+                var jqxhr = $.getJSON(url,  data=> {
+                        if(data.code!="ok") {
+                            this.writeError("Error:" + data.message);
+                        } else {
+                            this.write(data.result,data.user);
+                        }
+                        this.receive();
+                    }).fail(() => {
+                            _this.connected = false;
+                            wait= wait+1000;
+                            if(wait<30*1000) {
+                                setTimeout(()=>{_this.receive(wait);},wait);
+                            } else {
+                                this.writeError("Error: connection to server broke");
+                            }
+                        });
+
+            },
+            send: function(msg) {
+                if(!this.connected) {
+                    this.writeError("Not connected to server");
+                    return;
+                }
+                if(msg == "") msg = ":br";
+                msg  =encodeURIComponent(msg);
+                var url = ramaddaBaseUrl +"/chat/input?entryid=" + this.entryId+"&input=" + msg;
+                var jqxhr = $.getJSON(url,  data=> {
+                        //                        console.log("send result:" + JSON.stringify(data));
+                        if(data.code!="ok") {
+                            this.writeError("Error:" + data.message);
+                        } 
+                    });
+            },
+            writeError:function(msg) {
+                 this.write(HtmlUtils.div(["class","ramadda-chat-message ramadda-chat-message-error"], msg),"chat");
+            },
+            write:function(out, user) {
+                if(!user) user = "";
+                this.messageCnt++;
+                var id = this.getDomId(this.messageCnt);
+                var msg = "<table cellpadding=0 cellspacing=0 width=100%><tr valign=top><td width=150px style='border-right:1px #ccc solid;' align=left>" +HtmlUtils.div(["class","ramadda-chat-user"], user) +
+                    "</td><td align=left>" +
+                    HtmlUtils.div(["class","ramadda-chat-message"], out) +
+                    "</td></tr></table>";
+                this.output.append(HtmlUtils.div(["id",id,"class","ramadda-chat-message-container"], msg));
+                Utils.initContent("#" +id);
+                this.output.scrollTop(this.output.prop("scrollHeight"));
+                
+            }
+        });
+
+
+    this.initChat();
+
+}

@@ -1,0 +1,5 @@
+
+<api handler="org.ramadda.plugins.chat.ChatApiHandler" id="chat">
+     <api request="/chat/input"           method="processChatInput"  admin="false"/>
+     <api request="/chat/output"           method="processChatOutput"  admin="false"/>
+</api>
