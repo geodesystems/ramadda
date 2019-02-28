@@ -4419,7 +4419,7 @@ public class HtmlUtils {
      * @return _more_
      */
     public static String importCss(String css) {
-        return tag(TAG_STYLE, "", css);
+        return tag(TAG_STYLE, " type='text/css' ", css);
     }
 
 
