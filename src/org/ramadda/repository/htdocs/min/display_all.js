@@ -5516,100 +5516,100 @@ function RamaddaNotebookDisplay(displayManager, id, properties) {
 }
 
 
-var nbCell;
-var nbNotebook;
+function NotebookState(cell) {
+    this.id = HtmlUtils.getUniqueId();
+    this.cell = cell;
+    this.notebook = cell.notebook;
+    $.extend(this, {
+            entries:{},
+                stop: false,
+                prefix: null,
+                result: null,
+                
+                getCell:function() {
+        return this.cell;
+    },
 
-function nbGetCell() {
-    return notebookState.cell;
-}
+    getNotebook:    function() {
+        return this.notebook;
+    },
 
-function nbGetNotebook() {
-    return notebookState.cell.notebook;
-}
+    clear:    function() {
+        this.cell.clearOutput();
+    },
 
-function nbClear() {
-    notebookState.cell.notebook.clearOutput();
-}
+    save: function(output) {
+        this.notebook.saveNotebook(output);
+        return "notebook saved";
+    },
 
-function nbSave(output) {
-    nbGetNotebook().saveNotebook(output);
-    return "notebook saved";
-}
+    cearEntries: function() {
+        this.clearEntries();
+    },
 
-function nbClearEntries() {
-    nbGetNotebook().clearEntries();
-}
+    ls: function(entry) {
+        var div = new Div();
+        if(!entry)
+            entry = this.cell.getCurrentEntry(null);
+        this.call.getEntryHeading(entry, div);
+        this.write(div.toString());
+    },
 
-function nbLs(entry) {
-    var div = new Div();
-    if(!entry)
-        entry = nbCell.getCurrentEntry(null);
-    nbCell.getEntryHeading(entry, div);
-    nbWrite(div.toString());
-}
+    lsEntries: function() {
+        var h = "";
+        var entries = this.currentEntries;
+        for(var name in entries) {
+            var e = entries[name];
+            h += name +"=" + e.entry.getName()+"<br>";
+        }
+        this.write(h);
+    },
 
-function nbLsEntries() {
-    var h = "";
-    var entries = notebookState.currentEntries;
-    for(var name in entries) {
-        var e = entries[name];
-        h += name +"=" + e.entry.getName()+"<br>";
+    stop: function() {
+        this.stop = true;
+    },
+
+
+    setEntry: function(name,entryId) {
+        this.notebook.addEntry(name,entryId);
+    },
+
+
+    wiki: async function(s, entry, callback) {
+        var write = false;
+        if(!callback)
+            callback = h=>this.write(h);
+        if(entry == null) entry= this.cell.getCurrentEntry();
+        if((typeof entry)!="string") entry = entry.getId();
+        await GuiUtils.loadHtml(ramaddaBaseUrl + "/wikify?doImports=false&entryid=" + entry + "&text=" + encodeURIComponent(s),
+                                callback);
+    },
+
+    write: function(s) {
+        if(this.prefix==null) {
+            this.prefix = s;
+        } else {
+            this.prefix += s;
+        }
+    },
+
+    linechart: function(entry) {
+        this.cell.createDisplay(entry,DISPLAY_LINECHART);
+    },
+
+    help: function() {
+        return "Enter an expression, e.g.:<pre>1+2</pre> or wrap you code in brackets:<pre>{\nvar x=1+2;\nreturn x;\n}</pre>" +
+            "functions:<br>nbHelp() : print this help<br>nbClear() : clear the output<br>nbCell : this cell<br>nbNotebook: this notebook<br>" +
+            "nbLs(): list current entry; nbLs(parent): list parent; nbLs(root): list root" +
+            "nbLinechart(entry): create a linechart, defaults to current entry" +
+            "nbNotebook.addCell('wiki:some wiki text'): add a new cell with the given output<br>" +
+            "nbSave(includeOutput): save the notebook<br>nbWrite(html) : add some output<br>nbStop(): stop running";
     }
-    nbWrite(h);
-}
-
-function nbStop() {
-    notebookState.stop = true;
+        });
 }
 
 
-function nbSetEntry(name,entryId) {
-    nbNotebook.addEntry(name,entryId);
-}
-
-
-async function  nbWiki(s, entry, callback) {
-    var write = false;
-    if(!callback)
-        callback = h=>nbWrite(h);
-    if(entry == null) entry= nbCell.getCurrentEntry();
-    if((typeof entry)!="string") entry = entry.getId();
-    await GuiUtils.loadHtml(ramaddaBaseUrl + "/wikify?doImports=false&entryid=" + entry + "&text=" + encodeURIComponent(s),
-                            callback);
-}
-
-function nbWrite(s) {
-    if(notebookState.prefix==null) {
-        notebookState.prefix = s;
-    } else {
-        //        notebookState.prefix += "<br>";
-        notebookState.prefix += s;
-    }
-}
-
-function nbLinechart(entry) {
-    nbCell.createDisplay(entry,DISPLAY_LINECHART);
-}
-
-function nbHelp() {
-    return "Enter an expression, e.g.:<pre>1+2</pre> or wrap you code in brackets:<pre>{\nvar x=1+2;\nreturn x;\n}</pre>" +
-        "functions:<br>nbHelp() : print this help<br>nbClear() : clear the output<br>nbCell : this cell<br>nbNotebook: this notebook<br>" +
-        "nbLs(): list current entry; nbLs(parent): list parent; nbLs(root): list root" +
-        "nbLinechart(entry): create a linechart, defaults to current entry" +
-        "nbNotebook.addCell('wiki:some wiki text'): add a new cell with the given output<br>" +
-        "nbSave(includeOutput): save the notebook<br>nbWrite(html) : add some output<br>nbStop(): stop running";
-}
-
-
-var notebookState = {
-    entries:{},
-    cell: null,
-    stop: false,
-    prefix: null,
-    notebookResult: null,
-
-}
-
+var notebookStates = {};
 
 function RamaddaNotebookCell(notebook, id, content, props) {
     this.notebook = notebook;
@@ -6158,22 +6158,21 @@ function RamaddaNotebookCell(notebook, id, content, props) {
             try {
                 var current = this.getCurrentEntry();
                 var entries = this.notebook.getCurrentEntries();
-                notebookState.entries = {};
+                var state = new NotebookState(this);
+                notebookStates[state.id] = state;
                 var jsSet = "";
-                notebookState.entries["current"] = current;
+                state.entries["current"] = current;
                 name = "current";
-                jsSet+= name +"= notebookState.entries['" + name +"'];\n"
+                var stateJS = "notebookStates['" + state.id +"']";
+                jsSet+= "state= " + stateJS+";\n";
+                jsSet+= name +"=state.entries['" + name +"'];\n"
                 for(var name in entries) {
                     var e = entries[name];
-                    notebookState.entries[name] = e.entry;
-                    jsSet+= name +"= notebookState.entries['" + name +"'];\n"
+                    state.entries[name] = e.entry;
+                    jsSet+= name +"= state.entries['" + name +"'];\n"
                 }
                 nbCell = this;
                 nbNotebook = this.notebook;
-                notebookState.stop = false;
-                notebookState.cell = this;
-                notebookState.notebookResult = null;
-                notebookState.prefix = null;
                 blob = blob.trim();
                 var lines = blob.split("\n");
                 var js;
@@ -6182,17 +6181,17 @@ function RamaddaNotebookCell(notebook, id, content, props) {
                 }
 
                 if(lines.length>1 || blob.startsWith("return ") || blob.startsWith("{")) {
-                     js = "async function nbFunc() {\n" + jsSet +"\n" + blob + "\n}\nasync function tmp() {await nbFunc().then(r=>{console.log('then:' + r);notebookState.notebookResult=result;});};";
+                     js = "async function nbFunc() {\n" + jsSet +"\n" + blob + "\n}\nasync function tmp() {await nbFunc().then(r=>{" +stateJS+"=result;});};";
                 } 
                 var jsReturn;
                 eval(js);
                 await nbFunc().then(function(r) {jsReturn=r;});
-                if (notebookState.stop) {
+                if (state.stop) {
                     result.ok = false;
                 }
 
                 var html = "";
-                if (Utils.stringDefined(notebookState.prefix)) html +=notebookState.prefix;
+                if (Utils.stringDefined(state.prefix)) html +=state.prefix;
                 if (jsReturn) html +=jsReturn;
                 return Utils.call(callback, html);
             } catch (e) {
