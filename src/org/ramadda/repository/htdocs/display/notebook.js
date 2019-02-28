@@ -895,7 +895,6 @@ function RamaddaNotebookCell(notebook, id, content, props) {
         },
         processHtml: function(blob, result) {
             blob = blob.trim();
-            blob = blob.replace(/\n/g, "<br>");
             return blob;
         },
          processWiki: async function(blob, result, callback) {
