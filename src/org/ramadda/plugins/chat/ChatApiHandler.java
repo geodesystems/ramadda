@@ -28,6 +28,7 @@ import org.ramadda.service.ServiceArg;
 import org.ramadda.util.HtmlUtils;
 import org.ramadda.util.Json;
 import org.ramadda.util.Utils;
+import org.json.*;
 
 import org.w3c.dom.Element;
 
@@ -48,6 +49,7 @@ public class ChatApiHandler extends RepositoryManager implements RequestHandler 
 
     private static final long WAIT_DELAY = 1000*60;
 
+    private static final int MESSAGE_HISTORY  =10;
     private Hashtable<String,ChatRoom> rooms = new Hashtable<String,ChatRoom>();
 
 
@@ -104,15 +106,45 @@ public class ChatApiHandler extends RepositoryManager implements RequestHandler 
     public Result processChatInput(Request request) throws Exception {
         Entry entry  = getEntryManager().getEntry(request, request.getString(ARG_ENTRYID,""));
         String input = request.getString("input","");
-        String output  = getWikiManager().wikifyEntry(request, entry, input);
-        output = getPageHandler().translate(request, output);
-        ChatRoom room = getRoom(entry);
-        synchronized(room) {
-            room.notifyAll(output, request.getUser());
-        }
+        JSONObject obj = new JSONObject(new JSONTokener(input));
+        String  command = obj.getString("command");
         StringBuilder sb = new StringBuilder();
-        sb.append(Json.mapAndQuote("code","ok","message","output sent"));
+        if(command.equals("message")) {
+            String message = obj.getString("message");
+            String output  = getWikiManager().wikifyEntry(request, entry, message);
+            output = getPageHandler().translate(request, output);
+            ChatRoom room = getRoom(entry);
+            room.addMessage(new ChatMessage(message, getUserName(request.getUser())));
+            synchronized(room) {
+                room.notifyAll(output, getUserName(request.getUser()));
+            }
+            sb.append(Json.mapAndQuote("code","ok","message","output sent"));
+            return returnJson(request,sb);
+        }
+        if(command.equals("connect")) {
+            ChatRoom room = getRoom(entry);
+            synchronized(room) {
+                room.notifyAll("New user: " + getUserName(request.getUser()), "chat");
+            }
+
+            List<String> messageList  = new ArrayList<String>();
+            for(ChatMessage chatMessage: room.messages) {
+                String message  = getWikiManager().wikifyEntry(request, entry, chatMessage.message);
+                messageList.add(Json.mapAndQuote("message",message,"user", chatMessage.user));
+            }
+            String messages = Json.list(messageList);
+            sb.append(Json.map("code","\"ok\"","messages",messages));
+            return returnJson(request,sb);
+        }
+
+
         return returnJson(request,sb);
+    }
+
+    private String getUserName(User user) {
+        String name = user.getName().trim();
+        if(name.length()==0) name = user.getId();
+        return name;
     }
 
     public  Result processChatOutput(Request request) throws Exception {
@@ -122,29 +154,43 @@ public class ChatApiHandler extends RepositoryManager implements RequestHandler 
             room.wait();
         }
         StringBuilder sb = new StringBuilder();
-        String user = room.latestUser.getName().trim();
-        if(user.length()==0) user = room.latestUser.getId();
-        sb.append(Json.mapAndQuote("code","ok","result",room.latestInput,"user",user));
-        //        System.err.println("output:" + sb);
+        String user = room.latestUser;
+        String messages = Json.list(Json.mapAndQuote("message",room.latestInput,"user", user));
+        sb.append(Json.map("code","\"ok\"","messages",messages));
         return returnJson(request,sb);
     }
 
     static class ChatRoom {
         Entry entry;
         String latestInput;
-        User latestUser;
+        String latestUser;
+        List<ChatMessage> messages = new ArrayList<ChatMessage>();
+
         public ChatRoom(Entry entry) {
             this.entry= entry;
         }
 
-        public synchronized void notifyAll(String input, User user) {
+        public synchronized void notifyAll(String input, String user) {
             this.latestInput = input;
             this.latestUser = user;
             this.notifyAll();
         }
 
+        public void addMessage(ChatMessage message) {
+            messages.add(message);
+            if(messages.size()>MESSAGE_HISTORY)
+                messages.remove(0);
+        }
     }
 
 
+    static class ChatMessage {
+        String message;
+        String user;
+        public ChatMessage(String msg, String user) {
+            this.message = msg;
+            this.user = user;
+        }
+    }
 
 }
