@@ -587,9 +587,19 @@ position:relative;
 
 
 
-.ramadda-thumbnail {
+.ramadda-thumbnail-image {
    width: 100px;
 }
+
+.ramadda-thumbnail {
+     display:inline-block;
+     width:100px;
+     max-width:100px;
+     overflow-x:hidden;
+     max-height:100px;
+     overflow-y:auto;
+}
+
 
 
 .ramadda-admin-note {

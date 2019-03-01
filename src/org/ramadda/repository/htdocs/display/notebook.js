@@ -103,10 +103,7 @@ function RamaddaNotebookDisplay(displayManager, id, properties) {
                 }
                 if (Utils.isDefined(data.cells)) {
                     this.cells = [];
-                    for (var i = 0; i < data.cells.length; i++) {
-                        var props = data.cells[i];
-                        this.addCell(props.outputHtml, props, true);
-                    }
+                    data.cells.map(cell=>this.addCell(cell.outputHtml, cell, true));
                     this.layoutCells();
                 }
                 if(this.cells.length==0) {
@@ -172,20 +169,16 @@ function RamaddaNotebookDisplay(displayManager, id, properties) {
                 var e = this.currentEntries[name];
                 obj.currentEntries[name] = {entryId:e.entryId};
             }
-            for (var i = 0; i < this.cells.length; i++) {
-                var cell = this.cells[i];
-                obj.cells.push(cell.getJson(output));
-            }
+            this.cells.map(cell=>obj.cells.push(cell.getJson(output)));
             return obj;
         },
         layoutCells: function() {
             this.jq(ID_CELLS).html("");
-            for (var i = 0; i < this.cells.length; i++) {
-                var cell = this.cells[i];
+            this.cells.map(cell=>{
                 this.jq(ID_CELLS).append(HtmlUtils.div([ATTR_CLASS, "display-notebook-cell", ATTR_ID, cell.id], ""));
                 cell.createCell();
-            }
-        },
+                });
+            },
         addCell: function(content, props,layoutLater) {
                 cell = this.createCell(content, props);
                 this.cells.push(cell);
@@ -208,12 +201,8 @@ function RamaddaNotebookDisplay(displayManager, id, properties) {
             return cell;
         },
         clearOutput: function() {
-            for (var i = 0; i < this.cells.length; i++) {
-                var cell = this.cells[i];
-                cell.clearOutput();
-            }
+                this.cells.map(cell=> cell.clearOutput());
         },
-
         moveCellUp: function(cell) {
             var cells = [];
             var newCell = null;

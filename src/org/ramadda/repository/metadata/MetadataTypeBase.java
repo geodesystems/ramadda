@@ -613,7 +613,7 @@ public class MetadataTypeBase extends RepositoryManager {
         }
 
         String extra = (forLink
-                        ? HtmlUtils.cssClass("ramadda-thumbnail")
+                        ? HtmlUtils.cssClass("ramadda-thumbnail-image")
                         : "");
         String tail  = getStorageManager().getFileTail(f.toString());
         String path =
@@ -636,14 +636,9 @@ public class MetadataTypeBase extends RepositoryManager {
                                     ARG_METADATA_ID,
                                     metadata.getId()), "thumbnail", "");
 
-
-                String imgUrl = HtmlUtils.url(path, ARG_ELEMENT,
-                                    element.getIndex() + "", ARG_ENTRYID,
-                                    metadata.getEntryId(), ARG_METADATA_ID,
-                                    metadata.getId());
-
                 img = handler.getPageHandler().makePopupLink(img, bigimg,
                         true, false);
+                img = HtmlUtils.div(img,HtmlUtils.cssClass("ramadda-thumbnail"));
             } else {
                 img = Utils.concatString(img, "\n<br>\n<b>", tail, "</b>\n");
             }
