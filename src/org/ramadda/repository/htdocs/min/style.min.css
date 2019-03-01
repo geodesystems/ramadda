@@ -626,6 +626,11 @@ position:relative;
     padding-bottom:4px;
 }
 
+.ui-tabs .ramadda-section  {
+    padding-left:0px;
+    padding-right:0px;
+
+}
 
 .ramadda-section-wide  {
     padding-left:20px;
@@ -3305,6 +3310,8 @@ padding-bottom: 0.2em;
 
 .ui-tabs .ui-tabs-panel {
    border: 1px solid #aaaaaa;
+  padding-left:1em;
+  padding-right:1em;
 }
 
 .ui-widget.ui-widget-content  {
