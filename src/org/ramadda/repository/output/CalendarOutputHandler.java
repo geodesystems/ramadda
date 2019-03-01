@@ -713,7 +713,6 @@ public class CalendarOutputHandler extends OutputHandler {
                                Appendable sb, boolean doDay)
             throws Exception {
 
-        System.err.println("doDay:" + doDay);
         boolean hadDateArgs = request.defined(ARG_YEAR)
                               || request.defined(ARG_MONTH)
                               || request.defined(ARG_DAY);

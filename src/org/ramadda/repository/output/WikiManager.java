@@ -2048,7 +2048,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
         } else if (theTag.equals(WIKI_TAG_CALENDAR)) {
             List<Entry> children = getEntries(request, wikiUtil,
                                        originalEntry, entry, props);
-            boolean doDay = getProperty(wikiUtil, props, ATTR_DAY, false);
+            boolean doDay = getProperty(wikiUtil, props, ATTR_DAY, false) || request.defined(ARG_DAY);
             getCalendarOutputHandler().outputCalendar(request,
                     getCalendarOutputHandler().makeCalendarEntries(request,
                         children), sb, doDay);
