@@ -936,7 +936,8 @@ public class CalendarOutputHandler extends OutputHandler {
                         + dayContents + "</td><td align=right class=calday>"
                         + HtmlUtils.href(dayUrl, "" + thisDay)
                         + "<br>&nbsp;</td></tr></table>";
-                    sb.append("<td class=\"calentry\" " + bg + " >" + content
+                    content = HtmlUtils.div(content,HtmlUtils.cssClass("cal-daywrapper"));
+                    sb.append("<td width=15% class=\"calentry\" " + bg + " >" + content
                               + "</td>");
                     cal.add(cal.DAY_OF_MONTH, 1);
                 }
@@ -1327,7 +1328,8 @@ public class CalendarOutputHandler extends OutputHandler {
                         + "</td><td align=right class=calday width=5>"
                         + HtmlUtils.href(dayUrl, "" + thisDay)
                         + "<br>&nbsp;</td></tr></table>";
-                    sb.append("<td class=\"calentry\" " + bg + " >" + content
+                    content = HtmlUtils.div(content,HtmlUtils.cssClass("cal-daywrapper"));
+                    sb.append("<td width=15% class=\"calentry\" " + bg + " >" + content
                               + "</td>");
                     cal.add(cal.DAY_OF_MONTH, 1);
                 }

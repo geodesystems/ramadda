@@ -2563,6 +2563,7 @@ nowiki {
     border-color: #666;
     border-width: 0px 0px 1px 1px;
     border-style: solid;
+ table-layout: fixed;
 }
 
 .calnavtable {
@@ -2597,10 +2598,14 @@ nowiki {
 .calentry {
 }
 
+.cal-daywrapper {
+    max-width:100%;
+    overflow-x:auto;
+}
+
 .calcontents {
 	max-height: 150px; 
-	overflow-y: auto;
-	overflow-x: hidden;
+        overflow-y: auto;
 }
 
 .calnav {
