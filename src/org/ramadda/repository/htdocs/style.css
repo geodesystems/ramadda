@@ -2560,24 +2560,28 @@ nowiki {
 }
 
 .calendartable,  .dategrid {
-    border-color: #666;
+    border-color: #888;
     border-width: 0px 0px 1px 1px;
     border-style: solid;
- table-layout: fixed;
+    table-layout: fixed;
 }
 
 .calnavtable {
-    border-color: #666;
+    border-color: #888;
     border-width: 1px 1px 1px 1px;
     border-style: solid;
 }
 
 .calnavday, .calheader, .calentry, .daycalendartable td, .dategrid>tr>td  {
-    border-color: #666;
+    border-color: #888;
     border-width: 1px 1px 0px 0px;
     border-style: solid;
     margin: 0px;
 }
+
+.calentry {
+}
+
 
 .calheader {
    padding-top:10px;
@@ -2586,25 +2590,25 @@ nowiki {
    font-weight: bold;
 }
 
-.calday, .calday a {
+.cal-day-link, .cal-day-link a {
      text-decoration: none;
      color: #000;
 }
 
-.calday {
+.cal-day-link {
+   height:100%;
    font-size: 8pt;
 }
 
-.calentry {
-}
 
-.cal-daywrapper {
+.cal-day {
+    display:inline-block;
     max-width:100%;
     overflow-x:auto;
 }
 
 .calcontents {
-	max-height: 150px; 
+	max-height: 200px; 
         overflow-y: auto;
 }
 
