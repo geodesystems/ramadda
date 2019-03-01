@@ -229,8 +229,8 @@ color:#000;
 }
 
 .ramadda-grid-box {
-  margin-top:2px;
-  margin-bottom:2px;
+  margin-top:10px;
+  margin-bottom:10px;
   padding:10px;
   padding-bottom:10px;
   padding-top:6px;
@@ -2888,7 +2888,7 @@ a.toggleblocklabellink:visited {
 }
 
 
-/* override the bootstrap column padding
+/* override the bootstrap column padding */
 .ramadda-col {
 padding-right:10px;
 padding-left:10px;

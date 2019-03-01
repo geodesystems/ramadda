@@ -2576,7 +2576,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                             if (showLine) {
                                 sb.append("<hr>");
                             } else {
-                                sb.append(HtmlUtils.br());
+                                //                                sb.append(HtmlUtils.br());
                             }
                         }
                         rowCnt++;
