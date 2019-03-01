@@ -1094,7 +1094,7 @@ public class WikiUtil {
                     weight = "8";
                 }
                 buff.append("<div class=\"row\">");
-                buff.append("<div class=\"col-md-" + weight + "\">");
+                buff.append("<div class=\"col-md-" + weight + "  ramadda-col\">");
                 buff.append("<div class=\"jumbotron\">");
 
                 continue;
@@ -1469,7 +1469,7 @@ public class WikiUtil {
                     contents = toks.get(1);
                 }
                 rowState.openColumn(buff,
-                                    HtmlUtils.cssClass(clazz + " wiki-col"));
+                                    HtmlUtils.cssClass(clazz + " ramadda-col wiki-col"));
                 buff.append(contents);
                 rowState.closeColumn(buff);
 
@@ -1499,7 +1499,7 @@ public class WikiUtil {
                     clazz = clazz.replace("col-", "col-md-");
                 }
                 rowState.openColumn(buff,
-                                    HtmlUtils.cssClass(clazz + " wiki-col")
+                                    HtmlUtils.cssClass(clazz + " ramadda-col wiki-col")
                                     + extra);
 
                 continue;
