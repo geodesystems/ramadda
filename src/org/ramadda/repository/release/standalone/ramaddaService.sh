@@ -51,7 +51,8 @@ kill_cmd() {
             echo "$MSG $LIST" ; 
             echo $LIST | xargs kill $SIGNAL
             sleep 2
-            SIGNAL="-9" ; MSG="Killing $SIGNAL"
+            SIGNAL="-15" 
+            MSG="Killing $SIGNAL"
             if [ -f $PID ]
             then
                 /bin/rm $PID

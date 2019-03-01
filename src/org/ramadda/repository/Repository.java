@@ -1038,6 +1038,15 @@ public class Repository extends RepositoryBase implements RequestHandler,
             Toolkit.getDefaultToolkit().beep();
         }
 
+        Repository theRepository = this;
+        //Add a listener for the kill signal so we can shutdown gracefully
+        Runtime.getRuntime().addShutdownHook(new Thread()  {
+                public void run()  {
+                    System.err.println("RAMADDA shutting down");
+                    theRepository.shutdown();
+                }
+            });
+
     }
 
     /**
