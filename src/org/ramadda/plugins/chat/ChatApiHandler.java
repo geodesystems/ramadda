@@ -264,6 +264,24 @@ public class ChatApiHandler extends RepositoryManager implements RequestHandler 
 
             return returnJson(request, sb);
         }
+
+
+        if (command.equals("clearall")) {
+            boolean canEdit = getAccessManager().canEditEntry(request,entry);
+            if(!canEdit) {
+                sb.append(Json.mapAndQuote("code", "notok", "message",
+                                           "no permissions to clear all"));
+                return returnJson(request, sb);
+            }
+
+            ChatRoom room = getRoom(entry);
+            room.clearAll();
+            saveRoom(room);
+            sb.append(Json.mapAndQuote("code", "ok", "message",
+                                       "cleared"));
+            return returnJson(request, sb);
+        }
+
         if (command.equals("connect")) {
             ChatRoom room = getRoom(entry);
             synchronized (room) {
@@ -360,6 +378,13 @@ public class ChatApiHandler extends RepositoryManager implements RequestHandler 
          */
         public ChatRoom(Entry entry) {
             this.entry = entry;
+        }
+
+        public void clearAll() {
+            messages = new ArrayList<ChatMessage>();
+            saveCnt =0;
+            latestInput = null;
+            latestUser = null;
         }
 
         /**

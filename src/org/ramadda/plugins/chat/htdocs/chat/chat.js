@@ -1,5 +1,5 @@
 
-function RamaddaChat(entryId, chatId) {
+function RamaddaChat(entryId, chatId, canEdit) {
     var ID_INPUT_TOOLBAR = "inputtoolbar";
     var ID_MENU = "menu";
     var ID_GUTTER = "gutter";
@@ -11,7 +11,8 @@ function RamaddaChat(entryId, chatId) {
     $.extend(this,{
             messageCnt:0,
             entryId: entryId,
-                chatId: chatId
+                chatId: chatId,
+                canEdit:canEdit
                 });
 
     this.chat = $("#"+this.chatId);
@@ -82,10 +83,14 @@ function RamaddaChat(entryId, chatId) {
                                              ["id",this.getDomId(ID_TOGGLE),"title","toggle input"]);
                 
                 gutter +="\n";
-                gutter+="<br>" +  HtmlUtils.image(ramaddaBaseUrl+"/chat/mail-send.png",["class","ramadda-chat-menuitem","title","Send","data-command","send"]);
+                gutter+="<br>" +  HtmlUtils.image(ramaddaBaseUrl+"/chat/mail-send.png",["class","ramadda-chat-menuitem","title","Send","what","send"]);
                 gutter +="\n";
-                gutter+="<br>" +  HtmlUtils.image(ramaddaBaseUrl+"/icons/eraser.png",["class","ramadda-chat-menuitem","title","Clear","data-command","clear"]);
+                gutter+="<br>" +  HtmlUtils.image(ramaddaBaseUrl+"/icons/eraser.png",["class","ramadda-chat-menuitem","title","Clear output","what","clear"]);
 
+                if(this.canEdit) {
+                    gutter += HtmlUtils.div(["class","ramadda-chat-menuitem","title","Clear all messages on server","what","clearall"],
+                                            HtmlUtils.image(ramaddaBaseUrl+"/icons/delete.gif",[]));
+                }
                 if(this.showTextArea) {
                     var text = this.input?this.input.val():"";
                     var inputToolbar = HtmlUtils.div(["id",this.getDomId(ID_INPUT_TOOLBAR)],this.editToolbar);
@@ -115,13 +120,13 @@ function RamaddaChat(entryId, chatId) {
                 }
                 this.gutter.html(gutter);
                 this.gutter.find(".ramadda-chat-menuitem").click(function() {
-                        //For some reason I'm not getting the command here
-                        var command = $(this).attr("data-commmand");
-                        var title = $(this).attr("title");
-                        if(title == "Clear") {
+                        var what = $(this).attr("what");
+                        if(what == "clear") {
                             _this.output.html("");
-                        } else  if(title == "Send") {
+                        } else  if(what == "send") {
                             _this.send(_this.input.val());
+                        } else  if(what == "clearall") {
+                            _this.clearAll();
                         }
                     });
                 this.jq(ID_TOGGLE).click(()=>this.toggleInput());
@@ -166,6 +171,18 @@ function RamaddaChat(entryId, chatId) {
                     });
 
            },
+            clearAll: function() {
+                var json = {
+                    command:"clearall",
+                }
+                msg  =encodeURIComponent(JSON.stringify(json));
+                var url = ramaddaBaseUrl +"/chat/input?entryid=" + this.entryId+"&input=" + msg;
+                var jqxhr = $.getJSON(url,  data=> {
+                        this.output.html("");
+                    });
+
+           },
+
             send: function(msg) {
                 if(!this.connected) {
                     this.writeError("Not connected to server");

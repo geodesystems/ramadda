@@ -87,7 +87,8 @@ public class ChatTypeHandler extends ExtensibleGroupTypeHandler {
                       "",
                       HtmlUtils.id(id)
                       + HtmlUtils.cssClass("ramadda-chat"));
-        sb.append(HtmlUtils.script("\nnew RamaddaChat('" + entry.getId()+"','"+ id +"');\n"));
+        boolean canEdit = getAccessManager().canEditEntry(request,entry);
+        sb.append(HtmlUtils.script("\nnew RamaddaChat('" + entry.getId()+"','"+ id +"'," + canEdit+");\n"));
         return sb.toString();
     }
 
