@@ -914,19 +914,39 @@ public class Repository extends RepositoryBase implements RequestHandler,
                 }
             }
 
+            List<RepositoryManager> later = new ArrayList<RepositoryManager>();
+
             synchronized (repositoryManagers) {
                 for (RepositoryManager repositoryManager :
                         repositoryManagers) {
                     try {
+                        if(repositoryManager== pluginManager ||
+                           repositoryManager == entryManager ||
+                           repositoryManager == databaseManager ||
+                           repositoryManager == metadataManager) {
+                            later.add(repositoryManager);
+                            continue;
+                        }
                         repositoryManager.shutdown();
                     } catch (Throwable thr) {
                         System.err.println(
                             "RAMADDA: Error shutting down:"
                             + repositoryManager.getClass().getName() + " "
                             + thr);
+                        thr.printStackTrace();
                     }
                 }
             }
+
+            for (RepositoryManager repositoryManager: later) {
+                try {
+                    repositoryManager.shutdown();
+                } catch (Throwable thr) {
+                    System.err.println("RAMADDA: Error shutting down plugin manager:" + repositoryManager.getClass().getName());
+                    thr.printStackTrace();
+                }
+            }
+
             repositoryManagers     = null;
             userManager            = null;
             monitorManager         = null;

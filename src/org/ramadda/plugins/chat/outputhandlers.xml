@@ -1,3 +1,2 @@
 <outputhandlers>
-  <outputhandler class="org.ramadda.plugins.chat.ChatOutputHandler" name="Chat Room"/>
 </outputhandlers>

@@ -39,9 +39,6 @@ import java.util.List;
  */
 public class ChatTypeHandler extends ExtensibleGroupTypeHandler {
 
-    /** _more_ */
-    private ChatOutputHandler chatOutputHandler;
-
     /**
      * _more_
      *
@@ -53,27 +50,6 @@ public class ChatTypeHandler extends ExtensibleGroupTypeHandler {
     public ChatTypeHandler(Repository repository, Element entryNode)
             throws Exception {
         super(repository, entryNode);
-    }
-
-
-    /**
-     * _more_
-     *
-     * @return _more_
-     */
-    private ChatOutputHandler getChatOutputHandler() {
-        if (chatOutputHandler == null) {
-            try {
-                chatOutputHandler =
-                    (ChatOutputHandler) getRepository().getOutputHandler(
-                        ChatOutputHandler.OUTPUT_CHATROOM);
-            } catch (Exception exc) {
-                throw new RuntimeException(exc);
-
-            }
-        }
-
-        return chatOutputHandler;
     }
 
 

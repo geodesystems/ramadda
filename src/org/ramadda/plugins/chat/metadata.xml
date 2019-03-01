@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<metadata>
+  <handler class="org.ramadda.repository.metadata.MetadataHandler"        category="Miscellaneous">
+    <type
+       name="Saved Chat"
+       id="chat_file">
+      <element name="File" datatype="file" thumbnail="false"/>
+    </type>
+</handler>
+
+
+
+</metadata>
