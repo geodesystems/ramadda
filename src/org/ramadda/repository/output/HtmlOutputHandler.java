@@ -988,7 +988,7 @@ public class HtmlOutputHandler extends OutputHandler {
      *
      * @throws Exception _more_
      */
-    public Result getSelectXml(Request request, List<Entry> subGroups,
+    public Result getSelectXml(Request request, Entry group, List<Entry> subGroups,
                                List<Entry> entries)
             throws Exception {
 
@@ -1098,6 +1098,10 @@ public class HtmlOutputHandler extends OutputHandler {
         }
 
 
+        Entry parent = group.getParentEntry();
+        if(parent!=null) {
+            sb.append(getSelectLink(request, parent, target,"../"));
+        }
         for (Entry subGroup : subGroups) {
             if (Misc.equals(localeId, subGroup.getId())) {
                 continue;
@@ -1902,7 +1906,7 @@ public class HtmlOutputHandler extends OutputHandler {
         }
 
         if (outputType.equals(OUTPUT_SELECTXML)) {
-            return getSelectXml(request, subGroups, entries);
+            return getSelectXml(request, group, subGroups, entries);
         }
         if (outputType.equals(OUTPUT_METADATAXML)) {
             return getMetadataXml(request, group, true);

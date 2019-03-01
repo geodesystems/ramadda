@@ -1008,9 +1008,12 @@ public class OutputHandler extends RepositoryManager {
      *
      * @throws Exception _more_
      */
-    public String getSelectLink(Request request, Entry entry, String target)
+    public String getSelectLink(Request request, Entry entry, String...args)
             throws Exception {
-        String        linkText = getEntryDisplayName(entry);
+        String target = args[0];
+        String namePrefix = args.length>1?args[1]:null;
+
+        String        linkText = (namePrefix!=null?namePrefix:"")+getEntryDisplayName(entry);
         StringBuilder sb       = new StringBuilder();
         String        entryId  = entry.getId();
         String        icon     = getPageHandler().getIconUrl(request, entry);
@@ -1056,10 +1059,9 @@ public class OutputHandler extends RepositoryManager {
 
         String type      = request.getString(ARG_SELECTTYPE, "");
         String elementId = entry.getId();
-        String value     = (entry.isGroup()
-        //getFullName
-                            ? ((Entry) entry).getName()
-                            : getEntryDisplayName(entry));
+        String value     = entry.isGroup()
+            ? ((Entry) entry).getName()
+            : getEntryDisplayName(entry);
         value = value.replace("'", "\\'");
 
 
