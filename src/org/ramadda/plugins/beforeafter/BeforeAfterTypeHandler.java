@@ -139,8 +139,7 @@ public class BeforeAfterTypeHandler extends GenericTypeHandler {
 
         String desc = group.getDescription();
         if ((desc != null) && (desc.length() > 0)) {
-            sb.append(desc);
-            sb.append(HtmlUtils.br());
+            sb.append(getWikiManager().wikifyEntry(request, group,desc));
         }
         StringBuffer divs = new StringBuffer();
         int          col  = 1;
