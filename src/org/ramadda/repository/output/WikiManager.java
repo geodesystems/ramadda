@@ -2590,7 +2590,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                     }
                     HtmlUtils.open(sb, HtmlUtils.TAG_DIV,
                                    HtmlUtils.cssClass("col-md-"
-                                       + weightString));
+                                       + weightString +" ramadda-col"));
                     HtmlUtils.open(sb, HtmlUtils.TAG_DIV,
                                    HtmlUtils.cssClass("ramadda-grid-box"));
 
@@ -4564,7 +4564,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
         for (StringBuilder buff : colsSB) {
             HtmlUtils.open(
                 sb, "div",
-                HtmlUtils.cssClass(colClass)
+                HtmlUtils.cssClass(colClass +" ramadda-col")
                 + HtmlUtils.style("padding-left:5px; padding-right:5px;"));
             sb.append(buff);
             HtmlUtils.close(sb, "div");
