@@ -2633,7 +2633,7 @@ nowiki {
 .calnavday {
    text-align:right;
    font-size: 8pt;
-   background-color:#c3d9ff;
+   background-color:#fff;
    padding-left:20px;
    padding-top:5px;
    padding-right:1px;
@@ -2646,7 +2646,7 @@ nowiki {
 .calnavtheday {
    text-align:right;
    font-size: 8pt;
-   background-color:#fff;
+   background-color:#c3d9ff;
    padding-left:20px;
    padding-top:5px;
    padding-right:1px;
