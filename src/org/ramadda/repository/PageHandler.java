@@ -3696,7 +3696,7 @@ Time:14625 cnt:7000
                          ? ".min"
                          : "";
         String mini    = getRepository().getMinifiedOk()
-                         ? "min"
+                         ? "min/"
                          : "";
         //        System.err.println(mini +" " + getRepository().getMinifiedOk());
         String path;
