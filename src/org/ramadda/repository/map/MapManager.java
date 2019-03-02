@@ -1210,7 +1210,7 @@ public class MapManager extends RepositoryManager implements WikiConstants {
                           int height, Hashtable mapProps, Hashtable props)
             throws Exception {
 
-        boolean doCategories = Utils.getProperty(props, "doCategories", true);
+        boolean doCategories = Utils.getProperty(props, "doCategories", false);
         boolean details = request.get("mapdetails",
                                       Utils.getProperty(props, ATTR_DETAILS,
                                           Utils.getProperty(props,
@@ -1219,6 +1219,7 @@ public class MapManager extends RepositoryManager implements WikiConstants {
                                   false);
         boolean cbx = Utils.getProperty(props, "showCheckbox", false);
         boolean search = Utils.getProperty(props, "showSearch", false);
+        boolean searchMarkers = Utils.getProperty(props, "showMarkersSearch", false);
         boolean showLocationSearch = Utils.getProperty(props,
                                          "showLocationSearch", false);
 
@@ -1344,9 +1345,11 @@ public class MapManager extends RepositoryManager implements WikiConstants {
                 catMap.put(category, catSB = new StringBuilder());
                 categories.add(category);
             }
+            String suffix = map.getMapId() + "_" + entry.getId();
             catSB.append(
                 HtmlUtils.open(
                     HtmlUtils.TAG_DIV,
+                    HtmlUtils.id("block_" + suffix) +
                     "data-mapid=\"" + entry.getId() + "\" "
                     + HtmlUtils.cssClass(CSS_CLASS_EARTH_NAV)));
             String getIconUrl = getPageHandler().getIconUrl(request, entry);
@@ -1355,8 +1358,7 @@ public class MapManager extends RepositoryManager implements WikiConstants {
                             + ".hiliteMarker(" + sqt(entry.getId()) + ");";
 
             if (cbx) {
-                String cbxId = "visible_" + map.getMapId() + "_"
-                               + entry.getId();
+                String cbxId = "visible_" + suffix;
                 catSB.append(HtmlUtils.checkbox("tmp", "true", cbxOn,
                         HtmlUtils.id(cbxId)) + HtmlUtils.space(2));
             }
@@ -1377,7 +1379,7 @@ public class MapManager extends RepositoryManager implements WikiConstants {
                                              "250");
         String navTop   = "";
         String searchId = "";
-        if (search) {
+        if (searchMarkers) {
             searchId = "search_" + map.getMapId();
             navTop += HtmlUtils.input(
                 "tmp", "", 20,
@@ -1408,7 +1410,7 @@ public class MapManager extends RepositoryManager implements WikiConstants {
                     + " .ramadda-earth-nav', " + map.getVariableName()
                     + ", '#ffffcc', 'white');";
 
-        if (search) {
+        if (searchMarkers) {
             js += map.getVariableName() + ".initSearch(" + sqt(searchId)
                   + ");";
         }

@@ -1609,12 +1609,15 @@ function initMapFunctions(theMap) {
         var all = text == "";
         var cbxall = $(':input[id*=\"' + "visibleall_" + this.mapId + '\"]');
         cbxall.prop('checked', all);
+        var bounds = new OpenLayers.Bounds();
+        var cnt = 0;
         if (this.markers) {
             var list = this.getMarkers();
             for (var idx = 0; idx < list.length; idx++) {
                 marker = list[idx];
                 var visible = true;
                 var cbx = $('#' + "visible_" + this.mapId + "_" + marker.ramaddaId);
+                var block = $('#' + "block_" + this.mapId + "_" + marker.ramaddaId);
                 var name = marker.name;
                 if (all) visible = true;
                 else if (!Utils.isDefined(name)) {
@@ -1624,11 +1627,17 @@ function initMapFunctions(theMap) {
                 }
                 if (visible) {
                     marker.style.display = 'inline';
+                    if(marker.location)
+                        bounds.extend(marker.location);
+                    cnt++;
                 } else {
                     marker.style.display = 'none';
                 }
+                if(visible)
+                    block.show();
+                else
+                    block.hide();
                 cbx.prop('checked', visible);
-                //            marker.display(visible);
             }
             this.markers.redraw();
         }
@@ -1644,6 +1653,11 @@ function initMapFunctions(theMap) {
                     visible = name.toLowerCase().includes(text);
                 }
                 marker.display(visible);
+                if(visible) {
+                    var b = this.transformProjBounds(marker.bounds);
+                    bounds.extend(b);
+                    cnt++;
+                }
             }
             this.boxes.redraw();
         }
@@ -1667,6 +1681,9 @@ function initMapFunctions(theMap) {
                 }
             }
             this.lines.redraw();
+        }
+        if(cnt>0) {
+            this.centerOnMarkers(bounds, true);
         }
     }
 
@@ -2684,6 +2701,7 @@ function initMapFunctions(theMap) {
                 }
             }
         }
+
 
         if (!bounds) {
             bounds = dfltBounds;
