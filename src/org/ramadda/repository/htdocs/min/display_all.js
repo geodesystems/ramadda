@@ -5950,7 +5950,7 @@ function RamaddaNotebookCell(notebook, id, content, props) {
             } else {
                 this.toggleButton.html(HtmlUtils.image(Utils.getIcon("togglearrowright.gif")));
                 this.jq(ID_INPUT_TOOLBAR).css("display", "none");
-                this.inputContainer.hide("slow");
+                this.inputContainer.hide();
             }
             if (this.showBorder) {
                 this.cell.css("border-top", "1px #ccc solid");
