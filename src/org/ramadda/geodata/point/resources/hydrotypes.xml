@@ -19,6 +19,7 @@
   <type name="type_hydro_colorado"  super="type_point_hydro" description="Colorado DNR Stream Gage"  handler="org.ramadda.data.services.PointTypeHandler">
      <property name="icon" value="/point/co.png"/>
      <property name="record.file.class" value="org.ramadda.data.point.text.CsvFile"/>
+     <property name="map.chart.field" value="discharge"/>
      <column  name="site_id"  label="Site ID" cansearch="true"/>
 
  <property name="record.properties">
@@ -44,15 +45,6 @@ fields=station[label="Station" type="string"],time[type=date format="yyyy-MM-dd 
 ]]>
 
 </wiki>
-<bubble><![CDATA[
-:heading Gauge: {{name}}
-<center>
-{{display type="linechart" showTitle="false" layoutHere="false" fields="discharge" vAxisMinValue="0"}}
-{{display type="barchart" showTitle="false" layoutHere="false" fields="gage_height"}}
-</center>
-]]>
-</bubble>
-
   </type>
 
 

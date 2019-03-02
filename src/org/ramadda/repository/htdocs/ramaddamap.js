@@ -3252,12 +3252,13 @@ function initMapFunctions(theMap) {
             };
             var title = props.title;
             if (!title) title = "Chart";
+            var fields = (props.fields==null?null:props.fields.split(","));
             var chartProps = {
                 "title": title,
                 "layoutHere": true,
                 "divid": props.divId,
                 "entryId": props.entryId,
-                "fields": props.fields,
+                "fields": fields,
                 "vAxisMinValue": props.vAxisMinValue,
                 "vAxisMaxValue": props.vAxisMaxValue,
                 "data": new PointData(title, null, null, getRamadda().getRoot() + "/entry/show?entryid=" + props.entryId + "&output=points.product&product=points.json&numpoints=1000", pointDataProps)

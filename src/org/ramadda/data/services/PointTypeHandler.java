@@ -753,14 +753,15 @@ public class PointTypeHandler extends RecordTypeHandler {
     @Override
     public String getMapInfoBubble(Request request, Entry entry) throws Exception {
 
-        String fromParent = super.getMapInfoBubble(request,  entry);
-        if(fromParent!=null) return fromParent;
+        //        String fromParent = super.getMapInfoBubble(request,  entry);
+        //        if(fromParent!=null) return fromParent;
         try {
             String chartType = getTypeProperty("map.chart.type", "linechart");
             if ( !Utils.stringDefined(chartType)
                     || chartType.equals("none")) {
                 return super.getMapInfoBubble(request, entry);
             }
+            String chartField = getTypeProperty("map.chart.field", "");
             String minSizeX = getTypeProperty("map.chart.minSizeX", "600");
             String minSizeY = getTypeProperty("map.chart.minSizeY", "300");
             String fields = getTypeProperty("map.chart.fields",
@@ -777,7 +778,7 @@ public class PointTypeHandler extends RecordTypeHandler {
             sb.append(HtmlUtils.div("", HtmlUtils.id(id)));
 
             return Json.mapAndQuote("entryId", entry.getId(), "chartType",
-                                    chartType, "divId", id, "title", "",
+                                    chartType, "fields", chartField, "divId", id, "title", "",
                                     "text", sb.toString(), "minSizeX",
                                     minSizeX, "minSizeY", minSizeY,
                                     "vAxisMinValue", "0", "showTitle",
