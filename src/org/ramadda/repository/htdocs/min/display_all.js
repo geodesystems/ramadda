@@ -5480,12 +5480,13 @@ function RamaddaNotebookDisplay(displayManager, id, properties) {
                 this.addCell("",null);
             }
         },
-        runAll: function() {
+        runAll: async function() {
+                var ok = true;
             for (var i = 0; i < this.cells.length; i++) {
                 var cell = this.cells[i];
-                if (!cell.run()) {
-                    break;
-                }
+                await cell.run(result=>ok=result);
+                if(!ok) break;
+
             }
 
         },
@@ -5982,20 +5983,20 @@ function RamaddaNotebookCell(notebook, id, content, props) {
 
 
         },
-        run: function() {
-                if(this.running) return "already running";
+        run: async function(callback) {
+            if(this.running) return Utils.call(callback, true);
                 this.running = true;
                 try {
-                    this.runInner();
+                    await this.runInner();
                 } catch(e) {
                     this.writeOutput("An error occurred:" + e);
                     console.log(e.stack);
                     return false;
                 }
                 this.running = false;
-                return true;
+                return Utils.call(callback, true);
             },
-            runInner: async function() {
+        runInner: async function() {
             var value = this.input.val();
             value = value.trim();
             var help = "More information <a target=_help href='" + ramaddaBaseUrl + "/userguide/notebook.html'>here</a>";
@@ -6053,6 +6054,7 @@ function RamaddaNotebookCell(notebook, id, content, props) {
             }
             this.outputHtml = result;
             this.output.html(result);
+            Utils.initContent("#"+this.getDomId(ID_OUTPUT));
             return ok;
         },
         writeOutput: function(h) {
@@ -6086,15 +6088,12 @@ function RamaddaNotebookCell(notebook, id, content, props) {
             let _this = this;
             let divId = HtmlUtils.getUniqueId();
             var wikiCallback = function(html) {
-                $("#" + divId).html(html);
-                Utils.initContent("#"+_this.getDomId(ID_OUTPUT));
-                _this.outputUpdated();
+                var h = HtmlUtils.div(["id", divId,"style"], html);
+                return Utils.call(callback, h);
             }
             blob = "{{group showMenu=false}}\n" + blob;
-            GuiUtils.loadHtml(ramaddaBaseUrl + "/wikify?doImports=false&entryid=" + id + "&text=" + encodeURIComponent(blob),
+            await GuiUtils.loadHtml(ramaddaBaseUrl + "/wikify?doImports=false&entryid=" + id + "&text=" + encodeURIComponent(blob),
                               wikiCallback);
-            var h = HtmlUtils.div(["id", divId,"style"], HtmlUtils.image(Utils.getIcon("progressbig.gif"),["width","100"]));
-            return Utils.call(callback, h);
         },
         processSh: function(blob, result) {
             var r = "";
