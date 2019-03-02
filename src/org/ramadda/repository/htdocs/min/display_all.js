@@ -6093,7 +6093,7 @@ function RamaddaNotebookCell(notebook, id, content, props) {
             blob = "{{group showMenu=false}}\n" + blob;
             GuiUtils.loadHtml(ramaddaBaseUrl + "/wikify?doImports=false&entryid=" + id + "&text=" + encodeURIComponent(blob),
                               wikiCallback);
-            var h = HtmlUtils.div(["id", divId,"style","text-align:center;width:100%"], HtmlUtils.image(Utils.getIcon("progress.gif"),["width","100"]));
+            var h = HtmlUtils.div(["id", divId,"style","text-align:center;width:100%"], HtmlUtils.image(Utils.getIcon("progressbig.gif"),["width","100"]));
             return Utils.call(callback, h);
         },
         processSh: function(blob, result) {
