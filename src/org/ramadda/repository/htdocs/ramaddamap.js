@@ -779,6 +779,7 @@ function initMapFunctions(theMap) {
                     }
                 }
 
+                this.centerOnMarkers();
                 if (download) {
                     var csv = "";
                     for (var i in attrs) {
