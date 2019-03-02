@@ -44,7 +44,14 @@ fields=station[label="Station" type="string"],time[type=date format="yyyy-MM-dd 
 ]]>
 
 </wiki>
-
+<bubble><![CDATA[
+:heading Gauge: {{name}}
+<center>
+{{display type="linechart" showTitle="false" layoutHere="false" fields="discharge" vAxisMinValue="0"}}
+{{display type="barchart" showTitle="false" layoutHere="false" fields="gage_height"}}
+</center>
+]]>
+</bubble>
 
   </type>
 
