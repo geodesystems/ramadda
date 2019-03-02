@@ -1032,6 +1032,7 @@ public class MapManager extends RepositoryManager implements WikiConstants {
 
         String fromEntry = entry.getTypeHandler().getMapInfoBubble(request,
                                entry);
+        System.err.println ("bubble:" + fromEntry);
         if (fromEntry != null) {
             fromEntry = getWikiManager().wikifyEntry(request, entry,
                     fromEntry, false, null, null,
