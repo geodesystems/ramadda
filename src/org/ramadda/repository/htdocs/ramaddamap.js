@@ -39,6 +39,9 @@ var ramaddaCircleHiliteAttrs = {
     fillColor: 'red'
 };
 
+
+
+
 function createLonLat(lon, lat) {
     lon = parseFloat(lon);
     lat = parseFloat(lat);
@@ -90,20 +93,34 @@ var mapDefaults = {
 }
 
 
-//Global list of all maps on this page
-var ramaddaMaps = new Array();
+
 var ramaddaMapMap = {};
 
-function ramaddaAddMap(map) {
-    ramaddaMaps.push(map);
+function ramaddaMapAdd(map) {
+    if (window.globalMapList == null) {
+        window.globalMapList = [];
+    }
+    window.globalMapList.push(map);
     ramaddaMapMap[map.mapId] = map;
 }
 
 
+
+
+function ramaddaMapCheckLayout() {
+    if (window.globalMapList != null) {
+        window.globalMapList.map(map=>map.map.updateSize());
+    }
+}
+
+
+
+
 function RepositoryMap(mapId, params) {
+    ramaddaMapAdd(this);
     if (!params) params = {};
     this.mapId = mapId || "map";
-    ramaddaAddMap(this);
+    ramaddaMapAdd(this);
     let theMap = this;
     $.extend(this, {
         name: "map",
