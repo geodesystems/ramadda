@@ -705,6 +705,11 @@ function Entry(props) {
                     parent = tmp;
                 }
         },
+        map: async function(func) {
+                var children;
+                await this.getChildrenEntries(l=>{children=l});
+                children.map(func);
+       },
         getParentEntry: async function(callback, extraArgs) {
                 if(!this.parent) {
                     //                    console.log("\tgetParent: no parent");
@@ -735,8 +740,9 @@ function Entry(props) {
                   callback(list.getEntries());
                 }
             };
-            var entryList = new EntryList(this.getRamadda(), jsonUrl, myCallback, true);
-            return null;
+            var entryList =  new EntryList(this.getRamadda(), jsonUrl, myCallback, false);
+            await entryList.doSearch();
+            return;
         },
         getType: function() {
             if (this.typeObject != null) {}
@@ -983,13 +989,13 @@ function EntryList(repository, jsonUrl, listener, doSearch) {
                 listener.entryListChanged(this);
             }
         },
-        doSearch: function(listener) {
+        doSearch: async function(listener) {
             if (listener == null) {
                 listener = this.listener;
             }
             var _this = this;
             //console.log("search url:" + this.url);
-            var jqxhr = $.getJSON(this.url, function(data, status, jqxhr) {
+            await $.getJSON(this.url, function(data, status, jqxhr) {
                     if (GuiUtils.isJsonError(data)) {
                         return;
                     }
