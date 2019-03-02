@@ -751,8 +751,10 @@ public class PointTypeHandler extends RecordTypeHandler {
      * @return _more_
      */
     @Override
-    public String getMapInfoBubble(Request request, Entry entry) {
+    public String getMapInfoBubble(Request request, Entry entry) throws Exception {
 
+        String fromParent = super.getMapInfoBubble(request,  entry);
+        if(fromParent!=null) return fromParent;
         try {
             String chartType = getTypeProperty("map.chart.type", "linechart");
             if ( !Utils.stringDefined(chartType)
