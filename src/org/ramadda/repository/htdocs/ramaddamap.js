@@ -2744,6 +2744,9 @@ function initMapFunctions(theMap) {
     theMap.seenMarkers = {};
 
     theMap.addMarker = function(id, location, iconUrl, markerName, text, parentId, size, voffset, canSelect) {
+        if(Array.isArray(location)) {
+            location = createLonLat(location[0],location[1]);
+        }
         if (size == null) size = 16;
         if (voffset == null) voffset = 0;
 
