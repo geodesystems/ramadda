@@ -55,6 +55,9 @@ function getHandler(id) {
 
 var Utils = {
     pageLoaded: false,
+    getIcon: function(icon) {
+        return ramaddaBaseUrl +"/icons/" + icon;
+    },
     padLeft: function(s, length, pad) {
         s = "" + s;
         if (!pad) pad = " ";

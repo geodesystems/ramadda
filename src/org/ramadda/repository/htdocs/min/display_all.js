@@ -5610,14 +5610,15 @@ function RamaddaNotebookCell(notebook, id, content, props) {
 
     var ID_CELL = "cell";
     var ID_GUTTER = "gutter";
-    var ID_INPUT_GUTTER = "inputgutter";
-    var ID_OUTPUT_GUTTER = "inputgutter";
+    var ID_GUTTER_CONTAINER = "guttercontainer";
     var ID_HEADER = "header";
     var ID_INPUT = "input";
     var ID_INPUT_TOOLBAR = "inputtoolbar";
     var ID_OUTPUT = "output";
     var ID_MESSAGE = "message";
-    var ID_MENU_BUTTON = "menubutton";
+    var ID_BUTTON_MENU = "menubutton";
+    var ID_BUTTON_RUN = "runbutton";
+    var ID_BUTTON_TOGGLE = "togglebutton";
     var ID_MENU = "menu";
     var ID_CELLNAME_INPUT = "cellnameinput";
     var ID_SHOWHEADER_INPUT = "showheader";
@@ -5676,9 +5677,13 @@ function RamaddaNotebookCell(notebook, id, content, props) {
             var output = HtmlUtils.div([ATTR_CLASS, "display-notebook-output", ATTR_ID, this.getDomId(ID_OUTPUT)], this.outputHtml);
             output = HtmlUtils.div(["class", "display-notebook-output-container"], output);
             var menu = HtmlUtils.div(["id", this.getDomId(ID_MENU), "class", "ramadda-popup"], "");
-            var gutter = HtmlUtils.div(["class", "display-notebook-gutter", ATTR_ID, this.getDomId(ID_INPUT_GUTTER)],
+            var buttons = this.makeButton(ID_BUTTON_MENU, icon_menu, "Show menu","showmenu") +
+                this.makeButton(ID_BUTTON_TOGGLE, Utils.getIcon("togglearrowdown.gif"), "Toggle input","toggle") +
+                this.makeButton(ID_BUTTON_RUN, Utils.getIcon("run.png"), "Run","run") +
+                this.makeButton(ID_BUTTON_RUN, Utils.getIcon("runall.png"), "Run all","runall")
+            var gutter = HtmlUtils.div(["class", "display-notebook-gutter", ATTR_ID, this.getDomId(ID_GUTTER)],
                                        menu +
-                                       HtmlUtils.div(["title","Show menu", "class", "display-notebook-menu-button", "id", this.getDomId(ID_MENU_BUTTON)], HtmlUtils.image(icon_menu, [])));
+                                       buttons);
 
             var table = HtmlUtils.openTag("table", ["cellspacing", "0", "cellpadding", "0", "width", "100%", "border", "0"]);
             table += HtmlUtils.tr(["valign", "top"], HtmlUtils.td([],"") + HtmlUtils.td([], inputToolbar));
@@ -5704,14 +5709,20 @@ function RamaddaNotebookCell(notebook, id, content, props) {
 
                 });
             this.header = this.jq(ID_HEADER);
-            this.menuButton = this.jq(ID_MENU_BUTTON);
+            this.menuButton = this.jq(ID_BUTTON_MENU);
+            this.toggleButton = this.jq(ID_BUTTON_TOGGLE);
             this.cell = this.jq(ID_CELL);
             this.input = this.jq(ID_INPUT);
             this.output = this.jq(ID_OUTPUT);
             this.inputContainer = this.cell.find(".display-notebook-input-container");
             this.inputMenu = this.cell.find(".display-notebook-input-container");
+            this.gutter = this.jq(ID_GUTTER);
             this.applyStyle();
-            this.menuButton.click(()=>this.makeMenu());
+            this.gutter.find(".display-notebook-menu-button").click(function(){
+                    var command = $(this).attr("what");
+                    _this.processCommand(command);
+                });
+
             var hoverIn = function() {
                 _this.checkMenuButton(true);
             }
@@ -5778,7 +5789,10 @@ function RamaddaNotebookCell(notebook, id, content, props) {
              var link = this.jq("toolbar_notebook");
              this.makeMenu(link,"left bottom");
          },
-
+          makeButton: function(id, icon,title, command) {
+             if(!command) command="noop";
+             return  HtmlUtils.div(["what", command, "title",title, "class", "display-notebook-menu-button", "id", this.getDomId(id)], HtmlUtils.image(icon, []));
+         },
          makeMenu: function(src, at) {
              if(!src) src = this.menuButton;
              if(!at) at = "right top";
@@ -5787,8 +5801,8 @@ function RamaddaNotebookCell(notebook, id, content, props) {
                 var line =  "<tr><td colspan=2 style='border-top:1px #ccc solid;'</td></tr>";
                 var line2 =  "<div style='border-top:1px #ccc solid;'</div>"
                 var menu = "";
-                menu += HtmlUtils.input(ID_CELLNAME_INPUT, _this.cellName, ["placeholder", "Cell name", "style", "width:100%;", "xsize", "20", "id", _this.getDomId(ID_CELLNAME_INPUT)]);
-                menu += "<br>";
+                //                menu += HtmlUtils.input(ID_CELLNAME_INPUT, _this.cellName, ["placeholder", "Cell name", "style", "width:100%;", "xsize", "20", "id", _this.getDomId(ID_CELLNAME_INPUT)]);
+                //                menu += "<br>";
                 menu += "<table>";
 
                 menu += "<tr><td align=right><b>Run:</b>&nbsp;</td><td>";
@@ -5796,15 +5810,17 @@ function RamaddaNotebookCell(notebook, id, content, props) {
                 menu += HtmlUtils.div(["title", "ctrl-return", "class", "ramadda-link", "what", "runall"], "All");
                 menu += "</td></tr>"
 
+                menu += "<tr><td align=right><b>Clear:</b>&nbsp;</td><td>";
+                menu += HtmlUtils.div(["class", "ramadda-link", "what", "clear"], "This cell") + space;
+                menu += HtmlUtils.div(["class", "ramadda-link", "what", "clearall"], "All");
+                menu += "</td></tr>"
+
                 menu += "<tr><td align=right><b>New Cell:</b>&nbsp;</td><td>";
                 menu += HtmlUtils.div(["class", "ramadda-link", "what", "newabove"], "Above") + space;
                 menu += HtmlUtils.div(["class", "ramadda-link", "what", "newbelow"], "Below");
                 menu += "</td></tr>"
 
-                menu += "<tr><td align=right><b>Clear:</b>&nbsp;</td><td>";
-                menu += HtmlUtils.div(["class", "ramadda-link", "what", "clear"], "This cell") + space;
-                menu += HtmlUtils.div(["class", "ramadda-link", "what", "clearall"], "All");
-                menu += "</td></tr>"
+
 
                 menu += "<tr><td align=right><b>Move:</b>&nbsp;</td><td>";
                 menu += HtmlUtils.div(["title", "ctrl-^", "class", "ramadda-link", "what", "moveup"], "Up") + space;
@@ -5817,9 +5833,8 @@ function RamaddaNotebookCell(notebook, id, content, props) {
                 menu += HtmlUtils.checkbox(_this.getDomId(ID_SHOWEDIT), [],
                     _this.showInput) + " Input";
                 menu += space;
-                menu += HtmlUtils.checkbox(_this.getDomId(ID_SHOWHEADER_INPUT), [],
-                    _this.showHeader) + " Header";
-                menu += "<br>";
+                //                menu += HtmlUtils.checkbox(_this.getDomId(ID_SHOWHEADER_INPUT), [],  _this.showHeader) + " Header";
+                //                menu += "<br>";
                 menu += HtmlUtils.checkbox(_this.getDomId(ID_SHOWBORDER), [],
                     _this.showBorder) + " Border";
 
@@ -5886,51 +5901,62 @@ function RamaddaNotebookCell(notebook, id, content, props) {
                 popup.find(".ramadda-link").click(function() {
                     var what = $(this).attr("what");
                     popup.hide();
-                    if (what == "run") {
-                        _this.run();
-                    } else if (what == "showthis") {
-                        _this.showInput = true;
-                        _this.applyStyle();
-                    } else if (what == "hidethis") {
-                        _this.showInput = false;
-                        _this.applyStyle();
-                    } else if (what == "showall") {
-                        _this.notebook.toggleAll(true);
-                    } else if (what == "hideall") {
-                        _this.notebook.toggleAll(false);
-                    } else if (what == "runall") {
-                        _this.notebook.runAll();
-                    } else if (what == "clear") {
-                        _this.clearOutput();
-                    } else if (what == "clearall") {
-                        _this.notebook.clearOutput();
-                    } else if (what == "moveup") {
-                        _this.notebook.moveCellUp(_this);
-                    } else if (what == "movedown") {
-                        _this.notebook.moveCellDown(_this);
-                    } else if (what == "newabove") {
-                        _this.notebook.newCellAbove(_this);
-                    } else if (what == "newbelow") {
-                        _this.notebook.newCellBelow(_this);
-                    } else if (what == "savewith") {
-                        _this.notebook.saveNotebook(true);
-                    } else if (what == "savewithout") {
-                        _this.notebook.saveNotebook(false);
-                    } else if (what == "help") {
-                        var win = window.open(ramaddaBaseUrl + "/userguide/notebook.html", '_blank');
-                        win.focus();
-                    } else if (what == "delete") {
-                        _this.askDelete();
-                    }
+                    _this.processCommand(what);
                 });
         },
+             processCommand: function(command) {
+                    if (command == "run") {
+                        this.run();
+                    } else if(command== "showmenu") {
+                        this.makeMenu();
+                    } else if (command == "toggle") {
+                        this.showInput = !this.showInput;
+                        this.applyStyle();
+                    } else if (command == "showthis") {
+                        this.showInput = true;
+                        this.applyStyle();
+                    } else if (command == "hidethis") {
+                        this.showInput = false;
+                        this.applyStyle();
+                    } else if (command == "showall") {
+                        this.notebook.toggleAll(true);
+                    } else if (command == "hideall") {
+                        this.notebook.toggleAll(false);
+                    } else if (command == "runall") {
+                        this.notebook.runAll();
+                    } else if (command == "clear") {
+                        this.clearOutput();
+                    } else if (command == "clearall") {
+                        this.notebook.clearOutput();
+                    } else if (command == "moveup") {
+                        this.notebook.moveCellUp(this);
+                    } else if (command == "movedown") {
+                        this.notebook.moveCellDown(this);
+                    } else if (command == "newabove") {
+                        this.notebook.newCellAbove(this);
+                    } else if (command == "newbelow") {
+                        this.notebook.newCellBelow(this);
+                    } else if (command == "savewith") {
+                        this.notebook.saveNotebook(true);
+                    } else if (command == "savewithout") {
+                        this.notebook.saveNotebook(false);
+                    } else if (command == "help") {
+                        var win = window.open(ramaddaBaseUrl + "/userguide/notebook.html", '_blank');
+                        win.focus();
+                    } else if (command == "delete") {
+                        this.askDelete();
+                    } else  {
+                        console.log("unknown command:" + command);
+                    }
+
+         },
         checkMenuButton: function(vis) {
             if (vis) {
-                this.menuButton.css("display", "block");
+                this.gutter.css("display", "block");
                 this.cell.find(".display-notebook-gutter-container").css("background", "rgb(250,250,250)");
                 //                this.cell.find(".display-notebook-gutter-container").css("border-right", "1px #ccc solid");
             } else {
-                this.menuButton.css("display", "none");
+                this.gutter.css("display", "none");
                 this.cell.find(".display-notebook-gutter-container").css("background", "#fff");
                 //                this.cell.find(".display-notebook-gutter-container").css("border-right", "1px #fff solid");
             }
@@ -5944,9 +5970,11 @@ function RamaddaNotebookCell(notebook, id, content, props) {
             }
             this.header.html(this.cellName);
             if (this.showInput && this.notebook.showInput()) {
+                this.toggleButton.html(HtmlUtils.image(Utils.getIcon("togglearrowdown.gif")));
                 this.jq(ID_INPUT_TOOLBAR).css("display", "block");
                 this.inputContainer.css("display", "block");
             } else {
+                this.toggleButton.html(HtmlUtils.image(Utils.getIcon("togglearrowright.gif")));
                 this.jq(ID_INPUT_TOOLBAR).css("display", "none");
                 this.inputContainer.css("display", "none");
             }
@@ -6094,7 +6122,7 @@ function RamaddaNotebookCell(notebook, id, content, props) {
             blob = "{{group showMenu=false}}\n" + blob;
             GuiUtils.loadHtml(ramaddaBaseUrl + "/wikify?doImports=false&entryid=" + id + "&text=" + encodeURIComponent(blob),
                               wikiCallback);
-            var h = HtmlUtils.div(["id", divId], "Processing...");
+            var h = HtmlUtils.div(["id", divId,"style","text-align:center;width:100%"], HtmlUtils.image(Utils.getIcon("progress.gif"),["width","100"]));
             return Utils.call(callback, h);
         },
         processSh: function(blob, result) {
