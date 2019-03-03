@@ -2700,7 +2700,7 @@ public class Request implements Constants, Cloneable {
             return htmlTemplateId;
         }
 
-        return getString(ARG_TEMPLATE, "");
+        return getString(ARG_TEMPLATE, (String) null);
     }
 
 

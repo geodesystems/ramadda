@@ -165,6 +165,9 @@ public class PageHandler extends RepositoryManager {
     /** _more_ */
     private List<HtmlTemplate> htmlTemplates;
 
+    /** _more_          */
+    private Hashtable<String, HtmlTemplate> templateMap;
+
     /** _more_ */
     private HtmlTemplate mobileTemplate;
 
@@ -225,7 +228,7 @@ public class PageHandler extends RepositoryManager {
     /** _more_ */
     private boolean showCreateDate;
 
-    /** _more_          */
+    /** _more_ */
     private boolean showSearch;
 
     /** _more_ */
@@ -975,37 +978,13 @@ public class PageHandler extends RepositoryManager {
     }
 
 
-
-
-    /**
-     * _more_
-     *
-     * @param request The request
-     *
-     * @return _more_
-     */
-    public HtmlTemplate getHtmlTemplate(Request request) {
-        return null;
-    }
-
     /**
      * _more_
      *
      * @return _more_
      */
     public HtmlTemplate getMobileTemplate() {
-        if (cacheTemplates) {
-            mobileTemplate = null;
-        }
-        if (mobileTemplate == null) {
-            for (HtmlTemplate htmlTemplate : getTemplates()) {
-                if (htmlTemplate.getId().equals("mobile")) {
-                    mobileTemplate = htmlTemplate;
-
-                    break;
-                }
-            }
-        }
+        getTemplates();
 
         return mobileTemplate;
     }
@@ -1029,8 +1008,11 @@ public class PageHandler extends RepositoryManager {
      * @return _more_
      */
     public List<HtmlTemplate> getTemplates() {
+
         List<HtmlTemplate> theTemplates = htmlTemplates;
         if ( !cacheTemplates || (theTemplates == null)) {
+            defaultTemplate = null;
+            mobileTemplate  = null;
             String imports = "";
             try {
                 imports = getStorageManager().readSystemResource(
@@ -1041,6 +1023,7 @@ public class PageHandler extends RepositoryManager {
 
             imports      = applyBaseMacros(imports);
             theTemplates = new ArrayList<HtmlTemplate>();
+            templateMap  = new Hashtable<String, HtmlTemplate>();
 
             String defaultId =
                 getRepository().getProperty(PROP_HTML_TEMPLATE_DEFAULT,
@@ -1092,6 +1075,7 @@ public class PageHandler extends RepositoryManager {
 
                         continue;
                     }
+                    templateMap.put(template.getId(), template);
                     theTemplates.add(template);
 
                     if ((mapTemplate == null)
@@ -1099,6 +1083,11 @@ public class PageHandler extends RepositoryManager {
                         mapTemplate = template;
                     }
 
+                    if (mobileTemplate == null) {
+                        if (template.getId().equals("mobile")) {
+                            mobileTemplate = template;
+                        }
+                    }
                     if (defaultTemplate == null) {
                         if (defaultId == null) {
                             defaultTemplate = template;
@@ -1113,12 +1102,19 @@ public class PageHandler extends RepositoryManager {
                     //noop
                 }
             }
+            if (defaultTemplate == null) {
+                defaultTemplate = theTemplates.get(0);
+            }
+            if (mobileTemplate == null) {
+                mobileTemplate = defaultTemplate;
+            }
             if (getRepository().getCacheResources()) {
                 htmlTemplates = theTemplates;
             }
         }
 
         return theTemplates;
+
     }
 
 
@@ -1424,30 +1420,26 @@ public class PageHandler extends RepositoryManager {
      * @return _more_
      */
     private HtmlTemplate getTemplateInner(Request request, Entry entry) {
+        //this forces the possible reload of the templates
+        getTemplates();
+        if (request == null) {
+            return defaultTemplate;
+        }
         if (request.isMobile()) {
             return getMobileTemplate();
         }
 
-
-        List<HtmlTemplate> theTemplates = getTemplates();
-
-        /*
-          code to run through all of the templates
-        if(request.template == null) {
-            request.template =  theTemplates.get(tcnt++);
-            return request.template;
-        }
-        if(true)return request.template;
-        */
-
-
-        if ((request == null) && (defaultTemplate != null)) {
-            return defaultTemplate;
-        }
-
+        //Check for template=... url arg
         String templateId = request.getHtmlTemplateId();
-        if (((templateId == null) || (templateId.length() == 0))
-                && (entry != null)) {
+        if (Utils.stringDefined(templateId)) {
+            HtmlTemplate template = templateMap.get(templateId);
+            if (template != null) {
+                return template;
+            }
+        }
+
+        //Check for metadata template definition
+        if ( !Utils.stringDefined(templateId) && (entry != null)) {
             try {
                 List<Metadata> metadataList =
                     getMetadataManager().findMetadata(request, entry,
@@ -1467,65 +1459,18 @@ public class PageHandler extends RepositoryManager {
 
 
         User user = request.getUser();
-
-        if ((templateId == null) && user.getAnonymous()) {
+        if ((templateId == null) && (user != null) && !user.getAnonymous()) {
             templateId = user.getTemplate();
         }
 
         if (templateId != null) {
-            for (HtmlTemplate template : theTemplates) {
-                if (Misc.equals(template.getId(), templateId)) {
-                    return template;
-                }
-            }
-        }
-
-        if (user.getAnonymous()) {
-            if (defaultTemplate != null) {
-                return defaultTemplate;
-            }
-
-            return theTemplates.get(0);
-        }
-
-        for (HtmlTemplate template : theTemplates) {
-            if (request == null) {
-                return template;
-            }
-            if (isTemplateFor(request, template)) {
+            HtmlTemplate template = templateMap.get(templateId);
+            if (template != null) {
                 return template;
             }
         }
-        if (defaultTemplate != null) {
-            return defaultTemplate;
-        }
 
-        return theTemplates.get(0);
-    }
-
-
-
-    /**
-     * _more_
-     *
-     * @param request _more_
-     * @param template _more_
-     *
-     * @return _more_
-     */
-    public boolean isTemplateFor(Request request, HtmlTemplate template) {
-        if (request.getUser() == null) {
-            return false;
-        }
-        String templateId = request.getUser().getTemplate();
-        if (templateId == null) {
-            return false;
-        }
-        if (Misc.equals(template.getId(), templateId)) {
-            return true;
-        }
-
-        return false;
+        return defaultTemplate;
     }
 
 
