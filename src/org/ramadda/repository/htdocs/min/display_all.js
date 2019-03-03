@@ -6837,8 +6837,6 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
         colorList: ['blue', 'red', 'green', 'orange', 'fuchsia', 'teal', 'navy', 'silver'],
         curveType: 'none',
         fontSize: 0,
-        vAxisMinValue: NaN,
-        vAxisMaxValue: NaN,
         showPercent: false,
         percentFields: null,
     });
@@ -6919,19 +6917,26 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
                 this.getDisplayManager().handleEventPointDataLoaded(this, this.lastPointData);
             }
         },
+        getVAxisMinValue: function() {
+                return parseFloat(this.getProperty("vAxisMinValue",NaN));
+        },
+        getVAxisMaxValue: function() {
+                return parseFloat(this.getProperty("vAxisMaxValue",NaN));
+        },
         getMenuItems: function(menuItems) {
             SUPER.getMenuItems.call(this, menuItems);
             var get = this.getGet();
             //                menuItems.push(HtmlUtils.onClick(get+".setColor();", "Set color"));
 
             var min = "0";
-            if (!isNaN(this.vAxisMinValue)) {
-                min = "" + this.vAxisMinValue;
+            if (!isNaN(this.getVAxisMinValue())) {
+                min = "" + this.getVAxisMinValue();
             }
             var max = "";
-            if (!isNaN(this.vAxisMaxValue)) {
-                max = "" + this.vAxisMaxValue;
+            if (!isNaN(this.getVAxisMaxValue())) {
+                max = "" + this.getVAxisMaxValue();
             }
+
             var tmp = HtmlUtils.formTable();
             tmp += HtmlUtils.formEntry("Axis Range:", HtmlUtils.input("", min, ["size", "7", ATTR_ID, this.getDomId("vaxismin")]) + " - " +
                 HtmlUtils.input("", max, ["size", "7", ATTR_ID, this.getDomId("vaxismax")]));
@@ -7466,13 +7471,13 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 
             var defaultRange = this.getDisplayManager().getRange(selectedFields[0]);
             var range = [NaN, NaN];
-            if (!isNaN(this.vAxisMinValue)) {
-                range[0] = parseFloat(this.vAxisMinValue);
+            if (!isNaN(this.getVAxisMinValue())) {
+                range[0] = this.getVAxisMinValue();
             } else if (defaultRange != null) {
                 range[0] = defaultRange[0];
             }
-            if (!isNaN(this.vAxisMaxValue)) {
-                range[1] = parseFloat(this.vAxisMaxValue);
+            if (!isNaN(this.getVAxisMaxValue())) {
+                range[1] = this.getVAxisMaxValue();
             } else if (defaultRange != null) {
                 range[1] = defaultRange[1];
             }
@@ -7761,11 +7766,11 @@ function HistogramDisplay(displayManager, id, properties) {
             if (Utils.isDefined(this.maxValue)) {
                 chartOptions.vAxis.viewWindow.max = parseFloat(this.maxValue);
             }
-            if (!isNaN(this.vAxisMaxValue)) {
-                chartOptions.vAxis.maxValue = parseFloat(this.vAxisMaxValue);
+            if (!isNaN(this.getVAxisMaxValue())) {
+                chartOptions.vAxis.maxValue = this.getVAxisMaxValue();
             }
-            if (!isNaN(this.vAxisMinValue)) {
-                chartOptions.vAxis.minValue = parseFloat(this.vAxisMinValue);
+            if (!isNaN(this.getVAxisMinValue())) {
+                chartOptions.vAxis.minValue = parseFloat(this.getVAxisMinValue());
             }
             return new google.visualization.Histogram(document.getElementById(this.getChartId()));
         },
@@ -8814,13 +8819,13 @@ function ScatterplotDisplay(displayManager, id, properties) {
                     title: this.getDataValues(dataList[0])[1]
                 };
                 //We only have the one vAxis range for now
-                if (!isNaN(this.vAxisMinValue)) {
-                    chartOptions.hAxis.minValue = this.vAxisMinValue;
-                    chartOptions.vAxis.minValue = this.vAxisMinValue;
+                if (!isNaN(this.getVAxisMinValue())) {
+                    chartOptions.hAxis.minValue = this.getVAxisMinValue();
+                    chartOptions.vAxis.minValue = this.getVAxisMinValue();
                 }
-                if (!isNaN(this.vAxisMaxValue)) {
-                    chartOptions.hAxis.maxValue = this.vAxisMaxValue;
-                    chartOptions.vAxis.maxValue = this.vAxisMaxValue;
+                if (!isNaN(this.getVAxisMaxValue())) {
+                    chartOptions.hAxis.maxValue = this.getVAxisMaxValue();
+                    chartOptions.vAxis.maxValue = this.getVAxisMaxValue();
                 }
             }
             return new google.visualization.ScatterChart(document.getElementById(this.getChartId()));
