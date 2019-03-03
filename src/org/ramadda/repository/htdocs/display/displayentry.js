@@ -110,6 +110,12 @@ function RamaddaEntryDisplay(displayManager, id, type, properties) {
                 var fromSelect = this.jq(ID_PROVIDERS).val();
                 if (fromSelect != null) {
                     provider = fromSelect;
+                } else {
+                    var toks = this.providers.split(",");
+                    if(toks.length>0) {
+                        var tuple = toks[0].split(":");
+                        provider = tuple[0];
+                    }
                 }
                 this.searchSettings.provider = provider;
             }
