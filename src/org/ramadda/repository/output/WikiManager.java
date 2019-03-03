@@ -5981,17 +5981,19 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                                          "linechart");
 
         String anotherDivId = getProperty(wikiUtil, props, "divid");
-        boolean layoutHere = getProperty(wikiUtil, props, "layoutHere",
-                                         !displayType.equals("group"));
-        if ((anotherDivId != null) || layoutHere) {
-            Utils.add(propList, "layoutHere", "true");
-            if (anotherDivId == null) {
-                anotherDivId = HtmlUtils.getUniqueId("displaydiv");
-            }
-            anotherDivId = anotherDivId.replace("$entryid", entry.getId());
-            sb.append(HtmlUtils.div("", HtmlUtils.id(anotherDivId)));
-            Utils.add(propList, "divid", Json.quote(anotherDivId));
+        String layoutHere = getProperty(wikiUtil, props, "layoutHere",
+                                        (String)null);
+        //                                         !displayType.equals("group"));
+        //        if ((anotherDivId != null) || layoutHere) {
+        if(layoutHere!=null)
+            Utils.add(propList, "layoutHere", layoutHere);
+        if (anotherDivId == null) {
+            anotherDivId = HtmlUtils.getUniqueId("displaydiv");
         }
+        anotherDivId = anotherDivId.replace("$entryid", entry.getId());
+        sb.append(HtmlUtils.div("", HtmlUtils.id(anotherDivId)));
+        Utils.add(propList, "divid", Json.quote(anotherDivId));
+        //        }
         props.remove("layoutHere");
 
         //Put the main div after the display div

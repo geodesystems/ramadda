@@ -2711,7 +2711,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             return prefix + title;
         },
         getIsLayoutFixed: function() {
-            return this.getProperty(PROP_LAYOUT_HERE, false);
+            return this.getProperty(PROP_LAYOUT_HERE, true);
         },
         doingQuickEntrySearch: false,
         doQuickEntrySearch: function(request, callback) {
