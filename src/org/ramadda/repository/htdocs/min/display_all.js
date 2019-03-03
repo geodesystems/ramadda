@@ -7606,7 +7606,7 @@ function RamaddaAxisChart(displayManager, id, chartType, properties) {
             chartOptions.height = this.getProperty("chartHeight", this.getProperty("height", "150"));
             $.extend(chartOptions, {
                 legend: {
-                    position: 'bottom'
+                        position: this.getProperty("legendPosition",'bottom')
                 },
                 chartArea: {
                     left: this.getProperty("chartLeft", this.chartDimensions.left),
