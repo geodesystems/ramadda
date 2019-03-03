@@ -8,6 +8,7 @@ body {
 
 
 
+
 body.popup {
 	background-color: #ffffcc;
 }
@@ -61,6 +62,11 @@ A.faq-question-link {
 
 A.faq-question-link:hover {
     text-decoration: underline;
+}
+
+.ramadda-wiki-tag {
+    margin-left:20px;
+    font-style:italic;
 }
 
 .faq-category-title {
