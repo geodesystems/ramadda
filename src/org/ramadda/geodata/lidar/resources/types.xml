@@ -1,0 +1,34 @@
+<types supercategory="Geoscience">
+
+  <type name="lidar_collection"  description="LiDAR Collection" handler="org.ramadda.data.services.PointCollectionTypeHandler" category="LiDAR">
+     <property name="icon" value="/nlas/icons/lasercollection.png"/>
+     <property name="form.resource.show" value="false"/>
+     <property name="form.area.show" value="true"/>
+     <property name="form.datatype.show" value="false"/>
+     <property name="form.date.show" value="false"/>
+     <property name="form.altitude.show" value="false"/>
+   </type>
+
+
+  <type name="lidar"  description="LiDAR Data" handler="org.ramadda.geodata.lidar.LidarTypeHandler" category="LiDAR">
+     <property name="icon" value="/nlas/icons/laser.png"/>
+     <column name="numberofpoints" type="int"  label="Number of points"  showinhtml="true"/>
+     <column name="properties" type="string" size="1024" columns="80" rows="5"  label="Properties"  showinhtml="false" canlist="false"/>
+     <property name="form.altitude.bottom.show" value="true"/>
+     <property name="form.altitude.top.show" value="true"/>
+     <property name="entry.category" value="lidar"/>
+  </type>
+
+  <type name="lidar_las"  description="LAS Lidar Data" handler="org.ramadda.geodata.lidar.LidarTypeHandler" super="lidar" category="LiDAR" pattern=".*\.las">
+     <property name="icon" value="/nlas/icons/laser.png"/>
+     <property name="record.file.class" value="org.ramadda.geodata.lidar.las.LasFile"/>
+  </type>
+
+
+  <type name="lidar_lvis"  description="LVIS Lidar Data" handler="org.ramadda.geodata.lidar.LidarTypeHandler" super="lidar" category="LiDAR">
+     <property name="icon" value="/nlas/icons/nasa.png"/>
+     <property name="record.file.class" value="org.ramadda.geodata.lidar.lvis.LvisFile"/>
+  </type>
+
+
+</types>
