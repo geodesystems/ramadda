@@ -1659,7 +1659,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
             if (getProperty(wikiUtil, props, "button", false)) {
                 return HtmlUtils.href(
                     url, title,
-                    HtmlUtils.cssClass("ramadda-button-blue")
+                    HtmlUtils.cssClass("ramadda-button ramadda-button-blue")
                     + HtmlUtils.attr("role", "button"));
             } else {
                 return HtmlUtils.href(url, title);
