@@ -1858,7 +1858,6 @@ function TreemapDisplay(displayManager, id, properties) {
                     return _this.tooltips[row];
                 }
                 return "<div class='display-treemap-tooltip-outer'><div class='display-treemap-tooltip''><i>left-click: go down<br>right-click: go up</i></div></div>";
-                return null;
             };
             var chartOptions = SUPER.makeChartOptions.call(this, dataList, props, selectedFields);
             $.extend(chartOptions, {

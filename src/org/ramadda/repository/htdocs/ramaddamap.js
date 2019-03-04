@@ -445,7 +445,7 @@ function initMapFunctions(theMap) {
             layer.selectedFeature = null;
             this.selectedFeature = null;
             this.onPopupClose();
-            return;
+            if(true) return;
 
             if (!feature) return;
             this.clearDateFeature(feature);

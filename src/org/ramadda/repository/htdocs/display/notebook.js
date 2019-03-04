@@ -3,6 +3,9 @@ Copyright 2008-2019 Geode Systems LLC
 */
 
 
+
+
+
 var DISPLAY_NOTEBOOK = "notebook";
 addGlobalDisplayType({
     type: DISPLAY_NOTEBOOK,
@@ -307,12 +310,14 @@ function NotebookState(cell) {
     this.notebook = cell.notebook;
     $.extend(this, {
             entries:{},
-                stop: false,
-                prefix: null,
-                result: null,
-                
-                getCell:function() {
-        return this.cell;
+            stopFlag: false,
+            prefix: null,
+            result: null,
+            getStop:function(){
+                return this.stopFlag;
+            },
+           getCell:function() {
+           return this.cell;
     },
 
     getNotebook:    function() {
@@ -351,7 +356,7 @@ function NotebookState(cell) {
     },
 
     stop: function() {
-        this.stop = true;
+        this.stopFlag = true;
     },
     setEntry: function(name,entryId) {
         this.notebook.addEntry(name,entryId);
@@ -490,7 +495,7 @@ function RamaddaNotebookCell(notebook, id, content, props) {
             GuiUtils.loadHtml(url,  h=> {
                     _this.inputToolbar =h; 
                     _this.jq(ID_INPUT_TOOLBAR).html(h);
-                    $("#"+_this.editId +"_prefix").html(HtmlUtils.span(["id",_this.getDomId("toolbar_notebook"),"class","ramadda-link"],"Notebook"));
+                    $("#"+_this.editId +"_prefix").html(HtmlUtils.span(["id",_this.getDomId("toolbar_notebook"),"class","ramadda-menubar-button"],"Notebook"));
                     _this.jq("toolbar_notebook").click(()=>_this.showNotebookMenu());
 
                 });
@@ -802,8 +807,8 @@ function RamaddaNotebookCell(notebook, id, content, props) {
             var help = "More information <a target=_help href='" + ramaddaBaseUrl + "/userguide/notebook.html'>here</a>";
             value = value.replace(/{cellname}/g, this.cellName);
             value = value.replace(/{help}/g, help);
-            var result = "";
             var type = "wiki";
+            var blobs = [];
             var blob = "";
             var commands = value.split("\n");
             var types = ["wiki", "html", "sh", "js"];
@@ -816,18 +821,9 @@ function RamaddaNotebookCell(notebook, id, content, props) {
                 for (var typeIdx = 0; typeIdx < types.length; typeIdx++) {
                     var t = types[typeIdx];
                     if (value.startsWith(t + ":")) {
-                        var r = {
-                            ok: true
+                        if(blob!="") {
+                            blobs.push({blob:blob,type:type,div:new Div(),ok:true});
                         }
-                        var blobResult;
-                        await this.processBlob(type, blob, r,result=>blobResult=result);
-                        if (blobResult) {
-                            if (blobResult != "") {
-                                blobResult += "<br>";
-                            }
-                            result += blobResult;
-                        }
-                        ok = r.ok;
                         blob = value.substring((t + ":").length);
                         if (blob != "") blob += "\n";
                         type = t;
@@ -838,22 +834,25 @@ function RamaddaNotebookCell(notebook, id, content, props) {
                 if (isType) continue;
                 blob = blob + value + "\n";
             }
-            if (ok) {
-                var r = {
-                    ok: true
-                }
-                var blobResult;
-                await this.processBlob(type, blob, r,result=>{blobResult=result});
-                if (blobResult) {
-                    if (blobResult != "") {
-                        blobResult += "<br>";
-                    }
-                    result += blobResult;
-                }
-                ok = r.ok;
+
+            if(blob!="") {
+                blobs.push({blob:blob,type:type,div:new Div(),ok:true});
             }
-            this.outputHtml = result;
+
+            
+            var result = "";
+            for(var i=0;i<blobs.length;i++) {
+                result+=blobs[i].div.toString()+"\n";
+            }
             this.output.html(result);
+            for(var i=0;i<blobs.length;i++) {
+                var blob = blobs[i];
+                await this.processBlob(blob);
+                if(!blob.ok) {
+                    console.log("not ok");
+                    break;
+                }
+            }
             Utils.initContent("#"+this.getDomId(ID_OUTPUT));
             return ok;
         },
@@ -877,11 +876,10 @@ function RamaddaNotebookCell(notebook, id, content, props) {
             this.output.html("");
             this.outputHtml = "";
         },
-        processHtml: function(blob, result) {
-            blob = blob.trim();
-            return blob;
+        processHtml: async function(blob) {
+            blob.div.set(blob.blob);
         },
-         processWiki: async function(blob, result, callback) {
+        processWiki: async function(blob) {
             var id = this.notebook.getProperty("entryId", "");
             var entry = this.getCurrentEntry(null);
             if (entry) id = entry.getId();
@@ -889,15 +887,15 @@ function RamaddaNotebookCell(notebook, id, content, props) {
             let divId = HtmlUtils.getUniqueId();
             var wikiCallback = function(html) {
                 var h = HtmlUtils.div(["id", divId,"style"], html);
-                return Utils.call(callback, h);
+                blob.div.set(h);
             }
-            blob = "{{group showMenu=false}}\n" + blob;
-            await GuiUtils.loadHtml(ramaddaBaseUrl + "/wikify?doImports=false&entryid=" + id + "&text=" + encodeURIComponent(blob),
-                              wikiCallback);
+            var wiki =  "{{group showMenu=false}}\n" + blob.blob;
+            await GuiUtils.loadHtml(ramaddaBaseUrl + "/wikify?doImports=false&entryid=" + id + "&text=" + encodeURIComponent(blob.blob),
+                             wikiCallback);
         },
-        processSh: function(blob, result) {
+        processSh: async function(blob) {
             var r = "";
-            var lines = blob.split("\n");
+            var lines = blob.blob.split("\n");
             var commands = [];
             for (var i = 0; i < lines.length; i++) {
                 var fullLine = lines[i].trim();
@@ -923,19 +921,14 @@ function RamaddaNotebookCell(notebook, id, content, props) {
                 }
             }
             let _this = this;
-            var process = async function() {
-                var i = 0;
-                for(i=0;i<commands.length;i++) {
-                    var cmd = commands[i];
-                    //                    console.log("calling:" + cmd.line);
-                    await cmd.proc.call(_this,cmd.line, cmd.toks,cmd.div, cmd.extra);
-                    //                    console.log("done");
-                }
+            blob.div.set(r);
+            var i = 0;
+            for(i=0;i<commands.length;i++) {
+                var cmd = commands[i];
+                await cmd.proc.call(_this,cmd.line, cmd.toks,cmd.div, cmd.extra);
             }
-            setTimeout(process,1);
-            return r;
         },
-         processJs: async function(blob, result,callback) {
+         processJs: async function(blob) {
             try {
                 var current = this.getCurrentEntry();
                 var entries = this.notebook.getCurrentEntries();
@@ -954,51 +947,43 @@ function RamaddaNotebookCell(notebook, id, content, props) {
                 }
                 nbCell = this;
                 nbNotebook = this.notebook;
-                blob = blob.trim();
-                var lines = blob.split("\n");
-                var js;
-                if(lines.length==1 && !blob.startsWith("return ") && !blob.startsWith("{")) {
-                    blob = "return " + blob;
+                var js =  blob.blob.trim();
+                var lines = js.split("\n");
+                if(lines.length==1 && !js.startsWith("return ") && !js.startsWith("{")) {
+                    js = "return " + js;
                 }
 
-                if(lines.length>1 || blob.startsWith("return ") || blob.startsWith("{")) {
-                     js = "async function nbFunc() {\n" + jsSet +"\n" + blob + "\n}\nasync function tmp() {await nbFunc().then(r=>{" +stateJS+"=result;});};";
+                if(lines.length>1 ||js.startsWith("return ") || js.startsWith("{")) {
+                    js = "async function nbFunc() {\n" + jsSet +"\n" + js + "\n}";
                 } 
-                var jsReturn;
                 eval(js);
-                await nbFunc().then(function(r) {jsReturn=r;});
-                if (state.stop) {
-                    result.ok = false;
+                await nbFunc().then(r=>{state.result=r;});
+                if (state.getStop()) {
+                    blob.ok = false;
                 }
-
                 var html = "";
                 if (Utils.stringDefined(state.prefix)) html +=state.prefix;
-                if (jsReturn) html +=jsReturn;
-                return Utils.call(callback, html);
+                if (state.result) html +=state.result;
+                blob.div.set(html);
             } catch (e) {
-                result.ok = false;
-                var lines = blob.split("\n");
+                blob.ok = false;
+                var lines = blob.blob.split("\n");
                 var line = lines[e.lineNumber - 2];
-                return Utils.call(callback, "Error: " + e.message + "<br>" + HtmlUtils.span(["class", "display-notebook-error"], " &gt; " + line));
+                blob.div.set("Error: " + e.message + "<br>" + HtmlUtils.span(["class", "display-notebook-error"], " &gt; " + line));
             }
         },
-
-           processBlob: async function(type, blob, result, callback) {
-            if (blob == "") {
-                return Utils.call(callback,"");
-            }
-            if (type == "html") {
-                return Utils.call(callback, this.processHtml(blob, result));
-            } else if (type == "wiki") {
-                await this.processWiki(blob, result,callback);
-                return;
-            } else if (type == "js") {
-                await this.processJs(blob, result,callback);
-                return;
+           processBlob: async function(blob) {
+            if (blob.type == "html") {
+                await  this.processHtml(blob);
+            } else if (blob.type == "wiki") {
+                await this.processWiki(blob);
+            } else if (blob.type == "js") {
+                await this.processJs(blob);
+            } else if (blob.type == "sh") {
+                await this.processSh(blob);
             } else {
-                return Utils.call(callback, this.processSh(blob, result));
+                blob.div.set("Unknown type:" + blob.type);
             }
-            return Utils.call(callback, "unknown type:" + type+" blob:"  + blob);
         },
 
 
@@ -1272,7 +1257,6 @@ function RamaddaNotebookCell(notebook, id, content, props) {
             }
             if(toks[1].startsWith("..")) {
                 var entry = this.getCurrentEntry();
-                div.set("Retrieving entry...");
                 await entry.getParentEntry(entry=>{
                         if(entry) { 
                             this.setCurrentEntry(entry);

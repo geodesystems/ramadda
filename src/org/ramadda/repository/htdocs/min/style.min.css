@@ -66,6 +66,7 @@ a:link.ramadda-button-blue:hover, a:visited.ramadda-button-blue:hover, .ramadda-
   background:#F0F0F0;
   margin-top:6px;
   padding:5px;
+  padding-bottom:0px;
 }
 
 
@@ -75,14 +76,25 @@ a.ramadda-menubar-button:link, a.ramadda-menubar-button {
 }
 
 a.ramadda-menubar-button:hover {
+    text-decoration: underline;
     color:#000;
-    text-decoration:underline;
 }
 
 
+.ramadda-menubar-button:hover {
+   text-decoration: underline;
+   cursor:pointer;
+}
+
 .ramadda-menubar-button {
+    border-left:1px #ccc solid;
     padding-left:8px;
     padding-right:8px;
+    padding-top:5px;
+}
+
+.ramadda-menubar-button:first-child {
+    border-left:0px #ccc solid;
 }
 
 .ramadda-page-title  {

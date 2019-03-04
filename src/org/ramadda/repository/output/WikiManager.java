@@ -4900,8 +4900,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
         }
 
 
-        String buttonClass =
-            " class=\"ramadda-menubar-button xramadda-button\" ";
+        String buttonClass =HtmlUtils.clazz("ramadda-menubar-button");
 
         StringBuilder help = new StringBuilder();
         for(String extraHelp:StringUtil.split(request.getString("extrahelp",""),",",true,true)) {
@@ -4965,7 +4964,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                                     "style='padding:5px;'"), buttonClass);
 
 
-        String tagsButton = getPageHandler().makePopupLink(msg("Add tag"),
+        String tagsButton = getPageHandler().makePopupLink(msg("Content"),
                                 HtmlUtils.div(tags.toString(),
                                     "style='padding:5px;'"), buttonClass);
 
@@ -4976,19 +4975,19 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
         makeTagsMenu(true, tags2, textAreaId);
 
         String tagsButton1 =
-            getPageHandler().makePopupLink(msg("Add property"),
+            getPageHandler().makePopupLink(msg("Property"),
                                            tags1.toString(), buttonClass);
 
-        String tagsButton2 = getPageHandler().makePopupLink(msg("Add chart"),
+        String tagsButton2 = getPageHandler().makePopupLink(msg("Chart"),
                                  tags2.toString(), buttonClass);
 
         String addEntry = OutputHandler.getSelect(request, textAreaId,
-                              "Add entry id", true, "entryid", entry, false,
+                              "Entry id", true, "entryid", entry, false,
                               buttonClass);
 
 
         String addLink = OutputHandler.getSelect(request, textAreaId,
-                             "Add entry link", true, "wikilink", entry,
+                             "Entry link", true, "wikilink", entry,
                              false, buttonClass);
 
         HtmlUtils.open(buttons, "div", HtmlUtils.cssClass("ramadda-menubar"));

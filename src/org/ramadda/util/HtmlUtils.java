@@ -1301,6 +1301,17 @@ public class HtmlUtils {
     /**
      * _more_
      *
+     * @param c _more_
+     *
+     * @return _more_
+     */
+    public static String clazz(String c) {
+        return attr(ATTR_CLASS, c);
+    }
+
+    /**
+     * _more_
+     *
      * @param sb _more_
      * @param c _more_
      *
