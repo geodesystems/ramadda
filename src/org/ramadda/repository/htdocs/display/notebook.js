@@ -4,8 +4,6 @@ Copyright 2008-2019 Geode Systems LLC
 
 
 
-
-
 var DISPLAY_NOTEBOOK = "notebook";
 addGlobalDisplayType({
     type: DISPLAY_NOTEBOOK,
@@ -35,23 +33,8 @@ function RamaddaNotebookDisplay(displayManager, id, properties) {
             if (!this.fetchedNotebook) {
                 this.fetchedNotebook = true;
                 await this.getEntry(this.getProperty("entryId",""),entry=> {
-                        this.currentEntry=entry;});
-                this.baseEntries["base"] = {
-                    entry:this.currentEntry,
-                    entryId:this.currentEntry.getId(),
-                }
-                var root;
-                await this.currentEntry.getRoot(entry=> {root=entry;});
-                if(root) {
-                    this.baseEntries["root"] = {
-                        entry:root,
-                        entryId:root.getId(),
-                    }
-                }
-                for(a in this.baseEntries)
-                    this.currentEntries[a] = this.baseEntries[a];
-
-                
+                        this.baseEntry=entry;});
+                await this.baseEntry.getRoot(entry=> {this.rootEntry=entry;});
                 var id = this.getProperty("entryId", "");
                 var url = ramaddaBaseUrl + "/getnotebook?entryid=" + id;
                 url += "&notebookId=" + this.getProperty("notebookId", "default_notebook");
@@ -68,6 +51,12 @@ function RamaddaNotebookDisplay(displayManager, id, properties) {
             } else {
                 this.layoutCells();
             }
+        },
+        getBaseEntry: function() {
+                return this.baseEntry;
+        },
+        getRootEntry: function() {
+                return this.rootEntry;
         },
         loadJson: async function(data) {
                 if (data.error) {
@@ -87,8 +76,11 @@ function RamaddaNotebookDisplay(displayManager, id, properties) {
                         if(this.currentEntries[a]) continue;
                         obj.name=a;
                         obj.entryId = data.currentEntries[a].entryId;
-                        await this.getEntry(obj.entryId,e=>obj.entry=e);
-                        this.currentEntries[a] = obj;
+                        try {
+                            await this.getEntry(obj.entryId,e=>obj.entry=e);
+                            this.currentEntries[a] = obj;
+                        } catch(e) {
+                        }
                     }
                 }
                 if (Utils.isDefined(data.cells)) {
@@ -358,7 +350,7 @@ function NotebookState(cell) {
         if(!callback)
             callback = h=>this.write(h);
         if(entry == null) 
-            await this.getCurrentEntry(e=>entry=e);
+            await this.cell.getCurrentEntry(e=>entry=e);
         if((typeof entry)!="string") entry = entry.getId();
         await GuiUtils.loadHtml(ramaddaBaseUrl + "/wikify?doImports=false&entryid=" + entry + "&text=" + encodeURIComponent(s),
                                 callback);
@@ -934,6 +926,8 @@ function RamaddaNotebookCell(notebook, id, content, props) {
                 var jsSet = "";
                 state.entries["current"] = current;
                 state.entries["parent"] = this.parentEntry;
+                state.entries["base"] = this.notebook.getBaseEntry();
+                state.entries["root"] = this.notebook.getRootEntry();
                 var stateJS = "notebookStates['" + state.id +"']";
                 jsSet+= "state= " + stateJS+";\n";
                 for(name in state.entries) {
@@ -1138,7 +1132,7 @@ function RamaddaNotebookCell(notebook, id, content, props) {
         },
         getCurrentEntry: async function(callback) {
             if (this.currentEntry == null) {
-                await this.setCurrentEntry(this.notebook.currentEntry);
+                await this.setCurrentEntry(this.notebook.getBaseEntry());
             }
             if (this.currentEntry == null) {
                 if (Utils.isDefined(dflt)) return dflt;
@@ -1241,7 +1235,7 @@ function RamaddaNotebookCell(notebook, id, content, props) {
         processCommand_cd: async function(line, toks,div) {
             if(div==null) div = new Div();
             if (toks.length <= 1) {
-                await this.setCurrentEntry(this.notebook.currentEntry);
+                await this.setCurrentEntry(this.notebook.getBaseEntry());
                 return;
                 //                return this.getEntryHeading(this.currentEntry, div);
             }

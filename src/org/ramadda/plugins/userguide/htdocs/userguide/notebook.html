@@ -36,18 +36,18 @@ The Notebook display provides an interactive notebook that can display html, exe
 
 A notebook can be created for any entry with the following wiki text:
 <div style="margin:10p;"><pre>
-{{display type=&quot;notebook&quot;}}
+{{display type=&quot;notebook&quot; showMenu=&quot;false&quot; showTitle=&quot;false&quot;}}
 </pre></div>
 
 Notebooks are always associated with an entry. You can have multiple notebooks for an entry using the notebookId attribute:
 
 <div style="margin:10p;"><pre>
 //This is the default notebook
-{{display type=&quot;notebook&quot;}}
+{{display type=&quot;notebook&quot; showMenu=&quot;false&quot; showTitle=&quot;false&quot;}}
 
-{{display type=&quot;notebook&quot; notebookId=&quot;notebook2&quot;}}
+{{display type=&quot;notebook&quot; notebookId=&quot;notebook2&quot; showMenu=&quot;false&quot; showTitle=&quot;false&quot;}}
 
-{{display type=&quot;notebook&quot; notebookId=&quot;notebook3&quot;}}
+{{display type=&quot;notebook&quot; notebookId=&quot;notebook3&quot; showMenu=&quot;false&quot; showTitle=&quot;false&quot;}}
 </pre></div>
 
 
@@ -56,14 +56,11 @@ The notebook file be accessed and/or deleted through the entry's Edit Properties
 
 <p>
 
-When first created a notebook looks like:
-<a name="image1"></a><div class="cimg"><a href="images/notebook1.png"><img  src="images/notebook1.png"  alt="Initial Notebook" ></a><br><span class="caption">Image 1: Initial Notebook</span></div>
+A notebook is made up of a number of notebook cells. Initially there is just one cell.
+Each cell has an input area, output area and cell menu. The menu can either be accessed through
+the Notebook menu or from the left side link that is shown on mouseover:
 
-A notebook is made up of a number of notebook cells. Each cell has an input area, output area and cell menu. The menu can either be accessed through
-the Notebook menu or from the left side link:
-
-<a name="image2"></a><div class="cimg"><a href="images/notebook2.png"><img  src="images/notebook2.png"  alt="Notebook Menu" ></a><br><span class="caption">Image 2: Notebook Menu</span></div>
-
+<a name="image1"></a><div class="cimg"><a href="images/notebook1.png"><img  src="images/notebook1.png"  alt="Notebook Menu" ></a><br><span class="caption">Image 1: Notebook Menu</span></div>
 
 
 <a name="editing"></a><p><div class="ramadda-help-heading">5.3.1 <a href="#editing">Editing a notebook</a></div> 
@@ -88,7 +85,19 @@ Javascript
 
 </pre>
 
-<a name="html"></a><p><div class="ramadda-help-heading">5.3.2 <a href="#html">Html Input</a></div> 
+<a name="context"></a><p><div class="ramadda-help-heading">5.3.2 <a href="#context">Cell Context</a></div> 
+Within a cell there is an entry context, a number of entries that can be accessed within the javascript
+input and that the wiki is created from. The following entries are available:
+<ul>
+<li> "base" -  This is the entry that the notebook is defined for
+<li> "current"  - The current entry. By default this the base entry base entry but can be changed with the
+shell commands.
+<li> "parent"  - the parent of the current entry
+<li> "root"  - the top-level entry
+</ul>
+
+
+<a name="html"></a><p><div class="ramadda-help-heading">5.3.3 <a href="#html">Html Input</a></div> 
 To specify html text start the input with "html:".  
 <pre>
 <i>html:</i>
@@ -96,7 +105,7 @@ html text
 </pre>
 
 
-<a name="wiki"></a><p><div class="ramadda-help-heading">5.3.3 <a href="#wiki">Wiki Input</a></div> 
+<a name="wiki"></a><p><div class="ramadda-help-heading">5.3.4 <a href="#wiki">Wiki Input</a></div> 
 To specify wiki text start the input with "wiki:" - 
 <pre>
 <i>wiki:</i>
@@ -106,24 +115,48 @@ RAMADDA wiki text
 The wiki text is just regular RAMADDA wiki text. More information <a href="wikitext.html">here</a>.
 
 
-<a name="sh"></a><p><div class="ramadda-help-heading">5.3.4 <a href="#sh">Shell Input</a></div> 
+<a name="sh"></a><p><div class="ramadda-help-heading">5.3.5 <a href="#sh">Shell Input</a></div> 
 To specify shell text start the input with "sh:" - 
 <pre>
 <i>sh:</i>
 shell commands
 </pre>
 
-The following shell commands are supported:
+The shell commands allow for easy navigation around the RAMADDA entry hierarchy. 
+
+The following shell commands are supported. All of the "cd" commands change the cell's current entry.
 <pre>
 <i>sh:</i>
+#change current entry to the base entry
+cd  
+
 #change current entry to the root
 cd  /
 
 #change current entry to the parent of the current entry
 cd  ..
 
-#change current entry to the default
-cd  
+
+#change current entry to the parent of the parent of the current entry
+cd  ../..
+
+#change current entry to the "Test" entry under the root
+cd  /Test
+
+#change current entry to the first entry found under the root with name that begins with "foo" 
+cd  /foo*
+
+#change current entry to the first entry found under the root with name that ends with "bar" 
+cd  /*bar
+
+#change current entry to the "Test" entry relative to the current entry
+cd  ../Test
+
+#change current entry to the child of the current entry with name "Child" 
+cd  Child
+
+#change current entry to the grandchild entry with name "Grandchild" 
+cd  Child/Grandchild
 
 #print the current entry
 pwd
@@ -132,11 +165,16 @@ pwd
 ls
 
 #print output
-print any output
+echo any output
+
+
+#shell commands can be on one line, e.g.:
+cd /;pwd;ls;cd;pwd
+
 </pre>
 
 
-<a name="js"></a><p><div class="ramadda-help-heading">5.3.5 <a href="#js">Javascript Input</a></div> 
+<a name="js"></a><p><div class="ramadda-help-heading">5.3.6 <a href="#js">Javascript Input</a></div> 
 To specify javascript start the input with "js:" - 
 <pre>
 <i>js:</i>
@@ -173,6 +211,9 @@ function result() {
 return result();
 </pre>
 
+
+
+
 There are a number of helper functions and pre-defined variables that can be accessed from javascript:
 <pre>
 <i>js:</i>
@@ -180,18 +221,42 @@ There are a number of helper functions and pre-defined variables that can be acc
 </pre>
 
 
+The above described entry context can be accessed with the variables:
+<pre>
+<i>js:</i>
+base
+current
+parent
+root
+</pre>
 
-<a name="running"></a><p><div class="ramadda-help-heading">5.3.6 <a href="#running">Running a notebook</a></div> 
+e.g.:
+
+<pre>
+state.write(base.getName());
+state.write(root.getName());
+state.write(current.getName());
+state.write(parent.getName());
+
+//Create wiki text for the given entry
+state.wiki("{{tree}}", current);
+state.wiki(":title {{name}}", root);
+</pre>
+
+
+
+
+<a name="running"></a><p><div class="ramadda-help-heading">5.3.7 <a href="#running">Running a notebook</a></div> 
 To run a notebook cell either press shift-return in the cell input area or choose "Run This Cell" in the notebook menu.
 All of the cells can be run through the notebook menu with the "Run All" command.
 A notebook can be configured to run all of the cells when the notebook is first loaded through the "Run on load"
 command in the notebook menu.
 
 
-<a name="commands"></a><p><div class="ramadda-help-heading">5.3.7 <a href="#commands">Notebook Menu Commands</a></div> 
+<a name="commands"></a><p><div class="ramadda-help-heading">5.3.8 <a href="#commands">Notebook Menu Commands</a></div> 
 The notebook menu allows one to configure the display and behavior of individual cells or all of the cells.
 
-<a name="image3"></a><div class="cimg"><a href="images/notebookmenu.png"><img  src="images/notebookmenu.png"  alt="Notebook Menu" ></a><br><span class="caption">Image 3: Notebook Menu</span></div>
+<a name="image2"></a><div class="cimg"><a href="images/notebookmenu.png"><img  src="images/notebookmenu.png"  alt="Notebook Menu" ></a><br><span class="caption">Image 2: Notebook Menu</span></div>
 
 <ul>
 <li> Cell name: Name the current cell. The name is shown in the header (see below)
