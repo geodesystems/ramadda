@@ -5240,20 +5240,12 @@ function RamaddaNotebookDisplay(displayManager, id, properties) {
                     entry:this.currentEntry,
                     entryId:this.currentEntry.getId(),
                 }
-                var parent;
-                await this.currentEntry.getParentEntry(entry=> {parent=entry;});
-                if(parent) {
-                    this.baseEntries["parent"] = {
-                        entry:parent,
-                        entryId:parent.getId(),
-                    }
-                    var root;
-                    await this.currentEntry.getRoot(entry=> {root=entry;});
-                    if(root) {
-                        this.baseEntries["root"] = {
-                            entry:root,
-                            entryId:root.getId(),
-                        }
+                var root;
+                await this.currentEntry.getRoot(entry=> {root=entry;});
+                if(root) {
+                    this.baseEntries["root"] = {
+                        entry:root,
+                        entryId:root.getId(),
                     }
                 }
                 for(a in this.baseEntries)
@@ -5533,14 +5525,14 @@ function NotebookState(cell) {
         return "notebook saved";
     },
 
-    cearEntries: function() {
+    clearEntries: function() {
         this.clearEntries();
     },
 
-    ls: function(entry) {
+    ls: async function(entry) {
         var div = new Div();
         if(!entry)
-            entry = this.cell.getCurrentEntry(null);
+            await this.getCurrentEntry(e=>entry=e);
         this.call.getEntryHeading(entry, div);
         this.write(div.toString());
     },
@@ -5565,7 +5557,8 @@ function NotebookState(cell) {
         var write = false;
         if(!callback)
             callback = h=>this.write(h);
-        if(entry == null) entry= this.cell.getCurrentEntry();
+        if(entry == null) 
+            await this.getCurrentEntry(e=>entry=e);
         if((typeof entry)!="string") entry = entry.getId();
         await GuiUtils.loadHtml(ramaddaBaseUrl + "/wikify?doImports=false&entryid=" + entry + "&text=" + encodeURIComponent(s),
                                 callback);
@@ -6081,7 +6074,7 @@ function RamaddaNotebookCell(notebook, id, content, props) {
         },
         processWiki: async function(blob) {
             var id = this.notebook.getProperty("entryId", "");
-            var entry = this.getCurrentEntry(null);
+            await this.getCurrentEntry(e=>entry=e);
             if (entry) id = entry.getId();
             let _this = this;
             let divId = HtmlUtils.getUniqueId();
@@ -6130,19 +6123,20 @@ function RamaddaNotebookCell(notebook, id, content, props) {
         },
          processJs: async function(blob) {
             try {
-                var current = this.getCurrentEntry();
-                var entries = this.notebook.getCurrentEntries();
+                await this.getCurrentEntry(e=>{current=e});
                 var state = new NotebookState(this);
                 notebookStates[state.id] = state;
+                var notebookEntries = this.notebook.getCurrentEntries();
+                for(name in notebookEntries) {
+                    state.entries[name] = notebookEntries[name].entry;
+                }
                 var jsSet = "";
                 state.entries["current"] = current;
-                name = "current";
+                state.entries["parent"] = this.parentEntry;
                 var stateJS = "notebookStates['" + state.id +"']";
                 jsSet+= "state= " + stateJS+";\n";
-                jsSet+= name +"=state.entries['" + name +"'];\n"
-                for(var name in entries) {
-                    var e = entries[name];
-                    state.entries[name] = e.entry;
+                for(name in state.entries) {
+                    var e = state.entries[name];
                     jsSet+= name +"= state.entries['" + name +"'];\n"
                 }
                 nbCell = this;
@@ -6170,7 +6164,9 @@ function RamaddaNotebookCell(notebook, id, content, props) {
                 var lines = blob.blob.split("\n");
                 var line = lines[e.lineNumber - 2];
                 blob.div.set("Error: " + e.message + "<br>" + HtmlUtils.span(["class", "display-notebook-error"], " &gt; " + line));
+                console.log(e.stack);
             }
+            notebookStates[state.id] = null;
         },
            processBlob: async function(blob) {
             if (blob.type == "html") {
@@ -6333,12 +6329,15 @@ function RamaddaNotebookCell(notebook, id, content, props) {
             }
             return dflt;
         },
-        setCurrentEntry: function(entry) {
+        setCurrentEntry: async function(entry) {
                 this.currentEntry = entry;
+                this.parentEntry = null;
+                if(this.currentEntry)
+                    await this.currentEntry.getParentEntry(entry=> {console.log("parent:" + entry.getName());this.parentEntry=entry;});
         },
-        getCurrentEntry: function(dflt) {
+        getCurrentEntry: async function(callback) {
             if (this.currentEntry == null) {
-                this.setCurrentEntry(this.notebook.currentEntry);
+                await this.setCurrentEntry(this.notebook.currentEntry);
             }
             if (this.currentEntry == null) {
                 if (Utils.isDefined(dflt)) return dflt;
@@ -6349,12 +6348,12 @@ function RamaddaNotebookCell(notebook, id, content, props) {
                 });
                 this.currentEntry = this.rootEntry;
             }
-            return this.currentEntry;
+            return Utils.call(callback, this.currentEntry);
         },
         createDisplay: async function(entry, displayType) {
-            if(!entry) entry = this.getCurrentEntry();
+            if(!entry) await this.getCurrentEntry(e=>entry=e);
             if((typeof entry) =="string") {
-                await this.notebook.getEntry(entry,e=> {entry=e});
+                await this.notebook.getEntry(entry,e=>entry=e);
             }    
             var jsonUrl = this.notebook.getPointUrl(entry);
             if (jsonUrl == null) {
@@ -6363,8 +6362,9 @@ function RamaddaNotebookCell(notebook, id, content, props) {
             }
             this.notebook.createDisplay(entry.getId(), displayType, jsonUrl);
         },
-        createPointDisplay: function(toks, displayType) {
-            var entry = this.getEntryFromArgs(toks, this.getCurrentEntry());
+        createPointDisplay: async function(toks, displayType) {
+            await this.getCurrentEntry(e=>current=e);
+            var entry = this.getEntryFromArgs(toks, currentEntry);
             var jsonUrl = this.notebook.getPointUrl(entry);
             if (jsonUrl == null) {
                 this.writeError("Not a point type:" + entry.getName());
@@ -6407,18 +6407,19 @@ function RamaddaNotebookCell(notebook, id, content, props) {
             //            var icon = entry.getIconImage([ATTR_TITLE, "View entry"]);
             //            return "&gt; "+ icon +" " +entry.getName();
           },
-         processCommand_pwd: function(line, toks,div) {
+         processCommand_pwd: async function(line, toks,div) {
             if(div==null) div = new Div();
-            var entry = this.getCurrentEntry();
+            await this.getCurrentEntry(e=>entry=e);
             return this.getEntryHeading(entry, div);
         },
         processCommand_clearEntries: function(line, toks, div) {
              this.notebook.clearEntries();
              div.set("Entries cleared");
         },
-        processCommand_printEntries: function(line, toks, div) {
+        processCommand_printEntries: async function(line, toks, div) {
                 var h = "";
-                h += "current" +"=" + this.getCurrentEntry().getName()+"<br>";
+                await this.getCurrentEntry(e=>current=e);
+                h += "current" +"=" + current.getName()+"<br>";
                 var entries = this.notebook.getCurrentEntries();
                 for(var name in entries) {
                     var e = entries[name];
@@ -6439,14 +6440,14 @@ function RamaddaNotebookCell(notebook, id, content, props) {
         processCommand_cd: async function(line, toks,div) {
             if(div==null) div = new Div();
             if (toks.length <= 1) {
-                this.setCurrentEntry(this.notebook.currentEntry);
+                await this.setCurrentEntry(this.notebook.currentEntry);
                 return;
                 //                return this.getEntryHeading(this.currentEntry, div);
             }
             if(toks[1].startsWith("/")) {
                 //                toks = toks[1].split("/");
                 //                console.log(toks);
-                var entry = this.getCurrentEntry();
+                await this.getCurrentEntry(e=>entry=e);
                 var root;
                 await entry.getRoot(e=>{root = e});
 
@@ -6456,14 +6457,11 @@ function RamaddaNotebookCell(notebook, id, content, props) {
 
             }
             if(toks[1].startsWith("..")) {
-                var entry = this.getCurrentEntry();
-                await entry.getParentEntry(entry=>{
-                        if(entry) { 
-                            this.setCurrentEntry(entry);
-                            //                            this.getEntryHeading(entry, div);
-                        } else {
-                            div.msg("No parent entry");
-                        }});
+                await this.getCurrentEntry(e=>entry=e);
+                if(this.parentEntry)
+                    await this.setCurrentEntry(this.parentEntry);
+                else
+                    div.msg("No parent entry");
                 return;
             }
             return div.set("NA");
@@ -6471,7 +6469,8 @@ function RamaddaNotebookCell(notebook, id, content, props) {
          processCommand_ls: async function(line, toks,div) {
             if(div==null) div = new Div();
             div.set("Listing entries...");
-            await this.getCurrentEntry().getChildrenEntries(children=>{this.displayEntries(children, div)}, "");
+            await this.getCurrentEntry(e=>entry=e);
+            await entry.getChildrenEntries(children=>{this.displayEntries(children, div)}, "");
         },
         entryListChanged: function(entryList) {
             var entries = entryList.getEntries();
