@@ -4960,7 +4960,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
 
         String helpButton = getPageHandler().makePopupLink(msg("Help"),
                                 HtmlUtils.div(help.toString(),
-                                    "style='padding:5px;'"), buttonClass +" ramadda-menubar-button-last");
+                                              "style='padding:5px;'"), HtmlUtils.clazz(" ramadda-menubar-button ramadda-menubar-button-last"));
 
 
         String tagsButton = getPageHandler().makePopupLink(msg("Content"),
