@@ -87,14 +87,14 @@ a.ramadda-menubar-button:hover {
 }
 
 .ramadda-menubar-button {
-    border-left:1px #ccc solid;
+    border-right:1px #ccc solid;
     padding-left:8px;
     padding-right:8px;
     padding-top:5px;
 }
 
-.ramadda-menubar-button:first-child {
-    border-left:0px #ccc solid;
+.ramadda-menubar-button:last-child {
+    border-right:0px #ccc solid;
 }
 
 .ramadda-page-title  {

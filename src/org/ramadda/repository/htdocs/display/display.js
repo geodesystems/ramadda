@@ -2348,7 +2348,6 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             $("#" + popupId).draggable();
         },
         checkLayout: function() {
-            console.log("display.checkLayout");
         },
         displayData: function() {},
         createUI: function() {

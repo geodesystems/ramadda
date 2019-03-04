@@ -343,7 +343,11 @@ function NotebookState(cell) {
         this.stopFlag = true;
     },
     setEntry: function(name,entryId) {
-        this.notebook.addEntry(name,entryId);
+        this.cell.notebook.addEntry(name,entryId);
+    },
+     getEntry: async function(entryId, callback) {
+            await this.cell.notebook.getEntry(e=>entry=e);
+            return Utils.call(callback, entry);
     },
     wiki: async function(s, entry, callback) {
         var write = false;
@@ -478,10 +482,12 @@ function RamaddaNotebookCell(notebook, id, content, props) {
             var url = ramaddaBaseUrl +"/wikitoolbar?entryid=" + this.entryId +"&handler=" + this.editId;
             url+="&extrahelp=" + ramaddaBaseUrl +"/userguide/notebook.html|Notebook Help";
             GuiUtils.loadHtml(url,  h=> {
-                    _this.inputToolbar =h; 
-                    _this.jq(ID_INPUT_TOOLBAR).html(h);
-                    $("#"+_this.editId +"_prefix").html(HtmlUtils.span(["id",_this.getDomId("toolbar_notebook"),"class","ramadda-menubar-button"],"Notebook"));
-                    _this.jq("toolbar_notebook").click(()=>_this.showNotebookMenu());
+                    this.inputToolbar =h; 
+                    this.jq(ID_INPUT_TOOLBAR).html(h);
+                    $("#"+this.editId +"_prefix").html(HtmlUtils.span(["id",this.getDomId("toolbar_notebook"),
+                                                                       "style","border-right:1px #ccc solid;",
+                                                                       "class","ramadda-menubar-button"],"Notebook"));
+                    this.jq("toolbar_notebook").click(()=>this.showNotebookMenu());
 
                 });
             this.header = this.jq(ID_HEADER);

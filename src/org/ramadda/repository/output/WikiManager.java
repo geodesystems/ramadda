@@ -1482,7 +1482,6 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
         }
 
         if(metadata == null) {
-            System.err.println("none");
             Result  result =  new Result("", new StringBuilder("{}"),Json.MIMETYPE);
             result.setShouldDecorate(false);
             return result;
@@ -4961,7 +4960,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
 
         String helpButton = getPageHandler().makePopupLink(msg("Help"),
                                 HtmlUtils.div(help.toString(),
-                                    "style='padding:5px;'"), buttonClass);
+                                    "style='padding:5px;border-right:0px #ccc solid;'"), buttonClass);
 
 
         String tagsButton = getPageHandler().makePopupLink(msg("Content"),
@@ -4998,7 +4997,6 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
         buttons.append(addEntry);
         buttons.append(addLink);
         buttons.append(helpButton);
-        buttons.append(HtmlUtils.span("",HtmlUtils.id(textAreaId+"_suffix")));
         HtmlUtils.close(buttons, "div");
 
         return buttons.toString();
