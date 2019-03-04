@@ -6466,7 +6466,34 @@ function RamaddaNotebookCell(notebook, id, content, props) {
                 } else  {
                     await this.currentEntry.getChildrenEntries(c=>children=c);
                     var child = null;
+                    var startsWith = false;
+                    var endsWith = false;
+                    if(dir.endsWith("*")) {
+                        dir = dir.substring(0,dir.length-1);
+                        startsWith=true;
+                    }
+                    if(dir.startsWith("*")) {
+                        dir = dir.substring(1);
+                        endsWith=true;
+                    }
                     for(var childIdx=0;childIdx<children.length;childIdx++) {
+                        var name = children[childIdx].getName();
+                        if(startsWith && endsWith) {
+                            if(name.includes(dir)) {
+                                child = children[childIdx];
+                                break;
+                            }
+                        } else  if(startsWith) {
+                            if(name.startsWith(dir)) {
+                                child = children[childIdx];
+                                break;
+                            }
+                        } else  if(endsWith) {
+                            if(name.endsWith(dir)) {
+                                child = children[childIdx];
+                                break;
+                            }
+                        }
                         if(children[childIdx].getName() == dir) {
                             child = children[childIdx];
                             break;
