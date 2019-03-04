@@ -5988,6 +5988,7 @@ function RamaddaNotebookCell(notebook, id, content, props) {
                     await this.runInner();
                 } catch(e) {
                     this.writeOutput("An error occurred:" + e);
+                    console.log("error:" + e);
                     console.log(e.stack);
                     return false;
                 }
@@ -6333,7 +6334,7 @@ function RamaddaNotebookCell(notebook, id, content, props) {
                 this.currentEntry = entry;
                 this.parentEntry = null;
                 if(this.currentEntry)
-                    await this.currentEntry.getParentEntry(entry=> {console.log("parent:" + entry.getName());this.parentEntry=entry;});
+                    await this.currentEntry.getParentEntry(entry=> {this.parentEntry=entry;});
         },
         getCurrentEntry: async function(callback) {
             if (this.currentEntry == null) {
@@ -6444,27 +6445,40 @@ function RamaddaNotebookCell(notebook, id, content, props) {
                 return;
                 //                return this.getEntryHeading(this.currentEntry, div);
             }
-            if(toks[1].startsWith("/")) {
-                //                toks = toks[1].split("/");
-                //                console.log(toks);
+            var arg =Utils.join(toks," ",1).trim();
+            if(arg.startsWith("/")) {
                 await this.getCurrentEntry(e=>entry=e);
                 var root;
                 await entry.getRoot(e=>{root = e});
-
                 this.setCurrentEntry(root);
-                //                this.getEntryHeading(root, div);
-                return;
-
             }
-            if(toks[1].startsWith("..")) {
-                await this.getCurrentEntry(e=>entry=e);
-                if(this.parentEntry)
+            var dirs = arg.split("/");
+            await this.getCurrentEntry(e=>entry=e);
+            for(var i=0;i<dirs.length;i++) {
+                var dir = dirs[i];
+                if(dir=="") continue;
+                if(dir == "..") {
+                    if(!this.parentEntry) {
+                        div.msg("No parent entry");
+                        break;
+                    }
                     await this.setCurrentEntry(this.parentEntry);
-                else
-                    div.msg("No parent entry");
-                return;
+                } else  {
+                    await this.currentEntry.getChildrenEntries(c=>children=c);
+                    var child = null;
+                    for(var childIdx=0;childIdx<children.length;childIdx++) {
+                        if(children[childIdx].getName() == dir) {
+                            child = children[childIdx];
+                            break;
+                        }
+                    }
+                    if(!child) {
+                        div.msg("No entry:" + dir);
+                        break;
+                    }
+                    await this.setCurrentEntry(child);
+                }
             }
-            return div.set("NA");
         },
          processCommand_ls: async function(line, toks,div) {
             if(div==null) div = new Div();

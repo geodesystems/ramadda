@@ -65,10 +65,11 @@ var Utils = {
             s = pad + s;
         return s;
     },
-    join: function(l, delimiter) {
+    join: function(l, delimiter,offset) {
+        if((typeof offset) ==  "undefined") offset=0;
         var s = "";
-        for (var i = 0; i < l.length; i++) {
-            if (i > 0) s += delimiter;
+        for (var i = offset; i < l.length; i++) {
+            if (i > offset) s += delimiter;
             s += l[i];
         }
         return s;
