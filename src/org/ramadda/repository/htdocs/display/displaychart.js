@@ -996,7 +996,7 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
             divAttrs.push("style");
             divAttrs.push("height:100%;width:100%;");
             //            divAttrs.push("height:400px;width:100%;border: 1px red solid; padding:5px;");
-            return HtmlUtils.div(divAttrs, "");
+            return HtmlUtils.div(divAttrs, "CHART HERE");
         },
         makeGoogleChart: function(dataList, props, selectedFields) {
             if (typeof google == 'undefined') {

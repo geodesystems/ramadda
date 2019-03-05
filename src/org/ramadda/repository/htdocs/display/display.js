@@ -671,6 +671,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
                 var divid = this.getProperty(PROP_DIVID);
                 if (divid != null) {
                     var html = this.getHtml();
+                    //                    console.log("html:"+ html);
                     $("#" + divid).html(html);
                 }
             }
@@ -917,6 +918,10 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             var dataList = this.dataCollection.getList();
             //If we have fixed fields then clear them after the first time
             var fixedFields = this.getProperty(PROP_FIELDS);
+            if(fixedFields && (typeof fixedFields) == "string") {
+                fixedFields = fixedFields.split(",");
+            }
+
             for (var collectionIdx = 0; collectionIdx < dataList.length; collectionIdx++) {
                 var pointData = dataList[collectionIdx];
                 var fields = this.getFieldsToSelect(pointData);
@@ -2017,7 +2022,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
         doit: function() {
             console.log("doit");
         },
-        createDisplay: async function(entryId, displayType, jsonUrl) {
+        createDisplay: async function(entryId, displayType, jsonUrl,displayProps) {
             var entry;
             await this.getEntry(entryId, e=>{entry=e});
             if (entry == null) {
@@ -2032,6 +2037,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
                 showDetails: true,
                 title: entry.getName(),
             };
+            if(displayProps) $.extend(props, displayProps);
 
             //TODO: figure out when to create data, check for grids, etc
             if (displayType != DISPLAY_ENTRYLIST) {

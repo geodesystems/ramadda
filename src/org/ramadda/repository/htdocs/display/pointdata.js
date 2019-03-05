@@ -80,7 +80,6 @@ function BasePointData(name, properties) {
             return value;
         },
 
-
         getRecordFields: function() {
             return this.recordFields;
         },

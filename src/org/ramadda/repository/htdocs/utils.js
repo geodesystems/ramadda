@@ -1037,6 +1037,15 @@ var HtmlUtils = {
     heading: function(html) {
         return this.tag("h3",[], html);
     },
+    bootstrapClasses:["col-md-12","col-md-6","col-md-4", "col-md-4","col-md-4","col-md-2"],
+    getBootstrapClass: function(cols) {
+        cols -= 1;
+        cols = Math.max(cols,0);
+        if(cols<this.bootstrapClasses.length) {
+            return this.bootstrapClasses[cols];
+        }
+        return "col-md-1";
+    },
     div: function(attrs, inner) {
         return this.tag("div", attrs, inner);
     },
@@ -1220,8 +1229,11 @@ var HtmlUtils = {
 
     loadedGoogleCharts: false,
     loadGoogleCharts: function() {
-        if (this.loadedGoogleCharts) return;
+        if (this.loadedGoogleCharts) {
+            return;
+        }
         this.loadedGoogleCharts = true;
+
         google.charts.load("43", {
             packages: ['corechart', 'calendar', 'table', 'bar', 'treemap', 'sankey', 'wordtree', 'timeline', 'gauge']
         });
@@ -1281,11 +1293,13 @@ var HtmlUtils = {
         return this.tag("input", attrs);
     },
 
-    radio: function(id, name, radioclass, value, checked) {
-        var html = "<input id=\"" + id + "\"  class=\"" + radioclass + "\" name=\"" + name + "\" type=radio value=\"" + value + "\" ";
+    radio: function(id, name, radioclass, value, checked, extra) {
+        if(!extra) extra = "";
+        var html = "<input id='" + id + "'  class='" + radioclass + "' name='" + name + "' type=radio value='" + value + "' ";
         if (checked) {
             html += " checked ";
         }
+        html+=" " + extra
         html += "/>";
         return html;
     },
@@ -1570,6 +1584,11 @@ function Div(contents) {
         this.contents = html;
         $("#"+this.id).html(html);
         return this;
+    }
+    this.append = function(html) {
+        if(!this.content) this.content = html;
+        else this.content += html;
+        $("#"+this.id).append(html);
     }
     this.msg = function(msg) {
         return this.set(HtmlUtils.div([ATTR_CLASS, "display-message"], msg));
