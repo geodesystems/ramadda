@@ -5531,28 +5531,28 @@ function RamaddaNotebookDisplay(displayManager, id, properties) {
             for (var i = 0; i < this.cells.length; i++) {
                 var cell = this.cells[i];
                 if(!cell.runFirst) continue;
-                if(cell.hasRun) continue;
-                await cell.run(result=>ok=result);
-                if(!ok) break;
-                var content = cell.getOutputContent();
-                if(Utils.stringDefined(cell.cellName)) {
-                    this.cellValues[cell.cellName] = content;
-                }
+                await this.runCell(cell).then(result=>ok=result);
             }
             if(!ok) return;
             for (var i = 0; i < this.cells.length; i++) {
                 var cell = this.cells[i];
                 if(cell.runFirst) continue;
-                if(cell.hasRun) continue;
-                await cell.run(result=>ok=result);
-                if(!ok) break;
-                var content = cell.getOutputContent();
-                if(Utils.stringDefined(cell.cellName)) {
-                    this.cellValues[cell.cellName] = content;
-                }
+                await this.runCell(cell).then(result=>ok=result);
             }
-
         },
+        runCell: async function(cell) {
+                if(cell.hasRun) return true;
+                await cell.run(result=>ok=result);
+                if(!ok) return false;
+                var raw = cell.getRawOutput();
+                if(raw) {
+                    raw= raw.trim();
+                    if(Utils.stringDefined(cell.cellName)) {
+                        this.cellValues[cell.cellName] = raw;
+                    }
+                }
+                return true;
+            },
         toggleAll: function(on) {
                 this.cells.map(cell=>{
                         cell.showInput = on;
@@ -5812,6 +5812,8 @@ function RamaddaNotebookCell(notebook, id, content, props) {
             this.cell.hover(()=>this.checkHover(true), ()=>this.checkHover(false));
             this.calculateInputHeight();
             this.input.focus(()=>this.getPopup().hide());
+            this.input.click(()=>this.getPopup().hide());
+            this.output.click(()=>this.getPopup().hide());
             this.input.on('input selectionchange propertychange', ()=>this.calculateInputHeight());
             this.input.keydown(function(e) {
                 var key = e.key;
@@ -6112,16 +6114,23 @@ function RamaddaNotebookCell(notebook, id, content, props) {
         askDelete: function() {
             let _this = this;
             var menu = "";
-            menu += "You sure you want to delete this cell?<br>";
+            menu += "Are you sure you want to delete this cell?<br>";
             menu += HtmlUtils.div(["class", "ramadda-link", "what", "yes"], "Yes") + "<br>";
             menu += HtmlUtils.div(["class", "ramadda-link", "what", "cancel"], "No");
             var popup = this.getPopup();
             popup.html(HtmlUtils.div(["class", "ramadda-popup-inner"], menu));
             popup.show();
+            var src = this.input;
+            if(!src.is(":visible"))  {
+                src  = this.output;
+            }
+            if(!src.is(":visible"))  {
+                src = this.header;
+            }
             popup.position({
-                of: this.menuButton,
+                of: src,
                 my: "left top",
-                at: "right top",
+                at: "left top",
                 collision: "fit fit"
             });
             popup.find(".ramadda-link").click(function() {
@@ -6166,7 +6175,7 @@ function RamaddaNotebookCell(notebook, id, content, props) {
             var blobs = [];
             var blob = "";
             var commands = value.split("\n");
-            var types = ["wiki", "html", "sh", "js"];
+            var types = ["wiki", "html", "sh", "js","raw"];
             var ok = true;
             for (var i = 0; i < commands.length; i++) {
                 if (!ok) break;
@@ -6200,6 +6209,7 @@ function RamaddaNotebookCell(notebook, id, content, props) {
                 result+=blobs[i].div.toString()+"\n";
             }
             this.output.html(result);
+            this.rawOutput = "";
             for(var i=0;i<blobs.length;i++) {
                 var blob = blobs[i];
                 await this.processBlob(blob);
@@ -6223,9 +6233,8 @@ function RamaddaNotebookCell(notebook, id, content, props) {
         outputUpdated: function() {
             this.outputHtml = this.jq(ID_OUTPUT).html();
         },
-
-        getOutputContent: function() {
-            return  this.jq(ID_OUTPUT).html();
+        getRawOutput: function() {
+            return  this.rawOutput;
         },
         focus: function() {
             this.input.focus();
@@ -6235,9 +6244,11 @@ function RamaddaNotebookCell(notebook, id, content, props) {
             this.outputHtml = "";
         },
         processHtml: async function(blob) {
+            this.rawOutput+=blob.blob+"\n";
             blob.div.set(blob.blob);
         },
         processWiki: async function(blob) {
+            this.rawOutput+=blob.blob+"\n";
             var id = this.notebook.getProperty("entryId", "");
             await this.getCurrentEntry(e=>entry=e);
             if (entry) id = entry.getId();
@@ -6300,7 +6311,6 @@ function RamaddaNotebookCell(notebook, id, content, props) {
                 state.entries["parent"] = this.parentEntry;
                 state.entries["base"] = this.notebook.getBaseEntry();
                 state.entries["root"] = this.notebook.getRootEntry();
-
                 
                 var stateJS = "notebookStates['" + state.id +"']";
                 jsSet+= "state= " + stateJS+";\n";
@@ -6326,7 +6336,10 @@ function RamaddaNotebookCell(notebook, id, content, props) {
                 }
                 var html = "";
                 if (Utils.stringDefined(state.prefix)) html +=state.prefix;
-                if (state.result) html +=state.result;
+                if (state.result) {
+                    html +=state.result;
+                    this.rawOutput+=html+"\n";
+                }
                 blob.div.append(html);
             } catch (e) {
                 blob.ok = false;
@@ -6337,11 +6350,14 @@ function RamaddaNotebookCell(notebook, id, content, props) {
             }
             notebookStates[state.id] = null;
         },
-           processBlob: async function(blob) {
+         processBlob: async function(blob) {
             if (blob.type == "html") {
                 await  this.processHtml(blob);
             } else if (blob.type == "wiki") {
                 await this.processWiki(blob);
+            } else if (blob.type == "raw") {
+                this.rawOutput+=blob.blob+"\n";
+                return;
             } else if (blob.type == "js") {
                 await this.processJs(blob);
             } else if (blob.type == "sh") {
