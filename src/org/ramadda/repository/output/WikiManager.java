@@ -1446,7 +1446,7 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
 
 
     public Result processWikify(Request request) throws Exception {
-        String wiki = request.getString("text","");
+        String wiki = request.getUnsafeString("text","");
         if(request.defined(ARG_ENTRYID)) {
             if(!request.get("doImports",true)) {
                 request.putExtraProperty("initchart", "added");
