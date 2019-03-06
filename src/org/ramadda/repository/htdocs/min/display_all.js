@@ -823,6 +823,8 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
                     var html = this.getHtml();
                     //                    console.log("html:"+ html);
                     $("#" + divid).html(html);
+                } else {
+                    console.log("error: no div defined for display:" + this.getType());
                 }
             }
         },
@@ -2639,7 +2641,8 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
                 if (title != "" && this.entryId) {
                     label = HtmlUtils.href(this.getRamadda().getEntryUrl(this.entryId), title);
                 }
-                titleDiv = HtmlUtils.tag("span", [ATTR_CLASS, "display-title", ATTR_ID, this.getDomId(ID_TITLE)], this.getDisplayTitle(title));
+                var titleToShow = this.getShowTitle()?this.getDisplayTitle(title):"";
+                titleDiv = HtmlUtils.tag("span", [ATTR_CLASS, "display-title", ATTR_ID, this.getDomId(ID_TITLE)], titleToShow);
                 if (button == "") {
                     left = titleDiv;
                 } else {
@@ -14910,6 +14913,7 @@ function DisplayManager(argId, argProperties) {
                 props = {};
             }
             props.editMode = true;
+            props.layoutHere = false;
             if (type == DISPLAY_LABEL && props.text == null) {
                 var text = prompt("Text");
                 if (text == null) return;
@@ -14935,8 +14939,10 @@ function DisplayManager(argId, argProperties) {
                 if (!haveItAlready) {
                     this.dataList.push(props.data);
                 }
+                //                console.log("data:" + haveItAlready);
             }
 
+            //            console.log("props:" + JSON.stringify(props));
             //Upper case the type name, e.g., linechart->Linechart
             var proc = type.substring(0, 1).toUpperCase() + type.substring(1);
 

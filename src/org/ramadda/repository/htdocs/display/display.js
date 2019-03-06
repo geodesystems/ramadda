@@ -673,6 +673,8 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
                     var html = this.getHtml();
                     //                    console.log("html:"+ html);
                     $("#" + divid).html(html);
+                } else {
+                    console.log("error: no div defined for display:" + this.getType());
                 }
             }
         },
@@ -2489,7 +2491,8 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
                 if (title != "" && this.entryId) {
                     label = HtmlUtils.href(this.getRamadda().getEntryUrl(this.entryId), title);
                 }
-                titleDiv = HtmlUtils.tag("span", [ATTR_CLASS, "display-title", ATTR_ID, this.getDomId(ID_TITLE)], this.getDisplayTitle(title));
+                var titleToShow = this.getShowTitle()?this.getDisplayTitle(title):"";
+                titleDiv = HtmlUtils.tag("span", [ATTR_CLASS, "display-title", ATTR_ID, this.getDomId(ID_TITLE)], titleToShow);
                 if (button == "") {
                     left = titleDiv;
                 } else {

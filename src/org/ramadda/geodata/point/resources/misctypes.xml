@@ -93,7 +93,7 @@ Note - dates are nominal and represent monthly data from 1996-2004
 +col-md-8
 {{group showMenu="true" layoutType="table" layoutColumns="1" showTitle="false" layoutHere="true"}}
 {{display type="linechart" showTitle="false"  fields="etr,ghi" vAxisMinValue="0" vAxisMaxValue="1200"}}
-{{display type="linechart" showTitle="false"  fields="gh_illum"  vAxisMinValue="0" vAxisMaxValue="1200" padRight="true"}}
+{{display type="linechart" showTitle="false"  fields="zenith_lum"  vAxisMinValue="0" vAxisMaxValue="1200" padRight="true"}}
 {{display type="linechart" showTitle="false"  fields="totcld"  padRight="true"}}
 {{display type="linechart" showTitle="false"  fields="dry_bulb,pressure" }}
 -col

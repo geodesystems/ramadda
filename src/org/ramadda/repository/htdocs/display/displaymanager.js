@@ -391,6 +391,7 @@ function DisplayManager(argId, argProperties) {
                 props = {};
             }
             props.editMode = true;
+            props.layoutHere = false;
             if (type == DISPLAY_LABEL && props.text == null) {
                 var text = prompt("Text");
                 if (text == null) return;
@@ -416,8 +417,10 @@ function DisplayManager(argId, argProperties) {
                 if (!haveItAlready) {
                     this.dataList.push(props.data);
                 }
+                //                console.log("data:" + haveItAlready);
             }
 
+            //            console.log("props:" + JSON.stringify(props));
             //Upper case the type name, e.g., linechart->Linechart
             var proc = type.substring(0, 1).toUpperCase() + type.substring(1);
 
