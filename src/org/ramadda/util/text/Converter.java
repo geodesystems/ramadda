@@ -675,7 +675,10 @@ public abstract class Converter extends Processor {
 
                 String field = id + "[" + attrs + "] ";
                 if (i == 0) {
-                    field = "#fields=" + field;
+                    if(toStdOut)
+                        field = "fields=" + field;
+                    else
+                        field = "#fields=" + field;
                 }
                 values.add(field);
             }
