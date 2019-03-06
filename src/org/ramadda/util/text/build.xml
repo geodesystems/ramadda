@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<project basedir="../../../../.." default="all" name="Ramadda">
+
+    <target name="all" depends="">
+        <property file="${basedir}/build.properties"/>
+       <javac
+            verbose="false"
+            classpath="${classpath}"
+            debug="true"
+            deprecation="false" 
+            destdir="."
+            failonerror="true" 
+            nowarn="true"
+            srcdir="${src_dir}"
+            fork="true"
+            memoryMaximumSize="${javac.maxmemory}"
+            source="${javac.version}"
+            target="${javac.version}"
+        >
+        <include name="org/ramadda/util/text/*.java"/>
+        </javac>
+     </target>
+
+</project>
