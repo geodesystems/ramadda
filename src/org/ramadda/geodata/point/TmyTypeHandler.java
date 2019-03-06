@@ -102,6 +102,8 @@ public class TmyTypeHandler extends PointTypeHandler {
     @Override
     public void initializeNewEntry(Request request, Entry entry)
             throws Exception {
+        initializeRecordEntry(entry, entry.getFile());
+
         FileInputStream fis = new FileInputStream(entry.getResource().getPath());
         BufferedReader br = new BufferedReader(new InputStreamReader(fis));
         String line = br.readLine();
