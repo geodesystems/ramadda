@@ -160,7 +160,6 @@ public class TmyTypeHandler extends PointTypeHandler {
          *
          * @throws IOException _more_
          */
-        @Override
         public InputStream xxxdoMakeInputStream(boolean buffered)
                 throws IOException {
             try {
