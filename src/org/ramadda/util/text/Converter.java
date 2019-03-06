@@ -587,7 +587,10 @@ public abstract class Converter extends Processor {
             boolean      debug  = Misc.equals(props.get("debug"), "true");
             PrintWriter  writer = info.getWriter();
             StringBuffer sb     = new StringBuffer();
-            sb.append("#fields=");
+            if(toStdOut)
+                sb.append("fields=");
+            else
+                sb.append("#fields=");
             List values = new ArrayList<String>();
             for (int i = 0; i < firstRow.getValues().size(); i++) {
                 String col    = (String) firstRow.getValues().get(i);
