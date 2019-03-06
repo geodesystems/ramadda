@@ -579,7 +579,7 @@ function RamaddaNotebookCell(notebook, id, content, props) {
             table += HtmlUtils.tr(["valign", "top"], HtmlUtils.td([],"") + HtmlUtils.td([], inputToolbar));
             if(this.notebook.showGutter()) {
                 table += HtmlUtils.tr(["valign", "top"],
-                                      HtmlUtils.td(["rowspan", "3", "width", "5", "class", "display-notebook-gutter-container"], gutter) +
+                                      HtmlUtils.td(["id",this.getDomId(ID_GUTTER_CONTAINER),"rowspan", "3", "width", "5", "class", "display-notebook-gutter-container"], gutter) +
                                       HtmlUtils.td([], ""));
             }
             table += HtmlUtils.tr(["valign", "top"], "\n" + HtmlUtils.td([], input));
@@ -609,6 +609,7 @@ function RamaddaNotebookCell(notebook, id, content, props) {
             this.inputContainer = this.cell.find(".display-notebook-input-container");
             this.inputMenu = this.cell.find(".display-notebook-input-container");
             this.gutter = this.jq(ID_GUTTER);
+            this.gutterContainer = this.jq(ID_GUTTER_CONTAINER);
             this.applyStyle();
             this.gutter.find(".display-notebook-menu-button").click(function(){
                     _this.processCommand($(this).attr("what"));
@@ -618,6 +619,7 @@ function RamaddaNotebookCell(notebook, id, content, props) {
                 });
 
             this.cell.hover(()=>this.checkHover(true), ()=>this.checkHover(false));
+            this.gutterContainer.mousemove(()=>this.checkHover(true));
             this.calculateInputHeight();
             this.input.focus(()=>this.getPopup().hide());
             this.input.click(()=>this.getPopup().hide());
@@ -882,6 +884,10 @@ function RamaddaNotebookCell(notebook, id, content, props) {
 
          },
         checkHover: function(vis) {
+            if(Utils.isDefined(this.lastHover)) {
+                if(vis == this.lastHover) return;
+            }
+            this.lastHover = vis;
             var showingHeader = this.header.is(":visible");
             if (vis) {
                 if(!showingHeader)
