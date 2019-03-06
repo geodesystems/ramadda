@@ -9,7 +9,7 @@
             classpath="${classpath}"
             debug="true"
             deprecation="false" 
-            destdir="."
+            destdir="${compile_dir}"
             failonerror="true" 
             nowarn="true"
             srcdir="${src_dir}"
