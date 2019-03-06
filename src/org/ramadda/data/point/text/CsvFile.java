@@ -163,6 +163,7 @@ public class CsvFile extends TextFile {
     @Override
     public List<RecordField> doMakeFields(boolean failureOk) {
         String fieldString = getProperty(PROP_FIELDS, null);
+        //        System.err.println("CsvFile.props:" + getProperties());
         if (fieldString == null) {
             doQuickVisit();
             fieldString = getProperty(PROP_FIELDS, null);

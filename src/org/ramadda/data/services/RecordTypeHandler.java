@@ -258,10 +258,10 @@ public abstract class RecordTypeHandler extends BlobTypeHandler implements Recor
      *
      * @throws Exception _more_
      */
-    public void initializeRecordEntry(Entry entry, File originalFile)
+    public void initializeRecordEntry(Entry entry, File originalFile, boolean force)
             throws Exception {
 
-        if (anySuperTypesOfThisType()) {
+        if (!force && anySuperTypesOfThisType()) {
             return;
         }
         Hashtable existingProperties = getRecordProperties(entry);
@@ -418,6 +418,7 @@ public abstract class RecordTypeHandler extends BlobTypeHandler implements Recor
             return null;
         }
         //Explicitly set the properties to force a call to initProperties
+        //        System.err.println ("doMakeRecordFile.setProperties:" + properties.get("fields"));
         recordFile.setProperties(properties);
 
         return recordFile;

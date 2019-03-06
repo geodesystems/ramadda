@@ -83,10 +83,11 @@ public class TmyTypeHandler extends PointTypeHandler {
      * @throws Exception _more_
      */
     @Override
-    public RecordFile doMakeRecordFile(Request request, Entry entry)
+    public RecordFile doMakeRecordFile(Entry entry, Hashtable properties,
+                                       Hashtable requestProperties)
             throws Exception {
         return new TmyRecordFile(getRepository(), entry,
-                                 getPathForEntry(request, entry), this);
+                                 entry.getResource().getPath(), this);
     }
 
 
@@ -102,7 +103,8 @@ public class TmyTypeHandler extends PointTypeHandler {
     @Override
     public void initializeNewEntry(Request request, Entry entry)
             throws Exception {
-        initializeRecordEntry(entry, entry.getFile());
+        System.err.println ("initNewEntry");
+        initializeRecordEntry(entry, entry.getFile(), true);
 
         FileInputStream fis = new FileInputStream(entry.getResource().getPath());
         BufferedReader br = new BufferedReader(new InputStreamReader(fis));

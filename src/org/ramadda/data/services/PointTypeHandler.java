@@ -169,7 +169,7 @@ public class PointTypeHandler extends RecordTypeHandler {
             //            return;
         } else {
             //This finds any properties files next to the file
-            initializeRecordEntry(entry, file);
+            initializeRecordEntry(entry, file,false);
         }
 
 
