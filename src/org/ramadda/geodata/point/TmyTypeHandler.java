@@ -105,12 +105,12 @@ public class TmyTypeHandler extends PointTypeHandler {
         FileInputStream fis = new FileInputStream(entry.getResource().getPath());
         BufferedReader br = new BufferedReader(new InputStreamReader(fis));
         String line = br.readLine();
+        //690150,"TWENTYNINE PALMS",CA,-8.0,34.300,-116.167,626
         List<String> toks = StringUtil.split(line,",");
         entry.setName(toks.get(1).replaceAll("\"",""));
         entry.setValue(IDX_STATE, toks.get(2));
         entry.setLocation(Double.parseDouble(toks.get(4)),
                           Double.parseDouble(toks.get(5)));
-        //690150,"TWENTYNINE PALMS",CA,-8.0,34.300,-116.167,626
         fis.close();
     }
 
@@ -161,7 +161,7 @@ public class TmyTypeHandler extends PointTypeHandler {
          * @throws IOException _more_
          */
         @Override
-        public InputStream doMakeInputStream(boolean buffered)
+        public InputStream xxxdoMakeInputStream(boolean buffered)
                 throws IOException {
             try {
                 String filename = "tmy_" + entry.getId() + "_"
