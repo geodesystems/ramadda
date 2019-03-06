@@ -1145,15 +1145,10 @@ height:100%;
 
 
 .display-notebook-header {
+     margin-top:4px;
      min-height:10px;
      width:100%;
-    border:1px #fff solid;
 }
-
-.display-notebook-header:hover {
-   border:1px #ccc solid;
-}
-
 
 .display-notebook-cell {
      border-collapse: collapse;
@@ -1197,12 +1192,15 @@ height:100%;
 
 .display-notebook-gutter {
    height:100%;
-   min-width: 16px;
+   min-width: 18px;
 }
 
 
 .display-notebook-gutter-container {
-   min-width: 18px;
+   text-align:center;
+   min-width: 22px;
+   padding-left:2px;
+   padding-right:2px;
 }
 
 .display-notebook-menu-button:hover {
