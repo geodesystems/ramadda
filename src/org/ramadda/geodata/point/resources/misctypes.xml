@@ -91,9 +91,11 @@ Note - dates are nominal and represent monthly data from 1996-2004
 ----
 +row
 +col-md-8
-{{group showMenu="true" layoutType="table" layoutColumns="1" showTitle="false"}}
-{{display type="linechart" showTitle="false" layoutHere="false" xfields="tmax,tmin"}}
-{{display type="barchart" showTitle="false" layoutHere="false" fields="precipitation"}}
+{{group showMenu="true" layoutType="table" layoutColumns="1" showTitle="false" layoutHere="true"}}
+{{display type="linechart" showTitle="false"  fields="etr,ghi" vAxisMinValue="0" vAxisMaxValue="1200"}}
+{{display type="linechart" showTitle="false"  fields="gh_illum"  vAxisMinValue="0" vAxisMaxValue="1200" padRight="true"}}
+{{display type="linechart" showTitle="false"  fields="totcld"  padRight="true"}}
+{{display type="linechart" showTitle="false"  fields="dry_bulb,pressure" }}
 -col
 +col-md-4
 <center>
@@ -103,6 +105,7 @@ Data courtesy of <a href="https://rredc.nrel.gov/solar/old_data/nsrdb/1991-2005/
 {{map}}
 -col
 -row
+{{display type="table" width="100%" showTitle="false" layoutHere="true" }}
 ]]>
 
 </wiki>
