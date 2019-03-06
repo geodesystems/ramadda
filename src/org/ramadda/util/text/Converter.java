@@ -1246,6 +1246,8 @@ public abstract class Converter extends Processor {
                 sb.append(row.getString(i));
             }
 
+            if(rowCnt<5)
+                System.err.println("combine:" + sb);
             if (inPlace) {
                 row = filterValues(info, row);
                 row.insert(indices.get(0), sb.toString());
