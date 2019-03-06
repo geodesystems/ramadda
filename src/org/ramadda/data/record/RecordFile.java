@@ -137,6 +137,8 @@ public abstract class RecordFile {
     };
 
 
+    private RecordFileContext context;
+
     /**
      * ctor
      */
@@ -174,6 +176,19 @@ public abstract class RecordFile {
         this.filename = filename;
     }
 
+
+    public RecordFile(String filename, RecordFileContext context, Hashtable properties) {
+        this.filename   = filename;
+        this.properties = properties;
+        this.context = context;
+    }
+
+    public String getContextProperty(RecordField field, String key, String dflt) {
+        if(context ==null) return dflt;
+        String v  = context.getFieldProperty(field.getName(), key);
+        if(v==null) return dflt;
+        return v;
+    }
 
     /**
      * _more_
@@ -480,6 +495,9 @@ public abstract class RecordFile {
         }
         if (value == null) {
             value = (String) getProperty(prop, (String) null);
+        }
+        if (value == null) {
+            value = getContextProperty(field, prop, dflt);
         }
 
 

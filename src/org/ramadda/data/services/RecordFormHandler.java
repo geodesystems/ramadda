@@ -330,8 +330,10 @@ public class RecordFormHandler extends RepositoryManager implements RecordConsta
         sb.append(HtmlUtils.formTable());
         sb.append(HtmlUtils.row(HtmlUtils.cols(new Object[] {
             HtmlUtils.b(msg("Field Name")),
-            HtmlUtils.b(msg("Label")), HtmlUtils.b(msg("Description")),
-            HtmlUtils.b(msg("Unit")), HtmlUtils.b(msg("Type")) })));
+            HtmlUtils.b(msg("Label")), 
+            HtmlUtils.b(msg("Unit")),
+            HtmlUtils.b(msg("Description")),
+            HtmlUtils.b(msg("Type")) })));
 
         int cnt = 0;
         for (RecordField field : fields) {
@@ -352,7 +354,7 @@ public class RecordFormHandler extends RepositoryManager implements RecordConsta
                                : field.getType();
             sb.append(HtmlUtils.rowTop(HtmlUtils.cols(new Object[] {
                 field.getName(),
-                field.getLabel(), field.getDescription(), unit,
+                field.getLabel(), unit, field.getDescription(), 
                 ((typeLabel == null)
                  ? ""
                  : typeLabel) })));

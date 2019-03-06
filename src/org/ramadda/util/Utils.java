@@ -3016,6 +3016,16 @@ public class Utils {
      * @throws Exception _more_
      */
     public static void main(String[] args) throws Exception {
+        if(true) {
+            String fmt = "yyyy-MM-dd HH:mm";
+            String date = "1996-22-08 08:00";
+            System.err.println(new SimpleDateFormat(fmt).parse(date));
+            return;
+        }
+
+
+
+
         String ds = "2019-02-20T10:00 UTC";
         System.err.println(parseDate(ds));
         if (true) {

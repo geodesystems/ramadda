@@ -20,6 +20,7 @@ package org.ramadda.data.services;
 import org.ramadda.data.point.PointFile;
 import org.ramadda.data.point.PointMetadataHarvester;
 import org.ramadda.data.record.RecordFile;
+import org.ramadda.data.record.RecordFileContext;
 import org.ramadda.data.record.RecordFileFactory;
 import org.ramadda.data.record.RecordVisitorGroup;
 
@@ -67,7 +68,7 @@ import java.util.List;
  * @author Jeff McWhirter
  * @version $Revision: 1.3 $
  */
-public abstract class RecordTypeHandler extends BlobTypeHandler implements RecordConstants {
+public abstract class RecordTypeHandler extends BlobTypeHandler implements RecordConstants, RecordFileContext  {
 
     /** _more_ */
     public static final int IDX_RECORD_COUNT = 0;
@@ -110,6 +111,18 @@ public abstract class RecordTypeHandler extends BlobTypeHandler implements Recor
     public RecordTypeHandler(Repository repository, Element node)
             throws Exception {
         super(repository, node);
+    }
+
+
+    public String getContextNamespace() {
+        return getTypeProperty("record.namespace", "record");
+    }
+
+    public String getFieldProperty(String field, String key) {
+        key = getContextNamespace() +"." + field +"." + key;
+        String v = getRepository().getProperty(key);
+        if(v!=null && v.trim().length()>0) return v;
+        return null;
     }
 
     /**

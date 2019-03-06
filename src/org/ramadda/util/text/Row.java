@@ -53,6 +53,8 @@ public class Row {
     /** _more_ */
     private List values;
 
+    private Object skipTo;
+
     /**
      * _more_
      */
@@ -91,6 +93,28 @@ public class Row {
     public Row(String line, String delimiter) {
         this(Utils.tokenizeColumns(line, delimiter));
     }
+
+
+/**
+Set the SkipTo property.
+
+@param value The new value for SkipTo
+**/
+public void setSkipTo (Object value) {
+	skipTo = value;
+}
+
+/**
+Get the SkipTo property.
+
+@return The SkipTo
+**/
+public Object getSkipTo () {
+	return skipTo;
+}
+
+
+
 
 
     /**

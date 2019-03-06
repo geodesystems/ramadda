@@ -142,10 +142,6 @@ public abstract class Converter extends Processor {
             for (Integer idx : indices) {
                 if (idx < row.size()) {
                     String s = row.getString(idx);
-                    //                    if(s.indexOf("ROOFING") >=0) {
-                    //                        System.err.println("Line:" + theLine);
-                    //                        System.err.println("Cols:" + cols);
-                    //                    }
                     result.add(s);
                 }
             }
@@ -540,6 +536,8 @@ public abstract class Converter extends Processor {
         /** _more_ */
         boolean defaultChartable = true;
 
+        boolean makeLabel = true;
+
         /** _more_          */
         Row firstRow;
 
@@ -556,6 +554,8 @@ public abstract class Converter extends Processor {
                                             defaultType);
             defaultChartable = CsvUtil.getDbProp(props, "default",
                     "chartable", true);
+            makeLabel = CsvUtil.getDbProp(props, null, "makeLabel",
+                                          true);
         }
 
 
@@ -578,7 +578,6 @@ public abstract class Converter extends Processor {
             }
             if (firstRow == null) {
                 firstRow = row;
-
                 return null;
             }
             boolean      debug  = Misc.equals(props.get("debug"), "true");
@@ -607,7 +606,7 @@ public abstract class Converter extends Processor {
 
                 String label = CsvUtil.getDbProp(props, id, "label",
                                    (String) null);
-                if (label == null) {
+                if (makeLabel && label == null) {
                     label = Utils.makeLabel(col.replaceAll("\\([^\\)]+\\)",
                             ""));
                 }
@@ -615,7 +614,8 @@ public abstract class Converter extends Processor {
                                   ".*?\\(([^\\)]+)\\).*");
                 //                    System.err.println ("COL:" + col +" unit: " + unit);
                 StringBuffer attrs = new StringBuffer();
-                attrs.append("label=\"" + label + "\" ");
+                if(label!=null)
+                    attrs.append("label=\"" + label + "\" ");
                 if (unit != null) {
                     attrs.append("unit=\"" + unit + "\" ");
 
@@ -675,6 +675,7 @@ public abstract class Converter extends Processor {
 
             firstRow.setValues(values);
             info.setExtraRow(row);
+            row.setSkipTo(this);
             Row tmp = firstRow;
             firstRow = null;
             if (debug) {

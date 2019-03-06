@@ -133,6 +133,9 @@ public abstract class TextFile extends PointFile {
     }
 
 
+    public TextFile(String filename, RecordFileContext context, Hashtable properties) {
+        super(filename, context, properties);
+    }
 
     /**
      * _more_

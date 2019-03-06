@@ -2455,6 +2455,9 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
         getHtml: function() {
             var dobs = this.getDoBs();
             var html = "";
+            var menu = HtmlUtils.div([ATTR_CLASS, "display-dialog", ATTR_ID, this.getDomId(ID_DIALOG)], "");
+            html += menu;
+            html += HtmlUtils.div([ATTR_CLASS, "ramadda-popup", ATTR_ID, this.getDomId(ID_MENU_OUTER)], "");
             var width = this.getWidth();
             if (dobs) {
                 html += HtmlUtils.openDiv(["class", "minitron"]);
@@ -2465,8 +2468,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
                 html += HtmlUtils.openDiv(["class", "display-contents"]);
             }
 
-            html += HtmlUtils.div([ATTR_CLASS, "ramadda-popup", ATTR_ID, this.getDomId(ID_MENU_OUTER)], "");
-            var menu = HtmlUtils.div([ATTR_CLASS, "display-dialog", ATTR_ID, this.getDomId(ID_DIALOG)], "");
+
             var get = this.getGet();
             var button = "";
             if (this.getShowMenu()) {
@@ -2501,7 +2503,6 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             var contents = this.getContentsDiv();
             //                contents  = "CONTENTS";
             html += contents;
-            html += menu;
             html += HtmlUtils.closeTag(TAG_DIV);
             if (dobs) {
                 html += HtmlUtils.closeTag(TAG_DIV);

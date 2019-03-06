@@ -532,7 +532,6 @@ text-align:left;
 .display-cell {
   padding:10px;
   max-width:100%;
-  overflow-x:auto;
 }
 
 .display-contents-inner {

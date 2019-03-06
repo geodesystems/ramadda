@@ -776,9 +776,10 @@ public class CsvUtil {
      */
     public static String getDbProp(Hashtable<String, String> props,
                                    String colId, String prop, String dflt) {
-        String value = props.get("-" + colId + "." + prop);
+        String key  = colId==null?prop:colId+"." + prop;
+        String value = props.get("-" + key);
         if (value == null) {
-            value = props.get(colId + "." + prop);
+            value = props.get(key);
         }
         if (value != null) {
             return value;
@@ -904,6 +905,7 @@ public class CsvUtil {
             return true;
         }
 
+
         textReader.initRow(row);
         if ((textReader.getMaxRows() >= 0)
                 && (textReader.getVisitedRows() > textReader.getMaxRows())) {
@@ -916,7 +918,7 @@ public class CsvUtil {
             }
             if (textReader.getExtraRow() != null) {
                 row = textReader.getProcessor().processRow(textReader,
-                        textReader.getExtraRow(), null);
+                                                           textReader.getExtraRow(), null);
                 textReader.setExtraRow(null);
             }
             if ( !textReader.getOkToRun()) {
@@ -2211,7 +2213,10 @@ public class CsvUtil {
      * @return _more_
      */
     private Hashtable<String, String> parseProps(String s) {
+        s = s.replaceAll("_quote_","\"");
         List<String>              toks  = Utils.parseCommandLine(s);
+        //        System.err.println("s:" + s);
+        //        System.err.println("toks:" + toks);
         Hashtable<String, String> props = new Hashtable<String, String>();
         for (int j = 0; j < toks.size(); j += 2) {
             if (j >= toks.size() - 1) {

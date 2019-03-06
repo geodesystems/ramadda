@@ -321,12 +321,19 @@ public abstract class Processor extends CsvOperator {
                 */
             }
 
+            Object skipTo = row.getSkipTo();
             boolean sawBufferer = false;
             if (remainderProcessors == null) {
                 remainderProcessors = new ArrayList<Processor>();
                 firstProcessors     = new ArrayList<Processor>();
                 for (int i = 0; i < processors.size(); i++) {
                     Processor processor = processors.get(i);
+                    if(skipTo!=null) {
+                        if(skipTo == processor) {
+                            skipTo = null;
+                        }
+                        continue;
+                    }
                     if (sawBufferer) {
                         remainderProcessors.add(processor);
                     } else {
@@ -340,6 +347,12 @@ public abstract class Processor extends CsvOperator {
 
             boolean firstRow = rowCnt++ == 0;
             for (Processor processor : firstProcessors) {
+                if(skipTo!=null) {
+                    if(skipTo == processor) {
+                        skipTo = null;
+                    }
+                    continue;
+                }
                 if (firstRow) {
                     processor.setHeader(row.getValues());
                 }
@@ -902,11 +915,10 @@ public abstract class Processor extends CsvOperator {
                 return row;
             }
             handleRow(info.getWriter(), row);
-
             return row;
         }
 
-
+        int xxcnt=0;
 
         /**
          * _more_
@@ -2131,6 +2143,7 @@ public abstract class Processor extends CsvOperator {
         @Override
         public List<Row> finish(TextReader info, List<Row> rows)
                 throws Exception {
+            System.err.println("sort.finish");
             rows = new ArrayList<Row>(getRows(rows));
             if (rows.size() == 0) {
                 return rows;
@@ -2139,7 +2152,6 @@ public abstract class Processor extends CsvOperator {
             rows.remove(0);
             Collections.sort(rows, new Row.RowCompare(index));
             rows.add(0, headerRow);
-
             return rows;
         }
     }

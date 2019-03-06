@@ -65,9 +65,49 @@ Data courtesy of <a href="https://daymet.ornl.gov/">ORNL Daymet</a>
 
 </wiki>
 
+
+
+
   </type>
 
 
+
+
+  <type name="type_tmy"  description="NREL TMY Data" super="type_point" category="Point Data" foruser="true" handler="org.ramadda.geodata.point.TmyTypeHandler">
+     <property name="icon" value="/point/nrel.png"/>
+     <property name="form.area.show" value="false"/>
+     <property name="form.location.show" value="true"/>
+     <property name="form.url.show" value="false"/>
+     <property name="point.default.max" value="10000"/>
+
+     <column  name="state"  label="State" type="enumeration"  />
+<wiki>
+<![CDATA[
++section  title="NREL TMY Data: {{name}}"
+{{description wikify=true}}
+----
++row
++col-md-8
+{{group showMenu="true" layoutType="table" layoutColumns="1" showTitle="false"}}
+{{display type="linechart" showTitle="false" layoutHere="false" xfields="tmax,tmin"}}
+{{display type="barchart" showTitle="false" layoutHere="false" fields="precipitation"}}
+-col
++col-md-4
+<center>
+Data courtesy of <a href="https://rredc.nrel.gov/solar/old_data/nsrdb/1991-2005/tmy3//">NREL</a>
+{{resource  message="" title="Download Data"}}
+</center>
+{{map}}
+-col
+-row
+]]>
+
+</wiki>
+
+
+
+
+  </type>
 
 
 

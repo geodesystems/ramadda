@@ -216,6 +216,11 @@ public abstract class PointFile extends RecordFile implements Cloneable,
 
 
 
+    public PointFile(String filename, RecordFileContext context, Hashtable properties) {
+        super(filename, context, properties);
+    }
+
+
     /**
      * _more_
      *
@@ -1072,12 +1077,16 @@ public abstract class PointFile extends RecordFile implements Cloneable,
             }
             String label = getProperty(field, properties, ATTR_LABEL,
                                        (String) null);
+            String desc = getProperty(field, properties, "description",
+                                      (String) null);
             if (label == null) {
-                label = getProperty(field, properties, "description",
-                                    (String) null);
+                label = desc;
             }
             if (label != null) {
                 field.setLabel(label);
+            }
+            if (desc != null) {
+                field.setDescription(desc);
             }
             DataRecord.initField(field);
             fields.add(field);

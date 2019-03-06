@@ -278,6 +278,8 @@ public class Filter extends Converter {
         /** _more_          */
         boolean isTemplate = false;
 
+        boolean debug = false;
+
         /**
          *
          * _more_
@@ -338,6 +340,8 @@ public class Filter extends Converter {
                 isTemplate = true;
             } else {
                 isTemplate   = false;
+                //                if(pattern.equals("1996")) debug = true;
+                //                System.err.println("p:" + pattern);
                 this.pattern = Pattern.compile(pattern);
             }
         }
@@ -386,9 +390,11 @@ public class Filter extends Converter {
             //            System.out.println("v:" + v);
             if (pattern.matcher(v).find()) {
                 //                System.out.println("OK");
+                if(debug) System.err.println ("R3:" + doNegate(true) +" " +row);
                 return doNegate(true);
             }
 
+            //            if(debug) System.err.println ("R4:" + doNegate(false) +" " +row);
             return doNegate(false);
         }
 

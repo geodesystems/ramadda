@@ -494,7 +494,7 @@ public class PointTypeHandler extends RecordTypeHandler {
      */
     public int getDefaultMax(Request request, Entry entry, String tag,
                              Hashtable props) {
-        return 5000;
+        return  getTypeProperty("point.default.max", 5000);
     }
 
     /**

@@ -75,6 +75,10 @@ public class CsvFile extends TextFile {
     }
 
 
+    public CsvFile(String filename, RecordFileContext context, Hashtable properties) {
+        super(filename, context, properties);
+    }
+
     /**
      * _more_
      *

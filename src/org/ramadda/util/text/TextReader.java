@@ -153,7 +153,6 @@ public class TextReader implements Cloneable {
     /** _more_          */
     private Row extraRow;
 
-
     /** _more_ */
     private List header;
 
@@ -265,7 +264,6 @@ public class TextReader implements Cloneable {
     public Row getExtraRow() {
         return extraRow;
     }
-
 
 
 
