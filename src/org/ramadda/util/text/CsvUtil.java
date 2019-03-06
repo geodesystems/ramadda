@@ -94,6 +94,7 @@ public class CsvUtil {
     /** _more_ */
     private boolean verbose = false;
 
+    private int rawLines = 0;
 
     /** _more_ */
     private String delimiter;
@@ -843,6 +844,11 @@ public class CsvUtil {
                 if (line == null) {
                     break;
                 }
+                if(rawLines>0) {
+                    textReader.getWriter().println(line);
+                    rawLines--;
+                    continue;
+                }
                 if (verbose) {
                     if (((++cnt) % 1000) == 0) {
                         System.err.println("processed:" + cnt);
@@ -1100,6 +1106,7 @@ public class CsvUtil {
             "-columns", "<e.g., 0,1,2,7-10,12>",
             "(A comma separated list of columns #s or column range, 0-based. Extract the given columns)"),
         new Cmd("-skip", "<how many lines to skip>"),
+        new Cmd("-rawlines", "<how many lines to pass through unprocesed>"),
         new Cmd("-cut", "<one or more rows. -1 to the end>"),
         new Cmd("-include", "<one or more rows, -1 to the end>"),
         new Cmd("-pattern", "<col #> <regexp pattern>",
@@ -1478,6 +1485,12 @@ public class CsvUtil {
                 continue;
             }
 
+
+
+            if (arg.equals("-rawlines")) {
+                rawLines = Integer.parseInt(args.get(++i));
+                continue;
+            }
 
 
             if (arg.equals("-delimiter")) {
