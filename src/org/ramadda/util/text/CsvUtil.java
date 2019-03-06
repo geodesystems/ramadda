@@ -1637,7 +1637,6 @@ public class CsvUtil {
                 continue;
             }
 
-
             if (arg.equals("-pointheader")) {
                 info.getProcessor().addProcessor(
                     new Converter.PrintHeader(true));

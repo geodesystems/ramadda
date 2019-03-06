@@ -536,7 +536,9 @@ public abstract class Converter extends Processor {
         /** _more_ */
         boolean defaultChartable = true;
 
+
         boolean makeLabel = true;
+        boolean toStdOut = false;
 
         /** _more_          */
         Row firstRow;
@@ -556,6 +558,8 @@ public abstract class Converter extends Processor {
                     "chartable", true);
             makeLabel = CsvUtil.getDbProp(props, null, "makeLabel",
                                           true);
+            toStdOut =  CsvUtil.getDbProp(props, null, "stdout",
+                                          false);
         }
 
 
@@ -673,6 +677,11 @@ public abstract class Converter extends Processor {
                 values.add(field);
             }
 
+            if(toStdOut) {
+                System.out.println(StringUtil.join(",",values));
+                info.stopRunning();
+                return firstRow;
+            }
             firstRow.setValues(values);
             info.setExtraRow(row);
             row.setSkipTo(this);
