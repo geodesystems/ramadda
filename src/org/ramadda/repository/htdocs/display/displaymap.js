@@ -170,10 +170,10 @@ function RamaddaMapDisplay(displayManager, id, properties) {
                 theDisplay.mapBoundsChanged();
             });
 
-            if (this.getProperty("bounds") && this.getProperty("showBounds", true)) {
+            if (this.getProperty("bounds")) {
                 var toks = this.getProperty("bounds", "").split(",");
                 if (toks.length == 4) {
-                    if (this.getProperty("showBounds"), true) {
+                    if (this.getProperty("showBounds", true)) {
                         var attrs = {};
                         if (this.getProperty("boundsColor")) {
                             attrs.strokeColor = this.getProperty("boundsColor", "");
@@ -501,8 +501,11 @@ function RamaddaMapDisplay(displayManager, id, properties) {
             return [lat, lon];
         },
 
+        haveInitBounds: false,
         setInitMapBounds: function(north, west, south, east) {
             if (!this.map) return;
+            if(this.haveInitBounds) return;
+            this.haveInitBounds = true;
             this.map.centerOnMarkers(new OpenLayers.Bounds(west, south, east,
                 north));
         },
