@@ -7842,7 +7842,10 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
             this.chart = this.doMakeGoogleChart(dataList, props, selectedFields, this.chartOptions);
             if (this.chart != null) {
                 var dataTable = this.makeDataTable(dataList, props, selectedFields);
-                if (!dataTable) return;
+                if (!dataTable) {
+                    this.setContents(this.getMessage("No data available"));
+                    return;
+                }
                 if (!Utils.isDefined(this.chartOptions.height)) {
                     this.chartOptions.height = "100%";
                 }
@@ -8709,7 +8712,7 @@ function TreemapDisplay(displayManager, id, properties) {
 
         doMakeGoogleChart: function(dataList, props, selectedFields, chartOptions) {
             var dataTable = this.makeDataTable(dataList, props, selectedFields);
-            if (!dataTable) return;
+            if (!dataTable) return null;
             return new google.visualization.TreeMap(document.getElementById(this.getChartId()));
         },
 
@@ -8952,9 +8955,13 @@ function CalendarDisplay(displayManager, id, properties) {
         canDoMultiFields: function() {
             return false;
         },
+        getIncludeIndexIfDate: function() {
+            return true;
+        },
         makeDataTable: function(dataList, props, selectedFields) {
             var dataTable = new google.visualization.DataTable();
             var header = this.getDataValues(dataList[0]);
+            if(header.length<2) return null;
             dataTable.addColumn({
                 type: 'date',
                 id: 'Date'
