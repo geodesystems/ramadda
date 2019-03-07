@@ -56,7 +56,7 @@
 
 
 
-.display-correlation .side-heading {
+.display-correlation-heading-side {
     font-weight: bold;
     padding-top:2px;
     padding-bottom:2px;
@@ -78,7 +78,7 @@
 
 
 
-.display-correlation .top-heading {
+.display-correlation-heading-top {
 //    background-color: #efefef;
     height:100%;
     vertical-align: bottom;
@@ -229,7 +229,7 @@
 .display-heatmap {
 }
 
-.display-heatmap .side-heading {
+.display-heatmap-heading-side {
     font-weight: bold;
     padding-top:2px;
     padding-bottom:2px;
@@ -249,7 +249,7 @@
 
 
 
-.display-heatmap .top-heading {
+.display-heatmap-heading-top {
     height:100%;
     vertical-align: bottom;
     font-weight: bold;
