@@ -4432,72 +4432,11 @@ public class TypeHandler extends RepositoryManager {
                         }
                     }
 
-                    String addMetadata =
-                        HtmlUtils.checkbox(ARG_METADATA_ADD, "true",
-                            Misc.equals(getFormDefault(entry,
-                                ARG_METADATA_ADD,
-                                "false"), "false")) + HtmlUtils.space(1)
-                                    + msg("Add properties")
-                                    + HtmlUtils.space(1)
-                                    + HtmlUtils.checkbox(ARG_METADATA_ADDSHORT)
-                                    + HtmlUtils.space(1)
-                                    + msg("Just spatial/temporal properties");
-
-                    List datePatterns = new ArrayList();
-                    datePatterns.add(new TwoFacedObject("", BLANK));
-                    for (int i = 0; i < DateUtil.DATE_PATTERNS.length; i++) {
-                        datePatterns.add(DateUtil.DATE_FORMATS[i]);
-                    }
-
-                    String unzipWidget =
-                        HtmlUtils.checkbox(ARG_FILE_UNZIP, "true", true)
-                        + HtmlUtils.space(1) + msg("Unzip archive") + " "
-                        + HtmlUtils.checkbox(
-                            ARG_FILE_PRESERVEDIRECTORY, "true",
-                            false) + HtmlUtils.space(1)
-                                   + msg("Make folders from archive");
-                    String makeNameWidget =
-                        HtmlUtils.checkbox(ARG_MAKENAME, "true", true)
-                        + HtmlUtils.space(1) + msg("Make name from filename");
-
-                    String deleteFileWidget = ((entry != null)
-                                               && entry.isFile())
-                            ? HtmlUtils.checkbox(ARG_DELETEFILE, "true",
-                                false) + HtmlUtils.space(1)
-                                       + msg("Delete file")
-                            : "";
 
 
-                    /*
-                      String datePatternWidget = msgLabel("Date pattern")
-                      + HtmlUtils.space(1)
-                      + HtmlUtils.select(ARG_DATE_PATTERN,
-                      datePatterns) + " ("
-                      + msg("Use file name") + ")";
-
-                    */
-
-                    String datePatternWidget =
-                        msgLabel("Date pattern") + HtmlUtils.space(1)
-                        + HtmlUtils.input(ARG_DATE_PATTERN,
-                            request.getString(ARG_DATE_PATTERN,
-                                "")) + " (e.g., yyyy_MM_dd, yyyyMMdd_hhMM, etc. )";
+                    String extras = getFileExtras(request, entry);
 
 
-
-                    String extraMore = "";
-
-                    if ((entry == null) && getType().equals(TYPE_FILE)) {
-                        extraMore = HtmlUtils.checkbox(ARG_TYPE_GUESS,
-                                "true", true) + " "
-                                    + msg("Figure out the type")
-                                    + HtmlUtils.br();
-                    }
-
-                    String extras = extraMore + addMetadata + HtmlUtils.br()
-                                    + unzipWidget + HtmlUtils.br()
-                                    + makeNameWidget + HtmlUtils.br()
-                                    + deleteFileWidget;
                     /*datePatternWidget*/
 
                     String extra =
@@ -4646,6 +4585,79 @@ public class TypeHandler extends RepositoryManager {
     }
 
 
+
+
+    public String getFileExtras(Request request, Entry entry) throws Exception {
+        String addMetadata =
+            HtmlUtils.checkbox(ARG_METADATA_ADD, "true",
+                               Misc.equals(getFormDefault(entry,
+                                                          ARG_METADATA_ADD,
+                                                          "false"), "false")) + HtmlUtils.space(1)
+            + msg("Add properties")
+            + HtmlUtils.space(1)
+            + HtmlUtils.checkbox(ARG_METADATA_ADDSHORT)
+            + HtmlUtils.space(1)
+            + msg("Just spatial/temporal properties");
+
+        List datePatterns = new ArrayList();
+        datePatterns.add(new TwoFacedObject("", BLANK));
+        for (int i = 0; i < DateUtil.DATE_PATTERNS.length; i++) {
+            datePatterns.add(DateUtil.DATE_FORMATS[i]);
+        }
+
+        String unzipWidget =
+            HtmlUtils.checkbox(ARG_FILE_UNZIP, "true", true)
+            + HtmlUtils.space(1) + msg("Unzip archive") + " "
+            + HtmlUtils.checkbox(
+                                 ARG_FILE_PRESERVEDIRECTORY, "true",
+                                 false) + HtmlUtils.space(1)
+            + msg("Make folders from archive");
+        String makeNameWidget =
+            HtmlUtils.checkbox(ARG_MAKENAME, "true", true)
+            + HtmlUtils.space(1) + msg("Make name from filename");
+
+        String deleteFileWidget = ((entry != null)
+                                   && entry.isFile())
+            ? HtmlUtils.checkbox(ARG_DELETEFILE, "true",
+                                 false) + HtmlUtils.space(1)
+            + msg("Delete file")
+            : "";
+
+
+        /*
+          String datePatternWidget = msgLabel("Date pattern")
+          + HtmlUtils.space(1)
+          + HtmlUtils.select(ARG_DATE_PATTERN,
+          datePatterns) + " ("
+          + msg("Use file name") + ")";
+
+        */
+
+        String datePatternWidget =
+            msgLabel("Date pattern") + HtmlUtils.space(1)
+            + HtmlUtils.input(ARG_DATE_PATTERN,
+                              request.getString(ARG_DATE_PATTERN,
+                                                "")) + " (e.g., yyyy_MM_dd, yyyyMMdd_hhMM, etc. )";
+
+
+
+        String extraMore = "";
+
+        if ((entry == null) && getType().equals(TYPE_FILE)) {
+            extraMore = HtmlUtils.checkbox(ARG_TYPE_GUESS,
+                                           "true", true) + " "
+                + msg("Figure out the type")
+                + HtmlUtils.br();
+        }
+
+
+        String extras = extraMore + addMetadata + HtmlUtils.br()
+            + unzipWidget + HtmlUtils.br()
+            + makeNameWidget + HtmlUtils.br()
+            + deleteFileWidget;
+        return extras;
+
+    }
 
 
     /**

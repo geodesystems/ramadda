@@ -95,7 +95,7 @@ public class LatLonImageTypeHandler extends GenericTypeHandler {
         JobManager.CommandResults results;
         JobManager job = getRepository().getJobManager();
         
-        if(_path.endsWith(".grd")) {
+        if(request.get("makehillshade",false)) {
             File tmp = getStorageManager().getTmpFile(request, "tmp.tif");
             results = job.executeCommand((List<String>)Utils.makeList(gdalDem, "hillshade","-of","GTiff", srcTiff.toString(),tmp.toString()), work);
             
@@ -145,6 +145,14 @@ public class LatLonImageTypeHandler extends GenericTypeHandler {
         }
 
 
+    }
+
+    @Override
+    public String getFileExtras(Request request, Entry entry) throws Exception {
+        String extra  = super.getFileExtras(request, entry);
+        String mine =   "If data then:<br>" + 
+            HtmlUtils.checkbox("makehillshade", "true", false) +" Make hillshade<br>";
+        return mine +extra;
     }
 
     /**
