@@ -7815,7 +7815,7 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
                 else if (width < 0)
                     style += "width:" + (-width) + "%;";
                 else
-                    style += "width:" + width;
+                    style += "width:" + width+";";
             } else {
                 style += "width:" + "100%;";
             }
@@ -7826,11 +7826,10 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
                 else if (height < 0)
                     style += "height:" + (-height) + "%;";
                 else
-                    style += "height:" + height;
+                    style += "height:" + height+";";
             } else {
                 style += "height:" + "100%;";
             }
-            console.log("style:" + style);
             divAttrs.push(style);
             return HtmlUtils.div(divAttrs, "");
         },
@@ -8138,7 +8137,7 @@ function PiechartDisplay(displayManager, id, properties) {
                 else if (width < 0)
                     style += "width:" + (-width) + "%;";
                 else
-                    style += "width:" + width;
+                    style += "width:" + width+";";
             } else {
                 style += "width:" + "100%;";
             }
@@ -8149,7 +8148,7 @@ function PiechartDisplay(displayManager, id, properties) {
                 else if (height < 0)
                     style += "height:" + (-height) + "%;";
                 else
-                    style += "height:" + height;
+                    style += "height:" + height+";";
             } else {
                 style += "height:" + "100%;";
             }
