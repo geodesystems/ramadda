@@ -1024,6 +1024,7 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
             } else {
                 style += "height:" + "100%;";
             }
+            console.log("style:" + style);
             divAttrs.push(style);
             return HtmlUtils.div(divAttrs, "");
         },
