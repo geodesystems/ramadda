@@ -110,13 +110,13 @@ public class LatLonImageTypeHandler extends GenericTypeHandler {
         results = getRepository().getJobManager().executeCommand(commands,
                 null, workingDir, 60, new PrintWriter(bos1),
                 new PrintWriter(bos2));
-        String err = new String(bos2.getByteArray());
-        if(err.length>0) {
+        String err = new String(bos2.toByteArray());
+        if(err.length()>0) {
             System.err.println("error:" + err);
             throw new IllegalArgumentException("georeferencing geotiff failed:" + err);
         }
 
-        System.err.println("ok:" + new String(bos1.getByteArray()));
+        System.err.println("ok:" + new String(bos1.toByteArray()));
         File png = getStorageManager().getTmpFile(
                        request,
                        IOUtil.stripExtension(
