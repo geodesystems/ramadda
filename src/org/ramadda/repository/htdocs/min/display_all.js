@@ -9735,25 +9735,40 @@ function RamaddaCorrelationDisplay(displayManager, id, properties) {
             var allFields = this.dataCollection.getList()[0].getRecordFields();
             var fields = this.getSelectedFields([]);
             if (fields.length == 0) fields = allFields;
-            var html = HtmlUtils.openTag("table", ["border", "0", "class", "display-correlation"]);
-            html += "<tr valign=bottom><td class=display-heading>&nbsp;</td>";
+            var fieldCnt = 0;
             for (var fieldIdx = 0; fieldIdx < fields.length; fieldIdx++) {
                 var field1 = fields[fieldIdx];
                 if (!field1.isFieldNumeric() || field1.isFieldGeo()) continue;
-                html += "<td align=center class=top-heading>" + HtmlUtils.tag("div", ["class", "top-heading"], field1.getLabel()) + "</td>";
+                fieldCnt++;
             }
-            html += "</tr>";
+
+            var html = HtmlUtils.openTag("table", ["border", "0", "class", "display-correlation","width","100%"]);
+            var col1Width = 10+"%";
+            var width = 90/fieldCnt +"%";
+            html += "\n<tr valign=bottom><td class=display-heading width=" + col1Width+">&nbsp;</td>";
+            var short = this.getProperty("short",fieldCnt>8);
+            var showValue = this.getProperty("showValue",!short);
+            var useId = this.getProperty("useId",true);
+            var useIdTop = this.getProperty("useIdTop",useId);
+            var useIdSide = this.getProperty("useIdSide",useId);
+            for (var fieldIdx = 0; fieldIdx < fields.length; fieldIdx++) {
+                var field1 = fields[fieldIdx];
+                if (!field1.isFieldNumeric() || field1.isFieldGeo()) continue;
+                var label =useIdTop? field1.getId(): field1.getLabel();
+                if(short)  label  = "";
+                html += "<td align=center class=top-heading width=" + width+">" + HtmlUtils.tag("div", ["class", "top-heading"], label) + "</td>";
+            }
+            html += "</tr>\n";
 
             var colors = null;
             colorByMin = parseFloat(this.colorByMin);
             colorByMax = parseFloat(this.colorByMax);
             colors = this.getColorTable(true);
-            var colCnt = 0;
             for (var fieldIdx1 = 0; fieldIdx1 < fields.length; fieldIdx1++) {
                 var field1 = fields[fieldIdx1];
                 if (!field1.isFieldNumeric() || field1.isFieldGeo()) continue;
-                colCnt++;
-                html += "<tr><td>" + HtmlUtils.tag("div", ["class", "side-heading"], field1.getLabel().replace(/ /g, "&nbsp;")) + "</td>";
+                var label =useIdSide? field1.getId(): field1.getLabel();
+                html += "<tr valign=center><td>" + HtmlUtils.tag("div", ["class", "side-heading"], label.replace(/ /g, "&nbsp;")) + "</td>";
                 var rowName = field1.getLabel();
                 for (var fieldIdx2 = 0; fieldIdx2 < fields.length; fieldIdx2++) {
                     var field2 = fields[fieldIdx2];
@@ -9794,11 +9809,14 @@ function RamaddaCorrelationDisplay(displayManager, id, properties) {
                         else if (index < 0) index = 0;
                         style = "background-color:" + colors[index];
                     }
-                    html += "<td align=right style=\"" + style + "\">" + HtmlUtils.tag("div", ["class", "display-correlation-element", "title", "&rho;(" + rowName + "," + colName + ")"], r.toFixed(3)) + "</td>";
+                    var value = r.toFixed(3);
+                    var label = value;
+                    if(!showValue || short)  label  = "&nbsp;";
+                    html += "<td class=display-correlation-cell align=right style=\"" + style + "\">" + HtmlUtils.tag("div", ["class", "display-correlation-element", "title", "&rho;(" + rowName + "," + colName + ") = " + value], label) + "</td>";
                 }
                 html += "</tr>";
             }
-            html += "<tr><td></td><td colspan = " + colCnt + ">" + HtmlUtils.div(["id", this.getDomId(ID_BOTTOM)], "") + "</td></tr>";
+            html += "<tr><td></td><td colspan = " + (fieldCnt+1) + ">" + HtmlUtils.div(["id", this.getDomId(ID_BOTTOM)], "") + "</td></tr>";
             html += "</table>";
             this.setContents(html);
             this.displayColorTable(colors, ID_BOTTOM, colorByMin, colorByMax);

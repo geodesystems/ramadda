@@ -105,7 +105,10 @@ Data courtesy of <a href="https://rredc.nrel.gov/solar/old_data/nsrdb/1991-2005/
 {{map}}
 -col
 -row
-{{display type="table" width="100%" showTitle="false" layoutHere="true" }}
+{{display type="correlation" width="100%" showTitle="true" title="Correlation" layoutHere="true" short="true"
+useIdTop="true" useIdSide="false"
+fields="etr,etrn,ghi,dni,dhi,gh_illum,dn_illum,dh_illum,zenith_lum,totcld,opqcld,dry_bulb,dew_point,rhum,pressure,hvis,ceilhgt,pwat,aod,alb"
+}}
 -section
 ]]>
 
