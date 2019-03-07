@@ -20,12 +20,23 @@ package org.ramadda.plugins.map;
 import org.ramadda.repository.Entry;
 import org.ramadda.repository.Repository;
 import org.ramadda.repository.Request;
+import org.ramadda.repository.job.*;
 import org.ramadda.repository.map.MapInfo;
+import org.ramadda.repository.metadata.*;
 import org.ramadda.repository.type.GenericTypeHandler;
+import org.ramadda.util.Bounds;
+import org.ramadda.util.GeoUtils;
 import org.ramadda.util.HtmlUtils;
+import org.ramadda.util.Utils;
 
 import org.w3c.dom.Element;
 
+import ucar.unidata.util.IOUtil;
+
+import java.io.*;
+
+import java.util.ArrayList;
+import java.util.List;
 
 
 /**
@@ -46,6 +57,107 @@ public class LatLonImageTypeHandler extends GenericTypeHandler {
         super(repository, node);
     }
 
+
+    /**
+     * _more_
+     *
+     * @param request _more_
+     * @param entry _more_
+     *
+     * @throws Exception _more_
+     */
+    public void initializeNewEntry(Request request, Entry entry)
+            throws Exception {
+        super.initializeNewEntry(request, entry);
+        String path = entry.getResource().getPath();
+        if ( !(path.toLowerCase().endsWith(".tif")
+                || path.toLowerCase().endsWith(".tiff"))) {
+            System.err.println("not tif");
+
+            return;
+        }
+        String gdalWarp =
+            getRepository().getProperty("service.gdal.gdalwarp",
+                                        (String) null);
+        String gdalInfo =
+            getRepository().getProperty("service.gdal.gdalinfo",
+                                        (String) null);
+        String gdalTranslate =
+            getRepository().getProperty("service.gdal.gdal_translate",
+                                        (String) null);
+        if ((gdalWarp == null) || (gdalInfo == null)
+                || (gdalTranslate == null)) {
+            System.err.println("no gdal");
+
+            return;
+        }
+
+        File         workingDir =
+            getStorageManager().getScratchDir().getDir();
+        File tmpTiff = getStorageManager().getTmpFile(request, "tmp.tif");
+        List<String> commands   = new ArrayList<String>();
+        //gdalwarp f41078a1.tif outfile.tif -t_srs "+proj=longlat +ellps=WGS84"
+        commands.add(gdalWarp);
+        commands.add(entry.getFile().toString());
+        commands.add(tmpTiff.toString());
+        commands.add("-t_srs");
+        commands.add("+proj=longlat +ellps=WGS84");
+        ByteArrayOutputStream     bos1;
+        ByteArrayOutputStream     bos2;
+        JobManager.CommandResults results;
+
+        bos1 = new ByteArrayOutputStream();
+        bos2 = new ByteArrayOutputStream();
+        results = getRepository().getJobManager().executeCommand(commands,
+                null, workingDir, 60, new PrintWriter(bos1),
+                new PrintWriter(bos2));
+
+
+        File png = getStorageManager().getTmpFile(
+                       request,
+                       IOUtil.stripExtension(
+                           getStorageManager().getFileTail(entry)) + ".png");
+        System.err.println(tmpTiff);
+
+
+        commands = new ArrayList<String>();
+        Utils.add(commands, gdalTranslate, "-of", "PNG", tmpTiff.toString(),
+                  png.toString());
+        bos1 = new ByteArrayOutputStream();
+        bos2 = new ByteArrayOutputStream();
+        results = getRepository().getJobManager().executeCommand(commands,
+                null, workingDir, 60, new PrintWriter(bos1),
+                new PrintWriter(bos2));
+
+        commands = new ArrayList<String>();
+        Utils.add(commands, gdalInfo, png.toString());
+        bos1 = new ByteArrayOutputStream();
+        bos2 = new ByteArrayOutputStream();
+        results = getRepository().getJobManager().executeCommand(commands,
+                null, workingDir, 60, new PrintWriter(bos1),
+                new PrintWriter(bos2));
+
+
+
+        File newFile = getStorageManager().moveToEntryDir(entry, png);
+        String attachment = getStorageManager().copyToEntryDir(entry,
+                                entry.getFile()).getName();
+        Metadata metadata =
+            new Metadata(getRepository().getGUID(), entry.getId(),
+                         ContentMetadataHandler.TYPE_ATTACHMENT, false,
+                         attachment, null, null, null, null);
+
+        getMetadataManager().addMetadata(entry, metadata);
+        getStorageManager().deleteFile(entry.getFile());
+        entry.getResource().setPath(newFile.toString());
+        Bounds bounds =
+            GeoUtils.parseGdalInfo(new String(bos1.toByteArray()));
+        if (bounds != null) {
+            entry.setBounds(bounds);
+        }
+
+
+    }
 
     /**
      * _more_

@@ -20,6 +20,7 @@ package org.ramadda.util;
 import org.w3c.dom.*;
 
 import ucar.unidata.util.IOUtil;
+import ucar.unidata.util.Misc;
 import ucar.unidata.util.StringUtil;
 
 import ucar.unidata.xml.XmlUtil;
@@ -561,6 +562,118 @@ public class GeoUtils {
 
     }
 
+    /**
+     * _more_
+     *
+     * @param results _more_
+     *
+     * @return _more_
+     */
+    public static Bounds parseGdalInfo(String results) {
+        /*
+Upper Left  (  -28493.167, 4255884.544) (117d38'27.05"W, 33d56'37.74"N)
+Lower Left  (  -28493.167, 4224973.143) (117d38'27.05"W, 33d39'53.81"N)
+Upper Right (    2358.212, 4255884.544) (117d18'28.38"W, 33d56'37.74"N)
+Lower Right (    2358.212, 4224973.143) (117d18'28.38"W, 33d39'53.81"N)
+        */
+
+        double north = Double.NaN;
+        double south = Double.NaN;
+        double east  = Double.NaN;
+        double west  = Double.NaN;
+        for (String line : StringUtil.split(results, "\n", true, true)) {
+            double[] latlon;
+            if (line.indexOf("Upper Left") >= 0) {
+                latlon = getGdalLatLon(line);
+                if (latlon != null) {
+                    north = ((north != north)
+                             ? latlon[1]
+                             : Math.max(north, latlon[1]));
+                    west  = ((west != west)
+                             ? latlon[0]
+                             : Math.min(west, latlon[0]));
+                }
+            } else if (line.indexOf("Lower Right") >= 0) {
+                latlon = getGdalLatLon(line);
+                if (latlon != null) {
+                    south = ((south != south)
+                             ? latlon[1]
+                             : Math.min(south, latlon[1]));
+                    east  = ((east != east)
+                             ? latlon[0]
+                             : Math.max(east, latlon[0]));
+                }
+            } else if (line.indexOf("Upper Right") >= 0) {
+                latlon = getGdalLatLon(line);
+                if (latlon != null) {
+                    north = ((north != north)
+                             ? latlon[1]
+                             : Math.max(north, latlon[1]));
+                    east  = ((east != east)
+                             ? latlon[0]
+                             : Math.max(east, latlon[0]));
+                }
+            } else if (line.indexOf("Lower Left") >= 0) {
+                latlon = getGdalLatLon(line);
+                if (latlon != null) {
+                    south = ((south != south)
+                             ? latlon[1]
+                             : Math.min(south, latlon[1]));
+                    west  = ((west != west)
+                             ? latlon[0]
+                             : Math.min(west, latlon[0]));
+                }
+
+            } else {}
+        }
+
+        Bounds bounds = null;
+
+        if ( !Double.isNaN(north)) {
+            bounds = new Bounds(north, west, south, east);
+        }
+
+        return bounds;
+    }
+
+    /**
+     * _more_
+     *
+     * @param line _more_
+     *
+     * @return _more_
+     */
+    private static double[] getGdalLatLon(String line) {
+        line = line.trim();
+        line = StringUtil.findPattern(line, ".*\\(([^\\)]+)\\.*");
+        //        System.err.println("TOK: " + line);
+        if (line == null) {
+            return null;
+        }
+
+        List<String> toks = StringUtil.split(line, ",", true, true);
+        if (toks.size() != 2) {
+            return null;
+        }
+
+        return new double[] { decodeGdalLatLon(toks.get(0)),
+                              decodeGdalLatLon(toks.get(1)) };
+    }
+
+    /**
+     * _more_
+     *
+     * @param s _more_
+     *
+     * @return _more_
+     */
+    private static double decodeGdalLatLon(String s) {
+        s = s.replace("d", ":");
+        s = s.replace("'", ":");
+        s = s.replace("\"", "");
+
+        return Misc.decodeLatLon(s);
+    }
 
 
 }
