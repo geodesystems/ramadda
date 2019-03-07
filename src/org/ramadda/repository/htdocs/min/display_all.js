@@ -7796,13 +7796,42 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
             this.setContents(this.getChartDiv());
             return chartOptions;
         },
+        getChartHeight: function() {
+                return this.getProperty("height");
+        },
+        getChartWidth: function() {
+                return this.getProperty("width");
+        },
         getChartDiv: function() {
+
             var chartId = this.getDomId(ID_CHART);
             var divAttrs = [ATTR_ID, chartId];
             divAttrs.push("style");
-            divAttrs.push("height:100%;width:100%;");
-            //            divAttrs.push("height:400px;width:100%;border: 1px red solid; padding:5px;");
-            return HtmlUtils.div(divAttrs, "CHART HERE");
+            var style = "";
+            var width = this.getChartWidth();
+            if (width) {
+                if (width > 0)
+                    style += "width:" + width + "px;";
+                else if (width < 0)
+                    style += "width:" + (-width) + "%;";
+                else
+                    style += "width:" + width;
+            } else {
+                style += "width:" + "100%;";
+            }
+            var height = this.getChartHeight();
+            if (height) {
+                if (height > 0)
+                    style += "height:" + height + "px;";
+                else if (height < 0)
+                    style += "height:" + (-height) + "%;";
+                else
+                    style += "height:" + height;
+            } else {
+                style += "height:" + "100%;";
+            }
+            divAttrs.push(style);
+            return HtmlUtils.div(divAttrs, "");
         },
         makeGoogleChart: function(dataList, props, selectedFields) {
             if (typeof google == 'undefined') {
@@ -8098,8 +8127,8 @@ function PiechartDisplay(displayManager, id, properties) {
             var divAttrs = [ATTR_ID, chartId];
             divAttrs.push("style");
             var style = "";
-            if (this.getProperty("width")) {
-                var width = this.getProperty("width");
+            var width = this.getChartWidth();
+            if (width) {
                 if (width > 0)
                     style += "width:" + width + "px;";
                 else if (width < 0)
@@ -8109,8 +8138,8 @@ function PiechartDisplay(displayManager, id, properties) {
             } else {
                 style += "width:" + "100%;";
             }
-            if (this.getProperty("height")) {
-                var height = this.getProperty("height");
+            var height = this.getChartHeight();
+            if (height) {
                 if (height > 0)
                     style += "height:" + height + "px;";
                 else if (height < 0)
@@ -8123,7 +8152,6 @@ function PiechartDisplay(displayManager, id, properties) {
             divAttrs.push(style);
             return HtmlUtils.div(divAttrs, "");
         },
-
         doMakeGoogleChart: function(dataList, props, selectedFields, chartOptions) {
             chartOptions.tooltip = {
                 textStyle: {
@@ -8985,6 +9013,12 @@ function GaugeDisplay(displayManager, id, properties) {
     RamaddaUtil.inherit(this, new RamaddaGoogleChart(displayManager, id, DISPLAY_GAUGE, properties));
     addRamaddaDisplay(this);
     RamaddaUtil.inherit(this, {
+        getChartHeight: function() {
+                return this.getProperty("height", this.getChartWidth());
+        },
+        getChartWidth: function() {
+                return this.getProperty("width","150");
+        },
         doMakeGoogleChart: function(dataList, props, selectedFields, chartOptions) {
             this.dataList = dataList;
             this.chartOptions = chartOptions;
