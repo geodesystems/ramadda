@@ -97,11 +97,10 @@ public class LatLonImageTypeHandler extends GenericTypeHandler {
         File tmpTiff = getStorageManager().getTmpFile(request, "tmp.tif");
         List<String> commands   = new ArrayList<String>();
         //gdalwarp f41078a1.tif outfile.tif -t_srs "+proj=longlat +ellps=WGS84"
-        commands.add(gdalWarp);
-        commands.add(entry.getFile().toString());
-        commands.add(tmpTiff.toString());
-        commands.add("-t_srs");
-        commands.add("+proj=longlat +ellps=WGS84");
+        Utils.add(commands, gdalWarp, entry.getFile().toString(),
+                  tmpTiff.toString(),
+                  "-t_srs",
+                  "+proj=longlat +ellps=WGS84");
         ByteArrayOutputStream     bos1;
         ByteArrayOutputStream     bos2;
         JobManager.CommandResults results;
@@ -111,8 +110,13 @@ public class LatLonImageTypeHandler extends GenericTypeHandler {
         results = getRepository().getJobManager().executeCommand(commands,
                 null, workingDir, 60, new PrintWriter(bos1),
                 new PrintWriter(bos2));
+        String err = new String(bos2.getByteArray());
+        if(err.length>0) {
+            System.err.println("error:" + err);
+            throw new IllegalArgumentException("georeferencing geotiff failed:" + err);
+        }
 
-
+        System.err.println("ok:" + new String(bos1.getByteArray()));
         File png = getStorageManager().getTmpFile(
                        request,
                        IOUtil.stripExtension(
