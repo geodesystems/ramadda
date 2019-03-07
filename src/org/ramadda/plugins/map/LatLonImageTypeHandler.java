@@ -70,78 +70,63 @@ public class LatLonImageTypeHandler extends GenericTypeHandler {
             throws Exception {
         super.initializeNewEntry(request, entry);
         String path = entry.getResource().getPath();
-        if ( !(path.toLowerCase().endsWith(".tif")
-                || path.toLowerCase().endsWith(".tiff"))) {
-            System.err.println("not tif");
-
+        String _path = path.toLowerCase();
+        if ( !(
+               _path.endsWith(".tif")   || _path.endsWith(".tiff")  || _path.endsWith(".grd"))) {
+            
             return;
         }
-        String gdalWarp =
-            getRepository().getProperty("service.gdal.gdalwarp",
+        String gdal =
+            getRepository().getProperty("service.gdal",
                                         (String) null);
-        String gdalInfo =
-            getRepository().getProperty("service.gdal.gdalinfo",
-                                        (String) null);
-        String gdalTranslate =
-            getRepository().getProperty("service.gdal.gdal_translate",
-                                        (String) null);
-        if ((gdalWarp == null) || (gdalInfo == null)
-                || (gdalTranslate == null)) {
+
+        if (gdal == null) {
             System.err.println("no gdal");
-
             return;
         }
 
-        File         workingDir =
-            getStorageManager().getScratchDir().getDir();
+        String gdalWarp = gdal+"/gdalwarp";
+        String gdalInfo =gdal +"/gdalinfo";
+        String gdalTranslate = gdal+"/gdal_translate";
+        String gdalDem = gdal+"/gdaldem";
+        File         work =  getStorageManager().getScratchDir().getDir();
+        File srcTiff = entry.getFile();
+        List<String> commands;
+        JobManager.CommandResults results;
+        JobManager job = getRepository().getJobManager();
+        
+        if(_path.endsWith(".grd")) {
+            File tmp = getStorageManager().getTmpFile(request, "tmp.tif");
+            results = job.executeCommand((List<String>)Utils.makeList(gdalDem, "hillshade","-of","GTiff", srcTiff.toString(),tmp.toString()), work);
+            
+
+            srcTiff = tmp;
+        }
+
         File tmpTiff = getStorageManager().getTmpFile(request, "tmp.tif");
-        List<String> commands   = new ArrayList<String>();
+
+
+        
         //gdalwarp f41078a1.tif outfile.tif -t_srs "+proj=longlat +ellps=WGS84"
-        Utils.add(commands, gdalWarp, entry.getFile().toString(),
+        commands = (List<String>)Utils.add(null, gdalWarp, srcTiff.toString(),
                   tmpTiff.toString(),
                   "-t_srs",
                   "+proj=longlat +ellps=WGS84");
-        ByteArrayOutputStream     bos1;
-        ByteArrayOutputStream     bos2;
-        JobManager.CommandResults results;
-
-        bos1 = new ByteArrayOutputStream();
-        bos2 = new ByteArrayOutputStream();
-        results = getRepository().getJobManager().executeCommand(commands,
-                null, workingDir, 60, new PrintWriter(bos1),
-                new PrintWriter(bos2));
-        String err = new String(bos2.toByteArray());
+        results = job.executeCommand(commands, work);
+        String err = results.getStderrMsg();
         if(err.length()>0) {
-            System.err.println("error:" + err);
             throw new IllegalArgumentException("georeferencing geotiff failed:" + err);
         }
 
-        System.err.println("ok:" + new String(bos1.toByteArray()));
         File png = getStorageManager().getTmpFile(
                        request,
                        IOUtil.stripExtension(
                            getStorageManager().getFileTail(entry)) + ".png");
-        System.err.println(tmpTiff);
 
-
-        commands = new ArrayList<String>();
-        Utils.add(commands, gdalTranslate, "-of", "PNG", tmpTiff.toString(),
-                  png.toString());
-        bos1 = new ByteArrayOutputStream();
-        bos2 = new ByteArrayOutputStream();
-        results = getRepository().getJobManager().executeCommand(commands,
-                null, workingDir, 60, new PrintWriter(bos1),
-                new PrintWriter(bos2));
-
-        commands = new ArrayList<String>();
-        Utils.add(commands, gdalInfo, png.toString());
-        bos1 = new ByteArrayOutputStream();
-        bos2 = new ByteArrayOutputStream();
-        results = getRepository().getJobManager().executeCommand(commands,
-                null, workingDir, 60, new PrintWriter(bos1),
-                new PrintWriter(bos2));
-
-
+        commands = (List<String>)Utils.makeList(gdalTranslate, "-of", "PNG", tmpTiff.toString(),
+                                  png.toString());
+        results = job.executeCommand(commands,work);
+        results = job.executeCommand((List<String>)Utils.makeList(gdalInfo, png.toString()),work);
 
         File newFile = getStorageManager().moveToEntryDir(entry, png);
         String attachment = getStorageManager().copyToEntryDir(entry,
@@ -154,8 +139,7 @@ public class LatLonImageTypeHandler extends GenericTypeHandler {
         getMetadataManager().addMetadata(entry, metadata);
         getStorageManager().deleteFile(entry.getFile());
         entry.getResource().setPath(newFile.toString());
-        Bounds bounds =
-            GeoUtils.parseGdalInfo(new String(bos1.toByteArray()));
+        Bounds bounds =    GeoUtils.parseGdalInfo(results.getStdoutMsg());
         if (bounds != null) {
             entry.setBounds(bounds);
         }

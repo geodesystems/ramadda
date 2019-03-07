@@ -191,6 +191,7 @@ public class Utils {
      * @return _more_
      */
     public static List add(List list, Object... args) {
+        if(list == null) list = new ArrayList();
         for (Object s : args) {
             if (s != null) {
                 list.add(s);
