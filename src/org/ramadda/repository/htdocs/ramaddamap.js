@@ -490,8 +490,8 @@ function initMapFunctions(theMap) {
             //Things go blooeey with lat up to 90
             if (north > 88) north = 88;
             if (south < -88) south = -88;
-            var imageBounds = createBounds(west, south, east, north);
-            imageBounds = this.transformLLBounds(imageBounds);
+            var latLonBounds = createBounds(west, south, east, north);
+            var imageBounds = this.transformLLBounds(latLonBounds);
             var image = new OpenLayers.Layer.Image(
                 name, url,
                 imageBounds,
@@ -503,6 +503,7 @@ function initMapFunctions(theMap) {
                 }
             );
 
+            image.latLonBounds  = latLonBounds;
             //        image.setOpacity(0.5);
             if (theArgs.forSelect) {
                 theMap.selectImage = image;
@@ -2622,10 +2623,18 @@ function initMapFunctions(theMap) {
             mymarker = this.imageLayers[id];
         }
 
+        
         if (!mymarker) {
             return;
         }
-        this.map.setCenter(mymarker.lonlat);
+        var latLonBounds = mymarker.latLonBounds;
+        if(latLonBounds) {
+            var projBounds = this.transformLLBounds(latLonBounds);
+            this.getMap().zoomToExtent(projBounds);
+        } else {
+            this.map.setCenter(mymarker.lonlat);
+        }
+
         this.showMarkerPopup(mymarker);
     }
 
