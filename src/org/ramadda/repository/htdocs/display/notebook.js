@@ -514,7 +514,7 @@ function RamaddaNotebookCell(notebook, id, content, props) {
         content: content,
         outputHtml: "",
         showInput: false,
-        showHeader: true,
+        showHeader: false,
         showBorder: false,
         cellName: "",
         runFirst:false,
@@ -903,11 +903,15 @@ function RamaddaNotebookCell(notebook, id, content, props) {
         },
         applyStyle: function() {
             this.checkHover(false);
-            if (this.showHeader) {
+            //Always hide the header. Its only shown when there is no output and no input
+            this.header.css("display", "none");
+            /*
+            if (this.showHeader) { 
                 this.header.css("display", "block");
             } else {
                 this.header.css("display", "none");
             }
+            */
             if (this.showInput && this.notebook.showInput()) {
                 //                this.toggleButton.html(HtmlUtils.image(Utils.getIcon("togglearrowdown.gif")));
                 this.jq(ID_INPUT_TOOLBAR).css("display", "block");
