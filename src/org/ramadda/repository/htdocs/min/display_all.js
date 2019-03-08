@@ -16079,6 +16079,11 @@ function RamaddaMapDisplay(displayManager, id, properties) {
             var colorByAttr = this.getDisplayProp(source, "colorBy", null);
             var colors = this.getColorTable(true);
             var sizeByAttr = this.getDisplayProp(source, "sizeBy", null);
+
+
+
+
+
             var isTrajectory = this.getDisplayProp(source, "isTrajectory", false);
             if (isTrajectory) {
                 var attrs = {
@@ -16142,6 +16147,29 @@ function RamaddaMapDisplay(displayManager, id, properties) {
             }
 
 
+            if(this.getProperty("showColorByMenu",false) && colorBy.field && !this.madeColorByMenu) {
+                this.madeColorByMenu = true;
+                var menu = "<select class='ramadda-pulldown' id='" + this.getDomId("colorByMenu") + "'>";
+                for (var i = 0; i < fields.length; i++) {
+                    var field = fields[i];
+                    if(!field.isNumeric || field.isFieldGeo()) continue;
+                    var extra = "";
+                    if (colorBy.field.getId() == field.getId()) extra = "selected ";
+                    menu += "<option value='" + field.getId() +"' " + extra + ">" + field.getLabel() + "</option>\n";
+                }
+                menu += "</select>";
+                this.writeHtml(ID_TOP_RIGHT, "Color by: "+menu);
+                this.jq("colorByMenu").change(()=> {
+                        var value = this.jq("colorByMenu").val();
+                        this.setProperty("colorBy",value);
+                        this.updateUI();
+                    }
+                );
+            }
+
+
+
+
             sizeBy.index = sizeBy.field != null ? sizeBy.field.getIndex() : -1;
             colorBy.index = colorBy.field != null ? colorBy.field.getIndex() : -1;
             var excludeZero = this.getProperty(PROP_EXCLUDE_ZERO, false);
@@ -16154,11 +16182,11 @@ function RamaddaMapDisplay(displayManager, id, properties) {
                 }
                 if (i == 0 || v > colorBy.maxValue) colorBy.maxValue = v;
                 if (i == 0 || v < colorBy.minValue) colorBy.minValue = v;
-
                 v = tuple[sizeBy.index];
                 if (i == 0 || v > sizeBy.maxValue) sizeBy.maxValue = v;
                 if (i == 0 || v < sizeBy.minValue) sizeBy.minValue = v;
             }
+
 
 
             if (this.showPercent) {
