@@ -541,9 +541,9 @@ function RamaddaNotebookCell(notebook, id, content, props) {
             addHandler(this,this.editId+"_wikilink");
             var _this = this;
             var buttons = 
-                this.makeButton(ID_BUTTON_MENU, icon_menu, "Show menu","showmenu",true) +
-                this.makeButton(ID_BUTTON_RUN, Utils.getIcon("run.png"), "Run","run",true) +
-                this.makeButton(ID_BUTTON_RUN, Utils.getIcon("runall.png"), "Run all","runall",true);
+                this.makeButton(ID_BUTTON_MENU, icon_menu, "Show menu","showmenu") +
+                this.makeButton(ID_BUTTON_RUN, Utils.getIcon("run.png"), "Run","run") +
+                this.makeButton(ID_BUTTON_RUN, Utils.getIcon("runall.png"), "Run all","runall");
 
 
             var header = HtmlUtils.div([ATTR_CLASS, "display-notebook-header", ATTR_ID, this.getDomId(ID_HEADER),"title","Click to toggle input\nShift-click to clear output"],"&nbsp;" + buttons + "&nbsp;" + HtmlUtils.span(["id", this.getDomId(ID_CELLNAME)], this.cellName));
@@ -650,11 +650,9 @@ function RamaddaNotebookCell(notebook, id, content, props) {
              var link = this.jq("toolbar_notebook");
              this.makeMenu(link,"left bottom");
          },
-          makeButton: function(id, icon,title, command, horiz) {
+          makeButton: function(id, icon,title, command) {
              if(!command) command="noop";
-             var style = "";
-             if(horiz) style = "display:inline-block;padding-left:1px;padding-right:1px;";
-             return  HtmlUtils.div(["what", command, "title",title, "class", "display-notebook-menu-button", "style",style,"id", this.getDomId(id)], HtmlUtils.image(icon, []));
+             return  HtmlUtils.div(["what", command, "title",title, "class", "display-notebook-menu-button", "id", this.getDomId(id)], HtmlUtils.image(icon, []));
          },
          makeMenu: function(src, at) {
             if(!src) {
