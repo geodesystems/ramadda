@@ -17611,6 +17611,10 @@ function RamaddaDotplotDisplay(displayManager, id, properties) {
             if (!records) return;
             var fields = this.getSelectedFields(this.getData().getRecordFields());
             var stringField = this.getFieldOfType(fields, "string");
+            if(!stringField) {
+                stringField = fields[0];
+            }
+
             var fields = this.getFieldsOfType(fields, "numeric");
             if (fields.length == 0) {
                 this.displayError("No numeric fields specified");
