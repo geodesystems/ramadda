@@ -2784,8 +2784,11 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             } else {
                 msg = "<b>Sorry, but an error has occurred:</b>";
                 if (!data) data = "No data returned from server";
+                var error = data.error ? data.error : data;
+                error = error.replace(/<[^>]*>/g,"");
+                error = HtmlUtils.tag("pre",[],error);
                 msg += HtmlUtils.tag("div", ["style", "background:#fff;margin:10px;padding:10px;border:1px #ccc solid;   border-radius: 0px;"],
-                    (data.error ? data.error : data));
+                    error);
             }
             this.setContents(this.getMessage(msg));
         },
