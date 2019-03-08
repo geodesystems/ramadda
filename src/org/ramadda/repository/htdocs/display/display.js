@@ -2786,7 +2786,8 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
                 if (!data) data = "No data returned from server";
                 var error = data.error ? data.error : data;
                 error = error.replace(/<[^>]*>/g,"");
-                error = HtmlUtils.tag("pre",[],error);
+                error = error.replace(/\n\n+/g,"\n");
+                error = HtmlUtils.tag("pre",["style","max-height:300px;overflow-y:auto;max-width:100%;overflow-x:auto;"],error);
                 msg += HtmlUtils.tag("div", ["style", "background:#fff;margin:10px;padding:10px;border:1px #ccc solid;   border-radius: 0px;"],
                     error);
             }
