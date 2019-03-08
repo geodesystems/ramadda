@@ -25,6 +25,7 @@ import org.ramadda.util.Station;
 import org.ramadda.util.Utils;
 import org.ramadda.util.text.*;
 
+import ucar.unidata.util.DateUtil;
 import ucar.unidata.util.StringUtil;
 
 import java.io.*;
@@ -510,11 +511,17 @@ public class TextRecord extends DataRecord {
             date = getDateFormat(field).parse(tok);
             //            System.err.println ("Date:" + tok +" parsed:" + date);
         } catch (java.text.ParseException ignore) {
-            //Try tacking on UTC
-            try {
-                date = getDateFormat(field).parse(tok + " UTC");
-            } catch (java.text.ParseException ignoreThisOne) {
-                throw ignore;
+            //Check for year
+            if(tok.length()==4) {
+                date = DateUtil.parse(tok);
+            }
+            if(date==null) {
+                //Try tacking on UTC
+                try {
+                    date = getDateFormat(field).parse(tok + " UTC");
+                } catch (java.text.ParseException ignoreThisOne) {
+                    throw ignore;
+                }
             }
         }
         if (offset != 0) {
