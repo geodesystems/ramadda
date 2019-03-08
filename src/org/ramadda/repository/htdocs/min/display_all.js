@@ -2936,10 +2936,19 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
                 if (!data) data = "No data returned from server";
                 var error = data.error ? data.error : data;
                 error = error.replace(/<[^>]*>/g,"");
-                error = error.replace(/\n\n+/g,"\n");
+                var tmp  = "";
+                var lines = error.split("\n");
+                var seen = {};
+                for(var i=0;i<lines.length;i++) {
+                    var line = lines[i].trim();
+                    if(line == "") continue;
+                    if(seen[line]) continue;
+                    seen[line]  =true;
+                    tmp+=line+"\n";
+                }
+                error = tmp;
                 error = HtmlUtils.tag("pre",["style","max-height:300px;overflow-y:auto;max-width:100%;overflow-x:auto;"],error);
-                msg += HtmlUtils.tag("div", ["style", "background:#fff;margin:10px;padding:10px;border:1px #ccc solid;   border-radius: 0px;"],
-                    error);
+                msg += error;
             }
             this.setContents(this.getMessage(msg));
         },

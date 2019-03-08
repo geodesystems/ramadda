@@ -355,7 +355,7 @@
     text-align:left;
     border: 1px #aaa solid;
     background-color : #fffeec;
-    min-width: 400px;
+    max-width:100%;
     margin:5px;
     padding:10px;
     padding-left:20px;
