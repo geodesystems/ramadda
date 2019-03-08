@@ -1464,6 +1464,9 @@ public class WikiUtil {
 
                 List<String> toks     = StringUtil.splitUpTo(tline, " ", 2);
                 String       clazz    = toks.get(0).substring(1);
+                if (clazz.matches("col-[0-9]+")) {
+                    clazz = clazz.replace("col-", "col-md-");
+                }
                 String       contents = "";
                 if (toks.size() > 1) {
                     contents = toks.get(1);
