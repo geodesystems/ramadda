@@ -937,9 +937,13 @@ public class WikiUtil {
             if (tline.startsWith("+tabs")) {
                 TabState     tabInfo = new TabState();
                 List<String> toks    = StringUtil.splitUpTo(tline, " ", 2);
+                String divClass= "";
                 if (toks.size() == 2) {
                     Hashtable props =
                         StringUtil.parseHtmlProperties(toks.get(1));
+                    if(props.get("min")!=null) divClass= "ramadda-tabs-min";
+                    else if(props.get("center")!=null) divClass= "ramadda-tabs-center";
+
                     tabInfo.minHeight = (String) props.get("minHeight");
                     if ((tabInfo.minHeight != null)
                             && !tabInfo.minHeight.endsWith("px")) {
@@ -949,6 +953,8 @@ public class WikiUtil {
                 tabInfos.add(tabInfo);
                 allTabStates.add(tabInfo);
                 buff.append("\n");
+                HtmlUtils.open(buff, HtmlUtils.TAG_DIV, 
+                               "class", divClass);
                 HtmlUtils.open(buff, HtmlUtils.TAG_DIV, "id", tabInfo.id,
                                "class", "ui-tabs");
                 buff.append("\n");
@@ -1006,6 +1012,7 @@ public class WikiUtil {
                     tabInfo.title.append("</ul>");
                     tabInfo.title.append("\n");
                     tabInfos.remove(tabInfos.size() - 1);
+                    buff.append(HtmlUtils.close("div"));
                     buff.append(HtmlUtils.close("div"));
 
                     continue;

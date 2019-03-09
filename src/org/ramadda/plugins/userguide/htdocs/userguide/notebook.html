@@ -213,15 +213,7 @@ return result();
 </pre>
 
 
-
-
-There are a number of helper functions and pre-defined variables that can be accessed from javascript:
-<pre>
-<i>js:</i>
-//TODO
-</pre>
-
-
+There are a number of helper functions and pre-defined variables that can be accessed from javascript.
 The above described entry context can be accessed with the variables:
 <pre>
 <i>js:</i>
@@ -231,8 +223,30 @@ parent
 root
 </pre>
 
-e.g.:
+The state object holds the state of this JS cell execution and provides a number of methods.
+<pre>
+<i>js:</i>
+//TODO
+</pre>
 
+<pre>
+<i>js:</i>
+state.getCell() // return the cell
+state.getNotebook() // return the cell
+state.clear() //clear the output
+state.ls() //List the current entry
+state.stop() //Stop cell execution
+
+//make wiki text. This is applicable to the current entry if the 
+//optionalEntry is not provided. If optionalCallback is not provided then 
+//the wiki text is displayed on the page. Else the wiki text is passed to
+//the callback
+state.wiki(wikiText,optionalEntry,optionalCallback); 
+
+state.write(html); //write the html to the page
+</pre>
+
+Putting the entry state and the functions together we can do:
 <pre>
 state.write(base.getName());
 state.write(root.getName());
