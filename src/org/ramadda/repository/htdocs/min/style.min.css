@@ -732,6 +732,7 @@ textarea, input {
 .ui-widget {
     font-family: inherit;
     font-size:12pt;
+    background:rgba(0,0,0,0);
 }
 
 
@@ -3363,6 +3364,7 @@ padding-bottom: 0.2em;
 
 .ui-tabs .ui-tabs-panel {
   border: 1px solid #aaaaaa;
+  background:#fff;
   padding-left:1em;
   padding-right:1em;
 }
@@ -3386,6 +3388,10 @@ padding-bottom: 0.2em;
 
 .ramadda-tabs-min .ui-tabs .ui-tabs-panel {
    border:0px solid #ccc;
+}
+
+.ramadda-tabs-min .ui-tabs  {
+       background:#fff;
 }
 
 .ramadda-tabs-min .ui-tabs .ui-tabs-nav .ui-tabs-anchor {
