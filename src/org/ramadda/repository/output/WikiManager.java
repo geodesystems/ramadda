@@ -1800,7 +1800,12 @@ ATTR_SHOWLINK, "true", ATTR_INCLUDEICON, "false") + ATTRS_LAYOUT),
             return getHtmlOutputHandler().makeHtmlHeader(request, entry,
                     getProperty(wikiUtil, props, ATTR_TITLE, "Layout"));
         } else if (theTag.equals(WIKI_TAG_NAME)) {
-            return getEntryDisplayName(entry);
+            String name = getEntryDisplayName(entry);
+            if(getProperty(wikiUtil,props,"link",false)) {
+                name = HtmlUtils.href(
+                                      request.entryUrl(getRepository().URL_ENTRY_SHOW, entry),name);
+            }
+            return name;
         } else if (theTag.equals(WIKI_TAG_EMBED)) {
             if ( !entry.isFile()
                     || ( !isTextFile(entry.getResource().getPath())
