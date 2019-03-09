@@ -121,7 +121,10 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                                                               "#"+ ATTR_TAGOPEN, "", 
                                                               "#"+ ATTR_TAGCLOSE, ""), 
                             new WikiTag(WIKI_TAG_LIST), 
-                            new WikiTag(WIKI_TAG_TABS, null, attrs(ATTR_TAG, WIKI_TAG_HTML, ATTR_SHOWLINK, "true", ATTR_INCLUDEICON, "false") + ATTRS_LAYOUT), 
+                            new WikiTag(WIKI_TAG_TABS, null, 
+                                        attrs(ATTR_TAG, WIKI_TAG_HTML, 
+                                              "#tabsStyle","min|center|minarrow",
+ATTR_SHOWLINK, "true", ATTR_INCLUDEICON, "false") + ATTRS_LAYOUT), 
                             new WikiTag(WIKI_TAG_GRID, null, 
                                         ATTR_TAG, WIKI_TAG_CARD, 
                                         "inner-height","100", 
@@ -2746,9 +2749,16 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                     }
                     contents = tmp;
                 }
+                String style    = getProperty(wikiUtil, props, "tabsStyle", "");
+                String divClass  ="";
+                if(style.equals("min")) divClass= "ramadda-tabs-min";
+                else if(style.equals("center")) divClass= "ramadda-tabs-center";
+                else if(style.equals("minarrow")) divClass= "ramadda-tabs-min ramadda-tabs-minarrow";
+                sb.append(HtmlUtils.open("div",HtmlUtils.cssClass(divClass)));
                 sb.append(OutputHandler.makeTabs(titles, contents, true,
                         useCookies));
 
+                sb.append(HtmlUtils.close("div"));
                 return sb.toString();
             }
         } else if (false && theTag.equals(WIKI_TAG_GRID)) {
