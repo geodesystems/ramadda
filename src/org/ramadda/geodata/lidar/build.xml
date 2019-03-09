@@ -4,6 +4,7 @@
       <property name="plugin" value="lidar"/>
       <property name="plugin_dir" value="org/ramadda/geodata/${plugin}"/>
       <property name="plugin_group" value="geoplugins"/>
+      <property name="plugin_extra_src" value="${plugin_dir}/lvis/*.java"/>
       <ant antfile="${basedir}/build.xml" target="plugin_build"/>
     </target>
 </project>
