@@ -91,7 +91,24 @@ public class KmlTypeHandler extends GenericTypeHandler {
         if ( !entry.isFile()) {
             return;
         }
-        Element kmlRoot = readKml(getRepository(), entry);
+        initializeKmlEntry(request, entry, newEntry);
+    }
+
+
+    /**
+     * _more_
+     *
+     * @param request _more_
+     * @param entry _more_
+     * @param newEntry _more_
+     *
+     * @throws Exception _more_
+     */
+    public static void initializeKmlEntry(Request request, Entry entry,
+                                          boolean newEntry)
+            throws Exception {
+
+        Element kmlRoot = readKml(request.getRepository(), entry);
         if (kmlRoot == null) {
             return;
         }
@@ -201,7 +218,8 @@ public class KmlTypeHandler extends GenericTypeHandler {
      * @param node _more_
      * @param nwse _more_
      */
-    private void initializeEntry(Entry entry, Element node, double[] nwse) {
+    private static void initializeEntry(Entry entry, Element node,
+                                        double[] nwse) {
         String tagName = node.getTagName();
         if (tagName.equals(KmlUtil.TAG_FOLDER)
                 || tagName.equals(KmlUtil.TAG_KML)
@@ -262,7 +280,7 @@ public class KmlTypeHandler extends GenericTypeHandler {
      * @param nwse _more_
      * @param coordString _more_
      */
-    private void setBounds(double[] nwse, String coordString) {
+    private static void setBounds(double[] nwse, String coordString) {
         if (coordString != null) {
             double[][] coords = KmlUtil.parseCoordinates(coordString);
             for (int i = 0; i < coords[0].length; i++) {
@@ -283,7 +301,7 @@ public class KmlTypeHandler extends GenericTypeHandler {
      *
      * @return _more_
      */
-    private double convert(String value, double dflt) {
+    private static double convert(String value, double dflt) {
         if (value == null) {
             return dflt;
         }
@@ -298,7 +316,7 @@ public class KmlTypeHandler extends GenericTypeHandler {
      * @param lat _more_
      * @param lon _more_
      */
-    private void setBounds(double[] nwse, double lat, double lon) {
+    private static void setBounds(double[] nwse, double lat, double lon) {
         setLat(nwse, lat);
         setLon(nwse, lon);
     }
@@ -309,7 +327,7 @@ public class KmlTypeHandler extends GenericTypeHandler {
      * @param nwse _more_
      * @param lon _more_
      */
-    private void setLon(double[] nwse, double lon) {
+    private static void setLon(double[] nwse, double lon) {
         nwse[1] = (nwse[1] == Entry.NONGEO)
                   ? lon
                   : Math.min(nwse[1], lon);
@@ -325,7 +343,7 @@ public class KmlTypeHandler extends GenericTypeHandler {
      * @param nwse _more_
      * @param lat _more_
      */
-    private void setLat(double[] nwse, double lat) {
+    private static void setLat(double[] nwse, double lat) {
         nwse[0] = (nwse[0] == Entry.NONGEO)
                   ? lat
                   : Math.max(nwse[0], lat);
@@ -341,7 +359,7 @@ public class KmlTypeHandler extends GenericTypeHandler {
      * @param nwse _more_
      * @param lat _more_
      */
-    private void setNorth(double[] nwse, double lat) {
+    private static void setNorth(double[] nwse, double lat) {
         nwse[0] = (nwse[0] == Entry.NONGEO)
                   ? lat
                   : Math.max(nwse[0], lat);
@@ -353,7 +371,7 @@ public class KmlTypeHandler extends GenericTypeHandler {
      * @param nwse _more_
      * @param lat _more_
      */
-    private void setSouth(double[] nwse, double lat) {
+    private static void setSouth(double[] nwse, double lat) {
         nwse[2] = (nwse[2] == Entry.NONGEO)
                   ? lat
                   : Math.min(nwse[2], lat);
@@ -366,7 +384,7 @@ public class KmlTypeHandler extends GenericTypeHandler {
      * @param nwse _more_
      * @param lon _more_
      */
-    private void setWest(double[] nwse, double lon) {
+    private static void setWest(double[] nwse, double lon) {
         nwse[1] = (nwse[1] == Entry.NONGEO)
                   ? lon
                   : Math.min(nwse[1], lon);
@@ -378,7 +396,7 @@ public class KmlTypeHandler extends GenericTypeHandler {
      * @param nwse _more_
      * @param lon _more_
      */
-    private void setEast(double[] nwse, double lon) {
+    private static void setEast(double[] nwse, double lon) {
         nwse[3] = (nwse[3] == Entry.NONGEO)
                   ? lon
                   : Math.max(nwse[3], lon);
