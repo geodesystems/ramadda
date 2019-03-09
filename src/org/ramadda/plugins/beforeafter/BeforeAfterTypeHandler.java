@@ -181,8 +181,13 @@ public class BeforeAfterTypeHandler extends GenericTypeHandler {
             int height = 366;
 
             if ((dim.width > 0) && (dim.height > 0)) {
-                width  = Math.max(width, dim.width);
-                height = (int) (dim.height * width / (float) dim.width);
+                if(dim.height> dim.width) {
+                    height =   600;
+                    width = height*dim.width/dim.height;
+                } else {
+                    width  = Math.max(width, dim.width);
+                    height = (int) (dim.height * width / (float) dim.width);
+                }
             }
 
 
