@@ -2651,7 +2651,11 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
                     label = HtmlUtils.href(this.getRamadda().getEntryUrl(this.entryId), title);
                 }
                 var titleToShow = this.getShowTitle()?this.getDisplayTitle(title):"";
-                titleDiv = HtmlUtils.tag("span", [ATTR_CLASS, "display-title", ATTR_ID, this.getDomId(ID_TITLE)], titleToShow);
+                var titleStyle="";
+                if(this.getProperty("titleColor",null)) {
+                    titleStyle+=" color:" +this.getProperty("titleColor")+"; ";
+                }
+                titleDiv = HtmlUtils.tag("span", [ATTR_CLASS, "display-title", ATTR_ID, this.getDomId(ID_TITLE),"style",titleStyle], titleToShow);
                 if (button == "") {
                     left = titleDiv;
                 } else {
