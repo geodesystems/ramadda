@@ -370,6 +370,7 @@ function DisplayThing(argId, argProperties) {
                 }
             },
         getProperty: function(key, dflt) {
+
             if (this[key]) {
                 return this[key];
             }
@@ -2475,6 +2476,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             if (width > 0) {
                 style+="width:" + width + "px;"
             }
+
             html += HtmlUtils.openDiv(["class", "display-contents", "style", style]);
 
 

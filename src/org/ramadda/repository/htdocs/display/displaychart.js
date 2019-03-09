@@ -945,8 +945,10 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
             chartOptions.backgroundColor =  {};
             chartOptions.chartArea = {};
             chartOptions.chartArea.backgroundColor= {};
-            chartOptions.hAxis = {gridlines:{}};
-            chartOptions.vAxis = {gridlines:{}};
+
+            chartOptions.legend = {textStyle:{}};
+            chartOptions.hAxis = {gridlines:{},textStyle:{}};
+            chartOptions.vAxis = {gridlines:{},textStyle:{}};
             this.setPropertyOn(chartOptions.backgroundColor,"chart.fill","fill",null);
             this.setPropertyOn(chartOptions.backgroundColor,"chart.stroke","stroke",null);
             this.setPropertyOn(chartOptions.backgroundColor,"chart.strokeWidth","strokeWidth",null);
@@ -958,6 +960,10 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
             this.setPropertyOn(chartOptions.hAxis.gridlines,"hAxis.gridlines.color","color",this.getProperty("gridlines.color",null));
             this.setPropertyOn(chartOptions.vAxis.gridlines,"vAxis.gridlines.color","color",this.getProperty("gridlines.color",null));
 
+            this.setPropertyOn(chartOptions.hAxis.textStyle,"hAxis.text.color","color",this.getProperty("axis.text.color",null));
+            this.setPropertyOn(chartOptions.vAxis.textStyle,"vAxis.text.color","color",this.getProperty("axis.text.color",null));
+
+            this.setPropertyOn(chartOptions.legend.textStyle,"legend.text.color","color",null);
 
 
             if (this.lineWidth) {
@@ -1135,10 +1141,11 @@ function RamaddaAxisChart(displayManager, id, chartType, properties) {
 
             var useMultipleAxes = this.getProperty("useMultipleAxes", true);
             chartOptions.height = this.getProperty("chartHeight", this.getProperty("height", "150"));
-            $.extend(chartOptions, {
-                legend: {
-                        position: this.getProperty("legendPosition",'bottom')
-                },
+            if(!chartOptions.legend)
+                chartOptions.legend = {};
+
+            $.extend(chartOptions.legend, {
+                    position: this.getProperty("legendPosition",'bottom')
             });
 
             if(!chartOptions.chartArea) {

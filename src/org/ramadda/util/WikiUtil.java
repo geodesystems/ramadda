@@ -1168,7 +1168,7 @@ public class WikiUtil {
                     String image = (String)props.get("image");
                     tmp =  handler.getWikiImageUrl(this, image, props);
                     if(tmp!=null) image=tmp;
-                    style += " background-image: url('" + image +"'); ";
+                    style += "background-size:100% auto; background-image: url('" + image +"'); ";
                     String color = (String) props.get("color");
                     if(color!=null)
                         style += " background: " + color +"; ";
