@@ -943,6 +943,7 @@ public class WikiUtil {
                         StringUtil.parseHtmlProperties(toks.get(1));
                     if(props.get("min")!=null) divClass= "ramadda-tabs-min";
                     else if(props.get("center")!=null) divClass= "ramadda-tabs-center";
+                    else if(props.get("minarrow")!=null) divClass= "ramadda-tabs-min ramadda-tabs-minarrow";
 
                     tabInfo.minHeight = (String) props.get("minHeight");
                     if ((tabInfo.minHeight != null)
