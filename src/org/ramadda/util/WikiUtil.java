@@ -1166,9 +1166,11 @@ public class WikiUtil {
                     String tmp = (String)props.get("class");
                     if(tmp!=null) clazz=tmp;
                     String image = (String)props.get("image");
+                    String attach =  (String) props.get("attach");
+                    if(attach == null) attach = "fixed";
                     tmp =  handler.getWikiImageUrl(this, image, props);
                     if(tmp!=null) image=tmp;
-                    style += "background-size:100% auto; background-image: url('" + image +"'); ";
+                    style += "background-attachment:" + attach+";background-size:100% auto; background-image: url('" + image +"'); ";
                     String color = (String) props.get("color");
                     if(color!=null)
                         style += " background: " + color +"; ";
