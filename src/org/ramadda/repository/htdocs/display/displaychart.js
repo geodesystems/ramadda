@@ -817,7 +817,7 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
             }
         },
         clearChart: function() {
-            if (this.chart != null) {
+            if (this.chart != null && this.chart.clearChart) {
                 this.chart.clearChart();
             }
         },
@@ -947,7 +947,7 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
             chartOptions.chartArea.backgroundColor= {};
             chartOptions.hAxis = {gridlines:{}};
             chartOptions.vAxis = {gridlines:{}};
-            this.setPropertyOn(chartOptions.backgroundColor,"chart.fill","fill","transparent");
+            this.setPropertyOn(chartOptions.backgroundColor,"chart.fill","fill",null);
             this.setPropertyOn(chartOptions.backgroundColor,"chart.stroke","stroke",null);
             this.setPropertyOn(chartOptions.backgroundColor,"chart.strokeWidth","strokeWidth",null);
 

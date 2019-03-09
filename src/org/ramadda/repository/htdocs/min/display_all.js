@@ -706,7 +706,8 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             this.setDisplayParent(cm.getLayoutManager());
         },
         setContents: function(contents) {
-            contents = HtmlUtils.div([ATTR_CLASS, "display-contents-inner display-" + this.getType() + "-inner"], contents);
+                var style = "";
+            contents = HtmlUtils.div([ATTR_CLASS, "display-contents-inner display-" + this.getType() + "-inner","style",style], contents);
             this.writeHtml(ID_DISPLAY_CONTENTS, contents);
         },
         addEntry: function(entry) {
@@ -2620,11 +2621,11 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             if (dobs) {
                 html += HtmlUtils.openDiv(["class", "minitron"]);
             }
+            var style =  this.getProperty("displayStyle","");
             if (width > 0) {
-                html += HtmlUtils.openDiv(["class", "display-contents", "style", "width:" + width + "px;"]);
-            } else {
-                html += HtmlUtils.openDiv(["class", "display-contents"]);
+                style+="width:" + width + "px;"
             }
+            html += HtmlUtils.openDiv(["class", "display-contents", "style", style]);
 
 
             var get = this.getGet();
@@ -7581,7 +7582,7 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
             }
         },
         clearChart: function() {
-            if (this.chart != null) {
+            if (this.chart != null && this.chart.clearChart) {
                 this.chart.clearChart();
             }
         },
@@ -7711,7 +7712,7 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
             chartOptions.chartArea.backgroundColor= {};
             chartOptions.hAxis = {gridlines:{}};
             chartOptions.vAxis = {gridlines:{}};
-            this.setPropertyOn(chartOptions.backgroundColor,"chart.fill","fill","transparent");
+            this.setPropertyOn(chartOptions.backgroundColor,"chart.fill","fill",null);
             this.setPropertyOn(chartOptions.backgroundColor,"chart.stroke","stroke",null);
             this.setPropertyOn(chartOptions.backgroundColor,"chart.strokeWidth","strokeWidth",null);
 

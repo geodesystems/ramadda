@@ -556,7 +556,8 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             this.setDisplayParent(cm.getLayoutManager());
         },
         setContents: function(contents) {
-            contents = HtmlUtils.div([ATTR_CLASS, "display-contents-inner display-" + this.getType() + "-inner"], contents);
+                var style = "";
+            contents = HtmlUtils.div([ATTR_CLASS, "display-contents-inner display-" + this.getType() + "-inner","style",style], contents);
             this.writeHtml(ID_DISPLAY_CONTENTS, contents);
         },
         addEntry: function(entry) {
@@ -2470,11 +2471,11 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             if (dobs) {
                 html += HtmlUtils.openDiv(["class", "minitron"]);
             }
+            var style =  this.getProperty("displayStyle","");
             if (width > 0) {
-                html += HtmlUtils.openDiv(["class", "display-contents", "style", "width:" + width + "px;"]);
-            } else {
-                html += HtmlUtils.openDiv(["class", "display-contents"]);
+                style+="width:" + width + "px;"
             }
+            html += HtmlUtils.openDiv(["class", "display-contents", "style", style]);
 
 
             var get = this.getGet();
