@@ -28,6 +28,7 @@ import org.ramadda.util.HtmlUtils;
 import org.ramadda.util.Utils;
 
 import org.ramadda.util.sql.Clause;
+import javax.imageio.ImageIO;
 
 
 import org.ramadda.util.sql.SqlUtil;
@@ -46,6 +47,7 @@ import ucar.unidata.util.WikiUtil;
 import ucar.unidata.xml.XmlUtil;
 
 import java.awt.Dimension;
+import java.io.FileInputStream;
 
 
 import java.awt.Image;
@@ -167,7 +169,7 @@ public class BeforeAfterTypeHandler extends GenericTypeHandler {
             Dimension dim    = dimensions.get(entry1.getId());
 
             if (dim == null) {
-                Image image = Utils.readImage(entry1.getResource().getPath());
+                Image image = ImageIO.read(new FileInputStream(entry1.getFile()));
                 dim = new Dimension(image.getWidth(null),
                                     image.getHeight(null));
                 if ((dim.width > 0) && (dim.height > 0)) {
