@@ -732,7 +732,6 @@ textarea, input {
 .ui-widget {
     font-family: inherit;
     font-size:12pt;
-    background:rgba(0,0,0,0);
 }
 
 
@@ -3349,6 +3348,10 @@ padding-bottom: 0.2em;
 
 
 
+
+.ui-tabs {
+    background:rgba(0,0,0,0);
+}
 
 .ui-tabs .ui-tabs-nav li.ui-tabs-active {
 //  font-weight: bold;
