@@ -1152,6 +1152,7 @@ height:100%;
 
 
 .display-notebook-header {
+     outline:none;
      margin-top:2px;
      padding-top:1px;
      padding-bottom:1px;
