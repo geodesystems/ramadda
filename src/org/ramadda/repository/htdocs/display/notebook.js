@@ -715,8 +715,8 @@ function RamaddaNotebookCell(notebook, id, content, props) {
 
                 menu += line2;
                 //                menu += "<b>Layout</b><br>";
-                //                menu += HtmlUtils.div(["class", "ramadda-link", "what", "savewithout"], "Save Notebook (w/o output)") + "<br>";
-                menu += HtmlUtils.div(["class", "ramadda-link", "what", "savewith"], "Save Notebook (with output)") + "<br>";
+                menu += HtmlUtils.div(["class", "ramadda-link", "what", "savewithout"], "Save notebook") + "<br>";
+                //                menu += HtmlUtils.div(["class", "ramadda-link", "what", "savewith"], "Save Notebook (with output)") + "<br>";
                 menu += line2;
                 menu += HtmlUtils.div(["class", "ramadda-link", "what", "delete"], "Delete") + "<br>";
                 menu += HtmlUtils.div(["class", "ramadda-link", "what", "help"], "Help") + "<br>";
