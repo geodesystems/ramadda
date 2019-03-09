@@ -1803,7 +1803,8 @@ ATTR_SHOWLINK, "true", ATTR_INCLUDEICON, "false") + ATTRS_LAYOUT),
             String name = getEntryDisplayName(entry);
             if(getProperty(wikiUtil,props,"link",false)) {
                 name = HtmlUtils.href(
-                                      request.entryUrl(getRepository().URL_ENTRY_SHOW, entry),name);
+                                      request.entryUrl(getRepository().URL_ENTRY_SHOW, entry),name,
+                                      HtmlUtils.cssClass("ramadda-link"));
             }
             return name;
         } else if (theTag.equals(WIKI_TAG_EMBED)) {
