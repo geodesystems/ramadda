@@ -690,8 +690,8 @@ function RamaddaDotplotDisplay(displayManager, id, properties) {
                     yanchor: 'middle',
                     xanchor: 'right'
                 },
-                paper_bgcolor: this.getProperty("paperBackground", 'rgb(254, 247, 234)'),
-                plot_bgcolor: this.getProperty("plotBackground", 'rgb(254, 247, 234)'),
+                paper_bgcolor: this.getProperty("chart.fill", 'rgb(254, 247, 234)'),
+                plot_bgcolor: this.getProperty("chartArea.fill", 'rgb(254, 247, 234)'),
                 hovermode: 'closest'
             };
             this.setDimensions(layout, 2);

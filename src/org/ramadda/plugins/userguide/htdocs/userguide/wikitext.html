@@ -116,15 +116,43 @@ to center
 To wrap text in a div do:
 <div style="margin:10px;"><pre>
 +div
-some text in a div
+...
 -div
 </pre></div>
+
+
+Set the background color or image with:
+<pre>
++div color="color"
+...
+-div
+
++div image=image_reference
+...
+-div
+
++div style="css style"
+...
+-div
+</pre>
+
+Where image_reference is either:
+<pre>
++div image=::name_of_attachment
+-div
++div image=this
+...
+-div
++div image=other_entry_id
+...
+-div
+</pre>
 
 
 To add attributes to the div do:
 <div style="margin:10px;"><pre>
 +div style="max-height:100px;overflow-y:auto;"
-some text in a div
+...
 -div
 </pre></div>
 
@@ -412,6 +440,9 @@ This by default gives a 20px left and right margin. To change this you can add a
 ...
 -inset
 </pre>
+
+
+
 
 
 

@@ -266,6 +266,9 @@ public class WikiUtil {
         public String getWikiLink(WikiUtil wikiUtil, String name,
                                   String label);
 
+
+        public String getWikiImageUrl(WikiUtil wikiUtil, String image,Hashtable props);
+
         /**
          * _more_
          *
@@ -1153,6 +1156,37 @@ public class WikiUtil {
                 continue;
             }
 
+            if (tline.startsWith("+div")) {
+                List<String> toks      = StringUtil.splitUpTo(tline, " ", 2);
+                String style = "";
+                String clazz="";
+                if (toks.size() == 2) {
+                    Hashtable props =
+                        StringUtil.parseHtmlProperties(toks.get(1));
+                    String tmp = (String)props.get("class");
+                    if(tmp!=null) clazz=tmp;
+                    String image = (String)props.get("image");
+                    tmp =  handler.getWikiImageUrl(this, image, props);
+                    if(tmp!=null) image=tmp;
+                    style += " background-image: url('" + image +"'); ";
+                    String color = (String) props.get("color");
+                    if(color!=null)
+                        style += " background: " + color +"; ";
+                }
+                buff.append(HtmlUtils.open(HtmlUtils.TAG_DIV,
+                                           HtmlUtils.cssClass(clazz) +
+                                           HtmlUtils.style(style)));
+
+                continue;
+            }
+
+            if (tline.startsWith("-div")) {
+                buff.append(HtmlUtils.close(HtmlUtils.TAG_DIV));
+                continue;
+            }
+
+
+
 
             if (tline.startsWith("+info-sec")
                     || tline.startsWith("+section")) {
@@ -1312,21 +1346,6 @@ public class WikiUtil {
                 continue;
             }
 
-            if (tline.startsWith("+div")) {
-                List<String> toks = StringUtil.splitUpTo(tline, " ", 2);
-                buff.append("<div " + ((toks.size() > 1)
-                                       ? toks.get(1)
-                                       : "") + ">");
-
-                continue;
-            }
-
-
-            if (tline.equals("-div")) {
-                buff.append("</div>");
-
-                continue;
-            }
 
 
             if (tline.equals("+center")) {

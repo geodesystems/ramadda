@@ -363,6 +363,12 @@ function DisplayThing(argId, argProperties) {
         propertyDefined: function(key) {
             return Utils.isDefined(this.getProperty(key));
         },
+       setPropertyOn:function(object,myProperty,objectProperty, dflt)  {
+             var prop  = this.getProperty(myProperty, dflt);
+             if(Utils.isDefined(prop) && prop!=null) {
+                 object[objectProperty]  = prop;
+                }
+            },
         getProperty: function(key, dflt) {
             if (this[key]) {
                 return this[key];

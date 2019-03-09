@@ -1207,7 +1207,7 @@ ATTR_SHOWLINK, "true", ATTR_INCLUDEICON, "false") + ATTRS_LAYOUT),
             srcEntry = entry;
         } else {
             src = src.trim();
-            if ((src.length() == 0) || entry.getName().equals(src)) {
+            if ((src.length() == 0) || entry.getName().equals(src) || src.equals("this")) {
                 srcEntry = entry;
             } else if (entry instanceof Entry) {
                 srcEntry = getEntryManager().findEntryWithName(request,
@@ -1286,6 +1286,10 @@ ATTR_SHOWLINK, "true", ATTR_INCLUDEICON, "false") + ATTRS_LAYOUT),
                                 getHtmlOutputHandler().getImageUrl(request,
                                     srcEntry), srcEntry, props);
         }
+
+
+
+
 
 
         if ((attachment != null) && attachment.equals("*")) {
@@ -5125,6 +5129,57 @@ ATTR_SHOWLINK, "true", ATTR_INCLUDEICON, "false") + ATTRS_LAYOUT),
 
 
 
+
+    public String getWikiImageUrl(WikiUtil wikiUtil, String src, Hashtable props)  {
+        try {
+        Entry   entry   = (Entry) wikiUtil.getProperty(ATTR_ENTRY);
+        Request request = (Request) wikiUtil.getProperty(ATTR_REQUEST);
+        Entry srcEntry = null;
+        String attachment = null;
+
+        int    idx        = src.indexOf("::");
+        if(idx>=0) {
+            List<String> toks = StringUtil.splitUpTo(src, "::", 2);
+            if (toks.size() == 2) {
+                src        = toks.get(0);
+                attachment = toks.get(1).substring(1);
+            }
+        }
+        if ((src.length() == 0) || entry.getName().equals(src)) {
+            srcEntry = entry;
+        } else if (entry instanceof Entry) {
+            srcEntry = getEntryManager().findEntryWithName(request,
+                    (Entry) entry, src);
+        }
+        if (srcEntry == null) {
+            return null;
+        }
+        if (attachment == null) {
+            if ( !srcEntry.isImage()) {
+                return null;
+            }
+            return getHtmlOutputHandler().getImageUrl(request, srcEntry);
+        }
+        if ((attachment != null) && attachment.equals("*")) {
+            attachment = null;
+        }
+        for (Metadata metadata : getMetadataManager().getMetadata(srcEntry)) {
+            MetadataType metadataType =
+                getMetadataManager().findType(metadata.getType());
+            if (metadataType == null) {
+                continue;
+            }
+            String url = metadataType.getDisplayImageUrl(request, srcEntry,
+                             metadata, attachment);
+            if (url != null) {
+                return url;
+            }
+        }
+        return null;
+        } catch(Exception exc) {
+            throw new IllegalArgumentException(exc);
+        }
+    }
 
     /**
      * Get a wiki link

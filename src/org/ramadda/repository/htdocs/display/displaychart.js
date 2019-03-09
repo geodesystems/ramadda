@@ -927,18 +927,37 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
             dataTable.addRows(justData);
             return dataTable;
         },
+
         makeChartOptions: function(dataList, props, selectedFields) {
             var chartOptions = {
                 tooltip: {
                     isHtml: true
                 },
             };
+            
             $.extend(chartOptions, {
                 lineWidth: 1,
                 colors: this.colorList,
                 curveType: this.curveType,
                 vAxis: {}
             });
+
+            chartOptions.backgroundColor =  {};
+            chartOptions.chartArea = {};
+            chartOptions.chartArea.backgroundColor= {};
+            chartOptions.hAxis = {gridlines:{}};
+            chartOptions.vAxis = {gridlines:{}};
+            this.setPropertyOn(chartOptions.backgroundColor,"chart.fill","fill","transparent");
+            this.setPropertyOn(chartOptions.backgroundColor,"chart.stroke","stroke",null);
+            this.setPropertyOn(chartOptions.backgroundColor,"chart.strokeWidth","strokeWidth",null);
+
+            this.setPropertyOn(chartOptions.chartArea.backgroundColor,"chartArea.fill","fill",null);
+            this.setPropertyOn(chartOptions.chartArea.backgroundColor,"chartArea.stroke","stroke",null);
+            this.setPropertyOn(chartOptions.chartArea.backgroundColor,"chartArea.strokeWidth","strokeWidth",null);
+
+            this.setPropertyOn(chartOptions.hAxis.gridlines,"hAxis.gridlines.color","color",this.getProperty("gridlines.color",null));
+            this.setPropertyOn(chartOptions.vAxis.gridlines,"vAxis.gridlines.color","color",this.getProperty("gridlines.color",null));
+
 
 
             if (this.lineWidth) {
@@ -970,7 +989,8 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
             }
             this.chartDimensions = {
                 width: "90%",
-                left: "10%"
+                left: "10%",
+                right:10,
             }
 
             useMultipleAxes = this.getProperty("useMultipleAxes", true);
@@ -1043,7 +1063,7 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
                 if (!Utils.isDefined(this.chartOptions.height)) {
                     this.chartOptions.height = "100%";
                 }
-                //                console.log("draw:" +" " +JSON.stringify(this.chartOptions));
+                //                console.log("draw:" +" " +JSON.stringify(this.chartOptions,null,3));
                 this.chart.draw(dataTable, this.chartOptions);
                 var theDisplay = this;
                 google.visualization.events.addListener(this.chart, 'onmouseover', function(event) {
@@ -1119,13 +1139,26 @@ function RamaddaAxisChart(displayManager, id, chartType, properties) {
                 legend: {
                         position: this.getProperty("legendPosition",'bottom')
                 },
-                chartArea: {
-                    left: this.getProperty("chartLeft", this.chartDimensions.left),
-                    top: this.getProperty("chartTop", "10"),
-                    height: this.getProperty("chartHeight", "70%"),
-                    width: this.getProperty("chartWidth", this.chartDimensions.width),
-                },
             });
+
+            if(!chartOptions.chartArea) {
+                chartOptions.chartArea={};
+            }
+            /*
+            chartOptions.chartArea={};
+            chartOptions.chartArea.backgroundColor =  {
+                'fill': '#ccc',
+                'opacity': 1
+            }
+            */
+            //            chartOptions.chartArea.backgroundColor =  "green";
+            $.extend(chartOptions.chartArea, {
+                    left: this.getProperty("chartLeft", this.chartDimensions.left),
+                        right: this.getProperty("chartRight", this.chartDimensions.right),
+                        top: this.getProperty("chartTop", "10"),
+                        height: this.getProperty("chartHeight", "70%"),
+                        width: this.getProperty("chartWidth", this.chartDimensions.width),
+                        });
 
             if (useMultipleAxes) {
                 $.extend(chartOptions, {
