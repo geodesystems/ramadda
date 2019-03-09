@@ -1372,7 +1372,8 @@ a.btn-primary:link, a.btn-primary  {
 }
 
 .ramadda-link {
-         display:inline-block;
+  text-decoration: none;
+  display:inline-block;
 }
 
 .ramadda-link:hover, a:hover {
