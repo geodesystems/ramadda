@@ -9183,7 +9183,9 @@ function ScatterplotDisplay(displayManager, id, properties) {
             var chartId = this.getChartId();
             $("#" + chartId).css("width", width);
             $("#" + chartId).css("height", height);
-            this.chartOptions = {
+
+            var chartOptions = SUPER.makeChartOptions.call(this, dataList, props, selectedFields);
+            $.extend(this.chartOptions,{
                 title: '',
                 tooltip: {
                     isHtml: true
@@ -9195,7 +9197,7 @@ function ScatterplotDisplay(displayManager, id, properties) {
                     height: "80%",
                     width: "90%"
                 }
-            };
+                });
 
             if (this.getShowTitle()) {
                 this.chartOptions.title = this.getTitle(true);
