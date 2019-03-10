@@ -292,6 +292,13 @@ ATTR_SHOWLINK, "true", ATTR_INCLUDEICON, "false") + ATTRS_LAYOUT),
                                         ATTR_SHOWMENU, "true", 
                                         ATTR_SHOWTITLE, "true"),
                             new WikiTag(WIKI_TAG_DISPLAY,
+                                        "Text",
+                                        ATTR_TYPE, "label", 
+                                        "text","",
+                                        ATTR_LAYOUTHERE, "true", 
+                                        ATTR_SHOWMENU, "true", 
+                                        ATTR_SHOWTITLE, "true"),
+                            new WikiTag(WIKI_TAG_DISPLAY,
                                         "Summary Stats",
                                         ATTR_TYPE, "stats", 
                                         "loadData","false", 
@@ -1286,9 +1293,6 @@ ATTR_SHOWLINK, "true", ATTR_INCLUDEICON, "false") + ATTRS_LAYOUT),
                                 getHtmlOutputHandler().getImageUrl(request,
                                     srcEntry), srcEntry, props);
         }
-
-
-
 
 
 

@@ -167,6 +167,7 @@ function RamaddaAnimationDisplay(displayManager, id, properties) {
     });
 }
 
+
 function RamaddaLabelDisplay(displayManager, id, properties) {
     var ID_TEXT = "text";
     var ID_EDIT = "edit";
@@ -187,6 +188,7 @@ function RamaddaLabelDisplay(displayManager, id, properties) {
     if (properties["class"]) this["class"] = properties["class"];
     else this["class"] = "display-text";
 
+
     RamaddaUtil.defineMembers(this, {
         initDisplay: function() {
             var theDisplay = this;
@@ -195,7 +197,8 @@ function RamaddaLabelDisplay(displayManager, id, properties) {
             if (this.editMode) {
                 textClass += " display-text-edit ";
             }
-            var html = HtmlUtils.div([ATTR_CLASS, textClass, ATTR_ID, this.getDomId(ID_TEXT)], this.text);
+            var style = "color:" + this.getTextColor("contentsColor") +";";
+            var html = HtmlUtils.div([ATTR_CLASS, textClass, ATTR_ID, this.getDomId(ID_TEXT),"style",style], this.text);
             if (this.editMode) {
                 html += HtmlUtils.textarea(ID_EDIT, this.text, ["rows", 5, "cols", 120, ATTR_SIZE, "120", ATTR_CLASS, "display-text-input", ATTR_ID, this.getDomId(ID_EDIT)]);
             }

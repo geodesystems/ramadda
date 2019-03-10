@@ -35,6 +35,7 @@ import org.ramadda.util.sql.SqlUtil;
 
 import org.w3c.dom.*;
 
+import ucar.unidata.util.IOUtil;
 import ucar.unidata.util.Misc;
 import ucar.unidata.util.TwoFacedObject;
 import ucar.unidata.xml.XmlUtil;
@@ -1428,12 +1429,27 @@ public class MetadataManager extends RepositoryManager {
                                          request.getString(ARG_METADATA_ID,
                                              ""));
         if (metadata == null) {
+            String attachment = IOUtil.getFileTail(request.getRequestPath());
+            for (Metadata md : metadataList) {
+                metadata = md;
+                MetadataType metadataType =
+                    getMetadataManager().findType(metadata.getType());
+                if (metadataType == null) {
+                    continue;
+                }
+                MetadataElement element = metadataType.getDisplayImageElement(request, entry,
+                                                             metadata, attachment);
+
+                if(element!=null) {
+                    return metadataType.processView(request, entry, metadata,  element);
+                }
+            }
             return new Result("", "Could not find metadata");
         }
         long            t2      = System.currentTimeMillis();
         MetadataHandler handler = findMetadataHandler(metadata.getType());
         Result          result = handler.processView(request, entry,
-                                     metadata);
+                                                     metadata);
 
         long            t3      = System.currentTimeMillis();
         result = getEntryManager().addEntryHeader(request,

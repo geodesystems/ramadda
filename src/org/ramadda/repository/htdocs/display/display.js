@@ -584,19 +584,23 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             this.updateUI();
             var title = "";
             if (this.getShowTitle()) {
-                title = entry.getName();
-                title = HtmlUtils.href(this.getRamadda().getEntryUrl(this.entryId), title);
-                this.setTitleHtml(title);
+                this.jq(ID_TITLE).html(entry.getName());
             }
         },
-       setTitleHtml:function(title) {
-                var titleStyle="";
-                var titleColor = this.getProperty("titleColor",this.getProperty("text.color"));
-                if(titleColor) {
-                    titleStyle+=" color:" +titleColor+"; ";
+        getTextColor: function(property) {
+                if(property) return this.getProperty(property, this.getProperty("textColor"));
+                return this.getProperty("textColor","#000");
+        },
+        getTitleHtml: function(title) {
+                var titleToShow= "";
+                if (this.getShowTitle()) {
+                    var titleStyle=" color:" +this.getTextColor("titleColor") +";";
+                    titleToShow = this.getShowTitle()?this.getDisplayTitle(title):"";
+                    if(this.entryId)
+                        titleToShow = HtmlUtils.href(this.getRamadda().getEntryUrl(this.entryId), titleToShow,[ATTR_CLASS, "display-title", ATTR_ID, this.getDomId(ID_TITLE),"style", titleStyle]);
                 }
-                this.jq(ID_TITLE).html(HtmlUtils.tag("span", [ATTR_CLASS, "display-title", ATTR_ID, this.getDomId(ID_TITLE),"style",titleStyle], title));
-       },
+                return titleToShow;
+      },
         handleEventFieldValueSelected: function(source, args) {
             this.setProperty("filterPattern", args.value);
             this.setProperty("patternFilterField", args.field.getId());
@@ -635,13 +639,13 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
                 return;
             }
             if (args.selected) {
-                $("#" + this.getDomId(ID_TITLE)).addClass("display-title-select");
+                this.jq(ID_TITLE).addClass("display-title-select");
             } else {
-                $("#" + this.getDomId(ID_TITLE)).removeClass("display-title-select");
+                this.jq(ID_TITLE).removeClass("display-title-select");
             }
         },
         highlightEntry: function(entry) {
-            $("#" + this.getDomId(ID_TITLE)).addClass("display-title-select");
+                this.jq(ID_TITLE).addClass("display-title-select");
         },
         getEntries: function() {
             return this.entries;
@@ -2503,18 +2507,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             var left = "";
             if (button != "" || title != "") {
                 this.cnt++;
-                var titleDiv = "";
-                var label = title;
-                if (title != "" && this.entryId) {
-                    label = HtmlUtils.href(this.getRamadda().getEntryUrl(this.entryId), title);
-                }
-                var titleToShow = this.getShowTitle()?this.getDisplayTitle(title):"";
-                var titleStyle="";
-                var titleColor = this.getProperty("titleColor",this.getProperty("text.color"));
-                if(titleColor) {
-                    titleStyle+=" color:" +titleColor+"; ";
-                }
-                titleDiv = HtmlUtils.tag("span", [ATTR_CLASS, "display-title", ATTR_ID, this.getDomId(ID_TITLE),"style",titleStyle], titleToShow);
+                var titleDiv =this.getTitleHtml(title);
                 if (button == "") {
                     left = titleDiv;
                 } else {
@@ -2638,7 +2631,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             return height;
         },
         getContentsStyle: function() {
-            var style = "";
+           var style="";
             var height = this.getHeightForStyle();
             if (height) {
                 style += " height:" + height + ";";
@@ -2650,9 +2643,16 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             return style;
         },
         getContentsDiv: function() {
-            var extraStyle = this.getContentsStyle();
-            if (this.getProperty("background"))
-                extraStyle += "background: " + this.getProperty("background") + ";";
+            var style = this.getContentsStyle();
+            style += this.getProperty("contentsStyle","");
+            var image = this.getProperty("backgroundImage");
+            if(image) {
+                image = HtmlUtils.getEntryImage(this.entryId,image);
+                style += "background-attachment:auto;background-size:100% auto; background-image: url('" + image +"'); ";
+            }
+            var background = this.getProperty("background");
+            if(background)
+                style += "background: " + background+ ";";
             var topBottomStyle = "";
             var width = this.getWidthForStyle();
             if (width) {
@@ -2660,7 +2660,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             }
             var top = HtmlUtils.div([ATTR_STYLE, topBottomStyle, ATTR_ID, this.getDomId(ID_DISPLAY_TOP)], "");
             var bottom = HtmlUtils.div([ATTR_STYLE, topBottomStyle, ATTR_ID, this.getDomId(ID_DISPLAY_BOTTOM)], "");
-            return top + HtmlUtils.div([ATTR_CLASS, "display-contents-inner display-" + this.type, "style", extraStyle, ATTR_ID, this.getDomId(ID_DISPLAY_CONTENTS)], "") + bottom;
+            return top + HtmlUtils.div([ATTR_CLASS, "display-contents-inner display-" + this.type, "style", style, ATTR_ID, this.getDomId(ID_DISPLAY_CONTENTS)], "") + bottom;
         },
         copyDisplay: function() {
             var newOne = {};

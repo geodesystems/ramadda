@@ -455,6 +455,10 @@ color: #000;
     background: #e0f0ff; 
 }
 
+.display-label {
+    padding:2px;
+}
+
 .display-animation {
    border-top:1px #ccc solid; 
    padding:5px;

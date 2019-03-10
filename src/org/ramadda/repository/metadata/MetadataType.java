@@ -804,6 +804,28 @@ public class MetadataType extends MetadataTypeBase {
         return null;
     }
 
+    public MetadataElement getDisplayImageElement(Request request, Entry entry,
+                                     Metadata metadata, String filter)
+            throws Exception {
+        for (MetadataElement element : getChildren()) {
+            if ( !element.getDataType().equals(element.DATATYPE_FILE)) {
+                continue;
+            }
+            if ( !element.showAsAttachment()) {
+                continue;
+            }
+            if (element.getThumbnail()) {
+                //???                continue;
+            }
+            String url = getImageUrl(request, entry, metadata, filter);
+            if (url != null) {
+                return element;
+            }
+        }
+
+        return null;
+    }
+
 
 
     /**
@@ -824,6 +846,11 @@ public class MetadataType extends MetadataTypeBase {
             return new Result("", "Cannot process view");
         }
         MetadataElement element = getChildren().get(elementIndex);
+        return processView(request, entry, metadata,  element);
+    }
+
+    public Result processView(Request request, Entry entry, Metadata metadata,MetadataElement element)
+        throws Exception {
         if ( !element.getDataType().equals(element.DATATYPE_FILE)) {
             return new Result("", "Cannot process view");
         }

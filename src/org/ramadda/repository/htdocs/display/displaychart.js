@@ -956,14 +956,12 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
             this.setPropertyOn(chartOptions.chartArea.backgroundColor,"chartArea.fill","fill",null);
             this.setPropertyOn(chartOptions.chartArea.backgroundColor,"chartArea.stroke","stroke",null);
             this.setPropertyOn(chartOptions.chartArea.backgroundColor,"chartArea.strokeWidth","strokeWidth",null);
-            var textColor = this.getProperty("text.color");
-
             this.setPropertyOn(chartOptions.hAxis.gridlines,"hAxis.gridlines.color","color",this.getProperty("gridlines.color",null));
             this.setPropertyOn(chartOptions.vAxis.gridlines,"vAxis.gridlines.color","color",this.getProperty("gridlines.color",null));
 
+            var textColor = this.getProperty("textColor","#000");
             this.setPropertyOn(chartOptions.hAxis.textStyle,"hAxis.text.color","color",this.getProperty("axis.text.color",textColor));
             this.setPropertyOn(chartOptions.vAxis.textStyle,"vAxis.text.color","color",this.getProperty("axis.text.color",textColor));
-
             this.setPropertyOn(chartOptions.legend.textStyle,"legend.text.color","color",textColor);
 
 

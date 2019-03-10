@@ -1256,7 +1256,18 @@ var HtmlUtils = {
         else attrs.style = "style='display:inline-block;'";
         return this.div(attrs, label);
     },
-
+    getEntryImage: function(entryId, tag) {
+        var index = tag.indexOf("::");
+        if(index>=0) {
+            var toks = tag.split("::");
+            if(toks[0].trim().length>0) {
+                entryId = toks[0].trim();
+            }
+            var attach = toks[1].trim();
+            return ramaddaBaseUrl +"/metadata/view/" + attach +"?entryid=" + entryId;
+        }
+        return tag;
+    },
     href: function(url, label, attrs) {
         if (attrs == null) attrs = [];
         var a = [];
