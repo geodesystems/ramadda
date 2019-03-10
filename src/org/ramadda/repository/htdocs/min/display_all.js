@@ -5273,7 +5273,8 @@ function RamaddaNotebookDisplay(displayManager, id, properties) {
         initDisplay: async function() {
             let _this = this;
             this.createUI();
-            var contents = HtmlUtils.div([ATTR_CLASS, "display-notebook-cells", ATTR_ID, this.getDomId(ID_CELLS)], "Loading...");
+            var includes = "<script src='" + ramaddaBaseUrl + "/lib/showdown.min.js'></script>";
+            var contents =   includes + HtmlUtils.div([ATTR_CLASS, "display-notebook-cells", ATTR_ID, this.getDomId(ID_CELLS)], "Loading...");
             var popup =  HtmlUtils.div(["class","ramadda-popup",ATTR_ID, this.getDomId(ID_MENU)]);
             contents = HtmlUtils.div([ATTR_ID, this.getDomId(ID_NOTEBOOK)], popup +contents);
             this.setContents(contents);
@@ -6183,7 +6184,7 @@ function RamaddaNotebookCell(notebook, id, content, props) {
             var blobs = [];
             var blob = "";
             var commands = value.split("\n");
-            var types = ["wiki", "html", "sh", "js","raw"];
+            var types = ["wiki", "html", "sh", "js","raw","md"];
             var ok = true;
             for (var i = 0; i < commands.length; i++) {
                 if (!ok) break;
@@ -6254,6 +6255,12 @@ function RamaddaNotebookCell(notebook, id, content, props) {
         processHtml: async function(blob) {
             this.rawOutput+=blob.blob+"\n";
             blob.div.set(blob.blob);
+        },
+        processMd: async function(blob) {
+            this.rawOutput+=blob.blob+"\n";
+            var converter = new showdown.Converter();
+            var html      = converter.makeHtml(blob.blob);
+            blob.div.set(html);
         },
         processWiki: async function(blob) {
             this.rawOutput+=blob.blob+"\n";
@@ -6370,6 +6377,8 @@ function RamaddaNotebookCell(notebook, id, content, props) {
                 await this.processJs(blob);
             } else if (blob.type == "sh") {
                 await this.processSh(blob);
+            } else if (blob.type == "md") {
+                await this.processMd(blob);
             } else {
                 blob.div.set("Unknown type:" + blob.type);
             }

@@ -41,7 +41,7 @@ The icons on the left allow you to popup the cell menu, show the cell input, run
 The menubar at the top of the input area is just RAMADADA's wiki text <a href="wiki.html#menubar">menu bar</a>.
 Use the following tags to denote and separate the contents within a notebook cell:
 <p>
-The input of a notebook cell can be any combination of html, wiki text, special "shell" commands or javascript.
+The input of a notebook cell can be any combination of html, wiki text, markdown, special "shell" commands or javascript.
 The input can either be all one type or a mix of different input types.
 
 <pre>
@@ -50,6 +50,10 @@ Regular html text
 
 <i>wiki:</i>
 RAMADDA wiki text
+
+
+<i>md:</i>
+Markdown text
 
 <i>sh:</i>
 Shell commands
@@ -87,6 +91,16 @@ RAMADDA wiki text
 </pre>
 
 The wiki text is just regular RAMADDA wiki text. More information <a href="wikitext.html">here</a>.
+
+
+[ug::subheading {Markdown Input} markdown]
+To specify markdown  text start the input with "md:" - 
+<pre>
+<i>md:</i>
+# markdown 1
+# markdown 2
+</pre>
+
 
 
 [ug::subheading {Shell Input} sh]
