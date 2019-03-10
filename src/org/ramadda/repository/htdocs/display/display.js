@@ -586,6 +586,13 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             if (this.getShowTitle()) {
                 title = entry.getName();
                 title = HtmlUtils.href(this.getRamadda().getEntryUrl(this.entryId), title);
+                var titleStyle="";
+                var titleColor = this.getProperty("titleColor",this.getProperty("text.color"));
+                if(titleColor) {
+                    titleStyle+=" color:" +titleColor+"; ";
+                }
+                this.jq(ID_TITLE).html(HtmlUtils.tag("span", [ATTR_CLASS, "display-title", ATTR_ID, this.getDomId(ID_TITLE),"style",titleStyle], title));
+
                 this.jq(ID_TITLE).html(title);
             }
         },
@@ -2502,8 +2509,9 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
                 }
                 var titleToShow = this.getShowTitle()?this.getDisplayTitle(title):"";
                 var titleStyle="";
-                if(this.getProperty("titleColor",null)) {
-                    titleStyle+=" color:" +this.getProperty("titleColor")+"; ";
+                var titleColor = this.getProperty("titleColor",this.getProperty("text.color"));
+                if(titleColor) {
+                    titleStyle+=" color:" +titleColor+"; ";
                 }
                 titleDiv = HtmlUtils.tag("span", [ATTR_CLASS, "display-title", ATTR_ID, this.getDomId(ID_TITLE),"style",titleStyle], titleToShow);
                 if (button == "") {

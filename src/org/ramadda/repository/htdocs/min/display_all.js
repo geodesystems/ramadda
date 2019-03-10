@@ -736,6 +736,13 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             if (this.getShowTitle()) {
                 title = entry.getName();
                 title = HtmlUtils.href(this.getRamadda().getEntryUrl(this.entryId), title);
+                var titleStyle="";
+                var titleColor = this.getProperty("titleColor",this.getProperty("text.color"));
+                if(titleColor) {
+                    titleStyle+=" color:" +titleColor+"; ";
+                }
+                this.jq(ID_TITLE).html(HtmlUtils.tag("span", [ATTR_CLASS, "display-title", ATTR_ID, this.getDomId(ID_TITLE),"style",titleStyle], title));
+
                 this.jq(ID_TITLE).html(title);
             }
         },
@@ -2652,8 +2659,9 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
                 }
                 var titleToShow = this.getShowTitle()?this.getDisplayTitle(title):"";
                 var titleStyle="";
-                if(this.getProperty("titleColor",null)) {
-                    titleStyle+=" color:" +this.getProperty("titleColor")+"; ";
+                var titleColor = this.getProperty("titleColor",this.getProperty("text.color"));
+                if(titleColor) {
+                    titleStyle+=" color:" +titleColor+"; ";
                 }
                 titleDiv = HtmlUtils.tag("span", [ATTR_CLASS, "display-title", ATTR_ID, this.getDomId(ID_TITLE),"style",titleStyle], titleToShow);
                 if (button == "") {
@@ -7727,14 +7735,15 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
             this.setPropertyOn(chartOptions.chartArea.backgroundColor,"chartArea.fill","fill",null);
             this.setPropertyOn(chartOptions.chartArea.backgroundColor,"chartArea.stroke","stroke",null);
             this.setPropertyOn(chartOptions.chartArea.backgroundColor,"chartArea.strokeWidth","strokeWidth",null);
+            var textColor = this.getProperty("text.color");
 
             this.setPropertyOn(chartOptions.hAxis.gridlines,"hAxis.gridlines.color","color",this.getProperty("gridlines.color",null));
             this.setPropertyOn(chartOptions.vAxis.gridlines,"vAxis.gridlines.color","color",this.getProperty("gridlines.color",null));
 
-            this.setPropertyOn(chartOptions.hAxis.textStyle,"hAxis.text.color","color",this.getProperty("axis.text.color",null));
-            this.setPropertyOn(chartOptions.vAxis.textStyle,"vAxis.text.color","color",this.getProperty("axis.text.color",null));
+            this.setPropertyOn(chartOptions.hAxis.textStyle,"hAxis.text.color","color",this.getProperty("axis.text.color",textColor));
+            this.setPropertyOn(chartOptions.vAxis.textStyle,"vAxis.text.color","color",this.getProperty("axis.text.color",textColor));
 
-            this.setPropertyOn(chartOptions.legend.textStyle,"legend.text.color","color",null);
+            this.setPropertyOn(chartOptions.legend.textStyle,"legend.text.color","color",textColor);
 
 
             if (this.lineWidth) {
