@@ -9564,13 +9564,17 @@ function RamaddaStatsDisplay(displayManager, id, properties, type) {
                 var align = (justOne ? "right" : "left");
                 var label = field.getLabel();
                 var toks = label.split("!!");
-                var title = field.getId();
+                var tooltip = "";
+                tooltip += field.getId();
+                if(field.description && field.description!="") {
+                    tooltip += "\n" +field.description+"\n";
+                }
                 label = toks[toks.length - 1];
                 if (justOne) {
                     label += ":";
                 }
                 label = label.replace(/ /g, "&nbsp;")
-                var row = HtmlUtils.tr([], HtmlUtils.td(["align", align], "<b>" + HtmlUtils.tag("div", ["title", title], label) + "</b>") + right);
+                var row = HtmlUtils.tr([], HtmlUtils.td(["align", align], "<b>" + HtmlUtils.tag("div", ["title", tooltip], label) + "</b>") + right);
                 if (justOne) {
                     html += row;
                 } else {
@@ -16109,8 +16113,10 @@ function RamaddaMapDisplay(displayManager, id, properties) {
             if (!this.hasData()) {
                 return;
             }
-            if (!this.getProperty("showData", true))
+            if (!this.getProperty("showData", true)) {
                 return;
+            }
+
             var pointData = this.getPointData();
             var records = this.filterData();
             if (records == null) {
@@ -16144,11 +16150,6 @@ function RamaddaMapDisplay(displayManager, id, properties) {
             var colorByAttr = this.getDisplayProp(source, "colorBy", null);
             var colors = this.getColorTable(true);
             var sizeByAttr = this.getDisplayProp(source, "sizeBy", null);
-
-
-
-
-
             var isTrajectory = this.getDisplayProp(source, "isTrajectory", false);
             if (isTrajectory) {
                 var attrs = {
@@ -16224,8 +16225,17 @@ function RamaddaMapDisplay(displayManager, id, properties) {
                 }
                 menu += "</select>";
                 this.writeHtml(ID_TOP_RIGHT, "Color by: "+menu);
+                /*
+                this.jq("colorByMenu").superfish({
+                        //Don't set animation - it is broke on safari
+                        //                    animation: {height:'show'},
+                        speed: 'fast',
+                            delay: 300
+                            });
+                */
                 this.jq("colorByMenu").change(()=> {
                         var value = this.jq("colorByMenu").val();
+                        this.vectorMapApplied = false;
                         this.setProperty("colorBy",value);
                         this.updateUI();
                     }
@@ -16242,6 +16252,8 @@ function RamaddaMapDisplay(displayManager, id, properties) {
                 var pointRecord = records[i];
                 var tuple = pointRecord.getData();
                 var v = tuple[colorBy.index];
+                if (isNaN(v) ||  v === null) 
+                    continue;
                 if (excludeZero && v == 0) {
                     continue;
                 }
@@ -16389,6 +16401,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
             }
             if (didColorBy)
                 this.displayColorTable(colors, ID_BOTTOM, colorBy.minValue, colorBy.maxValue);
+
             this.applyVectorMap();
         },
         handleEventRemoveDisplay: function(source, display) {

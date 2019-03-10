@@ -410,6 +410,10 @@ public class RecordField {
         items.add(HtmlUtils.quote(name));
         items.add("label");
         items.add(Json.quote(label));
+        if(description!=null) {
+            items.add("description");
+            items.add(Json.quote(description.replaceAll("\n"," ")));
+        }
         items.add("type");
         items.add(Json.quote(dataType));
         items.add("unit");

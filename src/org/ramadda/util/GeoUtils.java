@@ -403,7 +403,30 @@ public class GeoUtils {
         } else if (address.toLowerCase().startsWith("to:")) {
             address = address.substring(3);
         }
+        boolean doCountry = false;
+        if (address.toLowerCase().startsWith("country:")) {
+            address = address.substring("country:".length()).trim();
+            doCountry = true;
+        }
+        if (address.length() == 0) {
+            return null;
+        }
+
+
         Place place = null;
+        if(doCountry) {
+            try {
+            List<Place> places = Place.getPlaces("countries");
+            place = Place.findPlace(places, address);
+            if(place == null)
+                System.err.println("no place:" + address);
+            return place;
+            } catch(Exception exc) {
+                exc.printStackTrace();
+            }
+            System.exit(0);
+        }
+
         /*
         place = Place.getPlace(address);
         if (place == null) {

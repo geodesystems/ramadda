@@ -2227,6 +2227,8 @@ public class PageHandler extends RepositoryManager {
      * @return _more_
      */
     public String getMessage(String h, String icon, boolean showClose) {
+        h = h.replaceAll("\n","<br>");
+        h = h.replaceAll("&#10;","<br>");
         String html = showClose
                       ? HtmlUtils.jsLink(
                           HtmlUtils.onMouseClick("hide('messageblock')"),

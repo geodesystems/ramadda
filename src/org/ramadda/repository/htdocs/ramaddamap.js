@@ -1361,7 +1361,7 @@ function initMapFunctions(theMap) {
         if(!args) {
             args  = {
                 strokeColor:'blue',
-                strokeWidth: 2
+                strokeWidth: 1
             }
         }
         layer.styleMap = this.getVectorLayerStyleMap(layer, args);

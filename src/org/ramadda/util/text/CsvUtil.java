@@ -844,6 +844,7 @@ public class CsvUtil {
                 if (line == null) {
                     break;
                 }
+                line = line.replaceAll("\\u000d"," ");
                 if(rawLines>0) {
                     textReader.getWriter().println(line);
                     rawLines--;
@@ -1139,6 +1140,7 @@ public class CsvUtil {
         new Cmd("-prefix", "<col #> <prefix>", "(add prefix to column)"),
         new Cmd("-suffix", "<col #> <suffix>", "(add suffix to column)"),
         new Cmd("-change", "<col #s> <pattern> <substitution string>"),
+        new Cmd("-changerow", "<row> <pattern> <substitution string>"),
         new Cmd("-formatdate",
                 "<col #s> <intial date format> <target date format>"),
         new Cmd("-map", "<col #> <new columns name> <value newvalue ...>",
@@ -1180,8 +1182,8 @@ public class CsvUtil {
         new Cmd("-geocode",
                 "<col idx> <csv file> <name idx> <lat idx> <lon idx>"),
         new Cmd("-geocodeaddress",
-                "<col indices> <latlabel> <lonlabel> <suffix> "),
-        new Cmd("-geocodeaddressdb", "<col indices> <suffix> "),
+                "<col indices> <latlabel> <lonlabel> <prefix> <suffix> "),
+        new Cmd("-geocodeaddressdb", "<col indices> <prefix> <suffix> "),
         new Cmd("-count", "", "(show count)"),
         new Cmd("-maxrows", "<max rows to print>"),
         new Cmd("-skipline", " <pattern>",
@@ -1623,6 +1625,17 @@ public class CsvUtil {
                 continue;
             }
 
+            if (arg.equals("-mergerows")) {
+                String r = args.get(++i);
+                info.getProcessor().addProcessor(
+                                                 new Converter.RowMerger(getNumbers(r),args.get(++i)));
+
+                continue;
+            }
+
+
+
+
             /*
             if (arg.equals("-addrange")) {
                 i++;
@@ -1740,17 +1753,19 @@ public class CsvUtil {
                 List<String> cols   = getCols(args.get(++i));
                 String       lat    = args.get(++i);
                 String       lon    = args.get(++i);
-                String       suffix = args.get(++i);
+                String       prefix = args.get(++i).trim();
+                String       suffix = args.get(++i).trim();
                 info.getProcessor().addProcessor(new Converter.Geocoder(cols,
-                        lat, lon, suffix));
+                                                                        lat, lon, prefix, suffix));
 
                 continue;
             }
             if (arg.equals("-geocodeaddressdb")) {
                 List<String> cols   = getCols(args.get(++i));
-                String       suffix = args.get(++i);
+                String       suffix = args.get(++i).trim();
+                String       prefix = args.get(++i).trim();
                 info.getProcessor().addProcessor(new Converter.Geocoder(cols,
-                        suffix, true));
+                                                                        prefix, suffix, true));
 
                 continue;
             }
@@ -1783,6 +1798,27 @@ public class CsvUtil {
                 info.getProcessor().addProcessor(
                     new Converter.ColumnChanger(
                         cols, pattern, args.get(++i)));
+
+                continue;
+            }
+
+
+            if (arg.equals("-changerow")) {
+                i++;
+                int row = Integer.parseInt(args.get(i));
+                String       pattern = args.get(++i);
+                pattern =
+                    pattern.replaceAll("_leftparen_",
+                                       "\\\\(").replaceAll("_rightparen_",
+                                           "\\\\)");
+                pattern =
+                    pattern.replaceAll("_leftbracket_",
+                                       "\\\\[").replaceAll("_rightbracket_",
+                                           "\\\\]");
+                pattern = pattern.replaceAll("_dot_", "\\\\.");
+                info.getProcessor().addProcessor(
+                    new Converter.RowChanger(
+                                             row, pattern, args.get(++i)));
 
                 continue;
             }

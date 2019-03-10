@@ -58,7 +58,9 @@ public class Place {
     /** _more_ */
     public static final Resource[] RESOURCES = {
         //name,id,fips,lat,lon,opt state index,suffix
-        new Resource(RESOURCE_ROOT + "/alllocations.txt", new int[] { 0, 0,
+        new Resource(RESOURCE_ROOT + "/alllocations.txt", new int[] { 3, 0, 0,1,2
+                                                                      }, ""),
+        new Resource(RESOURCE_ROOT + "/countries.txt", new int[] { 3, 0,
                 -1, 1, 2, }, ""),
         new Resource(RESOURCE_ROOT + "/states.txt", new int[] { 1, 0, 2, 3,
                 4, }, ""), new Resource(RESOURCE_ROOT + "/counties.txt",
@@ -346,6 +348,16 @@ public class Place {
     }
 
 
+    public static Place findPlace(List<Place>places, String key) {
+        key = key.toLowerCase();
+        //        System.out.println("key:" + key);
+        for(Place place: places) {
+            //            System.out.println(":" + place._name+":");
+            if(key.equals(place._name)) return place;
+        }
+        return null;
+    }
+
     /**
      * _more_
      *
@@ -377,7 +389,6 @@ public class Place {
      */
     public static Resource getResource(String id) throws Exception {
         getPlaces(id);
-
         return resourceMap.get(id);
     }
 
@@ -428,8 +439,8 @@ public class Place {
                     List<Place> tmp = new ArrayList<Place>();
                     for (int i = 0; i < RESOURCES.length; i++) {
                         Resource resource = RESOURCES[i];
-                        //                System.err.println("Reading:" + resource.file +" prefix:" + resource.prefix);
-                        if ((resourceId != null)
+                        //                        System.err.println("Reading:" + resource.file +" id:" + resource.id);
+                        if((resourceId != null)
                                 && !resource.id.equals(resourceId)) {
                             continue;
                         }

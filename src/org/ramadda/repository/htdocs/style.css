@@ -3374,6 +3374,7 @@ padding-bottom: 0.2em;
 }
 
 
+
 .ramadda-tabs-center .ui-tabs-nav { 
 //    height: 2.35em; 
     height: 1.8em; 
@@ -3442,6 +3443,19 @@ padding-bottom: 0.2em;
 }
 
 
+.ramadda-tabs-transparent .ui-tabs-nav .ui-state-active a { 
+   color: #fff; 
+   font-weight: bold;
+}
+
+
+.ramadda-tabs-transparent .ui-tabs, .ramadda-tabs-transparent .ui-tabs-panel { 
+   background:#0000;
+}
+
+.ramadda-tabs-transparent .ui-tabs-nav { 
+//   background:#fff;
+}
 
 
 .ui-widget.ui-widget-content  {

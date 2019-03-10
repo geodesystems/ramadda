@@ -1079,6 +1079,8 @@ public abstract class PointFile extends RecordFile implements Cloneable,
                                        (String) null);
             String desc = getProperty(field, properties, "description",
                                       (String) null);
+            if(desc !=null)
+                desc = desc.replaceAll("_comma_",",");
             if (label == null) {
                 label = desc;
             }

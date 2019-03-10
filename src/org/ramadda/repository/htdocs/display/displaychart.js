@@ -2732,13 +2732,17 @@ function RamaddaStatsDisplay(displayManager, id, properties, type) {
                 var align = (justOne ? "right" : "left");
                 var label = field.getLabel();
                 var toks = label.split("!!");
-                var title = field.getId();
+                var tooltip = "";
+                tooltip += field.getId();
+                if(field.description && field.description!="") {
+                    tooltip += "\n" +field.description+"\n";
+                }
                 label = toks[toks.length - 1];
                 if (justOne) {
                     label += ":";
                 }
                 label = label.replace(/ /g, "&nbsp;")
-                var row = HtmlUtils.tr([], HtmlUtils.td(["align", align], "<b>" + HtmlUtils.tag("div", ["title", title], label) + "</b>") + right);
+                var row = HtmlUtils.tr([], HtmlUtils.td(["align", align], "<b>" + HtmlUtils.tag("div", ["title", tooltip], label) + "</b>") + right);
                 if (justOne) {
                     html += row;
                 } else {

@@ -1829,7 +1829,7 @@ public abstract class Processor extends CsvOperator {
         public void printRow(TextReader info, Row row) throws Exception {
             if (cnt == 0) {
                 info.getWriter().println(
-                    "<table  class='stripe hover ramadda-table' table-height=400>");
+                    "<table  class='stripe hover ramadda-table' xtable-height=400>");
             }
             List   values = row.getValues();
             String open   = "<td>";
@@ -1848,14 +1848,17 @@ public abstract class Processor extends CsvOperator {
             for (int i = 0; i < values.size(); i++) {
                 if (i == 0) {
                     info.getWriter().print(open);
+                    info.getWriter().print("<div style='white-space:nowrap;max-width:120px;overflow-x:auto;'>");
                     if (cnt == 0) {
                         info.getWriter().print("&nbsp;");
                     } else {
                         info.getWriter().print("#" + cnt);
                     }
+                    info.getWriter().print("</div'>");
                     info.getWriter().print(close);
                 }
                 info.getWriter().print(open);
+                info.getWriter().print("<div style='white-space:nowrap;max-width:120px;overflow-x:auto;'>");
                 if (cnt == 0) {
                     info.getWriter().print("#" + i + "&nbsp;");
                     String label = Utils.makeLabel(""
@@ -1865,6 +1868,7 @@ public abstract class Processor extends CsvOperator {
                 } else {
                     info.getWriter().print("" + values.get(i));
                 }
+                info.getWriter().print("</div>");
                 info.getWriter().print(close);
             }
             if (cnt == 0) {

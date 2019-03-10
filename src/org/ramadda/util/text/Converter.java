@@ -468,6 +468,12 @@ public abstract class Converter extends Processor {
                 writer.println("skiplines=1");
                 writer.print("fields=");
             }
+
+            for (int i = 0; i < row.size(); i++) {
+                String col = ((String) row.get(i).toString()).trim();
+            }
+            
+
             for (int i = 0; i < row.size(); i++) {
                 String col = ((String) row.get(i).toString()).trim();
                 col = col.replaceAll("\n", " ");
@@ -508,6 +514,7 @@ public abstract class Converter extends Processor {
             writer.flush();
             writer.close();
 
+            info.stopRunning();
             return null;
         }
 
@@ -584,6 +591,7 @@ public abstract class Converter extends Processor {
                 firstRow = row;
                 return null;
             }
+            boolean justFields = Misc.equals(props.get("justFields"), "true");
             boolean      debug  = Misc.equals(props.get("debug"), "true");
             PrintWriter  writer = info.getWriter();
             StringBuffer sb     = new StringBuffer();
@@ -594,7 +602,30 @@ public abstract class Converter extends Processor {
             List values = new ArrayList<String>();
             for (int i = 0; i < firstRow.getValues().size(); i++) {
                 String col    = (String) firstRow.getValues().get(i);
-                String sample = (String) row.getValues().get(i);
+                String[] toks;
+                String desc=null;
+                String label=null;
+
+                try {
+                toks = Utils.findPatterns(col, "<desc>(.*)</desc>");
+                if(toks!=null && toks.length==1) {
+                    desc = toks[0];
+                    desc = desc.replaceAll(",","_comma_");
+                    desc = desc.replaceAll("\"","").replaceAll("\n"," ");
+                    col = col.replaceAll("<desc>.*</desc>","");
+                }
+                toks = Utils.findPatterns(col, "<label>(.*)</label>");
+                if(toks!=null && toks.length==1) {
+                    label = toks[0];
+                    col = col.replaceAll("<label>.*</label>","");
+                }
+                } catch(Exception exc) {
+                    throw new IllegalArgumentException(exc);
+                }
+
+
+                String sample = (String) row.getValues().get(i).toString();
+                String _sample = sample.toLowerCase();
                 col = col.replaceAll("\u00B5", "u").replaceAll("\u00B3",
                                      "^3").replaceAll("\n", " ");
                 String id =
@@ -611,7 +642,8 @@ public abstract class Converter extends Processor {
                 id = CsvUtil.getDbProp(props, id, "id", id);
 
 
-                String label = CsvUtil.getDbProp(props, id, "label",
+                if(label == null) 
+                    label = CsvUtil.getDbProp(props, id, "label",
                                    (String) null);
                 if (makeLabel && label == null) {
                     label = Utils.makeLabel(col.replaceAll("\\([^\\)]+\\)",
@@ -623,6 +655,8 @@ public abstract class Converter extends Processor {
                 StringBuffer attrs = new StringBuffer();
                 if(label!=null)
                     attrs.append("label=\"" + label + "\" ");
+                if(desc!=null) 
+                    attrs.append(" description=\"" + desc + "\" ");
                 if (unit != null) {
                     attrs.append("unit=\"" + unit + "\" ");
 
@@ -641,7 +675,9 @@ public abstract class Converter extends Processor {
                     chartable = false;
                 } else {
                     try {
-                        if (sample.matches("^(\\+|-)?\\d+$")) {
+                        if(_sample.equals("nan") || _sample.equals("na")) {
+                            type = "double";
+                        } else  if (sample.matches("^(\\+|-)?\\d+$")) {
                             //                            System.out.println(label+" match int");
                             type = "integer";
                         } else if (sample.matches(
@@ -672,8 +708,12 @@ public abstract class Converter extends Processor {
                     writer.println(StringUtil.padLeft(id, 20) + " " + attrs
                                    + "  sample:" + sample);
                 }
+                String field;
 
-                String field = id + "[" + attrs + "] ";
+                if(justFields) 
+                    field = id;
+                else
+                    field = id + "[" + attrs + "] ";
                 if (i == 0) {
                     if(toStdOut)
                         field = "fields=" + field;
@@ -893,6 +933,120 @@ public abstract class Converter extends Processor {
             }
 
             return row;
+        }
+
+    }
+
+
+
+    public static class RowChanger extends Converter {
+
+        int row; 
+
+        /** _more_ */
+        private String pattern;
+
+        /** _more_ */
+        private String value;
+
+        /**
+         * _more_
+         *
+         * @param cols _more_
+         * @param pattern _more_
+         * @param value _more_
+         */
+        public RowChanger(int row, String pattern,
+                             String value) {
+            this.pattern = pattern;
+            this.value   = value;
+            this.row = row;
+        }
+
+        /**
+         * _more_
+         *
+         *
+         * @param info _more_
+         * @param row _more_
+         * @param line _more_
+         *
+         * @return _more_
+         */
+        @Override
+        public Row processRow(TextReader info, Row row, String line) {
+            //Don't process the first row
+            if (rowCnt++ !=this.row) {
+                return row;
+            }
+            for(int i=0;i<row.size();i++) {
+                String s = row.getString(i);
+                s = s.replaceAll(pattern, value);
+                row.set(i, s);
+            }
+
+            return row;
+        }
+
+    }
+
+
+
+    public static class RowMerger extends Converter {
+
+        HashSet<Integer>  rows = new HashSet<Integer>();
+
+        /** _more_ */
+        private String delimiter;
+
+        private Row firstRow;
+
+        /**
+         * _more_
+         *
+         * @param cols _more_
+         * @param pattern _more_
+         * @param value _more_
+         */
+        public RowMerger(List<Integer> rows, String delimiter) {
+            this.delimiter = delimiter;
+            for(int i=0;i<rows.size();i++)
+                this.rows.add(rows.get(i));
+        }
+
+        /**
+         * _more_
+         *
+         *
+         * @param info _more_
+         * @param row _more_
+         * @param line _more_
+         *
+         * @return _more_
+         */
+        @Override
+        public Row processRow(TextReader info, Row row, String line) {
+            if(rows.size()==0) return row;
+            int rowNumber = rowCnt++;
+            if(!rows.contains(rowNumber)) return row;
+            rows.remove(rowNumber);
+            if(firstRow == null) {
+                firstRow = row;
+                return null;
+            }
+            for(int i=0;i<row.size();i++) {
+                String s = row.getString(i);
+                String ss = firstRow.getString(i);
+                ss = ss+delimiter +s;
+                firstRow.set(i,ss);
+            }
+
+            if(rows.size()==0) {
+                row = firstRow;
+                firstRow = null;
+                return row;
+            }
+            return null;
         }
 
     }
@@ -1302,6 +1456,9 @@ public abstract class Converter extends Processor {
         private boolean doAddress = false;
 
         /** _more_ */
+        private String prefix;
+
+        /** _more_ */
         private String suffix;
 
         /** _more_          */
@@ -1347,9 +1504,11 @@ public abstract class Converter extends Processor {
          * @throws Exception _more_
          */
         public Geocoder(List<String> cols, String lat, String lon,
+                        String prefix,
                         String suffix)
                 throws Exception {
             super(cols);
+            this.prefix     = prefix;
             this.suffix     = suffix;
             this.writeForDb = false;
             if (lat.length() > 0) {
@@ -1370,9 +1529,10 @@ public abstract class Converter extends Processor {
          *
          * @throws Exception _more_
          */
-        public Geocoder(List<String> cols, String suffix, boolean forDb)
+        public Geocoder(List<String> cols, String prefix, String suffix, boolean forDb)
                 throws Exception {
             super(cols);
+            this.prefix     = prefix;
             this.suffix     = suffix;
             this.writeForDb = forDb;
             doAddress       = true;
@@ -1454,14 +1614,21 @@ public abstract class Converter extends Processor {
 
             List<Integer> indices = getIndices(info);
             StringBuilder key     = new StringBuilder();
+            if (prefix != null && prefix.length()>0) {
+                key.append(prefix);
+                key.append(" ");
+            }
+            boolean didOne = false;
             for (int i : indices) {
                 Object value = values.get(i);
-                if (key.length() > 0) {
+                if (didOne) {
                     key.append(", ");
                 }
+                didOne = true;
                 key.append(value);
             }
-            if (suffix != null) {
+
+            if (suffix != null && suffix.length()>0) {
                 key.append(" ");
                 key.append(suffix);
             }
