@@ -68,7 +68,7 @@ The icons on the left allow you to popup the cell menu, show the cell input, run
 The menubar at the top of the input area is just RAMADADA's wiki text <a href="wiki.html#menubar">menu bar</a>.
 Use the following tags to denote and separate the contents within a notebook cell:
 <p>
-The input of a notebook cell can be any combination of html, wiki text, markdown, special "shell" commands or javascript.
+The input of a notebook cell can be any combination of html, wiki text, markdown, special "shell" commands, javascript or python.
 The input can either be all one type or a mix of different input types.
 
 <pre>
@@ -86,6 +86,9 @@ Markdown text
 Shell commands
 
 <i>js:</i>
+Javascript
+
+<i>py:</i>
 Javascript
 
 </pre>
@@ -274,15 +277,24 @@ state.wiki(":title {{name}}", root);
 
 
 
+<a name="py"></a><p><div class="ramadda-help-heading">5.3.8 <a href="#py">Python Input</a></div> 
+The notebook Python runs in the browser using the <a href="http://www.skulpt.org/">Skulpt</a> package.
+To specify python start the input with "py:" - 
+<pre>
+<i>py:</i>
+print "hello world"
+</pre>
 
-<a name="running"></a><p><div class="ramadda-help-heading">5.3.8 <a href="#running">Running a notebook</a></div> 
+
+
+<a name="running"></a><p><div class="ramadda-help-heading">5.3.9 <a href="#running">Running a notebook</a></div> 
 To run a notebook cell either press shift-return in the cell input area or choose "Run This Cell" in the notebook menu.
 All of the cells can be run through the notebook menu with the "Run All" command.
 A notebook can be configured to run all of the cells when the notebook is first loaded through the "Run on load"
 command in the notebook menu.
 
 
-<a name="commands"></a><p><div class="ramadda-help-heading">5.3.9 <a href="#commands">Notebook Menu Commands</a></div> 
+<a name="commands"></a><p><div class="ramadda-help-heading">5.3.10 <a href="#commands">Notebook Menu Commands</a></div> 
 The notebook menu allows one to configure the display and behavior of individual cells or all of the cells.
 
 <a name="image2"></a><div class="cimg"><a href="images/notebookmenu.png"><img  src="images/notebookmenu.png"  alt="Notebook Menu" ></a><br><span class="caption">Image 2: Notebook Menu</span></div>

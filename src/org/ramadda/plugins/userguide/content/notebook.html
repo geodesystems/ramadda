@@ -41,7 +41,7 @@ The icons on the left allow you to popup the cell menu, show the cell input, run
 The menubar at the top of the input area is just RAMADADA's wiki text <a href="wiki.html#menubar">menu bar</a>.
 Use the following tags to denote and separate the contents within a notebook cell:
 <p>
-The input of a notebook cell can be any combination of html, wiki text, markdown, special "shell" commands or javascript.
+The input of a notebook cell can be any combination of html, wiki text, markdown, special "shell" commands, javascript or python.
 The input can either be all one type or a mix of different input types.
 
 <pre>
@@ -59,6 +59,9 @@ Markdown text
 Shell commands
 
 <i>js:</i>
+Javascript
+
+<i>py:</i>
 Javascript
 
 </pre>
@@ -245,6 +248,15 @@ state.wiki("{{tree}}", current);
 state.wiki(":title {{name}}", root);
 </pre>
 
+
+
+[ug::subheading {Python Input} py]
+The notebook Python runs in the browser using the <a href="http://www.skulpt.org/">Skulpt</a> package.
+To specify python start the input with "py:" - 
+<pre>
+<i>py:</i>
+print "hello world"
+</pre>
 
 
 

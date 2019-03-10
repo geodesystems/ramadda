@@ -5255,6 +5255,7 @@ addGlobalDisplayType({
 
 function RamaddaNotebookDisplay(displayManager, id, properties) {
     var ID_NOTEBOOK = "notebook";
+    var ID_IMPORTS = "imports";
     var ID_CELLS = "cells";
     var ID_CELL = "cell";
     var ID_MENU = "menu";
@@ -5270,11 +5271,12 @@ function RamaddaNotebookDisplay(displayManager, id, properties) {
         currentEntries:{},
         baseEntries:{},
         columns:1,
+        imports:{},
         initDisplay: async function() {
             let _this = this;
             this.createUI();
-            var includes = "<script src='" + ramaddaBaseUrl + "/lib/showdown.min.js'></script>";
-            var contents =   includes + HtmlUtils.div([ATTR_CLASS, "display-notebook-cells", ATTR_ID, this.getDomId(ID_CELLS)], "Loading...");
+            var imports = HtmlUtils.div(["id",this.getDomId(ID_IMPORTS)]);
+            var contents =   imports + HtmlUtils.div([ATTR_CLASS, "display-notebook-cells", ATTR_ID, this.getDomId(ID_CELLS)], "Loading...");
             var popup =  HtmlUtils.div(["class","ramadda-popup",ATTR_ID, this.getDomId(ID_MENU)]);
             contents = HtmlUtils.div([ATTR_ID, this.getDomId(ID_NOTEBOOK)], popup +contents);
             this.setContents(contents);
@@ -5301,6 +5303,14 @@ function RamaddaNotebookDisplay(displayManager, id, properties) {
                 this.layoutCells();
             }
         },
+        import: async function(path,callback) {
+           if(this.imports[path]) return Utils.call(callback);
+          this.imports[path] = true;
+          await $.getScript( path, function( data, textStatus, jqxhr ) {
+              });
+
+          return Utils.call(callback);
+       },
         getBaseEntry: function() {
                 return this.baseEntry;
         },
@@ -5593,6 +5603,13 @@ function RamaddaNotebookDisplay(displayManager, id, properties) {
             },
 
     });
+}
+
+
+function skulptRead(x) {
+    if (Sk.builtinFiles === undefined || Sk.builtinFiles["files"][x] === undefined)
+            throw "File not found: '" + x + "'";
+    return Sk.builtinFiles["files"][x];
 }
 
 
@@ -6184,7 +6201,7 @@ function RamaddaNotebookCell(notebook, id, content, props) {
             var blobs = [];
             var blob = "";
             var commands = value.split("\n");
-            var types = ["wiki", "html", "sh", "js","raw","md"];
+            var types = ["wiki", "html", "sh", "js","raw","md","py"];
             var ok = true;
             for (var i = 0; i < commands.length; i++) {
                 if (!ok) break;
@@ -6257,10 +6274,35 @@ function RamaddaNotebookCell(notebook, id, content, props) {
             blob.div.set(blob.blob);
         },
         processMd: async function(blob) {
+            await this.notebook.import(ramaddaBaseUrl + "/lib/showdown.min.js");
             this.rawOutput+=blob.blob+"\n";
             var converter = new showdown.Converter();
             var html      = converter.makeHtml(blob.blob);
             blob.div.set(html);
+        },
+        processPy: async function(blob) {
+            await this.notebook.import(ramaddaBaseUrl+"/lib/skulpt.min.js");
+            await this.notebook.import(ramaddaBaseUrl+"/lib/skulpt-stdlib.js");
+            var output = "";
+            var outf = function(t) {
+                if(t.trim()!="") {
+                    //                   console.log("Out:" + t.trim()+":");
+                    output+=t.trim()+"<br>"
+                }
+            }
+            Sk.configure({output:outf, read:skulptRead}); 
+            //            (Sk.TurtleGraphics || (Sk.TurtleGraphics = {})).target = 'mycanvas';
+            var myPromise = Sk.misceval.asyncToPromise(function() {
+                    return Sk.importMainWithBody("<stdin>", false, blob.blob, true);
+                });
+            myPromise.then(function(mod) {
+                    //                    console.log('success');
+                },
+                function(err) {
+                    output+="Error:" + err.toString();
+                    console.log(err.toString());
+                });
+        blob.div.set(output);
         },
         processWiki: async function(blob) {
             this.rawOutput+=blob.blob+"\n";
@@ -6379,6 +6421,8 @@ function RamaddaNotebookCell(notebook, id, content, props) {
                 await this.processSh(blob);
             } else if (blob.type == "md") {
                 await this.processMd(blob);
+            } else if (blob.type == "py") {
+                await this.processPy(blob);
             } else {
                 blob.div.set("Unknown type:" + blob.type);
             }
