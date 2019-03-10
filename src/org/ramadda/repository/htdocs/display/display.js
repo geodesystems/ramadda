@@ -557,7 +557,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             this.setDisplayParent(cm.getLayoutManager());
         },
         setContents: function(contents) {
-                var style = "";
+            var style = "";
             contents = HtmlUtils.div([ATTR_CLASS, "display-contents-inner display-" + this.getType() + "-inner","style",style], contents);
             this.writeHtml(ID_DISPLAY_CONTENTS, contents);
         },
@@ -595,6 +595,8 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
                 var titleToShow= "";
                 if (this.getShowTitle()) {
                     var titleStyle=" color:" +this.getTextColor("titleColor") +";";
+                    var bg = this.getProperty("titleBackground");
+                    if(bg) titleStyle+="background:" + bg +";";
                     titleToShow = this.getShowTitle()?this.getDisplayTitle(title):"";
                     if(this.entryId)
                         titleToShow = HtmlUtils.href(this.getRamadda().getEntryUrl(this.entryId), titleToShow,[ATTR_CLASS, "display-title", ATTR_ID, this.getDomId(ID_TITLE),"style", titleStyle]);
