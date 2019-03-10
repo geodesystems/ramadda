@@ -9191,16 +9191,16 @@ function ScatterplotDisplay(displayManager, id, properties) {
                 });
 
             if (this.getShowTitle()) {
-                this.chartOptions.title = this.getTitle(true);
+                chartOptions.title = this.getTitle(true);
             }
 
             if (dataList.length > 0 && this.getDataValues(dataList[0]).length > 1) {
-                if(!this.chartOptions.hAxis) this.chartOptions.hAxis={};
-                $.extend(this.chartOptions.hAxis, {
+                if(!chartOptions.hAxis) chartOptions.hAxis={};
+                $.extend(chartOptions.hAxis, {
                     title: this.getDataValues(dataList[0])[0]
                             });
-                if(!this.chartOptions.vAxis) this.chartOptions.vAxis={};
-                $.extend(this.chartOptions.vAxis,{
+                if(!chartOptions.vAxis) chartOptions.vAxis={};
+                $.extend(chartOptions.vAxis,{
                     title: this.getDataValues(dataList[0])[1]
                             });
                 //We only have the one vAxis range for now
@@ -9214,7 +9214,6 @@ function ScatterplotDisplay(displayManager, id, properties) {
                 }
             }
             return chartOptions;
-            
             },
         doMakeGoogleChart: function(dataList, props, selectedFields, chartOptions) {
             var height = 400;
