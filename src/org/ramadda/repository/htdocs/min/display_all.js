@@ -5186,14 +5186,11 @@ function RamaddaLabelDisplay(displayManager, id, properties) {
     addRamaddaDisplay(this);
     this.text = "";
     this.editMode = properties.editMode;
-
     if (properties.text) this.text = properties.text;
     else if (properties.label) this.text = properties.label;
     else if (properties.html) this.text = properties.html;
-    else if (properties.title) this.text = properties.title;
     if (properties["class"]) this["class"] = properties["class"];
     else this["class"] = "display-text";
-
 
     RamaddaUtil.defineMembers(this, {
         initDisplay: function() {
@@ -5227,7 +5224,7 @@ function RamaddaLabelDisplay(displayManager, id, properties) {
                         at: "left top",
                         collision: "none none"
                     });
-                    theDisplay.jq(ID_TEXT).html("hello there");
+                    theDisplay.jq(ID_TEXT).html("");
                 });
             }
 
