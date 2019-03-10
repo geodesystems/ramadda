@@ -9186,7 +9186,8 @@ function ScatterplotDisplay(displayManager, id, properties) {
             $("#" + chartId).css("height", height);
 
             var chartOptions = SUPER.makeChartOptions.call(this, dataList, props, selectedFields);
-            $.extend(this.chartOptions,{
+            chartOptions.curveType=null;
+            $.extend(chartOptions,{
                 title: '',
                 tooltip: {
                     isHtml: true
