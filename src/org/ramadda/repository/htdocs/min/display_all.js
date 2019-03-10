@@ -736,16 +736,17 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             if (this.getShowTitle()) {
                 title = entry.getName();
                 title = HtmlUtils.href(this.getRamadda().getEntryUrl(this.entryId), title);
+                this.setTitleHtml(title);
+            }
+        },
+       setTitleHtml:function(title) {
                 var titleStyle="";
                 var titleColor = this.getProperty("titleColor",this.getProperty("text.color"));
                 if(titleColor) {
                     titleStyle+=" color:" +titleColor+"; ";
                 }
                 this.jq(ID_TITLE).html(HtmlUtils.tag("span", [ATTR_CLASS, "display-title", ATTR_ID, this.getDomId(ID_TITLE),"style",titleStyle], title));
-
-                this.jq(ID_TITLE).html(title);
-            }
-        },
+       },
         handleEventFieldValueSelected: function(source, args) {
             this.setProperty("filterPattern", args.value);
             this.setProperty("patternFilterField", args.field.getId());
