@@ -2337,7 +2337,8 @@ function GaugeDisplay(displayManager, id, properties) {
 
 
 function ScatterplotDisplay(displayManager, id, properties) {
-    RamaddaUtil.inherit(this, new RamaddaGoogleChart(displayManager, id, DISPLAY_SCATTERPLOT, properties));
+    let SUPER = new RamaddaGoogleChart(displayManager, id, DISPLAY_SCATTERPLOT, properties);
+    RamaddaUtil.inherit(this, SUPER);
     $.extend(this, {
         doMakeGoogleChart: function(dataList, props, selectedFields, chartOptions) {
             var height = 400;
