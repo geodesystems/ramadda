@@ -2858,10 +2858,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             if (!Utils.stringDefined(title)) {
                 title = this.getTitle(false).trim();
             }
-            var text = this.getDisplayTitle(title);
-            if (this.entryId) {
-                text = HtmlUtils.href(this.getRamadda().getEntryUrl(this.entryId), text);
-            }
+            var text =this.getTitleHtml(title);
             if (this.getShowTitle()) {
                 this.jq(ID_TITLE).show();
             } else {
