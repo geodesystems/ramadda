@@ -1173,9 +1173,9 @@ public class WikiUtil {
                         if(tmp!=null) image=tmp;
                         style += "background-attachment:" + attach+";background-size:100% auto; background-image: url('" + image +"'); ";
                     }
-                    String color = (String) props.get("color");
-                    if(color!=null)
-                        style += " background: " + color +"; ";
+                    String bg = (String) props.get("background");
+                    if(bg!=null)
+                        style += " background: " + bg +"; ";
                 }
                 buff.append(HtmlUtils.open(HtmlUtils.TAG_DIV,
                                            HtmlUtils.cssClass(clazz) +
