@@ -615,7 +615,6 @@ function RamaddaNotebookCell(notebook, id, content, props) {
             this.output.click(()=>this.hidePopup());
             this.input.on('input selectionchange propertychange', ()=>this.calculateInputHeight());
             var moveFunc = (e)=>{
-                console.log("move");
                 var key = e.key;
                 if (key == 'v' && e.ctrlKey) {
                     this.notebook.moveCellDown(_this);
@@ -963,16 +962,17 @@ function RamaddaNotebookCell(notebook, id, content, props) {
             var ok = true;
             for (var i = 0; i < commands.length; i++) {
                 if (!ok) break;
-                value = commands[i].trim();
-                if(value.startsWith("//")) continue;
+                var command = commands[i];
+                var _command = command.trim();
+                if(_command.startsWith("//")) continue;
                 var isType = false;
                 for (var typeIdx = 0; typeIdx < types.length; typeIdx++) {
                     var t = types[typeIdx];
-                    if (value.startsWith(t + ":")) {
+                    if (_command.startsWith(t + ":")) {
                         if(blob!="") {
                             blobs.push({blob:blob,type:type,div:new Div(),ok:true});
                         }
-                        blob = value.substring((t + ":").length);
+                        blob = _command.substring((t + ":").length);
                         if (blob != "") blob += "\n";
                         type = t;
                         isType = true;
@@ -980,7 +980,7 @@ function RamaddaNotebookCell(notebook, id, content, props) {
                     }
                 }
                 if (isType) continue;
-                blob = blob + value + "\n";
+                blob = blob + command + "\n";
             }
 
             if(blob!="") {
