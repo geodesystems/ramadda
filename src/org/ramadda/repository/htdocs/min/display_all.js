@@ -9213,6 +9213,8 @@ function ScatterplotDisplay(displayManager, id, properties) {
                     chartOptions.vAxis.maxValue = this.getVAxisMaxValue();
                 }
             }
+            return chartOptions;
+            
             },
         doMakeGoogleChart: function(dataList, props, selectedFields, chartOptions) {
             var height = 400;
