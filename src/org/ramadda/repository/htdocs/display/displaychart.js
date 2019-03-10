@@ -2340,21 +2340,10 @@ function ScatterplotDisplay(displayManager, id, properties) {
     let SUPER = new RamaddaGoogleChart(displayManager, id, DISPLAY_SCATTERPLOT, properties);
     RamaddaUtil.inherit(this, SUPER);
     $.extend(this, {
-        doMakeGoogleChart: function(dataList, props, selectedFields, chartOptions) {
-            var height = 400;
-            if (Utils.isDefined(this.chartHeight)) {
-                height = this.chartHeight;
-            }
-            var width = "100%";
-            if (Utils.isDefined(this.chartWidth)) {
-                width = this.chartWidth;
-            }
-            var chartId = this.getChartId();
-            $("#" + chartId).css("width", width);
-            $("#" + chartId).css("height", height);
-
+        makeChartOptions: function(dataList, props, selectedFields) {
             var chartOptions = SUPER.makeChartOptions.call(this, dataList, props, selectedFields);
             chartOptions.curveType=null;
+            chartOptions.lineWidth=0;
             $.extend(chartOptions,{
                 title: '',
                 tooltip: {
@@ -2374,12 +2363,14 @@ function ScatterplotDisplay(displayManager, id, properties) {
             }
 
             if (dataList.length > 0 && this.getDataValues(dataList[0]).length > 1) {
-                this.chartOptions.hAxis = {
+                if(!this.chartOptions.hAxis) this.chartOptions.hAxis={};
+                $.extend(this.chartOptions.hAxis, {
                     title: this.getDataValues(dataList[0])[0]
-                };
-                this.chartOptions.vAxis = {
+                            });
+                if(!this.chartOptions.vAxis) this.chartOptions.vAxis={};
+                $.extend(this.chartOptions.vAxis,{
                     title: this.getDataValues(dataList[0])[1]
-                };
+                            });
                 //We only have the one vAxis range for now
                 if (!isNaN(this.getVAxisMinValue())) {
                     chartOptions.hAxis.minValue = this.getVAxisMinValue();
@@ -2390,6 +2381,20 @@ function ScatterplotDisplay(displayManager, id, properties) {
                     chartOptions.vAxis.maxValue = this.getVAxisMaxValue();
                 }
             }
+            },
+        doMakeGoogleChart: function(dataList, props, selectedFields, chartOptions) {
+            var height = 400;
+            if (Utils.isDefined(this.chartHeight)) {
+                height = this.chartHeight;
+            }
+            var width = "100%";
+            if (Utils.isDefined(this.chartWidth)) {
+                width = this.chartWidth;
+            }
+
+            var chartId = this.getChartId();
+            $("#" + chartId).css("width", width);
+            $("#" + chartId).css("height", height);
             return new google.visualization.ScatterChart(document.getElementById(this.getChartId()));
         },
 
