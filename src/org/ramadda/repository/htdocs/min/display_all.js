@@ -7781,8 +7781,10 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
             chartOptions.legend = {textStyle:{}};
             chartOptions.hAxis = {gridlines:{},textStyle:{}};
             chartOptions.vAxis = {gridlines:{},textStyle:{}};
+            chartOptions.hAxis.titleTextStyle = {};
+            chartOptions.vAxis.titleTextStyle = {};
             this.setPropertyOn(chartOptions.backgroundColor,"chart.fill","fill",null);
-            this.setPropertyOn(chartOptions.backgroundColor,"chart.stroke","stroke",null);
+            this.setPropertyOn(chartOptions.backgroundColor,"chart.stroke","stroke",this.getProperty("chartArea.fill","red"));
             this.setPropertyOn(chartOptions.backgroundColor,"chart.strokeWidth","strokeWidth",null);
 
             this.setPropertyOn(chartOptions.chartArea.backgroundColor,"chartArea.fill","fill",null);
@@ -7794,6 +7796,10 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
             var textColor = this.getProperty("textColor","#000");
             this.setPropertyOn(chartOptions.hAxis.textStyle,"hAxis.text.color","color",this.getProperty("axis.text.color",textColor));
             this.setPropertyOn(chartOptions.vAxis.textStyle,"vAxis.text.color","color",this.getProperty("axis.text.color",textColor));
+
+            this.setPropertyOn(chartOptions.hAxis.titleTextStyle,"hAxis.text.color","color",textColor);
+            this.setPropertyOn(chartOptions.vAxis.titleTextStyle,"vAxis.text.color","color",textColor);
+
             this.setPropertyOn(chartOptions.legend.textStyle,"legend.text.color","color",textColor);
 
 
@@ -9177,19 +9183,20 @@ function ScatterplotDisplay(displayManager, id, properties) {
             chartOptions.curveType=null;
             chartOptions.lineWidth=0;
             $.extend(chartOptions,{
-                title: '',
-                tooltip: {
-                    isHtml: true
-                },
-                legend: 'none',
-                chartArea: {
+                    title: '',
+                        tooltip: {
+                        isHtml: true
+                            },
+                        legend: 'none',
+                        });
+
+            if(!chartOptions.chartArea) chartOptions.chartArea={};
+            $.extend(chartOptions.chartArea, {
                     left: "10%",
                     top: 10,
                     height: "80%",
                     width: "90%"
-                }
-                });
-
+                        });
             if (this.getShowTitle()) {
                 chartOptions.title = this.getTitle(true);
             }
