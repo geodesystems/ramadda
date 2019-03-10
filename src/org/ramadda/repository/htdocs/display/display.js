@@ -596,7 +596,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
                 if (this.getShowTitle()) {
                     var titleStyle=" color:" +this.getTextColor("titleColor") +";";
                     var bg = this.getProperty("titleBackground");
-                    if(bg) titleStyle+="background:" + bg +";";
+                    if(bg) titleStyle+="background:" + bg +"; padding:2px;padding-right:6px;padding-left:6px;";
                     titleToShow = this.getShowTitle()?this.getDisplayTitle(title):"";
                     if(this.entryId)
                         titleToShow = HtmlUtils.href(this.getRamadda().getEntryUrl(this.entryId), titleToShow,[ATTR_CLASS, "display-title", ATTR_ID, this.getDomId(ID_TITLE),"style", titleStyle]);
