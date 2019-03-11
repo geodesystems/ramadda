@@ -1235,7 +1235,7 @@ height:100%;
 
 
 .display-tnse-canvas-outer { 
-      border:1px #ccc solid;
+      border-right:1px #ccc solid;
       padding-right:30px;
       padding-bottom:30px;
       width:100%;

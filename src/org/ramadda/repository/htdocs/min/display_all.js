@@ -10003,7 +10003,7 @@ function RamaddaTsneDisplay(displayManager, id, properties) {
             var height = this.getProperty("height");
             if(height.endsWith("px")) height =height.replace("px","");
             height = parseInt(height);
-            height-=30;
+            //            height-=30;
             var details = HtmlUtils.div(["style","height:" + height+"px;max-height:" + height+"px","class","display-tnse-details","id",this.getDomId(ID_DETAILS)],"");
             var canvas = HtmlUtils.div(["class","display-tnse-canvas-outer","style","height:" + height+"px"], HtmlUtils.div(["class","display-tnse-canvas","id",this.getDomId(ID_CANVAS)],""));
             var buttons =  HtmlUtils.div(["id",this.getDomId(ID_RUN),"class","ramadda-button","what","run"],"Stop") +"&nbsp;" +
