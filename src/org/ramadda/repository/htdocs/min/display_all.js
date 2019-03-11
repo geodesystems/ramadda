@@ -159,6 +159,7 @@ var ID_HEADER = "header";
 var ID_TITLE = ATTR_TITLE;
 var ID_TITLE_EDIT = "title_edit";
 var ID_TOP_RIGHT = "topright";
+var ID_TOP_LEFT = "topleft";
 var ID_DETAILS = "details";
 var ID_DISPLAY_CONTENTS = "contents";
 var ID_DISPLAY_TOP = "top";
@@ -2666,6 +2667,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
                     left = "<div class=display-header>" + button + "&nbsp;" + titleDiv + "</div>";
                 }
             }
+            left = HtmlUtils.div(["id", this.getDomId(ID_TOP_LEFT)], left);
             var right = HtmlUtils.div(["id", this.getDomId(ID_TOP_RIGHT)], "");
             html += HtmlUtils.leftRightTable(left, right, {
                 valign: "bottom"
@@ -5271,7 +5273,6 @@ function RamaddaNotebookDisplay(displayManager, id, properties) {
         currentEntries:{},
         baseEntries:{},
         columns:1,
-        imports:{},
         initDisplay: async function() {
             let _this = this;
             this.createUI();
@@ -5303,14 +5304,6 @@ function RamaddaNotebookDisplay(displayManager, id, properties) {
                 this.layoutCells();
             }
         },
-        import: async function(path,callback) {
-           if(this.imports[path]) return Utils.call(callback);
-          this.imports[path] = true;
-          await $.getScript( path, function( data, textStatus, jqxhr ) {
-              });
-
-          return Utils.call(callback);
-       },
         getBaseEntry: function() {
                 return this.baseEntry;
         },
@@ -6274,15 +6267,15 @@ function RamaddaNotebookCell(notebook, id, content, props) {
             blob.div.set(blob.blob);
         },
         processMd: async function(blob) {
-            await this.notebook.import(ramaddaBaseUrl + "/lib/showdown.min.js");
+            await Utils.import(ramaddaBaseUrl + "/lib/showdown.min.js");
             this.rawOutput+=blob.blob+"\n";
             var converter = new showdown.Converter();
             var html      = converter.makeHtml(blob.blob);
             blob.div.set(html);
         },
         processPy: async function(blob) {
-            await this.notebook.import(ramaddaBaseUrl+"/lib/skulpt.min.js");
-            await this.notebook.import(ramaddaBaseUrl+"/lib/skulpt-stdlib.js");
+            await Utils.import(ramaddaBaseUrl+"/lib/skulpt.min.js");
+            await Utils.import(ramaddaBaseUrl+"/lib/skulpt-stdlib.js");
             var output = "";
             var outf = function(t) {
                 if(t.trim()!="") {
@@ -6855,6 +6848,7 @@ var DISPLAY_RECORDS = "records";
 var DISPLAY_TABLE = "table";
 var DISPLAY_CROSSTAB = "crosstab";
 var DISPLAY_CORRELATION = "correlation";
+var DISPLAY_TSNE = "tsne";
 var DISPLAY_HEATMAP = "heatmap";
 var DISPLAY_WORDTREE = "wordtree";
 var DISPLAY_TREEMAP = "treemap";
@@ -6998,6 +6992,13 @@ addGlobalDisplayType({
 addGlobalDisplayType({
     type: DISPLAY_CORRELATION,
     label: "Correlation",
+    requiresData: true,
+    forUser: true,
+    category: CATEGORY_MISC
+});
+addGlobalDisplayType({
+    type: DISPLAY_TSNE,
+    label: "TSNE",
     requiresData: true,
     forUser: true,
     category: CATEGORY_MISC
@@ -9954,6 +9955,201 @@ function RamaddaCorrelationDisplay(displayManager, id, properties) {
                 });
 
         },
+    });
+}
+
+
+
+function RamaddaTsneDisplay(displayManager, id, properties) {
+    var ID_BOTTOM = "bottom";
+    var ID_CANVAS = "tsnecanvas";
+    var ID_DETAILS = "tsnedetails";
+    var ID_RUN = "tsnerun";
+    var ID_RESET = "tsnereset";
+    var ID_STEP = "tsnestep";
+    var ID_SEARCH = "tsnesearch";
+    $.extend(this, {
+        colorTable: "red_white_blue",
+        colorByMin: "-1",
+        colorByMax: "1",
+        height:"500px;"
+    });
+
+    let SUPER = new RamaddaFieldsDisplay(displayManager, id, DISPLAY_TSNE, properties);
+    RamaddaUtil.inherit(this, SUPER);
+    addRamaddaDisplay(this);
+
+    RamaddaUtil.defineMembers(this, {
+        nameToIndex:{},
+        needsData: function() {
+            return true;
+        },
+        handleEventPointDataLoaded: function(source, pointData) {
+            if (!this.needsData()) {
+                if (this.dataCollection == null) {
+                    this.dataCollection = source.dataCollection;
+                    this.updateUI();
+                }
+            }
+        },
+        updateUI: async function(pointData) {
+            SUPER.updateUI.call(this, pointData);
+            if (!this.hasData()) {
+                this.setContents(this.getLoadingMessage());
+                return;
+            }
+            await Utils.import(ramaddaBaseUrl + "/lib/tsne.js");
+            //Height is the height of the overall display including the menu bar
+            var height = this.getProperty("height");
+            if(height.endsWith("px")) height =height.replace("px","");
+            height = parseInt(height);
+            height-=30;
+            var details = HtmlUtils.div(["style","height:" + height+"px;max-height:" + height+"px","class","display-tnse-details","id",this.getDomId(ID_DETAILS)],"");
+            var canvas = HtmlUtils.div(["class","display-tnse-canvas-outer","style","height:" + height+"px"], HtmlUtils.div(["class","display-tnse-canvas","id",this.getDomId(ID_CANVAS)],""));
+            var buttons =  HtmlUtils.div(["id",this.getDomId(ID_RUN),"class","ramadda-button","what","run"],"Stop") +"&nbsp;" +
+                HtmlUtils.div(["id",this.getDomId(ID_STEP),"class","ramadda-button","what","step"],"Step") +"&nbsp;" +
+                HtmlUtils.div(["id",this.getDomId(ID_RESET),"class","ramadda-button","what","reset"],"Reset") +"&nbsp;" +
+                HtmlUtils.input("","",["id",this.getDomId(ID_SEARCH),"placeholder","search"]);
+                
+            buttons = HtmlUtils.div(["class","display-tnse-toolbar"],buttons);
+            this.jq(ID_TOP_LEFT).append(buttons);
+            this.setContents("<table  width=100%><tr valign=top><td width=80%>" +canvas +"</td><td width=20%>" +details+"</td></tr></table>");
+            this.search = this.jq(ID_SEARCH);
+            this.search.keyup(e=>{
+                    var v = this.search.val().trim();
+                    this.canvas.find(".display-tnse-mark").removeClass("display-tnse-highlight");
+                    if(v=="") return;
+                    v =v.toLowerCase();
+                    for(name in this.nameToIndex) {
+                        if(name.toLowerCase().startsWith(v)) {
+                            this.jq("element-" + this.nameToIndex[name]).addClass("display-tnse-highlight");
+                        }
+                    }
+                });
+            this.details = this.jq(ID_DETAILS);
+            this.reset = this.jq(ID_RESET);
+            this.step = this.jq(ID_STEP);
+            this.step.button().click(()=> {
+                    this.running = false;
+                    this.run.html(this.running?"Stop":"Run");
+                    this.takeStep();
+                });
+            this.reset.button().click(()=> {
+                    this.start();
+                });
+            this.run = this.jq(ID_RUN);
+            this.run.button().click(()=> {
+                    this.running = !this.running;
+                    if(this.running) this.takeStep();
+                    this.run.html(this.running?"Stop":"Run");
+                });
+            this.canvas = this.jq(ID_CANVAS);
+            this.running = true;
+            this.start();
+        },
+        start: function() {
+            this.canvas.html("");
+            this.haveStepped = false;
+            this.dataList = this.getStandardData(null, {
+                includeIndex: false
+            });
+            var allFields = this.dataCollection.getList()[0].getRecordFields();
+            if(!this.fields) {
+                this.fields = this.getSelectedFields([]);
+                if (this.fields.length == 0) this.fields = allFields;
+                var strings = this.getFieldsOfType(this.fields, "string");
+                if(strings.length>0)
+                    this.textField = strings[0];
+            }
+            var data= [];
+            for (var rowIdx = 1; rowIdx < this.dataList.length; rowIdx++) {
+                var tuple = this.getDataValues(this.dataList[rowIdx]);
+                var nums = [];
+                for(var i=0;i<this.fields.length;i++) {
+                    if(this.fields[i].isNumeric)
+                        nums.push(tuple[this.fields[i].getIndex()]);
+                }
+                data.push(nums);
+            }
+
+            var opt = {}
+            opt.epsilon = 10; // epsilon is learning rate
+            opt.perplexity = 30; // how many neighbors each point influences
+            opt.dim = 2; // dimensionality of the embedding (2 = default)
+            this.tsne = new tsnejs.tSNE(opt); 
+            this.tsne.initDataRaw(data);
+            this.takeStep();
+            },
+        takeStep: function() {
+            var numSteps = 10;
+            for(var step=0;step<numSteps;step++) {
+                this.tsne.step(); 
+            }
+
+            var pts = this.tsne.getSolution(); 
+            var minx,miny,maxx,maxy;
+            for(var i=0;i<pts.length;i++) {
+                if(i==0) {
+                    maxx = minx = pts[i][0];
+                    maxy = miny = pts[i][1];
+                } else {
+                    maxx = Math.max(maxx,pts[i][0]);
+                    minx = Math.min(minx,pts[i][0]);
+                    maxy = Math.max(maxy,pts[i][1]);
+                    miny = Math.min(miny,pts[i][1]);
+                }
+            }
+            //            this.canvas.html("");
+
+            var sleep = 250;
+            for(var i=0;i<pts.length;i++) {
+                var x = pts[i][0];
+                var y = pts[i][1];
+                var px = 100*(x-minx)/(maxx-minx);
+                var py = 100*(y-miny)/(maxy-miny);
+                if(!this.haveStepped) {
+                    var title = "";
+                    if(this.textField){
+                        var tuple = this.getDataValues(this.dataList[i]);
+                        title = tuple[this.textField.getIndex()];
+                    }
+                    if(title.length>10){
+                        title.length=10;
+                    }
+                    this.nameToIndex[title] = i;
+                    this.canvas.append(HtmlUtils.div(["title",title,"index",i, "id",this.getDomId("element-" + i), "class","display-tnse-mark","style","left:" + px +"%;" + "top:" + py +"%;"],title));
+                }  else  {
+                    this.jq("element-" + i).animate({
+                            left: px+"%",
+                                top:py+"%"
+                                }, sleep,"linear");
+                }
+
+            }
+            let _this = this;
+            if(!this.haveStepped) {
+                this.canvas.find(".display-tnse-mark").click(function(e) {
+                        var index = parseInt($(this).attr("index"));
+                        if(index<0 || index>=_this.dataList.length) return;
+                        var tuple = _this.getDataValues(_this.dataList[index]);
+                        var details = "<table class=formtable width=100% >";
+                        for(var i=0;i<_this.fields.length;i++) {
+                            var field = _this.fields[i];
+                            details+="<tr><td align=right class=formlabel>" +field.getLabel() +":</td><td>" + tuple[field.getIndex()]+"</td></tr>";
+                        }
+                        details+="</table>";
+                        _this.details.html(details);
+                    });
+            }
+            if(!this.haveStepped) {
+                //                this.haveStepped = true;
+                //                this.takeStep();
+                //                return;
+            }
+            this.haveStepped = true;
+            if(this.running)
+                setTimeout(()=>this.takeStep(),sleep);
+       },
     });
 }
 

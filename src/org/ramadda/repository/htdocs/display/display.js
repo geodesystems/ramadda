@@ -9,6 +9,7 @@ var ID_HEADER = "header";
 var ID_TITLE = ATTR_TITLE;
 var ID_TITLE_EDIT = "title_edit";
 var ID_TOP_RIGHT = "topright";
+var ID_TOP_LEFT = "topleft";
 var ID_DETAILS = "details";
 var ID_DISPLAY_CONTENTS = "contents";
 var ID_DISPLAY_TOP = "top";
@@ -2516,6 +2517,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
                     left = "<div class=display-header>" + button + "&nbsp;" + titleDiv + "</div>";
                 }
             }
+            left = HtmlUtils.div(["id", this.getDomId(ID_TOP_LEFT)], left);
             var right = HtmlUtils.div(["id", this.getDomId(ID_TOP_RIGHT)], "");
             html += HtmlUtils.leftRightTable(left, right, {
                 valign: "bottom"

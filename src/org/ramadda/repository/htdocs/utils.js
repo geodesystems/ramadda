@@ -58,6 +58,14 @@ var Utils = {
     getIcon: function(icon) {
         return ramaddaBaseUrl +"/icons/" + icon;
     },
+    imports:{},
+    import: async function(path,callback) {
+        if(this.imports[path]) return Utils.call(callback);
+        this.imports[path] = true;
+        await $.getScript( path, function( data, textStatus, jqxhr ) {
+            });
+          return Utils.call(callback);
+       },
     padLeft: function(s, length, pad) {
         s = "" + s;
         if (!pad) pad = " ";

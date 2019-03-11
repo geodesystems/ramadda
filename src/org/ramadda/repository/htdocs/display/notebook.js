@@ -29,7 +29,6 @@ function RamaddaNotebookDisplay(displayManager, id, properties) {
         currentEntries:{},
         baseEntries:{},
         columns:1,
-        imports:{},
         initDisplay: async function() {
             let _this = this;
             this.createUI();
@@ -61,14 +60,6 @@ function RamaddaNotebookDisplay(displayManager, id, properties) {
                 this.layoutCells();
             }
         },
-        import: async function(path,callback) {
-           if(this.imports[path]) return Utils.call(callback);
-          this.imports[path] = true;
-          await $.getScript( path, function( data, textStatus, jqxhr ) {
-              });
-
-          return Utils.call(callback);
-       },
         getBaseEntry: function() {
                 return this.baseEntry;
         },
@@ -1032,15 +1023,15 @@ function RamaddaNotebookCell(notebook, id, content, props) {
             blob.div.set(blob.blob);
         },
         processMd: async function(blob) {
-            await this.notebook.import(ramaddaBaseUrl + "/lib/showdown.min.js");
+            await Utils.import(ramaddaBaseUrl + "/lib/showdown.min.js");
             this.rawOutput+=blob.blob+"\n";
             var converter = new showdown.Converter();
             var html      = converter.makeHtml(blob.blob);
             blob.div.set(html);
         },
         processPy: async function(blob) {
-            await this.notebook.import(ramaddaBaseUrl+"/lib/skulpt.min.js");
-            await this.notebook.import(ramaddaBaseUrl+"/lib/skulpt-stdlib.js");
+            await Utils.import(ramaddaBaseUrl+"/lib/skulpt.min.js");
+            await Utils.import(ramaddaBaseUrl+"/lib/skulpt-stdlib.js");
             var output = "";
             var outf = function(t) {
                 if(t.trim()!="") {
