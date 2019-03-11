@@ -6848,6 +6848,7 @@ var DISPLAY_RECORDS = "records";
 var DISPLAY_TABLE = "table";
 var DISPLAY_CROSSTAB = "crosstab";
 var DISPLAY_CORRELATION = "correlation";
+var DISPLAY_RANKING = "ranking";
 var DISPLAY_TSNE = "tsne";
 var DISPLAY_HEATMAP = "heatmap";
 var DISPLAY_WORDTREE = "wordtree";
@@ -6985,6 +6986,13 @@ addGlobalDisplayType({
 addGlobalDisplayType({
     type: DISPLAY_TABLE,
     label: "Table",
+    requiresData: true,
+    forUser: true,
+    category: CATEGORY_MISC
+});
+addGlobalDisplayType({
+    type: DISPLAY_RANKING,
+    label: "Ranking",
     requiresData: true,
     forUser: true,
     category: CATEGORY_MISC
@@ -9952,6 +9960,110 @@ function RamaddaCorrelationDisplay(displayManager, id, properties) {
             this.displayManager.propagateEventRecordSelection(this,
                 this.dataCollection.getList()[0], {
                     index: 0
+                });
+
+        },
+    });
+}
+
+
+
+function RamaddaRankingDisplay(displayManager, id, properties) {
+    $.extend(this,{
+            height:"500px;"
+                });
+    let SUPER = new RamaddaFieldsDisplay(displayManager, id, DISPLAY_RANKING, properties);
+    RamaddaUtil.inherit(this, SUPER);
+    addRamaddaDisplay(this);
+
+    RamaddaUtil.defineMembers(this, {
+        needsData: function() {
+            return true;
+        },
+        handleEventPointDataLoaded: function(source, pointData) {
+            if (!this.needsData()) {
+                if (this.dataCollection == null) {
+                    this.dataCollection = source.dataCollection;
+                    this.updateUI();
+                }
+            }
+        },
+        fieldSelectionChanged: function() {
+            this.updateUI();
+        },
+        updateUI: function(pointData) {
+            SUPER.updateUI.call(this, pointData);
+            if (!this.hasData()) {
+                this.setContents(this.getLoadingMessage());
+                return;
+            }
+            var dataList = this.getStandardData(null, {
+                includeIndex: false
+            });
+            var allFields = this.dataCollection.getList()[0].getRecordFields();
+            var fields = this.getSelectedFields([]);
+            if (fields.length == 0) fields = allFields;
+            var numericFields = this.getFieldsOfType(fields, "numeric");
+            var sortField = this.getFieldById(numericFields, this.getProperty("sortField"));
+            if(numericFields.length==0) {
+                this.setContents("No fields specified");
+                return;
+            }
+            if(!sortField) {
+                sortField = numericFields[0];
+            }
+            if(!sortField) {
+                this.setContents("No fields specified");
+                return;
+            }
+
+            var stringField = this.getFieldOfType(fields, "string");
+            var menu = "<select class='ramadda-pulldown' id='" + this.getDomId("sortfields") + "'>";
+            for (var i = 0; i < numericFields.length; i++) {
+                var field = numericFields[i];
+                var extra = "";
+                if (field.getId() == sortField.getId()) extra = " selected ";
+                menu += "<option value='" + field.getId() + "'  " + extra +" >" + field.getLabel() + "</option>\n";
+            }
+            menu += "</select>";
+            var html = "";
+            html+=menu;
+            html+= HtmlUtils.openTag("div",["style","max-height:100%;overflow-y:auto;"]);
+            html+="<table>";
+            var tmp = [];
+            for (var rowIdx = 1; rowIdx < dataList.length; rowIdx++) {
+                tmp.push(dataList[rowIdx]);
+            }
+            
+            var cnt = 0;
+            tmp.sort((a,b)=>{
+                    var t1 = this.getDataValues(a);
+                    var t2 = this.getDataValues(b);
+                    var v1 = t1[sortField.getIndex()];
+                    var v2 = t2[sortField.getIndex()];
+                    if(v1<v2) return 1;
+                    if(v1>v2) return -1;
+                    return 0;
+                });
+
+
+            for (var rowIdx = 0; rowIdx < tmp.length; rowIdx++) {
+                var tuple = this.getDataValues(tmp[rowIdx]);
+                var label = "";
+                if(stringField)
+                    label = tuple[stringField.getIndex()];
+                value = tuple[sortField.getIndex()];
+                if(isNaN(value) || value === null) value="NA";
+                html+="<tr><td> #" +(rowIdx+1)+"</td><td>&nbsp;" + label +"</td><td align=right>" +
+                    value+"</td></tr>";
+            }                
+            html += HtmlUtils.closeTag("table");
+            html += HtmlUtils.closeTag("div");
+            this.setContents(html);
+            let _this = this;
+            this.jq("sortfields").change(function() {
+                    _this.setProperty("sortField", $(this).val());
+                    _this.updateUI();
                 });
 
         },
