@@ -1172,7 +1172,7 @@ public class WikiUtil {
                         if(attach == null) attach = "fixed";
                         tmp =  handler.getWikiImageUrl(this, image, props);
                         if(tmp!=null) image=tmp;
-                        style += "background-attachment:" + attach+";background-size:100% auto; background-image: url('" + image +"'); ";
+                        style += " background-repeat: repeat-y;background-attachment:" + attach+";background-size:100% auto; background-image: url('" + image +"'); ";
                     }
                     String bg = (String) props.get("background");
                     if(bg!=null)
