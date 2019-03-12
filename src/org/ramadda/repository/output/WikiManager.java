@@ -4026,14 +4026,14 @@ ATTR_SHOWLINK, "true", ATTR_INCLUDEICON, "false") + ATTRS_LAYOUT),
                     if(idstar!=null) {
                         System.err.println("id:" + idstar);
                         for (Entry child : entries) {
-                            System.err.println("\tchild:"+ child.getName());
                             if(child.getName().startsWith(idstar)) {
-                                System.err.println("\tgot it:"+ child.getName());
                                 firstEntry = child;
                                 break;
                             }
                         }
                     }
+                }
+                if (firstEntry == null) {
                     continue;
                 }
                 entries.remove(firstEntry);
