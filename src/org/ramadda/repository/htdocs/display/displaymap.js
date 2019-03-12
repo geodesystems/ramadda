@@ -299,8 +299,8 @@ function RamaddaMapDisplay(displayManager, id, properties) {
             });
         },
         doDisplayMap: function() {
-            var v = (this.kmlLayer != null || this.geojsonLayer != null) && (("" + this.getProperty("displayAsMap", "")) == "true");
-            return v;
+                if(!this.getProperty("displayAsMap", true)) return false;
+                return this.kmlLayer != null || this.geojsonLayer != null;
         },
         cloneLayer: function(layer) {
             var theDisplay = this;
