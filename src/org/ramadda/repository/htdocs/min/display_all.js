@@ -10026,7 +10026,7 @@ function RamaddaRankingDisplay(displayManager, id, properties) {
                 menu += "<option value='" + field.getId() + "'  " + extra +" >" + field.getLabel() + "</option>\n";
             }
             menu += "</select>";
-            if(this.getProperty("showMenu",true)) {
+            if(this.getProperty("showRankingMenu",true)) {
                 this.jq(ID_TOP_LEFT).html(menu);
             }
             var html = "";

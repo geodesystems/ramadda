@@ -408,23 +408,41 @@ public class GeoUtils {
             address = address.substring("country:".length()).trim();
             doCountry = true;
         }
+        boolean doState = false;
+        if (address.toLowerCase().startsWith("state:")) {
+            address = address.substring("state:".length()).trim();
+            doState = true;
+        }
         if (address.length() == 0) {
             return null;
         }
 
 
         Place place = null;
+
         if(doCountry) {
             try {
-            List<Place> places = Place.getPlaces("countries");
-            place = Place.findPlace(places, address);
-            if(place == null)
-                System.err.println("no place:" + address);
-            return place;
+                List<Place> places = Place.getPlaces("countries");
+                place = Place.findPlace(places, address);
+                if(place == null)
+                    System.err.println("no place:" + address);
+                return place;
             } catch(Exception exc) {
                 exc.printStackTrace();
             }
-            System.exit(0);
+        }
+
+
+        if(doState) {
+            try {
+                List<Place> places = Place.getPlaces("states");
+                place = Place.findPlace(places, address);
+                if(place == null)
+                    System.err.println("no place:" + address);
+                return place;
+            } catch(Exception exc) {
+                exc.printStackTrace();
+            }
         }
 
         /*
