@@ -440,7 +440,7 @@ public class Place {
                     List<Place> tmp = new ArrayList<Place>();
                     for (int i = 0; i < RESOURCES.length; i++) {
                         Resource resource = RESOURCES[i];
-                        //                        System.err.println("Reading:" + resource.file +" id:" + resource.id);
+                        System.err.println("Reading:" + resource.file +" id:" + resource.id);
                         if((resourceId != null)
                                 && !resource.id.equals(resourceId)) {
                             continue;
