@@ -201,7 +201,9 @@ function RamaddaMapDisplay(displayManager, id, properties) {
                 theDisplay.mapBoundsChanged();
             });
 
+            var overrideBounds = false;
             if (this.getProperty("bounds")) {
+                overrideBounds = true;
                 var toks = this.getProperty("bounds", "").split(",");
                 if (toks.length == 4) {
                     if (this.getProperty("showBounds", true)) {
@@ -241,7 +243,6 @@ function RamaddaMapDisplay(displayManager, id, properties) {
                     //TODO: Center on the kml
                 }
             }
-            console.log("layers:" + this.showDataLayers());
             if(this.showDataLayers()) {
                 if (theDisplay.kmlLayer != null) {
                     var url = ramaddaBaseUrl + "/entry/show?output=shapefile.kml&entryid=" + theDisplay.kmlLayer;
@@ -270,16 +271,17 @@ function RamaddaMapDisplay(displayManager, id, properties) {
                 selectFunc = function(layer) {
                     theDisplay.mapFeatureSelected(layer);
                 }
+                var hasBounds = this.getProperty("bounds")!=null;
                 if (isKml)
                     this.map.addKMLLayer(this.kmlLayerName, url, this.doDisplayMap(), selectFunc, null, null,
                         function(map, layer) {
                             theDisplay.baseMapLoaded(layer, url);
-                        });
+                                         },!hasBounds);
                 else
                     this.map.addGeoJsonLayer(this.geojsonLayerName, url, this.doDisplayMap(), selectFunc, null, null,
                         function(map, layer) {
                             theDisplay.baseMapLoaded(layer, url);
-                        });
+                        },!hasBounds);
             } else if (mapLoadInfo.layer) {
                 this.cloneLayer(mapLoadInfo.layer);
             } else {
@@ -816,7 +818,8 @@ function RamaddaMapDisplay(displayManager, id, properties) {
                 this.vectorLayer.removeFeatures(features);
                 var dataBounds = this.vectorLayer.getDataExtent();
                 bounds = this.map.transformProjBounds(dataBounds);
-                this.map.centerOnMarkers(bounds, true);
+                if(this.getProperty("bounds") == null)
+                    this.map.centerOnMarkers(bounds, true);
             }
             this.vectorLayer.redraw();
         },

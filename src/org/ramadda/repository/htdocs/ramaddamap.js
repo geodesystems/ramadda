@@ -1331,7 +1331,8 @@ function initMapFunctions(theMap) {
                     }
                 } else {
                     if (_this.centerOnMarkersCalled) {
-                        _this.centerOnMarkers(_this.dfltBounds, _this.centerOnMarkersForce);
+                        if(!_this.dfltBounds)
+                            _this.centerOnMarkers(_this.dfltBounds, _this.centerOnMarkersForce);
                     }
                 }
                 if (loadCallback) {
@@ -1370,6 +1371,7 @@ function initMapFunctions(theMap) {
     }
 
     theMap.addKMLLayer = function(name, url, canSelect, selectCallback, unselectCallback, args, loadCallback, zoomToExtent) {
+
         var layer = new OpenLayers.Layer.Vector(name, {
             projection: this.displayProjection,
             strategies: [new OpenLayers.Strategy.Fixed()],
@@ -2247,6 +2249,7 @@ function initMapFunctions(theMap) {
             var offset = zoom.offset;
             if (offset) {
                 var bounds = this.transformLLBounds(createBounds(lon - offset, lat - offset, lon + offset, lat + offset));
+
                 this.map.zoomToExtent(bounds);
             }
         }
