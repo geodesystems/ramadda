@@ -1214,6 +1214,7 @@ public class WikiUtil {
                 String  title       = (String)props.get( "title");
                 String  classArg    = (String)props.get( "class");
                 String  style       = (String)props.get( "style");
+                String  titleStyle       = (String)props.get( "titleStyle");
                 boolean doBorderTop = tline.indexOf("----") >= 0;
                 boolean doEvenOdd   = tline.indexOf("#") >= 0;
                 String  extraClass  = "";
@@ -1229,7 +1230,6 @@ public class WikiUtil {
                                     ? ""
                                     : " style=\"" + style + "\" ");
 
-                System.err.println("style:" + style +" ex:" + extraAttr);
                 if (doEvenOdd) {
                     Integer scnt  = (Integer) getProperty("section-cnt");
                     boolean first = false;
@@ -1269,8 +1269,8 @@ public class WikiUtil {
                     buff.append(HtmlUtils.close(HtmlUtils.TAG_DIV));
                 }
                 if (title != null) {
-                    buff.append(HtmlUtils.div(getTitle(title),
-                            HtmlUtils.cssClass("ramadda-page-title")));
+                    buff.append(HtmlUtils.div(getTitle(title,titleStyle),
+                                              HtmlUtils.cssClass("ramadda-page-title")));
                 }
 
                 continue;
@@ -1838,10 +1838,14 @@ public class WikiUtil {
      * @return _more_
      */
     public String getTitle(String label) {
+        return getTitle(label,null);
+    }
+
+    public String getTitle(String label,String style) {
         String url = getTitleUrl(true);
 
         return (url != null)
-               ? HtmlUtils.href(url, label)
+            ? HtmlUtils.href(url, label,style==null?null:HtmlUtils.style(style))
                : label;
     }
 
