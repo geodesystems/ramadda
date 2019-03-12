@@ -58,7 +58,7 @@ public class Place {
     /** _more_ */
     public static final Resource[] RESOURCES = {
         //name,id,fips,lat,lon,opt state index,suffix
-        new Resource(RESOURCE_ROOT + "/alllocations.txt", new int[] { 3, 0, 0,1,2
+        new Resource(RESOURCE_ROOT + "/alllocations.txt", new int[] { 0, 0, 0,1,2
                                                                       }, ""),
         new Resource(RESOURCE_ROOT + "/countries.txt", new int[] { 3, 0,
                 -1, 1, 2, }, ""),
@@ -214,7 +214,7 @@ public class Place {
     public void processLine(List<String> toks, int nameIndex, int idIndex,
                             int fipsIndex, int latIndex, int lonIndex,
                             int suffixIndex) {
-        System.err.println("line:" + toks.size() +"  " + toks);
+        //        System.err.println("line:" + toks.size() +"  " + toks);
         if (fipsIndex >= toks.size()) {
             return;
         }
@@ -440,7 +440,7 @@ public class Place {
                     List<Place> tmp = new ArrayList<Place>();
                     for (int i = 0; i < RESOURCES.length; i++) {
                         Resource resource = RESOURCES[i];
-                        System.err.println("Reading:" + resource.file +" id:" + resource.id);
+                        //                        System.err.println("Reading:" + resource.file +" id:" + resource.id);
                         if((resourceId != null)
                                 && !resource.id.equals(resourceId)) {
                             continue;
