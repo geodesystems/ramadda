@@ -473,8 +473,8 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             }
             this[func].apply(this, [source, data]);
         },
-        displayColorTable: function(ct, domId, min, max) {
-            Utils.displayColorTable(ct, this.getDomId(domId), min, max);
+        displayColorTable: function(ct, domId, min, max, args) {
+                Utils.displayColorTable(ct, this.getDomId(domId), min, max, args);
         },
         getColorTableName: function(name) {
             var ct;

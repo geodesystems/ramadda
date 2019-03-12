@@ -95,13 +95,16 @@ var Utils = {
         }
         return u;
     },
-    formatDateYYYYMMDD: function(date, options, args) {
-        return date.getUTCFullYear() + "-" + (date.getUTCMonth() + 1) + "-" + date.getUTCDate();
-    },
     getMacro: function(v) {
         if (v == "${states}")
             return "Alabama,Alaska,Arizona,Arkansas,California,Colorado,Connecticut,Delaware,District of Columbia,Florida,Georgia,Hawaii,Idaho,Illinois,Indiana,Iowa,Kansas,Kentucky,Louisiana,Maine,Maryland,Massachusetts,Michigan,Minnesota,Mississippi,Missouri,Montana,Nebraska,Nevada,New Hampshire,New Jersey,New Mexico,New York,North Carolina,North Dakota,Ohio,Oklahoma,Oregon,Origin State,Pennsylvania,Rhode Island,South Carolina,South Dakota,Tennessee,Texas,Utah,Vermont,Virginia,Washington,West Virginia,Wisconsin,Wyoming";
         return v;
+    },
+    formatDateYYYYMMDD: function(date, options, args) {
+        return date.getUTCFullYear() + "-" + (date.getUTCMonth() + 1) + "-" + date.getUTCDate();
+    },
+    formatDateYYYY: function(date, options, args) {
+        return date.getUTCFullYear();
     },
     formatDate: function(date, options, args) {
         if (!args) args = {};
@@ -435,10 +438,13 @@ var Utils = {
         if (!ct) return;
         if (ct.colors) ct = ct.colors;
         var options = {
-            height: "10px",
+            height: "15px",
             showRange: true
         }
         if (args) $.extend(options, args);
+        var stringValues = options.stringValues;
+        if(stringValues && stringValues.length) 
+            options.showRange = false;
         min = parseFloat(min);
         max = parseFloat(max);
         var html = HtmlUtils.openTag("div", ["class", "display-colortable"]) + "<table cellpadding=0 cellspacing=0 width=100% border=0><tr>";
@@ -459,6 +465,17 @@ var Utils = {
         }
         html += "</tr></table>";
         html += HtmlUtils.closeTag("div");
+        html += HtmlUtils.openTag("div", ["class", "display-colortable-extra"]);
+        if(stringValues && stringValues.length) {
+            var tdw = 100/stringValues.length+"%";
+            html+="<table width=100%><tr>";
+            for(var i=0;i<stringValues.length;i++) {
+                html+="<td align=center width='" + tdw+"'>" + stringValues[i]+"</td>";
+            }
+            html+="</tr></table>"
+        }
+        html += HtmlUtils.closeTag("div");
+
         $("#" + domId).html(html);
     },
     ColorTables: {

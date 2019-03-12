@@ -282,7 +282,16 @@ displayDiv="mapDisplay${entryid}"
 -row
 }]
 
+<b>Map Animation:</b><br>
+The map display can be configured to provide a time-based animation of the points with the following attributes.
 
+<pre>
+animationDateFormat="yyyyMMdd" or "yyyy" - default is the fully formatted date
+animationMode="cumulative" or "sliding" - how the time window is moved
+animationSteps="60"   - how many steps
+animationWindow="year" or "month" or "day" or "hour" or "minute" or "second"  - override the animationSteps
+animationSpeed="250" - time in milliseconds between each step
+</pre>
 
 [displayType { Line chart} linechart {
 Displays time series or indexed point data. The vAxisMinValue and vAxisMaxValue are used as the range instead of the min/max from the data.

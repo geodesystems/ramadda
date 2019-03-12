@@ -623,8 +623,8 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             }
             this[func].apply(this, [source, data]);
         },
-        displayColorTable: function(ct, domId, min, max) {
-            Utils.displayColorTable(ct, this.getDomId(domId), min, max);
+        displayColorTable: function(ct, domId, min, max, args) {
+                Utils.displayColorTable(ct, this.getDomId(domId), min, max, args);
         },
         getColorTableName: function(name) {
             var ct;
@@ -15671,6 +15671,10 @@ function RamaddaMapDisplay(displayManager, id, properties) {
     var ID_LONFIELD = "lonfield";
     var ID_MAP = "map";
     var ID_BOTTOM = "bottom";
+    var ID_RUN = "maprun";
+    var ID_STEP = "mapstep";
+    var ID_SHOWALl = "showall";
+    var ID_ANIMATION_LABEL = "animationlabel";
     var SUPER;
     RamaddaUtil.defineMembers(this, {
         showLocationReadout: false,
@@ -15718,6 +15722,32 @@ function RamaddaMapDisplay(displayManager, id, properties) {
             } else if (height < 0) {
                 extraStyle += " height:" + (-height) + "%; ";
             }
+
+
+            var buttons =  HtmlUtils.div(["id",this.getDomId(ID_RUN),"class","ramadda-button","what","run"],"Start Animation") +"&nbsp;" +
+                HtmlUtils.div(["id",this.getDomId(ID_STEP),"class","ramadda-button","what","run"],"Step") +"&nbsp;" +
+                HtmlUtils.div(["id",this.getDomId(ID_SHOWALl),"class","ramadda-button","what","run"],"Show All") +"&nbsp;" +
+                HtmlUtils.span(["id", this.getDomId(ID_ANIMATION_LABEL),"class","display-map-animation-label"]);
+            buttons = HtmlUtils.div(["class","display-map-toolbar"],buttons);
+            this.jq(ID_TOP_LEFT).append(buttons);
+            this.run = this.jq(ID_RUN);
+            this.step = this.jq(ID_STEP);
+            this.showAll = this.jq(ID_SHOWALl);
+            this.animation.label =  this.jq(ID_ANIMATION_LABEL);
+            this.run.button().click(()=> {
+                    this.toggleAnimation();
+                });
+            this.step.button().click(()=> {
+                    if(!this.animation.running)
+                        this.startAnimation(true);
+                });
+            this.showAll.button().click(()=> {
+                    this.animation.running = false;
+                    this.animation.inAnimation = false;
+                    this.animation.label.html("");
+                    this.run.html("Start Animation");
+                    this.showAllPoints();
+                });
 
 
             html += HtmlUtils.div([ATTR_CLASS, "display-map-map", "style",
@@ -16429,6 +16459,141 @@ function RamaddaMapDisplay(displayManager, id, properties) {
         needsData: function() {
             return true;
         },
+        animation: {
+                running:false,
+                inAnimation: false,
+                begin: null,
+                end: null,
+                dateMin:null,
+                dateMax:null,
+                dateRange:0,
+                dateFormat: this.getProperty("animationDateFormat","yyyyMMdd"),
+                mode:this.getProperty("animationMode","cumulative"),
+                steps:this.getProperty("animationSteps",60),
+                windowUnit:this.getProperty("animationWindow",""),
+                window:0,
+                speed:parseInt(this.getProperty("animationSpeed",250)),
+        },
+        toggleAnimation: function() {
+                this.animation.running = !this.animation.running;
+                this.run.html(this.animation.running?"Stop Animation":"Start Animation");
+                if(this.animation.running)
+                    this.startAnimation();
+        },
+        startAnimation: function(justOneStep) {
+                if(!this.points) {
+                    return;
+                }
+                if(!justOneStep)
+                    this.animation.running = true;
+                if(!this.animation.inAnimation) {
+                    this.animation.inAnimation = true;
+                    this.animation.label.html("");
+                    var date = this.animation.dateMin;
+                    this.animation.begin = date;
+                    var unit = this.animation.windowUnit;
+                    if(unit!="") {
+                        var tmp =0;
+                        var size = 0;
+                        //Pad the size
+                        if(unit == "year") {
+                            this.animation.begin = new Date(date.getUTCFullYear(),0);
+                            size = 1000*60*60*24*366;
+                        } else if(unit == "month") {
+                            this.animation.begin = new Date(date.getUTCFullYear(),date.getMonth());
+                            size = 1000*60*60*24*32;
+                        } else if(unit == "day") {
+                            this.animation.begin = new Date(date.getUTCFullYear(),date.getMonth(),date.getDay());
+                            size = 1000*60*60*25;
+                        } else if(unit == "hour") {
+                            this.animation.begin = new Date(date.getUTCFullYear(),date.getMonth(),date.getDay(),date.getHours());
+                            size = 1000*60*61;
+                        } else if(unit == "minute") {
+                            this.animation.begin = new Date(date.getUTCFullYear(),date.getMonth(),date.getDay(),date.getHours(),date.getMinutes());
+                            size = 1000*61;
+                        } else {
+                            this.animation.begin = new Date(date.getUTCFullYear(),date.getMonth(),date.getDay(),date.getHours(),date.getSeconds());
+                            size = 1001;
+                        }
+                        this.animation.window  = size;
+                    } else {
+                        this.animation.window = this.animation.dateRange/this.animation.steps;
+                    }
+                    this.animation.end = this.animation.begin;
+                    for(var i=0;i<this.points.length;i++) {
+                        var point =  this.points[i];
+                        point.style.display = 'none';
+                    }
+                    if(this.map.circles)
+                        this.map.circles.redraw();
+                }
+                this.stepAnimation();
+        },
+        stepAnimation: function() {
+                if(!this.points) return;
+                var oldEnd = this.animation.end;
+                var unit = this.animation.windowUnit;
+                var date = new Date(this.animation.end.getTime() +this.animation.window);
+                if(unit == "year") {
+                    this.animation.end = new Date(date.getUTCFullYear(),0);
+                } else if(unit == "month") {
+                    this.animation.end = new Date(date.getUTCFullYear(),date.getMonth());
+                } else if(unit == "day") {
+                    this.animation.end = new Date(date.getUTCFullYear(),date.getMonth(),date.getDay());
+                } else if(unit == "hour") {
+                    this.animation.end = new Date(date.getUTCFullYear(),date.getMonth(),date.getDay(),date.getHours());
+                } else if(unit == "minute") {
+                    this.animation.end = new Date(date.getUTCFullYear(),date.getMonth(),date.getDay(),date.getHours(),date.getMinutes());
+                } else {
+                    this.animation.end = new Date(this.animation.end.getTime() +this.animation.window);
+                }
+                if(this.animation.mode=="sliding")  {
+                    this.animation.begin  = oldEnd;
+                }
+                //                console.log("step:" + date  +" -  " + this.animation.end);
+                var windowStart = this.animation.begin.getTime();
+                var windowEnd = this.animation.end.getTime();
+                for(var i=0;i<this.points.length;i++) {
+                    var point =  this.points[i];
+                    if(point.date>=windowStart && point.date<=windowEnd)
+                        point.style.display = 'inline';
+                    else
+                        point.style.display = 'none';
+                }
+                if(this.map.circles)
+                    this.map.circles.redraw();
+                if(windowEnd< this.animation.dateMax.getTime()) {
+                    this.animation.label.html(this.formatAnimationDate(this.animation.begin) +" - "+ this.formatAnimationDate(this.animation.end));
+                    if(this.animation.running) {
+                        setTimeout(()=>this.stepAnimation(),this.animation.speed);
+                    }
+                } else {
+                    this.animation.running = false;
+                    this.animation.label.html("");
+                    this.animation.inAnimation = false;
+                    this.animation.label.html("");
+                    this.run.html("Start Animation");
+                }
+        },
+        formatAnimationDate: function(d) {
+                if(this.animation.dateFormat == "yyyy") {
+                    return Utils.formatDateYYYY(d);
+                } else if(this.animation.dateFormat == "yyyyMMdd") {
+                    return Utils.formatDateYYYYMMDD(d);
+                } else {
+                    return Utils.formatDate(d);
+                }
+        },
+        showAllPoints: function() {
+                if(!this.points) return;
+                for(var i=0;i<this.points.length;i++) {
+                    var point =  this.points[i];
+                    point.style.display = 'inline';
+                }
+                if(this.map.circles)
+                    this.map.circles.redraw();
+        },
+
         updateUI: function() {
             this.haveCalledUpdateUI = true;
             SUPER.updateUI.call(this);
@@ -16516,6 +16681,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
                 maxValue: 0,
                 field: null,
                 index: -1,
+                isString: false,
             };
 
 
@@ -16525,15 +16691,30 @@ function RamaddaMapDisplay(displayManager, id, properties) {
                 maxValue: 0,
                 field: null,
                 index: -1,
+                isString: false,
+                stringMap:{}
             };
+
+            var sizeByMap = this.getProperty("sizeByMap");
+            if(sizeByMap) {
+                var toks = sizeByMap.split(",");
+                for(var i=0;i<toks.length;i++) {
+                    var toks2 = toks[i].split(":");
+                    if(toks2.length>1) {
+                        sizeBy.stringMap[toks2[0]] = toks2[1];
+                    }
+                }
+            }
 
             for (var i = 0; i < fields.length; i++) {
                 var field = fields[i];
                 if (field.getId() == colorBy.id || ("#" + (i + 1)) == colorBy.id) {
                     colorBy.field = field;
+                    if(field.getType()=="string") colorBy.isString = true;
                 }
                 if (field.getId() == sizeBy.id || ("#" + (i + 1)) == sizeBy.id) {
                     sizeBy.field = field;
+                    if(field.getType()=="string") sizeBy.isString = true;
                 }
             }
 
@@ -16567,27 +16748,56 @@ function RamaddaMapDisplay(displayManager, id, properties) {
                 );
             }
 
-
-
-
             sizeBy.index = sizeBy.field != null ? sizeBy.field.getIndex() : -1;
             colorBy.index = colorBy.field != null ? colorBy.field.getIndex() : -1;
             var excludeZero = this.getProperty(PROP_EXCLUDE_ZERO, false);
+            this.animation.dateMin = null;
+            this.animation.dateMax = null;
+            var colorByMap = {};
+            var colorByValues = [];
             for (var i = 0; i < points.length; i++) {
                 var pointRecord = records[i];
+                if(this.animation.dateMin == null) {
+                    this.animation.dateMin = pointRecord.getDate();
+                    this.animation.dateMax = pointRecord.getDate();
+                } else {
+                    var date = pointRecord.getDate();
+                    if(date) {
+                        if(date.getTime()<this.animation.dateMin.getTime())
+                            this.animation.dateMin = date;
+                        if(date.getTime()>this.animation.dateMax.getTime())
+                            this.animation.dateMax = date;
+                    }
+                }
                 var tuple = pointRecord.getData();
                 var v = tuple[colorBy.index];
+                if(colorBy.isString) {
+                    if(!Utils.isDefined(colorByMap[v])) {
+                        colorByValues.push(v);
+                        colorByMap[v] = colorByValues.length;
+                        colorBy.minValue = 1;
+                        colorBy.maxValue = colorByValues.length;
+                        //                        console.log("cb:" +colorBy.minValue +" -  " +colorBy.maxValue);
+                    }
+                }
+
+
                 if (isNaN(v) ||  v === null) 
                     continue;
                 if (excludeZero && v == 0) {
                     continue;
                 }
-                if (i == 0 || v > colorBy.maxValue) colorBy.maxValue = v;
-                if (i == 0 || v < colorBy.minValue) colorBy.minValue = v;
-                v = tuple[sizeBy.index];
-                if (i == 0 || v > sizeBy.maxValue) sizeBy.maxValue = v;
-                if (i == 0 || v < sizeBy.minValue) sizeBy.minValue = v;
+                if(!colorBy.isString) {
+                    if (i == 0 || v > colorBy.maxValue) colorBy.maxValue = v;
+                    if (i == 0 || v < colorBy.minValue) colorBy.minValue = v;
+                }
+                if(!sizeBy.isString) {
+                    v = tuple[sizeBy.index];
+                    if (i == 0 || v > sizeBy.maxValue) sizeBy.maxValue = v;
+                    if (i == 0 || v < sizeBy.minValue) sizeBy.minValue = v;
+                }
             }
+            this.animation.dateRange = this.animation.dateMax.getTime() - this.animation.dateMin.getTime();
 
 
 
@@ -16627,14 +16837,28 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 
                 if (sizeBy.index >= 0) {
                     var value = values[sizeBy.index];
-                    var denom = (sizeBy.maxValue - sizeBy.minValue);
-                    var percent = (denom == 0 ? NaN : (value - sizeBy.minValue) / denom);
-                    props.pointRadius = 6 + parseInt(15 * percent);
-                    if (sizeEndPoints) {
-                        endPointSize = dfltEndPointSize + parseInt(10 * percent);
-                    }
-                    if (sizeSegments) {
-                        segmentWidth = dfltSegmentWidth + parseInt(10 * percent);
+                    if(sizeBy.isString) {
+                        if(Utils.isDefined(sizeBy.stringMap[value])) {
+                            var v = parseInt(sizeBy.stringMap[value]);
+                            segmentWidth = dfltSegmentWidth + v;
+                            props.pointRadius = v;
+                        } else if(Utils.isDefined(sizeBy.stringMap["*"])) {
+                            var v = parseInt(sizeBy.stringMap["*"]);
+                            segmentWidth = dfltSegmentWidth + v;
+                            props.pointRadius = v;
+                        } else {
+                            segmentWidth = dfltSegmentWidth;
+                        }
+                    } else {
+                        var denom = (sizeBy.maxValue - sizeBy.minValue);
+                        var percent = (denom == 0 ? NaN : (value - sizeBy.minValue) / denom);
+                        props.pointRadius = 6 + parseInt(15 * percent);
+                        if (sizeEndPoints) {
+                            endPointSize = dfltEndPointSize + parseInt(10 * percent);
+                        }
+                        if (sizeSegments) {
+                            segmentWidth = dfltSegmentWidth + parseInt(10 * percent);
+                        }
                     }
                     //                            console.log("percent:" + percent +  " radius: " + props.pointRadius +" Value: " + value  + " range: " + sizeBy.minValue +" " + sizeBy.maxValue);
                 }
@@ -16669,7 +16893,12 @@ function RamaddaMapDisplay(displayManager, id, properties) {
                         }
 
                     } else {
+                        if(colorBy.isString) {
+                            value = colorByMap[value];
+                        } 
                         percent = (value - colorBy.minValue) / (colorBy.maxValue - colorBy.minValue);
+                        //                        if(i<20)
+                            //                            console.log("cbv:" +value +" %:" + percent);
                     }
 
                     var index = parseInt(percent * colors.length);
@@ -16707,7 +16936,8 @@ function RamaddaMapDisplay(displayManager, id, properties) {
                         var p2 = new OpenLayers.LonLat(lon2, lat2);
                         if (!Utils.isDefined(seen[p1])) {
                             seen[p1] = true;
-                            this.points.push(this.map.addPoint("endpt-" + i, p1, pointProps, html));
+                            var point = this.map.addPoint("endpt-" + i, p1, pointProps, html);
+                            this.points.push(point);
                         }
                         if (!Utils.isDefined(seen[p2])) {
                             seen[p2] = true;
@@ -16721,11 +16951,18 @@ function RamaddaMapDisplay(displayManager, id, properties) {
                     if (Utils.isDefined(seen[point])) continue;
                     seen[point] = true;
                     point = this.map.addPoint("pt-" + i, point, props, html, dontAddPoint);
+                    var date = pointRecord.getDate();
+                    if(date) {
+                        point.date = date.getTime();
+                    }
                     this.points.push(point);
                 }
             }
-            if (didColorBy)
-                this.displayColorTable(colors, ID_BOTTOM, colorBy.minValue, colorBy.maxValue);
+            if (didColorBy) {
+                this.displayColorTable(colors, ID_BOTTOM, colorBy.minValue, colorBy.maxValue, {
+                        stringValues:colorByValues}
+                    );
+            }
 
             this.applyVectorMap();
         },

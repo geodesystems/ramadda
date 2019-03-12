@@ -5,11 +5,6 @@
 .display input {
 }
 
-.display-colortable {
-   font-size:10px;
-  max-width:100%;
-  overflow-x:auto;
-}
 
 
 
@@ -77,6 +72,8 @@
 }
 
 
+.display-map-toolbar .ramadda-button {
+}
 
 .display-correlation-heading-top {
 //    background-color: #efefef;
@@ -1116,6 +1113,18 @@ height:100%;
      padding-top:2px;
      padding-bottom:2px;
      border-bottom: 1px #ccc solid;
+}
+
+.display-colortable {
+  font-size:10px;
+  max-width:100%;
+  overflow-x:auto;
+  border:1px #efefef solid;
+  border-top:0px #efefef solid;
+}
+
+.display-colortable-extra {
+  font-size:10px;
 }
 
 .display-colortable-slice {

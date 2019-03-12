@@ -383,7 +383,16 @@ displayDiv=&quot;mapDisplay${entryid}&quot;
 -row
 </pre>
 
+<b>Map Animation:</b><br>
+The map display can be configured to provide a time-based animation of the points with the following attributes.
 
+<pre>
+animationDateFormat=yyyyMMdd or yyyy - default is the fully formatted date
+animationMode=cumulative or sliding - how the time window is moved
+animationSteps=60   - how many steps
+animationWindowUnit=year or month or week or day or hour or minute or second  - override the animationSteps
+animationWindowSize=1  - How many of the above unit per time step
+</pre>
 
 <a name="linechart"></a>
 <div class="ramadda-help-subsubheading"><a href="#linechart"> Line chart</a>
