@@ -1193,10 +1193,11 @@ public class WikiUtil {
 
 
 
-            if (tline.startsWith("+info-sec")
-                    || tline.startsWith("+section")) {
-
+            if (tline.startsWith("+section")) {
                 List<String> toks      = StringUtil.splitUpTo(tline, " ", 2);
+                Hashtable  props =
+                    StringUtil.parseHtmlProperties(toks.size()>1?toks.get(1):"");
+
                 String       tag       = toks.get(0).substring(1);
                 List<String> toks2     = StringUtil.splitUpTo(tag, "-", 2);
                 String       remainder = ((toks2.size() > 1)
@@ -1208,27 +1209,27 @@ public class WikiUtil {
                     baseClass = baseClass + "-" + remainder;
                 }
 
-
-                String  label       = getAttribute(tline, "label");
-                String  heading     = getAttribute(tline, "heading");
-                String  title       = getAttribute(tline, "title");
-                String  classArg    = getAttribute(tline, "class");
-                String  extraArg    = getAttribute(tline, "style");
+                String  label       = (String)props.get( "label");
+                String  heading     = (String)props.get( "heading");
+                String  title       = (String)props.get( "title");
+                String  classArg    = (String)props.get( "class");
+                String  style       = (String)props.get( "style");
                 boolean doBorderTop = tline.indexOf("----") >= 0;
                 boolean doEvenOdd   = tline.indexOf("#") >= 0;
                 String  extraClass  = "";
                 if (doBorderTop) {
-                    if (extraArg == null) {
-                        extraArg = "border-top:1px rgb(224, 224, 224) solid;";
+                    if (style == null) {
+                        style = "border-top:1px rgb(224, 224, 224) solid;";
                     } else {
-                        extraArg +=
+                        style +=
                             "border-top:1px rgb(224, 224, 224) solid;";
                     }
                 }
-                String extraAttr = ((extraArg == null)
+                String extraAttr = ((style == null)
                                     ? ""
-                                    : " style=\"" + extraArg + "\" ");
+                                    : " style=\"" + style + "\" ");
 
+                System.err.println("style:" + style +" ex:" + extraAttr);
                 if (doEvenOdd) {
                     Integer scnt  = (Integer) getProperty("section-cnt");
                     boolean first = false;
@@ -1252,6 +1253,7 @@ public class WikiUtil {
                     extraClass = classArg;
                 }
 
+
                 String clazz = baseClass + " " + extraClass;
                 buff.append("<div class=\"");
                 buff.append(clazz);
@@ -1273,8 +1275,7 @@ public class WikiUtil {
 
                 continue;
             }
-            if (tline.startsWith("-info-sec")
-                    || tline.startsWith("-section")) {
+            if (tline.startsWith("-section")) {
                 buff.append("</div>");
 
                 continue;
