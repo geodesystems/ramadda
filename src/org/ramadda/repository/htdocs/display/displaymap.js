@@ -241,16 +241,17 @@ function RamaddaMapDisplay(displayManager, id, properties) {
                     //TODO: Center on the kml
                 }
             }
-
-            if (theDisplay.kmlLayer != null) {
-                var url = ramaddaBaseUrl + "/entry/show?output=shapefile.kml&entryid=" + theDisplay.kmlLayer;
-                theDisplay.addBaseMapLayer(url, true);
+            console.log("layers:" + this.showDataLayers());
+            if(this.showDataLayers()) {
+                if (theDisplay.kmlLayer != null) {
+                    var url = ramaddaBaseUrl + "/entry/show?output=shapefile.kml&entryid=" + theDisplay.kmlLayer;
+                    theDisplay.addBaseMapLayer(url, true);
+                }
+                if (theDisplay.geojsonLayer != null) {
+                    url = theDisplay.getRamadda().getEntryDownloadUrl(theDisplay.geojsonLayer);
+                    theDisplay.addBaseMapLayer(url, false);
+                }
             }
-            if (theDisplay.geojsonLayer != null) {
-                url = theDisplay.getRamadda().getEntryDownloadUrl(theDisplay.geojsonLayer);
-                theDisplay.addBaseMapLayer(url, false);
-            }
-
             if (this.getProperty("latitude")) {
                 this.map.setCenter(createLonLat(parseFloat(this.getProperty("longitude", -105)),
                     parseFloat(this.getProperty("latitude", 40))));
@@ -298,7 +299,11 @@ function RamaddaMapDisplay(displayManager, id, properties) {
                 index: layer.feature.dataIndex
             });
         },
+        showDataLayers: function() {
+                return this.getProperty("showLayers", true);
+        },
         doDisplayMap: function() {
+                if(!this.showDataLayers()) return false;
                 if(!this.getProperty("displayAsMap", true)) return false;
                 return this.kmlLayer != null || this.geojsonLayer != null;
         },
