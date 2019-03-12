@@ -843,6 +843,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
                 if(!this.points) {
                     return;
                 }
+                if(!this.animation.dateMax) return;
                 if(!justOneStep)
                     this.animation.running = true;
                 if(!this.animation.inAnimation) {
@@ -890,6 +891,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
         },
         stepAnimation: function() {
                 if(!this.points) return;
+                if(!this.animation.dateMax) return;
                 var oldEnd = this.animation.end;
                 var unit = this.animation.windowUnit;
                 var date = new Date(this.animation.end.getTime() +this.animation.window);
