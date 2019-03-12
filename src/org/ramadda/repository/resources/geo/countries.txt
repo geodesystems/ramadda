@@ -39,6 +39,7 @@ CA	56.130366	-106.346771	Canada
 CC	-12.164165	96.870956	Cocos Islands
 CD	-4.038333	21.758664	Congo
 CD	-4.038333	21.758664	Congo (Dem. Rep.)
+CD	-4.038333	21.758664	Democratic Republic of the Congo
 CF	6.611111	20.939444	Central African Republic
 CG	-0.228021	15.827659	Congo (Rep.)
 CG	-0.228021	15.827659	Congo (Republic)
