@@ -214,6 +214,7 @@ public class Place {
     public void processLine(List<String> toks, int nameIndex, int idIndex,
                             int fipsIndex, int latIndex, int lonIndex,
                             int suffixIndex) {
+        System.err.println("line:" + toks.size() +"  " + toks);
         if (fipsIndex >= toks.size()) {
             return;
         }
