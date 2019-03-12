@@ -15723,6 +15723,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
                 extraStyle += " height:" + (-height) + "%; ";
             }
 
+            if(this.getProperty("doAnimation",false)) {
 
             var buttons =  HtmlUtils.div(["id",this.getDomId(ID_RUN),"class","ramadda-button","what","run"],"Start Animation") +"&nbsp;" +
                 HtmlUtils.div(["id",this.getDomId(ID_STEP),"class","ramadda-button","what","run"],"Step") +"&nbsp;" +
@@ -15748,7 +15749,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
                     this.run.html("Start Animation");
                     this.showAllPoints();
                 });
-
+            }
 
             html += HtmlUtils.div([ATTR_CLASS, "display-map-map", "style",
                 extraStyle, ATTR_ID, this.getDomId(ID_MAP)
@@ -16797,8 +16798,9 @@ function RamaddaMapDisplay(displayManager, id, properties) {
                     if (i == 0 || v < sizeBy.minValue) sizeBy.minValue = v;
                 }
             }
-            this.animation.dateRange = this.animation.dateMax.getTime() - this.animation.dateMin.getTime();
-
+            if(this.animation.dateMax) {
+                this.animation.dateRange = this.animation.dateMax.getTime() - this.animation.dateMin.getTime();
+            }
 
 
             if (this.showPercent) {
