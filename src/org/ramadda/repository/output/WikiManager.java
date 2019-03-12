@@ -4017,16 +4017,11 @@ ATTR_SHOWLINK, "true", ATTR_INCLUDEICON, "false") + ATTRS_LAYOUT),
             List<String> ids = StringUtil.split(firstEntries, ",");
             for (int i = ids.size() - 1; i >= 0; i--) {
                 String id = ids.get(i);
-                String idstar = null;
-                if(id.endsWith("*")) {
-                    idstar = id.substring(0,id.length()-1);
-                }
                 Entry firstEntry = map.get(id);
                 if (firstEntry == null) {
-                    if(idstar!=null) {
-                        System.err.println("id:" + idstar);
+                    if(StringUtil.containsRegExp(id)) {
                         for (Entry child : entries) {
-                            if(child.getName().startsWith(idstar)) {
+                            if(child.getName().matches(id)) {
                                 firstEntry = child;
                                 break;
                             }
