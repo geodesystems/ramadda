@@ -3949,7 +3949,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
                 } else if (path.endsWith(".html")) {
                     String html = IOUtil.readInputStream(inputStream);
                     html = getPageHandler().applyBaseMacros(html);
-                    html = html.replaceAll("\\${version}",
+                    html = html.replace("${version}",
                                         getProperty(PROP_BUILD_VERSION,
                                             "1.0"));
                     html = html.replace("${hostname}",
