@@ -1184,12 +1184,15 @@ public class MapInfo {
         String   icon = repository.getPageHandler().getIconUrl(request,
                             entry);
         double[] location = entry.getCenter();
-        addMarker(entry.getId(),
-                  new LatLonPointImpl(Math.max(-80,
-                      Math.min(80, location[0])), location[1]), icon,
-                          entry.getName(),
-                          repository.getMapManager().makeInfoBubble(request,
-                              entry, true));
+        String id = entry.getId();
+        String info = repository.getMapManager().makeInfoBubble(request, entry, true);
+        getJS().append(mapVarName + ".addEntryMarker(" + HtmlUtils.squote(id)
+                       + "," + llp(location[0], location[1]) + "," +
+                       HtmlUtils.squote(icon) + "," + 
+                       HtmlUtils.squote(entry.getName().replaceAll(
+                                                  "'", "\\\\'")) + ","
+                                                      + HtmlUtils.squote(info) + ","
+                       + HtmlUtils.squote(entry.getTypeHandler().getType()) + ");\n");
     }
 
 

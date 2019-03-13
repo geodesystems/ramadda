@@ -412,6 +412,7 @@ function initMapFunctions(theMap) {
             layer.selectedFeature = feature;
             layer.selectedFeature.isSelected = true;
             layer.drawFeature(layer.selectedFeature, "select");
+            var okToPopup = true;
             if (layer.selectCallback) {
                 layer.feature = layer.selectedFeature;
                 if (feature.originalStyle) {
@@ -419,8 +420,11 @@ function initMapFunctions(theMap) {
                 }
                 layer.selectCallback(layer);
             } else {
-                this.showMarkerPopup(feature, true);
+                if(okToPopup) {
+                    this.showMarkerPopup(feature, true);
+                }
             }
+
             if (center) {
                 var geometry = feature.geometry;
                 if (geometry) {
@@ -457,6 +461,22 @@ function initMapFunctions(theMap) {
             this.selectedFeature = null;
             this.checkFeatureVisible(feature, true);
         },
+        handleEntrySelect: function(id, name, type) {
+               if(type!="geo_kml" && type!="geo_json" && type!="geo_shapefile") return null;
+               var layer;
+               if(type=="geo_kml") {
+                   var url = ramaddaBaseUrl + "/entry/get?entryid=" + id;
+                   layer = this.addKMLLayer(name, url, true, null, null,null,null, true);
+               } else  if(type=="geo_json") {
+                   var url = ramaddaBaseUrl + "/entry/get?entryid=" + id;
+                   layer = this.addGeoJsonLayer(name, url, true, null, null,null,null, true);
+               } else {
+                   var url = ramaddaBaseUrl + "/entry/show?output=shapefile.kml&entryid=" + id;
+                   layer = this.addKMLLayer(name, url, true, null, null,null,null, true);
+               }
+               return layer;
+        },
+
         addLayer: function(layer) {
             if (this.map != null) {
                 this.map.addLayer(layer);
@@ -1321,7 +1341,7 @@ function initMapFunctions(theMap) {
             "loadend": function(e) {
                 _this.hideLoadingImage();
                 if (e.response && Utils.isDefined(e.response.code) && e.response.code == OpenLayers.Protocol.Response.FAILURE) {
-                    console.log("An error occurred loading the map");
+                    console.log("An error occurred loading the map:" + JSON.stringify(e.response,null,2));
                     return;
                 }
                 if(zoomToExtent) {
@@ -1371,7 +1391,6 @@ function initMapFunctions(theMap) {
     }
 
     theMap.addKMLLayer = function(name, url, canSelect, selectCallback, unselectCallback, args, loadCallback, zoomToExtent) {
-
         var layer = new OpenLayers.Layer.Vector(name, {
             projection: this.displayProjection,
             strategies: [new OpenLayers.Strategy.Fixed()],
@@ -2791,6 +2810,13 @@ function initMapFunctions(theMap) {
 
     theMap.seenMarkers = {};
 
+    theMap.addEntryMarker = function(id, location, iconUrl, markerName, text, type) {
+        marker = this.addMarker(id,location, iconUrl, markerName, text);
+        marker.entryType=  type;
+        marker.entryId=  id;
+    }
+
+
     theMap.addMarker = function(id, location, iconUrl, markerName, text, parentId, size, voffset, canSelect) {
         if(Array.isArray(location)) {
             location = createLonLat(location[0],location[1]);
@@ -3181,6 +3207,27 @@ function initMapFunctions(theMap) {
         return line;
     }
 
+    theMap.handleMarkerLayer = function() {
+        if (this.currentPopup) {
+            this.getMap().removePopup(this.currentPopup);
+            this.currentPopup.destroy();
+            this.currentPopup = null;
+        }
+        var marker =  this.currentEntryMarker;
+        if(marker.entryLayer) {
+            var idx = this.loadedLayers.indexOf(marker.entryLayer);
+            if(idx>=0)
+                this.loadedLayers =   this.loadedLayers.slice(idx);
+            this.map.removeLayer(marker.entryLayer);
+            marker.entryLayer = null;
+            return;
+        }
+        var layer = this.handleEntrySelect(marker.entryId, marker.name, marker.entryType);
+        if(layer) {
+            marker.entryLayer = layer;
+        }
+
+    }
     theMap.showMarkerPopup = function(marker, fromClick) {
         if (this.entryClickHandler && window[this.entryClickHandler]) {
             if (!window[this.entryClickHandler](this, marker)) {
@@ -3204,6 +3251,10 @@ function initMapFunctions(theMap) {
         }
 
         var markertext = marker.text;
+
+
+
+
         if (fromClick && marker.locationKey != null) {
             markers = this.seenMarkers[marker.locationKey];
             if (markers.length > 1) {
@@ -3232,6 +3283,18 @@ function initMapFunctions(theMap) {
                 markertext = "Lon: " + location.lat + "<br>" + "Lat: " + location.lon;
             }
         }
+
+
+        if(marker.entryType) {
+            var type = marker.entryType;
+            if(type=="geo_kml" || type=="geo_json" || type=="geo_shapefile") {
+                this.currentEntryMarker = marker;
+                var call = "ramaddaMapMap['" + this.mapId+"'].handleMarkerLayer();";
+                var label = marker.entryLayer?"Remove Layer":"Load Layer";
+                markertext = "<center>" + HtmlUtils.onClick(call,label) +"</center>" + markertext;
+            }
+        }
+
 
 
         var projPoint = this.transformLLPoint(location);

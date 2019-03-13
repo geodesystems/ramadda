@@ -4046,10 +4046,23 @@ ATTR_SHOWLINK, "true", ATTR_INCLUDEICON, "false") + ATTRS_LAYOUT),
             Hashtable<String, Entry> map = new Hashtable<String, Entry>();
             for (Entry child : entries) {
                 map.put(child.getId(), child);
+                map.put(child.getName(),child);
             }
             List<String> ids = StringUtil.split(lastEntries, ",");
             for (int i = ids.size() - 1; i >= 0; i--) {
-                Entry lastEntry = map.get(ids.get(i));
+                String id = ids.get(i);
+                Entry lastEntry = map.get(id);
+                if (lastEntry == null) {
+                    if(StringUtil.containsRegExp(id)) {
+                        for (Entry child : entries) {
+                            if(child.getName().matches(id)) {
+                                lastEntry = child;
+                                break;
+                            }
+                        }
+                    }
+                }
+
                 if (lastEntry == null) {
                     continue;
                 }
