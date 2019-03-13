@@ -1124,6 +1124,10 @@ function RamaddaMapDisplay(displayManager, id, properties) {
             this.animation.dateMax = null;
             var colorByMap = {};
             var colorByValues = [];
+
+            var colorByMinPerc = this.getDisplayProp(source, "colorByMinPercentile", -1);
+            var colorByMaxPerc = this.getDisplayProp(source, "colorByMaxPercentile", -1);
+
             for (var i = 0; i < points.length; i++) {
                 var pointRecord = records[i];
                 if(this.animation.dateMin == null) {

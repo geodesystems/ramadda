@@ -9969,6 +9969,7 @@ function RamaddaCorrelationDisplay(displayManager, id, properties) {
 
 
 function RamaddaRankingDisplay(displayManager, id, properties) {
+    var ID_TABLE = "table";
     $.extend(this,{
             height:"500px;"
                 });
@@ -10031,10 +10032,12 @@ function RamaddaRankingDisplay(displayManager, id, properties) {
             }
             var html = "";
             html+= HtmlUtils.openTag("div",["style","max-height:100%;overflow-y:auto;"]);
-            html+="<table>";
+            html+= HtmlUtils.openTag("table",["id",this.getDomId(ID_TABLE)]);
             var tmp = [];
             for (var rowIdx = 1; rowIdx < dataList.length; rowIdx++) {
-                tmp.push(dataList[rowIdx]);
+                var obj = dataList[rowIdx];
+                obj.originalRow = rowIdx;
+                tmp.push(obj);
             }
             
             var cnt = 0;
@@ -10050,24 +10053,29 @@ function RamaddaRankingDisplay(displayManager, id, properties) {
 
 
             for (var rowIdx = 0; rowIdx < tmp.length; rowIdx++) {
-                var tuple = this.getDataValues(tmp[rowIdx]);
+                var obj = tmp[rowIdx];
+                var tuple = this.getDataValues(obj);
                 var label = "";
                 if(stringField)
                     label = tuple[stringField.getIndex()];
                 value = tuple[sortField.getIndex()];
                 if(isNaN(value) || value === null) value="NA";
-                html+="<tr><td> #" +(rowIdx+1)+"</td><td>&nbsp;" + label +"</td><td align=right>" +
+                html+="<tr valign=top class='display-ranking-row' what='" + obj.originalRow +"'><td> #" +(rowIdx+1)+"</td><td>&nbsp;" + label +"</td><td align=right>&nbsp;" +
                     value+"</td></tr>";
             }                
             html += HtmlUtils.closeTag("table");
             html += HtmlUtils.closeTag("div");
             this.setContents(html);
             let _this = this;
+            this.jq(ID_TABLE).find(".display-ranking-row").click(function(e){
+                    _this.getDisplayManager().propagateEventRecordSelection(_this, _this.getPointData(), {
+                            index: parseInt($(this).attr("what"))-1
+                        });
+                });
             this.jq("sortfields").change(function() {
                     _this.setProperty("sortField", $(this).val());
                     _this.updateUI();
                 });
-
         },
     });
 }
@@ -16768,6 +16776,10 @@ function RamaddaMapDisplay(displayManager, id, properties) {
             this.animation.dateMax = null;
             var colorByMap = {};
             var colorByValues = [];
+
+            var colorByMinPerc = this.getDisplayProp(source, "colorByMinPercentile", -1);
+            var colorByMaxPerc = this.getDisplayProp(source, "colorByMaxPercentile", -1);
+
             for (var i = 0; i < points.length; i++) {
                 var pointRecord = records[i];
                 if(this.animation.dateMin == null) {

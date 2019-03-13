@@ -1293,3 +1293,12 @@ height:100%;
   border: 1px #000 solid;
   z-index: 50;
 }
+
+
+.display-ranking-row {
+   cursor:pointer;
+}
+
+.display-ranking-row:hover {
+   background:#efefef;
+}
