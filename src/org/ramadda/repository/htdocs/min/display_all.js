@@ -5282,13 +5282,24 @@ function RamaddaNotebookDisplay(displayManager, id, properties) {
             this.setContents(contents);
             this.jq(ID_NOTEBOOK).hover(()=>{}, ()=>{this.jq(ID_MENU).hide()});
             if (!this.fetchedNotebook) {
+               console.log("loading ace");
                 await Utils.importJS(ramaddaBaseUrl +"/lib/ace/src-min/ace.js");
-                setTimeout(()=>this.fetchNotebook(),100);
+               console.log("after loading ace");
+                setTimeout(()=>this.fetchNotebook(1),100);
             } else {
                 this.layoutCells();
             }
         },
-        fetchNotebook: async function() {
+        fetchNotebook: async function(cnt) {
+           if(!Utils.isDefined(ace)) {
+               console.log("no ace");
+               if(cnt>50) {
+                   alert("Could not load ace.js");
+                   return;
+               }
+                setTimeout(()=>this.fetchNotebook(cnt+1),100);
+                return;
+            }
             let _this = this;
                 ace.config.set('basePath', ramaddaBaseUrl +"/lib/ace/src-min");
                 this.fetchedNotebook = true;
