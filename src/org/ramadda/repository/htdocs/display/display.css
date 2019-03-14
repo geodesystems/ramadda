@@ -1207,6 +1207,9 @@ height:100%;
 }
 
 
+.display-notebook-menu .ramadda-link {
+//   width: 100%;
+}
 .display-notebook-input:focus {
     border:1px #888 solid;
 }

@@ -5932,25 +5932,11 @@ function RamaddaNotebookCell(notebook, id, content, props) {
              if(!at) at = "left top";
              let _this = this;
                 var space = "&nbsp;&nbsp;";
-                var line =  "<tr><td colspan=2 style='border-top:1px #ccc solid;'</td></tr>";
-                var line2 =  "<div style='border-top:1px #ccc solid;'</div>"
+                var line =  "<div style='border-top:1px #ccc solid;margin-top:4px;margin-bottom:4px;'></div>"
                 var menu = "";
-                menu += HtmlUtils.input(ID_CELLNAME_INPUT, _this.cellName, ["placeholder", "Cell name", "style", "width:100%;", "xsize", "20", "id", _this.getDomId(ID_CELLNAME_INPUT)]);
+                menu += HtmlUtils.input(ID_CELLNAME_INPUT, _this.cellName, ["placeholder", "Cell name", "style", "width:100%;", "id", _this.getDomId(ID_CELLNAME_INPUT)]);
                 menu += "<br>";
-                menu += "<table>";
-
-                //                menu += "<tr><td align=right><b>Run:</b>&nbsp;</td><td>";
-                //                menu += HtmlUtils.div(["title", "shift-return", "class", "ramadda-link", "what", "run"], "This cell") + space;
-                /*
-                menu += "<tr><td colspan=2>";
-                menu += HtmlUtils.div(["title", "ctrl-return", "class", "ramadda-link", "what", "runall"], "Run all");
-                menu += space;
-                menu += "</td></tr>"
-                */
-                    //                menu += "<tr><td align=right><b>Clear:</b>&nbsp;</td><td>";
-                    //                menu += HtmlUtils.div(["class", "ramadda-link", "what", "clear"], "This cell") + space;
-                    //                menu += "</td></tr>"
-
+                menu += "<table  width=100%> ";
                 menu += "<tr><td align=right><b>New cell:</b>&nbsp;</td><td>";
                 menu += HtmlUtils.div(["class", "ramadda-link", "what", "newabove"], "Above") + space;
                 menu += HtmlUtils.div(["class", "ramadda-link", "what", "newbelow"], "Below");
@@ -5962,7 +5948,7 @@ function RamaddaNotebookCell(notebook, id, content, props) {
 
                 menu += "</table>";
 
-                menu += line2;
+                menu += line;
                 menu += HtmlUtils.div(["title", "ctrl-return", "class", "ramadda-link", "what", "hideall"], "Hide all inputs");
                 menu+="<br>"
                 menu += HtmlUtils.div(["class", "ramadda-link", "what", "clearall"], "Clear all outputs");
@@ -5971,20 +5957,21 @@ function RamaddaNotebookCell(notebook, id, content, props) {
                 var colId = _this.getDomId(ID_LAYOUT_COLUMNS);
                 menu+="Columns: ";
                 menu += HtmlUtils.input(colId, this.notebook.columns, ["size", "3", "id", _this.getDomId(ID_LAYOUT_COLUMNS)]);
-                menu += line2;
+                menu += line;
 
                 menu += HtmlUtils.checkbox(_this.getDomId(ID_SHOW_OUTPUT), [],_this.showOutput) +" Output enabled" +"<br>";
                 menu += HtmlUtils.checkbox(_this.getDomId(ID_RUNFIRST), [],_this.runFirst) +" Run first" +"<br>";
                 menu += HtmlUtils.checkbox(_this.getDomId(ID_RUN_ON_LOAD), [],_this.notebook.runOnLoad) +" Run on load" +"<br>";
                 menu += HtmlUtils.div(["title","Don't show the left side and input for anonymous users"],HtmlUtils.checkbox(_this.getDomId(ID_DISPLAY_MODE), [],_this.notebook.displayMode) +" Display mode" +"<br>");
 
-                menu += line2;
-                //                menu += "<b>Layout</b><br>";
+                menu += line;
                 menu += HtmlUtils.div(["class", "ramadda-link", "what", "savewithout"], "Save notebook") + "<br>";
-                //                menu += HtmlUtils.div(["class", "ramadda-link", "what", "savewith"], "Save Notebook (with output)") + "<br>";
-                menu += line2;
+                menu += line;
                 menu += HtmlUtils.div(["class", "ramadda-link", "what", "delete"], "Delete") + "<br>";
                 menu += HtmlUtils.div(["class", "ramadda-link", "what", "help"], "Help") + "<br>";
+                menu = HtmlUtils.div(["class","display-notebook-menu"],menu);
+
+
                 var popup = this.getPopup();
                 this.dialogShown = true;
                 popup.html(HtmlUtils.div(["class", "ramadda-popup-inner"], menu));
