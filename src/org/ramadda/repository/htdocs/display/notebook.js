@@ -49,8 +49,8 @@ function RamaddaNotebookDisplay(displayManager, id, properties) {
             }
         },
         fetchNotebook: async function(cnt) {
-           console.log("ace?" +Utils.isDefined(ace));
-           if(!Utils.isDefined(ace)) {
+           console.log("ace?" +window["ace"]);
+           if(!window["ace"]) {
                console.log("no ace");
                if(cnt>50) {
                    alert("Could not load ace.js");
