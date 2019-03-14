@@ -5274,7 +5274,6 @@ function RamaddaNotebookDisplay(displayManager, id, properties) {
         baseEntries:{},
         columns:1,
         initDisplay: async function() {
-            let _this = this;
             this.createUI();
             var imports = HtmlUtils.div(["id",this.getDomId(ID_IMPORTS)]);
             var contents =   imports + HtmlUtils.div([ATTR_CLASS, "display-notebook-cells", ATTR_ID, this.getDomId(ID_CELLS)], "Loading...");
@@ -5283,10 +5282,16 @@ function RamaddaNotebookDisplay(displayManager, id, properties) {
             this.setContents(contents);
             this.jq(ID_NOTEBOOK).hover(()=>{}, ()=>{this.jq(ID_MENU).hide()});
             if (!this.fetchedNotebook) {
-                this.fetchedNotebook = true;
                 await Utils.importJS(ramaddaBaseUrl +"/lib/ace/src-min/ace.js");
+                setTimeout(()=>this.fetchNotebook(),100);
+            } else {
+                this.layoutCells();
+            }
+        },
+        fetchNotebook: async function() {
+            let _this = this;
                 ace.config.set('basePath', ramaddaBaseUrl +"/lib/ace/src-min");
-
+                this.fetchedNotebook = true;
                 await this.getEntry(this.getProperty("entryId",""),entry=> {
                         this.baseEntry=entry;});
                 await this.baseEntry.getRoot(entry=> {this.rootEntry=entry;});
@@ -5302,10 +5307,7 @@ function RamaddaNotebookDisplay(displayManager, id, properties) {
                             this.addCell("init cell", props,false).run();
                             this.cells[0].focus();
                         });
-                
-            } else {
-                this.layoutCells();
-            }
+
         },
         getBaseEntry: function() {
                 return this.baseEntry;
