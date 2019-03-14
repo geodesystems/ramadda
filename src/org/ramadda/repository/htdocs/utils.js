@@ -59,33 +59,43 @@ var Utils = {
         return ramaddaBaseUrl +"/icons/" + icon;
     },
     imports:{},
-    importJS: async function(path,callback) {
-        if(this.imports[path]) return Utils.call(callback);
-        this.imports[path] = true;
-        await $.getScript( path, function( data, textStatus, jqxhr ) {
-            });
-          return Utils.call(callback);
+    importJS: async function(path,callback,err) {
+        var key = "js:" + path;
+        if(this.imports[key]) return Utils.call(callback);
+        try {
+            await $.getScript( path).done(()=>{
+                    this.imports[key] = true;
+                    Utils.call(callback);
+                })
+                .fail(err);
+        } catch(e) {}
        },
-    importCSS: async function(path,callback) {
-        if(this.imports[path]) return Utils.call(callback);
-        this.imports[path] = true;
+    importCSS: async function(path,callback,err) {
+        var key = "css:" + path;
+        if(this.imports[key]) return Utils.call(callback);
+       try {
         await $.ajax({
                 url: path,
                 dataType: 'text',
-                success: function(data) {
+                success: (data) =>{
+                    this.imports[key] = true;
                     $('<style type="text/css">\n' + data + '</style>').appendTo("head");                    
+                    Utils.call(callback);
                 }                  
-            });
-        return Utils.call(callback);
+            }).fail(err);
+        } catch(e) {
+        }
     },
-    importText: async function(path,callback) {
-        await $.ajax({
-                url: path,
-                dataType: 'text',
-                success: function(data) {
-                    Utils.call(callback,data);
-                }                  
-            });
+    importText: async function(path,callback,err) {
+        try {
+            await $.ajax({
+                    url: path,
+                    dataType: 'text',
+                    success: function(data) {
+                        Utils.call(callback,data);
+                    }                  
+                }).fail(err);
+        } catch(e) {}
     },
 
     padLeft: function(s, length, pad) {
@@ -1093,6 +1103,9 @@ var HtmlUtils = {
             return this.bootstrapClasses[cols];
         }
         return "col-md-1";
+    },
+    pre: function(attrs, inner) {
+        return this.tag("pre", attrs, inner);
     },
     div: function(attrs, inner) {
         return this.tag("div", attrs, inner);
