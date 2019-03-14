@@ -741,7 +741,7 @@ public class WikiUtil {
                 String       clazz     = "ramadda-table";
                 if (toks.size() == 2) {
                     Hashtable props =
-                        StringUtil.parseHtmlProperties(toks.get(1));
+                        HtmlUtils.parseHtmlProperties(toks.get(1));
                     width     = Utils.getProperty(props, "width", width);
                     height    = Utils.getProperty(props, "height", height);
                     ordering  = Utils.getProperty(props, "ordering",
@@ -881,7 +881,7 @@ public class WikiUtil {
                 String       width = null;
                 if (toks.size() == 2) {
                     Hashtable props =
-                        StringUtil.parseHtmlProperties(toks.get(1));
+                        HtmlUtils.parseHtmlProperties(toks.get(1));
                     width = Utils.getProperty(props, "width", width);
                 }
 
@@ -943,7 +943,7 @@ public class WikiUtil {
                 String divClass= "";
                 if (toks.size() == 2) {
                     Hashtable props =
-                        StringUtil.parseHtmlProperties(toks.get(1));
+                        HtmlUtils.parseHtmlProperties(toks.get(1));
                     if(props.get("min")!=null) divClass= "ramadda-tabs-min";
                     else if(props.get("center")!=null) divClass= "ramadda-tabs-center";
                     else if(props.get("minarrow")!=null) divClass= "ramadda-tabs-min ramadda-tabs-minarrow";
@@ -1163,7 +1163,7 @@ public class WikiUtil {
                 String clazz="";
                 if (toks.size() == 2) {
                     Hashtable props =
-                        StringUtil.parseHtmlProperties(toks.get(1));
+                        HtmlUtils.parseHtmlProperties(toks.get(1));
                     String tmp = (String)props.get("class");
                     if(tmp!=null) clazz=tmp;
                     String image = (String)props.get("image");
@@ -1194,9 +1194,11 @@ public class WikiUtil {
 
 
             if (tline.startsWith("+section")) {
+
                 List<String> toks      = StringUtil.splitUpTo(tline, " ", 2);
                 Hashtable  props =
-                    StringUtil.parseHtmlProperties(toks.size()>1?toks.get(1):"");
+                    HtmlUtils.parseHtmlProperties(toks.size()>1?toks.get(1):"");
+
 
                 String       tag       = toks.get(0).substring(1);
                 List<String> toks2     = StringUtil.splitUpTo(tag, "-", 2);
@@ -1250,10 +1252,13 @@ public class WikiUtil {
                     putProperty("section-cnt", new Integer(newCnt));
                 }
                 if (classArg != null) {
-                    extraClass = classArg;
+                    extraClass += " " +classArg+" ";
                 }
 
-
+                String full = (String)props.get("full");
+                if(full!=null && (!full.equals("false"))) {
+                        extraClass+= " ramadda-section-full ";
+                }
                 String clazz = baseClass + " " + extraClass;
                 buff.append("<div class=\"");
                 buff.append(clazz);
@@ -1705,7 +1710,7 @@ public class WikiUtil {
             String    first = s.substring(0, idx1);
             String    attrs = s.substring(idx1 + 6, idx2);
             String    inner = s.substring(idx2 + 1, idx3);
-            Hashtable props = StringUtil.parseHtmlProperties(attrs);
+            Hashtable props = HtmlUtils.parseHtmlProperties(attrs);
             sb.append(first);
 
             String  before     = (String) props.get("before");

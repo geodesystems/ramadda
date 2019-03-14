@@ -1479,6 +1479,132 @@ public class HtmlUtils {
     }
 
 
+  public static Hashtable parseHtmlProperties(String s) {
+    boolean debug = false;
+    Hashtable properties = new Hashtable();
+    if (debug) {
+        System.err.println("Source:" + s);
+    }
+    // single title=foo full --- name=bar
+    s = s.trim();
+    int length = s.length();
+    int MODE_START=0;
+    int MODE_NAME=1;
+    int MODE_EQUALS=2;
+    int MODE_OPEN_QUOTE=3;
+    int MODE_VALUE=4;
+    int MODE_VALUE_QUOTE=5;
+    int MODE_VALUE_NOQUOTE=6;
+    int mode = MODE_START;
+    StringBuilder nb = new StringBuilder();
+    StringBuilder vb = new StringBuilder();
+    for(int i=0;i<length;i++) {
+        char c = s.charAt(i);
+        //        System.err.println(mode +" c:" + c);
+        if(mode == MODE_START) {
+            if(c==' ') {
+                continue;
+            }
+            if(c=='=') {
+                mode = MODE_VALUE;
+                continue;
+            }
+            nb.append(c);
+            if (debug) 
+                System.err.println("start:" + nb);
+            mode = MODE_NAME;
+            continue;
+        }
+
+        if(mode == MODE_NAME) {
+            if(c==' ') {
+                mode = MODE_EQUALS;
+                continue;
+            }
+            if(c=='=') {
+                mode = MODE_VALUE;
+                continue;
+            }
+            nb.append(c);
+            if (debug) 
+                System.err.println("name:" + nb);
+            continue;
+        }
+        if(mode == MODE_EQUALS) {
+            if(c=='=') {
+                mode = MODE_VALUE;
+                continue;
+            }
+            String name = nb.toString();
+            if(name.length()>0)
+                properties.put(name.trim(),"");
+            nb = new StringBuilder();
+            nb.append(c);
+            if (debug) 
+                System.err.println("=:" + nb);
+            mode = MODE_START;
+            continue;
+        }
+        if(mode == MODE_VALUE) {
+            if(c==' ') {
+                continue;
+            }
+            if(c=='"') {
+                mode = MODE_VALUE_QUOTE;
+                continue;
+            }
+            mode = MODE_VALUE_NOQUOTE;
+            vb.append(c);
+            continue;
+        }
+        if(mode == MODE_VALUE_QUOTE) {
+            if(c=='"') {
+                mode = MODE_START;
+                String name = nb.toString();
+                if(name.length()>0)
+                    properties.put(name,vb.toString());
+                nb = new StringBuilder();
+                vb = new StringBuilder();
+                continue;
+            }
+            vb.append(c);
+            if (debug) 
+                System.err.println("quote:" + vb);
+            continue;
+        }
+
+        if(mode == MODE_VALUE_NOQUOTE) {
+            if(c==' ') {
+                mode = MODE_START;
+                String name = nb.toString();
+                if(name.length()>0)
+                    properties.put(name,vb.toString());
+                nb = new StringBuilder();
+                vb = new StringBuilder();
+                continue;
+            }
+            vb.append(c);
+            if (debug) 
+                System.err.println("no quote:" + vb);
+            continue;
+        }
+
+
+    }
+    String name = nb.toString();
+    if(name.length()>0)
+        properties.put(name,vb.toString());
+    if (debug) {
+      System.err.println("props:" + properties);
+    }
+
+
+    return properties;
+  }
+
+
+
+
     /**
      * _more_
      *
@@ -4967,6 +5093,14 @@ public class HtmlUtils {
      * @throws Exception _more_
      */
     public static void main(String[] args) throws Exception {
+        System.err.println(parseHtmlProperties("single"));
+        System.err.println(parseHtmlProperties("single1 single2"));
+        System.err.println(parseHtmlProperties("flag1=foo flag2=bar"));
+        System.err.println(parseHtmlProperties("flag1=foo flag2=\"bar\" "));
+        System.err.println(parseHtmlProperties("title=foo full --- name=bar xxx=\"\" "));
+        if(true) return;
+
+
         List<HtmlUtils.Link> links = HtmlUtils.extractLinks(new URL(args[0]),
                                          (args.length > 1)
                                          ? args[1]

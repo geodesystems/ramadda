@@ -1171,7 +1171,7 @@ height:100%;
 
 .ace_notebook_tag {
    color:blue;
-   border-bottom: 1px #ccc solid;
+   border-top: 1px #ccc solid;
    width:100%;
    display:inline-block;
 }

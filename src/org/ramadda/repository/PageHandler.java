@@ -1142,7 +1142,7 @@ public class PageHandler extends RepositoryManager {
             String include = html.substring(0, idx1);
             include = include.substring("<include".length());
             include = include.replace(">", "");
-            Hashtable props = StringUtil.parseHtmlProperties(include);
+            Hashtable props = HtmlUtils.parseHtmlProperties(include);
             String    url   = (String) props.get("href");
             if (url != null) {
                 String includedContent =

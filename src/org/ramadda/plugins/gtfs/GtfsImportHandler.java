@@ -124,7 +124,7 @@ public class GtfsImportHandler extends ImportHandler {
         }
 
         Hashtable<String, String> props =
-            StringUtil.parseHtmlProperties(request.getString("extra", ""));
+            HtmlUtils.parseHtmlProperties(request.getString("extra", ""));
         List<String> files = new ArrayList<String>();
         String       path  = props.get("directory");
         if ((path != null) && request.getUser().getAdmin()) {

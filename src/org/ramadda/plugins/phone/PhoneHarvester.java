@@ -519,7 +519,7 @@ public class PhoneHarvester extends Harvester {
                         }
                         if (toks.size() > 2) {
                             Hashtable props =
-                                StringUtil.parseHtmlProperties(toks.get(2));
+                                HtmlUtils.parseHtmlProperties(toks.get(2));
                             request.putAll(props);
                         }
                     }

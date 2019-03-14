@@ -836,7 +836,7 @@ ATTR_SHOWLINK, "true", ATTR_INCLUDEICON, "false") + ATTRS_LAYOUT),
                     }
                 }
             }
-            Hashtable tmpProps = StringUtil.parseHtmlProperties(remainder);
+            Hashtable tmpProps = HtmlUtils.parseHtmlProperties(remainder);
             Hashtable props    = new Hashtable();
             for (Enumeration keys =
                     tmpProps.keys(); keys.hasMoreElements(); ) {
