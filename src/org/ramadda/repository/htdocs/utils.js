@@ -942,6 +942,7 @@ var HtmlUtils = {
         info.hidden = hidden;
         info.editor.setKeyboardHandler("emacs");
         info.editor.setShowPrintMargin(false);
+        info.editor.getSession().setUseWrapMode(true);
         info.editor.setOptions({
             autoScrollEditorIntoView: true,
             copyWithEmptySelection: true,

@@ -5439,7 +5439,7 @@ function RamaddaNotebookDisplay(displayManager, id, properties) {
         layoutCells: function() {
             this.jq(ID_CELLS).html("");
             var html;
-            if(this.layout == "sidebyside") {
+            if(this.showInput() && this.layout == "sidebyside") {
                 var left = HtmlUtils.openTag("div",["id",this.getDomId(ID_INPUTS)]);
                 var right = HtmlUtils.openTag("div",["id",this.getDomId(ID_OUTPUTS)]);
                 for(var i=0;i<this.cells.length;i++) {
@@ -5485,7 +5485,7 @@ function RamaddaNotebookDisplay(displayManager, id, properties) {
                 cell = this.createCell(content, props);
                 this.cells.push(cell);
                 if(!layoutLater) {
-                    if(this.layout == "sidebyside") {
+                    if(this.showInput() && this.layout == "sidebyside") {
                         this.jq(ID_INPUTS).append(HtmlUtils.div([ATTR_CLASS, "display-notebook-cell", ATTR_ID, cell.id+"_cellinput"], ""));
                         this.jq(ID_OUTPUTS).append(HtmlUtils.div([ATTR_CLASS, "display-notebook-cell", ATTR_ID, cell.id+"_celloutput"], ""));
                     } else {
@@ -6110,7 +6110,7 @@ function RamaddaNotebookCell(notebook, id, content, props) {
                         return;
                     } else if (command == "toggle") {
                         this.showInput = !this.showInput;
-                        this.applyStyle();
+                        this.applyStyle(true);
                     } else if (command == "showthis") {
                         this.showInput = true;
                         this.applyStyle();
@@ -6155,16 +6155,14 @@ function RamaddaNotebookCell(notebook, id, content, props) {
          shouldShowInput: function() {
             return this.showInput && this.notebook.showInput();
         },
-        applyStyle: function() {
+        applyStyle: function(fromUser) {
             if (this.shouldShowInput()) {
                 this.jq(ID_INPUT_TOOLBAR).css("display", "block");
-                this.inputContainer.show("show");
+                this.inputContainer.show(400,()=>this.editor.resize());
                 this.showHeader = true;
-                //Do this later because the editor gets weird if we do it now
-                setTimeout(()=>this.editor.resize(),100);
             } else {
                 this.jq(ID_INPUT_TOOLBAR).css("display", "none");
-                this.inputContainer.hide();
+                this.inputContainer.hide(fromUser?200:0);
                 this.showHeader = false;
             }
             this.showHeader = this.notebook.showInput();
