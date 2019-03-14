@@ -38,15 +38,18 @@ function RamaddaNotebookDisplay(displayManager, id, properties) {
             this.setContents(contents);
             this.jq(ID_NOTEBOOK).hover(()=>{}, ()=>{this.jq(ID_MENU).hide()});
             if (!this.fetchedNotebook) {
-               console.log("loading ace");
-                await Utils.importJS(ramaddaBaseUrl +"/lib/ace/src-min/ace.js");
-               console.log("after loading ace");
-                setTimeout(()=>this.fetchNotebook(1),100);
+                if(!this.fetchingNotebook) {
+                    this.fetchingNotebook = true;
+                    await Utils.importJS(ramaddaBaseUrl +"/lib/ace/src-min/ace.js");
+                    console.log("after loading ace");
+                    setTimeout(()=>this.fetchNotebook(1),100);
+                }
             } else {
                 this.layoutCells();
             }
         },
         fetchNotebook: async function(cnt) {
+           console.log("ace?" +Utils.isDefined(ace));
            if(!Utils.isDefined(ace)) {
                console.log("no ace");
                if(cnt>50) {
@@ -56,6 +59,9 @@ function RamaddaNotebookDisplay(displayManager, id, properties) {
                 setTimeout(()=>this.fetchNotebook(cnt+1),100);
                 return;
             }
+           console.log("xxx");
+           console.log("ace=" +ace);
+           console.log("OK");
             let _this = this;
                 ace.config.set('basePath', ramaddaBaseUrl +"/lib/ace/src-min");
                 this.fetchedNotebook = true;
