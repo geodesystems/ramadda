@@ -791,10 +791,10 @@ input, password, fileinput,textarea {
 .ace_tag {
    font-weight: bold;
 }
+
 .ace_editor  { 
 overflow-x:auto;
 width:100%;
-height:500px;
 border: 1px #ccc solid;
 }
 

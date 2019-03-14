@@ -5284,6 +5284,9 @@ function RamaddaNotebookDisplay(displayManager, id, properties) {
             this.jq(ID_NOTEBOOK).hover(()=>{}, ()=>{this.jq(ID_MENU).hide()});
             if (!this.fetchedNotebook) {
                 this.fetchedNotebook = true;
+                await Utils.importJS(ramaddaBaseUrl +"/lib/ace/src-min/ace.js");
+                ace.config.set('basePath', ramaddaBaseUrl +"/lib/ace/src-min");
+
                 await this.getEntry(this.getProperty("entryId",""),entry=> {
                         this.baseEntry=entry;});
                 await this.baseEntry.getRoot(entry=> {this.rootEntry=entry;});
@@ -5786,9 +5789,9 @@ function RamaddaNotebookCell(notebook, id, content, props) {
                 return obj;
         },
         createCell: function() {
-                if (this.content == null) {
-                    this.content = "wiki:";
-                }
+            if (this.content == null) {
+                 this.content = "wiki:";
+            }
             this.editId= addHandler(this);
             addHandler(this,this.editId+"_entryid");
             addHandler(this,this.editId+"_wikilink");
@@ -5799,7 +5802,8 @@ function RamaddaNotebookCell(notebook, id, content, props) {
                 this.makeButton(ID_BUTTON_RUN, Utils.getIcon("runall.png"), "Run all","runall");
 
             var header = HtmlUtils.div([ATTR_CLASS, "display-notebook-header", ATTR_ID, this.getDomId(ID_HEADER),"tabindex","0","title","Click to toggle input\nShift-click to clear output"],"&nbsp;" + buttons + "&nbsp;" + HtmlUtils.span(["id", this.getDomId(ID_CELLNAME)], this.cellName));
-            var input = HtmlUtils.textarea(TAG_INPUT, this.content, ["rows", this.inputRows, ATTR_CLASS, "display-notebook-input", ATTR_ID, this.getDomId(ID_INPUT)]);
+            //            var input = HtmlUtils.textarea(TAG_INPUT, this.content, ["rows", this.inputRows, ATTR_CLASS, "display-notebook-input xxace_editor", ATTR_ID, this.getDomId(ID_INPUT)]);
+            var input = HtmlUtils.div(["rows", this.inputRows, ATTR_CLASS, "display-notebook-input xxace_editor", ATTR_ID, this.getDomId(ID_INPUT)], this.content);
             var inputToolbar = HtmlUtils.div(["id",this.getDomId(ID_INPUT_TOOLBAR)],"");
 
             input = HtmlUtils.div(["class", "display-notebook-input-container"], inputToolbar + input);
@@ -5831,6 +5835,10 @@ function RamaddaNotebookCell(notebook, id, content, props) {
                     }
 
                 });
+
+            this.editor = HtmlUtils.initAceEditor("",this.getDomId(ID_INPUT));
+
+
             this.menuButton = this.jq(ID_BUTTON_MENU);
             this.toggleButton = this.jq(ID_BUTTON_TOGGLE);
             this.cell = this.jq(ID_CELL);
@@ -5848,7 +5856,7 @@ function RamaddaNotebookCell(notebook, id, content, props) {
             this.input.focus(()=>this.hidePopup());
             this.input.click(()=>this.hidePopup());
             this.output.click(()=>this.hidePopup());
-            this.input.on('input selectionchange propertychange', ()=>this.calculateInputHeight());
+            //            this.input.on('input selectionchange propertychange', ()=>this.calculateInputHeight());
             var moveFunc = (e)=>{
                 var key = e.key;
                 if (key == 'v' && e.ctrlKey) {
@@ -6038,7 +6046,6 @@ function RamaddaNotebookCell(notebook, id, content, props) {
         hidePopup: function() {
             var popup = this.getPopup();
             if(popup && this.dialogShown)  {
-                console.log("setting cellname");
                 var cols = parseInt(this.jq(ID_LAYOUT_COLUMNS).val());
                 this.cellName = this.jq(ID_CELLNAME_INPUT).val();
                 this.jq(ID_CELLNAME).html(this.cellName);
@@ -6182,8 +6189,11 @@ function RamaddaNotebookCell(notebook, id, content, props) {
             this.running = false;
             return Utils.call(callback, true);
         },
+        getInputText: function() {
+            return this.editor.getValue();
+        },
         runInner: async function() {
-            var value = this.input.val();
+            var value = this.getInputText();
             value = value.trim();
             var help = "More information <a target=_help href='" + ramaddaBaseUrl + "/userguide/notebook.html'>here</a>";
             value = value.replace(/{cellname}/g, this.cellName);
@@ -6193,28 +6203,31 @@ function RamaddaNotebookCell(notebook, id, content, props) {
             var blobs = [];
             var blob = "";
             var commands = value.split("\n");
-            var types = ["wiki", "html", "sh", "js","raw","md","py"];
             var ok = true;
             for (var i = 0; i < commands.length; i++) {
                 if (!ok) break;
                 var command = commands[i];
                 var _command = command.trim();
-                if(_command.startsWith("//")) continue;
-                var isType = false;
-                for (var typeIdx = 0; typeIdx < types.length; typeIdx++) {
-                    var t = types[typeIdx];
-                    if (_command.startsWith(t + ":")) {
-                        if(blob!="") {
-                            blobs.push({blob:blob,type:type,div:new Div(),ok:true});
-                        }
-                        blob = _command.substring((t + ":").length);
-                        if (blob != "") blob += "\n";
-                        type = t;
-                        isType = true;
-                        break;
+                //                if(_command.startsWith("//")) continue;
+                if (_command.startsWith("%%")) {
+                    var rest = _command.substring(2).trim();
+                    var newType;
+                    var index = rest.indexOf(" ");
+                    if(index<0) {
+                        newType = rest;
+                        rest = "";
+                    } else {
+                        newType = rest.substring(0,index).trim();
+                        rest = rest.substring(index);
                     }
+                    if(blob!="") {
+                        blobs.push({blob:blob,type:type,div:new Div(),ok:true});
+                    }
+                    blob = rest;
+                    if (blob != "") blob += "\n";
+                    type = newType;
+                    continue;
                 }
-                if (isType) continue;
                 blob = blob + command + "\n";
             }
 
@@ -6266,16 +6279,41 @@ function RamaddaNotebookCell(notebook, id, content, props) {
             this.rawOutput+=blob.blob+"\n";
             blob.div.set(blob.blob);
         },
+        processCss: async function(blob) {
+            var css = HtmlUtils.tag("style", ["type","text/css"], blob.blob);
+            this.rawOutput+=css+"\n";
+            blob.div.set(css);
+        },
+        processFetch: async function(blob) {
+            var lines = blob.blob.split("\n");
+            var commands = [];
+            for (var i = 0; i < lines.length; i++) {
+                var line = lines[i].trim();
+                if (line == "") continue;
+                if(line.startsWith("js:")) {
+                    var url = line.substring(3).trim();
+                    await Utils.importJS(url);
+                } else if(line.startsWith("css:")) {
+                    var url = line.substring(4).trim();
+                    await Utils.importCSS(url);
+                } else if(line.startsWith("html:")) {
+                    var url = line.substring(5).trim();
+                    await Utils.importText(url,h=>blob.div.set(h));
+                } else {
+                    blob.div.set("Unknown fetch:" + line);
+                }
+            }
+        },
         processMd: async function(blob) {
-            await Utils.import(ramaddaBaseUrl + "/lib/showdown.min.js");
+            await Utils.importJS(ramaddaBaseUrl + "/lib/showdown.min.js");
             this.rawOutput+=blob.blob+"\n";
             var converter = new showdown.Converter();
             var html      = converter.makeHtml(blob.blob);
             blob.div.set(html);
         },
         processPy: async function(blob) {
-            await Utils.import(ramaddaBaseUrl+"/lib/skulpt.min.js");
-            await Utils.import(ramaddaBaseUrl+"/lib/skulpt-stdlib.js");
+            await Utils.importJS(ramaddaBaseUrl+"/lib/skulpt.min.js");
+            await Utils.importJS(ramaddaBaseUrl+"/lib/skulpt-stdlib.js");
             var output = "";
             var outf = function(t) {
                 if(t.trim()!="") {
@@ -6405,6 +6443,10 @@ function RamaddaNotebookCell(notebook, id, content, props) {
                 await  this.processHtml(blob);
             } else if (blob.type == "wiki") {
                 await this.processWiki(blob);
+            } else if (blob.type == "css") {
+                await this.processCss(blob);
+            } else if (blob.type == "fetch") {
+                await this.processFetch(blob);
             } else if (blob.type == "raw") {
                 this.rawOutput+=blob.blob+"\n";
                 return;
@@ -6422,8 +6464,9 @@ function RamaddaNotebookCell(notebook, id, content, props) {
         },
 
 
+
         calculateInputHeight: function() {
-            this.content = this.input.val();
+            this.content =   this.getInputText();
             if(!this.content) return;
             var lines = this.content.split("\n");
             if (lines.length != this.inputRows) {
@@ -6451,14 +6494,6 @@ function RamaddaNotebookCell(notebook, id, content, props) {
         handleControlKey: function(event) {
             var k = event.which;
         },
-        writeInput: function(v) {
-            var input = this.getInput();
-            if (input.val() == v) {
-                return;
-            }
-            input.val(v).focus();
-            this.currentInput = this.getInput().val();
-        },
         getOutput: function() {
             return this.jq(ID_OUTPUT);
         },
@@ -6474,8 +6509,7 @@ function RamaddaNotebookCell(notebook, id, content, props) {
                 scrollTop: output.prop("scrollHeight")
             }, 1000);
             this.currentOutput = output.html();
-            this.currentInput = this.getInput().val();
-
+            this.currentInput =   this.getInputText();
         },
         writeError: function(msg) {
             this.writeStatusMessage(msg);
@@ -6504,9 +6538,10 @@ function RamaddaNotebookCell(notebook, id, content, props) {
                 this.notebook.addEntry(id, entryId);
             },
        setId: function(entryId) {
-                var caretPos = this.input.getCursorPosition();
-                var t = this.input.val();
-                this.input.val(t.substring(0, caretPos) + '"' +entryId+'"'+ t.substring(caretPos) );
+            var cursor = this.editor.getCursorPosition();
+            this.editor.insert(entryId);
+            //            this.editor.selection.moveTo(cursor.row, cursor.column);
+            //            this.editor.focus();
        },
        cdEntry: function(entryId) {
                 var div = new Div("");
@@ -10120,7 +10155,7 @@ function RamaddaTsneDisplay(displayManager, id, properties) {
                 this.setContents(this.getLoadingMessage());
                 return;
             }
-            await Utils.import(ramaddaBaseUrl + "/lib/tsne.js");
+            await Utils.importJS(ramaddaBaseUrl + "/lib/tsne.js");
             //Height is the height of the overall display including the menu bar
             var height = this.getProperty("height");
             if(height.endsWith("px")) height =height.replace("px","");

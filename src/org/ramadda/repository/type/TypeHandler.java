@@ -4717,6 +4717,7 @@ public class TypeHandler extends RepositoryManager {
         text = text.replaceAll("<", "&lt;").replaceAll(">", "&gt;");
         String textWidget = HtmlUtils.div(text,
                                           HtmlUtils.id(id + "_editor")
+                                          + HtmlUtils.style("height:500px;") 
                                           + HtmlUtils.attr("class",
                                               "ace_editor"));
         sb.append(HtmlUtils.hidden(id, "", HtmlUtils.id(id)));

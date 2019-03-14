@@ -1201,6 +1201,7 @@ height:100%;
     border:1px #eee solid;
     background:rgb(250,250,250);
     resize:none;
+    height: 400px;
     max-height: 400px;
     overflow-y:auto;
 }

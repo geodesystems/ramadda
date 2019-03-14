@@ -68,30 +68,50 @@ The icons on the left allow you to popup the cell menu, show the cell input, run
 The menubar at the top of the input area is just RAMADADA's wiki text <a href="wiki.html#menubar">menu bar</a>.
 Use the following tags to denote and separate the contents within a notebook cell:
 <p>
-The input of a notebook cell can be any combination of html, wiki text, markdown, special "shell" commands, javascript or python.
-The input can either be all one type or a mix of different input types.
+The input of a notebook cell can be any combination of html, wiki text, markdown, raw text, javascript, python, 
+or special "shell" commands and "fetch" commands.
+The input can either be all one type or a mix of different input types. Each type is delineated by a "%%".
 
 <pre>
-<i>html:</i>
+<i>%% html</i>
 Regular html text
 
-<i>wiki:</i>
+<i>%% css</i>
+CSS
+
+<i>%% wiki</i>
 RAMADDA wiki text
 
-
-<i>md:</i>
+<i>%% md</i>
 Markdown text
 
-<i>sh:</i>
+<i>%% fetch</i>
+Fetch commands
+
+<i>%% js</i>
+Javascript
+
+<i>%% py</i>
+Javascript
+
+<i>%% sh</i>
 Shell commands
 
-<i>js:</i>
-Javascript
+<i>%% fetch</i>
+Fetch commands
 
-<i>py:</i>
-Javascript
+<i>%% raw</i>
+Raw text
 
 </pre>
+
+A command can be on the same line
+<pre>
+<i>%% html</i> some html
+<i>%% wiki</i> some wiki
+<i>%% js</i> some javascript
+</pre>
+
 
 <a name="context"></a><p><div class="ramadda-help-heading">5.3.2 <a href="#context">Cell Context</a></div> 
 Within a cell there is an entry context, a number of entries that can be accessed within the javascript
@@ -106,17 +126,17 @@ shell commands.
 
 
 <a name="html"></a><p><div class="ramadda-help-heading">5.3.3 <a href="#html">Html Input</a></div> 
-To specify html text start the input with "html:".  
+To specify html text start the input with "%% html".  
 <pre>
-<i>html:</i>
+<i>%% html</i>
 html text
 </pre>
 
 
 <a name="wiki"></a><p><div class="ramadda-help-heading">5.3.4 <a href="#wiki">Wiki Input</a></div> 
-To specify wiki text start the input with "wiki:" - 
+To specify wiki text start the input with "%% wiki" - 
 <pre>
-<i>wiki:</i>
+<i>%% wiki</i>
 RAMADDA wiki text
 </pre>
 
@@ -124,19 +144,30 @@ The wiki text is just regular RAMADDA wiki text. More information <a href="wikit
 
 
 <a name="markdown"></a><p><div class="ramadda-help-heading">5.3.5 <a href="#markdown">Markdown Input</a></div> 
-To specify markdown  text start the input with "md:" - 
+To specify markdown  text start the input with "%% md" - 
 <pre>
-<i>md:</i>
+<i>%% md</i>
 # markdown 1
 # markdown 2
 </pre>
 
 
 
-<a name="sh"></a><p><div class="ramadda-help-heading">5.3.6 <a href="#sh">Shell Input</a></div> 
-To specify shell text start the input with "sh:" - 
+<a name="fetch"></a><p><div class="ramadda-help-heading">5.3.6 <a href="#fetch">Fetch Input</a></div> 
+The fetch command allow you to import javascript, css or html files
+
 <pre>
-<i>sh:</i>
+<i>%% fetch</i>
+js: /url/to/javascript
+css: /url/to/css
+html: /url/to/html
+</pre>
+
+
+<a name="sh"></a><p><div class="ramadda-help-heading">5.3.7 <a href="#sh">Shell Input</a></div> 
+To specify shell text start the input with "%% sh" - 
+<pre>
+<i>%% sh</i>
 shell commands
 </pre>
 
@@ -144,7 +175,7 @@ The shell commands allow for easy navigation around the RAMADDA entry hierarchy.
 
 The following shell commands are supported. All of the "cd" commands change the cell's current entry.
 <pre>
-<i>sh:</i>
+<i>%% sh</i>
 #change current entry to the base entry
 cd  
 
@@ -192,29 +223,29 @@ cd /;pwd;ls;cd;pwd
 </pre>
 
 
-<a name="js"></a><p><div class="ramadda-help-heading">5.3.7 <a href="#js">Javascript Input</a></div> 
-To specify javascript start the input with "js:" - 
+<a name="js"></a><p><div class="ramadda-help-heading">5.3.8 <a href="#js">Javascript Input</a></div> 
+To specify javascript start the input with "%% js" - 
 <pre>
-<i>js:</i>
+<i>%% js</i>
 javascript code
 </pre>
 
 Javacsript input comes in 3 forms - single line expression, single line with a return  or multiple lines with a return.
 For example, the below will display the number "3":
 <pre>
-<i>js:</i>
+<i>%% js</i>
 1+2
 </pre>
 
 Here is a single line with a return:
 <pre>
-<i>js:</i>
+<i>%% js</i>
 return "some string"
 </pre>
 
 Here is a multiple line input:
 <pre>
-<i>js:</i>
+<i>%% js</i>
 var x;
 x = 1+2;
 return x;
@@ -222,7 +253,7 @@ return x;
 
 The javascript input can have function definitions:
 <pre>
-<i>js:</i>
+<i>%% js</i>
 function result() {
    return "the result";
 }
@@ -233,7 +264,7 @@ return result();
 There are a number of helper functions and pre-defined variables that can be accessed from javascript.
 The above described entry context can be accessed with the variables:
 <pre>
-<i>js:</i>
+<i>%% js</i>
 base
 current
 parent
@@ -242,12 +273,12 @@ root
 
 The state object holds the state of this JS cell execution and provides a number of methods.
 <pre>
-<i>js:</i>
+<i>%% js</i>
 //TODO
 </pre>
 
 <pre>
-<i>js:</i>
+<i>%% js</i>
 state.getCell() // return the cell
 state.getNotebook() // return the cell
 state.clear() //clear the output
@@ -277,24 +308,24 @@ state.wiki(":title {{name}}", root);
 
 
 
-<a name="py"></a><p><div class="ramadda-help-heading">5.3.8 <a href="#py">Python Input</a></div> 
+<a name="py"></a><p><div class="ramadda-help-heading">5.3.9 <a href="#py">Python Input</a></div> 
 The notebook Python runs in the browser using the <a href="http://www.skulpt.org/">Skulpt</a> package.
-To specify python start the input with "py:" - 
+To specify python start the input with "%% py" - 
 <pre>
-<i>py:</i>
+<i>%% py</i>
 print "hello world"
 </pre>
 
 
 
-<a name="running"></a><p><div class="ramadda-help-heading">5.3.9 <a href="#running">Running a notebook</a></div> 
+<a name="running"></a><p><div class="ramadda-help-heading">5.3.10 <a href="#running">Running a notebook</a></div> 
 To run a notebook cell either press shift-return in the cell input area or choose "Run This Cell" in the notebook menu.
 All of the cells can be run through the notebook menu with the "Run All" command.
 A notebook can be configured to run all of the cells when the notebook is first loaded through the "Run on load"
 command in the notebook menu.
 
 
-<a name="commands"></a><p><div class="ramadda-help-heading">5.3.10 <a href="#commands">Notebook Menu Commands</a></div> 
+<a name="commands"></a><p><div class="ramadda-help-heading">5.3.11 <a href="#commands">Notebook Menu Commands</a></div> 
 The notebook menu allows one to configure the display and behavior of individual cells or all of the cells.
 
 <a name="image2"></a><div class="cimg"><a href="images/notebookmenu.png"><img  src="images/notebookmenu.png"  alt="Notebook Menu" ></a><br><span class="caption">Image 2: Notebook Menu</span></div>

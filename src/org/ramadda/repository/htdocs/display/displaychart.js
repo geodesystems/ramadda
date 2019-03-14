@@ -3295,7 +3295,7 @@ function RamaddaTsneDisplay(displayManager, id, properties) {
                 this.setContents(this.getLoadingMessage());
                 return;
             }
-            await Utils.import(ramaddaBaseUrl + "/lib/tsne.js");
+            await Utils.importJS(ramaddaBaseUrl + "/lib/tsne.js");
             //Height is the height of the overall display including the menu bar
             var height = this.getProperty("height");
             if(height.endsWith("px")) height =height.replace("px","");

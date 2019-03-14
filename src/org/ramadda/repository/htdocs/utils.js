@@ -59,13 +59,35 @@ var Utils = {
         return ramaddaBaseUrl +"/icons/" + icon;
     },
     imports:{},
-    import: async function(path,callback) {
+    importJS: async function(path,callback) {
         if(this.imports[path]) return Utils.call(callback);
         this.imports[path] = true;
         await $.getScript( path, function( data, textStatus, jqxhr ) {
             });
           return Utils.call(callback);
        },
+    importCSS: async function(path,callback) {
+        if(this.imports[path]) return Utils.call(callback);
+        this.imports[path] = true;
+        await $.ajax({
+                url: path,
+                dataType: 'text',
+                success: function(data) {
+                    $('<style type="text/css">\n' + data + '</style>').appendTo("head");                    
+                }                  
+            });
+        return Utils.call(callback);
+    },
+    importText: async function(path,callback) {
+        await $.ajax({
+                url: path,
+                dataType: 'text',
+                success: function(data) {
+                    Utils.call(callback,data);
+                }                  
+            });
+    },
+
     padLeft: function(s, length, pad) {
         s = "" + s;
         if (!pad) pad = " ";
@@ -902,7 +924,6 @@ var HtmlUtils = {
         return info.editor;
     },
     handleAceEditorSubmit: function() {
-        console.log("handle submit:" + this.aceEditors);
         if (!this.aceEditors) return;
         for (a in this.aceEditors) {
             var info = this.aceEditors[a];
@@ -926,6 +947,7 @@ var HtmlUtils = {
             copyWithEmptySelection: true,
         });
         info.editor.session.setMode("ace/mode/ramadda");
+        return info.editor;
     },
     makeBreadcrumbs: function(id) {
         jQuery("#" + id).jBreadCrumb({
