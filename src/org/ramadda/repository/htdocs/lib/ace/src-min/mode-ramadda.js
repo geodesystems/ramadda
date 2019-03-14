@@ -1560,7 +1560,6 @@ var tagMap = lang.createMap({
 });
 
 var RamaddaHighlightRules = function() {
-    console.log("MODE");
     XmlHighlightRules.call(this);
     for (var rule in this.$rules) {
         this.$rules[rule].unshift(

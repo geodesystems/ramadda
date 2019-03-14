@@ -3655,7 +3655,8 @@ Time:14625 cnt:7000
         }
 
         
-        return s.replace("${cdnpath}", path).replace(
+        String htdocsBase =  makeHtdocsUrl("");
+        return s.replace("${htdocs}", htdocsBase).replace("${cdnpath}", path).replace(
                                                      "${root}", getRepository().getUrlBase()).replace(
             "${baseentry}", getEntryManager().getRootEntry().getId()).replace(
             "${min}", mini).replace("${dotmin}", dotmini);
