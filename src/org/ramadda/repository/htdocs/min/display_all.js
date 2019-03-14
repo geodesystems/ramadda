@@ -5803,9 +5803,8 @@ function RamaddaNotebookCell(notebook, id, content, props) {
 
             var header = HtmlUtils.div([ATTR_CLASS, "display-notebook-header", ATTR_ID, this.getDomId(ID_HEADER),"tabindex","0","title","Click to toggle input\nShift-click to clear output"],"&nbsp;" + buttons + "&nbsp;" + HtmlUtils.span(["id", this.getDomId(ID_CELLNAME)], this.cellName));
             var content = this.content.replace(/</g,"&lt;").replace(/>/g,"&gt;");
-            console.log("content:" + content);
-            //            var input = HtmlUtils.textarea(TAG_INPUT, this.content, ["rows", this.inputRows, ATTR_CLASS, "display-notebook-input xxace_editor", ATTR_ID, this.getDomId(ID_INPUT)]);
-            var input = HtmlUtils.div([ATTR_CLASS, "display-notebook-input xxace_editor", ATTR_ID, this.getDomId(ID_INPUT)], content);
+            //            var input = HtmlUtils.textarea(TAG_INPUT, this.content, ["rows", this.inputRows, ATTR_CLASS, "display-notebook-input", ATTR_ID, this.getDomId(ID_INPUT)]);
+            var input = HtmlUtils.div([ATTR_CLASS, "display-notebook-input ace_editor", ATTR_ID, this.getDomId(ID_INPUT)], content);
             var inputToolbar = HtmlUtils.div(["id",this.getDomId(ID_INPUT_TOOLBAR)],"");
 
             input = HtmlUtils.div(["class", "display-notebook-input-container"], inputToolbar + input);
@@ -6104,6 +6103,8 @@ function RamaddaNotebookCell(notebook, id, content, props) {
                 this.jq(ID_INPUT_TOOLBAR).css("display", "block");
                 this.inputContainer.show("show");
                 this.showHeader = true;
+                //Do this later because the editor gets weird if we do it now
+                setTimeout(()=>this.editor.resize(),100);
             } else {
                 this.jq(ID_INPUT_TOOLBAR).css("display", "none");
                 this.inputContainer.hide();
