@@ -661,6 +661,10 @@ position:relative;
 
 
 
+.ramadda-section-full  {
+    padding:0px;
+}
+
 .ramadda-section-wide  {
     padding-left:20px;
     padding-right:20px;
@@ -796,6 +800,7 @@ input, password, fileinput,textarea {
 overflow-x:auto;
 width:100%;
 border: 1px #ccc solid;
+height:500px;
 }
 
 

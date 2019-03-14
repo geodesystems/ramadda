@@ -5284,30 +5284,24 @@ function RamaddaNotebookDisplay(displayManager, id, properties) {
             if (!this.fetchedNotebook) {
                 if(!this.fetchingNotebook) {
                     this.fetchingNotebook = true;
-                    await Utils.importJS(ramaddaBaseUrl +"/lib/ace/src-min/ace.js");
-                    console.log("after loading ace");
-                    setTimeout(()=>this.fetchNotebook(1),100);
+                    await Utils.importJS(ramaddaBaseHtdocs +"/lib/ace/src-min/ace.js");
+                    setTimeout(()=>this.fetchNotebook(1),10);
                 }
             } else {
                 this.layoutCells();
             }
         },
         fetchNotebook: async function(cnt) {
-           console.log("ace?" +window["ace"]);
            if(!window["ace"]) {
-               console.log("no ace");
                if(cnt>50) {
                    alert("Could not load ace.js");
                    return;
                }
-                setTimeout(()=>this.fetchNotebook(cnt+1),100);
+                setTimeout(()=>this.fetchNotebook(cnt+1),cnt*10);
                 return;
             }
-           console.log("xxx");
-           console.log("ace=" +ace);
-           console.log("OK");
-            let _this = this;
-                ace.config.set('basePath', ramaddaBaseUrl +"/lib/ace/src-min");
+           ace.config.set('basePath', ramaddaBaseHtdocs +"/lib/ace/src-min");
+           let _this = this;
                 this.fetchedNotebook = true;
                 await this.getEntry(this.getProperty("entryId",""),entry=> {
                         this.baseEntry=entry;});
@@ -5444,8 +5438,8 @@ function RamaddaNotebookDisplay(displayManager, id, properties) {
                 var cell = this.cells[i];
                 cell.index = i+1;
                 html+=HtmlUtils.openTag("div",["class", clazz]);
-                html+=HtmlUtils.openTag("div",["style","max-width:100%;overflow-x:auto;padding:0px;margin:px;"]);
-                html+=HtmlUtils.div([ATTR_CLASS, "display-notebook-cell", ATTR_ID, cell.id], "");
+                html+=HtmlUtils.openTag("div",[ "style","max-width:100%;overflow-x:auto;padding:0px;margin:px;"]);
+                html+=HtmlUtils.div([ATTR_CLASS, "display-notebook-cell",ATTR_ID, cell.id], "");
                 html+=HtmlUtils.closeTag("div");
                 html+=HtmlUtils.closeTag("div");
                 colCnt++;
@@ -5831,7 +5825,6 @@ function RamaddaNotebookCell(notebook, id, content, props) {
             output = HtmlUtils.div(["class", "display-notebook-output-container"], output);
             var menu = HtmlUtils.div(["id", this.getDomId(ID_MENU), "class", "ramadda-popup"], "");
             var html =  header +input + output;
-
             html = HtmlUtils.div(["id", this.getDomId(ID_CELL)], html);
             $("#" + this.id).html(html);
             var url = ramaddaBaseUrl +"/wikitoolbar?entryid=" + this.entryId +"&handler=" + this.editId;
@@ -6217,7 +6210,7 @@ function RamaddaNotebookCell(notebook, id, content, props) {
                 if (!ok) break;
                 var command = commands[i];
                 var _command = command.trim();
-                //                if(_command.startsWith("//")) continue;
+                if(_command.startsWith("//")) continue;
                 if (_command.startsWith("%%")) {
                     var rest = _command.substring(2).trim();
                     var newType;

@@ -3654,8 +3654,9 @@ Time:14625 cnt:7000
                    + RepositoryUtil.getHtdocsVersion();
         }
 
+        
         return s.replace("${cdnpath}", path).replace(
-            "${root}", getRepository().getUrlBase()).replace(
+                                                     "${root}", getRepository().getUrlBase()).replace(
             "${baseentry}", getEntryManager().getRootEntry().getId()).replace(
             "${min}", mini).replace("${dotmin}", dotmini);
     }

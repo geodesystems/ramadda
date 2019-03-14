@@ -3883,6 +3883,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
         }
 
         String urlBase = getUrlBase();
+        String htdocsBase =  getPageHandler().makeHtdocsUrl("");
         if (path.startsWith(urlBase)) {
             int length = urlBase.length();
             path = path.substring(length);
@@ -3931,7 +3932,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
                 if (path.endsWith(".js") || path.endsWith(".css")
                         || path.endsWith(".json")) {
                     String js = IOUtil.readInputStream(inputStream);
-                    js = js.replace("${root}", urlBase).replace(
+                    js = js.replace("${htdocs}",htdocsBase).replace("${root}", urlBase).replace(
                         "${urlroot}", urlBase).replace(
                         "${baseentry}",
                         getEntryManager().getRootEntry().getId());
@@ -3989,7 +3990,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
                     || pluginPath.endsWith(".json")) {
                 String js = IOUtil.readInputStream(inputStream);
                 js    = js.replace("${urlroot}", urlBase);
-                js    = js.replace("${root}", urlBase);
+                js    = js.replace("${htdocs}",htdocsBase).replace("${root}", urlBase);
                 js    = js.replace("${hostname}", request.getServerName());
                 bytes = js.getBytes();
                 putHtdocsCache(path, bytes);

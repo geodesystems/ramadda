@@ -1166,8 +1166,15 @@ height:100%;
 .chernoff  {
         fill: none;
         stroke: #000;
-      }
+}
 
+
+.ace_notebook_tag {
+   color:blue;
+   border-bottom: 1px #ccc solid;
+   width:100%;
+   display:inline-block;
+}
 
 .display-notebook-header {
      outline:none;
@@ -1199,6 +1206,7 @@ height:100%;
     padding-left:4px;
     width:100%;
     border:1px #eee solid;
+    border-top:1px #ccc solid;
     background:rgb(250,250,250);
     resize:none;
     height: 400px;

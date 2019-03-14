@@ -4,3 +4,5 @@
 
 var ramaddaBaseUrl = "${root}";
 var ramaddaBaseEntry = "${baseentry}";
+var ramaddaBaseHtdocs= "${htdocs}";
+

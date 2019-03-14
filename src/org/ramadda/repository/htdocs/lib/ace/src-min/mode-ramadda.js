@@ -1,3 +1,4 @@
+
 define("ace/mode/doc_comment_highlight_rules",["require","exports","module","ace/lib/oop","ace/mode/text_highlight_rules"], function(require, exports, module) {
 "use strict";
 
@@ -1559,6 +1560,7 @@ var tagMap = lang.createMap({
 });
 
 var RamaddaHighlightRules = function() {
+    console.log("MODE");
     XmlHighlightRules.call(this);
     for (var rule in this.$rules) {
         this.$rules[rule].unshift(
@@ -1567,6 +1569,9 @@ var RamaddaHighlightRules = function() {
                                           },
                                   {token : "keyword",
                                           regex : "\\:(br ?|p ?|note(-[^ ]+)*|blurb(-[^ ]+)*|heading(-[^ ]+)*)"
+                                          },
+                                  {token : "notebook_tag",
+                                          regex : "\\%\\% *[^ ]+.*"
                                           },
                                   {token : "keyword",
                                           regex : "^(-row.*|-col.*)|(-center)|(-div)|(-inset|-section|-note|-heading|-tabs|-tab|-accordian|-segment).*|((-section|-blurb|-heading) +)"
