@@ -1535,9 +1535,9 @@ public class HtmlUtils {
                 mode = MODE_VALUE;
                 continue;
             }
-            String name = nb.toString();
+            String name = nb.toString().trim();
             if(name.length()>0)
-                properties.put(name.trim(),"");
+                properties.put(name,"");
             nb = new StringBuilder();
             nb.append(c);
             if (debug) 
@@ -1560,7 +1560,7 @@ public class HtmlUtils {
         if(mode == MODE_VALUE_QUOTE) {
             if(c=='"') {
                 mode = MODE_START;
-                String name = nb.toString();
+                String name = nb.toString().trim();
                 if(name.length()>0)
                     properties.put(name,vb.toString());
                 nb = new StringBuilder();

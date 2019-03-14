@@ -1199,7 +1199,6 @@ public class WikiUtil {
                 Hashtable  props =
                     HtmlUtils.parseHtmlProperties(toks.size()>1?toks.get(1):"");
 
-
                 String       tag       = toks.get(0).substring(1);
                 List<String> toks2     = StringUtil.splitUpTo(tag, "-", 2);
                 String       remainder = ((toks2.size() > 1)
@@ -1257,12 +1256,13 @@ public class WikiUtil {
 
                 String full = (String)props.get("full");
                 if(full!=null && (!full.equals("false"))) {
-                        extraClass+= " ramadda-section-full ";
+                    extraClass+= " ramadda-section-full ";
                 }
                 String clazz = baseClass + " " + extraClass;
                 buff.append("<div class=\"");
                 buff.append(clazz);
                 buff.append("\"   " + extraAttr + ">");
+                //                System.err.println("s:" + clazz +" " + extraAttr);
                 if (label == null) {
                     label = heading;
                 }
