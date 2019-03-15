@@ -1286,6 +1286,9 @@ color:rgb(63, 127, 95);
      min-height: 15px;
 }
 
+.display-notebook-output a {
+color:#A8D3F4;
+}
 
 .display-notebook-error  {
  color:red;

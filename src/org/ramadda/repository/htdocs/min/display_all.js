@@ -5274,7 +5274,7 @@ function RamaddaNotebookDisplay(displayManager, id, properties) {
             runOnLoad: this.getProperty("runOnLoad",true),
                 displayMode: this.getProperty("displayMode",false),
                 showConsole:this.getProperty("showConsole",true),
-                layout: this.getProperty("displayMode","horizontal"),
+                layout: this.getProperty("layout","horizontal"),
                 columns: this.getProperty("columns",1),
                 });
 
@@ -5301,6 +5301,9 @@ function RamaddaNotebookDisplay(displayManager, id, properties) {
                 if (!this.fetchingNotebook) {
                     this.fetchingNotebook = true;
                     await Utils.importJS(ramaddaBaseHtdocs + "/lib/ace/src-min/ace.js");
+                    await Utils.importJS(ramaddaBaseUrl + "/lib/showdown.min.js"); 
+                    var imports = "<link rel='preload' href='https://cdn.jsdelivr.net/npm/katex@0.10.1/dist/fonts/KaTeX_Main-Regular.woff2' as='font' type='font/woff2' crossorigin='anonymous'>\n<link rel='preload' href='https://cdn.jsdelivr.net/npm/katex@0.10.1/dist/fonts/KaTeX_Math-Italic.woff2' as='font' type='font/woff2' crossorigin='anonymous'>\n<link rel='preload' href='https://cdn.jsdelivr.net/npm/katex@0.10.1/dist/fonts/KaTeX_Size2-Regular.woff2' as='font' type='font/woff2' crossorigin='anonymous'>\n<link rel='preload' href='https://cdn.jsdelivr.net/npm/katex@0.10.1/dist/fonts/KaTeX_Size4-Regular.woff2' as='font' type='font/woff2' crossorigin='anonymous'/>\n<link rel='stylesheet' href='https://fonts.googleapis.com/css?family=Lato:300,400,700,700i'>\n<link rel='stylesheet' href='https://cdn.jsdelivr.net/npm/katex@0.10.1/dist/katex.min.css' crossorigin='anonymous'>\n<link rel='stylesheet' href='static/index.css'><script defer src='https://cdn.jsdelivr.net/npm/katex@0.10.1/dist/katex.min.js' crossorigin='anonymous'></script>";
+                    $(imports).appendTo("head");                    
                     setTimeout(() => this.fetchNotebook(1), 10);
                 }
             } else {
@@ -5509,7 +5512,7 @@ function RamaddaNotebookDisplay(displayManager, id, properties) {
                 var right = HtmlUtils.div(["id", this.getDomId(ID_OUTPUTS)]);
                 var center = HtmlUtils.div([], "");
                 left +=con;
-                html = "<table width=100%><tr valign=top><td width=50%>" + left + "</td><td style='border-left:1px #ccc solid;' width=1>" + center + "</td><td xwidth=50%>" + right + "</td></tr></table>";
+                html = "<table width=100%><tr valign=top><td width=50%>" + left + "</td><td style='border-left:1px #ccc solid;' width=1>" + center + "</td><td width=49%>" + right + "</td></tr></table>";
             } else {
                 this.jq(ID_CELLS_BOTTOM).html(con);
             }
@@ -6122,7 +6125,7 @@ function RamaddaNotebookCell(notebook, id, content, props) {
             var cols = this.notebook.columns;
             var colId = _this.getDomId(ID_LAYOUT_COLUMNS);
             menu += "<b>Layout:</b> ";
-            menu += HtmlUtils.checkbox(_this.getDomId(ID_LAYOUT_TYPE), [], _this.notebook.layout == "horizontal") + " Side by side" + "<br>";
+            menu += HtmlUtils.checkbox(_this.getDomId(ID_LAYOUT_TYPE), [], _this.notebook.layout == "horizontal") + " Horizontal" + "<br>";
             //            menu += "Columns: ";
             //            menu += HtmlUtils.input(colId, this.notebook.columns, ["size", "3", "id", _this.getDomId(ID_LAYOUT_COLUMNS)]);
             menu += line;
@@ -6490,12 +6493,12 @@ function RamaddaNotebookCell(notebook, id, content, props) {
                     url = line.substring(3).trim();
                     await Utils.importJS(url,
                         () => {},
-                        (jqxhr, settings, exception) => error = "Error fetching " + origLine + " " + exception);
+                                         (jqxhr, settings, exception) => error = "Error fetching " + origLine + " " + exception,true);
                 } else if (line.startsWith("css:")) {
                     url = line.substring(4).trim();
                     await Utils.importCSS(url,
                         null,
-                        (jqxhr, settings, exception) => error = "Error fetching " + origLine + " " + exception);
+                                          (jqxhr, settings, exception) => error = "Error fetching " + origLine + " " + exception,true);
                 } else if (line.startsWith("html:")) {
                     url = line.substring(5).trim();
                     await Utils.importText(url, h => chunk.div.append(h), (jqxhr, settings, exception) => error = "Error fetching " + origLine + " " + exception);
@@ -6537,11 +6540,45 @@ function RamaddaNotebookCell(notebook, id, content, props) {
                 }
             }
         },
-        processMd: async function(chunk) {
-            await Utils.importJS(ramaddaBaseUrl + "/lib/showdown.min.js");
+       processMd: async function(chunk) {
+        //            await Utils.importJS(ramaddaBaseUrl + "/lib/katex/lib/katex/katex.min.css");
+         //            await Utils.importJS(ramaddaBaseUrl + "/lib/katex/lib/katex/katex.min.js");
+
             this.rawOutput += chunk.content + "\n";
+            var o = "";
+            var tex = null;
+            var lines = chunk.content.split("\n");
+            var texs=[];
+            for(var i=0;i<lines.length;i++) {
+                var line = lines[i];
+                var _line = line.trim();
+                if(_line.startsWith("$$")) {
+                    if(tex!=null) {
+                        try {
+                        var html = katex.renderToString(tex, {
+                                throwOnError: true
+                            });
+                        o+="tex:"  + texs.length+":\n";
+                        texs.push(html);
+                        } catch(e) {
+                            o+="Error parsing tex:" + e+"<pre>" + tex+"</pre>";
+                        }
+                        tex = null;
+                    }  else {
+                        tex = "";
+                    }
+                } else if(tex!=null) {
+                    tex +=line+"\n";
+                } else {
+                    o+=line +"\n";
+                }
+            }
+
             var converter = new showdown.Converter();
-            var html = converter.makeHtml(chunk.content);
+            var html = converter.makeHtml(o);
+            for(var i=0;i<texs.length;i++) {
+                html = html.replace("tex:"  + i+":", "<center>" + texs[i]+"</center>");
+            }
             chunk.div.set(html);
         },
         processPy: async function(chunk) {
@@ -6681,7 +6718,8 @@ function RamaddaNotebookCell(notebook, id, content, props) {
                 var html = "";
                 if (Utils.stringDefined(state.prefix)) html += state.prefix;
                 if (state.result) {
-                    if((typeof state.result) !="object") {
+                    var type = typeof state.result;
+                    if(type !="object" && type!="function") {
                         html += state.result;
                         this.rawOutput += html + "\n";
                     } else {

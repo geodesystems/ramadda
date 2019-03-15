@@ -59,26 +59,33 @@ var Utils = {
         return ramaddaBaseUrl +"/icons/" + icon;
     },
     imports:{},
-    importJS: async function(path,callback,err) {
+    importJS: async function(path,callback,err,noCache) {
         var key = "js:" + path;
-        if(this.imports[key]) return Utils.call(callback);
+        if(!noCache)
+            if(this.imports[key]) return Utils.call(callback);
         try {
             await $.getScript( path).done(()=>{
-                    this.imports[key] = true;
+                    if(!noCache)
+                        this.imports[key] = true;
                     Utils.call(callback);
                 })
                 .fail(err);
         } catch(e) {}
        },
-    importCSS: async function(path,callback,err) {
+    waitOn: async function(obj,callback) {
+        if(window[obj]) return;
+    },
+    importCSS: async function(path,callback,err,noCache) {
         var key = "css:" + path;
-        if(this.imports[key]) return Utils.call(callback);
+        if(!noCache)
+            if(this.imports[key]) return Utils.call(callback);
        try {
         await $.ajax({
                 url: path,
                 dataType: 'text',
                 success: (data) =>{
-                    this.imports[key] = true;
+                    if(!noCache)
+                        this.imports[key] = true;
                     $('<style type="text/css">\n' + data + '</style>').appendTo("head");                    
                     Utils.call(callback);
                 }                  
