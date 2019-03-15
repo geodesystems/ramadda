@@ -486,6 +486,9 @@ function NotebookState(cell,div) {
                 stop: function() {
                 this.stopFlag = true;
             },
+                setGlobal: function(name,value) {
+                this.cell.notebook.addGlobal(name,value);
+            },
                 setEntry: function(name,entryId) {
                 this.cell.notebook.addEntry(name,entryId);
             },
@@ -1130,10 +1133,10 @@ function RamaddaNotebookCell(notebook, id, content, props) {
                     }
                     var url = line;
                     var results = null;
-                    await Utils.importText(url,h=>results=h,(jqxhr, settings, exception)=>error = "Error fetching " + origLine +" " +exception);
+                    await Utils.importText(url,h=>results=h,(jqxhr, settings, err)=>error = "Error fetching " + origLine +" error:" +err.toString());
                     if(results) {
                         if(v) {
-                            window[v] = results;
+                            this.notebook.addGlobal(v, results);
                         } else {
                             blob.div.append(HtmlUtils.pre([],results));
                         }
@@ -1203,8 +1206,12 @@ function RamaddaNotebookCell(notebook, id, content, props) {
                 var cmds = fullLine.split(";");
                 for(var cmdIdx=0;cmdIdx<cmds.length;cmdIdx++) {
                     var line = cmds[cmdIdx].trim();
-                    if(line.startsWith("#") || line.startsWith("//")) continue;
+                    if(line == "" || line.startsWith("#") || line.startsWith("//")) continue;
+                    for(name in this.notebook.globals) {
+                        line = line.replace("${" +name+"}",this.notebook.globals[name]);
+                    }
                     var toks = line.split(" ");
+
                     var command = toks[0].trim();
                     var proc = null;
                     var extra = null;
@@ -1214,8 +1221,7 @@ function RamaddaNotebookCell(notebook, id, content, props) {
                         proc = this.processCommand_help;
                         extra =  "Unknown command: <i>" + command + "</i>";
                     }
-                    var div = new Div();
-                    //                    console.log("line:" + line);
+                    var div = new Div("");
                     commands.push({proc:proc,line:line,toks:toks,extra:extra,div:div});
                     r+=div.set("");
                 }
@@ -1225,6 +1231,9 @@ function RamaddaNotebookCell(notebook, id, content, props) {
             var i = 0;
             for(i=0;i<commands.length;i++) {
                 var cmd = commands[i];
+                if(cmd.extra) {
+                    cmd.div.append(extra);
+                }
                 await cmd.proc.call(_this,cmd.line, cmd.toks,cmd.div, cmd.extra);
             }
         },
@@ -1248,6 +1257,9 @@ function RamaddaNotebookCell(notebook, id, content, props) {
                 for(name in state.entries) {
                     var e = state.entries[name];
                     jsSet+= name +"= state.entries['" + name +"'];\n"
+                }
+                for(name in this.notebook.globals) {
+                    jsSet += name + "= state.getNotebook().globals['" + name+"'];\n";
                 }
                 nbCell = this;
                 nbNotebook = this.notebook;
@@ -1365,7 +1377,7 @@ function RamaddaNotebookCell(notebook, id, content, props) {
             var help = "";
             if (prefix != null) help += prefix;
             help += "<pre>pwd, ls, cd</pre>";
-            return div.set(help);
+            return div.append(help);
         },
         entries: {},
 
@@ -1565,6 +1577,26 @@ function RamaddaNotebookCell(notebook, id, content, props) {
             if(div==null) div = new Div();
             await this.getCurrentEntry(e=>entry=e);
             return this.getEntryHeading(entry, div);
+        },
+        processCommand_set: async function(line, toks,div) {
+            if(div==null) div = new Div();
+            if(toks.length<2) {
+                div.append("Error: usage: set &lt;name&gt; &lt;value&gt;");
+                return;
+            }
+            var name = toks[1];
+            if(toks.length==2) {
+                var v = this.notebook.globals[name];
+                if(v) {
+                    div.append(v);
+                } else {
+                    div.append("Unknown: " + name);
+                }
+            } else {
+                var v = Utils.join(toks," ",2);
+                v = v.replace(/\"/g,"");
+                this.notebook.addGlobal(name,v);
+            }
         },
         processCommand_clearEntries: function(line, toks, div) {
              this.notebook.clearEntries();

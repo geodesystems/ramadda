@@ -95,7 +95,8 @@ var Utils = {
                         Utils.call(callback,data);
                     }                  
                 }).fail(err);
-        } catch(e) {}
+        } catch(e) {
+        }
     },
 
     padLeft: function(s, length, pad) {
