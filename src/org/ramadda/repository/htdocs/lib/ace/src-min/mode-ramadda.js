@@ -1572,6 +1572,15 @@ var RamaddaHighlightRules = function() {
                                   {token : "notebook_tag",
                                           regex : "\\%\\% *[^ ]+.*"
                                           },
+                                  {token : "comment_line",
+                                          regex : "/\\*.*\\*/"
+                                          },
+                                  {token : "comment_line",
+                                          regex : "^ *#.*"
+                                          },
+                                  {token : "comment_line",
+                                          regex : "//.*"
+                                          },
                                   {token : "keyword",
                                           regex : "^(-row.*|-col.*)|(-center)|(-div)|(-inset|-section|-note|-heading|-tabs|-tab|-accordian|-segment).*|((-section|-blurb|-heading) +)"
                                           },

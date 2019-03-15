@@ -276,7 +276,11 @@ ATTR_SHOWLINK, "true", ATTR_INCLUDEICON, "false") + ATTRS_LAYOUT),
                             new WikiTag(WIKI_TAG_DISPLAY,
                                         "Notebook",
                                         ATTR_TYPE, "notebook",
-                                        "#notebookId","notebook1",
+                                        "#runOnLoad","true",
+                                        "#showConsole","true",
+                                        "#layout","horizontal|vertical",
+                                        "#displayMode","true",
+                                        "#notebookId","notebookid",
                                         ATTR_SHOWMENU, "false", 
                                         ATTR_SHOWTITLE, "false"),
                             new WikiTag(WIKI_TAG_DISPLAY,
@@ -3299,7 +3303,7 @@ ATTR_SHOWLINK, "true", ATTR_INCLUDEICON, "false") + ATTRS_LAYOUT),
                 "strokeColor", "fillColor", "fillOpacity", "scrollToZoom",
                 "fill", "selectOnHover", "onSelect", "showDetailsLink",
                 "initialZoom:zoom", "defaultMapLayer:layer", "kmlLayer",
-                "kmlLayerName", "displayDiv"
+                "kmlLayerName", "displayDiv","initialBounds:bounds"
             };
             for (String mapArg : mapArgs) {
                 String key = mapArg;
@@ -5044,7 +5048,7 @@ ATTR_SHOWLINK, "true", ATTR_INCLUDEICON, "false") + ATTRS_LAYOUT),
             getPageHandler().makePopupLink(msg("Property"),
                                            tags1.toString(), buttonClass);
 
-        String tagsButton2 = getPageHandler().makePopupLink(msg("Chart"),
+        String tagsButton2 = getPageHandler().makePopupLink(msg("Displays"),
                                  tags2.toString(), buttonClass);
 
         String addEntry = OutputHandler.getSelect(request, textAreaId,

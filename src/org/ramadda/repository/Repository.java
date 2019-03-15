@@ -3893,9 +3893,15 @@ public class Repository extends RepositoryBase implements RequestHandler,
         //Check for the version in the path and strip it off, e.g.
         // /repository/htdocs_v1/style.css
         //We do this so we can cleanly update new css and js
-        if (path.startsWith(RepositoryUtil.HTDOCS_VERSION_SLASH)) {
+        /*        if (path.startsWith(RepositoryUtil.HTDOCS_VERSION_SLASH)) {
             path = path.substring(
                 RepositoryUtil.HTDOCS_VERSION_SLASH.length());
+                }*/
+        if (path.startsWith("/htdocs_v")) {
+            path = path.substring(9);
+            int index = path.indexOf("/");
+            if(index>=0)
+                path = path.substring(index);
         }
 
         String mimeType =

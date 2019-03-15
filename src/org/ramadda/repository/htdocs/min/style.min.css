@@ -1381,6 +1381,14 @@ a.btn-primary:link, a.btn-primary  {
   display:inline-block;
 }
 
+.ramadda-image-link {
+  display:inline-block;
+}
+
+.ramadda-image-link:hover {
+   cursor:pointer;
+}
+
 .ramadda-link:hover, a:hover {
   color: #000;
   text-decoration: underline;

@@ -119,6 +119,7 @@ function ramaddaMapCheckLayout() {
 function RepositoryMap(mapId, params) {
     ramaddaMapAdd(this);
     if (!params) params = {};
+    //    console.log("params:" + JSON.stringify(params));
     this.mapId = mapId || "map";
     ramaddaMapAdd(this);
     let theMap = this;
@@ -203,7 +204,10 @@ function RepositoryMap(mapId, params) {
     }
     if (params.initialLocation) {
         this.defaultLocation = createLonLat(params.initialLocation[1], params.initialLocation[0]);
-    } else if (Utils.isDefined(params.initialBounds) && params.initialBounds[0] <= 90 && params.initialBounds[0] >= -90) {
+    } else if (Utils.isDefined(params.initialBounds)) {
+        if((typeof params.initialBounds) == "string") {
+            params.initialBounds = params.initialBounds.split(",");
+        }
         this.defaultBounds = createBounds(params.initialBounds[1], params.initialBounds[2], params.initialBounds[3], params.initialBounds[0]);
     }
 
@@ -1625,6 +1629,8 @@ function initMapFunctions(theMap) {
         });
     }
 
+
+
     theMap.searchMarkers = function(text) {
         text = text.trim();
         text = text.toLowerCase();
@@ -2367,6 +2373,12 @@ function initMapFunctions(theMap) {
         }
     }
 
+    theMap.clearMarkers = function() {
+        if(!this.markers) return;
+        var markers = this.getMarkers();
+        this.markers.removeFeatures(markers);
+        this.markers.redraw();
+    }
     theMap.getMarkers = function() {
             if (this.markers == null) return [];
             return this.markers.features;
@@ -2687,8 +2699,13 @@ function initMapFunctions(theMap) {
     }
 
 
-    // bounds are in lat/lon
-    theMap.centerOnMarkers = function(dfltBounds, force) {
+    theMap.centerOnMarkerLayer = function() {
+        this.centerOnMarkers(null, false, true);
+    }
+
+
+    //bounds are in lat/lon
+    theMap.centerOnMarkers = function(dfltBounds, force, justMarkerLayer) {
         this.centerOnMarkersCalled = true;
         this.centerOnMarkersForce = force;
         now = Date.now();
@@ -2710,6 +2727,7 @@ function initMapFunctions(theMap) {
                 var dataBounds = this.markers.getDataExtent();
                 bounds = this.transformProjBounds(dataBounds);
             }
+            if(!justMarkerLayer) {
             if (this.lines) {
                 var dataBounds = this.lines.getDataExtent();
                 var fromLine = this.transformProjBounds(dataBounds);
@@ -2730,6 +2748,7 @@ function initMapFunctions(theMap) {
                     else
                         bounds = latlon;
                 }
+            }
             }
         }
 
