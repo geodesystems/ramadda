@@ -6271,8 +6271,8 @@ function RamaddaNotebookCell(notebook, id, content, props) {
             value = value.replace(/{help}/g, help);
             value = this.notebook.convertInput(value);
             var type = "wiki";
-            var blobs = [];
-            var blob = "";
+            var chunks = [];
+            var chunk = "";
             var commands = value.split("\n");
             var ok = true;
             for (var i = 0; i < commands.length; i++) {
@@ -6291,32 +6291,32 @@ function RamaddaNotebookCell(notebook, id, content, props) {
                         newType = rest.substring(0,index).trim();
                         rest = rest.substring(index);
                     }
-                    if(blob!="") {
-                        blobs.push({blob:blob,type:type,div:new Div(),ok:true});
+                    if(chunk!="") {
+                        chunks.push({content:chunk,type:type,div:new Div(),ok:true});
                     }
-                    blob = rest;
-                    if (blob != "") blob += "\n";
+                    chunk = rest;
+                    if (chunk != "") chunk += "\n";
                     type = newType;
                     continue;
                 }
-                blob = blob + command + "\n";
+                chunk = chunk + command + "\n";
             }
 
-            if(blob!="") {
-                blobs.push({blob:blob,type:type,div:new Div(),ok:true});
+            if(chunk!="") {
+                chunks.push({content:chunk,type:type,div:new Div(),ok:true});
             }
 
             
             var result = "";
-            for(var i=0;i<blobs.length;i++) {
-                result+=blobs[i].div.toString()+"\n";
+            for(var i=0;i<chunks.length;i++) {
+                result+=chunks[i].div.toString()+"\n";
             }
             this.output.html(result);
             this.rawOutput = "";
-            for(var i=0;i<blobs.length;i++) {
-                var blob = blobs[i];
-                await this.processBlob(blob);
-                if(!blob.ok) {
+            for(var i=0;i<chunks.length;i++) {
+                var chunk = chunks[i];
+                await this.processChunk(chunk);
+                if(!chunk.ok) {
                     return false;
                 }
             }
@@ -6345,21 +6345,21 @@ function RamaddaNotebookCell(notebook, id, content, props) {
             this.output.html("");
             this.outputHtml = "";
         },
-        processHtml: async function(blob) {
-            this.rawOutput+=blob.blob+"\n";
-            blob.div.set(blob.blob);
+        processHtml: async function(chunk) {
+            this.rawOutput+=chunk.content+"\n";
+            chunk.div.set(chunk.content);
         },
-        processCss: async function(blob) {
-            var css = HtmlUtils.tag("style", ["type","text/css"], blob.blob);
+        processCss: async function(chunk) {
+            var css = HtmlUtils.tag("style", ["type","text/css"], chunk.content);
             this.rawOutput+=css+"\n";
-            blob.div.set(css);
+            chunk.div.set(css);
         },
-        handleError: function(blob, error) {
-            blob.ok = false;
-            blob.div.append(error);
+        handleError: function(chunk, error) {
+            chunk.ok = false;
+            chunk.div.append(error);
         },
-        processFetch: async function(blob) {
-            var lines = blob.blob.split("\n");
+        processFetch: async function(chunk) {
+            var lines = chunk.content.split("\n");
             for (var i = 0; i < lines.length; i++) {
                 var line = lines[i].trim();
                 if (line == "") continue;
@@ -6377,7 +6377,7 @@ function RamaddaNotebookCell(notebook, id, content, props) {
                                           (jqxhr, settings, exception)=>error = "Error fetching " + origLine +" " +exception);
                 } else if(line.startsWith("html:")) {
                     var url = line.substring(5).trim();
-                    await Utils.importText(url,h=>blob.div.append(h),(jqxhr, settings, exception)=>error = "Error fetching " + origLine +" " +exception);
+                    await Utils.importText(url,h=>chunk.div.append(h),(jqxhr, settings, exception)=>error = "Error fetching " + origLine +" " +exception);
                 } else if(line.startsWith("text:")) {
                     line = line.substring(5).trim();
                     var v = null;
@@ -6401,26 +6401,26 @@ function RamaddaNotebookCell(notebook, id, content, props) {
                         if(v) {
                             this.notebook.addGlobal(v, results);
                         } else {
-                            blob.div.append(HtmlUtils.pre([],results));
+                            chunk.div.append(HtmlUtils.pre([],results));
                         }
                     }
                 } else {
-                    blob.div.append("Unknown fetch:" + line);
+                    chunk.div.append("Unknown fetch:" + line);
                 }
                 if(error) {
-                    this.handleError(blob, error);
+                    this.handleError(chunk, error);
                     return;
                 }
             }
         },
-        processMd: async function(blob) {
+        processMd: async function(chunk) {
             await Utils.importJS(ramaddaBaseUrl + "/lib/showdown.min.js");
-            this.rawOutput+=blob.blob+"\n";
+            this.rawOutput+=chunk.content+"\n";
             var converter = new showdown.Converter();
-            var html      = converter.makeHtml(blob.blob);
-            blob.div.set(html);
+            var html      = converter.makeHtml(chunk.content);
+            chunk.div.set(html);
         },
-        processPy: async function(blob) {
+        processPy: async function(chunk) {
             await Utils.importJS(ramaddaBaseUrl+"/lib/skulpt.min.js");
             await Utils.importJS(ramaddaBaseUrl+"/lib/skulpt-stdlib.js");
             var output = "";
@@ -6433,7 +6433,7 @@ function RamaddaNotebookCell(notebook, id, content, props) {
             Sk.configure({output:outf, read:skulptRead}); 
             //            (Sk.TurtleGraphics || (Sk.TurtleGraphics = {})).target = 'mycanvas';
             var myPromise = Sk.misceval.asyncToPromise(function() {
-                    return Sk.importMainWithBody("<stdin>", false, blob.blob, true);
+                    return Sk.importMainWithBody("<stdin>", false, chunk.content, true);
                 });
             myPromise.then(function(mod) {
                     //                    console.log('success');
@@ -6442,10 +6442,10 @@ function RamaddaNotebookCell(notebook, id, content, props) {
                     output+="Error:" + err.toString();
                     console.log(err.toString());
                 });
-        blob.div.set(output);
+        chunk.div.set(output);
         },
-        processWiki: async function(blob) {
-            this.rawOutput+=blob.blob+"\n";
+        processWiki: async function(chunk) {
+            this.rawOutput+=chunk.content+"\n";
             var id = this.notebook.getProperty("entryId", "");
             await this.getCurrentEntry(e=>entry=e);
             if (entry) id = entry.getId();
@@ -6453,15 +6453,15 @@ function RamaddaNotebookCell(notebook, id, content, props) {
             let divId = HtmlUtils.getUniqueId();
             var wikiCallback = function(html) {
                 var h = HtmlUtils.div(["id", divId,"style"], html);
-                blob.div.set(h);
+                chunk.div.set(h);
             }
-            var wiki =  "{{group showMenu=false}}\n" + blob.blob;
-            await GuiUtils.loadHtml(ramaddaBaseUrl + "/wikify?doImports=false&entryid=" + id + "&text=" + encodeURIComponent(blob.blob),
+            var wiki =  "{{group showMenu=false}}\n" + chunk.content;
+            await GuiUtils.loadHtml(ramaddaBaseUrl + "/wikify?doImports=false&entryid=" + id + "&text=" + encodeURIComponent(chunk.content),
                              wikiCallback);
         },
-        processSh: async function(blob) {
+        processSh: async function(chunk) {
             var r = "";
-            var lines = blob.blob.split("\n");
+            var lines = chunk.content.split("\n");
             var commands = [];
             for (var i = 0; i < lines.length; i++) {
                 var fullLine = lines[i].trim();
@@ -6470,9 +6470,6 @@ function RamaddaNotebookCell(notebook, id, content, props) {
                 for(var cmdIdx=0;cmdIdx<cmds.length;cmdIdx++) {
                     var line = cmds[cmdIdx].trim();
                     if(line == "" || line.startsWith("#") || line.startsWith("//")) continue;
-                    for(name in this.notebook.globals) {
-                        line = line.replace("${" +name+"}",this.notebook.globals[name]);
-                    }
                     var toks = line.split(" ");
 
                     var command = toks[0].trim();
@@ -6490,7 +6487,7 @@ function RamaddaNotebookCell(notebook, id, content, props) {
                 }
             }
             let _this = this;
-            blob.div.set(r);
+            chunk.div.set(r);
             var i = 0;
             for(i=0;i<commands.length;i++) {
                 var cmd = commands[i];
@@ -6500,10 +6497,10 @@ function RamaddaNotebookCell(notebook, id, content, props) {
                 await cmd.proc.call(_this,cmd.line, cmd.toks,cmd.div, cmd.extra);
             }
         },
-         processJs: async function(blob) {
+         processJs: async function(chunk) {
             try {
                 await this.getCurrentEntry(e=>{current=e});
-                var state = new NotebookState(this,blob.div);
+                var state = new NotebookState(this,chunk.div);
                 notebookStates[state.id] = state;
                 var notebookEntries = this.notebook.getCurrentEntries();
                 for(name in notebookEntries) {
@@ -6526,7 +6523,7 @@ function RamaddaNotebookCell(notebook, id, content, props) {
                 }
                 nbCell = this;
                 nbNotebook = this.notebook;
-                var js =  blob.blob.trim();
+                var js =  chunk.content.trim();
                 var lines = js.split("\n");
                 if(lines.length==1 && !js.startsWith("return ") && !js.startsWith("{")) {
                     js = "return " + js;
@@ -6538,7 +6535,7 @@ function RamaddaNotebookCell(notebook, id, content, props) {
                 eval(js);
                 await nbFunc().then(r=>{state.result=r;});
                 if (state.getStop()) {
-                    blob.ok = false;
+                    chunk.ok = false;
                 }
                 var html = "";
                 if (Utils.stringDefined(state.prefix)) html +=state.prefix;
@@ -6546,37 +6543,40 @@ function RamaddaNotebookCell(notebook, id, content, props) {
                     html +=state.result;
                     this.rawOutput+=html+"\n";
                 }
-                blob.div.append(html);
+                chunk.div.append(html);
             } catch (e) {
-                blob.ok = false;
-                var lines = blob.blob.split("\n");
+                chunk.ok = false;
+                var lines = chunk.content.split("\n");
                 var line = lines[e.lineNumber - 2];
-                blob.div.append("Error: " + e.message + "<br>" + HtmlUtils.span(["class", "display-notebook-error"], " &gt; " + line));
+                chunk.div.append("Error: " + e.message + "<br>" + HtmlUtils.span(["class", "display-notebook-error"], " &gt; " + line));
                 console.log(e.stack);
             }
             notebookStates[state.id] = null;
         },
-         processBlob: async function(blob) {
-            if (blob.type == "html") {
-                await  this.processHtml(blob);
-            } else if (blob.type == "wiki") {
-                await this.processWiki(blob);
-            } else if (blob.type == "css") {
-                await this.processCss(blob);
-            } else if (blob.type == "fetch") {
-                await this.processFetch(blob);
-            } else if (blob.type == "raw") {
-                this.rawOutput+=blob.blob+"\n";
-            } else if (blob.type == "js") {
-                await this.processJs(blob);
-            } else if (blob.type == "sh") {
-                await this.processSh(blob);
-            } else if (blob.type == "md") {
-                await this.processMd(blob);
-            } else if (blob.type == "py") {
-                await this.processPy(blob);
+         processChunk: async function(chunk) {
+            for(name in this.notebook.globals) {
+                chunk.content = chunk.content.replace("${" +name+"}",this.notebook.globals[name]);
+            }
+            if (chunk.type == "html") {
+                await  this.processHtml(chunk);
+            } else if (chunk.type == "wiki") {
+                await this.processWiki(chunk);
+            } else if (chunk.type == "css") {
+                await this.processCss(chunk);
+            } else if (chunk.type == "fetch") {
+                await this.processFetch(chunk);
+            } else if (chunk.type == "raw") {
+                this.rawOutput+=chunk.content+"\n";
+            } else if (chunk.type == "js") {
+                await this.processJs(chunk);
+            } else if (chunk.type == "sh") {
+                await this.processSh(chunk);
+            } else if (chunk.type == "md") {
+                await this.processMd(chunk);
+            } else if (chunk.type == "py") {
+                await this.processPy(chunk);
             } else {
-                blob.div.set("Unknown type:" + blob.type);
+                chunk.div.set("Unknown type:" + chunk.type);
             }
         },
 
