@@ -1333,7 +1333,7 @@ function RamaddaNotebookCell(notebook, id, content, props) {
             var converter = new showdown.Converter();
             var html = converter.makeHtml(o);
             for(var i=0;i<texs.length;i++) {
-                html = html.replace("tex:"  + i+":", "<center>" + texs[i]+"</center>");
+                html = html.replace("tex:"  + i+":", texs[i]);
             }
             chunk.div.set(html);
         },
