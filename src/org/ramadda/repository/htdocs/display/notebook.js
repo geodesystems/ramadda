@@ -30,7 +30,7 @@ function RamaddaNotebookDisplay(displayManager, id, properties) {
             runOnLoad: this.getProperty("runOnLoad",true),
                 displayMode: this.getProperty("displayMode",false),
                 showConsole:this.getProperty("showConsole",true),
-                layout: this.getProperty("displayMode","horizontal"),
+                layout: this.getProperty("layout","horizontal"),
                 columns: this.getProperty("columns",1),
                 });
 
@@ -878,7 +878,7 @@ function RamaddaNotebookCell(notebook, id, content, props) {
             var cols = this.notebook.columns;
             var colId = _this.getDomId(ID_LAYOUT_COLUMNS);
             menu += "<b>Layout:</b> ";
-            menu += HtmlUtils.checkbox(_this.getDomId(ID_LAYOUT_TYPE), [], _this.notebook.layout == "horizontal") + " Side by side" + "<br>";
+            menu += HtmlUtils.checkbox(_this.getDomId(ID_LAYOUT_TYPE), [], _this.notebook.layout == "horizontal") + " Horizontal" + "<br>";
             //            menu += "Columns: ";
             //            menu += HtmlUtils.input(colId, this.notebook.columns, ["size", "3", "id", _this.getDomId(ID_LAYOUT_COLUMNS)]);
             menu += line;

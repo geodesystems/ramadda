@@ -1570,7 +1570,7 @@ var RamaddaHighlightRules = function() {
                                           regex : "\\:(br ?|p ?|note(-[^ ]+)*|blurb(-[^ ]+)*|heading(-[^ ]+)*)"
                                           },
                                   {token : "notebook_tag",
-                                          regex : "\\%\\% *[^ ]+.*"
+                                          regex : "^ *\\%\\% *[^ ]+.*"
                                           },
                                   {token : "comment_line",
                                           regex : "/\\*.*\\*/"
