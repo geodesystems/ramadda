@@ -1398,9 +1398,23 @@ public class WikiUtil {
 
 
 
+            if (tline.equals("+centerdiv")) {
+                buff.append(HtmlUtils.open(HtmlUtils.TAG_DIV,
+                                           HtmlUtils.style("text-align:center;")));
+                buff.append(HtmlUtils.open(HtmlUtils.TAG_DIV,
+                                           HtmlUtils.style("text-align:left;")));
+                continue;
+            }
+
+            if (tline.equals("-centerdiv")) {
+                buff.append(HtmlUtils.close(HtmlUtils.TAG_DIV));
+                buff.append(HtmlUtils.close(HtmlUtils.TAG_DIV));
+                continue;
+            }
+
+
             if (tline.equals("+center")) {
                 buff.append("<center>");
-
                 continue;
             }
 
