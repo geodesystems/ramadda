@@ -1194,8 +1194,14 @@ public class WikiUtil {
 
 
             if (tline.startsWith("+gridboxes")) {
+                tline = tline.substring(1);
+                List<String> toks      = StringUtil.splitUpTo(tline, " ", 2);
+                List<String> toks2     = StringUtil.splitUpTo(toks.get(0), "-", 2);
+                String clazz = "";
+                if(toks2.size()>1) 
+                    clazz = "ramadda-gridboxes-" + toks2.get(1);
                 buff.append(HtmlUtils.open(HtmlUtils.TAG_DIV,
-                                           HtmlUtils.cssClass("ramadda-gridboxes")));
+                                           HtmlUtils.cssClass("ramadda-gridboxes " + clazz)));
                 continue;
             }
 

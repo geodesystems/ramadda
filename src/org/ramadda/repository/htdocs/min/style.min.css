@@ -241,9 +241,28 @@ color:#000;
 
 .ramadda-gridboxes {
     display: inline-grid;
-    grid-template-columns: 1fr 1fr 1fr;
     column-gap: 20px;
     row-gap: 20px;
+}
+
+.ramadda-gridboxes-1 {
+    grid-template-columns: 1fr;
+}
+
+.ramadda-gridboxes-2 {
+    grid-template-columns: 1fr 1fr;
+}
+
+.ramadda-gridboxes-3 {
+    grid-template-columns: 1fr 1fr 1fr;
+}
+
+.ramadda-gridboxes-4 {
+    grid-template-columns: 1fr 1fr 1fr 1fr;
+}
+
+.ramadda-gridboxes-5 {
+    grid-template-columns: 1fr 1fr 1fr 1fr 1fr;
 }
 
 

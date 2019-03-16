@@ -368,12 +368,24 @@ This by default gives a 20px left and right margin. To change this you can add a
 
 
 [ug::subsubheading {Grid Boxes} gridboxes]
-To make a gridded box layout like this:
+To make a gridded box layout like this use  the +gridboxes/+gridbox tags.
 [ht::cimg images/gridbox.png {} {border=0}]
 
-Use this wiki text:
+These take the form of:
 <pre>
-+gridboxes
++gridboxes-&lt;number of columns&gt;
++gridbox Header 1
+contents
+-gridbox
++gridbox Header 2
+contents
+-gridbox
+-gridboxes
+</pre>
+
+For example:
+<pre>
++gridboxes-3
 +gridbox Header 1
 Hello there
 <br>
