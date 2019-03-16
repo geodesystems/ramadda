@@ -279,7 +279,7 @@ color:#000;
     font-size: 21px;
     font-weight: 300;
     margin: 0px 0px 5px;
-    padding: 10px 10px 5px 15px;
+    padding: 10px 10px 5px 10px;
 }
 
 
@@ -290,10 +290,10 @@ color:#000;
 }
 
 .ramadda-grid-box {
-  margin-top:10px;
-  margin-bottom:10px;
+  margin-top:5px;
+  margin-bottom:5px;
   padding:10px;
-  padding-bottom:10px;
+  padding-bottom:6px;
   padding-top:6px;
   border : 1px #ddd solid;
   background: #FbFbFb;
