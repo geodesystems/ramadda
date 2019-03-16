@@ -1402,7 +1402,7 @@ public class WikiUtil {
                 buff.append(HtmlUtils.open(HtmlUtils.TAG_DIV,
                                            HtmlUtils.style("text-align:center;")));
                 buff.append(HtmlUtils.open(HtmlUtils.TAG_DIV,
-                                           HtmlUtils.style("text-align:left;")));
+                                           HtmlUtils.style("display:inline-block;text-align:left;")));
                 continue;
             }
 
