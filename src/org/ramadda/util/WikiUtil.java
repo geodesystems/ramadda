@@ -1434,6 +1434,13 @@ public class WikiUtil {
             }
 
 
+            if (tline.startsWith(":link")) {
+                List<String> toks  = StringUtil.splitUpTo(tline, " ", 3);
+                String label = toks.size()>2?toks.get(2):"link";
+                buff.append(HtmlUtils.href(toks.get(1),label));
+                continue;
+            }
+
             if (tline.startsWith(":heading") || tline.startsWith(":block")
                     || tline.startsWith(":note") || tline.startsWith(":box")
                     || tline.startsWith(":blurb")
