@@ -1269,6 +1269,7 @@ function RamaddaNotebookCell(notebook, id, content, props) {
                     url = line.substring(5).trim();
                     await Utils.importText(url, h => chunk.div.append(h), (jqxhr, settings, exception) => error = "Error fetching " + origLine + " " + exception);
                 } else if (line.startsWith("text:") || line.startsWith("json:")) {
+                    var isJson = line.startsWith("json:");
                     line = line.substring(5).trim();
                     var v = null;
                     //check if we have a var
@@ -1289,17 +1290,15 @@ function RamaddaNotebookCell(notebook, id, content, props) {
                     var results = null;
                     await Utils.importText(url, h => results = h, (jqxhr, settings, err) => error = "Error fetching " + origLine + " error:" + err?err.toString():"");
                     if (results) {
-                        console.log("got results");
-                        if(line.startsWith("json:")) {
-                            console.log("turning it into json");
+                        if(isJson) {
                             results = JSON.parse(results);
                         }
                         if (v) {
                             console.log("adding global:" + (typeof results));
                             this.notebook.addGlobal(v, results);
                         } else {
-                            if(line.startsWith("json:")) {
-                                results = JSON.stringify(results,null,4);
+                            if(isJson) {
+                                results = JSON.stringify(results,null,2);
                             }
                             chunk.div.append(HtmlUtils.pre(["style","max-width:100%;overflow-x:auto;"], results));
                         }
