@@ -103,9 +103,9 @@ var Utils = {
                     }                  
                 }).fail(err);
         } catch(e) {
+            Utils.call(err,e);
         }
     },
-
     padLeft: function(s, length, pad) {
         s = "" + s;
         if (!pad) pad = " ";

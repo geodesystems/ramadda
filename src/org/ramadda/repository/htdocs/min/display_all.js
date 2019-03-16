@@ -5263,6 +5263,7 @@ function RamaddaNotebookDisplay(displayManager, id, properties) {
     var ID_INPUTS = "inputs";
     var ID_OUTPUTS = "outputs";
     var ID_CONSOLE = "console";
+    var ID_CONSOLE_CONTAINER = "consolecontainer";
     var ID_CONSOLE_OUTPUT = "consoleout";
     var ID_CELL = "cell";
     var ID_MENU = "menu";
@@ -5300,6 +5301,12 @@ function RamaddaNotebookDisplay(displayManager, id, properties) {
             if (!this.fetchedNotebook) {
                 if (!this.fetchingNotebook) {
                     this.fetchingNotebook = true;
+                    /*                    await Utils.importJS("https://alpha.iodide.app/pyodide-0.8.2/pyodide.js");
+                    languagePluginLoader.then(() => {
+                            // pyodide is now ready to use...
+                            console.log(pyodide.runPython('import sys\nsys.version'));
+                        },()=>console.log("error"));
+                    */
                     await Utils.importJS(ramaddaBaseHtdocs + "/lib/ace/src-min/ace.js");
                     await Utils.importJS(ramaddaBaseUrl + "/lib/showdown.min.js"); 
                     var imports = "<link rel='preload' href='https://cdn.jsdelivr.net/npm/katex@0.10.1/dist/fonts/KaTeX_Main-Regular.woff2' as='font' type='font/woff2' crossorigin='anonymous'>\n<link rel='preload' href='https://cdn.jsdelivr.net/npm/katex@0.10.1/dist/fonts/KaTeX_Math-Italic.woff2' as='font' type='font/woff2' crossorigin='anonymous'>\n<link rel='preload' href='https://cdn.jsdelivr.net/npm/katex@0.10.1/dist/fonts/KaTeX_Size2-Regular.woff2' as='font' type='font/woff2' crossorigin='anonymous'>\n<link rel='preload' href='https://cdn.jsdelivr.net/npm/katex@0.10.1/dist/fonts/KaTeX_Size4-Regular.woff2' as='font' type='font/woff2' crossorigin='anonymous'/>\n<link rel='stylesheet' href='https://fonts.googleapis.com/css?family=Lato:300,400,700,700i'>\n<link rel='stylesheet' href='https://cdn.jsdelivr.net/npm/katex@0.10.1/dist/katex.min.css' crossorigin='anonymous'>\n<link rel='stylesheet' href='static/index.css'><script defer src='https://cdn.jsdelivr.net/npm/katex@0.10.1/dist/katex.min.js' crossorigin='anonymous'></script>";
@@ -5506,18 +5513,17 @@ function RamaddaNotebookDisplay(displayManager, id, properties) {
 
         makeCellLayout: function() {
             var html = "";
-            var con = this.makeConsole();
+            var consoleContainer = HtmlUtils.div(["id",this.getDomId(ID_CONSOLE_CONTAINER)]);
             if (this.showInput() && this.layout == "horizontal") {
                 var left = HtmlUtils.div(["id", this.getDomId(ID_INPUTS)]);
                 var right = HtmlUtils.div(["id", this.getDomId(ID_OUTPUTS)]);
                 var center = HtmlUtils.div([], "");
-                left +=con;
+                left +=consoleContainer;
                 html = "<table width=100%><tr valign=top><td width=50%>" + left + "</td><td style='border-left:1px #ccc solid;' width=1>" + center + "</td><td width=49%>" + right + "</td></tr></table>";
             } else {
-                this.jq(ID_CELLS_BOTTOM).html(con);
+                this.jq(ID_CELLS_BOTTOM).html(consoleContainer);
             }
             this.jq(ID_CELLS).html(html);
-            this.initConsole();
         },
          log:function(msg, type, from,div) {
                 var icon = "";
@@ -5546,8 +5552,10 @@ function RamaddaNotebookDisplay(displayManager, id, properties) {
                                          "</td></tr></table>";
                 var item =  HtmlUtils.div(["class",clazz],html);
                 this.console.append(item);
-                var height = this.console.height();
-                this.console.scrollTop(200);
+                //200 is defined in display.css
+                var height = this.console.prop('scrollHeight');
+                if(height>200)
+                    this.console.scrollTop(height-200);
         },
         layoutCells: function() {
             for (var i = 0; i < this.cells.length; i++) {
@@ -5597,6 +5605,8 @@ function RamaddaNotebookDisplay(displayManager, id, properties) {
                 var cell = this.cells[i];
                 cell.createCell();
             };
+            this.jq(ID_CONSOLE_CONTAINER).html(this.makeConsole());
+            this.initConsole();
         },
         addCell: function(content, props, layoutLater) {
             cell = this.createCell(content, props);
@@ -6502,7 +6512,7 @@ function RamaddaNotebookCell(notebook, id, content, props) {
                 } else if (line.startsWith("html:")) {
                     url = line.substring(5).trim();
                     await Utils.importText(url, h => chunk.div.append(h), (jqxhr, settings, exception) => error = "Error fetching " + origLine + " " + exception);
-                } else if (line.startsWith("text:")) {
+                } else if (line.startsWith("text:") || line.startsWith("json:")) {
                     line = line.substring(5).trim();
                     var v = null;
                     //check if we have a var
@@ -6521,12 +6531,18 @@ function RamaddaNotebookCell(notebook, id, content, props) {
                     }
                     url = line;
                     var results = null;
-                    await Utils.importText(url, h => results = h, (jqxhr, settings, err) => error = "Error fetching " + origLine + " error:" + err.toString());
+                    await Utils.importText(url, h => results = h, (jqxhr, settings, err) => error = "Error fetching " + origLine + " error:" + err?err.toString():"");
                     if (results) {
+                        if(line.startsWith("json:")) {
+                            results = JSON.parse(results);
+                        }
                         if (v) {
                             this.notebook.addGlobal(v, results);
                         } else {
-                            chunk.div.append(HtmlUtils.pre([], results));
+                            if(line.startsWith("json:")) {
+                                results = JSON.stringify(results,null,4);
+                            }
+                            chunk.div.append(HtmlUtils.pre(["style","max-width:100%;overflow-x:auto;"], results));
                         }
                     }
                 } else {
@@ -6577,7 +6593,7 @@ function RamaddaNotebookCell(notebook, id, content, props) {
             var converter = new showdown.Converter();
             var html = converter.makeHtml(o);
             for(var i=0;i<texs.length;i++) {
-                html = html.replace("tex:"  + i+":", "<div>" +texs[i]+"</div>");
+                html = html.replace("tex:"  + i+":", texs[i]);
             }
             chunk.div.set(html);
         },
@@ -6667,7 +6683,7 @@ function RamaddaNotebookCell(notebook, id, content, props) {
                 await cmd.proc.call(_this, cmd.line, cmd.toks, cmd.div, cmd.extra);
             }
         },
-        processJs: async function(chunk) {
+         processJs: async function(chunk, global) {
             try {
                 await this.getCurrentEntry(e => {
                     current = e
@@ -6701,10 +6717,10 @@ function RamaddaNotebookCell(notebook, id, content, props) {
                 nbNotebook = this.notebook;
                 var js = chunk.content.trim();
                 var lines = js.split("\n");
+                if(!global) {
                 if (lines.length == 1 && !js.startsWith("return ") && !js.startsWith("{")) {
                     js = "return " + js;
                 }
-
                 if (lines.length > 1 || js.startsWith("return ") || js.startsWith("{")) {
                     js = "async function nbFunc() {\n" + jsSet + "\n" + js + "\n}";
                 }
@@ -6712,6 +6728,11 @@ function RamaddaNotebookCell(notebook, id, content, props) {
                 await nbFunc().then(r => {
                     state.result = r;
                 });
+                } else {
+                    state.result = eval(js);
+                    console.log("r: "+state.result);
+
+                }
                 if (state.getStop()) {
                     chunk.ok = false;
                 }
@@ -6751,6 +6772,8 @@ function RamaddaNotebookCell(notebook, id, content, props) {
                 this.rawOutput += chunk.content + "\n";
             } else if (chunk.type == "js") {
                 await this.processJs(chunk);
+            } else if (chunk.type == "jsglobal") {
+                await this.processJs(chunk,true);
             } else if (chunk.type == "sh") {
                 await this.processSh(chunk);
             } else if (chunk.type == "md") {
