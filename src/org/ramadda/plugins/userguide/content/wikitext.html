@@ -367,6 +367,36 @@ This by default gives a 20px left and right margin. To change this you can add a
 
 
 
+[ug::subsubheading {Grid Boxes} gridboxes]
+To make a gridded box layout like this:
+[ht::cimg images/gridbox.png {} {border=0}]
+
+Use this wiki text:
+<pre>
++gridboxes
++gridbox Header 1
+Hello there
+<br>
+How are you
+-gridbox
++gridbox
+Hello there
+<br>
+How are you
+-gridbox
++gridbox Header 3
+Hello there
+<br>
+How are you
+-gridbox
++gridbox Header 4
+Line 1
+:br 
+Line 2
+-gridbox
+-gridboxes
+</pre>
+
 
 
 [ug::subsubheading {Scrollable Tables} tables]

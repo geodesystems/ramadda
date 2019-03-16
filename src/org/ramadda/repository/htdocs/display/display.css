@@ -1290,6 +1290,10 @@ color:rgb(63, 127, 95);
 color:#A8D3F4;
 }
 
+.ramadda-gridbox-contents a {
+    color: var(--element-color);
+}
+
 .display-notebook-error  {
  color:red;
 }

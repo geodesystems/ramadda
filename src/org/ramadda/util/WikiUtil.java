@@ -1193,6 +1193,39 @@ public class WikiUtil {
 
 
 
+            if (tline.startsWith("+gridboxes")) {
+                buff.append(HtmlUtils.open(HtmlUtils.TAG_DIV,
+                                           HtmlUtils.cssClass("ramadda-gridboxes")));
+                continue;
+            }
+
+
+            if (tline.startsWith("-gridboxes")) {
+                buff.append(HtmlUtils.close(HtmlUtils.TAG_DIV));
+                continue;
+            }
+
+            if (tline.startsWith("+gridbox")) {
+                List<String> toks      = StringUtil.splitUpTo(tline, " ", 2);
+                buff.append(HtmlUtils.open(HtmlUtils.TAG_DIV,
+                                           HtmlUtils.cssClass("ramadda-gridbox")));
+                if(toks.size()>1) {
+                    buff.append(HtmlUtils.tag(HtmlUtils.TAG_DIV,
+                                              HtmlUtils.cssClass("ramadda-gridbox-header"),toks.get(1)));
+                }
+                buff.append(HtmlUtils.open(HtmlUtils.TAG_DIV,
+                                           HtmlUtils.cssClass("ramadda-gridbox-contents")));
+
+                continue;
+            }
+
+
+            if (tline.startsWith("-gridbox")) {
+                buff.append(HtmlUtils.close(HtmlUtils.TAG_DIV));
+                buff.append(HtmlUtils.close(HtmlUtils.TAG_DIV));
+                continue;
+            }
+
             if (tline.startsWith("+section")) {
 
                 List<String> toks      = StringUtil.splitUpTo(tline, " ", 2);

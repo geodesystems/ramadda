@@ -42,6 +42,8 @@ as well as special  RAMADDA wiki tags that allow for page payout, displaying map
 </a>
 <li> <a href='#inset'><a href="#inset">Inset</a>
 </a>
+<li> <a href='#gridboxes'><a href="#gridboxes">Grid Boxes</a>
+</a>
 <li> <a href='#tables'><a href="#tables">Scrollable Tables</a>
 </a>
 <li> <a href='#gridlayout'><a href="#gridlayout">Grid Layout</a>
@@ -443,6 +445,38 @@ This by default gives a 20px left and right margin. To change this you can add a
 
 
 
+
+<a name="gridboxes"></a>
+<div class="ramadda-help-subsubheading"><a href="#gridboxes">Grid Boxes</a>
+</div> 
+To make a gridded box layout like this:
+<div class="cimg"><a href="images/gridbox.png"><img  src="images/gridbox.png" border=0 alt="images/gridbox.png" ></a></div>
+
+Use this wiki text:
+<pre>
++gridboxes
++gridbox Header 1
+Hello there
+<br>
+How are you
+-gridbox
++gridbox
+Hello there
+<br>
+How are you
+-gridbox
++gridbox Header 3
+Hello there
+<br>
+How are you
+-gridbox
++gridbox Header 4
+Line 1
+:br 
+Line 2
+-gridbox
+-gridboxes
+</pre>
 
 
 
