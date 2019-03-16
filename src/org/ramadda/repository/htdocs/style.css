@@ -242,10 +242,8 @@ color:#000;
 .ramadda-gridboxes {
     display: grid;
     grid-template-columns: 1fr 1fr 1fr;
-    column-gap: 30px;
-    row-gap: 30px;
-    margin-top: 15px;
-    margin-bottom: 30px;
+    column-gap: 20px;
+    row-gap: 20px;
 }
 
 
@@ -260,6 +258,8 @@ color:#000;
     font-size: 14px;
     font-weight: 400;
     line-height: 20px;
+    padding:10px;
+    text-align:left;
 }
 
 .ramadda-gridbox:hover {
@@ -272,14 +272,12 @@ color:#000;
 }
 
 .ramadda-gridbox-contents {
-    padding: 5px 15px 15px;
 }
 
 .ramadda-gridbox-header {
     font-size: 21px;
     font-weight: 300;
-    margin: 0px 0px 5px;
-    padding: 10px 10px 5px 10px;
+    margin-bottom: 5px;
 }
 
 
