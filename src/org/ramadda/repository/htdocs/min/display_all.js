@@ -6533,10 +6533,13 @@ function RamaddaNotebookCell(notebook, id, content, props) {
                     var results = null;
                     await Utils.importText(url, h => results = h, (jqxhr, settings, err) => error = "Error fetching " + origLine + " error:" + err?err.toString():"");
                     if (results) {
+                        console.log("got results");
                         if(line.startsWith("json:")) {
+                            console.log("turning it into json");
                             results = JSON.parse(results);
                         }
                         if (v) {
+                            console.log("adding global:" + (typeof results));
                             this.notebook.addGlobal(v, results);
                         } else {
                             if(line.startsWith("json:")) {
