@@ -240,7 +240,7 @@ color:#000;
 
 
 .ramadda-gridboxes {
-    display: grid;
+    display: inline-grid;
     grid-template-columns: 1fr 1fr 1fr;
     column-gap: 20px;
     row-gap: 20px;
@@ -259,6 +259,8 @@ color:#000;
     font-weight: 400;
     line-height: 20px;
     padding:10px;
+    padding-left:15px;
+    padding-right:15px;
     text-align:left;
 }
 
