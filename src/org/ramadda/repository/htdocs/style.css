@@ -267,6 +267,17 @@ color:#000;
   box-shadow: 2px 2px 2px rgba(0, 0, 0, 0.2);
 }
 
+.ramadda-gridbox ul {
+   margin:0px;
+   padding: 0px;
+}
+
+.ramadda-gridbox li {
+   margin:0px;
+   margin-left:15px;
+   padding: 0px;
+}
+
 .ramadda-gridbox-contents a {
     color: var(--element-color);
 }
