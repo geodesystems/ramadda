@@ -949,7 +949,14 @@ var HtmlUtils = {
             $("#" + info.hidden).val(info.editor.getValue());
         }
     },
-    initAceEditor: function(formId, id, hidden) {
+    initAceEditor: function(formId, id, hidden,argOptions) {
+        var options = {
+            autoScrollEditorIntoView: true,
+            copyWithEmptySelection: true,
+        };
+        if(argOptions)
+            $.extend(options, argOptions);
+
         if (!this.aceEditors) {
             this.aceEditors = {};
         }
@@ -961,10 +968,7 @@ var HtmlUtils = {
         info.editor.setKeyboardHandler("emacs");
         info.editor.setShowPrintMargin(false);
         info.editor.getSession().setUseWrapMode(true);
-        info.editor.setOptions({
-            autoScrollEditorIntoView: true,
-            copyWithEmptySelection: true,
-        });
+        info.editor.setOptions(options);
         info.editor.session.setMode("ace/mode/ramadda");
         return info.editor;
     },

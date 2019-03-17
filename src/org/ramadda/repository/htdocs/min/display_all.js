@@ -5263,6 +5263,7 @@ function RamaddaNotebookDisplay(displayManager, id, properties) {
     var ID_INPUTS = "inputs";
     var ID_OUTPUTS = "outputs";
     var ID_CONSOLE = "console";
+    var ID_CONSOLE_TOOLBAR = "consoletoolbar";
     var ID_CONSOLE_CONTAINER = "consolecontainer";
     var ID_CONSOLE_OUTPUT = "consoleout";
     var ID_CELL = "cell";
@@ -5275,6 +5276,7 @@ function RamaddaNotebookDisplay(displayManager, id, properties) {
             runOnLoad: this.getProperty("runOnLoad",true),
                 displayMode: this.getProperty("displayMode",false),
                 showConsole:this.getProperty("showConsole",true),
+                consoleHidden:false,
                 layout: this.getProperty("layout","horizontal"),
                 columns: this.getProperty("columns",1),
                 });
@@ -5373,8 +5375,8 @@ function RamaddaNotebookDisplay(displayManager, id, properties) {
             if (!Utils.isDefined(this.properties.displayMode) && Utils.isDefined(data.displayMode)) {
                 this.displayMode = data.displayMode;
             }
-            if (!Utils.isDefined(this.properties.showConsole) && Utils.isDefined(data.showConsole)) {
-                this.showConsole = data.showConsole;
+            if (Utils.isDefined(data.consoleHidden)) {
+                this.consoleHidden = data.consoleHidden;
             }
             if (!Utils.isDefined(this.properties.columns) && Utils.isDefined(data.columns)) {
                 this.columns = data.columns;
@@ -5466,6 +5468,7 @@ function RamaddaNotebookDisplay(displayManager, id, properties) {
                 runOnLoad: this.runOnLoad,
                 displayMode: this.displayMode,
                 showConsole: this.showConsole,
+                consoleHidden: this.consoleHidden,
                 layout: this.layout,
                 columns: this.columns,
             };
@@ -5484,13 +5487,26 @@ function RamaddaNotebookDisplay(displayManager, id, properties) {
             }
             let _this =this;
             this.console = this.jq(ID_CONSOLE_OUTPUT);
-            this.jq(ID_CONSOLE).find(".ramadda-image-link").click(function(){
+            if(this.consoleHidden)
+                this.console.hide();
+            this.jq(ID_CONSOLE).find(".ramadda-image-link").click(function(e){
                     var what = $(this).attr("what");
                     if(what == "clear") {
                         _this.console.html("");
                     }
+                    e.stopPropagation();
                 });
 
+            this.consoleToolbar = this.jq(ID_CONSOLE_TOOLBAR);
+            this.consoleToolbar.click(()=>{
+                    if(this.console.is(":visible")) {
+                        this.console.hide(400);
+                        this.consoleHidden = true;
+                    } else {
+                        this.consoleHidden = false;
+                        this.console.show(400);
+                    }
+                });
          },
         getShowConsole: function() {
                 return this.showInput() && this.showConsole;
@@ -5501,8 +5517,7 @@ function RamaddaNotebookDisplay(displayManager, id, properties) {
                 return "";
             }
             var contents = this.jq(ID_CONSOLE_OUTPUT).html();
-            this.jq(ID_CELLS_BOTTOM).html("");
-            var consoleToolbar = HtmlUtils.div([],
+            var consoleToolbar = HtmlUtils.div(["id",this.getDomId(ID_CONSOLE_TOOLBAR),"class","display-notebook-console-toolbar","title","click to hide/show console"],
                                                HtmlUtils.leftRight("",
                                                                    HtmlUtils.span(["class","ramadda-image-link","title","Clear","what","clear"],
                                                                                  HtmlUtils.image(Utils.getIcon("clear.png")))));
@@ -5514,6 +5529,7 @@ function RamaddaNotebookDisplay(displayManager, id, properties) {
         makeCellLayout: function() {
             var html = "";
             var consoleContainer = HtmlUtils.div(["id",this.getDomId(ID_CONSOLE_CONTAINER)]);
+            this.jq(ID_CELLS_BOTTOM).html("");
             if (this.showInput() && this.layout == "horizontal") {
                 var left = HtmlUtils.div(["id", this.getDomId(ID_INPUTS),"style","width:100%;"]);
                 var right = HtmlUtils.div(["id", this.getDomId(ID_OUTPUTS),"style","width:100%;"]);
@@ -6013,9 +6029,7 @@ function RamaddaNotebookCell(notebook, id, content, props) {
 
             });
 
-            this.editor = HtmlUtils.initAceEditor("", this.getDomId(ID_INPUT));
-
-
+            this.editor = HtmlUtils.initAceEditor("", this.getDomId(ID_INPUT),false,{maxLines: 30,minLines:5});
             this.menuButton = this.jq(ID_BUTTON_MENU);
             this.toggleButton = this.jq(ID_BUTTON_TOGGLE);
             this.cell = this.jq(ID_CELL);
@@ -6033,7 +6047,7 @@ function RamaddaNotebookCell(notebook, id, content, props) {
             this.input.focus(() => this.hidePopup());
             this.input.click(() => this.hidePopup());
             this.output.click(() => this.hidePopup());
-            //            this.input.on('input selectionchange propertychange', ()=>this.calculateInputHeight());
+            this.input.on('input selectionchange propertychange', ()=>this.calculateInputHeight());
             var moveFunc = (e) => {
                 var key = e.key;
                 if (key == 'v' && e.ctrlKey) {

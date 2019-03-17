@@ -1233,6 +1233,10 @@ color:rgb(63, 127, 95);
   background:#fafafa;
 }
 
+.display-notebook-console-toolbar:hover {
+  background:#fafafa;
+}
+
 .display-notebook-cell {
      border-collapse: collapse;
      margin-top:4px;
@@ -1253,8 +1257,8 @@ color:rgb(63, 127, 95);
     border:1px #eee solid;
     border-top:1px #ccc solid;
     background:rgb(250,250,250);
-    height: 400px;
-    max-height: 400px;
+//    height: 400px;
+//    max-height: 400px;
     overflow-y:auto;
 }
 
