@@ -32,7 +32,7 @@ function RamaddaNotebookDisplay(displayManager, id, properties) {
             runOnLoad: this.getProperty("runOnLoad",true),
                 displayMode: this.getProperty("displayMode",false),
                 showConsole:this.getProperty("showConsole",true),
-                consoleHidden:false,
+                consoleHidden:this.getProperty("consoleHidden",false),
                 layout: this.getProperty("layout","horizontal"),
                 columns: this.getProperty("columns",1),
                 });
@@ -916,7 +916,7 @@ function RamaddaNotebookCell(notebook, id, content, props) {
             menu += line;
             menu += HtmlUtils.div(["class", "ramadda-link", "what", "savewithout"], "Save notebook") + "<br>";
             menu += line;
-            menu += HtmlUtils.div(["class", "ramadda-link", "what", "delete"], "Delete") + "<br>";
+            menu += HtmlUtils.div(["class", "ramadda-link", "what", "delete"], "Delete cell") + "<br>";
             menu += HtmlUtils.div(["class", "ramadda-link", "what", "help"], "Help") + "<br>";
             menu = HtmlUtils.div(["class", "display-notebook-menu"], menu);
 
@@ -1475,6 +1475,9 @@ function RamaddaNotebookCell(notebook, id, content, props) {
                 var stateJS = "notebookStates['" + state.id + "']";
                 topLines++;
                 jsSet += "var notebook= " + stateJS + ";\n";
+                topLines++;
+                //Put this here so we're sortof compatible with iodide notebooks
+                jsSet += "var iodide = {output:{text:function(t){notebook.write(t);}}}\n";
                 for (name in state.entries) {
                     var e = state.entries[name];
                     topLines++;
@@ -1848,6 +1851,7 @@ function RamaddaNotebookCell(notebook, id, content, props) {
             await this.getCurrentEntry(e => entry = e);
             div.append("current:" + entry.getName() + " id:" + entry.getId() + "<br>");
         },
+
         processCommand_cd: async function(line, toks, div) {
             if (div == null) div = new Div();
             if (toks.length <= 1) {
@@ -1935,18 +1939,29 @@ function RamaddaNotebookCell(notebook, id, content, props) {
                 this.displayEntries(entries);
             }
         },
-        processCommand_search: function(line, toks, div) {
+        processCommand_search: async function(line, toks, div) {
             var text = "";
             for (var i = 1; i < toks.length; i++) text += toks[i] + " ";
             text = text.trim();
-            var searchSettings = new EntrySearchSettings({
+            var settings = new EntrySearchSettings({
                 text: text,
             });
-            var repository = this.getRamadda();
-            this.writeStatusMessage("Searching...");
-            var jsonUrl = repository.getSearchUrl(searchSettings, OUTPUT_JSON);
-            this.entryList = new EntryList(repository, jsonUrl, this, true);
-            //                this.writeResult(line);
+            var jsonUrl = this.notebook.getRamadda().getSearchUrl(settings, OUTPUT_JSON);
+            let _this =this;
+            var myCallback = {
+                entryListChanged: function(list) {
+                    var entries = list.getEntries();
+                    div.set("");
+                    if(entries.length==0) {
+                        div.append("Nothing found");
+                    } else {
+                        _this.displayEntries(entries, div)
+                    }
+                }
+            };
+            var entryList =  new EntryList(this.notebook.getRamadda(), jsonUrl, myCallback, false);
+            div.set("Searching...");
+            await entryList.doSearch();
         },
         processCommand_clear: function(line, toks, div) {
             this.clearOutput();
