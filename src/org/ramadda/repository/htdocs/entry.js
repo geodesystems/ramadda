@@ -705,10 +705,11 @@ function Entry(props) {
                     parent = tmp;
                 }
         },
-        map: async function(func) {
+        map: async function(func, finish) {
                 var children;
                 await this.getChildrenEntries(l=>{children=l});
                 children.map(func);
+                Utils.call(finish);
        },
         getParentEntry: async function(callback, extraArgs) {
                 if(!this.parent) {

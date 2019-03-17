@@ -6718,8 +6718,6 @@ function RamaddaNotebookCell(notebook, id, content, props) {
                 lines = js.split("\n");
                 js  = jsSet +"\n" + js;
                 var result = eval.call(null,js);
-                if(result!=null)
-                    console.log(result +"\n" + js);
                 if (state.getStop()) {
                     chunk.ok = false;
                 }
