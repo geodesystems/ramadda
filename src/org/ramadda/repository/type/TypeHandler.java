@@ -572,7 +572,7 @@ public class TypeHandler extends RepositoryManager {
         if (metadataTypes == null) {
             metadataTypes =
                 StringUtil.split(EnumeratedMetadataHandler.TYPE_TAG + ","
-                                 + ContentMetadataHandler.TYPE_KEYWORD, ",",
+                                 + ContentMetadataHandler.TYPE_THUMBNAIL, ",",
                                      true, true);
         }
 
