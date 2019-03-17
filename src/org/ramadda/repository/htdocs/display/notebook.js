@@ -131,6 +131,9 @@ function RamaddaNotebookDisplay(displayManager, id, properties) {
             if (!Utils.isDefined(this.properties.displayMode) && Utils.isDefined(data.displayMode)) {
                 this.displayMode = data.displayMode;
             }
+            if (!Utils.isDefined(this.properties.showConsole) && Utils.isDefined(data.showConsole)) {
+                this.showConsole = data.showConsole;
+            }
             if (Utils.isDefined(data.consoleHidden)) {
                 this.consoleHidden = data.consoleHidden;
             }
