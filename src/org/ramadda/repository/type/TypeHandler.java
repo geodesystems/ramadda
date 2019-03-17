@@ -520,7 +520,7 @@ public class TypeHandler extends RepositoryManager {
             metadataTypes = StringUtil.split(Utils.getAttributeOrTag(node,
                     ATTR_METADATA,
                     EnumeratedMetadataHandler.TYPE_TAG + ","
-                    + ContentMetadataHandler.TYPE_KEYWORD), ",", true, true);
+                    + ContentMetadataHandler.TYPE_THUMBNAIL), ",", true, true);
 
             childTypes = StringUtil.split(Utils.getAttributeOrTag(node,
                     ATTR_CHILDTYPES, ""));
