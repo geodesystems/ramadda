@@ -5307,6 +5307,7 @@ function RamaddaNotebookDisplay(displayManager, id, properties) {
             if (!this.fetchedNotebook) {
                 if (!this.fetchingNotebook) {
                     this.fetchingNotebook = true;
+                    await Utils.importCSS(ramaddaBaseHtdocs + "/lib/fontawesome/font-awesome.css");
                     await Utils.importJS(ramaddaBaseHtdocs + "/lib/ace/src-min/ace.js");
                     await Utils.importJS(ramaddaBaseUrl + "/lib/showdown.min.js"); 
                     var imports = "<link rel='preload' href='https://cdn.jsdelivr.net/npm/katex@0.10.1/dist/fonts/KaTeX_Main-Regular.woff2' as='font' type='font/woff2' crossorigin='anonymous'>\n<link rel='preload' href='https://cdn.jsdelivr.net/npm/katex@0.10.1/dist/fonts/KaTeX_Math-Italic.woff2' as='font' type='font/woff2' crossorigin='anonymous'>\n<link rel='preload' href='https://cdn.jsdelivr.net/npm/katex@0.10.1/dist/fonts/KaTeX_Size2-Regular.woff2' as='font' type='font/woff2' crossorigin='anonymous'>\n<link rel='preload' href='https://cdn.jsdelivr.net/npm/katex@0.10.1/dist/fonts/KaTeX_Size4-Regular.woff2' as='font' type='font/woff2' crossorigin='anonymous'/>\n<link rel='stylesheet' href='https://fonts.googleapis.com/css?family=Lato:300,400,700,700i'>\n<link rel='stylesheet' href='https://cdn.jsdelivr.net/npm/katex@0.10.1/dist/katex.min.css' crossorigin='anonymous'>\n<link rel='stylesheet' href='static/index.css'><script defer src='https://cdn.jsdelivr.net/npm/katex@0.10.1/dist/katex.min.js' crossorigin='anonymous'></script>";
@@ -5351,7 +5352,8 @@ function RamaddaNotebookDisplay(displayManager, id, properties) {
 
         },
         addGlobal: function(name, value) {
-            this.globals[name] = value;
+            if(Utils.isDefined(window[name])) window[name] = value;
+            else this.globals[name] = value;
         },
         getBaseEntry: function() {
             return this.baseEntry;
@@ -6390,9 +6392,10 @@ function RamaddaNotebookCell(notebook, id, content, props) {
                 this.outputUpdated();
             } catch (e) {
                 this.running = false;
-                this.writeOutput("An error occurred:" + e.toString());
+                this.writeOutput("An error occurred:" + e.toString() +" " +(typeof e));
                 console.log("error:" + e.toString());
-                console.log(e.stack);
+                if(e.stack)
+                    console.log(e.stack);
                 return Utils.call(callback, false);
             }
             this.running = false;
@@ -6508,6 +6511,7 @@ function RamaddaNotebookCell(notebook, id, content, props) {
         },
        handleError: function(chunk, error,from) {
             chunk.ok = false;
+            console.log("An error occurred:" + error);
             this.notebook.log(error,"error",from,chunk.div);
         },
         processFetch: async function(chunk) {
@@ -6524,8 +6528,13 @@ function RamaddaNotebookCell(notebook, id, content, props) {
                     //Don't import jquery
                     if(url.match("jquery-.*\\.js")) return;
                     await Utils.importJS(url,
-                        () => {},
-                                         (jqxhr, settings, exception) => error = "Error fetching " + origLine + " " + exception,true);
+                                           () => {},
+                                         (jqxhr, settings, exception) => {
+                                             error = "Error fetching " + origLine + " " + (exception?exception.toString():"");
+                                         },
+                                         //Check the cache
+                                         false
+                                         );
                 } else if (line.startsWith("css:")) {
                     url = line.substring(4).trim();
                     await Utils.importCSS(url,
@@ -6560,7 +6569,6 @@ function RamaddaNotebookCell(notebook, id, content, props) {
                             results = JSON.parse(results);
                         }
                         if (v) {
-                            console.log("adding global:" + (typeof results));
                             this.notebook.addGlobal(v, results);
                         } else {
                             if(isJson) {
@@ -6624,7 +6632,6 @@ function RamaddaNotebookCell(notebook, id, content, props) {
         processPy: async function(chunk) {
             if(!this.notebook.loadedPyodide) {
                 chunk.div.set("Loading Python...");
-                await Utils.importCSS(ramaddaBaseHtdocs + "/lib/fontawesome/font-awesome.css");
                 await Utils.importJS(ramaddaBaseHtdocs + "/lib/pyodide/pyodide.js");
                 await languagePluginLoader.then(() => {
                         pyodide.runPython('import sys\nsys.version;');
@@ -6731,8 +6738,10 @@ function RamaddaNotebookCell(notebook, id, content, props) {
                     jsSet += "var " +name + "= notebook.entries['" + name + "'];\n"
                 }
                 for (name in this.notebook.globals) {
-                    topLines++;
-                    jsSet += "var " +name + "= notebook.getNotebook().globals['" + name + "'];\n";
+                    if(!Utils.isDefined(window[name])) {
+                        topLines++;
+                        jsSet += "var " +name + "= notebook.getNotebook().globals['" + name + "'];\n";
+                    }
                 }
                 var js = chunk.content.trim();
                 lines = js.split("\n");

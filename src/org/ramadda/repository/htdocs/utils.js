@@ -60,17 +60,44 @@ var Utils = {
     },
     imports:{},
     importJS: async function(path,callback,err,noCache) {
+        let _this = this;
         var key = "js:" + path;
-        if(!noCache)
-            if(this.imports[key]) return Utils.call(callback);
+        if(!noCache && this.imports[key]) return Utils.call(callback);
         try {
-            await $.getScript( path).done(()=>{
-                    if(!noCache)
-                        this.imports[key] = true;
-                    Utils.call(callback);
-                })
-                .fail(err);
-        } catch(e) {}
+            //Some urls fail  with getScript so we do a getText then eval
+            //            throw new Error();
+            await $.ajax({
+                    url: path,
+                    dataType: 'script',
+                    cache:true,
+                    success: function(data) {
+                        _this.imports[key] = true;
+                        Utils.call(callback);
+                    }                  
+                }).fail((jqxhr,settings,exc)=>{
+                        console.log("initial importJS failed: " +path);
+                    });
+        } catch(e) {
+            try {
+                //If the  ajax call failed it might be due to the mime type not being javascript. 
+                //Try just grabbing the text and adding it via a script tag
+                await $.ajax({
+                        url: path,
+                        dataType: 'text',
+                        success: function(data) {
+                            console.log("got script as text -  " + path);
+                            var script = document.createElement('script');
+                            script.innerHTML = data;
+                            document.body.appendChild(script);
+                            Utils.call(callback);
+                            _this.imports[key] = true;
+                        }                  
+                    }).fail((jqxhr, settings, exception)=>{if(!err) console.log("importJS failed:" +path);else err(jqxhr,settings,exception);});
+            } catch(e) {
+                //                if(!err) console.log("importJS failed:" +path+" error:" + e);
+                //                else Utils.call(err,e);
+            }
+        }
        },
     waitOn: async function(obj,callback) {
         if(window[obj]) return;
