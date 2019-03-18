@@ -3,25 +3,8 @@ Copyright 2008-2019 Geode Systems LLC
 */
 
 
-var currentNotebookState;
-
-var iodide = {
-    test: function() {
-        return "test it";
-    },
-    addOutputRenderer: function(renderer) {
-    },
-    output:{
-        text:function(t) {
-            currentNotebookState.iodideText(t);
-        },
-        element:function(t) {
-            console.log("element:" + t);
-            return currentNotebookState.iodideElement(t);
-        }
-  }
-}
-
+var notebook;
+var iodide;
 
 
 var DISPLAY_NOTEBOOK = "notebook";
@@ -581,14 +564,6 @@ function NotebookState(cell, div) {
         getCell: function() {
             return this.cell;
         },
-        iodideText: function(t){
-                this.write(t);
-        },
-        iodideElement: function(e) {
-                var id  = HtmlUtils.getUniqueId();
-                this.write(HtmlUtils.tag(e,["id",id]));
-                return document.getElementById(id);
-        },
         setValue: function(name, value) {
             this.notebook.setCellValue(name, value);
         },
@@ -672,6 +647,20 @@ function NotebookState(cell, div) {
             await GuiUtils.loadHtml(ramaddaBaseUrl + "/wikify?doImports=false&entryid=" + entry + "&text=" + encodeURIComponent(s),
                 callback);
         },
+      //These are for the iodiode mimic
+        addOutputRenderer: function(renderer) {
+         },
+        output:{
+            text:function(t) {
+                notebook.write(t);
+            },
+            element:function(tag) {
+               var id  = HtmlUtils.getUniqueId();
+               notebook.write(HtmlUtils.tag(tag,["id",id]));
+               return document.getElementById(id);
+            }
+        },
+
         write: function(s) {
              this.div.append(s);
             },
@@ -1402,10 +1391,11 @@ function RamaddaNotebookCell(notebook, id, content, props) {
                 this.notebook.loadedPyodide = true;
             }
             var state = new NotebookState(this, chunk.div);
-            currentNotebookState = state;
-            var output = "";
+            window.iodide = window.notebook = state;
             pyodide.runPython(chunk.content);
-            chunk.div.append(output);
+            if (state.getStop()) {
+                chunk.ok = false;
+            }
         },
         processWiki: async function(chunk) {
             this.rawOutput += chunk.content + "\n";
@@ -1474,7 +1464,7 @@ function RamaddaNotebookCell(notebook, id, content, props) {
                     current = e
                 });
                 var state = new NotebookState(this, chunk.div);
-                currentNotebookState = state;
+                window.iodide = window.notebook = state;
                 notebookStates[state.id] = state;
                 var notebookEntries = this.notebook.getCurrentEntries();
                 for (name in notebookEntries) {
