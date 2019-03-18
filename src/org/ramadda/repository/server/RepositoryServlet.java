@@ -278,8 +278,8 @@ public class RepositoryServlet extends HttpServlet implements Constants {
                 return;
             }
         }
-        request.setCharacterEncoding("UTF-8");
-        response.setCharacterEncoding("UTF-8");
+        //        request.setCharacterEncoding("UTF-8");
+        //        response.setCharacterEncoding("UTF-8");
 
         RequestHandler handler          = new RequestHandler(request);
         Result         repositoryResult = null;

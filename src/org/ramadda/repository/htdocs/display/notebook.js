@@ -3,6 +3,27 @@ Copyright 2008-2019 Geode Systems LLC
 */
 
 
+var currentNotebookState;
+
+var iodide = {
+    test: function() {
+        return "test it";
+    },
+    addOutputRenderer: function(renderer) {
+    },
+    output:{
+        text:function(t) {
+            currentNotebookState.iodideText(t);
+        },
+        element:function(t) {
+            console.log("element:" + t);
+            return currentNotebookState.iodideElement(t);
+        }
+  }
+}
+
+
+
 var DISPLAY_NOTEBOOK = "notebook";
 addGlobalDisplayType({
     type: DISPLAY_NOTEBOOK,
@@ -59,12 +80,6 @@ function RamaddaNotebookDisplay(displayManager, id, properties) {
             if (!this.fetchedNotebook) {
                 if (!this.fetchingNotebook) {
                     this.fetchingNotebook = true;
-                    /*                    await Utils.importJS("https://alpha.iodide.app/pyodide-0.8.2/pyodide.js");
-                    languagePluginLoader.then(() => {
-                            // pyodide is now ready to use...
-                            console.log(pyodide.runPython('import sys\nsys.version'));
-                        },()=>console.log("error"));
-                    */
                     await Utils.importJS(ramaddaBaseHtdocs + "/lib/ace/src-min/ace.js");
                     await Utils.importJS(ramaddaBaseUrl + "/lib/showdown.min.js"); 
                     var imports = "<link rel='preload' href='https://cdn.jsdelivr.net/npm/katex@0.10.1/dist/fonts/KaTeX_Main-Regular.woff2' as='font' type='font/woff2' crossorigin='anonymous'>\n<link rel='preload' href='https://cdn.jsdelivr.net/npm/katex@0.10.1/dist/fonts/KaTeX_Math-Italic.woff2' as='font' type='font/woff2' crossorigin='anonymous'>\n<link rel='preload' href='https://cdn.jsdelivr.net/npm/katex@0.10.1/dist/fonts/KaTeX_Size2-Regular.woff2' as='font' type='font/woff2' crossorigin='anonymous'>\n<link rel='preload' href='https://cdn.jsdelivr.net/npm/katex@0.10.1/dist/fonts/KaTeX_Size4-Regular.woff2' as='font' type='font/woff2' crossorigin='anonymous'/>\n<link rel='stylesheet' href='https://fonts.googleapis.com/css?family=Lato:300,400,700,700i'>\n<link rel='stylesheet' href='https://cdn.jsdelivr.net/npm/katex@0.10.1/dist/katex.min.css' crossorigin='anonymous'>\n<link rel='stylesheet' href='static/index.css'><script defer src='https://cdn.jsdelivr.net/npm/katex@0.10.1/dist/katex.min.js' crossorigin='anonymous'></script>";
@@ -549,11 +564,6 @@ function RamaddaNotebookDisplay(displayManager, id, properties) {
 }
 
 
-function skulptRead(x) {
-    if (Sk.builtinFiles === undefined || Sk.builtinFiles["files"][x] === undefined)
-        throw "File not found: '" + x + "'";
-    return Sk.builtinFiles["files"][x];
-}
 
 
 function NotebookState(cell, div) {
@@ -570,6 +580,14 @@ function NotebookState(cell, div) {
         },
         getCell: function() {
             return this.cell;
+        },
+        iodideText: function(t){
+                this.write(t);
+        },
+        iodideElement: function(e) {
+                var id  = HtmlUtils.getUniqueId();
+                this.write(HtmlUtils.tag(e,["id",id]));
+                return document.getElementById(id);
         },
         setValue: function(name, value) {
             this.notebook.setCellValue(name, value);
@@ -1371,31 +1389,23 @@ function RamaddaNotebookCell(notebook, id, content, props) {
             chunk.div.set(HtmlUtils.div(["class","display-notebook-md"], html));
         },
         processPy: async function(chunk) {
-            await Utils.importJS(ramaddaBaseUrl + "/lib/skulpt.min.js");
-            await Utils.importJS(ramaddaBaseUrl + "/lib/skulpt-stdlib.js");
-            var output = "";
-            var outf = function(t) {
-                if (t.trim() != "") {
-                    //                   console.log("Out:" + t.trim()+":");
-                    output += t.trim() + "<br>"
-                }
+            if(!this.notebook.loadedPyodide) {
+                chunk.div.set("Loading Python...");
+                await Utils.importCSS(ramaddaBaseHtdocs + "/lib/fontawesome/font-awesome.css");
+                await Utils.importJS(ramaddaBaseHtdocs + "/lib/pyodide/pyodide.js");
+                await languagePluginLoader.then(() => {
+                        pyodide.runPython('import sys\nsys.version;');
+                        //                        pyodide.runPython('print ("hello python")');
+                    },(e)=>console.log("error:"+e));
+                await pyodide.loadPackage(['numpy', 'cycler', 'pytz','matplotlib'])
+                chunk.div.set("");
+                this.notebook.loadedPyodide = true;
             }
-            Sk.configure({
-                output: outf,
-                read: skulptRead
-            });
-            //            (Sk.TurtleGraphics || (Sk.TurtleGraphics = {})).target = 'mycanvas';
-            var myPromise = Sk.misceval.asyncToPromise(function() {
-                return Sk.importMainWithBody("<stdin>", false, chunk.content, true);
-            });
-            myPromise.then(function(mod) {
-                    //                    console.log('success');
-                },
-                function(err) {
-                    output += "Error:" + err.toString();
-                    console.log(err.toString());
-                });
-            chunk.div.set(output);
+            var state = new NotebookState(this, chunk.div);
+            currentNotebookState = state;
+            var output = "";
+            pyodide.runPython(chunk.content);
+            chunk.div.append(output);
         },
         processWiki: async function(chunk) {
             this.rawOutput += chunk.content + "\n";
@@ -1464,6 +1474,7 @@ function RamaddaNotebookCell(notebook, id, content, props) {
                     current = e
                 });
                 var state = new NotebookState(this, chunk.div);
+                currentNotebookState = state;
                 notebookStates[state.id] = state;
                 var notebookEntries = this.notebook.getCurrentEntries();
                 for (name in notebookEntries) {
@@ -1480,7 +1491,6 @@ function RamaddaNotebookCell(notebook, id, content, props) {
                 jsSet += "var notebook= " + stateJS + ";\n";
                 topLines++;
                 //Put this here so we're sortof compatible with iodide notebooks
-                jsSet += "var iodide = {output:{text:function(t){notebook.write(t);}}}\n";
                 for (name in state.entries) {
                     var e = state.entries[name];
                     topLines++;

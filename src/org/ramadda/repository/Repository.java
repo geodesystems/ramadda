@@ -3906,6 +3906,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
 
         String mimeType =
             getMimeTypeFromSuffix(IOUtil.getFileExtension(path));
+        if(path.endsWith("asm.data")) mimeType= "application/octet-stream";
         boolean decorate = true;
         if (path.startsWith("/raw")) {
             path     = path.substring("/raw".length());
