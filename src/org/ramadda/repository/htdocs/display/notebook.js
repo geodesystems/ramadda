@@ -710,6 +710,7 @@ function RamaddaNotebookCell(notebook, id, content, props) {
     var ID_LAYOUT_COLUMNS = "layoutcolumns";
     var ID_RUNFIRST = "runfirst";
     var ID_SHOW_OUTPUT = "showoutput";
+    var ID_RUN_ICON = "runningicon";
 
     let SUPER = new DisplayThing(id, {});
     RamaddaUtil.inherit(this, SUPER);
@@ -761,7 +762,10 @@ function RamaddaNotebookCell(notebook, id, content, props) {
                 this.makeButton(ID_BUTTON_RUN, Utils.getIcon("run.png"), "Run this cell", "run") +
                 this.makeButton(ID_BUTTON_RUN, Utils.getIcon("runall.png"), "Run all", "runall");
 
-            var header = HtmlUtils.div([ATTR_CLASS, "display-notebook-header", ATTR_ID, this.getDomId(ID_HEADER), "tabindex", "0", "title", "Click to toggle input\nShift-click to clear output"], "&nbsp;" + buttons + "&nbsp;" + HtmlUtils.span(["id", this.getDomId(ID_CELLNAME)], this.cellName));
+            var runIcon = HtmlUtils.image(icon_blank,["align","right","id",this.getDomId(ID_RUN_ICON),"style","padding-bottom:2px;padding-top:2px;padding-right:5px;"]);
+            buttons = buttons +  "&nbsp;" + HtmlUtils.span(["id", this.getDomId(ID_CELLNAME)], this.cellName);
+            buttons+=runIcon;
+            var header = HtmlUtils.div([ATTR_CLASS, "display-notebook-header", ATTR_ID, this.getDomId(ID_HEADER), "tabindex", "0", "title", "Click to toggle input\nShift-click to clear output"], "&nbsp;" + buttons);
             var content = this.content.replace(/</g, "&lt;").replace(/>/g, "&gt;");
             var input = HtmlUtils.div([ATTR_CLASS, "display-notebook-input ace_editor", ATTR_ID, this.getDomId(ID_INPUT),"title","shift-return: run chunk\nctrl-return: run to end"], content);
             var inputToolbar = HtmlUtils.div(["id", this.getDomId(ID_INPUT_TOOLBAR)], "");
@@ -1219,13 +1223,16 @@ function RamaddaNotebookCell(notebook, id, content, props) {
                     }
                 }
 
+                this.jq(ID_RUN_ICON).attr("src", icon_progress);
                 await this.runInner(value,doRows).then(r => ok = r);
+                this.jq(ID_RUN_ICON).attr("src", icon_blank);
                 if (!ok) {
                     this.running = false;
                     return Utils.call(callback, false);
                 }
                 this.outputUpdated();
             } catch (e) {
+                this.jq(ID_RUN_ICON).attr("src", icon_blank);
                 this.running = false;
                 this.writeOutput("An error occurred:" + e.toString() +" " +(typeof e));
                 console.log("error:" + e.toString());
