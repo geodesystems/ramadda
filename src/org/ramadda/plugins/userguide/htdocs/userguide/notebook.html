@@ -32,7 +32,35 @@ pre {
 
 The Notebook display provides an interactive notebook that can display html, execute javascript and perform other "shell" functions.
 
-<a name="creating"></a><p><div class="ramadda-help-heading">5.3.0 <a href="#creating">Creating a notebook</a></div> 
+<a name="overview"></a><p><div class="ramadda-help-heading">5.3.0 <a href="#overview">Quick Overview</a></div> 
+View this in action on <a href="/repository/entry/show?entryid=14bb9793-bc3d-4b3f-8eda-b6c046e39983">RAMADDA</a>.
+<br>
+Notebooks are created with the wiki tag:
+<pre>{{display type="notebook"}}</pre> 
+<ul>
+<li> Notebooks are made up of any number of cells
+<li> A cell has an input area and an output area
+<ul> 
+<li> The input area can be shown or hidden
+<li> To toggle the input click on the header above the menubar 
+<li> Click on the <img src=/repository/icons/menu.png> link to show the notebook menu. 
+<li> A notebook can be laid out horizontally (like this) or vertically
+<li> A message console is shown at the bottom of the notebook
+</ul>
+<li> Cells can contain any number of chunks of different types - 
+<ul>
+<li> HTML, wiki text, markdown, raw text, special shell and fetch commands, Javascript and Python. 
+<li> The different chunks within a cell are delineated with "%% type", e.g. "%%html"
+<li> Markdown and HTML chunks feature wysiwig editing
+<li>Evaluate the current chunk and step to the next chunk with <i>shift-return</i>.
+<li> Evaluate the whole cell or the whole notebook with the links above  <img src="/repository/icons/run.png"> <img src="/repository/icons/runall.png">
+</ul>
+</ul>
+
+
+
+
+<a name="creating"></a><p><div class="ramadda-help-heading">5.3.1 <a href="#creating">Creating a notebook</a></div> 
 
 A notebook can be created for any entry with the following wiki text:
 <div style="margin:10p;"><pre>
@@ -64,7 +92,11 @@ the Notebook menu or from the left side link that is shown on mouseover:
 
 The icons on the left allow you to popup the cell menu, show the cell input, run the cell and run all cells.
 
-<a name="editing"></a><p><div class="ramadda-help-heading">5.3.1 <a href="#editing">Editing a notebook</a></div> 
+
+
+
+
+<a name="editing"></a><p><div class="ramadda-help-heading">5.3.2 <a href="#editing">Editing a notebook</a></div> 
 The menubar at the top of the input area is just RAMADADA's wiki text <a href="wiki.html#menubar">menu bar</a>.
 Use the following tags to denote and separate the contents within a notebook cell:
 <p>
@@ -113,7 +145,7 @@ A command can be on the same line
 </pre>
 
 
-<a name="context"></a><p><div class="ramadda-help-heading">5.3.2 <a href="#context">Cell Context</a></div> 
+<a name="context"></a><p><div class="ramadda-help-heading">5.3.3 <a href="#context">Cell Context</a></div> 
 Within a cell there is an entry context, a number of entries that can be accessed within the javascript
 input and that the wiki is created from. The following entries are available:
 <ul>
@@ -125,7 +157,7 @@ shell commands.
 </ul>
 
 
-<a name="html"></a><p><div class="ramadda-help-heading">5.3.3 <a href="#html">Html Input</a></div> 
+<a name="html"></a><p><div class="ramadda-help-heading">5.3.4 <a href="#html">Html Input</a></div> 
 To specify html text start the input with "%% html".  
 <pre>
 <i>%% html</i>
@@ -133,7 +165,7 @@ html text
 </pre>
 
 
-<a name="wiki"></a><p><div class="ramadda-help-heading">5.3.4 <a href="#wiki">Wiki Input</a></div> 
+<a name="wiki"></a><p><div class="ramadda-help-heading">5.3.5 <a href="#wiki">Wiki Input</a></div> 
 To specify wiki text start the input with "%% wiki" - 
 <pre>
 <i>%% wiki</i>
@@ -143,7 +175,7 @@ RAMADDA wiki text
 The wiki text is just regular RAMADDA wiki text. More information <a href="wikitext.html">here</a>.
 
 
-<a name="markdown"></a><p><div class="ramadda-help-heading">5.3.5 <a href="#markdown">Markdown Input</a></div> 
+<a name="markdown"></a><p><div class="ramadda-help-heading">5.3.6 <a href="#markdown">Markdown Input</a></div> 
 To specify markdown  text start the input with "%% md" - 
 <pre>
 <i>%% md</i>
@@ -153,7 +185,7 @@ To specify markdown  text start the input with "%% md" -
 
 
 
-<a name="fetch"></a><p><div class="ramadda-help-heading">5.3.6 <a href="#fetch">Fetch Input</a></div> 
+<a name="fetch"></a><p><div class="ramadda-help-heading">5.3.7 <a href="#fetch">Fetch Input</a></div> 
 The fetch command allow you to import javascript, css or html files
 
 <pre>
@@ -164,7 +196,7 @@ html: /url/to/html
 </pre>
 
 
-<a name="sh"></a><p><div class="ramadda-help-heading">5.3.7 <a href="#sh">Shell Input</a></div> 
+<a name="sh"></a><p><div class="ramadda-help-heading">5.3.8 <a href="#sh">Shell Input</a></div> 
 To specify shell text start the input with "%% sh" - 
 <pre>
 <i>%% sh</i>
@@ -223,7 +255,7 @@ cd /;pwd;ls;cd;pwd
 </pre>
 
 
-<a name="js"></a><p><div class="ramadda-help-heading">5.3.8 <a href="#js">Javascript Input</a></div> 
+<a name="js"></a><p><div class="ramadda-help-heading">5.3.9 <a href="#js">Javascript Input</a></div> 
 To specify javascript start the input with "%% js" - 
 <pre>
 <i>%% js</i>
@@ -308,7 +340,7 @@ state.wiki(":title {{name}}", root);
 
 
 
-<a name="py"></a><p><div class="ramadda-help-heading">5.3.9 <a href="#py">Python Input</a></div> 
+<a name="py"></a><p><div class="ramadda-help-heading">5.3.10 <a href="#py">Python Input</a></div> 
 The notebook Python runs in the browser using the <a href="http://www.skulpt.org/">Skulpt</a> package.
 To specify python start the input with "%% py" - 
 <pre>
@@ -318,14 +350,14 @@ print "hello world"
 
 
 
-<a name="running"></a><p><div class="ramadda-help-heading">5.3.10 <a href="#running">Running a notebook</a></div> 
+<a name="running"></a><p><div class="ramadda-help-heading">5.3.11 <a href="#running">Running a notebook</a></div> 
 To run a notebook cell either press shift-return in the cell input area or choose "Run This Cell" in the notebook menu.
 All of the cells can be run through the notebook menu with the "Run All" command.
 A notebook can be configured to run all of the cells when the notebook is first loaded through the "Run on load"
 command in the notebook menu.
 
 
-<a name="commands"></a><p><div class="ramadda-help-heading">5.3.11 <a href="#commands">Notebook Menu Commands</a></div> 
+<a name="commands"></a><p><div class="ramadda-help-heading">5.3.12 <a href="#commands">Notebook Menu Commands</a></div> 
 The notebook menu allows one to configure the display and behavior of individual cells or all of the cells.
 
 <a name="image2"></a><div class="cimg"><a href="images/notebookmenu.png"><img  src="images/notebookmenu.png"  alt="Notebook Menu" ></a><br><span class="caption">Image 2: Notebook Menu</span></div>

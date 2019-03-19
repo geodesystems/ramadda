@@ -5,6 +5,34 @@
 
 The Notebook display provides an interactive notebook that can display html, execute javascript and perform other "shell" functions.
 
+[ug::subheading {Quick Overview} overview]
+View this in action on <a href="/repository/entry/show?entryid=14bb9793-bc3d-4b3f-8eda-b6c046e39983">RAMADDA</a>.
+<br>
+Notebooks are created with the wiki tag:
+<pre>{{display type="notebook"}}</pre> 
+<ul>
+<li> Notebooks are made up of any number of cells
+<li> A cell has an input area and an output area
+<ul> 
+<li> The input area can be shown or hidden
+<li> To toggle the input click on the header above the menubar 
+<li> Click on the <img src=/repository/icons/menu.png> link to show the notebook menu. 
+<li> A notebook can be laid out horizontally (like this) or vertically
+<li> A message console is shown at the bottom of the notebook
+</ul>
+<li> Cells can contain any number of chunks of different types - 
+<ul>
+<li> HTML, wiki text, markdown, raw text, special shell and fetch commands, Javascript and Python. 
+<li> The different chunks within a cell are delineated with "%% type", e.g. "%%html"
+<li> Markdown and HTML chunks feature wysiwig editing
+<li>Evaluate the current chunk and step to the next chunk with <i>shift-return</i>.
+<li> Evaluate the whole cell or the whole notebook with the links above  <img src="/repository/icons/run.png"> <img src="/repository/icons/runall.png">
+</ul>
+</ul>
+
+
+
+
 [ug::subheading {Creating a notebook} creating]
 
 A notebook can be created for any entry with the following wiki text:
@@ -36,6 +64,10 @@ the Notebook menu or from the left side link that is shown on mouseover:
 [ht::cimg images/notebook1.png {Notebook Menu}]
 
 The icons on the left allow you to popup the cell menu, show the cell input, run the cell and run all cells.
+
+
+
+
 
 [ug::subheading {Editing a notebook} editing]
 The menubar at the top of the input area is just RAMADADA's wiki text <a href="wiki.html#menubar">menu bar</a>.
