@@ -2836,7 +2836,7 @@ function initMapFunctions(theMap) {
     }
 
 
-    theMap.addMarker = function(id, location, iconUrl, markerName, text, parentId, size, voffset, canSelect) {
+    theMap.createMarker = function(id, location, iconUrl, markerName, text, parentId, size, voffset, canSelect) {
         if(Array.isArray(location)) {
             location = createLonLat(location[0],location[1]);
         }
@@ -2905,10 +2905,24 @@ function initMapFunctions(theMap) {
 
         var visible = this.isLayerVisible(marker.ramaddaId, marker.parentId);
         if (!visible) marker.display(false);
-
         feature.what = "marker";
-        this.markers.addFeatures([feature]);
         return feature;
+    }
+
+
+
+    theMap.addMarker = function(id, location, iconUrl, markerName, text, parentId, size, voffset, canSelect) {
+        var marker = this.createMarker(id,location, iconUrl,markerName, text,parentId, size, voffset, canSelect);
+        this.addMarkers([marker]);
+        return marker;
+    }
+
+    theMap.addMarkers = function(markers) {
+        if (!this.markers) {
+            this.markers = new OpenLayers.Layer.Vector("Markers");
+            this.addVectorLayer(this.markers, canSelect);
+        }
+        this.markers.addFeatures(markers);
     }
 
 

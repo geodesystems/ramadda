@@ -5804,6 +5804,9 @@ function NotebookState(cell, div) {
         div: div,
         stopFlag: false,
         result: null,
+         log: function(msg,type,from) {
+             this.getNotebook().log(msg,type,from,this.div);
+        },
         getStop: function() {
             return this.stopFlag;
         },
