@@ -362,10 +362,11 @@
         <unjar src="${lib_dir}/postgresql-42.2.5.jre7.jar" dest="${tmpjar_dir}"/>
 
 
-        <!--
+
         <unjar src="${lib_dir}/mysql-connector-java-5.1.32-bin.jar" dest="${tmpjar_dir}"/>
--->
+<!--
         <unjar src="${lib_dir}/mysql-connector-java-8.0.15.jar" dest="${tmpjar_dir}"/>
+-->
 
         <unjar src="${lib_dir}/h2.jar" dest="${tmpjar_dir}"/>
         <unjar src="${lib_dir}/derby.jar" dest="${tmpjar_dir}"/>
