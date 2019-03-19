@@ -1171,6 +1171,7 @@ function RamaddaNotebookCell(notebook, id, content, props) {
                 if(lines[i].trim().startsWith("%%")) {
                     var ll = lines[i].length;
                     this.editor.selection.moveTo(i,ll);
+                    this.editor.scrollToLine(i, true, true, function () {});
                     break;
                 }
             }
