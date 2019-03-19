@@ -385,10 +385,38 @@ with just the notebook output saved
 </ul>
 
 
+<a name="macros"></a><p><div class="ramadda-help-heading">5.3.13 <a href="#macros">Macros</a></div> 
+Cell values can be used as macros in other cells. There are 2 ways of doing this. 
+First, you can set the name of a cell (through the popup menu) to be some macro name, e.g., the_value.
+The cells that define the macro values need to be run before the cells that reference the macro values. Do this
+by setting the "Run first" checkbox in the source cell's menu.
+<p>
 
+Assume we have cell content as some html, and the name of the cell is "the_value", e.g.:
+<pre>
+%%html
+Some html
+</pre>
 
+In another cell you can insert the HTML with the macro:
+<pre>
+%%html
+Some other cell
+Here is the macro: ${the_value}
+</pre>
 
+If you have a JS cell then the "the_value" will be set as a variable that can be referenced, e.g.:
+<pre>
+%%js
+var x = the_value;
+</pre>
 
+The macro values can also be set within a cell using the "raw" chunk type by adding a var=&lt;var name&gt; line like:
+<pre>
+%%raw var=id
+Some macro value
+
+</pre>
 
 
 

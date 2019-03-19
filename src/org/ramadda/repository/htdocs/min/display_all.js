@@ -6856,6 +6856,11 @@ function RamaddaNotebookCell(notebook, id, content, props) {
                     topLines++;
                     jsSet += "var " +name + "= notebook.entries['" + name + "'];\n"
                 }
+                for (name in this.notebook.cellValues) {
+                    var clean  = name.replace(/ /g,"_").replace(/[^a-zA-Z0-9_]+/g,"_");
+                    topLines++;
+                    jsSet += "var " +clean + "= notebook.getNotebook().cellValues['" + name + "'];\n";
+                }
                 for (name in this.notebook.globals) {
                     if(!Utils.isDefined(window[name])) {
                         topLines++;
@@ -6898,7 +6903,15 @@ function RamaddaNotebookCell(notebook, id, content, props) {
             } else if (chunk.type == "fetch") {
                 await this.processFetch(chunk);
             } else if (chunk.type == "raw") {
-                this.rawOutput += chunk.content + "\n";
+                var content = chunk.content;
+                var re = new RegExp("^ *var *= *(.*)");
+                var toks = re.exec(content);
+                if(toks) {
+                    content =  content.replace(re, "").trim();
+                    var id = toks[1];
+                    this.notebook.setCellValue(id, content);
+                }
+                this.rawOutput += content;
             } else if (chunk.type == "js") {
                 await this.processJs(chunk);
             } else if (chunk.type == "sh") {
@@ -6908,7 +6921,7 @@ function RamaddaNotebookCell(notebook, id, content, props) {
             } else if (chunk.type == "py") {
                 await this.processPy(chunk);
             } else {
-                chunk.div.set("Unknown type:" + chunk.type);
+                this.notebook.log("Unknown type:" + chunk.type,"error",null,chunk.div);
             }
         },
 
