@@ -1208,9 +1208,13 @@ color:rgb(63, 127, 95);
    padding-bottom:5px;
 }
 
-.display-notebook-console-item-error {
+.display-notebook-console-item-error, .display-notebook-chunk-error {
   background:#FDF4F5;
   color: red;
+}
+
+.display-notebook-chunk-error {
+   border:1px #ccc solid;
 }
 
 .display-notebook-console-item-output {
@@ -1235,6 +1239,16 @@ color:rgb(63, 127, 95);
 
 .display-notebook-console-toolbar:hover {
   background:#fafafa;
+}
+
+.display-notebook-chunk {
+/*   border: 1px #ccc solid;*/
+
+}
+
+.display-notebook-chunk p {
+     margin-top:0.5em;
+     margin-bottom:0.5em;
 }
 
 .display-notebook-cell {
@@ -1289,6 +1303,7 @@ color:rgb(63, 127, 95);
      width:100%;
      min-height: 15px;
 }
+
 
 .display-notebook-md a {
 color:#5179D8;

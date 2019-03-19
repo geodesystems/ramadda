@@ -307,7 +307,7 @@ function RamaddaNotebookDisplay(displayManager, id, properties) {
                     clazz+= " display-notebook-console-item-error";
                     icon = HtmlUtils.image(Utils.getIcon("cross-octagon.png"));
                     if(div) {
-                        div.append(msg);
+                        div.append(HtmlUtils.div(["class","display-notebook-chunk-error"],msg));
                     }
                 } else if(type == "output") {
                     clazz+= " display-notebook-console-item-output";
@@ -758,12 +758,12 @@ function RamaddaNotebookCell(notebook, id, content, props) {
             var _this = this;
             var buttons =
                 this.makeButton(ID_BUTTON_MENU, icon_menu, "Show menu", "showmenu") +
-                this.makeButton(ID_BUTTON_RUN, Utils.getIcon("run.png"), "Run", "run") +
+                this.makeButton(ID_BUTTON_RUN, Utils.getIcon("run.png"), "Run this cell", "run") +
                 this.makeButton(ID_BUTTON_RUN, Utils.getIcon("runall.png"), "Run all", "runall");
 
             var header = HtmlUtils.div([ATTR_CLASS, "display-notebook-header", ATTR_ID, this.getDomId(ID_HEADER), "tabindex", "0", "title", "Click to toggle input\nShift-click to clear output"], "&nbsp;" + buttons + "&nbsp;" + HtmlUtils.span(["id", this.getDomId(ID_CELLNAME)], this.cellName));
             var content = this.content.replace(/</g, "&lt;").replace(/>/g, "&gt;");
-            var input = HtmlUtils.div([ATTR_CLASS, "display-notebook-input ace_editor", ATTR_ID, this.getDomId(ID_INPUT)], content);
+            var input = HtmlUtils.div([ATTR_CLASS, "display-notebook-input ace_editor", ATTR_ID, this.getDomId(ID_INPUT),"title","shift-return: run chunk\nctrl-return: run to end"], content);
             var inputToolbar = HtmlUtils.div(["id", this.getDomId(ID_INPUT_TOOLBAR)], "");
 
             input = HtmlUtils.div(["class", "display-notebook-input-container"], inputToolbar + input);
@@ -798,6 +798,9 @@ function RamaddaNotebookCell(notebook, id, content, props) {
             });
 
             this.editor = HtmlUtils.initAceEditor("", this.getDomId(ID_INPUT),false,{maxLines: 30,minLines:5});
+            this.editor.getSession().on('change', ()=>{
+                    this.inputChanged();
+                });
             this.menuButton = this.jq(ID_BUTTON_MENU);
             this.toggleButton = this.jq(ID_BUTTON_TOGGLE);
             this.cell = this.jq(ID_CELL);
@@ -830,19 +833,24 @@ function RamaddaNotebookCell(notebook, id, content, props) {
             };
             this.input.keydown(moveFunc);
             this.header.keydown(moveFunc);
-            this.input.keypress(function(e) {
+            this.input.keydown(function(e) {
                 var key = e.key;
                 if (key == 'Enter') {
-                    if (e.shiftKey) {
+                    //                    console.log(key +"  shift:"  + e.shiftKey +" ctrl:" + e.ctrlKey);
+                    if (e.shiftKey || e.ctrlKey) {
                         if (e.preventDefault) {
                             e.preventDefault();
                         }
-                        _this.run();
-                    } else if (e.ctrlKey) {
-                        if (e.preventDefault) {
-                            e.preventDefault();
+                        if (e.shiftKey && e.ctrlKey) {
+                            //run all
+                            _this.run(null,false,false);
+                        } else {
+                            //run current, run to end
+                            _this.run(null,true,e.ctrlKey);
+                            if(!e.ctrlKey) {
+                                _this.stepToNextChunk();
+                            }
                         }
-                        _this.notebook.runAll();
                     }
                 }
 
@@ -1132,15 +1140,86 @@ function RamaddaNotebookCell(notebook, id, content, props) {
                     _this.notebook.deleteCell(_this);
                 }
             });
-
-
         },
-        run: async function(callback) {
+        inputChanged:  function() {
+            var value = this.getInputText();
+            var lines = value.split("\n");
+            var cursor = this.editor.getCursorPosition();
+            for(var i=cursor.row;i>=0;i--) {
+                var line = lines[i].trim();
+                if(line.startsWith("%%")) {
+                    var type = line.substring(2).trim();
+
+                    if(type.startsWith("md") || type.startsWith("html")) {
+                        var doRows = {};
+                        doRows[i] = true;
+                        this.runInner(value,doRows);
+                    }
+                    break;
+                }
+            }
+        },
+        stepToNextChunk:  function() {
+            var value = this.getInputText();
+            var lines = value.split("\n");
+            var cursor = this.editor.getCursorPosition();
+            for(var i=cursor.row+1;i<lines.length;i++) {
+                if(lines[i].trim().startsWith("%%")) {
+                    var ll = lines[i].length;
+                    this.editor.selection.moveTo(i,ll);
+                    break;
+                }
+            }
+            
+        },
+
+        run: async function(callback, justCurrent, toEnd) {
             if (this.running) return Utils.call(callback, true);
             this.running = true;
+            var doRows=null;
             try {
                 var ok = true;
-                await this.runInner().then(r => ok = r);
+                var value = this.getInputText();
+                if(justCurrent) {
+                    doRows={};
+                    var cursor = this.editor.getCursorPosition();
+                    var row = cursor.row;
+                    var lines = value.split("\n");
+                    var percentCnt=0;
+                    if(toEnd) {
+                        justCurrent = false;
+                        while(row>=0) {
+                            if(lines[row].trim().startsWith("%%")) {
+                                break;
+                            } 
+                            row--;
+                        }
+                        if(row<0) row=0;
+                        while(row<lines.length) {
+                            doRows[row]=true;
+                            row++;
+                        }
+                    } else {
+                        //go to the next chunk
+                        row++;
+                        while(row<lines.length) {
+                            if(lines[row].trim().startsWith("%%")) {
+                                row--;
+                                break;
+                            }
+                            row++;
+                        }
+                        if(row>=lines.length) row = lines.length-1;
+                        while(row>=0) {
+                            var line = lines[row].trim();
+                            doRows[row]=true;
+                            if(line.startsWith("%%")) break;
+                            row--;
+                        }
+                    }
+                }
+
+                await this.runInner(value,doRows).then(r => ok = r);
                 if (!ok) {
                     this.running = false;
                     return Utils.call(callback, false);
@@ -1164,20 +1243,39 @@ function RamaddaNotebookCell(notebook, id, content, props) {
             if (!this.editor) return this.content;
             return this.editor.getValue();
         },
-        runInner: async function() {
-            var value = this.getInputText();
+        runInner: async function(value,doRows) {
             value = value.trim();
-            var help = "More information <a target=_help href='" + ramaddaBaseUrl + "/userguide/notebook.html'>here</a>";
             value = value.replace(/{cellname}/g, this.cellName);
-            value = value.replace(/{help}/g, help);
             value = this.notebook.convertInput(value);
+            if(!this.divs) this.divs = [];
             var type = "wiki";
             var chunks = [];
             var chunk = "";
             var commands = value.split("\n");
-            var ok = true;
+            var prevDiv = null;
+            var divCnt = 0;
+            var makeDiv=()=> {
+                var div =(divCnt<this.divs.length?this.divs[divCnt]:null);
+                divCnt++;
+                if(div) {
+                    if(div.jq().size()==0) {
+                        div = null;
+                    } else {
+                    }
+                } else {
+                }
+                if(!div) {
+                    div =new Div(null,"display-notebook-chunk");
+                    this.divs.push(div);
+                    if(prevDiv) prevDiv.jq().after(div.toString());
+                    else this.output.html(div.toString());
+                } else {
+                }
+                prevDiv = div;
+                return div;
+            };
+            var doChunk = true;
             for (var i = 0; i < commands.length; i++) {
-                if (!ok) break;
                 var command = commands[i];
                 var _command = command.trim();
                 if (_command.startsWith("//")) continue;
@@ -1193,13 +1291,16 @@ function RamaddaNotebookCell(notebook, id, content, props) {
                         rest = rest.substring(index);
                     }
                     if (chunk != "") {
+                        var div = makeDiv();
                         chunks.push({
                             content: chunk,
                             type: type,
-                            div: new Div(),
+                            div: div,
+                            doChunk: doChunk,
                             ok: true
                         });
                     }
+                    doChunk = doRows?doRows[i]:true;
                     chunk = rest;
                     if (chunk != "") chunk += "\n";
                     type = newType;
@@ -1209,30 +1310,36 @@ function RamaddaNotebookCell(notebook, id, content, props) {
             }
 
             if (chunk != "") {
+                var div = makeDiv();
                 chunks.push({
                     content: chunk,
                     type: type,
-                    div: new Div(),
+                    div: div,
+                    doChunk:doChunk,
                     ok: true
                 });
             }
 
 
+            /*
             var result = "";
             for (var i = 0; i < chunks.length; i++) {
                 result += chunks[i].div.toString() + "\n";
             }
             this.output.html(result);
+            */
             this.rawOutput = "";
             for (var i = 0; i < chunks.length; i++) {
                 var chunk = chunks[i];
+                if(!chunk.doChunk) continue;
+                chunk.div.set("");
                 await this.processChunk(chunk);
                 if (!chunk.ok) {
                     return false;
                 }
             }
             Utils.initContent("#" + this.getDomId(ID_OUTPUT));
-            return ok;
+            return true;
         },
         writeOutput: function(h) {
             if (!this.output) {
@@ -1255,6 +1362,7 @@ function RamaddaNotebookCell(notebook, id, content, props) {
         clearOutput: function() {
             this.output.html("");
             this.outputHtml = "";
+            this.divs = [];
         },
         processHtml: async function(chunk) {
             this.rawOutput += chunk.content + "\n";

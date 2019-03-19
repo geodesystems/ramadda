@@ -1683,13 +1683,16 @@ msg+="]"
     */
 
 
-function Div(contents) {
+function Div(contents,clazz) {
     this.id = HtmlUtils.getUniqueId();
     this.contents  = contents || "";
     this.extra = "";
+    this.clazz =clazz;
     this.toString = function() {
-        return HtmlUtils.div(["id",this.id],this.contents);
+        return HtmlUtils.div(["class",clazz||"","id",this.id],this.contents);
     }
+    this.getId = function() {return this.id;}
+    this.jq = function() { return $("#" + this.id)}
     this.set = function(html, attrs) {
         if(attrs) this.extra = HtmlUtils.attrs(attrs);
         this.contents = html;
