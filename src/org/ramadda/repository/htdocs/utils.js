@@ -637,7 +637,7 @@ var Utils = {
         greens: {
             colors: ['#f7fcf5','#e5f5e0','#c7e9c0','#a1d99b','#74c476','#41ab5d','#238b45','#006d2c','#00441b']
         },
-        map_grays{
+        map_grays: {
             colors: ['#ffffff','#f0f0f0','#d9d9d9','#bdbdbd','#969696','#737373','#525252','#252525','#000000']
         },
         bright38: {
