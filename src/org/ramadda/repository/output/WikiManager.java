@@ -2033,18 +2033,27 @@ ATTR_SHOWLINK, "true", ATTR_INCLUDEICON, "false") + ATTRS_LAYOUT),
                 }
             }
 
+
             if (imageUrl != null) {
                 String img = HtmlUtils.img(imageUrl, "",
                                            HtmlUtils.style("width:100%;"));
-                card.append(
-                    HtmlUtils.div(
-                        HtmlUtils.href(
-                            imageUrl, img,
-                            HtmlUtils.cssClass(
-                                "popup_image")), HtmlUtils.cssClass(
-                                    "ramadda-imagewrap")));
-                addImagePopupJS(request, wikiUtil, card, props);
+                String inner;
+                boolean popup = getProperty(wikiUtil, props, "popup", true);
+                if(popup) {
+                    inner =  HtmlUtils.href(
+                                            imageUrl, img,
+                                            HtmlUtils.cssClass(
+                                                               "popup_image"));
+                } else {
+                    inner =  HtmlUtils.href(entryUrl, img,
+                                            HtmlUtils.cssClass(""));
+                }
+                card.append(HtmlUtils.div(inner,
+                                          HtmlUtils.cssClass("ramadda-imagewrap")));
+
+                if(popup) addImagePopupJS(request, wikiUtil, card, props);
             }
+
             HtmlUtils.close(card, HtmlUtils.TAG_DIV);
 
             return card.toString();
