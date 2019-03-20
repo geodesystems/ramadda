@@ -494,7 +494,25 @@ public class PointTypeHandler extends RecordTypeHandler {
      */
     public int getDefaultMax(Request request, Entry entry, String tag,
                              Hashtable props) {
+        try {
+        String fromProps;
+        fromProps = (String)props.get("maxPoints");
+        if(fromProps!=null) {
+            return Integer.parseInt(fromProps);
+        }
+        Hashtable recordProps = getRecordProperties(entry);
+        if (recordProps != null) {
+            fromProps = (String)recordProps.get("maxPoints");
+            if(fromProps!=null) {
+                return Integer.parseInt(fromProps);
+            }
+        }
+
         return  getTypeProperty("point.default.max", 5000);
+        } catch(Exception exc) {
+            throw new IllegalArgumentException(exc);
+
+        }
     }
 
     /**

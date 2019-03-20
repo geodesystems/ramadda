@@ -17146,7 +17146,10 @@ function RamaddaMapDisplay(displayManager, id, properties) {
                         var tmp =0;
                         var size = 0;
                         //Pad the size
-                        if(unit == "year") {
+                        if(unit == "decade") {
+                            this.animation.begin = new Date(date.getUTCFullYear(),0);
+                            size = 1000*60*60*24*365*10+1000*60*60*24*365;
+                        } else if(unit == "year") {
                             this.animation.begin = new Date(date.getUTCFullYear(),0);
                             size = 1000*60*60*24*366;
                         } else if(unit == "month") {
@@ -17185,7 +17188,9 @@ function RamaddaMapDisplay(displayManager, id, properties) {
                 var oldEnd = this.animation.end;
                 var unit = this.animation.windowUnit;
                 var date = new Date(this.animation.end.getTime() +this.animation.window);
-                if(unit == "year") {
+                if(unit == "decade") {
+                    this.animation.end = new Date(date.getUTCFullYear(),0);
+                } else  if(unit == "year") {
                     this.animation.end = new Date(date.getUTCFullYear(),0);
                 } else if(unit == "month") {
                     this.animation.end = new Date(date.getUTCFullYear(),date.getMonth());
@@ -17204,13 +17209,28 @@ function RamaddaMapDisplay(displayManager, id, properties) {
                 //                console.log("step:" + date  +" -  " + this.animation.end);
                 var windowStart = this.animation.begin.getTime();
                 var windowEnd = this.animation.end.getTime();
+                var atLoc ={};
                 for(var i=0;i<this.points.length;i++) {
                     var point =  this.points[i];
-                    if(point.date>=windowStart && point.date<=windowEnd)
-                        point.style.display = 'inline';
-                    else
+                    if(point.date<windowStart || point.date>windowEnd) {
                         point.style.display = 'none';
+                        continue;
+                    }
+                    if(atLoc[point.location]) {
+                        var other = atLoc[point.location];
+                        if(other.date<point.date) {
+                            atLoc[point.location] = point;
+                            other.style.display = 'none';
+                            point.style.display = 'inline';
+                        } else {
+                            point.style.display = 'none';
+                        }
+                        continue;
+                    }
+                    atLoc[point.location] = point;
+                    point.style.display = 'inline';
                 }
+
                 if(this.map.circles)
                     this.map.circles.redraw();
                 if(windowEnd< this.animation.dateMax.getTime()) {
@@ -17609,7 +17629,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
                 if (showPoints) {
                     //We do this because openlayers gets really slow when there are lots of features at one point
                     if (!Utils.isDefined(seen[point])) seen[point] = 0; 
-                    if (seen[point]>50) continue;
+                    if (seen[point]>500) continue;
                     seen[point]++;
                     point = this.map.addPoint("pt-" + i, point, props, html, dontAddPoint);
                     var date = pointRecord.getDate();
