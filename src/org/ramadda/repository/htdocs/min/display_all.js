@@ -5292,6 +5292,7 @@ function RamaddaNotebookDisplay(displayManager, id, properties) {
         currentEntries: {},
         globals: {},
         baseEntries: {},
+        outputRenderers: [],
         initDisplay: async function() {
             this.createUI();
             var imports = HtmlUtils.div(["id", this.getDomId(ID_IMPORTS)]);
@@ -5305,6 +5306,7 @@ function RamaddaNotebookDisplay(displayManager, id, properties) {
                 this.jq(ID_MENU).hide()
             });
             if (!this.fetchedNotebook) {
+                this.initOutputRenderers();
                 if (!this.fetchingNotebook) {
                     this.fetchingNotebook = true;
                     await Utils.importCSS(ramaddaBaseHtdocs + "/lib/fontawesome/font-awesome.css");
@@ -5351,6 +5353,49 @@ function RamaddaNotebookDisplay(displayManager, id, properties) {
             });
 
         },
+        initOutputRenderers: function() {
+                let notebook = this;
+                this.outputRenderesr=[];
+                this.addOutputRenderer({
+                        shouldRender: (value) => {return typeof value === "object";},
+                            render: (value) => {if(Array.isArray(value)) return HtmlUtils.div(["style"," white-space: pre;"], JSON.stringify(value)); return HtmlUtils.div(["style"," white-space: pre;"],JSON.stringify(value,null,2))},
+                            });
+                this.addOutputRenderer({
+                        shouldRender: (value) => {return typeof value === "object" && value.getTime;},
+                            render: (value) => {return notebook.formatDate(value)},
+                            });
+
+                this.addOutputRenderer({
+                        shouldRender: (value) => {var t  = typeof value; return t === "string" || t === "number" || t ==="boolean";},
+                            render: (value) => {
+                            if(typeof value === "string") {
+                                if(value.split("\n").length>1) {
+                                    return HtmlUtils.div(["style"," white-space: pre;"], value);
+                                }
+                            }
+                            return value
+                        },
+                            });
+                this.addOutputRenderer({
+                        shouldRender: (value) => {return typeof value === "object" && "lat" in value && "lon" in value;},
+                            render: (value) => {return "<img src='http://staticmap.openstreetmap.de/staticmap.php?center=" + value.lat +"," + value.lon +"&zoom=17&size=300x200&maptype=mapnik'/>"},
+                            });
+
+        },
+        addOutputRenderer: function(renderer) {
+                if(this.outputRenderers.indexOf(renderer)<0) {
+                    this.outputRenderers.push(renderer);
+                }
+        },
+       formatOutput: function(value) {
+                for(var i=this.outputRenderers.length-1;i>=0;i--) {
+                    var renderer = this.outputRenderers[i];
+                    if(renderer.shouldRender(value)) {
+                        return renderer.render(value);
+                    }
+                }
+                return null;
+       },
         addGlobal: function(name, value) {
             if(Utils.isDefined(window[name])) window[name] = value;
             else this.globals[name] = value;
@@ -5896,9 +5941,10 @@ function NotebookState(cell, div) {
             await GuiUtils.loadHtml(ramaddaBaseUrl + "/wikify?doImports=false&entryid=" + entry + "&text=" + encodeURIComponent(s),
                 callback);
         },
-      //These are for the iodiode mimic
+       //These are for the iodiode mimic
         addOutputRenderer: function(renderer) {
-         },
+                this.getNotebook().addOutputRenderer(renderer);
+        },
         output:{
             text:function(t) {
                 notebook.write(t);
@@ -5909,8 +5955,8 @@ function NotebookState(cell, div) {
                return document.getElementById(id);
             }
         },
-
         write: function(s) {
+             s = this.getNotebook().formatOutput(s);
              this.div.append(s);
             },
         linechart: async function(entry, props) {
@@ -6401,7 +6447,7 @@ function RamaddaNotebookCell(notebook, id, content, props) {
                 if(line.startsWith("%%")) {
                     var type = line.substring(2).trim();
 
-                    if(type.startsWith("md") || type.startsWith("html")) {
+                    if(type.startsWith("md") || type.startsWith("html") || type.startsWith("css")) {
                         var doRows = {};
                         doRows[i] = true;
                         this.runInner(value,doRows);
@@ -6510,6 +6556,7 @@ function RamaddaNotebookCell(notebook, id, content, props) {
             var prevDiv = null;
             var divCnt = 0;
             var makeDiv=()=> {
+                //                console.log("make div:" + divCnt);
                 var div =(divCnt<this.divs.length?this.divs[divCnt]:null);
                 divCnt++;
                 if(div) {
@@ -6527,6 +6574,7 @@ function RamaddaNotebookCell(notebook, id, content, props) {
                 } else {
                 }
                 prevDiv = div;
+                div.jq().show();
                 return div;
             };
             var doChunk = true;
@@ -6575,6 +6623,9 @@ function RamaddaNotebookCell(notebook, id, content, props) {
                 });
             }
 
+            for(var i=divCnt;i<this.divs.length;i++) {
+                this.divs[i].jq().hide();
+            }
 
             /*
             var result = "";
@@ -6620,8 +6671,14 @@ function RamaddaNotebookCell(notebook, id, content, props) {
             this.divs = [];
         },
         processHtml: async function(chunk) {
-            this.rawOutput += chunk.content + "\n";
-            chunk.div.set(chunk.content);
+            var content = chunk.content;
+            if(content.match("%\n*$")) {
+                content = content.trim();
+                content = content.substring(0,content.length-1);
+            }
+
+            this.rawOutput += content + "\n";
+            chunk.div.set(content);
         },
         processCss: async function(chunk) {
             var css = HtmlUtils.tag("style", ["type", "text/css"], chunk.content);
@@ -6712,9 +6769,14 @@ function RamaddaNotebookCell(notebook, id, content, props) {
          //            await Utils.importJS(ramaddaBaseUrl + "/lib/katex/lib/katex/katex.min.js");
 
             this.rawOutput += chunk.content + "\n";
+            var content = chunk.content;
+            if(content.match("%\n*$")) {
+                content = content.trim();
+                content = content.substring(0,content.length-1);
+            }
             var o = "";
             var tex = null;
-            var lines = chunk.content.split("\n");
+            var lines = content.split("\n");
             var texs=[];
             for(var i=0;i<lines.length;i++) {
                 var line = lines[i];
@@ -6876,16 +6938,21 @@ function RamaddaNotebookCell(notebook, id, content, props) {
                 }
                 var html = "";
                 if (result!=null) {
-                    var type = typeof result;
-                    if(type !="object" && type!="function") {
-                        html = result;
-                        this.rawOutput += html + "\n";
+                    var rendered = this.notebook.formatOutput(result);
+                    if(rendered!=null) {
+                        html = rendered;
+                    } else {
+                        var type = typeof result;
+                        if(type !="object" && type!="function") {
+                            html = result;
+                            this.rawOutput += html + "\n";
+                        }
                     }
                 }
                 chunk.div.append(html);
             } catch (e) {
                 chunk.ok = false;
-                var line = lines[e.lineNumber - topLines-2];
+                var line = lines[e.lineNumber - topLines-1];
                 this.notebook.log("Error: " + e.message + "<br>&gt;" +(line?line:""),"error","js",chunk.div);
             }
             notebookStates[state.id] = null;

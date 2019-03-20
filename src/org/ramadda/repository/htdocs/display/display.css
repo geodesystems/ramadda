@@ -1242,8 +1242,9 @@ color:rgb(63, 127, 95);
 }
 
 .display-notebook-chunk {
-/*   border: 1px #ccc solid;*/
-
+/*   margin:1px;
+   border: 1px #ccc solid;
+*/
 }
 
 .display-notebook-chunk p {
