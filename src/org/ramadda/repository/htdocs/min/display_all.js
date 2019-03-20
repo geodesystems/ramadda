@@ -16347,6 +16347,8 @@ function RamaddaMapDisplay(displayManager, id, properties) {
                 extraStyle += " height:" + height + "px; ";
             } else if (height < 0) {
                 extraStyle += " height:" + (-height) + "%; ";
+            } else if(height!="") {
+                extraStyle += " height:" + (height)+";";
             }
 
             if(this.getProperty("doAnimation",false)) {
@@ -17011,8 +17013,8 @@ function RamaddaMapDisplay(displayManager, id, properties) {
             }
             return source.getProperty(prop, dflt);
         },
-        applyVectorMap: function() {
-            if (this.vectorMapApplied) {
+        applyVectorMap: function(force) {
+            if (!force && this.vectorMapApplied) {
                 return;
             }
             if (!this.doDisplayMap()) {
@@ -17029,6 +17031,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
             var circles = this.points;
             for (var i = 0; i < circles.length; i++) {
                 var circle = circles[i];
+                if(circle.style && circle.style.display=="none") continue;
                 var center = circle.center;
                 var matchedFeature = null;
                 var index = -1;
@@ -17082,13 +17085,24 @@ function RamaddaMapDisplay(displayManager, id, properties) {
                     matchedFeature.dataIndex = i;
                 }
             }
+            for(var i=0;i<features.length;i++) {
+                var feature = features[i];
+                style = feature.style;
+                if (!style) style = {
+                        "stylename": "from display"
+                    };
+                $.extend(style, {"display":"none"});
+            }
+
+            /*
             if (("" + this.getProperty("pruneFeatures", "")) == "true") {
                 this.vectorLayer.removeFeatures(features);
                 var dataBounds = this.vectorLayer.getDataExtent();
                 bounds = this.map.transformProjBounds(dataBounds);
-                if(this.getProperty("bounds") == null)
+                if(!force && this.getProperty("bounds") == null)
                     this.map.centerOnMarkers(bounds, true);
             }
+            */
             this.vectorLayer.redraw();
         },
         needsData: function() {
@@ -17211,6 +17225,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
                     this.animation.label.html("");
                     this.run.html("Start Animation");
                 }
+                this.applyVectorMap(true);
         },
         formatAnimationDate: function(d) {
                 if(this.animation.dateFormat == "yyyy") {
@@ -17229,6 +17244,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
                 }
                 if(this.map.circles)
                     this.map.circles.redraw();
+                this.applyVectorMap(true);
         },
 
         updateUI: function() {
@@ -17467,6 +17483,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
             var dontAddPoint = this.doDisplayMap();
             var didColorBy = false;
             var seen = {};
+
             for (var i = 0; i < points.length; i++) {
                 var pointRecord = records[i];
                 var point = points[i];
@@ -17590,8 +17607,10 @@ function RamaddaMapDisplay(displayManager, id, properties) {
                 }
 
                 if (showPoints) {
-                    if (Utils.isDefined(seen[point])) continue;
-                    seen[point] = true;
+                    //We do this because openlayers gets really slow when there are lots of features at one point
+                    if (!Utils.isDefined(seen[point])) seen[point] = 0; 
+                    if (seen[point]>50) continue;
+                    seen[point]++;
                     point = this.map.addPoint("pt-" + i, point, props, html, dontAddPoint);
                     var date = pointRecord.getDate();
                     if(date) {

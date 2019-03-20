@@ -1182,7 +1182,7 @@ public class CsvUtil {
         new Cmd("-geocode",
                 "<col idx> <csv file> <name idx> <lat idx> <lon idx>"),
         new Cmd("-geocodeaddress",
-                "<col indices> <latlabel> <lonlabel> <prefix> <suffix> "),
+                "<col indices> Latitude Longitude <prefix> <suffix> "),
         new Cmd("-geocodeaddressdb", "<col indices> <prefix> <suffix> "),
         new Cmd("-count", "", "(show count)"),
         new Cmd("-maxrows", "<max rows to print>"),
