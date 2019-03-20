@@ -590,52 +590,55 @@ var Utils = {
             colors: ['rgb(62,62,62)', 'rgb(69,69,69)', 'rgb(75,75,75)', 'rgb(82,82,82)', 'rgb(88,88,88)', 'rgb(95,95,95)', 'rgb(102,102,102)', 'rgb(108,108,108)', 'rgb(115,115,115)', 'rgb(121,121,121)', 'rgb(128,128,128)', 'rgb(135,135,135)', 'rgb(141,141,141)', 'rgb(148,148,148)', 'rgb(155,155,155)', 'rgb(161,161,161)', 'rgb(168,168,168)', 'rgb(174,174,174)', 'rgb(181,181,181)', 'rgb(188,188,188)', 'rgb(194,194,194)', 'rgb(201,201,201)', 'rgb(207,207,207)', 'rgb(214,214,214)', 'rgb(221,221,221)', 'rgb(227,227,227)', 'rgb(234,234,234)', 'rgb(240,240,240)', 'rgb(247,247,247)', 'rgb(254,254,254)', ]
         },
         blue_green: {
-            colors: ['#e5f5f9', '#99d8c9', '#2ca25f']
+            colors: ['#f7fcfd','#e5f5f9','#ccece6','#99d8c9','#66c2a4','#41ae76','#238b45','#006d2c','#00441b']
         },
         blue_purple: {
-            colors: ['#e0ecf4', '#9ebcda', '#8856a7']
+            colors: ['#f7fcfd','#e0ecf4','#bfd3e6','#9ebcda','#8c96c6','#8c6bb1','#88419d','#810f7c','#4d004b']
         },
         green_blue: {
-            colors: ['#e0f3db', '#a8ddb5', '#43a2ca']
+            colors: ['#f7fcf0','#e0f3db','#ccebc5','#a8ddb5','#7bccc4','#4eb3d3','#2b8cbe','#0868ac','#084081']
         },
         orange_red: {
-            colors: ['#fee8c8', '#fdbb84', '#e34a33']
+            colors: ['#fff7ec','#fee8c8','#fdd49e','#fdbb84','#fc8d59','#ef6548','#d7301f','#b30000','#7f0000']
         },
         purple_blue: {
-            colors: ['#ece7f2', '#a6bddb', '#2b8cbe']
+           colors:             ['#fff7fb','#ece7f2','#d0d1e6','#a6bddb','#74a9cf','#3690c0','#0570b0','#045a8d','#023858']
         },
         purple_blue_green: {
-            colors: ['#ece2f0', '#a6bddb', '#1c9099']
+            colors: ['#fff7fb','#ece2f0','#d0d1e6','#a6bddb','#67a9cf','#3690c0','#02818a','#016c59','#014636']
         },
         purple_red: {
-            colors: ['#e7e1ef', '#c994c7', '#dd1c77']
+            colors: ['#f7f4f9','#e7e1ef','#d4b9da','#c994c7','#df65b0','#e7298a','#ce1256','#980043','#67001f']
         },
         red_purple: {
-            colors: ['#fde0dd', '#fa9fb5', '#c51b8a']
+            colors: ['#fff7f3','#fde0dd','#fcc5c0','#fa9fb5','#f768a1','#dd3497','#ae017e','#7a0177','#49006a']
         },
         yellow_green: {
-            colors: ['#f7fcb9', '#addd8e', '#31a354']
+            colors: ['#ffffe5','#f7fcb9','#d9f0a3','#addd8e','#78c679','#41ab5d','#238443','#006837','#004529']
         },
         yellow_green_blue: {
-            colors: ['#edf8b1', '#7fcdbb', '#2c7fb8']
+            colors: ['#ffffd9','#edf8b1','#c7e9b4','#7fcdbb','#41b6c4','#1d91c0','#225ea8','#253494','#081d58']
         },
         yellow_orange_brown: {
-            colors: ['#fff7bc', '#fec44f', '#d95f0e']
+            colors: ['#ffffe5','#fff7bc','#fee391','#fec44f','#fe9929','#ec7014','#cc4c02','#993404','#662506']
         },
         yellow_orange_red: {
-            colors: ['#ffeda0', '#feb24c', '#f03b20']
+            colors: ['#ffffcc','#ffeda0','#fed976','#feb24c','#fd8d3c','#fc4e2a','#e31a1c','#bd0026','#800026']
         },
         oranges: {
-            colors: ['#fee6ce', '#fdae6b', '#e6550d']
+            colors: ['#fff5eb','#fee6ce','#fdd0a2','#fdae6b','#fd8d3c','#f16913','#d94801','#a63603','#7f2704']
         },
         purples: {
-            colors: ['#efedf5', '#bcbddc', '#756bb1']
+            colors: ['#fcfbfd','#efedf5','#dadaeb','#bcbddc','#9e9ac8','#807dba','#6a51a3','#54278f','#3f007d']
         },
         reds: {
-            colors: ['#fee0d2', '#fc9272', '#de2d26']
+            colors: ['#fff5f0','#fee0d2','#fcbba1','#fc9272','#fb6a4a','#ef3b2c','#cb181d','#a50f15','#67000d']
         },
         greens: {
-            colors: ['#e5f5e0', '#a1d99b', '#31a354']
+            colors: ['#f7fcf5','#e5f5e0','#c7e9c0','#a1d99b','#74c476','#41ab5d','#238b45','#006d2c','#00441b']
+        },
+        map_grays{
+            colors: ['#ffffff','#f0f0f0','#d9d9d9','#bdbdbd','#969696','#737373','#525252','#252525','#000000']
         },
         bright38: {
             colors: ['rgb(254,0,225)', 'rgb(188,0,254)', 'rgb(165,0,254)', 'rgb(134,0,254)', 'rgb(111,0,254)', 'rgb(81,0,254)', 'rgb(58,0,254)', 'rgb(28,0,254)', 'rgb(0,2,254)', 'rgb(0,33,254)', 'rgb(0,56,254)', 'rgb(0,78,254)', 'rgb(0,139,254)', 'rgb(0,169,254)', 'rgb(0,208,254)', 'rgb(0,231,254)', 'rgb(0,254,231)', 'rgb(0,254,200)', 'rgb(0,254,169)', 'rgb(0,254,139)', 'rgb(0,254,109)', 'rgb(0,254,79)', 'rgb(0,254,39)', 'rgb(0,254,0)', 'rgb(42,254,0)', 'rgb(88,254,0)', 'rgb(126,254,0)', 'rgb(164,254,0)', 'rgb(195,254,0)', 'rgb(226,254,0)', 'rgb(254,243,0)', 'rgb(254,199,0)', 'rgb(254,167,0)', 'rgb(254,137,0)', 'rgb(254,106,0)', 'rgb(254,68,0)', 'rgb(254,30,0)', 'rgb(254,0,0)', ]
