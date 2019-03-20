@@ -5356,10 +5356,12 @@ function RamaddaNotebookDisplay(displayManager, id, properties) {
         initOutputRenderers: function() {
                 let notebook = this;
                 this.outputRenderesr=[];
+                /*
                 this.addOutputRenderer({
                         shouldRender: (value) => {return typeof value === "object";},
                             render: (value) => {if(Array.isArray(value)) return HtmlUtils.div(["style"," white-space: pre;"], JSON.stringify(value)); return HtmlUtils.div(["style"," white-space: pre;"],JSON.stringify(value,null,2))},
                             });
+                */
                 this.addOutputRenderer({
                         shouldRender: (value) => {return typeof value === "object" && value.getTime;},
                             render: (value) => {return notebook.formatDate(value)},
@@ -6618,7 +6620,7 @@ function RamaddaNotebookCell(notebook, id, content, props) {
                 chunks.push({
                     content: chunk,
                     type: type,
-                    rest:rest,
+                    rest:" " + rest+" ",
                     div: div,
                     doChunk:doChunk,
                     ok: true
@@ -6640,6 +6642,7 @@ function RamaddaNotebookCell(notebook, id, content, props) {
             for (var i = 0; i < chunks.length; i++) {
                 var chunk = chunks[i];
                 if(!chunk.doChunk) continue;
+                if(chunk.rest.indexOf(" dontRun ")>=0) continue;
                 chunk.div.set("");
                 await this.processChunk(chunk);
                 if (!chunk.ok) {
@@ -17474,6 +17477,22 @@ function RamaddaMapDisplay(displayManager, id, properties) {
                     if (i == 0 || v < sizeBy.minValue) sizeBy.minValue = v;
                 }
             }
+            sizeBy.radiusMin = parseFloat(this.getProperty("sizeByRadiusMin",-1));
+            sizeBy.radiusMax = parseFloat(this.getProperty("sizeByRadiusMax",-1));
+            var sizeByOffset  = 0;
+            var sizeByLog = this.getProperty("sizeByLog",false);
+            var sizeByFunc = Math.log;
+            if(sizeByLog) {
+                if(sizeBy.minValue<1) {
+                    sizeByOffset = 1-sizeBy.minValue;
+                }
+                sizeBy.minValue = sizeByFunc(sizeBy.minValue+sizeByOffset);
+                sizeBy.maxValue = sizeByFunc(sizeBy.maxValue+sizeByOffset);
+            }
+            sizeBy.range = sizeBy.maxValue-sizeBy.minValue;
+
+
+
             if(this.animation.dateMax) {
                 this.animation.dateRange = this.animation.dateMax.getTime() - this.animation.dateMin.getTime();
             }
@@ -17485,6 +17504,22 @@ function RamaddaMapDisplay(displayManager, id, properties) {
             }
             colorBy.minValue = this.getDisplayProp(source, "colorByMin", colorBy.minValue);
             colorBy.maxValue = this.getDisplayProp(source, "colorByMax", colorBy.maxValue);
+            colorBy.origMinValue = colorBy.minValue;
+            colorBy.origMaxValue = colorBy.maxValue;
+
+            var colorByOffset  = 0;
+            var colorByLog = this.getProperty("colorByLog",false);
+            var colorByFunc = Math.log;
+            if(colorByLog) {
+                if(colorBy.minValue<1) {
+                    colorByOffset = 1-colorBy.minValue;
+                }
+                colorBy.minValue = colorByFunc(colorBy.minValue+colorByOffset);
+                colorBy.maxValue = colorByFunc(colorBy.maxValue+colorByOffset);
+            }
+            colorBy.range = colorBy.maxValue-colorBy.minValue;
+            //            console.log("cb:" + colorBy.minValue +" " + colorBy.maxValue+ " off:" + colorByOffset);
+
 
             if (this.points) {
                 for (var i = 0; i < this.points.length; i++)
@@ -17529,9 +17564,15 @@ function RamaddaMapDisplay(displayManager, id, properties) {
                             segmentWidth = dfltSegmentWidth;
                         }
                     } else {
-                        var denom = (sizeBy.maxValue - sizeBy.minValue);
-                        var percent = (denom == 0 ? NaN : (value - sizeBy.minValue) / denom);
-                        props.pointRadius = 6 + parseInt(15 * percent);
+                        var denom = sizeBy.range;
+                        var v = value+sizeByOffset;
+                        if(sizeByLog) v= sizeByFunc(v);
+                        var percent = (denom == 0 ? NaN : (v - sizeBy.minValue) / denom);
+                        if(sizeBy.radiusMax>=0 && sizeBy.radiusMin>=0) {
+                            props.pointRadius = Math.round(sizeBy.radiusMin+ percent*(sizeBy.radiusMax-sizeBy.radiusMin));
+                        } else {
+                            props.pointRadius = 6 + parseInt(15 * percent);
+                        }
                         if (sizeEndPoints) {
                             endPointSize = dfltEndPointSize + parseInt(10 * percent);
                         }
@@ -17572,12 +17613,16 @@ function RamaddaMapDisplay(displayManager, id, properties) {
                         }
 
                     } else {
+                        var v = value;
                         if(colorBy.isString) {
-                            value = colorByMap[value];
+                            v = colorByMap[v];
                         } 
-                        percent = (value - colorBy.minValue) / (colorBy.maxValue - colorBy.minValue);
-                        //                        if(i<20)
-                            //                            console.log("cbv:" +value +" %:" + percent);
+                        v += colorByOffset;
+                        if(colorByLog) {
+                            v = colorByFunc(v);
+                        }
+                        percent = (v - colorBy.minValue) /colorBy.range;
+                        //console.log("cbv:" +value +" %:" + percent);
                     }
 
                     var index = parseInt(percent * colors.length);
@@ -17640,7 +17685,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
                 }
             }
             if (didColorBy) {
-                this.displayColorTable(colors, ID_BOTTOM, colorBy.minValue, colorBy.maxValue, {
+                this.displayColorTable(colors, ID_BOTTOM, colorBy.origMinValue, colorBy.origMaxValue, {
                         stringValues:colorByValues}
                     );
             }

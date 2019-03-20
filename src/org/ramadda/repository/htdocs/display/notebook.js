@@ -112,10 +112,12 @@ function RamaddaNotebookDisplay(displayManager, id, properties) {
         initOutputRenderers: function() {
                 let notebook = this;
                 this.outputRenderesr=[];
+                /*
                 this.addOutputRenderer({
                         shouldRender: (value) => {return typeof value === "object";},
                             render: (value) => {if(Array.isArray(value)) return HtmlUtils.div(["style"," white-space: pre;"], JSON.stringify(value)); return HtmlUtils.div(["style"," white-space: pre;"],JSON.stringify(value,null,2))},
                             });
+                */
                 this.addOutputRenderer({
                         shouldRender: (value) => {return typeof value === "object" && value.getTime;},
                             render: (value) => {return notebook.formatDate(value)},
@@ -1374,7 +1376,7 @@ function RamaddaNotebookCell(notebook, id, content, props) {
                 chunks.push({
                     content: chunk,
                     type: type,
-                    rest:rest,
+                    rest:" " + rest+" ",
                     div: div,
                     doChunk:doChunk,
                     ok: true
@@ -1396,6 +1398,7 @@ function RamaddaNotebookCell(notebook, id, content, props) {
             for (var i = 0; i < chunks.length; i++) {
                 var chunk = chunks[i];
                 if(!chunk.doChunk) continue;
+                if(chunk.rest.indexOf(" dontRun ")>=0) continue;
                 chunk.div.set("");
                 await this.processChunk(chunk);
                 if (!chunk.ok) {
