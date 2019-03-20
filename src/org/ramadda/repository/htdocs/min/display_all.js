@@ -5458,7 +5458,6 @@ function RamaddaNotebookDisplay(displayManager, id, properties) {
                 this.layoutCells();
                 this.cells[0].focus();
             }
-
             if (this.runOnLoad) {
                 this.runAll();
             }
@@ -6446,7 +6445,6 @@ function RamaddaNotebookCell(notebook, id, content, props) {
                 var line = lines[i].trim();
                 if(line.startsWith("%%")) {
                     var type = line.substring(2).trim();
-
                     if(type.startsWith("md") || type.startsWith("html") || type.startsWith("css")) {
                         var doRows = {};
                         doRows[i] = true;
@@ -6470,7 +6468,6 @@ function RamaddaNotebookCell(notebook, id, content, props) {
             }
             
         },
-
         run: async function(callback, justCurrent, toEnd) {
             if (this.running) return Utils.call(callback, true);
             this.running = true;
@@ -6550,6 +6547,7 @@ function RamaddaNotebookCell(notebook, id, content, props) {
             value = this.notebook.convertInput(value);
             if(!this.divs) this.divs = [];
             var type = "wiki";
+            var rest = "";
             var chunks = [];
             var chunk = "";
             var commands = value.split("\n");
@@ -6583,30 +6581,33 @@ function RamaddaNotebookCell(notebook, id, content, props) {
                 var _command = command.trim();
                 if (_command.startsWith("//")) continue;
                 if (_command.startsWith("%%")) {
-                    var rest = _command.substring(2).trim();
+                    var newRest = _command.substring(2).trim();
                     var newType;
-                    var index = rest.indexOf(" ");
+                    var index = newRest.indexOf(" ");
                     if (index < 0) {
-                        newType = rest;
-                        rest = "";
+                        newType = newRest;
+                        newRest = "";
                     } else {
-                        newType = rest.substring(0, index).trim();
-                        rest = rest.substring(index);
+                        newType = newRest.substring(0, index).trim();
+                        newRest = newRest.substring(index);
                     }
                     if (chunk != "") {
                         var div = makeDiv();
                         chunks.push({
                             content: chunk,
                             type: type,
+                            rest:rest,
                             div: div,
                             doChunk: doChunk,
                             ok: true
                         });
                     }
                     doChunk = doRows?doRows[i]:true;
-                    chunk = rest;
+                    chunk = "";
                     if (chunk != "") chunk += "\n";
-                    type = newType;
+                    if(newType!="")
+                        type = newType;
+                    rest = newRest;
                     continue;
                 }
                 chunk = chunk + command + "\n";
@@ -6617,6 +6618,7 @@ function RamaddaNotebookCell(notebook, id, content, props) {
                 chunks.push({
                     content: chunk,
                     type: type,
+                    rest:rest,
                     div: div,
                     doChunk:doChunk,
                     ok: true
@@ -6699,8 +6701,20 @@ function RamaddaNotebookCell(notebook, id, content, props) {
                 var error = null;
                 var url;
                 var msgExtra ="";
-                if (line.startsWith("js:")) {
-                    url = line.substring(3).trim();
+                var idx = line.indexOf(":");
+                if(idx<0) {
+                    this.handleError(chunk, "Bad fetch line:" + line,"io");
+                    return;
+                }
+                var tag = line.substring(0,idx);
+                line = line.substring(idx+1).trim();
+                var idx = line.indexOf(" //");
+                if(idx>=0) {
+                    line = line.substring(0,idx).trim();
+                }
+
+                if (tag == "js") {
+                    url = line;
                     //Don't import jquery
                     if(url.match("jquery-.*\\.js")) return;
                     await Utils.importJS(url,
@@ -6711,17 +6725,16 @@ function RamaddaNotebookCell(notebook, id, content, props) {
                                          //Check the cache
                                          false
                                          );
-                } else if (line.startsWith("css:")) {
-                    url = line.substring(4).trim();
+                } else if (tag == "css") {
+                    url = line;
                     await Utils.importCSS(url,
                         null,
                                           (jqxhr, settings, exception) => error = "Error fetching " + origLine + " " + exception,true);
-                } else if (line.startsWith("html:")) {
-                    url = line.substring(5).trim();
+                } else if (tag == "html") {
+                    url = line;
                     await Utils.importText(url, h => chunk.div.append(h), (jqxhr, settings, exception) => error = "Error fetching " + origLine + " " + exception);
-                } else if (line.startsWith("text:") || line.startsWith("json:")) {
-                    var isJson = line.startsWith("json:");
-                    line = line.substring(5).trim();
+                } else if (tag == "text" || tag == "json") {
+                    var isJson = tag == "json";
                     var v = null;
                     //check if we have a var
                     var indexEquals = line.indexOf("=");
@@ -6738,8 +6751,9 @@ function RamaddaNotebookCell(notebook, id, content, props) {
                         }
                     }
                     url = line;
+                    console.log("url:" +url);
                     var results = null;
-                    await Utils.importText(url, h => results = h, (jqxhr, settings, err) => error = "Error fetching " + origLine + " error:" + err?err.toString():"");
+                    await Utils.importText(url, h => results = h, (jqxhr, settings, err) => error = "Error fetching " + origLine + " error:" + (err?err.toString():""));
                     if (results) {
                         if(isJson) {
                             results = JSON.parse(results);
@@ -6754,7 +6768,7 @@ function RamaddaNotebookCell(notebook, id, content, props) {
                         }
                     }
                 } else {
-                    error =  "Unknown fetch:" + line;
+                    error =  "Unknown fetch:" + origLine;
                 }
                 if (error) {
                     this.handleError(chunk, error,"io");
@@ -6972,9 +6986,8 @@ function RamaddaNotebookCell(notebook, id, content, props) {
             } else if (chunk.type == "raw") {
                 var content = chunk.content;
                 var re = new RegExp("^ *var *= *(.*)");
-                var toks = re.exec(content);
+                var toks = re.exec(chunk.rest);
                 if(toks) {
-                    content =  content.replace(re, "").trim();
                     var id = toks[1];
                     this.notebook.setCellValue(id, content);
                 }
