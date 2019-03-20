@@ -76,7 +76,7 @@ public class LatLonImageTypeHandler extends GenericTypeHandler {
         String  _path = path.toLowerCase();
         boolean isKmz = _path.endsWith(".kmz");
         if ( !(isKmz || _path.endsWith(".tif") || _path.endsWith(".tiff")
-                || _path.endsWith(".grd"))) {
+               || _path.endsWith(".grd")|| _path.endsWith(".asc"))) {
 
             return;
         }
