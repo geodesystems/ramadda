@@ -6751,7 +6751,6 @@ function RamaddaNotebookCell(notebook, id, content, props) {
                         }
                     }
                     url = line;
-                    console.log("url:" +url);
                     var results = null;
                     await Utils.importText(url, h => results = h, (jqxhr, settings, err) => error = "Error fetching " + origLine + " error:" + (err?err.toString():""));
                     if (results) {
