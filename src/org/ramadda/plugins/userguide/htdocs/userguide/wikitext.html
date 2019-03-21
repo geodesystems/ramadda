@@ -42,6 +42,8 @@ as well as special  RAMADDA wiki tags that allow for page payout, displaying map
 </a>
 <li> <a href='#inset'><a href="#inset">Inset</a>
 </a>
+<li> <a href='#frames'><a href="#frames">Frames</a>
+</a>
 <li> <a href='#gridboxes'><a href="#gridboxes">Grid Boxes</a>
 </a>
 <li> <a href='#tables'><a href="#tables">Scrollable Tables</a>
@@ -445,6 +447,32 @@ This by default gives a 20px left and right margin. To change this you can add a
 
 
 
+<a name="frames"></a>
+<div class="ramadda-help-subsubheading"><a href="#frames">Frames</a>
+</div> 
+Frame your content like this:
+<div class="cimg"><a href="images/gridbox.png"><img  src="images/gridbox.png" border=0 alt="images/gridbox.png" ></a></div>
+
+With the +frame/-frame tags:
+<pre>
++frame
+content
+-frame
+</pre>
+
+You can change the background of the inner part of the frame with:
+<pre>
++frame background=white
+content
+-frame
+</pre>
+
+You can change the size and the color of the frame with:
+<pre>
++frame frameSize=5 frameColor=red
+content
+-frame
+</pre>
 
 <a name="gridboxes"></a>
 <div class="ramadda-help-subsubheading"><a href="#gridboxes">Grid Boxes</a>

@@ -8412,7 +8412,7 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
             chartOptions.hAxis.titleTextStyle = {};
             chartOptions.vAxis.titleTextStyle = {};
             this.setPropertyOn(chartOptions.backgroundColor,"chart.fill","fill",null);
-            this.setPropertyOn(chartOptions.backgroundColor,"chart.stroke","stroke",this.getProperty("chartArea.fill","red"));
+            this.setPropertyOn(chartOptions.backgroundColor,"chart.stroke","stroke",this.getProperty("chartArea.fill",""));
             this.setPropertyOn(chartOptions.backgroundColor,"chart.strokeWidth","strokeWidth",null);
 
             this.setPropertyOn(chartOptions.chartArea.backgroundColor,"chartArea.fill","fill",null);

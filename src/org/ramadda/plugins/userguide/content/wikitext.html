@@ -366,6 +366,30 @@ This by default gives a 20px left and right margin. To change this you can add a
 
 
 
+[ug::subsubheading {Frames} frames]
+Frame your content like this:
+[ht::cimg images/gridbox.png {} {border=0}]
+
+With the +frame/-frame tags:
+<pre>
++frame
+content
+-frame
+</pre>
+
+You can change the background of the inner part of the frame with:
+<pre>
++frame background=white
+content
+-frame
+</pre>
+
+You can change the size and the color of the frame with:
+<pre>
++frame frameSize=5 frameColor=red
+content
+-frame
+</pre>
 
 [ug::subsubheading {Grid Boxes} gridboxes]
 To make a gridded box layout like this use  the +gridboxes/+gridbox tags.

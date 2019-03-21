@@ -1347,11 +1347,25 @@ public class WikiUtil {
             }
 
             if (tline.startsWith("+frame")) {
-                HtmlUtils.open(buff, "div",
-                               HtmlUtils.cssClass("ramadda-frame-outer"));
-                HtmlUtils.open(buff, "div",
-                               HtmlUtils.cssClass("ramadda-frame-inner"));
+                List<String> toks      = StringUtil.splitUpTo(tline, " ", 2);
+                Hashtable  props =
+                    HtmlUtils.parseHtmlProperties(toks.size()>1?toks.get(1):"");
+                String innerStyle = "";
+                String frameStyle = "";
+                String frameSize = (String) props.get("frameSize");
+                if(frameSize!=null)
+                    frameStyle+=" padding:" + frameSize+"px;";
+                String frameColor = (String) props.get("frameColor");
+                if(frameColor!=null)
+                    frameStyle+=" background:" + frameColor+";";
 
+                String background = (String) props.get("background");
+                if(background!=null)
+                    innerStyle+=" background:" + background+";";
+                HtmlUtils.open(buff, "div",
+                               HtmlUtils.cssClass("ramadda-frame-outer")+ HtmlUtils.style(frameStyle));
+                HtmlUtils.open(buff, "div",
+                               HtmlUtils.cssClass("ramadda-frame-inner") + HtmlUtils.style(innerStyle));
                 continue;
             }
 

@@ -694,13 +694,13 @@ position:relative;
 
 
 .ramadda-frame-outer {
-background:#F2F0EE;
-padding:15px;
+  background:#F2F0EE;
+  padding:15px;
 }
 
 .ramadda-frame-inner {
-padding:8px;
-border:1px #ddd solid;
+  padding:10px;
+  border:1px #ddd solid;
 }
 
 
