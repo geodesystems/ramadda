@@ -5353,9 +5353,14 @@ function RamaddaNotebookDisplay(displayManager, id, properties) {
             });
 
         },
+       formatObject: function(value) {
+                if(Array.isArray(value)) 
+                    return HtmlUtils.div(["style"," white-space: pre;"], JSON.stringify(value)); 
+                return HtmlUtils.div(["style"," white-space: pre;"],JSON.stringify(value,null,2))},
+        },
         initOutputRenderers: function() {
                 let notebook = this;
-                this.outputRenderesr=[];
+                this.outputRenderers=[];
                 /*
                 this.addOutputRenderer({
                         shouldRender: (value) => {return typeof value === "object";},
@@ -5956,10 +5961,13 @@ function NotebookState(cell, div) {
                return document.getElementById(id);
             }
         },
-        write: function(s) {
-             s = this.getNotebook().formatOutput(s);
+        write: function(value) {
+             var s = this.getNotebook().formatOutput(value);
+             if(s==null &&  (typeof value)=="object") {
+                 s = this.notebook.formatObject(value);
+             }
              this.div.append(s);
-            },
+        },
         linechart: async function(entry, props) {
             if (!entry)
                 await this.cell.getCurrentEntry(e => entry = e);
