@@ -898,6 +898,10 @@ function RamaddaNotebookCell(notebook, id, content, props) {
             this.header.keydown(moveFunc);
             this.input.keydown(function(e) {
                 var key = e.key;
+                if (key == 's' && e.ctrlKey) {
+                    _this.notebook.saveNotebook(false);
+                    return;
+                }
                 if (key == 'Enter') {
                     //                    console.log(key +"  shift:"  + e.shiftKey +" ctrl:" + e.ctrlKey);
                     if (e.shiftKey || e.ctrlKey) {

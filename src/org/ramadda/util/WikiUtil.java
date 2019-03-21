@@ -1350,8 +1350,12 @@ public class WikiUtil {
                 List<String> toks      = StringUtil.splitUpTo(tline, " ", 2);
                 Hashtable  props =
                     HtmlUtils.parseHtmlProperties(toks.size()>1?toks.get(1):"");
+                String outerClazz = "ramadda-frame-outer";
                 String innerStyle = "";
                 String frameStyle = "";
+                if(props.get("shadow")!=null) {
+                    outerClazz += " ramadda-frame-shadow ";
+                } 
                 String frameSize = (String) props.get("frameSize");
                 if(frameSize!=null)
                     frameStyle+=" padding:" + frameSize+"px;";
@@ -1363,7 +1367,7 @@ public class WikiUtil {
                 if(background!=null)
                     innerStyle+=" background:" + background+";";
                 HtmlUtils.open(buff, "div",
-                               HtmlUtils.cssClass("ramadda-frame-outer")+ HtmlUtils.style(frameStyle));
+                               HtmlUtils.cssClass(outerClazz)+ HtmlUtils.style(frameStyle));
                 HtmlUtils.open(buff, "div",
                                HtmlUtils.cssClass("ramadda-frame-inner") + HtmlUtils.style(innerStyle));
                 continue;

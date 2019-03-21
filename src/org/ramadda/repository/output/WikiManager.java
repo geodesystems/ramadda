@@ -112,6 +112,15 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
                             new WikiTag(WIKI_TAG_EMBED, null, ATTR_ENTRY,"",ATTR_SKIP_LINES,"0",ATTR_MAX_LINES,"1000",ATTR_FORCE,"false",ATTR_MAXHEIGHT,"300",ATTR_ANNOTATE,"false"),
                             new WikiTag(WIKI_TAG_FIELD, null, "name", "")),
         new WikiTagCategory("Layout", 
+                            new WikiTag(WIKI_TAG_MAP,
+                                        null, ATTR_WIDTH, "100%", ATTR_HEIGHT, "400",
+                                              ATTR_LISTENTRIES, "true", ATTR_DETAILS, "false",
+                                        "showLocationSearch","true",
+                                              "showCheckbox", "true",
+                                              "showSearch", "false",
+                                              ATTR_ICON, "#/icons/dots/green.png", ARG_MAP_ICONSONLY,
+                                              "false"), 
+
                             new WikiTag(WIKI_TAG_LINKS, null, "#" + ATTR_SHOWTITLE,"",
                                                               "#" + ATTR_TITLE,"",
                                                               "#"+ ATTR_INCLUDEICON,"true",
@@ -145,29 +154,7 @@ ATTR_SHOWLINK, "true", ATTR_INCLUDEICON, "false") + ATTRS_LAYOUT),
                                                               + "header", "", APPLY_PREFIX
                                                               + "footer", "", APPLY_PREFIX
                                                               + "border", "0", APPLY_PREFIX
-                                                              + "bordercolor", "#000")),
-        
-        new WikiTagCategory("Earth",            
-                            new WikiTag(WIKI_TAG_MAP,
-                                        null, ATTR_WIDTH, "100%", ATTR_HEIGHT, "400",
-                                              ATTR_LISTENTRIES, "true", ATTR_DETAILS, "false",
-                                        "showLocationSearch","true",
-                                              "showCheckbox", "true",
-                                              "showSearch", "false",
-                                              ATTR_ICON, "#/icons/dots/green.png", ARG_MAP_ICONSONLY,
-                                              "false"), 
-                            /*
-                              keep the implementation around for legacy wikis but don't show this anymore
-                              as we can do {{map entries="this"}}
-                            new WikiTag(WIKI_TAG_MAPENTRY,
-                            null, ATTR_WIDTH, "100%", ATTR_HEIGHT, "400",
-                                              ATTR_DETAILS,
-                                              "false"), 
-                            */
-                            new WikiTag(WIKI_TAG_EARTH,null,
-                                        ATTR_WIDTH, "400", ATTR_HEIGHT, "400",
-                                              ATTR_LISTENTRIES, "false")),
-        
+                                        + "bordercolor", "#000")),
         new WikiTagCategory("Images",
                             new WikiTag(WIKI_TAG_IMAGE,null,
                                         "#"+ATTR_SRC, "", ATTR_WIDTH,"100%", "#"+ATTR_ALIGN,
@@ -224,7 +211,7 @@ ATTR_SHOWLINK, "true", ATTR_INCLUDEICON, "false") + ATTRS_LAYOUT),
                                         ATTR_INCLUDEICON,
                                         "false"), 
                             new WikiTag(WIKI_TAG_ROOT)),
-        new WikiTagCategory("Displays",
+        new WikiTagCategory("Displays and Charts",
                             new WikiTag(WIKI_TAG_GROUP, "Display group",
                                         "layoutType", "table", 
                                         "layoutColumns", "1",
@@ -5061,7 +5048,7 @@ ATTR_SHOWLINK, "true", ATTR_INCLUDEICON, "false") + ATTRS_LAYOUT),
                                  tags2.toString(), buttonClass);
 
         String addEntry = OutputHandler.getSelect(request, textAreaId,
-                              "Entry id", true, "entryid", entry, false,
+                              "Entry id", true, "entryid", entry, false,  
                               buttonClass);
 
 
