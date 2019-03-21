@@ -5354,9 +5354,10 @@ function RamaddaNotebookDisplay(displayManager, id, properties) {
 
         },
        formatObject: function(value) {
-                if(Array.isArray(value)) 
-                    return HtmlUtils.div(["style"," white-space: pre;"], JSON.stringify(value)); 
-                return HtmlUtils.div(["style"," white-space: pre;"],JSON.stringify(value,null,2))},
+                if(!value) return null;
+             if(Array.isArray(value)) 
+                 return HtmlUtils.div(["style"," white-space: pre;"], JSON.stringify(value)); 
+             return HtmlUtils.div(["style"," white-space: pre;"],JSON.stringify(value,null,2));
         },
         initOutputRenderers: function() {
                 let notebook = this;
