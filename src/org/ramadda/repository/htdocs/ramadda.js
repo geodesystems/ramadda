@@ -31,11 +31,11 @@ function hidePopupObject() {
 function mouseDown(event) {
     if (popupObject) {
         var thisId = popupObject.attr("id");
-        setTimeout(()=>{
-                if(checkToHidePopup() && popupObject && thisId == popupObject.attr("id")) {
-                    hidePopupObject()
-                }
-            },250);
+        setTimeout(() => {
+            if (checkToHidePopup() && popupObject && thisId == popupObject.attr("id")) {
+                hidePopupObject()
+            }
+        }, 250);
     }
     mouseIsDown = 1;
     mouseMoveCnt = 0;
@@ -869,8 +869,8 @@ function Selector(event, selectorId, elementId, allEntries, selecttype, localeId
 function selectClick(id, entryId, value) {
     selector = selectors[id];
     var handler = getHandler(id);
-    if(handler) {
-        handler.selectClick(selector.selecttype, id, entryId,value);
+    if (handler) {
+        handler.selectClick(selector.selecttype, id, entryId, value);
         selectCancel();
         return;
     }
@@ -973,7 +973,7 @@ function checkToHidePopup() {
         timeDiff = now - popupTime;
         if (timeDiff > 1000) {
             return true;
-        } 
+        }
         return false;
     }
     return true;
@@ -981,10 +981,10 @@ function checkToHidePopup() {
 
 function showPopup(event, srcId, popupId, alignLeft, myalign, atalign) {
     hidePopupObject();
-    var popup = $("#"+ popupId);
+    var popup = $("#" + popupId);
     popupTime = new Date();
     popupObject = popup;
-    var src = $("#"+ srcId);
+    var src = $("#" + srcId);
     if (!myalign)
         myalign = 'left top';
     if (!atalign)
@@ -995,18 +995,18 @@ function showPopup(event, srcId, popupId, alignLeft, myalign, atalign) {
     }
     popup.show();
     popup.position({
-            of:src,
-                my: myalign,
-                at: atalign,
-                collision: "none none"
+        of: src,
+        my: myalign,
+        at: atalign,
+        collision: "none none"
     });
     //Do it again to fix a bug on safari
     popup.position({
-            of: src,
-                my: myalign,
-                at: atalign,
-                collision: "none none"
-                });
+        of: src,
+        my: myalign,
+        at: atalign,
+        collision: "none none"
+    });
 }
 
 
@@ -1123,7 +1123,7 @@ function submitEntryForm(dialogId) {
 function treeViewClick(entryId, url, label, template) {
     var href = "<a href='" + url + "'> <img src=\"" + ramaddaBaseUrl + "/icons/link.png" + "\" border=0> " + label + "</a>";
     $("#treeview_header").html(href);
-    if(template)
+    if (template)
         url = url + "&template=" + template;
     $('#treeview_view').attr("src", url);
 }

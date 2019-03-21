@@ -6,7 +6,7 @@
 function insertText(id, value) {
     hidePopupObject();
     var handler = getHandler(id);
-    if(handler) {
+    if (handler) {
         handler.insertText(value);
         return;
     }
@@ -54,8 +54,8 @@ function insertTags(id, tagOpen, tagClose, sampleText) {
     hidePopupObject();
 
     var handler = getHandler(id);
-    if(handler) {
-        handler.insertTags(tagOpen,tagClose, sampleText);
+    if (handler) {
+        handler.insertTags(tagOpen, tagClose, sampleText);
         return;
     }
 

@@ -112,7 +112,7 @@ function RamaddaEntryDisplay(displayManager, id, type, properties) {
                     provider = fromSelect;
                 } else {
                     var toks = this.providers.split(",");
-                    if(toks.length>0) {
+                    if (toks.length > 0) {
                         var tuple = toks[0].split(":");
                         provider = tuple[0];
                     }
@@ -148,7 +148,7 @@ function RamaddaSearcher(displayManager, id, type, properties) {
 
     RamaddaUtil.initMembers(this, {
         showForm: true,
-        searchText:"",
+        searchText: "",
         showSearchSettings: true,
         showEntries: true,
         showType: true,
@@ -321,7 +321,9 @@ function RamaddaSearcher(displayManager, id, type, properties) {
         showEntryDetails: async function(event, entryId, src, leftAlign) {
             if (true) return;
             var entry;
-            await this.getEntry(entryId,e=>{entry=e});
+            await this.getEntry(entryId, e => {
+                entry = e
+            });
             var popupId = "#" + this.getDomId(ID_DETAILS + entryId);
             if (this.currentPopupEntry == entry) {
                 this.hideEntryDetails(entryId);
@@ -610,7 +612,7 @@ function RamaddaSearcher(displayManager, id, type, properties) {
                         options += "</optgroup>";
 
                 }
-                topItems.push(HtmlUtils.tag("select", ["multiple",null,"id", this.getDomId(ID_PROVIDERS), ATTR_CLASS, "display-search-providers"], options));
+                topItems.push(HtmlUtils.tag("select", ["multiple", null, "id", this.getDomId(ID_PROVIDERS), ATTR_CLASS, "display-search-providers"], options));
             }
 
 
@@ -2014,8 +2016,8 @@ function RamaddaMetadataDisplay(displayManager, id, properties) {
             }
 
             var html = "";
-            html += HtmlUtils.openTag(TAG_TABLE, ["id",this.getDomId("table"), ATTR_CLASS, "cell-border stripe ramadda-table", ATTR_WIDTH, "100%", "cellpadding", "5", "cellspacing", "0"]);
-            html+="<thead>"
+            html += HtmlUtils.openTag(TAG_TABLE, ["id", this.getDomId("table"), ATTR_CLASS, "cell-border stripe ramadda-table", ATTR_WIDTH, "100%", "cellpadding", "5", "cellspacing", "0"]);
+            html += "<thead>"
             var type = this.findEntryType(this.searchSettings.entryType);
             var typeName = "Entry";
             if (type != null) {
@@ -2056,7 +2058,7 @@ function RamaddaMetadataDisplay(displayManager, id, properties) {
             }
             var headerRow = HtmlUtils.tr(["valign", "bottom"], HtmlUtils.join(headerItems, ""));
             html += headerRow;
-            html+="</thead><tbody>"
+            html += "</thead><tbody>"
             var divider = "<div class=display-metadata-divider></div>";
             var missing = this.missingMessage;
             if (missing = null) missing = "&nbsp;";
@@ -2129,12 +2131,12 @@ function RamaddaMetadataDisplay(displayManager, id, properties) {
                 //Add in the header every 10 rows
                 if (((entryIdx + 1) % 10) == 0) html += headerRow;
             }
-            html+="</tbody>"
+            html += "</tbody>"
             html += HtmlUtils.closeTag(TAG_TABLE);
             this.jq(ID_ENTRIES).html(html);
             HtmlUtils.formatTable("#" + this.getDomId("table"), {
-                    scrollY: 400
-                        });
+                scrollY: 400
+            });
         },
     });
 
@@ -2253,7 +2255,7 @@ function RamaddaTimelineDisplay(displayManager, id, properties) {
 
 
 
-function  RamaddaEntrydisplayDisplay(displayManager, id, properties) {
+function RamaddaEntrydisplayDisplay(displayManager, id, properties) {
     var SUPER;
     var e = new Error();
 
@@ -2264,9 +2266,10 @@ function  RamaddaEntrydisplayDisplay(displayManager, id, properties) {
     if (properties.sourceEntry == null && properties.entryId != null) {
         var _this = this;
         var f = async function() {
-            await _this.getEntry(properties.entryId, entry=>{
-                    _this.sourceEntry = entry; 
-                    _this.initDisplay()});
+            await _this.getEntry(properties.entryId, entry => {
+                _this.sourceEntry = entry;
+                _this.initDisplay()
+            });
 
         }
         f();

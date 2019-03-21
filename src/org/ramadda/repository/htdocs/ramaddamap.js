@@ -60,18 +60,18 @@ function createProjection(name) {
     return new OpenLayers.Projection(name);
 }
 
-function get_my_url (bounds) {
+function get_my_url(bounds) {
     var res = this.map.getResolution();
-    var x = Math.round ((bounds.left - this.maxExtent.left) / (res * this.tileSize.w));
-    var y = Math.round ((this.maxExtent.top - bounds.top) / (res * this.tileSize.h));
+    var x = Math.round((bounds.left - this.maxExtent.left) / (res * this.tileSize.w));
+    var y = Math.round((this.maxExtent.top - bounds.top) / (res * this.tileSize.h));
     var z = this.map.getZoom();
 
-    var path = z + "/" + x + "/" + y + "." + this.type +"?"+ parseInt(Math.random()*9999);
+    var path = z + "/" + x + "/" + y + "." + this.type + "?" + parseInt(Math.random() * 9999);
     var url = this.url;
     if (url instanceof Array) {
         url = this.selectUrl(path, url);
     }
-    return url + this.service +"/"+ this.layername +"/"+ path;
+    return url + this.service + "/" + this.layername + "/" + path;
 
 }
 
@@ -109,7 +109,7 @@ function ramaddaMapAdd(map) {
 
 function ramaddaMapCheckLayout() {
     if (window.globalMapList != null) {
-        window.globalMapList.map(map=>map.map.updateSize());
+        window.globalMapList.map(map => map.map.updateSize());
     }
 }
 
@@ -205,7 +205,7 @@ function RepositoryMap(mapId, params) {
     if (params.initialLocation) {
         this.defaultLocation = createLonLat(params.initialLocation[1], params.initialLocation[0]);
     } else if (Utils.isDefined(params.initialBounds)) {
-        if((typeof params.initialBounds) == "string") {
+        if ((typeof params.initialBounds) == "string") {
             params.initialBounds = params.initialBounds.split(",");
         }
         this.defaultBounds = createBounds(params.initialBounds[1], params.initialBounds[2], params.initialBounds[3], params.initialBounds[0]);
@@ -424,7 +424,7 @@ function initMapFunctions(theMap) {
                 }
                 layer.selectCallback(layer);
             } else {
-                if(okToPopup) {
+                if (okToPopup) {
                     this.showMarkerPopup(feature, true);
                 }
             }
@@ -453,7 +453,7 @@ function initMapFunctions(theMap) {
             layer.selectedFeature = null;
             this.selectedFeature = null;
             this.onPopupClose();
-            if(true) return;
+            if (true) return;
 
             if (!feature) return;
             this.clearDateFeature(feature);
@@ -466,19 +466,19 @@ function initMapFunctions(theMap) {
             this.checkFeatureVisible(feature, true);
         },
         handleEntrySelect: function(id, name, type) {
-               if(type!="geo_kml" && type!="geo_json" && type!="geo_shapefile") return null;
-               var layer;
-               if(type=="geo_kml") {
-                   var url = ramaddaBaseUrl + "/entry/get?entryid=" + id;
-                   layer = this.addKMLLayer(name, url, true, null, null,null,null, true);
-               } else  if(type=="geo_json") {
-                   var url = ramaddaBaseUrl + "/entry/get?entryid=" + id;
-                   layer = this.addGeoJsonLayer(name, url, true, null, null,null,null, true);
-               } else {
-                   var url = ramaddaBaseUrl + "/entry/show?output=shapefile.kml&entryid=" + id;
-                   layer = this.addKMLLayer(name, url, true, null, null,null,null, true);
-               }
-               return layer;
+            if (type != "geo_kml" && type != "geo_json" && type != "geo_shapefile") return null;
+            var layer;
+            if (type == "geo_kml") {
+                var url = ramaddaBaseUrl + "/entry/get?entryid=" + id;
+                layer = this.addKMLLayer(name, url, true, null, null, null, null, true);
+            } else if (type == "geo_json") {
+                var url = ramaddaBaseUrl + "/entry/get?entryid=" + id;
+                layer = this.addGeoJsonLayer(name, url, true, null, null, null, null, true);
+            } else {
+                var url = ramaddaBaseUrl + "/entry/show?output=shapefile.kml&entryid=" + id;
+                layer = this.addKMLLayer(name, url, true, null, null, null, null, true);
+            }
+            return layer;
         },
 
         addLayer: function(layer) {
@@ -527,7 +527,7 @@ function initMapFunctions(theMap) {
                 }
             );
 
-            image.latLonBounds  = latLonBounds;
+            image.latLonBounds = latLonBounds;
             //        image.setOpacity(0.5);
             if (theArgs.forSelect) {
                 theMap.selectImage = image;
@@ -1111,7 +1111,7 @@ function initMapFunctions(theMap) {
                 if (!(isDate || isYear)) continue;
                 var value = this.getAttrValue(p, attr);
                 if (!value) continue;
-                if(value == "0") continue;
+                if (value == "0") continue;
                 try {
                     var date = Utils.parseDate(value);
                     if (isYear) didYear = true;
@@ -1161,7 +1161,7 @@ function initMapFunctions(theMap) {
                     _this.endDate = null;
                     _this.startFeature = null;
                     _this.endFeature = null;
-                    _this.setFeatureDateRange(layer,"Resetting range...");
+                    _this.setFeatureDateRange(layer, "Resetting range...");
                 });
             }
             var width = this.animationTicks.width();
@@ -1273,9 +1273,9 @@ function initMapFunctions(theMap) {
 
     theMap.setFeatureDateRange = function(layer, msg) {
         this.dateFeatureSelect(null);
-        if(!msg) msg = "Setting range...";
+        if (!msg) msg = "Setting range...";
         this.animationTicks.html(msg);
-        setTimeout(()=>this.setFeatureDateRangeInner(layer),100);
+        setTimeout(() => this.setFeatureDateRangeInner(layer), 100);
     }
 
     theMap.setFeatureDateRangeInner = function(layer) {
@@ -1306,8 +1306,8 @@ function initMapFunctions(theMap) {
         tick.css("zIndex", "100");
         //In case some aren't closed
         //        this.getFeatureTick(null).tooltip("close");
-        if(this.tickOpen) this.tickOpen.tooltip("close");
-        this.tickOpen  = tick;
+        if (this.tickOpen) this.tickOpen.tooltip("close");
+        this.tickOpen = tick;
         tick.tooltip("open");
     }
     theMap.dateFeatureOut = function(feature) {
@@ -1319,7 +1319,7 @@ function initMapFunctions(theMap) {
             tick.css("background-color", "");
             tick.css("zIndex", "0");
         }
-        this.tickOpen  = null;
+        this.tickOpen = null;
         tick.tooltip("close");
     }
     theMap.getFeatureTick = function(feature) {
@@ -1335,7 +1335,7 @@ function initMapFunctions(theMap) {
     }
 
 
-    theMap.initMapVectorLayer = function(layer, canSelect, selectCallback, unselectCallback, loadCallback,zoomToExtent) {
+    theMap.initMapVectorLayer = function(layer, canSelect, selectCallback, unselectCallback, loadCallback, zoomToExtent) {
         var _this = this;
         this.showLoadingImage();
         layer.isMapLayer = true;
@@ -1345,17 +1345,17 @@ function initMapFunctions(theMap) {
             "loadend": function(e) {
                 _this.hideLoadingImage();
                 if (e.response && Utils.isDefined(e.response.code) && e.response.code == OpenLayers.Protocol.Response.FAILURE) {
-                    console.log("An error occurred loading the map:" + JSON.stringify(e.response,null,2));
+                    console.log("An error occurred loading the map:" + JSON.stringify(e.response, null, 2));
                     return;
                 }
-                if(zoomToExtent) {
+                if (zoomToExtent) {
                     var dataBounds = layer.getDataExtent();
                     if (dataBounds) {
                         _this.map.zoomToExtent(dataBounds, true);
                     }
                 } else {
                     if (_this.centerOnMarkersCalled) {
-                        if(!_this.dfltBounds)
+                        if (!_this.dfltBounds)
                             _this.centerOnMarkers(_this.dfltBounds, _this.centerOnMarkersForce);
                     }
                 }
@@ -1383,14 +1383,14 @@ function initMapFunctions(theMap) {
             }),
             //xxstyleMap: this.getVectorLayerStyleMap(args)
         });
-        if(!args) {
-            args  = {
-                strokeColor:'blue',
+        if (!args) {
+            args = {
+                strokeColor: 'blue',
                 strokeWidth: 1
             }
         }
         layer.styleMap = this.getVectorLayerStyleMap(layer, args);
-        this.initMapVectorLayer(layer, canSelect, selectCallback, unselectCallback, loadCallback,zoomToExtent);
+        this.initMapVectorLayer(layer, canSelect, selectCallback, unselectCallback, loadCallback, zoomToExtent);
         return layer;
     }
 
@@ -1408,14 +1408,14 @@ function initMapFunctions(theMap) {
             }),
             //styleMap: this.getVectorLayerStyleMap(args)
         });
-        if(!args) {
-            args  = {
-                strokeColor:'blue',
+        if (!args) {
+            args = {
+                strokeColor: 'blue',
                 strokeWidth: 2
             }
         }
         layer.styleMap = this.getVectorLayerStyleMap(layer, args);
-        this.initMapVectorLayer(layer, canSelect, selectCallback, unselectCallback, loadCallback,zoomToExtent);
+        this.initMapVectorLayer(layer, canSelect, selectCallback, unselectCallback, loadCallback, zoomToExtent);
         return layer;
     }
 
@@ -1487,24 +1487,23 @@ function initMapFunctions(theMap) {
 
             } else if (mapLayer == map_opentopo) {
                 newLayer = this.createXYZLayer("OpenTopo", "//a.tile.opentopomap.org/${z}/${x}/${y}.png}");
-            } else if(mapLayer == map_weather) {
-                var wlayers = ['NWS Radar','nexrad-n0q-900913','GOES Infrared', 'goes-ir-4km-900913','GOES Water Vapor', 'goes-wv-4km-900913','GOES Visible','goes-vis-1km-900913','24 hr precip','q2-p24h-900913'];
-                              
-                for(var wi=0;wi<wlayers.length;wi+=2) {
+            } else if (mapLayer == map_weather) {
+                var wlayers = ['NWS Radar', 'nexrad-n0q-900913', 'GOES Infrared', 'goes-ir-4km-900913', 'GOES Water Vapor', 'goes-wv-4km-900913', 'GOES Visible', 'goes-vis-1km-900913', '24 hr precip', 'q2-p24h-900913'];
+
+                for (var wi = 0; wi < wlayers.length; wi += 2) {
                     var name = wlayers[wi];
-                    var id = wlayers[wi+1];
-                    var layer  = new OpenLayers.Layer.TMS(
-                                                     name,
-                                                     'https://mesonet.agron.iastate.edu/cache/tile.py/',
-                                                     {layername      : id,
-                                                      service         : '1.0.0',
-                                                      type            : 'png',
-                                                      visibility      : false,
-                                                      getURL          : get_my_url,
-                                                      isBaseLayer     : false},
-                                                     {
-                                                     }
-                                                          );
+                    var id = wlayers[wi + 1];
+                    var layer = new OpenLayers.Layer.TMS(
+                        name,
+                        'https://mesonet.agron.iastate.edu/cache/tile.py/', {
+                            layername: id,
+                            service: '1.0.0',
+                            type: 'png',
+                            visibility: false,
+                            getURL: get_my_url,
+                            isBaseLayer: false
+                        }, {}
+                    );
                     layer.ramaddaId = id;
                     this.addLayer(layer);
                 }
@@ -1655,13 +1654,13 @@ function initMapFunctions(theMap) {
                 }
                 if (visible) {
                     marker.style.display = 'inline';
-                    if(marker.location)
+                    if (marker.location)
                         bounds.extend(marker.location);
                     cnt++;
                 } else {
                     marker.style.display = 'none';
                 }
-                if(visible)
+                if (visible)
                     block.show();
                 else
                     block.hide();
@@ -1681,7 +1680,7 @@ function initMapFunctions(theMap) {
                     visible = name.toLowerCase().includes(text);
                 }
                 marker.display(visible);
-                if(visible) {
+                if (visible) {
                     var b = this.transformProjBounds(marker.bounds);
                     bounds.extend(b);
                     cnt++;
@@ -1710,7 +1709,7 @@ function initMapFunctions(theMap) {
             }
             this.lines.redraw();
         }
-        if(cnt>0) {
+        if (cnt > 0) {
             this.centerOnMarkers(bounds, true);
         }
     }
@@ -1930,7 +1929,7 @@ function initMapFunctions(theMap) {
             wait.html(HtmlUtils.image(icon_wait));
             var url = ramaddaBaseUrl + "/geocode?query=" + encodeURIComponent(searchInput.val());
             if (bounds.is(':checked')) {
-               var b = _this.transformProjBounds(_this.map.getExtent());
+                var b = _this.transformProjBounds(_this.map.getExtent());
                 url += "&bounds=" + b.top + "," + b.left + "," + b.bottom + "," + b.right;
             }
             var jqxhr = $.getJSON(url, function(data) {
@@ -2374,7 +2373,7 @@ function initMapFunctions(theMap) {
     }
 
     theMap.clearMarkers = function() {
-        if(!this.markers) return;
+        if (!this.markers) return;
         var markers = this.getMarkers();
         this.markers.removeFeatures(markers);
         this.markers.redraw();
@@ -2657,12 +2656,12 @@ function initMapFunctions(theMap) {
             mymarker = this.imageLayers[id];
         }
 
-        
+
         if (!mymarker) {
             return;
         }
         var latLonBounds = mymarker.latLonBounds;
-        if(latLonBounds) {
+        if (latLonBounds) {
             var projBounds = this.transformLLBounds(latLonBounds);
             this.getMap().zoomToExtent(projBounds);
         } else {
@@ -2727,28 +2726,28 @@ function initMapFunctions(theMap) {
                 var dataBounds = this.markers.getDataExtent();
                 bounds = this.transformProjBounds(dataBounds);
             }
-            if(!justMarkerLayer) {
-            if (this.lines) {
-                var dataBounds = this.lines.getDataExtent();
-                var fromLine = this.transformProjBounds(dataBounds);
-                if (bounds)
-                    bounds.extend(fromLine);
-                else
-                    bounds = fromLine;
-            }
-            for (var layer in this.getMap().layers) {
-                layer = this.getMap().layers[layer];
-                if (!layer.getDataExtent) continue;
-                if (layer.isBaseLayer || !layer.getVisibility()) continue;
-                var dataBounds = layer.getDataExtent();
-                if (dataBounds) {
-                    var latlon = this.transformProjBounds(dataBounds);
+            if (!justMarkerLayer) {
+                if (this.lines) {
+                    var dataBounds = this.lines.getDataExtent();
+                    var fromLine = this.transformProjBounds(dataBounds);
                     if (bounds)
-                        bounds.extend(latlon);
+                        bounds.extend(fromLine);
                     else
-                        bounds = latlon;
+                        bounds = fromLine;
                 }
-            }
+                for (var layer in this.getMap().layers) {
+                    layer = this.getMap().layers[layer];
+                    if (!layer.getDataExtent) continue;
+                    if (layer.isBaseLayer || !layer.getVisibility()) continue;
+                    var dataBounds = layer.getDataExtent();
+                    if (dataBounds) {
+                        var latlon = this.transformProjBounds(dataBounds);
+                        if (bounds)
+                            bounds.extend(latlon);
+                        else
+                            bounds = latlon;
+                    }
+                }
             }
         }
 
@@ -2830,15 +2829,15 @@ function initMapFunctions(theMap) {
     theMap.seenMarkers = {};
 
     theMap.addEntryMarker = function(id, location, iconUrl, markerName, text, type) {
-        marker = this.addMarker(id,location, iconUrl, markerName, text);
-        marker.entryType=  type;
-        marker.entryId=  id;
+        marker = this.addMarker(id, location, iconUrl, markerName, text);
+        marker.entryType = type;
+        marker.entryId = id;
     }
 
 
     theMap.createMarker = function(id, location, iconUrl, markerName, text, parentId, size, voffset, canSelect) {
-        if(Array.isArray(location)) {
-            location = createLonLat(location[0],location[1]);
+        if (Array.isArray(location)) {
+            location = createLonLat(location[0], location[1]);
         }
         if (size == null) size = 16;
         if (voffset == null) voffset = 0;
@@ -2912,7 +2911,7 @@ function initMapFunctions(theMap) {
 
 
     theMap.addMarker = function(id, location, iconUrl, markerName, text, parentId, size, voffset, canSelect) {
-        var marker = this.createMarker(id,location, iconUrl,markerName, text,parentId, size, voffset, canSelect);
+        var marker = this.createMarker(id, location, iconUrl, markerName, text, parentId, size, voffset, canSelect);
         this.addMarkers([marker]);
         return marker;
     }
@@ -3246,17 +3245,17 @@ function initMapFunctions(theMap) {
             this.currentPopup.destroy();
             this.currentPopup = null;
         }
-        var marker =  this.currentEntryMarker;
-        if(marker.entryLayer) {
+        var marker = this.currentEntryMarker;
+        if (marker.entryLayer) {
             var idx = this.loadedLayers.indexOf(marker.entryLayer);
-            if(idx>=0)
-                this.loadedLayers =   this.loadedLayers.slice(idx);
+            if (idx >= 0)
+                this.loadedLayers = this.loadedLayers.slice(idx);
             this.map.removeLayer(marker.entryLayer);
             marker.entryLayer = null;
             return;
         }
         var layer = this.handleEntrySelect(marker.entryId, marker.name, marker.entryType);
-        if(layer) {
+        if (layer) {
             marker.entryLayer = layer;
         }
 
@@ -3318,13 +3317,13 @@ function initMapFunctions(theMap) {
         }
 
 
-        if(marker.entryType) {
+        if (marker.entryType) {
             var type = marker.entryType;
-            if(type=="geo_kml" || type=="geo_json" || type=="geo_shapefile") {
+            if (type == "geo_kml" || type == "geo_json" || type == "geo_shapefile") {
                 this.currentEntryMarker = marker;
-                var call = "ramaddaMapMap['" + this.mapId+"'].handleMarkerLayer();";
-                var label = marker.entryLayer?"Remove Layer":"Load Layer";
-                markertext = "<center>" + HtmlUtils.onClick(call,label) +"</center>" + markertext;
+                var call = "ramaddaMapMap['" + this.mapId + "'].handleMarkerLayer();";
+                var label = marker.entryLayer ? "Remove Layer" : "Load Layer";
+                markertext = "<center>" + HtmlUtils.onClick(call, label) + "</center>" + markertext;
             }
         }
 
@@ -3360,7 +3359,7 @@ function initMapFunctions(theMap) {
             };
             var title = props.title;
             if (!title) title = "Chart";
-            var fields = (props.fields==null?null:props.fields.split(","));
+            var fields = (props.fields == null ? null : props.fields.split(","));
             var chartProps = {
                 "title": title,
                 "layoutHere": true,

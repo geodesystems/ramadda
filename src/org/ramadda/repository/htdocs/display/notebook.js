@@ -28,18 +28,18 @@ function RamaddaNotebookDisplay(displayManager, id, properties) {
     var ID_CONSOLE_OUTPUT = "consoleout";
     var ID_CELL = "cell";
     var ID_MENU = "menu";
-    this.properties = properties||{};
+    this.properties = properties || {};
     let SUPER = new RamaddaDisplay(displayManager, id, DISPLAY_NOTEBOOK, properties);
     RamaddaUtil.inherit(this, SUPER);
     addRamaddaDisplay(this);
     RamaddaUtil.defineMembers(this, {
-            runOnLoad: this.getProperty("runOnLoad",true),
-                displayMode: this.getProperty("displayMode",false),
-                showConsole:this.getProperty("showConsole",true),
-                consoleHidden:this.getProperty("consoleHidden",false),
-                layout: this.getProperty("layout","horizontal"),
-                columns: this.getProperty("columns",1),
-                });
+        runOnLoad: this.getProperty("runOnLoad", true),
+        displayMode: this.getProperty("displayMode", false),
+        showConsole: this.getProperty("showConsole", true),
+        consoleHidden: this.getProperty("consoleHidden", false),
+        layout: this.getProperty("layout", "horizontal"),
+        columns: this.getProperty("columns", 1),
+    });
 
     RamaddaUtil.defineMembers(this, {
         cells: [],
@@ -67,9 +67,9 @@ function RamaddaNotebookDisplay(displayManager, id, properties) {
                     this.fetchingNotebook = true;
                     await Utils.importCSS(ramaddaBaseHtdocs + "/lib/fontawesome/font-awesome.css");
                     await Utils.importJS(ramaddaBaseHtdocs + "/lib/ace/src-min/ace.js");
-                    await Utils.importJS(ramaddaBaseUrl + "/lib/showdown.min.js"); 
+                    await Utils.importJS(ramaddaBaseUrl + "/lib/showdown.min.js");
                     var imports = "<link rel='preload' href='https://cdn.jsdelivr.net/npm/katex@0.10.1/dist/fonts/KaTeX_Main-Regular.woff2' as='font' type='font/woff2' crossorigin='anonymous'>\n<link rel='preload' href='https://cdn.jsdelivr.net/npm/katex@0.10.1/dist/fonts/KaTeX_Math-Italic.woff2' as='font' type='font/woff2' crossorigin='anonymous'>\n<link rel='preload' href='https://cdn.jsdelivr.net/npm/katex@0.10.1/dist/fonts/KaTeX_Size2-Regular.woff2' as='font' type='font/woff2' crossorigin='anonymous'>\n<link rel='preload' href='https://cdn.jsdelivr.net/npm/katex@0.10.1/dist/fonts/KaTeX_Size4-Regular.woff2' as='font' type='font/woff2' crossorigin='anonymous'/>\n<link rel='stylesheet' href='https://fonts.googleapis.com/css?family=Lato:300,400,700,700i'>\n<link rel='stylesheet' href='https://cdn.jsdelivr.net/npm/katex@0.10.1/dist/katex.min.css' crossorigin='anonymous'>\n<link rel='stylesheet' href='static/index.css'><script defer src='https://cdn.jsdelivr.net/npm/katex@0.10.1/dist/katex.min.js' crossorigin='anonymous'></script>";
-                    $(imports).appendTo("head");                    
+                    $(imports).appendTo("head");
                     setTimeout(() => this.fetchNotebook(1), 10);
                 }
             } else {
@@ -109,59 +109,70 @@ function RamaddaNotebookDisplay(displayManager, id, properties) {
             });
 
         },
-       formatObject: function(value) {
-                if(!value) return null;
-             if(Array.isArray(value)) 
-                 return HtmlUtils.div(["style"," white-space: pre;"], JSON.stringify(value)); 
-             return HtmlUtils.div(["style"," white-space: pre;"],JSON.stringify(value,null,2));
+        formatObject: function(value) {
+            if (!value) return null;
+            if (Array.isArray(value))
+                return HtmlUtils.div(["style", " white-space: pre;"], JSON.stringify(value));
+            return HtmlUtils.div(["style", " white-space: pre;"], JSON.stringify(value, null, 2));
         },
         initOutputRenderers: function() {
-                let notebook = this;
-                this.outputRenderers=[];
-                /*
-                this.addOutputRenderer({
-                        shouldRender: (value) => {return typeof value === "object";},
-                            render: (value) => {if(Array.isArray(value)) return HtmlUtils.div(["style"," white-space: pre;"], JSON.stringify(value)); return HtmlUtils.div(["style"," white-space: pre;"],JSON.stringify(value,null,2))},
-                            });
-                */
-                this.addOutputRenderer({
-                        shouldRender: (value) => {return typeof value === "object" && value.getTime;},
-                            render: (value) => {return notebook.formatDate(value)},
-                            });
+            let notebook = this;
+            this.outputRenderers = [];
+            /*
+            this.addOutputRenderer({
+                    shouldRender: (value) => {return typeof value === "object";},
+                        render: (value) => {if(Array.isArray(value)) return HtmlUtils.div(["style"," white-space: pre;"], JSON.stringify(value)); return HtmlUtils.div(["style"," white-space: pre;"],JSON.stringify(value,null,2))},
+                        });
+            */
+            this.addOutputRenderer({
+                shouldRender: (value) => {
+                    return typeof value === "object" && value.getTime;
+                },
+                render: (value) => {
+                    return notebook.formatDate(value)
+                },
+            });
 
-                this.addOutputRenderer({
-                        shouldRender: (value) => {var t  = typeof value; return t === "string" || t === "number" || t ==="boolean";},
-                            render: (value) => {
-                            if(typeof value === "string") {
-                                if(value.split("\n").length>1) {
-                                    return HtmlUtils.div(["style"," white-space: pre;"], value);
-                                }
-                            }
-                            return value
-                        },
-                            });
-                this.addOutputRenderer({
-                        shouldRender: (value) => {return typeof value === "object" && "lat" in value && "lon" in value;},
-                            render: (value) => {return "<img src='http://staticmap.openstreetmap.de/staticmap.php?center=" + value.lat +"," + value.lon +"&zoom=17&size=300x200&maptype=mapnik'/>"},
-                            });
+            this.addOutputRenderer({
+                shouldRender: (value) => {
+                    var t = typeof value;
+                    return t === "string" || t === "number" || t === "boolean";
+                },
+                render: (value) => {
+                    if (typeof value === "string") {
+                        if (value.split("\n").length > 1) {
+                            return HtmlUtils.div(["style", " white-space: pre;"], value);
+                        }
+                    }
+                    return value
+                },
+            });
+            this.addOutputRenderer({
+                shouldRender: (value) => {
+                    return typeof value === "object" && "lat" in value && "lon" in value;
+                },
+                render: (value) => {
+                    return "<img src='http://staticmap.openstreetmap.de/staticmap.php?center=" + value.lat + "," + value.lon + "&zoom=17&size=300x200&maptype=mapnik'/>"
+                },
+            });
 
         },
         addOutputRenderer: function(renderer) {
-                if(this.outputRenderers.indexOf(renderer)<0) {
-                    this.outputRenderers.push(renderer);
-                }
+            if (this.outputRenderers.indexOf(renderer) < 0) {
+                this.outputRenderers.push(renderer);
+            }
         },
-       formatOutput: function(value) {
-                for(var i=this.outputRenderers.length-1;i>=0;i--) {
-                    var renderer = this.outputRenderers[i];
-                    if(renderer.shouldRender(value)) {
-                        return renderer.render(value);
-                    }
+        formatOutput: function(value) {
+            for (var i = this.outputRenderers.length - 1; i >= 0; i--) {
+                var renderer = this.outputRenderers[i];
+                if (renderer.shouldRender(value)) {
+                    return renderer.render(value);
                 }
-                return null;
-       },
+            }
+            return null;
+        },
         addGlobal: function(name, value) {
-            if(Utils.isDefined(window[name])) window[name] = value;
+            if (Utils.isDefined(window[name])) window[name] = value;
             else this.globals[name] = value;
         },
         getBaseEntry: function() {
@@ -251,7 +262,7 @@ function RamaddaNotebookDisplay(displayManager, id, properties) {
                 notebook: json
             };
             var url = ramaddaBaseUrl + "/savenotebook";
-            $.post(url, args, (result) =>{
+            $.post(url, args, (result) => {
                 if (result.error) {
                     alert("Error saving notebook: " + result.error);
                     return;
@@ -260,10 +271,10 @@ function RamaddaNotebookDisplay(displayManager, id, properties) {
                     alert("Error saving notebook: " + result.result);
                     return;
                 }
-                if(!this.getShowConsole()) {
+                if (!this.getShowConsole()) {
                     alert("Notebook saved");
                 } else {
-                    this.log("Notebook saved","info","nb");
+                    this.log("Notebook saved", "info", "nb");
                 }
             });
         },
@@ -293,96 +304,96 @@ function RamaddaNotebookDisplay(displayManager, id, properties) {
             return obj;
         },
         initConsole: function() {
-            if(!this.showInput()) {
+            if (!this.showInput()) {
                 return;
             }
-            let _this =this;
+            let _this = this;
             this.console = this.jq(ID_CONSOLE_OUTPUT);
-            if(this.consoleHidden)
+            if (this.consoleHidden)
                 this.console.hide();
-            this.jq(ID_CONSOLE).find(".ramadda-image-link").click(function(e){
-                    var what = $(this).attr("what");
-                    if(what == "clear") {
-                        _this.console.html("");
-                    }
-                    e.stopPropagation();
-                });
+            this.jq(ID_CONSOLE).find(".ramadda-image-link").click(function(e) {
+                var what = $(this).attr("what");
+                if (what == "clear") {
+                    _this.console.html("");
+                }
+                e.stopPropagation();
+            });
 
             this.consoleToolbar = this.jq(ID_CONSOLE_TOOLBAR);
-            this.consoleToolbar.click(()=>{
-                    if(this.console.is(":visible")) {
-                        this.console.hide(400);
-                        this.consoleHidden = true;
-                    } else {
-                        this.consoleHidden = false;
-                        this.console.show(400);
-                    }
-                });
-         },
+            this.consoleToolbar.click(() => {
+                if (this.console.is(":visible")) {
+                    this.console.hide(400);
+                    this.consoleHidden = true;
+                } else {
+                    this.consoleHidden = false;
+                    this.console.show(400);
+                }
+            });
+        },
         getShowConsole: function() {
-                return this.showInput() && this.showConsole;
-         },
+            return this.showInput() && this.showConsole;
+        },
         makeConsole: function() {
             this.console = null;
-            if(!this.getShowConsole()) {
+            if (!this.getShowConsole()) {
                 return "";
             }
             var contents = this.jq(ID_CONSOLE_OUTPUT).html();
-            var consoleToolbar = HtmlUtils.div(["id",this.getDomId(ID_CONSOLE_TOOLBAR),"class","display-notebook-console-toolbar","title","click to hide/show console"],
-                                               HtmlUtils.leftRight("",
-                                                                   HtmlUtils.span(["class","ramadda-image-link","title","Clear","what","clear"],
-                                                                                 HtmlUtils.image(Utils.getIcon("clear.png")))));
-            return  HtmlUtils.div(["id", this.getDomId(ID_CONSOLE),"class","display-notebook-console"],
-                                        consoleToolbar+
-                                  HtmlUtils.div(["class","display-notebook-console-output", "id", this.getDomId(ID_CONSOLE_OUTPUT)],contents||""));
+            var consoleToolbar = HtmlUtils.div(["id", this.getDomId(ID_CONSOLE_TOOLBAR), "class", "display-notebook-console-toolbar", "title", "click to hide/show console"],
+                HtmlUtils.leftRight("",
+                    HtmlUtils.span(["class", "ramadda-image-link", "title", "Clear", "what", "clear"],
+                        HtmlUtils.image(Utils.getIcon("clear.png")))));
+            return HtmlUtils.div(["id", this.getDomId(ID_CONSOLE), "class", "display-notebook-console"],
+                consoleToolbar +
+                HtmlUtils.div(["class", "display-notebook-console-output", "id", this.getDomId(ID_CONSOLE_OUTPUT)], contents || ""));
         },
 
         makeCellLayout: function() {
             var html = "";
-            var consoleContainer = HtmlUtils.div(["id",this.getDomId(ID_CONSOLE_CONTAINER)]);
+            var consoleContainer = HtmlUtils.div(["id", this.getDomId(ID_CONSOLE_CONTAINER)]);
             this.jq(ID_CELLS_BOTTOM).html("");
             if (this.showInput() && this.layout == "horizontal") {
-                var left = HtmlUtils.div(["id", this.getDomId(ID_INPUTS),"style","width:100%;"]);
-                var right = HtmlUtils.div(["id", this.getDomId(ID_OUTPUTS),"style","width:100%;"]);
+                var left = HtmlUtils.div(["id", this.getDomId(ID_INPUTS), "style", "width:100%;"]);
+                var right = HtmlUtils.div(["id", this.getDomId(ID_OUTPUTS), "style", "width:100%;"]);
                 var center = HtmlUtils.div([], "");
-                left +=consoleContainer;
+                left += consoleContainer;
                 html = "<table style='table-layout:fixed;' border=0 width=100%><tr valign=top><td width=50%>" + left + "</td><td style='border-left:1px #ccc solid;' width=1>" + center + "</td><td width=49%>" + right + "</td></tr></table>";
             } else {
                 this.jq(ID_CELLS_BOTTOM).html(consoleContainer);
             }
             this.jq(ID_CELLS).html(html);
         },
-         log:function(msg, type, from,div) {
-                var icon = "";
-                var clazz = "display-notebook-console-item";
-                if(type == "error") {
-                    clazz+= " display-notebook-console-item-error";
-                    icon = HtmlUtils.image(Utils.getIcon("cross-octagon.png"));
-                    if(div) {
-                        div.append(HtmlUtils.div(["class","display-notebook-chunk-error"],msg));
-                    }
-                } else if(type == "output") {
-                    clazz+= " display-notebook-console-item-output";
-                    icon = HtmlUtils.image(Utils.getIcon("arrow-000-small.png"));
-                } else if(type == "info") {
-                    clazz+= " display-notebook-console-item-info";
-                    icon = HtmlUtils.image(Utils.getIcon("information.png"));
+        log: function(msg, type, from, div) {
+            var icon = "";
+            var clazz = "display-notebook-console-item";
+            if (type == "error") {
+                clazz += " display-notebook-console-item-error";
+                icon = HtmlUtils.image(Utils.getIcon("cross-octagon.png"));
+                if (div) {
+                    div.append(HtmlUtils.div(["class", "display-notebook-chunk-error"], msg));
                 }
-                if(!this.console) return;
-                if(!from) from = "";
-                else from = HtmlUtils.div(["class","display-notebook-console-from"],from);
-                var block = HtmlUtils.div(["style","margin-left:5px;"],msg);
-                var html = "<table width=100%><tr valign=top><td width=10>" + icon+"</td><td>" +
-                                         block +
-                                         "</td><td width=10>" +
-                                         from +
-                                         "</td></tr></table>";
-                var item =  HtmlUtils.div(["class",clazz],html);
-                this.console.append(item);
-                //200 is defined in display.css
-                var height = this.console.prop('scrollHeight');
-                if(height>200)
-                    this.console.scrollTop(height-200);
+            } else if (type == "output") {
+                clazz += " display-notebook-console-item-output";
+                icon = HtmlUtils.image(Utils.getIcon("arrow-000-small.png"));
+            } else if (type == "info") {
+                clazz += " display-notebook-console-item-info";
+                icon = HtmlUtils.image(Utils.getIcon("information.png"));
+            }
+            if (!this.console) return;
+            if (!from) from = "";
+            else from = HtmlUtils.div(["class", "display-notebook-console-from"], from);
+            var block = HtmlUtils.div(["style", "margin-left:5px;"], msg);
+            var html = "<table width=100%><tr valign=top><td width=10>" + icon + "</td><td>" +
+                block +
+                "</td><td width=10>" +
+                from +
+                "</td></tr></table>";
+            var item = HtmlUtils.div(["class", clazz], html);
+            this.console.append(item);
+            //200 is defined in display.css
+            var height = this.console.prop('scrollHeight');
+            if (height > 200)
+                this.console.scrollTop(height - 200);
         },
         layoutCells: function() {
             for (var i = 0; i < this.cells.length; i++) {
@@ -612,8 +623,8 @@ function NotebookState(cell, div) {
         div: div,
         stopFlag: false,
         result: null,
-         log: function(msg,type,from) {
-             this.getNotebook().log(msg,type,from,this.div);
+        log: function(msg, type, from) {
+            this.getNotebook().log(msg, type, from, this.div);
         },
         getStop: function() {
             return this.stopFlag;
@@ -641,8 +652,8 @@ function NotebookState(cell, div) {
             };
             return new PointData(entry.getName(), null, null, jsonUrl, pointDataProps);
         },
-        log: function(msg,type) { 
-            this.getNotebook().log(msg,type,"js");
+        log: function(msg, type) {
+            this.getNotebook().log(msg, type, "js");
         },
         getNotebook: function() {
             return this.notebook;
@@ -693,7 +704,7 @@ function NotebookState(cell, div) {
             return Utils.call(callback, entry);
         },
         wiki: async function(s, entry, callback) {
-            if (!callback) { 
+            if (!callback) {
                 var wdiv = new Div();
                 this.div.append(wdiv.toString());
                 callback = h => wdiv.append(h);
@@ -704,26 +715,26 @@ function NotebookState(cell, div) {
             await GuiUtils.loadHtml(ramaddaBaseUrl + "/wikify?doImports=false&entryid=" + entry + "&text=" + encodeURIComponent(s),
                 callback);
         },
-       //These are for the iodiode mimic
+        //These are for the iodiode mimic
         addOutputRenderer: function(renderer) {
-                this.getNotebook().addOutputRenderer(renderer);
+            this.getNotebook().addOutputRenderer(renderer);
         },
-        output:{
-            text:function(t) {
+        output: {
+            text: function(t) {
                 notebook.write(t);
             },
-            element:function(tag) {
-               var id  = HtmlUtils.getUniqueId();
-               notebook.write(HtmlUtils.tag(tag,["id",id]));
-               return document.getElementById(id);
+            element: function(tag) {
+                var id = HtmlUtils.getUniqueId();
+                notebook.write(HtmlUtils.tag(tag, ["id", id]));
+                return document.getElementById(id);
             }
         },
         write: function(value) {
-             var s = this.getNotebook().formatOutput(value);
-             if(s==null &&  (typeof value)=="object") {
-                 s = this.notebook.formatObject(value);
-             }
-             this.div.append(s);
+            var s = this.getNotebook().formatOutput(value);
+            if (s == null && (typeof value) == "object") {
+                s = this.notebook.formatObject(value);
+            }
+            this.div.append(s);
         },
         linechart: async function(entry, props) {
             if (!entry)
@@ -821,12 +832,12 @@ function RamaddaNotebookCell(notebook, id, content, props) {
                 this.makeButton(ID_BUTTON_RUN, Utils.getIcon("run.png"), "Run this cell", "run") +
                 this.makeButton(ID_BUTTON_RUN, Utils.getIcon("runall.png"), "Run all", "runall");
 
-            var runIcon = HtmlUtils.image(icon_blank,["align","right","id",this.getDomId(ID_RUN_ICON),"style","padding-bottom:2px;padding-top:2px;padding-right:5px;"]);
-            buttons = buttons +  "&nbsp;" + HtmlUtils.span(["id", this.getDomId(ID_CELLNAME)], this.cellName);
-            buttons+=runIcon;
+            var runIcon = HtmlUtils.image(icon_blank, ["align", "right", "id", this.getDomId(ID_RUN_ICON), "style", "padding-bottom:2px;padding-top:2px;padding-right:5px;"]);
+            buttons = buttons + "&nbsp;" + HtmlUtils.span(["id", this.getDomId(ID_CELLNAME)], this.cellName);
+            buttons += runIcon;
             var header = HtmlUtils.div([ATTR_CLASS, "display-notebook-header", ATTR_ID, this.getDomId(ID_HEADER), "tabindex", "0", "title", "Click to toggle input\nShift-click to clear output"], "&nbsp;" + buttons);
             var content = this.content.replace(/</g, "&lt;").replace(/>/g, "&gt;");
-            var input = HtmlUtils.div([ATTR_CLASS, "display-notebook-input ace_editor", ATTR_ID, this.getDomId(ID_INPUT),"title","shift-return: run chunk\nctrl-return: run to end"], content);
+            var input = HtmlUtils.div([ATTR_CLASS, "display-notebook-input ace_editor", ATTR_ID, this.getDomId(ID_INPUT), "title", "shift-return: run chunk\nctrl-return: run to end"], content);
             var inputToolbar = HtmlUtils.div(["id", this.getDomId(ID_INPUT_TOOLBAR)], "");
 
             input = HtmlUtils.div(["class", "display-notebook-input-container"], inputToolbar + input);
@@ -860,10 +871,13 @@ function RamaddaNotebookCell(notebook, id, content, props) {
 
             });
 
-            this.editor = HtmlUtils.initAceEditor("", this.getDomId(ID_INPUT),false,{maxLines: 30,minLines:5});
-            this.editor.getSession().on('change', ()=>{
-                    this.inputChanged();
-                });
+            this.editor = HtmlUtils.initAceEditor("", this.getDomId(ID_INPUT), false, {
+                maxLines: 30,
+                minLines: 5
+            });
+            this.editor.getSession().on('change', () => {
+                this.inputChanged();
+            });
             this.menuButton = this.jq(ID_BUTTON_MENU);
             this.toggleButton = this.jq(ID_BUTTON_TOGGLE);
             this.cell = this.jq(ID_CELL);
@@ -881,7 +895,7 @@ function RamaddaNotebookCell(notebook, id, content, props) {
             this.input.focus(() => this.hidePopup());
             this.input.click(() => this.hidePopup());
             this.output.click(() => this.hidePopup());
-            this.input.on('input selectionchange propertychange', ()=>this.calculateInputHeight());
+            this.input.on('input selectionchange propertychange', () => this.calculateInputHeight());
             var moveFunc = (e) => {
                 var key = e.key;
                 if (key == 'v' && e.ctrlKey) {
@@ -910,11 +924,11 @@ function RamaddaNotebookCell(notebook, id, content, props) {
                         }
                         if (e.shiftKey && e.ctrlKey) {
                             //run all
-                            _this.run(null,false,false);
+                            _this.run(null, false, false);
                         } else {
                             //run current, run to end
-                            _this.run(null,true,e.ctrlKey);
-                            if(!e.ctrlKey) {
+                            _this.run(null, true, e.ctrlKey);
+                            if (!e.ctrlKey) {
                                 _this.stepToNextChunk();
                             }
                         }
@@ -1021,10 +1035,10 @@ function RamaddaNotebookCell(notebook, id, content, props) {
             _this.jq(ID_SHOWHEADER_INPUT).focus();
 
             _this.jq(ID_SHOWCONSOLE).change(function(e) {
-                    _this.notebook.showConsole = _this.jq(ID_SHOWCONSOLE).is(':checked');
-                    _this.hidePopup();
-                    _this.notebook.layoutCells();
-                });
+                _this.notebook.showConsole = _this.jq(ID_SHOWCONSOLE).is(':checked');
+                _this.hidePopup();
+                _this.notebook.layoutCells();
+            });
 
 
             _this.jq(ID_SHOWHEADER_INPUT).change(function(e) {
@@ -1208,85 +1222,85 @@ function RamaddaNotebookCell(notebook, id, content, props) {
                 }
             });
         },
-        inputChanged:  function() {
+        inputChanged: function() {
             var value = this.getInputText();
             var lines = value.split("\n");
             var cursor = this.editor.getCursorPosition();
-            for(var i=cursor.row;i>=0;i--) {
+            for (var i = cursor.row; i >= 0; i--) {
                 var line = lines[i].trim();
-                if(line.startsWith("%%")) {
+                if (line.startsWith("%%")) {
                     var type = line.substring(2).trim();
-                    if(type.startsWith("md") || type.startsWith("html") || type.startsWith("css")) {
+                    if (type.startsWith("md") || type.startsWith("html") || type.startsWith("css")) {
                         var doRows = {};
                         doRows[i] = true;
-                        this.runInner(value,doRows);
+                        this.runInner(value, doRows);
                     }
                     break;
                 }
             }
         },
-        stepToNextChunk:  function() {
+        stepToNextChunk: function() {
             var value = this.getInputText();
             var lines = value.split("\n");
             var cursor = this.editor.getCursorPosition();
-            for(var i=cursor.row+1;i<lines.length;i++) {
-                if(lines[i].trim().startsWith("%%")) {
+            for (var i = cursor.row + 1; i < lines.length; i++) {
+                if (lines[i].trim().startsWith("%%")) {
                     var ll = lines[i].length;
-                    this.editor.selection.moveTo(i,ll);
-                    this.editor.scrollToLine(i, true, true, function () {});
+                    this.editor.selection.moveTo(i, ll);
+                    this.editor.scrollToLine(i, true, true, function() {});
                     break;
                 }
             }
-            
+
         },
         run: async function(callback, justCurrent, toEnd) {
             if (this.running) return Utils.call(callback, true);
             this.running = true;
-            var doRows=null;
+            var doRows = null;
             try {
                 var ok = true;
                 var value = this.getInputText();
-                if(justCurrent) {
-                    doRows={};
+                if (justCurrent) {
+                    doRows = {};
                     var cursor = this.editor.getCursorPosition();
                     var row = cursor.row;
                     var lines = value.split("\n");
-                    var percentCnt=0;
-                    if(toEnd) {
+                    var percentCnt = 0;
+                    if (toEnd) {
                         justCurrent = false;
-                        while(row>=0) {
-                            if(lines[row].trim().startsWith("%%")) {
+                        while (row >= 0) {
+                            if (lines[row].trim().startsWith("%%")) {
                                 break;
-                            } 
+                            }
                             row--;
                         }
-                        if(row<0) row=0;
-                        while(row<lines.length) {
-                            doRows[row]=true;
+                        if (row < 0) row = 0;
+                        while (row < lines.length) {
+                            doRows[row] = true;
                             row++;
                         }
                     } else {
                         //go to the next chunk
                         row++;
-                        while(row<lines.length) {
-                            if(lines[row].trim().startsWith("%%")) {
+                        while (row < lines.length) {
+                            if (lines[row].trim().startsWith("%%")) {
                                 row--;
                                 break;
                             }
                             row++;
                         }
-                        if(row>=lines.length) row = lines.length-1;
-                        while(row>=0) {
+                        if (row >= lines.length) row = lines.length - 1;
+                        while (row >= 0) {
                             var line = lines[row].trim();
-                            doRows[row]=true;
-                            if(line.startsWith("%%")) break;
+                            doRows[row] = true;
+                            if (line.startsWith("%%")) break;
                             row--;
                         }
                     }
                 }
 
                 this.jq(ID_RUN_ICON).attr("src", icon_progress);
-                await this.runInner(value,doRows).then(r => ok = r);
+                await this.runInner(value, doRows).then(r => ok = r);
                 this.jq(ID_RUN_ICON).attr("src", icon_blank);
                 if (!ok) {
                     this.running = false;
@@ -1296,9 +1310,9 @@ function RamaddaNotebookCell(notebook, id, content, props) {
             } catch (e) {
                 this.jq(ID_RUN_ICON).attr("src", icon_blank);
                 this.running = false;
-                this.writeOutput("An error occurred:" + e.toString() +" " +(typeof e));
+                this.writeOutput("An error occurred:" + e.toString() + " " + (typeof e));
                 console.log("error:" + e.toString());
-                if(e.stack)
+                if (e.stack)
                     console.log(e.stack);
                 return Utils.call(callback, false);
             }
@@ -1312,11 +1326,11 @@ function RamaddaNotebookCell(notebook, id, content, props) {
             if (!this.editor) return this.content;
             return this.editor.getValue();
         },
-        runInner: async function(value,doRows) {
+        runInner: async function(value, doRows) {
             value = value.trim();
             value = value.replace(/{cellname}/g, this.cellName);
             value = this.notebook.convertInput(value);
-            if(!this.divs) this.divs = [];
+            if (!this.divs) this.divs = [];
             var type = "wiki";
             var rest = "";
             var chunks = [];
@@ -1324,24 +1338,21 @@ function RamaddaNotebookCell(notebook, id, content, props) {
             var commands = value.split("\n");
             var prevDiv = null;
             var divCnt = 0;
-            var makeDiv=()=> {
+            var makeDiv = () => {
                 //                console.log("make div:" + divCnt);
-                var div =(divCnt<this.divs.length?this.divs[divCnt]:null);
+                var div = (divCnt < this.divs.length ? this.divs[divCnt] : null);
                 divCnt++;
-                if(div) {
-                    if(div.jq().size()==0) {
+                if (div) {
+                    if (div.jq().size() == 0) {
                         div = null;
-                    } else {
-                    }
-                } else {
-                }
-                if(!div) {
-                    div =new Div(null,"display-notebook-chunk");
+                    } else {}
+                } else {}
+                if (!div) {
+                    div = new Div(null, "display-notebook-chunk");
                     this.divs.push(div);
-                    if(prevDiv) prevDiv.jq().after(div.toString());
+                    if (prevDiv) prevDiv.jq().after(div.toString());
                     else this.output.html(div.toString());
-                } else {
-                }
+                } else {}
                 prevDiv = div;
                 div.jq().show();
                 return div;
@@ -1367,16 +1378,16 @@ function RamaddaNotebookCell(notebook, id, content, props) {
                         chunks.push({
                             content: chunk,
                             type: type,
-                            rest:rest,
+                            rest: rest,
                             div: div,
                             doChunk: doChunk,
                             ok: true
                         });
                     }
-                    doChunk = doRows?doRows[i]:true;
+                    doChunk = doRows ? doRows[i] : true;
                     chunk = "";
                     if (chunk != "") chunk += "\n";
-                    if(newType!="")
+                    if (newType != "")
                         type = newType;
                     rest = newRest;
                     continue;
@@ -1389,14 +1400,14 @@ function RamaddaNotebookCell(notebook, id, content, props) {
                 chunks.push({
                     content: chunk,
                     type: type,
-                    rest:" " + rest+" ",
+                    rest: " " + rest + " ",
                     div: div,
-                    doChunk:doChunk,
+                    doChunk: doChunk,
                     ok: true
                 });
             }
 
-            for(var i=divCnt;i<this.divs.length;i++) {
+            for (var i = divCnt; i < this.divs.length; i++) {
                 this.divs[i].jq().hide();
             }
 
@@ -1410,8 +1421,8 @@ function RamaddaNotebookCell(notebook, id, content, props) {
             this.rawOutput = "";
             for (var i = 0; i < chunks.length; i++) {
                 var chunk = chunks[i];
-                if(!chunk.doChunk) continue;
-                if(chunk.rest.indexOf(" dontRun ")>=0) continue;
+                if (!chunk.doChunk) continue;
+                if (chunk.rest.indexOf(" dontRun ") >= 0) continue;
                 chunk.div.set("");
                 await this.processChunk(chunk);
                 if (!chunk.ok) {
@@ -1446,9 +1457,9 @@ function RamaddaNotebookCell(notebook, id, content, props) {
         },
         processHtml: async function(chunk) {
             var content = chunk.content;
-            if(content.match("%\n*$")) {
+            if (content.match("%\n*$")) {
                 content = content.trim();
-                content = content.substring(0,content.length-1);
+                content = content.substring(0, content.length - 1);
             }
 
             this.rawOutput += content + "\n";
@@ -1459,10 +1470,10 @@ function RamaddaNotebookCell(notebook, id, content, props) {
             this.rawOutput += css + "\n";
             chunk.div.set(css);
         },
-       handleError: function(chunk, error,from) {
+        handleError: function(chunk, error, from) {
             chunk.ok = false;
             console.log("An error occurred:" + error);
-            this.notebook.log(error,"error",from,chunk.div);
+            this.notebook.log(error, "error", from, chunk.div);
         },
         processFetch: async function(chunk) {
             var lines = chunk.content.split("\n");
@@ -1472,36 +1483,36 @@ function RamaddaNotebookCell(notebook, id, content, props) {
                 var origLine = line;
                 var error = null;
                 var url;
-                var msgExtra ="";
+                var msgExtra = "";
                 var idx = line.indexOf(":");
-                if(idx<0) {
-                    this.handleError(chunk, "Bad fetch line:" + line,"io");
+                if (idx < 0) {
+                    this.handleError(chunk, "Bad fetch line:" + line, "io");
                     return;
                 }
-                var tag = line.substring(0,idx);
-                line = line.substring(idx+1).trim();
+                var tag = line.substring(0, idx);
+                line = line.substring(idx + 1).trim();
                 var idx = line.indexOf(" //");
-                if(idx>=0) {
-                    line = line.substring(0,idx).trim();
+                if (idx >= 0) {
+                    line = line.substring(0, idx).trim();
                 }
 
                 if (tag == "js") {
                     url = line;
                     //Don't import jquery
-                    if(url.match("jquery-.*\\.js")) return;
+                    if (url.match("jquery-.*\\.js")) return;
                     await Utils.importJS(url,
-                                           () => {},
-                                         (jqxhr, settings, exception) => {
-                                             error = "Error fetching " + origLine + " " + (exception?exception.toString():"");
-                                         },
-                                         //Check the cache
-                                         false
-                                         );
+                        () => {},
+                        (jqxhr, settings, exception) => {
+                            error = "Error fetching " + origLine + " " + (exception ? exception.toString() : "");
+                        },
+                        //Check the cache
+                        false
+                    );
                 } else if (tag == "css") {
                     url = line;
                     await Utils.importCSS(url,
                         null,
-                                          (jqxhr, settings, exception) => error = "Error fetching " + origLine + " " + exception,true);
+                        (jqxhr, settings, exception) => error = "Error fetching " + origLine + " " + exception, true);
                 } else if (tag == "html") {
                     url = line;
                     await Utils.importText(url, h => chunk.div.append(h), (jqxhr, settings, exception) => error = "Error fetching " + origLine + " " + exception);
@@ -1518,92 +1529,92 @@ function RamaddaNotebookCell(notebook, id, content, props) {
                         if (indexSlash >= 0 && indexSlash < indexHttp) index = indexSlash;
                         if (indexEquals < index) {
                             v = line.substring(0, indexEquals).trim();
-                            msgExtra = " (var "+ v+")";
+                            msgExtra = " (var " + v + ")";
                             line = line.substring(indexEquals + 1).trim();
                         }
                     }
                     url = line;
                     var results = null;
-                    await Utils.importText(url, h => results = h, (jqxhr, settings, err) => error = "Error fetching " + origLine + " error:" + (err?err.toString():""));
+                    await Utils.importText(url, h => results = h, (jqxhr, settings, err) => error = "Error fetching " + origLine + " error:" + (err ? err.toString() : ""));
                     if (results) {
-                        if(isJson) {
+                        if (isJson) {
                             results = JSON.parse(results);
                         }
                         if (v) {
                             this.notebook.addGlobal(v, results);
                         } else {
-                            if(isJson) {
-                                results = JSON.stringify(results,null,2);
+                            if (isJson) {
+                                results = JSON.stringify(results, null, 2);
                             }
-                            chunk.div.append(HtmlUtils.pre(["style","max-width:100%;overflow-x:auto;"], results));
+                            chunk.div.append(HtmlUtils.pre(["style", "max-width:100%;overflow-x:auto;"], results));
                         }
                     }
                 } else {
-                    error =  "Unknown fetch:" + origLine;
+                    error = "Unknown fetch:" + origLine;
                 }
                 if (error) {
-                    this.handleError(chunk, error,"io");
+                    this.handleError(chunk, error, "io");
                     return;
                 } else {
-                    this.notebook.log("Loaded: " + url +msgExtra,"output","io");
+                    this.notebook.log("Loaded: " + url + msgExtra, "output", "io");
                 }
             }
         },
-       processMd: async function(chunk) {
-        //            await Utils.importJS(ramaddaBaseUrl + "/lib/katex/lib/katex/katex.min.css");
-         //            await Utils.importJS(ramaddaBaseUrl + "/lib/katex/lib/katex/katex.min.js");
+        processMd: async function(chunk) {
+            //            await Utils.importJS(ramaddaBaseUrl + "/lib/katex/lib/katex/katex.min.css");
+            //            await Utils.importJS(ramaddaBaseUrl + "/lib/katex/lib/katex/katex.min.js");
 
             this.rawOutput += chunk.content + "\n";
             var content = chunk.content;
-            if(content.match("%\n*$")) {
+            if (content.match("%\n*$")) {
                 content = content.trim();
-                content = content.substring(0,content.length-1);
+                content = content.substring(0, content.length - 1);
             }
             var o = "";
             var tex = null;
             var lines = content.split("\n");
-            var texs=[];
-            for(var i=0;i<lines.length;i++) {
+            var texs = [];
+            for (var i = 0; i < lines.length; i++) {
                 var line = lines[i];
                 var _line = line.trim();
-                if(_line.startsWith("$$")) {
-                    if(tex!=null) {
+                if (_line.startsWith("$$")) {
+                    if (tex != null) {
                         try {
-                        var html = katex.renderToString(tex, {
+                            var html = katex.renderToString(tex, {
                                 throwOnError: true
                             });
-                        o+="tex:"  + texs.length+":\n";
-                        texs.push(html);
-                        } catch(e) {
-                            o+="Error parsing tex:" + e+"<pre>" + tex+"</pre>";
+                            o += "tex:" + texs.length + ":\n";
+                            texs.push(html);
+                        } catch (e) {
+                            o += "Error parsing tex:" + e + "<pre>" + tex + "</pre>";
                         }
                         tex = null;
-                    }  else {
+                    } else {
                         tex = "";
                     }
-                } else if(tex!=null) {
-                    tex +=line+"\n";
+                } else if (tex != null) {
+                    tex += line + "\n";
                 } else {
-                    o+=line +"\n";
+                    o += line + "\n";
                 }
             }
 
             var converter = new showdown.Converter();
             var html = converter.makeHtml(o);
-            for(var i=0;i<texs.length;i++) {
-                html = html.replace("tex:"  + i+":", texs[i]);
+            for (var i = 0; i < texs.length; i++) {
+                html = html.replace("tex:" + i + ":", texs[i]);
             }
-            chunk.div.set(HtmlUtils.div(["class","display-notebook-md"], html));
+            chunk.div.set(HtmlUtils.div(["class", "display-notebook-md"], html));
         },
         processPy: async function(chunk) {
-            if(!this.notebook.loadedPyodide) {
+            if (!this.notebook.loadedPyodide) {
                 chunk.div.set("Loading Python...");
                 await Utils.importJS(ramaddaBaseHtdocs + "/lib/pyodide/pyodide.js");
                 await languagePluginLoader.then(() => {
-                        pyodide.runPython('import sys\nsys.version;');
-                        //                        pyodide.runPython('print ("hello python")');
-                    },(e)=>console.log("error:"+e));
-                await pyodide.loadPackage(['numpy', 'cycler', 'pytz','matplotlib'])
+                    pyodide.runPython('import sys\nsys.version;');
+                    //                        pyodide.runPython('print ("hello python")');
+                }, (e) => console.log("error:" + e));
+                await pyodide.loadPackage(['numpy', 'cycler', 'pytz', 'matplotlib'])
                 chunk.div.set("");
                 this.notebook.loadedPyodide = true;
             }
@@ -1673,7 +1684,7 @@ function RamaddaNotebookCell(notebook, id, content, props) {
                 await cmd.proc.call(_this, cmd.line, cmd.toks, cmd.div, cmd.extra);
             }
         },
-         processJs: async function(chunk) {
+        processJs: async function(chunk) {
             var lines;
             var topLines = 0;
             try {
@@ -1701,34 +1712,34 @@ function RamaddaNotebookCell(notebook, id, content, props) {
                 for (name in state.entries) {
                     var e = state.entries[name];
                     topLines++;
-                    jsSet += "var " +name + "= notebook.entries['" + name + "'];\n"
+                    jsSet += "var " + name + "= notebook.entries['" + name + "'];\n"
                 }
                 for (name in this.notebook.cellValues) {
-                    var clean  = name.replace(/ /g,"_").replace(/[^a-zA-Z0-9_]+/g,"_");
+                    var clean = name.replace(/ /g, "_").replace(/[^a-zA-Z0-9_]+/g, "_");
                     topLines++;
-                    jsSet += "var " +clean + "= notebook.getNotebook().cellValues['" + name + "'];\n";
+                    jsSet += "var " + clean + "= notebook.getNotebook().cellValues['" + name + "'];\n";
                 }
                 for (name in this.notebook.globals) {
-                    if(!Utils.isDefined(window[name])) {
+                    if (!Utils.isDefined(window[name])) {
                         topLines++;
-                        jsSet += "var " +name + "= notebook.getNotebook().globals['" + name + "'];\n";
+                        jsSet += "var " + name + "= notebook.getNotebook().globals['" + name + "'];\n";
                     }
                 }
                 var js = chunk.content.trim();
                 lines = js.split("\n");
-                js  = jsSet +"\n" + js;
-                var result = eval.call(null,js);
+                js = jsSet + "\n" + js;
+                var result = eval.call(null, js);
                 if (state.getStop()) {
                     chunk.ok = false;
                 }
                 var html = "";
-                if (result!=null) {
+                if (result != null) {
                     var rendered = this.notebook.formatOutput(result);
-                    if(rendered!=null) {
+                    if (rendered != null) {
                         html = rendered;
                     } else {
                         var type = typeof result;
-                        if(type !="object" && type!="function") {
+                        if (type != "object" && type != "function") {
                             html = result;
                             this.rawOutput += html + "\n";
                         }
@@ -1737,8 +1748,8 @@ function RamaddaNotebookCell(notebook, id, content, props) {
                 chunk.div.append(html);
             } catch (e) {
                 chunk.ok = false;
-                var line = lines[e.lineNumber - topLines-1];
-                this.notebook.log("Error: " + e.message + "<br>&gt;" +(line?line:""),"error","js",chunk.div);
+                var line = lines[e.lineNumber - topLines - 1];
+                this.notebook.log("Error: " + e.message + "<br>&gt;" + (line ? line : ""), "error", "js", chunk.div);
             }
             notebookStates[state.id] = null;
         },
@@ -1758,7 +1769,7 @@ function RamaddaNotebookCell(notebook, id, content, props) {
                 var content = chunk.content;
                 var re = new RegExp("^ *var *= *(.*)");
                 var toks = re.exec(chunk.rest);
-                if(toks) {
+                if (toks) {
                     var id = toks[1];
                     this.notebook.setCellValue(id, content);
                 }
@@ -1772,7 +1783,7 @@ function RamaddaNotebookCell(notebook, id, content, props) {
             } else if (chunk.type == "py") {
                 await this.processPy(chunk);
             } else {
-                this.notebook.log("Unknown type:" + chunk.type,"error",null,chunk.div);
+                this.notebook.log("Unknown type:" + chunk.type, "error", null, chunk.div);
             }
         },
 
@@ -2186,19 +2197,19 @@ function RamaddaNotebookCell(notebook, id, content, props) {
                 text: text,
             });
             var jsonUrl = this.notebook.getRamadda().getSearchUrl(settings, OUTPUT_JSON);
-            let _this =this;
+            let _this = this;
             var myCallback = {
                 entryListChanged: function(list) {
                     var entries = list.getEntries();
                     div.set("");
-                    if(entries.length==0) {
+                    if (entries.length == 0) {
                         div.append("Nothing found");
                     } else {
                         _this.displayEntries(entries, div)
                     }
                 }
             };
-            var entryList =  new EntryList(this.notebook.getRamadda(), jsonUrl, myCallback, false);
+            var entryList = new EntryList(this.notebook.getRamadda(), jsonUrl, myCallback, false);
             div.set("Searching...");
             await entryList.doSearch();
         },

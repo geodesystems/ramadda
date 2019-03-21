@@ -364,12 +364,12 @@ function DisplayThing(argId, argProperties) {
         propertyDefined: function(key) {
             return Utils.isDefined(this.getProperty(key));
         },
-       setPropertyOn:function(object,myProperty,objectProperty, dflt)  {
-             var prop  = this.getProperty(myProperty, dflt);
-             if(Utils.isDefined(prop) && prop!=null) {
-                 object[objectProperty]  = prop;
-                }
-            },
+        setPropertyOn: function(object, myProperty, objectProperty, dflt) {
+            var prop = this.getProperty(myProperty, dflt);
+            if (Utils.isDefined(prop) && prop != null) {
+                object[objectProperty] = prop;
+            }
+        },
         getProperty: function(key, dflt) {
 
             if (this[key]) {
@@ -474,7 +474,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             this[func].apply(this, [source, data]);
         },
         displayColorTable: function(ct, domId, min, max, args) {
-                Utils.displayColorTable(ct, this.getDomId(domId), min, max, args);
+            Utils.displayColorTable(ct, this.getDomId(domId), min, max, args);
         },
         getColorTableName: function(name) {
             var ct;
@@ -559,7 +559,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
         },
         setContents: function(contents) {
             var style = "";
-            contents = HtmlUtils.div([ATTR_CLASS, "display-contents-inner display-" + this.getType() + "-inner","style",style], contents);
+            contents = HtmlUtils.div([ATTR_CLASS, "display-contents-inner display-" + this.getType() + "-inner", "style", style], contents);
             this.writeHtml(ID_DISPLAY_CONTENTS, contents);
         },
         addEntry: function(entry) {
@@ -589,21 +589,21 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             }
         },
         getTextColor: function(property) {
-                if(property) return this.getProperty(property, this.getProperty("textColor"));
-                return this.getProperty("textColor","#000");
+            if (property) return this.getProperty(property, this.getProperty("textColor"));
+            return this.getProperty("textColor", "#000");
         },
         getTitleHtml: function(title) {
-                var titleToShow= "";
-                if (this.getShowTitle()) {
-                    var titleStyle=" color:" +this.getTextColor("titleColor") +";";
-                    var bg = this.getProperty("titleBackground");
-                    if(bg) titleStyle+="background:" + bg +"; padding:2px;padding-right:6px;padding-left:6px;";
-                    titleToShow = this.getShowTitle()?this.getDisplayTitle(title):"";
-                    if(this.entryId)
-                        titleToShow = HtmlUtils.href(this.getRamadda().getEntryUrl(this.entryId), titleToShow,[ATTR_CLASS, "display-title", ATTR_ID, this.getDomId(ID_TITLE),"style", titleStyle]);
-                }
-                return titleToShow;
-      },
+            var titleToShow = "";
+            if (this.getShowTitle()) {
+                var titleStyle = " color:" + this.getTextColor("titleColor") + ";";
+                var bg = this.getProperty("titleBackground");
+                if (bg) titleStyle += "background:" + bg + "; padding:2px;padding-right:6px;padding-left:6px;";
+                titleToShow = this.getShowTitle() ? this.getDisplayTitle(title) : "";
+                if (this.entryId)
+                    titleToShow = HtmlUtils.href(this.getRamadda().getEntryUrl(this.entryId), titleToShow, [ATTR_CLASS, "display-title", ATTR_ID, this.getDomId(ID_TITLE), "style", titleStyle]);
+            }
+            return titleToShow;
+        },
         handleEventFieldValueSelected: function(source, args) {
             this.setProperty("filterPattern", args.value);
             this.setProperty("patternFilterField", args.field.getId());
@@ -648,7 +648,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             }
         },
         highlightEntry: function(entry) {
-                this.jq(ID_TITLE).addClass("display-title-select");
+            this.jq(ID_TITLE).addClass("display-title-select");
         },
         getEntries: function() {
             return this.entries;
@@ -660,7 +660,9 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             }
             if (this.entryId) {
                 var entry;
-                await this.getRamadda().getEntry(this.entryId, e=>{entry=e});
+                await this.getRamadda().getEntry(this.entryId, e => {
+                    entry = e
+                });
             }
             return null;
         },
@@ -943,7 +945,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             var dataList = this.dataCollection.getList();
             //If we have fixed fields then clear them after the first time
             var fixedFields = this.getProperty(PROP_FIELDS);
-            if(fixedFields && (typeof fixedFields) == "string") {
+            if (fixedFields && (typeof fixedFields) == "string") {
                 fixedFields = fixedFields.split(",");
             }
 
@@ -1439,7 +1441,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             }
 
             var desc = entry.getDescription();
-            if(desc)
+            if (desc)
                 desc = desc.replace(/\n/g, "<br>");
             else
                 desc = "";
@@ -1579,7 +1581,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
                 even = !even;
                 var entry = entries[i];
                 this.entriesMap[entry.getId()] = entry;
-                var toolbar = this.makeEntryToolbar(entry, handler,props.handlerId);
+                var toolbar = this.makeEntryToolbar(entry, handler, props.handlerId);
                 var entryMenuButton = this.getEntryMenuButton(entry);
 
                 var entryName = entry.getDisplayName();
@@ -1596,7 +1598,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
                     ATTR_ID,
                     this.getDomId(ID_TREE_LINK + entryIdForDom)
                 ]);
-                var toggleCall = this.getGet() + ".toggleEntryDetails(event, '" + entryId + "'," + suffix + ",'" + props.handlerId +"');";
+                var toggleCall = this.getGet() + ".toggleEntryDetails(event, '" + entryId + "'," + suffix + ",'" + props.handlerId + "');";
                 var toggleCall2 = this.getGet() + ".entryHeaderClick(event, '" + entryId + "'," + suffix + "); ";
                 var open = HtmlUtils.onClick(toggleCall, arrow);
                 var extra = "";
@@ -1604,7 +1606,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
                 if (showIndex) {
                     extra = "#" + (i + 1) + " ";
                 }
-                if(handler && handler.getEntryPrefix) {
+                if (handler && handler.getEntryPrefix) {
                     extra += handler.getEntryPrefix(props.handlerId, entry);
                 }
                 var left = HtmlUtils.div([ATTR_CLASS, "display-entrylist-name"], entryMenuButton + " " + open + " " + extra + link + " " + entryName);
@@ -1641,7 +1643,9 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
                 //TOOLBAR
                 var entryId = $(this).attr(ATTR_ENTRYID);
                 var entry;
-                await theDisplay.getEntry(entryId,e=>{entry=e});
+                await theDisplay.getEntry(entryId, e => {
+                    entry = e
+                });
                 if (!entry) {
                     console.log("no entry:" + entryId);
                     return;
@@ -1671,7 +1675,9 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             entryRows.mouseout(async function(event) {
                 var entryId = $(this).attr(ATTR_ENTRYID);
                 var entry;
-                await  theDisplay.getEntry(entryId, e=>{entry=e}) ;
+                await theDisplay.getEntry(entryId, e => {
+                    entry = e
+                });
                 if (!entry) return;
                 theDisplay.propagateEvent("handleEventEntryMouseout", {
                     entry: entry
@@ -1698,7 +1704,9 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 
                         theDisplay.hideEntryDetails(entryId);
                         var entry;
-                        await this.getEntry(entryId,e=>{entry=e});
+                        await this.getEntry(entryId, e => {
+                            entry = e
+                        });
                         if (entry == null) return;
 
                         var zoom = null;
@@ -1718,8 +1726,10 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
                     unselected: async function(event, ui) {
                         if (true) return;
                         var entryId = ui.unselected.getAttribute(ATTR_ENTRYID);
-                        var entry ;
-                        await this.getEntry(entryId,e=>{entry=e});
+                        var entry;
+                        await this.getEntry(entryId, e => {
+                            entry = e
+                        });
                         var index = theDisplay.selectedEntries.indexOf(entry);
                         //                            console.log("remove:" +  index + " " + theDisplay.selectedEntries);
                         if (index > -1) {
@@ -1800,7 +1810,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             return html;
         },
 
-         makeEntryToolbar: function(entry, handler,handlerId) {
+        makeEntryToolbar: function(entry, handler, handlerId) {
             var get = this.getGet();
             var toolbarItems = [];
             //                 toolbarItems.push(HtmlUtils.tag(TAG_A, [ATTR_HREF, entry.getEntryUrl(),"target","_"], 
@@ -1855,7 +1865,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 
 
 
-            if(handler && handler.addToToolbar) {
+            if (handler && handler.addToToolbar) {
                 handler.addToToolbar(handlerId, entry, toolbarItems);
             }
 
@@ -1890,8 +1900,10 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             this.toggleEntryDetails(event, entryId);
         },
         toggleEntryDetails: async function(event, entryId, suffix, handlerId) {
-                var entry;
-                await this.getEntry(entryId,e=>{entry=e});
+            var entry;
+            await this.getEntry(entryId, e => {
+                entry = e
+            });
             //                console.log("toggleEntryDetails:" + entry.getName() +" " + entry.getId());
             if (suffix == null) suffix = "";
             var link = this.jq(ID_TREE_LINK + entry.getIdForDom() + suffix);
@@ -1973,7 +1985,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             }
             return selected;
         },
-         displayChildren: function(entry, entries, suffix, handlerId) {
+        displayChildren: function(entry, entries, suffix, handlerId) {
             if (!suffix) suffix = "";
             var detailsInner = this.jq(ID_DETAILS_INNER + entry.getIdForDom() + suffix);
             var details = this.getEntryHtml(entry, {
@@ -1986,7 +1998,9 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
                 if (this.showDetailsForGroup) {
                     entriesHtml += details;
                 }
-                entriesHtml += this.getEntriesTree(entries,{handlerId:handlerId});
+                entriesHtml += this.getEntriesTree(entries, {
+                    handlerId: handlerId
+                });
                 detailsInner.html(entriesHtml);
                 this.addEntrySelect();
             }
@@ -2013,9 +2027,9 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             return getGlobalRamadda();
         },
         getEntry: async function(entryId, callback) {
-             if (this.entriesMap && this.entriesMap[entryId]) {
-                   return Utils.call(callback, this.entriesMap[entryId]);
-              }
+            if (this.entriesMap && this.entriesMap[entryId]) {
+                return Utils.call(callback, this.entriesMap[entryId]);
+            }
             var ramadda = this.getRamadda();
             var toks = entryId.split(",");
             if (toks.length == 2) {
@@ -2024,32 +2038,36 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             }
             var entry = null;
             if (this.entryList != null) {
-                await this.entryList.getEntry(entryId,e=>entry=e);
+                await this.entryList.getEntry(entryId, e => entry = e);
             }
             if (entry == null) {
-                await ramadda.getEntry(entryId, e=>entry=e);
+                await ramadda.getEntry(entryId, e => entry = e);
             }
 
             if (entry == null) {
-                await this.getRamadda().getEntry(entryId, e=>entry=e);
+                await this.getRamadda().getEntry(entryId, e => entry = e);
             }
             return Utils.call(callback, entry);
         },
         addMapLayer: async function(entryId) {
-                var entry;
-                await this.getEntry(entryId,e=>{entry=e});
-                if (entry == null) {
-                    console.log("No entry:" + entryId);
-                    return;
-                }
-                this.getDisplayManager().addMapLayer(this, entry);
+            var entry;
+            await this.getEntry(entryId, e => {
+                entry = e
+            });
+            if (entry == null) {
+                console.log("No entry:" + entryId);
+                return;
+            }
+            this.getDisplayManager().addMapLayer(this, entry);
         },
         doit: function() {
             console.log("doit");
         },
-        createDisplay: async function(entryId, displayType, jsonUrl,displayProps) {
+        createDisplay: async function(entryId, displayType, jsonUrl, displayProps) {
             var entry;
-            await this.getEntry(entryId, e=>{entry=e});
+            await this.getEntry(entryId, e => {
+                entry = e
+            });
             if (entry == null) {
                 console.log("No entry:" + entryId);
                 return null;
@@ -2062,7 +2080,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
                 showDetails: true,
                 title: entry.getName(),
             };
-            if(displayProps) $.extend(props, displayProps);
+            if (displayProps) $.extend(props, displayProps);
 
             //TODO: figure out when to create data, check for grids, etc
             if (displayType != DISPLAY_ENTRYLIST) {
@@ -2097,10 +2115,12 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             return null;
         },
         getEntryMenu: async function(entryId, callback) {
-             var entry;
-             await this.getEntry(entryId,e=>{entry=e});
-             if (entry == null) {
-                 return Utils.call(callback, "null entry");
+            var entry;
+            await this.getEntry(entryId, e => {
+                entry = e
+            });
+            if (entry == null) {
+                return Utils.call(callback, "null entry");
             }
 
             var get = this.getGet();
@@ -2172,7 +2192,9 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
         },
         showEntryMenu: async function(event, entryId) {
             var menu;
-            await this.getEntryMenu(entryId,m=>{menu=m});
+            await this.getEntryMenu(entryId, m => {
+                menu = m
+            });
             this.writeHtml(ID_MENU_OUTER, menu);
             var srcId = this.getDomId(ID_MENU_BUTTON + Utils.cleanId(entryId));
             showPopup(event, srcId, this.getDomId(ID_MENU_OUTER), false, "left top", "left bottom");
@@ -2378,8 +2400,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 
             $("#" + popupId).draggable();
         },
-        checkLayout: function() {
-        },
+        checkLayout: function() {},
         displayData: function() {},
         createUI: function() {
             this.checkFixedLayout();
@@ -2487,9 +2508,9 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             if (dobs) {
                 html += HtmlUtils.openDiv(["class", "minitron"]);
             }
-            var style =  this.getProperty("displayStyle","");
+            var style = this.getProperty("displayStyle", "");
             if (width > 0) {
-                style+="width:" + width + "px;"
+                style += "width:" + width + "px;"
             }
 
             html += HtmlUtils.openDiv(["class", "display-contents", "style", style]);
@@ -2510,7 +2531,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             var left = "";
             if (button != "" || title != "") {
                 this.cnt++;
-                var titleDiv =this.getTitleHtml(title);
+                var titleDiv = this.getTitleHtml(title);
                 if (button == "") {
                     left = titleDiv;
                 } else {
@@ -2635,7 +2656,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             return height;
         },
         getContentsStyle: function() {
-           var style="";
+            var style = "";
             var height = this.getHeightForStyle();
             if (height) {
                 style += " height:" + height + ";";
@@ -2648,15 +2669,15 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
         },
         getContentsDiv: function() {
             var style = this.getContentsStyle();
-            style += this.getProperty("contentsStyle","");
+            style += this.getProperty("contentsStyle", "");
             var image = this.getProperty("backgroundImage");
-            if(image) {
-                image = HtmlUtils.getEntryImage(this.entryId,image);
-                style += "background-attachment:auto;background-size:100% auto; background-image: url('" + image +"'); ";
+            if (image) {
+                image = HtmlUtils.getEntryImage(this.entryId, image);
+                style += "background-attachment:auto;background-size:100% auto; background-image: url('" + image + "'); ";
             }
             var background = this.getProperty("background");
-            if(background)
-                style += "background: " + background+ ";";
+            if (background)
+                style += "background: " + background + ";";
             var topBottomStyle = "";
             var width = this.getWidthForStyle();
             if (width) {
@@ -2712,7 +2733,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             if (!Utils.stringDefined(title)) {
                 title = this.getTitle(false).trim();
             }
-            var text =this.getTitleHtml(title);
+            var text = this.getTitleHtml(title);
             if (this.getShowTitle()) {
                 this.jq(ID_TITLE).show();
             } else {
@@ -2787,7 +2808,9 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             this.dataCollection.addData(pointData);
             var entry = pointData.entry;
             if (entry == null) {
-                await this.getRamadda().getEntry(pointData.entryId,e=>{entry=e});
+                await this.getRamadda().getEntry(pointData.entryId, e => {
+                    entry = e
+                });
             }
             if (entry) {
                 pointData.entry = entry;
@@ -2808,19 +2831,19 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
                 msg = "<b>Sorry, but an error has occurred:</b>";
                 if (!data) data = "No data returned from server";
                 var error = data.error ? data.error : data;
-                error = error.replace(/<[^>]*>/g,"");
-                var tmp  = "";
+                error = error.replace(/<[^>]*>/g, "");
+                var tmp = "";
                 var lines = error.split("\n");
                 var seen = {};
-                for(var i=0;i<lines.length;i++) {
+                for (var i = 0; i < lines.length; i++) {
                     var line = lines[i].trim();
-                    if(line == "") continue;
-                    if(seen[line]) continue;
-                    seen[line]  =true;
-                    tmp+=line+"\n";
+                    if (line == "") continue;
+                    if (seen[line]) continue;
+                    seen[line] = true;
+                    tmp += line + "\n";
                 }
                 error = tmp;
-                error = HtmlUtils.tag("pre",["style","max-height:300px;overflow-y:auto;max-width:100%;overflow-x:auto;"],error);
+                error = HtmlUtils.tag("pre", ["style", "max-height:300px;overflow-y:auto;max-width:100%;overflow-x:auto;"], error);
                 msg += error;
             }
             this.setContents(this.getMessage(msg));

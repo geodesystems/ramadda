@@ -36,9 +36,9 @@ function noop() {}
 
 function addHandler(obj, id) {
     if (window.globalHandlers == null) {
-        window.globalHandlers  = {};
+        window.globalHandlers = {};
     }
-    if(!id) id = HtmlUtils.getUniqueId();
+    if (!id) id = HtmlUtils.getUniqueId();
     window.globalHandlers[id] = obj;
     return id;
 }
@@ -56,81 +56,83 @@ function getHandler(id) {
 var Utils = {
     pageLoaded: false,
     getIcon: function(icon) {
-        return ramaddaBaseUrl +"/icons/" + icon;
+        return ramaddaBaseUrl + "/icons/" + icon;
     },
-    imports:{},
-    importJS: async function(path,callback,err,noCache) {
+    imports: {},
+    importJS: async function(path, callback, err, noCache) {
         let _this = this;
         var key = "js:" + path;
-        if(!noCache && this.imports[key]) return Utils.call(callback);
+        if (!noCache && this.imports[key]) return Utils.call(callback);
         try {
             //Some urls fail  with getScript so we do a getText then eval
             //            throw new Error();
             await $.ajax({
-                    url: path,
-                    dataType: 'script',
-                    cache:true,
-                    success: function(data) {
-                        _this.imports[key] = true;
-                        Utils.call(callback);
-                    }                  
-                }).fail((jqxhr,settings,exc)=>{
-                        console.log("initial importJS failed: " +path);
-                    });
-        } catch(e) {
+                url: path,
+                dataType: 'script',
+                cache: true,
+                success: function(data) {
+                    _this.imports[key] = true;
+                    Utils.call(callback);
+                }
+            }).fail((jqxhr, settings, exc) => {
+                console.log("initial importJS failed: " + path);
+            });
+        } catch (e) {
             try {
                 //If the  ajax call failed it might be due to the mime type not being javascript. 
                 //Try just grabbing the text and adding it via a script tag
                 await $.ajax({
-                        url: path,
-                        dataType: 'text',
-                        success: function(data) {
-                            console.log("got script as text -  " + path);
-                            var script = document.createElement('script');
-                            script.innerHTML = data;
-                            document.body.appendChild(script);
-                            Utils.call(callback);
-                            _this.imports[key] = true;
-                        }                  
-                    }).fail((jqxhr, settings, exception)=>{if(!err) console.log("importJS failed:" +path);else err(jqxhr,settings,exception);});
-            } catch(e) {
+                    url: path,
+                    dataType: 'text',
+                    success: function(data) {
+                        console.log("got script as text -  " + path);
+                        var script = document.createElement('script');
+                        script.innerHTML = data;
+                        document.body.appendChild(script);
+                        Utils.call(callback);
+                        _this.imports[key] = true;
+                    }
+                }).fail((jqxhr, settings, exception) => {
+                    if (!err) console.log("importJS failed:" + path);
+                    else err(jqxhr, settings, exception);
+                });
+            } catch (e) {
                 //                if(!err) console.log("importJS failed:" +path+" error:" + e);
                 //                else Utils.call(err,e);
             }
         }
-       },
-    waitOn: async function(obj,callback) {
-        if(window[obj]) return;
     },
-    importCSS: async function(path,callback,err,noCache) {
+    waitOn: async function(obj, callback) {
+        if (window[obj]) return;
+    },
+    importCSS: async function(path, callback, err, noCache) {
         var key = "css:" + path;
-        if(!noCache)
-            if(this.imports[key]) return Utils.call(callback);
-       try {
-        await $.ajax({
-                url: path,
-                dataType: 'text',
-                success: (data) =>{
-                    if(!noCache)
-                        this.imports[key] = true;
-                    $('<style type="text/css">\n' + data + '</style>').appendTo("head");                    
-                    Utils.call(callback);
-                }                  
-            }).fail(err);
-        } catch(e) {
-        }
-    },
-    importText: async function(path,callback,err) {
+        if (!noCache)
+            if (this.imports[key]) return Utils.call(callback);
         try {
             await $.ajax({
-                    url: path,
-                    dataType: 'text',
-                    success: function(data) {
-                        Utils.call(callback,data);
-                    }                  
-                }).fail(err);
-        } catch(e) {
-            Utils.call(err,e);
+                url: path,
+                dataType: 'text',
+                success: (data) => {
+                    if (!noCache)
+                        this.imports[key] = true;
+                    $('<style type="text/css">\n' + data + '</style>').appendTo("head");
+                    Utils.call(callback);
+                }
+            }).fail(err);
+        } catch (e) {}
+    },
+    importText: async function(path, callback, err) {
+        try {
+            await $.ajax({
+                url: path,
+                dataType: 'text',
+                success: function(data) {
+                    Utils.call(callback, data);
+                }
+            }).fail(err);
+        } catch (e) {
+            Utils.call(err, e);
         }
     },
     padLeft: function(s, length, pad) {
@@ -140,8 +142,8 @@ var Utils = {
             s = pad + s;
         return s;
     },
-    join: function(l, delimiter,offset) {
-        if((typeof offset) ==  "undefined") offset=0;
+    join: function(l, delimiter, offset) {
+        if ((typeof offset) == "undefined") offset = 0;
         var s = "";
         for (var i = offset; i < l.length; i++) {
             if (i > offset) s += delimiter;
@@ -268,18 +270,18 @@ var Utils = {
         document.body.removeChild(element);
     },
     later: function(callback) {
-        if(callback) {
-            setTimeout(callback,1);
+        if (callback) {
+            setTimeout(callback, 1);
         }
     },
-    call: function(callback,arg1,arg2,arg3,arg4) {
-        if(callback) {
+    call: function(callback, arg1, arg2, arg3, arg4) {
+        if (callback) {
             var args = [];
-            if(Utils.isDefined(arg1)) args.push(arg1);
-            if(Utils.isDefined(arg2)) args.push(arg2);
-            if(Utils.isDefined(arg3)) args.push(arg3);
-            if(Utils.isDefined(arg4)) args.push(arg4);
-            callback.apply(this,args);
+            if (Utils.isDefined(arg1)) args.push(arg1);
+            if (Utils.isDefined(arg2)) args.push(arg2);
+            if (Utils.isDefined(arg3)) args.push(arg3);
+            if (Utils.isDefined(arg4)) args.push(arg4);
+            callback.apply(this, args);
         }
         return arg1;
     },
@@ -510,7 +512,7 @@ var Utils = {
         }
         if (args) $.extend(options, args);
         var stringValues = options.stringValues;
-        if(stringValues && stringValues.length) 
+        if (stringValues && stringValues.length)
             options.showRange = false;
         min = parseFloat(min);
         max = parseFloat(max);
@@ -533,13 +535,13 @@ var Utils = {
         html += "</tr></table>";
         html += HtmlUtils.closeTag("div");
         html += HtmlUtils.openTag("div", ["class", "display-colortable-extra"]);
-        if(stringValues && stringValues.length) {
-            var tdw = 100/stringValues.length+"%";
-            html+="<table width=100%><tr>";
-            for(var i=0;i<stringValues.length;i++) {
-                html+="<td align=center width='" + tdw+"'>" + stringValues[i]+"</td>";
+        if (stringValues && stringValues.length) {
+            var tdw = 100 / stringValues.length + "%";
+            html += "<table width=100%><tr>";
+            for (var i = 0; i < stringValues.length; i++) {
+                html += "<td align=center width='" + tdw + "'>" + stringValues[i] + "</td>";
             }
-            html+="</tr></table>"
+            html += "</tr></table>"
         }
         html += HtmlUtils.closeTag("div");
 
@@ -590,55 +592,55 @@ var Utils = {
             colors: ['rgb(62,62,62)', 'rgb(69,69,69)', 'rgb(75,75,75)', 'rgb(82,82,82)', 'rgb(88,88,88)', 'rgb(95,95,95)', 'rgb(102,102,102)', 'rgb(108,108,108)', 'rgb(115,115,115)', 'rgb(121,121,121)', 'rgb(128,128,128)', 'rgb(135,135,135)', 'rgb(141,141,141)', 'rgb(148,148,148)', 'rgb(155,155,155)', 'rgb(161,161,161)', 'rgb(168,168,168)', 'rgb(174,174,174)', 'rgb(181,181,181)', 'rgb(188,188,188)', 'rgb(194,194,194)', 'rgb(201,201,201)', 'rgb(207,207,207)', 'rgb(214,214,214)', 'rgb(221,221,221)', 'rgb(227,227,227)', 'rgb(234,234,234)', 'rgb(240,240,240)', 'rgb(247,247,247)', 'rgb(254,254,254)', ]
         },
         blue_green: {
-            colors: ['#f7fcfd','#e5f5f9','#ccece6','#99d8c9','#66c2a4','#41ae76','#238b45','#006d2c','#00441b']
+            colors: ['#f7fcfd', '#e5f5f9', '#ccece6', '#99d8c9', '#66c2a4', '#41ae76', '#238b45', '#006d2c', '#00441b']
         },
         blue_purple: {
-            colors: ['#f7fcfd','#e0ecf4','#bfd3e6','#9ebcda','#8c96c6','#8c6bb1','#88419d','#810f7c','#4d004b']
+            colors: ['#f7fcfd', '#e0ecf4', '#bfd3e6', '#9ebcda', '#8c96c6', '#8c6bb1', '#88419d', '#810f7c', '#4d004b']
         },
         green_blue: {
-            colors: ['#f7fcf0','#e0f3db','#ccebc5','#a8ddb5','#7bccc4','#4eb3d3','#2b8cbe','#0868ac','#084081']
+            colors: ['#f7fcf0', '#e0f3db', '#ccebc5', '#a8ddb5', '#7bccc4', '#4eb3d3', '#2b8cbe', '#0868ac', '#084081']
         },
         orange_red: {
-            colors: ['#fff7ec','#fee8c8','#fdd49e','#fdbb84','#fc8d59','#ef6548','#d7301f','#b30000','#7f0000']
+            colors: ['#fff7ec', '#fee8c8', '#fdd49e', '#fdbb84', '#fc8d59', '#ef6548', '#d7301f', '#b30000', '#7f0000']
         },
         purple_blue: {
-           colors:             ['#fff7fb','#ece7f2','#d0d1e6','#a6bddb','#74a9cf','#3690c0','#0570b0','#045a8d','#023858']
+            colors: ['#fff7fb', '#ece7f2', '#d0d1e6', '#a6bddb', '#74a9cf', '#3690c0', '#0570b0', '#045a8d', '#023858']
         },
         purple_blue_green: {
-            colors: ['#fff7fb','#ece2f0','#d0d1e6','#a6bddb','#67a9cf','#3690c0','#02818a','#016c59','#014636']
+            colors: ['#fff7fb', '#ece2f0', '#d0d1e6', '#a6bddb', '#67a9cf', '#3690c0', '#02818a', '#016c59', '#014636']
         },
         purple_red: {
-            colors: ['#f7f4f9','#e7e1ef','#d4b9da','#c994c7','#df65b0','#e7298a','#ce1256','#980043','#67001f']
+            colors: ['#f7f4f9', '#e7e1ef', '#d4b9da', '#c994c7', '#df65b0', '#e7298a', '#ce1256', '#980043', '#67001f']
         },
         red_purple: {
-            colors: ['#fff7f3','#fde0dd','#fcc5c0','#fa9fb5','#f768a1','#dd3497','#ae017e','#7a0177','#49006a']
+            colors: ['#fff7f3', '#fde0dd', '#fcc5c0', '#fa9fb5', '#f768a1', '#dd3497', '#ae017e', '#7a0177', '#49006a']
         },
         yellow_green: {
-            colors: ['#ffffe5','#f7fcb9','#d9f0a3','#addd8e','#78c679','#41ab5d','#238443','#006837','#004529']
+            colors: ['#ffffe5', '#f7fcb9', '#d9f0a3', '#addd8e', '#78c679', '#41ab5d', '#238443', '#006837', '#004529']
         },
         yellow_green_blue: {
-            colors: ['#ffffd9','#edf8b1','#c7e9b4','#7fcdbb','#41b6c4','#1d91c0','#225ea8','#253494','#081d58']
+            colors: ['#ffffd9', '#edf8b1', '#c7e9b4', '#7fcdbb', '#41b6c4', '#1d91c0', '#225ea8', '#253494', '#081d58']
         },
         yellow_orange_brown: {
-            colors: ['#ffffe5','#fff7bc','#fee391','#fec44f','#fe9929','#ec7014','#cc4c02','#993404','#662506']
+            colors: ['#ffffe5', '#fff7bc', '#fee391', '#fec44f', '#fe9929', '#ec7014', '#cc4c02', '#993404', '#662506']
         },
         yellow_orange_red: {
-            colors: ['#ffffcc','#ffeda0','#fed976','#feb24c','#fd8d3c','#fc4e2a','#e31a1c','#bd0026','#800026']
+            colors: ['#ffffcc', '#ffeda0', '#fed976', '#feb24c', '#fd8d3c', '#fc4e2a', '#e31a1c', '#bd0026', '#800026']
         },
         oranges: {
-            colors: ['#fff5eb','#fee6ce','#fdd0a2','#fdae6b','#fd8d3c','#f16913','#d94801','#a63603','#7f2704']
+            colors: ['#fff5eb', '#fee6ce', '#fdd0a2', '#fdae6b', '#fd8d3c', '#f16913', '#d94801', '#a63603', '#7f2704']
         },
         purples: {
-            colors: ['#fcfbfd','#efedf5','#dadaeb','#bcbddc','#9e9ac8','#807dba','#6a51a3','#54278f','#3f007d']
+            colors: ['#fcfbfd', '#efedf5', '#dadaeb', '#bcbddc', '#9e9ac8', '#807dba', '#6a51a3', '#54278f', '#3f007d']
         },
         reds: {
-            colors: ['#fff5f0','#fee0d2','#fcbba1','#fc9272','#fb6a4a','#ef3b2c','#cb181d','#a50f15','#67000d']
+            colors: ['#fff5f0', '#fee0d2', '#fcbba1', '#fc9272', '#fb6a4a', '#ef3b2c', '#cb181d', '#a50f15', '#67000d']
         },
         greens: {
-            colors: ['#f7fcf5','#e5f5e0','#c7e9c0','#a1d99b','#74c476','#41ab5d','#238b45','#006d2c','#00441b']
+            colors: ['#f7fcf5', '#e5f5e0', '#c7e9c0', '#a1d99b', '#74c476', '#41ab5d', '#238b45', '#006d2c', '#00441b']
         },
         map_grays: {
-            colors: ['#ffffff','#f0f0f0','#d9d9d9','#bdbdbd','#969696','#737373','#525252','#252525','#000000']
+            colors: ['#ffffff', '#f0f0f0', '#d9d9d9', '#bdbdbd', '#969696', '#737373', '#525252', '#252525', '#000000']
         },
         bright38: {
             colors: ['rgb(254,0,225)', 'rgb(188,0,254)', 'rgb(165,0,254)', 'rgb(134,0,254)', 'rgb(111,0,254)', 'rgb(81,0,254)', 'rgb(58,0,254)', 'rgb(28,0,254)', 'rgb(0,2,254)', 'rgb(0,33,254)', 'rgb(0,56,254)', 'rgb(0,78,254)', 'rgb(0,139,254)', 'rgb(0,169,254)', 'rgb(0,208,254)', 'rgb(0,231,254)', 'rgb(0,254,231)', 'rgb(0,254,200)', 'rgb(0,254,169)', 'rgb(0,254,139)', 'rgb(0,254,109)', 'rgb(0,254,79)', 'rgb(0,254,39)', 'rgb(0,254,0)', 'rgb(42,254,0)', 'rgb(88,254,0)', 'rgb(126,254,0)', 'rgb(164,254,0)', 'rgb(195,254,0)', 'rgb(226,254,0)', 'rgb(254,243,0)', 'rgb(254,199,0)', 'rgb(254,167,0)', 'rgb(254,137,0)', 'rgb(254,106,0)', 'rgb(254,68,0)', 'rgb(254,30,0)', 'rgb(254,0,0)', ]
@@ -958,7 +960,7 @@ var HtmlUtils = {
         if (window["ramaddaDisplayCheckLayout"]) {
             ramaddaDisplayCheckLayout();
         }
-        if(window["ramaddaMapCheckLayout"]) {
+        if (window["ramaddaMapCheckLayout"]) {
             ramaddaMapCheckLayout();
         }
     },
@@ -979,12 +981,12 @@ var HtmlUtils = {
             $("#" + info.hidden).val(info.editor.getValue());
         }
     },
-    initAceEditor: function(formId, id, hidden,argOptions) {
+    initAceEditor: function(formId, id, hidden, argOptions) {
         var options = {
             autoScrollEditorIntoView: true,
             copyWithEmptySelection: true,
         };
-        if(argOptions)
+        if (argOptions)
             $.extend(options, argOptions);
 
         if (!this.aceEditors) {
@@ -1135,13 +1137,13 @@ var HtmlUtils = {
     },
 
     heading: function(html) {
-        return this.tag("h3",[], html);
+        return this.tag("h3", [], html);
     },
-    bootstrapClasses:["col-md-12","col-md-6","col-md-4", "col-md-4","col-md-4","col-md-2"],
+    bootstrapClasses: ["col-md-12", "col-md-6", "col-md-4", "col-md-4", "col-md-4", "col-md-2"],
     getBootstrapClass: function(cols) {
         cols -= 1;
-        cols = Math.max(cols,0);
-        if(cols<this.bootstrapClasses.length) {
+        cols = Math.max(cols, 0);
+        if (cols < this.bootstrapClasses.length) {
             return this.bootstrapClasses[cols];
         }
         return "col-md-1";
@@ -1314,7 +1316,7 @@ var HtmlUtils = {
             if (!name) continue;
             var value = list[i + 1];
             if (value == null) {
-                html += " " + name +" ";
+                html += " " + name + " ";
             } else {
                 html += this.attr(name, value);
             }
@@ -1361,13 +1363,13 @@ var HtmlUtils = {
     },
     getEntryImage: function(entryId, tag) {
         var index = tag.indexOf("::");
-        if(index>=0) {
+        if (index >= 0) {
             var toks = tag.split("::");
-            if(toks[0].trim().length>0) {
+            if (toks[0].trim().length > 0) {
                 entryId = toks[0].trim();
             }
             var attach = toks[1].trim();
-            return ramaddaBaseUrl +"/metadata/view/" + attach +"?entryid=" + entryId;
+            return ramaddaBaseUrl + "/metadata/view/" + attach + "?entryid=" + entryId;
         }
         return tag;
     },
@@ -1408,12 +1410,12 @@ var HtmlUtils = {
     },
 
     radio: function(id, name, radioclass, value, checked, extra) {
-        if(!extra) extra = "";
+        if (!extra) extra = "";
         var html = "<input id='" + id + "'  class='" + radioclass + "' name='" + name + "' type=radio value='" + value + "' ";
         if (checked) {
             html += " checked ";
         }
-        html+=" " + extra
+        html += " " + extra
         html += "/>";
         return html;
     },
@@ -1686,26 +1688,30 @@ msg+="]"
     */
 
 
-function Div(contents,clazz) {
+function Div(contents, clazz) {
     this.id = HtmlUtils.getUniqueId();
-    this.contents  = contents || "";
+    this.contents = contents || "";
     this.extra = "";
-    this.clazz =clazz;
+    this.clazz = clazz;
     this.toString = function() {
-        return HtmlUtils.div(["class",clazz||"","id",this.id],this.contents);
+        return HtmlUtils.div(["class", clazz || "", "id", this.id], this.contents);
     }
-    this.getId = function() {return this.id;}
-    this.jq = function() { return $("#" + this.id)}
+    this.getId = function() {
+        return this.id;
+    }
+    this.jq = function() {
+        return $("#" + this.id)
+    }
     this.set = function(html, attrs) {
-        if(attrs) this.extra = HtmlUtils.attrs(attrs);
+        if (attrs) this.extra = HtmlUtils.attrs(attrs);
         this.contents = html;
-        $("#"+this.id).html(html);
+        $("#" + this.id).html(html);
         return this;
     }
     this.append = function(html) {
-        if(!this.content) this.content = html;
+        if (!this.content) this.content = html;
         else this.content += html;
-        $("#"+this.id).append(html);
+        $("#" + this.id).append(html);
     }
     this.msg = function(msg) {
         return this.set(HtmlUtils.div([ATTR_CLASS, "display-message"], msg));
@@ -1714,13 +1720,13 @@ function Div(contents,clazz) {
 }
 
 
-(function ($, undefined) {
+(function($, undefined) {
     $.fn.getCursorPosition = function() {
         var el = $(this).get(0);
         var pos = 0;
-        if('selectionStart' in el) {
+        if ('selectionStart' in el) {
             pos = el.selectionStart;
-        } else if('selection' in document) {
+        } else if ('selection' in document) {
             el.focus();
             var Sel = document.selection.createRange();
             var SelLength = document.selection.createRange().text.length;
@@ -1730,4 +1736,3 @@ function Div(contents,clazz) {
         return pos;
     }
 })(jQuery);
-

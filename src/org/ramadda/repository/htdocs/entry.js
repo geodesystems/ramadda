@@ -465,7 +465,7 @@ function Ramadda(repositoryRoot) {
         getEntry: async function(id, callback) {
             var entry = this.entryCache[id];
             if (entry != null) {
-                return Utils.call(callback,entry);
+                return Utils.call(callback, entry);
             }
             //Check any others
             if (window.globalRamaddas) {
@@ -481,7 +481,7 @@ function Ramadda(repositoryRoot) {
                 return Utils.call(callback, null);
             }
             var ramadda = this;
-            var jsonUrl = this.getJsonUrl(id)+"&onlyentry=true";
+            var jsonUrl = this.getJsonUrl(id) + "&onlyentry=true";
             //            console.log("\tramadda.getEntry getting json");
             await $.getJSON(jsonUrl, function(data) {
                     //                    console.log("\tramadda.getEntry json return");
@@ -492,13 +492,13 @@ function Ramadda(repositoryRoot) {
                     var first = null;
                     if (entryList.length > 0) first = entryList[0];
                     //                    console.log("\tramadda.getEntry: result:" + entryList.length +" " + first);
-                    Utils.call(callback,first, entryList);
+                    Utils.call(callback, first, entryList);
                 })
                 .fail(function(jqxhr, textStatus, error) {
                     var err = textStatus + ", " + error;
                     GuiUtils.handleError("Error getting entry information: " + err, jsonUrl, false);
                 });
-            }
+        }
     });
 
 
@@ -651,7 +651,7 @@ function Entry(props) {
 
     this.startDate = Utils.parseDate(props.startDate);
     this.endDate = Utils.parseDate(props.endDate);
-    if(this.endDate && this.startDate) {
+    if (this.endDate && this.startDate) {
         if (this.endDate.getTime() < this.startDate.getTime()) {
             var tmp = this.startDate;
             this.startDate = this.endDate;
@@ -695,33 +695,37 @@ function Entry(props) {
             return this.isGroup;
         },
         getRoot: async function(callback, extraArgs) {
-                var parent  = this;
-                while(true) {
-                    var tmp;
-                    await parent.getParentEntry(e=>tmp=e);
-                    if(!tmp) {
-                        return Utils.call(callback, parent);
-                    }
-                    parent = tmp;
+            var parent = this;
+            while (true) {
+                var tmp;
+                await parent.getParentEntry(e => tmp = e);
+                if (!tmp) {
+                    return Utils.call(callback, parent);
                 }
+                parent = tmp;
+            }
         },
         map: async function(func, finish) {
-                var children;
-                await this.getChildrenEntries(l=>{children=l});
-                children.map(func);
-                Utils.call(finish);
-       },
+            var children;
+            await this.getChildrenEntries(l => {
+                children = l
+            });
+            children.map(func);
+            Utils.call(finish);
+        },
         getParentEntry: async function(callback, extraArgs) {
-                if(!this.parent) {
-                    //                    console.log("\tgetParent: no parent");
-                    return Utils.call(callback,null);
-                }
-                if(this.parentEntry) {
-                    //                    console.log("\tgetParent: got it");
-                    return Utils.call(callback,this.parentEntry);
-                }
-                await this.getRamadda().getEntry(this.parent, entry=>{
-                        this.parentEntry=entry;Utils.call(callback,entry);});
+            if (!this.parent) {
+                //                    console.log("\tgetParent: no parent");
+                return Utils.call(callback, null);
+            }
+            if (this.parentEntry) {
+                //                    console.log("\tgetParent: got it");
+                return Utils.call(callback, this.parentEntry);
+            }
+            await this.getRamadda().getEntry(this.parent, entry => {
+                this.parentEntry = entry;
+                Utils.call(callback, entry);
+            });
         },
         getChildrenEntries: async function(callback, extraArgs) {
             if (this.childrenEntries != null) {
@@ -738,10 +742,10 @@ function Entry(props) {
             //                console.log(jsonUrl);
             var myCallback = {
                 entryListChanged: function(list) {
-                  callback(list.getEntries());
+                    callback(list.getEntries());
                 }
             };
-            var entryList =  new EntryList(this.getRamadda(), jsonUrl, myCallback, false);
+            var entryList = new EntryList(this.getRamadda(), jsonUrl, myCallback, false);
             await entryList.doSearch();
             return;
         },
@@ -972,7 +976,9 @@ function EntryList(repository, jsonUrl, listener, doSearch) {
         getEntry: async function(id, callback) {
             var entry = this.map[id];
             if (entry != null) return Utils.call(callback, entry);
-            await this.getRepository().getEntry(id, e=>{Utils.call(callback,e)});
+            await this.getRepository().getEntry(id, e => {
+                Utils.call(callback, e)
+            });
         },
         getEntries: function() {
             return this.entries;
@@ -1137,7 +1143,9 @@ function EntryListHolder(ramadda) {
             for (var i = 0; i < this.entryLists.length; i++) {
                 var entryList = this.entryLists[i];
                 var entry;
-                await entryList.getEntry(id,e=>{entry=e});
+                await entryList.getEntry(id, e => {
+                    entry = e
+                });
                 if (entry != null) {
                     return entry;
                 }

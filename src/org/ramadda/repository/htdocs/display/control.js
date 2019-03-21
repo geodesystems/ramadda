@@ -194,8 +194,8 @@ function RamaddaLabelDisplay(displayManager, id, properties) {
             if (this.editMode) {
                 textClass += " display-text-edit ";
             }
-            var style = "color:" + this.getTextColor("contentsColor") +";";
-            var html = HtmlUtils.div([ATTR_CLASS, textClass, ATTR_ID, this.getDomId(ID_TEXT),"style",style], this.text);
+            var style = "color:" + this.getTextColor("contentsColor") + ";";
+            var html = HtmlUtils.div([ATTR_CLASS, textClass, ATTR_ID, this.getDomId(ID_TEXT), "style", style], this.text);
             if (this.editMode) {
                 html += HtmlUtils.textarea(ID_EDIT, this.text, ["rows", 5, "cols", 120, ATTR_SIZE, "120", ATTR_CLASS, "display-text-input", ATTR_ID, this.getDomId(ID_EDIT)]);
             }
@@ -231,6 +231,3 @@ function RamaddaLabelDisplay(displayManager, id, properties) {
         },
     });
 }
-
-
-

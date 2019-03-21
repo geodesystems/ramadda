@@ -591,7 +591,7 @@ function RamaddaDotplotDisplay(displayManager, id, properties) {
     addRamaddaDisplay(this);
     RamaddaUtil.defineMembers(this, {
         getDisplayStyle: function() {
-            return  "";
+            return "";
             return "border: 1px #ccc solid;";
         },
 
@@ -600,7 +600,7 @@ function RamaddaDotplotDisplay(displayManager, id, properties) {
             if (!records) return;
             var fields = this.getSelectedFields(this.getData().getRecordFields());
             var stringField = this.getFieldOfType(fields, "string");
-            if(!stringField) {
+            if (!stringField) {
                 stringField = fields[0];
             }
 
