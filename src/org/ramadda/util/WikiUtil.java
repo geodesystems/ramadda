@@ -1057,7 +1057,7 @@ public class WikiUtil {
                     continue;
                 }
 
-                if (tline.startsWith("+segment")) {
+               if (tline.startsWith("+segment")) {
                     List<String> toks  = StringUtil.splitUpTo(tline, " ", 2);
                     String       title = (toks.size() > 1)
                                          ? toks.get(1)
@@ -1345,6 +1345,24 @@ public class WikiUtil {
 
                 continue;
             }
+
+            if (tline.startsWith("+frame")) {
+                HtmlUtils.open(buff, "div",
+                               HtmlUtils.cssClass("ramadda-frame-outer"));
+                HtmlUtils.open(buff, "div",
+                               HtmlUtils.cssClass("ramadda-frame-inner"));
+
+                continue;
+            }
+
+
+            if (tline.startsWith("-frame")) {
+                HtmlUtils.close(buff, "div");
+                HtmlUtils.close(buff, "div");
+                continue;
+            }
+
+
 
 
             if (tline.startsWith("+title")) {
