@@ -5086,14 +5086,14 @@ ATTR_SHOWLINK, "true", ATTR_INCLUDEICON, "false") + ATTRS_LAYOUT),
         for (int i = 0; i < WIKITAGS.length; i++) {
             WikiTagCategory cat = WIKITAGS[i];
             if ( !charts) {
-                if (cat.category.equals("Displays")
+                if (cat.category.equals("Displays and Charts")
                         || cat.category.equals("Misc Charts")
                         || cat.category.equals("Charts")
                         || cat.category.equals("Text Displays")) {
                     continue;
                 }
             } else {
-                if ( !(cat.category.equals("Displays")
+                if ( !(cat.category.equals("Displays and Charts")
                         || cat.category.equals("Charts")
                         || cat.category.equals("Misc Charts")
                         || cat.category.equals("Text Displays"))) {
