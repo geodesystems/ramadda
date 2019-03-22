@@ -5851,12 +5851,12 @@ function RamaddaNotebookDisplay(displayManager, id, properties) {
             for (var i = 0; i < this.cells.length; i++) {
                 var cell = this.cells[i];
                 if (cell.runFirst) continue;
-                await this.runCell(cell).then(result => ok = result);
+                await this.runCell(cell,true).then(result => ok = result);
             }
         },
-        runCell: async function(cell) {
+        runCell: async function(cell,doingAll) {
             if (cell.hasRun) return true;
-            await cell.run(result => ok = result);
+            await cell.run(result => ok = result,{doingAll:doingAll});
             if (!ok) return false;
             var raw = cell.getRawOutput();
             if (raw) {
@@ -6000,7 +6000,6 @@ function NotebookState(cell, div) {
         clearAllOutput: function() {
              this.getNotebook().clearOutput();
         },
-
         write: function(value) {
             var s = this.getNotebook().formatOutput(value);
             if (s == null && (typeof value) == "object") {
@@ -6196,10 +6195,10 @@ function RamaddaNotebookCell(notebook, id, content, props) {
                         }
                         if (e.shiftKey && e.ctrlKey) {
                             //run all
-                            _this.run(null, false, false);
+                            _this.run(null);
                         } else {
                             //run current, run to end
-                            _this.run(null, true, e.ctrlKey);
+                            _this.run(null, {justCurrent:true, toEnd:e.ctrlKey});
                             if (!e.ctrlKey) {
                                 _this.stepToNextChunk();
                             }
@@ -6525,7 +6524,11 @@ function RamaddaNotebookCell(notebook, id, content, props) {
             }
 
         },
-        run: async function(callback, justCurrent, toEnd) {
+        run: async function(callback, args) {
+            if(!args) args = {};
+            var justCurrent = args.justCurrent; 
+            var toEnd = args.toEnd;
+            var doingAll = args.doingAll;
             if (this.running) return Utils.call(callback, true);
             this.running = true;
             var doRows = null;
@@ -6694,7 +6697,7 @@ function RamaddaNotebookCell(notebook, id, content, props) {
             for (var i = 0; i < chunks.length; i++) {
                 var chunk = chunks[i];
                 if (!chunk.doChunk) continue;
-                if (chunk.rest.indexOf(" dontRun ") >= 0) continue;
+                if(doingAll && chunk.rest.indexOf(" skipRunAll ") >= 0) continue;
                 chunk.div.set("");
                 await this.processChunk(chunk);
                 if (!chunk.ok) {
