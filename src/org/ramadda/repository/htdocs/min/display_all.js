@@ -6575,7 +6575,7 @@ function RamaddaNotebookCell(notebook, id, content, props) {
                 }
 
                 this.jq(ID_RUN_ICON).attr("src", icon_progress);
-                await this.runInner(value, doRows).then(r => ok = r);
+                await this.runInner(value, doRows,doingAll).then(r => ok = r);
                 this.jq(ID_RUN_ICON).attr("src", icon_blank);
                 if (!ok) {
                     this.running = false;
@@ -6601,7 +6601,7 @@ function RamaddaNotebookCell(notebook, id, content, props) {
             if (!this.editor) return this.content;
             return this.editor.getValue();
         },
-        runInner: async function(value, doRows) {
+            runInner: async function(value, doRows,doingAll)  {
             value = value.trim();
             value = value.replace(/{cellname}/g, this.cellName);
             value = this.notebook.convertInput(value);
