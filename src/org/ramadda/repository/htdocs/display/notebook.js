@@ -1457,9 +1457,9 @@ function RamaddaNotebookCell(notebook, id, content, props) {
             this.input.focus();
         },
         clearOutput: function() {
-            this.output.html("");
+            if(this.divs)
+                this.divs.map(div=>div.set(""));
             this.outputHtml = "";
-            this.divs = [];
         },
         processHtml: async function(chunk) {
             var content = chunk.content;

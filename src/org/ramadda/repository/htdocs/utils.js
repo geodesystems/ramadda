@@ -1792,7 +1792,7 @@ function Div(contents, clazz) {
     this.set = function(html, attrs) {
         if (attrs) this.extra = HtmlUtils.attrs(attrs);
         this.contents = html;
-        $("#" + this.id).html(html);
+        this.jq().html(html);
         return this;
     }
     this.append = function(html) {
