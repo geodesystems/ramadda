@@ -1390,7 +1390,7 @@ function RamaddaNotebookCell(notebook, id, content, props) {
                         chunks.push({
                             content: chunk,
                             type: type,
-                            rest: rest,
+                            props: rest.split(" "),
                             div: div,
                             doChunk: doChunk,
                             ok: true
@@ -1412,7 +1412,7 @@ function RamaddaNotebookCell(notebook, id, content, props) {
                 chunks.push({
                     content: chunk,
                     type: type,
-                    rest: " " + rest + " ",
+                     props: rest.split(" "),
                     div: div,
                     doChunk: doChunk,
                     ok: true
@@ -1422,20 +1422,12 @@ function RamaddaNotebookCell(notebook, id, content, props) {
             for (var i = divCnt; i < this.divs.length; i++) {
                 this.divs[i].jq().hide();
             }
-
-            /*
-            var result = "";
-            for (var i = 0; i < chunks.length; i++) {
-                result += chunks[i].div.toString() + "\n";
-            }
-            this.output.html(result);
-            */
             this.rawOutput = "";
             for (var i = 0; i < chunks.length; i++) {
                 var chunk = chunks[i];
                 if (!chunk.doChunk) continue;
-                if(doingAll && chunk.rest.indexOf(" skipRunAll ") >= 0) continue;
                 chunk.div.set("");
+                if(doingAll && chunk.props.indexOf("skipRunAll") >= 0) continue;
                 await this.processChunk(chunk);
                 if (!chunk.ok) {
                     return false;
