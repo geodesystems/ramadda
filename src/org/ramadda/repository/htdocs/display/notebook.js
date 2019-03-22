@@ -629,6 +629,9 @@ function NotebookState(cell, div) {
         log: function(msg, type, from) {
             this.getNotebook().log(msg, type, from, this.div);
         },
+        clearConsole: function() {
+                this.getNotebook().clearConsole();
+        },
         getStop: function() {
             return this.stopFlag;
         },
