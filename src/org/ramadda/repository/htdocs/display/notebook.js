@@ -1425,7 +1425,9 @@ function RamaddaNotebookCell(notebook, id, content, props) {
             this.rawOutput = "";
             for (var i = 0; i < chunks.length; i++) {
                 var chunk = chunks[i];
-                if (!chunk.doChunk) continue;
+                if (!chunk.doChunk) {
+                    continue;
+                }
                 chunk.div.set("");
                 if(doingAll && chunk.props.indexOf("skipRunAll") >= 0) continue;
                 await this.processChunk(chunk);
