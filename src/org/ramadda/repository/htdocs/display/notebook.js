@@ -737,12 +737,15 @@ function NotebookState(cell, div) {
         clearAllOutput: function() {
              this.getNotebook().clearOutput();
         },
-        write: function(value) {
+        write: function(value, clear) {
             var s = this.getNotebook().formatOutput(value);
             if (s == null && (typeof value) == "object") {
                 s = this.notebook.formatObject(value);
             }
-            this.div.append(s);
+            if(clear)
+                this.div.set(s);
+            else
+                this.div.append(s);
         },
         linechart: async function(entry, props) {
             if (!entry)
