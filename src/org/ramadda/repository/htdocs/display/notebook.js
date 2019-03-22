@@ -395,6 +395,9 @@ function RamaddaNotebookDisplay(displayManager, id, properties) {
             if (height > 200)
                 this.console.scrollTop(height - 200);
         },
+        clearConsole: function() {
+           this.console.html("");
+        },
         layoutCells: function() {
             for (var i = 0; i < this.cells.length; i++) {
                 var cell = this.cells[i];
