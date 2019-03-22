@@ -165,17 +165,39 @@ public class IPythonNotebookOutputHandler extends OutputHandler {
             }
             if (input != null) {
                 if (cellType.equals("code")) {
-                    sb.append("%%py\n");
-                    StringBuilder newSrc = new StringBuilder();
-                    for(String line: StringUtil.split(input,"\n")) {
-                        //Strip the ipy special functions
-                        if(line.trim().startsWith("%")) continue;
-                        newSrc.append(line);
-                        newSrc.append("\n");
+                    if(input.startsWith("%%javascript")) {
+                        sb.append("%%js\n");
+                        input = input.replace("%%javascript","");
+                    } else if(input.startsWith("%%html")) {
+                        sb.append("%%html\n");
+                        input = input.replace("%%html","");                       
+                    } else if(input.startsWith("%%latex")) {
+                        sb.append("%%md\n");
+                        input = "$$\n" + input.replace("%%latex","") +"\n$$\n";                       
+                    } else if(input.startsWith("%%markdown")) {
+                        sb.append("%%md\n");
+                        input = input.replace("%%markdown","");                       
+                    } else if(input.startsWith("%%python")) {
+                        sb.append("%%py\n");
+                        input = input.replace("%%python","");                       
+                    } else {
+                        sb.append("%%py\n");
+                        StringBuilder newSrc = new StringBuilder();
+                        for(String line: StringUtil.split(input,"\n")) {
+                            //Strip the ipy special functions
+                            if(line.trim().startsWith("%")) line = "#"  + line;
+                            newSrc.append(line);
+                            newSrc.append("\n");
+                        }
+                        input  = newSrc.toString();
                     }
-                    input  = newSrc.toString();
                 } else if (cellType.equals("markdown")) {
                     sb.append("%%md\n");
+                } else if (cellType.equals("raw")) {
+                    sb.append("%%raw\n");
+                } else if (cellType.equals("heading")) {
+                    sb.append("%%md\n");
+                    input = "# " + input.trim().replaceAll("\n"," ");
                 } else {
                     sb.append("%%" + cellType +"\n");
                 }
