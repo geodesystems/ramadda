@@ -1025,6 +1025,42 @@ height:500px;
    color: black;
 }
 
+.json-label {
+}
+
+.json-string  {
+   color:green;
+}
+.json-date  {
+   color:green;
+}
+.json-function  {
+   color: #FF20ED;
+}
+
+.json-none  {
+            color:gray;
+}
+.json-boolean  {
+   color:red;
+}
+.json-number  {
+   color:blue;
+}
+.json-url  {
+   color:blue;
+   text-decoration:underline;
+}
+
+.json-label:hover {
+   cursor:pointer;
+   text-decoration:underline;
+}
+
+.json-inner {
+    margin-left:20px;
+}
+
 .ramadda-json-block {
   margin-left:20px;
   display:block;

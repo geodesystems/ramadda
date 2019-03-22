@@ -135,6 +135,93 @@ var Utils = {
             Utils.call(err, e);
         }
     },
+    formatJson: function(json,levelsShown) {
+        var blob =  this.formatJsonInner(json, 0,levelsShown);
+        return this.formatJsonBlob(blob,null, 0,levelsShown);
+    },
+    formatJsonClick: function(imageid,innerid) {
+        var inner = $("#"+innerid);
+        var image = $("#"+imageid);
+        if (inner.is(":visible")) {
+            inner.hide();
+            image.attr("src",icon_tree_closed);
+
+        } else {
+            inner.show();
+            image.attr("src",icon_tree_open);
+        }
+    },
+    formatJsonBlob: function(blob,label, level,levelsShown) {
+        var html ="";
+        if(label!=null) html = label+": ";
+        html+=  blob.value;
+        if(blob.inner) {
+            var imageid = HtmlUtils.getUniqueId();
+            var toggle = HtmlUtils.image(icon_tree_closed,["id",imageid]);
+            var innerid = HtmlUtils.getUniqueId();
+            var click = "Utils.formatJsonClick('" + imageid +"','" + innerid +"')";
+            html = HtmlUtils.div(["onclick",click,"class","json-label"],toggle + " " + html);
+            var display = level<levelsShown?"block":"none";
+            html += HtmlUtils.div(["style","display:" + display+";","class","json-inner","id",innerid],blob.inner);
+        }
+        return html;
+    },
+    formatJsonInner: function(json, level,levelsShown) {
+        var type = typeof json;
+        if(type == "string") {
+            var clazz="json-string";
+            if(json.match("^http")) {
+                clazz="json-url";
+                json = HtmlUtils.href(json,json,["class",clazz]);
+            }
+            return {value:HtmlUtils.span(["class",clazz],"\"" +json +"\"")};
+        }
+        if(type == "number" || type == "boolean") {
+            return {value:HtmlUtils.span(["class","json-"+type],json)};
+        }
+
+        if(json.toISOString) {
+            return {value:HtmlUtils.span(["class","json-date"],"\"" +json.toISOString()+"\"")};
+        }
+        if(type == "function") {
+            var args = (json + '').replace(/[/][/].*$/mg,'').replace(/\s+/g, '');
+            args = args.replace(/[/][*][^\/*]*[*][/]/g, ''); 
+            args = args.split('){', 1)[0].replace(/^[^\(]*[\(]/, '').replace(/=[^,]+/g, '').split(',').filter(Boolean);
+            return {value:HtmlUtils.span(["class","json-function"], json.name +"(" + args+") {...}")};
+        }
+        var isArray  = Array.isArray(json);
+        var label = isArray?" Array " + HtmlUtils.span(["class","json-number"],"["  + json.length +"]"):"Object";
+        var  html = HtmlUtils.openTag("div");
+        var labels = [];
+        var indices = [];
+        if(isArray) {
+            for(var i=0;i<json.length;i++) {
+                labels.push(i);
+                indices.push(i);
+            }
+            if(indices.length==0) {
+                html += this.formatJsonBlob({value:HtmlUtils.span(["class","json-none"],"[]")},null,level+1,levelsShown);
+            }
+        } else {
+            for(var name in json) {
+                labels.push(name);
+                indices.push(name);
+            }
+            if(indices.length==0) {
+                html += this.formatJsonBlob({value:HtmlUtils.span(["class","json-none"],"No properties")},null,level+1,levelsShown);
+            }
+        }
+
+        for(var i=0;i<indices.length;i++) {
+            html += "<div>";
+            var blob = Utils.formatJsonInner(json[indices[i]], level+1, levelsShown);
+            html += this.formatJsonBlob(blob,labels[i],level+1,levelsShown);
+            html += "</div>";
+        }
+
+        html += "</div>";
+        return {value:label,inner:html};
+    },
     padLeft: function(s, length, pad) {
         s = "" + s;
         if (!pad) pad = " ";

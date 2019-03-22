@@ -5373,10 +5373,7 @@ function RamaddaNotebookDisplay(displayManager, id, properties) {
 
         },
         formatObject: function(value) {
-            if (!value) return null;
-            if (Array.isArray(value))
-                return HtmlUtils.div(["style", " white-space: pre;"], JSON.stringify(value));
-            return HtmlUtils.div(["style", " white-space: pre;"], JSON.stringify(value, null, 2));
+             return Utils.formatJson(value);
         },
         initOutputRenderers: function() {
             let notebook = this;
@@ -5629,6 +5626,9 @@ function RamaddaNotebookDisplay(displayManager, id, properties) {
         log: function(msg, type, from, div) {
             var icon = "";
             var clazz = "display-notebook-console-item";
+            if(typeof msg  == "object") {
+                msg = Utils.formatJson(msg);
+            }
             if (type == "error") {
                 clazz += " display-notebook-console-item-error";
                 icon = HtmlUtils.image(Utils.getIcon("cross-octagon.png"));
