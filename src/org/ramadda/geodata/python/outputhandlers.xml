@@ -1,3 +1,4 @@
 <outputhandlers>
   <outputhandler class="org.ramadda.repository.output.ServiceOutputHandler" serviceId="python_notebook" />
+  <outputhandler class="org.ramadda.geodata.python.IPythonNotebookOutputHandler" />
 </outputhandlers>

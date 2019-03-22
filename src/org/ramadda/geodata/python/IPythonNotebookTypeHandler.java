@@ -447,7 +447,7 @@ public class IPythonNotebookTypeHandler extends TypeHandler {
      *
      * @throws Exception _more_
      */
-    private void readLines(JSONObject obj, String name, Appendable sb)
+    public static  void readLines(JSONObject obj, String name, Appendable sb)
             throws Exception {
         try {
             readLines(obj.getJSONArray(name), sb);
@@ -465,7 +465,7 @@ public class IPythonNotebookTypeHandler extends TypeHandler {
      *
      * @throws Exception _more_
      */
-    private void readLines(JSONArray lines, Appendable sb) throws Exception {
+    public static void readLines(JSONArray lines, Appendable sb) throws Exception {
         for (int lineIdx = 0; lineIdx < lines.length(); lineIdx++) {
             String line = lines.getString(lineIdx);
             sb.append(line);
