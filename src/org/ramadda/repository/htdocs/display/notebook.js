@@ -665,10 +665,6 @@ function NotebookState(cell, div) {
             return this.notebook;
         },
 
-        clear: function() {
-            this.cell.clearOutput();
-        },
-
         save: function(output) {
             this.notebook.saveNotebook(output);
             return "notebook saved";
@@ -735,6 +731,13 @@ function NotebookState(cell, div) {
                 return document.getElementById(id);
             }
         },
+        clearOutput: function() {
+            this.cell.clearOutput();
+        },
+        clearAllOutput: function() {
+             this.getNotebook().clearOutput();
+        },
+
         write: function(value) {
             var s = this.getNotebook().formatOutput(value);
             if (s == null && (typeof value) == "object") {
