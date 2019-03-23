@@ -1,8 +1,10 @@
-function D3Skewt(divid, args) {
+function D3Skewt(divid, args, jsonData) {
     this.divid = divid;
+    this.jsonData = jsonData;
     this.options = {
         skewtWidth: 700,
         skewtHeight: 700,
+        hodographWidth: 300,
         showHodograph: true,
         showText: true,
         showTimes: true,
@@ -14,7 +16,7 @@ function D3Skewt(divid, args) {
 
     var _deg2rad = (Math.PI / 180);
     var _tan = Math.tan(55 * _deg2rad);
-    var _margin = [30, 40, 20, 35];
+    this._margin = _margin = [30, 40, 20, 35];
     //constants
     $.extend(this, {
         deg2rad: _deg2rad,
@@ -22,6 +24,7 @@ function D3Skewt(divid, args) {
         margin: _margin,
         skewtWidth: this.options.skewtWidth - _margin[1] - _margin[3],
         skewtHeight: this.options.skewtHeight - _margin[0] - _margin[2],
+        hodographWidth: this.options.hodographWidth,
         basep: 1050,
         topp: 100,
         plines: [1000, 850, 700, 500, 300, 200, 100],
@@ -88,11 +91,16 @@ function D3Skewt(divid, args) {
         getSkewtHeight: function() {
             return this.skewtHeight;
         },
+        getHodographWidth: function() {
+            return this.hodographWidth;
+        },
         initSvg: function() {
             var skewt = this;
             this.x = d3.scale.linear().range([0, skewt.getSkewtWidth()]).domain([-45, 50]);
             this.y = d3.scale.log().range([0, skewt.getSkewtHeight()]).domain([skewt.topp, skewt.basep]);
-            this.r = d3.scale.linear().range([0, 300]).domain([0, 150]);
+            var hw = this.getHodographWidth();
+            this.r = d3.scale.linear().range([0, hw]).domain([0, 150]);
+
             this.y2 = d3.scale.linear();
             this.xAxis = d3.svg.axis().scale(this.x).tickSize(0, 0).ticks(10).orient("bottom");
             this.yAxis = d3.svg.axis().scale(this.y).tickSize(0, 0).tickValues(this.plines)
@@ -141,10 +149,10 @@ function D3Skewt(divid, args) {
 
             // create svg container for hodograph
             this.svghodo = d3.select("#" + this.hodoBoxId).append("svg")
-                .attr("width", 300)
-                .attr("height", 300)
+                .attr("width", skewt.getHodographWidth())
+                .attr("height", skewt.getHodographWidth() + skewt._margin[0])
                 .append("g")
-                .attr("transform", "translate(150,150)");
+                .attr("transform", "translate(" + hw/2+"," + (hw/2+skewt._margin[0])+ ")");
 
             this.svgtext = d3.select("#" + this.textBoxId).append("svg").attr("width", 300).attr("height", 400)
                 .append("g").attr("transform", "translate(0,50)");
@@ -436,28 +444,15 @@ function D3Skewt(divid, args) {
             requestedLevels = [0, 1, 3, 6, 9]; // levels in km agl
             skewt.interpobjects = [];
             this.numberOfMembers = 1;
-            /*
-            var o = {
-                pressure: json.pres[0][0],
-                height: json.hght[0][0],
-                temperature: json.tmpc[0][0].map(v=>v/10),
-                dewpoint: json.dwpc[0][0].map(v=>v/10), 
-                winddir: json.wdir[0][0],
-                windspeed: json.wspd[0][0].map(v=>v/10),
-            }
-            var s = JSON.stringify(o,null,2);
-            Utils.makeDownloadFile("skewt.json",s);
-           */
-
             skewt.alldata = json.temperature.map(function(c, k) {
                     var obj = {
                         pressure: json.pressure[k],
                         height: json.height[k],
                         temperature: json.temperature[k],
                         dewpoint: json.dewpoint[k], 
-                        winddir: json.winddir[k],
-                        windspeed: json.windspeed[k],
-                        windspeedround: Math.round((json.windspeed[k]) / 5) * 5,
+                        winddir: json.wind_direction[k],
+                        windspeed: json.wind_speed[k],
+                        windspeedround: Math.round((json.wind_speed[k]) / 5) * 5,
                         heightagl: json.height[k] - +json.height[0],
                     };
                     return obj;
@@ -482,45 +477,6 @@ function D3Skewt(divid, args) {
                 });
             skewt.interpobjects.push(test);
             return skewt.alldata;
-            /*
-            skewt.alldata = json['tmpc'].map(function(c, k) {
-                return c.map(function(d, i) {
-                    var obj = d.map(function(e, j) {
-                        return {
-                            pressure: +json.pres[k][i][j],
-                            height: +json.hght[k][i][j],
-                            temperature: +json.tmpc[k][i][j] / 10,
-                            dewpoint: +json.dwpc[k][i][j] / 10, 
-                            winddir: +json.wdir[k][i][j],
-                            windspeed: +json.wspd[k][i][j] / 10,
-                            heightagl: +json.hght[k][i][j] - +json.hght[k][i][0],
-                            windspeedround: Math.round((json.wspd[k][i][j] / 10) / 5) * 5
-                        }
-                        });
-
-                    // interpolate to given heights for each sounding
-                    var test = requestedLevels.map(function(d) {
-                        if (d == 0) {
-                            return obj[0];
-                        }
-
-                        d = 1000 * d + obj[0].height; // want height AGL
-                        for (i = 0; i <= obj.length; i++) {
-                            if (obj[i].height > d) {
-                                var closeindex = i;
-                                break;
-                            } // since heights increase monotonically
-                        }
-                        var interp = d3.interpolateObject(obj[i - 1], obj[i]); // interp btw two levels
-                        var half = interp(1 - (d - obj[i].height) / (obj[i - 1].height - obj[i].height));
-                        return half
-                    });
-                    skewt.interpobjects.push(test);
-                    return obj;
-                });
-            });
-*/
-
 
         },
         drawFirstHour: function() {
@@ -756,9 +712,14 @@ function D3Skewt(divid, args) {
         });
     this.initUI();
     let skewt = this;
-    d3.json('/repository/lib/skewt/skewt.json', (err, json) => {
-            this.loadData(json);
-    });
+
+    if(this.jsonData) {
+        this.loadData(this.jsonData);
+    } else {
+        d3.json('/repository/lib/skewt/skewt.json', (err, json) => {
+                this.loadData(json);
+            });
+    }
 
     /*
     d3.json('/repository/skewt/conv_OUN.js', function(err, json) {

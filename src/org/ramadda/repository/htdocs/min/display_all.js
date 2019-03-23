@@ -2694,7 +2694,6 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
                 valign: "bottom"
             });
             var contents = this.getContentsDiv();
-            //                contents  = "CONTENTS";
             html += contents;
             html += HtmlUtils.closeTag(TAG_DIV);
             if (dobs) {
@@ -2835,6 +2834,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             }
             var top = HtmlUtils.div([ATTR_STYLE, topBottomStyle, ATTR_ID, this.getDomId(ID_DISPLAY_TOP)], "");
             var bottom = HtmlUtils.div([ATTR_STYLE, topBottomStyle, ATTR_ID, this.getDomId(ID_DISPLAY_BOTTOM)], "");
+
             return top + HtmlUtils.div([ATTR_CLASS, "display-contents-inner display-" + this.type, "style", style, ATTR_ID, this.getDomId(ID_DISPLAY_CONTENTS)], "") + bottom;
         },
         copyDisplay: function() {
@@ -11366,38 +11366,68 @@ var D3Util = {
 
 
 function RamaddaSkewtDisplay(displayManager, id, properties) {
-    var SUPER;
+    let SUPER  = new RamaddaDisplay(displayManager, id, DISPLAY_SKEWT, properties);
     var ID_SKEWT = "skewt";
-    RamaddaUtil.inherit(this, SUPER = new RamaddaDisplay(displayManager, id, DISPLAY_SKEWT, properties));
+    RamaddaUtil.inherit(this, SUPER);
     addRamaddaDisplay(this);
 
     RamaddaUtil.defineMembers(this, {
-        initDisplay: function() {
-            this.createUI();
-            var html = "<p><script src='/repository/lib/skewt/d3skewt.js'></script>\n";
-            html += "<link rel='stylesheet' type='text/css' href='/lib/skewt/sounding.css'>\n";
+        needsData: function() {
+            return true;
+        },
+        initDisplay:  function() {
+            SUPER.initDisplay.call(this);
+        },
+        updateUI: async function() {
+         if(!this.loadedResources) {
+            await Utils.importCSS(ramaddaBaseUrl+"/lib/skewt/sounding.css");
+            await Utils.importJS(ramaddaBaseUrl +"/lib/skewt/d3skewt.js");
+            this.loadedResources = true;
+         }
+         if(!window["D3Skewt"]) {
+               setTimeout(()=>this.updateUI(),100);
+               return;
+           }
+           SUPER.updateUI.call(this);
+           //            this.writeHtml(ID_DISPLAY_CONTENTS, "XXXX");
             var skewtId = this.getDomId(ID_SKEWT);
-            html += HtmlUtils.div(["id", skewtId], "");
-            this.writeHtml(ID_DISPLAY_CONTENTS, html);
-            var _this = this;
-            var func = function() {
-                if (!window["D3Skewt"]) {
-                    console.log("no skewt yet");
-                    setTimeout(func, 1000);
+            //            return;
+            var html = HtmlUtils.div(["id", skewtId], "");
+            this.setContents(html);
+            var records = this.filterData();
+            if (!records) {
+                console.log("no data yet");
+                return;
+            }
+            var options = {};
+            if (this.propertyDefined("showHodograph"))
+                options.showHodograph = this.getProperty("showHodograph", true);
+            if (this.propertyDefined("showText"))
+                options.showText = this.getProperty("showText", true);
+            if (this.propertyDefined("skewtWidth"))
+                options.skewtWidth = parseInt(this.getProperty("skewtWidth"));
+            if (this.propertyDefined("skewtHeight"))
+                options.skewtHeight = parseInt(this.getProperty("skewtHeight"));
+            if (this.propertyDefined("hodographWidth")){
+                options.hodographWidth = parseInt(this.getProperty("hodographWidth"));
+            }
+            //            options.hodographWidth = 200;
+            var fields = this.getData().getRecordFields();
+            var names = ["pressure","height","temperature","dewpoint","wind_direction","wind_speed"];
+            var pressure = this.getFieldById(fields,"pressure");
+            var height = this.getFieldById(fields,"height");
+            var height = this.getFieldById(fields,"height");
+            var data ={};
+            for(var i=0;i<names.length;i++) {
+                var field = this.getFieldById(fields,names[i]);
+                if(field == null) {
+                    this.displayError("No " + names[i] + " defined in data");
                     return;
                 }
-                var options = {};
-                if (_this.propertyDefined("showHodograph"))
-                    options.showHodograph = _this.getProperty("showHodograph", true);
-                if (_this.propertyDefined("showText"))
-                    options.showText = _this.getProperty("showText", true);
-                if (_this.propertyDefined("chartWidth"))
-                    options.width = parseInt(_this.getProperty("chartWidth"));
-                if (_this.propertyDefined("chartHeight"))
-                    options.height = parseInt(_this.getProperty("chartHeight"));
-                _this.skewt1 = new D3Skewt(skewtId, options);
+                var values = this.getColumnValues(records, field).values;
+                data[names[i]] = values;
             }
-            setTimeout(func, 1000);
+            this.skewt1 = new D3Skewt(skewtId, options,data);
         }
     });
 }

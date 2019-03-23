@@ -48,7 +48,29 @@ point.csvcommands=-skip, 10,-stop,.*&lt;PRE&gt;.*,-print
      </property>
      <column  name="station_id"  label="Station ID" type="string" />
      <column  name="station_number"  label="Station Number" type="string" />
+<wiki>
+<![CDATA[
++section title={{name}}
+{{description wikify=true}}
++row
++col-9
+{{display type=skewt layoutHere=true height="500" skewtWidth="500" skewtHeight="500" hodographWidth=200 showMenu=false showTitle=false}}
+-col
++col-3
+Data courtesy of
+:br
+[http://weather.uwyo.edu/upperair/sounding.html University of Wyoming]
+{{map}}
+-col
+-row
+{{information  details="true"  showTitle="false"  }} 
+-section
+]]>
+</wiki>
+
+
 </type>
+
 
 
 
@@ -82,7 +104,6 @@ Data courtesy of <a href="https://daymet.ornl.gov/">ORNL Daymet</a>
 {{display  type="correlation"  fields="precipitation,tmax,tmin,vp,srad,swe"  layoutHere="true"  showMenu="true"  showTitle="false" 
 }}
 ]]>
-
 </wiki>
 
 

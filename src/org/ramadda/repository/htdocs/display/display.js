@@ -2544,7 +2544,6 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
                 valign: "bottom"
             });
             var contents = this.getContentsDiv();
-            //                contents  = "CONTENTS";
             html += contents;
             html += HtmlUtils.closeTag(TAG_DIV);
             if (dobs) {
@@ -2685,6 +2684,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             }
             var top = HtmlUtils.div([ATTR_STYLE, topBottomStyle, ATTR_ID, this.getDomId(ID_DISPLAY_TOP)], "");
             var bottom = HtmlUtils.div([ATTR_STYLE, topBottomStyle, ATTR_ID, this.getDomId(ID_DISPLAY_BOTTOM)], "");
+
             return top + HtmlUtils.div([ATTR_CLASS, "display-contents-inner display-" + this.type, "style", style, ATTR_ID, this.getDomId(ID_DISPLAY_CONTENTS)], "") + bottom;
         },
         copyDisplay: function() {
