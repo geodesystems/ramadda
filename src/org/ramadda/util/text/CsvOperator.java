@@ -147,7 +147,7 @@ public abstract class CsvOperator {
     }
 
 
-    /** _more_          */
+    /** _more_ */
     public static final String[] FILE_PREFIXES = { "/org/ramadda/repository/resources/geo" };
 
     /**

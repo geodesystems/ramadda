@@ -40,13 +40,12 @@ import org.ramadda.util.Json;
 import org.ramadda.util.Utils;
 import org.ramadda.util.grid.LatLonGrid;
 
-
-
 import org.w3c.dom.*;
 
 import ucar.unidata.ui.ImageUtils;
 import ucar.unidata.util.IOUtil;
 import ucar.unidata.util.Misc;
+import ucar.unidata.util.StringUtil;
 
 import java.awt.image.*;
 
@@ -58,6 +57,9 @@ import java.io.DataOutputStream;
 
 import java.io.File;
 import java.io.FileOutputStream;
+
+
+import java.text.SimpleDateFormat;
 
 
 import java.util.ArrayList;
@@ -147,9 +149,53 @@ public class PointTypeHandler extends RecordTypeHandler {
     public void initializeNewEntry(Request request, Entry entry)
             throws Exception {
 
-
         if ( !getTypeProperty("point.initialize", true)) {
             return;
+        }
+
+        String patterns = (String) getTypeProperty("record.patterns",
+                              (String) null);
+        if (patterns != null) {
+            String contents = IOUtil.readContents(entry.getFile());
+            for (String tok : StringUtil.split(patterns, ",", true, true)) {
+                List<String> toks2 = StringUtil.splitUpTo(tok, ":", 2);
+                if (toks2.size() != 2) {
+                    continue;
+                }
+                String field   = toks2.get(0);
+                String pattern = toks2.get(1);
+                String value   = StringUtil.findPattern(contents, pattern);
+                //                System.err.println ("p:"+ pattern +" v:" + value);
+                if (value != null) {
+                    if (field.equals("latitude")) {
+                        entry.setLatitude(Double.parseDouble(value));
+                    } else if (field.equals("longitude")) {
+                        entry.setLongitude(Double.parseDouble(value));
+                    } else if (field.equals("elevation")) {
+                        entry.setAltitude(Double.parseDouble(value));
+                    } else if (field.equals("date")) {
+                        String format =
+                            getTypeProperty("record.pattern.date.format",
+                                            "yyyyMMdd'T'HHmmss Z");
+                        SimpleDateFormat sdf =
+                            RepositoryUtil.makeDateFormat(format, null);
+                        entry.setStartAndEndDate(sdf.parse(value).getTime());
+                    } else {
+                        List<Column> columns = getColumns();
+                        if (columns != null) {
+                            for (Column c : columns) {
+                                if (c.getName().equals(field)) {
+                                    Object[] values = getEntryValues(entry);
+                                    c.setValue(entry, values, value);
+                                }
+                            }
+                        }
+
+                    }
+                }
+
+            }
+
         }
 
         if (entry.getXmlNode() != null) {
@@ -169,7 +215,7 @@ public class PointTypeHandler extends RecordTypeHandler {
             //            return;
         } else {
             //This finds any properties files next to the file
-            initializeRecordEntry(entry, file,false);
+            initializeRecordEntry(entry, file, false);
         }
 
 
@@ -210,6 +256,7 @@ public class PointTypeHandler extends RecordTypeHandler {
         ((PointTypeHandler) entry.getTypeHandler()).handleHarvestedMetadata(
             pointEntry, metadataHarvester);
         log("initialize new entry: done");
+
 
     }
 
@@ -495,21 +542,21 @@ public class PointTypeHandler extends RecordTypeHandler {
     public int getDefaultMax(Request request, Entry entry, String tag,
                              Hashtable props) {
         try {
-        String fromProps;
-        fromProps = (String)props.get("maxPoints");
-        if(fromProps!=null) {
-            return Integer.parseInt(fromProps);
-        }
-        Hashtable recordProps = getRecordProperties(entry);
-        if (recordProps != null) {
-            fromProps = (String)recordProps.get("maxPoints");
-            if(fromProps!=null) {
+            String fromProps;
+            fromProps = (String) props.get("maxPoints");
+            if (fromProps != null) {
                 return Integer.parseInt(fromProps);
             }
-        }
+            Hashtable recordProps = getRecordProperties(entry);
+            if (recordProps != null) {
+                fromProps = (String) recordProps.get("maxPoints");
+                if (fromProps != null) {
+                    return Integer.parseInt(fromProps);
+                }
+            }
 
-        return  getTypeProperty("point.default.max", 5000);
-        } catch(Exception exc) {
+            return getTypeProperty("point.default.max", 5000);
+        } catch (Exception exc) {
             throw new IllegalArgumentException(exc);
 
         }
@@ -767,9 +814,12 @@ public class PointTypeHandler extends RecordTypeHandler {
      * @param entry _more_
      *
      * @return _more_
+     *
+     * @throws Exception _more_
      */
     @Override
-    public String getMapInfoBubble(Request request, Entry entry) throws Exception {
+    public String getMapInfoBubble(Request request, Entry entry)
+            throws Exception {
 
         //        String fromParent = super.getMapInfoBubble(request,  entry);
         //        if(fromParent!=null) return fromParent;
@@ -780,8 +830,8 @@ public class PointTypeHandler extends RecordTypeHandler {
                 return super.getMapInfoBubble(request, entry);
             }
             String chartField = getTypeProperty("map.chart.field", "");
-            String minSizeX = getTypeProperty("map.chart.minSizeX", "600");
-            String minSizeY = getTypeProperty("map.chart.minSizeY", "300");
+            String minSizeX   = getTypeProperty("map.chart.minSizeX", "600");
+            String minSizeY   = getTypeProperty("map.chart.minSizeY", "300");
             String fields = getTypeProperty("map.chart.fields",
                                             (String) null);
             StringBuilder sb   = new StringBuilder();
@@ -796,11 +846,11 @@ public class PointTypeHandler extends RecordTypeHandler {
             sb.append(HtmlUtils.div("", HtmlUtils.id(id)));
 
             return Json.mapAndQuote("entryId", entry.getId(), "chartType",
-                                    chartType, "fields", chartField, "divId", id, "title", "",
-                                    "text", sb.toString(), "minSizeX",
-                                    minSizeX, "minSizeY", minSizeY,
-                                    "vAxisMinValue", "0", "showTitle",
-                                    "false", ((fields == null)
+                                    chartType, "fields", chartField, "divId",
+                                    id, "title", "", "text", sb.toString(),
+                                    "minSizeX", minSizeX, "minSizeY",
+                                    minSizeY, "vAxisMinValue", "0",
+                                    "showTitle", "false", ((fields == null)
                     ? "dummy"
                     : "fields"), ((fields == null)
                                   ? ""

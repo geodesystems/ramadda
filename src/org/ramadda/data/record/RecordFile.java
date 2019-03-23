@@ -94,7 +94,7 @@ public abstract class RecordFile {
     /** general properties */
     private Hashtable properties;
 
-    /** _more_          */
+    /** _more_ */
     private Hashtable requestProperties;
 
     /** _more_ */
@@ -125,7 +125,6 @@ public abstract class RecordFile {
     /** _more_ */
     private SimpleDateFormat[] mySdfs;
 
-
     /** _more_ */
     private static SimpleDateFormat[][] SDFS = {
         { makeDateFormat("yyyy") },
@@ -137,7 +136,11 @@ public abstract class RecordFile {
     };
 
 
+    /** _more_          */
     private RecordFileContext context;
+
+    /** _more_          */
+    private File cacheFile;
 
     /**
      * ctor
@@ -177,16 +180,58 @@ public abstract class RecordFile {
     }
 
 
-    public RecordFile(String filename, RecordFileContext context, Hashtable properties) {
+    /**
+     * _more_
+     *
+     * @param filename _more_
+     * @param context _more_
+     * @param properties _more_
+     */
+    public RecordFile(String filename, RecordFileContext context,
+                      Hashtable properties) {
         this.filename   = filename;
         this.properties = properties;
-        this.context = context;
+        this.context    = context;
     }
 
-    public String getContextProperty(RecordField field, String key, String dflt) {
-        if(context ==null) return dflt;
-        String v  = context.getFieldProperty(field.getName(), key);
-        if(v==null) return dflt;
+    /**
+     * Set the CacheFile property.
+     *
+     * @param value The new value for CacheFile
+     */
+    public void setCacheFile(File value) {
+        cacheFile = value;
+    }
+
+    /**
+     * Get the CacheFile property.
+     *
+     * @return The CacheFile
+     */
+    public File getCacheFile() {
+        return cacheFile;
+    }
+
+
+    /**
+     * _more_
+     *
+     * @param field _more_
+     * @param key _more_
+     * @param dflt _more_
+     *
+     * @return _more_
+     */
+    public String getContextProperty(RecordField field, String key,
+                                     String dflt) {
+        if (context == null) {
+            return dflt;
+        }
+        String v = context.getFieldProperty(field.getName(), key);
+        if (v == null) {
+            return dflt;
+        }
+
         return v;
     }
 

@@ -321,17 +321,18 @@ public abstract class Processor extends CsvOperator {
                 */
             }
 
-            Object skipTo = row.getSkipTo();
+            Object  skipTo      = row.getSkipTo();
             boolean sawBufferer = false;
             if (remainderProcessors == null) {
                 remainderProcessors = new ArrayList<Processor>();
                 firstProcessors     = new ArrayList<Processor>();
                 for (int i = 0; i < processors.size(); i++) {
                     Processor processor = processors.get(i);
-                    if(skipTo!=null) {
-                        if(skipTo == processor) {
+                    if (skipTo != null) {
+                        if (skipTo == processor) {
                             skipTo = null;
                         }
+
                         continue;
                     }
                     if (sawBufferer) {
@@ -347,10 +348,11 @@ public abstract class Processor extends CsvOperator {
 
             boolean firstRow = rowCnt++ == 0;
             for (Processor processor : firstProcessors) {
-                if(skipTo!=null) {
-                    if(skipTo == processor) {
+                if (skipTo != null) {
+                    if (skipTo == processor) {
                         skipTo = null;
                     }
+
                     continue;
                 }
                 if (firstRow) {
@@ -915,10 +917,12 @@ public abstract class Processor extends CsvOperator {
                 return row;
             }
             handleRow(info.getWriter(), row);
+
             return row;
         }
 
-        int xxcnt=0;
+        /** _more_          */
+        int xxcnt = 0;
 
         /**
          * _more_
@@ -1848,7 +1852,8 @@ public abstract class Processor extends CsvOperator {
             for (int i = 0; i < values.size(); i++) {
                 if (i == 0) {
                     info.getWriter().print(open);
-                    info.getWriter().print("<div style='white-space:nowrap;max-width:120px;overflow-x:auto;'>");
+                    info.getWriter().print(
+                        "<div style='white-space:nowrap;max-width:120px;overflow-x:auto;'>");
                     if (cnt == 0) {
                         info.getWriter().print("&nbsp;");
                     } else {
@@ -1858,7 +1863,8 @@ public abstract class Processor extends CsvOperator {
                     info.getWriter().print(close);
                 }
                 info.getWriter().print(open);
-                info.getWriter().print("<div style='white-space:nowrap;max-width:120px;overflow-x:auto;'>");
+                info.getWriter().print(
+                    "<div style='white-space:nowrap;max-width:120px;overflow-x:auto;'>");
                 if (cnt == 0) {
                     info.getWriter().print("#" + i + "&nbsp;");
                     String label = Utils.makeLabel(""
@@ -2156,6 +2162,7 @@ public abstract class Processor extends CsvOperator {
             rows.remove(0);
             Collections.sort(rows, new Row.RowCompare(index));
             rows.add(0, headerRow);
+
             return rows;
         }
     }
@@ -2317,7 +2324,7 @@ public abstract class Processor extends CsvOperator {
      *
      *
      * @version        $version$, Wed, Feb 20, '19
-     * @author         Enter your name here...    
+     * @author         Enter your name here...
      */
     public static class Joiner extends RowCollector {
 
@@ -2333,7 +2340,7 @@ public abstract class Processor extends CsvOperator {
         /** _more_ */
         private List<String> values2;
 
-        /** _more_          */
+        /** _more_ */
         private String file;
 
         /**

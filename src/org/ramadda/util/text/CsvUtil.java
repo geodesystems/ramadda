@@ -94,6 +94,7 @@ public class CsvUtil {
     /** _more_ */
     private boolean verbose = false;
 
+    /** _more_          */
     private int rawLines = 0;
 
     /** _more_ */
@@ -777,7 +778,9 @@ public class CsvUtil {
      */
     public static String getDbProp(Hashtable<String, String> props,
                                    String colId, String prop, String dflt) {
-        String key  = colId==null?prop:colId+"." + prop;
+        String key   = (colId == null)
+                       ? prop
+                       : colId + "." + prop;
         String value = props.get("-" + key);
         if (value == null) {
             value = props.get(key);
@@ -824,7 +827,7 @@ public class CsvUtil {
         Row       firstRow = textReader.getFirstRow();
         textReader.setFirstRow(null);
         if (firstRow != null) {
-            processRow(textReader, firstRow);
+            processRow(textReader, firstRow, "");
             rowCnt++;
         }
         if (rows != null) {
@@ -833,7 +836,7 @@ public class CsvUtil {
                 if (rowCnt <= textReader.getSkip()) {
                     continue;
                 }
-                if ( !processRow(textReader, row)) {
+                if ( !processRow(textReader, row, "")) {
                     break;
                 }
             }
@@ -844,10 +847,11 @@ public class CsvUtil {
                 if (line == null) {
                     break;
                 }
-                line = line.replaceAll("\\u000d"," ");
-                if(rawLines>0) {
+                line = line.replaceAll("\\u000d", " ");
+                if (rawLines > 0) {
                     textReader.getWriter().println(line);
                     rawLines--;
+
                     continue;
                 }
                 if (verbose) {
@@ -880,7 +884,7 @@ public class CsvUtil {
                     textReader.setDelimiter(delimiter);
                 }
                 Row row = new Row(line, textReader.getDelimiter());
-                if ( !processRow(textReader, row)) {
+                if ( !processRow(textReader, row, line)) {
                     break;
                 }
             }
@@ -900,15 +904,16 @@ public class CsvUtil {
      *
      * @param textReader _more_
      * @param row _more_
+     * @param line _more_
      *
      * @return _more_
      *
      * @throws Exception _more_
      */
-    private boolean processRow(TextReader textReader, Row row)
+    private boolean processRow(TextReader textReader, Row row, String line)
             throws Exception {
         if ((textReader.getFilter() != null)
-                && !textReader.getFilter().rowOk(textReader, row)) {
+                && !textReader.getFilter().rowOk(textReader, row, line)) {
             return true;
         }
 
@@ -925,7 +930,7 @@ public class CsvUtil {
             }
             if (textReader.getExtraRow() != null) {
                 row = textReader.getProcessor().processRow(textReader,
-                                                           textReader.getExtraRow(), null);
+                        textReader.getExtraRow(), null);
                 textReader.setExtraRow(null);
             }
             if ( !textReader.getOkToRun()) {
@@ -1027,17 +1032,17 @@ public class CsvUtil {
      *
      *
      * @version        $version$, Wed, Feb 20, '19
-     * @author         Enter your name here...    
+     * @author         Enter your name here...
      */
     public static class Cmd {
 
-        /** _more_          */
+        /** _more_ */
         String cmd;
 
-        /** _more_          */
+        /** _more_ */
         String args;
 
-        /** _more_          */
+        /** _more_ */
         String desc;
 
         /**
@@ -1098,7 +1103,7 @@ public class CsvUtil {
 
     }
 
-    /** _more_          */
+    /** _more_ */
     private static final Cmd[] commands = {
         new Cmd("-help", "", "(print this help)"),
         new Cmd("-help:<topic search string>", "",
@@ -1107,6 +1112,8 @@ public class CsvUtil {
             "-columns", "<e.g., 0,1,2,7-10,12>",
             "(A comma separated list of columns #s or column range, 0-based. Extract the given columns)"),
         new Cmd("-skip", "<how many lines to skip>"),
+        new Cmd("-start", "<start pattern>"),
+        new Cmd("-stop", "<stop pattern>"),
         new Cmd("-rawlines", "<how many lines to pass through unprocesed>"),
         new Cmd("-cut", "<one or more rows. -1 to the end>"),
         new Cmd("-include", "<one or more rows, -1 to the end>"),
@@ -1375,6 +1382,21 @@ public class CsvUtil {
                 }*/
 
 
+            if (arg.equals("-start")) {
+                info.getFilter().addFilter(new Filter.Start(args.get(++i)));
+
+                continue;
+            }
+
+
+            if (arg.equals("-stop")) {
+                info.getFilter().addFilter(new Filter.Stop(args.get(++i)));
+
+                continue;
+            }
+
+
+
             if (arg.equals("-decimate")) {
                 int start = Integer.parseInt(args.get(++i));
                 int skip  = Integer.parseInt(args.get(++i));
@@ -1491,6 +1513,7 @@ public class CsvUtil {
 
             if (arg.equals("-rawlines")) {
                 rawLines = Integer.parseInt(args.get(++i));
+
                 continue;
             }
 
@@ -1628,7 +1651,7 @@ public class CsvUtil {
             if (arg.equals("-mergerows")) {
                 String r = args.get(++i);
                 info.getProcessor().addProcessor(
-                                                 new Converter.RowMerger(getNumbers(r),args.get(++i)));
+                    new Converter.RowMerger(getNumbers(r), args.get(++i)));
 
                 continue;
             }
@@ -1756,7 +1779,7 @@ public class CsvUtil {
                 String       prefix = args.get(++i).trim();
                 String       suffix = args.get(++i).trim();
                 info.getProcessor().addProcessor(new Converter.Geocoder(cols,
-                                                                        lat, lon, prefix, suffix));
+                        lat, lon, prefix, suffix));
 
                 continue;
             }
@@ -1765,7 +1788,7 @@ public class CsvUtil {
                 String       suffix = args.get(++i).trim();
                 String       prefix = args.get(++i).trim();
                 info.getProcessor().addProcessor(new Converter.Geocoder(cols,
-                                                                        prefix, suffix, true));
+                        prefix, suffix, true));
 
                 continue;
             }
@@ -1805,8 +1828,8 @@ public class CsvUtil {
 
             if (arg.equals("-changerow")) {
                 i++;
-                int row = Integer.parseInt(args.get(i));
-                String       pattern = args.get(++i);
+                int    row     = Integer.parseInt(args.get(i));
+                String pattern = args.get(++i);
                 pattern =
                     pattern.replaceAll("_leftparen_",
                                        "\\\\(").replaceAll("_rightparen_",
@@ -1817,8 +1840,7 @@ public class CsvUtil {
                                            "\\\\]");
                 pattern = pattern.replaceAll("_dot_", "\\\\.");
                 info.getProcessor().addProcessor(
-                    new Converter.RowChanger(
-                                             row, pattern, args.get(++i)));
+                    new Converter.RowChanger(row, pattern, args.get(++i)));
 
                 continue;
             }
@@ -2261,8 +2283,8 @@ public class CsvUtil {
      * @return _more_
      */
     private Hashtable<String, String> parseProps(String s) {
-        s = s.replaceAll("_quote_","\"");
-        List<String>              toks  = Utils.parseCommandLine(s);
+        s = s.replaceAll("_quote_", "\"");
+        List<String> toks = Utils.parseCommandLine(s);
         //        System.err.println("s:" + s);
         //        System.err.println("toks:" + toks);
         Hashtable<String, String> props = new Hashtable<String, String>();

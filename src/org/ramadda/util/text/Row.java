@@ -53,6 +53,7 @@ public class Row {
     /** _more_ */
     private List values;
 
+    /** _more_          */
     private Object skipTo;
 
     /**
@@ -95,23 +96,23 @@ public class Row {
     }
 
 
-/**
-Set the SkipTo property.
+    /**
+     * Set the SkipTo property.
+     *
+     * @param value The new value for SkipTo
+     */
+    public void setSkipTo(Object value) {
+        skipTo = value;
+    }
 
-@param value The new value for SkipTo
-**/
-public void setSkipTo (Object value) {
-	skipTo = value;
-}
-
-/**
-Get the SkipTo property.
-
-@return The SkipTo
-**/
-public Object getSkipTo () {
-	return skipTo;
-}
+    /**
+     * Get the SkipTo property.
+     *
+     * @return The SkipTo
+     */
+    public Object getSkipTo() {
+        return skipTo;
+    }
 
 
 

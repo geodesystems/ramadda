@@ -32,6 +32,26 @@
 
   </type>
 
+  <type name="type_sounding_wyoming"  description="UW Sounding" super="type_point" category="Point Data" foruser="true" handler="org.ramadda.data.services.PointTypeHandler">
+     <property name="icon" value="/point/uw.png"/>
+     <property name="record.file.class" value="org.ramadda.data.point.text.CsvFile"/>
+     <property name="record.patterns" value="latitude:latitude: *(-?[\d\.]+),longitude:longitude: *(-?[\d\.]+),elevation:elevation: *([\d\.]+),station_id:identifier: *(.*),station_number:number: *(.*),date:time: *(.*)"/>
+     <property name="record.pattern.date.format" value="yyMMdd/HHmm"/>
+     <property name="nameTemplate" value="Sounding - ${station_id} ${date}"/>
+     <property name="form.area.show" value="false"/>
+     <property name="form.location.show" value="true"/>
+ <property name="record.properties">
+fields=pressure[unit="hPa" label="pressure" type=double],height[unit="meters" label="Height" type=double],temperature[unit="C" label="Temperature" type=double],dewpoint[unit="C" label="Dewpoint" type=double],relative_humidity[unit="%" label="Relative humidity" type=double],mixing_ratio[unit="g/kg" label="Mixing ratio" type=double],wind_direction[unit="degrees" label="Wind direction" type=double],wind_speed[unit="knots" label="Wind speed" type=double],thta[unit="K" label="thta" type=double],thte[unit="K" label="thte" type=double],thtv[unit="K" label="thtv" type=double]
+picky=false
+delimiter=space
+point.csvcommands=-skip, 10,-stop,.*&lt;PRE&gt;.*,-print
+     </property>
+     <column  name="station_id"  label="Station ID" type="string" />
+     <column  name="station_number"  label="Station Number" type="string" />
+</type>
+
+
+
 
   <type name="type_daymet"  description="Daymet Daily Weather" super="type_point" category="Point Data" foruser="true" handler="org.ramadda.geodata.point.DaymetTypeHandler">
      <property name="icon" value="/point/ornl.png"/>

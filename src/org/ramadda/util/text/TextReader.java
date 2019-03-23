@@ -150,7 +150,7 @@ public class TextReader implements Cloneable {
     /** _more_ */
     private Row firstRow;
 
-    /** _more_          */
+    /** _more_ */
     private Row extraRow;
 
     /** _more_ */

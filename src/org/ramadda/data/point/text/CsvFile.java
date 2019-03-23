@@ -20,6 +20,8 @@ package org.ramadda.data.point.text;
 import org.ramadda.data.point.*;
 import org.ramadda.data.record.*;
 
+import org.ramadda.util.text.CsvUtil;
+
 import ucar.unidata.util.StringUtil;
 
 import java.awt.*;
@@ -75,9 +77,56 @@ public class CsvFile extends TextFile {
     }
 
 
-    public CsvFile(String filename, RecordFileContext context, Hashtable properties) {
+    /**
+     * _more_
+     *
+     * @param filename _more_
+     * @param context _more_
+     * @param properties _more_
+     */
+    public CsvFile(String filename, RecordFileContext context,
+                   Hashtable properties) {
         super(filename, context, properties);
     }
+
+    /**
+     * _more_
+     *
+     * @param buffered _more_
+     *
+     * @return _more_
+     *
+     * @throws IOException _more_
+     */
+    public InputStream doMakeInputStream(boolean buffered)
+            throws IOException {
+        String csvCommands = getProperty("point.csvcommands", (String) null);
+        if (csvCommands == null) {
+            return super.doMakeInputStream(buffered);
+        }
+        File file = getCacheFile();
+        if (file == null) {
+            return super.doMakeInputStream(buffered);
+        }
+        if ( !file.exists()) {
+            try {
+                ByteArrayOutputStream bos = new ByteArrayOutputStream();
+                FileOutputStream      fos = new FileOutputStream(file);
+                String[] args = StringUtil.listToStringArray(
+                                    StringUtil.split(csvCommands, ","));
+                CsvUtil csvUtil = new CsvUtil(args,
+                                      new BufferedOutputStream(fos), null);
+                csvUtil.setInputStream(super.doMakeInputStream(buffered));
+                csvUtil.run(null);
+                fos.close();
+            } catch (Exception exc) {
+                throw new IllegalArgumentException(exc);
+            }
+        }
+
+        return new BufferedInputStream(new FileInputStream(file));
+    }
+
 
     /**
      * _more_

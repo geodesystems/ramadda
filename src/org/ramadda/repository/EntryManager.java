@@ -79,6 +79,8 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.Statement;
 
+import java.text.SimpleDateFormat;
+
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Enumeration;
@@ -2568,21 +2570,25 @@ public class EntryManager extends RepositoryManager {
                 if (name.indexOf("${") >= 0) {}
                 if ((name.trim().length() == 0)
                         && typeHandler.okToSetNewNameDefault()) {
-                    name = IOUtil.getFileTail(origName);
-                    if (request.get(ARG_MAKENAME, false)) {
-                        name = name.replaceAll("_", " ");
-                        name = IOUtil.stripExtension(name);
-                        StringBuilder tmp = new StringBuilder();
-                        for (String tok :
-                                StringUtil.split(name, " ", true, true)) {
-                            tok = StringUtil.camelCase(tok);
-                            tmp.append(tok);
-                            tmp.append(" ");
+                    String nameTemplate =
+                        typeHandler.getTypeProperty("nameTemplate",
+                            (String) null);
+                    if (nameTemplate == null) {
+                        name = IOUtil.getFileTail(origName);
+                        if (request.get(ARG_MAKENAME, false)) {
+                            name = name.replaceAll("_", " ");
+                            name = IOUtil.stripExtension(name);
+                            StringBuilder tmp = new StringBuilder();
+                            for (String tok :
+                                    StringUtil.split(name, " ", true, true)) {
+                                tok = StringUtil.camelCase(tok);
+                                tmp.append(tok);
+                                tmp.append(" ");
+                            }
+                            name = tmp.toString().trim();
                         }
-                        name = tmp.toString().trim();
                     }
                 }
-
 
                 Date[] theDateRange = { dateRange[0], dateRange[1] };
 
@@ -2638,9 +2644,14 @@ public class EntryManager extends RepositoryManager {
                                "Cannot create an entry of type "
                                + typeHandlerToUse.getDescription());
                 }
-
                 if (name.trim().length() == 0) {
-                    name = typeHandlerToUse.getDefaultEntryName(resourceName);
+                    String nameTemplate =
+                        typeHandlerToUse.getTypeProperty("nameTemplate",
+                            (String) null);
+                    if (nameTemplate == null) {
+                        name = typeHandlerToUse.getDefaultEntryName(
+                            resourceName);
+                    }
                 }
                 entry = typeHandlerToUse.createEntry(id);
 
@@ -7762,6 +7773,36 @@ public class EntryManager extends RepositoryManager {
             for (Entry theNewEntry : entries) {
                 theNewEntry.getTypeHandler().initializeNewEntry(request,
                         theNewEntry);
+                String name = theNewEntry.getName();
+                if (name.trim().length() == 0) {
+                    String nameTemplate =
+                        theNewEntry.getTypeHandler().getTypeProperty(
+                            "nameTemplate", (String) null);
+                    if (nameTemplate != null) {
+                        Object[] values =
+                            theNewEntry.getTypeHandler().getEntryValues(
+                                theNewEntry);
+                        SimpleDateFormat sdf =
+                            RepositoryUtil.makeDateFormat("yyyy-MM-dd HH:mm");
+                        nameTemplate = nameTemplate.replace(
+                            "${date}",
+                            sdf.format(new Date(theNewEntry.getStartDate())));
+                        if (values != null) {
+                            List<Column> columns =
+                                theNewEntry.getTypeHandler().getColumns();
+                            if (columns != null) {
+                                for (Column c : columns) {
+                                    Object obj = c.getObject(values);
+                                    nameTemplate = nameTemplate.replace("${"
+                                            + c.getName()
+                                            + "}", obj.toString());
+                                }
+                            }
+                        }
+                        theNewEntry.setName(nameTemplate);
+                    }
+                }
+
             }
         }
 

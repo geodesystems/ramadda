@@ -68,7 +68,8 @@ import java.util.List;
  * @author Jeff McWhirter
  * @version $Revision: 1.3 $
  */
-public abstract class RecordTypeHandler extends BlobTypeHandler implements RecordConstants, RecordFileContext  {
+public abstract class RecordTypeHandler extends BlobTypeHandler implements RecordConstants,
+        RecordFileContext {
 
     /** _more_ */
     public static final int IDX_RECORD_COUNT = 0;
@@ -114,14 +115,30 @@ public abstract class RecordTypeHandler extends BlobTypeHandler implements Recor
     }
 
 
+    /**
+     * _more_
+     *
+     * @return _more_
+     */
     public String getContextNamespace() {
         return getTypeProperty("record.namespace", "record");
     }
 
+    /**
+     * _more_
+     *
+     * @param field _more_
+     * @param key _more_
+     *
+     * @return _more_
+     */
     public String getFieldProperty(String field, String key) {
-        key = getContextNamespace() +"." + field +"." + key;
+        key = getContextNamespace() + "." + field + "." + key;
         String v = getRepository().getProperty(key);
-        if(v!=null && v.trim().length()>0) return v;
+        if ((v != null) && (v.trim().length() > 0)) {
+            return v;
+        }
+
         return null;
     }
 
@@ -255,13 +272,15 @@ public abstract class RecordTypeHandler extends BlobTypeHandler implements Recor
      *
      * @param entry _more_
      * @param originalFile _more_
+     * @param force _more_
      *
      * @throws Exception _more_
      */
-    public void initializeRecordEntry(Entry entry, File originalFile, boolean force)
+    public void initializeRecordEntry(Entry entry, File originalFile,
+                                      boolean force)
             throws Exception {
 
-        if (!force && anySuperTypesOfThisType()) {
+        if ( !force && anySuperTypesOfThisType()) {
             return;
         }
         Hashtable existingProperties = getRecordProperties(entry);
@@ -417,8 +436,15 @@ public abstract class RecordTypeHandler extends BlobTypeHandler implements Recor
         if (recordFile == null) {
             return null;
         }
+        String filename = "record_" + entry.getId() + "_"
+                          + entry.getChangeDate() + ".csv";
+
+        File file = getRepository().getEntryManager().getCacheFile(entry,
+                        filename);
+        recordFile.setCacheFile(file);
+
         //Explicitly set the properties to force a call to initProperties
-        //        System.err.println ("doMakeRecordFile.setProperties:" + properties.get("fields"));
+        //        System.err.println ("doMakeRecordFile.setProperties:" + properties);
         recordFile.setProperties(properties);
 
         return recordFile;
@@ -542,7 +568,10 @@ public abstract class RecordTypeHandler extends BlobTypeHandler implements Recor
         ctor = Misc.findConstructor(c, new Class[] { String.class });
 
         if (ctor != null) {
-            return (RecordFile) ctor.newInstance(new Object[] { path });
+            RecordFile recordFile =
+                (RecordFile) ctor.newInstance(new Object[] { path });
+
+            return recordFile;
         }
 
         throw new IllegalArgumentException("Could not find constructor for "
