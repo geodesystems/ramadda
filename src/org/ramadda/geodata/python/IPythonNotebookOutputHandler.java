@@ -99,7 +99,9 @@ public class IPythonNotebookOutputHandler extends OutputHandler {
             return;
         }
         if (state.getEntry() != null) {
-            links.add(makeLink(request, state.getEntry(), OUTPUT_IPYTHON_TOJSMD));
+            if(state.getEntry().getTypeHandler().isType("python_notebook")) {
+                links.add(makeLink(request, state.getEntry(), OUTPUT_IPYTHON_TOJSMD));
+            }
         }
     }
 
