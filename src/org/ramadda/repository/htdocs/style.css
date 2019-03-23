@@ -881,24 +881,6 @@ input, password, fileinput,textarea {
   border : 1px #000 solid;
 }
 
-.ace_attribute-name {
-   font-style:italic;
-}
-.ace_attribute-value {
-   font-style:italic;
-}
-.ace_tag {
-   font-weight: bold;
-}
-
-.ace_editor  { 
-overflow-x:auto;
-width:100%;
-border: 1px #ccc solid;
-height:500px;
-}
-
-
 .ramadda-confirm {
    margin:15px;
    margin-left:25px;
@@ -3678,4 +3660,24 @@ h1, h2, h3 {
 
 
 }
+
+
+
+.ace_attribute-name {
+   font-style:italic;
+}
+.ace_attribute-value {
+   font-style:italic;
+}
+.ace_tag {
+   font-weight: bold;
+}
+
+.ace_editor  { 
+overflow-x:auto;
+width:100%;
+border: 1px #ccc solid;
+height:500px;
+}
+
 

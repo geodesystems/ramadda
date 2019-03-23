@@ -170,7 +170,7 @@ function RamaddaNotebookDisplay(displayManager, id, properties) {
         },
         addGlobal: function(name, value) {
             if (Utils.isDefined(window[name])) window[name] = value;
-            else this.globals[name] = value;
+            this.globals[name] = value;
         },
         getBaseEntry: function() {
             return this.baseEntry;
@@ -1341,7 +1341,7 @@ function RamaddaNotebookCell(notebook, id, content, props) {
             if (!this.editor) return this.content;
             return this.editor.getValue();
         },
-            runInner: async function(value, doRows,doingAll)  {
+        runInner: async function(value, doRows,doingAll)  {
             value = value.trim();
             value = value.replace(/{cellname}/g, this.cellName);
             value = this.notebook.convertInput(value);
@@ -1353,6 +1353,31 @@ function RamaddaNotebookCell(notebook, id, content, props) {
             var commands = value.split("\n");
             var prevDiv = null;
             var divCnt = 0;
+            var makeChunk = (type, chunk, div, doChunk, rest)  =>{
+                var props = Utils.parseAttributes(rest);
+                if(props["skipoutput"]===true) {
+                    //clear the output
+                    div.set("");
+                    //Use a dummy div if we are skipping output
+                    div = new Div();
+                }
+                var depends = [];
+                if(props["depends"] && typeof props["depends"] == "string") depends=props["depends"].split(",");
+                var chunk =  {
+                    name:props["name"],
+                    depends:depends,
+                    output:null,
+                    runFirst:props["runFirst"],
+                    hasRun:false,
+                    content: chunk,
+                    type: type,
+                    props: props,
+                    div: div,
+                    doChunk: doChunk,
+                    ok: true
+                }
+                return chunk;
+            };
             var makeDiv = () => {
                 //                console.log("make div:" + divCnt);
                 var div = (divCnt < this.divs.length ? this.divs[divCnt] : null);
@@ -1390,14 +1415,7 @@ function RamaddaNotebookCell(notebook, id, content, props) {
                     }
                     if (chunk != "") {
                         var div = makeDiv();
-                        chunks.push({
-                            content: chunk,
-                            type: type,
-                            props: rest.split(" "),
-                            div: div,
-                            doChunk: doChunk,
-                            ok: true
-                        });
+                        chunks.push(makeChunk(type, chunk, div, doChunk, rest));
                     }
                     doChunk = doRows ? doRows[i] : true;
                     chunk = "";
@@ -1412,35 +1430,83 @@ function RamaddaNotebookCell(notebook, id, content, props) {
 
             if (chunk != "") {
                 var div = makeDiv();
-                chunks.push({
-                    content: chunk,
-                    type: type,
-                     props: rest.split(" "),
-                    div: div,
-                    doChunk: doChunk,
-                    ok: true
-                });
+                chunks.push(makeChunk(type, chunk, div, doChunk, rest));
             }
 
+            var chunkMap = {};
+            for(var i=0;i<chunks.length;i++) {
+                var chunk = chunks[i];
+                if(chunk.name) {
+                    chunkMap[chunk.name] = chunk;
+                }
+            }
             for (var i = divCnt; i < this.divs.length; i++) {
                 this.divs[i].jq().hide();
             }
             this.rawOutput = "";
-            for (var i = 0; i < chunks.length; i++) {
-                var chunk = chunks[i];
-                if (!chunk.doChunk) {
-                    continue;
-                }
-                chunk.div.set("");
-                if(doingAll && chunk.props.indexOf("skipRunAll") >= 0) continue;
-                await this.processChunk(chunk);
-                if (!chunk.ok) {
-                    return false;
-                }
-            }
+            var ok = true;
+            await this.runChunks(chunks, chunkMap,doingAll, true,r=>ok=r);
+            if(!ok) return false;
+            await this.runChunks(chunks, chunkMap, doingAll, false,r=>ok=r);
+            if(!ok) return false;
             Utils.initContent("#" + this.getDomId(ID_OUTPUT));
             return true;
+       },
+       runChunks: async function(chunks, chunkMap, doingAll, justFirst,callback) {
+            for (var i = 0; i < chunks.length; i++) {
+                var chunk = chunks[i];
+                var ok = true;
+                await  this.runChunk(chunk, chunkMap,doingAll, justFirst,(r=>ok=r));
+                if(!ok) return Utils.call(callback, false);
+            }
+            return Utils.call(callback, true);
         },
+       runChunk: async function(chunk, chunkMap,doingAll, justFirst,callback) {
+            var ok = true;
+            if (!chunk.doChunk) {
+                ok = false;
+            } else if(chunk.hasRun) {
+                ok = false;
+            }  else if(justFirst===true && !chunk.props["runfirst"]) {
+                ok =false;
+            } else  if(justFirst===false && chunk.props["runfirst"]===true) {
+                ok = false;
+            }
+            if(!ok) {
+                return Utils.call(callback,true);
+            }
+            chunk.div.set("");
+            if(doingAll && chunk.props["skiprunall"]===true) {
+                return Utils.call(callback,true);
+            }
+            chunk.hasRun = true;
+            for(var i=0;i<chunk.depends.length;i++) {
+                var name = chunk.depends[i];
+                if(chunkMap[name] && !chunkMap[name].hasRun) {
+                    var ok = true;
+
+                    await  this.runChunk(chunkMap[name], chunkMap, false, null,(r=>ok=r));
+                    if(!ok) 
+                        return Utils.call(callback, false);
+                }
+            }
+            await this.processChunk(chunk);
+            if (!chunk.ok) {
+                return Utils.call(callback, false);
+            }
+            if(chunk.name && (typeof chunk.name=="string")) {
+                var name = chunk.name.trim();
+                if(chunk.output) {
+                    if(name!="") {
+                        this.notebook.addGlobal(name, chunk.output);
+                    }
+                } else {
+                    this.notebook.addGlobal(name, null);
+                }
+            }
+            return Utils.call(callback, true);
+        },
+
         writeOutput: function(h) {
             if (!this.output) {
                 err = new Error();
@@ -1472,11 +1538,13 @@ function RamaddaNotebookCell(notebook, id, content, props) {
             }
 
             this.rawOutput += content + "\n";
+            chunk.output  = content;
             chunk.div.set(content);
         },
         processCss: async function(chunk) {
             var css = HtmlUtils.tag("style", ["type", "text/css"], chunk.content);
             this.rawOutput += css + "\n";
+            chunk.output  = css;
             chunk.div.set(css);
         },
         handleError: function(chunk, error, from) {
@@ -1613,7 +1681,9 @@ function RamaddaNotebookCell(notebook, id, content, props) {
             for (var i = 0; i < texs.length; i++) {
                 html = html.replace("tex:" + i + ":", texs[i]);
             }
-            chunk.div.set(HtmlUtils.div(["class", "display-notebook-md"], html));
+            var md = HtmlUtils.div(["class", "display-notebook-md"], html);
+            chunk.output  = html;
+            chunk.div.set(md);
         },
         processPy: async function(chunk) {
             if (!this.notebook.loadedPyodide) {
@@ -1644,6 +1714,7 @@ function RamaddaNotebookCell(notebook, id, content, props) {
             var wikiCallback = function(html) {
                 var h = HtmlUtils.div(["id", divId, "style"], html);
                 chunk.div.set(h);
+                chunk.output  = h;
             }
             var wiki = "{{group showMenu=false}}\n" + chunk.content;
             await GuiUtils.loadHtml(ramaddaBaseUrl + "/wikify?doImports=false&entryid=" + id + "&text=" + encodeURIComponent(chunk.content),
@@ -1729,6 +1800,8 @@ function RamaddaNotebookCell(notebook, id, content, props) {
                     jsSet += "var " + clean + "= notebook.getNotebook().cellValues['" + name + "'];\n";
                 }
                 for (name in this.notebook.globals) {
+                    name = name.trim();
+                    if(name=="") continue;
                     if (!Utils.isDefined(window[name])) {
                         topLines++;
                         jsSet += "var " + name + "= notebook.getNotebook().globals['" + name + "'];\n";
@@ -1743,6 +1816,7 @@ function RamaddaNotebookCell(notebook, id, content, props) {
                 }
                 var html = "";
                 if (result != null) {
+                    chunk.output  = result;
                     var rendered = this.notebook.formatOutput(result);
                     if (rendered != null) {
                         html = rendered;
@@ -1764,7 +1838,11 @@ function RamaddaNotebookCell(notebook, id, content, props) {
         },
         processChunk: async function(chunk) {
             for (name in this.notebook.globals) {
-                chunk.content = chunk.content.replace("${" + name + "}", this.notebook.globals[name]);
+                var value = this.notebook.globals[name];
+                if(typeof value == "object") {
+                    value = Utils.formatJson(value);
+                }
+                chunk.content = chunk.content.replace("${" + name.trim() + "}", value);
             }
             if (chunk.type == "html") {
                 await this.processHtml(chunk);
@@ -1776,12 +1854,15 @@ function RamaddaNotebookCell(notebook, id, content, props) {
                 await this.processFetch(chunk);
             } else if (chunk.type == "raw") {
                 var content = chunk.content;
+                chunk.output  = content;
                 var re = new RegExp("^ *var *= *(.*)");
+                /*
                 var toks = re.exec(chunk.rest);
                 if (toks) {
                     var id = toks[1];
                     this.notebook.setCellValue(id, content);
                 }
+                */
                 this.rawOutput += content;
             } else if (chunk.type == "js") {
                 await this.processJs(chunk);

@@ -59,6 +59,29 @@ var Utils = {
         return ramaddaBaseUrl + "/icons/" + icon;
     },
     imports: {},
+    parseAttributes: function(v) {
+        v=v.replace(/ += +/g,"=")
+        var newv;
+        while(true) {
+            newv = v.replace(/(^| ) *([^= ]+) *($| [^= ])/g," $2='true' $3");
+            if(newv==v) break;
+            v = newv;
+        }
+        v  = newv;
+        var id = HtmlUtils.getUniqueId();
+        var dummy = $('<div ' + v+'></div>')
+        var attrs = {};
+        dummy.each(function() {
+                $.each(this.attributes,function() {
+                var name = this.name;
+                var value = this.value;
+                //                console.log(name +"=" +value);
+                if(value=="true") value=true;
+                else if(value=="false") value = false;
+                attrs[name]=value;
+                    })});
+        return attrs;
+    },
     importJS: async function(path, callback, err, noCache) {
         let _this = this;
         var key = "js:" + path;
@@ -1072,6 +1095,7 @@ var HtmlUtils = {
         var options = {
             autoScrollEditorIntoView: true,
             copyWithEmptySelection: true,
+            //            theme:'ace/theme/solarized_light',
         };
         if (argOptions)
             $.extend(options, argOptions);
