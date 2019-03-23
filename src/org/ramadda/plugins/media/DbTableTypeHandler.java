@@ -355,7 +355,7 @@ public class DbTableTypeHandler extends TabularTypeHandler {
             }
             Row row = new Row(values);
             if ((andClauses.size() == 0)
-                    && !textReader.getFilter().rowOk(textReader, row)) {
+                && !textReader.getFilter().rowOk(textReader, row,"")) {
                 //                System.err.println ("skipping row:" + row);
                 continue;
             }
