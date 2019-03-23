@@ -803,18 +803,19 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
         getEntries: function() {
             return this.entries;
         },
-        getDisplayEntry: async function() {
+        getDisplayEntry: async function(callback) {
             var entries = this.getEntries();
             if (entries != null && entries.length > 0) {
-                return entries[0];
+                return Utils.call(callback, entries[0]);
             }
             if (this.entryId) {
                 var entry;
                 await this.getRamadda().getEntry(this.entryId, e => {
                     entry = e
+                    Utils.call(callback, entry);
                 });
             }
-            return null;
+            Utils.call(callback, null);
         },
         hasEntries: function() {
             return this.entries != null && this.entries.length > 0;
@@ -11508,7 +11509,21 @@ function RamaddaSkewtDisplay(displayManager, id, properties) {
                 var values = this.getColumnValues(records, field).values;
                 data[names[i]] = values;
             }
-            this.skewt1 = new D3Skewt(skewtId, options,data);
+            this.skewt = new D3Skewt(skewtId, options,data);
+            //            console.log(this.jq(ID_SKEWT).html());
+            await this.getDisplayEntry((e)=>{
+                    var q= e.getAttribute("variables");
+                    if(q){
+                        q = q.value;
+
+//                        q = q.value.trim();
+                        q = q.replace(/\n/g,"<br>").replace(/ /g,"&nbsp;");
+                        q = HtmlUtils.div(["class", "display-skewt-text"],q);
+                                         
+                        $("#" + this.skewt.textBoxId).html(q);
+
+                    }
+                });
         }
     });
 }

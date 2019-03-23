@@ -375,6 +375,7 @@ public class Column implements DataTypes, Constants {
     /** _more_ */
     private int rows = 1;
 
+
     /** _more_ */
     private int columns = 40;
 
@@ -504,6 +505,7 @@ public class Column implements DataTypes, Constants {
         canShow        = getAttributeOrTag(element, ATTR_SHOWINHTML, canShow);
         showLabel      = getAttributeOrTag(element, ATTR_SHOWLABEL,
                                            showLabel);
+
         canExport      = getAttributeOrTag(element, ATTR_CANEXPORT,
                                            canExport);
         canList        = getAttributeOrTag(element, ATTR_CANLIST, true);

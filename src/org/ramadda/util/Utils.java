@@ -3018,8 +3018,8 @@ public class Utils {
      */
     public static void main(String[] args) throws Exception {
         if(true) {
-            String fmt = "yyyy-MM-dd";
-            String date = "1855-12-18";
+            String fmt = "HHmm'Z' dd MMM yy";
+            String date = "1200Z 23 MAR 19";
             System.err.println(new SimpleDateFormat(fmt).parse(date));
             return;
         }

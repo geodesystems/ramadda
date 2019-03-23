@@ -1387,3 +1387,14 @@ color:#5179D8;
 .display-ranking-row:hover {
    background:#efefef;
 }
+
+.display-skewt-text {
+text-align:left;
+width:100%;
+max-width:400px;
+overflow-x:auto;
+max-height:300px;
+overflow-y:auto;
+font-size:10pt;
+font-family:monospace;
+}

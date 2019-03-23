@@ -627,11 +627,9 @@ public class Filter extends Converter {
             }
             if (line.matches(pattern)) {
                 seenStart = true;
-
                 return false;
             }
-
-            return true;
+            return false;
         }
     }
 

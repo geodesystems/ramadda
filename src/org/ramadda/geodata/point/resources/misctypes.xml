@@ -32,29 +32,39 @@
 
   </type>
 
-  <type name="type_sounding_wyoming"  description="UW Sounding" super="type_point" category="Point Data" foruser="true" handler="org.ramadda.data.services.PointTypeHandler">
-     <property name="icon" value="/point/uw.png"/>
+  <type name="type_sounding"  description="Sounding" super="type_point" category="Point Data" foruser="false" handler="org.ramadda.data.services.PointTypeHandler">
+</type>
+
+  <type name="type_sounding_wyoming"  description="UW Sounding" super="type_sounding"  foruser="true" >
      <property name="record.file.class" value="org.ramadda.data.point.text.CsvFile"/>
-     <property name="record.patterns" value="latitude:latitude: *(-?[\d\.]+),longitude:longitude: *(-?[\d\.]+),elevation:elevation: *([\d\.]+),station_id:identifier: *(.*),station_number:number: *(.*),date:time: *(.*)"/>
+     <property name="icon" value="/point/uw.png"/>
+     <property name="record.patterns" value="latitude:latitude: *(-?[\d\.]+),longitude:longitude: *(-?[\d\.]+),elevation:elevation: *([\d\.]+),station_id:identifier: *(.*),station_number:number: *(.*),date:time: *(.*),variables:(?s)(?m)(\s+Showalter.*)&lt;/PRE&gt;"/>
      <property name="record.pattern.date.format" value="yyMMdd/HHmm"/>
      <property name="nameTemplate" value="Sounding - ${station_id} ${date}"/>
      <property name="form.area.show" value="false"/>
      <property name="form.location.show" value="true"/>
  <property name="record.properties">
-fields=pressure[unit="hPa" label="pressure" type=double],height[unit="meters" label="Height" type=double],temperature[unit="C" label="Temperature" type=double],dewpoint[unit="C" label="Dewpoint" type=double],relative_humidity[unit="%" label="Relative humidity" type=double],mixing_ratio[unit="g/kg" label="Mixing ratio" type=double],wind_direction[unit="degrees" label="Wind direction" type=double],wind_speed[unit="knots" label="Wind speed" type=double],thta[unit="K" label="thta" type=double],thte[unit="K" label="thte" type=double],thtv[unit="K" label="thtv" type=double]
+fields=pressure[unit="hPa" label="pressure" type=double],height[unit="meters" label="Height" type=double],temperature[unit="C" label="Temperature" type=double],dewpoint[unit="C" label="Dewpoint" type=double],relative_humidity[unit="%" label="Relative humidity" type=double],mixing_ratio[unit="g/kg" label="Mixing ratio" type=double],wind_direction[unit="degrees" label="Wind direction" type=double],wind_speed[unit="knots" label="Wind speed" type=double],theta[unit="K" label="Theta" type=double],thetae[unit="K" label="Theta-E" type=double],thetav[unit="K" label="Theta-V" type=double]
 picky=false
 delimiter=space
 point.csvcommands=-skip, 10,-stop,.*&lt;PRE&gt;.*,-print
      </property>
      <column  name="station_id"  label="Station ID" type="string" />
      <column  name="station_number"  label="Station Number" type="string" />
+     <column  name="variables"  rows="10" htmlTemplate="&lt;pre&gt;${value}&lt;/pre&gt;" showinhtml="false" label="Variables" size="2000" type="string" />
 <wiki>
 <![CDATA[
 +section title={{name}}
 {{description wikify=true}}
+<div style="height:600">
+{{display type=skewt layoutHere=true height="500" skewtWidth="550" skewtHeight="550" hodographWidth=200 showMenu=false showTitle=false}}
+</div>
+:br
+:p
+:br
 +row
-+col-9
-{{display type=skewt layoutHere=true height="500" skewtWidth="500" skewtHeight="500" hodographWidth=200 showMenu=false showTitle=false}}
++col-md-9
+{{information  details="true"  showTitle="false"  }} 
 -col
 +col-3
 Data courtesy of
@@ -63,7 +73,52 @@ Data courtesy of
 {{map}}
 -col
 -row
+-section
+]]>
+</wiki>
+
+
+</type>
+
+
+
+  <type name="type_sounding_cod"  description="COD Sounding" super="type_sounding"  foruser="true" >
+     <property name="record.file.class" value="org.ramadda.data.point.text.CsvFile"/>
+     <property name="icon" value="/point/noaa.gif"/>
+     <property name="record.patterns" value="latitude:Latitude: *(-?[\d\.]+),longitude:Longitude: *(-?[\d\.]+),elevation:Elevation: *([\d\.]+),station_id:Station: *(.*),date:Date: *(.*),variables:(?s)(?m)indices(.*)Wind level data"/>
+     <property name="record.pattern.date.format" value="HHmm'Z' dd MMM yy"/>
+     <property name="nameTemplate" value="Sounding - ${station_id} ${date}"/>
+     <property name="form.area.show" value="false"/>
+     <property name="form.location.show" value="true"/>
+ <property name="record.properties">
+fields=level[type=string],pressure[unit="mb" label="pressure" type=double],height[unit="meters" label="Height" type=double],temperature[unit="C" label="Temperature" type=double],dewpoint[unit="C" label="Dewpoint" type=double],relative_humidity[unit="%" label="Relative humidity" type=double],dd[label="DD" unit="C" type="double"],wetbulb[label="Wet Bulb" unit="C" type="double"],wind_direction[unit="degrees" label="Wind direction" type=double],wind_speed[unit="knots" label="Wind speed" type=double],theta[label="Theta" unit="K" type=double],thetav[unit="K" label="Theta-V" type=double],thetaw[unit="K" label="Theta-W"  type=double],thetae[unit="K" label="Theta-E"  type=double],mixing_ratio[unit="g/kg" label="Mixing ratio" type=double]
+picky=false
+delimiter=space
+point.csvcommands=-start,(?s)----.*,-start,(?s)----.*,-stop,(?s)TRP.*,-print
+     </property>
+     <column  name="station_id"  label="Station ID" type="string" />
+     <column  name="variables"  rows="10" htmlTemplate="&lt;pre&gt;${value}&lt;/pre&gt;" showinhtml="false" label="Variables" size="2000" type="string" />
+<wiki>
+<![CDATA[
++section title={{name}}
+{{description wikify=true}}
+<div style="height:600">
+{{display type=skewt layoutHere=true height="500" skewtWidth="550" skewtHeight="550" hodographWidth=200 showMenu=false showTitle=false}}
+</div>
+:br
+:p
+:br
++row
++col-md-9
 {{information  details="true"  showTitle="false"  }} 
+-col
++col-3
+Data courtesy of
+:br
+[https://weather.cod.edu/buildmap/analysis/raob_build.php College of Dupage]
+{{map}}
+-col
+-row
 -section
 ]]>
 </wiki>

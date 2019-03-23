@@ -40,16 +40,16 @@ function D3Skewt(divid, args, jsonData) {
             this.hodoBoxId = this.divid + "_hodobox";
             this.textBoxId = this.divid + "_textbox";
             var hodoStyle = "vertical-align:top;";
-            var textStyle = "vertical-align:top;";
+            var textStyle = "vertical-align:top;width:100%;";
             if (this.options.showHodograph) {
                 hodoStyle += "display:inline-block;";
             } else {
                 hodoStyle += "display:none;";
             }
             if (this.options.showText) {
-                textStyle += "display:inline-block;";
+                //                textStyle += "display:inline-block;";
             } else {
-                textStyle += "display:none;";
+                //                textStyle += "display:none;";
             }
 
             var html = "";
@@ -58,9 +58,9 @@ function D3Skewt(divid, args, jsonData) {
                 if (this.options.showTimes)
                     html += this.createTimeline(this.numberOfTimes);
             }
-            html+="<table><tr valign=top><td>";
-            html += "<div style='display:inline-block;' id='" + this.mainBoxId + "'></div>";
-            html +="</td><td>";
+            html+="<table width=100%><tr valign=top><td align=right>";
+            html += "<div style='width:100%;' id='" + this.mainBoxId + "'></div>";
+            html +="</td><td align=center>";
             html += "<div style='" + hodoStyle + "' id='" + this.hodoBoxId + "'></div>";
             if(this.options.textPlace == "below")
                 html += "<br>";
