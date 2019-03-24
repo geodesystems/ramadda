@@ -842,18 +842,6 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
                 HtmlUtils.leftRight(HtmlUtils.div([ATTR_ID, this.getDomId(ID_FOOTER_LEFT), ATTR_CLASS, "display-footer-left"], ""),
                     HtmlUtils.div([ATTR_ID, this.getDomId(ID_FOOTER_RIGHT), ATTR_CLASS, "display-footer-right"], "")));
         },
-        checkFixedLayout: function() {
-            if (this.getIsLayoutFixed()) {
-                var divid = this.getProperty(PROP_DIVID);
-                if (divid != null) {
-                    var html = this.getHtml();
-                    //                    console.log("html:"+ html);
-                    $("#" + divid).html(html);
-                } else {
-                    console.log("error: no div defined for display:" + this.getType());
-                }
-            }
-        },
         shouldSkipField: function(field) {
             if (this.skipFields && !this.skipFieldsList) {
                 this.skipFieldsList = this.skipFields.split(",");
@@ -2552,9 +2540,15 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             $("#" + popupId).draggable();
         },
         checkLayout: function() {},
-        displayData: function() {},
-        createUI: function() {
-            this.checkFixedLayout();
+                displayData: function() {},
+                createUI: function() {
+                var divid = this.getProperty(PROP_DIVID);
+                if (divid != null) {
+                    var html = this.getHtml();
+                    $("#" + divid).html(html);
+                } else {
+                    console.log("error: no div defined for display:" + this.getType());
+                }
         },
         setDisplayReady: function() {
             this.displayReady = true;
@@ -3590,11 +3584,16 @@ function DisplayGroup(argDisplayManager, argId, argProperties, type) {
                 weights = this.weights.split(",");
             }
 
+            for (var i=0; i < displaysToLayout.length; i++) {
+                var divId = HtmlUtils.getUniqueId("divid_");
+                var div =  HtmlUtils.div(["class", " display-wrapper","id",divId],"");
+                displaysToLayout[i].setProperty(PROP_DIVID,divId);
+                displaysToLayout[i].layoutDiv=div;
+            }
             if (this.layout == LAYOUT_TABLE) {
                 //                console.log("table:" + this.columns);
                 if (displaysToLayout.length == 1) {
-                    html += HtmlUtils.div(["class", " display-wrapper"],
-                        displaysToLayout[0].getHtml());
+                    html += displaysToLayout[0].layoutDiv;
                 } else {
                     var weight = 12 / this.columns;
                     var i = 0;
@@ -3610,6 +3609,7 @@ function DisplayGroup(argDisplayManager, argId, argProperties, type) {
 
                     i = 0;
                     for (; i < displaysToLayout.length; i++) {
+
                         colCnt++;
                         if (colCnt >= this.columns) {
                             if (i > 0) {
@@ -3626,7 +3626,7 @@ function DisplayGroup(argDisplayManager, argId, argProperties, type) {
                             weightToUse = weights[weightIdx];
                             weightIdx++;
                         }
-                        html += HtmlUtils.div(["class", "col-md-" + weightToUse + " display-wrapper display-cell"], displaysToLayout[i].getHtml());
+                        html += HtmlUtils.div(["class", "col-md-" + weightToUse + " display-wrapper display-cell"], displaysToLayout[i].layoutDiv);
                     }
 
                     if (i > 0) {
@@ -3647,7 +3647,7 @@ function DisplayGroup(argDisplayManager, argId, argProperties, type) {
                         label = label.substring(0, 19) + "...";
                     }
                     html += HtmlUtils.tag(TAG_LI, [], HtmlUtils.tag(TAG_A, ["href", "#" + tabId + "-" + cnt], label));
-                    hidden += HtmlUtils.div(["id", tabId + "-" + cnt, "class", "ui-tabs-hide"], display.getHtml());
+                    hidden += HtmlUtils.div(["id", tabId + "-" + cnt, "class", "ui-tabs-hide"], display.layoutDiv);
                     cnt++;
                 }
                 html += HtmlUtils.closeTag(TAG_UL);
@@ -3662,7 +3662,7 @@ function DisplayGroup(argDisplayManager, argId, argProperties, type) {
                     while (rows.length <= row) {
                         rows.push([]);
                     }
-                    rows[row].push(display.getHtml());
+                    rows[row].push(display.layoutDiv);
                 }
                 for (var i = 0; i < rows.length; i++) {
                     var cols = rows[i];
@@ -3687,7 +3687,7 @@ function DisplayGroup(argDisplayManager, argId, argProperties, type) {
                     while (cols.length <= column) {
                         cols.push([]);
                     }
-                    cols[column].push(display.getHtml());
+                    cols[column].push(display.layoutDiv);
                     //                        cols[column].push("HTML");
                 }
                 html += HtmlUtils.openTag(TAG_DIV, ["class", "row"]);
@@ -3717,9 +3717,8 @@ function DisplayGroup(argDisplayManager, argId, argProperties, type) {
             }
 
             this.writeHtml(ID_DISPLAYS, html);
-
             if (this.layout == LAYOUT_TABS) {
-                $("#" + tabId).tabs({});
+                $("#" + tabId).tabs({activate: HtmlUtil.tabLoaded});
             }
             this.initDisplays();
         },

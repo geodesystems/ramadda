@@ -1399,6 +1399,8 @@ public class TabularOutputHandler extends OutputHandler {
 
         propsList.add("url");
         propsList.add(Json.quote(jsonUrl));
+        propsList.add("layoutHere");
+        propsList.add("false");
 
         /**
          * TabularVisitInfo visitInfo = new TabularVisitInfo(request, entry);
@@ -1434,6 +1436,7 @@ public class TabularOutputHandler extends OutputHandler {
         if ( !request.get(ARG_EMBEDDED, false)) {
             sb.append(entry.getDescription());
         }
+
         String divId = HtmlUtils.getUniqueId("div_");
         sb.append(HtmlUtils.div("", HtmlUtils.id(divId)));
         StringBuilder js = new StringBuilder();
