@@ -1398,3 +1398,28 @@ overflow-y:auto;
 font-size:10pt;
 font-family:monospace;
 }
+
+.display-skew-text {
+  white-space: pre;
+  font-family: monospace;
+}
+
+.display-skewt-index-label {
+   display:inline-block;
+   width:200px;
+   max-width:200px;
+   text-align:right;
+   vertical-align:bottom;
+   overflow-x:hidden;
+   font-weight:bold;
+   white-space:nowrap;
+}
+
+.display-skewt-index {
+   font-style:italic;
+   display:inline-block;
+   max-width:100px;
+   width:100px;
+   vertical-align:bottom;
+   white-space:nowrap;
+}

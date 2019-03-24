@@ -11512,16 +11512,16 @@ function RamaddaSkewtDisplay(displayManager, id, properties) {
             //            console.log(this.jq(ID_SKEWT).html());
             await this.getDisplayEntry((e)=>{
                     var q= e.getAttribute("variables");
-                    if(q){
-                        q = q.value;
+                    if(!q) return;
+                    q = q.value;
 
-//                        q = q.value.trim();
-                        q = q.replace(/\n/g,"<br>").replace(/ /g,"&nbsp;");
-                        q = HtmlUtils.div(["class", "display-skewt-text"],q);
-                                         
-                        $("#" + this.skewt.textBoxId).html(q);
+                    q = q.replace(/^ *\n/,"");
+                    q = q.replace(/^([^:]+):([^\n].*)$/gm,"<div title='$1' class=display-skewt-index-label>$1</div>: <div title='$2'  class=display-skewt-index>$2</div>");
+                    q = q.replace(/\n/g,"<br>\n");
+                    console.log(q);
+                    q = HtmlUtils.div(["class", "display-skewt-text"],q);
 
-                    }
+                    $("#" + this.skewt.textBoxId).html(q);
                 });
         }
     });
