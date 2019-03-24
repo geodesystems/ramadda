@@ -600,9 +600,10 @@ public class Json {
      */
     public static void toCsv(String file, PrintStream pw, String colString)
             throws Exception {
+        InputStream is = IOUtil.getInputStream(file, Json.class);
         BufferedReader br = new BufferedReader(
                                 new InputStreamReader(
-                                    new FileInputStream(file)));
+                                                      is));
 
         HashSet cols = null;
         if (colString != null) {
@@ -1093,6 +1094,12 @@ public class Json {
      * @throws Exception _more_
      */
     public static void main(String[] args) throws Exception {
+        toCsv(args[0], System.out, (args.length > 1)
+                                   ? args[1]
+                                   : null);
+        if(true) return;
+
+
         String  file = args[0];
         boolean html = true;
         if (file.equals("-plain")) {

@@ -32,9 +32,3 @@ President, Geode Systems
 {{tree showtoggle="false"}}
 <p>
 -section
-+section label="Workbench" #
-<div id=listdiv></div>
-<div id=maindiv></div>
-{{group  layoutType="table"  layoutColumns="2"  showMenu="true"  divid="maindiv" }}
-{{display  type="entrylist"    divid="listdiv" orientation="vertical"  showType="false" showForm="true"  showSearchSettings="false" formOpen="false"  layoutHere="true"  showMenu="false"  showTitle="false"  textRequired="true" providers="name:.*"}}
--section
