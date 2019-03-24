@@ -234,11 +234,11 @@ function RamaddaSkewtDisplay(displayManager, id, properties) {
                     var q= e.getAttribute("variables");
                     if(!q) return;
                     q = q.value;
-
+                    q = q.replace(/\r\n/g,"\n");
                     q = q.replace(/^ *\n/,"");
-                    q = q.replace(/^([^:]+):([^\n].*)$/gm,"<div title='$1' class=display-skewt-index-label>$1</div>: <div title='$2'  class=display-skewt-index>$2</div>");
-                    q = q.replace(/\n/g,"<br>\n");
-                    console.log(q);
+                    q = q.replace(/^ *([^:]+):([^\n].*)$/gm,"<div title='$1' class=display-skewt-index-label>$1</div>: <div title='$2'  class=display-skewt-index>$2</div>");
+                    q = q.replace(/[[\r\n]/g,"\n");
+                                  //                    console.log(q);
                     q = HtmlUtils.div(["class", "display-skewt-text"],q);
 
                     $("#" + this.skewt.textBoxId).html(q);
