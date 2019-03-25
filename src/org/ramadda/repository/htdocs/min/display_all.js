@@ -5467,7 +5467,7 @@ function RamaddaNotebookDisplay(displayManager, id, properties) {
         },
         addGlobal: function(name, value) {
             //TODO: more var name cleanup
-            name = name.trim().name.replace(/[ -]/g,"_");
+            name = name.trim().replace(/[ -]/g,"_");
             if (Utils.isDefined(window[name])) window[name] = value;
             this.globals[name] = value;
         },
