@@ -350,14 +350,30 @@ print "hello world"
 
 
 
-<a name="running"></a><p><div class="ramadda-help-heading">5.3.11 <a href="#running">Running a notebook</a></div> 
+<a name="plugin"></a><p><div class="ramadda-help-heading">5.3.11 <a href="#plugin">Defining new languages</a></div> 
+The <i>plugin</i> chunk type allows you to define new languages.
+This follows the <a href="https://iodide-project.github.io/docs/language_plugins/">Iodide Plugins</a> model.
+<pre>
+%% plugin
+{
+  "languageId": "jsx",
+  "displayName": "React JSX",
+  "url": "https://raw.githubusercontent.com/hamilton/iodide-jsx/master/docs/evaluate-jsx.js",
+  "module": "jsx",
+  "evaluator": "evaluateJSX",
+  "pluginType": "language"
+}
+</pre>
+
+
+<a name="running"></a><p><div class="ramadda-help-heading">5.3.12 <a href="#running">Running a notebook</a></div> 
 To run a notebook cell either press shift-return in the cell input area or choose "Run This Cell" in the notebook menu.
 All of the cells can be run through the notebook menu with the "Run All" command.
 A notebook can be configured to run all of the cells when the notebook is first loaded through the "Run on load"
 command in the notebook menu.
 
 
-<a name="commands"></a><p><div class="ramadda-help-heading">5.3.12 <a href="#commands">Notebook Menu Commands</a></div> 
+<a name="commands"></a><p><div class="ramadda-help-heading">5.3.13 <a href="#commands">Notebook Menu Commands</a></div> 
 The notebook menu allows one to configure the display and behavior of individual cells or all of the cells.
 
 <a name="image2"></a><div class="cimg"><a href="images/notebookmenu.png"><img  src="images/notebookmenu.png"  alt="Notebook Menu" ></a><br><span class="caption">Image 2: Notebook Menu</span></div>
@@ -385,7 +401,7 @@ with just the notebook output saved
 </ul>
 
 
-<a name="macros"></a><p><div class="ramadda-help-heading">5.3.13 <a href="#macros">Macros</a></div> 
+<a name="macros"></a><p><div class="ramadda-help-heading">5.3.14 <a href="#macros">Macros</a></div> 
 Cell values can be used as macros in other cells. There are 2 ways of doing this. 
 First, you can set the name of a cell (through the popup menu) to be some macro name, e.g., the_value.
 The cells that define the macro values need to be run before the cells that reference the macro values. Do this

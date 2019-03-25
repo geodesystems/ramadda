@@ -323,6 +323,22 @@ print "hello world"
 
 
 
+[ug::subheading {Defining new languages} plugin]
+The <i>plugin</i> chunk type allows you to define new languages.
+This follows the <a href="https://iodide-project.github.io/docs/language_plugins/">Iodide Plugins</a> model.
+<pre>
+%% plugin
+{
+  "languageId": "jsx",
+  "displayName": "React JSX",
+  "url": "https://raw.githubusercontent.com/hamilton/iodide-jsx/master/docs/evaluate-jsx.js",
+  "module": "jsx",
+  "evaluator": "evaluateJSX",
+  "pluginType": "language"
+}
+</pre>
+
+
 [ug::subheading {Running a notebook} running]
 To run a notebook cell either press shift-return in the cell input area or choose "Run This Cell" in the notebook menu.
 All of the cells can be run through the notebook menu with the "Run All" command.

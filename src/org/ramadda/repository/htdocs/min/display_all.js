@@ -5623,6 +5623,41 @@ function RamaddaNotebookDisplay(displayManager, id, properties) {
             }
             this.jq(ID_CELLS).html(html);
         },
+       plugins: {},
+       addPlugin: async function(plugin, chunk) {
+          var error;
+          await Utils.importJS(plugin.url,
+                              () => {},
+                              (jqxhr, settings, exception) => {
+                                  error = "Error fetching plugin url:" + plugin.url;
+                              });
+          if(!error) {
+              var module = plugin.module;
+              var tries = 500;
+              //Wait 5 seconds max
+              while(window[module]==null && tries-->0) {
+                  await new Promise(resolve => setTimeout(resolve, 10));
+              }
+              if(!window[module]) {
+                  error = "Could not load plugin module: " +module;
+              }
+          }
+          if(error) {
+              this.log(error,"error","nb",chunk.div);
+              return;
+          }
+          this.plugins[plugin.languageId] = plugin;
+        },
+       hasPlugin: function(id) {
+                return this.plugins[id]!=null;
+       },
+       processChunkWithPlugin: async function(id,chunk, callback) {
+           var module = this.plugins[id].module;
+           var func  = this.plugins[id].evaluator;
+           var result = window[module][func](chunk.content);
+           return Utils.call(callback,result);
+
+       },
         log: function(msg, type, from, div) {
             var icon = "";
             var clazz = "display-notebook-console-item";
@@ -5984,6 +6019,9 @@ function NotebookState(cell, div) {
         addOutputRenderer: function(renderer) {
             this.getNotebook().addOutputRenderer(renderer);
         },
+        addOutputHandler: function(renderer) {
+            this.getNotebook().addOutputRenderer(renderer);
+        },
         output: {
             text: function(t) {
                 notebook.write(t);
@@ -6001,6 +6039,7 @@ function NotebookState(cell, div) {
              this.getNotebook().clearOutput();
         },
         write: function(value, clear) {
+            if(!value) return;
             var s = this.getNotebook().formatOutput(value);
             if (s == null && (typeof value) == "object") {
                 s = this.notebook.formatObject(value);
@@ -6738,6 +6777,7 @@ function RamaddaNotebookCell(notebook, id, content, props) {
             if(!ok) {
                 return Utils.call(callback,true);
             }
+            //            console.log("runChunk:" + chunk.content);
             chunk.div.set("");
             if(doingAll && chunk.props["skiprunall"]===true) {
                 return Utils.call(callback,true);
@@ -6747,15 +6787,17 @@ function RamaddaNotebookCell(notebook, id, content, props) {
                 var name = chunk.depends[i];
                 if(chunkMap[name] && !chunkMap[name].hasRun) {
                     var ok = true;
-
                     await  this.runChunk(chunkMap[name], chunkMap, false, null,(r=>ok=r));
-                    if(!ok) 
+                    if(!ok) {
+                        console.log("run chunk after");
                         return Utils.call(callback, false);
+                    }
                 }
             }
             await this.processChunk(chunk);
             if (!chunk.ok) {
-                return Utils.call(callback, false);
+                Utils.call(callback, false);
+                return;
             }
             if(chunk.name && (typeof chunk.name=="string")) {
                 var name = chunk.name.trim();
@@ -6967,6 +7009,12 @@ function RamaddaNotebookCell(notebook, id, content, props) {
                 chunk.ok = false;
             }
         },
+        processPlugin: async function(chunk) {
+            var state = new NotebookState(this, chunk.div);
+            window.iodide = window.notebook = state;
+            var plugin = JSON.parse(chunk.content);
+            await this.notebook.addPlugin(plugin, chunk);
+        },
         processWiki: async function(chunk) {
             this.rawOutput += chunk.content + "\n";
             var id = this.notebook.getProperty("entryId", "");
@@ -7109,6 +7157,8 @@ function RamaddaNotebookCell(notebook, id, content, props) {
             }
             if (chunk.type == "html") {
                 await this.processHtml(chunk);
+            } else if (chunk.type == "plugin") {
+                await this.processPlugin(chunk);
             } else if (chunk.type == "wiki") {
                 await this.processWiki(chunk);
             } else if (chunk.type == "css") {
@@ -7136,7 +7186,15 @@ function RamaddaNotebookCell(notebook, id, content, props) {
             } else if (chunk.type == "py") {
                 await this.processPy(chunk);
             } else {
+                if(this.notebook.hasPlugin(chunk.type)) {
+                    var result;
+                    await this.notebook.processChunkWithPlugin(chunk.type, chunk,r=>result);
+                    //TODO: what to do with the result
+                    //                    console.log("result:" +result);
+                    return;
+                }
                 this.notebook.log("Unknown type:" + chunk.type, "error", null, chunk.div);
+                chunk.ok = false;
             }
         },
 
