@@ -913,7 +913,6 @@ public abstract class Processor extends CsvOperator {
             if (addPointHeader) {
                 addPointHeader = false;
                 handleHeaderRow(info.getWriter(), row, null /*exValues*/);
-
                 return row;
             }
             handleRow(info.getWriter(), row);

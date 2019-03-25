@@ -11629,6 +11629,18 @@ function RamaddaSkewtDisplay(displayManager, id, properties) {
         initDisplay:  function() {
             SUPER.initDisplay.call(this);
         },
+        handleEventMapClick: function(source, args) {
+            if (!this.dataCollection) {
+                return;
+            }
+            var pointData = this.dataCollection.getList();
+            for (var i = 0; i < pointData.length; i++) {
+                pointData[i].handleEventMapClick(this, source, args.lon, args.lat);
+            }
+        },
+        handleEventPointDataLoaded: function(source, pointData) {
+                this.updateUI();
+        },
         updateUI: async function() {
          if(!this.loadedResources) {
             await Utils.importCSS(ramaddaBaseUrl+"/lib/skewt/sounding.css");
@@ -11636,20 +11648,20 @@ function RamaddaSkewtDisplay(displayManager, id, properties) {
             this.loadedResources = true;
          }
          if(!window["D3Skewt"]) {
-               setTimeout(()=>this.updateUI(),100);
-               return;
-           }
-           SUPER.updateUI.call(this);
-           //            this.writeHtml(ID_DISPLAY_CONTENTS, "XXXX");
-            var skewtId = this.getDomId(ID_SKEWT);
-            //            return;
-            var html = HtmlUtils.div(["id", skewtId], "");
-            this.setContents(html);
-            var records = this.filterData();
-            if (!records) {
-                console.log("no data yet");
-                return;
-            }
+             setTimeout(()=>this.updateUI(),100);
+             return;
+         }
+         SUPER.updateUI.call(this);
+         var skewtId = this.getDomId(ID_SKEWT);
+         var html = HtmlUtils.div(["id", skewtId], "");
+         this.setContents(html);
+         var pointData = this.getData();
+         if (pointData == null) return;
+         var records =  pointData.getRecords();
+         if (!records) {
+             console.log("no data yet");
+             return;
+         }
             var options = {};
             if (this.propertyDefined("showHodograph"))
                 options.showHodograph = this.getProperty("showHodograph", true);
@@ -11669,6 +11681,7 @@ function RamaddaSkewtDisplay(displayManager, id, properties) {
             var height = this.getFieldById(fields,"height");
             var height = this.getFieldById(fields,"height");
             var data ={};
+
             for(var i=0;i<names.length;i++) {
                 var field = this.getFieldById(fields,names[i]);
                 if(field == null) {
@@ -16968,6 +16981,8 @@ function RamaddaMapDisplay(displayManager, id, properties) {
                 theDisplay.mapFeatureSelected(layer);
             });
         },
+        handleEventPointDataLoaded: function(source, pointData) {
+        },
         baseMapLoaded: function(layer, url) {
             this.vectorLayer = layer;
             this.applyVectorMap();
@@ -17159,6 +17174,13 @@ function RamaddaMapDisplay(displayManager, id, properties) {
             if (this.doDisplayMap()) {
                 return;
             }
+            var justOneMarker = this.getProperty("justOneMarker",false);
+            if(justOneMarker) {
+                var pointData = this.getPointData();
+                if(pointData) {
+                    pointData.handleEventMapClick(this, source, lon, lat);
+                }
+            }
             this.getDisplayManager().handleEventMapClick(this, lon, lat);
         },
 
@@ -17246,7 +17268,6 @@ function RamaddaMapDisplay(displayManager, id, properties) {
                 return;
             }
             var selected = args.selected;
-
 
             if (!entry.hasLocation()) {
                 return;
@@ -17665,7 +17686,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
                 return;
             }
             if (points.length == 0) {
-                console.log("points.legnth==0");
+                console.log("points.length==0");
                 return;
             }
 
@@ -17794,8 +17815,10 @@ function RamaddaMapDisplay(displayManager, id, properties) {
             var colorByMinPerc = this.getDisplayProp(source, "colorByMinPercentile", -1);
             var colorByMaxPerc = this.getDisplayProp(source, "colorByMaxPercentile", -1);
 
+            var justOneMarker = this.getProperty("justOneMarker",false);
             for (var i = 0; i < points.length; i++) {
                 var pointRecord = records[i];
+
                 if (this.animation.dateMin == null) {
                     this.animation.dateMin = pointRecord.getDate();
                     this.animation.dateMax = pointRecord.getDate();
@@ -17901,6 +17924,19 @@ function RamaddaMapDisplay(displayManager, id, properties) {
             for (var i = 0; i < points.length; i++) {
                 var pointRecord = records[i];
                 var point = points[i];
+                if(justOneMarker) {
+                    if(this.justOneMarker)
+                        this.map.removeMarker(this.justOneMarker);
+                    if(!isNaN(point.x) && !isNaN(point.y)) {
+                        this.justOneMarker= this.map.addMarker(id, [point.x,point.y], null, "", "");
+                        return;
+                    } else {
+                        continue;
+                    }
+                }
+
+
+
                 var values = pointRecord.getData();
                 var props = {
                     pointRadius: radius,
@@ -18035,12 +18071,12 @@ function RamaddaMapDisplay(displayManager, id, properties) {
                     if (!Utils.isDefined(seen[point])) seen[point] = 0;
                     if (seen[point] > 500) continue;
                     seen[point]++;
-                    point = this.map.addPoint("pt-" + i, point, props, html, dontAddPoint);
+                    var mapPoint = this.map.addPoint("pt-" + i, point, props, html, dontAddPoint);
                     var date = pointRecord.getDate();
                     if (date) {
-                        point.date = date.getTime();
+                        mapPoint.date = date.getTime();
                     }
-                    this.points.push(point);
+                    this.points.push(mapPoint);
                 }
             }
             if (didColorBy) {

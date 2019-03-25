@@ -318,6 +318,22 @@ public class Utils {
     }
 
 
+    public static List<String> tokenizeColumns(String line,
+                                               List<Integer> widths) {
+        List<String> toks      = new ArrayList<String>();
+        int lastIdx = 0;
+        for (int i = 0; i < widths.size(); i++) {
+            int width = widths.get(i);
+            if(lastIdx+width>line.length()) break;
+            String theString = line.substring(lastIdx,  lastIdx + width);
+            toks.add(theString);
+            lastIdx   += width;
+        }
+        return toks;
+    }
+
+
+
     /**
      * _more_
      *

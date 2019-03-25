@@ -508,8 +508,9 @@ public class CsvUtil {
     public void header(List<String> files, TextReader info, boolean asPoint)
             throws Exception {
         PrintWriter writer    = info.getWriter();
+        List<Integer> widths = info.getWidths();
         String      delimiter = info.getDelimiter();
-        if (delimiter == null) {
+        if (widths==null && delimiter == null) {
             delimiter = ",";
         }
         List<BufferedReader> readers = new ArrayList<BufferedReader>();
@@ -523,7 +524,7 @@ public class CsvUtil {
             if (line == null) {
                 continue;
             }
-            List<String> cols = Utils.tokenizeColumns(line, delimiter);
+            List<String> cols = widths!=null?Utils.tokenizeColumns(line, widths):Utils.tokenizeColumns(line, delimiter);
             if (asPoint) {
                 writer.println("skiplines=1");
                 writer.print("fields=");
@@ -863,7 +864,6 @@ public class CsvUtil {
                 rowCnt++;
                 if (rowCnt <= textReader.getSkip()) {
                     textReader.addHeaderLine(line);
-
                     continue;
                 }
 
@@ -871,8 +871,8 @@ public class CsvUtil {
                 if ( !textReader.lineOk(textReader, line)) {
                     continue;
                 }
-
-                if (textReader.getDelimiter() == null) {
+                List<Integer> widths = textReader.getWidths();
+                if (widths==null && textReader.getDelimiter() == null) {
                     String delimiter = ",";
                     //Check for the bad separator
                     int i1 = line.indexOf(",");
@@ -883,7 +883,11 @@ public class CsvUtil {
                     //                System.err.println("CsvUtil.delimiter is null new one is:" + delimiter);
                     textReader.setDelimiter(delimiter);
                 }
-                Row row = new Row(line, textReader.getDelimiter());
+
+                if(line.length()==0) {
+                    continue;
+                }
+                Row row = (widths!=null?new Row(Utils.tokenizeColumns(line,widths)):new Row(line, textReader.getDelimiter()));
                 if ( !processRow(textReader, row, line)) {
                     break;
                 }
@@ -942,6 +946,7 @@ public class CsvUtil {
             textReader.getWriter().flush();
         }
         textReader.incrRow();
+
 
         return true;
     }
@@ -1133,6 +1138,7 @@ public class CsvUtil {
         new Cmd("-insert", "<col #> <comma separated values>"),
         new Cmd("-addcell", "<row #>  <col #>  <value>"),
         new Cmd("-deletecell", "<row #> <col #>"),
+        new Cmd("-macro", "<pattern> <column label> (Look for the pattern in the header and add the value as a column)"),
         new Cmd("-set", "<col #s> <row #s> <value>",
                 "(write the value into the cells)"),
         new Cmd("-case", "<lower|upper|camel> <col #>",
@@ -1205,6 +1211,7 @@ public class CsvUtil {
             " (be strict on columns. any rows that are not the size of the other rows are shown)"),
         new Cmd("-rotate"), new Cmd("-flip"),
         new Cmd("-delimiter", "", "(specify an alternative delimiter)"),
+        new Cmd("-widths", "w1,w2,...,wN", "(columns are fixed widths)"),
         new Cmd("-comment", "<string>"),
         new Cmd(
             "-db", "{<props>}",
@@ -1520,7 +1527,15 @@ public class CsvUtil {
 
             if (arg.equals("-delimiter")) {
                 info.setDelimiter(delimiter = args.get(++i));
+                continue;
+            }
 
+            if (arg.equals("-widths")) {
+                List<Integer> widths  = new ArrayList<Integer>();
+                for(String tok: StringUtil.split(args.get(++i),",",true,true)) {
+                    widths.add(Integer.parseInt(tok));
+                }
+                info.setWidths(widths);
                 continue;
             }
 
@@ -1908,6 +1923,14 @@ public class CsvUtil {
                     new Converter.ColumnInserter(
                         Integer.parseInt(args.get(++i)), args.get(++i)));
 
+                continue;
+            }
+
+
+
+            if (arg.equals("-macro")) {
+                info.getProcessor().addProcessor(
+                                                 new Converter.ColumnMacro(args.get(++i), args.get(++i)));
                 continue;
             }
 

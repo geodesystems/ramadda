@@ -105,20 +105,27 @@ public class CsvFile extends TextFile {
             return super.doMakeInputStream(buffered);
         }
         File file = getCacheFile();
-        if (file == null) {
-            return super.doMakeInputStream(buffered);
-        }
-        if ( !file.exists()) {
+        if (file == null || !file.exists()) {
             try {
-                ByteArrayOutputStream bos = new ByteArrayOutputStream();
-                FileOutputStream      fos = new FileOutputStream(file);
+                ByteArrayOutputStream bos=null;
+                OutputStream      fos;
+                if(file!=null) {
+                     fos = new FileOutputStream(file);
+                } else {
+                    fos = bos = new ByteArrayOutputStream();
+                }
                 String[] args = StringUtil.listToStringArray(
                                     StringUtil.split(csvCommands, ","));
+                for(int i=0;i<args.length;i++) 
+                    args[i] = args[i].replaceAll("_comma_",",");
                 CsvUtil csvUtil = new CsvUtil(args,
                                       new BufferedOutputStream(fos), null);
                 csvUtil.setInputStream(super.doMakeInputStream(buffered));
                 csvUtil.run(null);
                 fos.close();
+                if(file == null) {
+                    return new ByteArrayInputStream(bos.toByteArray());
+                }
             } catch (Exception exc) {
                 throw new IllegalArgumentException(exc);
             }

@@ -100,6 +100,8 @@ public class TextReader implements Cloneable {
     /** _more_ */
     private String delimiter = ",";
 
+    private List<Integer> widths;
+
     /** _more_ */
     private String comment = "#";
 
@@ -1064,6 +1066,26 @@ public class TextReader implements Cloneable {
     public int getSkip() {
         return skip;
     }
+
+
+/**
+Set the Widths property.
+
+@param value The new value for Widths
+**/
+public void setWidths (List<Integer> value) {
+	widths = value;
+}
+
+/**
+Get the Widths property.
+
+@return The Widths
+**/
+public List<Integer> getWidths () {
+	return widths;
+}
+
 
 
 

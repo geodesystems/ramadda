@@ -2330,6 +2330,63 @@ public abstract class Converter extends Processor {
 
 
 
+    public static class ColumnMacro extends Converter {
+
+        /** _more_ */
+        private String pattern;
+        private String label;
+        private String value;
+
+        /**
+         * _more_
+         *
+         * @param col _more_
+         *
+         * @param value _more_
+         */
+        public ColumnMacro(String pattern, String label) {
+            this.pattern = pattern;
+            this.label = label;
+
+        }
+
+        /**
+         * _more_
+         *
+         *
+         * @param info _more_
+         * @param row _more_
+         * @param line _more_
+         *
+         * @return _more_
+         */
+        @Override
+        public Row processRow(TextReader info, Row row, String line) {
+            if(rowCnt++==0) {
+                row.getValues().add(label);
+                return row;
+            }
+            if(value == null) {
+                for(String hline:info.getHeaderLines()) {
+                    String str = StringUtil.findPattern(hline, pattern);
+                    //                    System.out.println(pattern +" " +str +" " + hline);
+                    if(str!=null) {
+                        value = str;
+                        break;
+                    }
+                }
+            }
+            if(value == null) {
+                value = "";
+            }
+            row.getValues().add(value);
+            return row;
+        }
+    }
+
+
+
+
     /**
      * Class description
      *

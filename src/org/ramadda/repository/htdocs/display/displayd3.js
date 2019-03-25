@@ -179,6 +179,18 @@ function RamaddaSkewtDisplay(displayManager, id, properties) {
         initDisplay:  function() {
             SUPER.initDisplay.call(this);
         },
+        handleEventMapClick: function(source, args) {
+            if (!this.dataCollection) {
+                return;
+            }
+            var pointData = this.dataCollection.getList();
+            for (var i = 0; i < pointData.length; i++) {
+                pointData[i].handleEventMapClick(this, source, args.lon, args.lat);
+            }
+        },
+        handleEventPointDataLoaded: function(source, pointData) {
+                this.updateUI();
+        },
         updateUI: async function() {
          if(!this.loadedResources) {
             await Utils.importCSS(ramaddaBaseUrl+"/lib/skewt/sounding.css");
@@ -186,20 +198,20 @@ function RamaddaSkewtDisplay(displayManager, id, properties) {
             this.loadedResources = true;
          }
          if(!window["D3Skewt"]) {
-               setTimeout(()=>this.updateUI(),100);
-               return;
-           }
-           SUPER.updateUI.call(this);
-           //            this.writeHtml(ID_DISPLAY_CONTENTS, "XXXX");
-            var skewtId = this.getDomId(ID_SKEWT);
-            //            return;
-            var html = HtmlUtils.div(["id", skewtId], "");
-            this.setContents(html);
-            var records = this.filterData();
-            if (!records) {
-                console.log("no data yet");
-                return;
-            }
+             setTimeout(()=>this.updateUI(),100);
+             return;
+         }
+         SUPER.updateUI.call(this);
+         var skewtId = this.getDomId(ID_SKEWT);
+         var html = HtmlUtils.div(["id", skewtId], "");
+         this.setContents(html);
+         var pointData = this.getData();
+         if (pointData == null) return;
+         var records =  pointData.getRecords();
+         if (!records) {
+             console.log("no data yet");
+             return;
+         }
             var options = {};
             if (this.propertyDefined("showHodograph"))
                 options.showHodograph = this.getProperty("showHodograph", true);
@@ -219,6 +231,7 @@ function RamaddaSkewtDisplay(displayManager, id, properties) {
             var height = this.getFieldById(fields,"height");
             var height = this.getFieldById(fields,"height");
             var data ={};
+
             for(var i=0;i<names.length;i++) {
                 var field = this.getFieldById(fields,names[i]);
                 if(field == null) {

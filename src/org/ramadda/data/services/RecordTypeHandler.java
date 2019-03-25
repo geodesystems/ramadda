@@ -439,9 +439,13 @@ public abstract class RecordTypeHandler extends BlobTypeHandler implements Recor
         String filename = "record_" + entry.getId() + "_"
                           + entry.getChangeDate() + ".csv";
 
-        File file = getRepository().getEntryManager().getCacheFile(entry,
-                        filename);
-        recordFile.setCacheFile(file);
+        File file = null;
+        if(getTypeProperty("record.file.cacheok",true)) {
+            file = getRepository().getEntryManager().getCacheFile(entry,
+                                                                  filename);
+            recordFile.setCacheFile(file);
+        }
+
 
         //Explicitly set the properties to force a call to initProperties
         //        System.err.println ("doMakeRecordFile.setProperties:" + properties);
