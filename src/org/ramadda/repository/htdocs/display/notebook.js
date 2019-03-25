@@ -1986,6 +1986,7 @@ function RamaddaNotebookCell(notebook, id, content, props) {
                 await this.processPy(chunk);
             } else {
                 if(this.notebook.hasPlugin(chunk.type)) {
+                    chunk.div.set("");
                     var result;
                     await this.notebook.processChunkWithPlugin(chunk.type, chunk,r=>result);
                     //TODO: what to do with the result
