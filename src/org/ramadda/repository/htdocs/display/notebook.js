@@ -1918,8 +1918,12 @@ function RamaddaNotebookCell(notebook, id, content, props) {
                 await this.processJs(chunk);
             } else if (chunk.type == "sh") {
                 await this.processSh(chunk);
+            } else if (chunk.type == "meta") {
+                //noop
+    
             } else if (chunk.type == "md") {
                 await this.processMd(chunk);
+
             } else if (chunk.type == "py") {
                 await this.processPy(chunk);
             } else {
