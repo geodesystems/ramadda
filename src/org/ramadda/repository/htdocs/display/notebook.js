@@ -122,6 +122,28 @@ function RamaddaNotebookDisplay(displayManager, id, properties) {
                         });
             */
             this.addOutputRenderer({
+                    shouldRender: (value) => {return Array.isArray(value);},
+                        render: (value) => {return Utils.formatJson(value);},
+                        });
+            this.addOutputRenderer({
+                    shouldRender: (value) => {return Array.isArray(value) && value.length>0 && Array.isArray(value[0]);},
+                        render: (value) => {
+                        var table = "<table>";
+                        for (var rowIdx=0;rowIdx<value.length;rowIdx++) {
+                            var row = value[rowIdx];
+                            table+="<tr>";
+                            for (var colIdx=0;colIdx<row.length;colIdx++) {
+                                table+="<td>&nbsp;"+ row[colIdx] +"</td>";
+                            }
+                            table+="</tr>";
+                        }
+                        table+="</table>";
+                        return table;
+
+                    }});
+
+
+            this.addOutputRenderer({
                 shouldRender: (value) => {
                     return typeof value === "object" && value.getTime;
                 },
@@ -149,7 +171,8 @@ function RamaddaNotebookDisplay(displayManager, id, properties) {
                     return typeof value === "object" && "lat" in value && "lon" in value;
                 },
                 render: (value) => {
-                    return "<img src='http://staticmap.openstreetmap.de/staticmap.php?center=" + value.lat + "," + value.lon + "&zoom=17&size=300x200&maptype=mapnik'/>"
+                    var url = 'http://staticmap.openstreetmap.de/staticmap.php?center=' + value.lat + ',' + value.lon + '&zoom=17&size=400x150&maptype=mapnik';
+                    return "<img src='" + url +"'/>"
                 },
             });
 
@@ -160,10 +183,23 @@ function RamaddaNotebookDisplay(displayManager, id, properties) {
             }
         },
         formatOutput: function(value) {
+             if(!value) return  null;
             for (var i = this.outputRenderers.length - 1; i >= 0; i--) {
                 var renderer = this.outputRenderers[i];
-                if (renderer.shouldRender(value)) {
+                if (renderer.shouldRender && renderer.shouldRender(value)) {
                     return renderer.render(value);
+                }
+            }
+            var v = null;
+            if(value.iodideRender) {
+                v = value.iodideRender();
+            } else if(value.notebookRender) {
+                v = value.notebookRender();
+            } 
+            if(v) {
+                //TODO handle elements
+                if(typeof v == "string") {
+                    return v;
                 }
             }
             return null;
@@ -886,7 +922,28 @@ function RamaddaNotebookCell(notebook, id, content, props) {
             buttons = buttons + "&nbsp;" + HtmlUtils.span(["id", this.getDomId(ID_CELLNAME)], this.cellName);
             buttons += runIcon;
             var header = HtmlUtils.div([ATTR_CLASS, "display-notebook-header", ATTR_ID, this.getDomId(ID_HEADER), "tabindex", "0", "title", "Click to toggle input\nShift-click to clear output"], "&nbsp;" + buttons);
-            var content = this.content.replace(/</g, "&lt;").replace(/>/g, "&gt;");
+
+            //Strip out the meta chunks
+            var content = "";
+            var lines = this.content.split("\n");
+            var inMeta = false;
+            for(var i=0;i<lines.length;i++) {
+                var line  = lines[i];
+                var _line = line.trim();
+                if(_line.startsWith("%%")) {
+                    if(_line.match(/^%% *meta/)) {
+                        inMeta = true;
+                    } else {
+                        inMeta = false;
+                    }
+                }
+                if(!inMeta) {
+                    content+=line +"\n";
+                }
+            }
+
+
+            content = content.replace(/</g, "&lt;").replace(/>/g, "&gt;");
             var input = HtmlUtils.div([ATTR_CLASS, "display-notebook-input ace_editor", ATTR_ID, this.getDomId(ID_INPUT), "title", "shift-return: run chunk\nctrl-return: run to end"], content);
             var inputToolbar = HtmlUtils.div(["id", this.getDomId(ID_INPUT_TOOLBAR)], "");
 
@@ -1868,6 +1925,7 @@ function RamaddaNotebookCell(notebook, id, content, props) {
                     var rendered = this.notebook.formatOutput(result);
                     if (rendered != null) {
                         html = rendered;
+                        this.rawOutput += html + "\n";
                     } else {
                         var type = typeof result;
                         if (type != "object" && type != "function") {
