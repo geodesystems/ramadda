@@ -5466,6 +5466,8 @@ function RamaddaNotebookDisplay(displayManager, id, properties) {
             return null;
         },
         addGlobal: function(name, value) {
+            //TODO: more var name cleanup
+            name = name.trim().name.replace(/[ -]/g,"_");
             if (Utils.isDefined(window[name])) window[name] = value;
             this.globals[name] = value;
         },
@@ -6975,8 +6977,9 @@ function RamaddaNotebookCell(notebook, id, content, props) {
                     line = line.substring(0, idx).trim();
                 }
 
-                var url;
-                var variable;
+
+                var url = null;
+                var variable= null;
                 if (tag == "text" || tag == "json") {
                     var args = line.match(/^([a-zA-Z0-9_]+) *= *(.*)$/);
                     if(args) {
