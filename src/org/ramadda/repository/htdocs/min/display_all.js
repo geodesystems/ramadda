@@ -5266,8 +5266,6 @@ Copyright 2008-2019 Geode Systems LLC
 */
 
 
-var notebook;
-var iodide;
 
 
 var DISPLAY_NOTEBOOK = "notebook";
@@ -5948,6 +5946,31 @@ function RamaddaNotebookDisplay(displayManager, id, properties) {
     });
 }
 
+
+
+
+var iodide  = {
+        addOutputRenderer: function(renderer) {
+           notebook.addOutputRenderer(renderer);
+        },
+        addOutputHandler: function(renderer) {
+           notebook.addOutputHandler(renderer);
+        },
+        output: {
+            text: function(t) {
+            console.log("iodide.output");
+                notebook.write(t);
+            },
+            element: function(tag) {
+            console.log("iodide.element");
+                var id = HtmlUtils.getUniqueId();
+                notebook.write(HtmlUtils.tag(tag, ["id", id]));
+                return document.getElementById(id);
+            }
+        },
+};
+
+var notebook;
 
 
 
@@ -7060,7 +7083,7 @@ function RamaddaNotebookCell(notebook, id, content, props) {
                 this.notebook.loadedPyodide = true;
             }
             var state = new NotebookState(this, chunk.div);
-            window.iodide = window.notebook = state;
+            window.notebook = state;
             pyodide.runPython(chunk.content);
             if (state.getStop()) {
                 chunk.ok = false;
@@ -7068,7 +7091,7 @@ function RamaddaNotebookCell(notebook, id, content, props) {
         },
         processPlugin: async function(chunk) {
             var state = new NotebookState(this, chunk.div);
-            window.iodide = window.notebook = state;
+            window.notebook = state;
             var plugin = JSON.parse(chunk.content);
             await this.notebook.addPlugin(plugin, chunk);
         },
@@ -7140,7 +7163,7 @@ function RamaddaNotebookCell(notebook, id, content, props) {
                     current = e
                 });
                 var state = new NotebookState(this, chunk.div);
-                window.iodide = window.notebook = state;
+                window.notebook = state;
                 notebookStates[state.id] = state;
                 var notebookEntries = this.notebook.getCurrentEntries();
                 for (name in notebookEntries) {
