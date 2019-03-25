@@ -6942,13 +6942,15 @@ function RamaddaNotebookCell(notebook, id, content, props) {
             if(url.match(/^[a-z0-9]+-[a-z0-9].*/)) {
                 return Utils.call(callback, ramaddaBaseUrl + "/entry/get?entryid=" + url);
             } else {
-                if((url.startsWith("/") && !url.startsWith(ramaddaBaseUrl)) || url.startsWith("..")) {
-                    var entry;
-                    await this.getEntryFromPath(url,e=>entry=e);
-                    if(!entry) {
-                        return Utils.call(callback, null);
-                    } 
-                    return Utils.call(callback, ramaddaBaseUrl + "/entry/get?entryid=" + entry.getId());
+                if(!url.startsWith("http")) {
+                    if((url.startsWith("/") && !url.startsWith(ramaddaBaseUrl)) || url.startsWith("..") || !url.startsWith("/")) {
+                        var entry;
+                        await this.getEntryFromPath(url,e=>entry=e);
+                        if(!entry) {
+                            return Utils.call(callback, null);
+                        } 
+                        return Utils.call(callback, ramaddaBaseUrl + "/entry/get?entryid=" + entry.getId());
+                    }
                 }
                 return Utils.call(callback, url);
             }
@@ -7020,9 +7022,10 @@ function RamaddaNotebookCell(notebook, id, content, props) {
                             this.notebook.addGlobal(variable, results);
                         } else {
                             if (isJson) {
-                                results = JSON.stringify(results, null, 2);
+                                chunk.div.append(Utils.formatJson(results));
+                            } else {
+                                chunk.div.append(HtmlUtils.pre(["style", "max-width:100%;overflow-x:auto;"], results));
                             }
-                            chunk.div.append(HtmlUtils.pre(["style", "max-width:100%;overflow-x:auto;"], results));
                         }
                     }
                 } else {
