@@ -1674,6 +1674,22 @@ function RamaddaNotebookCell(notebook, id, content, props) {
             console.log("An error occurred:" + error);
             this.notebook.log(error, "error", from, chunk.div);
         },
+        getFetchUrl: async function(url, type, callback) {
+            //Check for entry id
+            if(url.match(/^[a-z0-9]+-[a-z0-9].*/)) {
+                return Utils.call(callback, ramaddaBaseUrl + "/entry/get?entryid=" + url);
+            } else {
+                if((url.startsWith("/") && !url.startsWith(ramaddaBaseUrl)) || url.startsWith("..")) {
+                    var entry;
+                    await this.getEntryFromPath(url,e=>entry=e);
+                    if(!entry) {
+                        return Utils.call(callback, null);
+                    } 
+                    return Utils.call(callback, ramaddaBaseUrl + "/entry/get?entryid=" + entry.getId());
+                }
+                return Utils.call(callback, url);
+            }
+        },
         processFetch: async function(chunk) {
             var lines = chunk.content.split("\n");
             for (var i = 0; i < lines.length; i++) {
@@ -1681,7 +1697,6 @@ function RamaddaNotebookCell(notebook, id, content, props) {
                 if (line == "") continue;
                 var origLine = line;
                 var error = null;
-                var url;
                 var msgExtra = "";
                 var idx = line.indexOf(":");
                 if (idx < 0) {
@@ -1695,8 +1710,25 @@ function RamaddaNotebookCell(notebook, id, content, props) {
                     line = line.substring(0, idx).trim();
                 }
 
+                var url;
+                var variable;
+                if (tag == "text" || tag == "json") {
+                    var args = line.match(/^([a-zA-Z0-9_]+) *= *(.*)$/);
+                    if(args) {
+                        variable = args[1];
+                        line = args[2].trim();
+                        msgExtra = " (var " + variable + ")";
+                    }
+                }
+
+
+                await this.getFetchUrl(line,tag,u=>url=u);
+                if(!url) {
+                    this.handleError(chunk, "Unable to get entry url:" + line, "io");
+                    return;
+                }
+
                 if (tag == "js") {
-                    url = line;
                     //Don't import jquery
                     if (url.match("jquery-.*\\.js")) return;
                     await Utils.importJS(url,
@@ -1708,39 +1740,21 @@ function RamaddaNotebookCell(notebook, id, content, props) {
                         false
                     );
                 } else if (tag == "css") {
-                    url = line;
                     await Utils.importCSS(url,
                         null,
                         (jqxhr, settings, exception) => error = "Error fetching " + origLine + " " + exception, true);
                 } else if (tag == "html") {
-                    url = line;
                     await Utils.importText(url, h => chunk.div.append(h), (jqxhr, settings, exception) => error = "Error fetching " + origLine + " " + exception);
                 } else if (tag == "text" || tag == "json") {
                     var isJson = tag == "json";
-                    var v = null;
-                    //check if we have a var
-                    var indexEquals = line.indexOf("=");
-                    var indexHttp = line.indexOf("http");
-                    var indexSlash = line.indexOf("/");
-                    if (indexEquals > 0) {
-                        var index = indexHttp >= 0 ? indexHttp : indexSlash;
-                        //begins with /
-                        if (indexSlash >= 0 && indexSlash < indexHttp) index = indexSlash;
-                        if (indexEquals < index) {
-                            v = line.substring(0, indexEquals).trim();
-                            msgExtra = " (var " + v + ")";
-                            line = line.substring(indexEquals + 1).trim();
-                        }
-                    }
-                    url = line;
                     var results = null;
                     await Utils.importText(url, h => results = h, (jqxhr, settings, err) => error = "Error fetching " + origLine + " error:" + (err ? err.toString() : ""));
                     if (results) {
                         if (isJson) {
                             results = JSON.parse(results);
                         }
-                        if (v) {
-                            this.notebook.addGlobal(v, results);
+                        if (variable) {
+                            this.notebook.addGlobal(variable, results);
                         } else {
                             if (isJson) {
                                 results = JSON.stringify(results, null, 2);
@@ -2344,27 +2358,31 @@ function RamaddaNotebookCell(notebook, id, content, props) {
                 //                return this.getEntryHeading(this.currentEntry, div);
             }
             var arg = Utils.join(toks, " ", 1).trim();
+            var entry;
+            await this.getEntryFromPath(arg, e=>entry=e);
+            if(!entry) {
+                div.msg("Could not get entry:" + arg);
+                return;
+            }
+            await this.setCurrentEntry(entry);
+        },
+        getEntryFromPath: async function(arg, callback) {
+            var entry;
+            await this.getCurrentEntry(e => entry = e);
             if (arg.startsWith("/")) {
-                await this.getCurrentEntry(e => entry = e);
-                var root;
-                await entry.getRoot(e => {
-                    root = e
-                });
-                this.setCurrentEntry(root);
+                await entry.getRoot(e => {entry = e});
             }
             var dirs = arg.split("/");
-            await this.getCurrentEntry(e => entry = e);
             for (var i = 0; i < dirs.length; i++) {
                 var dir = dirs[i];
                 if (dir == "") continue;
                 if (dir == "..") {
-                    if (!this.parentEntry) {
-                        div.msg("No parent entry");
+                    await entry.getParentEntry(e => {entry=e});
+                    if(!entry) {
                         break;
                     }
-                    await this.setCurrentEntry(this.parentEntry);
                 } else {
-                    await this.currentEntry.getChildrenEntries(c => children = c);
+                    await entry.getChildrenEntries(c => children = c);
                     var child = null;
                     var startsWith = false;
                     var endsWith = false;
@@ -2400,13 +2418,15 @@ function RamaddaNotebookCell(notebook, id, content, props) {
                         }
                     }
                     if (!child) {
-                        div.msg("No entry:" + dir);
                         break;
                     }
-                    await this.setCurrentEntry(child);
+                    entry = child;
                 }
             }
+            return Utils.call(callback, entry);
         },
+
+
         processCommand_ls: async function(line, toks, div) {
             if (div == null) div = new Div();
             div.set("Listing entries...");
