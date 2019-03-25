@@ -1805,7 +1805,7 @@ function Div(contents, clazz) {
     this.extra = "";
     this.clazz = clazz;
     this.toString = function() {
-        return HtmlUtils.div(["style","border:1px red solid;","class", clazz || "", "id", this.id], this.contents);
+        return HtmlUtils.div(["class", clazz || "", "id", this.id], this.contents);
     }
     this.getId = function() {
         return this.id;
