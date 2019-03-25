@@ -11619,6 +11619,7 @@ var D3Util = {
 function RamaddaSkewtDisplay(displayManager, id, properties) {
     let SUPER  = new RamaddaDisplay(displayManager, id, DISPLAY_SKEWT, properties);
     var ID_SKEWT = "skewt";
+    var ID_DATE_LABEL = "skewtdate";
     RamaddaUtil.inherit(this, SUPER);
     addRamaddaDisplay(this);
 
@@ -11643,8 +11644,8 @@ function RamaddaSkewtDisplay(displayManager, id, properties) {
         },
         updateUI: async function() {
          if(!this.loadedResources) {
-            await Utils.importCSS(ramaddaBaseUrl+"/lib/skewt/sounding.css");
-            await Utils.importJS(ramaddaBaseUrl +"/lib/skewt/d3skewt.js");
+            await Utils.importCSS(ramaddaBaseHtdocs+"/lib/skewt/sounding.css");
+            await Utils.importJS(ramaddaBaseHtdocs +"/lib/skewt/d3skewt.js");
             this.loadedResources = true;
          }
          if(!window["D3Skewt"]) {
@@ -11658,9 +11659,18 @@ function RamaddaSkewtDisplay(displayManager, id, properties) {
          var pointData = this.getData();
          if (pointData == null) return;
          var records =  pointData.getRecords();
-         if (!records) {
+         if (!records || records.length==0) {
              console.log("no data yet");
              return;
+         }
+         var date = records[0].getDate();
+         if(this.jq(ID_DATE_LABEL).size()==0) {
+             this.jq(ID_TOP_LEFT).append(HtmlUtils.div(["id",this.getDomId(ID_DATE_LABEL)]));
+         }
+         if(date!=null) {
+             this.jq(ID_TOP_LEFT).html("Date: " + this.formatDate(date));
+         } else {
+             this.jq(ID_TOP_LEFT).html("");
          }
             var options = {};
             if (this.propertyDefined("showHodograph"))

@@ -115,9 +115,8 @@ public class CsvUtil {
         for (String arg : args) {
             this.args.add(arg);
         }
+        //        System.err.println("ARGS:" + this.args);
     }
-
-
     /**
      * _more_
      *
@@ -1138,7 +1137,7 @@ public class CsvUtil {
         new Cmd("-insert", "<col #> <comma separated values>"),
         new Cmd("-addcell", "<row #>  <col #>  <value>"),
         new Cmd("-deletecell", "<row #> <col #>"),
-        new Cmd("-macro", "<pattern> <column label> (Look for the pattern in the header and add the value as a column)"),
+        new Cmd("-macro", "<pattern> <template> <column label> (Look for the pattern in the header and apply the template to make a new column, template: '{1} {2} ...', use 'none' for column name for no header)"),
         new Cmd("-set", "<col #s> <row #s> <value>",
                 "(write the value into the cells)"),
         new Cmd("-case", "<lower|upper|camel> <col #>",
@@ -1930,7 +1929,7 @@ public class CsvUtil {
 
             if (arg.equals("-macro")) {
                 info.getProcessor().addProcessor(
-                                                 new Converter.ColumnMacro(args.get(++i), args.get(++i)));
+                                                 new Converter.ColumnMacro(args.get(++i), args.get(++i), args.get(++i)));
                 continue;
             }
 

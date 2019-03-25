@@ -58,9 +58,9 @@ function D3Skewt(divid, args, jsonData) {
                 if (this.options.showTimes)
                     html += this.createTimeline(this.numberOfTimes);
             }
-            html+="<table width=100%><tr valign=top><td align=right>";
+            html+="<table border=0 width=100%><tr valign=top><td align=right>";
             html += "<div style='width:100%;' id='" + this.mainBoxId + "'></div>";
-            html +="</td><td align=center>";
+            html +="</td><td>";
             html += "<div style='" + hodoStyle + "' id='" + this.hodoBoxId + "'></div>";
             if(this.options.textPlace == "below")
                 html += "<br>";
@@ -147,6 +147,7 @@ function D3Skewt(divid, args, jsonData) {
                 .append("g")
                 .attr("transform", "translate(" + skewt.margin[3] + "," + skewt.margin[0] + ")");
 
+            //xxxx
             // create svg container for hodograph
             this.svghodo = d3.select("#" + this.hodoBoxId).append("svg")
                 .attr("width", skewt.getHodographWidth())

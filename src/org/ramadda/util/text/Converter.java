@@ -43,6 +43,8 @@ import java.util.List;
 
 import java.util.regex.*;
 
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 
 /**
@@ -2333,7 +2335,8 @@ public abstract class Converter extends Processor {
     public static class ColumnMacro extends Converter {
 
         /** _more_ */
-        private String pattern;
+        private Pattern pattern;
+        private String template;
         private String label;
         private String value;
 
@@ -2344,8 +2347,9 @@ public abstract class Converter extends Processor {
          *
          * @param value _more_
          */
-        public ColumnMacro(String pattern, String label) {
-            this.pattern = pattern;
+        public ColumnMacro(String pattern, String template, String label) {
+            this.pattern = Pattern.compile(pattern, Pattern.MULTILINE);
+            this.template = template;
             this.label = label;
 
         }
@@ -2362,18 +2366,21 @@ public abstract class Converter extends Processor {
          */
         @Override
         public Row processRow(TextReader info, Row row, String line) {
-            if(rowCnt++==0) {
+            if(rowCnt++==0 && !label.equals("none"))  {
                 row.getValues().add(label);
                 return row;
             }
             if(value == null) {
                 for(String hline:info.getHeaderLines()) {
-                    String str = StringUtil.findPattern(hline, pattern);
-                    //                    System.out.println(pattern +" " +str +" " + hline);
-                    if(str!=null) {
-                        value = str;
+                    Matcher matcher = pattern.matcher(hline);
+                    if(matcher.find()) {
+                        String v = template;
+                        for(int i=0;i<matcher.groupCount();i++)  {
+                            v = v.replace("{" + (i+1) +"}",matcher.group(i+1));
+                        }
+                        value  = v;
                         break;
-                    }
+                    } 
                 }
             }
             if(value == null) {
