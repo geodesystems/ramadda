@@ -29,7 +29,8 @@ function D3Skewt(divid, args, jsonData) {
         topp: 100,
         plines: [1000, 850, 700, 500, 300, 200, 100],
         pticks: [950, 900, 800, 750, 650, 600, 550, 450, 400, 350, 250, 150],
-        barbsize: 25
+        barbsize: 25,
+        clipperId: this.divid +"_clipper",
     });
 
     //methods
@@ -197,7 +198,7 @@ function D3Skewt(divid, args, jsonData) {
 
             // Add clipping path
             svg.append("clipPath")
-                .attr("id", "clipper")
+                .attr("id", skewt.clipperId)
                 .append("rect")
                 .attr("x", 0)
                 .attr("y", 0)
@@ -224,7 +225,7 @@ function D3Skewt(divid, args, jsonData) {
                         return "gridline"
                     }
                 })
-                .attr("clip-path", "url(#clipper)");
+                .attr("clip-path", "url(#"+ skewt.clipperId+")");
             //.attr("transform", "translate(0," + this.getSkewtHeight() + ") skewX(-30)");
 
             // Logarithmic pressure lines
@@ -258,7 +259,7 @@ function D3Skewt(divid, args, jsonData) {
                 .data(all)
                 .enter().append("path")
                 .attr("class", "gridline")
-                .attr("clip-path", "url(#clipper)")
+                .attr("clip-path", "url(#" + skewt.clipperId+")")
                 .attr("d", dryline);
 
             // Line along right edge of plot
@@ -495,7 +496,7 @@ function D3Skewt(divid, args, jsonData) {
                 .attr("class", function(d, i) {
                     return (i < 10) ? "temperature member" : "temperature mean"
                 })
-                .attr("clip-path", "url(#clipper)")
+                .attr("clip-path", "url(#" + skewt.clipperId+")")
                 .attr("d", skewt.line);
 
             skewt.tdlines = skewt.skewtgroup.selectAll("tdlines")
@@ -503,7 +504,7 @@ function D3Skewt(divid, args, jsonData) {
                 .attr("class", function(d, i) {
                     return (i < 10) ? "dewpoint member" : "dewpoint mean"
                 })
-                .attr("clip-path", "url(#clipper)")
+                .attr("clip-path", "url(#" + skewt.clipperId +")")
                 .attr("d", skewt.line2);
 
             skewt.holines = skewt.hodogroup.selectAll("hodolines")

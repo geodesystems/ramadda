@@ -58,10 +58,8 @@ point.csvcommands=-skip, 10,-stop,.*&lt;PRE&gt;.*,-print
 +section title={{name}}
 {{description wikify=true}}
 <div style="height:600">
-{{display type=skewt layoutHere=true height="500" skewtWidth="550" skewtHeight="550" hodographWidth=200 showMenu=false showTitle=false}}
+{{display type=skewt layoutHere=true  skewtWidth="550" skewtHeight="550" hodographWidth=200 showMenu=false showTitle=false}}
 </div>
-:br
-:p
 :br
 +row
 +col-md-9
@@ -105,10 +103,8 @@ point.csvcommands=-start,(?s)----.*,-start,(?s)----.*,-stop,(?s)TRP.*,-print
 +section title={{name}}
 {{description wikify=true}}
 <div style="height:600">
-{{display type=skewt layoutHere=true height="500" skewtWidth="550" skewtHeight="550" hodographWidth=200 showMenu=false showTitle=false}}
+{{display type=skewt layoutHere=true  skewtWidth="550" skewtHeight="550" hodographWidth=200 showMenu=false showTitle=false}}
 </div>
-:br
-:p
 :br
 +row
 +col-md-9
@@ -156,7 +152,7 @@ point.csvcommands=-skip,6,-widths,7_comma_7_comma_7_comma_7_comma_7_comma_7_comm
 <div style="height:600">
 +row
 +col-8
-{{display type=skewt layoutHere=true height="500" skewtWidth="500" skewtHeight="550" hodographWidth=150 showMenu=false showTitle=false}}
+{{display type=skewt layoutHere=true  skewtWidth="500" skewtHeight="550" hodographWidth=150 showMenu=false showTitle=false}}
 -col
 +col-4
 Click to select new sounding
@@ -164,8 +160,6 @@ Click to select new sounding
 -col
 -row
 </div>
-:br
-:p
 :br
 +row
 +col-md-9

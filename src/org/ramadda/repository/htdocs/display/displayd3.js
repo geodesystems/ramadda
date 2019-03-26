@@ -190,15 +190,18 @@ function RamaddaSkewtDisplay(displayManager, id, properties) {
             }
         },
         handleEventPointDataLoaded: function(source, pointData) {
+                //TODO: this results in a double  call to updateUI when first created
                 this.updateUI();
         },
         updateUI: async function() {
          if(!this.loadedResources) {
             await Utils.importCSS(ramaddaBaseHtdocs+"/lib/skewt/sounding.css");
-            await Utils.importJS(ramaddaBaseHtdocs +"/lib/skewt/d3skewt.js");
-            //            await Utils.importJS(ramaddaBaseUrl +"/htdocs_vzzz/lib/skewt/d3skewt.js");
+            //            await Utils.importJS(ramaddaBaseHtdocs +"/lib/skewt/d3skewt.js");
+            await Utils.importJS(ramaddaBaseUrl +"/htdocs_v_a/lib/skewt/d3skewt.js");
             this.loadedResources = true;
          }
+
+
          if(!window["D3Skewt"]) {
              setTimeout(()=>this.updateUI(),100);
              return;
@@ -252,6 +255,7 @@ function RamaddaSkewtDisplay(displayManager, id, properties) {
                 var values = this.getColumnValues(records, field).values;
                 data[names[i]] = values;
             }
+            options.myid = this.getId();
             this.skewt = new D3Skewt(skewtId, options,data);
             //            console.log(this.jq(ID_SKEWT).html());
             await this.getDisplayEntry((e)=>{
