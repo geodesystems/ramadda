@@ -196,6 +196,7 @@ function RamaddaSkewtDisplay(displayManager, id, properties) {
          if(!this.loadedResources) {
             await Utils.importCSS(ramaddaBaseHtdocs+"/lib/skewt/sounding.css");
             await Utils.importJS(ramaddaBaseHtdocs +"/lib/skewt/d3skewt.js");
+            //            await Utils.importJS(ramaddaBaseUrl +"/htdocs_vzzz/lib/skewt/d3skewt.js");
             this.loadedResources = true;
          }
          if(!window["D3Skewt"]) {
@@ -218,9 +219,9 @@ function RamaddaSkewtDisplay(displayManager, id, properties) {
              this.jq(ID_TOP_LEFT).append(HtmlUtils.div(["id",this.getDomId(ID_DATE_LABEL)]));
          }
          if(date!=null) {
-             this.jq(ID_TOP_LEFT).html("Date: " + this.formatDate(date));
+             this.jq(ID_DATE_LABEL).html("Date: " + this.formatDate(date));
          } else {
-             this.jq(ID_TOP_LEFT).html("");
+             this.jq(ID_DATE_LABEL).html("");
          }
             var options = {};
             if (this.propertyDefined("showHodograph"))

@@ -16,7 +16,7 @@ function D3Skewt(divid, args, jsonData) {
 
     var _deg2rad = (Math.PI / 180);
     var _tan = Math.tan(55 * _deg2rad);
-    this._margin = _margin = [30, 40, 20, 35];
+    this._margin = _margin = [20, 40, 20, 35];
     //constants
     $.extend(this, {
         deg2rad: _deg2rad,
@@ -52,20 +52,27 @@ function D3Skewt(divid, args, jsonData) {
                 textStyle += "display:none;";
             }
 
+            var doTable = this.options.showHodograph || this.options.showText;
             var html = "";
             this.numberOfTimes = 1;
             if(this.numberOfTimes>1) {
                 if (this.options.showTimes)
                     html += this.createTimeline(this.numberOfTimes);
             }
-            html+="<table border=0 width=100%><tr valign=top><td align=right>";
+            if(doTable) {
+                html+="<table border=1 width=100%><tr valign=top><td align=right>";
+            }
             html += "<div style='width:100%;' id='" + this.mainBoxId + "'></div>";
-            html +="</td><td>";
+            if(doTable) {
+                html +="</td><td>";
+            }
             html += "<div style='" + hodoStyle + "' id='" + this.hodoBoxId + "'></div>";
             if(this.options.textPlace == "below")
                 html += "<br>";
             html += "<div style='" + textStyle + "' id='" + this.textBoxId + "'></div>";
-            html += "</td></tr></table>";
+            if(doTable) {
+                html += "</td></tr></table>";
+            }
             $("#" + this.divid).html(html);
 
             this.initSvg();
