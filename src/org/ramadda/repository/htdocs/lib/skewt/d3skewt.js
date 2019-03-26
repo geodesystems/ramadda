@@ -60,7 +60,7 @@ function D3Skewt(divid, args, jsonData) {
                     html += this.createTimeline(this.numberOfTimes);
             }
             if(doTable) {
-                html+="<table border=1 width=100%><tr valign=top><td align=right>";
+                html+="<table border=0 width=100%><tr valign=top><td align=right>";
             }
             html += "<div style='width:100%;' id='" + this.mainBoxId + "'></div>";
             if(doTable) {
