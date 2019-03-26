@@ -90,6 +90,7 @@ import javax.imageio.*;
  * @author RAMADDA Development Team
  * @version $Revision: 1.3 $
  */
+
 public class ImageOutputHandler extends OutputHandler {
 
     /** _more_ */
@@ -186,7 +187,12 @@ public class ImageOutputHandler extends OutputHandler {
     /** _more_ */
     public static final OutputType OUTPUT_ANIMATEDGIF =
         new OutputType("Make Animated Gif", "image.animatedgif",
-                       OutputType.TYPE_VIEW | OutputType.TYPE_FORSEARCH, "",
+                       OutputType.TYPE_FILE, "", ICON_IMAGES);
+
+
+    /** _more_ */
+    public static final OutputType OUTPUT_B64 =
+        new OutputType("Base64 Image", "image.b64", OutputType.TYPE_FILE, "",
                        ICON_IMAGES);
 
 
@@ -247,6 +253,7 @@ public class ImageOutputHandler extends OutputHandler {
         addType(OUTPUT_VIDEO);
         addType(OUTPUT_COLLAGE);
         addType(OUTPUT_ANIMATEDGIF);
+        addType(OUTPUT_B64);
 
         addType(OUTPUT_STREETVIEW);
     }
@@ -265,7 +272,6 @@ public class ImageOutputHandler extends OutputHandler {
 
     public void getEntryLinks(Request request, State state, List<Link> links)
             throws Exception {
-
 
         if (state.entry != null) {
             if (state.entry.isFile()) {
@@ -293,8 +299,6 @@ public class ImageOutputHandler extends OutputHandler {
                     links.add(link);
                 }
             }
-
-            return;
         }
 
 
@@ -316,7 +320,6 @@ public class ImageOutputHandler extends OutputHandler {
                 return;
             }
         }
-
         if (state.getEntry() != null) {
             //            links.add(makeLink(request, state.getEntry(), OUTPUT_SLIDESHOW));
             links.add(makeLink(request, state.getEntry(), OUTPUT_GALLERY));
@@ -326,6 +329,7 @@ public class ImageOutputHandler extends OutputHandler {
                 links.add(makeLink(request, state.getEntry(),
                                    OUTPUT_ANIMATEDGIF));
             }
+            links.add(makeLink(request, state.getEntry(), OUTPUT_B64));
         }
     }
 
@@ -386,6 +390,10 @@ public class ImageOutputHandler extends OutputHandler {
             throws Exception {
 
         StringBuffer sb = new StringBuffer();
+
+        if (outputType.equals(OUTPUT_B64)) {
+            return makeB64(request, entry);
+        }
 
 
 
@@ -1589,6 +1597,42 @@ public class ImageOutputHandler extends OutputHandler {
 
         return result;
     }
+
+
+    /**
+     * _more_
+     *
+     * @param request _more_
+     * @param entry _more_
+     *
+     * @return _more_
+     *
+     * @throws Exception _more_
+     */
+    private Result makeB64(Request request, Entry entry) throws Exception {
+        String path = entry.getResource().getPath();
+        byte[] bytes =
+            IOUtil.readBytes(getStorageManager().getInputStream(path));
+        if (bytes == null) {
+            return new Result("",
+                              new StringBuilder("error reading image:"
+                                  + entry));
+        }
+
+        path = getStorageManager().getOriginalFilename(path);
+        String ext = IOUtil.getFileExtension(path).toLowerCase();
+        path = IOUtil.stripExtension(path) + ".b64";
+
+        StringBuilder sb = new StringBuilder();
+        sb.append("url(data:image/" + ext + ";base64,");
+        sb.append(RepositoryUtil.encodeBase64(bytes));
+        sb.append(")");
+        Result result = new Result(sb.toString(), "text");
+        result.setReturnFilename(path);
+
+        return result;
+    }
+
 
 
 
