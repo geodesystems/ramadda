@@ -5799,8 +5799,6 @@ ATTR_SHOWLINK, "true", ATTR_INCLUDEICON, "false") + ATTRS_LAYOUT),
         props.put("layoutType", "table");
         props.put("layoutColumns", "2");
         props.put("showMenu", "true");
-        props.put("showMap", "" + entry.isGeoreferenced());
-
         return wikifyEntry(request, entry, wiki.toString());
     }
 
@@ -6073,7 +6071,7 @@ ATTR_SHOWLINK, "true", ATTR_INCLUDEICON, "false") + ATTRS_LAYOUT),
             sb.append(HtmlUtils.div("", HtmlUtils.id(mainDivId)));
             sb.append("\n");
 
-            request.putExtraProperty("added group", "true");
+            request.putExtraProperty("added displaymanager", "true");
             js.append("\nvar displayManager = getOrCreateDisplayManager("
                       + HtmlUtils.quote(mainDivId) + ","
                       + Json.map(topProps, false) + ",true);\n");
@@ -6201,10 +6199,10 @@ ATTR_SHOWLINK, "true", ATTR_INCLUDEICON, "false") + ATTRS_LAYOUT),
             js,
             "This gets the global display manager or creates it if not created");
 
-        boolean needToCreateGroup = request.getExtraProperty("added group")
+        boolean needToCreateGroup = request.getExtraProperty("added displaymanager")
                                     == null;
         if (needToCreateGroup) {
-            request.putExtraProperty("added group", "true");
+            request.putExtraProperty("added displaymanager", "true");
             Utils.concatBuff(
                 js, "\nvar displayManager = getOrCreateDisplayManager(",
                 HtmlUtils.quote(mainDivId), ",", Json.map(topProps, false),

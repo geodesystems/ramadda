@@ -50,7 +50,7 @@ public class GsdTypeHandler extends PointTypeHandler {
     private static int IDX = PointTypeHandler.IDX_LAST + 1;
 
     /** _more_ */
-    private static int IDX_STRIDE = IDX++;
+    private static int IDX_MODEL = IDX++;
 
 
     /**
@@ -68,7 +68,7 @@ public class GsdTypeHandler extends PointTypeHandler {
 
     /** _more_ */
     private static final String URL_TEMPLATE =
-        "https://rucsoundings.noaa.gov/get_soundings.cgi?data_source=GFS&latest=latest&n_hrs=1.0&fcst_len=shortest&airport={lat}%2C{lon}&text=Ascii%20text%20%28GSD%20format%29&hydrometeors=false&start=latest";
+        "https://rucsoundings.noaa.gov/get_soundings.cgi?data_source={model}&latest=latest&n_hrs=1.0&fcst_len=shortest&airport={lat}%2C{lon}&text=Ascii%20text%20%28GSD%20format%29&hydrometeors=false&start=latest";
 
 
     public String getUrlForWiki(Request request, Entry entry, String tag,
@@ -76,7 +76,7 @@ public class GsdTypeHandler extends PointTypeHandler {
         if (tag.equals(WikiConstants.WIKI_TAG_CHART)
                 || tag.equals(WikiConstants.WIKI_TAG_DISPLAY)) {
             String url = super.getUrlForWiki(request, entry, tag,props);
-            return url+"&latitude=${latitude}&longitude=${longitude}";
+            return url+"&latitude=${latitude}&longitude=${longitude}&model=${model}";
         }
         return super.getUrlForWiki(request, entry, tag, props);
     }
@@ -90,6 +90,12 @@ public class GsdTypeHandler extends PointTypeHandler {
         String url = URL_TEMPLATE;
         String lat = (String) requestProperties.get("latitude");
         String lon = (String) requestProperties.get("longitude");
+        String model = (String)requestProperties.get("model");
+        if(model == null || model.equals("{model}"))
+            model = (String) entry.getValue(IDX_MODEL,"GFS");
+        if(model.length()==0) model  = "GFS";
+
+        url =  url.replace("{model}",model);
         url =  url.replace("{lat}",lat!=null?lat:"40");
         url =  url.replace("{lon}",lon!=null?lon:"-105");
         url = super.getPathForRecordEntry(entry, url, requestProperties);
