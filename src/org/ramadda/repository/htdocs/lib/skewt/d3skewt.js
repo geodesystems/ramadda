@@ -47,9 +47,9 @@ function D3Skewt(divid, args, jsonData) {
                 hodoStyle += "display:none;";
             }
             if (this.options.showText) {
-                //                textStyle += "display:inline-block;";
+                textStyle += "display:inline-block;";
             } else {
-                //                textStyle += "display:none;";
+                textStyle += "display:none;";
             }
 
             var html = "";
