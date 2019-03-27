@@ -1605,7 +1605,7 @@ public class OutputHandler extends RepositoryManager {
                             HtmlUtils.ATTR_WIDTH, WIDTH_KIND,
                             HtmlUtils.ATTR_CLASS,
                             "entry-list-header-column-last"), HtmlUtils.href(
-                                sortLink, msg("Kind"))));
+                                sortLink, msg("Type"))));
             }
             sb.append("</tr></table>");
 
@@ -1767,7 +1767,7 @@ public class OutputHandler extends RepositoryManager {
         sb.append(rowId);
         sb.append("'); \"  >");
         sb.append(
-            "<table border=\"0\" width=\"100%\" cellspacing=\"0\" cellpadding=\"0\"><tr><td>");
+            "<table class=\"entry-row-table\" border=\"0\" width=\"100%\" cellspacing=\"0\" cellpadding=\"0\"><tr><td>");
         sb.append(extra);
         sb.append(link.getLink());
         sb.append("</td>");

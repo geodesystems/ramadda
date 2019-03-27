@@ -938,6 +938,19 @@ input, password, fileinput,textarea {
 
 
 
+.entry-row-table  {
+table-layout: fixed;
+}
+
+.entry-row-table .entry-name {
+display: inline-block;
+position:relative;
+max-width:100%;
+overflow-x:auto;
+white-space:nowrap;
+vertical-align:bottom;
+}
+
 .entry-link  a {
      text-decoration:none;
      max-width: 200px;

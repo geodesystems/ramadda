@@ -93,16 +93,16 @@ public class WikiManager extends RepositoryManager implements WikiConstants,
     /** list of import items for the text editor menu */
     //J--
     public static final WikiTagCategory[] WIKITAGS = {
-        new WikiTagCategory("Information",
+        new WikiTagCategory("General",
                             new WikiTag(WIKI_TAG_INFORMATION, null, ATTR_DETAILS, "false",ATTR_SHOWTITLE,"false"),
                             new WikiTag(WIKI_TAG_NAME), 
                             new WikiTag(WIKI_TAG_DESCRIPTION),
                             new WikiTag(WIKI_TAG_RESOURCE, null, ATTR_TITLE,"",ATTR_INCLUDEICON,"true"), 
-                            new WikiTag(WIKI_TAG_DATERANGE,null, ATTR_FORMAT,DateHandler.DEFAULT_TIME_FORMAT),
-                            new WikiTag(WIKI_TAG_DATE_FROM, null, ATTR_FORMAT,DateHandler.DEFAULT_TIME_FORMAT),
-                            new WikiTag(WIKI_TAG_DATE_TO,null, ATTR_FORMAT,DateHandler.DEFAULT_TIME_FORMAT), 
-                            new WikiTag(WIKI_TAG_DATE_CREATE,null, ATTR_FORMAT,DateHandler.DEFAULT_TIME_FORMAT), 
-                            new WikiTag(WIKI_TAG_DATE_CHANGE,null, ATTR_FORMAT,DateHandler.DEFAULT_TIME_FORMAT), 
+                            new WikiTag(WIKI_TAG_DATERANGE,"Date Range", ATTR_FORMAT,DateHandler.DEFAULT_TIME_FORMAT),
+                            new WikiTag(WIKI_TAG_DATE_FROM, "From Date", ATTR_FORMAT,DateHandler.DEFAULT_TIME_FORMAT),
+                            new WikiTag(WIKI_TAG_DATE_TO,"To Date", ATTR_FORMAT,DateHandler.DEFAULT_TIME_FORMAT), 
+                            new WikiTag(WIKI_TAG_DATE_CREATE,"Create Date", ATTR_FORMAT,DateHandler.DEFAULT_TIME_FORMAT), 
+                            new WikiTag(WIKI_TAG_DATE_CHANGE,"Change Date", ATTR_FORMAT,DateHandler.DEFAULT_TIME_FORMAT), 
 
                             new WikiTag(WIKI_TAG_LABEL, null, ATTR_TEXT,"",ATTR_ID,"arbitrary id to match with property"),
                             new WikiTag(WIKI_TAG_LINK, null, ATTR_TITLE,"","button","false"),
@@ -142,7 +142,7 @@ ATTR_SHOWLINK, "true", ATTR_INCLUDEICON, "false") + ATTRS_LAYOUT),
                                         "showSnippetHover","true",
                                         "showLink","false","showHeading","true","showline","true"), 
                             new WikiTag(WIKI_TAG_TREE, null, ATTR_DETAILS, "true"), 
-                            new WikiTag(WIKI_TAG_TREEVIEW, null, ATTR_WIDTH,"750", ATTR_HEIGHT,"500"), 
+                            new WikiTag(WIKI_TAG_FRAMES, null, ATTR_WIDTH,"100%", ATTR_HEIGHT,"500"), 
                             new WikiTag(WIKI_TAG_ACCORDIAN, null, attrs(ATTR_TAG, WIKI_TAG_HTML, ATTR_COLLAPSE, "false", "border", "0", ATTR_SHOWLINK, "true", ATTR_INCLUDEICON, "false") + ATTRS_LAYOUT), 
                             //                            new WikiTag(WIKI_TAG_GRID), 
                             new WikiTag(WIKI_TAG_TABLE), 
@@ -165,7 +165,7 @@ ATTR_SHOWLINK, "true", ATTR_INCLUDEICON, "false") + ATTRS_LAYOUT),
                                               ATTR_CAPTION, "Figure ${count}: ${name}",
                                               ATTR_POPUPCAPTION,
                                               "over"), 
-                            new WikiTag(WIKI_TAG_SLIDESHOW,null,
+                            new WikiTag(WIKI_TAG_SLIDESHOW,"Slide Show",
                                         attrs(ATTR_TAG, WIKI_TAG_SIMPLE,
                                               ATTR_TEXTPOSITION,"top",
                                               ATTR_SHOWLINK, "true",
@@ -178,7 +178,7 @@ ATTR_SHOWLINK, "true", ATTR_INCLUDEICON, "false") + ATTRS_LAYOUT),
                                                 "bordercolor","#efefef",
                                               "#" + ATTR_TEXTPOSITION,"top|left|right|bottom"
                                                 )), 
-                            new WikiTag(WIKI_TAG_PLAYER, null, "loopdelay","1000","loopstart","false","imageWidth","600")),
+                            new WikiTag(WIKI_TAG_PLAYER, "Image Player", "loopdelay","1000","loopstart","false","imageWidth","600")),
         new WikiTagCategory("Misc",
                             new WikiTag(WIKI_TAG_CALENDAR, null, ATTR_DAY, "false"),
                             new WikiTag(WIKI_TAG_TIMELINE, null, ATTR_HEIGHT, "150"),
@@ -211,7 +211,7 @@ ATTR_SHOWLINK, "true", ATTR_INCLUDEICON, "false") + ATTRS_LAYOUT),
                                         ATTR_INCLUDEICON,
                                         "false"), 
                             new WikiTag(WIKI_TAG_ROOT)),
-        new WikiTagCategory("Displays and Charts",
+        new WikiTagCategory("Displays",
                             new WikiTag(WIKI_TAG_GROUP, "Display group",
                                         "layoutType", "table", 
                                         "layoutColumns", "1",
@@ -2985,7 +2985,7 @@ ATTR_SHOWLINK, "true", ATTR_INCLUDEICON, "false") + ATTRS_LAYOUT),
                 return sb.toString();
             }
 
-        } else if (theTag.equals(WIKI_TAG_TREEVIEW)) {
+        } else if (theTag.equals(WIKI_TAG_TREEVIEW) || theTag.equals(WIKI_TAG_FRAMES)) {
             int width = getDimension(wikiUtil, props, ATTR_WIDTH, -100);
             int height = getDimension(wikiUtil, props, ATTR_HEIGHT, 500);
 
@@ -4908,7 +4908,7 @@ ATTR_SHOWLINK, "true", ATTR_INCLUDEICON, "false") + ATTRS_LAYOUT),
         tags.append(
             addWikiEditButton(
                 textAreaId, "button_extlink.png",
-                "External link (remember http:// prefix)", "[", "]",
+                "External link", "[", "]",
                 "http://www.example.com link title",
                 "mw-editbutton-extlink"));
         tags.append(addWikiEditButton(textAreaId, "button_headline.png",
@@ -5030,7 +5030,7 @@ ATTR_SHOWLINK, "true", ATTR_INCLUDEICON, "false") + ATTRS_LAYOUT),
                                               "style='padding:5px;'"), HtmlUtils.clazz(" ramadda-menubar-button ramadda-menubar-button-last"));
 
 
-        String tagsButton = getPageHandler().makePopupLink(msg("Content"),
+        String tagsButton = getPageHandler().makePopupLink(msg("Formatting"),
                                 HtmlUtils.div(tags.toString(),
                                     "style='padding:5px;'"), buttonClass);
 
@@ -5041,10 +5041,10 @@ ATTR_SHOWLINK, "true", ATTR_INCLUDEICON, "false") + ATTRS_LAYOUT),
         makeTagsMenu(true, tags2, textAreaId);
 
         String tagsButton1 =
-            getPageHandler().makePopupLink(msg("Property"),
+            getPageHandler().makePopupLink(msg("Entry Property"),
                                            tags1.toString(), buttonClass);
 
-        String tagsButton2 = getPageHandler().makePopupLink(msg("Displays"),
+        String tagsButton2 = getPageHandler().makePopupLink(msg("Displays and Charts"),
                                  tags2.toString(), buttonClass);
 
         String addEntry = OutputHandler.getSelect(request, textAreaId,
@@ -5086,14 +5086,14 @@ ATTR_SHOWLINK, "true", ATTR_INCLUDEICON, "false") + ATTRS_LAYOUT),
         for (int i = 0; i < WIKITAGS.length; i++) {
             WikiTagCategory cat = WIKITAGS[i];
             if ( !charts) {
-                if (cat.category.equals("Displays and Charts")
+                if (cat.category.equals("Displays")
                         || cat.category.equals("Misc Charts")
                         || cat.category.equals("Charts")
                         || cat.category.equals("Text Displays")) {
                     continue;
                 }
             } else {
-                if ( !(cat.category.equals("Displays and Charts")
+                if ( !(cat.category.equals("Displays")
                         || cat.category.equals("Charts")
                         || cat.category.equals("Misc Charts")
                         || cat.category.equals("Text Displays"))) {
@@ -6492,7 +6492,7 @@ ATTR_SHOWLINK, "true", ATTR_INCLUDEICON, "false") + ATTRS_LAYOUT),
         WikiTag(String tag, String label, String... attrs) {
             this.tag = tag;
             if (label == null) {
-                label = tag;
+                label = StringUtil.camelCase(tag);
             }
             this.label = label;
             if (attrs.length == 1) {

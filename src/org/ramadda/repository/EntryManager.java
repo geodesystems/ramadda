@@ -6408,7 +6408,8 @@ public class EntryManager extends RepositoryManager {
 
         StringBuilder sb = new StringBuilder();
         HtmlUtils.open(sb, HtmlUtils.TAG_SPAN,
-                       HtmlUtils.id(targetId) + targetEvent.toString());
+                       HtmlUtils.attr("title",linkText) +
+                       HtmlUtils.cssClass("entry-name") +HtmlUtils.id(targetId) + targetEvent.toString());
 
         sb.append(prefix);
         if (imgUrl != null) {
@@ -6419,7 +6420,6 @@ public class EntryManager extends RepositoryManager {
         if (textBeforeEntryLink != null) {
             sb.append(textBeforeEntryLink);
         }
-
         if (decorateMetadata) {
             getMetadataManager().decorateEntry(request, entry, sb, true);
         }
