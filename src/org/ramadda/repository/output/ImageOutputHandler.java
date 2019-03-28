@@ -955,7 +955,6 @@ public class ImageOutputHandler extends OutputHandler {
             throws Exception {
         Result result = makeResult(request, group, entries);
         addLinks(request, result, new State(group, subGroups, entries));
-
         return result;
     }
 
@@ -997,9 +996,8 @@ public class ImageOutputHandler extends OutputHandler {
         StringBuilder sb     = new StringBuilder();
         OutputType    output = request.getOutput();
         if (entries.size() == 0) {
-            sb.append("<b>Nothing Found</b><p>");
-
-            return new Result("Query Results", sb, getMimeType(output));
+            sb.append("<b>No image entries found</b><p>");
+            return new Result("Query Results", sb);
         }
 
         if (output.equals(OUTPUT_GALLERY)) {
@@ -1640,14 +1638,6 @@ public class ImageOutputHandler extends OutputHandler {
             return new Result("", new StringBuilder("No image files"));
         }
 
-        Font labelFont = new Font(Font.SANS_SERIF, Font.PLAIN, 18);
-        BufferedImage dummy = new BufferedImage(1, 1,
-                                  BufferedImage.TYPE_INT_ARGB);
-        Graphics2D g1 = dummy.createGraphics();
-        g1.setFont(labelFont);
-        FontMetrics  fm         = g1.getFontMetrics();
-        Rectangle2D  tmprect    = fm.getStringBounds("XXXXXX", g1);
-        int          labelPad   = ((int) tmprect.getHeight()) + 5;
 
         OutputStream os         = null;
         FileWriter   fileWriter = null;
@@ -1666,15 +1656,29 @@ public class ImageOutputHandler extends OutputHandler {
             if (image == null) {
                 continue;
             }
+            int iwidth  = image.getWidth(null);
+            if (iwidth <= 0) {
+                continue;
+            }
+            int fontSize = iwidth<800?18:iwidth<1200?24:iwidth<1800?36:iwidth<2400?48:56;
+
             String      label = child.getName();
+            Font labelFont = new Font(Font.SANS_SERIF, Font.PLAIN, fontSize);
+            BufferedImage dummy = new BufferedImage(1, 1,
+                                                    BufferedImage.TYPE_INT_ARGB);
+            Graphics2D g1 = dummy.createGraphics();
+            g1.setFont(labelFont);
+            FontMetrics  fm         = g1.getFontMetrics();
+
+
+
             Rectangle2D rect  = fm.getStringBounds(label, g1);
             int         pad   = 5;
             image = ImageUtils.matte(image, 0,
                                      (int) rect.getHeight() + pad * 2, 0, 0,
                                      Color.white);
             int iheight = image.getHeight(null);
-            int iwidth  = image.getWidth(null);
-            if ((iwidth <= 0) || (iheight < 0)) {
+            if (iheight < 0) {
                 continue;
             }
             Graphics2D g = image.createGraphics();
