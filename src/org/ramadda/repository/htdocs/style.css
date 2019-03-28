@@ -942,7 +942,11 @@ input, password, fileinput,textarea {
 table-layout: fixed;
 }
 
-.entry-row-table .entry-name {
+.xentry-name  {
+white-space:nowrap;
+}
+
+.entry-row-table .entry-name .entry-link {
 display: inline-block;
 position:relative;
 max-width:100%;
