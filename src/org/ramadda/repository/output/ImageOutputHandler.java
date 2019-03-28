@@ -21,6 +21,7 @@ import org.ramadda.repository.*;
 import org.ramadda.repository.auth.*;
 import org.ramadda.repository.job.JobManager;
 import org.ramadda.repository.type.*;
+import org.ramadda.repository.util.FileWriter;
 import org.ramadda.util.HtmlUtils;
 import org.ramadda.util.Json;
 import org.ramadda.util.Utils;
@@ -54,7 +55,6 @@ import java.awt.Toolkit;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.*;
 
-
 import java.io.*;
 
 import java.io.File;
@@ -82,6 +82,7 @@ import java.util.zip.*;
 
 
 import javax.imageio.*;
+import javax.imageio.stream.ImageOutputStream;
 
 
 /**
@@ -184,6 +185,11 @@ public class ImageOutputHandler extends OutputHandler {
                        OutputType.TYPE_VIEW | OutputType.TYPE_FORSEARCH, "",
                        ICON_IMAGES);
 
+    /** _more_          */
+    public static final OutputType OUTPUT_LABELER =
+        new OutputType("Make Labeled Images", "image.labeler",
+                       OutputType.TYPE_VIEW, "", ICON_IMAGES);
+
     /** _more_ */
     public static final OutputType OUTPUT_ANIMATEDGIF =
         new OutputType("Make Animated Gif", "image.animatedgif",
@@ -252,6 +258,7 @@ public class ImageOutputHandler extends OutputHandler {
         addType(OUTPUT_EDIT);
         addType(OUTPUT_VIDEO);
         addType(OUTPUT_COLLAGE);
+        addType(OUTPUT_LABELER);
         addType(OUTPUT_ANIMATEDGIF);
         addType(OUTPUT_B64);
 
@@ -325,6 +332,7 @@ public class ImageOutputHandler extends OutputHandler {
             links.add(makeLink(request, state.getEntry(), OUTPUT_GALLERY));
             links.add(makeLink(request, state.getEntry(), OUTPUT_PLAYER));
             links.add(makeLink(request, state.getEntry(), OUTPUT_COLLAGE));
+            links.add(makeLink(request, state.getEntry(), OUTPUT_LABELER));
             if (repository.getProperty("service.imagemagick") != null) {
                 links.add(makeLink(request, state.getEntry(),
                                    OUTPUT_ANIMATEDGIF));
@@ -395,6 +403,12 @@ public class ImageOutputHandler extends OutputHandler {
             return makeB64(request, entry);
         }
 
+        if (outputType.equals(OUTPUT_LABELER)) {
+            List<Entry> entries = new ArrayList<Entry>();
+            entries.add(entry);
+
+            return makeLabels(request, entry, entries);
+        }
 
 
         if (outputType.equals(OUTPUT_STREETVIEW)) {
@@ -1006,6 +1020,9 @@ public class ImageOutputHandler extends OutputHandler {
         if (output.equals(OUTPUT_COLLAGE)) {
             return makeCollage(request, group, entries);
         }
+        if (output.equals(OUTPUT_LABELER)) {
+            return makeLabels(request, group, entries);
+        }
         if (output.equals(OUTPUT_ANIMATEDGIF)) {
             return makeAnimatedGif(request, group, entries);
         }
@@ -1594,6 +1611,111 @@ public class ImageOutputHandler extends OutputHandler {
         ImageUtils.writeImageToFile(collage, file.toString());
         Result result = new Result(new FileInputStream(file), "image/png");
         result.setReturnFilename("collage.png");
+
+        return result;
+    }
+
+    /**
+     * _more_
+     *
+     * @param request _more_
+     * @param entry _more_
+     * @param entries _more_
+     *
+     * @return _more_
+     *
+     * @throws Exception _more_
+     */
+    private Result makeLabels(Request request, Entry entry,
+                              List<Entry> entries)
+            throws Exception {
+        List<Entry> tmp = new ArrayList<Entry>();
+        for (Entry e : entries) {
+            if (e.isImage()) {
+                tmp.add(e);
+            }
+        }
+        entries = tmp;
+        if (entries.size() == 0) {
+            return new Result("", new StringBuilder("No image files"));
+        }
+
+        Font labelFont = new Font(Font.SANS_SERIF, Font.PLAIN, 18);
+        BufferedImage dummy = new BufferedImage(1, 1,
+                                  BufferedImage.TYPE_INT_ARGB);
+        Graphics2D g1 = dummy.createGraphics();
+        g1.setFont(labelFont);
+        FontMetrics  fm         = g1.getFontMetrics();
+        Rectangle2D  tmprect    = fm.getStringBounds("XXXXXX", g1);
+        int          labelPad   = ((int) tmprect.getHeight()) + 5;
+
+        OutputStream os         = null;
+        FileWriter   fileWriter = null;
+        for (int i = 0; i < entries.size(); i++) {
+            Entry  child = entries.get(i);
+            String path  = child.getResource().getPath();
+            byte[] imageBytes =
+                IOUtil.readBytes(Utils.doMakeInputStream(path, true));
+            if (imageBytes == null) {
+                System.err.println("no image:" + child);
+
+                continue;
+            }
+            BufferedImage image =
+                ImageIO.read(new ByteArrayInputStream(imageBytes));
+            if (image == null) {
+                continue;
+            }
+            String      label = child.getName();
+            Rectangle2D rect  = fm.getStringBounds(label, g1);
+            int         pad   = 5;
+            image = ImageUtils.matte(image, 0,
+                                     (int) rect.getHeight() + pad * 2, 0, 0,
+                                     Color.white);
+            int iheight = image.getHeight(null);
+            int iwidth  = image.getWidth(null);
+            if ((iwidth <= 0) || (iheight < 0)) {
+                continue;
+            }
+            Graphics2D g = image.createGraphics();
+            g.setFont(labelFont);
+            g.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING,
+                               RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
+            Color fg = Color.black;
+            g.setColor(fg);
+            g.drawString(label, iwidth / 2 - (int) (rect.getWidth() / 2),
+                         (int) (iheight - fm.getDescent() - pad));
+            String name = getStorageManager().getOriginalFilename(path);
+            File   file = getStorageManager().getTmpFile(request, name);
+            String ext =
+                IOUtil.getFileExtension(path).toLowerCase().replace(".", "");
+            if (ext.equals("jpg")) {
+                ext = "jpeg";
+            }
+            if ( !ImageIO.write(image, ext, file)) {
+                throw new IllegalArgumentException("Unable to write file:"
+                        + file.getName() + " type:" + ext);
+            }
+            if (entries.size() == 1) {
+                Result result = new Result(new FileInputStream(file),
+                                           "image/" + ext);
+                result.setReturnFilename(IOUtil.getFileTail(path));
+
+                return result;
+            }
+            if (os == null) {
+                request.setReturnFilename("images.zip");
+                os = request.getHttpServletResponse().getOutputStream();
+                request.getHttpServletResponse().setContentType(
+                    "application/zip");
+                fileWriter = new FileWriter(new ZipOutputStream(os));
+                fileWriter.setCompressionOn();
+            }
+            fileWriter.writeFile(name, new FileInputStream(file));
+        }
+        Result result = new Result();
+        result.setNeedToWrite(false);
+        fileWriter.close();
 
         return result;
     }
