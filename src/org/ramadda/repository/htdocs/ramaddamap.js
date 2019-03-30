@@ -1329,7 +1329,6 @@ function initMapFunctions(theMap) {
     }
     theMap.clearDateFeature = function(feature) {
         var element = feature != null ? $("#" + this.mapDivId + "_tick" + feature.dateIndex) : $("#" + this.mapDivId + "_animation_ticks .ramadda-map-animation-tick");
-        //        console.log("clear date:" +(feature!=null?feature.dateIndex:"NA")+ " " + element.size());
         element.css("background-color", "");
         element.css("zIndex", "0");
     }
@@ -2035,8 +2034,8 @@ function initMapFunctions(theMap) {
     theMap.isLayerVisible = function(id, parentId) {
         //        var cbx =   $(':input[id*=\"' + "visible_" + this.mapId +"_" + id+'\"]');
         var cbx = $('#' + "visible_" + this.mapId + "_" + id);
-        if (cbx.size() == 0 && parentId != null) cbx = $('#' + "visible_" + this.mapId + "_" + parentId);
-        if (cbx.size() == 0) return true;
+        if (cbx.length == 0 && parentId != null) cbx = $('#' + "visible_" + this.mapId + "_" + parentId);
+        if (cbx.length == 0) return true;
         return cbx.is(':checked');
     }
 

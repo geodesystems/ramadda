@@ -15,7 +15,7 @@ function SelectForm(formId, entryId, arg, outputDiv, selectValues) {
     this.clearSelect = function(num) {
         for (var i = num; i < 10; i++) {
             select = this.getSelect(i);
-            if (select.size() == 0) break;
+            if (select.length == 0) break;
             select.html("<select><option value=''>--</option></select>");
         }
     }
@@ -274,7 +274,7 @@ function SelectForm(formId, entryId, arg, outputDiv, selectValues) {
         var args = "";
         for (var i = 0; i < 10; i++) {
             select = this.getSelect(i);
-            if (select.size() == 0) break;
+            if (select.length == 0) break;
             var value = select.val();
             if (this.valueDefined(value)) {
                 args += "&" + this.arg + i + "=" + encodeURIComponent(value);
@@ -284,7 +284,7 @@ function SelectForm(formId, entryId, arg, outputDiv, selectValues) {
         var url = this.getUrl("metadata");
         for (var i = 0; i < 10; i++) {
             select = this.getSelect(i);
-            if (select.size() == 0) break;
+            if (select.length == 0) break;
             var value = select.val();
             if (!this.valueDefined(value)) {
                 this.applyToSelect(url + "&field=" + this.arg + i, i);

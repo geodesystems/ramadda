@@ -1422,7 +1422,6 @@ function RamaddaEntrygridDisplay(displayManager, id, properties) {
             SUPER.initDialog.call(this);
             var _this = this;
             var cbx = this.jq(ID_SETTINGS + " :checkbox");
-            console.log(cbx.size());
             cbx.click(function() {
                 _this.setProperty($(this).attr("attr"), $(this).is(':checked'));
                 _this.makeGrid(_this.entries);

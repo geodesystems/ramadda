@@ -44,7 +44,6 @@ function editImageClick(event, imgId, pt1x, pt1y, pt2x, pt2y) {
             var y2 = parseInt(fldy2.obj.value);
             var width = x2 - parseInt(fldx1.obj.value);
             var height = y2 - parseInt(fldy1.obj.value);
-            console.log(b.size());
             b.show();
             b.css({
                 top: idy + parseInt(fldy1.obj.value),

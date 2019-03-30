@@ -506,7 +506,7 @@ function EntryRow(entryId, rowId, cbxId, cbxWrapperId, showDetails) {
     }
 
     var form = this.getCbx().closest('form');
-    if (form.size()) {
+    if (form.length) {
         var visibilityGroup = groups[form.attr('id')];
         if (visibilityGroup) {
             visibilityGroup.addEntryRow(this);
@@ -757,7 +757,7 @@ var changeImages = new Array();
 function folderClick(uid, url, changeImg) {
     changeImages[uid] = changeImg;
     var jqBlock = $("#" + uid);
-    if (jqBlock.size() == 0) {
+    if (jqBlock.length == 0) {
         return;
     }
     var jqImage = $("#img_" + uid);
@@ -1176,7 +1176,6 @@ function ramaddaJsonAllClose(id) {
 function ramaddaJsonSetVisible(id, button, state, all) {
     var block = button.next(".ramadda-json-block");
     var block = button.next().next();
-    //    console.log("block:" + block.size());
     if (!state)
         state = block.attr("block-state");
     if (state == "close") {

@@ -85,7 +85,7 @@ function CollectionForm(formId, plottype, args) {
                     var base = window.location.protocol+ "//" + window.location.host;
                     imageUrl = base + imageUrl;                        
                     var urlDiv = $('#' + this.formId +"_url");
-                    if (urlDiv.size()==0) {
+                    if (urlDiv.length==0) {
                         console.log("no output div");
                     } else {
                         urlDiv.html(HtmlUtil.div(["class", "padded"],
@@ -141,7 +141,7 @@ function CollectionForm(formId, plottype, args) {
                     //add the arg that gives us the image directly back then set the img src
                     url += "&returnimage=true";
                     var outputDiv = $('#' + this.formId +"_output");
-                    if(outputDiv.size()==0) {
+                    if(outputDiv.length==0) {
                         console.log("no output div");
                         return;
                     }
@@ -197,7 +197,7 @@ function CollectionForm(formId, plottype, args) {
                   html += this.outputPDFFiles(pdffiles);
                 }
                 var outputDiv = $('#' + this.formId +"_output");
-                if(outputDiv.size()==0) {
+                if(outputDiv.length==0) {
                     console.log("no output div");
                 } else {
                     outputDiv.html(html);
@@ -335,7 +335,7 @@ function CollectionForm(formId, plottype, args) {
                     this.initField(collection, fieldIdx);
                 }
                 var t = this.getCollectionSelect(collection);
-                //        alert('t:' + t.size());
+                //        alert('t:' + t.length);
                 var collectionId  =  t.val();
         
                 //If they had one selected 
@@ -409,7 +409,7 @@ function CollectionForm(formId, plottype, args) {
                return  $('#' + this.getFieldSelectId(collection, fieldIdx));
             },
             hasField: function(collection, fieldIdx) {
-                return  this.getFieldSelect(collection, fieldIdx).size()>0;
+                return  this.getFieldSelect(collection, fieldIdx).length>0;
             },
            //Get the selected entry id
             getSelectedCollectionId: function(collection) {

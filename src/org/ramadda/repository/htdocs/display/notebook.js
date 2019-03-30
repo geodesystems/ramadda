@@ -312,8 +312,11 @@ function RamaddaNotebookDisplay(displayManager, id, properties) {
             });
         },
         showInput: function() {
-            if (this.displayMode && !this.user)
-                return false;
+           if (this.displayMode && !this.user){
+               return false;
+            }
+           if(this.getProperty("showInput",true) == false)
+               return false;
             return true;
         },
         getJson: function(output) {
@@ -697,11 +700,9 @@ var iodide  = {
         },
         output: {
             text: function(t) {
-            console.log("iodide.output");
                 notebook.write(t);
             },
             element: function(tag) {
-            console.log("iodide.element");
                 var id = HtmlUtils.getUniqueId();
                 notebook.write(HtmlUtils.tag(tag, ["id", id]));
                 return document.getElementById(id);
@@ -851,16 +852,7 @@ function NotebookState(cell, div) {
             if (!entry)
                 await this.cell.getCurrentEntry(e => entry = e);
             this.cell.createDisplay(this, entry, DISPLAY_LINECHART, props);
-        },
-
-        help: function() {
-            return "Enter an expression, e.g.:<pre>1+2</pre> or wrap you code in brackets:<pre>{\nvar x=1+2;\nreturn x;\n}</pre>" +
-                "functions:<br>nbHelp() : print this help<br>nbClear() : clear the output<br>nbCell : this cell<br>nbNotebook: this notebook<br>" +
-                "nbLs(): list current entry; nbLs(parent): list parent; nbLs(root): list root" +
-                "nbLinechart(entry): create a linechart, defaults to current entry" +
-                "nbNotebook.addCell('wiki:some wiki text'): add a new cell with the given output<br>" +
-                "nbSave(includeOutput): save the notebook<br>nbWrite(html) : add some output<br>nbStop(): stop running";
-        }
+            },
     });
 }
 
@@ -1504,7 +1496,7 @@ function RamaddaNotebookCell(notebook, id, content, props) {
                 var div = (divCnt < this.divs.length ? this.divs[divCnt] : null);
                 divCnt++;
                 if (div) {
-                    if (div.jq().size() == 0) {
+                    if (div.jq().length == 0) {
                         div = null;
                     } else {}
                 } else {}
@@ -1717,7 +1709,7 @@ function RamaddaNotebookCell(notebook, id, content, props) {
 
                 var url = null;
                 var variable= null;
-                if (tag == "text" || tag == "json") {
+                if (["text","json","blob"].includes(tag)) {
                     var args = line.match(/^([a-zA-Z0-9_]+) *= *(.*)$/);
                     if(args) {
                         variable = args[1];
@@ -1749,14 +1741,17 @@ function RamaddaNotebookCell(notebook, id, content, props) {
                         null,
                         (jqxhr, settings, exception) => error = "Error fetching " + origLine + " " + exception, true);
                 } else if (tag == "html") {
-                    await Utils.importText(url, h => chunk.div.append(h), (jqxhr, settings, exception) => error = "Error fetching " + origLine + " " + exception);
-                } else if (tag == "text" || tag == "json") {
+                    await Utils.doFetch(url, h => chunk.div.append(h), (jqxhr, settings, exception) => error = "Error fetching " + origLine + " " + exception);
+                } else if (tag == "text" || tag == "json" || tag == "blob") {
                     var isJson = tag == "json";
+                    var isBlob = tag == "blob";
                     var results = null;
-                    await Utils.importText(url, h => results = h, (jqxhr, settings, err) => error = "Error fetching " + origLine + " error:" + (err ? err.toString() : ""));
+                    await Utils.doFetch(url, h => results = h, (jqxhr, settings, err) => error = "Error fetching " + origLine + " error:" + (err ? err.toString() : ""),tag=="blob"?"blob":"text");
                     if (results) {
                         if (isJson) {
                             results = JSON.parse(results);
+                        } else if (isBlob) {
+                            results = new Blob([results],  {});
                         }
                         if (variable) {
                             this.notebook.addGlobal(variable, results);

@@ -159,6 +159,40 @@ function BasePointData(name, properties) {
 
 
 
+
+function convertToPointData(array) {
+    var fields = [];
+    var records = [];
+    var header = array[0];
+    var samples = array[1];
+    for(var i=0;i<header.length;i++) {
+        var label = header[i];
+        var id = label.toLowerCase().replace(/ /g,"_");
+        var sample =samples[i];
+        var tof= typeof sample;
+        var type;
+        if(tof=="string")
+            type = "string";
+        else if(tof=="number")
+            type = "double";
+        else if(sample.getTime)
+            type = "date";
+        else 
+            console.log("Unknwon type:" + tof);
+        fields.push(new RecordField({
+                    id:id,
+                        label:label,
+                        type:type,
+                        chartable:true
+                        }));
+    }
+    for(var i=1;array.length;i++) {
+        records.push(new  PointRecord(NaN, NaN, NaN, null, array[i]));
+    }
+    return new  PointData("pointdata", fields, records,null,null);
+}
+
+
 /*
 This encapsulates some instance of point data. 
 name - the name of this data
@@ -445,6 +479,8 @@ function RecordField(props) {
     });
 
 }
+
+
 
 
 /*

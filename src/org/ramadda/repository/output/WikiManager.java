@@ -4984,7 +4984,7 @@ ATTR_SHOWLINK, "true", ATTR_INCLUDEICON, "false") + ATTRS_LAYOUT),
         help.append(
             HtmlUtils.href(
                 getRepository().getUrlBase() + "/userguide/wikidisplay.html",
-                "Displays and charts", "target=_help") + "<br>");
+                "Displays and Charts", "target=_help") + "<br>");
 
         help.append(
             HtmlUtils.href(
@@ -5044,7 +5044,7 @@ ATTR_SHOWLINK, "true", ATTR_INCLUDEICON, "false") + ATTRS_LAYOUT),
             getPageHandler().makePopupLink(msg("Entry Property"),
                                            tags1.toString(), buttonClass);
 
-        String tagsButton2 = getPageHandler().makePopupLink(msg("Displays and Charts"),
+        String tagsButton2 = getPageHandler().makePopupLink(msg("Displays"),
                                  tags2.toString(), buttonClass);
 
         String addEntry = OutputHandler.getSelect(request, textAreaId,

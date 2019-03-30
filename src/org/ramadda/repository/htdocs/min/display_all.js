@@ -832,7 +832,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
         },
         getFieldValue: function(id, dflt) {
             var jq = $("#" + id);
-            if (jq.size() > 0) {
+            if (jq.length > 0) {
                 return jq.val();
             }
             return dflt;
@@ -1134,7 +1134,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
                     var idBase = "cbx_" + collectionIdx + "_" + i;
                     var cbxId = this.getDomId(idBase);
                     var cbx = $("#" + cbxId);
-                    if (cbx.size()) {
+                    if (cbx.length>0) {
                         cbxExists = true;
                     } else {
                         continue;
@@ -3064,7 +3064,6 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             }
             return true;
         },
-
         getPointData: function() {
             if (this.dataCollection.getList().length == 0) return null;
             return this.dataCollection.getList()[0];
@@ -4016,6 +4015,40 @@ function BasePointData(name, properties) {
 
 
 
+
+function convertToPointData(array) {
+    var fields = [];
+    var records = [];
+    var header = array[0];
+    var samples = array[1];
+    for(var i=0;i<header.length;i++) {
+        var label = header[i];
+        var id = label.toLowerCase().replace(/ /g,"_");
+        var sample =samples[i];
+        var tof= typeof sample;
+        var type;
+        if(tof=="string")
+            type = "string";
+        else if(tof=="number")
+            type = "double";
+        else if(sample.getTime)
+            type = "date";
+        else 
+            console.log("Unknwon type:" + tof);
+        fields.push(new RecordField({
+                    id:id,
+                        label:label,
+                        type:type,
+                        chartable:true
+                        }));
+    }
+    for(var i=1;array.length;i++) {
+        records.push(new  PointRecord(NaN, NaN, NaN, null, array[i]));
+    }
+    return new  PointData("pointdata", fields, records,null,null);
+}
+
+
 /*
 This encapsulates some instance of point data. 
 name - the name of this data
@@ -4302,6 +4335,8 @@ function RecordField(props) {
     });
 
 }
+
+
 
 
 /*
@@ -5575,8 +5610,11 @@ function RamaddaNotebookDisplay(displayManager, id, properties) {
             });
         },
         showInput: function() {
-            if (this.displayMode && !this.user)
-                return false;
+           if (this.displayMode && !this.user){
+               return false;
+            }
+           if(this.getProperty("showInput",true) == false)
+               return false;
             return true;
         },
         getJson: function(output) {
@@ -5960,11 +5998,9 @@ var iodide  = {
         },
         output: {
             text: function(t) {
-            console.log("iodide.output");
                 notebook.write(t);
             },
             element: function(tag) {
-            console.log("iodide.element");
                 var id = HtmlUtils.getUniqueId();
                 notebook.write(HtmlUtils.tag(tag, ["id", id]));
                 return document.getElementById(id);
@@ -6114,16 +6150,7 @@ function NotebookState(cell, div) {
             if (!entry)
                 await this.cell.getCurrentEntry(e => entry = e);
             this.cell.createDisplay(this, entry, DISPLAY_LINECHART, props);
-        },
-
-        help: function() {
-            return "Enter an expression, e.g.:<pre>1+2</pre> or wrap you code in brackets:<pre>{\nvar x=1+2;\nreturn x;\n}</pre>" +
-                "functions:<br>nbHelp() : print this help<br>nbClear() : clear the output<br>nbCell : this cell<br>nbNotebook: this notebook<br>" +
-                "nbLs(): list current entry; nbLs(parent): list parent; nbLs(root): list root" +
-                "nbLinechart(entry): create a linechart, defaults to current entry" +
-                "nbNotebook.addCell('wiki:some wiki text'): add a new cell with the given output<br>" +
-                "nbSave(includeOutput): save the notebook<br>nbWrite(html) : add some output<br>nbStop(): stop running";
-        }
+            },
     });
 }
 
@@ -6767,7 +6794,7 @@ function RamaddaNotebookCell(notebook, id, content, props) {
                 var div = (divCnt < this.divs.length ? this.divs[divCnt] : null);
                 divCnt++;
                 if (div) {
-                    if (div.jq().size() == 0) {
+                    if (div.jq().length == 0) {
                         div = null;
                     } else {}
                 } else {}
@@ -6980,7 +7007,7 @@ function RamaddaNotebookCell(notebook, id, content, props) {
 
                 var url = null;
                 var variable= null;
-                if (tag == "text" || tag == "json") {
+                if (["text","json","blob"].includes(tag)) {
                     var args = line.match(/^([a-zA-Z0-9_]+) *= *(.*)$/);
                     if(args) {
                         variable = args[1];
@@ -7012,14 +7039,17 @@ function RamaddaNotebookCell(notebook, id, content, props) {
                         null,
                         (jqxhr, settings, exception) => error = "Error fetching " + origLine + " " + exception, true);
                 } else if (tag == "html") {
-                    await Utils.importText(url, h => chunk.div.append(h), (jqxhr, settings, exception) => error = "Error fetching " + origLine + " " + exception);
-                } else if (tag == "text" || tag == "json") {
+                    await Utils.doFetch(url, h => chunk.div.append(h), (jqxhr, settings, exception) => error = "Error fetching " + origLine + " " + exception);
+                } else if (tag == "text" || tag == "json" || tag == "blob") {
                     var isJson = tag == "json";
+                    var isBlob = tag == "blob";
                     var results = null;
-                    await Utils.importText(url, h => results = h, (jqxhr, settings, err) => error = "Error fetching " + origLine + " error:" + (err ? err.toString() : ""));
+                    await Utils.doFetch(url, h => results = h, (jqxhr, settings, err) => error = "Error fetching " + origLine + " error:" + (err ? err.toString() : ""),tag=="blob"?"blob":"text");
                     if (results) {
                         if (isJson) {
                             results = JSON.parse(results);
+                        } else if (isBlob) {
+                            results = new Blob([results],  {});
                         }
                         if (variable) {
                             this.notebook.addGlobal(variable, results);
@@ -11668,7 +11698,7 @@ function RamaddaSkewtDisplay(displayManager, id, properties) {
              return;
          }
          var date = records[0].getDate();
-         if(this.jq(ID_DATE_LABEL).size()==0) {
+         if(this.jq(ID_DATE_LABEL).length==0) {
              this.jq(ID_TOP_LEFT).append(HtmlUtils.div(["id",this.getDomId(ID_DATE_LABEL)]));
          }
          if(date!=null) {
@@ -14755,7 +14785,6 @@ function RamaddaEntrygridDisplay(displayManager, id, properties) {
             SUPER.initDialog.call(this);
             var _this = this;
             var cbx = this.jq(ID_SETTINGS + " :checkbox");
-            console.log(cbx.size());
             cbx.click(function() {
                 _this.setProperty($(this).attr("attr"), $(this).is(':checked'));
                 _this.makeGrid(_this.entries);

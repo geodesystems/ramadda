@@ -145,15 +145,18 @@ var Utils = {
             }).fail(err);
         } catch (e) {}
     },
-    importText: async function(path, callback, err) {
+    doFetch: async function(path, callback, err,what) {
         try {
+            if(!what) what = "text";
             await $.ajax({
                 url: path,
-                dataType: 'text',
+                    xhrFields:{
+                        responseType: what
+                    },
                 success: function(data) {
                     Utils.call(callback, data);
                 }
-            }).fail(err);
+                }).fail(err);
         } catch (e) {
             Utils.call(err, e);
         }
@@ -1073,6 +1076,10 @@ var HtmlUtils = {
         if (window["ramaddaMapCheckLayout"]) {
             ramaddaMapCheckLayout();
         }
+    },
+    getObjectURL:function(blob) {
+        var urlCreator = window.URL || window.webkitURL;
+        return urlCreator.createObjectURL(blob);
     },
     getErrorDialog: function(msg) {
         return "<div class=\"ramadda-message\"><table><tr valign=top><td><div class=\"ramadda-message-link\"><img border=\"0\"  src=\"/repository/icons/error.png\"  /></div></td><td><div class=\"ramadda-message-inner\">" + msg + "</div></td></tr></table></div>";

@@ -682,7 +682,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
         },
         getFieldValue: function(id, dflt) {
             var jq = $("#" + id);
-            if (jq.size() > 0) {
+            if (jq.length > 0) {
                 return jq.val();
             }
             return dflt;
@@ -984,7 +984,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
                     var idBase = "cbx_" + collectionIdx + "_" + i;
                     var cbxId = this.getDomId(idBase);
                     var cbx = $("#" + cbxId);
-                    if (cbx.size()) {
+                    if (cbx.length>0) {
                         cbxExists = true;
                     } else {
                         continue;
@@ -2914,7 +2914,6 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             }
             return true;
         },
-
         getPointData: function() {
             if (this.dataCollection.getList().length == 0) return null;
             return this.dataCollection.getList()[0];

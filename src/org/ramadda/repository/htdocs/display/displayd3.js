@@ -218,7 +218,7 @@ function RamaddaSkewtDisplay(displayManager, id, properties) {
              return;
          }
          var date = records[0].getDate();
-         if(this.jq(ID_DATE_LABEL).size()==0) {
+         if(this.jq(ID_DATE_LABEL).length==0) {
              this.jq(ID_TOP_LEFT).append(HtmlUtils.div(["id",this.getDomId(ID_DATE_LABEL)]));
          }
          if(date!=null) {
