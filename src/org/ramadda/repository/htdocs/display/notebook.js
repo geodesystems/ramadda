@@ -1749,7 +1749,8 @@ function RamaddaNotebookCell(notebook, id, content, props) {
                     await Utils.doFetch(url, h => results = h, (jqxhr, settings, err) => error = "Error fetching " + origLine + " error:" + (err ? err.toString() : ""),tag=="blob"?"blob":"text");
                     if (results) {
                         if (isJson) {
-                            results = JSON.parse(results);
+                            if(typeof results =="string")
+                                results = JSON.parse(results);
                         } else if (isBlob) {
                             results = new Blob([results],  {});
                         }
