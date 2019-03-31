@@ -255,6 +255,12 @@ var Utils = {
             s = pad + s;
         return s;
     },
+    reverseArray: function(a) {
+        var b = [];
+        for(var i=a.length-1;i>=0;i--)
+            b.push(a[i]);
+        return b;
+    },
     join: function(l, delimiter, offset) {
         if ((typeof offset) == "undefined") offset = 0;
         var s = "";

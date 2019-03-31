@@ -138,7 +138,6 @@ public class NcssTypeHandler extends PointTypeHandler {
         }
         lat  = toks[0];
         url  = url.replaceAll(latPattern, "latitude=\\${latitude}&");
-
         toks = Utils.findPatterns(url, lonPattern);
         if (toks == null) {
             throw new IllegalArgumentException("Could not find longitude:"
@@ -146,6 +145,10 @@ public class NcssTypeHandler extends PointTypeHandler {
         }
         lon = toks[0];
         url = url.replaceAll(lonPattern, "longitude=\\${longitude}&");
+        if (loc != null) {
+            loc[0] = Double.parseDouble(lat);
+            loc[1] = Double.parseDouble(lon);
+        }
 
 
         String rest = url;
@@ -158,37 +161,36 @@ public class NcssTypeHandler extends PointTypeHandler {
             rest = toks[1];
 
         }
+
+
+
+
         //time_start=2019-01-07T00%3A00%3A00Z&time_end=2019-02-22T06%3A00%3A00Z&vertCoord=&accept=csv";
         //${date:now}time_start=${format:yyyy-MM-dd}&${date:+10 days}time_end=${format:yyyy-MM-dd}
 
         String timeStartPattern = "time_start=([^&]+)&";
-        toks = Utils.findPatterns(url, timeStartPattern);
-        if (toks == null) {
-            throw new IllegalArgumentException("Could not find time_start:"
-                    + url);
-        }
-        String timeStart = toks[0];
-        url = url.replaceAll(
-            timeStartPattern,
-            "\\${date:now}time_start=\\${format:yyyy-MM-dd}&");
-
         String timeEndPattern = "time_end=([^&]+)&";
-        toks = Utils.findPatterns(url, timeEndPattern);
-        if (toks == null) {
-            throw new IllegalArgumentException("Could not find time_end:"
-                    + url);
-        }
-        String timeEnd = toks[0];
-        url = url.replaceAll(
-            timeEndPattern,
-            "\\${date:+\\${endTimeOffset}}time_end=\\${format:yyyy-MM-dd}&");
+        toks = Utils.findPatterns(url, timeStartPattern);
+        if (toks != null) {
+            //            throw new IllegalArgumentException("Could not find time_start:"  + url);
+            String timeStart = toks[0];
+            url = url.replaceAll(
+                                 timeStartPattern,
+                                 "\\${date:now}time_start=\\${format:yyyy-MM-dd}&");
 
-        if (loc != null) {
-            loc[0] = Double.parseDouble(lat);
-            loc[1] = Double.parseDouble(lon);
+            toks = Utils.findPatterns(url, timeEndPattern);
+            if (toks == null) {
+                throw new IllegalArgumentException("Could not find time_end:"
+                                                   + url);
+            }
+            String timeEnd = toks[0];
+            url = url.replaceAll(
+                                 timeEndPattern,
+                                 "\\${date:+\\${endTimeOffset}}time_end=\\${format:yyyy-MM-dd}&");
+            
+            timeStart = timeStart.replace("%3A", ":");
+            timeEnd   = timeEnd.replace("%3A", ":");
         }
-        timeStart = timeStart.replace("%3A", ":");
-        timeEnd   = timeEnd.replace("%3A", ":");
 
         //        System.err.println("lat:" + lat +" lon:" + lon);
         //        System.err.println("vars:" + vars);
@@ -292,8 +294,9 @@ public class NcssTypeHandler extends PointTypeHandler {
         properties.append(
             "fields=time[type=date format=\"yyyy-MM-dd'T'HH:mm:ss\"],latitude[unit=\"degrees_north\"],longitude[unit=\"degrees_east\"]");
         if (addVertCoord) {
-            properties.append(",vertCoord[type=string unit=\""
-                              + vertCoordUnit + "\"]");
+            vars.add(0, "vertCoord");
+            units.put("vertCoord", vertCoordUnit);
+            //            properties.append(",vertCoord[type=double unit=\"" + vertCoordUnit + "\"]");
         }
 
         for (int i = 0; i < vars.size(); i++) {

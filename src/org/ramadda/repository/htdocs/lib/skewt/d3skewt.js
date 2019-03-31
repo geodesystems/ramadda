@@ -220,9 +220,9 @@ function D3Skewt(divid, args, jsonData) {
                 .attr("y2", this.getSkewtHeight())
                 .attr("class", function(d) {
                     if (d == 0) {
-                        return "temperaturezero";
+                        return "skewt-grid  skewt-grid-temperature-zero";
                     } else {
-                        return "gridline"
+                        return "skewt-grid  skewt-grid-temperature"
                     }
                 })
                 .attr("clip-path", "url(#"+ skewt.clipperId+")");
@@ -240,7 +240,7 @@ function D3Skewt(divid, args, jsonData) {
                 .attr("y2", function(d) {
                     return skewt.y(d);
                 })
-                .attr("class", "gridline");
+                .attr("class", "skewt-line-pressure");
 
             // create array to plot dry adiabats
             var pp = d3.range(this.topp, this.basep + 1, 10);
@@ -258,7 +258,7 @@ function D3Skewt(divid, args, jsonData) {
             svg.selectAll(".dryline")
                 .data(all)
                 .enter().append("path")
-                .attr("class", "gridline")
+                .attr("class", "skewt-grid skewt-grid-adiabat")
                 .attr("clip-path", "url(#" + skewt.clipperId+")")
                 .attr("d", dryline);
 
@@ -268,7 +268,7 @@ function D3Skewt(divid, args, jsonData) {
                 .attr("x2", skewt.getSkewtWidth() - 0.5)
                 .attr("y1", 0)
                 .attr("y2", skewt.getSkewtHeight())
-                .attr("class", "gridline");
+                .attr("class", "skewt-grid");
 
             // draw hodograph background
             svghodo.selectAll(".circles")
@@ -279,7 +279,7 @@ function D3Skewt(divid, args, jsonData) {
                 .attr("r", function(d) {
                     return skewt.r(d);
                 })
-                .attr("class", "gridline");
+                .attr("class", "skewt-grid");
             svghodo.selectAll("hodolabels")
                 .data(d3.range(10, 80, 20)).enter().append("text")
                 .attr('x', 0)
@@ -467,21 +467,20 @@ function D3Skewt(divid, args, jsonData) {
                     return obj;
                 });
 
-            var obj = skewt.alldata;
+            var data = skewt.alldata;
             // interpolate to given heights for each sounding
             var test = requestedLevels.map(function(d) {
                     if (d == 0) {
-                        return obj[0];
+                        return data[0];
                     }
-                    d = 1000 * d + obj[0].height; // want height AGL
-                    for (i = 0; i <= obj.length; i++) {
-                        if (obj[i].height > d) {
-                            var closeindex = i;
+                    d = 1000 * d + data[0].height; // want height AGL
+                    for (i = 0; i < data.length; i++) {
+                        if (data[i].height > d) {
                             break;
                         } // since heights increase monotonically
                     }
-                    var interp = d3.interpolateObject(obj[i - 1], obj[i]); // interp btw two levels
-                    var half = interp(1 - (d - obj[i].height) / (obj[i - 1].height - obj[i].height));
+                    var interp = d3.interpolateObject(data[i - 1], data[i]); // interp btw two levels
+                    var half = interp(1 - (d - data[i].height) / (data[i - 1].height - data[i].height));
                     return half
                 });
             skewt.interpobjects.push(test);
@@ -494,7 +493,7 @@ function D3Skewt(divid, args, jsonData) {
             skewt.tlines = skewt.skewtgroup.selectAll("tlines")
                 .data(skewt.tlinetest[0]).enter().append("path")
                 .attr("class", function(d, i) {
-                    return (i < 10) ? "temperature member" : "temperature mean"
+                    return (i < 10) ? "skewt-line-temperature member" : "skewt-line-temperature mean"
                 })
                 .attr("clip-path", "url(#" + skewt.clipperId+")")
                 .attr("d", skewt.line);
@@ -502,7 +501,7 @@ function D3Skewt(divid, args, jsonData) {
             skewt.tdlines = skewt.skewtgroup.selectAll("tdlines")
                 .data(skewt.tlinetest[0]).enter().append("path")
                 .attr("class", function(d, i) {
-                    return (i < 10) ? "dewpoint member" : "dewpoint mean"
+                    return (i < 10) ? "skewt-line-dewpoint member" : "skewt-line-dewpoint mean"
                 })
                 .attr("clip-path", "url(#" + skewt.clipperId +")")
                 .attr("d", skewt.line2);

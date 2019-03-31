@@ -195,9 +195,11 @@ function RamaddaSkewtDisplay(displayManager, id, properties) {
         },
         updateUI: async function() {
          if(!this.loadedResources) {
-            await Utils.importCSS(ramaddaBaseHtdocs+"/lib/skewt/sounding.css");
+             var time = new Date();
+             await Utils.importCSS(ramaddaBaseUrl +"/htdocs_v_" + time.getTime()+"/lib/skewt/sounding.css");
+           //            await Utils.importCSS(ramaddaBaseHtdocs+"/lib/skewt/sounding.css");
             //            await Utils.importJS(ramaddaBaseHtdocs +"/lib/skewt/d3skewt.js");
-            await Utils.importJS(ramaddaBaseUrl +"/htdocs_v_a/lib/skewt/d3skewt.js");
+             await Utils.importJS(ramaddaBaseUrl +"/htdocs_v_" + time.getTime()+"/lib/skewt/d3skewt.js");
             this.loadedResources = true;
          }
 
@@ -240,20 +242,120 @@ function RamaddaSkewtDisplay(displayManager, id, properties) {
             }
             //            options.hodographWidth = 200;
             var fields = this.getData().getRecordFields();
-            var names = ["pressure","height","temperature","dewpoint","wind_direction","wind_speed"];
-            var pressure = this.getFieldById(fields,"pressure");
-            var height = this.getFieldById(fields,"height");
-            var height = this.getFieldById(fields,"height");
+            var names = [
+                         {id:"pressure",aliases:["vertCoord"]},
+                         {id:"height",aliases:[]},
+                         {id:"temperature",aliases:["Temperature_isobaric"]},
+                         {id:"dewpoint",aliases:[]},
+                         {id:"rh",aliases:["Relative_humidity_isobaric"]},
+                         {id:"wind_direction",aliases:[]},
+                         {id:"wind_speed",aliases:[]},
+                         {id:"uwind",aliases:["u-component_of_wind_isobaric"]},
+                         {id:"vwind",aliases:["v-component_of_wind_isobaric"]},
+                         ];
+            //TODO: check for units
             var data ={};
-
+            var dataFields ={};
             for(var i=0;i<names.length;i++) {
-                var field = this.getFieldById(fields,names[i]);
+                var obj = names[i];
+                var id = obj.id;
+                var field = this.getFieldById(fields,id);
                 if(field == null) {
-                    this.displayError("No " + names[i] + " defined in data");
+                    for(var j=0;j<obj.aliases.length;j++) {
+                        field = this.getFieldById(fields,obj.aliases[j]);
+                        if(field) break;
+                    }
+                }
+                if(field) {
+                    data[id] = this.getColumnValues(records, field).values;
+                    dataFields[id]=field;
+                }
+            }
+
+            if(!data.pressure) {
+                this.displayError("No pressure defined in data");
+                return;
+            }
+
+            if(!data.temperature) {
+                this.displayError("No temperature defined in data");
+                return;
+            }
+
+            if(!data.height) {
+                var pressures = [
+                    1013.25, 954.61, 898.76, 845.59, 795.01, 746.91, 701.21,
+                    657.80, 616.6, 577.52, 540.48, 505.39, 472.17, 440.75,
+                    411.05, 382.99, 356.51, 331.54, 303.00, 285.85, 264.99,
+                    226.99, 193.99, 165.79, 141.70, 121.11, 103.52, 88.497,
+                    75.652, 64.674, 55.293, 25.492, 11.970, 5.746, 2.871,
+                    1.491, 0.798, 0.220, 0.052, 0.010,];
+                var alts = [
+                            0, 500, 1000, 1500, 2000, 2500, 3000, 3500, 4000, 4500, 5000,
+                            5500, 6000, 6500, 7000, 7500, 8000, 8500, 9000, 9500, 10000,
+                            11000, 12000, 13000, 14000, 15000, 16000, 17000, 18000, 19000,
+                            20000, 25000, 30000, 35000, 40000, 45000, 50000, 60000, 70000,
+                            80000,
+                            ];
+                
+                data.height = [];
+                for(var i=0;i<data.pressure.length;i++) {
+                    var pressure = data.pressure[i];
+                    var alt = alts[alts.length-1];
+                    for(var j=0;j<pressures.length;j++) {
+                        if(pressure>=pressures[j]) {
+                            if(j==0) alt = 0;
+                            else {
+                                var p1 = pressures[j-1];
+                                var p2 = pressures[j];
+                                var a1 = alts[j-1];
+                                var a2 = alts[j];
+                                var percent = 1-(pressure-p2)/(p1-p2);
+                                alt = (a2-a1)*percent+a1;
+                            }
+                            break;
+                        }
+                    }
+                    data.height.push(alt);
+                }
+            }
+
+            if(!data.dewpoint) {
+                if(!data.rh) {
+                    this.displayError("No dewpoint or rh");
                     return;
                 }
-                var values = this.getColumnValues(records, field).values;
-                data[names[i]] = values;
+                data.dewpoint = [];
+                for(var i=0;i<data.rh.length;i++) {
+                    var rh=data.rh[i];
+                    var t=data.temperature[i];
+                    var dp = t-(100-rh)/5;
+                    data.dewpoint.push(dp);
+                }
+            }
+
+
+            if(!data.wind_speed) {
+                if(!data.uwind || !data.vwind) {
+                    this.displayError("No wind speed defined in data");
+                    return;
+                }
+                data.wind_speed = [];
+                data.wind_direction = [];
+                for(var i=0;i<data.uwind.length;i++) {
+                    var u = data.uwind[i];
+                    var v = data.vwind[i];
+                    var ws = Math.sqrt(u*u+v*v);
+                    var wdir = 180+(180/Math.PI)*Math.atan2(v,u);
+                    data.wind_speed.push(ws);
+                    data.wind_direction.push(wdir);
+                }
+            }
+            if(data.height.length>1) {
+                if(data.height[0]>data.height[1]) {
+                    for(name in data)
+                        data[name] = Utils.reverseArray(data[name]);
+                }
             }
             options.myid = this.getId();
             this.skewt = new D3Skewt(skewtId, options,data);
