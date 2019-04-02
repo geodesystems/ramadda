@@ -2152,7 +2152,6 @@ public abstract class Processor extends CsvOperator {
         @Override
         public List<Row> finish(TextReader info, List<Row> rows)
                 throws Exception {
-            System.err.println("sort.finish");
             rows = new ArrayList<Row>(getRows(rows));
             if (rows.size() == 0) {
                 return rows;

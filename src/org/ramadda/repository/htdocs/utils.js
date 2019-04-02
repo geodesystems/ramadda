@@ -193,6 +193,7 @@ var Utils = {
         return html;
     },
     formatJsonInner: function(json, level,levelsShown) {
+        if(json==null) return {value:"null"};
         var type = typeof json;
         if(type == "string") {
             var clazz="json-string";
@@ -605,12 +606,26 @@ var Utils = {
     displayAllColorTables: function(domId) {
         var cnt = 0;
         var html = "";
+
+        var code = "";
+        /*
+        new ColorTable("GRAYSCALE", "Gray Scale", new int[][] {
+            { 0, 0, 0 }, { 1, 1, 1 }, { 2, 2, 2 }, { 3, 3, 3 }, { 4, 4, 4 },
+            });*/
+
         for (a in this.ColorTables) {
+            code +="new ColorTable(\"" + a +"\",\"" + a +"\", new String[]{\n";
+            for(var i=0;i<this.ColorTables[a].colors.length;i++) {
+                code +="\"" + this.ColorTables[a].colors[i]+"\",";
+            }
+            code += "});\n";
+
             html += HtmlUtils.b(a);
             html += HtmlUtils.div(["id", domId + "_" + cnt, "style", "width:100%;"], "");
             html += "<br>";
             cnt++;
-        }
+        }  
+        //        Utils.makeDownloadFile("colortables.java",code);
         $("#" + domId).html(html);
         cnt = 0;
         for (a in this.ColorTables) {
@@ -1100,7 +1115,6 @@ var HtmlUtils = {
         if (!this.aceEditors) return;
         for (a in this.aceEditors) {
             var info = this.aceEditors[a];
-            console.log("hidden:" + info.hidden + " " + $("#" + info.hidden).size());
             $("#" + info.hidden).val(info.editor.getValue());
         }
     },

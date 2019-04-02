@@ -262,10 +262,16 @@ function PointData(name, recordFields, records, url, properties) {
                 //                    console.log("Waiting on callback:" + obj.pending.length +" " + url);
                 return;
             }
-            console.log("load data:" + url);
-            //                console.log("loading point url:" + url);
-            var jqxhr = $.getJSON(url, function(data) {
+            var fail = function(jqxhr, textStatus, error) {
+                var err = textStatus + ": " + error;
+                console.log("JSON error:" + err);
+                display.pointDataLoadFailed(err);
+                pointData.stopLoading();
+            }
+
+            var success=function(data) {
                     if (GuiUtils.isJsonError(data)) {
+                        //                        console.log("fail");
                         display.pointDataLoadFailed(data);
                         return;
                     }
@@ -278,13 +284,11 @@ function PointData(name, recordFields, records, url, properties) {
                         tmp[i].pointDataLoaded(pointData, url, reload);
                     }
                     pointData.stopLoading();
-                })
-                .fail(function(jqxhr, textStatus, error) {
-                    var err = textStatus + ": " + error;
-                    console.log("JSON error:" + err);
-                    display.pointDataLoadFailed(err);
-                    pointData.stopLoading();
-                });
+                }
+            console.log("load data:" + url);
+            //                console.log("loading point url:" + url);
+            Utils.doFetch(url, success,fail,"text");
+            //var jqxhr = $.getJSON(url, success).fail(fail);
         }
 
     });
@@ -680,6 +684,14 @@ function makePointData(json, derived, source) {
             values[dateIndexes[j]] = new Date(values[dateIndexes[j]]);
         }
 
+        //        console.log("before:" + values);
+        var h = values[2];
+        for (var col = 0; col < values.length; col++) {
+            if(values[col]==null) {
+                values[col] = NaN;
+            } 
+        }
+
 
         if (derived) {
             for (var dIdx = 0; dIdx < derived.length; dIdx++) {
@@ -752,6 +764,9 @@ function makePointData(json, derived, source) {
                 }
             }
         }
+
+
+
 
 
         for (var fieldIdx = 0; fieldIdx < offsetFields.length; fieldIdx++) {

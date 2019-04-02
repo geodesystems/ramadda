@@ -4118,10 +4118,16 @@ function PointData(name, recordFields, records, url, properties) {
                 //                    console.log("Waiting on callback:" + obj.pending.length +" " + url);
                 return;
             }
-            console.log("load data:" + url);
-            //                console.log("loading point url:" + url);
-            var jqxhr = $.getJSON(url, function(data) {
+            var fail = function(jqxhr, textStatus, error) {
+                var err = textStatus + ": " + error;
+                console.log("JSON error:" + err);
+                display.pointDataLoadFailed(err);
+                pointData.stopLoading();
+            }
+
+            var success=function(data) {
                     if (GuiUtils.isJsonError(data)) {
+                        //                        console.log("fail");
                         display.pointDataLoadFailed(data);
                         return;
                     }
@@ -4134,13 +4140,11 @@ function PointData(name, recordFields, records, url, properties) {
                         tmp[i].pointDataLoaded(pointData, url, reload);
                     }
                     pointData.stopLoading();
-                })
-                .fail(function(jqxhr, textStatus, error) {
-                    var err = textStatus + ": " + error;
-                    console.log("JSON error:" + err);
-                    display.pointDataLoadFailed(err);
-                    pointData.stopLoading();
-                });
+                }
+            console.log("load data:" + url);
+            //                console.log("loading point url:" + url);
+            Utils.doFetch(url, success,fail,"text");
+            //var jqxhr = $.getJSON(url, success).fail(fail);
         }
 
     });
@@ -4536,6 +4540,14 @@ function makePointData(json, derived, source) {
             values[dateIndexes[j]] = new Date(values[dateIndexes[j]]);
         }
 
+        //        console.log("before:" + values);
+        var h = values[2];
+        for (var col = 0; col < values.length; col++) {
+            if(values[col]==null) {
+                values[col] = NaN;
+            } 
+        }
+
 
         if (derived) {
             for (var dIdx = 0; dIdx < derived.length; dIdx++) {
@@ -4608,6 +4620,9 @@ function makePointData(json, derived, source) {
                 }
             }
         }
+
+
+
 
 
         for (var fieldIdx = 0; fieldIdx < offsetFields.length; fieldIdx++) {
@@ -5732,6 +5747,22 @@ function RamaddaNotebookDisplay(displayManager, id, properties) {
            return Utils.call(callback,result);
 
        },
+        processPluginOutput: function(id,chunk, result) {
+           if(!result) return;
+           var module = this.plugins[id].module;
+           var func  = window[this.plugins[id].outputHandler];
+           if(func) {
+               chunk.div.append(func(result));
+           } else {
+               if(typeof result == "object"){
+                   //TODO: for now don't format this as some results are recursive
+                   //                   console.log(result);
+                   //                   chunk.div.set(this.formatObject(result));
+               } else {
+                   chunk.div.set(result);
+               }
+           }
+        },
         log: function(msg, type, from, div) {
             var icon = "";
             var clazz = "display-notebook-console-item";
@@ -7325,9 +7356,11 @@ function RamaddaNotebookCell(notebook, id, content, props) {
                 if(this.notebook.hasPlugin(chunk.type)) {
                     chunk.div.set("");
                     var result;
-                    await this.notebook.processChunkWithPlugin(chunk.type, chunk,r=>result);
+                    await this.notebook.processChunkWithPlugin(chunk.type, chunk,r=>result=r);
                     //TODO: what to do with the result
-                    //                    console.log("result:" +result);
+                    if(result) {
+                        this.notebook.processPluginOutput(chunk.type, chunk, result);
+                    }
                     return;
                 }
                 this.notebook.log("Unknown type:" + chunk.type, "error", null, chunk.div);
@@ -11684,12 +11717,12 @@ function RamaddaSkewtDisplay(displayManager, id, properties) {
             this.loadedResources = true;
          }
 
-
          if(!window["D3Skewt"]) {
              setTimeout(()=>this.updateUI(),100);
              return;
          }
          SUPER.updateUI.call(this);
+
          var skewtId = this.getDomId(ID_SKEWT);
          var html = HtmlUtils.div(["id", skewtId], "");
          this.setContents(html);
@@ -11832,6 +11865,8 @@ function RamaddaSkewtDisplay(displayManager, id, properties) {
                     data.wind_direction.push(wdir);
                 }
             }
+
+
             if(data.height.length>1) {
                 if(data.height[0]>data.height[1]) {
                     for(name in data)
@@ -11839,8 +11874,13 @@ function RamaddaSkewtDisplay(displayManager, id, properties) {
                 }
             }
             options.myid = this.getId();
-            this.skewt = new D3Skewt(skewtId, options,data);
-            //            console.log(this.jq(ID_SKEWT).html());
+            try {
+                this.skewt = new D3Skewt(skewtId, options,data);
+            } catch(e) {
+                this.displayError("An error occurred: " +e);
+                console.log("error:" + e.stack);
+                return;
+            }
             await this.getDisplayEntry((e)=>{
                     var q= e.getAttribute("variables");
                     if(!q) return;
@@ -11849,9 +11889,7 @@ function RamaddaSkewtDisplay(displayManager, id, properties) {
                     q = q.replace(/^ *\n/,"");
                     q = q.replace(/^ *([^:]+):([^\n].*)$/gm,"<div title='$1' class=display-skewt-index-label>$1</div>: <div title='$2'  class=display-skewt-index>$2</div>");
                     q = q.replace(/[[\r\n]/g,"\n");
-                                  //                    console.log(q);
                     q = HtmlUtils.div(["class", "display-skewt-text"],q);
-
                     $("#" + this.skewt.textBoxId).html(q);
                 });
         }

@@ -456,11 +456,12 @@ public class TextRecord extends DataRecord {
                     } else {
                         dValue = textFile.parseValue(this, field, tok);
                     }
-                    dValue           = field.convertValue(dValue);
-                    values[fieldCnt] = dValue;
-                    if (isMissingValue(field, values[fieldCnt])) {
-                        values[fieldCnt] = Double.NaN;
+                    if (isMissingValue(field,dValue)) {
+                        dValue = Double.NaN;
+                    } else {
+                        dValue           = field.convertValue(dValue);
                     }
+                    values[fieldCnt] = dValue;
                 }
                 //                System.err.println ("value[ " + fieldCnt +"] = " + values[fieldCnt]);
             }
@@ -478,8 +479,7 @@ public class TextRecord extends DataRecord {
 
             return ReadStatus.OK;
         } catch (Exception exc) {
-            System.err.println("Line:" + line);
-
+            System.err.println("Error line:" + line);
             throw exc;
         }
 

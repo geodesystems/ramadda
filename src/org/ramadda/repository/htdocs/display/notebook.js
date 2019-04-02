@@ -434,6 +434,22 @@ function RamaddaNotebookDisplay(displayManager, id, properties) {
            return Utils.call(callback,result);
 
        },
+        processPluginOutput: function(id,chunk, result) {
+           if(!result) return;
+           var module = this.plugins[id].module;
+           var func  = window[this.plugins[id].outputHandler];
+           if(func) {
+               chunk.div.append(func(result));
+           } else {
+               if(typeof result == "object"){
+                   //TODO: for now don't format this as some results are recursive
+                   //                   console.log(result);
+                   //                   chunk.div.set(this.formatObject(result));
+               } else {
+                   chunk.div.set(result);
+               }
+           }
+        },
         log: function(msg, type, from, div) {
             var icon = "";
             var clazz = "display-notebook-console-item";
@@ -2027,9 +2043,11 @@ function RamaddaNotebookCell(notebook, id, content, props) {
                 if(this.notebook.hasPlugin(chunk.type)) {
                     chunk.div.set("");
                     var result;
-                    await this.notebook.processChunkWithPlugin(chunk.type, chunk,r=>result);
+                    await this.notebook.processChunkWithPlugin(chunk.type, chunk,r=>result=r);
                     //TODO: what to do with the result
-                    //                    console.log("result:" +result);
+                    if(result) {
+                        this.notebook.processPluginOutput(chunk.type, chunk, result);
+                    }
                     return;
                 }
                 this.notebook.log("Unknown type:" + chunk.type, "error", null, chunk.div);

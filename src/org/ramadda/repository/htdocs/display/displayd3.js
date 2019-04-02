@@ -203,12 +203,12 @@ function RamaddaSkewtDisplay(displayManager, id, properties) {
             this.loadedResources = true;
          }
 
-
          if(!window["D3Skewt"]) {
              setTimeout(()=>this.updateUI(),100);
              return;
          }
          SUPER.updateUI.call(this);
+
          var skewtId = this.getDomId(ID_SKEWT);
          var html = HtmlUtils.div(["id", skewtId], "");
          this.setContents(html);
@@ -351,6 +351,8 @@ function RamaddaSkewtDisplay(displayManager, id, properties) {
                     data.wind_direction.push(wdir);
                 }
             }
+
+
             if(data.height.length>1) {
                 if(data.height[0]>data.height[1]) {
                     for(name in data)
@@ -358,8 +360,13 @@ function RamaddaSkewtDisplay(displayManager, id, properties) {
                 }
             }
             options.myid = this.getId();
-            this.skewt = new D3Skewt(skewtId, options,data);
-            //            console.log(this.jq(ID_SKEWT).html());
+            try {
+                this.skewt = new D3Skewt(skewtId, options,data);
+            } catch(e) {
+                this.displayError("An error occurred: " +e);
+                console.log("error:" + e.stack);
+                return;
+            }
             await this.getDisplayEntry((e)=>{
                     var q= e.getAttribute("variables");
                     if(!q) return;
@@ -368,9 +375,7 @@ function RamaddaSkewtDisplay(displayManager, id, properties) {
                     q = q.replace(/^ *\n/,"");
                     q = q.replace(/^ *([^:]+):([^\n].*)$/gm,"<div title='$1' class=display-skewt-index-label>$1</div>: <div title='$2'  class=display-skewt-index>$2</div>");
                     q = q.replace(/[[\r\n]/g,"\n");
-                                  //                    console.log(q);
                     q = HtmlUtils.div(["class", "display-skewt-text"],q);
-
                     $("#" + this.skewt.textBoxId).html(q);
                 });
         }

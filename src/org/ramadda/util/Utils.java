@@ -191,7 +191,9 @@ public class Utils {
      * @return _more_
      */
     public static List add(List list, Object... args) {
-        if(list == null) list = new ArrayList();
+        if (list == null) {
+            list = new ArrayList();
+        }
         for (Object s : args) {
             if (s != null) {
                 list.add(s);
@@ -318,17 +320,28 @@ public class Utils {
     }
 
 
+    /**
+     * _more_
+     *
+     * @param line _more_
+     * @param widths _more_
+     *
+     * @return _more_
+     */
     public static List<String> tokenizeColumns(String line,
-                                               List<Integer> widths) {
-        List<String> toks      = new ArrayList<String>();
-        int lastIdx = 0;
+            List<Integer> widths) {
+        List<String> toks    = new ArrayList<String>();
+        int          lastIdx = 0;
         for (int i = 0; i < widths.size(); i++) {
             int width = widths.get(i);
-            if(lastIdx+width>line.length()) break;
-            String theString = line.substring(lastIdx,  lastIdx + width);
+            if (lastIdx + width > line.length()) {
+                break;
+            }
+            String theString = line.substring(lastIdx, lastIdx + width);
             toks.add(theString);
-            lastIdx   += width;
+            lastIdx += width;
         }
+
         return toks;
     }
 
@@ -3033,10 +3046,21 @@ public class Utils {
      * @throws Exception _more_
      */
     public static void main(String[] args) throws Exception {
-        if(true) {
-            String fmt = "HHmm'Z' dd MMM yy";
+        if (true) {
+            System.err.println("v:" + (9 * 0.1));
+            System.err.println("v:" + (99 * 0.1));
+            System.err.println("v:" + (999 * 0.1));
+            System.err.println("v:" + (9999 * 0.1));
+            System.err.println("v:" + (99999 * 0.1));
+
+            return;
+        }
+
+        if (true) {
+            String fmt  = "HHmm'Z' dd MMM yy";
             String date = "1200Z 23 MAR 19";
             System.err.println(new SimpleDateFormat(fmt).parse(date));
+
             return;
         }
 

@@ -105,6 +105,8 @@ public class CsvFile extends TextFile {
             return super.doMakeInputStream(buffered);
         }
         File file = getCacheFile();
+        //        System.err.println("file:" +file);
+        //        System.err.println(Misc.getStackTrace());
         if (file == null || !file.exists()) {
             try {
                 ByteArrayOutputStream bos=null;
@@ -124,6 +126,7 @@ public class CsvFile extends TextFile {
                 csvUtil.run(null);
                 fos.close();
                 if(file == null) {
+                    //                    System.err.println("processed:" +new String(bos.toByteArray()));
                     return new ByteArrayInputStream(bos.toByteArray());
                 }
             } catch (Exception exc) {

@@ -1409,7 +1409,7 @@ public abstract class RecordFile {
     public boolean isMissingValue(Record record, RecordField field,
                                   double v) {
         double missing = field.getMissingValue();
-
+        //        System.err.println("isMissing:" + v +" " + missing);
         return missing == v;
     }
 
