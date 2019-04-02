@@ -5754,10 +5754,13 @@ function RamaddaNotebookDisplay(displayManager, id, properties) {
            if(func) {
                chunk.div.append(func(result));
            } else {
-               if(typeof result == "object")
-                   chunk.div.set(this.formatObject(result));
-               else
+               if(typeof result == "object"){
+                   //TODO: for now don't format this as some results are recursive
+                   //                   console.log(result);
+                   //                   chunk.div.set(this.formatObject(result));
+               } else {
                    chunk.div.set(result);
+               }
            }
         },
         log: function(msg, type, from, div) {
