@@ -1101,7 +1101,6 @@ var HtmlUtils = {
         if (!this.aceEditors) return;
         for (a in this.aceEditors) {
             var info = this.aceEditors[a];
-            console.log("hidden:" + info.hidden + " " + $("#" + info.hidden).size());
             $("#" + info.hidden).val(info.editor.getValue());
         }
     },
