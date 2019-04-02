@@ -872,7 +872,7 @@ public class MetadataElement extends MetadataTypeBase implements DataTypes {
             //            List<TwoFacedObject> names = ColorTable.getColorTableNames();
             //            names.add(0, new TwoFacedObject("--none--", ""));
             names.add(0, new TwoFacedObject("--none--", ""));
-            return HtmlUtils.select(arg, names, value);
+            return HtmlUtils.select(arg, names, value) +" " + HtmlUtils.href(getRepository().getUrlBase()+"/colortables","View","target=_colortables");
         } else if (dataType.equals(DATATYPE_BOOLEAN)) {
             return HtmlUtils.checkbox(arg, "true",
                                       Misc.equals(value, "true"));
