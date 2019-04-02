@@ -193,6 +193,7 @@ var Utils = {
         return html;
     },
     formatJsonInner: function(json, level,levelsShown) {
+        if(json==null) return {value:"null"};
         var type = typeof json;
         if(type == "string") {
             var clazz="json-string";

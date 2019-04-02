@@ -316,6 +316,11 @@ public class CsvUtil {
 
                 return;
             }
+            if (arg.equals("-alldata")) {
+                textReader.setAllData(true);
+                continue;
+            }
+
             if (arg.equals("-verbose")) {
                 verbose = true;
 
@@ -1168,6 +1173,8 @@ public class CsvUtil {
                 "(create a new column from the given columns)"),
         new Cmd("-scale", "<col #> <delta1> <scale> <delta2>",
                 "(set value={value+delta1}*scale+delta2)"),
+        new Cmd("-decimals", "<col #> <how many decimals to round to>",
+                ""),
         new Cmd(
             "-operator", "<col #s>  <new col name> <operator +,-,*,/>",
             "(apply the operator to the given columns and create new one)"),
@@ -1950,6 +1957,15 @@ public class CsvUtil {
                         args.get(++i), Double.parseDouble(args.get(++i)),
                         Double.parseDouble(args.get(++i)),
                         Double.parseDouble(args.get(++i))));
+
+                continue;
+            }
+
+
+            if (arg.equals("-decimals")) {
+                List<String> idxs = getCols(args.get(++i));
+                info.getProcessor().addProcessor(
+                                                 new Converter.Decimals(idxs, new Integer(args.get(++i))));
 
                 continue;
             }

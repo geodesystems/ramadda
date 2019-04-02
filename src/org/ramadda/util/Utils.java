@@ -3034,6 +3034,15 @@ public class Utils {
      */
     public static void main(String[] args) throws Exception {
         if(true) {
+            System.err.println("v:" + (9*0.1));
+            System.err.println("v:" + (99*0.1));
+            System.err.println("v:" + (999*0.1));
+            System.err.println("v:" + (9999*0.1));
+            System.err.println("v:" + (99999*0.1));
+            return;
+        }
+
+        if(true) {
             String fmt = "HHmm'Z' dd MMM yy";
             String date = "1200Z 23 MAR 19";
             System.err.println(new SimpleDateFormat(fmt).parse(date));

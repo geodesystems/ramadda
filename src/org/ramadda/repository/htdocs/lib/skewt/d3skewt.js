@@ -479,6 +479,7 @@ function D3Skewt(divid, args, jsonData) {
                             break;
                         } // since heights increase monotonically
                     }
+                    //TODO: Check if we ran off the end of the array
                     var interp = d3.interpolateObject(data[i - 1], data[i]); // interp btw two levels
                     var half = interp(1 - (d - data[i].height) / (data[i - 1].height - data[i].height));
                     return half

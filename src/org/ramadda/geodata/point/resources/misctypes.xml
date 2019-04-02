@@ -143,9 +143,10 @@ Data courtesy of
      <property name="form.resource.show" value="false"/>
      <column  name="model"  label="Model" type="enumeration" default="GFS" values="GFS,NAM,Op40,Bak40"/>
 
+
  <property name="record.properties">
-fields=cape[type=doubleg],pressure[unit="mb" label="pressure" type=double],height[unit="meters" label="Height" type=double],temperature[unit="C" label="Temperature" type=double],dewpoint[unit="C" label="Dewpoint" type=double],wind_direction[unit="degrees" label="Wind direction" type=double],wind_speed[unit="knots" label="Wind speed" type=double],date[type=date format=yyyy-MMM-dd-HH'Z' label=Date],latitude[label="Latitude" type=double],longitude[label="Longitude" type=double]
-point.csvcommands=-skip,6,-widths,7_comma_7_comma_7_comma_7_comma_7_comma_7_comma_7, -macro,(\d\d) +(\d\d) +([^ ]+)  +(\d\d\d\d),{4}-{3}-{2}-{1}Z, none, -macro,from *([-0-9\.]+)_comma_,{1},none,-macro,from *[^_comma_]+_comma_([^:]+):,{1},none, -scale, 1, 0, 0.1, 0, -scale, 3, 0, 0.1, 0, -scale, 4, 0, 0.1, 0, -print
+fields=cape[type=double],pressure[unit="mb" label="pressure" type=double],height[unit="meters" label="Height" type=double],temperature[unit="C" label="Temperature" type=double],dewpoint[unit="C" label="Dewpoint" type=double],wind_direction[unit="degrees" label="Wind direction" type=double],wind_speed[unit="knots" label="Wind speed" type=double],date[type=date format=yyyy-MMM-dd-HH'Z' label=Date],latitude[label="Latitude" type=double],longitude[label="Longitude" type=double]
+point.csvcommands=-alldata,-skip,7,-widths,7_comma_7_comma_7_comma_7_comma_7_comma_7_comma_7, -change,0-6,99999,NaN, -macro,(\d\d) +(\d\d) +([a-zA-Z]+)  +(\d\d\d\d),{4}-{3}-{2}-{1}Z, none, -macro,from *([-0-9\.]+)_comma_,{1},none,-macro,from *[^_comma_]+_comma_([^:]+):,{1},none,  -scale, 1, 0, 0.1, 0, -scale, 3, 0, 0.1, 0, -scale, 4, 0, 0.1, 0, -decimals, 1_comma_2_comma_3, 10, -print
      </property>
 <wiki>
 <![CDATA[

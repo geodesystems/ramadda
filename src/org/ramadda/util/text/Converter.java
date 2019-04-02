@@ -356,7 +356,8 @@ public abstract class Converter extends Processor {
         @Override
         public Row processRow(TextReader info, Row row, String line) {
             if (rowCnt++ == 0) {
-                return row;
+                if(!info.getAllData()) 
+                    return row;
             }
             List<Integer> indices = getIndices(info);
             for (int i : indices) {
@@ -408,7 +409,8 @@ public abstract class Converter extends Processor {
         @Override
         public Row processRow(TextReader info, Row row, String line) {
             if (rowCnt++ == 0) {
-                return row;
+                if(!info.getAllData()) 
+                    return row;
             }
             List<Integer> indices = getIndices(info);
             for (int i : indices) {
@@ -586,7 +588,6 @@ public abstract class Converter extends Processor {
          */
         @Override
         public Row processRow(TextReader info, Row row, String line) {
-
             rowCnt++;
             if (rowCnt > 2) {
                 return row;
@@ -900,6 +901,8 @@ public abstract class Converter extends Processor {
      */
     public static class ColumnChanger extends Converter {
 
+        private boolean isRegex;
+
         /** _more_ */
         private String pattern;
 
@@ -917,6 +920,9 @@ public abstract class Converter extends Processor {
                              String value) {
             super(cols);
             this.pattern = pattern;
+            this.isRegex = StringUtil.containsRegExp(pattern);
+            if(!isRegex)
+                this.pattern = ".*" + this.pattern +".*";
             this.value   = value;
         }
 
@@ -934,14 +940,18 @@ public abstract class Converter extends Processor {
         public Row processRow(TextReader info, Row row, String line) {
             //Don't process the first row
             if (rowCnt++ == 0) {
-                return row;
+                if(!info.getAllData()) 
+                    return row;
             }
             List<Integer> indices = getIndices(info);
             for (Integer idx : indices) {
                 int index = idx.intValue();
                 if ((index >= 0) && (index < row.size())) {
-                    String s = row.getString(index);
-                    s = s.replaceAll(pattern, value);
+                    String s = row.getString(index).trim();
+                    if(isRegex) 
+                        s = s.replaceAll(pattern, value);
+                    else
+                        s = s.replaceAll(pattern, value);
                     row.set(index, s);
                 }
             }
@@ -1000,7 +1010,8 @@ public abstract class Converter extends Processor {
         public Row processRow(TextReader info, Row row, String line) {
             //Don't process the first row
             if (rowCnt++ != this.row) {
-                return row;
+                if(!info.getAllData()) 
+                    return row;
             }
             for (int i = 0; i < row.size(); i++) {
                 String s = row.getString(i);
@@ -1134,7 +1145,8 @@ public abstract class Converter extends Processor {
         public Row processRow(TextReader info, Row row, String line) {
             //Don't process the first row
             if (rowCnt++ == 0) {
-                return row;
+                if(!info.getAllData()) 
+                    return row;
             }
             List<Integer> indices = getIndices(info);
             for (Integer idx : indices) {
@@ -1203,7 +1215,8 @@ public abstract class Converter extends Processor {
         public Row processRow(TextReader info, Row row, String line) {
             //Don't process the first row
             if (rowCnt++ == 0) {
-                return row;
+                if(!info.getAllData()) 
+                    return row;
             }
 
             List<Integer> indices = getIndices(info);
@@ -1278,7 +1291,6 @@ public abstract class Converter extends Processor {
                 if (name.length() > 0) {
                     row.getValues().add(name);
                 }
-
                 return row;
             }
             List<Integer> indices = getIndices(info);
@@ -1956,6 +1968,53 @@ public abstract class Converter extends Processor {
     }
 
 
+    public static class Decimals extends Converter {
+
+        /** _more_ */
+        private int tens;
+
+        /**
+         * _more_
+         *
+         * @param col _more_
+         * @param delta1 _more_
+         * @param scale _more_
+         * @param delta2 _more_
+         */
+        public Decimals(List<String> cols,int decimals) {
+            super(cols);
+            this.tens =(int) Math.pow(10,decimals);
+        }
+
+        /**
+         * _more_
+         *
+         *
+         * @param info _more_
+         * @param row _more_
+         * @param line _more_
+         *
+         * @return _more_
+         */
+        @Override
+        public Row processRow(TextReader info, Row row, String line) {
+            List<Integer> indices = getIndices(info);
+            for(int i=0;i<indices.size();i++) {
+            try {
+                int index = indices.get(i);
+                double value = Double.parseDouble(row.get(index).toString());
+                value =  (double)Math.round(value * tens) / tens;
+                row.set(index,
+                        new Double(value));
+            } catch (NumberFormatException nfe) {}
+            }
+
+            return row;
+        }
+
+    }
+
+
     /**
      * Class description
      *
@@ -2190,7 +2249,8 @@ public abstract class Converter extends Processor {
         @Override
         public Row processRow(TextReader info, Row row, String line) {
             if (rowCnt++ == 0) {
-                return row;
+                if(!info.getAllData()) 
+                    return row;
             }
             List<Integer> indices = getIndices(info);
             for (Integer idx : indices) {

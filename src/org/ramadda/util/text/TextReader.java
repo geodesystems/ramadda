@@ -177,6 +177,8 @@ public class TextReader implements Cloneable {
     /** _more_ */
     private boolean okToRun = true;
 
+    private boolean allData = false;
+
     /** _more_ */
     private List<Row> rows;
 
@@ -210,6 +212,25 @@ public class TextReader implements Cloneable {
     public TextReader(BufferedReader reader) {
         this.reader = reader;
     }
+
+/**
+Set the AllData property.
+
+@param value The new value for AllData
+**/
+public void setAllData (boolean value) {
+	allData = value;
+}
+
+/**
+Get the AllData property.
+
+@return The AllData
+**/
+public boolean getAllData () {
+	return allData;
+}
+
 
     /**
      * Set the Comment property.
@@ -362,6 +383,7 @@ public class TextReader implements Cloneable {
         that.skipStrings   = skipStrings;
         that.changeStrings = changeStrings;
         that.setPrepend(this.prepend);
+        this.allData       =  this.allData;
         if (that.outputFile != null) {
             that.output = null;
         }

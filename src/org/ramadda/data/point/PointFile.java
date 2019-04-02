@@ -21,6 +21,7 @@ package org.ramadda.data.point;
 import org.ramadda.data.record.*;
 import org.ramadda.data.record.filter.*;
 import org.ramadda.util.GeoUtils;
+import org.ramadda.util.HtmlUtils;
 import org.ramadda.util.Station;
 import org.ramadda.util.Utils;
 
@@ -478,6 +479,11 @@ public abstract class PointFile extends RecordFile implements Cloneable,
      * @throws Exception _more_
      */
     public static void main(String[] args) throws Exception {
+        String s = "label=\"Height\" type=double missing=99999";
+        System.err.println(parseAttributes(s));
+
+        if(true) return;
+
 
         String epsg = "32610";
         epsg = "2955";
@@ -1109,9 +1115,11 @@ public abstract class PointFile extends RecordFile implements Cloneable,
      * @return _more_
      */
     public static Hashtable parseAttributes(String attrs) {
+        if(true)
+            return HtmlUtils.parseHtmlProperties(attrs);
+        Hashtable ht                    = new Hashtable();
         String    attrName              = "";
         String    attrValue             = "";
-        Hashtable ht                    = new Hashtable();
         final int STATE_LOOKINGFORNAME  = 0;
         final int STATE_INNAME          = 1;
         final int STATE_LOOKINGFORVALUE = 2;
@@ -1122,7 +1130,6 @@ public abstract class PointFile extends RecordFile implements Cloneable,
         boolean gotDblQuote    = false;
         boolean gotSingleQuote = false;
         boolean gotEquals      = false;
-
 
         for (int i = 0; i < chars.length; i++) {
             char c = chars[i];

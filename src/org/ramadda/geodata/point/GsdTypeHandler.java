@@ -71,6 +71,7 @@ public class GsdTypeHandler extends PointTypeHandler {
         "https://rucsoundings.noaa.gov/get_soundings.cgi?data_source={model}&latest=latest&n_hrs=1.0&fcst_len=shortest&airport={lat}%2C{lon}&text=Ascii%20text%20%28GSD%20format%29&hydrometeors=false&start=latest";
 
 
+
     public String getUrlForWiki(Request request, Entry entry, String tag,
                                 Hashtable props) {
         if (tag.equals(WikiConstants.WIKI_TAG_CHART)
@@ -80,7 +81,6 @@ public class GsdTypeHandler extends PointTypeHandler {
         }
         return super.getUrlForWiki(request, entry, tag, props);
     }
-
 
 
     @Override
@@ -99,9 +99,10 @@ public class GsdTypeHandler extends PointTypeHandler {
         url =  url.replace("{lat}",lat!=null?lat:"40");
         url =  url.replace("{lon}",lon!=null?lon:"-105");
         url = super.getPathForRecordEntry(entry, url, requestProperties);
-        //        System.err.println("url:" + url);
+        System.err.println("url:" + url);
         return url;
     }
+
 
     /**
      * _more_
