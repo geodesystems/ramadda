@@ -1188,6 +1188,7 @@ public class CsvUtil {
         new Cmd("-format", "<columns> <decimal format, e.g. '##0.00'>"),
         new Cmd("-unique", "<columns>", "(pass through unique values)"),
         new Cmd("-percent", "<columns to add>"),
+        new Cmd("-sort", "<column sort>"),
         new Cmd(
             "-denormalize",
             "<col idx>  <csv file>  <new col name> <mode replace add>",
@@ -1449,7 +1450,6 @@ public class CsvUtil {
             if (arg.equals("-sort")) {
                 int idx = Integer.parseInt(args.get(++i));
                 info.getProcessor().addProcessor(new Processor.Sorter(idx));
-
                 continue;
             }
 

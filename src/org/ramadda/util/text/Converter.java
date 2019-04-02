@@ -681,6 +681,9 @@ public abstract class Converter extends Processor {
                                         defaultChartable);
                 if (id.indexOf("date") >= 0) {
                     type = "date";
+                } else  if (id.equals("year")) {
+                    type = "date";
+                    format="yyyy";
                 } else if (id.equals("latitude") || id.equals("longitude")) {
                     type      = "double";
                     isGeo     = true;

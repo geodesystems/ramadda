@@ -866,10 +866,12 @@ public class MetadataElement extends MetadataTypeBase implements DataTypes {
                                        HtmlUtils.attr(HtmlUtils.ATTR_SIZE,
                                            "" + columns));
             }
+           
         } else if (dataType.equals(DATATYPE_COLORTABLE)) {
-            List<TwoFacedObject> names = ColorTable.getColorTableNames();
+            List names=StringUtil.split("blues,blue_green_red,white_blue,blue_red,red_white_blue,blue_white_red,grayscale,inversegrayscale,rainbow,nice,blues,gray_scale,inverse_gray_shade,light_gray_scale,blue_green,blue_purple,green_blue,orange_red,purple_blue,purple_blue_green,purple_red,red_purple,yellow_green,yellow_green_blue,yellow_orange_brown,yellow_orange_red,oranges,purples,reds,greens,map_grays,bright38,precipitation,humidity,temperature,visad,inverse_visad,wind_comps,windspeed,dbz,dbz_nws,topographic",",");
+            //            List<TwoFacedObject> names = ColorTable.getColorTableNames();
+            //            names.add(0, new TwoFacedObject("--none--", ""));
             names.add(0, new TwoFacedObject("--none--", ""));
-
             return HtmlUtils.select(arg, names, value);
         } else if (dataType.equals(DATATYPE_BOOLEAN)) {
             return HtmlUtils.checkbox(arg, "true",
