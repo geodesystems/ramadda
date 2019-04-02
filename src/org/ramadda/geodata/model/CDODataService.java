@@ -421,10 +421,15 @@ public abstract class CDODataService extends Service {
             throws Exception {
 
         //System.out.println(commands);
+        // Have to add this for our stupid system
+        Map<String, String> envMap = new HashMap<String, String>();
+        envMap.put("HDF5_USE_FILE_LOCKING", "FALSE");
+        //envMap.put("HDF5_DISABLE_VERSION_CHECK", "2");
+
 
         long millis = System.currentTimeMillis();
         JobManager.CommandResults results =
-            getRepository().getJobManager().executeCommand(commands, null,
+            getRepository().getJobManager().executeCommand(commands, envMap,
                 processDir, 60);
         //System.out.println("processing took: " + (System.currentTimeMillis()-millis));
         String errorMsg = results.getStderrMsg();
