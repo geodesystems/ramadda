@@ -26,7 +26,7 @@ amip_fully_forced:AMIP Fully Forced
 # Other
 reanalysis:Reanalysis
 obs:Observations
-LENS:CESM Large Ensemble
+LENS:Large Ensemble
 CESM-LENS:CESM Large Ensemble
 historical:Historical Observed Radiative Forcing
 historicalNat:Historical Natural Radiative Forcing

@@ -11,6 +11,8 @@ ESRL-CAM5L46:ESRL CAM5 (46-level)
 ESRL-GFSv2:ESRL GFS
 CESM1-CAM5:CESM1-CAM5
 CanESM2:CanESM2
+GFDL-CM3:GFDL CM3
+CM3:GFDL CM3
 
 # Reanalyses
 20thC_ReanV2:20th Century Reanalysis V2
@@ -21,5 +23,7 @@ merra:MERRA
 merra2:MERRA-2
 ncep.reanalysis:NCEP/NCAR R1
 ncep.reanalysis2:NCEP/DOE R2
-GPCP:Global Precip Clim Project (GPCP)
 jra55:JRA-55
+
+# Observations
+GPCP:Global Precip Clim Project (GPCP)
