@@ -159,9 +159,11 @@ public class Place {
 
     /** _more_ */
     private String name;
+    private String lcname;
 
     /** _more_          */
     private String suffix;
+    private String lcsuffix;
 
     /** _more_          */
     private String _name;
@@ -270,6 +272,22 @@ public class Place {
      */
     public String getName() {
         return name;
+    }
+
+    public String getLowerCaseName() {
+        if(lcname ==null) lcname = name.toLowerCase();
+        return lcname;
+    }
+
+    public String getSuffix() {
+        return suffix;
+    }
+
+
+    public String getLowerCaseSuffix() {
+        if(lcsuffix==null && suffix!=null)
+            lcsuffix = suffix.toLowerCase();
+        return lcsuffix;
     }
 
     /**

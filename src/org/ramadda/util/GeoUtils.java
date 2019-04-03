@@ -419,6 +419,11 @@ public class GeoUtils {
             address = address.substring("zip:".length()).trim();
             doZip = true;
         }
+        boolean doCity = false;
+        if (address.toLowerCase().startsWith("city:")) {
+            address = address.substring("city:".length()).trim();
+            doCity = true;
+        }
         //        System.err.println ("address:" + address +" " + doZip);
 
         if (address.length() == 0) {
@@ -461,6 +466,33 @@ public class GeoUtils {
                 if(place == null)
                     System.err.println("no place:" + address);
                 return place;
+            } catch(Exception exc) {
+                exc.printStackTrace();
+            }
+        }
+
+        if(doCity) {
+            try {
+                List<String> toks = StringUtil.splitUpTo(address,",",2);
+                if(toks.size()>1) {
+                    String city = toks.get(0).toLowerCase().trim();
+                    String city1 = city +" city";
+                    String city2 = city +" town";
+                    String city3 = city +" cdp";
+                    String state = toks.get(1).toLowerCase().trim();
+                    List<Place> places = Place.getPlaces("places");
+                    for(Place place2: places) {
+                        if(Misc.equals(place2.getLowerCaseSuffix(),state)) {
+                            String name = place2.getLowerCaseName();
+                            if(name.equals(city) ||
+                               name.equals(city1) ||
+                               name.equals(city2) ||
+                               name.equals(city3)) {
+                                return place2;
+                            }
+                        }
+                    }
+                }
             } catch(Exception exc) {
                 exc.printStackTrace();
             }
@@ -516,7 +548,6 @@ public class GeoUtils {
         }
 
 
-
         place = addressToLocation.get(address);
         if (place != null) {
             if ((bounds == null)
@@ -530,6 +561,7 @@ public class GeoUtils {
             }
         }
 
+        System.err.println("looking for address:" + address);
 
 
         String latString      = null;

@@ -1184,6 +1184,7 @@ function initMapFunctions(theMap) {
                     feature.dateIndex = i;
                     var percent = 100 * (time - start) / range;
                     percent = percent - percent * percentPad;
+                    if(!options) options = {};
                     var fdate = date.toLocaleDateString("en-US", options);
                     var name = Utils.camelCase(this.getFeatureName(feature));
                     var tooltip = "";
