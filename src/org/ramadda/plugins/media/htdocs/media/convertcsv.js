@@ -46,6 +46,8 @@ function csvInsertDb(field,value) {
     if(!value) value = " ";
     if(value!="true" && value!="false") 
         value = " \"" +value+"\"";
+    else
+        value = " " + value +" ";
     csvInsertCommand(field +value);
 }
 
