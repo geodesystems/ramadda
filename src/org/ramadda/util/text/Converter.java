@@ -924,8 +924,8 @@ public abstract class Converter extends Processor {
             super(cols);
             this.pattern = pattern;
             this.isRegex = StringUtil.containsRegExp(pattern);
-            if(!isRegex)
-                this.pattern = ".*" + this.pattern +".*";
+            //            if(!isRegex)
+                 //                this.pattern = ".*" + this.pattern +".*";
             this.value   = value;
         }
 
@@ -2005,6 +2005,9 @@ public abstract class Converter extends Processor {
             for(int i=0;i<indices.size();i++) {
             try {
                 int index = indices.get(i);
+                if ((index < 0) || (index >= row.size())) {
+                    continue;
+                }
                 double value = Double.parseDouble(row.get(index).toString());
                 value =  (double)Math.round(value * tens) / tens;
                 row.set(index,
