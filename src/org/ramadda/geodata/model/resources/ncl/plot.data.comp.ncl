@@ -802,6 +802,34 @@ begin
        ;rescf@mpProjection = "Satellite"
        rescf@mpProjection = "CylindricalEquidistant"
     end if
+    if (isatt(opts,"latlonlines") .and. opts@latlonlines) then
+      rescf@mpGridAndLimbOn = True
+      rescf@mpGridLineDashPattern = 2
+      lonSpacing = 15.0
+      latSpacing = 15.0
+      deltaLon = opts@maxLon - opts@minLon
+      deltaLat = opts@maxLat - opts@minLat
+      if (deltaLon .lt. 50) then
+        lonSpacing = 10.0
+        if (deltaLon .lt. 20) then
+          lonSpacing = 5.0
+        end if
+        if (deltaLon .lt. 10) then
+          lonSpacing = 2.0
+        end if
+      end if
+      if (deltaLat .lt. 50) then
+        latSpacing = 10.0
+        if (deltaLat .lt. 20) then
+          latSpacing = 5.0
+        end if
+        if (deltaLat .lt. 10) then
+          latSpacing = 2.0
+        end if
+      end if
+      rescf@mpGridLonSpacingF = lonSpacing
+      rescf@mpGridLatSpacingF = latSpacing
+    end if
   else 
     if (opts@maxLat .gt. 0) then
       rescf@gsnPolar = "NH"
@@ -1012,6 +1040,7 @@ begin
     plots(0) = gsn_csm_contour_map(wks,mydata,rescf)
     ;if (cint .eq. 0) then
     if (rescf@cnMinLevelValF .eq. (-1*rescf@cnMaxLevelValF)) then 
+      ;print("removing middle contours for plot 0")
       res2 = remove_middle_contours(plots(0), rescf, 1)
       plots(0) = gsn_csm_contour_map(wks,mydata,res2)
     end if
@@ -1042,9 +1071,10 @@ begin
         end if
         plots(i) = gsn_csm_contour_map(wks,mydata,rescf)
         if (isanom .or. \
-         (isatt(rescf, "cnMinLevelValF") .and. isatt(rescf, "cnMaxLevelValF") \ 
-         .and. (rescf@cnMinLevelValF .eq. (-1*rescf@cnMaxLevelValF)))) then 
-          res2 = remove_middle_contours(plots(0), rescf, 1)
+         (isatt(rescf, "cnMinLevelValF") .and. isatt(rescf, "cnMaxLevelValF") .and. \
+         (rescf@cnMinLevelValF .eq. (-1*rescf@cnMaxLevelValF)))) then 
+          ;print("removing middle contours for plot "+i)
+          res2 = remove_middle_contours(plots(i), rescf, 1)
           plots(i) = gsn_csm_contour_map(wks,mydata,res2)
         else
           if (i .eq. 0 .and. (ismissing(cint) .or. cint .eq. 0.)) then
@@ -1514,7 +1544,14 @@ begin
     rscript(6) = "par(lwd=2)"
     rscript(7) = "sm.options(rugplot=FALSE)"
     rscript(8) = "options(na.action=na.exclude)"
-    rscript(9) = "# Make the density function"
+    linenum=9
+    if (numpdfs .gt. 1) then
+        outfile2 = pdffiles(1)
+        rscript(linenum) = "data2<-matrix(scan(file='"+outfile2+"'),ncol=1,byrow=TRUE)"
+        linenum=linenum+1
+   end if
+
+    rscript(linenum) = "# Make the density function"
     if (opts@xmax .eq. 0 .and. opts@xmin .eq. 0) then
       xlims = ""
     else
@@ -1525,16 +1562,27 @@ begin
     else
       ylims = ",ylim=c("+opts@ymin+","+opts@ymax+")"
     end if
-    if (opts@isanom .and. xlims .eq. "") then
-        rscript(10) = "a<-sm.density(data[,1],display='none')"
-        rscript(11) = "a<-cbind(a$eval.points,a$estimate)"
-        rscript(12) = "b<-min(a[,1])"
-        rscript(13) = "c<-max(a[,1])"
-        rscript(14) = "d<-max(abs(b),c)"
-        xlims = ",xlim=c(-d,d)"
-        linenum = 15
-    else
-        linenum = 10
+    if (xlims .eq. "") then
+      rscript(linenum+1) = "a<-sm.density(data[,1],display='none')"
+      rscript(linenum+2) = "a<-cbind(a$eval.points,a$estimate)"
+      if (numpdfs .gt. 1) then
+          rscript(linenum+3) = "a2<-sm.density(data2[,1],display='none')"
+          rscript(linenum+4) = "a2<-cbind(a2$eval.points,a2$estimate)"
+          rscript(linenum+5) = "b<-min(a[,1],a2[,1])"
+          rscript(linenum+6) = "c<-max(a[,1],a2[,1])"
+          linenum=linenum+7
+      else
+          rscript(linenum+3) = "b<-min(a[,1])"
+          rscript(linenum+4) = "c<-max(a[,1])"
+          linenum=linenum+5
+      end if
+      if (opts@isanom) then
+          rscript(linenum) = "d<-max(abs(b),c)"
+          xlims = ",xlim=c(-d,d)"
+          linenum=linenum+1
+      else
+          xlims = ",xlim=c(b,c)"
+      end if
     end if
     rscript(linenum) = "a<-sm.density(data[,1],col='black',lwd=3,ylab='Density',xlab='"+opts@varTitle+"'"+xlims+ylims+")"
     rscript(linenum+1) = "a<-cbind(a$eval.points,a$estimate)"
@@ -1547,12 +1595,10 @@ begin
     end if
     rscript(linenum+1) = "sm.options(add=TRUE)"
     if (numpdfs .gt. 1) then
-        outfile2 = pdffiles(1)
-        rscript(linenum+2) = "data2<-matrix(scan(file='"+outfile2+"'),ncol=1,byrow=TRUE)"
-        rscript(linenum+3) = "a<-sm.density(data2[,1],col='red',lwd=3"+xlims+ylims+")"
-        rscript(linenum+4) = "a<-cbind(a$eval.points,a$estimate)"
-        rscript(linenum+5) = "rug(data2[,1],lwd=1.,col='red',side=1)"
-        linenum = linenum+4
+        rscript(linenum+2) = "a2<-sm.density(data2[,1],col='red',lwd=3"+xlims+ylims+")"
+        rscript(linenum+3) = "a2<-cbind(a2$eval.points,a2$estimate)"
+        rscript(linenum+4) = "rug(data2[,1],lwd=1.,col='red',side=1)"
+        linenum = linenum+3
     end if
     rscript(linenum+2) = "title(main='"+opts@mainTitle+"',line=2., cex.main=1.3, font.main=1)"
     rscript(linenum+3) = "title(main='"+opts@regionTitle+"',line=1.2, cex.main=1.1, font.main=1)"
@@ -2266,6 +2312,13 @@ begin
     time_average = True
   end if
   
+  temp = getenv("latlonlines")
+  if (.not. ismissing(temp)) then
+    latlonlines = temp .eq. "true"
+  else
+    latlonlines = False
+  end if
+  
   temp = getenv("pdfstat")
   if (.not. ismissing(temp)) then
     pdfstat = temp
@@ -2314,6 +2367,7 @@ begin
   options@climId = climId
   options@average_time = time_average
   options@pdfstat = pdfstat
+  options@latlonlines = latlonlines
 
   ; add in the path to R if it is defined
   temp = getenv("rpath")
