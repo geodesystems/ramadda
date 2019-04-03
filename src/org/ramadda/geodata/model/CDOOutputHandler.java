@@ -236,6 +236,9 @@ public class CDOOutputHandler extends OutputHandler implements ServiceProvider {
     /** day period */
     public static final String PERIOD_DAY = "day";
 
+    /** date formatter */
+    public static final CalendarDateFormatter dateFormatter  = new CalendarDateFormatter("yyyy-MM-dd'T'HH:mm:ss");
+    
     /** start year */
     int startYear = 1979;
 
@@ -1368,9 +1371,9 @@ public class CDOOutputHandler extends OutputHandler implements ServiceProvider {
                 } else {
                     dateSelect =
                         OP_SELDATE + ","
-                        + CalendarDateFormatter.toDateTimeStringISO(dates[0])
+                        + dateFormatter.toString(dates[0])
                         + ","
-                        + CalendarDateFormatter.toDateTimeStringISO(dates[1]);
+                        + dateFormatter.toString(dates[1]);
                 }
             }
         } else {                                // month and year
