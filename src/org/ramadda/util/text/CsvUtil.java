@@ -1806,8 +1806,8 @@ public class CsvUtil {
             }
             if (arg.equals("-geocodeaddressdb")) {
                 List<String> cols   = getCols(args.get(++i));
-                String       suffix = args.get(++i).trim();
                 String       prefix = args.get(++i).trim();
+                String       suffix = args.get(++i).trim();
                 info.getProcessor().addProcessor(new Converter.Geocoder(cols,
                         prefix, suffix, true));
 
