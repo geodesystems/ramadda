@@ -563,6 +563,7 @@ public class GeoUtils {
             }
         }
 
+        if(address.length()==0 || address.equals(",")) return null;
         System.err.println("looking for address:" + address);
 
 
