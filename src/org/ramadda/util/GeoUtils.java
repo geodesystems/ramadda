@@ -479,6 +479,7 @@ public class GeoUtils {
                     String city1 = city +" city";
                     String city2 = city +" town";
                     String city3 = city +" cdp";
+                    String city4 = city +" village";
                     String state = toks.get(1).toLowerCase().trim();
                     List<Place> places = Place.getPlaces("places");
                     for(Place place2: places) {
@@ -487,7 +488,8 @@ public class GeoUtils {
                             if(name.equals(city) ||
                                name.equals(city1) ||
                                name.equals(city2) ||
-                               name.equals(city3)) {
+                               name.equals(city3) ||
+                               name.equals(city4)) {
                                 return place2;
                             }
                         }
