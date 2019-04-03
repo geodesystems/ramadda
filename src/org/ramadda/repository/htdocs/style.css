@@ -950,7 +950,7 @@ white-space:nowrap;
 display: inline-block;
 position:relative;
 max-width:100%;
-overflow-x:auto;
+overflow-x:hidden;
 white-space:nowrap;
 vertical-align:bottom;
 }
