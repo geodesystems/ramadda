@@ -224,6 +224,21 @@ public abstract class CsvOperator {
 
                     return;
                 }
+                if (StringUtil.containsRegExp(tok)) {
+                    for (int i = 0; i < header.size(); i++) {
+                        if ( !colsSeen.contains(i)) {
+                            String colName = (String) header.get(i);
+                            if(colName.matches(tok)) {
+                                colsSeen.add(i);
+                                indices.add(i);
+                            }
+                        }
+                    }
+
+                    return;
+                }
+
+
                 Integer iv = columnMap.get(tok);
                 if (iv != null) {
                     start = end = iv;

@@ -20,6 +20,7 @@ package org.ramadda.util.text;
 import org.ramadda.data.record.RecordField;
 
 
+import org.ramadda.util.HtmlUtils;
 import org.ramadda.util.Utils;
 
 
@@ -1349,7 +1350,8 @@ public abstract class Processor extends CsvOperator {
 
 
                 boolean isNumber = isNumeric[colIdx];
-                String  type     = "string";
+                String  type     = CsvUtil.getDbProp(props, "table",
+                                                     "type", "string");
                 if (isNumber) {
                     type = "double";
                 }
@@ -1359,6 +1361,7 @@ public abstract class Processor extends CsvOperator {
                 boolean       canSearch = dfltCanSearch;
 
 
+                attrs.append(XmlUtil.attrs(new String[] { "name", colId }));
 
                 if (CsvUtil.getDbProp(props, colId, "changetype",
                                       dfltChangeType).equals("true")) {
@@ -1370,7 +1373,6 @@ public abstract class Processor extends CsvOperator {
                     attrs.append(XmlUtil.attrs(new String[] { "size",
                             size }));
                 }
-                attrs.append(XmlUtil.attrs(new String[] { "name", colId }));
                 if ((colId.indexOf("type") >= 0)
                         || (colId.indexOf("category") >= 0)) {
                     type = "enumerationplus";
@@ -1869,9 +1871,10 @@ public abstract class Processor extends CsvOperator {
                     String label = Utils.makeLabel(""
                                        + values.get(i)).replaceAll(" ",
                                            "&nbsp;");
-                    info.getWriter().print(label);
+                    info.getWriter().print(HtmlUtils.span(label,HtmlUtils.attr("title",label)));
                 } else {
-                    info.getWriter().print("" + values.get(i));
+                    String label = values.get(i).toString();
+                    info.getWriter().print(HtmlUtils.span(label,HtmlUtils.attr("title",label)));
                 }
                 info.getWriter().print("</div>");
                 info.getWriter().print(close);
