@@ -40,6 +40,7 @@ import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Hashtable;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -313,11 +314,11 @@ public class FeatureCollection {
 
             String           colorByFieldAttr = colorBy.getAttr1().trim();
             DbaseDataWrapper colorByField     = null;
+            System.err.println ("looking for:" + colorByFieldAttr);
             for (int j = 0; j < fieldDatum.size(); j++) {
                 if (fieldDatum.get(j).getName().equalsIgnoreCase(
                         colorByFieldAttr)) {
                     colorByField = fieldDatum.get(j);
-
                     break;
                 }
             }
@@ -346,26 +347,28 @@ public class FeatureCollection {
             List features = shapefile.getFeatures();
             styleUrls = new ArrayList<String>();
 
-            Hashtable<String, Color> valueMap = new Hashtable<String,
-                                                    Color>();
-            if ((ct != null) && (colorByField != null)) {
-                boolean needMin = Double.isNaN(min);
-                boolean needMax = Double.isNaN(max);
-                if (needMin || needMax) {
-                    if (needMin) {
-                        min = Double.MAX_VALUE;
-                    }
-                    if (needMax) {
-                        max = Double.MIN_VALUE;
-                    }
 
-                    for (int i = 0; i < features.size(); i++) {
-                        double value = colorByField.getDouble(i);
+            Hashtable<String, Color> valueMap = new Hashtable<String,Color>();
+            if ((ct != null) && (colorByField != null)) {
+                if(colorByField.isNumeric()) {
+                    boolean needMin = Double.isNaN(min);
+                    boolean needMax = Double.isNaN(max);
+                    if (needMin || needMax) {
                         if (needMin) {
-                            min = Math.min(min, value);
+                            min = Double.MAX_VALUE;
                         }
                         if (needMax) {
-                            max = Math.max(max, value);
+                            max = Double.MIN_VALUE;
+                        }
+
+                        for (int i = 0; i < features.size(); i++) {
+                            double value = colorByField.getDouble(i);
+                            if (needMin) {
+                                min = Math.min(min, value);
+                            }
+                            if (needMax) {
+                                max = Math.max(max, value);
+                            }
                         }
                     }
                 }
@@ -385,29 +388,40 @@ public class FeatureCollection {
                     }
                 }
             }
-
-            for (int i = 0; i < features.size(); i++) {
-                Color color = null;
-                if (ct != null) {
-                    double value = colorByField.getDouble(i);
-                    color = ct.getColor(min, max, value);
-                } else if (colorByField != null) {
-                    String value = "" + colorByField.getData(i);
-                    color = valueMap.get(value);
-                    //                    System.err.println("value:" + value+ " color:" + color);
-                }
-                if (color != null) {
-                    String styleUrl = makeFillStyle(color, colorMap,
-                                          lineColor,
-                                          !lineColorAttr.equals("none"),
-                                          folder, styleCnt, styleName,
-                                          balloonTemplate);
-                    styleUrls.add(styleUrl);
-                } else {
-                    styleUrls.add(styleName);
+            if(colorByField!=null) {
+                int cnt = 0;
+                Hashtable<String,Integer> indexMap = new Hashtable<String,Integer>();
+                for (int i = 0; i < features.size(); i++) {
+                    Color color = null;
+                    if (ct != null) {
+                        if(colorByField.isNumeric()) {
+                            double value = colorByField.getDouble(i);
+                            color = ct.getColor(min, max, value);
+                        } else {
+                            String value = "" + colorByField.getData(i);
+                            Integer index = indexMap.get(value);
+                            if(index==null) {
+                                index = new Integer(cnt++);
+                                indexMap.put(value,index);
+                            }
+                            color = ct.getColorByIndex(index);
+                        }
+                    } else {
+                        String value = "" + colorByField.getData(i);
+                        color = valueMap.get(value);
+                    }
+                    if (color != null) {
+                        String styleUrl = makeFillStyle(color, colorMap,
+                                                        lineColor,
+                                                        !lineColorAttr.equals("none"),
+                                                        folder, styleCnt, styleName,
+                                                        balloonTemplate);
+                        styleUrls.add(styleUrl);
+                    } else {
+                        styleUrls.add(styleName);
+                    }
                 }
             }
-
         }
 
         KmlUtil.open(folder, false);

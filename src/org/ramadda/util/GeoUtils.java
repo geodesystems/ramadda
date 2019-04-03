@@ -413,6 +413,12 @@ public class GeoUtils {
             address = address.substring("state:".length()).trim();
             doState = true;
         }
+
+        boolean doZip = false;
+        if (address.toLowerCase().startsWith("zip:")) {
+            address = address.substring("zip:".length()).trim();
+            doZip = true;
+        }
         if (address.length() == 0) {
             return null;
         }
@@ -436,6 +442,19 @@ public class GeoUtils {
         if(doState) {
             try {
                 List<Place> places = Place.getPlaces("states");
+                place = Place.findPlace(places, address);
+                if(place == null)
+                    System.err.println("no place:" + address);
+                return place;
+            } catch(Exception exc) {
+                exc.printStackTrace();
+            }
+        }
+
+
+        if(doZip) {
+            try {
+                List<Place> places = Place.getPlaces("zipcodes");
                 place = Place.findPlace(places, address);
                 if(place == null)
                     System.err.println("no place:" + address);

@@ -197,6 +197,14 @@ public class ColorTable {
     }
 
 
+    public Color getColorByIndex(int index) {
+        colors = getColors();
+        if(index>=colors.size()) {
+            index = index%colors.size();
+        }
+        return colors.get(index);
+    }
+
     /**
      * get the pixel value in the table from the percent
      *

@@ -201,6 +201,10 @@ public class DbaseDataWrapper {
         return data.getType();
     }
 
+    public boolean  isNumeric() {
+        return this.getType() == DbaseData.TYPE_NUMERIC;
+    }
+
     /**
      * _more_
      *

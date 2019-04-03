@@ -1294,6 +1294,7 @@ public class MapInfo {
      */
     public void addKmlUrl(String name, String url, boolean canSelect,
                           String args) {
+        name = name.replaceAll("'"," ");
         getJS().append(mapVarName + ".addKMLLayer(" + HtmlUtils.squote(name)
                        + "," + HtmlUtils.squote(url) + "," + canSelect
                        + ",null,null," + args + ");\n");
