@@ -635,6 +635,96 @@ public class Filter extends Converter {
 
 
 
+    /**
+     * Class description
+     *
+     *
+     * @version        $version$, Fri, Mar 22, '19
+     * @author         Enter your name here...    
+     */
+    public static class MinColumns extends Filter {
+
+        /** _more_ */
+        private int cnt;
+
+
+        /**
+         * _more_
+         *
+         * @param start _more_
+         * @param skip _more_
+         *
+         * @param pattern _more_
+         */
+        public MinColumns(int cnt) {
+            this.cnt = cnt;
+        }
+
+
+
+        /**
+         * _more_
+         *
+         *
+         * @param info _more_
+         * @param row _more_
+         * @param line _more_
+         *
+         * @return _more_
+         */
+        @Override
+        public boolean rowOk(TextReader info, Row row, String line) {
+            if(row.size()<cnt) return false;
+            return true;
+        }
+    }
+
+    /**
+     * Class description
+     *
+     *
+     * @version        $version$, Fri, Mar 22, '19
+     * @author         Enter your name here...    
+     */
+    public static class MaxColumns extends Filter {
+
+        /** _more_ */
+        private int cnt;
+
+
+        /**
+         * _more_
+         *
+         * @param start _more_
+         * @param skip _more_
+         *
+         * @param pattern _more_
+         */
+        public MaxColumns(int cnt) {
+            this.cnt = cnt;
+        }
+
+
+
+        /**
+         * _more_
+         *
+         *
+         * @param info _more_
+         * @param row _more_
+         * @param line _more_
+         *
+         * @return _more_
+         */
+        @Override
+        public boolean rowOk(TextReader info, Row row, String line) {
+            if(row.size()>cnt) return false;
+            return true;
+        }
+    }
+
+
+
 
 
     /**

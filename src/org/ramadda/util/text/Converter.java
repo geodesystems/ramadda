@@ -2005,6 +2005,9 @@ public abstract class Converter extends Processor {
             for(int i=0;i<indices.size();i++) {
             try {
                 int index = indices.get(i);
+                if ((index < 0) || (index >= row.size())) {
+                    continue;
+                }
                 double value = Double.parseDouble(row.get(index).toString());
                 value =  (double)Math.round(value * tens) / tens;
                 row.set(index,

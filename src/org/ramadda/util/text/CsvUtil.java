@@ -1123,6 +1123,8 @@ public class CsvUtil {
         new Cmd("-skip", "<how many lines to skip>"),
         new Cmd("-start", "<start pattern>"),
         new Cmd("-stop", "<stop pattern>"),
+        new Cmd("-min", "<min # columns>"),
+        new Cmd("-max", "<max # columns>"),
         new Cmd("-rawlines", "<how many lines to pass through unprocesed>"),
         new Cmd("-cut", "<one or more rows. -1 to the end>"),
         new Cmd("-include", "<one or more rows, -1 to the end>"),
@@ -1405,6 +1407,18 @@ public class CsvUtil {
 
             if (arg.equals("-stop")) {
                 info.getFilter().addFilter(new Filter.Stop(args.get(++i)));
+
+                continue;
+            }
+
+            if (arg.equals("-min")) {
+                info.getFilter().addFilter(new Filter.MinColumns(new Integer(args.get(++i))));
+
+                continue;
+            }
+
+            if (arg.equals("-max")) {
+                info.getFilter().addFilter(new Filter.MaxColumns(new Integer(args.get(++i))));
 
                 continue;
             }
