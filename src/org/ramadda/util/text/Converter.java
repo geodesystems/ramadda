@@ -924,8 +924,8 @@ public abstract class Converter extends Processor {
             super(cols);
             this.pattern = pattern;
             this.isRegex = StringUtil.containsRegExp(pattern);
-            if(!isRegex)
-                this.pattern = ".*" + this.pattern +".*";
+            //            if(!isRegex)
+                 //                this.pattern = ".*" + this.pattern +".*";
             this.value   = value;
         }
 
