@@ -419,6 +419,7 @@ public class GeoUtils {
             address = address.substring("zip:".length()).trim();
             doZip = true;
         }
+        System.err.println ("address:" + address +" " + doZip);
         if (address.length() == 0) {
             return null;
         }
