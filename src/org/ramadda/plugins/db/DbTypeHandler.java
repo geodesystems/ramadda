@@ -1700,15 +1700,8 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
             }
         }
 
-        //        StringBuilder advanced = new StringBuilder(HtmlUtils.formTable());
-        /*
-        advanced.append(
-            HtmlUtils.formEntry(
-                msgLabel("Search Type"),
-                HtmlUtils.checkbox(
-                    ARG_DB_OR, "true", request.get(ARG_DB_OR, false)) + " "
-                        + msg("Use OR logic")));
-        */
+
+
         String count = msgLabel("Count") + " "
                        + HtmlUtils.input(ARG_MAX, getMax(request),
                                          HtmlUtils.SIZE_5
@@ -1791,6 +1784,13 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
 
         }
         if (normalForm) {
+            sb.append(
+                      HtmlUtils.formEntry(
+                                          msgLabel("Search Type"),
+                                          HtmlUtils.checkbox(
+                                                             ARG_DB_OR, "true", request.get(ARG_DB_OR, false)) + " "
+                                          + msg("Use OR logic")));
+
             sb.append(
                 formEntry(
                     request, msgLabel("View As"),
@@ -1936,7 +1936,6 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
             where.add(Clause.eq(COL_ID, entry.getId()));
         }
         String textToSearch = (String) request.getString(ARG_TEXT, "").trim();
-        System.err.println("text:"+ textToSearch);
         if (textToSearch.length() > 0) {
             addTextDbSearch(request, textToSearch, searchCriteria, where,
                             false, false, false);
