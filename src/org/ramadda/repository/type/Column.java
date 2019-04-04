@@ -1906,28 +1906,33 @@ public class Column implements DataTypes, Constants {
      * @param value _more_
      * @param where _more_
      */
-    public void addTextSearch(String value, List<Clause> where) {
-        value = value.trim();
+    public void addTextSearch(String text, List<Clause> where) {
+        text = text.trim();
+        List<String> values  = StringUtil.split(text, ",",true,true);
+        List<Clause> clauses= new ArrayList<Clause>();
+        for(String value: values) {
+
         if (value.equals("<blank>")) {
-            where.add(Clause.eq(getFullName(), ""));
+            clauses.add(Clause.eq(getFullName(), ""));
         } else if (value.startsWith("!")) {
             value = value.substring(1);
             if (value.length() == 0) {
-                where.add(Clause.neq(getFullName(), ""));
+                clauses.add(Clause.neq(getFullName(), ""));
             } else {
-                where.add(Clause.notLike(getFullName(), "%" + value + "%"));
+                clauses.add(Clause.notLike(getFullName(), "%" + value + "%"));
             }
         } else if (value.startsWith("=")) {
             value = value.substring(1);
-            where.add(Clause.eq(getFullName(), value));
+            clauses.add(Clause.eq(getFullName(), value));
         } else if ( !value.startsWith("%") && value.endsWith("%")) {
-            where.add(getDatabaseManager().makeLikeTextClause(getFullName(),
+            clauses.add(getDatabaseManager().makeLikeTextClause(getFullName(),
                     value, false));
         } else {
-            where.add(getDatabaseManager().makeLikeTextClause(getFullName(),
+            clauses.add(getDatabaseManager().makeLikeTextClause(getFullName(),
                     "%" + value + "%", false));
         }
-
+        }
+        where.add(Clause.or(clauses));
     }
 
     /**

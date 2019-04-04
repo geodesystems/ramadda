@@ -1927,13 +1927,14 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
 
 
         StringBuilder sb             = new StringBuilder();
+        Clause  idClause = null;
         List<Clause>  where          = new ArrayList<Clause>();
         StringBuilder searchCriteria = new StringBuilder();
 
         if (request.get(ARG_DB_ALL, false) && request.getUser().getAdmin()) {
             System.err.println("searching all");
         } else {
-            where.add(Clause.eq(COL_ID, entry.getId()));
+            idClause = Clause.eq(COL_ID, entry.getId());
         }
         String textToSearch = (String) request.getString(ARG_TEXT, "").trim();
         if (textToSearch.length() > 0) {
@@ -1951,6 +1952,7 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
         } else {
             mainClause = Clause.and(where);
         }
+        if(idClause!=null)        mainClause = Clause.and(idClause,mainClause);
 
         return handleList(request, entry, mainClause, "", true);
     }
