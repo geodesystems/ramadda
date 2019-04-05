@@ -84,7 +84,7 @@ var Utils = {
     },
     replaceRoot: function(s) {
         var  p = "\\${" +"root}";
-        var pattern = new    RegExp(p);
+        var pattern = new RegExp(p);
         s = s.replace(pattern,ramaddaBaseUrl);
         return s;
     },
@@ -136,6 +136,7 @@ var Utils = {
         if (window[obj]) return;
     },
     importCSS: async function(path, callback, err, noCache) {
+        path =this.replaceRoot(path);
         var key = "css:" + path;
         if (!noCache)
             if (this.imports[key]) return Utils.call(callback);
@@ -154,6 +155,7 @@ var Utils = {
     },
     doFetch: async function(path, callback, err,what) {
         path =this.replaceRoot(path);
+        console.log("path:" + path);
         try {
             if(!what) what = "text";
             await $.ajax({
