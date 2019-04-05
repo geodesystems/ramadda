@@ -1,0 +1,10 @@
+{
+  "languageId": "lisp",
+  "displayName": "Microtalk Lisp",
+  "url": "https://ds604.neocities.org/js/microtalk.js",
+  "module": "MICROTALK",
+  "evaluator": "evaluate",
+  "pluginType": "language",
+    "outputHandler":"processLispOutput"
+
+}
