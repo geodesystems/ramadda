@@ -1698,7 +1698,7 @@ function RamaddaNotebookCell(notebook, id, content, props) {
         },
         getFetchUrl: async function(url, type, callback) {
             //Check for entry id
-            url = url.replace("${root}",ramaddaBaseUrl);
+            url = Utils.replaceRoot(url);
             if(url.match(/^[a-z0-9]+-[a-z0-9].*/)) {
                 return Utils.call(callback, ramaddaBaseUrl + "/entry/get?entryid=" + url);
             } else {
@@ -1747,12 +1747,12 @@ function RamaddaNotebookCell(notebook, id, content, props) {
                     }
                 }
 
-
                 await this.getFetchUrl(line,tag,u=>url=u);
                 if(!url) {
                     this.handleError(chunk, "Unable to get entry url:" + line, "io");
                     return;
                 }
+                console.log("processFetch:" + url);
 
                 if (tag == "js") {
                     //Don't import jquery
