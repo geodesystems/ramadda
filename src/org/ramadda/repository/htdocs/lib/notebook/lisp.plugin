@@ -5,6 +5,5 @@
   "module": "MICROTALK",
   "evaluator": "evaluate",
   "pluginType": "language",
-    "outputHandler":"processLispOutput"
-
+   "outputHandler":"processLispOutput",
 }
