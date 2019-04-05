@@ -86,6 +86,7 @@ var Utils = {
         var  p = "\\${" +"root}";
         var pattern = new RegExp(p);
         s = s.replace(pattern,ramaddaBaseUrl);
+        console.log("replaceRoot:" + s +"  pattern:" + p);
         return s;
     },
     importJS: async function(path, callback, err, noCache) {
@@ -155,7 +156,7 @@ var Utils = {
     },
     doFetch: async function(path, callback, err,what) {
         path =this.replaceRoot(path);
-        console.log("path:" + path);
+        console.log("doFetch: path=" + path);
         try {
             if(!what) what = "text";
             await $.ajax({

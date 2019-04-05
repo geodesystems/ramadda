@@ -7088,6 +7088,7 @@ function RamaddaNotebookCell(notebook, id, content, props) {
                     var isJson = tag == "json";
                     var isBlob = tag == "blob";
                     var results = null;
+                    console.log("calling doFetch:" + url);
                     await Utils.doFetch(url, h => results = h, (jqxhr, settings, err) => error = "Error fetching " + origLine + " error:" + (err ? err.toString() : ""),tag=="blob"?"blob":"text");
                     if (results) {
                         if (isJson) {
@@ -7245,7 +7246,6 @@ function RamaddaNotebookCell(notebook, id, content, props) {
             }
         },
         processJs: async function(chunk) {
-            console.log("processjs");
             var lines;
             var topLines = 0;
             try {
