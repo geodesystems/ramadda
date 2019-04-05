@@ -82,7 +82,14 @@ var Utils = {
                     })});
         return attrs;
     },
+    replaceRoot: function(s) {
+        var  p = "\\${" +"root}";
+        var pattern = new    RegExp(p);
+        s = s.replace(pattern,ramaddaBaseUrl);
+        return s;
+    },
     importJS: async function(path, callback, err, noCache) {
+        path =this.replaceRoot(path);
         let _this = this;
         var key = "js:" + path;
         if (!noCache && this.imports[key]) return Utils.call(callback);
@@ -146,6 +153,7 @@ var Utils = {
         } catch (e) {}
     },
     doFetch: async function(path, callback, err,what) {
+        path =this.replaceRoot(path);
         try {
             if(!what) what = "text";
             await $.ajax({
@@ -407,6 +415,11 @@ var Utils = {
     },
     isDefined: function(v) {
         return !(typeof v === 'undefined');
+    },
+    makeLabel: function(s) {
+        s  = s+"";
+        s = s.trim();
+        return this.camelCase(s.replace(/_/g," "));
     },
     camelCase: function(s) {
         if (!s) return s;
@@ -1814,17 +1827,6 @@ $.widget("custom.iconselectmenu", $.ui.selectmenu, {
 window.onbeforeunload = pageIsUnloading;
 
 var HtmlUtil = HtmlUtils;
-
-
-/*
-msg = "red_white_blue:["
-    for(i=Utils.ColorTables.blue_white_red.length-1;i>=0;i--) {
-    msg +=Utils.ColorTables.blue_white_red[i]+",";
-}
-msg+="]"
-    //    console.log(msg);
-    */
-
 
 function Div(contents, clazz) {
     this.id = HtmlUtils.getUniqueId();

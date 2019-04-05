@@ -402,20 +402,33 @@ function RamaddaNotebookDisplay(displayManager, id, properties) {
        plugins: {},
        addPlugin: async function(plugin, chunk) {
           var error;
-          await Utils.importJS(plugin.url,
+          var url = Utils.replaceRoot(plugin.url);
+          await Utils.importJS(url,
                               () => {},
                               (jqxhr, settings, exception) => {
-                                  error = "Error fetching plugin url:" + plugin.url;
+                                  error = "Error fetching plugin url:" + url;
                               });
           if(!error) {
               var module = plugin.module;
-              var tries = 500;
-              //Wait 5 seconds max
+              var tries = 200;
+              //Wait 10 seconds max
               while(window[module]==null && tries-->0) {
-                  await new Promise(resolve => setTimeout(resolve, 10));
+                  await new Promise(resolve => setTimeout(resolve, 50));
               }
               if(!window[module]) {
                   error = "Could not load plugin module: " +module;
+              } else {
+                  if(window[module].isReady) {
+                      var tries = 200;
+                      //Wait 5 seconds max
+                      while(!window[module].isReady() && tries-->0) {
+                          //                          console.log("not ready yet:" + tries);
+                          await new Promise(resolve => setTimeout(resolve, 50));
+                      }
+                      //                      console.log("final ready:" + window[module].isReady() );
+                      if(!window[module].isReady()) 
+                          error = "Could not load plugin module: " +module;
+                  }
               }
           }
           if(error) {
@@ -430,7 +443,7 @@ function RamaddaNotebookDisplay(displayManager, id, properties) {
        processChunkWithPlugin: async function(id,chunk, callback) {
            var module = this.plugins[id].module;
            var func  = this.plugins[id].evaluator;
-           var result = window[module][func](chunk.content);
+           var result = window[module][func](chunk.content, chunk);
            return Utils.call(callback,result);
 
        },
@@ -727,7 +740,6 @@ var iodide  = {
 };
 
 var notebook;
-
 
 
 function NotebookState(cell, div) {
@@ -1686,6 +1698,7 @@ function RamaddaNotebookCell(notebook, id, content, props) {
         },
         getFetchUrl: async function(url, type, callback) {
             //Check for entry id
+            url = url.replace("${root}",ramaddaBaseUrl);
             if(url.match(/^[a-z0-9]+-[a-z0-9].*/)) {
                 return Utils.call(callback, ramaddaBaseUrl + "/entry/get?entryid=" + url);
             } else {
@@ -1851,16 +1864,10 @@ function RamaddaNotebookCell(notebook, id, content, props) {
                 chunk.div.set("");
                 this.notebook.loadedPyodide = true;
             }
-            var state = new NotebookState(this, chunk.div);
-            window.notebook = state;
+
             pyodide.runPython(chunk.content);
-            if (state.getStop()) {
-                chunk.ok = false;
-            }
         },
         processPlugin: async function(chunk) {
-            var state = new NotebookState(this, chunk.div);
-            window.notebook = state;
             var plugin = JSON.parse(chunk.content);
             await this.notebook.addPlugin(plugin, chunk);
         },
@@ -1925,15 +1932,14 @@ function RamaddaNotebookCell(notebook, id, content, props) {
             }
         },
         processJs: async function(chunk) {
+            console.log("processjs");
             var lines;
             var topLines = 0;
             try {
                 await this.getCurrentEntry(e => {
                     current = e
                 });
-                var state = new NotebookState(this, chunk.div);
-                window.notebook = state;
-                notebookStates[state.id] = state;
+                var state = window.notebook;
                 var notebookEntries = this.notebook.getCurrentEntries();
                 for (name in notebookEntries) {
                     state.entries[name] = notebookEntries[name].entry;
@@ -1995,7 +2001,6 @@ function RamaddaNotebookCell(notebook, id, content, props) {
                 var line = lines[e.lineNumber - topLines - 1];
                 this.notebook.log("Error: " + e.message + "<br>&gt;" + (line ? line : ""), "error", "js", chunk.div);
             }
-            notebookStates[state.id] = null;
         },
         processChunk: async function(chunk) {
             for (name in this.notebook.globals) {
@@ -2005,6 +2010,9 @@ function RamaddaNotebookCell(notebook, id, content, props) {
                 }
                 chunk.content = chunk.content.replace("${" + name.trim() + "}", value);
             }
+            var state = new NotebookState(this, chunk.div);
+            window.notebook = state;
+            notebookStates[state.id] = state;
             if (chunk.type == "html") {
                 await this.processHtml(chunk);
             } else if (chunk.type == "plugin") {
@@ -2053,6 +2061,12 @@ function RamaddaNotebookCell(notebook, id, content, props) {
                 this.notebook.log("Unknown type:" + chunk.type, "error", null, chunk.div);
                 chunk.ok = false;
             }
+
+            notebookStates[state.id] = null;
+            if (state.getStop()) {
+                chunk.ok = false;
+            }
+
         },
 
 
