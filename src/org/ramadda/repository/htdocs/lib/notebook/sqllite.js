@@ -2,7 +2,7 @@
 var SqlLite = {
     loaded:false,
     dbs: {},
-    isReady: function() {
+    isPluginReady: function() {
         return window.SQL;
     },
     evaluate: function(sql, chunk) {
