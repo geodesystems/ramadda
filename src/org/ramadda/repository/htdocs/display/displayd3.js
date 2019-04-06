@@ -244,7 +244,7 @@ function RamaddaSkewtDisplay(displayManager, id, properties) {
             var fields = this.getData().getRecordFields();
             var names = [
                          {id:"pressure",aliases:["vertCoord"]},
-                         {id:"height",aliases:[]},
+                         {id:"height",aliases:["Geopotential_height_isobaric"]},
                          {id:"temperature",aliases:["Temperature_isobaric"]},
                          {id:"dewpoint",aliases:[]},
                          {id:"rh",aliases:["Relative_humidity_isobaric"]},

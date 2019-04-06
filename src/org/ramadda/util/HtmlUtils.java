@@ -1309,6 +1309,10 @@ public class HtmlUtils {
         return attr(ATTR_CLASS, c);
     }
 
+    public static void clazz(Appendable sb, String c) {
+        attr(sb, ATTR_CLASS, c);
+    }
+
     /**
      * _more_
      *

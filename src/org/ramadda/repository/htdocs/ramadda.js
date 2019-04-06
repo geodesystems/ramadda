@@ -438,18 +438,13 @@ function EntryFormList(formId, img, selectId, initialOn) {
             }
         }
 
-        var form = GuiUtils.getDomObject(this.formId);
-        if (form) {
-            form = form.obj;
-            for (i = 0; i < form.elements.length; i++) {
-                if (this.on) {
-                    showObject(form.elements[i], "inline");
-                } else {
-                    hideObject(form.elements[i]);
-                }
-            }
-        }
 
+        var form = $("#"+this.formId);
+        if(this.on) {
+            form.find(':input').show();
+        }   else {
+            form.find(':input').hide();
+        }
         for (i = 0; i < this.entries.length; i++) {
             obj = GuiUtils.getDomObject(this.entries[i]);
             if (!obj) continue;

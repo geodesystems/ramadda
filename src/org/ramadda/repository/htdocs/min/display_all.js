@@ -7934,7 +7934,9 @@ function RamaddaNotebookCell(notebook, id, content, props) {
 function processLispOutput(r) {
     if (r && r.val) return r.val;
     return Utils.formatJson(r);
-}/**
+}
+
+/**
 Copyright 2008-2019 Geode Systems LLC
 */
 
@@ -11883,7 +11885,7 @@ function RamaddaSkewtDisplay(displayManager, id, properties) {
             var fields = this.getData().getRecordFields();
             var names = [
                          {id:"pressure",aliases:["vertCoord"]},
-                         {id:"height",aliases:[]},
+                         {id:"height",aliases:["Geopotential_height_isobaric"]},
                          {id:"temperature",aliases:["Temperature_isobaric"]},
                          {id:"dewpoint",aliases:[]},
                          {id:"rh",aliases:["Relative_humidity_isobaric"]},

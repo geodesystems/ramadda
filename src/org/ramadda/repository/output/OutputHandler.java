@@ -1444,6 +1444,7 @@ public class OutputHandler extends RepositoryManager {
 
         StringBuilder attrSB = new StringBuilder();
         HtmlUtils.id(attrSB, cbxId);
+        HtmlUtils.clazz(attrSB, "ramadda-entry-select");
         HtmlUtils.attr(
             attrSB, HtmlUtils.ATTR_TITLE,
             "Shift-click: select range; Control-click: toggle all");
@@ -1652,6 +1653,7 @@ public class OutputHandler extends RepositoryManager {
                 HtmlUtils.dangleOpen(cbxSB, HtmlUtils.TAG_INPUT);
                 HtmlUtils.id(cbxSB, cbxId);
                 HtmlUtils.attr(cbxSB, HtmlUtils.ATTR_STYLE, "display:none;");
+                HtmlUtils.clazz(cbxSB, "ramadda-entry-select");
                 HtmlUtils.attr(
                     cbxSB, HtmlUtils.ATTR_TITLE,
                     "Shift-click: select range; Control-click: toggle all");

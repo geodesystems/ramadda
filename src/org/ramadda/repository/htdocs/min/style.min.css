@@ -938,6 +938,10 @@ input, password, fileinput,textarea {
 
 
 
+.ramadda-entry-select  {
+  margin-right:4px !important;
+}
+
 .entry-row-table  {
 table-layout: fixed;
 }
