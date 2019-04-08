@@ -1127,6 +1127,7 @@ public class CsvUtil {
         new Cmd("-max", "<max # columns>"),
         new Cmd("-rawlines", "<how many lines to pass through unprocesed>"),
         new Cmd("-cut", "<one or more rows. -1 to the end>"),
+        new Cmd("-mergerows", "<2 or more rows> <delimiter> <close>" ),
         new Cmd("-include", "<one or more rows, -1 to the end>"),
         new Cmd("-pattern", "<col #> <regexp pattern>",
                 "(extract rows that match the pattern)"),
@@ -1583,6 +1584,8 @@ public class CsvUtil {
                 continue;
             }
 
+
+
             if (arg.equals("-max")) {
                 info.getProcessor().addProcessor(
                     new Processor.RowOperator(Processor.RowOperator.OP_MAX));
@@ -1686,7 +1689,7 @@ public class CsvUtil {
             if (arg.equals("-mergerows")) {
                 String r = args.get(++i);
                 info.getProcessor().addProcessor(
-                    new Converter.RowMerger(getNumbers(r), args.get(++i)));
+                                                 new Converter.RowMerger(getNumbers(r), args.get(++i),args.get(++i)));
 
                 continue;
             }

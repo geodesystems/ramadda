@@ -1044,6 +1044,7 @@ public abstract class Converter extends Processor {
 
         /** _more_ */
         private String delimiter;
+        private String close;
 
         /** _more_          */
         private Row firstRow;
@@ -1058,8 +1059,9 @@ public abstract class Converter extends Processor {
          * @param rows _more_
          * @param delimiter _more_
          */
-        public RowMerger(List<Integer> rows, String delimiter) {
+        public RowMerger(List<Integer> rows, String delimiter,String close) {
             this.delimiter = delimiter;
+            this.close = close;
             for (int i = 0; i < rows.size(); i++) {
                 this.rows.add(rows.get(i));
             }
@@ -1087,7 +1089,6 @@ public abstract class Converter extends Processor {
             rows.remove(rowNumber);
             if (firstRow == null) {
                 firstRow = row;
-
                 return null;
             }
             for (int i = 0; i < row.size(); i++) {
@@ -1096,11 +1097,11 @@ public abstract class Converter extends Processor {
                 ss = ss + delimiter + s;
                 firstRow.set(i, ss);
             }
-
             if (rows.size() == 0) {
+                for(int i=0;i<firstRow.size();i++)
+                    firstRow.set(i, firstRow.getString(i)+close);
                 row      = firstRow;
                 firstRow = null;
-
                 return row;
             }
 

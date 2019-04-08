@@ -8,7 +8,7 @@ var SqlLite = {
     evaluate: function(sql, chunk) {
         var dbid = chunk.props["db"]||"defaultdb";
         if(!this.dbs[dbid]) {
-            this.dbs[dbid] = new SQL.Database();
+            this.dbs[dbid] = new window.SQL.Database();
         }
         
         var db = this.dbs[dbid];

@@ -512,10 +512,10 @@ function RamaddaNotebookDisplay(displayManager, id, properties) {
                     if (window[module].isPluginReady) {
                         var tries = 200;
                         while (!window[module].isPluginReady() && tries-- > 0) {
-                            //                          console.log("not ready yet:" + tries);
+                            //                            console.log("not ready yet:" + tries);
                             await new Promise(resolve => setTimeout(resolve, 100));
                         }
-                        //                      console.log("final ready:" + window[module].isPluginReady() );
+                        //                        console.log("final ready:" + window[module].isPluginReady() );
                         if (!window[module].isPluginReady())
                             error = "Could not load plugin module: " + module;
                     }

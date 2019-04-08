@@ -314,7 +314,6 @@ public class FeatureCollection {
 
             String           colorByFieldAttr = colorBy.getAttr1().trim();
             DbaseDataWrapper colorByField     = null;
-            System.err.println ("looking for:" + colorByFieldAttr);
             for (int j = 0; j < fieldDatum.size(); j++) {
                 if (fieldDatum.get(j).getName().equalsIgnoreCase(
                         colorByFieldAttr)) {
