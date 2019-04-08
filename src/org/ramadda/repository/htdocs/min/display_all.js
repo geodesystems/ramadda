@@ -5317,7 +5317,6 @@ Copyright 2008-2019 Geode Systems LLC
 
 
 
-
 var DISPLAY_NOTEBOOK = "notebook";
 addGlobalDisplayType({
     type: DISPLAY_NOTEBOOK,
@@ -5580,12 +5579,6 @@ function RamaddaNotebookDisplay(displayManager, id, properties) {
                 }
             }
             return null;
-        },
-        addGlobal: function(name, value) {
-            //TODO: more var name cleanup
-            name = name.trim().replace(/[ -]/g, "_");
-            if (Utils.isDefined(window[name])) window[name] = value;
-            this.globals[name] = value;
         },
         getBaseEntry: function() {
             return this.baseEntry;
@@ -5851,7 +5844,7 @@ function RamaddaNotebookDisplay(displayManager, id, properties) {
         processChunkWithPlugin: async function(id, chunk, callback) {
             var module = this.plugins[id].module;
             var func = this.plugins[id].evaluator;
-            var result = window[module][func](chunk.content, chunk);
+            var result = window[module][func](chunk.getContent(), chunk);
             return Utils.call(callback, result);
 
         },
@@ -6083,12 +6076,50 @@ function RamaddaNotebookDisplay(displayManager, id, properties) {
             }
             return input;
         },
+        inGlobalChanged: false,
+        globalChanged: async function(name, value) {
+                var globalChangeCalled = this.inGlobalChanged;
+                var top = !this.inGlobalChanged;
+                if(this.inRunAll) {
+                    top =  false;
+                }
+                this.inGlobalChanged=true;
+                if(top) {
+                    this.cells.map(cell=>cell.prepareToRun());
+                }
+                for(var i=0;i<this.cells.length;i++) {
+                    await this.cells[i].globalChanged(name,value);
+                }
+                if(!globalChangeCalled) {
+                    this.inGlobalChanged = false;
+                }
+        },
+        addGlobal: function(name, value, dontPropagate) {
+            //TODO: more var name cleanup
+            name = name.trim().replace(/[ -]/g, "_");
+            var oldValue = this.getGlobalValue(name);
+            if (Utils.isDefined(window[name])) window[name] = value;
+            this.globals[name] = value;
+            if(!dontPropagate) {
+                var newValue = this.getGlobalValue(name);
+                if(newValue!=oldValue) {
+                    this.globalChanged(name, newValue);
+                }
+            }
+        },
+        getGlobalValue: function(name) {
+                if(!this.globals[name]) return null;
+                if(typeof this.globals[name] =="function") return this.globals[name]();
+                return this.globals[name];
+        },
+        inRunAll: false,
         runAll: async function() {
+            this.inRunAll = true;
             var ok = true;
             this.cellValues = {};
             for (var i = 0; i < this.cells.length; i++) {
                 var cell = this.cells[i];
-                cell.hasRun = false;
+                cell.prepareToRun();
             }
             for (var i = 0; i < this.cells.length; i++) {
                 var cell = this.cells[i];
@@ -6101,6 +6132,7 @@ function RamaddaNotebookDisplay(displayManager, id, properties) {
                 if (cell.runFirst) continue;
                 await this.runCell(cell, true).then(result => ok = result);
             }
+            this.inRunAll = false;
         },
         runCell: async function(cell, doingAll) {
             if (cell.hasRun) return true;
@@ -6172,6 +6204,13 @@ function NotebookState(cell, div) {
         },
         getCell: function() {
             return this.cell;
+        },
+        addGlobal: function(name,value) {
+                this.getNotebook().addGlobal(name,value);
+        },
+
+        globalChanged: function(name,value) {
+                this.getNotebook().globalChanged(name,value);
         },
         setValue: function(name, value) {
             this.notebook.setCellValue(name, value);
@@ -6795,7 +6834,7 @@ function RamaddaNotebookCell(notebook, id, content, props) {
                 var line = lines[i].trim();
                 if (line.startsWith("%%")) {
                     var type = line.substring(2).trim();
-                    if (type.startsWith("md") || type.startsWith("html") || type.startsWith("css")) {
+                    if (type.startsWith("md") || type.startsWith("html") || type.startsWith("css") || type.startsWith("raw")) {
                         var doRows = {};
                         doRows[i] = true;
                         this.runInner(value, doRows);
@@ -6895,65 +6934,63 @@ function RamaddaNotebookCell(notebook, id, content, props) {
             if (!this.editor) return this.content;
             return this.editor.getValue();
         },
+        globalChanged: async function(name, value) {
+            for(var i=0;i<this.chunks.length;i++) {
+                var chunk = this.chunks[i];
+                if(chunk.hasRun) continue;
+                if(chunk.depends.includes(name)) {
+                   var ok = true;
+                   await this.runChunk(chunk,r=>ok=r);
+                   if(!ok) break;
+                }
+            }
+        },
+        prepareToRun: function() {
+            this.hasRun = false;
+            if(this.chunks) {
+                this.chunks.map(chunk=>chunk.hasRun = false);
+            }
+        },
         runInner: async function(value, doRows, doingAll) {
             value = value.trim();
             value = value.replace(/{cellname}/g, this.cellName);
             value = this.notebook.convertInput(value);
-            if (!this.divs) this.divs = [];
+            if (!this.chunks) this.chunks = [];
+            var chunks = this.chunks;
             var type = "wiki";
             var rest = "";
-            var chunks = [];
-            var chunk = "";
             var commands = value.split("\n");
-            var prevDiv = null;
-            var divCnt = 0;
-            var makeChunk = (type, chunk, div, doChunk, rest) => {
+            var prevChunk = null;
+            var chunkCnt = 0;
+            var _cell = this;
+            var getChunk = (cell,type, content,  doChunk, rest) => {
                 var props = Utils.parseAttributes(rest);
-                if (props["skipoutput"] === true) {
-                    //clear the output
-                    div.set("");
-                    //Use a dummy div if we are skipping output
-                    div = new Div();
-                }
-                var depends = [];
-                if (props["depends"] && typeof props["depends"] == "string") depends = props["depends"].split(",");
-                var chunk = {
-                    name: props["name"],
-                    depends: depends,
-                    output: null,
-                    runFirst: props["runFirst"],
-                    hasRun: false,
-                    content: chunk,
-                    type: type,
-                    props: props,
-                    div: div,
-                    doChunk: doChunk,
-                    ok: true
-                }
-                return chunk;
-            };
-            var makeDiv = () => {
-                //                console.log("make div:" + divCnt);
-                var div = (divCnt < this.divs.length ? this.divs[divCnt] : null);
-                divCnt++;
-                if (div) {
-                    if (div.jq().length == 0) {
-                        div = null;
+                props.type = type;
+                props.doChunk = doChunk;
+                props.content   = content;
+                var chunk = (chunkCnt < chunks.length ? chunks[chunkCnt] : null);
+                chunkCnt++;
+                if (chunk) {
+                    if (chunk.div.jq().length == 0) {
+                        chunk = null;
                     } else {}
                 } else {}
-                if (!div) {
-                    div = new Div(null, "display-notebook-chunk");
-                    this.divs.push(div);
-                    if (prevDiv) prevDiv.jq().after(div.toString());
-                    else this.output.html(div.toString());
-                } else {}
-                prevDiv = div;
-                div.jq().show();
-                return div;
+                if (!chunk) {
+                    chunk = new NotebookChunk(cell, props);
+                    chunks.push(chunk);
+                    if (prevChunk) prevChunk.div.jq().after(chunk.div.toString());
+                    else cell.output.html(chunk.div.toString());
+                } else {
+                    chunk.initChunk(props);
+                }
+                prevChunk = chunk;
+                chunk.div.jq().show();
+                return chunk;
             };
+            var content = "";
             var doChunk = true;
-            for (var i = 0; i < commands.length; i++) {
-                var command = commands[i];
+            for (var rowIdx = 0; rowIdx < commands.length; rowIdx++) {
+                var command = commands[rowIdx];
                 var _command = command.trim();
                 if (_command.startsWith("//")) continue;
                 if (_command.startsWith("%%")) {
@@ -6967,81 +7004,78 @@ function RamaddaNotebookCell(notebook, id, content, props) {
                         newType = newRest.substring(0, index).trim();
                         newRest = newRest.substring(index);
                     }
-                    if (chunk != "") {
-                        var div = makeDiv();
-                        chunks.push(makeChunk(type, chunk, div, doChunk, rest));
+                    if (content != "") {
+                        getChunk(this, type, content, doChunk, rest);
                     }
-                    doChunk = doRows ? doRows[i] : true;
-                    chunk = "";
-                    if (chunk != "") chunk += "\n";
+                    doChunk = doRows ? doRows[rowIdx] : true;
+                
+                    content = "";
+                    if (content != "") content += "\n";
                     if (newType != "")
                         type = newType;
                     rest = newRest;
                     continue;
                 }
-                chunk = chunk + command + "\n";
+                content = content + command + "\n";
             }
 
-            if (chunk != "") {
-                var div = makeDiv();
-                chunks.push(makeChunk(type, chunk, div, doChunk, rest));
+            if (content != "") {
+                getChunk(this,type, content, doChunk, rest);
             }
 
-            var chunkMap = {};
-            for (var i = 0; i < chunks.length; i++) {
-                var chunk = chunks[i];
+            this.chunkMap = {};
+            for (var i = 0; i < this.chunks.length; i++) {
+                var chunk = this.chunks[i];
                 if (chunk.name) {
-                    chunkMap[chunk.name] = chunk;
+                    this.chunkMap[chunk.name] = chunk;
                 }
             }
-            for (var i = divCnt; i < this.divs.length; i++) {
-                this.divs[i].jq().hide();
+            for (var i = chunkCnt; i < this.chunks.length; i++) {
+                this.chunks[i].div.jq().hide();
             }
             this.rawOutput = "";
             var ok = true;
-            await this.runChunks(chunks, chunkMap, doingAll, true, r => ok = r);
+            await this.runChunks(this.chunks, doingAll, true, r => ok = r);
             if (!ok) return false;
-            await this.runChunks(chunks, chunkMap, doingAll, false, r => ok = r);
+            await this.runChunks(this.chunks, doingAll, false, r => ok = r);
             if (!ok) return false;
             Utils.initContent("#" + this.getDomId(ID_OUTPUT));
             return true;
         },
-        runChunks: async function(chunks, chunkMap, doingAll, justFirst, callback) {
+        runChunks: async function(chunks, doingAll, justFirst, callback) {
             for (var i = 0; i < chunks.length; i++) {
                 var chunk = chunks[i];
                 var ok = true;
-                await this.runChunk(chunk, chunkMap, doingAll, justFirst, (r => ok = r));
+                if (justFirst === true && !chunk.props["runfirst"]) {
+                    continue;
+                }
+                if (justFirst === false && chunk.props["runfirst"] === true) {
+                    continue;
+                }
+                if (doingAll && chunk.props["skiprunall"] === true) {
+                    continue;
+                }
+                if (!chunk.doChunk) {
+                    continue;
+                }
+                await this.runChunk(chunk, (r => ok = r));
                 if (!ok) return Utils.call(callback, false);
             }
             return Utils.call(callback, true);
         },
-        runChunk: async function(chunk, chunkMap, doingAll, justFirst, callback) {
-            var ok = true;
-            if (!chunk.doChunk) {
-                ok = false;
-            } else if (chunk.hasRun) {
-                ok = false;
-            } else if (justFirst === true && !chunk.props["runfirst"]) {
-                ok = false;
-            } else if (justFirst === false && chunk.props["runfirst"] === true) {
-                ok = false;
-            }
-            if (!ok) {
+        runChunk: async function(chunk,   callback) {
+            if (chunk.hasRun) {
+                //                console.log("runChunk: chunk has run");
                 return Utils.call(callback, true);
             }
-            //            console.log("runChunk:" + chunk.content);
             chunk.div.set("");
-            if (doingAll && chunk.props["skiprunall"] === true) {
-                return Utils.call(callback, true);
-            }
             chunk.hasRun = true;
             for (var i = 0; i < chunk.depends.length; i++) {
                 var name = chunk.depends[i];
-                if (chunkMap[name] && !chunkMap[name].hasRun) {
+                if (this.chunkMap[name] && !this.chunkMap[name].hasRun) {
                     var ok = true;
-                    await this.runChunk(chunkMap[name], chunkMap, false, null, (r => ok = r));
+                    await this.runChunk(this.chunkMap[name], false, null, (r => ok = r));
                     if (!ok) {
-                        console.log("run chunk after");
                         return Utils.call(callback, false);
                     }
                 }
@@ -7083,12 +7117,12 @@ function RamaddaNotebookCell(notebook, id, content, props) {
             this.input.focus();
         },
         clearOutput: function() {
-            if (this.divs)
-                this.divs.map(div => div.set(""));
+            if (this.chunks)
+                this.chunks.map(chunk => chunk.div.set(""));
             this.outputHtml = "";
         },
         processHtml: async function(chunk) {
-            var content = chunk.content;
+            var content = chunk.getContent();
             if (content.match("%\n*$")) {
                 content = content.trim();
                 content = content.substring(0, content.length - 1);
@@ -7099,7 +7133,7 @@ function RamaddaNotebookCell(notebook, id, content, props) {
             chunk.div.set(content);
         },
         processCss: async function(chunk) {
-            var css = HtmlUtils.tag("style", ["type", "text/css"], chunk.content);
+            var css = HtmlUtils.tag("style", ["type", "text/css"], chunk.getContent());
             this.rawOutput += css + "\n";
             chunk.output = css;
             chunk.div.set(css);
@@ -7129,7 +7163,7 @@ function RamaddaNotebookCell(notebook, id, content, props) {
             }
         },
         processFetch: async function(chunk) {
-            var lines = chunk.content.split("\n");
+            var lines = chunk.getContent().split("\n");
             for (var i = 0; i < lines.length; i++) {
                 var line = lines[i].trim();
                 if (line == "") continue;
@@ -7220,8 +7254,8 @@ function RamaddaNotebookCell(notebook, id, content, props) {
             //            await Utils.importJS(ramaddaBaseUrl + "/lib/katex/lib/katex/katex.min.css");
             //            await Utils.importJS(ramaddaBaseUrl + "/lib/katex/lib/katex/katex.min.js");
 
-            this.rawOutput += chunk.content + "\n";
             var content = chunk.content;
+            this.rawOutput += content + "\n";
             if (content.match("%\n*$")) {
                 content = content.trim();
                 content = content.substring(0, content.length - 1);
@@ -7277,14 +7311,14 @@ function RamaddaNotebookCell(notebook, id, content, props) {
                 this.notebook.loadedPyodide = true;
             }
 
-            pyodide.runPython(chunk.content);
+            pyodide.runPython(chunk.getContent());
         },
         processPlugin: async function(chunk) {
-            var plugin = JSON.parse(chunk.content);
+            var plugin = JSON.parse(chunk.getContent());
             await this.notebook.addPlugin(plugin, chunk);
         },
         processWiki: async function(chunk) {
-            this.rawOutput += chunk.content + "\n";
+            this.rawOutput += chunk.getContent() + "\n";
             var id = this.notebook.getProperty("entryId", "");
             await this.getCurrentEntry(e => entry = e);
             if (entry) id = entry.getId();
@@ -7295,13 +7329,13 @@ function RamaddaNotebookCell(notebook, id, content, props) {
                 chunk.div.set(h);
                 chunk.output = h;
             }
-            var wiki = "{{group showMenu=false}}\n" + chunk.content;
-            await GuiUtils.loadHtml(ramaddaBaseUrl + "/wikify?doImports=false&entryid=" + id + "&text=" + encodeURIComponent(chunk.content),
+            var wiki = "{{group showMenu=false}}\n" + chunk.getContent();
+            await GuiUtils.loadHtml(ramaddaBaseUrl + "/wikify?doImports=false&entryid=" + id + "&text=" + encodeURIComponent(chunk.getContent()),
                 wikiCallback);
         },
         processSh: async function(chunk) {
             var r = "";
-            var lines = chunk.content.split("\n");
+            var lines = chunk.getContent().split("\n");
             var commands = [];
             for (var i = 0; i < lines.length; i++) {
                 var fullLine = lines[i].trim();
@@ -7379,12 +7413,12 @@ function RamaddaNotebookCell(notebook, id, content, props) {
                 for (name in this.notebook.globals) {
                     name = name.trim();
                     if (name == "") continue;
-                    if (!Utils.isDefined(window[name])) {
+                    //                    if (!Utils.isDefined(window[name])) {
                         topLines++;
-                        jsSet += "var " + name + "= notebook.getNotebook().globals['" + name + "'];\n";
-                    }
+                        jsSet += "var " + name + "= notebook.getNotebook().getGlobalValue('" + name + "');\n";
+                        //                    }
                 }
-                var js = chunk.content.trim();
+                var js = chunk.getContent().trim();
                 lines = js.split("\n");
                 js = jsSet + "\n" + js;
                 var result = eval.call(null, js);
@@ -7414,13 +7448,6 @@ function RamaddaNotebookCell(notebook, id, content, props) {
             }
         },
         processChunk: async function(chunk) {
-            for (name in this.notebook.globals) {
-                var value = this.notebook.globals[name];
-                if (typeof value == "object") {
-                    value = Utils.formatJson(value);
-                }
-                chunk.content = chunk.content.replace("${" + name.trim() + "}", value);
-            }
             var state = new NotebookState(this, chunk.div);
             window.notebook = state;
             notebookStates[state.id] = state;
@@ -7435,7 +7462,7 @@ function RamaddaNotebookCell(notebook, id, content, props) {
             } else if (chunk.type == "fetch") {
                 await this.processFetch(chunk);
             } else if (chunk.type == "raw") {
-                var content = chunk.content;
+                var content = chunk.getContent();
                 chunk.output = content;
                 var re = new RegExp("^ *var *= *(.*)");
                 /*
@@ -7460,7 +7487,6 @@ function RamaddaNotebookCell(notebook, id, content, props) {
                 await this.processPy(chunk);
             } else {
                 var hasPlugin;
-
                 await this.notebook.hasPlugin(chunk.type, p => hasPlugin = p);
                 if (hasPlugin) {
                     chunk.div.set("");
@@ -7756,7 +7782,7 @@ function RamaddaNotebookCell(notebook, id, content, props) {
             }
             var name = toks[1];
             if (toks.length == 2) {
-                var v = this.notebook.globals[name];
+                var v = this.notebook.getGlobalValue(name);
                 if (v) {
                     div.append(v);
                 } else {
@@ -7936,7 +7962,53 @@ function processLispOutput(r) {
     return Utils.formatJson(r);
 }
 
-/**
+
+
+
+function NotebookChunk(cell, props) {
+    this.div =  new Div(null, "display-notebook-chunk");
+    this.cell = cell;
+    $.extend(this, {
+            getContent: function() {
+                var content = this.content;
+                for (name in this.cell.notebook.globals) {
+                    var value = this.cell.notebook.getGlobalValue(name);
+                    if (typeof value == "object") {
+                        value = Utils.formatJson(value);
+                    }
+                    content = content.replace("${" + name.trim() + "}", value);
+                }
+                return content;
+            },
+           initChunk: function(props) {
+                if (props["skipoutput"] === true) {
+                    this.div.set("");
+                    this.div = new Div();
+                }
+                var depends = [];
+                if (props["depends"] && typeof props["depends"] == "string") depends = props["depends"].split(",");
+                var content = props.content||"";
+                var regexp = RegExp(/\${([^ }]+)}/g);
+                while((result = regexp.exec(content)) !== null) {
+                    var param = result[1];
+                    if(!depends.includes(param)) depends.push(param);
+                }
+                $.extend(this, {
+                        name: props["name"],
+                            depends: depends,
+                            output: null,
+                            runFirst: props["runFirst"],
+                            hasRun: false,
+                            content: content,
+                            type: props.type,
+                            props: props,
+                            doChunk: !!props.doChunk,
+                            ok: true
+                            });
+            }
+        });
+    this.initChunk(props);
+}/**
 Copyright 2008-2019 Geode Systems LLC
 */
 
