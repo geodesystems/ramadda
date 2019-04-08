@@ -1224,6 +1224,14 @@ public class Utils {
         return pattern.toString();
     }
 
+    public static InputStream getInputStream(String filename, Class origin)
+        throws FileNotFoundException, IOException {
+        File f = new File(filename);
+        if(f.exists()) return new FileInputStream(f);
+        return IOUtil.getInputStream(filename, origin);
+    }
+
+
     /**
      * _more_
      *
@@ -1237,7 +1245,7 @@ public class Utils {
             return null;
         }
         try {
-            InputStream is = IOUtil.getInputStream(file, Utils.class);
+            InputStream is = Utils.getInputStream(file, Utils.class);
             if (is != null) {
                 byte[] bytes = IOUtil.readBytes(is);
                 Image  image = Toolkit.getDefaultToolkit().createImage(bytes);
@@ -1514,7 +1522,7 @@ public class Utils {
                 closeConnection(ftpClient);
             }
         } else {
-            InputStream is = IOUtil.getInputStream(url.toString(),
+            InputStream is = Utils.getInputStream(url.toString(),
                                  Utils.class);
             IOUtil.writeTo(is, os);
 
@@ -3046,6 +3054,12 @@ public class Utils {
      * @throws Exception _more_
      */
     public static void main(String[] args) throws Exception {
+        if(true) {
+            readImage(args[0]);
+            return;
+
+        }
+
         if (true) {
             System.err.println("v:" + (9 * 0.1));
             System.err.println("v:" + (99 * 0.1));
@@ -3501,7 +3515,7 @@ public class Utils {
      */
     public static long writeTo(URL from, File file) throws IOException {
         URLConnection    connection = from.openConnection();
-        InputStream is = IOUtil.getInputStream(from.toString(), Utils.class);
+        InputStream is = Utils.getInputStream(from.toString(), Utils.class);
         int              length     = connection.getContentLength();
         long             numBytes   = -1;
         FileOutputStream fos        = new FileOutputStream(file);

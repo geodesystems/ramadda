@@ -2151,8 +2151,7 @@ public class StorageManager extends RepositoryManager {
      */
     public InputStream getInputStream(String path) throws Exception {
         checkPath(path);
-
-        return IOUtil.getInputStream(path, getClass());
+        return Utils.getInputStream(path, getClass());
     }
 
     /**
