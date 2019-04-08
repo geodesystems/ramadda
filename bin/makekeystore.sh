@@ -61,7 +61,7 @@ fi
 
 echo "letsencrypt dir: ${LETSENCRYPT_DIR}"
 
-openssl pkcs12 -export -out ${SRCKEYSTORE} -in /etc/letsencrypt/live/${LETSENCRYPT_DIR}/fullchain.pem  -inkey /etc/letsencrypt/live/${LETSENCRYPT_DIR}/privkey.pem  -password pass:${PASSWORD}
+openssl pkcs12 -export -out ${SRCKEYSTORE} -in ${LETSENCRYPT_DIR}/fullchain.pem  -inkey ${LETSENCRYPT_DIR}/privkey.pem  -password pass:${PASSWORD}
 rm -f ${KEYSTORE}
 echo "$PASSWORD
 $PASSWORD
