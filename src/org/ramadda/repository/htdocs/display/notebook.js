@@ -34,7 +34,7 @@ var pluginDefintions = {
     "sql": {
         "languageId": "sql",
         "displayName": "SqlLite",
-        "url": "${root}/lib/notebook/sqllite.js",
+        "url": "${htdocs}/lib/notebook/sqllite.js",
         "module": "SqlLite",
         "evaluator": "evaluate",
         "pluginType": "language"
