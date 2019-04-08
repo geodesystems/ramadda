@@ -274,6 +274,12 @@ function RamaddaNotebookDisplay(displayManager, id, properties) {
             if (Utils.isDefined(window[name])) window[name] = value;
             this.globals[name] = value;
         },
+
+        getGlobalValue: function(name) {
+                if(!this.globals[name]) return null;
+                if(typeof this.globals[name] =="function") return this.globals[name]();
+                return this.globals[name];
+        },
         getBaseEntry: function() {
             return this.baseEntry;
         },
@@ -859,6 +865,9 @@ function NotebookState(cell, div) {
         },
         getCell: function() {
             return this.cell;
+        },
+        addGlobal: function(name,value) {
+                this.getNotebook().addGlobal(name,value);
         },
         setValue: function(name, value) {
             this.notebook.setCellValue(name, value);
@@ -1594,7 +1603,7 @@ function RamaddaNotebookCell(notebook, id, content, props) {
             var commands = value.split("\n");
             var prevDiv = null;
             var divCnt = 0;
-            var makeChunk = (type, chunk, div, doChunk, rest) => {
+            var makeChunk = (type, content, div, doChunk, rest) => {
                 var props = Utils.parseAttributes(rest);
                 if (props["skipoutput"] === true) {
                     //clear the output
@@ -1610,7 +1619,7 @@ function RamaddaNotebookCell(notebook, id, content, props) {
                     output: null,
                     runFirst: props["runFirst"],
                     hasRun: false,
-                    content: chunk,
+                    content: content,
                     type: type,
                     props: props,
                     div: div,
@@ -2068,7 +2077,7 @@ function RamaddaNotebookCell(notebook, id, content, props) {
                     if (name == "") continue;
                     if (!Utils.isDefined(window[name])) {
                         topLines++;
-                        jsSet += "var " + name + "= notebook.getNotebook().globals['" + name + "'];\n";
+                        jsSet += "var " + name + "= notebook.getNotebook().getGlobalValue('" + name + "');\n";
                     }
                 }
                 var js = chunk.content.trim();
@@ -2102,7 +2111,7 @@ function RamaddaNotebookCell(notebook, id, content, props) {
         },
         processChunk: async function(chunk) {
             for (name in this.notebook.globals) {
-                var value = this.notebook.globals[name];
+                var value = this.notebook.getGlobalValue(name);
                 if (typeof value == "object") {
                     value = Utils.formatJson(value);
                 }
@@ -2147,7 +2156,6 @@ function RamaddaNotebookCell(notebook, id, content, props) {
                 await this.processPy(chunk);
             } else {
                 var hasPlugin;
-
                 await this.notebook.hasPlugin(chunk.type, p => hasPlugin = p);
                 if (hasPlugin) {
                     chunk.div.set("");
@@ -2443,7 +2451,7 @@ function RamaddaNotebookCell(notebook, id, content, props) {
             }
             var name = toks[1];
             if (toks.length == 2) {
-                var v = this.notebook.globals[name];
+                var v = this.notebook.getGlobalValue(name);
                 if (v) {
                     div.append(v);
                 } else {
