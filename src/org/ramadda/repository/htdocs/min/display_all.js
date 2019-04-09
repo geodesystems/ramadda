@@ -5315,8 +5315,6 @@ function RamaddaLabelDisplay(displayManager, id, properties) {
 Copyright 2008-2019 Geode Systems LLC
 */
 
-
-
 var DISPLAY_NOTEBOOK = "notebook";
 addGlobalDisplayType({
     type: DISPLAY_NOTEBOOK,
