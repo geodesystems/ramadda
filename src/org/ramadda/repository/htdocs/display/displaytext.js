@@ -489,7 +489,8 @@ function RamaddaImagesDisplay(displayManager, id, properties) {
                     if(tooltip!="") tooltip+="&#10;";
                     tooltip+=row[this.tooltipFields[i].getIndex()];
                 }
-                var html =HtmlUtils.div(["class","display-images-item", "title", tooltip, "style","margin:" + margin+"px;"], HtmlUtils.image(img,["width",width])+label);
+                var img = HtmlUtils.href(img, HtmlUtils.image(img,["width",width]),["class","display-images-popup"]);
+                var html =HtmlUtils.div(["class","display-images-item", "title", tooltip, "style","margin:" + margin+"px;"], img+label);
                 if(this.splitField) {
                     var splitOn = row[this.splitField.getIndex()];
                     if(!splits[splitOn]) {
@@ -514,6 +515,7 @@ function RamaddaImagesDisplay(displayManager, id, properties) {
                 html +="</tr></table>";
             }
             this.writeHtml(ID_RESULTS, html);
+            this.jq(ID_RESULTS).find("a.display-images-popup").fancybox({});
             }
     });
 }
