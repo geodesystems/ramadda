@@ -731,95 +731,6 @@ public class CsvUtil {
             throws Exception {
         List<Row> rows  = new ArrayList<Row>();
         String    s     = IOUtil.readContents(file);
-        //        System.err.println("HTML:" + file);
-        //        System.out.println("TABLE:" + s);
-
-        String[] toks;
-        if (Utils.stringDefined(pattern)) {
-            int idx = s.indexOf(pattern);
-            if (idx < 0) {
-                return rows;
-            }
-            s = s.substring(idx + pattern.length());
-        }
-
-        while (true) {
-            toks = Utils.tokenizeChunk(s, "<table", "</table");
-            if (toks == null) {
-                break;
-            }
-            String table = toks[0];
-            s = toks[1];
-            if (skip > 0) {
-                skip--;
-
-                continue;
-            }
-            if (debug) {
-                System.out.println("table");
-            }
-            while (true) {
-                toks = Utils.tokenizeChunk(table, "<tr", "</tr");
-                if (toks == null) {
-                    break;
-                }
-                String tr = toks[0];
-                table = toks[1];
-                if (debug) {
-                    System.out.println("\trow: " + tr);
-                }
-                Row row = new Row();
-                rows.add(row);
-                while (true) {
-                    toks = Utils.tokenizeChunk(tr, "<td", "</td");
-                    if (toks == null) {
-                        break;
-                    }
-                    String td = toks[0];
-                    tr = toks[1];
-                    int idx = td.indexOf(">");
-                    if (idx < 0) {
-                        //                        System.out.println("return-2");
-                        //                        return rows;
-                    }
-                    if ((attrPattern != null) && (idx >= 0)) {
-                        String attrs = td.substring(0, idx).toLowerCase();
-                        if (attrPattern.matcher(attrs).find()) {
-                            System.out.println("skipping:"
-                                    + td.replaceAll("\n", " "));
-
-                            continue;
-                        }
-                        //                        System.out.println("not skipping:" +td );
-                    }
-                    td = td.substring(idx + 1);
-                    td = StringUtil.stripTags(td);
-                    if (removeEntity) {
-                        td = td.replaceAll("&[^;]+;", "");
-                    } else {
-                        td = HtmlUtils.unescapeHtml3(td);
-                    }
-                    if (removePattern != null) {
-                        td = td.replaceAll(removePattern, "");
-                    }
-                    if (removePattern2 != null) {
-                        td = td.replaceAll(removePattern2, "");
-                    }
-                    td = td.replaceAll("&nbsp;", " ");
-                    td = td.replaceAll("&quot;", "\"");
-                    td = td.replaceAll("&lt;", "<");
-                    td = td.replaceAll("&gt;", ">");
-                    td = td.replaceAll("\n", " ");
-                    row.insert(td.trim());
-                    if (debug) {
-                        System.out.println("\t\ttd:" + td);
-                    }
-                }
-            }
-
-            break;
-        }
-
         return rows;
 
     }
@@ -2362,8 +2273,8 @@ public class CsvUtil {
             Hashtable<String, String> props = parseProps(htmlProps);
             tokenizedRows.add(tokenizeHtml(files.get(0), props));
         } else if (doJson) {
-            Hashtable<String, String> props = parseProps(jsonProps);
-            tokenizedRows.add(tokenizeJson(files.get(0), props));
+            //            Hashtable<String, String> props = parseProps(jsonProps);
+            //tokenizedRows.add(tokenizeJson(files.get(0), props));
         }
 
     }
