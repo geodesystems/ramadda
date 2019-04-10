@@ -731,6 +731,25 @@ public class CsvUtil {
             throws Exception {
         List<Row> rows  = new ArrayList<Row>();
         String    s     = IOUtil.readContents(file);
+        JSONArray array      = new JSONArray(s);
+        String[]names = null;
+        for (int i = 0; i < array.length(); i++) {
+            JSONObject jrow = array.getJSONObject(i);
+            if(names==null) {
+                names = JSONObject.getNames(jrow);
+                Row row = new Row();
+                rows.add(row);
+                for (String name : names) {
+                    row.add(name);
+                }
+            }
+            Row row = new Row();
+            rows.add(row);
+            for (String name : names) {
+                row.add(jrow.get(name).toString());
+            }            
+
+        }
         return rows;
 
     }
@@ -2273,8 +2292,8 @@ public class CsvUtil {
             Hashtable<String, String> props = parseProps(htmlProps);
             tokenizedRows.add(tokenizeHtml(files.get(0), props));
         } else if (doJson) {
-            //            Hashtable<String, String> props = parseProps(jsonProps);
-            //tokenizedRows.add(tokenizeJson(files.get(0), props));
+            Hashtable<String, String> props = parseProps(jsonProps);
+            tokenizedRows.add(tokenizeJson(files.get(0), props));
         }
 
     }
