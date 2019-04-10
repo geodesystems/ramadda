@@ -477,8 +477,13 @@ function RamaddaImagesDisplay(displayManager, id, properties) {
             var width = this.getProperty("imageWidth","50");
             var margin = this.getProperty("imageMargin","0");
             var splits = {};
+            var splitCnt = {};
+
             var splitHeaders = [];
-            if(!this.splitField) splits[""]="";
+            if(!this.splitField) {
+                splits[""]="";
+                splitCnt[""]=0;
+            }
             for (var rowIdx = 0; rowIdx <records.length; rowIdx++) {
                 var row = this.getDataValues(records[rowIdx]);
                 var img = row[this.imageField.getIndex()];
@@ -494,9 +499,11 @@ function RamaddaImagesDisplay(displayManager, id, properties) {
                 if(this.splitField) {
                     var splitOn = row[this.splitField.getIndex()];
                     if(!splits[splitOn]) {
+                        splitCnt[splitOn] = 0;
                         splits[splitOn] = "";
                         splitHeaders.push(splitOn);
                     }
+                    splitCnt[splitOn]++;
                     splits[splitOn]+=html;
                 } else {
                     splits[""]+=html;
@@ -510,7 +517,8 @@ function RamaddaImagesDisplay(displayManager, id, properties) {
                 html +="<table width=100%><tr valign=top>";
                 for(var i=0;i<splitHeaders.length;i++) {
                     var header = splitHeaders[i];
-                    html+="<td width=" + width+"%><center><b>" + header+"</b></center>" + HtmlUtils.div(["class","display-images-items"], splits[header])+"</td>";
+                    var cnt = splitCnt[header]
+                    html+="<td width=" + width+"%><center><b>" + header+" (" +cnt +")</b></center>" + HtmlUtils.div(["class","display-images-items"], splits[header])+"</td>";
                 }
                 html +="</tr></table>";
             }
