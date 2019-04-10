@@ -383,7 +383,7 @@ function RamaddaImagesDisplay(displayManager, id, properties) {
             var fields = this.getSelectedFields(allFields);
             if (fields.length == 0)
                 fields = allFields;
-            this.splitField = this.getFieldById(fields, this.getProperty("splitBy"));
+            this.groupField = this.getFieldById(fields, this.getProperty("groupBy"));
             this.imageField = this.getFieldOfType(fields, "image");
             this.tooltipFields = this.getFieldsByIds(fields, this.getProperty("tooltipFields","",true).split(","));
             this.labelField = this.getFieldById(fields, this.getProperty("labelField", null, true));
@@ -476,13 +476,13 @@ function RamaddaImagesDisplay(displayManager, id, properties) {
 
             var width = this.getProperty("imageWidth","50");
             var margin = this.getProperty("imageMargin","0");
-            var splits = {};
-            var splitCnt = {};
+            var groups = {};
+            var groupCnt = {};
 
-            var splitHeaders = [];
-            if(!this.splitField) {
-                splits[""]="";
-                splitCnt[""]=0;
+            var groupHeaders = [];
+            if(!this.groupField) {
+                groups[""]="";
+                groupCnt[""]=0;
             }
             for (var rowIdx = 0; rowIdx <records.length; rowIdx++) {
                 var row = this.getDataValues(records[rowIdx]);
@@ -496,29 +496,29 @@ function RamaddaImagesDisplay(displayManager, id, properties) {
                 }
                 var img = HtmlUtils.href(img, HtmlUtils.image(img,["width",width]),["class","display-images-popup"]);
                 var html =HtmlUtils.div(["class","display-images-item", "title", tooltip, "style","margin:" + margin+"px;"], img+label);
-                if(this.splitField) {
-                    var splitOn = row[this.splitField.getIndex()];
-                    if(!splits[splitOn]) {
-                        splitCnt[splitOn] = 0;
-                        splits[splitOn] = "";
-                        splitHeaders.push(splitOn);
+                if(this.groupField) {
+                    var groupOn = row[this.groupField.getIndex()];
+                    if(!groups[groupOn]) {
+                        groupCnt[groupOn] = 0;
+                        groups[groupOn] = "";
+                        groupHeaders.push(groupOn);
                     }
-                    splitCnt[splitOn]++;
-                    splits[splitOn]+=html;
+                    groupCnt[groupOn]++;
+                    groups[groupOn]+=html;
                 } else {
-                    splits[""]+=html;
+                    groups[""]+=html;
                 }
                 //                if(rowIdx>10) break;
             }
             var html = "";
-            if(!this.splitField) html = splits[""];
+            if(!this.groupField) html = groups[""];
             else {
-                var width = splitHeaders.length==0?"100%":100/splitHeaders.length;
+                var width = groupHeaders.length==0?"100%":100/groupHeaders.length;
                 html +="<table width=100%><tr valign=top>";
-                for(var i=0;i<splitHeaders.length;i++) {
-                    var header = splitHeaders[i];
-                    var cnt = splitCnt[header]
-                    html+="<td width=" + width+"%><center><b>" + header+" (" +cnt +")</b></center>" + HtmlUtils.div(["class","display-images-items"], splits[header])+"</td>";
+                for(var i=0;i<groupHeaders.length;i++) {
+                    var header = groupHeaders[i];
+                    var cnt = groupCnt[header]
+                    html+="<td width=" + width+"%><center><b>" + header+" (" +cnt +")</b></center>" + HtmlUtils.div(["class","display-images-items"], groups[header])+"</td>";
                 }
                 html +="</tr></table>";
             }

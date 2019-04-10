@@ -740,15 +740,22 @@ public class CsvUtil {
                 Row row = new Row();
                 rows.add(row);
                 for (String name : names) {
+                    Object obj = jrow.opt(name);
+                    if(obj!=null)
+                        if(obj instanceof JSONObject || obj instanceof JSONArray)
+                            continue;
                     row.add(name);
                 }
             }
             Row row = new Row();
             rows.add(row);
             for (String name : names) {
-                row.add(jrow.get(name).toString());
+                Object obj = jrow.opt(name);
+                if(obj==null) obj = "";
+                else if(obj instanceof JSONObject || obj instanceof JSONArray)
+                    continue;
+                row.add(obj.toString());
             }            
-
         }
         return rows;
 
