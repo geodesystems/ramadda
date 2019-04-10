@@ -418,7 +418,7 @@ function RamaddaImagesDisplay(displayManager, id, properties) {
                 var widget;
                 var widgetId = this.getDomId("searchby_" + searchField.getId());
                 if(searchField.getType() == "enumeration") {
-                    var enums = [["","all"]];
+                    var enums = [["","All"]];
                     this.records.map(record=>{
                             var value = this.getDataValues(record)[searchField.getIndex()];
                             if(!enums.includes(value)) enums.push(value);
