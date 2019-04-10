@@ -370,9 +370,8 @@ function DisplayThing(argId, argProperties) {
                 object[objectProperty] = prop;
             }
         },
-        getProperty: function(key, dflt) {
-
-            if (this[key]) {
+        getProperty: function(key, dflt,skipThis) {
+           if(!skipThis && this[key]) {
                 return this[key];
             }
             var value = this.properties[key];
@@ -380,7 +379,7 @@ function DisplayThing(argId, argProperties) {
                 return value;
             }
             if (this.displayParent != null) {
-                return this.displayParent.getProperty(key, dflt);
+                return this.displayParent.getProperty(key, dflt, skipThis);
             }
             if (this.getDisplayManager) {
                 return this.getDisplayManager().getProperty(key, dflt);
@@ -388,8 +387,7 @@ function DisplayThing(argId, argProperties) {
             value = getGlobalDisplayProperty(key);
             if (value) return value;
             return dflt;
-        }
-
+            },
     });
 }
 

@@ -8,11 +8,21 @@ var DISPLAY_TEXTSTATS = "textstats";
 var DISPLAY_TEXTANALYSIS = "textanalysis";
 var DISPLAY_TEXTRAW = "textraw";
 var DISPLAY_TEXT = "text";
+var DISPLAY_IMAGES = "images";
+
 
 addGlobalDisplayType({
     type: DISPLAY_TEXT,
     label: "Text Readout",
     requiresData: false,
+    forUser: true,
+    category: CATEGORY_MISC
+});
+
+addGlobalDisplayType({
+    type: DISPLAY_IMAGES,
+    label: "Images",
+    requiresData: true,
     forUser: true,
     category: CATEGORY_MISC
 });
@@ -351,6 +361,160 @@ function RamaddaWordcloudDisplay(displayManager, id, properties) {
                 });
             }
         }
+    });
+}
+
+
+
+function RamaddaImagesDisplay(displayManager, id, properties) {
+    var ID_RESULTS = "results";
+    var ID_SEARCHBAR = "searchbar";
+    let SUPER =  new RamaddaFieldsDisplay(displayManager, id, DISPLAY_IMAGES, properties);
+    RamaddaUtil.inherit(this,SUPER);
+    addRamaddaDisplay(this);
+    $.extend(this, {
+        getContentsStyle: function() {
+            return "";
+        },
+        updateUI: function() {
+            this.records = this.filterData();
+            if(!this.records) return;
+            var allFields = this.getData().getRecordFields();
+            var fields = this.getSelectedFields(allFields);
+            if (fields.length == 0)
+                fields = allFields;
+            this.splitField = this.getFieldById(fields, this.getProperty("splitBy"));
+            this.imageField = this.getFieldOfType(fields, "image");
+            this.tooltipFields = this.getFieldsByIds(fields, this.getProperty("tooltipFields","",true).split(","));
+            this.labelField = this.getFieldById(fields, this.getProperty("labelField", null, true));
+            this.sortField = this.getFieldById(fields, this.getProperty("sortField", null, true));
+            if(!this.imageField)  {
+                this.displayError("No image field specified");
+                return;
+            }
+            if(this.sortField) {
+                var sortAscending = this.getProperty("sortAscending",true);
+                this.records.sort((a,b)=>{
+                        var row1 = this.getDataValues(a);
+                        var row2 = this.getDataValues(b);
+                        var result = 0;
+                        var v1 = row1[this.sortField.getIndex()];
+                        var v2 = row2[this.sortField.getIndex()];
+                        if(v1<v2) result = -1;
+                        else if(v1>v2) result = 1;
+                        if(sortAscending) return result;
+                        return result==0?result:-result;
+                     });
+            }
+            this.searchFields = [];
+            var contents = "";
+            var searchBy = this.getProperty("searchBy","").split(",");
+            var searchBar = "";
+
+            for(var i=0;i<searchBy.length;i++) {
+                var searchField  = this.getFieldById(fields,searchBy[i]);
+                if(!searchField) continue;
+                this.searchFields.push(searchField);
+                var widget;
+                var widgetId = this.getDomId("searchby_" + searchField.getId());
+                if(searchField.getType() == "enumeration") {
+                    var enums = [["","all"]];
+                    this.records.map(record=>{
+                            var value = this.getDataValues(record)[searchField.getIndex()];
+                            if(!enums.includes(value)) enums.push(value);
+                        });
+                    widget = HtmlUtils.select("",["id",widgetId],enums);
+                } else {
+                    widget =HtmlUtils.input("","",["id",widgetId]);
+                }
+                widget =searchField.getLabel() +": " + widget;
+                searchBar+=widget +"&nbsp;&nbsp;";
+            }
+
+            contents += HtmlUtils.div(["id",this.getDomId(ID_SEARCHBAR)], "<center>" +searchBar+"</center>");
+            contents += HtmlUtils.div(["id",this.getDomId(ID_RESULTS)]);
+            this.writeHtml(ID_DISPLAY_CONTENTS, contents);
+            this.jq(ID_SEARCHBAR).find("select").selectBoxIt({});
+            this.jq(ID_SEARCHBAR).find("input, input:radio,select").change(()=>{
+                    this.doSearch();
+                });
+            this.displaySearchResults(this.records);
+         },
+         doSearch: function() {
+                var records = [];
+                var values = [];
+                for(var i=0;i<this.searchFields.length;i++) {
+                    var searchField = this.searchFields[i];
+                    values.push($("#" + this.getDomId("searchby_" + searchField.getId())).val());
+                }
+                for (var rowIdx = 0; rowIdx <this.records.length; rowIdx++) {
+                    var row = this.getDataValues(this.records[rowIdx]);
+                    var ok = true;
+                    for(var i=0;i<this.searchFields.length;i++) {
+                        var searchField = this.searchFields[i];
+                        var searchValue = values[i];
+                        if(searchValue=="") continue;
+                        var value = row[searchField.getIndex()];
+                        if(searchField.getType() == "enumeration") {
+                            if(value!=searchValue) {
+                                ok = false;
+                                break;
+                            }
+                        } else {
+                            value  = (""+value).toLowerCase();
+                            if(value.indexOf(searchValue.toLowerCase())<0) {
+                                ok = false;
+                                break;
+                            }
+                        }
+                    }
+                    if(ok) records.push(this.records[rowIdx]);
+                }
+                this.displaySearchResults(records);
+         },
+         displaySearchResults: function(records) {
+
+            var width = this.getProperty("imageWidth","50");
+            var margin = this.getProperty("imageMargin","0");
+            var splits = {};
+            var splitHeaders = [];
+            if(!this.splitField) splits[""]="";
+            for (var rowIdx = 0; rowIdx <records.length; rowIdx++) {
+                var row = this.getDataValues(records[rowIdx]);
+                var img = row[this.imageField.getIndex()];
+                var tooltip = "";
+                var label = "";
+                if(this.labelField) label = "<br>" + row[this.labelField.getIndex()];
+                for(var i=0;i<this.tooltipFields.length;i++) {
+                    if(tooltip!="") tooltip+="&#10;";
+                    tooltip+=row[this.tooltipFields[i].getIndex()];
+                }
+                var html =HtmlUtils.div(["class","display-images-item", "title", tooltip, "style","margin:" + margin+"px;"], HtmlUtils.image(img,["width",width])+label);
+                if(this.splitField) {
+                    var splitOn = row[this.splitField.getIndex()];
+                    if(!splits[splitOn]) {
+                        splits[splitOn] = "";
+                        splitHeaders.push(splitOn);
+                    }
+                    splits[splitOn]+=html;
+                } else {
+                    splits[""]+=html;
+                }
+                //                if(rowIdx>10) break;
+            }
+            var html = "";
+            if(!this.splitField) html = splits[""];
+            else {
+                var width = splitHeaders.length==0?"100%":100/splitHeaders.length;
+                html +="<table width=100%><tr valign=top>";
+                for(var i=0;i<splitHeaders.length;i++) {
+                    var header = splitHeaders[i];
+                    html+="<td width=" + width+"%><center><b>" + header+"</b></center>" + HtmlUtils.div(["class","display-images-items"], splits[header])+"</td>";
+                }
+                html +="</tr></table>";
+            }
+            this.writeHtml(ID_RESULTS, html);
+            }
     });
 }
 

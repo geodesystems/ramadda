@@ -84,6 +84,9 @@ public class RecordField {
 
     /** _more_ */
     public static final String TYPE_STRING = "string";
+    public static final String TYPE_URL = "url";
+    public static final String TYPE_ENUMERATION = "enumeration";
+    public static final String TYPE_IMAGE = "image";
 
     /** _more_ */
     public static final String TYPE_DATE = "date";
@@ -240,12 +243,6 @@ public class RecordField {
         this.description = description;
         this.paramId     = paramId;
         this.unit        = unit;
-        /*      this.rawType = rawType;
-                this.typeName = typeName;
-                this.arity = arity;
-                this.searchable = searchable;
-                this.chartable  = chartable;
-        */
     }
 
 
@@ -414,6 +411,7 @@ public class RecordField {
             items.add("description");
             items.add(Json.quote(description.replaceAll("\n"," ")));
         }
+
         items.add("type");
         items.add(Json.quote(dataType));
         items.add("unit");
@@ -511,7 +509,7 @@ public class RecordField {
             attr(pw, "size", "" + arity);
         }
         if (isTypeString) {
-            attr(pw, "type", TYPE_STRING);
+            attr(pw, "type", type);
         } else if (isTypeDate) {
             attr(pw, "type", TYPE_DATE);
         } else {
@@ -1015,7 +1013,7 @@ public class RecordField {
         isTypeNumeric = value.equals("numeric") || value.equals("integer")
                         || value.equals(TYPE_DOUBLE)
                         || value.equals(TYPE_INT);
-        isTypeString = value.equals(TYPE_STRING);
+        isTypeString = value.equals(TYPE_STRING) || value.equals(TYPE_URL)|| value.equals(TYPE_IMAGE) || value.equals(TYPE_ENUMERATION);
         isTypeDate   = value.equals(TYPE_DATE);
     }
 

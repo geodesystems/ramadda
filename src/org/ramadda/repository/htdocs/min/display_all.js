@@ -520,9 +520,8 @@ function DisplayThing(argId, argProperties) {
                 object[objectProperty] = prop;
             }
         },
-        getProperty: function(key, dflt) {
-
-            if (this[key]) {
+        getProperty: function(key, dflt,skipThis) {
+           if(!skipThis && this[key]) {
                 return this[key];
             }
             var value = this.properties[key];
@@ -530,7 +529,7 @@ function DisplayThing(argId, argProperties) {
                 return value;
             }
             if (this.displayParent != null) {
-                return this.displayParent.getProperty(key, dflt);
+                return this.displayParent.getProperty(key, dflt, skipThis);
             }
             if (this.getDisplayManager) {
                 return this.getDisplayManager().getProperty(key, dflt);
@@ -538,8 +537,7 @@ function DisplayThing(argId, argProperties) {
             value = getGlobalDisplayProperty(key);
             if (value) return value;
             return dflt;
-        }
-
+            },
     });
 }
 
@@ -6092,7 +6090,7 @@ function RamaddaNotebookDisplay(displayManager, id, properties) {
                     this.inGlobalChanged = false;
                 }
         },
-        addGlobal: function(name, value, dontPropagate) {
+        addGlobal: async function(name, value, dontPropagate) {
             //TODO: more var name cleanup
             name = name.trim().replace(/[ -]/g, "_");
             var oldValue = this.getGlobalValue(name);
@@ -6101,7 +6099,7 @@ function RamaddaNotebookDisplay(displayManager, id, properties) {
             if(!dontPropagate) {
                 var newValue = this.getGlobalValue(name);
                 if(newValue!=oldValue) {
-                    this.globalChanged(name, newValue);
+                    await this.globalChanged(name, newValue);
                 }
             }
         },
@@ -6203,12 +6201,12 @@ function NotebookState(cell, div) {
         getCell: function() {
             return this.cell;
         },
-        addGlobal: function(name,value) {
-                this.getNotebook().addGlobal(name,value);
+        addGlobal: async function(name,value) {
+                await this.getNotebook().addGlobal(name,value);
         },
 
-        globalChanged: function(name,value) {
-                this.getNotebook().globalChanged(name,value);
+        globalChanged: async function(name,value) {
+                await this.getNotebook().globalChanged(name,value);
         },
         setValue: function(name, value) {
             this.notebook.setCellValue(name, value);
@@ -6267,8 +6265,8 @@ function NotebookState(cell, div) {
         stop: function() {
             this.stopFlag = true;
         },
-        setGlobal: function(name, value) {
-            this.cell.notebook.addGlobal(name, value);
+        setGlobal: async function(name, value) {
+                await this.cell.notebook.addGlobal(name, value);
         },
         setEntry: function(name, entryId) {
             this.cell.notebook.addEntry(name, entryId);
@@ -7066,14 +7064,16 @@ function RamaddaNotebookCell(notebook, id, content, props) {
                 //                console.log("runChunk: chunk has run");
                 return Utils.call(callback, true);
             }
+            chunk.ok = true;
             chunk.div.set("");
             chunk.hasRun = true;
             for (var i = 0; i < chunk.depends.length; i++) {
                 var name = chunk.depends[i];
                 if (this.chunkMap[name] && !this.chunkMap[name].hasRun) {
                     var ok = true;
-                    await this.runChunk(this.chunkMap[name], false, null, (r => ok = r));
-                    if (!ok) {
+                    var otherChunk = this.chunkMap[name];
+                    await this.runChunk(otherChunk, false, null, (r => ok = r));
+                    if (!ok || !otherChunk.ok) {
                         return Utils.call(callback, false);
                     }
                 }
@@ -7087,10 +7087,10 @@ function RamaddaNotebookCell(notebook, id, content, props) {
                 var name = chunk.name.trim();
                 if (chunk.output) {
                     if (name != "") {
-                        this.notebook.addGlobal(name, chunk.output);
+                        await this.notebook.addGlobal(name, chunk.output);
                     }
                 } else {
-                    this.notebook.addGlobal(name, null);
+                    await this.notebook.addGlobal(name, null);
                 }
             }
             return Utils.call(callback, true);
@@ -7125,7 +7125,6 @@ function RamaddaNotebookCell(notebook, id, content, props) {
                 content = content.trim();
                 content = content.substring(0, content.length - 1);
             }
-
             this.rawOutput += content + "\n";
             chunk.output = content;
             chunk.div.set(content);
@@ -7228,7 +7227,7 @@ function RamaddaNotebookCell(notebook, id, content, props) {
                             results = new Blob([results], {});
                         }
                         if (variable) {
-                            this.notebook.addGlobal(variable, results);
+                            await this.notebook.addGlobal(variable, results);
                         } else {
                             if (isJson) {
                                 chunk.div.append(Utils.formatJson(results));
@@ -7375,14 +7374,16 @@ function RamaddaNotebookCell(notebook, id, content, props) {
                 await cmd.proc.call(_this, cmd.line, cmd.toks, cmd.div, cmd.extra);
             }
         },
-        processJs: async function(chunk) {
+        processJs: async function(chunk,state) {
             var lines;
             var topLines = 0;
-            try {
-                await this.getCurrentEntry(e => {
+            await this.getCurrentEntry(e => {
                     current = e
                 });
-                var state = window.notebook;
+            if(!notebookStates[state.id]) {
+                throw new Error("Null NB:" + state.id);
+            }
+            try {
                 var notebookEntries = this.notebook.getCurrentEntries();
                 for (name in notebookEntries) {
                     state.entries[name] = notebookEntries[name].entry;
@@ -7397,7 +7398,6 @@ function RamaddaNotebookCell(notebook, id, content, props) {
                 topLines++;
                 jsSet += "var notebook= " + stateJS + ";\n";
                 topLines++;
-                //Put this here so we're sortof compatible with iodide notebooks
                 for (name in state.entries) {
                     var e = state.entries[name];
                     topLines++;
@@ -7442,6 +7442,7 @@ function RamaddaNotebookCell(notebook, id, content, props) {
             } catch (e) {
                 chunk.ok = false;
                 var line = lines[e.lineNumber - topLines - 1];
+                console.log("Error:" + e.stack);
                 this.notebook.log("Error: " + e.message + "<br>&gt;" + (line ? line : ""), "error", "js", chunk.div);
             }
         },
@@ -7450,39 +7451,29 @@ function RamaddaNotebookCell(notebook, id, content, props) {
             window.notebook = state;
             notebookStates[state.id] = state;
             if (chunk.type == "html") {
-                await this.processHtml(chunk);
+                await this.processHtml(chunk, state);
             } else if (chunk.type == "plugin") {
-                await this.processPlugin(chunk);
+                await this.processPlugin(chunk,state);
             } else if (chunk.type == "wiki") {
-                await this.processWiki(chunk);
+                await this.processWiki(chunk,state);
             } else if (chunk.type == "css") {
-                await this.processCss(chunk);
+                await this.processCss(chunk,state);
             } else if (chunk.type == "fetch") {
-                await this.processFetch(chunk);
+                await this.processFetch(chunk,state);
             } else if (chunk.type == "raw") {
                 var content = chunk.getContent();
                 chunk.output = content;
-                var re = new RegExp("^ *var *= *(.*)");
-                /*
-                var toks = re.exec(chunk.rest);
-                if (toks) {
-                    var id = toks[1];
-                    this.notebook.setCellValue(id, content);
-                }
-                */
                 this.rawOutput += content;
             } else if (chunk.type == "js") {
-                await this.processJs(chunk);
+                await this.processJs(chunk,state);
             } else if (chunk.type == "sh") {
-                await this.processSh(chunk);
+                await this.processSh(chunk,state);
             } else if (chunk.type == "meta") {
                 //noop
-
             } else if (chunk.type == "md") {
-                await this.processMd(chunk);
-
+                await this.processMd(chunk,state);
             } else if (chunk.type == "py") {
-                await this.processPy(chunk);
+                await this.processPy(chunk,state);
             } else {
                 var hasPlugin;
                 await this.notebook.hasPlugin(chunk.type, p => hasPlugin = p);
@@ -7499,8 +7490,7 @@ function RamaddaNotebookCell(notebook, id, content, props) {
                 this.notebook.log("Unknown type:" + chunk.type, "error", null, chunk.div);
                 chunk.ok = false;
             }
-
-            notebookStates[state.id] = null;
+            delete  notebookStates[state.id];
             if (state.getStop()) {
                 chunk.ok = false;
             }
@@ -7789,7 +7779,7 @@ function RamaddaNotebookCell(notebook, id, content, props) {
             } else {
                 var v = Utils.join(toks, " ", 2);
                 v = v.replace(/\"/g, "");
-                this.notebook.addGlobal(name, v);
+                await this.notebook.addGlobal(name, v);
             }
         },
         processCommand_clearEntries: function(line, toks, div) {
@@ -12881,11 +12871,21 @@ var DISPLAY_TEXTSTATS = "textstats";
 var DISPLAY_TEXTANALYSIS = "textanalysis";
 var DISPLAY_TEXTRAW = "textraw";
 var DISPLAY_TEXT = "text";
+var DISPLAY_IMAGES = "images";
+
 
 addGlobalDisplayType({
     type: DISPLAY_TEXT,
     label: "Text Readout",
     requiresData: false,
+    forUser: true,
+    category: CATEGORY_MISC
+});
+
+addGlobalDisplayType({
+    type: DISPLAY_IMAGES,
+    label: "Images",
+    requiresData: true,
     forUser: true,
     category: CATEGORY_MISC
 });
@@ -13224,6 +13224,160 @@ function RamaddaWordcloudDisplay(displayManager, id, properties) {
                 });
             }
         }
+    });
+}
+
+
+
+function RamaddaImagesDisplay(displayManager, id, properties) {
+    var ID_RESULTS = "results";
+    var ID_SEARCHBAR = "searchbar";
+    let SUPER =  new RamaddaFieldsDisplay(displayManager, id, DISPLAY_IMAGES, properties);
+    RamaddaUtil.inherit(this,SUPER);
+    addRamaddaDisplay(this);
+    $.extend(this, {
+        getContentsStyle: function() {
+            return "";
+        },
+        updateUI: function() {
+            this.records = this.filterData();
+            if(!this.records) return;
+            var allFields = this.getData().getRecordFields();
+            var fields = this.getSelectedFields(allFields);
+            if (fields.length == 0)
+                fields = allFields;
+            this.splitField = this.getFieldById(fields, this.getProperty("splitBy"));
+            this.imageField = this.getFieldOfType(fields, "image");
+            this.tooltipFields = this.getFieldsByIds(fields, this.getProperty("tooltipFields","",true).split(","));
+            this.labelField = this.getFieldById(fields, this.getProperty("labelField", null, true));
+            this.sortField = this.getFieldById(fields, this.getProperty("sortField", null, true));
+            if(!this.imageField)  {
+                this.displayError("No image field specified");
+                return;
+            }
+            if(this.sortField) {
+                var sortAscending = this.getProperty("sortAscending",true);
+                this.records.sort((a,b)=>{
+                        var row1 = this.getDataValues(a);
+                        var row2 = this.getDataValues(b);
+                        var result = 0;
+                        var v1 = row1[this.sortField.getIndex()];
+                        var v2 = row2[this.sortField.getIndex()];
+                        if(v1<v2) result = -1;
+                        else if(v1>v2) result = 1;
+                        if(sortAscending) return result;
+                        return result==0?result:-result;
+                     });
+            }
+            this.searchFields = [];
+            var contents = "";
+            var searchBy = this.getProperty("searchBy","").split(",");
+            var searchBar = "";
+
+            for(var i=0;i<searchBy.length;i++) {
+                var searchField  = this.getFieldById(fields,searchBy[i]);
+                if(!searchField) continue;
+                this.searchFields.push(searchField);
+                var widget;
+                var widgetId = this.getDomId("searchby_" + searchField.getId());
+                if(searchField.getType() == "enumeration") {
+                    var enums = [["","all"]];
+                    this.records.map(record=>{
+                            var value = this.getDataValues(record)[searchField.getIndex()];
+                            if(!enums.includes(value)) enums.push(value);
+                        });
+                    widget = HtmlUtils.select("",["id",widgetId],enums);
+                } else {
+                    widget =HtmlUtils.input("","",["id",widgetId]);
+                }
+                widget =searchField.getLabel() +": " + widget;
+                searchBar+=widget +"&nbsp;&nbsp;";
+            }
+
+            contents += HtmlUtils.div(["id",this.getDomId(ID_SEARCHBAR)], "<center>" +searchBar+"</center>");
+            contents += HtmlUtils.div(["id",this.getDomId(ID_RESULTS)]);
+            this.writeHtml(ID_DISPLAY_CONTENTS, contents);
+            this.jq(ID_SEARCHBAR).find("select").selectBoxIt({});
+            this.jq(ID_SEARCHBAR).find("input, input:radio,select").change(()=>{
+                    this.doSearch();
+                });
+            this.displaySearchResults(this.records);
+         },
+         doSearch: function() {
+                var records = [];
+                var values = [];
+                for(var i=0;i<this.searchFields.length;i++) {
+                    var searchField = this.searchFields[i];
+                    values.push($("#" + this.getDomId("searchby_" + searchField.getId())).val());
+                }
+                for (var rowIdx = 0; rowIdx <this.records.length; rowIdx++) {
+                    var row = this.getDataValues(this.records[rowIdx]);
+                    var ok = true;
+                    for(var i=0;i<this.searchFields.length;i++) {
+                        var searchField = this.searchFields[i];
+                        var searchValue = values[i];
+                        if(searchValue=="") continue;
+                        var value = row[searchField.getIndex()];
+                        if(searchField.getType() == "enumeration") {
+                            if(value!=searchValue) {
+                                ok = false;
+                                break;
+                            }
+                        } else {
+                            value  = (""+value).toLowerCase();
+                            if(value.indexOf(searchValue.toLowerCase())<0) {
+                                ok = false;
+                                break;
+                            }
+                        }
+                    }
+                    if(ok) records.push(this.records[rowIdx]);
+                }
+                this.displaySearchResults(records);
+         },
+         displaySearchResults: function(records) {
+
+            var width = this.getProperty("imageWidth","50");
+            var margin = this.getProperty("imageMargin","0");
+            var splits = {};
+            var splitHeaders = [];
+            if(!this.splitField) splits[""]="";
+            for (var rowIdx = 0; rowIdx <records.length; rowIdx++) {
+                var row = this.getDataValues(records[rowIdx]);
+                var img = row[this.imageField.getIndex()];
+                var tooltip = "";
+                var label = "";
+                if(this.labelField) label = "<br>" + row[this.labelField.getIndex()];
+                for(var i=0;i<this.tooltipFields.length;i++) {
+                    if(tooltip!="") tooltip+="&#10;";
+                    tooltip+=row[this.tooltipFields[i].getIndex()];
+                }
+                var html =HtmlUtils.div(["class","display-images-item", "title", tooltip, "style","margin:" + margin+"px;"], HtmlUtils.image(img,["width",width])+label);
+                if(this.splitField) {
+                    var splitOn = row[this.splitField.getIndex()];
+                    if(!splits[splitOn]) {
+                        splits[splitOn] = "";
+                        splitHeaders.push(splitOn);
+                    }
+                    splits[splitOn]+=html;
+                } else {
+                    splits[""]+=html;
+                }
+                //                if(rowIdx>10) break;
+            }
+            var html = "";
+            if(!this.splitField) html = splits[""];
+            else {
+                var width = splitHeaders.length==0?"100%":100/splitHeaders.length;
+                html +="<table width=100%><tr valign=top>";
+                for(var i=0;i<splitHeaders.length;i++) {
+                    var header = splitHeaders[i];
+                    html+="<td width=" + width+"%><center><b>" + header+"</b></center>" + HtmlUtils.div(["class","display-images-items"], splits[header])+"</td>";
+                }
+                html +="</tr></table>";
+            }
+            this.writeHtml(ID_RESULTS, html);
+            }
     });
 }
 

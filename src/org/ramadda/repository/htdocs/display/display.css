@@ -1423,3 +1423,17 @@ font-family:monospace;
    vertical-align:bottom;
    white-space:nowrap;
 }
+
+.display-searchbar {
+text-align:center;
+}
+
+.display-images-items {
+ margin-left:5px;
+ margin-right:5px;
+}
+
+.display-images-item {
+   display:inline-block;
+   text-align:center;
+}

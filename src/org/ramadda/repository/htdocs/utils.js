@@ -1313,7 +1313,7 @@ var HtmlUtils = {
         return this.tag("span", attrs, inner);
     },
     image: function(path, attrs) {
-        return "<img " + this.attrs(["src", path, "border", "0"]) + " " + this.attrs(attrs) + ">";
+        return "<img " + this.attrs(["src", path, "border", "0"]) + " " + this.attrs(attrs) + "/>";
     },
     tr: function(attrs, inner) {
         return this.tag("tr", attrs, inner);
@@ -1665,6 +1665,19 @@ var HtmlUtils = {
             HtmlUtils.handleFormChangeShowUrl(entryId, formId, outputId, skip, hook);
         });
         HtmlUtils.handleFormChangeShowUrl(entryId, formId, outputId, skip, hook);
+    },
+    select: function(name, attrs,list) {
+        var select = this.openTag("select", attrs);
+        list.map(item=>{
+                var label = item;
+                if(Array.isArray(item)) {
+                    label=item[1];
+                    item = item[0];
+                }
+                select+="<option value='" + item +"'>" + label +"</option>";
+            });
+        select+=this.closeTag("select");
+        return select;
     },
     input: function(name, value, attrs) {
         return "<input " + HtmlUtils.attrs(attrs) + HtmlUtils.attrs(["name", name, "value", value]) + ">";
