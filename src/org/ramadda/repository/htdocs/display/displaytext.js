@@ -408,7 +408,7 @@ function RamaddaImagesDisplay(displayManager, id, properties) {
             }
             this.searchFields = [];
             var contents = "";
-            var searchBy = this.getProperty("searchBy","").split(",");
+            var searchBy = this.getProperty("searchFields","",true).split(",");
             var searchBar = "";
 
             for(var i=0;i<searchBy.length;i++) {
