@@ -3188,7 +3188,7 @@ function RamaddaRankingDisplay(displayManager, id, properties) {
             var fields = this.getSelectedFields([]);
             if (fields.length == 0) fields = allFields;
             var numericFields = this.getFieldsOfType(fields, "numeric");
-            var sortField = this.getFieldById(numericFields, this.getProperty("sortField"));
+            var sortField = this.getFieldById(numericFields, this.getProperty("sortField","",true));
             if (numericFields.length == 0) {
                 this.setContents("No fields specified");
                 return;
@@ -3201,7 +3201,9 @@ function RamaddaRankingDisplay(displayManager, id, properties) {
                 return;
             }
 
-            var stringField = this.getFieldOfType(fields, "string");
+            var stringField = this.getFieldById(allFields, this.getProperty("nameField","",true));
+            if(!stringField)
+                stringField = this.getFieldOfType(allFields, "string");
             var menu = "<select class='ramadda-pulldown' id='" + this.getDomId("sortfields") + "'>";
             for (var i = 0; i < numericFields.length; i++) {
                 var field = numericFields[i];

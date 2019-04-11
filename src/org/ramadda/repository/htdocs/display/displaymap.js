@@ -1200,8 +1200,6 @@ function RamaddaMapDisplay(displayManager, id, properties) {
                         //                        console.log("cb:" +colorBy.minValue +" -  " +colorBy.maxValue);
                     }
                 }
-
-
                 if (isNaN(v) || v === null)
                     continue;
                 if (excludeZero && v == 0) {

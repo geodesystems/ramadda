@@ -732,18 +732,20 @@ public class CsvUtil {
         List<Row> rows  = new ArrayList<Row>();
         String    s     = IOUtil.readContents(file);
         JSONArray array      = new JSONArray(s);
-        String[]names = null;
+        List<String> names=null;
         for (int i = 0; i < array.length(); i++) {
             JSONObject jrow = array.getJSONObject(i);
             if(names==null) {
-                names = JSONObject.getNames(jrow);
+                String[]tmp = JSONObject.getNames(jrow);
                 Row row = new Row();
                 rows.add(row);
-                for (String name : names) {
+                names = new ArrayList<String>();
+                for (String name : tmp) {
                     Object obj = jrow.opt(name);
                     if(obj!=null)
                         if(obj instanceof JSONObject || obj instanceof JSONArray)
                             continue;
+                    names.add(name);
                     row.add(name);
                 }
             }
@@ -756,6 +758,7 @@ public class CsvUtil {
                     continue;
                 row.add(obj.toString());
             }            
+
         }
         return rows;
 

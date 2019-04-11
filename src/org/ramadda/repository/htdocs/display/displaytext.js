@@ -368,7 +368,6 @@ function RamaddaWordcloudDisplay(displayManager, id, properties) {
 
 function RamaddaImagesDisplay(displayManager, id, properties) {
     var ID_RESULTS = "results";
-    var ID_SEARCHBAR = "searchbar";
     let SUPER =  new RamaddaFieldsDisplay(displayManager, id, DISPLAY_IMAGES, properties);
     RamaddaUtil.inherit(this,SUPER);
     addRamaddaDisplay(this);

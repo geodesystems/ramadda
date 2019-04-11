@@ -166,7 +166,7 @@ var ID_DISPLAY_TOP = "top";
 var ID_DISPLAY_BOTTOM = "bottom";
 var ID_GROUP_CONTENTS = "group_contents";
 var ID_DETAILS_MAIN = "detailsmain";
-
+var ID_SEARCHBAR = "searchbar";
 
 var ID_TOOLBAR = "toolbar";
 var ID_TOOLBAR_INNER = "toolbarinner";
@@ -11186,7 +11186,7 @@ function RamaddaRankingDisplay(displayManager, id, properties) {
             var fields = this.getSelectedFields([]);
             if (fields.length == 0) fields = allFields;
             var numericFields = this.getFieldsOfType(fields, "numeric");
-            var sortField = this.getFieldById(numericFields, this.getProperty("sortField"));
+            var sortField = this.getFieldById(numericFields, this.getProperty("sortField","",true));
             if (numericFields.length == 0) {
                 this.setContents("No fields specified");
                 return;
@@ -11199,7 +11199,9 @@ function RamaddaRankingDisplay(displayManager, id, properties) {
                 return;
             }
 
-            var stringField = this.getFieldOfType(fields, "string");
+            var stringField = this.getFieldById(allFields, this.getProperty("nameField","",true));
+            if(!stringField)
+                stringField = this.getFieldOfType(allFields, "string");
             var menu = "<select class='ramadda-pulldown' id='" + this.getDomId("sortfields") + "'>";
             for (var i = 0; i < numericFields.length; i++) {
                 var field = numericFields[i];
@@ -13231,7 +13233,6 @@ function RamaddaWordcloudDisplay(displayManager, id, properties) {
 
 function RamaddaImagesDisplay(displayManager, id, properties) {
     var ID_RESULTS = "results";
-    var ID_SEARCHBAR = "searchbar";
     let SUPER =  new RamaddaFieldsDisplay(displayManager, id, DISPLAY_IMAGES, properties);
     RamaddaUtil.inherit(this,SUPER);
     addRamaddaDisplay(this);
@@ -18388,8 +18389,6 @@ function RamaddaMapDisplay(displayManager, id, properties) {
                         //                        console.log("cb:" +colorBy.minValue +" -  " +colorBy.maxValue);
                     }
                 }
-
-
                 if (isNaN(v) || v === null)
                     continue;
                 if (excludeZero && v == 0) {
