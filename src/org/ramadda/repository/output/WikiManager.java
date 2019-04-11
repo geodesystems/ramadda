@@ -468,7 +468,7 @@ ATTR_SHOWLINK, "true", ATTR_INCLUDEICON, "false") + ATTRS_LAYOUT),
                                         "#tooltipFields","field1,field2,...",
                                         "#groupByFields","field1,field2,...",
                                         "#captionTemplate","${field1}<br>${field2},...",
-                                        "#sortField",""
+                                        "#sortField","",
                                         "#labelField","image label field"),
                             new WikiTag(WIKI_TAG_DISPLAY,
                                         "Timeline chart",
