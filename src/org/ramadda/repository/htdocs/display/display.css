@@ -1437,3 +1437,21 @@ text-align:center;
    display:inline-block;
    text-align:center;
 }
+
+.display-images-card {
+  display:inline-block;
+  border: 1px #ccc solid;
+  margin:4px;
+  padding:4px;
+/*
+    --element-border: gainsboro;
+    --element-color:gray;
+    border: 1px solid var(--element-border);
+    border-radius: 5px;
+    background: rgba(0, 0, 0, 0) linear-gradient(to right, rgb(248, 243, 248), rgb(250, 248, 250)) repeat scroll 0% 0%;
+    color: var(--element-color);
+
+//  -moz-box-shadow: 2px 2px 4px rgba(0, 0, 0, 0.4);
+//  box-shadow: 2px 2px 4px rgba(0, 0, 0, 0.4);
+*/
+}

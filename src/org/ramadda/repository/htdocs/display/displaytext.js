@@ -393,9 +393,12 @@ function RamaddaImagesDisplay(displayManager, id, properties) {
             this.captionTemplate = this.getProperty("captionTemplate",null, true);
             if(this.captionFields.length==0) this.captionFields = this.tooltipFields;
             this.sortField = this.getFieldById(fields, this.getProperty("sortField", null, true));
+            if(!this.getProperty("showImages",true)) this.imageField = null;
             if(!this.imageField)  {
-                this.displayError("No image field specified");
-                return;
+                if(this.captionFields.length==0) {
+                    this.displayError("No image or caption fields specified");
+                    return;
+                }
             }
             if(this.sortField) {
                 var sortAscending = this.getProperty("sortAscending",true);
@@ -504,17 +507,15 @@ function RamaddaImagesDisplay(displayManager, id, properties) {
             }
             for (var rowIdx = 0; rowIdx <records.length; rowIdx++) {
                 var row = this.getDataValues(records[rowIdx]);
-                var img = row[this.imageField.getIndex()];
+                var contents = "";
                 var tooltip = "";
-                var label = "";
-                if(this.labelField) label = "<br>" + row[this.labelField.getIndex()];
                 this.tooltipFields.map(field=>{
                         if(tooltip!="") tooltip+="&#10;";
                         tooltip+=field.getValue(row);
                     });
-                var attrs = ["class","display-images-popup","data-fancybox",this.getDomId("gallery")];
+                var label = "";
+                var caption="";
                 if(this.captionFields.length>0) {
-                    var caption="";
                     if(this.captionTemplate) caption  = this.captionTemplate;
                     this.captionFields.map(field=>{
                             if(this.captionTemplate)
@@ -524,11 +525,20 @@ function RamaddaImagesDisplay(displayManager, id, properties) {
                         });
                     if(this.urlField)
                         caption = "<a href='" +this.urlField.getValue(row)+"' target=_other>" +caption+"</a>";
+                }
+
+                if(this.labelField) label = "<br>" + row[this.labelField.getIndex()];
+                var html ="";
+                if(this.imageField) {
+                    var img = row[this.imageField.getIndex()];
+                    var attrs = ["class","display-images-popup","data-fancybox",this.getDomId("gallery")];
                     attrs.push("data-caption");
                     attrs.push(caption);
+                    img =  HtmlUtils.href(img, HtmlUtils.image(img,["width",width]),attrs)+label;
+                    html = HtmlUtils.div(["class","display-images-item", "title", tooltip, "style","margin:" + margin+"px;"], img);
+                } else {
+                    html = HtmlUtils.div(["title",tooltip,"class","ramadda-gridbox display-images-card"],caption);
                 }
-                var img = HtmlUtils.href(img, HtmlUtils.image(img,["width",width]),attrs);
-                var html =HtmlUtils.div(["class","display-images-item", "title", tooltip, "style","margin:" + margin+"px;"], img+label);
                 if(this.groupField) {
                     var groupOn = row[this.groupField.getIndex()];
                     if(!groups[groupOn]) {
