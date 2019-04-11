@@ -499,7 +499,6 @@ function RamaddaImagesDisplay(displayManager, id, properties) {
             var margin = this.getProperty("imageMargin","0");
             var groups = {};
             var groupCnt = {};
-
             var groupHeaders = [];
             if(!this.groupField) {
                 groups[""]="";
@@ -556,6 +555,7 @@ function RamaddaImagesDisplay(displayManager, id, properties) {
             var html = "";
             if(!this.groupField) html = groups[""];
             else {
+                groupHeaders.sort();
                 var width = groupHeaders.length==0?"100%":100/groupHeaders.length;
                 html +="<table width=100%><tr valign=top>";
                 for(var i=0;i<groupHeaders.length;i++) {
