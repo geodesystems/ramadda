@@ -421,6 +421,9 @@ function RecordField(props) {
         getIndex: function() {
             return this.index;
         },
+        getValue: function(row) {
+            return row[this.index];
+        },
         isFieldGeo: function() {
             return this.isFieldLatitude() || this.isFieldLongitude() || this.isFieldElevation();
         },

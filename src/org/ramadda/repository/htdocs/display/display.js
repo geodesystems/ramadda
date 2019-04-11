@@ -17,6 +17,7 @@ var ID_DISPLAY_BOTTOM = "bottom";
 var ID_GROUP_CONTENTS = "group_contents";
 var ID_DETAILS_MAIN = "detailsmain";
 var ID_SEARCHBAR = "searchbar";
+var ID_GROUPBY_FIELDS= "groupdbyfields";
 
 var ID_TOOLBAR = "toolbar";
 var ID_TOOLBAR_INNER = "toolbarinner";

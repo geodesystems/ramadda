@@ -1666,7 +1666,7 @@ var HtmlUtils = {
         });
         HtmlUtils.handleFormChangeShowUrl(entryId, formId, outputId, skip, hook);
     },
-    select: function(name, attrs,list) {
+    select: function(name, attrs,list, selected) {
         var select = this.openTag("select", attrs);
         list.map(item=>{
                 var label = item;
@@ -1674,7 +1674,9 @@ var HtmlUtils = {
                     label=item[1];
                     item = item[0];
                 }
-                select+="<option value='" + item +"'>" + label +"</option>";
+                var extra = "";
+                if(selected == item) extra=" selected ";
+                select+="<option " + extra +" value='" + item +"'>" + label +"</option>";
             });
         select+=this.closeTag("select");
         return select;

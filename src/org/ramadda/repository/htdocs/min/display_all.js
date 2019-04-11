@@ -167,6 +167,7 @@ var ID_DISPLAY_BOTTOM = "bottom";
 var ID_GROUP_CONTENTS = "group_contents";
 var ID_DETAILS_MAIN = "detailsmain";
 var ID_SEARCHBAR = "searchbar";
+var ID_GROUPBY_FIELDS= "groupdbyfields";
 
 var ID_TOOLBAR = "toolbar";
 var ID_TOOLBAR_INNER = "toolbarinner";
@@ -4274,6 +4275,9 @@ function RecordField(props) {
     RamaddaUtil.defineMembers(this, {
         getIndex: function() {
             return this.index;
+        },
+        getValue: function(row) {
+            return row[this.index];
         },
         isFieldGeo: function() {
             return this.isFieldLatitude() || this.isFieldLongitude() || this.isFieldElevation();
@@ -13248,9 +13252,14 @@ function RamaddaImagesDisplay(displayManager, id, properties) {
             if (fields.length == 0)
                 fields = allFields;
             this.groupField = this.getFieldById(fields, this.getProperty("groupBy"));
+            this.groupByFields = this.getFieldsByIds(fields, this.getProperty("groupByFields","",true));
             this.imageField = this.getFieldOfType(fields, "image");
-            this.tooltipFields = this.getFieldsByIds(fields, this.getProperty("tooltipFields","",true).split(","));
+            this.urlField = this.getFieldOfType(fields, "url");
+            this.tooltipFields = this.getFieldsByIds(fields, this.getProperty("tooltipFields","",true));
             this.labelField = this.getFieldById(fields, this.getProperty("labelField", null, true));
+            this.captionFields = this.getFieldsByIds(fields, this.getProperty("captionFields", "", true));
+            this.captionTemplate = this.getProperty("captionTemplate",null, true);
+            if(this.captionFields.length==0) this.captionFields = this.tooltipFields;
             this.sortField = this.getFieldById(fields, this.getProperty("sortField", null, true));
             if(!this.imageField)  {
                 this.displayError("No image field specified");
@@ -13275,6 +13284,14 @@ function RamaddaImagesDisplay(displayManager, id, properties) {
             var searchBy = this.getProperty("searchFields","",true).split(",");
             var searchBar = "";
 
+            if(this.groupByFields.length>0) {
+                var enums = [];
+                this.groupByFields.map(field=>{
+                        enums.push([field.getId(),field.getLabel()]);
+                    });
+                searchBar += "Group by: " + HtmlUtils.select("",["id",this.getDomId(ID_GROUPBY_FIELDS)],enums)+"&nbsp;";
+            }
+
             for(var i=0;i<searchBy.length;i++) {
                 var searchField  = this.getFieldById(fields,searchBy[i]);
                 if(!searchField) continue;
@@ -13292,6 +13309,7 @@ function RamaddaImagesDisplay(displayManager, id, properties) {
                     widget =HtmlUtils.input("","",["id",widgetId]);
                 }
                 widget =searchField.getLabel() +": " + widget;
+                if(i==0) searchBar += " Display: ";
                 searchBar+=widget +"&nbsp;&nbsp;";
             }
 
@@ -13299,8 +13317,12 @@ function RamaddaImagesDisplay(displayManager, id, properties) {
             contents += HtmlUtils.div(["id",this.getDomId(ID_RESULTS)]);
             this.writeHtml(ID_DISPLAY_CONTENTS, contents);
             this.jq(ID_SEARCHBAR).find("select").selectBoxIt({});
-            this.jq(ID_SEARCHBAR).find("input, input:radio,select").change(()=>{
-                    this.doSearch();
+            let _this = this;
+            this.jq(ID_SEARCHBAR).find("input, input:radio,select").change(function(){
+                    if($(this).attr("id") ==_this.getDomId(ID_GROUPBY_FIELDS)) {
+                        _this.groupField = _this.getFieldById(fields, $(this).val());
+                    }
+                    _this.doSearch();
                 });
             this.displaySearchResults(this.records);
          },
@@ -13354,11 +13376,28 @@ function RamaddaImagesDisplay(displayManager, id, properties) {
                 var tooltip = "";
                 var label = "";
                 if(this.labelField) label = "<br>" + row[this.labelField.getIndex()];
-                for(var i=0;i<this.tooltipFields.length;i++) {
-                    if(tooltip!="") tooltip+="&#10;";
-                    tooltip+=row[this.tooltipFields[i].getIndex()];
+                this.tooltipFields.map(field=>{
+                        if(tooltip!="") tooltip+="&#10;";
+                        tooltip+=field.getValue(row);
+                    });
+                var attrs = ["class","display-images-popup","data-fancybox",this.getDomId("gallery")];
+                if(this.captionFields.length>0) {
+                    var caption="";
+                    if(this.captionTemplate) caption  = this.captionTemplate;
+                    if(this.urlField)
+                        caption += "<a href='" + this.urlField.getValue(row) +"' target=_other>";
+                    this.captionFields.map(field=>{
+                            if(this.captionTemplate)
+                                caption = caption.replace("\${" + field.getId()+"}",field.getValue(row));
+                            else
+                                caption+=field.getValue(row)+"<br>";
+                        });
+                    if(this.urlField)
+                        caption += "</a>";
+                    attrs.push("data-caption");
+                    attrs.push(caption);
                 }
-                var img = HtmlUtils.href(img, HtmlUtils.image(img,["width",width]),["class","display-images-popup"]);
+                var img = HtmlUtils.href(img, HtmlUtils.image(img,["width",width]),attrs);
                 var html =HtmlUtils.div(["class","display-images-item", "title", tooltip, "style","margin:" + margin+"px;"], img+label);
                 if(this.groupField) {
                     var groupOn = row[this.groupField.getIndex()];
@@ -13382,12 +13421,15 @@ function RamaddaImagesDisplay(displayManager, id, properties) {
                 for(var i=0;i<groupHeaders.length;i++) {
                     var header = groupHeaders[i];
                     var cnt = groupCnt[header]
-                    html+="<td width=" + width+"%><center><b>" + header+" (" +cnt +")</b></center>" + HtmlUtils.div(["class","display-images-items"], groups[header])+"</td>";
+                    html+="<td width=" + width+"%><center><b>&nbsp;" + header+" (" +cnt +")&nbsp;</b></center>" + HtmlUtils.div(["class","display-images-items"], groups[header])+"</td>";
                 }
                 html +="</tr></table>";
             }
             this.writeHtml(ID_RESULTS, html);
-            this.jq(ID_RESULTS).find("a.display-images-popup").fancybox({});
+            this.jq(ID_RESULTS).find("a.display-images-popup").fancybox({
+                    caption : function( instance, item ) {
+                        return  $(this).data('caption') || '';
+                    }});
             }
     });
 }
