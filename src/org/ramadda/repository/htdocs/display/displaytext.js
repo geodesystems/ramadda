@@ -8,7 +8,7 @@ var DISPLAY_TEXTSTATS = "textstats";
 var DISPLAY_TEXTANALYSIS = "textanalysis";
 var DISPLAY_TEXTRAW = "textraw";
 var DISPLAY_TEXT = "text";
-var DISPLAY_IMAGES = "images";
+var DISPLAY_CARDS = "cards";
 
 
 addGlobalDisplayType({
@@ -19,9 +19,10 @@ addGlobalDisplayType({
     category: CATEGORY_MISC
 });
 
+
 addGlobalDisplayType({
-    type: DISPLAY_IMAGES,
-    label: "Images",
+    type: DISPLAY_CARDS,
+    label: "Cards",
     requiresData: true,
     forUser: true,
     category: CATEGORY_MISC
@@ -366,9 +367,9 @@ function RamaddaWordcloudDisplay(displayManager, id, properties) {
 
 
 
-function RamaddaImagesDisplay(displayManager, id, properties) {
+function RamaddaCardsDisplay(displayManager, id, properties) {
     var ID_RESULTS = "results";
-    let SUPER =  new RamaddaFieldsDisplay(displayManager, id, DISPLAY_IMAGES, properties);
+    let SUPER =  new RamaddaFieldsDisplay(displayManager, id, DISPLAY_CARDS, properties);
     RamaddaUtil.inherit(this,SUPER);
     addRamaddaDisplay(this);
     $.extend(this, {
@@ -530,13 +531,13 @@ function RamaddaImagesDisplay(displayManager, id, properties) {
                 var html ="";
                 if(this.imageField) {
                     var img = row[this.imageField.getIndex()];
-                    var attrs = ["class","display-images-popup","data-fancybox",this.getDomId("gallery")];
+                    var attrs = ["class","display-cards-popup","data-fancybox",this.getDomId("gallery")];
                     attrs.push("data-caption");
                     attrs.push(caption);
                     img =  HtmlUtils.href(img, HtmlUtils.image(img,["width",width]),attrs)+label;
-                    html = HtmlUtils.div(["class","display-images-item", "title", tooltip, "style","margin:" + margin+"px;"], img);
+                    html = HtmlUtils.div(["class","display-cards-item", "title", tooltip, "style","margin:" + margin+"px;"], img);
                 } else {
-                    html = HtmlUtils.div(["title",tooltip,"class","ramadda-gridbox display-images-card"],caption);
+                    html = HtmlUtils.div(["title",tooltip,"class","ramadda-gridbox display-cards-card"],caption);
                 }
                 if(this.groupField) {
                     var groupOn = row[this.groupField.getIndex()];
@@ -561,12 +562,12 @@ function RamaddaImagesDisplay(displayManager, id, properties) {
                 for(var i=0;i<groupHeaders.length;i++) {
                     var header = groupHeaders[i];
                     var cnt = groupCnt[header]
-                    html+="<td width=" + width+"%><center><b>&nbsp;" + header+" (" +cnt +")&nbsp;</b></center>" + HtmlUtils.div(["class","display-images-items"], groups[header])+"</td>";
+                    html+="<td width=" + width+"%><center><b>&nbsp;" + header+" (" +cnt +")&nbsp;</b></center>" + HtmlUtils.div(["class","display-cards-items"], groups[header])+"</td>";
                 }
                 html +="</tr></table>";
             }
             this.writeHtml(ID_RESULTS, html);
-            this.jq(ID_RESULTS).find("a.display-images-popup").fancybox({
+            this.jq(ID_RESULTS).find("a.display-cards-popup").fancybox({
                     caption : function( instance, item ) {
                         return  $(this).data('caption') || '';
                     }});
