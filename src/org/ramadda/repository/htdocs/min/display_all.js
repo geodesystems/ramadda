@@ -13255,6 +13255,7 @@ function RamaddaImagesDisplay(displayManager, id, properties) {
             this.groupByFields = this.getFieldsByIds(fields, this.getProperty("groupByFields","",true));
             this.imageField = this.getFieldOfType(fields, "image");
             this.urlField = this.getFieldOfType(fields, "url");
+
             this.tooltipFields = this.getFieldsByIds(fields, this.getProperty("tooltipFields","",true));
             this.labelField = this.getFieldById(fields, this.getProperty("labelField", null, true));
             this.captionFields = this.getFieldsByIds(fields, this.getProperty("captionFields", "", true));
@@ -13384,8 +13385,6 @@ function RamaddaImagesDisplay(displayManager, id, properties) {
                 if(this.captionFields.length>0) {
                     var caption="";
                     if(this.captionTemplate) caption  = this.captionTemplate;
-                    if(this.urlField)
-                        caption += "<a href='" + this.urlField.getValue(row) +"' target=_other>";
                     this.captionFields.map(field=>{
                             if(this.captionTemplate)
                                 caption = caption.replace("\${" + field.getId()+"}",field.getValue(row));
@@ -13393,7 +13392,7 @@ function RamaddaImagesDisplay(displayManager, id, properties) {
                                 caption+=field.getValue(row)+"<br>";
                         });
                     if(this.urlField)
-                        caption += "</a>";
+                        caption = "<a href='" +this.urlField.getValue(row)+"' target=_other>" +caption+"</a>";
                     attrs.push("data-caption");
                     attrs.push(caption);
                 }
