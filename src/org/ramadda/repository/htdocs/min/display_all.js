@@ -9573,7 +9573,7 @@ function SankeyDisplay(displayManager, id, properties) {
             var strings = [];
             for (var i = 0; i < selectedFields.length; i++) {
                 var field = selectedFields[i];
-                if (field.isFieldString() == "string") {
+                if (field.isFieldString()) {
                     strings.push(field);
                 }
             }
