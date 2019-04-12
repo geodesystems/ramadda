@@ -41,6 +41,7 @@ rlns:Surface Net Longwave Radiation
 rtns:Surface Net Thermal Radiation
 rlds:Surface Downwelling Longwave Radiation
 rlus:Surface Upwelling Longwave Radiation
+rlut:TOA Outgoing Longwave Radiation
 rsds:Surface Downwelling Shortwave Radiation
 rsus:Surface Upwelling Shortwave Radiation
 mrsos:Moisture in Upper Portion of Soil Column (10cm)
