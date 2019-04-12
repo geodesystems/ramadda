@@ -13402,8 +13402,12 @@ function RamaddaCardsDisplay(displayManager, id, properties) {
                             else
                                 caption+=field.getValue(row)+"<br>";
                         });
-                    if(this.urlField)
-                        caption = "<a style='color:inherit;'  href='" +this.urlField.getValue(row)+"' target=_other>" +caption+"</a>";
+                    if(this.urlField) {
+                        var url = this.urlField.getValue(row);
+                        if(url && url!="") {
+                            caption = "<a style='color:inherit;'  href='" +url+"' target=_other>" +caption+"</a>";
+                        }
+                    }
                 }
                 if(this.labelField) label = "<br>" + row[this.labelField.getIndex()];
                 var html ="";
