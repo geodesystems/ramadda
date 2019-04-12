@@ -1072,6 +1072,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             }
             var list = [];
             var numeric = (type == "numeric");
+            var isString = (type == "string");
             for (a in fields) {
                 var field = fields[a];
                 if (type == null) return field;
@@ -1079,6 +1080,11 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
                     if (field.isFieldNumeric()) {
                         list.push(field);
                     }
+                } else if(isString) {
+                    if (field.isFieldString()) {
+                        list.push(field);
+                    }
+                    
                 } else if (field.getType() == type) {
                     list.push(field);
                 }

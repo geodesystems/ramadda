@@ -439,6 +439,9 @@ function RecordField(props) {
         isFieldNumeric: function() {
             return this.isNumeric;
         },
+        isFieldString: function() {
+                return this.type == "string" || this.type == "enumeration";
+        },
         isFieldDate: function() {
             return this.isDate;
         },
