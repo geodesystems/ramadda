@@ -13263,6 +13263,10 @@ function RamaddaCardsDisplay(displayManager, id, properties) {
             this.captionTemplate = this.getProperty("captionTemplate",null, true);
             if(this.captionFields.length==0) this.captionFields = this.tooltipFields;
             this.sortField = this.getFieldById(fields, this.getProperty("sortField", null, true));
+
+            this.colorByField = this.getFieldById(fields, this.getProperty("colorBy", null, true));
+            this.colorList = this.getColorTable(true);
+            this.foregroundList = this.getColorTable(true,"foreground");
             if(!this.getProperty("showImages",true)) this.imageField = null;
             if(!this.imageField)  {
                 if(this.captionFields.length==0) {
@@ -13362,8 +13366,12 @@ function RamaddaCardsDisplay(displayManager, id, properties) {
                     if(ok) records.push(this.records[rowIdx]);
                 }
                 this.displaySearchResults(records);
-         },
+            },
          displaySearchResults: function(records) {
+
+
+            var fontSize = this.getProperty("fontSize",null);
+            var cardStyle = this.getProperty("cardStyle",null);
 
             var width = this.getProperty("imageWidth","50");
             var margin = this.getProperty("imageMargin","0");
@@ -13374,6 +13382,8 @@ function RamaddaCardsDisplay(displayManager, id, properties) {
                 groups[""]="";
                 groupCnt[""]=0;
             }
+            var colorMap ={};
+            var colorCnt = 0;
             for (var rowIdx = 0; rowIdx <records.length; rowIdx++) {
                 var row = this.getDataValues(records[rowIdx]);
                 var contents = "";
@@ -13393,9 +13403,8 @@ function RamaddaCardsDisplay(displayManager, id, properties) {
                                 caption+=field.getValue(row)+"<br>";
                         });
                     if(this.urlField)
-                        caption = "<a href='" +this.urlField.getValue(row)+"' target=_other>" +caption+"</a>";
+                        caption = "<a style='color:inherit;'  href='" +this.urlField.getValue(row)+"' target=_other>" +caption+"</a>";
                 }
-
                 if(this.labelField) label = "<br>" + row[this.labelField.getIndex()];
                 var html ="";
                 if(this.imageField) {
@@ -13406,7 +13415,33 @@ function RamaddaCardsDisplay(displayManager, id, properties) {
                     img =  HtmlUtils.href(img, HtmlUtils.image(img,["width",width]),attrs)+label;
                     html = HtmlUtils.div(["class","display-cards-item", "title", tooltip, "style","margin:" + margin+"px;"], img);
                 } else {
-                    html = HtmlUtils.div(["title",tooltip,"class","ramadda-gridbox display-cards-card"],caption);
+                    var style = "";
+                    if(fontSize) {
+                        style+= " font-size:" + fontSize +"; ";
+                    }
+                    if(this.colorByField && this.colorList) {
+                        var value = this.colorByField.getValue(row);
+                        if(!Utils.isDefined(colorMap[value])) {
+                            colorMap[value] = colorCnt++;
+                        }
+                        var index = colorMap[value];
+                        if(index>=this.colorList.length) {
+                            index = this.colorList.length%index;
+                        }
+                        style+="background:" + this.colorList[index]+";";
+                        if(this.foregroundList) {
+                            if(index<this.foregroundList.length) {
+                                style+="color:" + this.foregroundList[index]+" !important;";
+                            } else {
+                                style+="color:" + this.foregroundList[this.foregroundList-1]+" !important;";
+                            }
+                        }
+                    }
+                    if(cardStyle)
+                        style +=cardStyle;
+                    if(rowIdx<3) console.log(style);
+                    var attrs = ["title",tooltip,"class","ramadda-gridbox display-cards-card","style",style];
+                    html = HtmlUtils.div(attrs,caption);
                 }
                 if(this.groupField) {
                     var groupOn = row[this.groupField.getIndex()];
