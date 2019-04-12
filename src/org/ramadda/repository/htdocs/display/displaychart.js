@@ -49,6 +49,11 @@ function haveGoogleChartsLoaded() {
     return googleChartsLoaded;
 }
 
+function displayGetFunctionValue(v) {
+    if(isNaN(v))return 0;
+    return v;
+}
+
 
 addGlobalDisplayType({
     type: DISPLAY_LINECHART,
@@ -657,7 +662,7 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
                 var setVars = "";
                 for (var i = 0; i < chartableFields.length; i++) {
                     var field = chartableFields[i];
-                    setVars += "\tvar " + field.getId() + "=args." + field.getId() + ";\n";
+                    setVars += "\tvar " + field.getId() + "=displayGetFunctionValue(args." + field.getId() + ");\n";
                 }
                 var code = "function displayChartEval(args) {\n" + setVars + "\treturn  " + this["function"] + "\n}";
                 eval(code);
