@@ -633,7 +633,9 @@ public abstract class Converter extends Processor {
                 }
 
 
-                String sample  = (String) row.getValues().get(i).toString();
+                Object osample = row.getValues().get(i);
+                if(osample==null) continue;
+                String sample  = (String) osample.toString();
                 String _sample = sample.toLowerCase();
                 col = col.replaceAll("\u00B5", "u").replaceAll("\u00B3",
                                      "^3").replaceAll("\n", " ");
