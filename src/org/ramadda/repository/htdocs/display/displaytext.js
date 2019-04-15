@@ -383,8 +383,10 @@ function RamaddaCardsDisplay(displayManager, id, properties) {
             var fields = this.getSelectedFields(allFields);
             if (fields.length == 0)
                 fields = allFields;
+            this.fields = fields;
             this.groupField = this.getFieldById(fields, this.getProperty("groupBy"));
             this.groupByFields = this.getFieldsByIds(fields, this.getProperty("groupByFields","",true));
+            this.groupByDepth = +this.getProperty("groupByDepth",this.groupByFields.length);
             this.imageField = this.getFieldOfType(fields, "image");
             this.urlField = this.getFieldOfType(fields, "url");
 
@@ -425,11 +427,14 @@ function RamaddaCardsDisplay(displayManager, id, properties) {
             var searchBar = "";
 
             if(this.groupByFields.length>0) {
-                var enums = [];
+                var options = [["","--"]];
                 this.groupByFields.map(field=>{
-                        enums.push([field.getId(),field.getLabel()]);
+                        options.push([field.getId(),field.getLabel()]);
                     });
-                searchBar += "Group by: " + HtmlUtils.select("",["id",this.getDomId(ID_GROUPBY_FIELDS)],enums)+"&nbsp;";
+                searchBar += "Group by: ";
+                for(var i=0;i<this.groupByDepth;i++) {
+                    searchBar += HtmlUtils.select("",["id",this.getDomId(ID_GROUPBY_FIELDS+i)],options)+"&nbsp;";
+                }
             }
 
             for(var i=0;i<searchBy.length;i++) {
@@ -456,10 +461,11 @@ function RamaddaCardsDisplay(displayManager, id, properties) {
             contents += HtmlUtils.div(["id",this.getDomId(ID_SEARCHBAR)], "<center>" +searchBar+"</center>");
             contents += HtmlUtils.div(["id",this.getDomId(ID_RESULTS)]);
             this.writeHtml(ID_DISPLAY_CONTENTS, contents);
-            this.jq(ID_SEARCHBAR).find("select").selectBoxIt({});
+            //            this.jq(ID_SEARCHBAR).find("select").selectBoxIt({});
             let _this = this;
             this.jq(ID_SEARCHBAR).find("input, input:radio,select").change(function(){
-                    if($(this).attr("id") ==_this.getDomId(ID_GROUPBY_FIELDS)) {
+                    var id = $(this).attr("id");
+                    if(id  && id.includes(_this.getDomId(ID_GROUPBY_FIELDS))) {
                         _this.groupField = _this.getFieldById(fields, $(this).val());
                     }
                     _this.doSearch();
@@ -506,13 +512,40 @@ function RamaddaCardsDisplay(displayManager, id, properties) {
 
             var width = this.getProperty("imageWidth","50");
             var margin = this.getProperty("imageMargin","0");
-            var groups = {};
-            var groupCnt = {};
-            var groupHeaders = [];
-            if(!this.groupField) {
-                groups[""]="";
-                groupCnt[""]=0;
+            var groupFields = [];
+            var seen=[];
+            for(var i=0;i<this.groupByDepth;i++) {
+                var id =  this.jq(ID_GROUPBY_FIELDS+i).val();
+                if(!seen[id]) {
+                    seen[id] = true;
+                    var field= this.getFieldById(this.fields, id);
+                    if(field) groupFields.push(field);
+                }
             }
+
+            function groupNode(id) {
+                $.extend(this,{
+                        id: id,
+                        members:[],
+                        isGroup:true,
+                        getCount: function() {
+                            if(this.members.length==0) return 0;
+                            if(this.members[0].isGroup) {
+                                var cnt = 0;
+                                this.members.map(node=>cnt+= node.getCount());
+                                return cnt;
+                            }
+                            return this.members.length;
+                        },
+                        findGroup: function(v) {
+                            for(var i=0;i<this.members.length;i++) {
+                                if(this.members[i].isGroup && this.members[i].id == v) return this.members[i];
+                            }
+                            return null;
+                        },
+                    });
+            }
+            var topGroup = new groupNode("");
             var colorMap ={};
             var colorCnt = 0;
             for (var rowIdx = 0; rowIdx <records.length; rowIdx++) {
@@ -574,42 +607,53 @@ function RamaddaCardsDisplay(displayManager, id, properties) {
                     }
                     if(cardStyle)
                         style +=cardStyle;
-                    if(rowIdx<3) console.log(style);
                     var attrs = ["title",tooltip,"class","ramadda-gridbox display-cards-card","style",style];
                     html = HtmlUtils.div(attrs,caption);
                 }
-                if(this.groupField) {
-                    var groupOn = row[this.groupField.getIndex()];
-                    if(!groups[groupOn]) {
-                        groupCnt[groupOn] = 0;
-                        groups[groupOn] = "";
-                        groupHeaders.push(groupOn);
+                var group = topGroup;
+                for(var groupIdx=0;groupIdx<groupFields.length;groupIdx++) {
+                    var groupField  = groupFields[groupIdx];
+                    var value = row[groupField.getIndex()];
+                    var child = group.findGroup(value);
+                    if(!child) {
+                        //                        console.log("new group:" + value);
+                        group.members.push(child = new groupNode(value));
                     }
-                    groupCnt[groupOn]++;
-                    groups[groupOn]+=html;
-                } else {
-                    groups[""]+=html;
+                    group = child;
                 }
-                //                if(rowIdx>10) break;
+                group.members.push(html);
             }
-            var html = "";
-            if(!this.groupField) html = groups[""];
-            else {
-                groupHeaders.sort();
-                var width = groupHeaders.length==0?"100%":100/groupHeaders.length;
-                html +="<table width=100%><tr valign=top>";
-                for(var i=0;i<groupHeaders.length;i++) {
-                    var header = groupHeaders[i];
-                    var cnt = groupCnt[header]
-                    html+="<td width=" + width+"%><center><b>&nbsp;" + header+" (" +cnt +")&nbsp;</b></center>" + HtmlUtils.div(["class","display-cards-items"], groups[header])+"</td>";
-                }
-                html +="</tr></table>";
-            }
+            var html = HtmlUtils.tag("div",["class","display-cards-header"],"Total" +" (" + topGroup.getCount()+")");
+            html+=this.makeGroupHtml(topGroup);
             this.writeHtml(ID_RESULTS, html);
             this.jq(ID_RESULTS).find("a.display-cards-popup").fancybox({
                     caption : function( instance, item ) {
                         return  $(this).data('caption') || '';
                     }});
+            },
+            makeGroupHtml: function(group) {
+                if(group.members.length==0) return "";
+                var html="";
+                if(group.members[0].isGroup) {
+                    group.members.sort((a,b)=>{
+                            if(a.id<b.id) return -1;
+                            if(a.id>b.id) return 1;
+                            return 0;
+                        });
+                    var width = group.members.length==0?"100%":100/group.members.length;
+                    html +="<table width=100% border=0><tr valign=top>";
+                    for(var i=0;i<group.members.length;i++) {
+                        var child = group.members[i];
+                        html+="<td width=" + width+"%>";
+                        html+=HtmlUtils.tag("div",["class","display-cards-header"],child.id +" (" + child.getCount()+")");
+                        html+= this.makeGroupHtml(child);
+                        html+="</td>";
+                    }
+                    html +="</tr></table>";
+                } else {
+                    html+=Utils.join(group.members,"");
+                }
+                return html;
             }
     });
 }

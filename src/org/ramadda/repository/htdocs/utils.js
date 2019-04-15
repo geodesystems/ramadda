@@ -1849,8 +1849,11 @@ function Div(contents, clazz) {
     this.contents = contents || "";
     this.extra = "";
     this.clazz = clazz;
+    this.setHidden = function() {
+    }
     this.toString = function() {
-        return HtmlUtils.div(["xxstyle","border:1px red solid;","class", clazz || "", "id", this.id], this.contents);
+        throw new Error("XX");
+        return HtmlUtils.div(["style","border:1px red solid;","class", clazz || "", "id", this.id], this.contents);
     }
     this.getId = function() {
         return this.id;

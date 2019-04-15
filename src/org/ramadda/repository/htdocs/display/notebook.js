@@ -788,7 +788,8 @@ function RamaddaNotebookDisplay(displayManager, id, properties) {
             if(!dontPropagate) {
                 var newValue = this.getGlobalValue(name);
                 if(newValue!=oldValue) {
-                    await this.globalChanged(name, newValue);
+                    //TODO:
+                    //                    await this.globalChanged(name, newValue);
                 }
             }
         },
@@ -1663,8 +1664,10 @@ function RamaddaNotebookCell(notebook, id, content, props) {
                 if (!chunk) {
                     chunk = new NotebookChunk(cell, props);
                     chunks.push(chunk);
-                    if (prevChunk) prevChunk.div.jq().after(chunk.div.toString());
-                    else cell.output.html(chunk.div.toString());
+                    if(!chunk.skipOutput) {
+                        if (prevChunk) prevChunk.div.jq().after(chunk.div.toString());
+                        else cell.output.html(chunk.div.toString());
+                    }
                 } else {
                     chunk.initChunk(props);
                 }
@@ -1940,7 +1943,7 @@ function RamaddaNotebookCell(notebook, id, content, props) {
             //            await Utils.importJS(ramaddaBaseUrl + "/lib/katex/lib/katex/katex.min.css");
             //            await Utils.importJS(ramaddaBaseUrl + "/lib/katex/lib/katex/katex.min.js");
 
-            var content = chunk.content;
+            var content = chunk.getContent();
             this.rawOutput += content + "\n";
             if (content.match("%\n*$")) {
                 content = content.trim();
@@ -2643,22 +2646,28 @@ function processLispOutput(r) {
 
 
 function NotebookChunk(cell, props) {
+    for(name in props)
+        props[name.toLowerCase()] = props[name];
     this.div =  new Div(null, "display-notebook-chunk");
     this.cell = cell;
     $.extend(this, {
             getContent: function() {
                 var content = this.content;
+                console.log("chunk.getContent:" + content);
                 for (name in this.cell.notebook.globals) {
                     var value = this.cell.notebook.getGlobalValue(name);
                     if (typeof value == "object") {
                         value = Utils.formatJson(value);
                     }
+                    console.log("   name:" + name +"=" + value);
                     content = content.replace("${" + name.trim() + "}", value);
                 }
                 return content;
             },
            initChunk: function(props) {
+                this.skipOutput = false;
                 if (props["skipoutput"] === true) {
+                    this.skipOutput = true;
                     this.div.set("");
                     this.div = new Div();
                 }

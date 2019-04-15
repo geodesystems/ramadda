@@ -1433,6 +1433,14 @@ text-align:center;
  margin-right:5px;
 }
 
+.display-cards-header {
+   font-weight:bold;
+   margin:2px; 
+   padding:2px; 
+   background:#eee;
+   text-align:center;
+}
+
 .display-cards-item {
    display:inline-block;
    text-align:center;
