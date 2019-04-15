@@ -13276,9 +13276,9 @@ function RamaddaCardsDisplay(displayManager, id, properties) {
             if (fields.length == 0)
                 fields = allFields;
             this.fields = fields;
-            this.groupField = this.getFieldById(fields, this.getProperty("groupBy"));
+            this.initGrouping  = this.getFieldsByIds(fields, this.getProperty("initGroupFields","",true));
             this.groupByFields = this.getFieldsByIds(fields, this.getProperty("groupByFields","",true));
-            this.groupByDepth = +this.getProperty("groupByDepth",this.groupByFields.length);
+            this.groupByMenus= +this.getProperty("groupByMenus",this.groupByFields.length);
             this.imageField = this.getFieldOfType(fields, "image");
             this.urlField = this.getFieldOfType(fields, "url");
 
@@ -13329,8 +13329,12 @@ function RamaddaCardsDisplay(displayManager, id, properties) {
                         options.push([field.getId(),field.getLabel()]);
                     });
                 searchBar += "Group by: ";
-                for(var i=0;i<this.groupByDepth;i++) {
-                    searchBar += HtmlUtils.select("",["id",this.getDomId(ID_GROUPBY_FIELDS+i)],options)+"&nbsp;";
+                for(var i=0;i<this.groupByMenus;i++) {
+                    var selected = "";
+                    if(i<this.initGrouping.length) {
+                        selected = this.initGrouping[i].getId();
+                    }
+                    searchBar += HtmlUtils.select("",["id",this.getDomId(ID_GROUPBY_FIELDS+i)],options,selected)+"&nbsp;";
                 }
             }
 
@@ -13362,9 +13366,6 @@ function RamaddaCardsDisplay(displayManager, id, properties) {
             let _this = this;
             this.jq(ID_SEARCHBAR).find("input, input:radio,select").change(function(){
                     var id = $(this).attr("id");
-                    if(id  && id.includes(_this.getDomId(ID_GROUPBY_FIELDS))) {
-                        _this.groupField = _this.getFieldById(fields, $(this).val());
-                    }
                     _this.doSearch();
                 });
             this.displaySearchResults(this.records);
@@ -13411,7 +13412,7 @@ function RamaddaCardsDisplay(displayManager, id, properties) {
             var margin = this.getProperty("imageMargin","0");
             var groupFields = [];
             var seen=[];
-            for(var i=0;i<this.groupByDepth;i++) {
+            for(var i=0;i<this.groupByMenus;i++) {
                 var id =  this.jq(ID_GROUPBY_FIELDS+i).val();
                 if(!seen[id]) {
                     seen[id] = true;
