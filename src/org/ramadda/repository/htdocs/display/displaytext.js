@@ -395,7 +395,8 @@ function RamaddaCardsDisplay(displayManager, id, properties) {
             this.captionFields = this.getFieldsByIds(fields, this.getProperty("captionFields", "", true));
             this.captionTemplate = this.getProperty("captionTemplate",null, true);
             if(this.captionFields.length==0) this.captionFields = this.tooltipFields;
-            this.sortField = this.getFieldById(fields, this.getProperty("sortField", null, true));
+            this.sortFields = this.getFieldsByIds(fields, this.getProperty("sortFields", "", true));
+
 
             this.colorByField = this.getFieldById(fields, this.getProperty("colorBy", null, true));
             this.colorList = this.getColorTable(true);
@@ -407,19 +408,23 @@ function RamaddaCardsDisplay(displayManager, id, properties) {
                     return;
                 }
             }
-            if(this.sortField) {
+            if(this.sortFields.length) {
                 var sortAscending = this.getProperty("sortAscending",true);
                 this.records.sort((a,b)=>{
                         var row1 = this.getDataValues(a);
                         var row2 = this.getDataValues(b);
                         var result = 0;
-                        var v1 = row1[this.sortField.getIndex()];
-                        var v2 = row2[this.sortField.getIndex()];
-                        if(v1<v2) result = -1;
-                        else if(v1>v2) result = 1;
-                        if(sortAscending) return result;
-                        return result==0?result:-result;
-                     });
+                        for(var i=0;i<this.sortFields.length;i++) {
+                            var sortField = this.sortFields[i];
+                            var v1 = row1[sortField.getIndex()];
+                            var v2 = row2[sortField.getIndex()];
+                            if(v1<v2) result = sortAscending?-1:-1;
+                            else if(v1>v2) result = sortAscending?1:-1;
+                            else result = 0;
+                            if(result!=0) break;
+                        }
+                        return result;
+                    });
             }
             this.searchFields = [];
             var contents = "";
@@ -519,7 +524,35 @@ function RamaddaCardsDisplay(displayManager, id, properties) {
                 if(!seen[id]) {
                     seen[id] = true;
                     var field= this.getFieldById(this.fields, id);
-                    if(field) groupFields.push(field);
+                    if(field) {
+                        groupFields.push(field);
+                        if(field.isNumeric && !field.range) {
+                            var min = Number.MAX_VALUE;
+                            var max = Number.MIN_VALUE;
+                            records.map(r=>{
+                                        r  =  this.getDataValues(r);
+                                        var v =field.getValue(r);
+                                        if(isNaN(v)) return;
+                                        if(v<min) min  = v;
+                                        if(v > max) max =v;
+                                });
+                            field.range = [min,max];
+                            var binsProp = this.getProperty(field.getId() +".bins");
+                            field.bins = [];
+                            if(binsProp) {
+                                var l  = binsProp.split(",");
+                                for(var i=0;i<l.length-1;i++) {
+                                    field.bins.push([+l[i],+l[i+1]]);
+                                }
+                            } else {
+                                var numBins = +this.getProperty(field.getId() +".binCount",10); 
+                                field.binSize = (max-min)/numBins;
+                                for(var bin=0;bin<numBins;bin++) {
+                                    field.bins.push([min+field.binSize*bin,min+field.binSize*(bin+1)]);
+                                }
+                            }
+                        }
+                    }
                 }
             }
 
@@ -614,9 +647,17 @@ function RamaddaCardsDisplay(displayManager, id, properties) {
                 for(var groupIdx=0;groupIdx<groupFields.length;groupIdx++) {
                     var groupField  = groupFields[groupIdx];
                     var value = row[groupField.getIndex()];
+                    if(groupField.isNumeric) {
+                        for(var binIdx=0;binIdx<groupField.bins.length;binIdx++) {
+                            var bin= groupField.bins[binIdx];
+                            if(value<=bin[1] || binIdx == groupField.bins.length-1) {
+                                value = Utils.formatNumber(bin[0]) +" - " + Utils.formatNumber(bin[1]);
+                                break;
+                            }
+                        }
+                    }
                     var child = group.findGroup(value);
                     if(!child) {
-                        //                        console.log("new group:" + value);
                         group.members.push(child = new groupNode(value));
                     }
                     group = child;
