@@ -427,15 +427,9 @@ public class PageHandler extends RepositoryManager {
         String userLinkTemplate =
             "<div onClick=\"document.location=\'${url}\'\"  class=\"ramadda-user-link\">${label}</div>";
         List<String> allLinks = new ArrayList<String>();
-        String searchImg = HtmlUtils.img(getIconUrl("/icons/magnifier.png"),
-                                         "Search", " id='searchlink' ");
-
-
-
-
-
-
-
+        String searchImg =HtmlUtils.faIcon("fa-search","title",
+                                            msg("Search"),
+                                           "class", "ramadda-user-menu-image","id","searchlink");
 
         List<String> navLinks = getNavLinks(request, userLinkTemplate);
         List<String> userLinks = getUserLinks(request, userLinkTemplate,
@@ -444,10 +438,10 @@ public class PageHandler extends RepositoryManager {
         allLinks.addAll(navLinks);
         allLinks.addAll(userLinks);
 
-        String popupImage =
-            HtmlUtils.img(getIconUrl(ICON_USERLINKS),
-                          msg("Login, user settings, help"),
-                          HtmlUtils.cssClass("ramadda-user-menu-image"));
+        String popupImage =HtmlUtils.faIcon("fa-cog","title",
+                                            msg("Login, user settings, help"),
+                                            "class", "ramadda-user-menu-image");
+
 
         String menuHtml =
             HtmlUtils.div(StringUtil.join("", allLinks),
@@ -462,7 +456,7 @@ public class PageHandler extends RepositoryManager {
             extra.append(HtmlUtils.space(2));
         }
         extra.append(makePopupLink(popupImage, menuHtml, false, true));
-        menuHtml = extra.toString();
+        menuHtml = HtmlUtils.div(extra.toString(),HtmlUtils.clazz("ramadda-user-menu"));
         long     t1     = System.currentTimeMillis();
 
         String[] macros = new String[] {
@@ -1944,8 +1938,7 @@ public class PageHandler extends RepositoryManager {
                 }
 
                 urls.add(url);
-                labels.add(HtmlUtils.img(getIconUrl("/icons/connect.png"))
-                           + " " + msg("Login"));
+                labels.add(HtmlUtils.faIcon("fa-sign-in")  + " " + msg("Login"));
                 tips.add(msg("Login"));
             }
 
@@ -1960,13 +1953,13 @@ public class PageHandler extends RepositoryManager {
         } else {
             extras.add("");
             urls.add(request.makeUrl(getRepositoryBase().URL_USER_LOGOUT));
-            labels.add(HtmlUtils.img(getIconUrl("/icons/disconnect.png"))
-                       + " " + msg("Logout"));
+            labels.add(HtmlUtils.faIcon("fa-sign-out")+ " " + msg("Logout"));
             tips.add(msg("Logout"));
-
             String label = user.getLabel().replace(" ", "&nbsp;");
-            String userIcon = HtmlUtils.img(getIconUrl("/icons/user.png"),
-                                            "Settings for " + label);
+            String userIcon =HtmlUtils.faIcon("fa-user","title",
+                                       "Settings for " + label,
+                                       "class", "ramadda-user-menu-image");
+
             String settingsUrl =
                 request.makeUrl(getRepositoryBase().URL_USER_FORM);
 
@@ -1990,8 +1983,8 @@ public class PageHandler extends RepositoryManager {
                         .getPluginManager().getDocUrls().size() > 0)) {
             urls.add(request.makeUrl(getRepositoryBase().URL_HELP));
             extras.add("");
-            labels.add(HtmlUtils.img(getIconUrl("/icons/help.png")) + " "
-                       + msg("Help"));
+            //            labels.add(HtmlUtils.img(getIconUrl("/icons/help.png")) + " " + msg("Help"));
+            labels.add(HtmlUtils.faIcon("fa-question-circle") + " " + msg("Help"));
             tips.add(msg("View Help"));
         }
 
@@ -2049,7 +2042,10 @@ public class PageHandler extends RepositoryManager {
             }
 
             if (icon != null) {
-                label = HtmlUtils.img(getIconUrl(icon)) + " " + label;
+                if(icon.startsWith("fa"))
+                    label =HtmlUtils.faIcon(icon) + " " + label;
+                else
+                    label = HtmlUtils.img(getIconUrl(icon)) + " " + label;
             }
 
             String html = template.replace("${url}", url);

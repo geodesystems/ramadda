@@ -1891,22 +1891,14 @@ label {
 }
 
 .ramadda-user-menu-item {
-
 }
+
 
 .ramadda-user-menu-image {
-   margin-right: 3px;
    margin-bottom: 0px;
    padding:0px;
-   width: 18px;
    vertical-align: middle;
 }
-
-.ramadda-user-menu-image:hover {
-   background-color: #ddd;
-}
-
-
 
 .ramadda-user-settings-link {
     font-size:80%;
@@ -1939,6 +1931,7 @@ label {
 }
 
 .ramadda-user-menu {
+  margin-right: 8px;
   font-weight: normal;
 }
 
@@ -3701,4 +3694,8 @@ border: 1px #ccc solid;
 height:500px;
 }
 
+
+i.fa {
+   color:#aaa;
+}
 

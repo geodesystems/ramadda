@@ -2849,6 +2849,10 @@ public class HtmlUtils {
     }
 
 
+    public static String faIcon(String icon, String... args) {
+        return span("<i class=\"fa " + icon +"\"></i>",attrs(args));
+    }
+
     /**
      * _more_
      *

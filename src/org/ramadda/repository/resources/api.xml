@@ -15,7 +15,7 @@
   </group>
 
   <group handler="entrymanager">
-      <api request="/entry/show"             method="processEntryShow"       name="${topgroup}" toplevel="true" ishome="true" icon="/icons/house.png"/>
+      <api request="/entry/show"             method="processEntryShow"       name="${topgroup}" toplevel="true" ishome="true" icon="fa-home"/>
       <api request="/entry/show/*"           method="processEntryShow"       checkauthmethod="true"/>
       <api request="/entry/form"             method="processEntryForm"       actions="edit"/>
       <api request="/entry/extedit"          method="processEntryExtEdit"       actions="edit"/>
@@ -158,7 +158,7 @@
       <api request="/admin/sql"          method="adminSql"           />
       <api request="/admin/plugin/upload"    method="adminPluginUpload"  />
       <api request="/admin/startstop"    method="adminDbStartStop"   requires_auth_token="true"  />
-      <api request="/admin/settings"     method="adminSettings"       name="Admin" toplevel="true" icon="/icons/wrench.png"/>
+      <api request="/admin/settings"     method="adminSettings"       name="Admin" toplevel="true" icon="fa-wrench"/>
       <api request="/admin/settings/do"  method="adminSettingsDo"     requires_auth_token="true" />
       <api request="/admin/tables"       method="adminDbTables"      />
       <api request="/admin/local"        method="adminLocal"       handler="localrepositorymanager"/>
