@@ -429,7 +429,7 @@ public class HtmlOutputHandler extends OutputHandler {
         StringBuffer inner = new StringBuffer();
         String cLink =
             HtmlUtils.jsLink(HtmlUtils.onMouseClick("hidePopupObject();"),
-                             HtmlUtils.img(getIconUrl(ICON_CLOSE)), "");
+                             getIconImage(ICON_CLOSE), "");
         inner.append(cLink);
         inner.append(HtmlUtils.br());
         inner.append(links);

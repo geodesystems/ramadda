@@ -315,7 +315,13 @@ public class RepositoryManager implements RepositorySource, Constants,
         return getRepository().getIconUrl(url);
     }
 
-
+    public String getIconImage(String url, String ...args) {
+        if(url.startsWith("fa-")) {
+            return HtmlUtils.faIcon(url,args);
+        } else {
+            return  HtmlUtils.image(getIconUrl(url), args);
+        }
+    }
 
 
     /**

@@ -1817,10 +1817,9 @@ public class PageHandler extends RepositoryManager {
                            HtmlUtils.onMouseClick(
                                HtmlUtils.call(
                                    "hideElementById",
-                                   HtmlUtils.squote(compId))), HtmlUtils.img(
-                                       getIconUrl(ICON_CLOSE), "Close",
-                                       HtmlUtils.cssClass(
-                                           "ramadda-popup-close")), "");
+                                   HtmlUtils.squote(compId))), 
+                           getIconImage(ICON_CLOSE, "title", "Close","class",
+                                        "ramadda-popup-close"), "");
         contents = cLink + HtmlUtils.br() + contents;
 
         menu.append(HtmlUtils.div(contents,
@@ -1848,10 +1847,8 @@ public class PageHandler extends RepositoryManager {
         if (makeClose) {
             String cLink = HtmlUtils.jsLink(
                                HtmlUtils.onMouseClick("hidePopupObject();"),
-                               HtmlUtils.img(
-                                   getIconUrl(ICON_CLOSE), "Close",
-                                   HtmlUtils.cssClass(
-                                       "ramadda-popup-close")), "");
+                               getIconImage(ICON_CLOSE, "title","Close",
+                                            "class",  "ramadda-popup-close"), "");
             contents = cLink + HtmlUtils.br() + contents;
         }
 
@@ -1946,7 +1943,7 @@ public class PageHandler extends RepositoryManager {
                 extras.add("");
                 urls.add(request.makeUrl(getRepositoryBase().URL_USER_CART));
                 //        labels.add(HtmlUtils.img(getRepository().getIconUrl(ICON_CART),
-                labels.add(HtmlUtils.img(getIconUrl("/icons/cart.png")) + " "
+                labels.add(getIconImage("/icons/cart.png") + " "
                            + msg("Data Cart"));
                 tips.add(msg("View data cart"));
             }
@@ -1983,7 +1980,6 @@ public class PageHandler extends RepositoryManager {
                         .getPluginManager().getDocUrls().size() > 0)) {
             urls.add(request.makeUrl(getRepositoryBase().URL_HELP));
             extras.add("");
-            //            labels.add(HtmlUtils.img(getIconUrl("/icons/help.png")) + " " + msg("Help"));
             labels.add(HtmlUtils.faIcon("fa-question-circle") + " " + msg("Help"));
             tips.add(msg("View Help"));
         }
@@ -2042,10 +2038,7 @@ public class PageHandler extends RepositoryManager {
             }
 
             if (icon != null) {
-                if(icon.startsWith("fa"))
-                    label =HtmlUtils.faIcon(icon) + " " + label;
-                else
-                    label = HtmlUtils.img(getIconUrl(icon)) + " " + label;
+                label = getIconImage(icon) + " " + label;
             }
 
             String html = template.replace("${url}", url);
@@ -2228,14 +2221,14 @@ public class PageHandler extends RepositoryManager {
         String html = showClose
                       ? HtmlUtils.jsLink(
                           HtmlUtils.onMouseClick("hide('messageblock')"),
-                          HtmlUtils.img(getIconUrl(Constants.ICON_CLOSE)))
+                          getIconImage(Constants.ICON_CLOSE))
                       : "&nbsp;";
         StringBuilder sb = new StringBuilder();
         sb.append(HtmlUtils.open(HtmlUtils.TAG_DIV, "class",
                                  "ramadda-message", "id", "messageblock"));
         sb.append(
             "<table><tr valign=top><td><div class=\"ramadda-message-link\">");
-        sb.append(HtmlUtils.img(getIconUrl(icon)));
+        sb.append(getIconImage(icon));
         sb.append("</div></td><td><div class=\"ramadda-message-inner\">");
         sb.append(h);
         sb.append("</div></td>");
@@ -2548,8 +2541,6 @@ public class PageHandler extends RepositoryManager {
 
         HtmlTemplate htmlTemplate = getPageHandler().getTemplate(request);
         List<Link> linkList = getEntryManager().getEntryLinks(request, entry);
-
-
 
         String headerLabel = HtmlUtils.href(
                                  request.entryUrl(

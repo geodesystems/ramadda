@@ -562,7 +562,7 @@ public class RepositoryBase implements Constants, RepositorySource {
     public String getMessage(String h, String icon, boolean showClose) {
         String html =
             HtmlUtils.jsLink(HtmlUtils.onMouseClick("hide('messageblock')"),
-                             HtmlUtils.img(getIconUrl(Constants.ICON_CLOSE)));
+                             getIconImage(Constants.ICON_CLOSE));
         if ( !showClose) {
             html = "&nbsp;";
         }
@@ -611,9 +611,19 @@ public class RepositoryBase implements Constants, RepositorySource {
         if (f == null) {
             return null;
         }
-
         return urlBase + f;
     }
+
+
+    public String getIconImage(String url, String ...args) {
+        if(url.startsWith("fa-")) {
+            return HtmlUtils.faIcon(url,args);
+        } else {
+            return  HtmlUtils.image(getIconUrl(url), args);
+        }
+    }
+
+
 
 
     /**
