@@ -69,7 +69,7 @@ public interface Constants {
     public static final String ICON_CART_DELETE = "/icons/cart_delete.png";
 
     /** _more_ */
-    public static final String ICON_CHAT = "/icons/user_comment.png";
+    public static final String ICON_CHAT = "fa-comments";
 
     /** _more_ */
     public static final String ICON_CLOCK = "/icons/clock.png";
