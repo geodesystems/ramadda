@@ -1852,8 +1852,7 @@ function Div(contents, clazz) {
     this.setHidden = function() {
     }
     this.toString = function() {
-        throw new Error("XX");
-        return HtmlUtils.div(["style","border:1px red solid;","class", clazz || "", "id", this.id], this.contents);
+        return HtmlUtils.div(["class", clazz || "", "id", this.id], this.contents);
     }
     this.getId = function() {
         return this.id;
