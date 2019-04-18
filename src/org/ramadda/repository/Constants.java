@@ -28,7 +28,7 @@ public interface Constants {
     //j--
 
     /** _more_ */
-    public static final String ICON_ACCESS = "/icons/door.png";
+    public static final String ICON_ACCESS = "fa-lock";
 
     /** _more_ */
     public static final String ICON_ADD = "/icons/add.gif";
