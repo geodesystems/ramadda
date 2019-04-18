@@ -1280,7 +1280,6 @@ public class HtmlUtils {
      * @return _more_
      */
     public static String img(String path, String title, String extra) {
-
         if (Utils.stringDefined(title)) {
             return tag(TAG_IMG,
                        attrs(ATTR_BORDER, "0", ATTR_SRC, path, ATTR_TITLE,

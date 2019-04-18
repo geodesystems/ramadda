@@ -627,8 +627,8 @@ public class GpxTypeHandler extends PointTypeHandler {
             new Link(
                 request.entryUrl(
                     getRepository().URL_ENTRY_ACCESS, entry, "type",
-                    "kml"), getRepository().getIconUrl(ICON_KML),
-                            "Convert GPX to KML", OutputType.TYPE_FILE));
+                    "kml"), ICON_KML,
+                "Convert GPX to KML", OutputType.TYPE_FILE));
     }
 
 

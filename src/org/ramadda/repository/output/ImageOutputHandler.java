@@ -300,8 +300,8 @@ public class ImageOutputHandler extends OutputHandler {
                     Link link = new Link(
                                     repository.getUrlBase()
                                     + "/lib/tui/tui?entryid="
-                                    + state.entry.getId(), getIconUrl(
-                                        ICON_IMAGES), "Edit Image");
+                                    + state.entry.getId(), 
+                                        ICON_IMAGES, "Edit Image");
                     link.setLinkType(OutputType.TYPE_EDIT);
                     links.add(link);
                 }

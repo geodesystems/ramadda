@@ -47,31 +47,4 @@ public class ResearchFacilityTypeHandler extends ExtensibleGroupTypeHandler {
         super(repository, node);
     }
 
-
-
-    /*
-    public void getEntryLinks(Request request, Entry entry, List<Link> links)
-        throws Exception {
-        super.getEntryLinks(request, entry, links);
-        links.add(
-                  new Link(
-                           request.entryUrl(
-                                            getRepository().URL_ENTRY_ACCESS, entry, "type",
-                                            "kml"), getRepository().getIconUrl(ICON_KML),
-                           "Convert GPX to KML", OutputType.TYPE_FILE));
-    }
-
-
-
-    public Result processEntryAccess(Request request, Entry entry)
-        throws Exception {
-        File imageFile = getStorageManager().getTmpFile(request,
-                                                        "icon.png");
-        return new Result("",
-                          getStorageManager().getFileInputStream(imageFile),
-                          getRepository().getMimeTypeFromSuffix("png"));
-    }
-    */
-
-
 }

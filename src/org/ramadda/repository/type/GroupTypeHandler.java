@@ -114,7 +114,7 @@ public class GroupTypeHandler extends TypeHandler {
                 new Link(
                     request.makeUrl(
                         getRepository().URL_SEARCH_FORM, ARG_GROUP,
-                        entry.getId()), getRepository().getIconUrl(ICON_SEARCH),
+                        entry.getId()), ICON_SEARCH,
                                         "Search in Folder"));
             */
         }

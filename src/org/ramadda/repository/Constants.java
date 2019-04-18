@@ -117,8 +117,8 @@ public interface Constants {
     public static final String ICON_EDIT = "/icons/edit.png";
 
     /** _more_ */
-    public static final String ICON_ENTRY = "/icons/information.png";
-
+    public static final String ICON_ENTRY = "fa-info-circle";
+///icons/information.png";
     /** _more_ */
     public static final String ICON_ENTRY_ADD = "/icons/page_add.png";
 
@@ -176,7 +176,7 @@ public interface Constants {
     public static final String ICON_GRAYRECTARROW = "";
 
     /** _more_ */
-    public static final String ICON_HOME = "/icons/application-home.png";
+    public static final String ICON_HOME = "fa-home";
 
     /** _more_ */
     public static final String ICON_HEADER = "/images/header.jpg";
@@ -200,10 +200,10 @@ public interface Constants {
     public static final String ICON_IMAGES = "/icons/images.png";
 
     /** _more_ */
-    public static final String ICON_INFORMATION = "/icons/information.png";
+    public static final String ICON_INFORMATION = ICON_ENTRY;
 
     /** _more_ */
-    public static final String ICON_TREE = "/icons/information.png";
+    public static final String ICON_TREE = ICON_ENTRY;
 
     /** _more_ */
     public static final String ICON_KML = "/icons/kml.png";

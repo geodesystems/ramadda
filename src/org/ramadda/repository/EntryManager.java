@@ -6674,7 +6674,7 @@ public class EntryManager extends RepositoryManager {
                 sb.append(HtmlUtils.space(1));
             } else {
                 sb.append(HtmlUtils.href(link.getUrl(),
-                                         HtmlUtils.img(link.getIcon())));
+                                         getIconImage(link.getIcon())));
             }
             sb.append(HtmlUtils.space(1));
             sb.append(

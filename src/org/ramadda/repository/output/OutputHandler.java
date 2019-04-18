@@ -676,7 +676,7 @@ public class OutputHandler extends RepositoryManager {
 
         return new Link(url, (outputType.getIcon() == null)
                              ? null
-                             : getIconUrl(outputType.getIcon()), outputType
+                             : outputType.getIcon(), outputType
                                  .getLabel(), outputType);
 
     }
@@ -699,7 +699,7 @@ public class OutputHandler extends RepositoryManager {
             new Link(
                 request.entryUrl(
                     getRepository().URL_ENTRY_SHOW, entry, ARG_OUTPUT,
-                    type.toString()), getIconUrl(type.getIcon()),
+                    type.toString()), type.getIcon(),
                                       type.getLabel(), type));
 
     }
@@ -1120,7 +1120,7 @@ public class OutputHandler extends RepositoryManager {
         link = new Link(request.entryUrl(getRepository().URL_ENTRY_SHOW,
                                          entry, ARG_OUTPUT,
                                          output.toString(), ARG_PREVIOUS,
-                                         "true"), getIconUrl(ICON_LEFT),
+                                         "true"), ICON_LEFT,
                                              "View Previous Entry");
 
         //        link.setLinkType(OutputType.TYPE_TOOLBAR);
@@ -1129,7 +1129,7 @@ public class OutputHandler extends RepositoryManager {
         link = new Link(request.entryUrl(getRepository().URL_ENTRY_SHOW,
                                          entry, ARG_OUTPUT,
                                          output.toString(), ARG_NEXT,
-                                         "true"), getIconUrl(ICON_RIGHT),
+                                         "true"), ICON_RIGHT,
                                              "View Next Entry");
         link.setLinkType(OutputType.TYPE_VIEW);
         //        link.setLinkType(OutputType.TYPE_TOOLBAR);
@@ -1178,16 +1178,16 @@ public class OutputHandler extends RepositoryManager {
 
         //J--
         String[] order = {
-            SORTBY_NAME, "true", msg("Name") + HtmlUtils.img(getRepository().getIconUrl(ICON_UPARROW)),  "Sort by name A-Z", 
-            SORTBY_NAME, "false", msg("Name")  + HtmlUtils.img(getRepository().getIconUrl(ICON_DOWNARROW)), "Sort by name Z-A", 
-            SORTBY_FROMDATE, "false", msg("Date")  + HtmlUtils.img(getRepository().getIconUrl(ICON_UPARROW)),"Sort by date newer to older", 
-            SORTBY_FROMDATE, "true",   msg("Date") + HtmlUtils.img(getRepository().getIconUrl(ICON_DOWNARROW)),   "Sort by date older to newer", 
-            SORTBY_CREATEDATE, "true",   msg("Created") + HtmlUtils.img(getRepository().getIconUrl(ICON_UPARROW)),  "Sort by created date older to newer", 
-            SORTBY_CREATEDATE, "false",  msg("Created")            + HtmlUtils.img(getRepository().getIconUrl(ICON_DOWNARROW)),   "Sort by created date newer to older", 
-            SORTBY_SIZE, "true",  msg("Size") + HtmlUtils.img(getRepository().getIconUrl(ICON_UPARROW)),"Sort by size smallest to largest", 
-            SORTBY_SIZE, "false",  msg("Size") + HtmlUtils.img(getRepository().getIconUrl(ICON_DOWNARROW)),  "Sort by size largest to smallest",
-            SORTBY_TYPE, "true",  msg("Type") + HtmlUtils.img(getRepository().getIconUrl(ICON_UPARROW)),"Sort by type A-Z", 
-            SORTBY_TYPE, "false",  msg("Type") + HtmlUtils.img(getRepository().getIconUrl(ICON_DOWNARROW)),  "Sort by type Z-A",
+            SORTBY_NAME, "true", msg("Name") + getRepository().getIconImage(ICON_UPARROW),  "Sort by name A-Z", 
+            SORTBY_NAME, "false", msg("Name")  + getRepository().getIconImage(ICON_DOWNARROW), "Sort by name Z-A", 
+            SORTBY_FROMDATE, "false", msg("Date")  + getRepository().getIconImage(ICON_UPARROW),"Sort by date newer to older", 
+            SORTBY_FROMDATE, "true",   msg("Date") + getRepository().getIconImage(ICON_DOWNARROW),   "Sort by date older to newer", 
+            SORTBY_CREATEDATE, "true",   msg("Created") + getRepository().getIconImage(ICON_UPARROW),  "Sort by created date older to newer", 
+            SORTBY_CREATEDATE, "false",  msg("Created")            + getRepository().getIconImage(ICON_DOWNARROW),   "Sort by created date newer to older", 
+            SORTBY_SIZE, "true",  msg("Size") + getRepository().getIconImage(ICON_UPARROW),"Sort by size smallest to largest", 
+            SORTBY_SIZE, "false",  msg("Size") + getRepository().getIconImage(ICON_DOWNARROW),  "Sort by size largest to smallest",
+            SORTBY_TYPE, "true",  msg("Type") + getRepository().getIconImage(ICON_UPARROW),"Sort by type A-Z", 
+            SORTBY_TYPE, "false",  msg("Type") + getRepository().getIconImage(ICON_DOWNARROW),  "Sort by type Z-A",
         };
         //J++
 
@@ -1368,19 +1368,9 @@ public class OutputHandler extends RepositoryManager {
 
         selectSB.append(HtmlUtils.leftRightBottom(sortLinks,
                 actionsSB.toString(), ""));
-        //        selectSB.append(HtmlUtils.space(4));
-
-
-
-        String arrowImg = HtmlUtils.img(hideIt
-                                        ? getRepository().getIconUrl(
-                                            "/icons/application_side_expand.png")
-                                        : getRepository().getIconUrl(
-                                            "/icons/application_side_contract.png"), msg(
-                                                "Show/Hide Form"), HtmlUtils.id(
-                                                base + "img"));
-        //        String linkLabel = msg(LABEL_ENTRIES) +HtmlUtils.space(1) + arrowImg;
-
+        String arrowImg = getRepository().getIconImage(hideIt?"/icons/application_side_expand.png":"/icons/application_side_contract.png", 
+                                                       "title",msg("Show/Hide Form"),
+                                                       "id",  base + "img");
         String linkLabel = arrowImg;
         String linkExtra = HtmlUtils.cssClass("ramadda-entries-link");
         String link = HtmlUtils.jsLink(HtmlUtils.onMouseClick(base
@@ -1838,13 +1828,10 @@ public class OutputHandler extends RepositoryManager {
                            "right", "class", CSS_CLASS_ENTRY_ROW_LABEL);
             sb.append(HtmlUtils.space(1));
             sb.append("  ");
-            HtmlUtils.div(
-                sb, HtmlUtils.img(
-                    getRepository().getIconUrl(
-                        ICON_BLANK), "", HtmlUtils.attr(
-                        HtmlUtils.ATTR_WIDTH, "10") + HtmlUtils.id(
-                        "entrymenuarrow_" + rowId)), HtmlUtils.cssClass(
-                            "entrymenuarrow"));
+            HtmlUtils.div(sb, 
+                          getRepository().getIconImage(
+                                                       ICON_BLANK,"width", "10","id",  "entrymenuarrow_" + rowId), 
+                          HtmlUtils.clazz("entrymenuarrow"));
             HtmlUtils.close(sb, HtmlUtils.TAG_TD);
         }
 

@@ -1942,7 +1942,6 @@ public class PageHandler extends RepositoryManager {
             if (getUserManager().isCartEnabled()) {
                 extras.add("");
                 urls.add(request.makeUrl(getRepositoryBase().URL_USER_CART));
-                //        labels.add(HtmlUtils.img(getRepository().getIconUrl(ICON_CART),
                 labels.add(getIconImage("/icons/cart.png") + " "
                            + msg("Data Cart"));
                 tips.add(msg("View data cart"));
@@ -2661,17 +2660,16 @@ public class PageHandler extends RepositoryManager {
                               request.entryUrl(
                                   getRepository().URL_ENTRY_SHOW, entry,
                                   ARG_OUTPUT,
-                                  output.toString()), HtmlUtils.img(
-                                      getIconUrl(output.getIcon()),
-                                      output.getLabel()));
-
+                                  output.toString()),
+                              getIconImage(output.getIcon(),"title",
+                                           output.getLabel()));
 
         sb.append(treeLink);
         for (Link link : links) {
             if (link.isType(OutputType.TYPE_TOOLBAR)) {
                 String href = HtmlUtils.href(link.getUrl(),
-                                             HtmlUtils.img(link.getIcon(),
-                                                 link.getLabel()));
+                                             getIconImage(link.getIcon(),"title",
+                                                          link.getLabel()));
                 sb.append(HtmlUtils.inset(href, 0, 3, 0, 0));
             }
         }
@@ -2830,7 +2828,6 @@ public class PageHandler extends RepositoryManager {
             }
             String name = getEntryDisplayName(ancestor);
             String linkLabel;
-            //            String img = HtmlUtils.img(getIconUrl(request, ancestor));
             linkLabel = name;
             if (titleList != null) {
                 titleList.add(0, name);
@@ -2975,19 +2972,16 @@ public class PageHandler extends RepositoryManager {
             Link link = new Link(
                             request.entryUrl(
                                 getRepository().URL_COMMENTS_SHOW,
-                                entry), getRepository().getIconUrl(
-                                    ICON_COMMENTS), "Add/View Comments",
+                                entry), 
+                                    ICON_COMMENTS, "Add/View Comments",
                                         OutputType.TYPE_TOOLBAR);
 
             String href = HtmlUtils.href(link.getUrl(),
                                          "Comments:(" + comments.size() + ")"
-                                         + HtmlUtils.img(link.getIcon(),
-                                             link.getLabel(),
-                                             link.getLabel()));
-
+                                         + getIconImage(link.getIcon(),
+                                                        "title", link.getLabel()));
 
             sb.append(href);
-
             sb.append("</td><td>");
         }
 
@@ -3095,8 +3089,7 @@ public class PageHandler extends RepositoryManager {
                                       entry.getId(), ARG_AUTHTOKEN,
                                       getRepository().getAuthToken(request.getSessionId()),
                                       ARG_COMMENT_ID,
-                                      comment.getId()), HtmlUtils.img(getIconUrl(ICON_DELETE),
-                                          msg("Delete comment"))));
+                                                                   comment.getId()), getIconImage(ICON_DELETE,"title",                           msg("Delete comment"))));
             if (canEdit) {
                 //                sb.append(HtmlUtils.formEntry(BLANK, deleteLink));
             }

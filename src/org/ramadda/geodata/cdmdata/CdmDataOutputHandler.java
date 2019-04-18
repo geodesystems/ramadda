@@ -361,7 +361,7 @@ public class CdmDataOutputHandler extends OutputHandler implements CdmConstants 
         request.put(ARG_OUTPUT, OUTPUT_OPENDAP);
         String opendapUrl = getOpendapUrl(entry);
         links.add(new Link(opendapUrl,
-                           getRepository().getIconUrl(ICON_OPENDAP),
+                           ICON_OPENDAP,
                            "OPeNDAP", OUTPUT_OPENDAP));
         request.put(ARG_OUTPUT, oldOutput);
 
