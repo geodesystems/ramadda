@@ -191,10 +191,10 @@ public interface Constants {
     public static final String ICON_MOVIE = "/icons/movie.gif";
 
     /** _more_ */
-    public static final String ICON_IMPORT = "/icons/application_get.png";
+    public static final String ICON_IMPORT = "fa-file-import";
 
     /** _more_ */
-    public static final String ICON_EXPORT = "/icons/application_put.png";
+    public static final String ICON_EXPORT = "fa-file-export";
 
     /** _more_ */
     public static final String ICON_IMAGES = "/icons/images.png";

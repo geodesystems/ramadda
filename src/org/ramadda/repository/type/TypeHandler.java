@@ -2504,7 +2504,7 @@ public class TypeHandler extends RepositoryManager {
                     request.makeUrl(
                         getRepository().URL_ENTRY_IMPORT, ARG_GROUP,
                         entry.getId()), 
-                            ICON_IMPORT, "Import " + LABEL_ENTRIES,
+                            ICON_IMPORT, "Import Entries",
                                           OutputType.TYPE_FILE));
             links.add(makeHRLink(OutputType.TYPE_FILE));
         }

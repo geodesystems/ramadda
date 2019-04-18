@@ -88,7 +88,7 @@ public class ZipOutputHandler extends OutputHandler {
     /** _more_ */
     public static final OutputType OUTPUT_EXPORT =
         new OutputType("Export Entries", "zip.export", OutputType.TYPE_FILE,
-                       "", ICON_ZIP);
+                       "", "fa-file-export");
 
 
     /**
