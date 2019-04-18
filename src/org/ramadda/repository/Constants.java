@@ -138,7 +138,7 @@ public interface Constants {
     public static final String ICON_FAVORITE = "/icons/star.png";
 
     /** _more_ */
-    public static final String ICON_FETCH = "/icons/download.png";
+    public static final String ICON_FETCH = "fa-download";
 
     /** _more_ */
     public static final String ICON_FILE = "/icons/page.png";
