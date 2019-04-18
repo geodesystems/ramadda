@@ -5443,7 +5443,7 @@ function RamaddaNotebookDisplay(displayManager, id, properties) {
                 this.initOutputRenderers();
                 if (!this.fetchingNotebook) {
                     this.fetchingNotebook = true;
-                    await Utils.importCSS(ramaddaBaseHtdocs + "/lib/fontawesome/font-awesome.css");
+                    await Utils.importCSS(ramaddaBaseHtdocs + "/lib/fontawesome/css/all.min.css");
                     await Utils.importJS(ramaddaBaseHtdocs + "/lib/ace/src-min/ace.js");
                     await Utils.importJS(ramaddaBaseUrl + "/lib/showdown.min.js");
                     var imports = "<link rel='preload' href='https://cdn.jsdelivr.net/npm/katex@0.10.1/dist/fonts/KaTeX_Main-Regular.woff2' as='font' type='font/woff2' crossorigin='anonymous'>\n<link rel='preload' href='https://cdn.jsdelivr.net/npm/katex@0.10.1/dist/fonts/KaTeX_Math-Italic.woff2' as='font' type='font/woff2' crossorigin='anonymous'>\n<link rel='preload' href='https://cdn.jsdelivr.net/npm/katex@0.10.1/dist/fonts/KaTeX_Size2-Regular.woff2' as='font' type='font/woff2' crossorigin='anonymous'>\n<link rel='preload' href='https://cdn.jsdelivr.net/npm/katex@0.10.1/dist/fonts/KaTeX_Size4-Regular.woff2' as='font' type='font/woff2' crossorigin='anonymous'/>\n<link rel='stylesheet' href='https://fonts.googleapis.com/css?family=Lato:300,400,700,700i'>\n<link rel='stylesheet' href='https://cdn.jsdelivr.net/npm/katex@0.10.1/dist/katex.min.css' crossorigin='anonymous'>\n<link rel='stylesheet' href='static/index.css'><script defer src='https://cdn.jsdelivr.net/npm/katex@0.10.1/dist/katex.min.js' crossorigin='anonymous'></script>";

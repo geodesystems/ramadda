@@ -78,7 +78,7 @@ public interface Constants {
     public static final String ICON_TIMELINE = "/icons/timeline_marker.png";
 
     /** _more_ */
-    public static final String ICON_CLOSE = "/icons/cancel.png";
+    public static final String ICON_CLOSE = "fa-window-close";
 
     /** _more_ */
     public static final String ICON_CLOUD = "/icons/cloud.gif";

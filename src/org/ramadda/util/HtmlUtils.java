@@ -1266,7 +1266,7 @@ public class HtmlUtils {
     }
 
     public static String image(String path, String ...args) {
-        return img(path,attrs(args));
+        return img(path,null, attrs(args));
     }
 
 
@@ -1280,7 +1280,8 @@ public class HtmlUtils {
      * @return _more_
      */
     public static String img(String path, String title, String extra) {
-        if (title!=null & title.length() > 0) {
+
+        if (Utils.stringDefined(title)) {
             return tag(TAG_IMG,
                        attrs(ATTR_BORDER, "0", ATTR_SRC, path, ATTR_TITLE,
                              title, ATTR_ALT, title) + " " + extra);
