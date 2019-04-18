@@ -1112,6 +1112,14 @@ var HtmlUtils = {
             ramaddaMapCheckLayout();
         }
     },
+    getIconImage: function(url,attrs) {
+        if(StringUtil.startsWith(url,"fa")) {
+            return HtmlUtils.span(attrs,HtmlUtils.tag("i",["class","fa " + url]));
+        } else {
+            return HtmlUtils.image(url, attrs);
+        }
+
+    },
     getObjectURL:function(blob) {
         var urlCreator = window.URL || window.webkitURL;
         return urlCreator.createObjectURL(blob);

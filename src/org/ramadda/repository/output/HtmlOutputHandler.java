@@ -95,8 +95,8 @@ public class HtmlOutputHandler extends OutputHandler {
 
     /** _more_ */
     public static final OutputType OUTPUT_TREEVIEW =
-        new OutputType("Tree View", "html.treeview", OutputType.TYPE_VIEW,
-                       "", "/icons/application_side_tree.png");
+        new OutputType("Frames", "html.treeview", OutputType.TYPE_VIEW,
+                       "", "fa-newspaper");
 
     /** _more_ */
     public static final OutputType OUTPUT_INFO =

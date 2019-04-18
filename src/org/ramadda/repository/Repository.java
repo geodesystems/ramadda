@@ -4189,6 +4189,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
         if (f == null) {
             return null;
         }
+
         if (getCdnOk()) {
             if (f.startsWith("/icons")) {
                 return getPageHandler().getCdnPath(f);

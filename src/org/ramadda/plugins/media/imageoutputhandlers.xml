@@ -1,4 +1,4 @@
-<outputhandlers class="org.ramadda.repository.output.ServiceOutputHandler" icon="/icons/png.png"  xxxentryType="type_image" entryPattern="(.*\.png|.*\.gif|.*\.jpg|.*\.jpeg|.*\.tiff)" category="Documents and Images">
+<outputhandlers class="org.ramadda.repository.output.ServiceOutputHandler" icon="fa-image"  xxxentryType="type_image" entryPattern="(.*\.png|.*\.gif|.*\.jpg|.*\.jpeg|.*\.tiff)" category="Documents and Images">
 
   <outputhandler>
    <service id="imagemagick_convert" label="Convert Image" command="${service.imagemagick}/convert">

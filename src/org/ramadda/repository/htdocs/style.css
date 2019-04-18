@@ -1821,7 +1821,7 @@ label {
    background: url(${root}/icons/menu_arrow_down.png) no-repeat 50% center;
    margin:0px;
    border: 1px #fff solid;
-   border-color: #aaa;
+   border-color: #ccc;
    background-color:#efefef;
 }
 

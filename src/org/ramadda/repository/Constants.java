@@ -57,13 +57,13 @@ public interface Constants {
     public static final String ICON_BLANK = "/icons/blank.gif";
 
     /** _more_ */
-    public static final String ICON_CALENDAR = "/icons/calendar.png";
+    public static final String ICON_CALENDAR = "fa-calendar-alt";
 
     /** _more_ */
     public static final String ICON_CART = "/icons/cart.png";
 
     /** _more_ */
-    public static final String ICON_CART_ADD = "/icons/cart_add.png";
+    public static final String ICON_CART_ADD = "fa-cart-plus";
 
     /** _more_ */
     public static final String ICON_CART_DELETE = "/icons/cart_delete.png";
@@ -102,7 +102,7 @@ public interface Constants {
     public static final String ICON_DATEGRID = "/icons/dategrid.gif";
 
     /** _more_ */
-    public static final String ICON_DELETE = "/icons/delete.png";
+    public static final String ICON_DELETE = "fa-cut";
 
     /** _more_ */
     public static final String ICON_DOWNARROW = "/icons/downarrow.gif";
@@ -114,13 +114,13 @@ public interface Constants {
     public static final String ICON_DOWNDART = "/icons/downdart.gif";
 
     /** _more_ */
-    public static final String ICON_EDIT = "/icons/edit.png";
+    public static final String ICON_EDIT = "fa-edit";
 
     /** _more_ */
     public static final String ICON_ENTRY = "fa-info-circle";
-///icons/information.png";
+
     /** _more_ */
-    public static final String ICON_ENTRY_ADD = "/icons/page_add.png";
+    public static final String ICON_ENTRY_ADD = "/icons/fileadd.png";
 
     /** _more_ */
     public static final String ICON_PUBLISH = "/icons/flag_green.png";
@@ -135,7 +135,7 @@ public interface Constants {
     public static final String ICON_ERROR = "/icons/error.png";
 
     /** _more_ */
-    public static final String ICON_FAVORITE = "/icons/star.png";
+    public static final String ICON_FAVORITE = "fa-star";
 
     /** _more_ */
     public static final String ICON_FETCH = "fa-download";
@@ -144,14 +144,13 @@ public interface Constants {
     public static final String ICON_FILE = "/icons/page.png";
 
     /** _more_ */
-    public static final String ICON_FILELISTING =
-        "/icons/application_view_list.png";
+    public static final String ICON_FILELISTING = "fa-list-alt";
 
     /** _more_ */
     public static final String ICON_FOLDER = "/icons/folder.png";
 
     /** _more_ */
-    public static final String ICON_FOLDER_ADD = "/icons/folder_add.png";
+    public static final String ICON_FOLDER_ADD = "fa-folder-plus";
 
     /** _more_ */
     public static final String ICON_FOLDER_CLOSED = "/icons/folderclosed.png";
@@ -185,10 +184,10 @@ public interface Constants {
     public static final String ICON_HELP = "/icons/help.png";
 
     /** _more_ */
-    public static final String ICON_IMAGE = "/icons/image.gif";
+    public static final String ICON_IMAGE = "fa-image";
 
     /** _more_ */
-    public static final String ICON_MOVIE = "/icons/movie.gif";
+    public static final String ICON_MOVIE = "fa-film";
 
     /** _more_ */
     public static final String ICON_IMPORT = "fa-file-import";
@@ -197,7 +196,7 @@ public interface Constants {
     public static final String ICON_EXPORT = "fa-file-export";
 
     /** _more_ */
-    public static final String ICON_IMAGES = "/icons/images.png";
+    public static final String ICON_IMAGES = "fa-images";
 
     /** _more_ */
     public static final String ICON_INFORMATION = ICON_ENTRY;
@@ -230,7 +229,7 @@ public interface Constants {
     public static final String ICON_LOG = "/icons/log.gif";
 
     /** _more_ */
-    public static final String ICON_MAP = "/icons/map.png";
+    public static final String ICON_MAP = "fa-map";
 
     /** _more_ */
     public static final String ICON_MAP_NAV = "/icons/bullet_go.png";
@@ -239,20 +238,19 @@ public interface Constants {
     public static final String ICON_METADATA = "/icons/metadata.gif";
 
     /** _more_ */
-    public static final String ICON_METADATA_ADD = "/icons/database_add.png";
+    public static final String ICON_METADATA_ADD = "fa-database";
 
     /** _more_ */
-    public static final String ICON_METADATA_EDIT =
-        "/icons/database_edit.png";
+    public static final String ICON_METADATA_EDIT =  "fa-database";
 
     /** _more_ */
     public static final String ICON_MINUS = "/icons/minus.gif";
 
     /** _more_ */
-    public static final String ICON_MOVE = "/icons/move.png";
+    public static final String ICON_MOVE = "fa-copy";
 
     /** _more_ */
-    public static final String ICON_NEW = "/icons/add.png";
+    public static final String ICON_NEW = "fa-plus";
 
     /** _more_ */
     public static final String ICON_PLUS = "/icons/plus.gif";
@@ -327,10 +325,10 @@ public interface Constants {
     public static final String ICON_GEOJSON = "/icons/geojson.png";
 
     /** _more_ */
-    public static final String ICON_ZIP = "/icons/zip.png";
+    public static final String ICON_ZIP = "fa-file-archive";
 
     /** _more_ */
-    public static final String ICON_ZIPTREE = "/icons/zip.png";
+    public static final String ICON_ZIPTREE = "fa-file-archive";
 
     //j++
 
