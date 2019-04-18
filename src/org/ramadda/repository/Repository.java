@@ -914,17 +914,19 @@ public class Repository extends RepositoryBase implements RequestHandler,
                 }
             }
 
-            List<RepositoryManager> later = new ArrayList<RepositoryManager>();
+            List<RepositoryManager> later =
+                new ArrayList<RepositoryManager>();
 
             synchronized (repositoryManagers) {
                 for (RepositoryManager repositoryManager :
                         repositoryManagers) {
                     try {
-                        if(repositoryManager== pluginManager ||
-                           repositoryManager == entryManager ||
-                           repositoryManager == databaseManager ||
-                           repositoryManager == metadataManager) {
+                        if ((repositoryManager == pluginManager)
+                                || (repositoryManager == entryManager)
+                                || (repositoryManager == databaseManager)
+                                || (repositoryManager == metadataManager)) {
                             later.add(repositoryManager);
+
                             continue;
                         }
                         repositoryManager.shutdown();
@@ -938,11 +940,13 @@ public class Repository extends RepositoryBase implements RequestHandler,
                 }
             }
 
-            for (RepositoryManager repositoryManager: later) {
+            for (RepositoryManager repositoryManager : later) {
                 try {
                     repositoryManager.shutdown();
                 } catch (Throwable thr) {
-                    System.err.println("RAMADDA: Error shutting down plugin manager:" + repositoryManager.getClass().getName());
+                    System.err.println(
+                        "RAMADDA: Error shutting down plugin manager:"
+                        + repositoryManager.getClass().getName());
                     thr.printStackTrace();
                 }
             }
@@ -1040,12 +1044,12 @@ public class Repository extends RepositoryBase implements RequestHandler,
 
         Repository theRepository = this;
         //Add a listener for the kill signal so we can shutdown gracefully
-        Runtime.getRuntime().addShutdownHook(new Thread()  {
-                public void run()  {
-                    System.err.println("RAMADDA shutting down");
-                    theRepository.shutdown();
-                }
-            });
+        Runtime.getRuntime().addShutdownHook(new Thread() {
+            public void run() {
+                System.err.println("RAMADDA shutting down");
+                theRepository.shutdown();
+            }
+        });
 
     }
 
@@ -1230,15 +1234,17 @@ public class Repository extends RepositoryBase implements RequestHandler,
             }
 
             File[] vfiles = getStorageManager().getVolatileDir().listFiles();
-            if(vfiles!=null) {
+            if (vfiles != null) {
                 for (File f : vfiles) {
-                    if(f==null) continue;
+                    if (f == null) {
+                        continue;
+                    }
                     if ( !f.toString().endsWith(".properties")) {
                         continue;
                     }
                     loadProperties(localProperties, f.toString());
                     System.err.println(
-                                       "RAMADDA: loaded and deleted volatile file:" + f);
+                        "RAMADDA: loaded and deleted volatile file:" + f);
                     f.delete();
                 }
             }
@@ -3873,17 +3879,18 @@ public class Repository extends RepositoryBase implements RequestHandler,
      */
     protected Result getHtdocsFile(Request request) throws Exception {
 
-        String path    = request.getRequestPath().replaceAll("//", "/");
+        String path = request.getRequestPath().replaceAll("//", "/");
         //Check for scanners
-        if(path.endsWith(".php")) {
+        if (path.endsWith(".php")) {
             Misc.sleepSeconds(60);
-            Result r = new Result("",new StringBuilder());
+            Result r = new Result("", new StringBuilder());
             r.setResponseCode(Result.RESPONSE_NOTFOUND);
+
             return r;
         }
 
-        String urlBase = getUrlBase();
-        String htdocsBase =  getPageHandler().makeHtdocsUrl("");
+        String urlBase    = getUrlBase();
+        String htdocsBase = getPageHandler().makeHtdocsUrl("");
         if (path.startsWith(urlBase)) {
             int length = urlBase.length();
             path = path.substring(length);
@@ -3900,13 +3907,16 @@ public class Repository extends RepositoryBase implements RequestHandler,
         if (path.startsWith("/htdocs_v")) {
             path = path.substring(9);
             int index = path.indexOf("/");
-            if(index>=0)
+            if (index >= 0) {
                 path = path.substring(index);
+            }
         }
 
         String mimeType =
             getMimeTypeFromSuffix(IOUtil.getFileExtension(path));
-        if(path.endsWith("asm.data")) mimeType= "application/octet-stream";
+        if (path.endsWith("asm.data")) {
+            mimeType = "application/octet-stream";
+        }
         boolean decorate = true;
         if (path.startsWith("/raw")) {
             path     = path.substring("/raw".length());
@@ -3939,7 +3949,8 @@ public class Repository extends RepositoryBase implements RequestHandler,
                 if (path.endsWith(".js") || path.endsWith(".css")
                         || path.endsWith(".json")) {
                     String js = IOUtil.readInputStream(inputStream);
-                    js = js.replace("${htdocs}",htdocsBase).replace("${root}", urlBase).replace(
+                    js = js.replace("${htdocs}", htdocsBase).replace(
+                        "${root}", urlBase).replace(
                         "${urlroot}", urlBase).replace(
                         "${baseentry}",
                         getEntryManager().getRootEntry().getId());
@@ -3963,8 +3974,9 @@ public class Repository extends RepositoryBase implements RequestHandler,
                     html = html.replace("${hostname}",
                                         request.getServerName());
 
-                    if(path.indexOf(".wiki.")>=0|| html.startsWith("<wiki>")) {
-                        html = getWikiManager().wikify(request,  html);
+                    if ((path.indexOf(".wiki.") >= 0)
+                            || html.startsWith("<wiki>")) {
+                        html = getWikiManager().wikify(request, html);
                     }
                     Result result = new Result(BLANK,
                                         new StringBuilder(html));
@@ -3996,8 +4008,9 @@ public class Repository extends RepositoryBase implements RequestHandler,
             if (pluginPath.endsWith(".js") || pluginPath.endsWith(".css")
                     || pluginPath.endsWith(".json")) {
                 String js = IOUtil.readInputStream(inputStream);
-                js    = js.replace("${urlroot}", urlBase);
-                js    = js.replace("${htdocs}",htdocsBase).replace("${root}", urlBase);
+                js = js.replace("${urlroot}", urlBase);
+                js = js.replace("${htdocs}", htdocsBase).replace("${root}",
+                                urlBase);
                 js    = js.replace("${hostname}", request.getServerName());
                 bytes = js.getBytes();
                 putHtdocsCache(path, bytes);
@@ -4011,8 +4024,9 @@ public class Repository extends RepositoryBase implements RequestHandler,
                 String html = IOUtil.readInputStream(inputStream);
                 html = getPageHandler().applyBaseMacros(html);
                 html = html.replace("${hostname}", request.getServerName());
-                if(path.indexOf(".wiki.")>=0|| html.startsWith("<wiki>")) {
-                    html = getWikiManager().wikify(request,  html);
+                if ((path.indexOf(".wiki.") >= 0)
+                        || html.startsWith("<wiki>")) {
+                    html = getWikiManager().wikify(request, html);
                 }
 
                 return getEntryManager().addHeaderToAncillaryPage(request,

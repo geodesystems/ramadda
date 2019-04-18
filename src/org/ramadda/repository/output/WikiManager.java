@@ -59,9 +59,10 @@ import ucar.unidata.util.Misc;
 import ucar.unidata.util.StringUtil;
 import ucar.unidata.util.TwoFacedObject;
 
+import java.io.BufferedReader;
+
 
 import java.io.File;
-import java.io.BufferedReader;
 import java.io.FileInputStream;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -1230,7 +1231,8 @@ ATTR_SHOWLINK, "true", ATTR_INCLUDEICON, "false") + ATTRS_LAYOUT),
             srcEntry = entry;
         } else {
             src = src.trim();
-            if ((src.length() == 0) || entry.getName().equals(src) || src.equals("this")) {
+            if ((src.length() == 0) || entry.getName().equals(src)
+                    || src.equals("this")) {
                 srcEntry = entry;
             } else if (entry instanceof Entry) {
                 srcEntry = getEntryManager().findEntryWithName(request,
@@ -1466,123 +1468,194 @@ ATTR_SHOWLINK, "true", ATTR_INCLUDEICON, "false") + ATTRS_LAYOUT),
     }
 
 
+    /**
+     * _more_
+     *
+     * @param request _more_
+     *
+     * @return _more_
+     *
+     * @throws Exception _more_
+     */
     public Result processGetWikiToolbar(Request request) throws Exception {
-        Entry entry  = getEntryManager().getEntry(request, request.getString(ARG_ENTRYID,""));
-        String handlerId = request.getString("handler","");
-        String toolbar = makeWikiEditBar(request, entry, handlerId);
+        Entry entry = getEntryManager().getEntry(request,
+                          request.getString(ARG_ENTRYID, ""));
+        String handlerId = request.getString("handler", "");
+        String toolbar   = makeWikiEditBar(request, entry, handlerId);
         toolbar = getPageHandler().translate(request, toolbar);
-        Result  result =  new Result("", new StringBuilder(toolbar));
+        Result result = new Result("", new StringBuilder(toolbar));
         result.setShouldDecorate(false);
+
         return result;
     }
 
 
 
+    /**
+     * _more_
+     *
+     * @param request _more_
+     *
+     * @return _more_
+     *
+     * @throws Exception _more_
+     */
     public Result processWikify(Request request) throws Exception {
-        String wiki = request.getUnsafeString("text","");
-        if(request.defined(ARG_ENTRYID)) {
-            if(!request.get("doImports",true)) {
+        String wiki = request.getUnsafeString("text", "");
+        if (request.defined(ARG_ENTRYID)) {
+            if ( !request.get("doImports", true)) {
                 request.putExtraProperty("initchart", "added");
                 request.putExtraProperty(MapManager.ADDED_IMPORTS, "added");
             }
-            Entry entry  = getEntryManager().getEntry(request, request.getString(ARG_ENTRYID,""));
-            wiki  = wikifyEntry(request, entry, wiki);
+            Entry entry = getEntryManager().getEntry(request,
+                              request.getString(ARG_ENTRYID, ""));
+            wiki = wikifyEntry(request, entry, wiki);
         } else {
-            wiki =  wikify(request, wiki);
+            wiki = wikify(request, wiki);
         }
         wiki = getPageHandler().translate(request, wiki);
-        Result  result =  new Result("", new StringBuilder(wiki));
+        Result result = new Result("", new StringBuilder(wiki));
         result.setShouldDecorate(false);
+
         return result;
     }
 
+    /**
+     * _more_
+     *
+     * @param request _more_
+     *
+     * @return _more_
+     *
+     * @throws Exception _more_
+     */
     public Result processGetNotebook(Request request) throws Exception {
-        Entry entry  = getEntryManager().getEntry(request, request.getString(ARG_ENTRYID,""));
+        Entry entry = getEntryManager().getEntry(request,
+                          request.getString(ARG_ENTRYID, ""));
         List<Metadata> metadataList =
             getMetadataManager().findMetadata(request, entry,
-                                              "wiki_notebook", false);
+                "wiki_notebook", false);
 
 
         Metadata metadata = null;
-        if(metadataList != null && metadataList.size()>0) {
-            String id = request.getString("notebookId","default_notebook");
-            for(Metadata m: metadataList) {
-                if(Misc.equals(m.getAttr1(), id)) {
+        if ((metadataList != null) && (metadataList.size() > 0)) {
+            String id = request.getString("notebookId", "default_notebook");
+            for (Metadata m : metadataList) {
+                if (Misc.equals(m.getAttr1(), id)) {
                     metadata = m;
+
                     break;
                 }
             }
         }
 
-        if(metadata == null) {
-            Result  result =  new Result("", new StringBuilder("{}"),Json.MIMETYPE);
+        if (metadata == null) {
+            Result result = new Result("", new StringBuilder("{}"),
+                                       Json.MIMETYPE);
             result.setShouldDecorate(false);
+
             return result;
         }
-        
-        Result  result =  new Result(new FileInputStream(getMetadataManager().getFile(request, entry, metadata,2)),Json.MIMETYPE);
+
+        Result result = new Result(
+                            new FileInputStream(
+                                getMetadataManager().getFile(
+                                    request, entry, metadata,
+                                    2)), Json.MIMETYPE);
         result.setShouldDecorate(false);
+
         return result;
     }
 
 
+    /**
+     * _more_
+     *
+     * @param request _more_
+     *
+     * @return _more_
+     *
+     * @throws Exception _more_
+     */
     public Result processSaveNotebook(Request request) throws Exception {
         try {
             return processSaveNotebookInner(request);
-        } catch(Exception exc) {
+        } catch (Exception exc) {
 
-            Result  result =  new Result("", new StringBuilder("{'error':'" + exc.getMessage() +"'}"),Json.MIMETYPE);
+            Result result = new Result("",
+                                       new StringBuilder("{'error':'"
+                                           + exc.getMessage()
+                                           + "'}"), Json.MIMETYPE);
+
             return result;
         }
     }
 
+    /**
+     * _more_
+     *
+     * @param request _more_
+     *
+     * @return _more_
+     *
+     * @throws Exception _more_
+     */
     public Result processSaveNotebookInner(Request request) throws Exception {
-        Entry entry  = getEntryManager().getEntry(request, request.getString(ARG_ENTRYID,""));
+        Entry entry = getEntryManager().getEntry(request,
+                          request.getString(ARG_ENTRYID, ""));
         if (entry == null) {
-            return   new Result("", new StringBuilder("{\"error\":\"cannot find entry\"}"),Json.MIMETYPE);
+            return new Result(
+                "", new StringBuilder("{\"error\":\"cannot find entry\"}"),
+                Json.MIMETYPE);
         }
-        if (!getAccessManager().canEditEntry(request, entry)) {
-            return   new Result("", new StringBuilder("{\"error\":\"cannot edit entry\"}"),Json.MIMETYPE);
+        if ( !getAccessManager().canEditEntry(request, entry)) {
+            return new Result(
+                "", new StringBuilder("{\"error\":\"cannot edit entry\"}"),
+                Json.MIMETYPE);
         }
 
         List<Metadata> metadataList =
             getMetadataManager().findMetadata(request, entry,
-                                              "wiki_notebook", false);
+                "wiki_notebook", false);
 
-        String notebookId = request.getString("notebookId","default_notebook");
+        String notebookId = request.getString("notebookId",
+                                "default_notebook");
         Metadata metadata = null;
-        if(metadataList != null && metadataList.size()>0) {
-            if(!Utils.stringDefined(notebookId)) {
-                metadata  = metadataList.get(0);
+        if ((metadataList != null) && (metadataList.size() > 0)) {
+            if ( !Utils.stringDefined(notebookId)) {
+                metadata = metadataList.get(0);
             } else {
-                for(Metadata m: metadataList) {
-                    if(Misc.equals(m.getAttr1(), notebookId)) {
+                for (Metadata m : metadataList) {
+                    if (Misc.equals(m.getAttr1(), notebookId)) {
                         metadata = m;
+
                         break;
                     }
                 }
             }
         }
-        String notebook = request.getString("notebook","");
-        if(metadata == null) {
+        String notebook = request.getString("notebook", "");
+        if (metadata == null) {
             File f = getStorageManager().getTmpFile(request, "notebook.json");
             IOUtil.writeFile(f, notebook);
             String theFile = getStorageManager().moveToEntryDir(entry,
-                                                                f).getName();
+                                 f).getName();
             getMetadataManager().addMetadata(
-                                             entry,
-                                             new Metadata(
-                                                          getRepository().getGUID(), entry.getId(),
-                                                          "wiki_notebook", false, 
-                                                          notebookId,
-                                                          theFile,
-                                                          "", "", ""));
+                entry,
+                new Metadata(
+                    getRepository().getGUID(), entry.getId(),
+                    "wiki_notebook", false, notebookId, theFile, "", "", ""));
             getEntryManager().updateEntry(null, entry);
-            return   new Result("", new StringBuilder("{\"result\":\"ok\"}"),Json.MIMETYPE);
-        } else  {
-            File file = getMetadataManager().getFile(request, entry, metadata,2);
+
+            return new Result("", new StringBuilder("{\"result\":\"ok\"}"),
+                              Json.MIMETYPE);
+        } else {
+            File file = getMetadataManager().getFile(request, entry,
+                            metadata, 2);
             getStorageManager().writeFile(file, notebook);
-            return   new Result("", new StringBuilder("{\"result\":\"ok\"}"),Json.MIMETYPE);
+
+            return new Result("", new StringBuilder("{\"result\":\"ok\"}"),
+                              Json.MIMETYPE);
         }
     }
 
@@ -1821,11 +1894,12 @@ ATTR_SHOWLINK, "true", ATTR_INCLUDEICON, "false") + ATTRS_LAYOUT),
                     getProperty(wikiUtil, props, ATTR_TITLE, "Layout"));
         } else if (theTag.equals(WIKI_TAG_NAME)) {
             String name = getEntryDisplayName(entry);
-            if(getProperty(wikiUtil,props,"link",false)) {
+            if (getProperty(wikiUtil, props, "link", false)) {
                 name = HtmlUtils.href(
-                                      request.entryUrl(getRepository().URL_ENTRY_SHOW, entry),name,
-                                      HtmlUtils.cssClass("ramadda-link"));
+                    request.entryUrl(getRepository().URL_ENTRY_SHOW, entry),
+                    name, HtmlUtils.cssClass("ramadda-link"));
             }
+
             return name;
         } else if (theTag.equals(WIKI_TAG_EMBED)) {
             if ( !entry.isFile()
@@ -1948,8 +2022,10 @@ ATTR_SHOWLINK, "true", ATTR_INCLUDEICON, "false") + ATTRS_LAYOUT),
             if ((name != null) && (value != null)) {
                 wikiUtil.appendJavascript("addGlobalDisplayProperty('" + name
                                           + "','" + value + "');\n");
-                return  "";
+
+                return "";
             }
+
             return "";
         } else if (theTag.equals(WIKI_TAG_PROPERTIES)) {
             return makeEntryTabs(request, wikiUtil, entry, props);
@@ -2037,21 +2113,22 @@ ATTR_SHOWLINK, "true", ATTR_INCLUDEICON, "false") + ATTRS_LAYOUT),
             if (imageUrl != null) {
                 String img = HtmlUtils.img(imageUrl, "",
                                            HtmlUtils.style("width:100%;"));
-                String inner;
+                String  inner;
                 boolean popup = getProperty(wikiUtil, props, "popup", true);
-                if(popup) {
-                    inner =  HtmlUtils.href(
-                                            imageUrl, img,
-                                            HtmlUtils.cssClass(
-                                                               "popup_image"));
+                if (popup) {
+                    inner = HtmlUtils.href(imageUrl, img,
+                                           HtmlUtils.cssClass("popup_image"));
                 } else {
-                    inner =  HtmlUtils.href(entryUrl, img,
-                                            HtmlUtils.cssClass(""));
+                    inner = HtmlUtils.href(entryUrl, img,
+                                           HtmlUtils.cssClass(""));
                 }
-                card.append(HtmlUtils.div(inner,
-                                          HtmlUtils.cssClass("ramadda-imagewrap")));
+                card.append(
+                    HtmlUtils.div(
+                        inner, HtmlUtils.cssClass("ramadda-imagewrap")));
 
-                if(popup) addImagePopupJS(request, wikiUtil, card, props);
+                if (popup) {
+                    addImagePopupJS(request, wikiUtil, card, props);
+                }
             }
 
             HtmlUtils.close(card, HtmlUtils.TAG_DIV);
@@ -2095,7 +2172,8 @@ ATTR_SHOWLINK, "true", ATTR_INCLUDEICON, "false") + ATTRS_LAYOUT),
         } else if (theTag.equals(WIKI_TAG_CALENDAR)) {
             List<Entry> children = getEntries(request, wikiUtil,
                                        originalEntry, entry, props);
-            boolean doDay = getProperty(wikiUtil, props, ATTR_DAY, false) || request.defined(ARG_DAY);
+            boolean doDay = getProperty(wikiUtil, props, ATTR_DAY, false)
+                            || request.defined(ARG_DAY);
             getCalendarOutputHandler().outputCalendar(request,
                     getCalendarOutputHandler().makeCalendarEntries(request,
                         children), sb, doDay);
@@ -2637,7 +2715,7 @@ ATTR_SHOWLINK, "true", ATTR_INCLUDEICON, "false") + ATTRS_LAYOUT),
                     }
                     HtmlUtils.open(sb, HtmlUtils.TAG_DIV,
                                    HtmlUtils.cssClass("col-md-"
-                                       + weightString +" ramadda-col"));
+                                       + weightString + " ramadda-col"));
                     HtmlUtils.open(sb, HtmlUtils.TAG_DIV,
                                    HtmlUtils.cssClass("ramadda-grid-box"));
 
@@ -2712,7 +2790,8 @@ ATTR_SHOWLINK, "true", ATTR_INCLUDEICON, "false") + ATTRS_LAYOUT),
                                 + startSpeed + ", width: \"" + width + "\""
                                 + ", pause: 2500, hoverPause: true"
                                 + ", generatePagination: " + shownav + "\n";
-                StringBuilder js = new StringBuilder("$(document).ready(function(){\n");
+                StringBuilder js =
+                    new StringBuilder("$(document).ready(function(){\n");
                 js.append(
                     "$(function(){\n$(" + HtmlUtils.squote("#" + slideId)
                     + ").slides({" + slideParams
@@ -2788,16 +2867,22 @@ ATTR_SHOWLINK, "true", ATTR_INCLUDEICON, "false") + ATTRS_LAYOUT),
                     }
                     contents = tmp;
                 }
-                String style    = getProperty(wikiUtil, props, "tabsStyle", "");
-                String divClass  ="";
-                if(style.equals("min")) divClass= "ramadda-tabs-min";
-                else if(style.equals("center")) divClass= "ramadda-tabs-center";
-                else if(style.equals("minarrow")) divClass= "ramadda-tabs-min ramadda-tabs-minarrow";
-                sb.append(HtmlUtils.open("div",HtmlUtils.cssClass(divClass)));
+                String style = getProperty(wikiUtil, props, "tabsStyle", "");
+                String divClass = "";
+                if (style.equals("min")) {
+                    divClass = "ramadda-tabs-min";
+                } else if (style.equals("center")) {
+                    divClass = "ramadda-tabs-center";
+                } else if (style.equals("minarrow")) {
+                    divClass = "ramadda-tabs-min ramadda-tabs-minarrow";
+                }
+                sb.append(HtmlUtils.open("div",
+                                         HtmlUtils.cssClass(divClass)));
                 sb.append(OutputHandler.makeTabs(titles, contents, true,
                         useCookies));
 
                 sb.append(HtmlUtils.close("div"));
+
                 return sb.toString();
             }
         } else if (false && theTag.equals(WIKI_TAG_GRID)) {
@@ -2998,7 +3083,8 @@ ATTR_SHOWLINK, "true", ATTR_INCLUDEICON, "false") + ATTRS_LAYOUT),
                 return sb.toString();
             }
 
-        } else if (theTag.equals(WIKI_TAG_TREEVIEW) || theTag.equals(WIKI_TAG_FRAMES)) {
+        } else if (theTag.equals(WIKI_TAG_TREEVIEW)
+                   || theTag.equals(WIKI_TAG_FRAMES)) {
             int width = getDimension(wikiUtil, props, ATTR_WIDTH, -100);
             int height = getDimension(wikiUtil, props, ATTR_HEIGHT, 500);
 
@@ -3007,10 +3093,10 @@ ATTR_SHOWLINK, "true", ATTR_INCLUDEICON, "false") + ATTRS_LAYOUT),
             if (children.size() == 0) {
                 return null;
             }
-            boolean noTemplate = getProperty(wikiUtil, props,
-                                             "noTemplate", true);
+            boolean noTemplate = getProperty(wikiUtil, props, "noTemplate",
+                                             true);
             getHtmlOutputHandler().makeTreeView(request, children, sb, width,
-                                                height, noTemplate);
+                    height, noTemplate);
 
             return sb.toString();
         } else if (theTag.equals(WIKI_TAG_LINKS)
@@ -3312,7 +3398,7 @@ ATTR_SHOWLINK, "true", ATTR_INCLUDEICON, "false") + ATTRS_LAYOUT),
                 "strokeColor", "fillColor", "fillOpacity", "scrollToZoom",
                 "fill", "selectOnHover", "onSelect", "showDetailsLink",
                 "initialZoom:zoom", "defaultMapLayer:layer", "kmlLayer",
-                "kmlLayerName", "displayDiv","initialBounds:bounds"
+                "kmlLayerName", "displayDiv", "initialBounds:bounds"
             };
             for (String mapArg : mapArgs) {
                 String key = mapArg;
@@ -3459,15 +3545,15 @@ ATTR_SHOWLINK, "true", ATTR_INCLUDEICON, "false") + ATTRS_LAYOUT),
             }
             options.append("}");
 
-            if(wikiUtil!=null) {
+            if (wikiUtil != null) {
                 wikiUtil.appendJavascript(
                     "$(document).ready(function() {\n $(\"a.popup_image\").fancybox("
                     + options.toString() + ");\n });\n");
             } else {
                 buf.append(
-                           HtmlUtils.script(
-                                            "$(document).ready(function() {\n $(\"a.popup_image\").fancybox("
-                                            + options.toString() + ");\n });\n"));
+                    HtmlUtils.script(
+                        "$(document).ready(function() {\n $(\"a.popup_image\").fancybox("
+                        + options.toString() + ");\n });\n"));
             }
             request.putExtraProperty("added fancybox", "yes");
         }
@@ -4033,13 +4119,14 @@ ATTR_SHOWLINK, "true", ATTR_INCLUDEICON, "false") + ATTRS_LAYOUT),
             }
             List<String> ids = StringUtil.split(firstEntries, ",");
             for (int i = ids.size() - 1; i >= 0; i--) {
-                String id = ids.get(i);
-                Entry firstEntry = map.get(id);
+                String id         = ids.get(i);
+                Entry  firstEntry = map.get(id);
                 if (firstEntry == null) {
-                    if(StringUtil.containsRegExp(id)) {
+                    if (StringUtil.containsRegExp(id)) {
                         for (Entry child : entries) {
-                            if(child.getName().matches(id)) {
+                            if (child.getName().matches(id)) {
                                 firstEntry = child;
+
                                 break;
                             }
                         }
@@ -4062,17 +4149,18 @@ ATTR_SHOWLINK, "true", ATTR_INCLUDEICON, "false") + ATTRS_LAYOUT),
             Hashtable<String, Entry> map = new Hashtable<String, Entry>();
             for (Entry child : entries) {
                 map.put(child.getId(), child);
-                map.put(child.getName(),child);
+                map.put(child.getName(), child);
             }
             List<String> ids = StringUtil.split(lastEntries, ",");
             for (int i = ids.size() - 1; i >= 0; i--) {
-                String id = ids.get(i);
-                Entry lastEntry = map.get(id);
+                String id        = ids.get(i);
+                Entry  lastEntry = map.get(id);
                 if (lastEntry == null) {
-                    if(StringUtil.containsRegExp(id)) {
+                    if (StringUtil.containsRegExp(id)) {
                         for (Entry child : entries) {
-                            if(child.getName().matches(id)) {
+                            if (child.getName().matches(id)) {
                                 lastEntry = child;
+
                                 break;
                             }
                         }
@@ -4643,7 +4731,7 @@ ATTR_SHOWLINK, "true", ATTR_INCLUDEICON, "false") + ATTRS_LAYOUT),
         for (StringBuilder buff : colsSB) {
             HtmlUtils.open(
                 sb, "div",
-                HtmlUtils.cssClass(colClass +" ramadda-col")
+                HtmlUtils.cssClass(colClass + " ramadda-col")
                 + HtmlUtils.style("padding-left:5px; padding-right:5px;"));
             sb.append(buff);
             HtmlUtils.close(sb, "div");
@@ -4918,12 +5006,10 @@ ATTR_SHOWLINK, "true", ATTR_INCLUDEICON, "false") + ATTRS_LAYOUT),
         tags.append(addWikiEditButton(textAreaId, "button_link.png",
                                       "Internal link", "[[", "]]",
                                       "Link title", "mw-editbutton-link"));
-        tags.append(
-            addWikiEditButton(
-                textAreaId, "button_extlink.png",
-                "External link", "[", "]",
-                "http://www.example.com link title",
-                "mw-editbutton-extlink"));
+        tags.append(addWikiEditButton(textAreaId, "button_extlink.png",
+                                      "External link", "[", "]",
+                                      "http://www.example.com link title",
+                                      "mw-editbutton-extlink"));
         tags.append(addWikiEditButton(textAreaId, "button_headline.png",
                                       "Level 2 headline", "\\n== ", " ==\\n",
                                       "Headline text",
@@ -4979,13 +5065,19 @@ ATTR_SHOWLINK, "true", ATTR_INCLUDEICON, "false") + ATTRS_LAYOUT),
         }
 
 
-        String buttonClass =HtmlUtils.clazz("ramadda-menubar-button");
+        String        buttonClass = HtmlUtils.clazz("ramadda-menubar-button");
 
-        StringBuilder help = new StringBuilder();
-        for(String extraHelp:StringUtil.split(request.getString("extrahelp",""),",",true,true)) {
-            List<String> toks = StringUtil.splitUpTo(extraHelp,"|",2);
-            if(toks.size()==2) {
-                help.append(HtmlUtils.href(Utils.encodeUntrustedText(toks.get(0)), Utils.encodeUntrustedText(toks.get(1)), "target=_help") + "<br>");
+        StringBuilder help        = new StringBuilder();
+        for (String extraHelp :
+                StringUtil.split(request.getString("extrahelp", ""), ",",
+                                 true, true)) {
+            List<String> toks = StringUtil.splitUpTo(extraHelp, "|", 2);
+            if (toks.size() == 2) {
+                help.append(
+                    HtmlUtils.href(
+                        Utils.encodeUntrustedText(toks.get(0)),
+                        Utils.encodeUntrustedText(toks.get(1)),
+                        "target=_help") + "<br>");
             }
         }
 
@@ -5038,9 +5130,12 @@ ATTR_SHOWLINK, "true", ATTR_INCLUDEICON, "false") + ATTRS_LAYOUT),
                                    + "/colortables", "Color Tables",
                                        "target=_help") + "<br>");
 
-        String helpButton = getPageHandler().makePopupLink(msg("Help"),
-                                HtmlUtils.div(help.toString(),
-                                              "style='padding:5px;'"), HtmlUtils.clazz(" ramadda-menubar-button ramadda-menubar-button-last"));
+        String helpButton =
+            getPageHandler().makePopupLink(
+                msg("Help"),
+                HtmlUtils.div(help.toString(), "style='padding:5px;'"),
+                HtmlUtils.clazz(
+                    " ramadda-menubar-button ramadda-menubar-button-last"));
 
 
         String tagsButton = getPageHandler().makePopupLink(msg("Formatting"),
@@ -5061,16 +5156,17 @@ ATTR_SHOWLINK, "true", ATTR_INCLUDEICON, "false") + ATTRS_LAYOUT),
                                  tags2.toString(), buttonClass);
 
         String addEntry = OutputHandler.getSelect(request, textAreaId,
-                              "Entry id", true, "entryid", entry, false,  
+                              "Entry id", true, "entryid", entry, false,
                               buttonClass);
 
 
         String addLink = OutputHandler.getSelect(request, textAreaId,
-                             "Entry link", true, "wikilink", entry,
-                             false, buttonClass);
+                             "Entry link", true, "wikilink", entry, false,
+                             buttonClass);
 
         HtmlUtils.open(buttons, "div", HtmlUtils.cssClass("ramadda-menubar"));
-        buttons.append(HtmlUtils.span("",HtmlUtils.id(textAreaId+"_prefix")));
+        buttons.append(HtmlUtils.span("",
+                                      HtmlUtils.id(textAreaId + "_prefix")));
         buttons.append(tagsButton);
         buttons.append(tagsButton1);
         buttons.append(tagsButton2);
@@ -5190,53 +5286,66 @@ ATTR_SHOWLINK, "true", ATTR_INCLUDEICON, "false") + ATTRS_LAYOUT),
 
 
 
-    public String getWikiImageUrl(WikiUtil wikiUtil, String src, Hashtable props)  {
+    /**
+     * _more_
+     *
+     * @param wikiUtil _more_
+     * @param src _more_
+     * @param props _more_
+     *
+     * @return _more_
+     */
+    public String getWikiImageUrl(WikiUtil wikiUtil, String src,
+                                  Hashtable props) {
         try {
-        Entry   entry   = (Entry) wikiUtil.getProperty(ATTR_ENTRY);
-        Request request = (Request) wikiUtil.getProperty(ATTR_REQUEST);
-        Entry srcEntry = null;
-        String attachment = null;
+            Entry   entry      = (Entry) wikiUtil.getProperty(ATTR_ENTRY);
+            Request request    = (Request) wikiUtil.getProperty(ATTR_REQUEST);
+            Entry   srcEntry   = null;
+            String  attachment = null;
 
-        int    idx        = src.indexOf("::");
-        if(idx>=0) {
-            List<String> toks = StringUtil.splitUpTo(src, "::", 2);
-            if (toks.size() == 2) {
-                src        = toks.get(0);
-                attachment = toks.get(1).substring(1);
+            int     idx        = src.indexOf("::");
+            if (idx >= 0) {
+                List<String> toks = StringUtil.splitUpTo(src, "::", 2);
+                if (toks.size() == 2) {
+                    src        = toks.get(0);
+                    attachment = toks.get(1).substring(1);
+                }
             }
-        }
-        if ((src.length() == 0) || entry.getName().equals(src)) {
-            srcEntry = entry;
-        } else if (entry instanceof Entry) {
-            srcEntry = getEntryManager().findEntryWithName(request,
-                    (Entry) entry, src);
-        }
-        if (srcEntry == null) {
-            return null;
-        }
-        if (attachment == null) {
-            if ( !srcEntry.isImage()) {
+            if ((src.length() == 0) || entry.getName().equals(src)) {
+                srcEntry = entry;
+            } else if (entry instanceof Entry) {
+                srcEntry = getEntryManager().findEntryWithName(request,
+                        (Entry) entry, src);
+            }
+            if (srcEntry == null) {
                 return null;
             }
-            return getHtmlOutputHandler().getImageUrl(request, srcEntry);
-        }
-        if ((attachment != null) && attachment.equals("*")) {
-            attachment = null;
-        }
-        for (Metadata metadata : getMetadataManager().getMetadata(srcEntry)) {
-            MetadataType metadataType =
-                getMetadataManager().findType(metadata.getType());
-            if (metadataType == null) {
-                continue;
+            if (attachment == null) {
+                if ( !srcEntry.isImage()) {
+                    return null;
+                }
+
+                return getHtmlOutputHandler().getImageUrl(request, srcEntry);
             }
-            String url = metadataType.getDisplayImageUrl(request, srcEntry,
-                             metadata, attachment);
-            if (url != null) {
-                return url;
+            if ((attachment != null) && attachment.equals("*")) {
+                attachment = null;
             }
-        }
-        return null;
-        } catch(Exception exc) {
+            for (Metadata metadata :
+                    getMetadataManager().getMetadata(srcEntry)) {
+                MetadataType metadataType =
+                    getMetadataManager().findType(metadata.getType());
+                if (metadataType == null) {
+                    continue;
+                }
+                String url = metadataType.getDisplayImageUrl(request,
+                                 srcEntry, metadata, attachment);
+                if (url != null) {
+                    return url;
+                }
+            }
+
+            return null;
+        } catch (Exception exc) {
             throw new IllegalArgumentException(exc);
         }
     }
@@ -5470,10 +5579,11 @@ ATTR_SHOWLINK, "true", ATTR_INCLUDEICON, "false") + ATTRS_LAYOUT),
         //infinite loops
         String content = wikiUtil.wikify(wikiContent, this, notTags);
         if (wrapInDiv) {
-            content =  HtmlUtils.div(content, HtmlUtils.cssClass("wikicontent"))+"\n";
+            content = HtmlUtils.div(content,
+                                    HtmlUtils.cssClass("wikicontent")) + "\n";
         }
         String js = wikiUtil.getJavascript();
-        if(js.length()>0) {
+        if (js.length() > 0) {
             StringBuilder sb = new StringBuilder();
             sb.append(content);
             sb.append("\n<!--begin wiki javascript-->\n");
@@ -5481,6 +5591,7 @@ ATTR_SHOWLINK, "true", ATTR_INCLUDEICON, "false") + ATTRS_LAYOUT),
             sb.append("\n<!--end wiki javascript-->\n");
             content = sb.toString();
         }
+
         return content;
     }
 
@@ -5631,7 +5742,7 @@ ATTR_SHOWLINK, "true", ATTR_INCLUDEICON, "false") + ATTRS_LAYOUT),
             boolean layoutHorizontal = position.equals(POS_RIGHT)
                                        || position.equals(POS_LEFT);
             String imageWidth = null;
-            String divStyle = "";
+            String divStyle   = "";
 
             if (sizeConstrained) {
                 imageWidth = getProperty(wikiUtil, props, ATTR_WIDTH, "400");
@@ -5643,8 +5754,8 @@ ATTR_SHOWLINK, "true", ATTR_INCLUDEICON, "false") + ATTRS_LAYOUT),
             extra.append(HtmlUtils.attr(HtmlUtils.ATTR_WIDTH, "95%"));
 
             if (imageWidth != null) {
-                if(imageWidth.startsWith("-")) {
-                    imageWidth=imageWidth.substring(1)+"%";
+                if (imageWidth.startsWith("-")) {
+                    imageWidth = imageWidth.substring(1) + "%";
                 }
                 //                divStyle +="width:" + imageWidth+";";
             }
@@ -5672,33 +5783,35 @@ ATTR_SHOWLINK, "true", ATTR_INCLUDEICON, "false") + ATTRS_LAYOUT),
             if (haveText && sizeConstrained) {
                 int height = getProperty(wikiUtil, props, ATTR_HEIGHT, -1);
                 if ((height > 0) && position.equals(POS_BOTTOM)) {
-                    divStyle +=  "overflow-y: auto; max-height:"  + (height - 75) + "px;";
+                    divStyle += "overflow-y: auto; max-height:"
+                                + (height - 75) + "px;";
                 }
             }
 
             image = HtmlUtils.div(image,
-                                  HtmlUtils.cssClass("entry-simple-image") +
-                                  HtmlUtils.style(divStyle));
+                                  HtmlUtils.cssClass("entry-simple-image")
+                                  + HtmlUtils.style(divStyle));
             if ( !haveText) {
                 return image;
             }
 
-            String textClass = "entry-simple-text " + getProperty(wikiUtil,props,"textClass","note");
-            String textStyle = getProperty(wikiUtil,props,"textStyle","margin:8px;");
+            String textClass = "entry-simple-text "
+                               + getProperty(wikiUtil, props, "textClass",
+                                             "note");
+            String textStyle = getProperty(wikiUtil, props, "textStyle",
+                                           "margin:8px;");
             String textExtra = HtmlUtils.cssClass(textClass);
             if (position.equals(POS_NONE)) {
                 content = image;
             } else if (position.equals(POS_BOTTOM)) {
                 content = image
                           + HtmlUtils.div(content,
-                                          HtmlUtils.style(textStyle) +
-                                          textExtra);
+                                          HtmlUtils.style(textStyle)
+                                          + textExtra);
             } else if (position.equals(POS_TOP)) {
-                content =
-                    HtmlUtils.div(content, 
-                                  HtmlUtils.style(textStyle) +
-                                  textExtra)
-                    + image;
+                content = HtmlUtils.div(content,
+                                        HtmlUtils.style(textStyle)
+                                        + textExtra) + image;
             } else if (position.equals(POS_RIGHT)) {
                 content =
                     HtmlUtils.table(
@@ -5707,13 +5820,16 @@ ATTR_SHOWLINK, "true", ATTR_INCLUDEICON, "false") + ATTRS_LAYOUT),
                             + HtmlUtils.col(
                                 HtmlUtils.div(
                                     content,
-                                    HtmlUtils.style("width:" + getProperty(wikiUtil, props, "textWidth","150px;")+textStyle) +
-                                    HtmlUtils.cssClass(
-                                        textClass))), HtmlUtils.attr(
-                                            HtmlUtils.ATTR_VALIGN,
-                                            "top")), HtmlUtils.attr(
-                                                HtmlUtils.ATTR_CELLPADDING,
-                                                    "0"));
+                                    HtmlUtils.style(
+                                        "width:"
+                                        + getProperty(
+                                            wikiUtil, props, "textWidth",
+                                            "150px;") + textStyle) + HtmlUtils.cssClass(
+                                                textClass))), HtmlUtils.attr(
+                                                    HtmlUtils.ATTR_VALIGN,
+                                                        "top")), HtmlUtils.attr(
+                                                            HtmlUtils.ATTR_CELLPADDING,
+                                                                "0"));
             } else if (position.equals(POS_LEFT)) {
                 content =
                     HtmlUtils.table(
@@ -5721,14 +5837,17 @@ ATTR_SHOWLINK, "true", ATTR_INCLUDEICON, "false") + ATTRS_LAYOUT),
                             HtmlUtils.col(
                                 HtmlUtils.div(
                                     content,
-                                    HtmlUtils.style("width:" + getProperty(wikiUtil, props, "textWidth","150px;")+textStyle) +
-                                    HtmlUtils.cssClass(
-                                        textClass))) + HtmlUtils.col(
-                                            image), HtmlUtils.attr(
-                                            HtmlUtils.ATTR_VALIGN,
-                                            "top")), HtmlUtils.attr(
-                                                HtmlUtils.ATTR_CELLPADDING,
-                                                    "0"));
+                                    HtmlUtils.style(
+                                        "width:"
+                                        + getProperty(
+                                            wikiUtil, props, "textWidth",
+                                            "150px;") + textStyle) + HtmlUtils.cssClass(
+                                                textClass))) + HtmlUtils.col(
+                                                    image), HtmlUtils.attr(
+                                                        HtmlUtils.ATTR_VALIGN,
+                                                            "top")), HtmlUtils.attr(
+                                                                HtmlUtils.ATTR_CELLPADDING,
+                                                                    "0"));
             } else {
                 content = "Unknown position:" + position;
             }
@@ -5812,6 +5931,7 @@ ATTR_SHOWLINK, "true", ATTR_INCLUDEICON, "false") + ATTRS_LAYOUT),
         props.put("layoutType", "table");
         props.put("layoutColumns", "2");
         props.put("showMenu", "true");
+
         return wikifyEntry(request, entry, wiki.toString());
     }
 
@@ -5981,8 +6101,8 @@ ATTR_SHOWLINK, "true", ATTR_INCLUDEICON, "false") + ATTRS_LAYOUT),
         }
 
 
-        if(!request.isAnonymous()) {
-            props.put("user",request.getUser().getId());
+        if ( !request.isAnonymous()) {
+            props.put("user", request.getUser().getId());
         }
 
         String colors = getProperty(wikiUtil, props, ATTR_COLORS);
@@ -6089,6 +6209,7 @@ ATTR_SHOWLINK, "true", ATTR_INCLUDEICON, "false") + ATTRS_LAYOUT),
                       + HtmlUtils.quote(mainDivId) + ","
                       + Json.map(topProps, false) + ",true);\n");
             wikiUtil.appendJavascript(js.toString());
+
             return;
         }
 
@@ -6108,11 +6229,12 @@ ATTR_SHOWLINK, "true", ATTR_INCLUDEICON, "false") + ATTRS_LAYOUT),
 
         String anotherDivId = getProperty(wikiUtil, props, "divid");
         String layoutHere = getProperty(wikiUtil, props, "layoutHere",
-                                        (String)null);
+                                        (String) null);
         //                                         !displayType.equals("group"));
         //        if ((anotherDivId != null) || layoutHere) {
-        if(layoutHere!=null)
+        if (layoutHere != null) {
             Utils.add(propList, "layoutHere", layoutHere);
+        }
         if (anotherDivId == null) {
             anotherDivId = HtmlUtils.getUniqueId("displaydiv");
         }
@@ -6212,8 +6334,8 @@ ATTR_SHOWLINK, "true", ATTR_INCLUDEICON, "false") + ATTRS_LAYOUT),
             js,
             "This gets the global display manager or creates it if not created");
 
-        boolean needToCreateGroup = request.getExtraProperty("added displaymanager")
-                                    == null;
+        boolean needToCreateGroup =
+            request.getExtraProperty("added displaymanager") == null;
         if (needToCreateGroup) {
             request.putExtraProperty("added displaymanager", "true");
             Utils.concatBuff(
@@ -6336,9 +6458,7 @@ ATTR_SHOWLINK, "true", ATTR_INCLUDEICON, "false") + ATTRS_LAYOUT),
             HtmlUtils.importJS(sb,
                                "https://www.gstatic.com/charts/loader.js");
             //                    "google.load(\"visualization\", \"1\", {packages:['corechart','table','bar']});\n"));
-            HtmlUtils.script(
-                sb,
-                "HtmlUtils.loadGoogleCharts();\n");
+            HtmlUtils.script(sb, "HtmlUtils.loadGoogleCharts();\n");
             //                "google.charts.load(\"43\", {packages:['corechart','calendar','table','bar','treemap', 'sankey','wordtree','timeline','gauge']});\n");
 
             HtmlUtils.importJS(

@@ -1188,7 +1188,6 @@ public class Entry implements Cloneable {
      *
      * @param lat  the latitude
      * @param lon  the longitude
-     * @param alt  the altitude
      */
     public void setLocation(double lat, double lon) {
         setLocation(lat, lon, Double.NaN);

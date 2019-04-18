@@ -891,7 +891,6 @@ public class RepositoryClient extends RepositoryBase {
      * @param node _more_
      * @param fromId _more_
      * @param toId _more_
-     * @param name _more_
      * @param type _more_
      *
      * @throws Exception _more_

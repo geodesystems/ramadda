@@ -804,8 +804,20 @@ public class MetadataType extends MetadataTypeBase {
         return null;
     }
 
-    public MetadataElement getDisplayImageElement(Request request, Entry entry,
-                                     Metadata metadata, String filter)
+    /**
+     * _more_
+     *
+     * @param request _more_
+     * @param entry _more_
+     * @param metadata _more_
+     * @param filter _more_
+     *
+     * @return _more_
+     *
+     * @throws Exception _more_
+     */
+    public MetadataElement getDisplayImageElement(Request request,
+            Entry entry, Metadata metadata, String filter)
             throws Exception {
         for (MetadataElement element : getChildren()) {
             if ( !element.getDataType().equals(element.DATATYPE_FILE)) {
@@ -846,11 +858,25 @@ public class MetadataType extends MetadataTypeBase {
             return new Result("", "Cannot process view");
         }
         MetadataElement element = getChildren().get(elementIndex);
-        return processView(request, entry, metadata,  element);
+
+        return processView(request, entry, metadata, element);
     }
 
-    public Result processView(Request request, Entry entry, Metadata metadata,MetadataElement element)
-        throws Exception {
+    /**
+     * _more_
+     *
+     * @param request _more_
+     * @param entry _more_
+     * @param metadata _more_
+     * @param element _more_
+     *
+     * @return _more_
+     *
+     * @throws Exception _more_
+     */
+    public Result processView(Request request, Entry entry,
+                              Metadata metadata, MetadataElement element)
+            throws Exception {
         if ( !element.getDataType().equals(element.DATATYPE_FILE)) {
             return new Result("", "Cannot process view");
         }

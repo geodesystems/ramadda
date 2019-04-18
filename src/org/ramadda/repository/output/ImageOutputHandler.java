@@ -185,7 +185,7 @@ public class ImageOutputHandler extends OutputHandler {
                        OutputType.TYPE_VIEW | OutputType.TYPE_FORSEARCH, "",
                        ICON_IMAGES);
 
-    /** _more_          */
+    /** _more_ */
     public static final OutputType OUTPUT_LABELER =
         new OutputType("Make Labeled Images", "image.labeler",
                        OutputType.TYPE_VIEW, "", ICON_IMAGES);
@@ -297,11 +297,10 @@ public class ImageOutputHandler extends OutputHandler {
             if (state.entry.getResource().isEditableImage()) {
                 File f = state.entry.getFile();
                 if ((f != null) && f.canWrite()) {
-                    Link link = new Link(
-                                    repository.getUrlBase()
-                                    + "/lib/tui/tui?entryid="
-                                    + state.entry.getId(), 
-                                        ICON_IMAGES, "Edit Image");
+                    Link link = new Link(repository.getUrlBase()
+                                         + "/lib/tui/tui?entryid="
+                                         + state.entry.getId(), ICON_IMAGES,
+                                             "Edit Image");
                     link.setLinkType(OutputType.TYPE_EDIT);
                     links.add(link);
                 }
@@ -955,6 +954,7 @@ public class ImageOutputHandler extends OutputHandler {
             throws Exception {
         Result result = makeResult(request, group, entries);
         addLinks(request, result, new State(group, subGroups, entries));
+
         return result;
     }
 
@@ -997,6 +997,7 @@ public class ImageOutputHandler extends OutputHandler {
         OutputType    output = request.getOutput();
         if (entries.size() == 0) {
             sb.append("<b>No image entries found</b><p>");
+
             return new Result("Query Results", sb);
         }
 
@@ -1627,6 +1628,7 @@ public class ImageOutputHandler extends OutputHandler {
     private Result makeLabels(Request request, Entry entry,
                               List<Entry> entries)
             throws Exception {
+
         List<Entry> tmp = new ArrayList<Entry>();
         for (Entry e : entries) {
             if (e.isImage()) {
@@ -1656,24 +1658,32 @@ public class ImageOutputHandler extends OutputHandler {
             if (image == null) {
                 continue;
             }
-            int iwidth  = image.getWidth(null);
+            int iwidth = image.getWidth(null);
             if (iwidth <= 0) {
                 continue;
             }
-            int fontSize = iwidth<800?18:iwidth<1200?24:iwidth<1800?36:iwidth<2400?48:56;
+            int    fontSize = (iwidth < 800)
+                              ? 18
+                              : (iwidth < 1200)
+                                ? 24
+                                : (iwidth < 1800)
+                                  ? 36
+                                  : (iwidth < 2400)
+                                    ? 48
+                                    : 56;
 
-            String      label = child.getName();
+            String label    = child.getName();
             Font labelFont = new Font(Font.SANS_SERIF, Font.PLAIN, fontSize);
             BufferedImage dummy = new BufferedImage(1, 1,
-                                                    BufferedImage.TYPE_INT_ARGB);
+                                      BufferedImage.TYPE_INT_ARGB);
             Graphics2D g1 = dummy.createGraphics();
             g1.setFont(labelFont);
-            FontMetrics  fm         = g1.getFontMetrics();
+            FontMetrics fm   = g1.getFontMetrics();
 
 
 
-            Rectangle2D rect  = fm.getStringBounds(label, g1);
-            int         pad   = 5;
+            Rectangle2D rect = fm.getStringBounds(label, g1);
+            int         pad  = 5;
             image = ImageUtils.matte(image, 0,
                                      (int) rect.getHeight() + pad * 2, 0, 0,
                                      Color.white);
@@ -1722,6 +1732,7 @@ public class ImageOutputHandler extends OutputHandler {
         fileWriter.close();
 
         return result;
+
     }
 
 

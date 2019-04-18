@@ -95,8 +95,8 @@ public class HtmlOutputHandler extends OutputHandler {
 
     /** _more_ */
     public static final OutputType OUTPUT_TREEVIEW =
-        new OutputType("Frames", "html.treeview", OutputType.TYPE_VIEW,
-                       "", "fa-newspaper");
+        new OutputType("Frames", "html.treeview", OutputType.TYPE_VIEW, "",
+                       "fa-newspaper");
 
     /** _more_ */
     public static final OutputType OUTPUT_INFO =
@@ -981,6 +981,7 @@ public class HtmlOutputHandler extends OutputHandler {
      * _more_
      *
      * @param request _more_
+     * @param group _more_
      * @param subGroups _more_
      * @param entries _more_
      *
@@ -988,8 +989,8 @@ public class HtmlOutputHandler extends OutputHandler {
      *
      * @throws Exception _more_
      */
-    public Result getSelectXml(Request request, Entry group, List<Entry> subGroups,
-                               List<Entry> entries)
+    public Result getSelectXml(Request request, Entry group,
+                               List<Entry> subGroups, List<Entry> entries)
             throws Exception {
 
         String        localeId = request.getString(ARG_LOCALEID, null);
@@ -1099,8 +1100,8 @@ public class HtmlOutputHandler extends OutputHandler {
 
 
         Entry parent = group.getParentEntry();
-        if(parent!=null) {
-            sb.append(getSelectLink(request, parent, target,"../"));
+        if (parent != null) {
+            sb.append(getSelectLink(request, parent, target, "../"));
         }
         for (Entry subGroup : subGroups) {
             if (Misc.equals(localeId, subGroup.getId())) {
@@ -1544,11 +1545,13 @@ public class HtmlOutputHandler extends OutputHandler {
      * @param sb _more_
      * @param width _more_
      * @param height _more_
+     * @param noTemplate _more_
      *
      * @throws Exception _more_
      */
     public void makeTreeView(Request request, List<Entry> children,
-                             Appendable sb, int width, int height, boolean noTemplate)
+                             Appendable sb, int width, int height,
+                             boolean noTemplate)
             throws Exception {
 
         //TODO:  make the DOM ids be unique
@@ -1583,8 +1586,12 @@ public class HtmlOutputHandler extends OutputHandler {
             url = Utils.concatString("javascript:",
                                      HtmlUtils.call("treeViewClick",
                                          HtmlUtils.jsMakeArgs(false,
-                                                              HtmlUtils.squote(child.getId()), HtmlUtils.squote(url), 
-                                                              HtmlUtils.squote(label),noTemplate?"'empty'":"null")));
+                                             HtmlUtils.squote(child.getId()),
+                                             HtmlUtils.squote(url),
+                                             HtmlUtils.squote(label),
+                                             noTemplate
+                                             ? "'empty'"
+                                             : "null")));
             HtmlUtils.open(listSB, HtmlUtils.TAG_DIV,
                            HtmlUtils.attrs(new String[] { "class",
                     "ramadda-treeview-entry" }));
@@ -1631,7 +1638,9 @@ public class HtmlOutputHandler extends OutputHandler {
                 }
             }
             initUrl = request.entryUrl(getRepository().URL_ENTRY_SHOW,
-                                       initEntry, (noTemplate?"template":"dummy"), "empty");
+                                       initEntry, (noTemplate
+                    ? "template"
+                    : "dummy"), "empty");
         }
         sb.append("<div class=\"col-md-" + wtr
                   + " ramadda-treeview-right \"  \"  >");

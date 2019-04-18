@@ -987,17 +987,42 @@ public class MetadataManager extends RepositoryManager {
         return metadataTypes;
     }
 
+    /**
+     * _more_
+     *
+     * @param request _more_
+     * @param entry _more_
+     * @param metadata _more_
+     *
+     * @return _more_
+     *
+     * @throws Exception _more_
+     */
     public String[] getFileUrl(Request request, Entry entry,
                                Metadata metadata)
             throws Exception {
         MetadataType type = getType(metadata);
+
         return type.getFileUrl(request, entry, metadata);
     }
 
-    public File getFile(Request request, Entry entry,
-                        Metadata metadata, int attr)
+    /**
+     * _more_
+     *
+     * @param request _more_
+     * @param entry _more_
+     * @param metadata _more_
+     * @param attr _more_
+     *
+     * @return _more_
+     *
+     * @throws Exception _more_
+     */
+    public File getFile(Request request, Entry entry, Metadata metadata,
+                        int attr)
             throws Exception {
         MetadataType type = getType(metadata);
+
         return type.getFile(entry, metadata, attr);
     }
 
@@ -1437,19 +1462,22 @@ public class MetadataManager extends RepositoryManager {
                 if (metadataType == null) {
                     continue;
                 }
-                MetadataElement element = metadataType.getDisplayImageElement(request, entry,
-                                                             metadata, attachment);
+                MetadataElement element =
+                    metadataType.getDisplayImageElement(request, entry,
+                        metadata, attachment);
 
-                if(element!=null) {
-                    return metadataType.processView(request, entry, metadata,  element);
+                if (element != null) {
+                    return metadataType.processView(request, entry, metadata,
+                            element);
                 }
             }
+
             return new Result("", "Could not find metadata");
         }
         long            t2      = System.currentTimeMillis();
         MetadataHandler handler = findMetadataHandler(metadata.getType());
         Result          result = handler.processView(request, entry,
-                                                     metadata);
+                                     metadata);
 
         long            t3      = System.currentTimeMillis();
         result = getEntryManager().addEntryHeader(request,
@@ -1557,7 +1585,8 @@ public class MetadataManager extends RepositoryManager {
                 StringBuilder metadataEntry = new StringBuilder();
                 HtmlUtils.comment(metadataEntry, "Metadata part begin");
                 metadataEntry.append(HtmlUtils.formTable());
-                metadataEntry.append(HtmlUtils.formEntry("",  cbx + HtmlUtils.space(2) + msg("Select")));
+                metadataEntry.append(HtmlUtils.formEntry("",
+                        cbx + HtmlUtils.space(2) + msg("Select")));
                 metadataEntry.append("\n");
                 metadataEntry.append(html[1]);
                 HtmlUtils.formTableClose(metadataEntry);

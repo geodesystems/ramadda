@@ -329,7 +329,7 @@ public interface WikiConstants {
     /** _more_ */
     public static final String WIKI_TAG_WIKITEXT = "wikitext";
 
-    /** _more_          */
+    /** _more_ */
     public static final String WIKI_TAG_JAVASCRIPT = "javascript";
 
 
@@ -394,6 +394,7 @@ public interface WikiConstants {
     /** _more_ */
     public static final String WIKI_TAG_TREEVIEW = "treeview";
 
+    /** _more_          */
     public static final String WIKI_TAG_FRAMES = "frames";
 
     /** the table property */
@@ -456,7 +457,7 @@ public interface WikiConstants {
     /** wiki import */
     public static final String WIKI_TAG_GRID = "grid";
 
-    /** _more_          */
+    /** _more_ */
     public static final String WIKI_TAG_CARD = "card";
 
     /** wiki import */

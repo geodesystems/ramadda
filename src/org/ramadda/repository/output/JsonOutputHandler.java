@@ -171,6 +171,17 @@ public class JsonOutputHandler extends OutputHandler {
     }
 
 
+    /**
+     * _more_
+     *
+     * @param request _more_
+     * @param outputType _more_
+     * @param entry _more_
+     *
+     * @return _more_
+     *
+     * @throws Exception _more_
+     */
     public Result outputEntry(Request request, OutputType outputType,
                               Entry entry)
             throws Exception {
@@ -181,6 +192,7 @@ public class JsonOutputHandler extends OutputHandler {
         StringBuilder sb = new StringBuilder();
         makeJson(request, allEntries, sb);
         request.setCORSHeaderOnResponse();
+
         return new Result("", sb, Json.MIMETYPE);
     }
 

@@ -676,8 +676,8 @@ public class OutputHandler extends RepositoryManager {
 
         return new Link(url, (outputType.getIcon() == null)
                              ? null
-                             : outputType.getIcon(), outputType
-                                 .getLabel(), outputType);
+                             : outputType.getIcon(), outputType.getLabel(),
+                             outputType);
 
     }
 
@@ -695,12 +695,10 @@ public class OutputHandler extends RepositoryManager {
     public void addOutputLink(Request request, Entry entry, List<Link> links,
                               OutputType type)
             throws Exception {
-        links.add(
-            new Link(
-                request.entryUrl(
-                    getRepository().URL_ENTRY_SHOW, entry, ARG_OUTPUT,
-                    type.toString()), type.getIcon(),
-                                      type.getLabel(), type));
+        links.add(new Link(request.entryUrl(getRepository().URL_ENTRY_SHOW,
+                                            entry, ARG_OUTPUT,
+                                            type.toString()), type.getIcon(),
+                                                type.getLabel(), type));
 
     }
 
@@ -732,6 +730,7 @@ public class OutputHandler extends RepositoryManager {
             throws Exception {
         List<Entry> entries = new ArrayList<Entry>();
         entries.add(entry);
+
         return outputGroup(request, outputType,
                            getEntryManager().getDummyGroup(),
                            new ArrayList<Entry>(), entries);
@@ -1002,21 +1001,26 @@ public class OutputHandler extends RepositoryManager {
      *
      * @param request _more_
      * @param entry _more_
-     * @param target _more_
+     * @param args _more_
      *
      * @return _more_
      *
      * @throws Exception _more_
      */
-    public String getSelectLink(Request request, Entry entry, String...args)
+    public String getSelectLink(Request request, Entry entry, String... args)
             throws Exception {
-        String target = args[0];
-        String namePrefix = args.length>1?args[1]:null;
+        String        target     = args[0];
+        String        namePrefix = (args.length > 1)
+                                   ? args[1]
+                                   : null;
 
-        String        linkText = (namePrefix!=null?namePrefix:"")+getEntryDisplayName(entry);
-        StringBuilder sb       = new StringBuilder();
-        String        entryId  = entry.getId();
-        String        icon     = getPageHandler().getIconUrl(request, entry);
+        String        linkText   = ((namePrefix != null)
+                                    ? namePrefix
+                                    : "") + getEntryDisplayName(entry);
+        StringBuilder sb         = new StringBuilder();
+        String        entryId    = entry.getId();
+        String        icon       = getPageHandler().getIconUrl(request,
+                                       entry);
         String        event;
         String        uid = "link_" + HtmlUtils.blockCnt++;
         String folderClickUrl =
@@ -1060,8 +1064,8 @@ public class OutputHandler extends RepositoryManager {
         String type      = request.getString(ARG_SELECTTYPE, "");
         String elementId = entry.getId();
         String value     = entry.isGroup()
-            ? ((Entry) entry).getName()
-            : getEntryDisplayName(entry);
+                           ? ((Entry) entry).getName()
+                           : getEntryDisplayName(entry);
         value = value.replace("'", "\\'");
 
 
@@ -1368,9 +1372,10 @@ public class OutputHandler extends RepositoryManager {
 
         selectSB.append(HtmlUtils.leftRightBottom(sortLinks,
                 actionsSB.toString(), ""));
-        String arrowImg = getRepository().getIconImage(hideIt?"/icons/application_side_expand.png":"/icons/application_side_contract.png", 
-                                                       "title",msg("Show/Hide Form"),
-                                                       "id",  base + "img");
+        String arrowImg = getRepository().getIconImage(hideIt
+                ? "/icons/application_side_expand.png"
+                : "/icons/application_side_contract.png", "title",
+                    msg("Show/Hide Form"), "id", base + "img");
         String linkLabel = arrowImg;
         String linkExtra = HtmlUtils.cssClass("ramadda-entries-link");
         String link = HtmlUtils.jsLink(HtmlUtils.onMouseClick(base
@@ -1828,10 +1833,11 @@ public class OutputHandler extends RepositoryManager {
                            "right", "class", CSS_CLASS_ENTRY_ROW_LABEL);
             sb.append(HtmlUtils.space(1));
             sb.append("  ");
-            HtmlUtils.div(sb, 
-                          getRepository().getIconImage(
-                                                       ICON_BLANK,"width", "10","id",  "entrymenuarrow_" + rowId), 
-                          HtmlUtils.clazz("entrymenuarrow"));
+            HtmlUtils.div(sb,
+                          getRepository().getIconImage(ICON_BLANK, "width",
+                              "10", "id",
+                              "entrymenuarrow_"
+                              + rowId), HtmlUtils.clazz("entrymenuarrow"));
             HtmlUtils.close(sb, HtmlUtils.TAG_TD);
         }
 

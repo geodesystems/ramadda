@@ -520,7 +520,8 @@ public class TypeHandler extends RepositoryManager {
             metadataTypes = StringUtil.split(Utils.getAttributeOrTag(node,
                     ATTR_METADATA,
                     EnumeratedMetadataHandler.TYPE_TAG + ","
-                    + ContentMetadataHandler.TYPE_THUMBNAIL), ",", true, true);
+                    + ContentMetadataHandler.TYPE_THUMBNAIL), ",", true,
+                        true);
 
             childTypes = StringUtil.split(Utils.getAttributeOrTag(node,
                     ATTR_CHILDTYPES, ""));
@@ -570,10 +571,9 @@ public class TypeHandler extends RepositoryManager {
      */
     private List<String> getMetadataTypes() {
         if (metadataTypes == null) {
-            metadataTypes =
-                StringUtil.split(EnumeratedMetadataHandler.TYPE_TAG + ","
-                                 + ContentMetadataHandler.TYPE_THUMBNAIL, ",",
-                                     true, true);
+            metadataTypes = StringUtil.split(
+                EnumeratedMetadataHandler.TYPE_TAG + ","
+                + ContentMetadataHandler.TYPE_THUMBNAIL, ",", true, true);
         }
 
         return metadataTypes;
@@ -2433,27 +2433,21 @@ public class TypeHandler extends RepositoryManager {
                     request.makeUrl(
                         getRepository().URL_ENTRY_FORM, ARG_GROUP,
                         entry.getId(), ARG_TYPE,
-                        TYPE_GROUP), 
-                            ICON_FOLDER_ADD, "New Folder",
-                                OutputType.TYPE_FILE));
+                        TYPE_GROUP), ICON_FOLDER_ADD, "New Folder",
+                                     OutputType.TYPE_FILE));
             links.add(
                 new Link(
                     request.makeUrl(
                         getRepository().URL_ENTRY_FORM, ARG_GROUP,
-                        entry.getId(), ARG_TYPE,
-                        TYPE_FILE), 
-                            ICON_ENTRY_ADD, "New File",
-                                             OutputType.TYPE_FILE));
+                        entry.getId(), ARG_TYPE, TYPE_FILE), ICON_ENTRY_ADD,
+                            "New File", OutputType.TYPE_FILE));
 
 
 
 
             links.add(new Link(request.makeUrl(getRepository().URL_ENTRY_NEW,
-                    ARG_GROUP,
-                    entry.getId()), ICON_NEW,
-                                    LABEL_NEW_ENTRY,
-                                    OutputType.TYPE_FILE
-                                    | OutputType.TYPE_TOOLBAR));
+                    ARG_GROUP, entry.getId()), ICON_NEW, LABEL_NEW_ENTRY,
+                        OutputType.TYPE_FILE | OutputType.TYPE_TOOLBAR));
             links.add(makeHRLink(OutputType.TYPE_FILE));
             List<String> pastTypes =
                 (List<String>) getSessionManager().getSessionProperty(
@@ -2490,9 +2484,9 @@ public class TypeHandler extends RepositoryManager {
                                 getEntryName(
                                     entry))) + ".zip", new String[] {
                                         ARG_ENTRYID,
-                                        entry.getId() }), ICON_EXPORT, "Export "
-                                            + LABEL_ENTRIES, OutputType
-                                                .TYPE_FILE));
+                                        entry.getId() }), ICON_EXPORT,
+                                        "Export " + LABEL_ENTRIES,
+                                        OutputType.TYPE_FILE));
 
 
         }
@@ -2503,9 +2497,8 @@ public class TypeHandler extends RepositoryManager {
                 new Link(
                     request.makeUrl(
                         getRepository().URL_ENTRY_IMPORT, ARG_GROUP,
-                        entry.getId()), 
-                            ICON_IMPORT, "Import Entries",
-                                          OutputType.TYPE_FILE));
+                        entry.getId()), ICON_IMPORT, "Import Entries",
+                                        OutputType.TYPE_FILE));
             links.add(makeHRLink(OutputType.TYPE_FILE));
         }
 
@@ -2514,9 +2507,9 @@ public class TypeHandler extends RepositoryManager {
                 HtmlUtils.url(
                     getRepository().URL_ENTRY_LINKS.toString(),
                     new String[] { ARG_ENTRYID,
-                                   entry.getId() }), 
-                "/icons/application-detail.png", "All Actions", OutputType
-                                           .TYPE_FILE));
+                                   entry
+                                   .getId() }), "/icons/application-detail.png",
+                                       "All Actions", OutputType.TYPE_FILE));
 
         links.add(makeHRLink(OutputType.TYPE_FILE));
 
@@ -2528,10 +2521,9 @@ public class TypeHandler extends RepositoryManager {
                 new Link(
                     request.makeUrl(
                         getRepository().URL_ENTRY_UPLOAD, ARG_GROUP,
-                        entry.getId()), 
-                            ICON_UPLOAD, "Upload a File",
-                                          OutputType.TYPE_FILE
-                                          | OutputType.TYPE_TOOLBAR));
+                        entry.getId()), ICON_UPLOAD, "Upload a File",
+                                        OutputType.TYPE_FILE
+                                        | OutputType.TYPE_TOOLBAR));
         }
 
 
@@ -2539,17 +2531,18 @@ public class TypeHandler extends RepositoryManager {
             links.add(
                 new Link(
                     request.entryUrl(getRepository().URL_ENTRY_FORM, entry),
-                    ICON_EDIT,
-                    "Edit " + LABEL_ENTRY,
+                    ICON_EDIT, "Edit " + LABEL_ENTRY,
                     OutputType.TYPE_EDIT /* | OutputType.TYPE_TOOLBAR*/));
 
             //NOTE: Don't add the direct link because the auth token is added
             if (false && getEntryManager().isAnonymousUpload(entry)) {
-                links.add(new Link(request.entryUrl(getRepository().URL_ENTRY_CHANGE,
-                        entry, ARG_JUSTPUBLISH,
-                        "true"), ICON_PUBLISH,
-                                 "Make " + LABEL_ENTRY + " Public",
-                                 OutputType.TYPE_EDIT
+                links.add(
+                    new Link(
+                        request.entryUrl(
+                            getRepository().URL_ENTRY_CHANGE, entry,
+                            ARG_JUSTPUBLISH, "true"), ICON_PUBLISH,
+                                "Make " + LABEL_ENTRY + " Public",
+                                OutputType.TYPE_EDIT
                 /*| OutputType.TYPE_TOOLBAR*/
                 ));
             }
@@ -2558,8 +2551,7 @@ public class TypeHandler extends RepositoryManager {
                 new Link(
                     request.entryUrl(
                         getMetadataManager().URL_METADATA_FORM,
-                        entry), 
-                            ICON_METADATA_EDIT, "Edit Properties",
+                        entry), ICON_METADATA_EDIT, "Edit Properties",
                                 OutputType.TYPE_EDIT));
 
             if (getMetadataTypes().size() > 0) {
@@ -2570,8 +2562,7 @@ public class TypeHandler extends RepositoryManager {
                 new Link(
                     request.entryUrl(
                         getMetadataManager().URL_METADATA_ADDFORM,
-                        entry), 
-                            ICON_METADATA_ADD, "Add Property...",
+                        entry), ICON_METADATA_ADD, "Add Property...",
                                 OutputType.TYPE_EDIT));
 
             if (getMetadataTypes().size() > 0) {
@@ -2582,12 +2573,10 @@ public class TypeHandler extends RepositoryManager {
                         new Link(
                             request.entryUrl(
                                 getMetadataManager().URL_METADATA_ADDFORM,
-                                    entry, ARG_METADATA_TYPE,
-                                        metadataType), 
-                                                ICON_METADATA_ADD, msg(
-                                                    "Add") + " "
-                                                        + type.getName(), OutputType
-                                                            .TYPE_EDIT));
+                                entry, ARG_METADATA_TYPE,
+                                metadataType), ICON_METADATA_ADD,
+                                    msg("Add") + " " + type.getName(),
+                                    OutputType.TYPE_EDIT));
                 }
                 links.add(makeHRLink(OutputType.TYPE_EDIT));
             }
@@ -2599,8 +2588,8 @@ public class TypeHandler extends RepositoryManager {
                     new Link(
                         request.entryUrl(
                             getRepository().URL_ACCESS_FORM,
-                            entry), ICON_ACCESS,
-                                    "Access", OutputType.TYPE_EDIT));
+                            entry), ICON_ACCESS, "Access",
+                                    OutputType.TYPE_EDIT));
             }
 
 
@@ -2608,8 +2597,7 @@ public class TypeHandler extends RepositoryManager {
                 new Link(
                     request.entryUrl(
                         getRepository().URL_ENTRY_EXTEDIT,
-                        entry), 
-                            "/icons/sitemap.png", "Extended Edit",
+                        entry), "/icons/sitemap.png", "Extended Edit",
                                 OutputType.TYPE_EDIT));
 
         }
@@ -2620,8 +2608,8 @@ public class TypeHandler extends RepositoryManager {
                 new Link(
                     request.entryUrl(
                         getRepository().URL_ENTRY_DELETE,
-                        entry), ICON_DELETE,
-                                "Delete " + LABEL_ENTRY, OutputType.TYPE_EDIT
+                        entry), ICON_DELETE, "Delete " + LABEL_ENTRY,
+                                OutputType.TYPE_EDIT
             /*| OutputType.TYPE_TOOLBAR*/
             ));
 
@@ -2638,15 +2626,14 @@ public class TypeHandler extends RepositoryManager {
                 new Link(
                     request.entryUrl(
                         getRepository().URL_COMMENTS_SHOW,
-                        entry), ICON_COMMENTS,
-                                "View Comments", OutputType.TYPE_VIEW));
+                        entry), ICON_COMMENTS, "View Comments",
+                                OutputType.TYPE_VIEW));
         } else {
             links.add(
                 new Link(
                     request.entryUrl(
                         getRepository().URL_COMMENTS_SHOW,
-                        entry), ICON_COMMENTS,
-                                "Add/View Comments",
+                        entry), ICON_COMMENTS, "Add/View Comments",
                                 OutputType.TYPE_TOOLBAR));
         }
 
@@ -2656,8 +2643,8 @@ public class TypeHandler extends RepositoryManager {
                 new Link(
                     request.entryUrlWithArg(
                         getRepository().URL_ENTRY_COPY, entry,
-                        ARG_FROM), ICON_MOVE,
-                                   "Move/Copy/Link", OutputType.TYPE_EDIT));
+                        ARG_FROM), ICON_MOVE, "Move/Copy/Link",
+                                   OutputType.TYPE_EDIT));
         }
     }
 
@@ -2745,7 +2732,7 @@ public class TypeHandler extends RepositoryManager {
             String      icon        = typeHandler.getIconProperty(null);
             if (icon == null) {
                 icon = ICON_ENTRY_ADD;
-            } 
+            }
             links.add(
                 new Link(
                     request.makeUrl(
@@ -2909,8 +2896,7 @@ public class TypeHandler extends RepositoryManager {
         fileTail = HtmlUtils.urlEncodeExceptSpace(fileTail);
 
         return new Link(getEntryManager().getEntryResourceUrl(request,
-                entry), ICON_FETCH,
-                        msg(label) + size,
+                entry), ICON_FETCH, msg(label) + size,
                         OutputType.TYPE_FILE | OutputType.TYPE_IMPORTANT);
     }
 
@@ -4581,17 +4567,28 @@ public class TypeHandler extends RepositoryManager {
 
 
 
-    public String getFileExtras(Request request, Entry entry) throws Exception {
+    /**
+     * _more_
+     *
+     * @param request _more_
+     * @param entry _more_
+     *
+     * @return _more_
+     *
+     * @throws Exception _more_
+     */
+    public String getFileExtras(Request request, Entry entry)
+            throws Exception {
         String addMetadata =
-            HtmlUtils.checkbox(ARG_METADATA_ADD, "true",
-                               Misc.equals(getFormDefault(entry,
-                                                          ARG_METADATA_ADD,
-                                                          "false"), "false")) + HtmlUtils.space(1)
-            + msg("Add properties")
-            + HtmlUtils.space(1)
-            + HtmlUtils.checkbox(ARG_METADATA_ADDSHORT)
-            + HtmlUtils.space(1)
-            + msg("Just spatial/temporal properties");
+            HtmlUtils.checkbox(
+                ARG_METADATA_ADD, "true",
+                Misc.equals(
+                    getFormDefault(entry, ARG_METADATA_ADD, "false"),
+                    "false")) + HtmlUtils.space(1) + msg("Add properties")
+                              + HtmlUtils.space(1)
+                              + HtmlUtils.checkbox(ARG_METADATA_ADDSHORT)
+                              + HtmlUtils.space(1)
+                              + msg("Just spatial/temporal properties");
 
         List datePatterns = new ArrayList();
         datePatterns.add(new TwoFacedObject("", BLANK));
@@ -4599,23 +4596,21 @@ public class TypeHandler extends RepositoryManager {
             datePatterns.add(DateUtil.DATE_FORMATS[i]);
         }
 
-        String unzipWidget =
-            HtmlUtils.checkbox(ARG_FILE_UNZIP, "true", true)
-            + HtmlUtils.space(1) + msg("Unzip archive") + " "
-            + HtmlUtils.checkbox(
-                                 ARG_FILE_PRESERVEDIRECTORY, "true",
-                                 false) + HtmlUtils.space(1)
-            + msg("Make folders from archive");
-        String makeNameWidget =
-            HtmlUtils.checkbox(ARG_MAKENAME, "true", true)
-            + HtmlUtils.space(1) + msg("Make name from filename");
+        String unzipWidget = HtmlUtils.checkbox(ARG_FILE_UNZIP, "true", true)
+                             + HtmlUtils.space(1) + msg("Unzip archive")
+                             + " "
+                             + HtmlUtils.checkbox(ARG_FILE_PRESERVEDIRECTORY,
+                                 "true", false) + HtmlUtils.space(1)
+                                     + msg("Make folders from archive");
+        String makeNameWidget = HtmlUtils.checkbox(ARG_MAKENAME, "true",
+                                    true) + HtmlUtils.space(1)
+                                          + msg("Make name from filename");
 
-        String deleteFileWidget = ((entry != null)
-                                   && entry.isFile())
-            ? HtmlUtils.checkbox(ARG_DELETEFILE, "true",
-                                 false) + HtmlUtils.space(1)
-            + msg("Delete file")
-            : "";
+        String deleteFileWidget = ((entry != null) && entry.isFile())
+                                  ? HtmlUtils.checkbox(ARG_DELETEFILE,
+                                      "true", false) + HtmlUtils.space(1)
+                                          + msg("Delete file")
+                                  : "";
 
 
         /*
@@ -4630,25 +4625,23 @@ public class TypeHandler extends RepositoryManager {
         String datePatternWidget =
             msgLabel("Date pattern") + HtmlUtils.space(1)
             + HtmlUtils.input(ARG_DATE_PATTERN,
-                              request.getString(ARG_DATE_PATTERN,
-                                                "")) + " (e.g., yyyy_MM_dd, yyyyMMdd_hhMM, etc. )";
+                request.getString(ARG_DATE_PATTERN,
+                    "")) + " (e.g., yyyy_MM_dd, yyyyMMdd_hhMM, etc. )";
 
 
 
         String extraMore = "";
 
         if ((entry == null) && getType().equals(TYPE_FILE)) {
-            extraMore = HtmlUtils.checkbox(ARG_TYPE_GUESS,
-                                           "true", true) + " "
-                + msg("Figure out the type")
-                + HtmlUtils.br();
+            extraMore = HtmlUtils.checkbox(ARG_TYPE_GUESS, "true", true)
+                        + " " + msg("Figure out the type") + HtmlUtils.br();
         }
 
 
         String extras = extraMore + addMetadata + HtmlUtils.br()
-            + unzipWidget + HtmlUtils.br()
-            + makeNameWidget + HtmlUtils.br()
-            + deleteFileWidget;
+                        + unzipWidget + HtmlUtils.br() + makeNameWidget
+                        + HtmlUtils.br() + deleteFileWidget;
+
         return extras;
 
     }
@@ -4711,7 +4704,7 @@ public class TypeHandler extends RepositoryManager {
         text = text.replaceAll("<", "&lt;").replaceAll(">", "&gt;");
         String textWidget = HtmlUtils.div(text,
                                           HtmlUtils.id(id + "_editor")
-                                          + HtmlUtils.style("height:500px;") 
+                                          + HtmlUtils.style("height:500px;")
                                           + HtmlUtils.attr("class",
                                               "ace_editor"));
         sb.append(HtmlUtils.hidden(id, "", HtmlUtils.id(id)));
@@ -6061,14 +6054,14 @@ public class TypeHandler extends RepositoryManager {
                                 boolean doDesc, boolean doFile)
             throws Exception {
 
-        DatabaseManager dbm     = getDatabaseManager();
-        textToSearch = textToSearch.replaceAll("%20"," ");
-        List<Clause>    textOrs = new ArrayList<Clause>();
+        DatabaseManager dbm = getDatabaseManager();
+        textToSearch = textToSearch.replaceAll("%20", " ");
+        List<Clause> textOrs = new ArrayList<Clause>();
         for (String textTok :
                 (List<String>) StringUtil.split(textToSearch, ",", true,
                     true)) {
-            boolean      doLike   = false;
-            boolean      doRegexp = false;
+            boolean doLike   = false;
+            boolean doRegexp = false;
             if (request.get(ARG_ISREGEXP, false)) {
                 doRegexp = true;
                 addCriteria(request, searchCriteria, "Text regexp:",
@@ -6077,7 +6070,7 @@ public class TypeHandler extends RepositoryManager {
                 addCriteria(request, searchCriteria, "Text like", textTok);
                 List tmp = StringUtil.split(textTok, ",", true, true);
                 //                textTok = "%" + StringUtil.join("%,%", tmp) + "%";
-                doLike  = true;
+                doLike = true;
             } else {
                 addCriteria(request, searchCriteria, "Text =", textToSearch);
             }
@@ -6085,10 +6078,10 @@ public class TypeHandler extends RepositoryManager {
             List<Clause> ands      = new ArrayList<Clause>();
             boolean searchMetadata = request.get(ARG_SEARCHMETADATA, false);
             searchMetadata = false;
-            String[] attrCols = { Tables.METADATA.COL_ATTR1  /*,
-                                    Tables.METADATA.COL_ATTR2,
-                                    Tables.METADATA.COL_ATTR3,
-                                    Tables.METADATA.COL_ATTR4*/
+            String[]     attrCols = { Tables.METADATA.COL_ATTR1  /*,
+                                        Tables.METADATA.COL_ATTR2,
+                                        Tables.METADATA.COL_ATTR3,
+                                        Tables.METADATA.COL_ATTR4*/
             };
 
 
@@ -6097,14 +6090,14 @@ public class TypeHandler extends RepositoryManager {
 
             for (String nameTok : nameToks) {
                 boolean nameDoLike = doLike;
-                boolean doNot = nameTok.startsWith("!");
+                boolean doNot      = nameTok.startsWith("!");
                 if (doNot) {
                     nameTok = nameTok.substring(1);
                 }
 
                 boolean doEquals = nameTok.startsWith("=");
                 if (doEquals) {
-                    nameTok = nameTok.substring(1);
+                    nameTok    = nameTok.substring(1);
                     nameDoLike = false;
                 }
 
@@ -6197,7 +6190,7 @@ public class TypeHandler extends RepositoryManager {
                     }
 
                 }
-                if(doNot) {
+                if (doNot) {
                     ands.add(Clause.and(ors));
                 } else {
                     ands.add(Clause.or(ors));

@@ -1210,7 +1210,8 @@ public class MapManager extends RepositoryManager implements WikiConstants {
                           int height, Hashtable mapProps, Hashtable props)
             throws Exception {
 
-        boolean doCategories = Utils.getProperty(props, "doCategories", false);
+        boolean doCategories = Utils.getProperty(props, "doCategories",
+                                   false);
         boolean details = request.get("mapdetails",
                                       Utils.getProperty(props, ATTR_DETAILS,
                                           Utils.getProperty(props,
@@ -1219,7 +1220,8 @@ public class MapManager extends RepositoryManager implements WikiConstants {
                                   false);
         boolean cbx = Utils.getProperty(props, "showCheckbox", false);
         boolean search = Utils.getProperty(props, "showSearch", false);
-        boolean searchMarkers = Utils.getProperty(props, "showMarkersSearch", false);
+        boolean searchMarkers = Utils.getProperty(props, "showMarkersSearch",
+                                    false);
         boolean showLocationSearch = Utils.getProperty(props,
                                          "showLocationSearch", false);
 
@@ -1268,10 +1270,12 @@ public class MapManager extends RepositoryManager implements WikiConstants {
         Hashtable theProps = Utils.makeMap(PROP_DETAILED, "" + details,
                                            PROP_SCREENBIGRECTS, "true");
 
-        if(mapProps!=null) 
+        if (mapProps != null) {
             theProps.putAll(mapProps);
-        if(props!=null) 
+        }
+        if (props != null) {
             theProps.putAll(props);
+        }
         addToMap(request, map, entriesToUse, theProps);
 
         Rectangle2D.Double bounds = null;
@@ -1349,8 +1353,8 @@ public class MapManager extends RepositoryManager implements WikiConstants {
             catSB.append(
                 HtmlUtils.open(
                     HtmlUtils.TAG_DIV,
-                    HtmlUtils.id("block_" + suffix) +
-                    "data-mapid=\"" + entry.getId() + "\" "
+                    HtmlUtils.id("block_" + suffix) + "data-mapid=\""
+                    + entry.getId() + "\" "
                     + HtmlUtils.cssClass(CSS_CLASS_EARTH_NAV)));
             String getIconUrl = getPageHandler().getIconUrl(request, entry);
 
@@ -1436,9 +1440,9 @@ public class MapManager extends RepositoryManager implements WikiConstants {
                          List<Entry> entriesToUse, Hashtable props)
             throws Exception {
 
-        boolean detailed = Misc.getProperty(props, PROP_DETAILED, false);
-        boolean showBounds = Utils.getProperty(props,  "showBounds", true);
-        boolean showMarkers = Utils.getProperty(props,  "showMarkers", true);
+        boolean detailed    = Misc.getProperty(props, PROP_DETAILED, false);
+        boolean showBounds  = Utils.getProperty(props, "showBounds", true);
+        boolean showMarkers = Utils.getProperty(props, "showMarkers", true);
         boolean screenBigRects = Misc.getProperty(props, PROP_SCREENBIGRECTS,
                                      false);
 
@@ -1487,7 +1491,9 @@ public class MapManager extends RepositoryManager implements WikiConstants {
             makeRectangles = false;
         }
 
-        if(!showBounds) makeRectangles = false;
+        if ( !showBounds) {
+            makeRectangles = false;
+        }
 
 
         for (Entry entry : entriesToUse) {

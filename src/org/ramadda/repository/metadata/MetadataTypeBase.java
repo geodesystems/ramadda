@@ -638,7 +638,8 @@ public class MetadataTypeBase extends RepositoryManager {
 
                 img = handler.getPageHandler().makePopupLink(img, bigimg,
                         true, false);
-                img = HtmlUtils.div(img,HtmlUtils.cssClass("ramadda-thumbnail"));
+                img = HtmlUtils.div(img,
+                                    HtmlUtils.cssClass("ramadda-thumbnail"));
             } else {
                 img = Utils.concatString(img, "\n<br>\n<b>", tail, "</b>\n");
             }

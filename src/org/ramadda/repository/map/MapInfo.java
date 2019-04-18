@@ -69,7 +69,7 @@ public class MapInfo {
     /** the map variable name */
     private String mapVarName;
 
-    /** _more_          */
+    /** _more_ */
     private String mapDiv;
 
     /** _more_ */
@@ -1184,15 +1184,16 @@ public class MapInfo {
         String   icon = repository.getPageHandler().getIconUrl(request,
                             entry);
         double[] location = entry.getCenter();
-        String id = entry.getId();
-        String info = repository.getMapManager().makeInfoBubble(request, entry, true);
-        getJS().append(mapVarName + ".addEntryMarker(" + HtmlUtils.squote(id)
-                       + "," + llp(location[0], location[1]) + "," +
-                       HtmlUtils.squote(icon) + "," + 
-                       HtmlUtils.squote(entry.getName().replaceAll(
-                                                  "'", "\\\\'")) + ","
-                                                      + HtmlUtils.squote(info) + ","
-                       + HtmlUtils.squote(entry.getTypeHandler().getType()) + ");\n");
+        String   id       = entry.getId();
+        String info = repository.getMapManager().makeInfoBubble(request,
+                          entry, true);
+        getJS().append(
+            mapVarName + ".addEntryMarker(" + HtmlUtils.squote(id) + ","
+            + llp(location[0], location[1]) + "," + HtmlUtils.squote(icon)
+            + ","
+            + HtmlUtils.squote(entry.getName().replaceAll("'", "\\\\'"))
+            + "," + HtmlUtils.squote(info) + ","
+            + HtmlUtils.squote(entry.getTypeHandler().getType()) + ");\n");
     }
 
 
@@ -1294,7 +1295,7 @@ public class MapInfo {
      */
     public void addKmlUrl(String name, String url, boolean canSelect,
                           String args) {
-        name = name.replaceAll("'"," ");
+        name = name.replaceAll("'", " ");
         getJS().append(mapVarName + ".addKMLLayer(" + HtmlUtils.squote(name)
                        + "," + HtmlUtils.squote(url) + "," + canSelect
                        + ",null,null," + args + ");\n");

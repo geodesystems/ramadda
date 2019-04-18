@@ -1561,6 +1561,14 @@ public class StorageManager extends RepositoryManager {
     }
 
 
+    /**
+     * _more_
+     *
+     * @param oldFile _more_
+     * @param contents _more_
+     *
+     * @throws Exception _more_
+     */
     public void writeFile(File oldFile, String contents) throws Exception {
         checkWriteFile(oldFile);
         IOUtil.writeFile(oldFile, contents);
@@ -2151,6 +2159,7 @@ public class StorageManager extends RepositoryManager {
      */
     public InputStream getInputStream(String path) throws Exception {
         checkPath(path);
+
         return Utils.getInputStream(path, getClass());
     }
 

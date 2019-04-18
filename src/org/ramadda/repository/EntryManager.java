@@ -6408,8 +6408,9 @@ public class EntryManager extends RepositoryManager {
 
         StringBuilder sb = new StringBuilder();
         HtmlUtils.open(sb, HtmlUtils.TAG_SPAN,
-                       HtmlUtils.attr("title",linkText) +
-                       HtmlUtils.cssClass("entry-name") +HtmlUtils.id(targetId) + targetEvent.toString());
+                       HtmlUtils.attr("title", linkText)
+                       + HtmlUtils.cssClass("entry-name")
+                       + HtmlUtils.id(targetId) + targetEvent.toString());
 
         sb.append(prefix);
         if (imgUrl != null) {

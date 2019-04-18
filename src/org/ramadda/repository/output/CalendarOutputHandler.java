@@ -630,6 +630,7 @@ public class CalendarOutputHandler extends OutputHandler {
         outputCalendar(request, makeCalendarEntries(request, entries), sb,
                        request.defined(ARG_DAY));
         getPageHandler().entrySectionClose(request, group, sb);
+
         return new Result(msg("Calendar"), sb);
     }
 
@@ -1003,13 +1004,17 @@ public class CalendarOutputHandler extends OutputHandler {
                         + "</td><td align=right class=calday width=5>"
                         + HtmlUtils.href(dayUrl, "" + thisDay)
                         + "<br>&nbsp;</td></tr></table>";
-                    content = HtmlUtils.div(content,HtmlUtils.cssClass("cal-daywrapper"));
-                    content =HtmlUtils.div(HtmlUtils.href(dayUrl, "" + thisDay),HtmlUtils.cssClass("cal-day-link")) +
-                        HtmlUtils.div(dayContents,HtmlUtils.cssClass("cal-day"));
+                    content =
+                        HtmlUtils.div(content,
+                                      HtmlUtils.cssClass("cal-daywrapper"));
+                    content = HtmlUtils.div(
+                        HtmlUtils.href(dayUrl, "" + thisDay),
+                        HtmlUtils.cssClass("cal-day-link")) + HtmlUtils.div(
+                            dayContents, HtmlUtils.cssClass("cal-day"));
 
 
-                    sb.append("<td width=15% class=\"calentry\" " + bg + " >" + content
-                              + "</td>");
+                    sb.append("<td width=15% class=\"calentry\" " + bg + " >"
+                              + content + "</td>");
                     cal.add(cal.DAY_OF_MONTH, 1);
                 }
                 if ((cal.get(cal.YEAR) >= selected[IDX_YEAR])

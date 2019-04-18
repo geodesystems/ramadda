@@ -160,7 +160,7 @@ public class Column implements DataTypes, Constants {
     /** _more_ */
     public static final String ATTR_SUFFIX = "suffix";
 
-    /** _more_          */
+    /** _more_ */
     public static final String ATTR_HELP = "help";
 
     /** _more_ */
@@ -297,7 +297,7 @@ public class Column implements DataTypes, Constants {
     /** _more_ */
     private String suffix;
 
-    /** _more_          */
+    /** _more_ */
     private String help;
 
     /** _more_ */
@@ -913,6 +913,7 @@ public class Column implements DataTypes, Constants {
      *
      * @param values _more_
      * @param idx _more_
+     * @param raw _more_
      *
      * @return _more_
      */
@@ -931,7 +932,10 @@ public class Column implements DataTypes, Constants {
             return "NA";
         }
         double d = ((Double) values[idx]).doubleValue();
-        if(raw) return ""+d;
+        if (raw) {
+            return "" + d;
+        }
+
         return latLonFormat.format(d);
     }
 
@@ -964,6 +968,7 @@ public class Column implements DataTypes, Constants {
      * @param sb _more_
      * @param output _more_
      * @param values _more_
+     * @param raw _more_
      *
      * @throws Exception _more_
      */
@@ -982,31 +987,35 @@ public class Column implements DataTypes, Constants {
      * @param output _more_
      * @param values _more_
      * @param sdf _more_
+     * @param raw _more_
      *
      * @throws Exception _more_
      */
     public void formatValue(Entry entry, Appendable result, String output,
-                            Object[] values, SimpleDateFormat sdf,boolean raw)
+                            Object[] values, SimpleDateFormat sdf,
+                            boolean raw)
             throws Exception {
 
-        Appendable sb        = new StringBuilder();
-        boolean    csv       = Misc.equals(output, OUTPUT_CSV);
-        if(csv) raw = true;
-        String     delimiter = csv
-                               ? "|"
-                               : ",";
+        Appendable sb  = new StringBuilder();
+        boolean    csv = Misc.equals(output, OUTPUT_CSV);
+        if (csv) {
+            raw = true;
+        }
+        String delimiter = csv
+                           ? "|"
+                           : ",";
         if (isType(DATATYPE_LATLON)) {
             sb.append(toLatLonString(values, offset, raw));
             sb.append(delimiter);
             sb.append(toLatLonString(values, offset + 1, raw));
         } else if (isType(DATATYPE_LATLONBBOX)) {
-            sb.append(toLatLonString(values, offset,raw));
+            sb.append(toLatLonString(values, offset, raw));
             sb.append(delimiter);
-            sb.append(toLatLonString(values, offset + 1,raw));
+            sb.append(toLatLonString(values, offset + 1, raw));
             sb.append(delimiter);
-            sb.append(toLatLonString(values, offset + 2,raw));
+            sb.append(toLatLonString(values, offset + 2, raw));
             sb.append(delimiter);
-            sb.append(toLatLonString(values, offset + 3,raw));
+            sb.append(toLatLonString(values, offset + 3, raw));
         } else if (isType(DATATYPE_PERCENTAGE)) {
             if (raw) {
                 sb.append(toString(values, offset));
@@ -1904,33 +1913,38 @@ public class Column implements DataTypes, Constants {
      * _more_
      *
      * @param value _more_
+     *
+     * @param text _more_
      * @param where _more_
      */
     public void addTextSearch(String text, List<Clause> where) {
         text = text.trim();
-        List<String> values  = StringUtil.split(text, ",",true,true);
-        List<Clause> clauses= new ArrayList<Clause>();
-        for(String value: values) {
+        List<String> values  = StringUtil.split(text, ",", true, true);
+        List<Clause> clauses = new ArrayList<Clause>();
+        for (String value : values) {
 
-        if (value.equals("<blank>")) {
-            clauses.add(Clause.eq(getFullName(), ""));
-        } else if (value.startsWith("!")) {
-            value = value.substring(1);
-            if (value.length() == 0) {
-                clauses.add(Clause.neq(getFullName(), ""));
+            if (value.equals("<blank>")) {
+                clauses.add(Clause.eq(getFullName(), ""));
+            } else if (value.startsWith("!")) {
+                value = value.substring(1);
+                if (value.length() == 0) {
+                    clauses.add(Clause.neq(getFullName(), ""));
+                } else {
+                    clauses.add(Clause.notLike(getFullName(),
+                            "%" + value + "%"));
+                }
+            } else if (value.startsWith("=")) {
+                value = value.substring(1);
+                clauses.add(Clause.eq(getFullName(), value));
+            } else if ( !value.startsWith("%") && value.endsWith("%")) {
+                clauses.add(
+                    getDatabaseManager().makeLikeTextClause(
+                        getFullName(), value, false));
             } else {
-                clauses.add(Clause.notLike(getFullName(), "%" + value + "%"));
+                clauses.add(
+                    getDatabaseManager().makeLikeTextClause(
+                        getFullName(), "%" + value + "%", false));
             }
-        } else if (value.startsWith("=")) {
-            value = value.substring(1);
-            clauses.add(Clause.eq(getFullName(), value));
-        } else if ( !value.startsWith("%") && value.endsWith("%")) {
-            clauses.add(getDatabaseManager().makeLikeTextClause(getFullName(),
-                    value, false));
-        } else {
-            clauses.add(getDatabaseManager().makeLikeTextClause(getFullName(),
-                    "%" + value + "%", false));
-        }
         }
         where.add(Clause.or(clauses));
     }
@@ -2047,7 +2061,8 @@ public class Column implements DataTypes, Constants {
         }
 
         if (help != null) {
-            formBuffer.append(typeHandler.formEntry(request, "", getRepository().getPageHandler().applyBaseMacros(help)));
+            formBuffer.append(typeHandler.formEntry(request, "",
+                    getRepository().getPageHandler().applyBaseMacros(help)));
         }
 
 

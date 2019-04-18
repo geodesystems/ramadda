@@ -423,8 +423,6 @@ public class EntryMonitor implements Constants {
     /**
      * _more_
      *
-     * @param s1 _more_
-     *
      * @param pattern _more_
      * @param s2 _more_
      *

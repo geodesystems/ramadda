@@ -241,7 +241,7 @@ public interface Constants {
     public static final String ICON_METADATA_ADD = "fa-database";
 
     /** _more_ */
-    public static final String ICON_METADATA_EDIT =  "fa-database";
+    public static final String ICON_METADATA_EDIT = "fa-database";
 
     /** _more_ */
     public static final String ICON_MINUS = "/icons/minus.gif";
