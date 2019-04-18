@@ -1935,7 +1935,7 @@ public class PageHandler extends RepositoryManager {
                 }
 
                 urls.add(url);
-                labels.add(HtmlUtils.faIcon("fa-sign-in")  + " " + msg("Login"));
+                labels.add(HtmlUtils.faIcon("fa-sign-in-alt")  + " " + msg("Login"));
                 tips.add(msg("Login"));
             }
 
@@ -1949,7 +1949,7 @@ public class PageHandler extends RepositoryManager {
         } else {
             extras.add("");
             urls.add(request.makeUrl(getRepositoryBase().URL_USER_LOGOUT));
-            labels.add(HtmlUtils.faIcon("fa-sign-out")+ " " + msg("Logout"));
+            labels.add(HtmlUtils.faIcon("fa-sign-out-alt")+ " " + msg("Logout"));
             tips.add(msg("Logout"));
             String label = user.getLabel().replace(" ", "&nbsp;");
             String userIcon =HtmlUtils.faIcon("fa-user","title",
