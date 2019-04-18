@@ -167,7 +167,7 @@ public interface Constants {
     public static final String ICON_GRAPH = "/icons/vector.png";
 
     /** _more_ */
-    public static final String ICON_TABLE = "/icons/table.png";
+    public static final String ICON_TABLE = "fa-table";
 
     /** _more_ */
     public static final String ICON_GRAYRECT = "/icons/grayrect.gif";
