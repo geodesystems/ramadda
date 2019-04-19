@@ -231,6 +231,9 @@ function RepositoryMap(mapId, params) {
                 theMap.handleNofeatureclick(e.layer);
             },
             featureclick: function(e) {
+                if(e.feature && e.feature.noSelect) {
+                    return;
+                }
                 theMap.handleFeatureclick(e.layer, e.feature);
             }
         }

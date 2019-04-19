@@ -95,18 +95,18 @@ public class TabularOutputHandler extends OutputHandler {
     /** _more_ */
     public static final OutputType OUTPUT_XLS_HTML =
         new OutputType("Show Spreadsheet", "xls_html", OutputType.TYPE_VIEW,
-                       "", "/media/xls.png");
+                       "", "fa-file-excel");
 
 
     /** _more_ */
     public static final OutputType OUTPUT_CONVERT_FORM =
         new OutputType("Convert Spreadsheet", "csv_convert_form",
-                       OutputType.TYPE_VIEW, "", "/media/xls.png");
+                       OutputType.TYPE_VIEW, "", "fa-file-excel");
 
     /** _more_ */
     public static final OutputType OUTPUT_CONVERT_PROCESS =
         new OutputType("Convert Spreadsheet", "csv_convert_process",
-                       OutputType.TYPE_VIEW, "", "/media/xls.png");
+                       OutputType.TYPE_VIEW, "", "fa-file-excel");
 
 
     /**

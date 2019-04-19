@@ -93,7 +93,7 @@ public interface Constants {
     public static final String ICON_CSV = "/icons/document-excel-csv.png";
 
     /** _more_ */
-    public static final String ICON_DATA = "/icons/data.gif";
+    public static final String ICON_DATA = "fa-table";
 
     /** _more_ */
     public static final String ICON_DIF = "/icons/metadata.gif";
@@ -235,7 +235,7 @@ public interface Constants {
     public static final String ICON_MAP_NAV = "/icons/bullet_go.png";
 
     /** _more_ */
-    public static final String ICON_METADATA = "/icons/metadata.gif";
+    public static final String ICON_METADATA = "fa-info";
 
     /** _more_ */
     public static final String ICON_METADATA_ADD = "fa-database";
@@ -287,7 +287,7 @@ public interface Constants {
         "/icons/binocular-small.png";
 
     /** _more_ */
-    public static final String ICON_TEXT = "/icons/text_align_left.png";
+    public static final String ICON_TEXT = "fa-align-left";
 
     /** _more_ */
     public static final String ICON_TOGGLEARROWDOWN =

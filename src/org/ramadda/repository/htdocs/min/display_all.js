@@ -18824,6 +18824,45 @@ function RamaddaMapDisplay(displayManager, id, properties) {
                     this.points.push(mapPoint);
                 }
             }
+            var labelTemplate = this.getProperty("labelTemplate");
+            if(labelTemplate) {
+                labelTemplate = labelTemplate.replace(/_nl_/g,"\n");
+                var labelLayer = new OpenLayers.Layer.Vector("Simple Geometry", {
+                        styleMap: new OpenLayers.StyleMap({'default':{
+                                    label : labelTemplate,
+                                    fontColor: this.getProperty("labelFontColor","#000"),
+                                    fontSize: this.getProperty("labelFontSize","12px"),
+                                    fontFamily: this.getProperty("labelFontFamily","'Open Sans', Helvetica Neue, Arial, Helvetica, sans-serif"),
+                                    fontWeight: this.getProperty("labelFontWeight","plain"),
+                                    labelAlign: this.getProperty("labelAlign","lb"),
+                                    labelXOffset: this.getProperty("labelXOffset","0"),
+                                    labelYOffset: this.getProperty("labelYOffset","0"),
+                                    labelOutlineColor:this.getProperty("labelOutlineColor","#fff"),
+                                    labelOutlineWidth: this.getProperty("labelOutlineWidth","0"),
+                                }}),
+                    });
+                var features =  [];
+                for (var i = 0; i < records.length; i++) {
+                    var point = points[i];
+                    var center = new OpenLayers.Geometry.Point(point.x, point.y);
+                    center.transform(this.map.displayProjection, this.map.sourceProjection);
+                    var pointRecord = records[i];
+                    var tuple = pointRecord.getData();
+                    var pointFeature = new OpenLayers.Feature.Vector(center);
+                    pointFeature.noSelect = true;
+                    pointFeature.attributes = {
+                    };
+                    for (var fieldIdx = 0;fieldIdx < fields.length; fieldIdx++) {
+                        var field = fields[fieldIdx];
+                        pointFeature.attributes[field.getId()] = field.getValue(tuple);
+                    }
+                    features.push(pointFeature);
+                }
+                this.map.addVectorLayer(labelLayer, true);
+                labelLayer.addFeatures(features);
+            }
+
+
             if (didColorBy) {
                 this.displayColorTable(colors, ID_BOTTOM, colorBy.origMinValue, colorBy.origMaxValue, {
                     stringValues: colorByValues
@@ -18894,7 +18933,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
                 }
                 this.myMarkers[source] = this.map.addMarker(source.getId(), point, icon, "", args.html, null, 24);
             }
-        }
+            }
     });
 }
 

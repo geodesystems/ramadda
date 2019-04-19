@@ -59120,7 +59120,9 @@ OpenLayers.Popup = OpenLayers.Class({
             this.map.events.unregister("movestart", this, this.hide);
         }
 
-        this.events.destroy();
+        //jeffmc: fix NPE
+        if(this.events)
+            this.events.destroy();
         this.events = null;
         
         if (this.closeDiv) {
@@ -59129,7 +59131,9 @@ OpenLayers.Popup = OpenLayers.Class({
         }
         this.closeDiv = null;
         
-        this.div.removeChild(this.groupDiv);
+        //jeffmc: fix NPE
+        if(this.div)
+            this.div.removeChild(this.groupDiv);
         this.groupDiv = null;
 
         if (this.map != null) {
@@ -69269,6 +69273,8 @@ OpenLayers.Popup.Framed =
         this.positionBlocks = null;
 
         //remove our blocks
+        //jeffmc: fix NPE
+        if(this.blocks) {
         for(var i = 0; i < this.blocks.length; i++) {
             var block = this.blocks[i];
 
@@ -69281,6 +69287,7 @@ OpenLayers.Popup.Framed =
                 this.groupDiv.removeChild(block.div);
             }
             block.div = null;
+        }
         }
         this.blocks = null;
 

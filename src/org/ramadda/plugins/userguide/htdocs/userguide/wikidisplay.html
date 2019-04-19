@@ -395,6 +395,23 @@ animationWindow="year" or "month" or "day" or "hour" or "minute" or "second"  - 
 animationSpeed="250" - time in milliseconds between each step
 </pre>
 
+<b>Map Labels:<b><br>
+You can display text labels at each point with the following attributes:
+<pre>
+labelTemplate="text template with ${field id} macros. Use _nl_ for new lines"
+labelFontColor="#000"
+labelFontSize="12px"
+labelFontFamily="'Open Sans', Helvetica Neue, Arial, Helvetica, sans-serif"
+labelFontWeight="plain"
+labelAlign="lb"  //See http://dev.openlayers.org/docs/files/OpenLayers/Feature/Vector-js.html
+align is of the form "hv" where h is "l|c|r" (left, center, right)  and v is "t|n|b" (top,middle,bottom)
+labelXOffset="0"
+labelYOffset="0"
+labelOutlineColor="#fff")
+labelOutlineWidth="0"
+</pre>
+
+
 <a name="linechart"></a>
 <div class="ramadda-help-subsubheading"><a href="#linechart"> Line chart</a>
 </div> 

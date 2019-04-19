@@ -290,7 +290,7 @@ public class PointOutputHandler extends RecordOutputHandler {
         OUTPUT_CHART = new OutputType("Chart ", base + ".chart",
                                       OutputType.TYPE_OTHER
                                       | OutputType.TYPE_IMPORTANT, "",
-                                          "/icons/chart.png", category);
+                                          "fa-chart-line", category);
 
         OUTPUT_FORM = new OutputType("Subset and Products", base + ".form",
                                      OutputType.TYPE_OTHER
