@@ -3378,8 +3378,11 @@ function RamaddaTsneDisplay(displayManager, id, properties) {
                 var tuple = this.getDataValues(this.dataList[rowIdx]);
                 var nums = [];
                 for (var i = 0; i < this.fields.length; i++) {
-                    if (this.fields[i].isNumeric)
-                        nums.push(tuple[this.fields[i].getIndex()]);
+                    if (this.fields[i].isNumeric){
+                        var v = tuple[this.fields[i].getIndex()];
+                        if(isNaN(v)) v = 0;
+                        nums.push(v);
+                    }
                 }
                 data.push(nums);
             }
@@ -3411,8 +3414,6 @@ function RamaddaTsneDisplay(displayManager, id, properties) {
                     miny = Math.min(miny, pts[i][1]);
                 }
             }
-            //            this.canvas.html("");
-
             var sleep = 250;
             for (var i = 0; i < pts.length; i++) {
                 var x = pts[i][0];
