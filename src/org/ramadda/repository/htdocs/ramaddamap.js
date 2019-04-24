@@ -211,7 +211,6 @@ function RepositoryMap(mapId, params) {
         this.defaultBounds = createBounds(params.initialBounds[1], params.initialBounds[2], params.initialBounds[3], params.initialBounds[0]);
     }
 
-
     var options = {
         projection: this.sourceProjection,
         displayProjection: this.displayProjection,
@@ -483,7 +482,6 @@ function initMapFunctions(theMap) {
             }
             return layer;
         },
-
         addLayer: function(layer) {
             if (this.map != null) {
                 this.map.addLayer(layer);
@@ -1994,8 +1992,6 @@ function initMapFunctions(theMap) {
         });
     }
 
-
-
     theMap.addVectorLayer = function(layer, canSelect) {
         this.addLayer(layer);
         if (this.getCanSelect(canSelect)) {
@@ -3117,6 +3113,7 @@ function initMapFunctions(theMap) {
             if (!notReally) {
                 if (this.circles == null) {
                     this.circles = new OpenLayers.Layer.Vector("Circles Layer");
+                    //                    this.circles.setZIndex(1);
                     /*
                       this.circles.events.on({
                       'featureselected': function(feature) {

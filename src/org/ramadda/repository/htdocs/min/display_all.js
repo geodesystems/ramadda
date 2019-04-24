@@ -18399,7 +18399,6 @@ function RamaddaMapDisplay(displayManager, id, properties) {
         },
 
         updateUI: function() {
-            this.haveCalledUpdateUI = true;
             SUPER.updateUI.call(this);
             if (!this.getDisplayReady()) {
                 return;
@@ -18410,7 +18409,6 @@ function RamaddaMapDisplay(displayManager, id, properties) {
             if (!this.getProperty("showData", true)) {
                 return;
             }
-
             var pointData = this.getPointData();
             var records = this.filterData();
             if (records == null) {
@@ -18418,6 +18416,10 @@ function RamaddaMapDisplay(displayManager, id, properties) {
                 console.log("null records:" + err.stack);
                 return;
             }
+           if(this.haveCalledUpdateUI) return;
+           this.haveCalledUpdateUI = true;
+
+
             var fields = pointData.getRecordFields();
             var bounds = {};
             var points = RecordUtil.getPoints(records, bounds);
@@ -18437,7 +18439,13 @@ function RamaddaMapDisplay(displayManager, id, properties) {
                 return;
             }
 
-            source = this;
+            this.addPoints(records,fields,points);
+            this.addLabels(records,fields,points);
+            this.applyVectorMap();
+        },
+
+                addPoints: function(records, fields, points) {
+            var source = this;
             var radius = parseFloat(this.getDisplayProp(source, "radius", 8));
             var strokeWidth = parseFloat(this.getDisplayProp(source, "strokeWidth", "1"));
             var strokeColor = this.getDisplayProp(source, "strokeColor", "#000");
@@ -18824,53 +18832,56 @@ function RamaddaMapDisplay(displayManager, id, properties) {
                     this.points.push(mapPoint);
                 }
             }
-            var labelTemplate = this.getProperty("labelTemplate");
-            if(labelTemplate) {
-                labelTemplate = labelTemplate.replace(/_nl_/g,"\n");
-                var labelLayer = new OpenLayers.Layer.Vector("Simple Geometry", {
-                        styleMap: new OpenLayers.StyleMap({'default':{
-                                    label : labelTemplate,
-                                    fontColor: this.getProperty("labelFontColor","#000"),
-                                    fontSize: this.getProperty("labelFontSize","12px"),
-                                    fontFamily: this.getProperty("labelFontFamily","'Open Sans', Helvetica Neue, Arial, Helvetica, sans-serif"),
-                                    fontWeight: this.getProperty("labelFontWeight","plain"),
-                                    labelAlign: this.getProperty("labelAlign","lb"),
-                                    labelXOffset: this.getProperty("labelXOffset","0"),
-                                    labelYOffset: this.getProperty("labelYOffset","0"),
-                                    labelOutlineColor:this.getProperty("labelOutlineColor","#fff"),
-                                    labelOutlineWidth: this.getProperty("labelOutlineWidth","0"),
-                                }}),
-                    });
-                var features =  [];
-                for (var i = 0; i < records.length; i++) {
-                    var point = points[i];
-                    var center = new OpenLayers.Geometry.Point(point.x, point.y);
-                    center.transform(this.map.displayProjection, this.map.sourceProjection);
-                    var pointRecord = records[i];
-                    var tuple = pointRecord.getData();
-                    var pointFeature = new OpenLayers.Feature.Vector(center);
-                    pointFeature.noSelect = true;
-                    pointFeature.attributes = {
-                    };
-                    for (var fieldIdx = 0;fieldIdx < fields.length; fieldIdx++) {
-                        var field = fields[fieldIdx];
-                        pointFeature.attributes[field.getId()] = field.getValue(tuple);
-                    }
-                    features.push(pointFeature);
-                }
-                this.map.addVectorLayer(labelLayer, true);
-                labelLayer.addFeatures(features);
-            }
-
-
             if (didColorBy) {
                 this.displayColorTable(colors, ID_BOTTOM, colorBy.origMinValue, colorBy.origMaxValue, {
-                    stringValues: colorByValues
-                });
+                        stringValues: colorByValues
+                            });
             }
-
-            this.applyVectorMap();
         },
+        addLabels:function(records, fields, points) {
+            var labelTemplate = this.getProperty("labelTemplate");
+            if(!labelTemplate) return;
+            labelTemplate = labelTemplate.replace(/_nl_/g,"\n");
+            var labelLayer = new OpenLayers.Layer.Vector("Simple Geometry", {
+                    styleMap: new OpenLayers.StyleMap({'default':{
+                                label : labelTemplate,
+                                fontColor: this.getProperty("labelFontColor","#000"),
+                                fontSize: this.getProperty("labelFontSize","12px"),
+                                fontFamily: this.getProperty("labelFontFamily","'Open Sans', Helvetica Neue, Arial, Helvetica, sans-serif"),
+                                fontWeight: this.getProperty("labelFontWeight","plain"),
+                                labelAlign: this.getProperty("labelAlign","lb"),
+                                labelXOffset: this.getProperty("labelXOffset","0"),
+                                labelYOffset: this.getProperty("labelYOffset","0"),
+                                labelOutlineColor:this.getProperty("labelOutlineColor","#fff"),
+                                labelOutlineWidth: this.getProperty("labelOutlineWidth","0"),
+                            }}),
+                });
+            var features =  [];
+            var seen = {};
+            for (var i = 0; i < records.length; i++) {
+                var point = points[i];
+                if(seen[point]) continue;
+                seen[point] = true;
+                var center = new OpenLayers.Geometry.Point(point.x, point.y);
+                center.transform(this.map.displayProjection, this.map.sourceProjection);
+                var pointRecord = records[i];
+                var tuple = pointRecord.getData();
+                var pointFeature = new OpenLayers.Feature.Vector(center);
+                pointFeature.noSelect = true;
+                pointFeature.attributes = {
+                };
+                for (var fieldIdx = 0;fieldIdx < fields.length; fieldIdx++) {
+                    var field = fields[fieldIdx];
+                    pointFeature.attributes[field.getId()] = field.getValue(tuple);
+                }
+                features.push(pointFeature);
+            }
+            this.map.addVectorLayer(labelLayer, true);
+            labelLayer.addFeatures(features);
+            $("#" + labelLayer.id).css("z-index",1000);
+        },
+
+
         handleEventRemoveDisplay: function(source, display) {
             if (!this.map) {
                 return;
