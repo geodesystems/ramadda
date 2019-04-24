@@ -2234,7 +2234,8 @@ ATTR_SHOWLINK, "true", ATTR_INCLUDEICON, "false") + ATTRS_LAYOUT),
                 if ( !link.isType(OutputType.TYPE_IMPORTANT)) {
                     continue;
                 }
-                String label = HtmlUtils.img(link.getIcon())
+                
+               String label = getIconImage(link.getIcon())
                                + HtmlUtils.space(1) + link.getLabel();
                 HtmlUtils.href(links, link.getUrl(), label);
                 links.append(HtmlUtils.br());
