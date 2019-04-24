@@ -233,7 +233,7 @@ function RepositoryMap(mapId, params) {
                 if(e.feature && e.feature.noSelect) {
                     return;
                 }
-                theMap.handleFeatureclick(e.layer, e.feature);
+               theMap.handleFeatureclick(e.layer, e.feature);
             }
         }
     };
