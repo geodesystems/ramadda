@@ -121,7 +121,7 @@ public class HtmlOutputHandler extends OutputHandler {
 
     /** _more_ */
     public static final OutputType OUTPUT_TABLE =
-        new OutputType("Tabular Layout", "html.table",
+        new OutputType("Table", "html.table",
                        OutputType.TYPE_VIEW | OutputType.TYPE_FORSEARCH, "",
                        ICON_TABLE);
 

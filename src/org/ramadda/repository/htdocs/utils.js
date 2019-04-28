@@ -1674,7 +1674,7 @@ var HtmlUtils = {
         });
         HtmlUtils.handleFormChangeShowUrl(entryId, formId, outputId, skip, hook);
     },
-    select: function(name, attrs,list, selected) {
+    select: function(name, attrs,list, selected,maxWidth) {
         var select = this.openTag("select", attrs);
         list.map(item=>{
                 var label = item;

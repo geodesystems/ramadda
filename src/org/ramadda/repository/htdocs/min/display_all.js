@@ -13285,6 +13285,8 @@ function RamaddaCardsDisplay(displayManager, id, properties) {
 
             this.tooltipFields = this.getFieldsByIds(fields, this.getProperty("tooltipFields","",true));
             this.labelField = this.getFieldById(fields, this.getProperty("labelField", null, true));
+            this.onlyShowImages =this.getProperty("onlyShowImages", false);
+            this.altLabelField = this.getFieldById(fields, this.getProperty("altLabelField", null, true));
             this.captionFields = this.getFieldsByIds(fields, this.getProperty("captionFields", "", true));
             this.captionTemplate = this.getProperty("captionTemplate",null, true);
             if(this.captionFields.length==0) this.captionFields = this.tooltipFields;
@@ -13347,16 +13349,25 @@ function RamaddaCardsDisplay(displayManager, id, properties) {
                 var widgetId = this.getDomId("searchby_" + searchField.getId());
                 if(searchField.getType() == "enumeration") {
                     var enums = [["","All"]];
+                    var seen = {};
                     this.records.map(record=>{
                             var value = this.getDataValues(record)[searchField.getIndex()];
-                            if(!enums.includes(value)) enums.push(value);
+                            if(!seen[value]) {
+                                seen[value]  = true;
+                                var label = value;
+                                if(label.length>20) {
+                                    label=  label.substring(0,19)+"...";
+                                }
+                                var tuple = [value, label];
+                                enums.push(tuple);
+                            }
                         });
                     widget = HtmlUtils.select("",["id",widgetId],enums);
                 } else {
                     widget =HtmlUtils.input("","",["id",widgetId]);
                 }
                 widget =searchField.getLabel() +": " + widget;
-                if(i==0) searchBar += " Display: ";
+                if(i==0) searchBar += "<br>Display: ";
                 searchBar+=widget +"&nbsp;&nbsp;";
             }
 
@@ -13502,12 +13513,15 @@ function RamaddaCardsDisplay(displayManager, id, properties) {
                 }
                 if(this.labelField) label = "<br>" + row[this.labelField.getIndex()];
                 var html ="";
+                var img = null;
                 if(this.imageField) {
-                    var img = row[this.imageField.getIndex()];
-                    var attrs = ["class","display-cards-popup","data-fancybox",this.getDomId("gallery")];
-                    attrs.push("data-caption");
-                    attrs.push(caption);
-                    img =  HtmlUtils.href(img, HtmlUtils.image(img,["width",width]),attrs)+label;
+                    img = row[this.imageField.getIndex()];
+                    if(this.onlyShowImages && !Utils.stringDefined(img)) continue;
+                } 
+                
+                var  imgAttrs= ["class","display-cards-popup","data-fancybox",this.getDomId("gallery"),"data-caption",caption];
+                if(Utils.stringDefined(img)) {
+                    img =  HtmlUtils.href(img, HtmlUtils.image(img,["width",width]),imgAttrs)+label;
                     html = HtmlUtils.div(["class","display-cards-item", "title", tooltip, "style","margin:" + margin+"px;"], img);
                 } else {
                     var style = "";
@@ -13535,7 +13549,12 @@ function RamaddaCardsDisplay(displayManager, id, properties) {
                     if(cardStyle)
                         style +=cardStyle;
                     var attrs = ["title",tooltip,"class","ramadda-gridbox display-cards-card","style",style];
-                    html = HtmlUtils.div(attrs,caption);
+                    if(this.altLabelField) {
+                        html = HtmlUtils.div(attrs,this.altLabelField.getValue(row));
+                    } else {
+                        html = HtmlUtils.div(attrs,caption);
+                    }
+                    html =  HtmlUtils.href("", html,imgAttrs);
                 }
                 var group = topGroup;
                 for(var groupIdx=0;groupIdx<groupFields.length;groupIdx++) {
