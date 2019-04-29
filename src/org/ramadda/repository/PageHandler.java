@@ -1857,8 +1857,10 @@ public class PageHandler extends RepositoryManager {
         }
 
         menu.append(HtmlUtils.div(contents,
-                                  HtmlUtils.id(compId)
-                                  + HtmlUtils.cssClass(CSS_CLASS_POPUP)));
+                                  HtmlUtils.id(compId) +
+                                  HtmlUtils.attr("style","display:none;") +
+                                  HtmlUtils.cssClass(CSS_CLASS_POPUP)));
+
 
         return menu.toString();
     }
