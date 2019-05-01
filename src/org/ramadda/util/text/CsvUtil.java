@@ -907,6 +907,10 @@ public class CsvUtil {
                     }
                 }
                 theLine = line;
+                if ( !textReader.lineOk(textReader, line)) {
+                    continue;
+                }
+
                 rowCnt++;
                 if (rowCnt <= textReader.getSkip()) {
                     textReader.addHeaderLine(line);
@@ -914,9 +918,7 @@ public class CsvUtil {
                 }
 
 
-                if ( !textReader.lineOk(textReader, line)) {
-                    continue;
-                }
+
                 List<Integer> widths = textReader.getWidths();
                 if (widths==null && textReader.getDelimiter() == null) {
                     String delimiter = ",";
