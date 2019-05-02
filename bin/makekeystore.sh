@@ -32,7 +32,7 @@ PROPERTY_FILE=${RAMADDA_HOME}/repository.properties
 
 ##Set your first domain and any other domains
 FIRST_DOMAIN=geodesystems.com
-OTHER_DOMAINS=www.geodesystems.com,dmt.geodesystems.com,boulderdata.org,www.boulderdata.org,communidata.org,www.communidata.org,hoganpancost.org,www.hoganpancost.org,10000cities.org,www.10000cities.org,ramadda.org,www.ramadda.org
+OTHER_DOMAINS=www.geodesystems.com,boulderdata.org,www.boulderdata.org,communidata.org,www.communidata.org,hoganpancost.org,www.hoganpancost.org,10000cities.org,www.10000cities.org,ramadda.org,www.ramadda.org
 
 
 BIN_DIR=`dirname $0`
