@@ -59,6 +59,9 @@ var Utils = {
         return ramaddaBaseUrl + "/icons/" + icon;
     },
     imports: {},
+    cloneList: function(l) {
+        return l.slice(0);
+    },
     parseAttributes: function(v) {
         v=v.replace(/ += +/g,"=")
         var newv;
@@ -1498,7 +1501,7 @@ var HtmlUtils = {
             return;
         }
         this.loadedGoogleCharts = true;
-
+        if(!window["google"]) return;
         google.charts.load("43", {
             packages: ['corechart', 'calendar', 'table', 'bar', 'treemap', 'sankey', 'wordtree', 'timeline', 'gauge']
         });

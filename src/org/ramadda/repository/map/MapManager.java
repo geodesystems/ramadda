@@ -936,13 +936,12 @@ public class MapManager extends RepositoryManager implements WikiConstants {
         getRepository().getWikiManager().addDisplayImports(request, sb);
         int weight = 12;
         if (includeList || (extraNav.length() > 0)) {
+            weight -= 3;
             HtmlUtils.open(sb, HtmlUtils.TAG_DIV, HtmlUtils.cssClass("row"));
             HtmlUtils.open(sb, HtmlUtils.TAG_DIV,
                            HtmlUtils.cssClass("col-md-3"));
-
             HtmlUtils.open(sb, HtmlUtils.TAG_DIV,
                            HtmlUtils.cssClass("ramadda-links"));
-            weight -= 3;
             sb.append(
                 HtmlUtils.open(
                     HtmlUtils.TAG_DIV,
@@ -956,7 +955,6 @@ public class MapManager extends RepositoryManager implements WikiConstants {
                 sb.append(extraNav);
             } else {
                 sb.append(navTop);
-
                 boolean doToggle = (numEntries > 5)
                                    && (categories.size() > 1);
                 for (int catIdx = 0; catIdx < categories.size(); catIdx++) {
@@ -991,7 +989,6 @@ public class MapManager extends RepositoryManager implements WikiConstants {
         if (includeList) {
             //            sb.append("</td></tr></table>");
         }
-
     }
 
     /**

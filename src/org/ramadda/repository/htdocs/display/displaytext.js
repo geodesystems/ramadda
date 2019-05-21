@@ -377,8 +377,8 @@ function RamaddaCardsDisplay(displayManager, id, properties) {
             return "";
         },
         updateUI: function() {
-            this.records = this.filterData();
-            if(!this.records) return;
+            var records = this.filterData();
+            if(!records) return;
             var allFields = this.getData().getRecordFields();
             var fields = this.getSelectedFields(allFields);
             if (fields.length == 0)
@@ -389,7 +389,6 @@ function RamaddaCardsDisplay(displayManager, id, properties) {
             this.groupByMenus= +this.getProperty("groupByMenus",this.groupByFields.length);
             this.imageField = this.getFieldOfType(fields, "image");
             this.urlField = this.getFieldOfType(fields, "url");
-
             this.tooltipFields = this.getFieldsByIds(fields, this.getProperty("tooltipFields","",true));
             this.labelField = this.getFieldById(fields, this.getProperty("labelField", null, true));
             this.onlyShowImages =this.getProperty("onlyShowImages", false);
@@ -397,9 +396,6 @@ function RamaddaCardsDisplay(displayManager, id, properties) {
             this.captionFields = this.getFieldsByIds(fields, this.getProperty("captionFields", "", true));
             this.captionTemplate = this.getProperty("captionTemplate",null, true);
             if(this.captionFields.length==0) this.captionFields = this.tooltipFields;
-            this.sortFields = this.getFieldsByIds(fields, this.getProperty("sortFields", "", true));
-
-
             this.colorByField = this.getFieldById(fields, this.getProperty("colorBy", null, true));
             this.colorList = this.getColorTable(true);
             this.foregroundList = this.getColorTable(true,"foreground");
@@ -410,9 +406,41 @@ function RamaddaCardsDisplay(displayManager, id, properties) {
                     return;
                 }
             }
+            this.sortFields = this.getFieldsByIds(fields, this.getProperty("sortFields", "", true));
+            var contents = "";
+
+            var groupByHtml = "";
+            if(this.groupByFields.length>0) {
+                var options = [["","--"]];
+                this.groupByFields.map(field=>{
+                        options.push([field.getId(),field.getLabel()]);
+                    });
+                groupByHtml =  " Group by: ";
+                for(var i=0;i<this.groupByMenus;i++) {
+                    var selected = "";
+                    if(i<this.initGrouping.length) {
+                        selected = this.initGrouping[i].getId();
+                    }
+                    groupByHtml+= HtmlUtils.select("",["id",this.getDomId(ID_GROUPBY_FIELDS+i)],options,selected)+"&nbsp;";
+                }
+                groupByHtml+="&nbsp;";
+
+            }
+            this.jq(ID_HEADER1).html(groupByHtml);
+            contents += HtmlUtils.div(["id",this.getDomId(ID_RESULTS)]);
+            this.writeHtml(ID_DISPLAY_CONTENTS, contents);
+            let _this = this;
+            this.jq(ID_HEADER1).find("input, input:radio,select").change(function(){
+                    var id = $(this).attr("id");
+                    _this.doSearch();
+                });
+            this.displaySearchResults(records);
+         },
+         displaySearchResults: function(records) {
+            records = Utils.cloneList(records);
             if(this.sortFields.length) {
                 var sortAscending = this.getProperty("sortAscending",true);
-                this.records.sort((a,b)=>{
+                records.sort((a,b)=>{
                         var row1 = this.getDataValues(a);
                         var row2 = this.getDataValues(b);
                         var result = 0;
@@ -428,100 +456,6 @@ function RamaddaCardsDisplay(displayManager, id, properties) {
                         return result;
                     });
             }
-            this.searchFields = [];
-            var contents = "";
-            var searchBy = this.getProperty("searchFields","",true).split(",");
-            var searchBar = "";
-
-            if(this.groupByFields.length>0) {
-                var options = [["","--"]];
-                this.groupByFields.map(field=>{
-                        options.push([field.getId(),field.getLabel()]);
-                    });
-                searchBar += "Group by: ";
-                for(var i=0;i<this.groupByMenus;i++) {
-                    var selected = "";
-                    if(i<this.initGrouping.length) {
-                        selected = this.initGrouping[i].getId();
-                    }
-                    searchBar += HtmlUtils.select("",["id",this.getDomId(ID_GROUPBY_FIELDS+i)],options,selected)+"&nbsp;";
-                }
-            }
-
-            for(var i=0;i<searchBy.length;i++) {
-                var searchField  = this.getFieldById(fields,searchBy[i]);
-                if(!searchField) continue;
-                this.searchFields.push(searchField);
-                var widget;
-                var widgetId = this.getDomId("searchby_" + searchField.getId());
-                if(searchField.getType() == "enumeration") {
-                    var enums = [["","All"]];
-                    var seen = {};
-                    this.records.map(record=>{
-                            var value = this.getDataValues(record)[searchField.getIndex()];
-                            if(!seen[value]) {
-                                seen[value]  = true;
-                                var label = value;
-                                if(label.length>20) {
-                                    label=  label.substring(0,19)+"...";
-                                }
-                                var tuple = [value, label];
-                                enums.push(tuple);
-                            }
-                        });
-                    widget = HtmlUtils.select("",["id",widgetId],enums);
-                } else {
-                    widget =HtmlUtils.input("","",["id",widgetId]);
-                }
-                widget =searchField.getLabel() +": " + widget;
-                if(i==0) searchBar += "<br>Display: ";
-                searchBar+=widget +"&nbsp;&nbsp;";
-            }
-
-            contents += HtmlUtils.div(["id",this.getDomId(ID_SEARCHBAR)], "<center>" +searchBar+"</center>");
-            contents += HtmlUtils.div(["id",this.getDomId(ID_RESULTS)]);
-            this.writeHtml(ID_DISPLAY_CONTENTS, contents);
-            //            this.jq(ID_SEARCHBAR).find("select").selectBoxIt({});
-            let _this = this;
-            this.jq(ID_SEARCHBAR).find("input, input:radio,select").change(function(){
-                    var id = $(this).attr("id");
-                    _this.doSearch();
-                });
-            this.displaySearchResults(this.records);
-         },
-         doSearch: function() {
-                var records = [];
-                var values = [];
-                for(var i=0;i<this.searchFields.length;i++) {
-                    var searchField = this.searchFields[i];
-                    values.push($("#" + this.getDomId("searchby_" + searchField.getId())).val());
-                }
-                for (var rowIdx = 0; rowIdx <this.records.length; rowIdx++) {
-                    var row = this.getDataValues(this.records[rowIdx]);
-                    var ok = true;
-                    for(var i=0;i<this.searchFields.length;i++) {
-                        var searchField = this.searchFields[i];
-                        var searchValue = values[i];
-                        if(searchValue=="") continue;
-                        var value = row[searchField.getIndex()];
-                        if(searchField.getType() == "enumeration") {
-                            if(value!=searchValue) {
-                                ok = false;
-                                break;
-                            }
-                        } else {
-                            value  = (""+value).toLowerCase();
-                            if(value.indexOf(searchValue.toLowerCase())<0) {
-                                ok = false;
-                                break;
-                            }
-                        }
-                    }
-                    if(ok) records.push(this.records[rowIdx]);
-                }
-                this.displaySearchResults(records);
-            },
-         displaySearchResults: function(records) {
 
 
             var fontSize = this.getProperty("fontSize",null);

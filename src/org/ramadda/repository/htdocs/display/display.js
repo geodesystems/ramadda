@@ -6,6 +6,9 @@ Copyright 2008-2019 Geode Systems LLC
 //Ids of DOM components
 var ID_FIELDS = "fields";
 var ID_HEADER = "header";
+var ID_HEADER1 = "header1";
+var ID_HEADER2 = "header2";
+var ID_HEADER3 = "header3";
 var ID_TITLE = ATTR_TITLE;
 var ID_TITLE_EDIT = "title_edit";
 var ID_TOP_RIGHT = "topright";
@@ -16,7 +19,6 @@ var ID_DISPLAY_TOP = "top";
 var ID_DISPLAY_BOTTOM = "bottom";
 var ID_GROUP_CONTENTS = "group_contents";
 var ID_DETAILS_MAIN = "detailsmain";
-var ID_SEARCHBAR = "searchbar";
 var ID_GROUPBY_FIELDS= "groupdbyfields";
 
 var ID_TOOLBAR = "toolbar";
@@ -1117,7 +1119,6 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
                 if (pointData == null) return null;
                 dataList = pointData.getRecords();
             }
-
             if (!fields) {
                 fields = pointData.getRecordFields();
             }
@@ -2395,8 +2396,8 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             $("#" + popupId).draggable();
         },
         checkLayout: function() {},
-                displayData: function() {},
-                createUI: function() {
+        displayData: function() {},
+        createUI: function() {
                 var divid = this.getProperty(PROP_DIVID);
                 if (divid != null) {
                     var html = this.getHtml();
@@ -2416,9 +2417,54 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
         },
         initDisplay: function() {
             this.createUI();
-            this.checkFilterValueMenu();
+            this.checkSearchBar();
         },
-        checkFilterValueMenu: function() {
+        checkSearchBar: function() {
+            let _this = this;
+            var pointData = this.getData();
+            if (pointData == null) return;
+            this.searchFields = [];
+            var searchBy = this.getProperty("searchFields","",true).split(",");
+            var fields= pointData.getRecordFields();
+            var records = pointData.getRecords();
+            if(searchBy.length>0) {
+                var searchBar  = "";
+                for(var i=0;i<searchBy.length;i++) {
+                    var searchField  = this.getFieldById(fields,searchBy[i]);
+                    if(!searchField) continue;
+                    this.searchFields.push(searchField);
+                    var widget;
+                    var widgetId = this.getDomId("searchby_" + searchField.getId());
+                    if(searchField.getType() == "enumeration") {
+                        var enums = [["","All"]];
+                        var seen = {};
+                        records.map(record=>{
+                                var value = this.getDataValues(record)[searchField.getIndex()];
+                                if(!seen[value]) {
+                                    seen[value]  = true;
+                                    var label = value;
+                                    if(label.length>20) {
+                                        label=  label.substring(0,19)+"...";
+                                    }
+                                    var tuple = [value, label];
+                                    enums.push(tuple);
+                                }
+                            });
+                        widget = HtmlUtils.select("",["id",widgetId],enums);
+                    } else {
+                        widget =HtmlUtils.input("","",["id",widgetId]);
+                    }
+                    widget =searchField.getLabel() +": " + widget;
+                    if(i==0) searchBar += "<br>Display: ";
+                    searchBar+=widget +"&nbsp;&nbsp;";
+                }
+                this.jq(ID_HEADER2).html(searchBar);
+                this.jq(ID_HEADER2).find("input, input:radio,select").change(function(){
+                        var id = $(this).attr("id");
+                        _this.doSearch();
+                    });
+            }
+
             if (!this.getProperty("showFilterWidget", true)) return;
             var filterValues = this.getProperty("filterValues");
             var filterValuesLabel = this.getProperty("filterValuesLabel", "");
@@ -2427,10 +2473,8 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
                 if (filterFieldId) {
                     var filterField = this.getFieldById(null, filterFieldId);
                     if (filterField) {
-                        var pointData = this.getData();
-                        if (pointData == null) return;
                         if (filterValuesLabel == "") filterValuesLabel = filterField.getLabel() + ": ";
-                        filterValues = this.getColumnValues(pointData.getRecords(), filterField).values;
+                        filterValues = this.getColumnValues(records, filterField).values;
                         filterValues = Utils.getUniqueValues(filterValues);
                         filterValues.unshift("");
                     }
@@ -2457,7 +2501,6 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
                 }
 
                 menu += "</select>";
-                let _this = this;
                 this.writeHtml(ID_TOP_RIGHT, filterValuesLabel + menu);
                 this.jq("filterValueMenu").change(function() {
                     var value = $(this).val();
@@ -2512,10 +2555,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             if (width > 0) {
                 style += "width:" + width + "px;"
             }
-
             html += HtmlUtils.openDiv(["class", "display-contents", "style", style]);
-
-
             var get = this.getGet();
             var button = "";
             if (this.getShowMenu()) {
@@ -2540,9 +2580,12 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             }
             left = HtmlUtils.div(["id", this.getDomId(ID_TOP_LEFT)], left);
             var right = HtmlUtils.div(["id", this.getDomId(ID_TOP_RIGHT)], "");
+            html += HtmlUtils.div(["id",this.getDomId(ID_HEADER1),"class","display-header1"], "");
+            html += HtmlUtils.div(["id",this.getDomId(ID_HEADER2),"class","display-header2"], "");
             html += HtmlUtils.leftRightTable(left, right, {
                 valign: "bottom"
             });
+            html += HtmlUtils.div(["id",this.getDomId(ID_HEADER3),"class","display-header3"], "");
             var contents = this.getContentsDiv();
             html += contents;
             html += HtmlUtils.closeTag(TAG_DIV);
@@ -2856,13 +2899,20 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             this.clearCache();
             if (!reload) {
                 this.addData(pointData);
-                this.checkFilterValueMenu();
+                this.checkSearchBar();
             }
             if (url != null) {
                 this.jsonUrl = url;
             } else {
                 this.jsonUrl = null;
             }
+            var records = pointData.getRecords();
+
+            var allFields = this.getData().getRecordFields();
+            var fields = this.getSelectedFields(allFields);
+            if (fields.length == 0)
+                fields = allFields;
+
             if (!this.getDisplayReady()) {
                 return;
             }
@@ -2872,6 +2922,40 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
                 this.propagateEvent("handleEventPointDataLoaded", pointData);
             }
         },
+        doSearch: function() {
+                var records = [];
+                var values = [];
+                for(var i=0;i<this.searchFields.length;i++) {
+                    var searchField = this.searchFields[i];
+                    values.push($("#" + this.getDomId("searchby_" + searchField.getId())).val());
+                }
+                for (var rowIdx = 0; rowIdx <this.records.length; rowIdx++) {
+                    var row = this.getDataValues(this.records[rowIdx]);
+                    var ok = true;
+                    for(var i=0;i<this.searchFields.length;i++) {
+                        var searchField = this.searchFields[i];
+                        var searchValue = values[i];
+                        if(searchValue=="") continue;
+                        var value = row[searchField.getIndex()];
+                        if(searchField.getType() == "enumeration") {
+                            if(value!=searchValue) {
+                                ok = false;
+                                break;
+                            }
+                        } else {
+                            value  = (""+value).toLowerCase();
+                            if(value.indexOf(searchValue.toLowerCase())<0) {
+                                ok = false;
+                                break;
+                            }
+                        }
+                    }
+                    if(ok) records.push(this.records[rowIdx]);
+                }
+                this.displaySearchResults(records);
+            },
+         displaySearchResults: function(records) {
+         },
 
         getDateFormatter: function() {
             var date_formatter = null;

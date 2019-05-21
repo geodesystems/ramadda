@@ -36,7 +36,9 @@ var googleChartsLoaded = false;
 function googleChartsHaveLoaded() {
     googleChartsLoaded = true;
 }
-google.charts.setOnLoadCallback(googleChartsHaveLoaded);
+if(window["google"]) {
+    google.charts.setOnLoadCallback(googleChartsHaveLoaded);
+}
 
 function haveGoogleChartsLoaded() {
     if (!googleChartsLoaded) {
@@ -651,7 +653,7 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
 
             var dataHasIndex = props.includeIndex;
             var dataList = this.computedData;
-            if (this["function"] && this.computedData == null) {
+            if (this["function"] && dataList == null) {
                 var pointData = this.dataCollection.getList()[0];
                 var allFields = pointData.getRecordFields();
                 var records = pointData.getRecords();
