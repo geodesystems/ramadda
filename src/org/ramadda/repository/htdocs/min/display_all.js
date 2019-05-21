@@ -3073,14 +3073,18 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             }
         },
         doSearch: function() {
-                var records = [];
+                var records = this.filterData();
+                if (!records) {
+                    return;
+                }
+                var newRecords = [];
                 var values = [];
                 for(var i=0;i<this.searchFields.length;i++) {
                     var searchField = this.searchFields[i];
                     values.push($("#" + this.getDomId("searchby_" + searchField.getId())).val());
                 }
-                for (var rowIdx = 0; rowIdx <this.records.length; rowIdx++) {
-                    var row = this.getDataValues(this.records[rowIdx]);
+                for (var rowIdx = 0; rowIdx <records.length; rowIdx++) {
+                    var row = this.getDataValues(records[rowIdx]);
                     var ok = true;
                     for(var i=0;i<this.searchFields.length;i++) {
                         var searchField = this.searchFields[i];
@@ -3100,9 +3104,9 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
                             }
                         }
                     }
-                    if(ok) records.push(this.records[rowIdx]);
+                    if(ok) newRecords.push(records[rowIdx]);
                 }
-                this.displaySearchResults(records);
+                this.displaySearchResults(newRecords);
             },
          displaySearchResults: function(records) {
          },
