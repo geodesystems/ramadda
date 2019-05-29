@@ -71,7 +71,8 @@ you might want to use an &quot;Hourly&quot; setting to get the image at some fix
 Under &quot;Look for files&quot; you specify a directory on the server file system to scan and a regular expression to
 match on the file name.
 The repository will recursively scan the directory tree and any files it finds that matches the pattern it will
-add to the repository. <p>
+add to the repository. 
+<p>
 The regular expressions used are somewhat extended in that you can specify subsets of the regular expression
 and use the result text for metadata and other information when creating the entry in the repository.
 For example, a very common case is to have a date/time embedded in the filename. So, you could have in your regular 
@@ -89,9 +90,22 @@ is used to create the repository entry fromdate field.
 <p>
 The date format that is used is defined in the Date Format field and follows the
 Java <a href="http://docs.oracle.com/javase/6/docs/api/java/text/SimpleDateFormat.html">date format</a> conventions.
+<p>
+If you are creating entries of a certain type that has a number of attributes you can extract the attribute values
+using this extended regular expression technique. So, for example, if you had an entry with two attributes attr1 and attr2
+and your files were of the format:
+<pre>
+&ltattr1&gt;_&ltattr2&gt;.csv_
+</pre>
 
+Your regular expression would be:
+<pre>
+(attr1:[^/]+.)_(attr2:[^/]*).csv
+</pre>
 
-
+This says that attr1 is any number of characters except the slash ("/"). The slash exclusion is
+used to exclude the file path as the full file path is used when matching patterns.
+The value for attr2 follows the "_" and is any number of characters except a slash.
 
 
 

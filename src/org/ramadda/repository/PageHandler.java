@@ -3350,9 +3350,7 @@ public class PageHandler extends RepositoryManager {
                 includeNonFiles, null);
 
         HtmlUtils.Selector selector =
-            new HtmlUtils.Selector(msg("Find match"),
-                                   TypeHandler.TYPE_FINDMATCH, null, 4,
-                                   false);
+            new HtmlUtils.Selector("Find match", TypeHandler.TYPE_FINDMATCH, getRepository().getIconUrl("/icons/blank.gif"), 0, 0, false);
         selector.setAttr(" style=\"padding:6px;\" ");
         items.add(0, selector);
         String selected = (typeHandler != null)

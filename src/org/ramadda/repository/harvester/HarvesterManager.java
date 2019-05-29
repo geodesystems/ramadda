@@ -691,13 +691,13 @@ public class HarvesterManager extends RepositoryManager {
 
             String edit = "&nbsp;";
             if (harvester.getIsEditable()) {
+                String icon  = 
                 edit = HtmlUtils
                     .href(request
                         .makeUrl(
                             URL_HARVESTERS_FORM, ARG_HARVESTER_ID,
-                            harvester.getId()), HtmlUtils
-                                .img(getRepository().getIconUrl(ICON_EDIT),
-                                     msg("Edit")));
+                            harvester.getId()), getIconImage(ICON_EDIT,"title",
+                                                             msg("Edit")));
             }
             cnt++;
             String rowAttributes = HtmlUtils.attr(HtmlUtils.ATTR_VALIGN,

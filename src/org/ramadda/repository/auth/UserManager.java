@@ -1985,9 +1985,8 @@ public class UserManager extends RepositoryManager {
                                       request.makeUrl(
                                           getRepositoryBase().URL_USER_EDIT,
                                           ARG_USER_ID,
-                                          user.getId()), HtmlUtils.img(
-                                              getIconUrl(ICON_EDIT),
-                                              msg("Edit user")));
+                                          user.getId()), getIconImage(ICON_EDIT,"title",
+                                                                      msg("Edit user")));
 
             String userProfileLink =
                 HtmlUtils.href(

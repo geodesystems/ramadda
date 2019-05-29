@@ -3444,14 +3444,8 @@ public class HtmlUtils {
                 if (selector.attr != null) {
                     attrSB.append(selector.attr);
                 }
+                //                System.out.println(selector.label  + " " + selector.icon +" " +selector.isHeader);
                 if (selector.icon != null) {
-                    /* Firefox only
-                    extraAttr = style(
-                        "margin:4px;margin-left:" + selector.margin
-                        + "px;padding-left:" + selector.padding
-                        + "px;padding-bottom:1px;padding-top:3px;background-repeat:no-repeat; background-image: url("
-                        + selector.icon + ");");
-                    */
                     extraAttr = attrs("data-class", "ramadda-select-icon",
                                       "data-style",
                                       "width:" + selector.padding

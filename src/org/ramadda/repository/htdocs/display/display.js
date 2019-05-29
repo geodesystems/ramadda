@@ -2907,7 +2907,6 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
                 this.jsonUrl = null;
             }
             var records = pointData.getRecords();
-
             var allFields = this.getData().getRecordFields();
             var fields = this.getSelectedFields(allFields);
             if (fields.length == 0)

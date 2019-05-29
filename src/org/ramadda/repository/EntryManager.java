@@ -1601,7 +1601,7 @@ public class EntryManager extends RepositoryManager {
         for (String cat : cats.getCategories()) {
             List<HtmlUtils.Selector> selectors = cats.get(cat);
             if (selectors.size() > 0) {
-                tfos.add(new HtmlUtils.Selector(cat, "", null, 0, true));
+                tfos.add(new HtmlUtils.Selector(cat, "", getRepository().getIconUrl("/icons/blank.gif"), 0, 0, true));
                 tfos.addAll(selectors);
             }
         }
@@ -4497,7 +4497,7 @@ public class EntryManager extends RepositoryManager {
                 String select =
                     getRepository().getHtmlOutputHandler().getSelect(
                         request, ARG_TO, HtmlUtils.img(
-                            getRepository().getIconUrl(
+                                                       getRepository().getIconUrl(
                                 ICON_FOLDER_OPEN)) + HtmlUtils.space(1)
                                     + msg("Select")
                                     + HtmlUtils.space(
