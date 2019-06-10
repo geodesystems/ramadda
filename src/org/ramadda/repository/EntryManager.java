@@ -1601,7 +1601,9 @@ public class EntryManager extends RepositoryManager {
         for (String cat : cats.getCategories()) {
             List<HtmlUtils.Selector> selectors = cats.get(cat);
             if (selectors.size() > 0) {
-                tfos.add(new HtmlUtils.Selector(cat, "", getRepository().getIconUrl("/icons/blank.gif"), 0, 0, true));
+                tfos.add(new HtmlUtils.Selector(cat, "",
+                        getRepository().getIconUrl("/icons/blank.gif"), 0, 0,
+                        true));
                 tfos.addAll(selectors);
             }
         }
@@ -4497,7 +4499,7 @@ public class EntryManager extends RepositoryManager {
                 String select =
                     getRepository().getHtmlOutputHandler().getSelect(
                         request, ARG_TO, HtmlUtils.img(
-                                                       getRepository().getIconUrl(
+                            getRepository().getIconUrl(
                                 ICON_FOLDER_OPEN)) + HtmlUtils.space(1)
                                     + msg("Select")
                                     + HtmlUtils.space(
@@ -8792,6 +8794,28 @@ public class EntryManager extends RepositoryManager {
      * @throws Exception _more_
      */
     public Entry getTemplateEntry(File file) throws Exception {
+        try {
+            Entry entry = getTemplateEntryInner(file);
+            return entry;
+        } catch (Exception exc) {
+            getLogManager().logError(
+                "Error creating template entry from file:" + file);
+
+            throw exc;
+        }
+    }
+
+
+    /**
+     * _more_
+     *
+     * @param file _more_
+     *
+     * @return _more_
+     *
+     * @throws Exception _more_
+     */
+    private Entry getTemplateEntryInner(File file) throws Exception {
         File    parent      = file.getParentFile();
         boolean isDirectory = file.isDirectory();
         String  type        = (isDirectory
