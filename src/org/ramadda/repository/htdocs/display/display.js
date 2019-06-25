@@ -2701,7 +2701,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             var style = "";
             var height = this.getHeightForStyle();
             if (height) {
-                style += " height:" + height + ";";
+                style += " height:" + height + ";overflow-y:auto;";
             }
             var width = this.getWidthForStyle();
             if (width) {
@@ -2728,8 +2728,10 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             var top = HtmlUtils.div([ATTR_STYLE, topBottomStyle, ATTR_ID, this.getDomId(ID_DISPLAY_TOP)], "");
             var bottom = HtmlUtils.div([ATTR_STYLE, topBottomStyle, ATTR_ID, this.getDomId(ID_DISPLAY_BOTTOM)], "");
 
-            return top + HtmlUtils.div([ATTR_CLASS, "display-contents-inner display-" + this.type, "style", style, ATTR_ID, this.getDomId(ID_DISPLAY_CONTENTS)], "") + bottom;
+            var contents =  top + HtmlUtils.div([ATTR_CLASS, "display-contents-inner display-" + this.type, "style", style, ATTR_ID, this.getDomId(ID_DISPLAY_CONTENTS)], "") + bottom;
+            return contents;
         },
+
         copyDisplay: function() {
             var newOne = {};
             $.extend(true, newOne, this);

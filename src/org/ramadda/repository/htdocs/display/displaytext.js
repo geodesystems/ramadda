@@ -11,6 +11,7 @@ var DISPLAY_TEXT = "text";
 var DISPLAY_CARDS = "cards";
 
 
+
 addGlobalDisplayType({
     type: DISPLAY_TEXT,
     label: "Text Readout",
@@ -27,6 +28,7 @@ addGlobalDisplayType({
     forUser: true,
     category: CATEGORY_MISC
 });
+
 
 
 addGlobalDisplayType({
@@ -652,6 +654,8 @@ function RamaddaCardsDisplay(displayManager, id, properties) {
             }
     });
 }
+
+
 
 
 

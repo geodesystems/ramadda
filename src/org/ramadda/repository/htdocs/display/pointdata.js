@@ -442,6 +442,9 @@ function RecordField(props) {
         isFieldString: function() {
                 return this.type == "string" || this.type == "enumeration";
         },
+        isFieldEnumeration: function() {
+                return this.type == "enumeration";
+        },
         isFieldDate: function() {
             return this.isDate;
         },
@@ -454,6 +457,18 @@ function RecordField(props) {
         getId: function() {
             return this.id;
         },
+        getTypeLabel: function() {
+                var type = "fa-font";
+                if(this.isFieldGeo()) {
+                    type="fa-globe";
+                } else if(this.isFieldNumeric()) {
+                    type="fa-hashtag";
+                } else if(this.isFieldEnumeration()) {
+                    type="fa-list";
+                }
+                var tt = this.getType();
+                return  HtmlUtils.span(["title",tt,"class","fa " +type,"style","color:rgb(169, 169, 169);font-size:12pt;"]);
+            },
         getUnitLabel: function() {
             var label = this.getLabel();
             if (this.unit && this.unit != "")

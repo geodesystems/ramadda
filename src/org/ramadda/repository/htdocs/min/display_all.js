@@ -2851,7 +2851,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             var style = "";
             var height = this.getHeightForStyle();
             if (height) {
-                style += " height:" + height + ";";
+                style += " height:" + height + ";overflow-y:auto;";
             }
             var width = this.getWidthForStyle();
             if (width) {
@@ -2878,8 +2878,10 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             var top = HtmlUtils.div([ATTR_STYLE, topBottomStyle, ATTR_ID, this.getDomId(ID_DISPLAY_TOP)], "");
             var bottom = HtmlUtils.div([ATTR_STYLE, topBottomStyle, ATTR_ID, this.getDomId(ID_DISPLAY_BOTTOM)], "");
 
-            return top + HtmlUtils.div([ATTR_CLASS, "display-contents-inner display-" + this.type, "style", style, ATTR_ID, this.getDomId(ID_DISPLAY_CONTENTS)], "") + bottom;
+            var contents =  top + HtmlUtils.div([ATTR_CLASS, "display-contents-inner display-" + this.type, "style", style, ATTR_ID, this.getDomId(ID_DISPLAY_CONTENTS)], "") + bottom;
+            return contents;
         },
+
         copyDisplay: function() {
             var newOne = {};
             $.extend(true, newOne, this);
@@ -4390,6 +4392,9 @@ function RecordField(props) {
         isFieldString: function() {
                 return this.type == "string" || this.type == "enumeration";
         },
+        isFieldEnumeration: function() {
+                return this.type == "enumeration";
+        },
         isFieldDate: function() {
             return this.isDate;
         },
@@ -4402,6 +4407,18 @@ function RecordField(props) {
         getId: function() {
             return this.id;
         },
+        getTypeLabel: function() {
+                var type = "fa-font";
+                if(this.isFieldGeo()) {
+                    type="fa-globe";
+                } else if(this.isFieldNumeric()) {
+                    type="fa-hashtag";
+                } else if(this.isFieldEnumeration()) {
+                    type="fa-list";
+                }
+                var tt = this.getType();
+                return  HtmlUtils.span(["title",tt,"class","fa " +type,"style","color:rgb(169, 169, 169);font-size:12pt;"]);
+            },
         getUnitLabel: function() {
             var label = this.getLabel();
             if (this.unit && this.unit != "")
@@ -10787,10 +10804,6 @@ function RamaddaStatsDisplay(displayManager, id, properties, type) {
                     header.push("Missing");
                     dummy.push("&nbsp;");
                 }
-                if (this.showType) {
-                    header.push("Type");
-                    dummy.push("&nbsp;");
-                }
                 html += HtmlUtils.tr(["valign", "bottom"], HtmlUtils.tds(["class", "display-stats-header", "align", "center"], header));
             }
             var cats = [];
@@ -10880,9 +10893,6 @@ function RamaddaStatsDisplay(displayManager, id, properties, type) {
                     }
 
                 }
-                if (this.showType) {
-                    values.push(stats[col].type);
-                }
                 right = HtmlUtils.tds(["align", "right"], values);
                 var align = (justOne ? "right" : "left");
                 var label = field.getLabel();
@@ -10893,11 +10903,13 @@ function RamaddaStatsDisplay(displayManager, id, properties, type) {
                     tooltip += "\n" + field.description + "\n";
                 }
                 label = toks[toks.length - 1];
+                if (field.unit && field.unit != "")
+                    label = label + " [" + field.unit + "]";
                 if (justOne) {
                     label += ":";
                 }
                 label = label.replace(/ /g, "&nbsp;")
-                var row = HtmlUtils.tr([], HtmlUtils.td(["align", align], "<b>" + HtmlUtils.tag("div", ["title", tooltip], label) + "</b>") + right);
+                 var row = HtmlUtils.tr([], HtmlUtils.td(["align", align], field.getTypeLabel() +"&nbsp;<b>" + HtmlUtils.span(["title", tooltip], label) + "</b>") + right);
                 if (justOne) {
                     html += row;
                 } else {
@@ -12993,6 +13005,7 @@ var DISPLAY_TEXT = "text";
 var DISPLAY_CARDS = "cards";
 
 
+
 addGlobalDisplayType({
     type: DISPLAY_TEXT,
     label: "Text Readout",
@@ -13009,6 +13022,7 @@ addGlobalDisplayType({
     forUser: true,
     category: CATEGORY_MISC
 });
+
 
 
 addGlobalDisplayType({
@@ -13634,6 +13648,8 @@ function RamaddaCardsDisplay(displayManager, id, properties) {
             }
     });
 }
+
+
 
 
 
