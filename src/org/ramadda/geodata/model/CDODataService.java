@@ -87,8 +87,9 @@ public abstract class CDODataService extends Service {
     public static final String ARG_CLIMATE_DATASET_NUMBER =
         "clim_dataset_number";
 
-    /** _more_ */
+    /** time average */
     public static final String ARG_TIME_AVERAGE = "time_average";
+
 
     /** the type handler associated with this */
     private CDOOutputHandler outputHandler;
@@ -981,6 +982,19 @@ public abstract class CDODataService extends Service {
         TypeHandler type = e.getTypeHandler();
 
         return (type instanceof ClimateModelFileTypeHandler);
+    }
+    
+    public String getFrequency(Request request, Entry sample) {
+        Entry collection =
+            GranuleTypeHandler.getCollectionEntry(request, sample);
+        String frequency = CDOOutputHandler.FREQUENCY_MONTHLY;
+        if (collection != null) {
+            String sval = collection.getValue(0).toString();
+            if (!sval.toLowerCase().contains("mon")) {
+              frequency = CDOOutputHandler.FREQUENCY_DAILY;
+            }
+        }
+        return frequency;
     }
 
     /**

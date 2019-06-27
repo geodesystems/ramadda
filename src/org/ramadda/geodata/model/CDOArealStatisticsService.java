@@ -1103,8 +1103,13 @@ public class CDOArealStatisticsService extends CDODataService {
         String type =
             input.getProperty(
                 "type", ClimateModelApiHandler.ARG_ACTION_COMPARE).toString();
+        String frequency = getFrequency(request, input.getOperands().get(0).getEntries().get(0));
         if ((periods == null) || (periods.isEmpty())) {
-            CDOOutputHandler.makeMonthsWidget(request, sb, null);
+            if (frequency.equals(CDOOutputHandler.FREQUENCY_DAILY)) {
+                CDOOutputHandler.makeMonthDaysWidget(request, sb, null);
+            } else {
+                CDOOutputHandler.makeMonthsWidget(request, sb, null);
+            }
             makeYearsWidget(request, sb, input, type);
         } else {
             makeEventsWidget(request, sb, periods, type);
@@ -1270,7 +1275,7 @@ public class CDOArealStatisticsService extends CDODataService {
                              : String.valueOf(wnum + 1);
             String yrLabel = "Start";
             if (numWidgets > 1) {
-                if (wnum < ordinalYears.length) {
+                if (wnum < ordinalYears.length && false) {
                     yrLabel = ordinalYears[wnum] + " Dataset:<br>Start";
                 } else {
                     yrLabel = "Dataset " + (wnum + 1) + ":<br>Start";

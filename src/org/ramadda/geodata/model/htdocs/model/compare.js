@@ -257,7 +257,7 @@ function CollectionForm(formId, plottype, args) {
                 for (var i = 0; i < imageEntries.length; i++) {
                     var entry = imageEntries[i];
                     imagehtml += "<a class=\"popup_image\" href=\""+ entry.getResourceUrl()+"\">\n";
-                    imagehtml += HtmlUtil.image(entry.getResourceUrl(), ["width", "500px"])+"\n";
+                    imagehtml += HtmlUtil.image(entry.getResourceUrl(), ["width", "100%"])+"\n";
                     imagehtml += "</a>\n";
                     imagehtml += "<br/>\n";
                     imagehtml += HtmlUtil.href(entry.getResourceUrl(), "Download image");

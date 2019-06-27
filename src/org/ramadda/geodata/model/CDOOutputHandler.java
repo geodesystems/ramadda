@@ -58,6 +58,7 @@ import ucar.nc2.units.SimpleUnit;
 import ucar.unidata.geoloc.LatLonPointImpl;
 import ucar.unidata.geoloc.LatLonRect;
 import ucar.unidata.util.DateUtil;
+import ucar.unidata.util.HtmlUtil;
 import ucar.unidata.util.IOUtil;
 import ucar.unidata.util.Misc;
 import ucar.unidata.util.StringUtil;
@@ -95,6 +96,13 @@ public class CDOOutputHandler extends OutputHandler implements ServiceProvider {
     /** operation identifier */
     public static final String ARG_CDO_OPERATION = ARG_CDO_PREFIX
                                                    + "operation";
+
+    /** start day identifier */
+    public static final String ARG_CDO_STARTDAY = ARG_CDO_PREFIX
+                                                    + "startday";
+
+    /** end day identifier */
+    public static final String ARG_CDO_ENDDAY = ARG_CDO_PREFIX + "endday";
 
     /** start month identifier */
     public static final String ARG_CDO_STARTMONTH = ARG_CDO_PREFIX
@@ -245,6 +253,12 @@ public class CDOOutputHandler extends OutputHandler implements ServiceProvider {
     /** end year */
     private int endYear = 2011;
 
+    /** monthly frequency */
+    public static final String FREQUENCY_MONTHLY = "frequency_monthly";
+
+    /** daily frequency */
+    public static final String FREQUENCY_DAILY = "frequency_daily";
+
     /** info types */
     @SuppressWarnings("unchecked")
     private List<TwoFacedObject> INFO_TYPES = Misc.toList(new Object[] {
@@ -278,10 +292,24 @@ public class CDOOutputHandler extends OutputHandler implements ServiceProvider {
         "January", "February", "March", "April", "May", "June", "July",
         "August", "September", "October", "November", "December"
     };
+    
+    /** short month names */
+    private static final String[] SHORT_MONTH_NAMES = {
+        "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul",
+        "Aug", "Sep", "Oct", "Nov", "Dec"
+    };
+
 
     /** month numbers */
     public static final int[] MONTH_NUMBERS = {
         1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12
+    };
+
+    /** month day numbers */
+    public static final int[] DAY_NUMBERS = {
+        1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 
+        11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 
+        21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31
     };
 
     /** month numbers */
@@ -292,6 +320,13 @@ public class CDOOutputHandler extends OutputHandler implements ServiceProvider {
     /** month list */
     public static final List<TwoFacedObject> MONTHS =
         TwoFacedObject.createList(MONTH_NUMBERS, MONTH_NAMES);
+
+    /** short month list */
+    public static final List<TwoFacedObject> SHORT_MONTHS =
+        TwoFacedObject.createList(MONTH_NUMBERS, SHORT_MONTH_NAMES);
+
+    /** days list */
+    public static final List<TwoFacedObject> DAYS = createList(DAY_NUMBERS);
 
     /** spatial arguments */
     private static final String[] SPATIALARGS = new String[] {
@@ -842,6 +877,44 @@ public class CDOOutputHandler extends OutputHandler implements ServiceProvider {
         //    MONTHS.size()
         //    - 1).getId().toString()), HtmlUtils.title(
         "Select the ending month"))));
+    }
+
+    /**
+     * Add the days selection widget
+     *
+     * @param request  the Request
+     * @param sb       the StringBuilder to add to
+     * @param dates    the list of dates (just in case)
+     *
+     * @throws Exception problems appending
+     */
+    public static void makeMonthDaysWidget(Request request, Appendable sb,
+                                        List<CalendarDate> dates)
+            throws Exception {
+        sb.append(
+            HtmlUtils.formEntry(
+                msgLabel("Days"),
+                msgLabel("Start")
+                + HtmlUtils.select(
+                    ARG_CDO_STARTMONTH, SHORT_MONTHS,
+                    request.getString(ARG_CDO_STARTMONTH, null),
+                    HtmlUtils.title(
+                        "Select the starting month")) + 
+                      HtmlUtils.select(
+                        ARG_CDO_STARTDAY, DAYS,
+                        request.getString(ARG_CDO_STARTDAY, null),
+                      HtmlUtils.title(
+                        "Select the starting day")) + HtmlUtil.space(2)
+                            + msgLabel("End")
+                            + HtmlUtils.select(
+                                ARG_CDO_ENDMONTH, SHORT_MONTHS,
+                                request.getString(ARG_CDO_ENDMONTH, null),
+                                HtmlUtils.title("Select the ending month")) +
+                                  HtmlUtils.select(
+                                    ARG_CDO_ENDDAY, DAYS,
+                                    request.getString(ARG_CDO_ENDDAY, null),
+                                  HtmlUtils.title(
+                                    "Select the ending day"))));
     }
 
     /**
@@ -1697,6 +1770,22 @@ public class CDOOutputHandler extends OutputHandler implements ServiceProvider {
             return isEnabled();
         }
 
+    }
+    
+    /**
+     * Create a list of tfos from the given int ids and names
+     *
+     * @param ids ids
+     * @param names names
+     *
+     * @return list of tfos
+     */
+    public static List<TwoFacedObject> createList(int[] ids) {
+        List<TwoFacedObject> l = new ArrayList<TwoFacedObject>();
+        for (int i = 0; i < ids.length; i++) {
+            l.add(new TwoFacedObject(Integer.toString(ids[i]), ids[i]));
+        }
+        return l;
     }
 
 }

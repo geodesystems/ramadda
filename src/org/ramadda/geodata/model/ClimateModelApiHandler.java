@@ -763,7 +763,6 @@ public class ClimateModelApiHandler extends RepositoryManager implements Request
 
         // Build the input form
 
-
         List<Entry> collections = getCollections(request);
         if (collections.size() == 0) {
             return new Result(
@@ -781,18 +780,7 @@ public class ClimateModelApiHandler extends RepositoryManager implements Request
 
         String formAttrs = HtmlUtils.attrs(ATTR_ID, formId);
         sb.append(HtmlUtils.form(getApiUrlPath(request, type), formAttrs));
-        //        if (type.equals(ARG_ACTION_COMPARE)
-        //                || type.equals(ARG_ACTION_ENS_COMPARE)
-        //                || type.equals(ARG_ACTION_MULTI_COMPARE)
-        //                || type.equals(ARG_ACTION_CORRELATION)) {
-        //            getMapManager().addGoogleEarthImports(request, sb);
-        //            sb.append(
-        //                "<script type=\"text/JavaScript\">google.load(\"earth\", \"1\");</script>\n");
-        //sb.append(HtmlUtils.script(
-        //    "$(document).ready(function() {\n $(\"a.popup_image\").fancybox({\n 'titleShow' : false\n });\n });\n"));
-        //        } else {
         getWikiManager().addDisplayImports(request, sb);
-        //        }
 
         List<TwoFacedObject> tfos = new ArrayList<TwoFacedObject>();
         tfos.add(new TwoFacedObject("Select Climate Collection", ""));
@@ -901,10 +889,6 @@ public class ClimateModelApiHandler extends RepositoryManager implements Request
             title += " for "
                      + HtmlUtils.href(entryUrl, fixedCollection.getName());
 
-
-            //            sb.append(":heading ");
-            //            sb.append("Collection: " + fixedCollection.getName());
-            //            sb.append("\n");
             sb.append(HtmlUtils.hidden(ARG_COLLECTION,
                                        fixedCollection.getId()));
         }
@@ -924,14 +908,6 @@ public class ClimateModelApiHandler extends RepositoryManager implements Request
             sb.append(HtmlUtils.hidden(ARG_TEMPLATE,
                                        request.getString(ARG_TEMPLATE)));
         }
-
-        sb.append(
-            "<table border=0 width=\"100%\" cellpadding=\"2\"><tr valign=\"center\" align=\"left\">\n");
-        //        sb.append(HtmlUtils.open("td", "width=\"400px\""));
-        //        sb.append(HtmlUtils.div(msg("Select Data To Plot"), HtmlUtils.cssClass("model-header")));
-        //        WikiUtil.heading(sb, msg("Select Data To Plot"));
-        //        sb.append(HtmlUtils.close("td"));
-        //        sb.append(HtmlUtils.open("td", ""));
 
         String plotButton  = "&nbsp;";
         String selectClass = "multi_select_widget";
@@ -965,8 +941,8 @@ public class ClimateModelApiHandler extends RepositoryManager implements Request
         plotButton = HtmlUtils.div(plotButton,
                                    HtmlUtils.cssClass("model-header"));
 
-        sb.append("<tr valign=\"top\">");
-        sb.append(HtmlUtils.open("td", "width=\"400px\"") + "\n");
+        sb.append("<div class=\"row\">\n");
+        sb.append(HtmlUtils.open("div", "class=\"col-md-5\"") + "\n");
 
         // Field selection
         String fieldsHelp = getHelp(fieldsHelpFile);
@@ -1095,27 +1071,7 @@ public class ClimateModelApiHandler extends RepositoryManager implements Request
 
                 }
             }
-            // TODO: lay out a table with the selectors 
-            //dsb.append(HtmlUtils.formTableClose());
             addSelectorTable(dsb, selectors);
-            /*
-            dsb.append(
-                "<table cellspacing=\"3px\" cellpadding=\"2px\" align=\"center\">\n");
-            for (int i = 0; i < selectors.size(); i++) {
-                dsb.append("<tr valign=\"top\">\n");
-                dsb.append("<td>");
-                dsb.append(selectors.get(i));
-                dsb.append("</td>");
-            }
-            dsb.append("</tr></table>\n");
-            */
-
-            // List out the search results
-            //StringBuilder results = extra.get(collection);
-            //if (results != null) {
-            //    dsb.append(results.toString());
-            //}
-
 
             datasets.add(dsb.toString());
         }
@@ -1125,12 +1081,11 @@ public class ClimateModelApiHandler extends RepositoryManager implements Request
             datasets.add(makeTimeSeriesSelectors(request, formId));
         }
         // table of two datasets
-        //sb.append("<table align=\"center\"><tr>");
-        sb.append("<table><tr>");
+        sb.append("<div class=\"row\">");
         if (datasets.size() > 1) {
-            sb.append("<td class=\"dataset-selector\" >");
+            sb.append("<div class=\"col-md-6 dataset-selector bottom-spacer\" >");
         } else {
-            sb.append("<td>");
+            sb.append("<div class=\"col-md-12 bottom-spacer\">");
         }
         if (type.equals(ARG_ACTION_COMPARE)
                 || type.equals(ARG_ACTION_TIMESERIES)
@@ -1141,59 +1096,44 @@ public class ClimateModelApiHandler extends RepositoryManager implements Request
                     msg(datasetTitles.get(0)),
                     HtmlUtils.cssClass("model-dataset_title")));
         }
-        sb.append(HtmlUtils.div(datasets.get(0),
-                                HtmlUtils.cssClass("model-dataset")));
-        sb.append("</td>");
+        sb.append(HtmlUtils.div(datasets.get(0)));
+        sb.append(HtmlUtils.close(HtmlUtils.TAG_DIV));  // left or only column
         if (datasets.size() > 1) {
-            sb.append("<td valign=\"top\">");
+            sb.append("<div class=\"col-md-6 text-vertical\">");
             sb.append(
                 HtmlUtils.div(
                     msg(datasetTitles.get(1)),
                     HtmlUtils.cssClass("model-dataset_title")));
-            sb.append(HtmlUtils.div(datasets.get(1),
-                                    HtmlUtils.cssClass("model-dataset")));
-            sb.append("</td>");
+            sb.append(HtmlUtils.div(datasets.get(1)));
+            sb.append(HtmlUtils.close(HtmlUtils.TAG_DIV));  // right column
         }
-        sb.append("</tr>");
+        sb.append("</div>");  // dataset row
 
-        sb.append("</table>");
-
+        String searchButton = null;
         if ( !hasOperands) {
-            //sb.append("<tr><td colspan=\"" + collectionArgs.length
-            //          + "\" align=\"center\">");
-            //sb.append("</td></tr></table>");
-            sb.append(HtmlUtils.p());
-            sb.append(HtmlUtils.open(HtmlUtils.TAG_CENTER));
-            sb.append(HtmlUtils.submit("Select Data", ARG_ACTION_SEARCH,
+          searchButton = HtmlUtils.submit("Select Data", ARG_ACTION_SEARCH,
                                        HtmlUtils.id(formId + "_submit")
                                        + makeButtonSubmitDialog(sb,
                                            msg("Searching for data")
-                                           + "...")));
-            sb.append(HtmlUtils.close(HtmlUtils.TAG_CENTER));
-            sb.append(HtmlUtils.close("div"));  // titled_border_content
-            // Right column - help
-            sb.append("<td>");
-            sb.append(plotButton);
-            sb.append("<div id=\"" + formId + "_output\" class=\"padded\">");
-            sb.append("</div>");
-            sb.append("<div id=\"" + formId + "_url\">");
-            sb.append("</div>");
-            sb.append("</td>");
-        } else {
-            sb.append(HtmlUtils.p());
-            sb.append(HtmlUtils.open(HtmlUtils.TAG_CENTER));
-            sb.append(HtmlUtils.submit("Update Data Selection",
+                                           + "..."));
+        }else {
+            searchButton = HtmlUtils.submit("Update Data Selection",
                                        ARG_ACTION_SEARCH,
                                        HtmlUtils.id(formId + "_submit")
                                        + makeButtonSubmitDialog(sb,
                                            msg("Searching for new data")
-                                           + "...")));
-            sb.append(HtmlUtils.close(HtmlUtils.TAG_CENTER));
-            //sb.append("</td></tr></table>");
-            sb.append(HtmlUtils.close("div"));  // titled_border_content
-            sb.append(HtmlUtils.close("div"));  // titled_border
-
-
+                                           + "..."));
+        }
+        sb.append("<div class=\"row\">");
+        sb.append("  <div class=\"col-md-12 text-center\">");
+        sb.append(searchButton);
+        sb.append(HtmlUtils.close(HtmlUtils.TAG_DIV));  // button column
+        sb.append(HtmlUtils.close(HtmlUtils.TAG_DIV));  // button row
+        sb.append(HtmlUtils.close(HtmlUtils.TAG_DIV));  // data select titled_border_content
+        sb.append(HtmlUtils.close(HtmlUtils.TAG_DIV) + "<!-- titled_border -->");  // data select titled_border
+        
+        if (hasOperands) {  // add in the process boxes
+            
             List<String> processTabs   = new ArrayList<String>();
             List<String> processHelp   = new ArrayList<String>();
             List<String> processTitles = new ArrayList<String>();
@@ -1228,7 +1168,6 @@ public class ClimateModelApiHandler extends RepositoryManager implements Request
             }
 
 
-            //sb.append(header(msg("Process Data")));
             for (int i = 0; i < processTitles.size(); i++) {
                 sb.append(
                     HtmlUtils.open(
@@ -1252,21 +1191,23 @@ public class ClimateModelApiHandler extends RepositoryManager implements Request
                 }
                 */
                 sb.append(processTabs.get(i));
-                sb.append("</div>\n");
-                sb.append("</div> <!-- titled_border -->");
+                sb.append("</div>\n"); // content
+                sb.append("</div> <!-- titled_border -->\n");
             }
-            sb.append("</td>");
-            // Right column - no data
-            sb.append("<td>");
-            sb.append(plotButton);
-            sb.append("<div id=\"" + formId + "_output\" class=\"padded\">");
-            sb.append("</div>");
-            sb.append("<div id=\"" + formId + "_url\">");
-            sb.append("</div>");
-            sb.append("</td>");
+            
         }
-        sb.append("\n</tr></table>");
-
+        
+        sb.append(HtmlUtils.close(HtmlUtils.TAG_DIV) + " <!-- col-md-5 -->\n");  // col-md-5 - left column
+       
+        // Right column - output
+        sb.append(HtmlUtils.open(HtmlUtils.TAG_DIV, HtmlUtils.cssClass("col-md-7")));
+        sb.append(plotButton);
+        sb.append("<div id=\"" + formId + "_output\" class=\"padded\"></div>\n");
+        sb.append("<div id=\"" + formId + "_url\"></div>\n");
+        sb.append(HtmlUtils.close(HtmlUtils.TAG_DIV) + " <!-- col-md-7 -->\n");  // col-md-7
+        
+        sb.append(HtmlUtils.close(HtmlUtils.TAG_DIV));  // input/output row  col-md-5, col-md-7
+        sb.append("\n</div>  <!--  ramadda section div -->\n");
 
         sb.append("\n");
         sb.append(HtmlUtils.script(js.toString()));
