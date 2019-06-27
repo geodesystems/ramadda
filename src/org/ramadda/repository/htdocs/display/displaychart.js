@@ -2680,10 +2680,6 @@ function RamaddaStatsDisplay(displayManager, id, properties, type) {
                     header.push("Missing");
                     dummy.push("&nbsp;");
                 }
-                if (this.showType) {
-                    header.push("Type");
-                    dummy.push("&nbsp;");
-                }
                 html += HtmlUtils.tr(["valign", "bottom"], HtmlUtils.tds(["class", "display-stats-header", "align", "center"], header));
             }
             var cats = [];
@@ -2773,9 +2769,6 @@ function RamaddaStatsDisplay(displayManager, id, properties, type) {
                     }
 
                 }
-                if (this.showType) {
-                    values.push(stats[col].type);
-                }
                 right = HtmlUtils.tds(["align", "right"], values);
                 var align = (justOne ? "right" : "left");
                 var label = field.getLabel();
@@ -2786,11 +2779,13 @@ function RamaddaStatsDisplay(displayManager, id, properties, type) {
                     tooltip += "\n" + field.description + "\n";
                 }
                 label = toks[toks.length - 1];
+                if (field.unit && field.unit != "")
+                    label = label + " [" + field.unit + "]";
                 if (justOne) {
                     label += ":";
                 }
                 label = label.replace(/ /g, "&nbsp;")
-                var row = HtmlUtils.tr([], HtmlUtils.td(["align", align], "<b>" + HtmlUtils.tag("div", ["title", tooltip], label) + "</b>") + right);
+                 var row = HtmlUtils.tr([], HtmlUtils.td(["align", align], field.getTypeLabel() +"&nbsp;<b>" + HtmlUtils.span(["title", tooltip], label) + "</b>") + right);
                 if (justOne) {
                     html += row;
                 } else {
