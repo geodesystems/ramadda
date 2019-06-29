@@ -672,6 +672,10 @@ public abstract class Converter extends Processor {
                 if (desc != null) {
                     attrs.append(" description=\"" + desc + "\" ");
                 }
+                if(unit == null) {
+                    unit = CsvUtil.getDbProp(props, id, "unit",
+                            (String) null);
+                }
                 if (unit != null) {
                     attrs.append("unit=\"" + unit + "\" ");
 
