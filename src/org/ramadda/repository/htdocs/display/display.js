@@ -2908,11 +2908,15 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             } else {
                 this.jsonUrl = null;
             }
+
+            /**
+               This makes the date error in makeDataTable. not sure why
             var records = pointData.getRecords();
             var allFields = this.getData().getRecordFields();
             var fields = this.getSelectedFields(allFields);
             if (fields.length == 0)
                 fields = allFields;
+            **/
 
             if (!this.getDisplayReady()) {
                 return;
