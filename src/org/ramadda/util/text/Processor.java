@@ -1850,6 +1850,7 @@ public abstract class Processor extends CsvOperator {
             }
 
 
+
             for (int i = 0; i < values.size(); i++) {
                 if (i == 0) {
                     info.getWriter().print(open);
@@ -1873,7 +1874,8 @@ public abstract class Processor extends CsvOperator {
                                            "&nbsp;");
                     info.getWriter().print(HtmlUtils.span(label,HtmlUtils.attr("title",label)));
                 } else {
-                    String label = values.get(i).toString();
+                    Object value  = values.get(i);
+                    String label = (value==null?"":value.toString());
                     info.getWriter().print(HtmlUtils.span(label,HtmlUtils.attr("title",label)));
                 }
                 info.getWriter().print("</div>");
