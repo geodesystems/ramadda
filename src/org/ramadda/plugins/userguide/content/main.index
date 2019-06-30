@@ -48,6 +48,7 @@ index.html
 >title:Data Facilities
 #>>pointdata.html
 >>etl.html
+>>dataexample.html
 >>gridsubset.html
 >>gridatpoint.html
 >>gridaggregation.html

@@ -540,6 +540,13 @@ public class TabularOutputHandler extends OutputHandler {
                 StringBuffer html = new StringBuffer();
                 for (String newFile : newFiles) {
                     File f = new File(newFile);
+                    /*
+                    File dir = f.getParentFile();
+                    String xml = "<entry name=\"foo\"><description><![CDATA[Hello]]></description></entry>";
+                    IOUtil.writeFile(IOUtil.joinDir(dir,"." + f.getName() +".ramadda.xml"), xml);
+                    System.err.println(IOUtil.joinDir(dir,"." + f.getName() +".ramadda.xml"));
+                    */
+
                     String id =
                         getEntryManager().getProcessFileTypeHandler()
                             .getSynthId(getEntryManager().getProcessEntry(),
@@ -550,11 +557,22 @@ public class TabularOutputHandler extends OutputHandler {
                             request.getAbsoluteUrl(
                                 getRepository().URL_ENTRY_SHOW), ARG_ENTRYID,
                                     id);
+
+
                     if (newFile.endsWith(".csv")) {
-                        url += "&output=" + OUTPUT_CONVERT_FORM;
+                        //                        url += "&output=" + OUTPUT_CONVERT_FORM;
                     }
-                    html.append(HtmlUtils.href(url, f.getName(),
-                            "target=_output") + "<br> ");
+                    html.append(HtmlUtils.href(url, f.getName(), "target=_output"));
+                    String getUrl =   HtmlUtils.url(
+                                                    request.makeUrl(getRepository().URL_ENTRY_GET) + "/"
+                                                    + f.getName(), ARG_ENTRYID, id);
+                    html.append("  ");
+                    html.append(HtmlUtils.href(getUrl,"Download"));
+                    //If they are creating point data then add an add entry link
+                    //                    if (newFile.endsWith(".csv") && args.contains("-addheader")) {
+                    //                        url += "&output=" + OUTPUT_CONVERT_FORM;
+                    //                    }
+                    html.append("<br>");
                 }
                 String urlParent =
                     HtmlUtils.url(

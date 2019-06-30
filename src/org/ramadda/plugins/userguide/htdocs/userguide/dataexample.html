@@ -1,0 +1,166 @@
+<html>
+<head>
+<title>Data Example</title>
+  <link rel="stylesheet" type="text/css" href="./default.css" title="Style">
+
+</head>
+
+<body>
+<div class="ramadda-documentation">
+<table width=100% cellspacing=0 cellpadding=0 ><tr><td width=30%>
+<a href="etl.html"><img src="images/previous.png" border="0"   alt="Previous: ETL Tools" title="Previous: ETL Tools"></a> <a href="gridsubset.html"><img src="images/next.png" border="0"   alt="Next: Grid Subsetting" title="Next: Grid Subsetting"></a>  <a href="toc.html#dataexample.html"><img src="images/table.png" border="0"   alt="Table of contents" title="Table of contents"></a>
+</td>
+<td width=40% align=center>
+<div class="ramadda-page-title"><a href="${root}/userguide/index.html">RAMADDA User Guide</a></div>
+</td>
+<td width=30%>&nbsp;</td>
+</tr></table>
+<div class="ramadda-page-heading">Section 7.1: Data Example</div>
+
+<style type="text/css">
+pre {
+    margin-left:15px;
+}
+</style>
+
+<div style="margin-left:20px;">
+
+
+
+Here we put things all together showing how to use the ETL tools to clean up and normalize an example CSV data file, how to ingest that file and create a display of the data. 
+<p>
+The overall flow is to -
+<ul>
+<li> Upload the raw data file to RAMADDA
+<li> Clean it up and convert it using the ETL tools
+<li> Add the converted file back to RAMADDA as a special "Text Point Data" entry type
+<li> Create a plot using RAMADDA's wiki facility
+</ul>
+
+
+<a name="rawdata"></a><p><div class="ramadda-help-heading">7.1.0 <a href="#rawdata">The Raw Data</a></div> 
+The example we are using is data from the City of Boulder
+<a href=https://bouldercolorado.gov/open-data/community-greenhouse-gas-emissions/>Open Data Repository</a> that shows  greenhouse gas emissions.
+<p>
+The raw data looks like
+<pre>
+Year,Category,Sub-Category,Emissions per Sub-Category (MTCO2e)
+2005,Source,Electricity,"1,014,560"
+2005,Source,Stationary Fuels,"274,089"
+...
+2014,Source,Transportation Fuels, Not Available
+2014,Source,Other, Not Available
+...
+</pre>
+
+<a name="elt"></a><p><div class="ramadda-help-heading">7.1.1 <a href="#elt">ETL</a></div> 
+What we want to do is to show this data as time series plots in RAMADDA. We first need to clean up the data, reformatting the numeric values, removing the missing years and transforming the data to group the fields by year to be able to create time series displays.
+<p>
+First thing we do is upload the file to RAMADDA. Navigate to some folder (e.g., a development folder) and click on the menu and select "New File" - 
+<div class="cimg"><a href="images/dataexample/menu.png"><img  src="images/dataexample/menu.png"  alt="images/dataexample/menu.png" ></a></div>
+
+Download the <a href=https://bouldercolorado.gov/open-data/community-greenhouse-gas-emissions/>GHGI_Community_Emissions_Source.csv</a> file from the 
+Open Data Repository then upload the file in the Add Entry form:
+<div class="cimg"><a href="images/dataexample/add.png"><img  src="images/dataexample/add.png"  alt="images/dataexample/add.png" ></a></div>
+
+Alternately you can copy the file URL and enter it into the URL field and select "Download":
+<div class="cimg"><a href="images/dataexample/add2.png"><img  src="images/dataexample/add2.png"  alt="images/dataexample/add2.png" ></a></div>
+
+
+Once you upload the raw CSV file RAMADDA automatically creates a "CSV File" entry type. The default display of these types of entry is the CSV data and 
+can be viewed <a href="https://boulderdata.org/repository/entry/show?entryid=9fba8d8d-7782-4c88-8e62-17d32faa0afe">here</a>
+
+<div class="cimg"><a href="images/dataexample/raw.png"><img  src="images/dataexample/raw.png"  alt="images/dataexample/raw.png" ></a></div>
+
+Now we need to go and convert the data. From the menu choose "Convert Spreadsheet" -
+<div class="cimg"><a href="images/dataexample/menu2.png"><img  src="images/dataexample/menu2.png"  alt="images/dataexample/menu2.png" ></a></div>
+
+This takes us to the interactive ELT conversion form (view it
+<a href="https://boulderdata.org/repository/entry/show/Home/Content/Community+Data/Colorado/Boulder+Data+Hub/Development/Ghgi+Community+Emissions+Source?entryid=9fba8d8d-7782-4c88-8e62-17d32faa0afe&output=csv_convert_form">here</a>).
+
+<div class="cimg"><a href="images/dataexample/convert1.png"><img  src="images/dataexample/convert1.png"  alt="images/dataexample/convert1.png" ></a></div>
+
+
+RAMADDA's ETL facility provides 30 some operations for doing different transformations on the CSV file. This form allows you to interactively convert the file. This ends up being an iterative process, allowing the user to try out different conversions and view the results in different ways. This facility is thoroughly documented <a href="https://geodesystems.com/repository/userguide/etl.html">here</a> but basically one adds any number of conversion commands in the main input area. The buttons along the bottom (e.g., Table, Records) allow you to view the results in different ways. 
+<p>
+
+We use the below commands to convert the raw data. This changes the commas in the
+value field (column 3 in the raw data), groups the different values by year, removes the years that have no values then adds RAMADDA's point data header to the result file. 
+
+<div class="cimg"><a href="images/dataexample/convert2.png"><img  src="images/dataexample/convert2.png"  alt="images/dataexample/convert2.png" ></a></div>
+
+Once all is good use the "Make Files" button to process the entire raw file. This provides a link to download the temporary processed file.
+
+
+<a name="textpoint"></a><p><div class="ramadda-help-heading">7.1.2 <a href="#textpoint">Creating the Text Point Data Entry</a></div> 
+Once you download the file you can then upload it back to RAMADDA to the folder of your choice. 
+Instead of adding it as a regular CSV file you need to specify a "Text Point Data" entry type. Go to the folder's menu and choose "Pick a Type" -
+<div class="cimg"><a href="images/dataexample/picktype.png"><img  src="images/dataexample/picktype.png"  alt="images/dataexample/picktype.png" ></a></div> 
+
+Since RAMADDA supports a huge number of entry types this next page can be daunting but fear not. Just scroll down or search in the page for "Text Point Data" and select the link - 
+<div class="cimg"><a href="images/dataexample/picktype2.png"><img  src="images/dataexample/picktype2.png"  alt="images/dataexample/picktype2.png" ></a></div> 
+
+This  takes you to an Add Entry form. Upload the converted file. 
+
+<a name="plots"></a><p><div class="ramadda-help-heading">7.1.3 <a href="#plots">Creating the Plots</a></div> 
+You have now created a new entry with the structured data. You can view information about the entry including
+its file format with the entry menu "Information" link. <a href="https://boulderdata.org/repository/entry/show/Home/Content/Community+Data/Colorado/Boulder+Data+Hub/Data/Energy+and+Utilities/Community+GHG+Emissions+by+Source?entryid=becb663b-d464-451a-a3c6-3ec8a4816515&output=html.info">Here</a> is the example file's information display.
+The default display of the new entry does not show any plots of data. To define a new display RAMADDA's wiki facility is used. From the entry's menu go to "Edit Entry". You will need to change the description. To specify that
+this is wiki text add a "&lt;wiki&gt;" tag to the beginning of the description (documented <a href="https://geodesystems.com/repository/userguide/wiki.html#wikidesc">here</a>).
+The <a href="https://boulderdata.org/repository/alias/boulder_emissons_source">example entry</a> 
+on the Boulder Data Hub has some descriptive information and shows 4 time series plots -
+<div class="cimg"><a href="images/dataexample/example.png"><img  src="images/dataexample/example.png"  alt="images/dataexample/example.png" ></a></div> 
+
+The above page also shows the wiki text. The wiki text facility is very powerful and provides
+numerous display types available - line charts, bar charts, dot plots, etc. There are a number of examples 
+shown <a href=https://geodesystems.com/repository/entry/show?entryid=1c99bcff-94a9-43a8-beb5-45a87adb2cc4>here</a>. Here is further documentation - 
+
+<ul>
+<li> <a href="https://geodesystems.com/repository/userguide/wikitext.html">Wiki text documentation</a> 
+<li> <a href="https://geodesystems.com/repository/userguide/wikidisplay.html">Plots documentation</a>
+</ul>
+
+
+<a name="otherdisplays"></a><p><div class="ramadda-help-heading">7.1.4 <a href="#otherdisplays">Creating other displays</a></div> 
+You can change the default display of your new data entry by changing its description. Copy and paste the 
+<a href="https://boulderdata.org/repository/alias/boulder_emissons_source">example entry's</a> wiki text. 
+Alternately you can create other wiki pages that import and display data from other entries. Simple go to 
+some folder in RAMADDA and choose  "Pick a Type" from the Folder's menu. The Wiki Page type is listed under the "Information" category (search for "wiki" in the web page. Create the wiki page - specifying a name and the wiki text. To display data from other entries you use the same wiki text as described above but you also specify an
+entry-
+<pre>
+{{display  type="linechart"  layoutHere="true"  fields="#1" entry="becb663b-d464-451a-a3c6-3ec8a4816515"}} 
+{{display  type="linechart"  layoutHere="true"  fields="#1" entry="some other entry id"}} 
+</pre>
+
+
+
+</div>
+<p>
+<div  class="childlist" ><table  width="100%" ><tr  valign="top" ><td  width="10%"  align="right" ><span  class="childlist-level" >
+7.1.0&nbsp;
+</span></td><td><a  class="childlist-link"  href="dataexample.html#rawdata" >
+<a href="#rawdata">The Raw Data</a>
+</a><br></td></tr><tr  valign="top" ><td  width="10%"  align="right" ><span  class="childlist-level" >
+7.1.1&nbsp;
+</span></td><td><a  class="childlist-link"  href="dataexample.html#elt" >
+<a href="#elt">ETL</a>
+</a><br></td></tr><tr  valign="top" ><td  width="10%"  align="right" ><span  class="childlist-level" >
+7.1.2&nbsp;
+</span></td><td><a  class="childlist-link"  href="dataexample.html#textpoint" >
+<a href="#textpoint">Creating the Text Point Data Entry</a>
+</a><br></td></tr><tr  valign="top" ><td  width="10%"  align="right" ><span  class="childlist-level" >
+7.1.3&nbsp;
+</span></td><td><a  class="childlist-link"  href="dataexample.html#plots" >
+<a href="#plots">Creating the Plots</a>
+</a><br></td></tr><tr  valign="top" ><td  width="10%"  align="right" ><span  class="childlist-level" >
+7.1.4&nbsp;
+</span></td><td><a  class="childlist-link"  href="dataexample.html#otherdisplays" >
+<a href="#otherdisplays">Creating other displays</a>
+</a><br></td></tr></table></div>
+<p>&nbsp;<p>
+<a href="etl.html"><img src="images/previous.png" border="0"   alt="Previous: ETL Tools" title="Previous: ETL Tools"></a> <a href="gridsubset.html"><img src="images/next.png" border="0"   alt="Next: Grid Subsetting" title="Next: Grid Subsetting"></a>  <a href="toc.html#dataexample.html"><img src="images/table.png" border="0"   alt="Table of contents" title="Table of contents"></a>
+<p>
+</div>
+</body>
+</html>
+
