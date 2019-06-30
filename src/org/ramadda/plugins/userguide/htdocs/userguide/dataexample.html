@@ -53,7 +53,6 @@ Year,Category,Sub-Category,Emissions per Sub-Category (MTCO2e)
 </pre>
 
 <a name="upload"></a><p><div class="ramadda-help-heading">7.1.1 <a href="#upload">Upload the raw file</a></div> 
-We first need to clean up the data, reformatting the numeric values, removing the missing years and transforming the data to group the fields by year to be able to create time series displays.
 <p>
 <ul>
 <li> First download the <a href=https://bouldercolorado.gov/open-data/community-greenhouse-gas-emissions/>GHGI_Community_Emissions_Source.csv</a> file from the Open Data Repository. 
@@ -73,7 +72,8 @@ We first need to clean up the data, reformatting the numeric values, removing th
 </ul>
 
 <a name="convert"></a><p><div class="ramadda-help-heading">7.1.2 <a href="#convert">Convert the raw file</a></div> 
-Now we need to go and convert the data. From the menu choose "Convert Spreadsheet" -
+Next, We need to clean up the data, reformatting the numeric values, removing the missing years and transforming the data to group the fields by year to be able to create time series displays.
+From the menu choose "Convert Spreadsheet" -
 <div class="cimg"><a href="images/dataexample/menu2.png"><img  src="images/dataexample/menu2.png"  alt="images/dataexample/menu2.png" ></a></div>
 
 This takes us to the interactive ETL conversion form (view it
@@ -82,10 +82,10 @@ This takes us to the interactive ETL conversion form (view it
 <div class="cimg"><a href="images/dataexample/convert1.png"><img  src="images/dataexample/convert1.png" width=80% alt="images/dataexample/convert1.png" ></a></div>
 
 
-RAMADDA's ETL facility provides 30 some operations for doing different transformations on the CSV file. This form allows you to interactively convert the file. This ends up being an iterative process, allowing the user to try out different conversions and view the results in different ways. This facility is documented <a href="https://geodesystems.com/repository/userguide/etl.html">here</a> but basically one adds any number of conversion commands in the main input area. The buttons along the bottom (e.g., Table, Records) allow you to view the results in different ways. 
+RAMADDA's ETL facility provides 30 some operations for doing different transformations on the CSV file. This form allows you to interactively convert the file. This ends up being an iterative process, allowing the user to try out different conversions and view the results in different ways. This facility is documented <a href="https://geodesystems.com/repository/userguide/etl.html">here</a>. One adds any number of conversion commands in the main input area. The buttons along the bottom (e.g., Table, Records) allow you to view the results in different ways. 
 <p>
 
-We use the below commands to convert the raw data. This changes the commas in the
+The below commands are used to convert the raw data. This changes the commas in the
 value field (column 3 in the raw data), groups the different values by year, removes the years that have no values then adds RAMADDA's point data header to the result file. 
 
 <div class="cimg"><a href="images/dataexample/convert2.png"><img  src="images/dataexample/convert2.png" width=90% alt="images/dataexample/convert2.png" ></a></div>
