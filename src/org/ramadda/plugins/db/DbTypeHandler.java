@@ -2204,7 +2204,7 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
                     List<String> toks = row.getValues();
                     if (toks.size() != dbInfo.getColumnsToUse().size()) {
                         System.err.println("bad count: " + toks.size()
-                                           + " line length:" + line.length()
+                                           + " line length:" + (line!=null?""+line.length():"null")
                                            + " " + toks);
                         System.err.println("line:" + line);
 
