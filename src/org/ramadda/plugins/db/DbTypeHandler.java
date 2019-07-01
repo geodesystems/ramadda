@@ -3356,7 +3356,6 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
 
         StringBuilder hb = new StringBuilder();
         if (valueList.size() > 0) {
-            hb.append(HtmlUtils.p());
             HtmlUtils.open(hb, "table", "class", "dbtable", "border", "1",
                            "cellspacing", "0", "cellpadding", "0");
         }
@@ -4219,6 +4218,7 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
                     sb, newRequest.getString(ARG_DB_SEARCHNAME, ""));
             }
             Result result = handleSearch(newRequest, entry);
+
             sb.append(result.getStringContent());
 
             return sb.toString();
