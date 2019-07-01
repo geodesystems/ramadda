@@ -5190,6 +5190,8 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
         } else {
             colNames = tableHandler.getColumnNames();
         }
+        System.err.println(SqlUtil.comma(colNames));
+        System.err.println(clause);
         Statement stmt = getDatabaseManager().select(SqlUtil.comma(colNames),
                              Misc.newList(tableHandler.getTableName()),
                              clause, extra, max);
