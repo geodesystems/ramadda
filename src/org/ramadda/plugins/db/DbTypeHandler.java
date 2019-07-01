@@ -3368,7 +3368,6 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
                 }
             }
 
-
             if (cnt == 0) {
                 HtmlUtils.open(hb, "tr", "valign", "top", "class", "dbrow");
                 for (Object obj : values) {
@@ -5042,6 +5041,7 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
         }
 
 
+
         List<String> colNames = tableHandler.getColumnNames();
         String       extra    = "";
 
@@ -5196,6 +5196,7 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
         } else {
             colNames = tableHandler.getColumnNames();
         }
+        boolean forTable = request.getString(ARG_DB_VIEW, "").equals(VIEW_TABLE);
 
         Statement stmt = getDatabaseManager().select(SqlUtil.comma(colNames),
                              Misc.newList(tableHandler.getTableName()),
@@ -5211,7 +5212,12 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
                     Object[] values =
                         new Object[aggColumns.size() + groupByColumns.size()];
                     for (int i = 0; i < groupByColumns.size(); i++) {
-                        values[i] = results.getString(i + 1);
+                        Column column = groupByColumns.get(i);
+                        String v = results.getString(i + 1);
+                        if(forTable && column.isEnumeration()) {
+                            v = column.getEnumLabel(v);
+                        }
+                        values[i] = v;
                     }
                     for (int i = 0; i < aggColumns.size(); i++) {
                         //   Column aggColumn = aggColumns.get(i);
