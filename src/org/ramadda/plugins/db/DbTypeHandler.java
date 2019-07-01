@@ -1785,11 +1785,12 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
         }
         if (normalForm) {
             sb.append(
-                      HtmlUtils.formEntry(
-                                          msgLabel("Search Type"),
-                                          HtmlUtils.checkbox(
-                                                             ARG_DB_OR, "true", request.get(ARG_DB_OR, false)) + " "
-                                          + msg("Use OR logic")));
+                HtmlUtils.formEntry(
+                    msgLabel("Search Type"),
+                    HtmlUtils.checkbox(
+                        ARG_DB_OR, "true",
+                        request.get(ARG_DB_OR, false)) + " "
+                            + msg("Use OR logic")));
 
             sb.append(
                 formEntry(
@@ -1927,7 +1928,7 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
 
 
         StringBuilder sb             = new StringBuilder();
-        Clause  idClause = null;
+        Clause        idClause       = null;
         List<Clause>  where          = new ArrayList<Clause>();
         StringBuilder searchCriteria = new StringBuilder();
 
@@ -1947,19 +1948,21 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
         }
 
         Clause mainClause = null;
-        if(where.size()>0) {
+        if (where.size() > 0) {
             if (request.get(ARG_DB_OR, false)) {
                 mainClause = Clause.or(where);
             } else {
                 mainClause = Clause.and(where);
             }
         }
-        if(idClause!=null)   {
-            if(mainClause ==null) 
-                mainClause  = idClause;
-            else
-                mainClause = Clause.and(idClause,mainClause);
+        if (idClause != null) {
+            if (mainClause == null) {
+                mainClause = idClause;
+            } else {
+                mainClause = Clause.and(idClause, mainClause);
+            }
         }
+
         return handleList(request, entry, mainClause, "", true);
     }
 
@@ -2637,7 +2640,7 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
             for (int i = 0; i < dbInfo.getColumnsToUse().size(); i++) {
                 StringBuilder cb = new StringBuilder();
                 dbInfo.getColumnsToUse().get(i).formatValue(entry, cb,
-                                                            Column.OUTPUT_CSV, values,true);
+                                             Column.OUTPUT_CSV, values, true);
                 String colValue = cb.toString();
                 colValue = colValue.replaceAll(",", "_");
                 colValue = colValue.replaceAll("\n", " ");
@@ -2703,7 +2706,7 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
             for (int i = 0; i < dbInfo.getColumnsToUse().size(); i++) {
                 cb.setLength(0);
                 dbInfo.getColumnsToUse().get(i).formatValue(entry, cb,
-                                                            Column.OUTPUT_CSV, values,true);
+                                             Column.OUTPUT_CSV, values, true);
                 String colValue = cb.toString();
                 attrs.add(dbInfo.getColumnsToUse().get(i).getName());
                 attrs.add(Json.quote(colValue));
@@ -3479,7 +3482,8 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
                                    Object[] values, SimpleDateFormat sdf)
             throws Exception {
         StringBuilder htmlSB = new StringBuilder();
-        column.formatValue(entry, htmlSB, Column.OUTPUT_HTML, values, sdf, false);
+        column.formatValue(entry, htmlSB, Column.OUTPUT_HTML, values, sdf,
+                           false);
         String html = htmlSB.toString();
 
         if (column.getCanSearch()) {
@@ -4186,38 +4190,42 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
                                         entry, tag, props);
         }
         //        {{db entry="e6a54dbb-c310-47ae-8f49-597f32aa9f4d" args="search.db_bolder_rental_housing.propaddr1:illini,Boxes:Boxes,db.view:map,searchname:Name" }}
-        String args = (String) props.get("args");
-        if (args == null) {
-            args = "";
-        }
-        Hashtable newArgs = new Hashtable();
-        newArgs.put(ARG_ENTRYID, entry.getId());
-        newArgs.put(ARG_DB_SEARCH, "true");
-        Request newRequest = request.cloneMe(request.getRepository());
-        newRequest.clearUrlArgs();
-        for (String pair : StringUtil.split(args, ",", true, true)) {
-            List<String> toks = StringUtil.splitUpTo(pair, ":", 2);
-            //false-> not singular
-            newRequest.put(toks.get(0), toks.get(1), false);
-        }
-        newRequest.putAll(newArgs);
-        newRequest.put(ARG_DB_SHOWHEADER, "false");
-        newRequest.put(ARG_EMBEDDED, "true");
-        StringBuilder sb = new StringBuilder();
-        addStyleSheet(sb);
-        String layer = (String) props.get("layer");
-        if (layer != null) {
-            newRequest.put("mapLayer", layer);
-        }
-        if (newRequest.defined(ARG_DB_SEARCHNAME)) {
-            HtmlUtils.sectionHeader(sb,
-                                    newRequest.getString(ARG_DB_SEARCHNAME,
-                                        ""));
-        }
-        Result result = handleSearch(newRequest, entry);
-        sb.append(result.getStringContent());
+        try {
+            String args = (String) props.get("args");
+            if (args == null) {
+                args = "";
+            }
+            Hashtable newArgs = new Hashtable();
+            newArgs.put(ARG_ENTRYID, entry.getId());
+            newArgs.put(ARG_DB_SEARCH, "true");
+            Request newRequest = request.cloneMe(request.getRepository());
+            newRequest.clearUrlArgs();
+            for (String pair : StringUtil.split(args, ",", true, true)) {
+                List<String> toks = StringUtil.splitUpTo(pair, ":", 2);
+                //false-> not singular
+                newRequest.put(toks.get(0), toks.get(1), false);
+            }
+            newRequest.putAll(newArgs);
+            newRequest.put(ARG_DB_SHOWHEADER, "false");
+            newRequest.put(ARG_EMBEDDED, "true");
+            StringBuilder sb = new StringBuilder();
+            addStyleSheet(sb);
+            String layer = (String) props.get("layer");
+            if (layer != null) {
+                newRequest.put("mapLayer", layer);
+            }
+            if (newRequest.defined(ARG_DB_SEARCHNAME)) {
+                HtmlUtils.sectionHeader(
+                    sb, newRequest.getString(ARG_DB_SEARCHNAME, ""));
+            }
+            Result result = handleSearch(newRequest, entry);
+            sb.append(result.getStringContent());
 
-        return sb.toString();
+            return sb.toString();
+        } catch (Exception exc) {
+            return getPageHandler().showDialogError("An error occurred:<br>"
+                    + exc.toString(), false);
+        }
     }
 
 
@@ -5196,12 +5204,15 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
         } else {
             colNames = tableHandler.getColumnNames();
         }
-        boolean forTable = request.getString(ARG_DB_VIEW, "").equals(VIEW_TABLE);
+        boolean forTable = request.getString(ARG_DB_VIEW,
+                                             "").equals(VIEW_TABLE);
 
+        //        System.err.println("Clause:" + clause);
+        //        System.err.println("cols:" + SqlUtil.comma(colNames));
         Statement stmt = getDatabaseManager().select(SqlUtil.comma(colNames),
                              Misc.newList(tableHandler.getTableName()),
                              clause, extra, max);
-        //        System.err.println("Clause:" + clause);
+
         try {
             SqlUtil.Iterator iter = getDatabaseManager().getIterator(stmt);
             ResultSet        results;
@@ -5213,8 +5224,8 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
                         new Object[aggColumns.size() + groupByColumns.size()];
                     for (int i = 0; i < groupByColumns.size(); i++) {
                         Column column = groupByColumns.get(i);
-                        String v = results.getString(i + 1);
-                        if(forTable && column.isEnumeration()) {
+                        String v      = results.getString(i + 1);
+                        if (forTable && column.isEnumeration()) {
                             v = column.getEnumLabel(v);
                         }
                         values[i] = v;
@@ -5642,7 +5653,7 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
         if (dbInfo.getLabelColumns() != null) {
             for (Column labelColumn : dbInfo.getLabelColumns()) {
                 labelColumn.formatValue(entry, sb, Column.OUTPUT_HTML,
-                                        values, sdf,false);
+                                        values, sdf, false);
                 sb.append(" ");
             }
 
@@ -5658,7 +5669,8 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
                     || type.equals(Column.DATATYPE_URL)
                     || type.equals(Column.DATATYPE_EMAIL)
                     || type.equals(Column.DATATYPE_ENUMERATIONPLUS)) {
-                column.formatValue(entry, sb, Column.OUTPUT_HTML, values,false);
+                column.formatValue(entry, sb, Column.OUTPUT_HTML, values,
+                                   false);
                 String label = sb.toString();
                 if (label.length() > 0) {
                     return label;

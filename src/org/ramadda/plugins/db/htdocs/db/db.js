@@ -24,7 +24,8 @@ function  dbAddUrlShowingForm(args) {
         var item = tuple.item;
         var value = tuple.value;
         if(item.type == "hidden") continue;
-        if(item.name == "db.search"  || item.name == "Boxes" || item.name == "group_by" || item.name.match("group_agg.*") ) {
+        //        if(item.name == "db.search"  || item.name == "Boxes" || item.name == "group_by" || item.name.match("group_agg.*") ) {
+        if(item.name == "db.search"  || item.name == "Boxes") {
             continue;
         }
         if(attrs!="") attrs+=",";
