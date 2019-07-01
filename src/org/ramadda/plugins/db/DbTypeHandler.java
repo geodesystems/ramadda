@@ -1954,7 +1954,6 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
                 mainClause = Clause.and(where);
             }
         }
-        System.err.println("main:" + mainClause);
         if(idClause!=null)   {
             if(mainClause ==null) 
                 mainClause  = idClause;
