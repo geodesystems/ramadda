@@ -4199,6 +4199,7 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
             newArgs.put(ARG_DB_SEARCH, "true");
             Request newRequest = request.cloneMe(request.getRepository());
             newRequest.clearUrlArgs();
+
             for (String pair : StringUtil.split(args, ",", true, true)) {
                 List<String> toks = StringUtil.splitUpTo(pair, ":", 2);
                 //false-> not singular
@@ -5208,7 +5209,7 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
             colNames = tableHandler.getColumnNames();
         }
         boolean forTable = request.getString(ARG_DB_VIEW,
-                                             "").equals(VIEW_TABLE);
+                                             VIEW_TABLE).equals(VIEW_TABLE);
 
         //        System.err.println("Clause:" + clause);
         //        System.err.println("cols:" + SqlUtil.comma(colNames));
