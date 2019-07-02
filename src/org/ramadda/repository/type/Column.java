@@ -1799,7 +1799,11 @@ public class Column implements DataTypes, Constants {
                                           EXPR_EQUALS, EXPR_LE, EXPR_GE,
                                           EXPR_BETWEEN);
             expr = expr.replace("&lt;", "<").replace("&gt;", ">");
-            System.err.println ("expr:" + expr +" " +(searchArg + "_expr"));
+            if(searchArg.indexOf("employee_annual_base_salary")>=0) {
+                System.err.println ("request:" + request);
+                System.err.println ("request.get:" + request.getString(searchArg + "_expr","NONE");
+                System.err.println ("expr:" + expr +" arg:" +(searchArg + "_expr"));
+            }
             double from  = request.get(searchArg + "_from", Double.NaN);
             double to    = request.get(searchArg + "_to", Double.NaN);
             double value = request.get(searchArg, Double.NaN);
