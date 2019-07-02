@@ -1963,7 +1963,6 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
             }
         }
 
-        System.err.println ("clause:" + mainClause);
         return handleList(request, entry, mainClause, "", true);
     }
 

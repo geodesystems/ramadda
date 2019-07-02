@@ -1797,14 +1797,8 @@ public class Column implements DataTypes, Constants {
         } else if (isNumeric()) {
             String expr = request.getEnum(searchArg + "_expr", "", "",
                                           EXPR_EQUALS, EXPR_LE, EXPR_GE,
-                                          EXPR_BETWEEN);
+                                          EXPR_BETWEEN,"&lt;=","&gt;=");
             expr = expr.replace("&lt;", "<").replace("&gt;", ">");
-            if(searchArg.indexOf("employee_annual_base_salary")>=0) {
-                //                System.err.println ("request:" + request);
-                request.debug = true;
-                System.err.println ("request.get:" + request.getString(searchArg + "_expr","NONE"));
-                request.debug = false;
-            }
             double from  = request.get(searchArg + "_from", Double.NaN);
             double to    = request.get(searchArg + "_to", Double.NaN);
             double value = request.get(searchArg, Double.NaN);

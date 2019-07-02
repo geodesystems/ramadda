@@ -1625,19 +1625,13 @@ public class Request implements Constants, Cloneable {
      */
     public String getCheckedString(String key, String dflt, Pattern pattern) {
         String v = (String) getValue(key, (String) null);
-
-
-
         if (v == null) {
             return dflt;
         }
 
         //If the user is anonymous then replace all "script" strings with "_script_"
-        //encode < and >
         if (isAnonymous()) {
             v = v.replaceAll("([sS][cC][rR][iI][pP][tT])", "_$1_");
-            v = v.replaceAll("<", "&lt;");
-            v = v.replaceAll(">", "&gt;");
         }
 
 
@@ -1681,7 +1675,7 @@ public class Request implements Constants, Cloneable {
         parameters = new Hashtable();
     }
 
-    public boolean debug = false;
+
 
     /**
      * _more_
@@ -1717,11 +1711,6 @@ public class Request implements Constants, Cloneable {
      */
     private String getValue(Object key, String dflt) {
         Object result = parameters.get(key);
-        if(debug) {
-            System.err.println("result:" + result);
-            System.err.println("p:" + parameters);
-        }
-
         if (result == null) {
             result = getFromPath(key.toString());
         }
