@@ -1696,10 +1696,6 @@ public class Request implements Constants, Cloneable {
             return dflt;
         }
         Object result = parameters.get(key);
-        if(debug) {
-            System.err.println("V:" + result);
-            System.err.println("p:" + parameters);
-        }
         if (result == null) {
             result = getFromPath(key.toString());
         }
@@ -1721,6 +1717,11 @@ public class Request implements Constants, Cloneable {
      */
     private String getValue(Object key, String dflt) {
         Object result = parameters.get(key);
+        if(debug) {
+            System.err.println("result:" + result);
+            System.err.println("p:" + parameters);
+        }
+
         if (result == null) {
             result = getFromPath(key.toString());
         }
