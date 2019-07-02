@@ -1920,8 +1920,6 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
                     }
                     r.remove(ARG_DB_SEARCHNAME);
                     request = r;
-
-                    System.err.println ("search id request:" + request);
                     break;
                 }
             }
@@ -1965,6 +1963,7 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
             }
         }
 
+        System.err.println ("clause:" + mainClause);
         return handleList(request, entry, mainClause, "", true);
     }
 
