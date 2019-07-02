@@ -2171,6 +2171,7 @@ public class Request implements Constants, Cloneable {
         isMobile = (ua.indexOf("iphone") >= 0)
                    || (ua.indexOf("android") >= 0)
                    || (ua.indexOf("blackberry") >= 0);
+        isMobile = false;
         isRobot = checkForRobot();
     }
 
