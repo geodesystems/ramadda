@@ -1925,7 +1925,7 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
             }
         }
 
-        System.err.println ("request:" + request);
+
 
         StringBuilder sb             = new StringBuilder();
         Clause        idClause       = null;
@@ -1943,6 +1943,7 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
                             false, false, false);
         }
 
+        System.err.println ("request:" + request);
         for (Column column : getColumns()) {
             column.assembleWhereClause(request, where, searchCriteria);
         }
