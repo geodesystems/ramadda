@@ -1625,6 +1625,9 @@ public class Request implements Constants, Cloneable {
      */
     public String getCheckedString(String key, String dflt, Pattern pattern) {
         String v = (String) getValue(key, (String) null);
+
+
+
         if (v == null) {
             return dflt;
         }
@@ -1691,6 +1694,10 @@ public class Request implements Constants, Cloneable {
             return dflt;
         }
         Object result = parameters.get(key);
+        if(key.equals("search.db_boulder_employee_salaries.employee_annual_base_salary_expr")) {
+            System.err.println("V:" + result);
+            System.err.println("p:" + parameters);
+        }
         if (result == null) {
             result = getFromPath(key.toString());
         }
@@ -2171,7 +2178,6 @@ public class Request implements Constants, Cloneable {
         isMobile = (ua.indexOf("iphone") >= 0)
                    || (ua.indexOf("android") >= 0)
                    || (ua.indexOf("blackberry") >= 0);
-        isMobile = false;
         isRobot = checkForRobot();
     }
 
