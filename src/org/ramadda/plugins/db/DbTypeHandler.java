@@ -1921,11 +1921,13 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
                     r.remove(ARG_DB_SEARCHNAME);
                     request = r;
 
+                    System.err.println ("search id request:" + request);
                     break;
                 }
             }
         }
 
+        System.err.println ("request:" + request);
 
         StringBuilder sb             = new StringBuilder();
         Clause        idClause       = null;
