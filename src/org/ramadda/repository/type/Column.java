@@ -1801,8 +1801,9 @@ public class Column implements DataTypes, Constants {
             expr = expr.replace("&lt;", "<").replace("&gt;", ">");
             if(searchArg.indexOf("employee_annual_base_salary")>=0) {
                 //                System.err.println ("request:" + request);
-                //                System.err.println ("request.get:" + request.getString(searchArg + "_expr","NONE"));
-                System.err.println ("expr:" + expr);
+                request.debug = true;
+                System.err.println ("request.get:" + request.getString(searchArg + "_expr","NONE"));
+                request.debug = false;
             }
             double from  = request.get(searchArg + "_from", Double.NaN);
             double to    = request.get(searchArg + "_to", Double.NaN);

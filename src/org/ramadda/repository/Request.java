@@ -1681,6 +1681,8 @@ public class Request implements Constants, Cloneable {
         parameters = new Hashtable();
     }
 
+    public boolean debug = false;
+
     /**
      * _more_
      *
@@ -1694,7 +1696,7 @@ public class Request implements Constants, Cloneable {
             return dflt;
         }
         Object result = parameters.get(key);
-        if(key.equals("search.db_boulder_employee_salaries.employee_annual_base_salary_expr")) {
+        if(debug) {
             System.err.println("V:" + result);
             System.err.println("p:" + parameters);
         }
