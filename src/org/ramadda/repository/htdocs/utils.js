@@ -6,7 +6,7 @@
 
 var root = ramaddaBaseUrl;
 var urlroot = ramaddaBaseUrl;
-var icon_close = ramaddaBaseUrl + "/icons/cancel.png";
+var icon_close = "fa-window-close";
 var icon_rightarrow = ramaddaBaseUrl + "/icons/grayrightarrow.gif";
 var icon_downdart = ramaddaBaseUrl + "/icons/downdart.gif";
 var icon_rightdart = ramaddaBaseUrl + "/icons/rightdart.gif";

@@ -337,8 +337,8 @@ function RamaddaSearcher(displayManager, id, type, properties) {
             }
             this.currentPopupEntry = entry;
             if (src == null) src = this.getDomId("entry_" + entry.getIdForDom());
-            var close = HtmlUtils.onClick(this.getGet() + ".hideEntryDetails('" + entryId + "');",
-                HtmlUtils.image(icon_close));
+            var closeImage = HtmlUtils.getIconImage(icon_close, []);
+            var close = HtmlUtils.onClick(this.getGet() + ".hideEntryDetails('" + entryId + "');",closeImage);
 
             var contents = this.getEntryHtml(entry, {
                 headerRight: close

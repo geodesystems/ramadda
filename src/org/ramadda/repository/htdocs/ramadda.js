@@ -561,7 +561,8 @@ function EntryRow(entryId, rowId, cbxId, cbxWrapperId, showDetails) {
         text = getChildText(xmlDoc);
         var leftSide = entryRow.getRow().offset().left;
         var offset = entryRow.lastClick - leftSide;
-        getTooltip().html("<div class=ramadda-popup-inner><div id=\"tooltipwrapper\" ><table><tr valign=top><img width=\"16\" class=\"ramadda-popup-close\" onmousedown=\"hideEntryPopup();\" id=\"tooltipclose\"  src=" + icon_close + "></td><td>" + text + "</table></div></div>");
+        var close = HtmlUtils.getIconImage(icon_close, ["xclass","ramadda-popup-close", "onmousedown", "hideEntryPopup();","id","tooltipclose"]);
+        getTooltip().html("<div class=ramadda-popup-inner><div id=\"tooltipwrapper\" ><table><tr valign=top>"+ close +"</td><td>" + text + "</table></div></div>");
         checkTabs(text);
 
         var pos = entryRow.getRow().offset();
@@ -929,7 +930,8 @@ function handleSelect(request, id) {
     selector = selectors[id];
     var xmlDoc = request.responseXML.documentElement;
     text = getChildText(xmlDoc);
-    var close = "<a href=\"javascript:selectCancel();\"><img class=\"ramadda-popup-close\" border=0 src=" + icon_close + "></a>";
+    var closeImage = HtmlUtils.getIconImage(icon_close, []);
+    var close = "<a href=\"javascript:selectCancel();\">" + closeImage+"</a>";
     selector.div.obj.innerHTML = "<table width=100%><tr><td align=right>" + close + "</table>" + text;
 }
 

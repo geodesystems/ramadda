@@ -2778,7 +2778,8 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
         makeDialog: function() {
             var html = "";
             html += HtmlUtils.div([ATTR_ID, this.getDomId(ID_HEADER), ATTR_CLASS, "display-header"]);
-            var close = HtmlUtils.onClick("$('#" + this.getDomId(ID_DIALOG) + "').hide();", HtmlUtils.image(icon_close, [ATTR_CLASS, "display-dialog-close", ATTR_TITLE, "Close Dialog"]));
+            var closeImage = HtmlUtils.getIconImage(icon_close, []);
+            var close = HtmlUtils.onClick("$('#" + this.getDomId(ID_DIALOG) + "').hide();", closeImage);
             var right = close;
             var left = "";
             //                var left = this.makeToolbar({addLabel:true});
@@ -14466,8 +14467,8 @@ function RamaddaSearcher(displayManager, id, type, properties) {
             }
             this.currentPopupEntry = entry;
             if (src == null) src = this.getDomId("entry_" + entry.getIdForDom());
-            var close = HtmlUtils.onClick(this.getGet() + ".hideEntryDetails('" + entryId + "');",
-                HtmlUtils.image(icon_close));
+            var closeImage = HtmlUtils.getIconImage(icon_close, []);
+            var close = HtmlUtils.onClick(this.getGet() + ".hideEntryDetails('" + entryId + "');",closeImage);
 
             var contents = this.getEntryHtml(entry, {
                 headerRight: close
