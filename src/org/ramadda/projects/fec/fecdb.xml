@@ -36,7 +36,7 @@ values="REP:Republican,DEM:Democrat,IND:Independent,GRE:Green" sortOrder="1">
 </column>
 <column name="DEBTS_OWED_BY"         label="Debts owed by" cansearch="true" canlist="false" type="double">
 </column>
-<column name="TTL_INDIV_CONTRIB"     label="Total individual contributions" cansearch="true" canlist="false" type="double" sortOrder="1">
+<column name="TTL_INDIV_CONTRIB"     label="Total individual contributions" cansearch="true" canlist="true" type="double" sortOrder="1">
 </column>
 <column name="CAND_OFFICE_ST"        label="Candidate state" cansearch="true" canlist="true" type="enumeration" sortOrder="1" values="00:National">
 </column>
