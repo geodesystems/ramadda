@@ -646,7 +646,12 @@ public abstract class RecordFile {
                                 "https://wcc.sc.egov.usda.gov");
         }
 
-        return Utils.doMakeInputStream(path, buffered);
+        try {
+            return Utils.doMakeInputStream(path, buffered);
+        } catch(IOException ioe) {
+            System.err.println("Error fetching data:" + path);
+            throw ioe;
+        }
     }
 
 

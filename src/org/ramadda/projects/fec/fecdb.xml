@@ -1,0 +1,66 @@
+<tables>
+<table id="feccandidates" name="FEC Candidate Data" icon="/fec/fec.png" numberFormat="###,###">
+<column name="CAND_ID"         label="Candidate identification" cansearch="false" canlist="false" type="string" candisplay="false" >
+<property name="isKey" value="true"/>
+</column>
+<column name="CAND_NAME"       label="Candidate name" cansearch="true" canlist="true" type="string" size="300" sortOrder="1">
+</column>
+<column name="CAND_ICI"        label="Incumbent challenger status" cansearch="false" canlist="false" type="enumeration" candisplay="false">
+</column>
+<column name="PTY_CD"          label="Party code" cansearch="false" canlist="false" type="enumeration"  candisplay="false">
+</column>
+<column name="CAND_PTY_AFFILIATION"  label="Party affiliation" cansearch="true" canlist="true" type="enumeration" 
+values="REP:Republican,DEM:Democrat,IND:Independent,GRE:Green" sortOrder="1">
+</column>
+<column name="TTL_RECEIPTS"          label="Total receipts" cansearch="true" canlist="true" type="double" sortOrder="1">
+</column>
+<column name="TRANS_FROM_AUTH"       label="Transfers from authorized committees" cansearch="false" canlist="false" type="double">
+</column>
+<column name="TTL_DISB"              label="Total disbursements" cansearch="true" canlist="false" type="double">
+</column>
+<column name="TRANS_TO_AUTH"         label="Transfers to authorized committees" cansearch="false" canlist="false" type="double">
+</column>
+<column name="COH_BOP"               label="Beginning cash" cansearch="true" canlist="false" type="double">
+</column>
+<column name="COH_COP"               label="Ending cash" cansearch="true" canlist="true" type="double">
+</column>
+<column name="CAND_CONTRIB"          label="Contributions from candidate" cansearch="true" canlist="false" type="double">
+</column>
+<column name="CAND_LOANS"            label="Loans from candidate" cansearch="true" canlist="false" type="double">
+</column>
+<column name="OTHER_LOANS"           label="Other loans" cansearch="true" canlist="false" type="double">
+</column>
+<column name="CAND_LOAN_REPAY"       label="Candidate loan repayments" cansearch="true" canlist="false" type="double">
+</column>
+<column name="OTHER_LOAN_REPAY"      label="Other loan repayments" cansearch="true" canlist="false" type="double">
+</column>
+<column name="DEBTS_OWED_BY"         label="Debts owed by" cansearch="true" canlist="false" type="double">
+</column>
+<column name="TTL_INDIV_CONTRIB"     label="Total individual contributions" cansearch="true" canlist="false" type="double" sortOrder="1">
+</column>
+<column name="CAND_OFFICE_ST"        label="Candidate state" cansearch="true" canlist="true" type="enumeration" sortOrder="1" values="00:National">
+</column>
+<column name="CAND_OFFICE_DISTRICT"  label="Candidate district" cansearch="true" canlist="true" type="enumeration">
+</column>
+<column name="SPEC_ELECTION"         label="Special election status" cansearch="false" canlist="false" type="enumeration" candisplay="false">
+</column>
+<column name="PRIM_ELECTION"         label="Primary election status" cansearch="false" canlist="false" type="enumeration" candisplay="false">
+</column>
+<column name="RUN_ELECTION"          label="Runoff election status" cansearch="false" canlist="false" type="enumeration" candisplay="false">
+</column>
+<column name="GEN_ELECTION"          label="General election status" cansearch="false" canlist="false" type="enumeration" candisplay="false">
+</column>
+<column name="GEN_ELECTION_PRECENT"  label="General election percentage" cansearch="false" canlist="false" type="double" candisplay="false">
+</column>
+<column name="OTHER_POL_CMTE_CONTRIB"        label="Contributions from other political committees" cansearch="true" canlist="false" type="double">
+</column>
+<column name="POL_PTY_CONTRIB"               label="Contributions from party committees" cansearch="true" canlist="false" type="double">
+</column>
+<column name="CVG_END_DT"                    label="Coverage end date" cansearch="true" canlist="true" type="date" format="MM/dd/yyyy" sortOrder="0">
+</column>
+<column name="INDIV_REFUNDS"                 label="Refunds to individuals" cansearch="false" canlist="false" type="double">
+</column>
+<column name="CMTE_REFUNDS"                  label="Refunds to committees" cansearch="false" canlist="false" type="double">
+</column>
+</table>
+</tables>

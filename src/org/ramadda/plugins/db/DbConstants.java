@@ -227,6 +227,10 @@ public interface DbConstants extends Constants {
     /** _more_ */
     public static final String ARG_DB_BULK_FILE = "db.bulk.file";
 
+    public static final String ARG_DB_BULK_DELIMITER = "db.bulk.delimiter";
+
+    public static final String ARG_DB_BULK_SKIP = "db.bulk.skip";
+
     /** _more_ */
     public static final String ARG_DB_BULK_LOCALFILE = "db.bulk.localfile";
 

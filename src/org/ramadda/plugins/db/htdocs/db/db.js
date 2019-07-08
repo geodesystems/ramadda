@@ -62,7 +62,8 @@ function dbHandleXml(request,args) {
     var xmlDoc=request.responseXML.documentElement;
     text = getChildText(xmlDoc);
     var call = "dbHidePopup(\'" + popupId +"\');";
-    popup.html("<div><table width=100%><tr valign=top><td><img width=\"16\" onmousedown=\"" + call +"\" id=\"tooltipclose\"  src=" + icon_close +"></td><td>" + text+"</td></table></div>");
+    popup.html("<div><table width=100%><tr valign=top><td>" +
+               HtmlUtils.getIconImage(icon_close,["onmousedown", call,"id","tooltipclose"]) +"</td><td>" + text+"</td></table></div>");
 
     popup.show();
     popup.position({

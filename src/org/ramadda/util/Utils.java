@@ -1439,6 +1439,7 @@ public class Utils {
                 connection.addRequestProperty("User-Agent", "ramadda");
                 is = connection.getInputStream();
             } catch (Exception exc) {
+                System.err.println ("Error URL: " + filename);
                 String msg = "An error has occurred";
                 if ((connection != null)
                         && (connection instanceof HttpURLConnection)) {

@@ -473,6 +473,10 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
         return getDbInfo().getColumns();
     }
 
+    public List<Column> getColumns(boolean sorted) {
+        return getDbInfo().getColumns(sorted);
+    }
+
     /**
      * _more_
      *
@@ -1687,7 +1691,7 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
         DbInfo        dbInfo   = getDbInfo();
         StringBuilder advanced = new StringBuilder();
         List<Clause>  where    = new ArrayList<Clause>();
-        for (Column column : getColumns()) {
+        for (Column column : getColumns(true)) {
             if ( !normalForm && column.isType(column.DATATYPE_LATLON)) {
                 continue;
             }
@@ -2180,6 +2184,8 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
                                    InputStream source)
             throws Exception {
 
+        String delimiter = request.getString(ARG_DB_BULK_DELIMITER,",");
+        int skip = request.get(ARG_DB_BULK_SKIP,1);
         final DbInfo              dbInfo     = getDbInfo();
         final ArrayList<Object[]> valueList  = new ArrayList<Object[]>();
         final int[]               cnt        = { 0 };
@@ -2189,7 +2195,8 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
                                          Double.NaN);
 
         textReader.setInput(new BufferedInputStream(source));
-        textReader.setSkip(1);
+        textReader.setSkip(skip);
+        textReader.setDelimiter(delimiter);
         Processor.ProcessorGroup myProcessor =
             new Processor.ProcessorGroup() {
             @Override
@@ -2214,11 +2221,18 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
                             + dbInfo.getColumnsToUse().size() + "<br>"
                             + line);
                     }
+                    String keyValue = null;
+                    
                     for (int colIdx = 0; colIdx < toks.size(); colIdx++) {
                         Column column = dbInfo.getColumnsToUse().get(colIdx);
                         String value  = (String) toks.get(colIdx).trim();
+                        if(column == dbInfo.getKeyColumn()) {
+                            keyValue  =value;
+                        }
                         column.setValue(entry, values, value);
                     }
+
+
 
                     if (dbInfo.getHasLocation()) {
                         double[] ll  = getLocation(values);
@@ -2227,6 +2241,14 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
                         if ( !Double.isNaN(lat) && !Double.isNaN(lon)) {
                             bounds.expand(lat, lon);
                         }
+                    }
+
+                    if(keyValue!=null) {
+                        Clause clause = Clause.and(Clause.eq(GenericTypeHandler.COL_ID,
+                                                             entry.getId()),
+                                                   Clause.eq(dbInfo.getKeyColumn().getName(),keyValue));
+                        System.err.println("drop:" + clause);
+                        getDatabaseManager().delete(tableHandler.getTableName(),clause);
                     }
 
                     valueList.add(values);
@@ -2332,6 +2354,7 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
                     || request.exists(ARG_DB_BULK_LOCALFILE))) {
             InputStream source = null;
             String      bulkContent;
+
             if (request.exists(ARG_DB_BULK_FILE)) {
                 File f = new File(request.getUploadedFile(ARG_DB_BULK_FILE));
                 if ( !f.exists()) {
@@ -3192,6 +3215,10 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
                     HtmlUtils.open(hb, "td",
                                    event
                                    + HtmlUtils.attr("class", "dbtablecell"));
+                } else if (column.isNumeric()) {
+                    HtmlUtils.open(hb, "td",
+                                   event
+                                   + "align=right");
                 } else {
                     HtmlUtils.open(hb, "td", event);
                 }
@@ -5442,19 +5469,23 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
         bulkButtons.append(HtmlUtils.submit(msg("Cancel"), ARG_DB_LIST));
         bulkSB.append(bulkButtons);
         bulkSB.append(HtmlUtils.p());
-        bulkSB.append(HtmlUtils.p());
         bulkSB.append(msgLabel("Upload a file"));
-        bulkSB.append(HtmlUtils.br());
-        bulkSB.append(msgLabel("File"));
-        bulkSB.append(HtmlUtils.fileInput(ARG_DB_BULK_FILE,
-                                          HtmlUtils.SIZE_60));
+        bulkSB.append(HtmlUtils.formTable());
+        bulkSB.append(HtmlUtils.formEntry(msgLabel("File"),
+                                          HtmlUtils.fileInput(ARG_DB_BULK_FILE,
+                                                              HtmlUtils.SIZE_60)));
         if (request.getUser().getAdmin()) {
-            bulkSB.append(HtmlUtils.br());
-            bulkSB.append(msgLabel("Or server side file"));
-            bulkSB.append(HtmlUtils.input(ARG_DB_BULK_LOCALFILE, "",
-                                          HtmlUtils.SIZE_60));
+            bulkSB.append(HtmlUtils.formEntry(msgLabel("Or server side file"),
+                                              HtmlUtils.input(ARG_DB_BULK_LOCALFILE, "",
+                                                              HtmlUtils.SIZE_60)));
         }
+        bulkSB.append(HtmlUtils.formEntry(msgLabel("Delimiter"),
+                            HtmlUtils.input(ARG_DB_BULK_DELIMITER,",",HtmlUtils.SIZE_5) +
+                            HtmlUtils.space(2) +
+                            msgLabel("# Header Lines") +
+                                          HtmlUtils.input(ARG_DB_BULK_SKIP,"1",HtmlUtils.SIZE_5)));
 
+        bulkSB.append(HtmlUtils.formTableClose());
         bulkSB.append(HtmlUtils.p());
         bulkSB.append(msgLabel("Or enter text"));
         List colIds = new ArrayList();
@@ -5551,8 +5582,11 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
             throws Exception {
         sb.append(HtmlUtils.formTable());
         SimpleDateFormat sdf = getDateFormat(entry);
-        for (Column column : getColumns()) {
+        for (Column column : getColumns(true)) {
             if ( !isDataColumn(column)) {
+                continue;
+            }
+            if(!column.getCanDisplay()) {
                 continue;
             }
             StringBuilder tmpSb = new StringBuilder();

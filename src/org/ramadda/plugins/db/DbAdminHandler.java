@@ -122,7 +122,7 @@ public class DbAdminHandler extends AdminHandlerImpl {
         if ( !pluginFile.endsWith("db.xml")) {
             return false;
         }
-        //        System.err.println("DbAdminHandler.init - plugin file:" + pluginFile);
+        //        System.out.println("DbAdminHandler.init - plugin file:" + pluginFile);
         Element root = XmlUtil.getRoot(pluginFile, getClass());
         if (root == null) {
             System.err.println(
@@ -192,6 +192,7 @@ public class DbAdminHandler extends AdminHandlerImpl {
             columnNodes.add(0, createDateNode);
             columnNodes.add(0, userNode);
             columnNodes.add(0, idNode);
+            //            System.out.println("\tDb:" + typeHandler);
             getRepository().addTypeHandler(tableId, typeHandler, true);
             typeHandler.initDbColumns(columnNodes);
         }

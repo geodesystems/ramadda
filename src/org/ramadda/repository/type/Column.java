@@ -51,9 +51,12 @@ import java.sql.Statement;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 
-import java.util.ArrayList;
 
+
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Comparator;
+import java.util.Collections;
 import java.util.Date;
 import java.util.Enumeration;
 import java.util.Hashtable;
@@ -163,6 +166,8 @@ public class Column implements DataTypes, Constants {
     /** _more_ */
     public static final String ATTR_HELP = "help";
 
+    public static final String ATTR_SORT_ORDER = "sortOrder";
+
     /** _more_ */
     public static final String ATTR_PROPERTIES = "properties";
 
@@ -195,6 +200,8 @@ public class Column implements DataTypes, Constants {
 
     /** _more_ */
     public static final String ATTR_CANLIST = "canlist";
+
+    public static final String ATTR_CANDISPLAY = "candisplay";
 
     /** _more_ */
     public static final String ATTR_EDITABLE = "editable";
@@ -300,6 +307,8 @@ public class Column implements DataTypes, Constants {
     /** _more_ */
     private String help;
 
+    private int sortOrder = 1000;
+
     /** _more_ */
     private String searchType = SEARCHTYPE_TEXT;
 
@@ -330,6 +339,8 @@ public class Column implements DataTypes, Constants {
 
     /** _more_ */
     private boolean canList;
+
+    private boolean canDisplay;
 
     /** _more_ */
     private List<TwoFacedObject> enumValues;
@@ -448,6 +459,7 @@ public class Column implements DataTypes, Constants {
                 ATTR_OLDNAMES, ""), ",", true, true);
         suffix = Utils.getAttributeOrTag(element, ATTR_SUFFIX, "");
         help   = Utils.getAttributeOrTag(element, ATTR_HELP, (String) null);
+        sortOrder   = Utils.getAttributeOrTag(element, ATTR_SORT_ORDER, 1000);
         //The suffix might have the ${root} macro in it
         if (typeHandler != null) {
             suffix =
@@ -509,6 +521,7 @@ public class Column implements DataTypes, Constants {
         canExport      = getAttributeOrTag(element, ATTR_CANEXPORT,
                                            canExport);
         canList        = getAttributeOrTag(element, ATTR_CANLIST, true);
+        canDisplay     = getAttributeOrTag(element, ATTR_CANDISPLAY, true);
         size           = getAttributeOrTag(element, ATTR_SIZE, size);
         min            = getAttributeOrTag(element, ATTR_MIN, min);
         max            = getAttributeOrTag(element, ATTR_MAX, max);
@@ -552,6 +565,22 @@ public class Column implements DataTypes, Constants {
         }
 
 
+    }
+
+    public static List<Column> sortColumns(List<Column>columns) {
+        List<Column> tmp = new ArrayList<Column>();
+        tmp.addAll(columns);
+        Comparator comp = new Comparator() {
+                public int compare(Object o1,Object o2 ) {
+                    Column c1 = (Column) o1;
+                    Column c2 = (Column) o2;
+                    if(c1.sortOrder<c2.sortOrder) return -1;
+                    if(c1.sortOrder>c2.sortOrder) return 1;
+                    return 0;
+                }
+            };
+        Collections.sort(tmp, comp);
+        return tmp;
     }
 
     /**
@@ -705,6 +734,8 @@ public class Column implements DataTypes, Constants {
         col.add("" + getCanSearchText());
         col.add("canlist");
         col.add("" + getCanList());
+        col.add("candisplay");
+        col.add("" + getCanDisplay());
         if (isEnumeration()) {
             List<String>         enums = new ArrayList<String>();
             List<TwoFacedObject> values;
@@ -3333,6 +3364,20 @@ public class Column implements DataTypes, Constants {
     }
 
 
+    public void setCanDisplay(boolean value) {
+        canDisplay = value;
+    }
+
+    /**
+     * Get the IsDisplayable property.
+     *
+     * @return The IsDisplayable
+     */
+    public boolean getCanDisplay() {
+        return canDisplay;
+    }
+
+
 
     /**
      * Set the Values property.
@@ -3461,6 +3506,10 @@ public class Column implements DataTypes, Constants {
             throws Exception {
         String attrValue = Utils.getAttributeOrTag(node, attrOrTag,
                                (String) null);
+        if (attrValue == null) {
+            attrValue = XmlUtil.getAttributeFromTree(node, attrOrTag);
+        }
+
         if (attrValue != null) {
             properties.put(attrOrTag, attrValue);
 

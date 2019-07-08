@@ -161,6 +161,8 @@ public class DbInfo {
     /** _more_ */
     private List<Column> allColumns;
 
+    private List<Column> sortedColumns;
+
     /** _more_ */
     private String[] namesArray;
 
@@ -168,7 +170,11 @@ public class DbInfo {
     /** _more_ */
     protected List<Column> columnsToUse;
 
+    private List<Column> columnsToUseSorted;
+
     /** _more_ */
+    private Column keyColumn;
+
     private Column dfltSortColumn;
 
     /** _more_ */
@@ -247,6 +253,7 @@ public class DbInfo {
         labelColumns    = null;
         descColumn      = null;
         urlColumn       = null;
+        keyColumn  = null;
         dfltSortColumn  = null;
         columnsToUse    = new ArrayList<Column>();
         for (int colIdx = 0; colIdx < allColumns.size(); colIdx++) {
@@ -261,6 +268,12 @@ public class DbInfo {
                            && Misc.equals(column.getProperty("dostats"),
                                           "true");
             doUniques[cnt] = column.isEnumeration();
+
+
+            if (Misc.equals(column.getProperty("isKey"), "true")) {
+                keyColumn = column;
+            }
+
 
             if (Misc.equals(column.getProperty("label"), "true")) {
                 if (labelColumns == null) {
@@ -353,6 +366,10 @@ public class DbInfo {
     }
 
 
+    public Column getKeyColumn() {
+        return keyColumn;
+    }
+
     /**
      * _more_
      *
@@ -416,6 +433,16 @@ public class DbInfo {
         return columnsToUse;
     }
 
+    public List<Column> getColumnsToUse(boolean sorted) {
+        if(sorted) {
+            if(columnsToUseSorted == null) {
+                columnsToUseSorted = Column.sortColumns(columnsToUse);
+            }
+            return columnsToUseSorted;
+        }
+        return columnsToUse;
+    }
+
 
     /**
      * _more_
@@ -423,6 +450,15 @@ public class DbInfo {
      * @return _more_
      */
     public List<Column> getColumns() {
+        return allColumns;
+    }
+
+    public List<Column> getColumns(boolean sorted) {
+        if(sorted) {
+            if(sortedColumns==null)
+                sortedColumns = Column.sortColumns(allColumns);
+            return sortedColumns;
+        }
         return allColumns;
     }
 
