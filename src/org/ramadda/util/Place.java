@@ -504,9 +504,6 @@ public class Place {
                             if ((indices.length >= 6) && (indices[5] >= 0)) {
                                 place.fips = place.fips.substring(indices[5]);
                             }
-                            resource.places.add(place);
-                            resource.map.put(place._name, place);
-                            tmp.add(place);
                             for (String key :
                                     new String[] {
                                         resource.prefix + place.getFips() }) {
@@ -541,6 +538,10 @@ public class Place {
                                 placesMap.put(key.toLowerCase(), place);
                                 placesMap.put(key.toUpperCase(), place);
                             }
+
+                            resource.places.add(place);
+                            resource.map.put(place._name, place);
+                            tmp.add(place);
 
 
 
