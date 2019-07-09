@@ -1751,7 +1751,7 @@ public class CsvUtil {
 
             if (arg.equals("-columns")) {
                 if(!ensureArg(args, i,1)) return false;
-                List<String> cols = getCols(args.get(i++));
+                List<String> cols = getCols(args.get(++i));
                 info.setSelector(new Converter.ColumnSelector(cols));
                 info.getProcessor().addProcessor(info.getSelector());
                 continue;
