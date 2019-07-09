@@ -370,7 +370,7 @@ public class AcsFile extends CsvFile {
                 //            Utils.printTimes("ACS File:", tt1,tt2);
             } catch (Exception exc) {
                 System.err.println("Error reading census data:" + json);
-
+                exc.printStackTrace();
                 throw exc;
             }
         }

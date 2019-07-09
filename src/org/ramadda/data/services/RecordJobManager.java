@@ -181,7 +181,7 @@ public class RecordJobManager extends JobManager implements RecordConstants {
                     return Boolean.TRUE;
                 } catch (Exception exc) {
                     System.err.println("Badness:" + exc);
-
+                    exc.printStackTrace();
                     throw new RuntimeException(exc);
                 }
             }
