@@ -417,6 +417,7 @@ public class GeoUtils {
         boolean doZip = false;
         if (address.toLowerCase().startsWith("zip:")) {
             address = address.substring("zip:".length()).trim();
+            if(address.length()>5) address = address.substring(0,5);
             doZip = true;
         }
         boolean doCity = false;
@@ -431,44 +432,25 @@ public class GeoUtils {
         }
 
 
+        Place.Resource resource = null;
         Place place = null;
-
         if(doCountry) {
-            try {
-                List<Place> places = Place.getPlaces("countries");
-                place = Place.findPlace(places, address);
-                if(place == null)
-                    System.err.println("no place:" + address);
-                return place;
-            } catch(Exception exc) {
-                exc.printStackTrace();
-            }
+            resource = Place.getResource("countries");
         }
-
 
         if(doState) {
-            try {
-                List<Place> places = Place.getPlaces("states");
-                place = Place.findPlace(places, address);
-                if(place == null)
-                    System.err.println("no place:" + address);
-                return place;
-            } catch(Exception exc) {
-                exc.printStackTrace();
-            }
+            resource = Place.getResource("states");
         }
 
-
         if(doZip) {
-            try {
-                List<Place> places = Place.getPlaces("zipcodes");
-                place = Place.findPlace(places, address);
-                if(place == null)
-                    System.err.println("no place:" + address);
-                return place;
-            } catch(Exception exc) {
-                exc.printStackTrace();
-            }
+            resource = Place.getResource("zipcodes");
+        }
+
+        if(resource!=null) {
+            place = resource.getPlace(address);
+            if(place == null)
+                System.out.println("no place:" + address);
+            return place;
         }
 
         if(doCity) {

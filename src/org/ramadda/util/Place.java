@@ -77,8 +77,8 @@ public class Place {
         //        new Resource(RESOURCE_ROOT + "/urbanareas.txt", new int[] { 1, 0, 0,
         //                9, 10 }, "urban:"),
         //#GEOID        POP10   HU10    ALAND   AWATER  ALAND_SQMI      AWATER_SQMI     INTPTLAT        INTPTLONG
-        new Resource(RESOURCE_ROOT + "/zipcodes.txt", new int[] { 0, 0, 0, 7,
-                8 }, "zip:"),
+        new Resource(RESOURCE_ROOT + "/zipcodes.txt", new int[] { 0, 0, 0, 3,
+                4 }, "zip:"),
         //#USPS GEOID   POP10   HU10    ALAND   AWATER  ALAND_SQMI      AWATER_SQMI     INTPTLAT        INTPTLONG
         new Resource(RESOURCE_ROOT + "/tracts.txt", new int[] { 1, 1, 1, 8,
                 9 }, "")
@@ -93,7 +93,7 @@ public class Place {
      * @version        $version$, Tue, Jan 30, '18
      * @author         Enter your name here...
      */
-    private static class Resource {
+    public static class Resource {
 
         /** _more_ */
         String id;
@@ -114,6 +114,8 @@ public class Place {
         /** _more_ */
         List<Place> places = new ArrayList<Place>();
 
+        Hashtable<String,Place> map = new Hashtable<String,Place>();
+
         /**
          * _more_
          *
@@ -128,6 +130,13 @@ public class Place {
             this.indices = indices;
             this.prefix  = prefix;
         }
+
+        public Place getPlace(String key) {
+            key = key.toLowerCase();
+            return this.map.get(key);
+        }
+
+
     }
 
 
@@ -367,11 +376,12 @@ public class Place {
     }
 
 
+
+
     public static Place findPlace(List<Place>places, String key) {
+        //        if(true) return null;
         key = key.toLowerCase();
-        //        System.out.println("key:" + key);
         for(Place place: places) {
-            //            System.out.println(":" + place._name+":");
             if(key.equals(place._name)) return place;
         }
         return null;
@@ -426,9 +436,9 @@ public class Place {
         if (resource == null) {
             return null;
         }
-
         return resource.places;
     }
+
 
 
     /**
@@ -441,6 +451,8 @@ public class Place {
     public static List<Place> getPlaces() throws Exception {
         return getPlaces(null);
     }
+
+
 
     /**
      * _more_
@@ -481,7 +493,6 @@ public class Place {
                                 continue;
                             }
                             Place place = new Place();
-                            resource.places.add(place);
                             place.from = resource.id;
                             int suffix = (indices.length >= 7)
                                          ? indices[6]
@@ -493,6 +504,8 @@ public class Place {
                             if ((indices.length >= 6) && (indices[5] >= 0)) {
                                 place.fips = place.fips.substring(indices[5]);
                             }
+                            resource.places.add(place);
+                            resource.map.put(place._name, place);
                             tmp.add(place);
                             for (String key :
                                     new String[] {

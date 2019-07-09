@@ -1560,6 +1560,13 @@ public class CsvUtil {
                 continue;
             }
 
+
+            if (arg.equals("-log")) {
+                info.getProcessor().addProcessor(new Processor.Logger());
+
+                continue;
+            }
+
             if (arg.equals("-strict")) {
                 info.getProcessor().addProcessor(new Processor.Counter(true));
 

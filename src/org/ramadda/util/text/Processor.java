@@ -1696,6 +1696,45 @@ public abstract class Processor extends CsvOperator {
 
 
 
+    public static class Logger extends Processor {
+
+        private int total;
+
+        /** _more_ */
+        private int rowCount;
+
+        /*
+         * _more_
+         */
+        public Logger() {}
+
+        /**
+         * _more_
+         *
+         *
+         * @param info _more_
+         * @param row _more_
+         * @param line _more_
+         *
+         * @return _more_
+         *
+         * @throws Exception _more_
+         */
+        @Override
+        public Row processRow(TextReader info, Row row, String line)
+                throws Exception {
+            total++;
+            if(++rowCount>=1000) {
+                System.err.println("count:" + total);
+                rowCount=0;
+            }
+            return row;
+        }
+
+    }
+
+
+
 
     /**
      * Class description
