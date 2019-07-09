@@ -539,7 +539,8 @@ public class Place {
                                 placesMap.put(key.toUpperCase(), place);
                             }
                             resource.places.add(place);
-                            resource.map.put(place._name, place);
+                            if(place._name!=null)
+                                resource.map.put(place._name, place);
                             tmp.add(place);
                         }
                     }
