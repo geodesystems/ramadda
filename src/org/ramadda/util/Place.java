@@ -204,7 +204,7 @@ public class Place {
      */
     public Place(String name, double lat, double lon) {
         this.id        = name;
-        this.name      = name;
+        setName(name);
         this.latitude  = lat;
         this.longitude = lon;
     }
@@ -538,13 +538,9 @@ public class Place {
                                 placesMap.put(key.toLowerCase(), place);
                                 placesMap.put(key.toUpperCase(), place);
                             }
-
                             resource.places.add(place);
                             resource.map.put(place._name, place);
                             tmp.add(place);
-
-
-
                         }
                     }
                     places = tmp;
