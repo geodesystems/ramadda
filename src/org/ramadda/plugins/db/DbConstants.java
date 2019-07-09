@@ -194,6 +194,8 @@ public interface DbConstants extends Constants {
     public static final String CSS_DB_TABLEHEADER_INNER =
         "dbtableheader_inner";
 
+    public static final String ARG_AGG_PERCENT ="aggpercent";
+
     /** _more_ */
     public static final String ARG_DB_VIEW = "db.view";
 

@@ -147,7 +147,6 @@ public abstract class Converter extends Processor {
                     result.add(s);
                 }
             }
-
             return new Row(result);
         }
 

@@ -152,6 +152,9 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
     /** _more_ */
     private DecimalFormat dfmt = new DecimalFormat("#0.#");
 
+    private DecimalFormat pfmt = new DecimalFormat("0.00");
+
+
 
     /** _more_ */
     XmlEncoder xmlEncoder = new XmlEncoder();
@@ -1765,6 +1768,7 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
                                                 "search-select")));
                     aggSB.append("<br>");
                 }
+                aggSB.append(HtmlUtils.checkbox(ARG_AGG_PERCENT,"true",request.get(ARG_AGG_PERCENT, false)) +" show percentage");
                 sb.append(formEntry(request, msgLabel("Aggregate"),
                                     aggSB.toString()));
 
@@ -3386,6 +3390,7 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
             HtmlUtils.open(hb, "table", "class", "dbtable", "border", "1",
                            "cellspacing", "0", "cellpadding", "0");
         }
+        boolean addPercent = request.get(ARG_AGG_PERCENT,false);
         double[]      sum = null;
         StringBuilder cb  = new StringBuilder();
         for (int cnt = 0; cnt < valueList.size(); cnt++) {
@@ -3393,38 +3398,65 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
             if (sum == null) {
                 sum = new double[values.length];
                 for (int i = 0; i < sum.length; i++) {
-                    sum[i] = Double.NaN;
+                    sum[i] = 0;
                 }
             }
+            if (cnt != 0) {
+                int col = 0;
+                for (Object obj : values) {
+                    if (obj instanceof Double) {
+                        double d = (Double) obj;
+                        if (!Double.isNaN(d)) {
+                            sum[col] += d;
+                        }
+                    } else if (obj instanceof Integer) {
+                        double d = (Integer) obj;
+                        if (!Double.isNaN(d)) {
+                            sum[col] += d;
+                        }
+                    }
+                    col++;
+                }
+            }
+        }
 
+        for (int cnt = 0; cnt < valueList.size(); cnt++) {
+            Object[] values = valueList.get(cnt);
             if (cnt == 0) {
                 HtmlUtils.open(hb, "tr", "valign", "top", "class", "dbrow");
+                int cnt2=0;
                 for (Object obj : values) {
                     makeTableHeader(hb, "" + obj);
+                    if(addPercent && cnt2>0) {
+                        makeTableHeader(hb, "Percent");
+                    }
+                    cnt2++;
                 }
-                HtmlUtils.close(hb, "tr");
+               HtmlUtils.close(hb, "tr");
             } else {
                 HtmlUtils.open(cb, "tr", "valign", "top", "class", "dbrow");
                 int col = 0;
                 for (Object obj : values) {
                     if (obj instanceof Double) {
-                        HtmlUtils.open(cb, "td", "align", "right");
-                        double d = (Double) obj;
-                        if (Double.isNaN(sum[col])) {
-                            sum[col] = d;
-                        } else {
-                            sum[col] += d;
+                        double d = (Double)obj;
+                        HtmlUtils.td(cb, dfmt.format((Double) obj),"align=right");
+                        if(addPercent) {
+                            if(sum[col]!=0) {
+                                HtmlUtils.td(cb, pfmt.format(100*d/sum[col])+"%","align=right");
+                            } else {
+                                HtmlUtils.td(cb, "NA");
+                            }
                         }
-                        cb.append(dfmt.format((Double) obj));
                     } else if (obj instanceof Integer) {
-                        int d = (Integer) obj;
-                        if (Double.isNaN(sum[col])) {
-                            sum[col] = d;
-                        } else {
-                            sum[col] += d;
+                        int d = (Integer)obj;
+                        HtmlUtils.td(cb, obj.toString(),"align=right");
+                        if(addPercent) {
+                            if(sum[col]!=0) {
+                                HtmlUtils.td(cb, pfmt.format(100*d/sum[col])+"%","align=right");
+                            } else {
+                                HtmlUtils.td(cb, "NA");
+                            }
                         }
-                        HtmlUtils.open(cb, "td", "align", "right");
-                        cb.append(obj);
                     } else {
                         HtmlUtils.open(cb, "td");
                         String s = "" + obj;
@@ -3434,30 +3466,29 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
                         cb.append(s);
                     }
                     col++;
-                    HtmlUtils.close(cb, "td");
                 }
                 cb.append("</tr>");
             }
-
         }
 
         if (valueList.size() > 0) {
+            hb.append(cb);
             HtmlUtils.open(hb, "tr", "valign", "top", "class", "dbrow");
             for (int i = 0; i < sum.length; i++) {
                 if (i == 0) {
-                    hb.append("<td>");
-                    hb.append("Total");
+                    HtmlUtils.td(hb,"Total", "style=\"background:#eee;\"");
                 } else {
-                    HtmlUtils.open(hb, "td", "align", "right");
                     if (Double.isNaN(sum[i])) {
-                        hb.append("");
+                        HtmlUtils.td(hb,"NA",  "style=\"background:#eee;\"");
                     } else {
-                        hb.append(dfmt.format(sum[i]));
+                        HtmlUtils.td(hb,dfmt.format(sum[i]),"align=right  style=\"background:#eee;\"");
+                    }
+                    if(addPercent) {
+                        HtmlUtils.td(hb,"&nbsp;",  "style=\"background:#eee;\"");
                     }
                 }
-                HtmlUtils.close(hb, "td");
             }
-            hb.append(cb);
+            HtmlUtils.close(hb, "tr");
             HtmlUtils.close(hb, "table");
         } else {
             hb.append(getPageHandler().showDialogNote(msg("Nothing found")));
