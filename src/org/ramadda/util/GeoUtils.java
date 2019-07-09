@@ -449,7 +449,7 @@ public class GeoUtils {
         if(resource!=null) {
             place = resource.getPlace(address);
             if(place == null)
-                System.out.println("no place:" + address);
+                System.err.println("no place:" + address);
             return place;
         }
 

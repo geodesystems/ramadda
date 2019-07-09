@@ -1789,10 +1789,10 @@ public abstract class Converter extends Processor {
          *
          * @throws Exception _more_
          */
-        public Denormalizer(String mapFile, int col, String newName,
+        public Denormalizer(String mapFile, int col1, int col2, int col, String newName,
                             String mode)
                 throws Exception {
-            makeMap(mapFile);
+            makeMap(mapFile, col1, col2);
             this.destCol    = col;
             this.newColName = newName;
             this.mode       = mode;
@@ -1807,7 +1807,7 @@ public abstract class Converter extends Processor {
          *
          * @throws Exception _more_
          */
-        private void makeMap(String filename) throws Exception {
+        private void makeMap(String filename, int col1, int col2) throws Exception {
             BufferedReader br = new BufferedReader(
                                     new InputStreamReader(
                                         getInputStream(filename)));
@@ -1821,8 +1821,8 @@ public abstract class Converter extends Processor {
                 if (line.startsWith("#")) {
                     continue;
                 }
-                List<String> toks = StringUtil.splitUpTo(line, ",", 2);
-                map.put(toks.get(0), toks.get(1).replaceAll("\"", ""));
+                List<String> toks = Utils.tokenizeColumns(line, ",");
+                map.put(toks.get(col1), toks.get(col2).replaceAll("\"", ""));
             }
         }
 
