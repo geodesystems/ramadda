@@ -300,7 +300,6 @@ public class CsvUtil {
             String arg = args.get(i);
             if (arg.equals("-help")) {
                 usage("", null, false, false);
-
                 return;
             }
             if (arg.equals("-genhelp")) {
@@ -358,7 +357,7 @@ public class CsvUtil {
         }
 
         List<List<Row>> rows = new ArrayList<List<Row>>();
-        parseArgs(extra, textReader, files, rows);
+        if(!parseArgs(extra, textReader, files, rows)) return;
         if (rows.size() > 0) {
             textReader.setRows(rows.get(0));
         }
@@ -1312,7 +1311,6 @@ public class CsvUtil {
         if (msg.length() > 0) {
             pw.println(msg);
         }
-        System.out.println("match:" + match);
         pw.println("Usage:");
         for (Cmd c : commands) {
             String cmd = c.getLine();
@@ -1364,12 +1362,13 @@ public class CsvUtil {
 
 
 
-    private void ensureArg(List args, int i,int cnt)  throws Exception {
+    private boolean ensureArg(List args, int i,int cnt)  throws Exception {
         if(args.size()<=(i+cnt)) {
             String arg = (String)args.get(i);
             usage("Bad argument count for:" + arg, arg, true, false);
-            throw new IllegalArgumentException();
+            return false;
         }
+        return true;
     }
 
     /**
@@ -1382,7 +1381,7 @@ public class CsvUtil {
      *
      * @throws Exception _more_
      */
-    public void parseArgs(List<String> args, TextReader info,
+    public boolean parseArgs(List<String> args, TextReader info,
                           List<String> files, List<List<Row>> tokenizedRows)
             throws Exception {
 
@@ -1412,13 +1411,13 @@ public class CsvUtil {
             String arg = args.get(i);
 
             if (arg.equals("-html")) {
-                ensureArg(args, i,1);
+                if(!ensureArg(args, i,1)) return false;
                 doHtml    = true;
                 htmlProps = args.get(++i);
                 continue;
             }
             if (arg.equals("-json")) {
-                ensureArg(args, i,1);
+                if(!ensureArg(args, i,1)) return false;
                 doJson    = true;
                 jsonProps = args.get(++i);
 
@@ -1427,32 +1426,32 @@ public class CsvUtil {
 
 
             if (arg.equals("-skip")) {
-                ensureArg(args, i,1);
+                if(!ensureArg(args, i,1)) return false;
                 info.setSkip(Integer.parseInt(args.get(++i)));
                 continue;
             }
 
 
             if (arg.equals("-skipline")) {
-                ensureArg(args, i,1);
+                if(!ensureArg(args, i,1)) return false;
                 info.setSkipPattern(args.get(++i));
                 continue;
             }
 
             if (arg.equals("-changeline")) {
-                ensureArg(args, i,2);
+                if(!ensureArg(args, i,2)) return false;
                 info.setChangeString(args.get(++i), args.get(++i));
                 continue;
             }
 
             if (arg.equals("-maxrows")) {
-                ensureArg(args, i,1);
+                if(!ensureArg(args, i,1)) return false;
                 info.setMaxRows(Integer.parseInt(args.get(++i)));
                 continue;
             }
 
             if (arg.equals("-prune")) {
-                ensureArg(args, i,1);
+                if(!ensureArg(args, i,1)) return false;
                 info.setPruneBytes(Integer.parseInt(args.get(++i)));
                 continue;
             }
@@ -1465,26 +1464,26 @@ public class CsvUtil {
 
 
             if (arg.equals("-start")) {
-                ensureArg(args, i,1);
+                if(!ensureArg(args, i,1)) return false;
                 info.getFilter().addFilter(new Filter.Start(args.get(++i)));
                 continue;
             }
 
 
             if (arg.equals("-stop")) {
-                ensureArg(args, i,1);
+                if(!ensureArg(args, i,1)) return false;
                 info.getFilter().addFilter(new Filter.Stop(args.get(++i)));
                 continue;
             }
 
             if (arg.equals("-min")) {
-                ensureArg(args, i,1);
+                if(!ensureArg(args, i,1)) return false;
                 info.getFilter().addFilter(new Filter.MinColumns(new Integer(args.get(++i))));
                 continue;
             }
 
             if (arg.equals("-max")) {
-                ensureArg(args, i,1);
+                if(!ensureArg(args, i,1)) return false;
                 info.getFilter().addFilter(new Filter.MaxColumns(new Integer(args.get(++i))));
                 continue;
             }
@@ -1492,7 +1491,7 @@ public class CsvUtil {
 
 
             if (arg.equals("-decimate")) {
-                ensureArg(args, i,2);
+                if(!ensureArg(args, i,2)) return false;
                 int start = Integer.parseInt(args.get(++i));
                 int skip  = Integer.parseInt(args.get(++i));
                 if (skip > 0) {
@@ -1503,7 +1502,7 @@ public class CsvUtil {
             }
 
             if (arg.equals("-db")) {
-                ensureArg(args, i,1);
+                if(!ensureArg(args, i,1)) return false;
                 Hashtable<String, String> props = parseProps(args.get(++i));
                 this.installPlugin = Misc.equals(props.get("-install"),
                         "true") || Misc.equals(props.get("install"), "true");
@@ -1516,7 +1515,7 @@ public class CsvUtil {
 
 
             if (arg.equals("-unfurl")) {
-                ensureArg(args, i,5);
+                if(!ensureArg(args, i,5)) return false;
                 int          idx1      = Integer.parseInt(args.get(++i));
                 List<String> valueCols = getCols(args.get(++i));
                 //                int          idx2 = Integer.parseInt(args.get(++i));
@@ -1529,14 +1528,14 @@ public class CsvUtil {
             }
 
             if (arg.equals("-sort")) {
-                ensureArg(args, i,1);
+                if(!ensureArg(args, i,1)) return false;
                 int idx = Integer.parseInt(args.get(++i));
                 info.getProcessor().addProcessor(new Processor.Sorter(idx));
                 continue;
             }
 
             if (arg.equals("-join")) {
-                ensureArg(args, i,4);
+                if(!ensureArg(args, i,4)) return false;
                 List<String> keys1   = getCols(args.get(++i));
                 List<String> values1 = getCols(args.get(++i));
                 String       file    = args.get(++i);
@@ -1550,7 +1549,7 @@ public class CsvUtil {
             }
 
             if (arg.equals("-sum")) {
-                ensureArg(args, i,2);
+                if(!ensureArg(args, i,2)) return false;
                 List<String> keys   = getCols(args.get(++i));
                 List<String> values = getCols(args.get(++i));
                 info.getProcessor().addProcessor(new Processor.Summer(keys,
@@ -1561,7 +1560,7 @@ public class CsvUtil {
 
 
             if (arg.equals("-unique")) {
-                ensureArg(args, i,1);
+                if(!ensureArg(args, i,1)) return false;
                 List<String> toks = getCols(args.get(++i));
                 info.getProcessor().addProcessor(new Filter.Unique(toks));
 
@@ -1609,20 +1608,20 @@ public class CsvUtil {
 
 
             if (arg.equals("-rawlines")) {
-                ensureArg(args, i,1);
+                if(!ensureArg(args, i,1)) return false;
                 rawLines = Integer.parseInt(args.get(++i));
                 continue;
             }
 
 
             if (arg.equals("-delimiter")) {
-                ensureArg(args, i,1);
+                if(!ensureArg(args, i,1)) return false;
                 info.setDelimiter(delimiter = args.get(++i));
                 continue;
             }
 
             if (arg.equals("-widths")) {
-                ensureArg(args, i,1);
+                if(!ensureArg(args, i,1)) return false;
                 List<Integer> widths  = new ArrayList<Integer>();
                 for(String tok: StringUtil.split(args.get(++i),",",true,true)) {
                     widths.add(Integer.parseInt(tok));
@@ -1632,14 +1631,14 @@ public class CsvUtil {
             }
 
             if (arg.equals("-comment")) {
-                ensureArg(args, i,1);
+                if(!ensureArg(args, i,1)) return false;
                 info.setComment(comment = args.get(++i));
 
                 continue;
             }
 
             if (arg.equals("-outputdelimiter")) {
-                ensureArg(args, i,1);
+                if(!ensureArg(args, i,1)) return false;
                 String s = args.get(++i);
                 if (s.equals("tab")) {
                     s = "\t";
@@ -1650,7 +1649,7 @@ public class CsvUtil {
             }
 
             if (arg.equals("-cut") || arg.equals("-include")) {
-                ensureArg(args, i,1);
+                if(!ensureArg(args, i,1)) return false;
                 String r = args.get(++i);
                 info.getFilter().addFilter(new Filter.Cutter(getNumbers(r),
                         arg.equals("-cut")));
@@ -1682,7 +1681,7 @@ public class CsvUtil {
                 continue;
             }
             if (arg.equals("-processor")) {
-                ensureArg(args, i,1);
+                if(!ensureArg(args, i,1)) return false;
                 Class c = Misc.findClass(args.get(++i));
                 info.getProcessor().addProcessor((Processor) c.newInstance());
                 continue;
@@ -1700,7 +1699,7 @@ public class CsvUtil {
             }
 
             if (arg.equals("-output")) {
-                ensureArg(args, i,1);
+                if(!ensureArg(args, i,1)) return false;
                 String out = args.get(++i);
                 this.outputStream = new FileOutputStream(out);
                 info.setWriter(new PrintWriter(this.outputStream));
@@ -1739,7 +1738,7 @@ public class CsvUtil {
             }
 
             if (arg.equals("-template")) {
-                ensureArg(args, i,1);
+                if(!ensureArg(args, i,1)) return false;
                 String template = args.get(++i);
                 if (new File(template).exists()) {
                     template = IOUtil.readContents(new File(template));
@@ -1751,7 +1750,7 @@ public class CsvUtil {
             }
 
             if (arg.equals("-columns")) {
-                ensureArg(args, i,1);
+                if(!ensureArg(args, i,1)) return false;
                 List<String> cols = getCols(args.get(i++));
                 info.setSelector(new Converter.ColumnSelector(cols));
                 info.getProcessor().addProcessor(info.getSelector());
@@ -1759,7 +1758,7 @@ public class CsvUtil {
             }
 
             if (arg.equals("-mergerows")) {
-                ensureArg(args, i,1);
+                if(!ensureArg(args, i,1)) return false;
                 String r = args.get(++i);
                 info.getProcessor().addProcessor(
                                                  new Converter.RowMerger(getNumbers(r), args.get(++i),args.get(++i)));
@@ -1772,7 +1771,7 @@ public class CsvUtil {
 
             /*
             if (arg.equals("-addrange")) {
-                ensureArg(args, i,3);
+                if(!ensureArg(args, i,3)) return false;
                 List<String> cols = getCols(args.get(++i));
                 int from = new Integer(args.get(++i)).intValue();
                 int to  = new Integer(args.get(++i)).intValue();
@@ -1782,7 +1781,7 @@ public class CsvUtil {
             */
 
             if (arg.equals("-addheader")) {
-                ensureArg(args, i,1);
+                if(!ensureArg(args, i,1)) return false;
                 info.getProcessor().addProcessor(
                     new Converter.HeaderMaker(parseProps(args.get(++i))));
                 continue;
@@ -1802,7 +1801,7 @@ public class CsvUtil {
             }
 
             if (arg.equals("-prepend")) {
-                ensureArg(args, i,1);
+                if(!ensureArg(args, i,1)) return false;
                 String text = args.get(++i);
                 text = text.replaceAll("_nl_", "\n");
                 textReader.setPrepend(text);
@@ -1812,7 +1811,7 @@ public class CsvUtil {
 
 
             if (arg.equals("-percent")) {
-                ensureArg(args, i,1);
+                if(!ensureArg(args, i,1)) return false;
                 List<String> cols = getCols(args.get(++i));
                 info.getProcessor().addProcessor(
                     new Converter.ColumnPercenter(cols));
@@ -1830,7 +1829,7 @@ public class CsvUtil {
             }
 
             if (arg.equals("-pad")) {
-                ensureArg(args, i,2);
+                if(!ensureArg(args, i,2)) return false;
                 int count = new Integer(args.get(++i)).intValue();
                 String pad = args.get(++i);
                 info.getProcessor().addProcessor(new Converter.Padder(count,
@@ -1840,7 +1839,7 @@ public class CsvUtil {
             }
 
             if (arg.equals("-prefix")) {
-                ensureArg(args, i,2);
+                if(!ensureArg(args, i,2)) return false;
                 List<String> cols = getCols(args.get(++i));
                 String       s    = args.get(++i);
                 info.getProcessor().addProcessor(new Converter.Prefixer(cols,
@@ -1850,7 +1849,7 @@ public class CsvUtil {
             }
 
             if (arg.equals("-suffix")) {
-                ensureArg(args, i,1);
+                if(!ensureArg(args, i,1)) return false;
                 List<String> cols = getCols(args.get(++i));
                 String       s    = args.get(++i);
                 info.getProcessor().addProcessor(new Converter.Suffixer(cols,
@@ -1861,7 +1860,7 @@ public class CsvUtil {
 
 
             if (arg.equals("-explode")) {
-                ensureArg(args, i,1);
+                if(!ensureArg(args, i,1)) return false;
                 String col = args.get(++i);
                 info.getProcessor().addProcessor(
                     new Processor.Exploder(Integer.parseInt(col)));
@@ -1870,7 +1869,7 @@ public class CsvUtil {
             }
 
             if (arg.equals("-geocode")) {
-                ensureArg(args, i,5);
+                if(!ensureArg(args, i,5)) return false;
                 String col      = args.get(++i);
                 String filename = args.get(++i);
                 info.getProcessor().addProcessor(new Converter.Geocoder(col,
@@ -1882,7 +1881,7 @@ public class CsvUtil {
             }
 
             if (arg.equals("-geocodeaddress")) {
-                ensureArg(args, i,5);
+                if(!ensureArg(args, i,5)) return false;
                 List<String> cols   = getCols(args.get(++i));
                 String       lat    = args.get(++i);
                 String       lon    = args.get(++i);
@@ -1894,7 +1893,7 @@ public class CsvUtil {
                 continue;
             }
             if (arg.equals("-geocodeaddressdb")) {
-                ensureArg(args, i,3);
+                if(!ensureArg(args, i,3)) return false;
                 List<String> cols   = getCols(args.get(++i));
                 String       prefix = args.get(++i).trim();
                 String       suffix = args.get(++i).trim();
@@ -1905,7 +1904,7 @@ public class CsvUtil {
             }
 
             if (arg.equals("-geocodedb")) {
-                ensureArg(args, i,5);
+                if(!ensureArg(args, i,5)) return false;
                 String col      = args.get(++i);
                 String filename = args.get(++i);
                 info.getProcessor().addProcessor(new Converter.Geocoder(col,
@@ -1917,7 +1916,7 @@ public class CsvUtil {
             }
 
             if (arg.equals("-change")) {
-                ensureArg(args, i,3);
+                if(!ensureArg(args, i,3)) return false;
                 List<String> cols    = getCols(args.get(++i));
                 String       pattern = args.get(++i);
                 pattern =
@@ -1939,7 +1938,7 @@ public class CsvUtil {
 
 
             if (arg.equals("-changerow")) {
-                ensureArg(args, i,3);
+                if(!ensureArg(args, i,3)) return false;
                 int    row     = Integer.parseInt(args.get(++i));
                 String pattern = args.get(++i);
                 pattern =
@@ -1959,7 +1958,7 @@ public class CsvUtil {
 
 
             if (arg.equals("-debug")) {
-                ensureArg(args, i,2);
+                if(!ensureArg(args, i,2)) return false;
                 List<String> cols    = getCols(args.get(++i));
                 String       pattern = args.get(++i);
                 info.getProcessor().addProcessor(
@@ -1970,7 +1969,7 @@ public class CsvUtil {
 
 
             if (arg.equals("-formatdate")) {
-                ensureArg(args, i,2);
+                if(!ensureArg(args, i,2)) return false;
                 List<String> cols = getCols(args.get(++i));
                 info.getProcessor().addProcessor(
                     new Converter.DateFormatter(
@@ -1980,7 +1979,7 @@ public class CsvUtil {
             }
 
             if (arg.equals("-map")) {
-                ensureArg(args, i,3);
+                if(!ensureArg(args, i,3)) return false;
                 List<String> cols = getCols(args.get(++i));
                 info.getProcessor().addProcessor(
                     new Converter.ColumnMapper(
@@ -1992,7 +1991,7 @@ public class CsvUtil {
 
 
             if (arg.equals("-tcl")) {
-                ensureArg(args, i,1);
+                if(!ensureArg(args, i,1)) return false;
                 i++;
                 info.getProcessor().addProcessor(
                     new Processor.TclWrapper(args.get(i)));
@@ -2001,7 +2000,7 @@ public class CsvUtil {
             }
 
             if (arg.equals("-split")) {
-                ensureArg(args, i,2);
+                if(!ensureArg(args, i,2)) return false;
                 info.getProcessor().addProcessor(
                     new Converter.ColumnSplitter(
                         args.get(++i), args.get(++i)));
@@ -2010,7 +2009,7 @@ public class CsvUtil {
             }
 
             if (arg.equals("-delete")) {
-                ensureArg(args, i,1);
+                if(!ensureArg(args, i,1)) return false;
                 info.getProcessor().addProcessor(
                     new Converter.ColumnDeleter(getCols(args.get(++i))));
 
@@ -2018,7 +2017,7 @@ public class CsvUtil {
             }
 
             if (arg.equals("-insert")) {
-                ensureArg(args, i,2);
+                if(!ensureArg(args, i,2)) return false;
                 info.getProcessor().addProcessor(
                     new Converter.ColumnInserter(
                         Integer.parseInt(args.get(++i)), args.get(++i)));
@@ -2029,7 +2028,7 @@ public class CsvUtil {
 
 
             if (arg.equals("-macro")) {
-                ensureArg(args, i,3);
+                if(!ensureArg(args, i,3)) return false;
                 info.getProcessor().addProcessor(
                                                  new Converter.ColumnMacro(args.get(++i), args.get(++i), args.get(++i)));
                 continue;
@@ -2037,7 +2036,7 @@ public class CsvUtil {
 
 
             if (arg.equals("-format")) {
-                ensureArg(args, i,2);
+                if(!ensureArg(args, i,2)) return false;
                 List<String> cols = getCols(args.get(++i));
                 info.getProcessor().addProcessor(
                     new Converter.ColumnFormatter(cols, args.get(++i)));
@@ -2048,7 +2047,7 @@ public class CsvUtil {
 
 
             if (arg.equals("-scale")) {
-                ensureArg(args, i,3);
+                if(!ensureArg(args, i,3)) return false;
                 info.getProcessor().addProcessor(
                     new Converter.ColumnScaler(
                         args.get(++i), Double.parseDouble(args.get(++i)),
@@ -2060,7 +2059,7 @@ public class CsvUtil {
 
 
             if (arg.equals("-decimals")) {
-                ensureArg(args, i,2);
+                if(!ensureArg(args, i,2)) return false;
                 List<String> idxs = getCols(args.get(++i));
                 info.getProcessor().addProcessor(
                                                  new Converter.Decimals(idxs, new Integer(args.get(++i))));
@@ -2069,7 +2068,7 @@ public class CsvUtil {
             }
 
             if (arg.equals("-copy")) {
-                ensureArg(args, i,2);
+                if(!ensureArg(args, i,2)) return false;
                 info.getProcessor().addProcessor(
                     new Converter.ColumnCopier(args.get(++i), args.get(++i)));
 
@@ -2077,7 +2076,7 @@ public class CsvUtil {
             }
 
             if (arg.equals("-concat")) {
-                ensureArg(args, i,2);
+                if(!ensureArg(args, i,2)) return false;
                 List<String> idxs = getCols(args.get(++i));
                 info.getProcessor().addProcessor(
                     new Converter.ColumnNewer(idxs, args.get(++i)));
@@ -2086,7 +2085,7 @@ public class CsvUtil {
             }
 
             if (arg.equals("-operator")) {
-                ensureArg(args, i,3);
+                if(!ensureArg(args, i,3)) return false;
                 List<String> idxs = getCols(args.get(++i));
                 String       name = args.get(++i);
                 String       op   = args.get(++i);
@@ -2097,7 +2096,7 @@ public class CsvUtil {
             }
 
             if (arg.equals("-round")) {
-                ensureArg(args, i,1);
+                if(!ensureArg(args, i,1)) return false;
                 List<String> idxs = getCols(args.get(++i));
                 info.getProcessor().addProcessor(
                     new Converter.ColumnRounder(idxs));
@@ -2106,7 +2105,7 @@ public class CsvUtil {
             }
 
             if (arg.equals("-case")) {
-                ensureArg(args, i,2);
+                if(!ensureArg(args, i,2)) return false;
                 String       action = args.get(++i);
                 List<String> idxs   = getCols(args.get(++i));
                 info.getProcessor().addProcessor(new Converter.Case(idxs,
@@ -2118,7 +2117,7 @@ public class CsvUtil {
 
 
             if (arg.equals("-addcell")) {
-                ensureArg(args, i,3);
+                if(!ensureArg(args, i,3)) return false;
                 int row = Integer.parseInt(args.get(++i));
                 int col = Integer.parseInt(args.get(++i));
                 info.getProcessor().addProcessor(
@@ -2128,7 +2127,7 @@ public class CsvUtil {
             }
 
             if (arg.equals("-deletecell")) {
-                ensureArg(args, i,2);
+                if(!ensureArg(args, i,2)) return false;
                 int row = Integer.parseInt(args.get(++i));
                 info.getProcessor().addProcessor(
                     new Converter.ColumnUnNudger(
@@ -2138,7 +2137,7 @@ public class CsvUtil {
             }
 
             if (arg.equals("-set")) {
-                ensureArg(args, i,3);
+                if(!ensureArg(args, i,3)) return false;
                 List<String> cols = getCols(args.get(++i));
                 List<String> rows = getCols(args.get(++i));
                 info.getProcessor().addProcessor(
@@ -2148,7 +2147,7 @@ public class CsvUtil {
             }
 
             if (arg.equals("-width")) {
-                ensureArg(args, i,2);
+                if(!ensureArg(args, i,2)) return false;
                 List<String> cols = getCols(args.get(++i));
                 int          size = Integer.parseInt(args.get(++i));
                 info.getProcessor().addProcessor(
@@ -2159,7 +2158,7 @@ public class CsvUtil {
 
             /*
             if (arg.equals("-addrow")) {
-            ensureArg(args, i,2);
+            if(!ensureArg(args, i,2)) return false;
                 int row = Integer.parseInt(args.get(++i));
                 info.getProcessor().addProcessor(
                     new Converter.RowInserter(
@@ -2170,7 +2169,7 @@ public class CsvUtil {
 
 
             if (arg.equals("-combine")) {
-                ensureArg(args, i,3);
+                if(!ensureArg(args, i,3)) return false;
                 List<String> cols      = getCols(args.get(++i));
                 String       separator = args.get(++i);
                 String       name      = args.get(++i);
@@ -2183,7 +2182,7 @@ public class CsvUtil {
 
 
             if (arg.equals("-combineinplace")) {
-                ensureArg(args, i,3);
+                if(!ensureArg(args, i,3)) return false;
                 List<String> cols      = getCols(args.get(++i));
                 String       separator = args.get(++i);
                 String       name      = args.get(++i);
@@ -2195,7 +2194,7 @@ public class CsvUtil {
             }
 
             if (arg.equals("-denormalize")) {
-                ensureArg(args, i,6);
+                if(!ensureArg(args, i,6)) return false;
                 String file = args.get(++i);
                 int    col1 = Integer.parseInt(args.get(++i));
                 int    col2 = Integer.parseInt(args.get(++i));
@@ -2224,7 +2223,7 @@ public class CsvUtil {
             }
 
             if (arg.equals("-pattern")) {
-                ensureArg(args, i,2);
+                if(!ensureArg(args, i,2)) return false;
                 String col     = args.get(++i);
                 String pattern = args.get(++i);
                 handlePattern(info, filterToAddTo,
@@ -2234,7 +2233,7 @@ public class CsvUtil {
             }
 
             if (arg.equals("-notpattern")) {
-                ensureArg(args, i,2);
+                if(!ensureArg(args, i,2)) return false;
                 String col     = args.get(++i);
                 String pattern = args.get(++i);
                 handlePattern(info, filterToAddTo,
@@ -2244,7 +2243,7 @@ public class CsvUtil {
             }
 
             if (arg.equals("-countvalue")) {
-ensureArg(args, i,2);
+                if(!ensureArg(args, i,2)) return false;
                 String col = args.get(++i);
                 int    cnt = Integer.parseInt(args.get(++i));
                 handlePattern(info, filterToAddTo,
@@ -2254,7 +2253,7 @@ ensureArg(args, i,2);
             }
 
             if (arg.equals("-lt")) {
-ensureArg(args, i,2);
+                if(!ensureArg(args, i,2)) return false;
                 handlePattern(info, filterToAddTo,
                               new Filter.ValueFilter(args.get(++i),
                                   Filter.ValueFilter.OP_LT,
@@ -2264,7 +2263,7 @@ ensureArg(args, i,2);
             }
 
             if (arg.equals("-gt")) {
-ensureArg(args, i,2);
+                if(!ensureArg(args, i,2)) return false;
                 handlePattern(info, filterToAddTo,
                               new Filter.ValueFilter(args.get(++i),
                                   Filter.ValueFilter.OP_GT,
@@ -2275,7 +2274,7 @@ ensureArg(args, i,2);
 
 
             if (arg.equals("-defined")) {
-                ensureArg(args, i,1);
+                if(!ensureArg(args, i,1)) return false;
                 handlePattern(info, filterToAddTo,
                               new Filter.ValueFilter(args.get(++i),
                                   Filter.ValueFilter.OP_DEFINED, 0));
@@ -2354,8 +2353,9 @@ ensureArg(args, i,2);
             Hashtable<String, String> props = parseProps(jsonProps);
             tokenizedRows.add(tokenizeJson(files.get(0), props));
         }
-
+        return true;
     }
+
 
     /**
      * _more_
