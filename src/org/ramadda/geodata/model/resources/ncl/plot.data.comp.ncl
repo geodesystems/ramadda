@@ -1973,7 +1973,7 @@ begin
   end if
   alldata = new((/numdatas,xys(0),xys(1)/),float)
   alldata(0,:,:) = onetime
-  if (numfiles .gt. 2) then
+  if (numfiles .gt. 2 .or. outtype .eq. "multicomp") then
      newtitles = new(numdatas,string)
       if (outtype .eq. "enscomp") then
         newtitles(0) = opts@ens(0)
@@ -1996,7 +1996,7 @@ begin
        tmpdata = atmpdata
     end if
     alldata(i,:,:) = tmpdata
-    if (numfiles .gt. 2) then
+    if (numfiles .gt. 2 .or. outtype .eq. "multicomp") then
       if (outtype .eq. "enscomp") then
         newtitles(i) = opts@ens(i)
       else
@@ -2008,6 +2008,7 @@ begin
     end if
     delete(tmpdata)
   end do
+;  if (outtype .eq. "multicomp" .and. numfiles .gt. 1) then
   if (outtype .eq. "multicomp") then
     alldata(numdatas-1,:,:) = dim_avg_n_Wrap(alldata(0:numfiles-1,:,:),0)
     newtitles(numdatas-1) = "Multi-Model Mean"

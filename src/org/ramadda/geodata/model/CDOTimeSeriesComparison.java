@@ -30,6 +30,7 @@ import org.ramadda.service.ServiceInput;
 import org.ramadda.service.ServiceOperand;
 import org.ramadda.service.ServiceOutput;
 import org.ramadda.util.HtmlUtils;
+import org.ramadda.util.Utils;
 
 //import ucar.ma2.Range.Iterator;
 import ucar.nc2.dt.GridDatatype;
@@ -40,7 +41,6 @@ import ucar.nc2.time.CalendarDateRange;
 
 import ucar.unidata.geoloc.LatLonPointImpl;
 import ucar.unidata.geoloc.LatLonRect;
-import ucar.unidata.util.DateUtil;
 import ucar.unidata.util.IOUtil;
 import ucar.unidata.util.Misc;
 import ucar.unidata.util.StringUtil;
@@ -129,7 +129,8 @@ public class CDOTimeSeriesComparison extends CDODataService {
                         getOutputHandler().getDataOutputHandler();
                     dataset =
                         dataOutputHandler.getCdmManager().getGridDataset(e,
-                            getPath(request, e));
+                            getPath(request,
+                                    e));
 
                     if (dataset != null) {
                         getOutputHandler().addVarLevelWidget(request, sb,
@@ -157,8 +158,8 @@ public class CDOTimeSeriesComparison extends CDODataService {
         if (dataset != null) {
             llr = dataset.getBoundingBox();
         } else {
-            llr = new LatLonRect(new LatLonPointImpl(90.0, -180.0),
-                                 new LatLonPointImpl(-90.0, 180.0));
+            llr = new LatLonRect(new LatLonPointImpl(90.0,
+                    -180.0), new LatLonPointImpl(-90.0, 180.0));
         }
         getOutputHandler().addMapWidget(request, sb, llr, false);
     }
@@ -215,7 +216,8 @@ public class CDOTimeSeriesComparison extends CDODataService {
                         getOutputHandler().getDataOutputHandler();
                     GridDataset dataset =
                         dataOutputHandler.getCdmManager().getGridDataset(e,
-                            getPath(request, e));
+                            getPath(request,
+                                    e));
                     if (dataset != null) {
                         List<CalendarDate> dates =
                             CdmDataOutputHandler.getGridDates(dataset);
@@ -225,20 +227,22 @@ public class CDOTimeSeriesComparison extends CDODataService {
                                 Calendar     cal = cd.getCalendar();
                                 if (cal != null) {
                                     calString = cal.toString();
-                                    sb.append(HtmlUtils
-                                        .hidden(CdmDataOutputHandler
-                                            .ARG_CALENDAR, request
-                                            .getString(CdmDataOutputHandler
-                                                .ARG_CALENDAR, calString)));
+                                    sb.append(
+                                        HtmlUtils.hidden(
+                                            CdmDataOutputHandler.ARG_CALENDAR,
+                                            request.getString(
+                                            CdmDataOutputHandler.ARG_CALENDAR,
+                                            calString)));
                                 }
                             }
                             for (CalendarDate d : dates) {
                                 try {  // shouldn't get an exception
                                     String year =
-                                        new CalendarDateTime(d)
-                                            .formattedString("yyyy",
-                                                CalendarDateTime
-                                                    .DEFAULT_TIMEZONE);
+                                        new CalendarDateTime(
+                                            d).formattedString(
+                                            "yyyy",
+                                            CalendarDateTime
+                                                .DEFAULT_TIMEZONE);
                                     uniqueYears.add(year);
                                 } catch (Exception excp) {}
                             }
@@ -289,30 +293,35 @@ public class CDOTimeSeriesComparison extends CDODataService {
         String yearNum  = "";
         String yrLabel  = Repository.msgLabel("Start");
         int    endIndex = commonYears.size() - 1;
-        sb.append(
-            HtmlUtils.formEntry(
-                Repository.msgLabel("Years"),
-                yrLabel
-                + HtmlUtils.select(
-                    CDOOutputHandler.ARG_CDO_STARTYEAR + yearNum,
-                    commonYears,
-                    request.getString(
-                        CDOOutputHandler.ARG_CDO_STARTYEAR + yearNum,
-                        request.getString(
-                            CDOOutputHandler.ARG_CDO_STARTYEAR,
-                            commonYears.get(0))), HtmlUtils.title(
-                                "Select the starting year")) + HtmlUtils.space(
-                                    3) + Repository.msgLabel("End")
-                                       + HtmlUtils.select(
-                                           CDOOutputHandler.ARG_CDO_ENDYEAR
-                                           + yearNum, commonYears,
-                                               request.getString(
-                                                   CDOOutputHandler.ARG_CDO_ENDYEAR
-                                                       + yearNum, request.getString(
-                                                           CDOOutputHandler.ARG_CDO_ENDYEAR,
-                                                               commonYears.get(
-                                                                   endIndex))), HtmlUtils.title(
-                                                                       "Select the ending year"))));
+        sb.append(HtmlUtils.formEntry(Repository.msgLabel("Years"),
+                                      yrLabel
+                                      + HtmlUtils.select(
+                                          CDOOutputHandler.ARG_CDO_STARTYEAR
+                                          + yearNum,
+                                          commonYears,
+                                          request.getString(
+                                          CDOOutputHandler.ARG_CDO_STARTYEAR
+                                          + yearNum,
+                                          request.getString(
+                                          CDOOutputHandler.ARG_CDO_STARTYEAR,
+                                          commonYears.get(0))),
+                                          HtmlUtils.title(
+                                          "Select the starting year")) + HtmlUtils.space(
+                                              3) + Repository.msgLabel("End")
+                                                  + HtmlUtils.select(
+                                                      CDOOutputHandler.ARG_CDO_ENDYEAR
+                                                          + yearNum,
+                                                              commonYears,
+                                                              request.getString(
+                                                              CDOOutputHandler
+                                                                  .ARG_CDO_ENDYEAR + yearNum,
+                                                                      request.getString(
+                                                                      CDOOutputHandler
+                                                                          .ARG_CDO_ENDYEAR,
+                                                                              commonYears.get(
+                                                                              endIndex))),
+                                                              HtmlUtils.title(
+                                                              "Select the ending year"))));
 
 
     }
@@ -335,7 +344,8 @@ public class CDOTimeSeriesComparison extends CDODataService {
                     getOutputHandler().getDataOutputHandler();
                 GridDataset dataset =
                     dataOutputHandler.getCdmManager().getGridDataset(e,
-                        getPath(request, e));
+                        getPath(request,
+                                e));
                 if (dataset != null) {
                     grids.add(dataset);
                 }
@@ -365,7 +375,7 @@ public class CDOTimeSeriesComparison extends CDODataService {
         }
         // Get the years from the time series
         Date[] tsRange = getTimeSeriesDateRange(getTimeSeriesData(request,
-                             tsEntry));
+                                                                  tsEntry));
         if (tsRange[0].compareTo(commonDateRange[0]) > 0) {
             commonDateRange[0] = tsRange[0];
         }
@@ -464,7 +474,8 @@ public class CDOTimeSeriesComparison extends CDODataService {
         for (Entry entry : entries) {
             TypeHandler th = entry.getTypeHandler();
             if ( !(isClimateModelType(entry)
-                    || (th instanceof NoaaPsdMonthlyClimateIndexTypeHandler))) {
+                    || (th
+                    instanceof NoaaPsdMonthlyClimateIndexTypeHandler))) {
                 return false;
             }
             if (isClimateModelType(entry)) {
@@ -532,7 +543,8 @@ public class CDOTimeSeriesComparison extends CDODataService {
         }
         request = adjustRequestDates(request, localInput);
         for (Entry tsEntry : tsEntries) {
-            outputOperands.add(processTimeSeriesData(request, localInput,
+            outputOperands.add(processTimeSeriesData(request,
+                    localInput,
                     tsEntry));
         }
 
@@ -551,26 +563,29 @@ public class CDOTimeSeriesComparison extends CDODataService {
             //            outputOperands.add(processModelData(request, input, gridEntry, 0));
             //        }
             if ( !useThreads) {
-                outputOperands.add(processModelData(request, localInput,
-                        gridEntry, 0));
+                outputOperands.add(processModelData(request,
+                        localInput,
+                        gridEntry,
+                        0));
             } else {
                 final int myOp = opNum;
                 //System.out.println("making thread " + opNum);
                 threadManager.addRunnable(new ThreadManager.MyRunnable() {
-                    public void run() throws Exception {
-                        try {
-                            ServiceOperand so = processModelData(myRequest,
-                                                    myInput, gridEntry, 0);
-                            if (so != null) {
-                                synchronized (outputOperands) {
-                                    outputOperands.add(so);
+                            public void run() throws Exception {
+                                try {
+                                    ServiceOperand so =
+                                        processModelData(myRequest, myInput,
+                                            gridEntry, 0);
+                                    if (so != null) {
+                                        synchronized (outputOperands) {
+                                            outputOperands.add(so);
+                                        }
+                                    }
+                                } catch (Exception ve) {
+                                    ve.printStackTrace();
                                 }
                             }
-                        } catch (Exception ve) {
-                            ve.printStackTrace();
-                        }
-                    }
-                });
+                        });
             }
         }
 
@@ -657,7 +672,8 @@ public class CDOTimeSeriesComparison extends CDODataService {
             getOutputHandler().getDataOutputHandler();
         GridDataset dataset =
             dataOutputHandler.getCdmManager().getGridDataset(sample,
-                getPath(request, sample));
+                getPath(request,
+                        sample));
         CalendarDateRange dateRange = dataset.getCalendarDateRange();
         int firstDataYearMM = Integer.parseInt(
                                   new CalendarDateTime(
@@ -888,8 +904,10 @@ public class CDOTimeSeriesComparison extends CDODataService {
         outputEntry.setValues(avalues);
         // Add in lineage and associations
         outputEntry.addAssociation(new Association(getRepository().getGUID(),
-                "generated product", "product generated from",
-                sample.getId(), outputEntry.getId()));
+                "generated product",
+                "product generated from",
+                sample.getId(),
+                outputEntry.getId()));
         getOutputHandler().getEntryManager().writeEntryXmlFile(request,
                 outputEntry);
 
@@ -968,8 +986,9 @@ public class CDOTimeSeriesComparison extends CDODataService {
             if (line.startsWith("#") || line.isEmpty() || (linenum == 1)) {
                 continue;
             }
-            String[]         toks  = StringUtil.split(line, ",", 2);
-            Date             d     = DateUtil.parse(toks[0]);
+            String[] toks = StringUtil.split(line, ",", 2);
+            //Date             d     = DateUtil.parse(toks[0]);
+            Date             d     = Utils.parseDate(toks[0]);
             double           value = Misc.parseNumber(toks[1]);
             TimeSeriesRecord r     = new TimeSeriesRecord(d, value);
             data.addRecord(r);
@@ -1029,12 +1048,14 @@ public class CDOTimeSeriesComparison extends CDODataService {
                                           1);
         int firstDataYearMM =
             Integer.parseInt(new DateTime(range[0]).formattedString("yyyyMM",
-                                          CalendarDateTime.DEFAULT_TIMEZONE));
+                                                                    CalendarDateTime
+                                                                        .DEFAULT_TIMEZONE));
         int firstDataYear  = firstDataYearMM / 100;
         int firstDataMonth = firstDataYearMM % 100;
         int lastDataYearMM =
             Integer.parseInt(new DateTime(range[1]).formattedString("yyyyMM",
-                                          CalendarDateTime.DEFAULT_TIMEZONE));
+                                                                    CalendarDateTime
+                                                                        .DEFAULT_TIMEZONE));
         int           lastDataYear  = lastDataYearMM / 100;
         int           lastDataMonth = lastDataYearMM % 100;
         int           startYear     = 0;
@@ -1055,7 +1076,8 @@ public class CDOTimeSeriesComparison extends CDODataService {
                                             true, true);
                 for (String year : yearList) {
                     int iyear = Integer.parseInt(year);
-                    if ((iyear <= firstDataYear) || (iyear > lastDataYear)
+                    if ((iyear <= firstDataYear)
+                            || (iyear > lastDataYear)
                             || ((iyear == lastDataYear)
                                 && (requestEndMonth > lastDataMonth))) {
                         continue;
@@ -1183,7 +1205,7 @@ public class CDOTimeSeriesComparison extends CDODataService {
         String id      = getRepository().getGUID();
         String newName = tsEntry.getName() + "_" + id + ".csv";
         File outFile = new File(IOUtil.joinDir(input.getProcessDir(),
-                           newName));
+                                               newName));
         OutputStream os =
             getStorageManager().getUncheckedFileOutputStream(outFile);
         os.write(csv.getBytes());
@@ -1196,8 +1218,10 @@ public class CDOTimeSeriesComparison extends CDODataService {
         outputEntry.setResource(resource);
         // Add in lineage and associations
         outputEntry.addAssociation(new Association(getRepository().getGUID(),
-                "generated product", "product generated from",
-                tsEntry.getId(), outputEntry.getId()));
+                "generated product",
+                "product generated from",
+                tsEntry.getId(),
+                outputEntry.getId()));
         getOutputHandler().getEntryManager().writeEntryXmlFile(request,
                 outputEntry);
 
@@ -1257,12 +1281,14 @@ public class CDOTimeSeriesComparison extends CDODataService {
                                           1);
         int firstDataYearMM =
             Integer.parseInt(new DateTime(range[0]).formattedString("yyyyMM",
-                                          CalendarDateTime.DEFAULT_TIMEZONE));
+                                                                    CalendarDateTime
+                                                                        .DEFAULT_TIMEZONE));
         int firstDataYear  = firstDataYearMM / 100;
         int firstDataMonth = firstDataYearMM % 100;
         int lastDataYearMM =
             Integer.parseInt(new DateTime(range[1]).formattedString("yyyyMM",
-                                          CalendarDateTime.DEFAULT_TIMEZONE));
+                                                                    CalendarDateTime
+                                                                        .DEFAULT_TIMEZONE));
         int           lastDataYear  = lastDataYearMM / 100;
         int           lastDataMonth = lastDataYearMM % 100;
         int           startYear     = 0;
@@ -1283,7 +1309,8 @@ public class CDOTimeSeriesComparison extends CDODataService {
                                             true, true);
                 for (String year : yearList) {
                     int iyear = Integer.parseInt(year);
-                    if ((iyear <= firstDataYear) || (iyear > lastDataYear)
+                    if ((iyear <= firstDataYear)
+                            || (iyear > lastDataYear)
                             || ((iyear == lastDataYear)
                                 && (requestEndMonth > lastDataMonth))) {
                         continue;

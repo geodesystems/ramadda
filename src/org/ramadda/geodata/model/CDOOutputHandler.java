@@ -17,36 +17,35 @@
 package org.ramadda.geodata.model;
 
 
+import java.io.File;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Date;
+import java.util.List;
+import java.util.SortedSet;
+import java.util.TreeSet;
+
 import org.ramadda.geodata.cdmdata.CdmDataOutputHandler;
 import org.ramadda.repository.DateHandler;
-
 import org.ramadda.repository.Entry;
 import org.ramadda.repository.Link;
-import org.ramadda.repository.PageHandler;
 import org.ramadda.repository.Repository;
 import org.ramadda.repository.Request;
 import org.ramadda.repository.Resource;
 import org.ramadda.repository.Result;
 import org.ramadda.repository.job.JobManager;
-import org.ramadda.repository.map.MapBoxProperties;
 import org.ramadda.repository.map.MapInfo;
 import org.ramadda.repository.output.OutputHandler;
 import org.ramadda.repository.output.OutputType;
-
-
 import org.ramadda.service.Service;
 import org.ramadda.service.ServiceInput;
 import org.ramadda.service.ServiceOutput;
 import org.ramadda.service.ServiceProvider;
-import org.ramadda.util.GeoUtils;
 import org.ramadda.util.HtmlUtils;
 import org.ramadda.util.TempDir;
-
-
 import org.w3c.dom.Element;
 
 import ucar.nc2.dataset.CoordinateAxis1D;
-import ucar.nc2.dataset.CoordinateAxis1DTime;
 import ucar.nc2.dt.GridCoordSystem;
 import ucar.nc2.dt.GridDatatype;
 import ucar.nc2.dt.grid.GridDataset;
@@ -54,32 +53,14 @@ import ucar.nc2.time.Calendar;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.time.CalendarDateFormatter;
 import ucar.nc2.units.SimpleUnit;
-
 import ucar.unidata.geoloc.LatLonPointImpl;
 import ucar.unidata.geoloc.LatLonRect;
-import ucar.unidata.util.DateUtil;
 import ucar.unidata.util.HtmlUtil;
 import ucar.unidata.util.IOUtil;
 import ucar.unidata.util.Misc;
 import ucar.unidata.util.StringUtil;
 import ucar.unidata.util.TwoFacedObject;
-
 import ucar.visad.data.CalendarDateTime;
-
-import visad.DateTime;
-
-
-import java.io.File;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.Hashtable;
-import java.util.List;
-import java.util.SortedSet;
-import java.util.TreeSet;
 
 
 /**
@@ -839,6 +820,45 @@ public class CDOOutputHandler extends OutputHandler implements ServiceProvider {
                 HtmlUtils.select(ARG_CDO_FROMDATE, formattedDates, fromDate)
                 + HtmlUtils.img(getIconUrl(ICON_ARROW))
                 + HtmlUtils.select(ARG_CDO_TODATE, formattedDates, toDate)));
+    }
+
+    /**
+     * Add the month selection widget
+     *
+     * @param request  the Request
+     * @param sb       the StringBuilder to add to
+     * @param dates    the list of dates (just in case)
+     *
+     * @throws Exception problems appending
+     */
+    public static void makeMonthsWidgetBS(Request request, Appendable sb,
+                                        List<CalendarDate> dates)
+            throws Exception {
+        /*
+        HtmlUtils.radio(ARG_CDO_MONTHS, "all", request.get(ARG_CDO_MONTHS, true))+msg("All")+
+        HtmlUtils.space(2)+
+        HtmlUtils.radio(ARG_CDO_MONTHS, "", request.get(ARG_CDO_MONTHS, false))+msg("Season")+
+        HtmlUtils.space(2)+
+        */
+        StringBuilder monthsSB = new StringBuilder();
+        monthsSB.append(HtmlUtils.open(HtmlUtils.TAG_DIV, HtmlUtils.cssClass("row")));
+        monthsSB.append(HtmlUtils.open(HtmlUtils.TAG_DIV, HtmlUtils.cssClass("col-md-6 text-left")));
+        monthsSB.append(msgLabel("Start"));
+        monthsSB.append(HtmlUtils.select(
+                    ARG_CDO_STARTMONTH, MONTHS,
+                    request.getString(ARG_CDO_STARTMONTH, null),
+                    HtmlUtils.title(
+                        "Select the starting month")));
+        monthsSB.append(HtmlUtils.close(HtmlUtils.TAG_DIV));
+        monthsSB.append(HtmlUtils.open(HtmlUtils.TAG_DIV, HtmlUtils.cssClass("col-md-6 text-left")));
+        monthsSB.append(msgLabel("End"));
+        monthsSB.append(HtmlUtils.select(
+                                ARG_CDO_ENDMONTH, MONTHS,
+                                request.getString(ARG_CDO_ENDMONTH, null),
+                                HtmlUtils.title("Select the ending month")));
+        monthsSB.append(HtmlUtils.close(HtmlUtils.TAG_DIV)); // col
+        monthsSB.append(HtmlUtils.close(HtmlUtils.TAG_DIV)); // row
+        sb.append(HtmlUtils.formEntry(msgLabel("Months"), monthsSB.toString()));
     }
 
     /**
