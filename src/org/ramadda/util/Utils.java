@@ -106,6 +106,7 @@ public class Utils {
         new DecimalFormat("#,##0.0000"), new DecimalFormat("#,##0.00000"),
     };
 
+    private static DecimalFormat INT_FORMAT =  new DecimalFormat("#,##0");
 
 
     /** _more_ */

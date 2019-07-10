@@ -150,7 +150,7 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
     private DecimalFormat ifmt = new DecimalFormat("#0");
 
     /** _more_ */
-    private DecimalFormat dfmt = new DecimalFormat("#0.#");
+    private DecimalFormat dfmt = new DecimalFormat("#,##0.#");
 
     private DecimalFormat pfmt = new DecimalFormat("0.00");
 
@@ -3508,7 +3508,7 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
      * @throws Exception _more_
      */
     private String format(double v, boolean round) throws Exception {
-        if (Math.abs(v) > 10000) {
+        if (Math.abs(v) > 1000) {
             round = true;
         }
         if(!round) return Utils.formatComma(v);
