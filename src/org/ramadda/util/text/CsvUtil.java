@@ -30,11 +30,8 @@ import ucar.unidata.util.IOUtil;
 import ucar.unidata.util.Misc;
 import ucar.unidata.util.StringUtil;
 
-
 import ucar.unidata.xml.XmlUtil;
-
 import java.io.*;
-
 import java.text.DateFormat;
 
 import java.text.DecimalFormat;

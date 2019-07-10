@@ -3439,7 +3439,7 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
                 for (Object obj : values) {
                     if (obj instanceof Double) {
                         double d = (Double)obj;
-                        HtmlUtils.td(cb, dfmt.format((Double) obj),"align=right");
+                        HtmlUtils.td(cb, format((Double) obj,false),"align=right");
                         if(addPercent) {
                             if(sum[col]!=0) {
                                 HtmlUtils.td(cb, pfmt.format(100*d/sum[col])+"%","align=right");
@@ -3481,7 +3481,7 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
                     if (Double.isNaN(sum[i])) {
                         HtmlUtils.td(hb,"NA",  "style=\"background:#eee;\"");
                     } else {
-                        HtmlUtils.td(hb,dfmt.format(sum[i]),"align=right  style=\"background:#eee;\"");
+                        HtmlUtils.td(hb,format(sum[i],false),"align=right  style=\"background:#eee;\"");
                     }
                     if(addPercent) {
                         HtmlUtils.td(hb,"&nbsp;",  "style=\"background:#eee;\"");
@@ -3511,6 +3511,7 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
         if (Math.abs(v) > 10000) {
             round = true;
         }
+        if(!round) return Utils.formatComma(v);
         DecimalFormat fmt = (round
                              ? ifmt
                              : dfmt);

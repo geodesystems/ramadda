@@ -100,6 +100,12 @@ public class Utils {
         new DecimalFormat("#0.0000"), new DecimalFormat("#0.00000"),
     };
 
+    private static DecimalFormat[] COMMA_FORMATS = {
+        new DecimalFormat("#,##0"), new DecimalFormat("#,##0.0"),
+        new DecimalFormat("#,##0.00"), new DecimalFormat("#,##0.000"),
+        new DecimalFormat("#,##0.0000"), new DecimalFormat("#,##0.00000"),
+    };
+
 
 
     /** _more_ */
@@ -170,6 +176,38 @@ public class Utils {
         }
 
         return FORMATS[4];
+    }
+
+
+    public static String formatComma(double d) {
+        return getFormatComma(d).format(d);
+    }
+
+    /**
+     * _more_
+     *
+     * @param d _more_
+     *
+     * @return _more_
+     */
+    public static DecimalFormat getFormatComma(double d) {
+        d = Math.abs(d);
+        if ((d > 10000) || (d == 0)) {
+            return COMMA_FORMATS[0];
+        }
+        if (d > 1000) {
+            return COMMA_FORMATS[1];
+        }
+        if (d > 100) {
+            return COMMA_FORMATS[2];
+        }
+        if (d > 10) {
+            return COMMA_FORMATS[3];
+        }
+        if (d > 1) {
+            return COMMA_FORMATS[4];
+        }
+        return COMMA_FORMATS[4];
     }
 
 
