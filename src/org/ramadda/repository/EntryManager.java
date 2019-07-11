@@ -1786,8 +1786,12 @@ public class EntryManager extends RepositoryManager {
 
 
         if ((entry != null) && entry.getIsLocalFile()) {
-            sb.append(msg("This is a local file and cannot be edited"));
-
+            getPageHandler().entrySectionOpen(request, entry, sb, "Local File");
+            sb.append(getPageHandler().showDialogWarning("This is a local file and cannot be edited"));
+            if(request.getUser().getAdmin() && entry.isFile()) {
+                sb.append("File path: " + entry.getResource().getPath());
+            }
+            getPageHandler().entrySectionClose(request, entry, sb);
             return group;
         }
 
