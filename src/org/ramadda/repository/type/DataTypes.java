@@ -46,6 +46,8 @@ public interface DataTypes {
     /** _more_ */
     public static final String DATATYPE_EMAIL = "email";
 
+    public static final String DATATYPE_KEY = "key";
+
     /** _more_ */
     public static final String DATATYPE_INT = "int";
 

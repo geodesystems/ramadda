@@ -1100,8 +1100,14 @@ public class EntryManager extends RepositoryManager {
     }
 
 
+
     /** _more_ */
     public static final String ARG_EXTEDIT_EDIT = "extedit.edit";
+
+
+    public static final String ARG_EXTEDIT_URL_TO = "extedit.url.to";
+    public static final String ARG_EXTEDIT_URL_PATTERN = "extedit.url.pattern";
+    public static final String ARG_EXTEDIT_URL_CHANGE = "extedit.url";
 
     /** _more_ */
     public static final String ARG_EXTEDIT_SPATIAL = "extedit.spatial";
@@ -1331,6 +1337,38 @@ public class EntryManager extends RepositoryManager {
 
             return getActionManager().doAction(request, action,
                     "Walking the tree, changing entries", "", entry);
+        } else if (request.exists(ARG_EXTEDIT_URL_CHANGE)) {
+            final String pattern =
+                request.getString(ARG_EXTEDIT_URL_PATTERN, (String) null);
+            final String to =
+                request.getString(ARG_EXTEDIT_URL_TO, (String) null);
+            ActionManager.Action action = new ActionManager.Action() {
+                public void run(final Object actionId) throws Exception {
+                    EntryVisitor walker = new EntryVisitor(request,
+                                              getRepository(), actionId,
+                                              true) {
+                        public boolean processEntry(Entry entry,
+                                List<Entry> children)
+                                throws Exception {
+                            String path  = entry.getResource().getPath();
+                            if(path == null) return true;
+                            String newPath = path.replaceAll(pattern, to);
+                            if(!path.equals(newPath)) {
+                                entry.getResource().setPath(newPath);
+                                updateEntry(request, entry);
+                                append("Changing URL:" + entry.getName()
+                                       + "<br>");
+                            } 
+                            return true;
+                        }
+                        };
+                    walker.walk(finalEntry);
+                    getActionManager().setContinueHtml(actionId,
+                            walker.getMessageBuffer().toString());
+                }
+                };
+            return getActionManager().doAction(request, action,
+                                               "Walking the tree, changing URLs", "", entry);
         }
 
 
@@ -1522,6 +1560,29 @@ public class EntryManager extends RepositoryManager {
             HtmlUtils.submit(
                 msg("Change the type of all descendent entries"),
                 ARG_EXTEDIT_CHANGETYPE_RECURSE));
+
+
+
+
+        sb.append(formHeader("Change Descendents URL Path"));
+        sb.append(request.form(getRepository().URL_ENTRY_EXTEDIT,
+                               HtmlUtils.attr("name", "entryform")));
+        sb.append(HtmlUtils.hidden(ARG_ENTRYID, entry.getId()));
+
+        sb.append(HtmlUtils.openInset(5, 30, 20, 0));
+        sb.append(HtmlUtils.formTable());
+        sb.append(HtmlUtils.formEntry(msgLabel("Pattern"),
+                                      HtmlUtils.input(ARG_EXTEDIT_URL_PATTERN,"")));
+        sb.append(HtmlUtils.formEntry(msgLabel("To"),
+                                      HtmlUtils.input(ARG_EXTEDIT_URL_TO,"")));
+
+
+        sb.append(HtmlUtils.formTableClose());
+        sb.append(HtmlUtils.p());
+        sb.append(
+            HtmlUtils.submit(
+                msg("Change URLs"),
+                ARG_EXTEDIT_URL_CHANGE));
 
         sb.append(HtmlUtils.formClose());
         sb.append(HtmlUtils.closeInset());
