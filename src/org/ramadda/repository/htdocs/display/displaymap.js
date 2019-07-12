@@ -768,6 +768,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
             }
             this.vectorMapApplied = true;
             var features = this.vectorLayer.features.slice();
+	    var maxExtent = null;
             var circles = this.points;
             for (var i = 0; i < circles.length; i++) {
                 var circle = circles[i];
@@ -795,6 +796,13 @@ function RamaddaMapDisplay(displayManager, id, properties) {
                             }
                             if (comp.containsPoint && comp.containsPoint(center)) {
                                 matchedFeature = feature;
+				geometry = feature.geometry;
+				if (geometry) {
+				    if (maxExtent === null) {
+					maxExtent = new OpenLayers.Bounds();
+				    }
+				    maxExtent.extend(geometry.getBounds());
+				}
                                 index = j;
                                 break;
                             }
@@ -813,6 +821,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
                         break;
                     }
                 }
+
                 if (matchedFeature) {
                     features.splice(index, 1);
                     style = matchedFeature.style;
@@ -846,6 +855,10 @@ function RamaddaMapDisplay(displayManager, id, properties) {
             }
             */
             this.vectorLayer.redraw();
+            if (maxExtent) {
+                this.map.map.zoomToExtent(maxExtent, true);
+	    }
+
         },
         needsData: function() {
             return true;
