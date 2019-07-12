@@ -729,9 +729,7 @@ public class CDOTimeSeriesComparison extends CDODataService {
         // Break it up into two requests
         if (spanYears) {
             //System.out.println("months span the year end");
-            String  opStr      = (opNum == 0)
-                                 ? ""
-                                 : "" + (opNum + 1);
+            String  opStr      = getOpArgString(opNum);
 
             Request newRequest = request.cloneMe();
 

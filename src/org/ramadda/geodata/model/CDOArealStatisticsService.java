@@ -490,9 +490,7 @@ public class CDOArealStatisticsService extends CDODataService {
             }
         }
 
-        String  opStr       = (opNum == 0)
-                              ? ""
-                              : "" + (opNum + 1);
+        String  opStr       = getOpArgString(opNum);
 
         Request timeRequest = handleNamedTimePeriod(request, opStr);
 
@@ -751,9 +749,7 @@ public class CDOArealStatisticsService extends CDODataService {
 
         long    millis      = System.currentTimeMillis();
         long    submillis   = System.currentTimeMillis();
-        String  opStr       = (opNum == 0)
-                              ? ""
-                              : "" + (opNum + 1);
+        String  opStr       = getOpArgString(opNum);
 
         Request timeRequest = handleNamedTimePeriod(request, opStr);
         if ((dataset == null) || dataset.getGrids().isEmpty()) {
@@ -972,48 +968,6 @@ public class CDOArealStatisticsService extends CDODataService {
             //System.out.println("running cdo: "+(System.currentTimeMillis()-submillis)+" ms");
         }
 
-    }
-
-    /**
-     * Handle a named time period request
-     *
-     * @param request  the request
-     * @param opStr the operator
-     *
-     * @return the answer
-     */
-    private Request handleNamedTimePeriod(Request request, String opStr) {
-        if ( !request.defined(ClimateModelApiHandler.ARG_EVENT)) {
-            return request;
-        }
-        Request newRequest = request.cloneMe();
-        String eventString =
-            newRequest.getString(ClimateModelApiHandler.ARG_EVENT);
-        if (eventString == null) {
-            return request;
-        }
-        List<String> toks = StringUtil.split(eventString, ";");
-        if (toks.size() != 4) {
-            System.err.println("Bad named time period: " + eventString);
-
-            return request;
-        }
-        newRequest.remove(ClimateModelApiHandler.ARG_EVENT);
-        newRequest.put(CDOOutputHandler.ARG_CDO_STARTMONTH, toks.get(1));
-        newRequest.put(CDOOutputHandler.ARG_CDO_ENDMONTH, toks.get(2));
-        String years = toks.get(3);
-        if (years.indexOf("/") > 0) {
-            List<String> ytoks = StringUtil.split(years, "/");
-            newRequest.put(CDOOutputHandler.ARG_CDO_STARTYEAR + opStr,
-                           ytoks.get(0));
-            newRequest.put(CDOOutputHandler.ARG_CDO_ENDYEAR + opStr,
-                           ytoks.get(1));
-        } else {
-            newRequest.put(CDOOutputHandler.ARG_CDO_YEARS + opStr,
-                           toks.get(3));
-        }
-
-        return newRequest;
     }
 
     /**
