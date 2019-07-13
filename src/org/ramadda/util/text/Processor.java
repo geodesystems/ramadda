@@ -1359,6 +1359,7 @@ public abstract class Processor extends CsvOperator {
                 StringBuilder attrs     = new StringBuilder();
                 boolean       canList   = dfltCanList;
                 boolean       canSearch = dfltCanSearch;
+                
 
 
                 attrs.append(XmlUtil.attrs(new String[] { "name", colId }));
@@ -1388,6 +1389,18 @@ public abstract class Processor extends CsvOperator {
                                     null);
                 String searchRows = CsvUtil.getDbProp(props, colId,
                                         "searchrows", "");
+                String defaultsort = CsvUtil.getDbProp(props, colId,
+                                                       "defaultsort", (String) null);
+                if(defaultsort!=null && defaultsort.equals("true")) {
+                    attrs.append(XmlUtil.attrs(new String[] { "defaultsort",
+                                                              "true"}));
+                    String asc = CsvUtil.getDbProp(props, colId,
+                                                   "ascending", (String) null);
+                    if(asc!=null)
+                        attrs.append(XmlUtil.attrs(new String[] { "ascending",asc}));
+                }
+
+
                 canSearch = "true".equals(CsvUtil.getDbProp(props, colId,
                         "cansearch", canSearch + ""));
                 canList = "true".equals(CsvUtil.getDbProp(props, colId,

@@ -261,6 +261,7 @@ public class Column implements DataTypes, Constants {
     /** _more_ */
     private TypeHandler typeHandler;
 
+    private Element xmlElement;
 
     /** _more_ */
     private String name;
@@ -450,6 +451,7 @@ public class Column implements DataTypes, Constants {
     public Column(TypeHandler typeHandler, Element element, int offset)
             throws Exception {
 
+        this.xmlElement = element;
         this.typeHandler = typeHandler;
         this.offset      = offset;
 
@@ -638,7 +640,10 @@ public class Column implements DataTypes, Constants {
      * @return _more_
      */
     public String getProperty(String key) {
-        return properties.get(key);
+        String prop = properties.get(key);
+        if(prop==null && xmlElement!=null) 
+            prop = XmlUtil.getAttribute(xmlElement, key);
+        return prop;
     }
 
 
