@@ -2185,14 +2185,17 @@ public abstract class Processor extends CsvOperator {
         /** _more_ */
         private int index;
 
+        private boolean asc = true;
+
         /**
          * _more_
          *
          *
          * @param index _more_
          */
-        public Sorter(int index) {
+        public Sorter(int index, boolean asc) {
             this.index = index;
+            this.asc = asc;
         }
 
 
@@ -2215,9 +2218,8 @@ public abstract class Processor extends CsvOperator {
             }
             Row headerRow = rows.get(0);
             rows.remove(0);
-            Collections.sort(rows, new Row.RowCompare(index));
+            Collections.sort(rows, new Row.RowCompare(index,asc));
             rows.add(0, headerRow);
-
             return rows;
         }
     }

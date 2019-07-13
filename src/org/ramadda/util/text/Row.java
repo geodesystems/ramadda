@@ -242,14 +242,15 @@ public class Row {
      */
     public static class RowCompare implements Comparator<Row> {
 
+        private boolean checked = false;
+
         /** _more_ */
         private int idx;
 
         /** _more_ */
         private boolean ascending;
 
-        /** _more_ */
-        private Comparator comparator;
+        private boolean isNumber = false;
 
         /**
          * _more_
@@ -257,9 +258,9 @@ public class Row {
          *
          * @param idx _more_
          */
-        public RowCompare(int idx) {
+        public RowCompare(int idx, boolean asc) {
             this.idx       = idx;
-            this.ascending = true;
+            this.ascending = asc;
         }
 
         /**
@@ -277,8 +278,27 @@ public class Row {
             Object o2 = r2.get(idx);
             String s1 = o1.toString();
             String s2 = o2.toString();
+            if(!checked) {
+                try { 
+                    checked =true;
+                    double d = Double.parseDouble(s1);
+                    isNumber = true;
+                } catch(Exception e) {
+                }
+            }
 
-            return s1.compareTo(s2);
+            int dir = 0;
+            if(isNumber) {
+                double d1 = Double.parseDouble(s1);
+                double d2 = Double.parseDouble(s2);
+                if(d1<d2) dir=-1;
+                else if(d1>d2) dir = 1;
+                else dir= 0;
+            } else {
+                dir =  s1.compareTo(s2);
+            }
+            if(dir==0) return 0;
+            return ascending?dir:-dir;
         }
 
     }

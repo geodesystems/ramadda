@@ -1527,7 +1527,7 @@ public class CsvUtil {
             if (arg.equals("-sort")) {
                 if(!ensureArg(args, i,1)) return false;
                 int idx = Integer.parseInt(args.get(++i));
-                info.getProcessor().addProcessor(new Processor.Sorter(idx));
+                info.getProcessor().addProcessor(new Processor.Sorter(idx,true));
                 continue;
             }
 
