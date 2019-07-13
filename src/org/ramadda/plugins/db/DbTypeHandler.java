@@ -1777,21 +1777,14 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
 
         if (aggtfos.size() > 0) {
             String orderBy = "";
+            String dir = request.getString(ARG_DB_SORTDIR, dbInfo.getDfltSortAsc()?"asc":"desc");
             if(dbInfo.getDfltSortColumn()!=null)
                 orderBy = dbInfo.getDfltSortColumn().getName();
             sb.append(formEntry(request, msgLabel("Order By"), HtmlUtils
-                .select(ARG_DB_SORTBY, aggtfos, request
-                        .getString(ARG_DB_SORTBY, orderBy), HtmlUtils
-                    .cssClass("search-select")) + HtmlUtils.space(2)
-                        + HtmlUtils
-                            .radio(ARG_DB_SORTDIR, "asc", request
-                                   .getString(ARG_DB_SORTDIR, dbInfo.getDfltSortAsc()?"asc":"desc")
-                                .equals("asc"), " default='asc' ") + " "
-                                    + "Ascending "
-                                    + HtmlUtils
-                                        .radio(ARG_DB_SORTDIR, "desc", request
-                                            .getString(ARG_DB_SORTDIR, "asc")
-                                            .equals("desc"), " default='asc' ") + " " + "Descending"));
+                .select(ARG_DB_SORTBY, aggtfos, request.getString(ARG_DB_SORTBY, orderBy), HtmlUtils
+                        .cssClass("search-select")) + HtmlUtils.space(2)
+                                + HtmlUtils.radio(ARG_DB_SORTDIR, "asc", dir.equals("asc"), " default='asc' ") + " Ascending "
+                                + HtmlUtils.radio(ARG_DB_SORTDIR, "desc", dir.equals("desc"), " default='asc' ") + " Descending"));
 
         }
         if (normalForm) {
