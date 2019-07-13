@@ -642,7 +642,7 @@ public class Column implements DataTypes, Constants {
     public String getProperty(String key) {
         String prop = properties.get(key);
         if(prop==null && xmlElement!=null) 
-            prop = XmlUtil.getAttribute(xmlElement, key);
+            prop = XmlUtil.getAttribute(xmlElement, key,(String)null);
         return prop;
     }
 
