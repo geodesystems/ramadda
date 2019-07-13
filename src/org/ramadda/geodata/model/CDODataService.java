@@ -36,6 +36,7 @@ import org.ramadda.service.Service;
 import org.ramadda.service.ServiceInput;
 import org.ramadda.service.ServiceOperand;
 import org.ramadda.util.HtmlUtils;
+import org.ramadda.util.Utils;
 import org.ramadda.util.sql.Clause;
 
 import ucar.nc2.dt.grid.GridDataset;
@@ -56,6 +57,7 @@ import java.io.File;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -921,6 +923,7 @@ public abstract class CDODataService extends Service {
         ServiceInput newInput = new ServiceInput(input.getProcessDir());
         List<ServiceOperand> newOps =
             new ArrayList<ServiceOperand>(input.getOperands().size());
+        int opNum = 0;
         for (ServiceOperand so : input.getOperands()) {
             List<Entry> opEntries = so.getEntries();
             Entry       oneOfThem = opEntries.get(0);
@@ -929,10 +932,17 @@ public abstract class CDODataService extends Service {
                 if (opEntries.size() == 1) {
                     newOps.add(so);
                 } else {
+                    // Aggregate by time via ncml
                     String id =
                         ModelUtil.makeValuesKey(oneOfThem.getValues(), true);
+                    List<Entry> aggEntries = opEntries;
+                    // reduce the daily files to just the years requested
+                    if (getFrequency(request,oneOfThem).equals(CDOOutputHandler.FREQUENCY_DAILY)) {
+                        aggEntries = extractDailyFiles(request, opEntries, opNum);
+                        id += "_"+opNum;
+                    }
                     Entry agg = ModelUtil.aggregateEntriesByTime(request,
-                                    opEntries, id, input.getProcessDir());
+                                    aggEntries, id, input.getProcessDir());
                     List<Entry> newEntries = new ArrayList<Entry>();
                     newEntries.add(agg);
                     ServiceOperand newOp =
@@ -943,6 +953,7 @@ public abstract class CDODataService extends Service {
             } else {
                 newOps.add(so);
             }
+            opNum++;
         }
         newInput.setOperands(newOps);
         // make sure to set the type of service if not null
@@ -952,6 +963,85 @@ public abstract class CDODataService extends Service {
 
         return newInput;
     }
+    
+    protected static String getOpArgString(int opNum) {
+        String  opStr       = (opNum == 0)
+                              ? ""
+                              : "" + (opNum + 1);
+        return opStr;
+    }
+
+    /**
+     * Extract only those daily files that are needed for the request
+     * @param request  the request
+     * @param opEntries the operand entries
+     * @param opNum  which op number
+     * @return
+     */
+    private List<Entry> extractDailyFiles(Request request, List<Entry> opEntries, int opNum) {
+        // for makeInputForm
+        if (!(request.defined(ClimateModelApiHandler.ARG_ACTION_COMPARE) ||
+              request.defined(ClimateModelApiHandler.ARG_ACTION_ENS_COMPARE) ||
+              request.defined(ClimateModelApiHandler.ARG_ACTION_MULTI_COMPARE) ||
+              request.defined(ClimateModelApiHandler.ARG_ACTION_CORRELATION) ||
+              request.defined(ClimateModelApiHandler.ARG_ACTION_MULTI_TIMESERIES) ||
+              request.defined(ClimateModelApiHandler.ARG_ACTION_TIMESERIES))) {
+            return opEntries;
+        }
+        List<Integer> years = new ArrayList<Integer>();
+        String opStr = getOpArgString(opNum);
+        Request timeRequest = handleNamedTimePeriod(request, opStr);
+        boolean haveYears = timeRequest.defined(CDOOutputHandler.ARG_CDO_YEARS
+                + opStr);
+        if (haveYears) {
+            String yearString = timeRequest.getString(
+            CDOOutputHandler.ARG_CDO_YEARS
+            + opStr, timeRequest.getString(
+                CDOOutputHandler.ARG_CDO_YEARS,
+                null));
+            if (yearString != null) {
+                yearString = CDOOutputHandler.verifyYearsList(yearString);
+            }
+            List<String> yearList = StringUtil.split(yearString, ",",
+                true, true);
+            for (String year : yearList) {
+                 years.add(Integer.parseInt(year));
+            }
+        } else {
+            int startYear = timeRequest.get(
+                    CDOOutputHandler.ARG_CDO_STARTYEAR
+                    + opStr, timeRequest.get(
+                        CDOOutputHandler.ARG_CDO_STARTYEAR,
+                        1979));
+            int endYear = timeRequest.get(
+                  CDOOutputHandler.ARG_CDO_ENDYEAR + opStr,
+                  timeRequest.get(
+                      CDOOutputHandler.ARG_CDO_ENDYEAR,
+                      1979));
+
+            for (int yr=startYear; yr <= endYear; yr++) {
+                years.add(yr);
+            }
+        }
+
+        List<Entry> newEntries = new ArrayList<Entry>();
+        for (Entry yearEntry : opEntries) {
+            for (Integer year : years) {
+                Date start = Utils.parseDate(year+"-01-01T00:00:00");
+                Date end = Utils.parseDate(year+"-12-31T23:59:59");
+                if (yearEntry.getStartDate() >= start.getTime() && yearEntry.getEndDate() <= end.getTime()) {
+                    newEntries.add(yearEntry);
+                }
+            }
+        }
+        if (newEntries.isEmpty()) {
+            newEntries = opEntries;
+        }
+        return newEntries;
+    }
+
+
+
 
     /**
      * Copy over the service operand properties to the new ServiceOperand
@@ -1394,6 +1484,51 @@ public abstract class CDODataService extends Service {
                                   climstartYear, climendYear);
 
         return sprdEntry;
+    }
+
+
+
+
+    /**
+     * Handle a named time period request
+     *
+     * @param request  the request
+     * @param opStr the operator
+     *
+     * @return the answer
+     */
+    protected Request handleNamedTimePeriod(Request request, String opStr) {
+        if ( !request.defined(ClimateModelApiHandler.ARG_EVENT)) {
+            return request;
+        }
+        Request newRequest = request.cloneMe();
+        String eventString =
+            newRequest.getString(ClimateModelApiHandler.ARG_EVENT);
+        if (eventString == null) {
+            return request;
+        }
+        List<String> toks = StringUtil.split(eventString, ";");
+        if (toks.size() != 4) {
+            System.err.println("Bad named time period: " + eventString);
+    
+            return request;
+        }
+        newRequest.remove(ClimateModelApiHandler.ARG_EVENT);
+        newRequest.put(CDOOutputHandler.ARG_CDO_STARTMONTH, toks.get(1));
+        newRequest.put(CDOOutputHandler.ARG_CDO_ENDMONTH, toks.get(2));
+        String years = toks.get(3);
+        if (years.indexOf("/") > 0) {
+            List<String> ytoks = StringUtil.split(years, "/");
+            newRequest.put(CDOOutputHandler.ARG_CDO_STARTYEAR + opStr,
+                           ytoks.get(0));
+            newRequest.put(CDOOutputHandler.ARG_CDO_ENDYEAR + opStr,
+                           ytoks.get(1));
+        } else {
+            newRequest.put(CDOOutputHandler.ARG_CDO_YEARS + opStr,
+                           toks.get(3));
+        }
+    
+        return newRequest;
     }
 
 }

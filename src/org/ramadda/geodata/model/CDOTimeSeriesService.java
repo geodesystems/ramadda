@@ -346,9 +346,7 @@ public class CDOTimeSeriesService extends CDODataService {
         //if (!maskType.equals("none")) {
         commands.add("-remapbil,r360x180");
         //}
-        String  opStr       = (opNum == 0)
-                              ? ""
-                              : "" + (opNum + 1);
+        String  opStr       = getOpArgString(opNum);
         Request timeRequest = request;
         // Handle the case where the months span the year end (e.g. DJF)
         if (doMonthsSpanYearEnd(timeRequest, sample)) {
