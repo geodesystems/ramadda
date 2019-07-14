@@ -1,0 +1,83 @@
+<html>
+<head>
+  <title>RAMADDA Data Tables</title>
+  <link rel="stylesheet" type="text/css" href="ramadda.css" title="Style">
+</head>
+
+<body>
+
+
+The data tables facility allow you to define a structured data base table via 
+an XML definition in a RAMADDA plugin. 
+The RAMADDA database facility looks for any file that ends with "db.xml", e.g., 
+testdb.xml
+in the plugins directory. 
+There are lots of examples on <a href="https://github.com/geodesystems/ramadda/tree/master/src/org/ramadda/plugins/db">Github</a>
+<p>
+Each  database table is defined with a table tag. You need to specify a unique id and a name.
+Contained in the table tag are a set of column definitions. Each column has a name which ends 
+up being the database column name so this should be legal sql. There is also a label and some flags,
+e.g. cansearch, canlist, that determine whether the column is shown in the list and in the search form.
+    
+<p>
+    The column also has a type, e.g.:
+<pre>
+string
+enumeration
+enumerationplus
+date
+datetime
+double
+int
+latlon
+latlonbbox
+clob
+email
+</pre>
+
+If its an enumeration then you also have to specify a column separated list of values.
+See the prioriity example below. The enumerationplus type allows the user to enter 
+their own value and/or use values that have already been created.
+If its a string or a clob then you also need to specify a size (byte size)
+<p>
+Here is a tasks data table - 
+<pre>
+
+&lt;table id="tasks" name="Tasks" icon="/db/tasks.gif"&gt;
+   &lt;column name="title" type="string" label="Title" cansearch="true"   canlist="true" required="true"/&gt;
+   &lt;column name="priority" type="enumeration" label="Priority" values="High,Medium,Low" cansearch="true"   canlist="true"/&gt;
+   &lt;column name="status" type="enumeration" label="Status" values="Not Started,In Progress,Completed,Deferred,Waiting" cansearch="true"   canlist="true"&gt;
+       &lt;property name="iscategory" value="true"/&gt;
+   &lt;/column&gt;
+
+   &lt;column name="complete" type="percentage" label="% Complete" cansearch="true"   canlist="true"/&gt;
+   &lt;column name="assignedto" type="enumerationplus" values="" label="Assigned To" cansearch="true"   canlist="true"&gt;
+       &lt;property name="iscategory" value="true"/&gt;
+   &lt;/column&gt;
+   &lt;column name="description" type="string" label="Description"  canlist="false" rows="5" columns="40" size="10000" /&gt;
+   &lt;column name="startdate" type="date" label="Start Date" cansearch="true"   canlist="true"/&gt;
+   &lt;column name="enddate" type="date" label="End Date" cansearch="true"   canlist="true"/&gt;
+&lt;/table&gt;
+</pre>
+
+Column tags can also contain property tags
+If a column tag has a property tag iscategory then the categorical views are shown, e.g.:
+<pre>
+&lt;column ...&gt;
+     &lt;property name="iscategory" value="true"/&gt;
+ &lt;/column&gt;
+</pre>
+
+
+If  a column has a "label=true" property, e.g.:
+<pre>
+      &lt;property name="label" value="true"/&gt;
+</pre>
+then that column value is used as the label for the entry
+
+
+
+
+
+</body>
+</html>
