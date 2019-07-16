@@ -1424,11 +1424,12 @@ public abstract class Processor extends CsvOperator {
                 }
 
                 StringBuffer inner = new StringBuffer();
-                if (CsvUtil.getDbProp(props, colId, "dostats", false)) {
+                String dostats = CsvUtil.getDbProp(props, colId, "dostats",(String) null);
+                if (dostats!=null) {
                     inner.append(XmlUtil.tag("property",
                                              XmlUtil.attrs(new String[] {
                                                  "name",
-                            "dostats", "value", "true" })));
+                            "dostats", "value", dostats})));
                 }
                 if (CsvUtil.getDbProp(props, colId, "iscategory", false)) {
                     inner.append(XmlUtil.tag("property",
