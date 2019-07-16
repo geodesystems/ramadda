@@ -267,8 +267,8 @@ public class DbInfo {
             doStats[cnt] = column.isNumeric()
                            && Misc.equals(column.getProperty("dostats"),
                                           "true");
-            doUniques[cnt] = column.isEnumeration()&&
-                && Misc.equals(column.getProperty("dostats","true"),
+            doUniques[cnt] = column.isEnumeration() &&
+                Misc.equals(column.getProperty("dostats","true"),
                                "true");
                 
 
