@@ -302,6 +302,7 @@ public class Column implements DataTypes, Constants {
     /** _more_ */
     private boolean showEmpty = true;
 
+
     /** _more_ */
     private String suffix;
 
@@ -640,9 +641,14 @@ public class Column implements DataTypes, Constants {
      * @return _more_
      */
     public String getProperty(String key) {
+        return getProperty(key,null);
+    }
+
+    public String getProperty(String key,  String dflt) {
         String prop = properties.get(key);
         if(prop==null && xmlElement!=null) 
             prop = XmlUtil.getAttribute(xmlElement, key,(String)null);
+        if(prop == null) return dflt;
         return prop;
     }
 
@@ -3658,6 +3664,7 @@ public class Column implements DataTypes, Constants {
     public String getAlias() {
         return alias;
     }
+
 
 
 }

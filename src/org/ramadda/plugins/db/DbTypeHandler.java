@@ -867,12 +867,15 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
         }
 
         if (fromSearch) {
+            /*
             sb.append(HtmlUtils.makeShowHideBlock(msg("Search again"
                     + ( !fromSearch
                         ? ""
                         : " -- " + numValues
                           + " results")), getSearchForm(request,
                               entry).toString(), false));
+            */
+            sb.append(HtmlUtils.makeShowHideBlock(msg("Search again"), getSearchForm(request,                              entry).toString(), false));
         }
 
 
