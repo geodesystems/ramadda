@@ -1961,10 +1961,13 @@ public class Column implements DataTypes, Constants {
      */
     public void addTextSearch(String text, List<Clause> where) {
         text = text.trim();
+        if(text.startsWith("\"") && text.endsWith("\"")) {
+            where.add(Clause.eq(getFullName(), text));
+            return;
+        }
         List<String> values  = StringUtil.split(text, ",", true, true);
         List<Clause> clauses = new ArrayList<Clause>();
         for (String value : values) {
-
             if (value.equals("<blank>")) {
                 clauses.add(Clause.eq(getFullName(), ""));
             } else if (value.startsWith("!")) {
