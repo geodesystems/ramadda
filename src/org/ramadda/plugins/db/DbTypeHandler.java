@@ -189,6 +189,7 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
                          Element tableNode, String desc)
             throws Exception {
         super(repository, tableName, desc);
+
         this.tableIcon = XmlUtil.getAttribute(tableNode, "icon",
                 "/db/database.png");
 
@@ -867,6 +868,7 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
                     String url = baseUrl + "&"
                                  + HtmlUtils.args(ARG_DB_SEARCH, "true",
                                      ARG_DB_SEARCHID, m.getId());
+
                     headerToks.add(HtmlUtils.href(url, m.getAttr1()));
                 }
             }
@@ -3201,8 +3203,10 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
         for (int cnt = 0; cnt < valueList.size(); cnt++) {
             Object[] values = valueList.get(cnt);
 
-            String   rowId  = "row_" + values[IDX_DBID];
-            String   divId  = "div_" + values[IDX_DBID];
+            String dbid  = (String) values[IDX_DBID];
+            String cbxId = ARG_DBID + (cnt);
+            String   rowId  = "row_" + dbid;
+            String   divId  = "div_" + dbid;
             String   event  = getEventJS(request, entry, values, rowId,
                                          divId);
             hb.append("\n");
@@ -3215,9 +3219,6 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
             HtmlUtils.open(hb, "td", "width", "10", "style",
                            "white-space:nowrap;");
             HtmlUtils.open(hb, "div", "class", "ramadda-db-div", "id", divId);
-            String dbid  = (String) values[IDX_DBID];
-            String cbxId = ARG_DBID + (cnt);
-
             if (doForm) {
                 String call =
                     HtmlUtils.attr(
@@ -3288,7 +3289,7 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
                 if (column.isEnumeration()) {
                     String value = (String) values[column.getOffset()];
                     if (value != null) {
-                        StringBuilder prefix = new StringBuilder();
+                        StringBuilder prefix = null;
                         String iconID = PROP_CAT_ICON + "."
                                         + column.getName();
                         Hashtable<String, String> iconMap =
@@ -3297,6 +3298,7 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
                         if (iconMap != null) {
                             String icon = iconMap.get(value);
                             if (icon != null) {
+                                if(prefix==null) prefix = new StringBuilder();
                                 prefix.append(
                                     HtmlUtils.img(
                                         getDbIconUrl(icon), "",
@@ -3318,11 +3320,13 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
                                     (String) values[column.getOffset()]);
                             if (bgColor != null) {
                                 style = style + "background-color:" + bgColor;
+                                if(prefix==null) prefix = new StringBuilder();
                                 prefix.append(HtmlUtils.span(content,
                                         HtmlUtils.style(style)));
                             }
                         }
-                        hb.append(prefix.toString());
+                        if(prefix!=null) 
+                            hb.append(prefix.toString());
                     }
                 }
 
@@ -3608,14 +3612,20 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
         StringBuilder htmlSB = new StringBuilder();
 
 
-
-
         column.formatValue(entry, htmlSB, Column.OUTPUT_HTML, values, sdf,
                            false);
         String html = htmlSB.toString();
 
-        if (column.getCanSearch()) {
-            //            html   = ....
+        if (column.getCanSearch() && column.isString()) {
+            String value = (String) values[column.getOffset()];
+            String          searchArg  = column.getSearchArg();
+            String url =
+                HtmlUtils.url(request.makeUrl(getRepository().URL_ENTRY_SHOW),
+                              new String[] { ARG_ENTRYID,
+                                             entry.getId(),
+                                             ARG_DB_SEARCH, "true",
+                                             searchArg, value});
+            html = HtmlUtils.href(url, html,HtmlUtils.cssClass("ramadda-db-link"));
         }
 
         sb.append(html);

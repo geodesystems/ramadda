@@ -13,6 +13,14 @@
       background-color:#edf5ff;
 }
 
+.ramadda-db-link {
+    text-decoration: none;
+}
+
+.ramadda-db-link:hover {
+    text-decoration: underline;
+}
+
 .dbtableheader_inner {
   color: #000;
   font-weight: bold;

@@ -1,5 +1,9 @@
 <tables>
 <table id="feccandidates" name="FEC Candidate Data" icon="/fec/fec.png" numberFormat="###,###">
+
+<property name="header.show.calender" value="false"/>
+<property name="header.show.chart" value="false"/>
+
 <column name="CAND_ID"         label="Candidate identification" cansearch="false" canlist="false" type="string" candisplay="false" >
 <property name="isKey" value="true"/>
 </column>
@@ -39,8 +43,10 @@ values="REP:Republican,DEM:Democrat,IND:Independent,GRE:Green" sortOrder="1">
 <column name="TTL_INDIV_CONTRIB"     label="Total individual contributions" cansearch="true" canlist="true" type="double" sortOrder="1">
 </column>
 <column name="CAND_OFFICE_ST"        label="Candidate state" cansearch="true" canlist="true" type="enumeration" sortOrder="1" values="00:National">
+<property  name="dostats"  value="false" />
 </column>
 <column name="CAND_OFFICE_DISTRICT"  label="Candidate district" cansearch="true" canlist="true" type="enumeration">
+<property  name="dostats"  value="false" />
 </column>
 <column name="SPEC_ELECTION"         label="Special election status" cansearch="false" canlist="false" type="enumeration" candisplay="false">
 </column>
@@ -56,7 +62,7 @@ values="REP:Republican,DEM:Democrat,IND:Independent,GRE:Green" sortOrder="1">
 </column>
 <column name="POL_PTY_CONTRIB"               label="Contributions from party committees" cansearch="true" canlist="false" type="double">
 </column>
-<column name="CVG_END_DT"                    label="Coverage end date" cansearch="true" canlist="true" type="date" format="MM/dd/yyyy" sortOrder="0">
+<column name="CVG_END_DT"                    label="Coverage end date" cansearch="true" canlist="true" type="date" format="MM/dd/yyyy" sortOrder="0" cansearch="false">
 </column>
 <column name="INDIV_REFUNDS"                 label="Refunds to individuals" cansearch="false" canlist="false" type="double">
 </column>
