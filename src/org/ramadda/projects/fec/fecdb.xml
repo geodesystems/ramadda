@@ -62,7 +62,7 @@ values="REP:Republican,DEM:Democrat,IND:Independent,GRE:Green" sortOrder="1">
 </column>
 <column name="POL_PTY_CONTRIB"               label="Contributions from party committees" cansearch="true" canlist="false" type="double">
 </column>
-<column name="CVG_END_DT"                    label="Coverage end date" cansearch="true" canlist="true" type="date" format="MM/dd/yyyy" sortOrder="0" cansearch="false">
+<column name="CVG_END_DT"                    label="Coverage end date" canlist="true" type="date" format="MM/dd/yyyy" sortOrder="0" cansearch="false">
 </column>
 <column name="INDIV_REFUNDS"                 label="Refunds to individuals" cansearch="false" canlist="false" type="double">
 </column>
