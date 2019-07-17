@@ -161,6 +161,7 @@ public class DbInfo {
     /** _more_ */
     private List<Column> allColumns;
 
+    /** _more_          */
     private List<Column> sortedColumns;
 
     /** _more_ */
@@ -170,11 +171,13 @@ public class DbInfo {
     /** _more_ */
     protected List<Column> columnsToUse;
 
+    /** _more_          */
     private List<Column> columnsToUseSorted;
 
     /** _more_ */
     private Column keyColumn;
 
+    /** _more_          */
     private Column dfltSortColumn;
 
     /** _more_ */
@@ -253,7 +256,7 @@ public class DbInfo {
         labelColumns    = null;
         descColumn      = null;
         urlColumn       = null;
-        keyColumn  = null;
+        keyColumn       = null;
         dfltSortColumn  = null;
         columnsToUse    = new ArrayList<Column>();
         for (int colIdx = 0; colIdx < allColumns.size(); colIdx++) {
@@ -267,10 +270,10 @@ public class DbInfo {
             doStats[cnt] = column.isNumeric()
                            && Misc.equals(column.getProperty("dostats"),
                                           "true");
-            doUniques[cnt] = column.isEnumeration() &&
-                Misc.equals(column.getProperty("dostats","true"),
-                               "true");
-                
+            doUniques[cnt] = column.isEnumeration()
+                             && Misc.equals(column.getProperty("dostats",
+                                 "true"), "true");
+
 
 
             if (Misc.equals(column.getProperty("isKey"), "true")) {
@@ -369,6 +372,11 @@ public class DbInfo {
     }
 
 
+    /**
+     * _more_
+     *
+     * @return _more_
+     */
     public Column getKeyColumn() {
         return keyColumn;
     }
@@ -436,13 +444,22 @@ public class DbInfo {
         return columnsToUse;
     }
 
+    /**
+     * _more_
+     *
+     * @param sorted _more_
+     *
+     * @return _more_
+     */
     public List<Column> getColumnsToUse(boolean sorted) {
-        if(sorted) {
-            if(columnsToUseSorted == null) {
+        if (sorted) {
+            if (columnsToUseSorted == null) {
                 columnsToUseSorted = Column.sortColumns(columnsToUse);
             }
+
             return columnsToUseSorted;
         }
+
         return columnsToUse;
     }
 
@@ -456,12 +473,22 @@ public class DbInfo {
         return allColumns;
     }
 
+    /**
+     * _more_
+     *
+     * @param sorted _more_
+     *
+     * @return _more_
+     */
     public List<Column> getColumns(boolean sorted) {
-        if(sorted) {
-            if(sortedColumns==null)
+        if (sorted) {
+            if (sortedColumns == null) {
                 sortedColumns = Column.sortColumns(allColumns);
+            }
+
             return sortedColumns;
         }
+
         return allColumns;
     }
 

@@ -79,5 +79,40 @@ then that column value is used as the label for the entry
 
 
 
+<h2>Templates</h2>
+You can define additional display templates. These show up in the "View As" menu in the search form.
+Templates are specified within the table tag with a template tag. There can be any number of templates.
+A template is defined with an id, name and (optional) mimetype. You can define  optional prefix and suffix.
+The main part of the template is define with the contents tag. This holds macros with the names of the table columns.
+
+<pre>
+&lt;tables&gt;
+&lt;table  id="airplane_crashes"  name="Airplane Crashes"  icon="/db/database.png" &gt;
+...
+&lt;template id="t1" name="Template 1" mimetype="text"&gt;
+&lt;contents&gt;
+&lt;![CDATA[
+&lt;h2&gt;Crash&lt;/h2&gt;
+Date: ${date}&lt;br&gt;
+Location: ${location}&lt;br&gt;
+Operator: ${operator}
+]]&gt;
+&lt;/contents&gt;
+&lt;prefix&gt;
+&lt;![CDATA[
+&lt;h1&gt;Crashes&lt;/h1&gt;
+]]&gt;
+&lt;/prefix&gt;
+&lt;suffix&gt;
+&lt;![CDATA[
+End
+]]&gt;
+&lt;/suffix&gt;
+&lt;/template&gt;
+&lt;/table&gt;
+&lt;/tables&gt;
+
+<pre>
+
 </body>
 </html>

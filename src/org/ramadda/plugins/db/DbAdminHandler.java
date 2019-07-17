@@ -52,6 +52,9 @@ public class DbAdminHandler extends AdminHandlerImpl {
     /** _more_ */
     public static final String TAG_TABLE = "table";
 
+    /** _more_          */
+    public static final String TAG_TEMPLATE = "template";
+
     /** _more_ */
     public static final String TAG_COLUMN = "column";
 
@@ -157,6 +160,8 @@ public class DbAdminHandler extends AdminHandlerImpl {
                     tableId, tableNode,
                     XmlUtil.getAttribute(tableNode, ATTR_NAME) });
 
+
+
             List<Element> columnNodes =
                 (List<Element>) XmlUtil.findChildren(tableNode, TAG_COLUMN);
             Element idNode = XmlUtil.create(TAG_COLUMN, tableNode,
@@ -192,9 +197,21 @@ public class DbAdminHandler extends AdminHandlerImpl {
             columnNodes.add(0, createDateNode);
             columnNodes.add(0, userNode);
             columnNodes.add(0, idNode);
+
+
+            List<Element> templates =
+                (List<Element>) XmlUtil.findChildren(tableNode, TAG_TEMPLATE);
+            for (Element element : templates) {
+                typeHandler.addTemplate(
+                    new DbTypeHandler.DbTemplate(element));
+            }
+
+
+
             //            System.out.println("\tDb:" + typeHandler);
             getRepository().addTypeHandler(tableId, typeHandler, true);
             typeHandler.initDbColumns(columnNodes);
+
         }
 
         return true;
