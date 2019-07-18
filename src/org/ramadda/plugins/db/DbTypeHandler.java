@@ -910,11 +910,13 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
 
 
         if (addNext[0]) {
-            if ((numValues > 0)
-                    && ((numValues == getMax(request))
-                        || request.defined(ARG_SKIP))) {
-                getRepository().getHtmlOutputHandler().showNext(request,
-                        numValues, sb);
+            if (numValues > 0) {
+                if(numValues == getMax(request)|| request.defined(ARG_SKIP)) {
+                    getRepository().getHtmlOutputHandler().showNext(request,
+                                                                    numValues, sb);
+                } else {
+                    sb.append(numValues +(numValues==1?" result":" results"));
+                }
             }
         }
 
