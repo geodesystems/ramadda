@@ -16,7 +16,8 @@
 <column name="CAND_PTY_AFFILIATION"  label="Party affiliation" cansearch="true" canlist="true" type="enumeration" 
 values="REP:Republican,DEM:Democrat,IND:Independent,GRE:Green" sortOrder="1">
 </column>
-<column name="TTL_RECEIPTS"          label="Total receipts" cansearch="true" canlist="true" type="double" sortOrder="1">
+<column name="TTL_RECEIPTS"          label="Total receipts" cansearch="true" canlist="true" type="double" sortOrder="1"
+defaultsort="true"  ascending="false">
 </column>
 <column name="TRANS_FROM_AUTH"       label="Transfers from authorized committees" cansearch="false" canlist="false" type="double">
 </column>
