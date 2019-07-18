@@ -3629,7 +3629,12 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
                               new String[] { ARG_ENTRYID,
                                              entry.getId(),
                                              ARG_DB_SEARCH, "true",
-                                             searchArg, value});
+                                             searchArg, value,
+                                             ARG_DB_SORTDIR,
+                                             dbInfo.getDfltSortAsc()?"asc":"desc"});
+            if (dbInfo.getDfltSortColumn() != null) {
+                url +="&" +ARG_DB_SORTBY +"=" + dbInfo.getDfltSortColumn().getName();
+            }
             html = HtmlUtils.href(url, html,HtmlUtils.cssClass("ramadda-db-link"));
         }
 
