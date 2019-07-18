@@ -1962,6 +1962,8 @@ public class Column implements DataTypes, Constants {
     public void addTextSearch(String text, List<Clause> where) {
         text = text.trim();
         if(text.startsWith("\"") && text.endsWith("\"")) {
+            text = text.substring(1);
+            text = text.substring(0,text.length()-1);
             where.add(Clause.eq(getFullName(), text));
             return;
         }

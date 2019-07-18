@@ -3619,6 +3619,9 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
         if (column.getCanSearch() && column.isString()) {
             String value = (String) values[column.getOffset()];
             String          searchArg  = column.getSearchArg();
+            if(!column.isEnumeration()) {
+                value = "\"" + value +"\"";
+            }
             String url =
                 HtmlUtils.url(request.makeUrl(getRepository().URL_ENTRY_SHOW),
                               new String[] { ARG_ENTRYID,
