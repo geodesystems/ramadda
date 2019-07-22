@@ -1895,9 +1895,10 @@ ATTR_SHOWLINK, "true", ATTR_INCLUDEICON, "false") + ATTRS_LAYOUT),
         } else if (theTag.equals(WIKI_TAG_NAME)) {
             String name = getEntryDisplayName(entry);
             if (getProperty(wikiUtil, props, "link", false)) {
+                String url = getEntryManager().getEntryUrl(request, entry);
                 name = HtmlUtils.href(
-                    request.entryUrl(getRepository().URL_ENTRY_SHOW, entry),
-                    name, HtmlUtils.cssClass("ramadda-link"));
+                                      url,
+                                      name, HtmlUtils.cssClass("ramadda-link"));
             }
 
             return name;
@@ -3607,8 +3608,8 @@ ATTR_SHOWLINK, "true", ATTR_INCLUDEICON, "false") + ATTRS_LAYOUT),
             wikiUtil.setUser(request.getUser().getId());
         }
         if (entry != null) {
-            wikiUtil.setTitleUrl(
-                request.entryUrl(getRepository().URL_ENTRY_SHOW, entry));
+            String url = getEntryManager().getEntryUrl(request, entry);
+            wikiUtil.setTitleUrl(url);
         }
 
         return wikiUtil;
