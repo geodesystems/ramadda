@@ -935,6 +935,7 @@ public abstract class PointFile extends RecordFile implements Cloneable,
             RecordField field = new RecordField(name, name, "", paramId++,
                                     getProperty(properties, ATTR_UNIT, ""));
 
+            field.setIsGroup(getProperty(field, properties,"group","false").equals("true"));
             field.setColumnWidth(new Integer(getProperty(field, properties,
                     "width", "0")).intValue());
             field.setIndex(new Integer(getProperty(field, properties,

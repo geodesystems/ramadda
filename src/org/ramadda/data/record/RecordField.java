@@ -19,16 +19,10 @@ package org.ramadda.data.record;
 
 import org.ramadda.util.HtmlUtils;
 import org.ramadda.util.Json;
-
-
 import org.ramadda.util.Utils;
-
 import ucar.unidata.util.Misc;
-
 import java.io.*;
-
 import java.text.SimpleDateFormat;
-
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Hashtable;
@@ -110,6 +104,8 @@ public class RecordField {
     /** _more_ */
     private boolean isDate = false;
 
+
+    private boolean isGroup = false;
 
     /** _more_ */
     private int sortOrder = 0;
@@ -369,7 +365,6 @@ public class RecordField {
             fieldSB = new StringBuffer();
             FIELD_LATITUDE.addJson(fieldSB, headerCnt++);
             fieldStrings.add(fieldSB.toString());
-
             fieldSB = new StringBuffer();
             FIELD_LONGITUDE.addJson(fieldSB, headerCnt++);
             fieldStrings.add(fieldSB.toString());
@@ -411,7 +406,11 @@ public class RecordField {
             items.add("description");
             items.add(Json.quote(description.replaceAll("\n"," ")));
         }
-
+        if(isGroup) {
+            System.err.println("isGroup");
+            items.add("isGroup");
+            items.add("true");
+        }
         items.add("type");
         items.add(Json.quote(dataType));
         items.add("unit");
@@ -544,6 +543,27 @@ public class RecordField {
     }
 
 
+/**
+Set the IsGroup property.
+
+@param value The new value for IsGroup
+**/
+public void setIsGroup (boolean value) {
+	isGroup = value;
+}
+
+/**
+Get the IsGroup property.
+
+@return The IsGroup
+**/
+public boolean getIsGroup () {
+	return isGroup;
+}
+
+
+
+    
     /**
      *  Set the Name property.
      *
