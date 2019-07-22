@@ -10524,10 +10524,10 @@ public class EntryManager extends RepositoryManager {
                 getMetadataManager().findMetadata(request, entry,
                     ContentMetadataHandler.TYPE_ALIAS, false);
             if (metadataList.size() > 0) {
-                return getRepository().getUrlBase() + "/alias/"
-                       + metadataList.get(0).getAttr1();
+                String alias = metadataList.get(0).getAttr1();
+                if(!alias.startsWith("http:")) 
+                    return getRepository().getUrlBase() + "/alias/" + alias;
             }
-
             return request.entryUrl(getRepository().URL_ENTRY_SHOW, entry);
         } catch (Exception exc) {
             throw new RuntimeException(exc);
