@@ -4001,6 +4001,12 @@ public class Utils {
                 : 0);
     }
 
-
+    public static String unquote(String text) {
+        if(text.startsWith("\"") && text.endsWith("\"")) {
+            text = text.substring(1);
+            text = text.substring(0,text.length()-1);
+        }
+        return text;
+    }
 
 }
