@@ -3447,6 +3447,13 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
                                  boolean showHeaderLinks)
             throws Exception {
 
+        List<Column> groupByColumns = new ArrayList<Column>();
+        List<String> args = (List<String>) (request.get(ARG_GROUPBY,
+                                                        new ArrayList()));
+        for (int i = 0; i < args.size(); i++) {
+            String  col           = args.get(i);
+            groupByColumns.add(getColumn(col));
+        }
         StringBuilder hb = new StringBuilder();
         if (valueList.size() > 0) {
             HtmlUtils.open(hb, "table", "class", "dbtable", "border", "1",
@@ -3498,7 +3505,9 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
             } else {
                 HtmlUtils.open(cb, "tr", "valign", "top", "class", "dbrow");
                 int col = 0;
-                for (Object obj : values) {
+                for (int i=0;i<values.length;i++)  {
+                    Object obj = values[i];
+                    Column groupByColumn= i<groupByColumns.size()?groupByColumns.get(i):null;
                     if (obj instanceof Double) {
                         double d = (Double) obj;
                         HtmlUtils.td(cb, format((Double) obj, false),
@@ -3529,6 +3538,24 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
                         String s = "" + obj;
                         if (s.length() == 0) {
                             s = "&lt;blank&gt;";
+                        } else if(groupByColumn!=null) {
+                            String value = s;
+                            String          searchArg  = groupByColumn.getSearchArg();
+                            if(!groupByColumn.isEnumeration()) {
+                                value = "\"" + value +"\"";
+                            }
+                            String url =
+                                HtmlUtils.url(request.makeUrl(getRepository().URL_ENTRY_SHOW),
+                                              new String[] { ARG_ENTRYID,
+                                                             entry.getId(),
+                                                             ARG_DB_SEARCH, "true",
+                                                             searchArg, value,
+                                                             ARG_DB_SORTDIR,
+                                                             dbInfo.getDfltSortAsc()?"asc":"desc"});
+                            if (dbInfo.getDfltSortColumn() != null) {
+                                url +="&" +ARG_DB_SORTBY +"=" + dbInfo.getDfltSortColumn().getName();
+                            }
+                            s =  HtmlUtils.href(url, s,HtmlUtils.cssClass("ramadda-db-link"));
                         }
                         cb.append(s);
                     }
