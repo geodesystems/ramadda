@@ -1962,8 +1962,7 @@ public class Column implements DataTypes, Constants {
     public void addTextSearch(String text, List<Clause> where) {
         text = text.trim();
         if(text.startsWith("\"") && text.endsWith("\"")) {
-            text = text.substring(1);
-            text = text.substring(0,text.length()-1);
+            text  = Utils.unquote(text);
             where.add(Clause.eq(getFullName(), text));
             return;
         }
@@ -3004,8 +3003,12 @@ public class Column implements DataTypes, Constants {
                 //                widget = HtmlUtils.textArea(searchArg, request.getString(searchArg, ""),
                 //                                           rows, columns);
             } else {
+                String text  =request.getString(searchArg, "");
+                text = text.replaceAll("\"","&quot;");
+                //                String text  = Utils.unquote(request.getString(searchArg, ""));
+
                 widget = HtmlUtils.input(searchArg,
-                                         request.getString(searchArg, ""),
+                                         text,
                                          HtmlUtils.SIZE_20);
             }
         }
