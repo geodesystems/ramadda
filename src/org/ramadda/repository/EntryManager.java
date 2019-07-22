@@ -1105,8 +1105,14 @@ public class EntryManager extends RepositoryManager {
     public static final String ARG_EXTEDIT_EDIT = "extedit.edit";
 
 
+    /** _more_          */
     public static final String ARG_EXTEDIT_URL_TO = "extedit.url.to";
-    public static final String ARG_EXTEDIT_URL_PATTERN = "extedit.url.pattern";
+
+    /** _more_          */
+    public static final String ARG_EXTEDIT_URL_PATTERN =
+        "extedit.url.pattern";
+
+    /** _more_          */
     public static final String ARG_EXTEDIT_URL_CHANGE = "extedit.url";
 
     /** _more_ */
@@ -1338,10 +1344,10 @@ public class EntryManager extends RepositoryManager {
             return getActionManager().doAction(request, action,
                     "Walking the tree, changing entries", "", entry);
         } else if (request.exists(ARG_EXTEDIT_URL_CHANGE)) {
-            final String pattern =
-                request.getString(ARG_EXTEDIT_URL_PATTERN, (String) null);
-            final String to =
-                request.getString(ARG_EXTEDIT_URL_TO, (String) null);
+            final String pattern = request.getString(ARG_EXTEDIT_URL_PATTERN,
+                                       (String) null);
+            final String to = request.getString(ARG_EXTEDIT_URL_TO,
+                                  (String) null);
             ActionManager.Action action = new ActionManager.Action() {
                 public void run(final Object actionId) throws Exception {
                     EntryVisitor walker = new EntryVisitor(request,
@@ -1350,25 +1356,29 @@ public class EntryManager extends RepositoryManager {
                         public boolean processEntry(Entry entry,
                                 List<Entry> children)
                                 throws Exception {
-                            String path  = entry.getResource().getPath();
-                            if(path == null) return true;
+                            String path = entry.getResource().getPath();
+                            if (path == null) {
+                                return true;
+                            }
                             String newPath = path.replaceAll(pattern, to);
-                            if(!path.equals(newPath)) {
+                            if ( !path.equals(newPath)) {
                                 entry.getResource().setPath(newPath);
                                 updateEntry(request, entry);
                                 append("Changing URL:" + entry.getName()
                                        + "<br>");
-                            } 
+                            }
+
                             return true;
                         }
-                        };
+                    };
                     walker.walk(finalEntry);
                     getActionManager().setContinueHtml(actionId,
                             walker.getMessageBuffer().toString());
                 }
-                };
+            };
+
             return getActionManager().doAction(request, action,
-                                               "Walking the tree, changing URLs", "", entry);
+                    "Walking the tree, changing URLs", "", entry);
         }
 
 
@@ -1571,18 +1581,19 @@ public class EntryManager extends RepositoryManager {
 
         sb.append(HtmlUtils.openInset(5, 30, 20, 0));
         sb.append(HtmlUtils.formTable());
-        sb.append(HtmlUtils.formEntry(msgLabel("Pattern"),
-                                      HtmlUtils.input(ARG_EXTEDIT_URL_PATTERN,"")));
+        sb.append(
+            HtmlUtils.formEntry(
+                msgLabel("Pattern"),
+                HtmlUtils.input(ARG_EXTEDIT_URL_PATTERN, "")));
         sb.append(HtmlUtils.formEntry(msgLabel("To"),
-                                      HtmlUtils.input(ARG_EXTEDIT_URL_TO,"")));
+                                      HtmlUtils.input(ARG_EXTEDIT_URL_TO,
+                                          "")));
 
 
         sb.append(HtmlUtils.formTableClose());
         sb.append(HtmlUtils.p());
-        sb.append(
-            HtmlUtils.submit(
-                msg("Change URLs"),
-                ARG_EXTEDIT_URL_CHANGE));
+        sb.append(HtmlUtils.submit(msg("Change URLs"),
+                                   ARG_EXTEDIT_URL_CHANGE));
 
         sb.append(HtmlUtils.formClose());
         sb.append(HtmlUtils.closeInset());
@@ -1847,12 +1858,16 @@ public class EntryManager extends RepositoryManager {
 
 
         if ((entry != null) && entry.getIsLocalFile()) {
-            getPageHandler().entrySectionOpen(request, entry, sb, "Local File");
-            sb.append(getPageHandler().showDialogWarning("This is a local file and cannot be edited"));
-            if(request.getUser().getAdmin() && entry.isFile()) {
+            getPageHandler().entrySectionOpen(request, entry, sb,
+                    "Local File");
+            sb.append(
+                getPageHandler().showDialogWarning(
+                    "This is a local file and cannot be edited"));
+            if (request.getUser().getAdmin() && entry.isFile()) {
                 sb.append("File path: " + entry.getResource().getPath());
             }
             getPageHandler().entrySectionClose(request, entry, sb);
+
             return group;
         }
 
@@ -8861,6 +8876,7 @@ public class EntryManager extends RepositoryManager {
     public Entry getTemplateEntry(File file) throws Exception {
         try {
             Entry entry = getTemplateEntryInner(file);
+
             return entry;
         } catch (Exception exc) {
             getLogManager().logError(
@@ -10494,6 +10510,28 @@ public class EntryManager extends RepositoryManager {
         return sb.toString();
     }
 
+    /**
+     * _more_
+     *
+     * @param request _more_
+     * @param entry _more_
+     *
+     * @return _more_
+     */
+    public String getEntryUrl(Request request, Entry entry) {
+        try {
+            List<Metadata> metadataList =
+                getMetadataManager().findMetadata(request, entry,
+                    ContentMetadataHandler.TYPE_ALIAS, false);
+            if (metadataList.size() > 0) {
+                return getRepository().getUrlBase() + "/alias/"
+                       + metadataList.get(0).getAttr1();
+            }
 
+            return request.entryUrl(getRepository().URL_ENTRY_SHOW, entry);
+        } catch (Exception exc) {
+            throw new RuntimeException(exc);
+        }
+    }
 
 }
