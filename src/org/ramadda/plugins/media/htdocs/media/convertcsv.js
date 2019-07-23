@@ -142,6 +142,9 @@ function csvCall(cmds,args) {
                     var isDb = result.startsWith("<tables");
                     if(isDb) {
                         result = result.replace("<tables>","Database:");
+                        result = result.replace(/<property[^>]+>/g,"");
+                        result = result.replace(/> *<\/column>/g,"/>");
+                        result = result.replace(/\n *\n/g,"\n");
                         result = result.replace(/\/>/g,"");
                         result = result.replace(/>/g,"");
                         result = result.replace(/<table +id="(.*?)"/g,"\t<table <a class=csv_db_field field='table' onclick=noop() title='Add to input'>$1</a>");
