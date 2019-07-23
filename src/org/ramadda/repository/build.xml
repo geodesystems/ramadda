@@ -262,6 +262,7 @@
 -->
 
             <include name="org/ramadda/data/**/*.txt"/>
+            <include name="org/ramadda/util/**/*.properties"/>
             <include name="org/ramadda/data/**/*.properties"/>
             <include name="${ramadda_relpath}/htdocs/**/*.*"/>
             <include name="${ramadda_relpath}/resources/**/*.*"/>
