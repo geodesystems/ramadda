@@ -3535,6 +3535,7 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
                         }
                     } else {
                         HtmlUtils.open(cb, "td");
+                        HtmlUtils.open(cb,"div",HtmlUtils.cssClass("db-group-table-cell"));
                         String s = "" + obj;
                         if (s.length() == 0) {
                             s = "&lt;blank&gt;";
@@ -3558,6 +3559,8 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
                             s =  HtmlUtils.href(url, s,HtmlUtils.cssClass("ramadda-db-link"));
                         }
                         cb.append(s);
+                        HtmlUtils.close(cb, "div");
+                        HtmlUtils.close(cb, "td");
                     }
                     col++;
                 }

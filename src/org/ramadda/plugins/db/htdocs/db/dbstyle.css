@@ -90,6 +90,11 @@
 
 
 
+.db-group-table-cell {
+   max-width:400px;
+   overflow-x: auto;
+}
+
 .dbtablecell {
   max-height:200px;
   overflow-y: auto;
