@@ -1249,6 +1249,7 @@ public class CsvUtil {
         new Cmd("-geocodeaddress",
                 "<col indices> Latitude Longitude <prefix> <suffix> "),
         new Cmd("-geocodeaddressdb", "<col indices> <prefix> <suffix> "),
+        new Cmd("-gender", "<column>"),
         new Cmd("-count", "", "(show count)"),
         new Cmd("-maxrows", "<max rows to print>"),
         new Cmd("-skipline", " <pattern>",
@@ -1864,6 +1865,15 @@ public class CsvUtil {
 
                 continue;
             }
+
+            if (arg.equals("-gender")) {
+                if(!ensureArg(args, i,1)) return false;
+                String col      = args.get(++i);
+
+                info.getProcessor().addProcessor(new Converter.Genderizer(new Integer(col)));
+                continue;
+            }
+
 
             if (arg.equals("-geocode")) {
                 if(!ensureArg(args, i,5)) return false;

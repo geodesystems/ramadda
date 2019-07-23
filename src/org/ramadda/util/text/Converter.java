@@ -35,11 +35,13 @@ import java.text.DateFormat;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 
+
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.List;
+import java.util.Properties;
 
 import java.util.regex.*;
 
@@ -1746,6 +1748,69 @@ public abstract class Converter extends Processor {
                 values.add(new Double(lon));
             }
 
+            return row;
+        }
+
+    }
+
+
+
+
+
+    private static  Properties genderProperties;
+
+    public static class Genderizer extends Converter {
+
+        private boolean doneHeader = false;
+
+        private int column;
+
+        /**
+         * _more_
+         * @throws Exception _more_
+         */
+        public Genderizer(int col) 
+                throws Exception {
+            this.column = col;
+        }
+
+        /**
+         * _more_
+         *
+         *
+         * @param info _more_
+         * @param row _more_
+         * @param line _more_
+         *
+         * @return _more_
+         */
+        @Override
+        public Row processRow(TextReader info, Row row, String line) {
+            List values = row.getValues();
+            if ( !doneHeader) {
+                values.add("Gender");
+                doneHeader = true;
+                return row;
+            }
+            String value = values.get(column).toString().toLowerCase().trim();
+            int index = value.indexOf(",");
+            if(index>=0) 
+                value = value.substring(index+1).trim();
+            index = value.indexOf(" ");
+            if(index>=0) 
+                value = value.substring(0,index).trim();
+            if(genderProperties == null) {
+                genderProperties = new Properties();
+                try {
+                    InputStream inputStream = Utils.getInputStream("/org/ramadda/util/text/gender.properties", getClass());
+                    genderProperties.load(inputStream);
+                } catch(Exception exc) {
+                    throw new RuntimeException(exc);
+                }
+            }
+            String gender = (String)genderProperties.get(value);
+            if(gender==null) gender = "na";
+            values.add(gender);
             return row;
         }
 
