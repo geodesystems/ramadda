@@ -148,7 +148,7 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
         new SimpleDateFormat("EEE dd, MMM yyyy HH:mm:ss z");
 
     /** _more_ */
-    private DecimalFormat ifmt = new DecimalFormat("#0");
+    private DecimalFormat ifmt = new DecimalFormat("#,##0");
 
     /** _more_ */
     private DecimalFormat dfmt = new DecimalFormat("#,##0.#");
