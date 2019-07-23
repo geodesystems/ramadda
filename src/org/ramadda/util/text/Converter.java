@@ -1810,6 +1810,8 @@ public abstract class Converter extends Processor {
             }
             String gender = (String)genderProperties.get(value);
             if(gender==null) gender = "na";
+            else if(!(gender.equals("m") || gender.equals("f"))) 
+                gender = "na";
             values.add(gender);
             return row;
         }
