@@ -3977,6 +3977,7 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
             }
         }
 
+        boolean simpleMap = request.get("simpleMap",false);
         if (catMap != null) {
             boolean open = true;
             for (String cat : cats) {
@@ -3990,24 +3991,29 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
         entryList.append(HtmlUtils.close(HtmlUtils.TAG_DIV));
         entryList.append(HtmlUtils.close(HtmlUtils.TAG_DIV));
 
-        HtmlUtils.open(sb, "table", "class", "db-map-table", "cellpadding",
-                       "0", "border", "0", "width", "100%");
-        HtmlUtils.open(sb, "tr", "valign", "top");
-        map.center();
-        sb.append(HtmlUtils.col(entryList.toString(),
-                                " class=\"db-map-column\" "
-                                + HtmlUtils.attr("width",
-                                    "250" /*leftWidth + "px"*/)));
-        sb.append(HtmlUtils.col(map.getHtml(), "  class=\"db-map-column\" "  //HtmlUtils.attr(HtmlUtils.ATTR_WIDTH, "60%")
-            ));
-        sb.append(
-            HtmlUtils.col(
-                "<div id=\"" + mapDisplayId
-                + "\" style=\"width:250px;max-width:250px;overflow-x:hidden;max-height:"
-                + height
-                + "px; overflow-y:hidden;\"></div>", " class=\"db-map-column\"  width=250"));
-        //HtmlUtils.attr(HtmlUtils.ATTR_WIDTH,"" + width + "px")));
-        HtmlUtils.close(sb, "tr", "table");
+        if(!simpleMap) {
+            HtmlUtils.open(sb, "table", "class", "db-map-table", "cellpadding",
+                           "0", "border", "0", "width", "100%");
+            HtmlUtils.open(sb, "tr", "valign", "top");
+            map.center();
+            sb.append(HtmlUtils.col(entryList.toString(),
+                                    " class=\"db-map-column\" "
+                                    + HtmlUtils.attr("width",
+                                                     "250" /*leftWidth + "px"*/)));
+            sb.append(HtmlUtils.col(map.getHtml(), "  class=\"db-map-column\" "  //HtmlUtils.attr(HtmlUtils.ATTR_WIDTH, "60%")
+                                    ));
+            sb.append(
+                      HtmlUtils.col(
+                                    "<div id=\"" + mapDisplayId
+                                    + "\" style=\"width:250px;max-width:250px;overflow-x:hidden;max-height:"
+                                    + height
+                                    + "px; overflow-y:hidden;\"></div>", " class=\"db-map-column\"  width=250"));
+            HtmlUtils.close(sb, "tr", "table");
+        } else {
+            sb.append(map.getHtml());
+        }
+
+
         String js =
             "highlightMarkers('.db-map-list-outer .db-map-list-entry', "
             + map.getVariableName() + ", '#ffffcc', 'white');";
