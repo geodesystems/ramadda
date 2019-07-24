@@ -2492,7 +2492,7 @@ public class PageHandler extends RepositoryManager {
 
         if (target != null) {
             lastLink = HtmlUtils.href(
-                request.entryUrl(getRepository().URL_ENTRY_SHOW, entry),
+                                      getEntryManager().getEntryUrl(request, entry),
                 entry.getLabel(), targetAttr);
 
         } else {
@@ -2552,9 +2552,8 @@ public class PageHandler extends RepositoryManager {
         List<Link> linkList = getEntryManager().getEntryLinks(request, entry);
 
         String headerLabel = HtmlUtils.href(
-                                 request.entryUrl(
-                                     getRepository().URL_ENTRY_SHOW,
-                                     entry), HtmlUtils.img(
+                                            getEntryManager().getEntryUrl(request, entry),
+                                            HtmlUtils.img(
                                          getIconUrl(request, entry)) + " "
                                              + getEntryDisplayName(entry));
 
@@ -2843,7 +2842,7 @@ public class PageHandler extends RepositoryManager {
                 titleList.add(0, name);
             }
 
-            //            String url = request.entryUrl(getRepository().URL_ENTRY_SHOW, ancestor);
+
             String url = getEntryManager().getEntryUrl(request, ancestor);
             String link = HtmlUtils.href(url, linkLabel);
             breadcrumbs.add(0, link);
@@ -3456,7 +3455,7 @@ public class PageHandler extends RepositoryManager {
         if (entry != null) {
             String label = entry.getTypeHandler().getEntryName(entry);
             label = HtmlUtils.href(
-                request.entryUrl(getRepository().URL_ENTRY_SHOW, entry),
+                                   getEntryManager().getEntryUrl(request, entry),
                 label);
             HtmlUtils.sectionTitle(sb, label);
             if (Utils.stringDefined(title)) {
@@ -3724,7 +3723,7 @@ Time:14625 cnt:7000
             url = request.entryUrl(getRepository().URL_ENTRY_SHOW, entry);
         }
         */
-        String url = request.entryUrl(getRepository().URL_ENTRY_SHOW, entry);
+        String url = getEntryManager().getEntryUrl(request, entry);
 
         return HtmlUtils.href(url, (args.length > 0)
                                    ? args[0]
