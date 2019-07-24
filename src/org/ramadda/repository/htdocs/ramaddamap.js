@@ -210,6 +210,7 @@ function RepositoryMap(mapId, params) {
         }
         this.defaultBounds = createBounds(params.initialBounds[1], params.initialBounds[2], params.initialBounds[3], params.initialBounds[0]);
     }
+    
 
     var options = {
         projection: this.sourceProjection,
@@ -1831,6 +1832,7 @@ function initMapFunctions(theMap) {
             var projPoint = this.transformLLPoint(llPoint);
             this.map.setCenter(projPoint);
             this.map.zoomToExtent(this.transformLLBounds(this.defaultBounds));
+            this.hadDefaultBounds = true;
             this.defaultBounds = null;
         } else {
             this.map.zoomToMaxExtent();
@@ -2699,6 +2701,11 @@ function initMapFunctions(theMap) {
 
     theMap.centerOnMarkerLayer = function() {
         this.centerOnMarkers(null, false, true);
+    }
+
+    theMap.centerOnMarkersInit = function() {
+        if(!this.defaultBounds && !this.hadDefaultBounds)
+            this.centerOnMarkers(null);
     }
 
 

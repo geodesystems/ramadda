@@ -1346,7 +1346,7 @@ public class MapInfo {
      * Center the map
      */
     public void center() {
-        Utils.append(getJS(), mapVarName, ".centerOnMarkers(null);\n");
+        Utils.append(getJS(), mapVarName, ".centerOnMarkersInit(null);\n");
     }
 
     /**
