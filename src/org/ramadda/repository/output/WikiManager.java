@@ -2614,8 +2614,8 @@ ATTR_SHOWLINK, "true", ATTR_INCLUDEICON, "false") + ATTRS_LAYOUT),
                             child)) + " " + title;
                 }
                 titles.add(title);
-                urls.add(request.entryUrl(getRepository().URL_ENTRY_SHOW,
-                                          child));
+                //                urls.add(request.entryUrl(getRepository().URL_ENTRY_SHOW, child));
+                urls.add(getEntryManager().getEntryUrl(request, child));
 
                 StringBuilder content =
                     new StringBuilder(my_getWikiInclude(wikiUtil, newRequest,
