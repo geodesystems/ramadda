@@ -1820,6 +1820,11 @@ function initMapFunctions(theMap) {
             this.initLocationSearch();
         }
 
+        if (this.defaultBounds) {
+            this.hadDefaultBounds = true;
+	}
+
+
         if (this.defaultLocation && !this.defaultBounds) {
             var center = this.defaultLocation;
             var offset = 10.0;
@@ -1832,7 +1837,6 @@ function initMapFunctions(theMap) {
             var projPoint = this.transformLLPoint(llPoint);
             this.map.setCenter(projPoint);
             this.map.zoomToExtent(this.transformLLBounds(this.defaultBounds));
-            this.hadDefaultBounds = true;
             this.defaultBounds = null;
         } else {
             this.map.zoomToMaxExtent();
@@ -2704,8 +2708,9 @@ function initMapFunctions(theMap) {
     }
 
     theMap.centerOnMarkersInit = function() {
-        if(!this.defaultBounds && !this.hadDefaultBounds)
+       if(!this.hadDefaultBounds) {
             this.centerOnMarkers(null);
+	}
     }
 
 
