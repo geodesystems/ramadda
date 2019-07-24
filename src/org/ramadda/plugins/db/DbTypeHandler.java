@@ -2438,7 +2438,7 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
             } else if (request.exists(ARG_DB_BULK_LOCALFILE)) {
                 request.ensureAdmin();
                 source = getStorageManager().getFileInputStream(
-                    new File(request.getString(ARG_DB_BULK_LOCALFILE, "")));
+                                                                new File(request.getString(ARG_DB_BULK_LOCALFILE, "").trim()));
             } else {
                 source = new ByteArrayInputStream(
                     request.getString(ARG_DB_BULK_TEXT, "").getBytes());
@@ -3850,6 +3850,9 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
         if (request.defined("mapLayer")) {
             props.put("defaultMapLayer", request.getString("mapLayer", ""));
         }
+        if (request.defined("mapBounds")) {
+            props.put("initialBounds", request.getString("mapBounds", ""));
+        }
 
         MapInfo map = getRepository().getMapManager().createMap(request,
                           entry, width, height, false, props);
@@ -4392,6 +4395,10 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
             String layer = (String) props.get("layer");
             if (layer != null) {
                 newRequest.put("mapLayer", layer);
+            }
+            String bounds = (String) props.get("mapBounds");
+            if (bounds != null) {
+                newRequest.put("mapBounds", bounds);
             }
             if (newRequest.defined(ARG_DB_SEARCHNAME)) {
                 HtmlUtils.sectionHeader(
