@@ -1263,14 +1263,20 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
                 max: max
             };
         },
-        filterData: function(dataList, fields) {
+        requiresGrouping:  function() {
+                return false;
+         },
+        filterData: function(dataList, fields, doGroup) {
+            var pointData = this.getData();
             if (!dataList) {
-                var pointData = this.getData();
                 if (pointData == null) return null;
                 dataList = pointData.getRecords();
             }
             if (!fields) {
                 fields = pointData.getRecordFields();
+            }
+            if(doGroup || this.requiresGrouping()) {
+                dataList = pointData.extractGroup(this.dataGroup, dataList);
             }
             var patternFieldId = this.getProperty("patternFilterField");
             var numericFieldId = this.getProperty("numericFilterField");
@@ -4015,6 +4021,7 @@ function BasePointData(name, properties) {
         initWith: function(thatPointData) {
             this.recordFields = thatPointData.recordFields;
             this.records = thatPointData.records;
+            this.setGroupField();
         },
         handleEventMapClick: function(myDisplay, source, lon, lat) {
             return false;
@@ -4034,6 +4041,7 @@ function BasePointData(name, properties) {
             if (value == null) return dflt;
             return value;
         },
+
 
         getRecordFields: function() {
             return this.recordFields;
@@ -4182,6 +4190,59 @@ function PointData(name, recordFields, records, url, properties) {
         stopLoading: function() {
             this.loadingCnt--;
         },
+        setGroupField: function() {
+                if(this.recordFields) {
+                    for(var i=0;i<this.recordFields.length;i++) {
+                        var field = this.recordFields[i];
+                        if(field.isFieldGroup()) {
+                            this.groupField = field;
+                            break;
+                        }
+                    }
+                }
+         },
+        extractGroup: function(group, records) {
+                if(!this.groupField) return records;
+                var groupData = this.getDataGroups(records);
+                if(groupData.length==0) return records;
+                if(!group) group = groupData[0];
+                return records;
+        },
+        getDataGroups: function(records) {
+                if(!this.groupData) {
+                    if(!records) return [];
+                    this.groupData= [];
+                    var groupField = this.getGroupField();
+                    if(!groupField) return this.groupData;
+                    var seen = {};
+                    for(var i=0;i<records.length;i++) {
+                        var record = records[i];
+                        var data;
+                        if(record.tuple) 
+                            data = record.tuple;
+                        else if(record.record)
+                            data = record.record.getData();
+                        console.log("data:" + data);
+                        foobarasds();
+                        var value = groupField.getValue(data);
+                        if(!seen[value]) {
+                            seen[value] = true;
+                            this.groupData.push(value);
+                        }
+                    }
+                }
+                console.log(this.groupData);
+                return this.groupData;
+        },
+        getGroupField: function() {
+                return this.groupField;
+        },
+        isGroup: function() {
+                return this.getGroupField()!=null;
+        },
+
+
+
         loadData: function(display, reload) {
             if (this.url == null) {
                 console.log("No URL");
@@ -4247,6 +4308,7 @@ function PointData(name, recordFields, records, url, properties) {
         }
 
     });
+    this.setGroupField();
 }
 
 
@@ -4284,8 +4346,10 @@ function DerivedPointData(displayManager, name, pointDataList, operation) {
                 this.records = results.records;
                 this.recordFields = results.recordFields;
             }
+            this.setGroupField();
             this.display.pointDataLoaded(this);
         },
+
         combineData: function(pointData1, pointData2) {
             var records1 = pointData1.getRecords();
             var records2 = pointData2.getRecords();
@@ -4368,9 +4432,9 @@ function RecordField(props) {
     $.extend(this, props);
     $.extend(this, {
         isNumeric: props.type == "double" || props.type == "integer",
+        isGroup:props.group,
         properties: props
     });
-
 
     RamaddaUtil.defineMembers(this, {
         getIndex: function() {
@@ -4378,6 +4442,9 @@ function RecordField(props) {
         },
         getValue: function(row) {
             return row[this.index];
+        },
+        isFieldGroup: function() {
+             return this.isGroup;
         },
         isFieldGeo: function() {
             return this.isFieldLatitude() || this.isFieldLongitude() || this.isFieldElevation();
@@ -4758,7 +4825,6 @@ function makePointData(json, derived, source) {
         var record = new PointRecord(tuple.latitude, tuple.longitude, tuple.elevation, date, values);
         pointRecords.push(record);
     }
-
 
 
     for (var dIdx = 0; dIdx < derived.length; dIdx++) {
@@ -8989,8 +9055,6 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
             if (dataList.length == 1) {
                 return google.visualization.arrayToDataTable(this.makeDataArray(dataList));
             }
-
-
             var justData = [];
             var begin = props.includeIndex ? 1 : 0;
             var tooltipFields = [];
