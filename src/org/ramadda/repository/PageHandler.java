@@ -2475,11 +2475,12 @@ public class PageHandler extends RepositoryManager {
 
 
             if (target != null) {
+                String url = getEntryManager().getEntryUrl(request, ancestor);
                 breadcrumbs.add(
-                    0, HtmlUtils.href(
-                        request.entryUrl(
-                            getRepository().URL_ENTRY_SHOW, ancestor), name,
-                                targetAttr));
+                                0, HtmlUtils.href(url,
+                                                  /*request.entryUrl(getRepository().URL_ENTRY_SHOW, ancestor), */
+                                                  name,
+                                                  targetAttr));
             } else {
                 String url = HtmlUtils.url(requestUrl.toString(),
                                            ARG_ENTRYID, ancestor.getId());
