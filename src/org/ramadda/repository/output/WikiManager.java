@@ -2628,8 +2628,8 @@ ATTR_SHOWLINK, "true", ATTR_INCLUDEICON, "false") + ATTRS_LAYOUT),
                         url = child.getTypeHandler().getEntryResourceUrl(
                             request, child);
                     } else {
-                        url = request.entryUrl(
-                            getRepository().URL_ENTRY_SHOW, child);
+                        url = getEntryManager().getEntryUrl(request, child);
+                        //                        url = request.entryUrl(getRepository().URL_ENTRY_SHOW, child);
                     }
                     String href = HtmlUtils.href(url, linklabel.isEmpty()
                             ? getEntryDisplayName(child)
@@ -3149,8 +3149,8 @@ ATTR_SHOWLINK, "true", ATTR_INCLUDEICON, "false") + ATTRS_LAYOUT),
                             child);
                 } else {
                     if (output == null) {
-                        url = request.entryUrl(
-                            getRepository().URL_ENTRY_SHOW, child);
+                        url = getEntryManager().getEntryUrl(request, child);
+                        //                        url = request.entryUrl(getRepository().URL_ENTRY_SHOW, child);
                     } else {
                         url = request.entryUrl(
                             getRepository().URL_ENTRY_SHOW, child,

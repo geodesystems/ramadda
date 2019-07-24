@@ -6548,7 +6548,8 @@ public class EntryManager extends RepositoryManager {
                                  String linkText, String url)
             throws Exception {
         if (url == null) {
-            url = request.entryUrl(getRepository().URL_ENTRY_SHOW, entry);
+            url = getEntryManager().getEntryUrl(request, entry);
+            //            url = request.entryUrl(getRepository().URL_ENTRY_SHOW, entry);
         }
 
         String elementId  = entry.getId();
