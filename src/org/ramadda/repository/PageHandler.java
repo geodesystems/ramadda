@@ -2843,8 +2843,8 @@ public class PageHandler extends RepositoryManager {
                 titleList.add(0, name);
             }
 
-            String url = request.entryUrl(getRepository().URL_ENTRY_SHOW,
-                                          ancestor);
+            //            String url = request.entryUrl(getRepository().URL_ENTRY_SHOW, ancestor);
+            String url = getEntryManager().getEntryUrl(request, ancestor);
             String link = HtmlUtils.href(url, linkLabel);
             breadcrumbs.add(0, link);
         }
