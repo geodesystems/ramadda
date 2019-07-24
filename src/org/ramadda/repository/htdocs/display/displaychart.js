@@ -860,8 +860,6 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
             if (dataList.length == 1) {
                 return google.visualization.arrayToDataTable(this.makeDataArray(dataList));
             }
-
-
             var justData = [];
             var begin = props.includeIndex ? 1 : 0;
             var tooltipFields = [];

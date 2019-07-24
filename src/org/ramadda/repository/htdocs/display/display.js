@@ -1113,14 +1113,20 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
                 max: max
             };
         },
-        filterData: function(dataList, fields) {
+        requiresGrouping:  function() {
+                return false;
+         },
+        filterData: function(dataList, fields, doGroup) {
+            var pointData = this.getData();
             if (!dataList) {
-                var pointData = this.getData();
                 if (pointData == null) return null;
                 dataList = pointData.getRecords();
             }
             if (!fields) {
                 fields = pointData.getRecordFields();
+            }
+            if(doGroup || this.requiresGrouping()) {
+                dataList = pointData.extractGroup(this.dataGroup, dataList);
             }
             var patternFieldId = this.getProperty("patternFilterField");
             var numericFieldId = this.getProperty("numericFilterField");
