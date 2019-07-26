@@ -1321,6 +1321,8 @@ public abstract class Processor extends CsvOperator {
                 }
             }
 
+            boolean dfltDoStats = CsvUtil.getDbProp(props, "table",
+                                        "dostats", "false").equals("true");
             boolean dfltCanSearch = CsvUtil.getDbProp(props, "table",
                                         "cansearch", "true").equals("true");
             boolean dfltCanList = CsvUtil.getDbProp(props, "table",
@@ -1424,12 +1426,14 @@ public abstract class Processor extends CsvOperator {
                 }
 
                 StringBuffer inner = new StringBuffer();
-                String dostats = CsvUtil.getDbProp(props, colId, "dostats",(String) null);
-                if (dostats!=null) {
+                boolean doStats = "true".equals(CsvUtil.getDbProp(props, colId,
+                                                                  "dostats", dfltDoStats + ""));
+
+                if (doStats) {
                     inner.append(XmlUtil.tag("property",
                                              XmlUtil.attrs(new String[] {
                                                  "name",
-                            "dostats", "value", dostats})));
+                                                 "dostats", "value", "true"})));
                 }
                 if (CsvUtil.getDbProp(props, colId, "iscategory", false)) {
                     inner.append(XmlUtil.tag("property",
