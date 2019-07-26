@@ -1081,7 +1081,7 @@ public class Column implements DataTypes, Constants {
                 }
                 String s = ((numberFormat != null)
                             ? numberFormat.format(v)
-                            : Utils.format(v));
+                            : Utils.formatComma(v));
                 sb.append(s);
             }
         } else if (isType(DATATYPE_DATETIME)) {
