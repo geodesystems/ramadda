@@ -335,6 +335,9 @@ public abstract class CDODataService extends Service {
             request.get(CDOOutputHandler.ARG_CDO_STARTMONTH, 1);
         int requestEndMonth = request.get(CDOOutputHandler.ARG_CDO_ENDMONTH,
                                           1);
+        int requestStartDay =
+            request.get(CDOOutputHandler.ARG_CDO_STARTDAY, 1);
+        int requestEndDay = request.get(CDOOutputHandler.ARG_CDO_ENDDAY,  CDOOutputHandler.DAYS_PER_MONTH[requestEndMonth - 1]);  // endday
         CdmDataOutputHandler dataOutputHandler =
             getOutputHandler().getDataOutputHandler();
         GridDataset dataset =
@@ -372,15 +375,14 @@ public abstract class CDODataService extends Service {
         yearString.append("-");
         yearString.append(StringUtil.padZero(requestStartMonth, 2));  // startmonth
         yearString.append("-");
-        yearString.append("01");  // startday
+        yearString.append(StringUtil.padZero(requestStartDay, 2));  // startmonth
         yearString.append("T00:00:00");  // starttime
         yearString.append(",");
         yearString.append(end);  //endyear
         yearString.append("-");
         yearString.append(StringUtil.padZero(requestEndMonth, 2));  // endmonth
         yearString.append("-");
-        yearString.append(
-            "" + CDOOutputHandler.DAYS_PER_MONTH[requestEndMonth - 1]);  // endday
+        yearString.append(StringUtil.padZero(requestEndDay, 2));  // endmonth
         yearString.append("T23:59:59");  // endtime
 
         return yearString.toString();
@@ -1124,7 +1126,7 @@ public abstract class CDODataService extends Service {
      *
      * @return _more_
      */
-    public String getFrequency(Request request, Entry sample) {
+    public static String getFrequency(Request request, Entry sample) {
         Entry collection = GranuleTypeHandler.getCollectionEntry(request,
                                sample);
         String frequency = CDOOutputHandler.FREQUENCY_MONTHLY;
@@ -1227,6 +1229,7 @@ public abstract class CDODataService extends Service {
             int threadNum = 0;
             for (final ServiceOperand op : ops) {
                 Entry oneOfThem = op.getEntries().get(0);
+                /**
                 Entry collection =
                     GranuleTypeHandler.getCollectionEntry(request, oneOfThem);
                 String frequency = "Monthly";
@@ -1236,6 +1239,8 @@ public abstract class CDODataService extends Service {
                 }
                 boolean isMonthly = frequency.toLowerCase().indexOf("mon")
                                     >= 0;
+                **/
+                boolean isMonthly = getFrequency(request, oneOfThem).equals(CDOOutputHandler.FREQUENCY_MONTHLY);
                 if ( !useThreads || ((threadNum == 0) && needAnom)) {
                     if (isMonthly) {
                         outputEntries.add(evaluateMonthlyRequest(request,

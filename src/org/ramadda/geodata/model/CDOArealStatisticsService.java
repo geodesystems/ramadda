@@ -497,7 +497,7 @@ public class CDOArealStatisticsService extends CDODataService {
 
         Request timeRequest = handleNamedTimePeriod(request, opStr);
 
-        makeDataFile(request, dpi, sample, outFile, dataset, varname, opNum);
+        makeDataFile(request, dpi, sample, outFile, dataset, varname, opNum, period);
         if (dataset != null) {
             dataset.close();
         }
@@ -750,7 +750,7 @@ public class CDOArealStatisticsService extends CDODataService {
      */
     private void makeDataFile(Request request, ServiceInput dpi,
                               Entry sample, File outFile,
-                              GridDataset dataset, String varname, int opNum)
+                              GridDataset dataset, String varname, int opNum, String period)
             throws Exception {
 
         long    millis      = System.currentTimeMillis();
@@ -957,7 +957,7 @@ public class CDOArealStatisticsService extends CDODataService {
 
         } else {
             submillis = System.currentTimeMillis();
-            if ( !collapseTimes) {
+            if ( !collapseTimes && !period.equals(CDOOutputHandler.FREQUENCY_DAILY)) {
                 commands.add("-timselmean," + numMonths);
             }
             getOutputHandler().addDateSelectServices(timeRequest, sample,

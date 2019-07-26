@@ -33,12 +33,8 @@ ramadda.template.cart = <b>Cart:</b><div class="favorites">${entries}</div>
 </properties>
 
     <!-- Bootstrap Core CSS -->
-    
+
     <link href="${root}/psdtheme/css/bootstrap.css" rel="stylesheet">
-    <!--
-    <link href="${root}/psdtheme/css/bootstrap-datepicker.min.css" rel="stylesheet">
-    -->
-${imports}
 
     <!-- Custom CSS -->
     <link href="${root}/psdtheme/css/psd.css" rel="stylesheet">
@@ -46,15 +42,15 @@ ${imports}
 
     <!-- Custom Fonts -->
     <!--
-    <link href="${root}/lib/font-awesome/font-awesome.css" rel="stylesheet" type="text/css">
+    <link href="/psd/css/font-awesome/css/all.min.css" rel="stylesheet" type="text/css">
     -->
-        <link href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700" rel="stylesheet">
-        <link href="https://fonts.googleapis.com/css?family=Open+Sans:300,400,400i,600,700" rel="stylesheet">
-        <link href="https://fonts.googleapis.com/css?family=Lato:300,400,700" rel="stylesheet">
+          <link href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700" rel="stylesheet">
+          <link href="https://fonts.googleapis.com/css?family=Open+Sans:300,400,400i,600,700" rel="stylesheet">
+          <link href="https://fonts.googleapis.com/css?family=Lato:300,400,700" rel="stylesheet">
 
   <!-- Bootstrap core JavaScript
     ================================================== -->
-    <!-- Placed at the end of the document so the pages load faster -->
+    <!-- Placed at the end of the document so the pages load fater -->
     <!-- jQuery (necessary for Bootstrap's JavaScript plugins) 
     <script src="/psd/jquery/js/jquery-1.12.4.min.js"></script>
     -->
@@ -67,15 +63,56 @@ ${imports}
      ================================================== 
         <script type="text/javascript" src="/psd/jquery/js/jquery.cookie.js"></script>
      -->
-        
 
 <!--
-<link rel="stylesheet" type="text/css" href="${root}/esrl_psd.css" media="all">
-<link rel="stylesheet" type="text/css" href="${root}/esrl_print.css" media="print">
--->
+        <script type="text/javascript" src="/psd/js/highslide/highslide-full.js"></script>
+  <link rel="stylesheet" type="text/css" href="/psd/js/highslide/highslide.css" />
+  <script type="text/javascript">
+    hs.registerOverlay({
+            html: '<div class="closebutton" onclick="return hs.close(this)" title="Close"></div>',
+            position: 'top right',
+            fade: 2 // fading the semi-transparent overlay looks bad in IE
+    });
+
+    hs.graphicsDir = '/psd/js/highslide/graphics/';
+    hs.showCredits = 0;
+    hs.align = 'center';
+    hs.dimmingOpacity = .75;
+  </script>
+  -->
+
+  <script>
+
+  function toggleNav() {
+    $('#mySidenav').animate({width:'toggle'},350);
+  }
+
+  function responsiveTabs(e) {
+    console.log("tabs stuff");
+    console.log(e);
+    e.addClass('responsive-tabs');
+    e.append($('<i class="fa fa-caret-down"> </i>'));
+    e.append($('<i class="fa fa-caret-up"> </i>'));
+
+    e.on('click', 'li.active > a, i.fa', function() {
+      e.toggleClass('open');
+    }.bind(this));
+
+    e.on('click', 'li:not(.active) > a', function() {
+      e.removeClass('open');
+    }.bind(e));
+  };
+
+  $(function() {
+    responsiveTabs($('.nav.nav-tabs'));
+    // $('.nav.nav-tabs').responsiveTabs();
+  });
+</script>
+
 <link href="${root}/images/noaa3.gif " rel="SHORTCUT ICON">
 
 ${headfinal}
+        
 
 <style>
 
@@ -142,246 +179,375 @@ nav.shrink .navbar-toggle {
         margin-top:-30px;
 }
 
+
+
+
 </style>
+
+
 
 </head>
 
 <body>
 <div id="banner">
-<style>
+        <style>
+
+.navbar-inverse .navbar-nav > .open > a, .navbar-inverse .navbar-nav > .open > a:hover, .navbar-inverse .navbar-nav > .open > a:focus {
+  background-color: transparent;
+  color:#73c779 !important;
+}
+
+.dropdown-header {
+  font-size:18px;
+  color:#73c779;
+  margin-left:-25px;
+}
 
 .dropdown-intranet {
   width: 400px;
   opacity: 0.95;
 }
 
-.mega-dropdown-menu > li > ul {
-  padding: 0;
-  margin: 0;
-}
-
-.mega-dropdown-menu > li > ul > li {
-  list-style: none;
-}
-
-.mega-dropdown-menu > li > ul > li > a {
+.mega-menu a {
   display: block;
-  padding: 3px 20px;
   clear: both;
   font-weight: normal;
-  line-height: 1.428571429;
-  color: #999;
+  line-height: 1.42857143;
+  color: #333333;
   white-space: nowrap;
 }
 
-.mega-dropdown-menu > li ul > li > a:hover,
-.mega-dropdown-menu > li ul > li > a:focus {
-  background-color: #888;
+@media(min-width:991px) {
+  .mega-menu {
+    min-width:965px;
+    margin-left:-485px;
+    padding-top:15px;
+  }
+
+  .mega-menu .col-md-3 {
+    border-left:1px solid;
+    border-color: #73c779;
+  }
+
+  .mega-menu .col-md-3:first-child {
+    border-left:0px;
+    padding-left:16px;
+    margin-left:-1px
+  }
+
+  .mega-menu ul {
+    list-style:none;
+    padding-left:5px;
+  }
+
+  .mega-menu .col-md-3:last-child>ul {
+      margin-right:4px;
+  }
+
+  .mega-menu a {
+    padding:3px 0px 3px 20px;
+  }
+
+  .mega-menu a:hover {
+    background: #888;
+  }
+
+  .dropdown-header {
+    padding:0px 0px 0px 18px;
+    margin-left:0px;
+  }
 }
 
-.mega-dropdown-menu .dropdown-header {
-  color: #428bca;
-  font-size: 16px;
-  font-weight: 600;
-  padding: 0;
-  margin-bottom: 4px;
+@media(min-width:1200px) {
+  .mega-menu {
+    min-width:1170px;
+    margin-left:-690px;
+    padding-top:15px;
+  }
+
+  .mega-menu ul {
+    list-style:none;
+    padding-left:0px;
+  }
 }
 
-.mega-dropdown-menu form {
-  margin: 3px 20px;
+.mega-menu{
+  opacity: 0.95;
 }
 
-.mega-dropdown-menu .form-group {
-  margin-bottom: 3px;
+.mega-menu div {
+  padding-left: 0px;
+  padding-right: 2px;
 }
 
-.dropdown-toggle .mega-dropdown-menu .dropdown-header {
-  color: #428bca;
-  font-size: 16px;
-  font-weight: 600;
-  padding: 0;
-  margin-bottom: 4px;
+.dropdown-intranet>li>ul {
+  position: relative;
+  display:block;
+  top: 100%;
+  left: 0;
+  z-index: 1000;
+  float: left;
+  width:100%;
+  padding: 0px 0;
+  margin: 2px 0 0;
+  list-style: none;
+  font-size: 14px;
+  text-align: left;
+  border-left:1px solid;
+  border-color: #73c779;
 }
+
+.about-menu{
+  border-left:0px !important;
+}
+
+@media(min-width:991px) {
+  .dropdown-intranet a:hover {
+    background: #888;
+  }
+}
+
+.dropdown-intranet>li>ul>li>a {
+  display: block;
+  font-weight: normal;
+  line-height: 1.42857143;
+  color: #333333;
+  white-space: nowrap;
+  padding:3px 0px 3px 10px;
+}
+
+.dropdown-intranet>li>ul>li {
+  display:block;
+}
+
+.dropdown a:hover {
+  background: #888;
+}
+
 </style>
 
 <nav class="navbar navbar-fixed-top navbar-inverse" role="navigation">
 
-        <div class="container">
-        <!-- Brand and toggle get grouped for better mobile display -->
-        <div class="navbar-header">
-                <div class="navbar-brand">
-                <div style="float: left;">
-                                        <a href="http://www.noaa.gov" title="NOAA"><img src="${root}/psdtheme/img/logos/noaa_notext.svg" width="38" class="header_logo"/></a>
-                                </div>
-                                <div style="float: left;">
-                                        <div style="margin: 12px 0 0 2px;">
-                                                <a href="http://www.esrl.noaa.gov" title="ESRL">ESRL</a> | <a href="/psd/" title="PSD">Physical Sciences Division</a>
-                                        </div>
-                                </div>
-                        </div>
-            <button type="button" class="navbar-toggle align-right" style="padding-right:10px;" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
-                    <span class="sr-only">Toggle navigation</span>
-                    <span class="icon-bar"></span>
-                    <span class="icon-bar"></span>
-                    <span class="icon-bar"></span>
-                </button>
-                </div>
-        <!-- Collect the nav links, forms, and other content for toggling -->
-            <div class="collapse navbar-collapse navbar-right" id="bs-example-navbar-collapse-1">
-                <ul class="nav navbar-nav">
-                                <li class="dropdown mega-dropdown ">
-                                <a href="#" class="dropdown-toggle" data-hover="dropdown" data-toggle="dropdown">About <!--<i class="fa fa-angle-down"></i>--></a>
+  <div class="container">
+    <!-- Brand and toggle get grouped for better mobile display -->
+    <div class="navbar-header">
+      <div class="navbar-brand">
+        <div style="float: left;">
+          <a href="http://www.noaa.gov" title="NOAA"><img src="${root}/psdtheme/img/logos/noaa_notext.svg" 
+              width="38" class="header_logo"/></a>
+        </div>
+        <div style="float: left;">
+          <div style="margin: 12px 0 0 2px;">
+            <span class="hidden-xs"><a href="http://www.esrl.noaa.gov" title="ESRL">ESRL</a>
+              | </span><a href="/psd/" title="PSD">Physical Sciences Division</a>
+          </div>
+        </div>
+      </div>
+      <button type="button" class="navbar-toggle align-right" style="padding-right:10px;"
+        data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+        <span class="sr-only">Toggle navigation</span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+    </div>
+    <!-- Collect the nav links, forms, and other content for toggling -->
+    <div class="collapse navbar-collapse navbar-right" id="bs-example-navbar-collapse-1">
+      <ul class="nav navbar-nav">
+        <li class="dropdown">
+          <a href="#" class="dropdown-toggle" data-hover="dropdown" data-toggle="dropdown">About</a>
+          
+          <ul class="dropdown-menu dropdown-intranet dropdown-menu-left row">
+            <li class="col-sm-6">
+              <ul class='about-menu'>
+                
+                  <li><a href="/psd/about/">About PSD</a></li>
+                  <li><a href="/psd/about/org.html">Organization At-A-Glance</a></li>
+                  <li><a href="/psd/reviews/">Science Reviews</a></li>
+                  <li><a href="http://www.boulder.noaa.gov/">Visiting NOAA
+                      Boulder</a></li>
 
-<!--
-                            <ul class="dropdown-menu mega-dropdown-menu dropdown-intranet dropdown-menu-left row">
-                            -->
-                            <ul class="dropdown-menu mega-dropdown-menu dropdown-menu-left row">
-                                                <li class="col-sm-12">
-
-                                        <ul>
-                                                <li><a href="/psd/about/">About PSD</a></li>
-                                                <li><a href="/psd/about/org.html">Organization At-A-Glance</a></li>
-                                                <li><a href="/psd/reviews/">Science Reviews</a></li>
-                                                                        <li><a href="http://www.boulder.noaa.gov/">Visiting NOAA Boulder</a></li>
-                                                        </ul>
-                                                </li>
-
-<!--
-                                                <li class="col-sm-6">
-                          <ul>
-                              <li class="dropdown-header"><a href="https://intranet.psd.esrl.noaa.gov" target="intranet">Intranet</a></li>
-                              <li><a href="https://helpdesk.psd.esrl.noaa.gov/" target="intranet">Helpdesk</a></li>
-                                                      <li><a href="https://webtools.psd.esrl.noaa.gov/prof_page_editor/" target="intranet">Staff Profile Page Editor</a></li>
-                                                      <li><a href="https://intranet.psd.esrl.noaa.gov/admin2/" target="intranet">Admin/Budget</a></li>
-                                                      <li><a href="https://intranet.psd.esrl.noaa.gov/facilities/" target="intranet">Facilities</a></li>
-                                                      <li><a href="https://intranet.psd.esrl.noaa.gov/it/" target="intranet">Computer Resources</a></li>
-                                                                  <li><a href="https://intranet.psd.esrl.noaa.gov/web" target="intranet">Web Resources</a></li>
-                                                      <li><a href="https://intranet.psd.esrl.noaa.gov/science/" target="intranet">Science</a></li>
-                                                        <li><a href="https://intranet.psd.esrl.noaa.gov/glossary/" target="intranet">Site Index</a></li>
-                                                        </ul>
-                                                </li>
-                                                -->
-
-                            </ul>
-                    </li>
-                <li class="dropdown">
-                   <a href="#" class="dropdown-toggle" data-hover="dropdown" data-toggle="dropdown">People <!--i class="fa fa-angle-down"></i>--></a>
-                        <ul class="dropdown-menu dropdown-menu-left">
-                                <li> <a href="/psd/about/contacts.html">Contacts</a></li>
-                                <li><a href="/psd/staff/index.html">Staff List</a></li>
-                                <li><a href="/psd/staff/spotlight/">Employee Spotlight</a></li>
+                  
                 </ul>
-                </li>
-                <li class="dropdown">
-                        <a href="#" class="dropdown-toggle" data-hover="dropdown" data-toggle="dropdown">Research <!--<i class="fa fa-angle-down"></i>--></a>
-                    <ul class="dropdown-menu dropdown-menu-left">
-                    <li><a href="/psd/research/">Overview</a></li>
-                        <li><a href="/psd/research/teams/">Teams</a></li>
-                        <li><a href="/psd/pubs/">Publications</a></li>
-                                        <li><a href="/psd/technology/">Observations</a></li>
-                   </ul>
-                </li>
-            <li class="dropdown">
-                    <a href="#" class="dropdown-toggle" data-hover="dropdown" data-toggle="dropdown">Data <!--i class="fa fa-angle-down"></i>--></a>
-                <ul class="dropdown-menu dropdown-menu-left">
-                                        <li><a href="/psd/data/index.html">All</a></li>
-                                        <li><a href="/psd/data/gridded/index.html">Gridded Climate</a></li>
-                                                <li><a href="/psd/data/obs/">Profiler Network Data &amp; Image Library</a></li>
-                                        <li><a href="/psd/psd3/cruises/">Cruise Data</a></li>
-                                        <li><a href="/psd/psd2/coastal/satres/">Satellite</a></li>
-                                        <li><a href="/psd/boulder/">Boulder Climate &amp; Weather</a></li>
-                                        <li><a href="/psd/cgi-bin/data/getpage.pl">Analysis &amp; Plotting Tools</a></li>
-                                        <li><a href="/psd/data/help/">Help</a></li>
+            </li>
+            <li class="col-sm-6">
+              <ul>
+                <li><a href="https://intranet.psd.esrl.noaa.gov" target="intranet"
+                    style="font-size:18px;">Intranet</a></li>
+                <li><a href="https://helpdesk.psd.esrl.noaa.gov/" target="intranet">Helpdesk</a></li>
+                <li><a href="https://webtools.psd.esrl.noaa.gov/prof_page_editor/"
+                    target="intranet">Staff Profile Page Editor</a></li>
+                <li><a href="https://intranet.psd.esrl.noaa.gov/admin2/" target="intranet">Admin/Budget</a></li>
+                <li><a href="https://intranet.psd.esrl.noaa.gov/facilities/"
+                    target="intranet">Facilities</a></li>
+                <li><a href="https://intranet.psd.esrl.noaa.gov/it/" target="intranet">Computer
+                    Resources</a></li>
+                <li><a href="https://intranet.psd.esrl.noaa.gov/web" target="intranet">Web
+                    Resources</a></li>
+                <li><a href="https://intranet.psd.esrl.noaa.gov/science/"
+                    target="intranet">Science</a></li>
+                <li><a href="https://intranet.psd.esrl.noaa.gov/glossary/"
+                    target="intranet">Site Index</a></li>
+              </ul>
+            </li>
+            
+          </ul>
+        </li>
+        <li class="dropdown">
+          <a href="#" class="dropdown-toggle" data-hover="dropdown" data-toggle="dropdown">People
+            <!--i class="fa fa-angle-down"></i>--></a>
+          <ul class="dropdown-menu dropdown-menu-left">
+            <li> <a href="/psd/about/contacts.html">Contacts</a></li>
+            <li><a href="/psd/staff/index.html">Staff List</a></li>
+            <li><a href="/psd/staff/spotlight/">Employee Spotlight</a></li>
+          </ul>
+        </li>
+        <li class="dropdown">
+          <a href="#" class="dropdown-toggle" data-hover="dropdown" data-toggle="dropdown">Research</a>
+          <ul class="dropdown-menu dropdown-menu-left mega-menu">
+            <div class="row is-flex">
+              <div class=" col-xs-12 col-md-3">
+                <ul class="">
+                  <li class="hidden-xs hidden-sm"><span class="dropdown-header">Research</span></li>
+                  <li><a href="/psd/research/">Overview</a></li>
+                  <li><a href="/psd/research/teams/">Teams</a></li>
+                  <li><a href="/psd/pubs/">Publications</a></li>
+                </ul>
+              </div>
+              <div class=" col-xs-12 col-md-3">
+                <ul class="">
+                  <li><span class="dropdown-header">Selected Topics</span></li>
+                  <li><a href="/psd/arportal/">Atmospheric Rivers</a></li>
+                  <li><a href="/psd/enso/">El Ni&ntilde;o and La Ni&ntilde;a</a></li>
+                  <li><a href="/psd/renewable_energy/">Renewable Energy</a></li>
+                  <li><a href="/psd/csi/">Interpreting Climate Conditions</a></li>
+                </ul>
+              </div>
+              <div class=" col-xs-12 col-md-3">
+                <ul class="">
+                  <li><span class="dropdown-header">In the Field</span></li>
+                  <li><a href="/psd/aqpi/">AQPI</a></li>
+                  <li><a href="/psd/atomic/">ATOMIC</a></li>
+                  <li><a href="/psd/enso/rapid_response/">ENRR</a></li>
+                  <!-- li><a href="/psd/mosaic/">MOSAiC</a></li -->
+                </ul>
+              </div>
+              <div class=" col-xs-12 col-md-3">
+                <ul class="">
+                  <li><span class="dropdown-header">Observations</span></li>
+                  <li><a href="/psd/arctic/observatories/">Arctic Climate</a></li>
+                  <li><a href="/psd/psd3/air-sea/oceanobs/">Shipboard</a></li>
+                  <li><a href="/psd/technology/">Technology</a></li>
+                </ul>
+              </div>
+            </div>
+          </ul>
+        </li>
+        <li class="dropdown">
+          <a href="#" class="dropdown-toggle" data-hover="dropdown" data-toggle="dropdown">Data
+            <!--i class="fa fa-angle-down"></i>--></a>
+          <ul class="dropdown-menu dropdown-menu-left">
+            <li><a href="/psd/data/index.html">All</a></li>
+            <li><a href="/psd/data/gridded/index.html">Gridded Climate</a></li>
+            <li><a href="/psd/data/obs/">Profiler Network Data &amp; Image
+                Library</a></li>
+            <li><a href="/psd/psd3/cruises/">Research Cruises</a></li>
+            <li><a href="/psd/arctic/data/">Arctic</a></li>
+            <li><a href="/psd/psd2/coastal/satres/">Satellite</a></li>
+            <li><a href="/psd/boulder/">Boulder Climate &amp; Weather</a></li>
+            <li><a href="/psd/cgi-bin/data/getpage.pl">Analysis &amp; Plotting
+                Tools</a></li>
+            <li><a href="/psd/data/help/">Help</a></li>
 
-                                </ul>
+          </ul>
+        </li>
+        <li class="dropdown">
+          <a href="#" class="dropdown-toggle" data-hover="dropdown" data-toggle="dropdown">Products
+            <!--<i class="fa fa-angle-down"></i>--></a>
+          <ul class="dropdown-menu dropdown-menu-left">
+            <li><a href="/psd/products/">All</a></li>
+            <li><a href="/psd/products/monitor/">Experimental </a></li>
+            <li><a href="/psd/map/">Map Room</a></li>
+            <li><a href="/psd/cgi-bin/data/getpage.pl">Analysis &amp; Plotting
+                Tools</a></li>
+            <li><a href="/psd/forecasts/reforecast2/">GEFS Reforecast V2</a></li>
+            <li><a href="/psd/forecasts/clim/">Subseasonal Tropical Forecasts</a></li>
+            <li><a href="/psd/ipcc/">Climate Change Web Portal</a></li>
+            <li><a href="/psd/repository/facts/">FACTS</a></li>
+          </ul>
+        </li>
+        <li class="dropdown">
+          <a href="#" class="dropdown-toggle" data-hover="dropdown" data-toggle="dropdown">News
+            | Events
+            <!--i class="fa fa-angle-down"></i>--></a>
+          <ul class="dropdown-menu dropdown-menu-left">
+            <li><a href="/psd/news/">News</a></li>
+            <li><a href="/psd/events/">Events</a></li>
+            <li><a href="/psd/seminars/">Seminars</a></li>
+          </ul>
+        </li>
+        <li class="dropdown">
+          <a href="#" class="dropdown-toggle" data-hover="dropdown" data-toggle="dropdown">Learn
+            <!--<i class="fa fa-angle-down"></i>--></a>
+          <ul class="dropdown-menu dropdown-menu-left">
+            <li><a href="/psd/outreach/resources/">Research Handouts</a></li>
+            <li><a href="/psd/outreach/education/">Education Resources</a></li>
+          </ul>
+        </li>
+        <li class="dropdown hidden-sm hidden-xs">
+          <a href="#" class="dropdown-toggle" data-hover="dropdown" data-toggle="dropdown"><i
+              class="fa fa-search"></i></a>
+          <ul class="dropdown-menu dropdown-menu-right">
+            <li>
+              <div id="custom-search-input" style="padding: 10px;">
+                <div class="input-group">
+                  <form action="//search.usa.gov/search">
+                    <input type="hidden" name="affiliate" value="etl.noaa.gov">
+                    <span class="input-group-btn">
+                      <input type="text" name="query" id="query-field" size="20"
+                        class="search-query form-control" placeholder="Search PSD...">
+                      <button class="btn btn-success" type="submit" name="search"><i
+                          class="fa fa-search" style="color:#679b6c"></i></button>
+                    </span>
+                  </form>
+                </div><!-- /input-group -->
+              </div>
             </li>
-                <li class="dropdown">
-                                <a href="#" class="dropdown-toggle" data-hover="dropdown" data-toggle="dropdown">Products <!--<i class="fa fa-angle-down"></i>--></a>
-                                <ul class="dropdown-menu dropdown-menu-left">
-                                        <li><a href="/psd/products/">All</a></li>
-                                        <li><a href="/psd/products/monitor/">Experimental </a></li>
-                                        <li><a href="/psd/map/">Map Room</a></li>
-                                        <li><a href="/psd/cgi-bin/data/getpage.pl">Analysis &amp; Plotting Tools</a></li>
-                                        <li><a href="/psd/forecasts/reforecast2/">GEFS Reforecast V2</a></li>
-                                        <li><a href="/psd/forecasts/clim/">Subseasonal Tropical Forecasts</a></li>
-                                        <li><a href="/psd/ipcc/">Climate Change Web Portal</a></li>
-                                </ul>
-                        </li>
-            <li class="dropdown">
-                                <a href="#" class="dropdown-toggle" data-hover="dropdown" data-toggle="dropdown">News | Events <!--i class="fa fa-angle-down"></i>--></a>
-                <ul class="dropdown-menu dropdown-menu-left">
-                                        <li><a href="/psd/news/">News</a></li>
-                                        <li><a href="/psd/events/">Events</a></li>
-                                        <li><a href="/psd/seminars/">Seminars</a></li>
-                        </ul>
-            </li>
-                <li class="dropdown">
-                                <a href="#" class="dropdown-toggle" data-hover="dropdown" data-toggle="dropdown">Learn <!--<i class="fa fa-angle-down"></i>--></a>
-                    <ul class="dropdown-menu dropdown-menu-left">
-                        <li><a href="/psd/outreach/resources/">Research Handouts</a></li>
-                    <li><a href="/psd/outreach/education/">Education Resources</a></li>
-                        </ul>
-            </li>
-            <!--
-            <li class="dropdown">
-                                <a href="#" class="dropdown-toggle" data-hover="dropdown" data-toggle="dropdown">Intranet <i class="fa fa-angle-down"></i></a>
-                    <ul class="dropdown-menu">
-                        <li><a href="/psd/outreach/resources/">PSD Fact Sheets</a></li>
-                    <li><a href="/psd/outreach/education/">Education Resources</a></li>
-                        </ul>
-            </li>
-            -->
-            <li class="dropdown hidden-sm hidden-xs">
-              <a href="#" class="dropdown-toggle" data-hover="dropdown" data-toggle="dropdown"><i class="fa fa-search"></i></a>
-                <ul class="dropdown-menu dropdown-menu-right">
-                                        <li>
-                                        <div id="custom-search-input" style="padding: 10px;">
-                                                <div class="input-group">
-                                                        <form action="//search.usa.gov/search">
-                                                        <input type="hidden" name="affiliate" value="etl.noaa.gov">
-                                                        <span class="input-group-btn">
-                                                                <input type="text" name="query" id="query-field" size="20" class="search-query form-control" placeholder="Search PSD...">
-                                                                <button class="btn btn-success" type="submit" name="search"><i class="fa fa-search" style="color:#679b6c"></i></button>
-                                                        </span>
-                                                        </form>
-                                                </div><!-- /input-group -->
-                                        </div>
-                                        </li>
-                </ul><!-- /.dropdown-menu -->
-            </li><!-- /.dropdown -->
-            <li class="visible-sm visible-xs">
-                                <div id="custom-search-input"  style="margin: 0 0 20px 0;">
-                    <div class="input-group">
-                                        <form action="//search.usa.gov/search">
-                                        <input type="hidden" name="affiliate" value="etl.noaa.gov">
-                                        <span class="input-group-btn">
-                                        <input type="text" name="query" id="query-field" size="20" class="search-query form-control" placeholder="Search PSD...">
-                                        <button class="btn btn-success" type="submit" name="search"><i class="fa fa-search" style="color:#679b6c"></i></button>
-                                </span>
-                                        </form>
-                                </div><!-- /input-group -->
-                                </div>
-                        </li>
-        </ul><!-- /.navbar-nav -->
-        </div><!-- /.navbar-collapse -->
-
-        <div>
-          <table width="100%">
-          <tr valign="bottom">
-          <td align="left" width="50%"><div class="title"><a href="${root}">${repository_name}</a></div></td>
-          <td align="right">${links}</td>
-          </tr>
-          </table>
-        </div> <!--ramadda_nav-->
-    </div> <!--/.container -->
-
+          </ul><!-- /.dropdown-menu -->
+        </li><!-- /.dropdown -->
+        <li class="visible-sm visible-xs">
+          <div id="custom-search-input" style="margin: 0 0 20px 0;">
+            <div class="input-group">
+              <form action="//search.usa.gov/search">
+                <input type="hidden" name="affiliate" value="etl.noaa.gov">
+                <span class="input-group-btn">
+                  <input type="text" name="query" id="query-field" size="20"
+                    class="search-query form-control" placeholder="Search PSD...">
+                  <button class="btn btn-success" type="submit" name="search"><i
+                      class="fa fa-search" style="color:#679b6c"></i></button>
+                </span>
+              </form>
+            </div><!-- /input-group -->
+          </div>
+        </li>
+      </ul><!-- /.navbar-nav -->
+    </div><!-- /.navbar-collapse -->
+    <div>
+      <table width="100%">
+      <tr valign="bottom">
+      <td align="left" width="50%"><div class="title"><a href="${root}">${repository_name}</a></div></td>
+      <td align="right">${links}</td>
+      </tr>
+      </table>
+    </div> <!--ramadda_nav-->
+  </div>
+  <!--/.container -->
 </nav>
 
-</div> <!--/.banner -->
-
-
+</div><!--/.banner-->
 
 <!-- Page Content -->
+
 <div class="mainsection">
   <div class="container">
     <div class="row">
@@ -403,25 +569,26 @@ nav.shrink .navbar-toggle {
 <!-- Footer -->
 <footer class="footer">
         <div class="container">
-        <div class="row">
-                <div class="col-md-4 col-sm-4">
-                                <h4>Mailing Address</h4>
-                                <p>
-                                NOAA ESRL PSD<br />
-                                325 Broadway<br />
-                                Boulder, CO 80305-3328
-                                </p>
-  
-                                <h4>Connect with ESRL</h4>
-                                <p>
-                                <a href="https://www.facebook.com/NOAAESRL"><i class="fab fa-facebook-f fa-2x circle text-center"></i></a>&nbsp;
-                                <a href="https://twitter.com/NOAA_ESRL"><i class="fab fa-twitter fa-2x circle text-center"></i></a>&nbsp;
-                                <a href="https://www.youtube.com/user/NOAAESRL"><i class="fab fa-youtube fa-2x circle text-center"></i></a>&nbsp;
-                                <a href="https://www.flickr.com/photos/noaa_esrl"><i class="fab fa-flickr fa-2x circle text-center"></a></i>
-                                </p>
+                <div class="row">
+                        <div class="col-md-4 col-sm-4">
+                                        <h4>Mailing Address</h4>
+                                        <p>
+                                                NOAA ESRL PSD<br />
+                                                325 Broadway<br />
+                                                Boulder, CO 80305-3328
+                                        </p>
+
+                                        <h4>Connect with ESRL</h4>
+                                        <p>
+                                                <a href="https://www.facebook.com/NOAAESRL"><i class="fab fa-facebook-f fa-2x circle text-center"></i></a>&nbsp;
+                                                <a href="https://twitter.com/NOAA_ESRL"><i class="fab fa-twitter fa-2x circle text-center"></i></a>&nbsp;
+                                                <a href="https://www.youtube.com/user/NOAAESRL"><i class="fab fa-youtube fa-2x circle text-center"></i></a>&nbsp;
+                                                <a href="https://www.flickr.com/photos/noaa_esrl"><i class="fab fa-flickr fa-2x circle text-center"></a></i>
+                                        </p>
                         </div>
-                <div class="col-md-5 col-sm-5">
-                        <h4>Physical Sciences Division</h4>
+
+                        <div class="col-md-5 col-sm-5">
+                <h4>Physical Sciences Division</h4>
                                 <p><a href="/psd/about/">About</a></p>
                                 <p><a href="/psd/about/contacts.html">Contact Us</a></p>
                                 <p><a href="/psd/site_index.html">Site Index</a></p>
@@ -430,24 +597,24 @@ nav.shrink .navbar-toggle {
                         </div>
 
                         <div class="col-md-3 col-sm-3">
-                                <h4>More</h4>
-                <p><a href="http://www.noaa.gov/privacy.html">Privacy Policy</a></p>
-                <p><a href="/psd/disclaimer/">Disclaimer</a></p>
-                <p><a href="http://www.esrl.noaa.gov/about/accessibility.html">Accessibility</a></p>
-                <p><a href="http://www.usa.gov/">USA.gov</a></p>
+                        <h4>More</h4>
+                                
+                                <p><a href="https://intranet.psd.esrl.noaa.gov" target="intranet">Intranet</a></p>
+                                
+                                <p><a href="http://www.noaa.gov/privacy.html">Privacy Policy</a></p>
+                                <p><a href="/psd/disclaimer/">Disclaimer</a></p>
+                                <p><a href="http://www.esrl.noaa.gov/about/accessibility.html">Accessibility</a></p>
+                                <p><a href="http://www.usa.gov/">USA.gov</a></p>
                         </div>
                 </div><!--/.row-->
         </div><!--/.container-->
         <div class="subFooter">
-                        <div class="col-md-12">
-                                        <a href="http://www.commerce.gov">DOC</a> &nbsp;|&nbsp; <a href="http://www.noaa.gov">NOAA</a> &nbsp;|&nbsp; <a href="http://www.research.noaa.gov">OAR</a>  &nbsp;|&nbsp; <a href="http://www.esrl.noaa.gov">Earth System Research Laboratory</a>
-                        </div>
+                <div class="col-md-12">
+                        <a href="http://www.commerce.gov">DOC</a> &nbsp;|&nbsp; <a href="http://www.noaa.gov">NOAA</a> &nbsp;|&nbsp; <a href="http://www.research.noaa.gov">OAR</a>  &nbsp;|&nbsp; <a href="http://www.esrl.noaa.gov">Earth System Research Laboratory</a>
+                </div>
         </div>
 </footer>
-        
-
-
 </body>
-
 </html>
+
 

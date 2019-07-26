@@ -26,14 +26,14 @@
     <link href="/psd/css/psd.css" rel="stylesheet">
 
     <!-- Custom Fonts -->
-    <link href="/psd/css/font-awesome/css/font-awesome.min.css" rel="stylesheet" type="text/css">
+    <link href="/psd/css/font-awesome/css/all.min.css" rel="stylesheet" type="text/css">
 	  <link href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700" rel="stylesheet">
 	  <link href="https://fonts.googleapis.com/css?family=Open+Sans:300,400,400i,600,700" rel="stylesheet">
 	  <link href="https://fonts.googleapis.com/css?family=Lato:300,400,700" rel="stylesheet">
 
   <!-- Bootstrap core JavaScript
     ================================================== -->
-    <!-- Placed at the end of the document so the pages load faster -->
+    <!-- Placed at the end of the document so the pages load fater -->
     <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
     <script src="/psd/jquery/js/jquery-1.12.4.min.js"></script>
     <!-- Include all compiled plugins (below), or include individual files as needed -->
@@ -58,6 +58,34 @@
     hs.align = 'center';
     hs.dimmingOpacity = .75;
   </script>
+
+  <script>
+
+  function toggleNav() {
+    $('#mySidenav').animate({width:'toggle'},350);
+  }
+
+  function responsiveTabs(e) {
+    console.log("tabs stuff");
+    console.log(e);
+    e.addClass('responsive-tabs');
+    e.append($('<i class="fa fa-caret-down"> </i>'));
+    e.append($('<i class="fa fa-caret-up"> </i>'));
+
+    e.on('click', 'li.active > a, i.fa', function() {
+      e.toggleClass('open');
+    }.bind(this));
+
+    e.on('click', 'li:not(.active) > a', function() {
+      e.removeClass('open');
+    }.bind(e));
+  };
+
+  $(function() {
+    responsiveTabs($('.nav.nav-tabs'));
+    // $('.nav.nav-tabs').responsiveTabs();
+  });
+</script>
 
 	<!--#if expr="$stylesheet" -->
     <!-- page-specific stylesheet -->
@@ -129,7 +157,27 @@ nav.shrink .navbar-toggle {
 	margin-top:-30px;
 }
 
+
+
+
 </style>
+
+<!--#if expr="$sidebar_nav" -->
+<script>
+$(function() {
+    $("div.container h1:first").hide();
+
+    var sideNavButton = '<span class="btn btn-psd" style="cursor:pointer;" onclick="toggleNav()"><i class="fa fa-bars"></i> Menu</span>';
+    var buttonColumn = $('<div class="col-sm-2 col-xs-3 text-right"></div>').html(sideNavButton);
+    var title = $("<h1></h1>").text($("div.container h1:first").text());
+    var titleColumn = $('<div class="col-sm-10 col-xs-9"></div>').html(title);
+    var titleBar = $("<div class='row'></div>").append(titleColumn,buttonColumn);
+
+    $("div.container h1:first").after(titleBar);
+});
+
+</script>
+<!--#endif -->
 
 </head>
 
@@ -139,7 +187,7 @@ nav.shrink .navbar-toggle {
 </div><!--/.banner-->
 
 <!-- Page Content -->
-<div class="mainsection">
+<div class="mainsection" role="main">
 <div class="container">
 	<!--#if expr="$self"-->
 		<!--#include virtual="/psd/nav/breadcrumbs.html"-->

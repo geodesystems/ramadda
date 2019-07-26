@@ -8,6 +8,13 @@
 <!--#endif -->
 
 		</div> <!-- end main content row  -->
+		<!--#if expr="$sidebar_nav" -->
+		<div id="mySidenav" class="sidenav">
+		<a href="javascript:void(0)" class="closebtn" onclick="toggleNav()">&times;</a>
+			<!--#include virtual="$sidebar_nav"-->
+		</div>
+		<!--#endif -->
+
 	</div> <!--  end main container -->
 </div> <!--  end mainsection -->
 <!-- Footer -->
@@ -24,10 +31,10 @@
 
 					<h4>Connect with ESRL</h4>
 					<p>
-						<a href="https://www.facebook.com/NOAAESRL"><i class="fa fa-facebook-f fa-2x circle text-center"></i></a>&nbsp;
-						<a href="https://twitter.com/NOAA_ESRL"><i class="fa fa-twitter fa-2x circle text-center"></i></a>&nbsp;
-						<a href="https://www.youtube.com/user/NOAAESRL"><i class="fa fa-youtube fa-2x circle text-center"></i></a>&nbsp;
-						<a href="https://www.flickr.com/photos/noaa_esrl"><i class="fa fa-flickr fa-2x circle text-center"></a></i>
+						<a href="https://www.facebook.com/NOAAESRL"><i class="fab fa-facebook-f fa-2x circle text-center"></i></a>&nbsp;
+						<a href="https://twitter.com/NOAA_ESRL"><i class="fab fa-twitter fa-2x circle text-center"></i></a>&nbsp;
+						<a href="https://www.youtube.com/user/NOAAESRL"><i class="fab fa-youtube fa-2x circle text-center"></i></a>&nbsp;
+						<a href="https://www.flickr.com/photos/noaa_esrl"><i class="fab fa-flickr fa-2x circle text-center"></a></i>
 					</p>
 			</div>
 
