@@ -303,9 +303,12 @@ public class NCLDataService extends Service {
             // there are some precip units that are funky.  But we don't want
             // to test for compatibility with m/s
         } else if (units.equals("Kg/m^2/s") || units.equals("mm/s")
+                   || units.equals("kg m**-2 s**-1")
+                   || units.equals("mm/day")   // in case it's a comparison
                    || units.equals("m/day")) {
             sb.append(HtmlUtils.hidden(ARG_NCL_UNITS, "mm/day"));
         } else if (SimpleUnit.isCompatible(units, "kg m-1 s-2")
+                   || SimpleUnit.isCompatible(units, "hPa")
                    || SimpleUnit.isCompatible(units, "Pa")) {
             sb.append(HtmlUtils.hidden(ARG_NCL_UNITS, "hPa"));
         } else if (SimpleUnit.isCompatible(units, "kg m-2")) {

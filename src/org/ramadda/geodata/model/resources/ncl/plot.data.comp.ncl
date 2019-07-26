@@ -874,6 +874,15 @@ begin
     rescf@lbLabelBarOn = False         ; turn off label bar
     rescf@mpGeophysicalLineThicknessF = .5  ; reduce the line thickness
     rescf@mpNationalLineThicknessF = .5     ; reduce the line thickness
+  else
+    rescf@lbLabelBarOn = True         ; turn on label bar
+    if (opts@isanom) then   ; add clim string as label bar title
+      climText = "Anomaly relative to "+opts@climId+opts@climyears+" average"
+      rescf@lbTitleString = climText
+      rescf@lbTitleFontHeightF = 0.01
+      rescf@lbTitlePosition = "Bottom"
+      rescf@lbTitleOffsetF = 0.2
+    end if
   end if
 
   rescf@tiMainFontHeightF=0.018
@@ -1054,7 +1063,11 @@ begin
         mydata = files(i,:,:)
         mydata = mask_data(mydata,masktype,maskdata)
         if (isatt(opts,"longnames")) then
-           mydata@long_name = opts@longnames(i)
+           if (.not. ismissing(opts@longnames(i))) then
+             mydata@long_name = opts@longnames(i)
+           else
+             mydata@long_name = opts@variable
+           end if
         end if
         ;rescf@gsnLeftString = setvartitle(mydata, opts, addAnom, level, levelunit)
         if (isatt(opts,"leftstring")) then
@@ -1326,19 +1339,26 @@ begin
       gsn_panel(wks,plots,panels,resP)
 
     else 
-      if (opts@isanom) then
-        res_text               = True
-        res_text@txFontHeightF = 0.012                     ; change font size
-        climText = "Anomaly relative to "+opts@climId+opts@climyears+" average"
-        txid_bot = gsn_create_text(wks, climText, res_text)
 
-        amres                  = True
-        amres@amJust           = "BottomCenter"
-        amres@amParallelPosF   =  0.0  ; This is the center of the plot.
-        amres@amOrthogonalPosF =  0.75 ; This is just below the colorbar
-        annoid_bot = gsn_add_annotation(plots(0), txid_bot, amres)
-      end if
+        ;; moved to main section
+;;      if (opts@isanom) then
+;;        res_text               = True
+;;        res_text@txFontHeightF = 0.012                     ; change font size
+;;        climText = "Anomaly relative to "+opts@climId+opts@climyears+" average"
+;;        txid_bot = gsn_create_text(wks, climText, res_text)
+;;
+;;        amres                  = True
+;;        amres@amJust           = "BottomCenter"
+;;        amres@amParallelPosF   =  0.0  ; This is the center of the plot.
+;;        if (opts@usepolar) then
+;;          amres@amOrthogonalPosF =  0.60 ; This is just below the colorbar
+;;        else
+;;          amres@amOrthogonalPosF =  0.75 ; This is just below the colorbar
+;;        end if
+;;        annoid_bot = gsn_add_annotation(plots(0), txid_bot, amres)
+;;      end if
       draw(plots(0))
+
     end if
     frame(wks)
     wksname = wks@name
@@ -1982,7 +2002,11 @@ begin
       end if 
   else
      longnames = new(2,string)
-     longnames(0) = onetime@long_name
+     if (isatt(onetime,"long_name")) then
+       longnames(0) = onetime@long_name
+     else
+       longnames(0) = opts@variable
+     end if
      newtitles = new(2,string)
      newtitles(0) = opts@titles(0)
   end if
@@ -2003,7 +2027,11 @@ begin
         newtitles(i) = opts@models(i)
       end if 
     else
-      longnames(i) = tmpdata@long_name
+      if (isatt(tmpdata,"long_name")) then
+        longnames(i) = tmpdata@long_name
+      else
+        longnames(i) = opts@variable
+      end if
       newtitles(i) = opts@titles(i)
     end if
     delete(tmpdata)
