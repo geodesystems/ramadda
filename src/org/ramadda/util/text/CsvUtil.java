@@ -114,7 +114,7 @@ public class CsvUtil {
         for (String arg : args) {
             this.args.add(arg);
         }
-        //        System.err.println("ARGS:" + this.args);
+        System.err.println("CsvUtil args:" + this.args);
     }
     /**
      * _more_
@@ -125,6 +125,7 @@ public class CsvUtil {
      */
     public CsvUtil(List<String> args) throws Exception {
         this.args = args;
+        System.err.println("CsvUtil args:" + this.args);
     }
 
     /**

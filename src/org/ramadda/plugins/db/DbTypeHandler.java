@@ -2289,7 +2289,11 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
                         if (column == dbInfo.getKeyColumn()) {
                             keyValue = value;
                         }
-                        column.setValue(entry, values, value);
+                        try {
+                            column.setValue(entry, values, value);
+                        } catch(Exception exc) {
+                            throw new IllegalArgumentException("Error setting column value:" + column.getName() +"\nvalues:" +  toks +"\nError:" + exc);
+                        }
                     }
 
 

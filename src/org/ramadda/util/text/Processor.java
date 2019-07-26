@@ -1377,7 +1377,7 @@ public abstract class Processor extends CsvOperator {
                 if ((colId.indexOf("type") >= 0)
                         || (colId.indexOf("category") >= 0)) {
                     type = "enumerationplus";
-                } else if (colId.indexOf("date") >= 0) {
+                } else if (colId.equals("date")) {
                     type = "date";
                     if (props.get("-" + colId + ".type") != null) {
                         type = props.get("-" + colId + ".type");
