@@ -125,6 +125,7 @@ public class CsvUtil {
      */
     public CsvUtil(List<String> args) throws Exception {
         this.args = args;
+        System.err.println("CsvUtil args:" + this.args);
     }
 
     /**
