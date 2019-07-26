@@ -2102,6 +2102,8 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
         StringBuilder sb             = new StringBuilder();
         List          dbids = request.get(ARG_DBID_SELECTED, new ArrayList());
 
+        if(request.exists(ARG_DB_DELETE)) 
+            action  = ACTION_DELETE;
         boolean       deleteSelected = action.equals(ACTION_DELETE);
         if (deleteSelected && (dbids.size() == 0)) {
             sb.append(
