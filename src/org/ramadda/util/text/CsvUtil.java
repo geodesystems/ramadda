@@ -340,7 +340,6 @@ public class CsvUtil {
             if (arg.startsWith("-header")) {
                 textReader.setFirstRow(
                     new Row(StringUtil.split(args.get(++i), ",")));
-
                 continue;
             }
 
