@@ -982,7 +982,6 @@ public class PageHandler extends RepositoryManager {
      */
     public HtmlTemplate getMobileTemplate() {
         getTemplates();
-
         return mobileTemplate;
     }
 
@@ -1008,6 +1007,7 @@ public class PageHandler extends RepositoryManager {
 
         List<HtmlTemplate> theTemplates = htmlTemplates;
         if ( !cacheTemplates || (theTemplates == null)) {
+            HtmlTemplate theMobileTemplate=null;
             defaultTemplate = null;
             mobileTemplate  = null;
             String imports = "";
@@ -1080,10 +1080,12 @@ public class PageHandler extends RepositoryManager {
                         mapTemplate = template;
                     }
 
-                    if (mobileTemplate == null) {
-                        if (template.getId().equals("mobile")) {
-                            mobileTemplate = template;
-                        }
+                    if(mobileTemplate == null && template.getTemplateProperty("mobile",false)) {
+                        mobileTemplate = template;
+                    }
+
+                    if(theMobileTemplate == null && template.getId().equals("mobile")) {
+                        theMobileTemplate = template;
                     }
                     if (defaultTemplate == null) {
                         if (defaultId == null) {
@@ -1098,6 +1100,9 @@ public class PageHandler extends RepositoryManager {
                     getLogManager().logError("loading template" + path, exc);
                     //noop
                 }
+            }
+            if(mobileTemplate == null) {
+                mobileTemplate = theMobileTemplate;
             }
             if (defaultTemplate == null) {
                 defaultTemplate = theTemplates.get(0);
