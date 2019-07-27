@@ -4210,6 +4210,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
             }
         }
 
+        if(f.startsWith("fa-")) return f;
         return getUrlBase() + f;
     }
 

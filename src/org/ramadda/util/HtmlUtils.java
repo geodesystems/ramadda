@@ -1265,8 +1265,16 @@ public class HtmlUtils {
         return img(path, title, "");
     }
 
-    public static String image(String path, String ...args) {
-        return img(path,null, attrs(args));
+    /**
+     * _more_
+     *
+     * @param path _more_
+     * @param args _more_
+     *
+     * @return _more_
+     */
+    public static String image(String path, String... args) {
+        return img(path, null, attrs(args));
     }
 
 
@@ -1281,9 +1289,17 @@ public class HtmlUtils {
      */
     public static String img(String path, String title, String extra) {
         if (Utils.stringDefined(title)) {
+            if (path.startsWith("fa-")) {
+                return faIconWithAttr(path,
+                                      attrs(ATTR_TITLE, title) + " " + extra);
+            }
+
             return tag(TAG_IMG,
                        attrs(ATTR_BORDER, "0", ATTR_SRC, path, ATTR_TITLE,
                              title, ATTR_ALT, title) + " " + extra);
+        }
+        if (path.startsWith("fa-")) {
+            return faIconWithAttr(path, extra);
         }
         String img = tag(TAG_IMG,
                          attrs(ATTR_BORDER, "0", ATTR_SRC, path) + " "
@@ -1314,6 +1330,12 @@ public class HtmlUtils {
         return attr(ATTR_CLASS, c);
     }
 
+    /**
+     * _more_
+     *
+     * @param sb _more_
+     * @param c _more_
+     */
     public static void clazz(Appendable sb, String c) {
         attr(sb, ATTR_CLASS, c);
     }
@@ -2854,8 +2876,47 @@ public class HtmlUtils {
     }
 
 
+    /**
+     * _more_
+     *
+     * @param icon _more_
+     * @param attr _more_
+     *
+     * @return _more_
+     */
+    public static String faIconWithAttr(String icon, String attr) {
+        return span("<i class=\"fa " + icon + "\"></i>", attr);
+    }
+
+
+    /**
+     * _more_
+     *
+     * @param icon _more_
+     * @param args _more_
+     *
+     * @return _more_
+     */
     public static String faIcon(String icon, String... args) {
-        return span("<i class=\"fa " + icon +"\"></i>",attrs(args));
+        return span("<i class=\"fa " + icon + "\"></i>", attrs(args));
+    }
+
+
+
+    /**
+     * _more_
+     *
+     * @param url _more_
+     * @param args _more_
+     *
+     * @return _more_
+     */
+    public String getIconImage(String url, String... args) {
+        if (url.startsWith("fa-")) {
+            return HtmlUtils.faIcon(url, args);
+        } else {
+            return HtmlUtils.image(url, args);
+        }
     }
 
     /**
@@ -4802,15 +4863,21 @@ public class HtmlUtils {
      */
     public static String[] getToggle(String label, boolean visible,
                                      String hideImg, String showImg) {
-        String id  = "block_" + (blockCnt++);
-        String img = HtmlUtils.img(visible
-                                   ? hideImg
-                                   : showImg, "", HtmlUtils.id(id + "img"));
+        //TODO
+        String id   = "block_" + (blockCnt++);
+        String icon = visible
+                      ? hideImg
+                      : showImg;
+        String img;
+        if (icon.startsWith("fa-")) {
+            img = faIconWithAttr(icon, HtmlUtils.id(id + "img"));
+        } else {
+            img = HtmlUtils.img(icon, "", HtmlUtils.id(id + "img"));
+        }
         String link =
             HtmlUtils.jsLink(HtmlUtils.onMouseClick("toggleBlockVisibility('"
                 + id + "','" + id + "img','" + hideImg + "','" + showImg
-                + "')"), img /* + label*/,
-                         HtmlUtils.cssClass("toggleblocklabellink"));
+                + "')"), img, HtmlUtils.cssClass("toggleblocklabellink"));
 
         if (label.length() > 0) {
             link = link + " " + label;

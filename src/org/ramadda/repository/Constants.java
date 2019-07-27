@@ -243,8 +243,7 @@ public interface Constants {
     /** _more_ */
     public static final String ICON_METADATA_EDIT = "fa-database";
 
-    /** _more_ */
-    public static final String ICON_MINUS = "/icons/minus.gif";
+
 
     /** _more_ */
     public static final String ICON_MOVE = "fa-copy";
@@ -253,7 +252,11 @@ public interface Constants {
     public static final String ICON_NEW = "fa-plus";
 
     /** _more_ */
-    public static final String ICON_PLUS = "/icons/plus.gif";
+    //    public static final String ICON_PLUS = "/icons/plus.gif";
+    //    public static final String ICON_MINUS = "/icons/minus.gif";
+    public static final String ICON_PLUS = "fa-plus-square";
+    public static final String ICON_MINUS = "fa-minus-square";
+
 
     /** _more_ */
     public static final String ICON_PROGRESS = "/icons/progress.gif";

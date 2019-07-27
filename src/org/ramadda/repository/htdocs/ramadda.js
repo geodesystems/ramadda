@@ -723,9 +723,17 @@ function checkboxClicked(event, cbxPrefix, id) {
 
 function toggleBlockVisibility(id, imgid, showimg, hideimg) {
     if (toggleVisibility(id, 'block')) {
-        $("#" + imgid).attr('src', showimg);
+        if(StringUtil.startsWith(showimg,"fa-")) {
+            $("#" + imgid).html(HtmlUtils.getIconImage(showimg,[]));
+        } else {
+            $("#" + imgid).attr('src', showimg);
+        }
     } else {
-        $("#" + imgid).attr('src', hideimg);
+        if(StringUtil.startsWith(showimg,"fa-")) {
+            $("#" + imgid).html(HtmlUtils.getIconImage(hideimg,[]));
+        } else {
+            $("#" + imgid).attr('src', hideimg);
+        }
     }
     ramaddaUpdateMaps();
 }
@@ -733,10 +741,16 @@ function toggleBlockVisibility(id, imgid, showimg, hideimg) {
 
 function toggleInlineVisibility(id, imgid, showimg, hideimg) {
     var img = GuiUtils.getDomObject(imgid);
+    var icon;
     if (toggleVisibility(id, 'inline')) {
-        if (img) img.obj.src = showimg;
+        icon= showimg;
     } else {
-        if (img) img.obj.src = hideimg;
+        icon = hideimg;
+    }
+    if(StringUtil.startsWith(icon,"fa-")) {
+        $("#" + imgid).html(HtmlUtils.getIconImage(icon,[]));
+    } else {
+        if(img) img.obj.src = icon;
     }
     ramaddaUpdateMaps();
 }
