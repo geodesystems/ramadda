@@ -1137,6 +1137,14 @@ table.dataTable tbody td {
   padding-top: 0px;
 }
 
+.ramadda-form-header {
+  xborder : 1px #d8d8d8 solid;
+  padding:4px;
+  font-weight: bold; 
+  padding-left:8px;
+  background-color: #efefef;
+}
+
 
 
 .entry-list-header-column, .entry-list-header-column-last {

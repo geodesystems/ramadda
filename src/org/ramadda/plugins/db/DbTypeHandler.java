@@ -1701,8 +1701,6 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
                          + HtmlUtils.submit(msg("Cancel"), ARG_DB_LIST);
 
         sb.append(formEntry(request, "", buttons));
-
-
         getSearchFormInner(request, entry, sb, true);
         sb.append(formEntry(request, "", buttons));
         sb.append(HtmlUtils.formTableClose());
@@ -1736,6 +1734,7 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
                                     Appendable sb, boolean normalForm)
             throws Exception {
 
+        sb.append(formEntry(request, "", HtmlUtils.div("Search For",HtmlUtils.cssClass("ramadda-form-header"))));
         DbInfo        dbInfo   = getDbInfo();
         StringBuilder advanced = new StringBuilder();
         List<Clause>  where    = new ArrayList<Clause>();
@@ -1779,6 +1778,7 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
 
         if (normalForm) {
             if (tfos.size() > 0) {
+                sb.append(formEntry(request, "", HtmlUtils.div("Group By",HtmlUtils.cssClass("ramadda-form-header"))));
                 sb.append(
                     formEntry(
                         request, msgLabel("Group By"),
@@ -1822,6 +1822,7 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
             }
         }
 
+        sb.append(formEntry(request, "", HtmlUtils.div("Options",HtmlUtils.cssClass("ramadda-form-header"))));
         StringBuilder viewSB      = new StringBuilder();
         boolean       defaultShow = false;
         viewSB.append(HtmlUtils.checkbox(ARG_DB_SHOW + "toggleall", "true",
