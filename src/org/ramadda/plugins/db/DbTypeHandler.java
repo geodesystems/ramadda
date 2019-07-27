@@ -3619,6 +3619,8 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
                             String searchArg = groupByColumn.getSearchArg();
                             if ( !groupByColumn.isEnumeration()) {
                                 value = "\"" + value + "\"";
+                            } else {
+                                value = groupByColumn.getEnumValue(value);
                             }
                             String url =
                                 HtmlUtils
@@ -5557,6 +5559,7 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
                         Column column = groupByColumns.get(i);
                         String v      = results.getString(i + 1);
                         if (forTable && column.isEnumeration()) {
+                            //xxxxx
                             v = column.getEnumLabel(v);
                         }
                         values[i] = v;

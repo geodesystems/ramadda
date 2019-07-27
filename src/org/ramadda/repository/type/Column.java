@@ -166,7 +166,7 @@ public class Column implements DataTypes, Constants {
     /** _more_ */
     public static final String ATTR_HELP = "help";
 
-    /** _more_          */
+    /** _more_ */
     public static final String ATTR_SORT_ORDER = "sortOrder";
 
     /** _more_ */
@@ -202,7 +202,7 @@ public class Column implements DataTypes, Constants {
     /** _more_ */
     public static final String ATTR_CANLIST = "canlist";
 
-    /** _more_          */
+    /** _more_ */
     public static final String ATTR_CANDISPLAY = "candisplay";
 
     /** _more_ */
@@ -263,7 +263,7 @@ public class Column implements DataTypes, Constants {
     /** _more_ */
     private TypeHandler typeHandler;
 
-    /** _more_          */
+    /** _more_ */
     private Element xmlElement;
 
     /** _more_ */
@@ -312,7 +312,7 @@ public class Column implements DataTypes, Constants {
     /** _more_ */
     private String help;
 
-    /** _more_          */
+    /** _more_ */
     private int sortOrder = 1000;
 
     /** _more_ */
@@ -321,7 +321,7 @@ public class Column implements DataTypes, Constants {
     /** _more_ */
     private boolean isIndex;
 
-    /** _more_          */
+    /** _more_ */
     private boolean doStats = false;
 
     /** _more_ */
@@ -349,7 +349,7 @@ public class Column implements DataTypes, Constants {
     /** _more_ */
     private boolean canList;
 
-    /** _more_          */
+    /** _more_ */
     private boolean canDisplay;
 
     /** _more_ */
@@ -1334,6 +1334,30 @@ public class Column implements DataTypes, Constants {
         return label;
     }
 
+
+
+    /**
+     * _more_
+     *
+     * @param label _more_
+     *
+     * @return _more_
+     */
+    public String getEnumValue(String label) {
+        if (label == null) {
+            return null;
+        }
+        for (Enumeration keys = enumMap.keys(); keys.hasMoreElements(); ) {
+            String value = (String) keys.nextElement();
+            String l     = (String) enumMap.get(value);
+            if (l.equals(label)) {
+                return value;
+            }
+        }
+
+        return label;
+    }
+
     /**
      * _more_
      *
@@ -1988,8 +2012,6 @@ public class Column implements DataTypes, Constants {
 
     /**
      * _more_
-     *
-     * @param value _more_
      *
      * @param text _more_
      * @param where _more_
