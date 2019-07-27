@@ -5529,7 +5529,8 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
                     label = "average";
                 }
                 label = StringUtil.camelCase(label);
-                labels.add(label + " of " + aggLabels.get(i));
+                if(!label.equals("Count")) 
+                    labels.add(label + " of " + aggLabels.get(i));
             }
             result.add(labels.toArray());
             extra += StringUtil.join(",", cols);
