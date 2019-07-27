@@ -209,6 +209,8 @@ public interface DbConstants extends Constants {
     /** _more_ */
     public static final String ARG_DB_ALL = "db.all";
 
+    public static final String ARG_DB_SHOW = "show";
+
 
 
     /** _more_ */
@@ -222,7 +224,7 @@ public interface DbConstants extends Constants {
     public static final String ARG_DB_BULKCOL = "db.bulkcol";
 
     /** _more_ */
-    public static final String ARG_DB_OR = "db.search.or";
+    public static final String ARG_DB_OR = "dbsearchor";
 
     /** _more_ */
     public static final String ARG_DB_BULK_TEXT = "db.bulk.text";
@@ -255,13 +257,13 @@ public interface DbConstants extends Constants {
     public static final String ARG_DB_DOSAVESEARCH = "dosavesearch";
 
     /** _more_ */
-    public static final String ARG_DB_SORTBY = "db.sortby";
+    public static final String ARG_DB_SORTBY = "dbsortby";
 
     /** _more_ */
-    public static final String ARG_DB_SORTDIR = "db.sortdir";
+    public static final String ARG_DB_SORTDIR = "dbsortdir";
 
     /** _more_ */
-    public static final String ARG_DB_OUTPUT = "db.output";
+    public static final String ARG_DB_OUTPUT = "dboutput";
 
     /** _more_ */
     public static final String ARG_DB_NEWFORM = "db.newform";

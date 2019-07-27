@@ -7,6 +7,15 @@ function dbRowOut(rowId) {
     //    $("#"+ rowId).css("background-color",  "#fff");
 }
 
+
+function dbToggleAllInit() {
+    $("input[name='showtoggleall']").click(function(){
+            var value  = $(this). prop("checked") == true;
+            $("input[name^='show_']").prop("checked", value);
+        });
+}
+
+
 function dbRowClick(event, divId, popupId, url) {
     row = GuiUtils.getDomObject(divId);
     if(!row) {

@@ -55,8 +55,8 @@ import java.text.SimpleDateFormat;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Comparator;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.Enumeration;
 import java.util.Hashtable;
@@ -166,6 +166,7 @@ public class Column implements DataTypes, Constants {
     /** _more_ */
     public static final String ATTR_HELP = "help";
 
+    /** _more_          */
     public static final String ATTR_SORT_ORDER = "sortOrder";
 
     /** _more_ */
@@ -201,6 +202,7 @@ public class Column implements DataTypes, Constants {
     /** _more_ */
     public static final String ATTR_CANLIST = "canlist";
 
+    /** _more_          */
     public static final String ATTR_CANDISPLAY = "candisplay";
 
     /** _more_ */
@@ -261,6 +263,7 @@ public class Column implements DataTypes, Constants {
     /** _more_ */
     private TypeHandler typeHandler;
 
+    /** _more_          */
     private Element xmlElement;
 
     /** _more_ */
@@ -309,6 +312,7 @@ public class Column implements DataTypes, Constants {
     /** _more_ */
     private String help;
 
+    /** _more_          */
     private int sortOrder = 1000;
 
     /** _more_ */
@@ -316,6 +320,9 @@ public class Column implements DataTypes, Constants {
 
     /** _more_ */
     private boolean isIndex;
+
+    /** _more_          */
+    private boolean doStats = false;
 
     /** _more_ */
     private boolean isWiki;
@@ -342,6 +349,7 @@ public class Column implements DataTypes, Constants {
     /** _more_ */
     private boolean canList;
 
+    /** _more_          */
     private boolean canDisplay;
 
     /** _more_ */
@@ -452,7 +460,7 @@ public class Column implements DataTypes, Constants {
     public Column(TypeHandler typeHandler, Element element, int offset)
             throws Exception {
 
-        this.xmlElement = element;
+        this.xmlElement  = element;
         this.typeHandler = typeHandler;
         this.offset      = offset;
 
@@ -460,9 +468,10 @@ public class Column implements DataTypes, Constants {
         group = XmlUtil.getAttribute(element, ATTR_GROUP, (String) null);
         oldNames = StringUtil.split(XmlUtil.getAttribute(element,
                 ATTR_OLDNAMES, ""), ",", true, true);
-        suffix = Utils.getAttributeOrTag(element, ATTR_SUFFIX, "");
-        help   = Utils.getAttributeOrTag(element, ATTR_HELP, (String) null);
-        sortOrder   = Utils.getAttributeOrTag(element, ATTR_SORT_ORDER, 1000);
+        suffix    = Utils.getAttributeOrTag(element, ATTR_SUFFIX, "");
+        help      = Utils.getAttributeOrTag(element, ATTR_HELP,
+                                            (String) null);
+        sortOrder = Utils.getAttributeOrTag(element, ATTR_SORT_ORDER, 1000);
         //The suffix might have the ${root} macro in it
         if (typeHandler != null) {
             suffix =
@@ -570,19 +579,32 @@ public class Column implements DataTypes, Constants {
 
     }
 
-    public static List<Column> sortColumns(List<Column>columns) {
+    /**
+     * _more_
+     *
+     * @param columns _more_
+     *
+     * @return _more_
+     */
+    public static List<Column> sortColumns(List<Column> columns) {
         List<Column> tmp = new ArrayList<Column>();
         tmp.addAll(columns);
         Comparator comp = new Comparator() {
-                public int compare(Object o1,Object o2 ) {
-                    Column c1 = (Column) o1;
-                    Column c2 = (Column) o2;
-                    if(c1.sortOrder<c2.sortOrder) return -1;
-                    if(c1.sortOrder>c2.sortOrder) return 1;
-                    return 0;
+            public int compare(Object o1, Object o2) {
+                Column c1 = (Column) o1;
+                Column c2 = (Column) o2;
+                if (c1.sortOrder < c2.sortOrder) {
+                    return -1;
                 }
-            };
+                if (c1.sortOrder > c2.sortOrder) {
+                    return 1;
+                }
+
+                return 0;
+            }
+        };
         Collections.sort(tmp, comp);
+
         return tmp;
     }
 
@@ -641,14 +663,26 @@ public class Column implements DataTypes, Constants {
      * @return _more_
      */
     public String getProperty(String key) {
-        return getProperty(key,null);
+        return getProperty(key, null);
     }
 
-    public String getProperty(String key,  String dflt) {
+    /**
+     * _more_
+     *
+     * @param key _more_
+     * @param dflt _more_
+     *
+     * @return _more_
+     */
+    public String getProperty(String key, String dflt) {
         String prop = properties.get(key);
-        if(prop==null && xmlElement!=null) 
-            prop = XmlUtil.getAttribute(xmlElement, key,(String)null);
-        if(prop == null) return dflt;
+        if ((prop == null) && (xmlElement != null)) {
+            prop = XmlUtil.getAttribute(xmlElement, key, (String) null);
+        }
+        if (prop == null) {
+            return dflt;
+        }
+
         return prop;
     }
 
@@ -1189,8 +1223,9 @@ public class Column implements DataTypes, Constants {
         } else {
             String s = toString(values, offset);
             if (raw) {
-                s = s.replaceAll(",", "_COMMA_");
-                s = s.replaceAll("\n", " ");
+                if (s.indexOf(",") >= 0) {
+                    s = "\"" + s + "\"";
+                }
             } else {
                 if (isType(DATATYPE_LIST)) {
                     s = s.replaceAll("\n", "<br>");
@@ -1839,7 +1874,7 @@ public class Column implements DataTypes, Constants {
         } else if (isNumeric()) {
             String expr = request.getEnum(searchArg + "_expr", "", "",
                                           EXPR_EQUALS, EXPR_LE, EXPR_GE,
-                                          EXPR_BETWEEN,"&lt;=","&gt;=");
+                                          EXPR_BETWEEN, "&lt;=", "&gt;=");
             expr = expr.replace("&lt;", "<").replace("&gt;", ">");
             double from  = request.get(searchArg + "_from", Double.NaN);
             double to    = request.get(searchArg + "_to", Double.NaN);
@@ -1961,9 +1996,10 @@ public class Column implements DataTypes, Constants {
      */
     public void addTextSearch(String text, List<Clause> where) {
         text = text.trim();
-        if(text.startsWith("\"") && text.endsWith("\"")) {
-            text  = Utils.unquote(text);
+        if (text.startsWith("\"") && text.endsWith("\"")) {
+            text = Utils.unquote(text);
             where.add(Clause.eq(getFullName(), text));
+
             return;
         }
         List<String> values  = StringUtil.split(text, ",", true, true);
@@ -3003,13 +3039,11 @@ public class Column implements DataTypes, Constants {
                 //                widget = HtmlUtils.textArea(searchArg, request.getString(searchArg, ""),
                 //                                           rows, columns);
             } else {
-                String text  =request.getString(searchArg, "");
-                text = text.replaceAll("\"","&quot;");
+                String text = request.getString(searchArg, "");
+                text = text.replaceAll("\"", "&quot;");
                 //                String text  = Utils.unquote(request.getString(searchArg, ""));
 
-                widget = HtmlUtils.input(searchArg,
-                                         text,
-                                         HtmlUtils.SIZE_20);
+                widget = HtmlUtils.input(searchArg, text, HtmlUtils.SIZE_20);
             }
         }
 
@@ -3383,6 +3417,11 @@ public class Column implements DataTypes, Constants {
     }
 
 
+    /**
+     * _more_
+     *
+     * @param value _more_
+     */
     public void setCanDisplay(boolean value) {
         canDisplay = value;
     }
@@ -3671,6 +3710,24 @@ public class Column implements DataTypes, Constants {
      */
     public String getAlias() {
         return alias;
+    }
+
+    /**
+     * Set the DoStats property.
+     *
+     * @param value The new value for DoStats
+     */
+    public void setDoStats(boolean value) {
+        doStats = value;
+    }
+
+    /**
+     * Get the DoStats property.
+     *
+     * @return The DoStats
+     */
+    public boolean getDoStats() {
+        return doStats;
     }
 
 

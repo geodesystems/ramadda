@@ -127,14 +127,6 @@ public class DbInfo {
     /** _more_ */
     private boolean hasNumber = false;
 
-    /** _more_ */
-    private boolean[] doStats;
-
-    /** _more_ */
-    private boolean[] doUniques;
-
-    /** _more_ */
-    private boolean[] isNumeric;
 
     /** _more_ */
     private Hashtable<String, Column> columnMap = new Hashtable<String,
@@ -244,9 +236,6 @@ public class DbInfo {
         //        namesArray = StringUtil.listToStringArray(columnNames);
         columnMap = new Hashtable<String, Column>();
 
-        isNumeric = new boolean[allColumns.size()];
-        doStats   = new boolean[allColumns.size()];
-        doUniques = new boolean[allColumns.size()];
         int cnt = 0;
         numberColumns   = new ArrayList<Column>();
         categoryColumns = new ArrayList<Column>();
@@ -266,16 +255,10 @@ public class DbInfo {
         }
 
         for (Column column : columnsToUse) {
-            isNumeric[cnt] = column.isNumeric();
-            doStats[cnt] = column.isNumeric()
-                           && Misc.equals(column.getProperty("dostats"),
-                                          "true");
-            doUniques[cnt] = column.isEnumeration()
-                             && Misc.equals(column.getProperty("dostats",
-                                 "true"), "true");
-
-
-
+            boolean doStats = Misc.equals(column.getProperty("dostats"),"true");
+            if(doStats) {
+                column.setDoStats(true);
+            }
             if (Misc.equals(column.getProperty("isKey"), "true")) {
                 keyColumn = column;
             }
@@ -381,38 +364,7 @@ public class DbInfo {
         return keyColumn;
     }
 
-    /**
-     * _more_
-     *
-     * @param col _more_
-     *
-     * @return _more_
-     */
-    public boolean isNumeric(int col) {
-        return isNumeric[col];
-    }
 
-    /**
-     * _more_
-     *
-     * @param col _more_
-     *
-     * @return _more_
-     */
-    public boolean doStats(int col) {
-        return doStats[col];
-    }
-
-    /**
-     * _more_
-     *
-     * @param col _more_
-     *
-     * @return _more_
-     */
-    public boolean doUnique(int col) {
-        return doUniques[col];
-    }
 
     /**
      * _more_

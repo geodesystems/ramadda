@@ -153,7 +153,7 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
     /** _more_ */
     private DecimalFormat dfmt = new DecimalFormat("#,##0.#");
 
-    /** _more_          */
+    /** _more_ */
     private DecimalFormat pfmt = new DecimalFormat("0.00");
 
 
@@ -171,7 +171,7 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
     private String labelColumnNames;
 
 
-    /** _more_          */
+    /** _more_ */
     private List<DbTemplate> templates = new ArrayList<DbTemplate>();
 
     /**
@@ -911,11 +911,14 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
 
         if (addNext[0]) {
             if (numValues > 0) {
-                if(numValues == getMax(request)|| request.defined(ARG_SKIP)) {
+                if ((numValues == getMax(request))
+                        || request.defined(ARG_SKIP)) {
                     getRepository().getHtmlOutputHandler().showNext(request,
-                                                                    numValues, sb);
+                            numValues, sb);
                 } else {
-                    sb.append(numValues +(numValues==1?" result":" results"));
+                    sb.append(numValues + ((numValues == 1)
+                                           ? " result"
+                                           : " results"));
                 }
             }
         }
@@ -1690,7 +1693,7 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
         String formUrl       =
             request.makeUrl(getRepository().URL_ENTRY_SHOW);
         String        formId = HtmlUtils.getUniqueId("form_");
-        sb.append(HtmlUtils.form(formUrl, HtmlUtils.id(formId)));
+        sb.append(HtmlUtils.formPost(formUrl, HtmlUtils.id(formId)));
         sb.append(HtmlUtils.hidden(ARG_ENTRYID, entry.getId()));
         sb.append(HtmlUtils.formTable());
         String buttons = HtmlUtils.submit(msg("Search"), ARG_DB_SEARCH)
@@ -1819,6 +1822,26 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
             }
         }
 
+        StringBuilder viewSB      = new StringBuilder();
+        boolean       defaultShow = false;
+        viewSB.append(HtmlUtils.checkbox(ARG_DB_SHOW + "toggleall", "true",
+                                         false) + " " + "Toggle All");
+        viewSB.append("<br>");
+        for (Column column : dbInfo.getColumnsToUse()) {
+            String arg = ARG_DB_SHOW + "_" + column.getName();
+            viewSB.append(HtmlUtils.checkbox(arg, "true",
+                                             request.get(arg,
+                                                 defaultShow)) + " "
+                                                     + column.getLabel());
+            viewSB.append("<br>");
+        }
+        sb.append(formEntry(request, msgLabel("Display"),
+                            HtmlUtils.makeShowHideBlock("",
+                                viewSB.toString(), false)));
+
+
+        sb.append(HtmlUtils.script("dbToggleAllInit();"));
+
         if (aggtfos.size() > 0) {
             String orderBy = "";
             String dir = request.getString(ARG_DB_SORTDIR,
@@ -1854,6 +1877,7 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
                         request.get(ARG_DB_OR, false)) + " "
                             + msg("Use OR logic")));
 
+
             sb.append(
                 formEntry(
                     request, msgLabel("View As"),
@@ -1863,18 +1887,18 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
                         HtmlUtils.attr("default", VIEW_TABLE)
                         + HtmlUtils.cssClass(
                             "search-select")) + HtmlUtils.space(2) + count));
+            String suffix = getAccessManager().canEditEntry(request, entry)
+                            ? HtmlUtils.space(2)
+                              + HtmlUtils.checkbox(ARG_DB_DOSAVESEARCH,
+                                  "true",
+                                  request.get(ARG_DB_DOSAVESEARCH,
+                                      false)) + " Save Search"
+                            : "";
+
             sb.append(formEntry(request, msgLabel("Search Name"),
                                 HtmlUtils.input(ARG_DB_SEARCHNAME,
                                     request.getString(ARG_DB_SEARCHNAME, ""),
-                                    HtmlUtils.SIZE_50)));
-
-            if (getAccessManager().canEditEntry(request, entry)) {
-                sb.append(formEntry(request, "",
-                                    HtmlUtils.checkbox(ARG_DB_DOSAVESEARCH,
-                                        "true",
-                                        request.get(ARG_DB_DOSAVESEARCH,
-                                            false)) + " Save Search"));
-            }
+                                    HtmlUtils.SIZE_50) + suffix));
         }
 
 
@@ -2099,12 +2123,13 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
      */
     public Result handleDeleteAsk(Request request, Entry entry, String action)
             throws Exception {
-        StringBuilder sb             = new StringBuilder();
+        StringBuilder sb    = new StringBuilder();
         List          dbids = request.get(ARG_DBID_SELECTED, new ArrayList());
 
-        if(request.exists(ARG_DB_DELETE)) 
-            action  = ACTION_DELETE;
-        boolean       deleteSelected = action.equals(ACTION_DELETE);
+        if (request.exists(ARG_DB_DELETE)) {
+            action = ACTION_DELETE;
+        }
+        boolean deleteSelected = action.equals(ACTION_DELETE);
         if (deleteSelected && (dbids.size() == 0)) {
             sb.append(
                 getPageHandler().showDialogWarning(
@@ -2293,8 +2318,11 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
                         }
                         try {
                             column.setValue(entry, values, value);
-                        } catch(Exception exc) {
-                            throw new IllegalArgumentException("Error setting column value:" + column.getName() +"\nvalues:" +  toks +"\nError:" + exc);
+                        } catch (Exception exc) {
+                            throw new IllegalArgumentException(
+                                "Error setting column value:"
+                                + column.getName() + "\nvalues:" + toks
+                                + "\nError:" + exc);
                         }
                     }
 
@@ -2403,6 +2431,42 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
      * _more_
      *
      * @param request _more_
+     * @param checkCanList _more_
+     *
+     * @return _more_
+     */
+    List<Column> getColumnsToUse(Request request, boolean checkCanList) {
+        List<Column> columns         = dbInfo.getColumnsToUse();
+        List<Column> selectedColumns = new ArrayList<Column>();
+        for (Column column : columns) {
+            String arg = ARG_DB_SHOW + "_" + column.getName();
+            if (request.get(arg, false)) {
+                selectedColumns.add(column);
+            }
+        }
+        if ((selectedColumns.size() > 0)
+                && (selectedColumns.size() != columns.size())) {
+            return selectedColumns;
+        }
+        if (checkCanList) {
+            selectedColumns = new ArrayList<Column>();
+            for (Column column : columns) {
+                if (column.getCanList()) {
+                    selectedColumns.add(column);
+                }
+            }
+
+            return selectedColumns;
+        }
+
+        return columns;
+    }
+
+
+    /**
+     * _more_
+     *
+     * @param request _more_
      * @param entry _more_
      * @param dbid _more_
      * @param fromAnonForm _more_
@@ -2444,7 +2508,8 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
             } else if (request.exists(ARG_DB_BULK_LOCALFILE)) {
                 request.ensureAdmin();
                 source = getStorageManager().getFileInputStream(
-                                                                new File(request.getString(ARG_DB_BULK_LOCALFILE, "").trim()));
+                    new File(
+                        request.getString(ARG_DB_BULK_LOCALFILE, "").trim()));
             } else {
                 source = new ByteArrayInputStream(
                     request.getString(ARG_DB_BULK_TEXT, "").getBytes());
@@ -2731,12 +2796,12 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
                 continue;
             }
 
-            for (int i = 0; i < dbInfo.getColumnsToUse().size(); i++) {
+            List<Column> columns = getColumnsToUse(request, false);
+            for (int i = 0; i < columns.size(); i++) {
                 StringBuilder cb = new StringBuilder();
-                dbInfo.getColumnsToUse().get(i).formatValue(entry, cb,
-                                             Column.OUTPUT_CSV, values, true);
+                columns.get(i).formatValue(entry, cb, Column.OUTPUT_CSV,
+                            values, true);
                 String colValue = cb.toString();
-                colValue = colValue.replaceAll(",", "_");
                 colValue = colValue.replaceAll("\n", " ");
                 if (i > 0) {
                     sb.append(",");
@@ -2786,8 +2851,10 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
          */
         List<String> cols    = new ArrayList<String>();
         List<String> results = new ArrayList<String>();
-        for (int i = 0; i < dbInfo.getColumnsToUse().size(); i++) {
-            Column c = dbInfo.getColumnsToUse().get(i);
+        List<Column> columns = getColumnsToUse(request, false);
+
+        for (int i = 0; i < columns.size(); i++) {
+            Column c = columns.get(i);
             cols.add(c.getJson(request));
         }
 
@@ -2797,12 +2864,12 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
             Object[]     values = valueList.get(cnt);
             List<String> attrs  = new ArrayList<String>();
 
-            for (int i = 0; i < dbInfo.getColumnsToUse().size(); i++) {
+            for (int i = 0; i < columns.size(); i++) {
                 cb.setLength(0);
-                dbInfo.getColumnsToUse().get(i).formatValue(entry, cb,
-                                             Column.OUTPUT_CSV, values, true);
+                columns.get(i).formatValue(entry, cb, Column.OUTPUT_CSV,
+                            values, true);
                 String colValue = cb.toString();
-                attrs.add(dbInfo.getColumnsToUse().get(i).getName());
+                attrs.add(columns.get(i).getName());
                 attrs.add(Json.quote(colValue));
             }
             results.add(Json.map(attrs));
@@ -3087,7 +3154,7 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
             throws Exception {
 
         DbInfo           dbInfo       = getDbInfo();
-        List<Column>     columnsToUse = dbInfo.getColumnsToUse();
+        List<Column>     columnsToUse = getColumnsToUse(request, true);
         SimpleDateFormat sdf          = getDateFormat(entry);
         Hashtable        entryProps   = getProperties(entry);
 
@@ -3143,9 +3210,6 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
             makeTableHeader(hb, "&nbsp;");
             for (int i = 0; i < columnsToUse.size(); i++) {
                 Column column = columnsToUse.get(i);
-                if ( !column.getCanList()) {
-                    continue;
-                }
                 String type;
                 if (column.isNumeric()) {
                     type = "number";
@@ -3202,6 +3266,8 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
                                 HtmlUtils.id(popupId)
                                 + HtmlUtils.cssClass("ramadda-popup")));
 
+
+
         double[] sum  = new double[columnsToUse.size()];
         double[] min  = new double[columnsToUse.size()];
         double[] max  = new double[columnsToUse.size()];
@@ -3211,8 +3277,8 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
         for (int cnt = 0; cnt < valueList.size(); cnt++) {
             Object[] values = valueList.get(cnt);
 
-            String dbid  = (String) values[IDX_DBID];
-            String cbxId = ARG_DBID + (cnt);
+            String   dbid   = (String) values[IDX_DBID];
+            String   cbxId  = ARG_DBID + (cnt);
             String   rowId  = "row_" + dbid;
             String   divId  = "div_" + dbid;
             String   event  = getEventJS(request, entry, values, rowId,
@@ -3262,10 +3328,7 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
 
             for (int i = 0; i < columnsToUse.size(); i++) {
                 Column column = columnsToUse.get(i);
-                if ( !column.getCanList()) {
-                    continue;
-                }
-                if (dbInfo.isNumeric(i)) {
+                if (column.isNumeric()) {
                     Object o = values[column.getOffset()];
                     if (o != null) {
                         double v = ((o instanceof Integer)
@@ -3306,7 +3369,9 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
                         if (iconMap != null) {
                             String icon = iconMap.get(value);
                             if (icon != null) {
-                                if(prefix==null) prefix = new StringBuilder();
+                                if (prefix == null) {
+                                    prefix = new StringBuilder();
+                                }
                                 prefix.append(
                                     HtmlUtils.img(
                                         getDbIconUrl(icon), "",
@@ -3328,13 +3393,16 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
                                     (String) values[column.getOffset()]);
                             if (bgColor != null) {
                                 style = style + "background-color:" + bgColor;
-                                if(prefix==null) prefix = new StringBuilder();
+                                if (prefix == null) {
+                                    prefix = new StringBuilder();
+                                }
                                 prefix.append(HtmlUtils.span(content,
                                         HtmlUtils.style(style)));
                             }
                         }
-                        if(prefix!=null) 
+                        if (prefix != null) {
                             hb.append(prefix.toString());
+                        }
                     }
                 }
 
@@ -3347,7 +3415,7 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
                 HtmlUtils.close(hb, HtmlUtils.TAG_TD);
 
 
-                if (dbInfo.doUnique(i)) {
+                if (column.isEnumeration() && column.getDoStats()) {
                     Hashtable<Object, Integer> numUniques =
                         uniques.get(column.getName());
                     if (numUniques == null) {
@@ -3373,10 +3441,7 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
                           "#" + valueList.size());
             for (int i = 0; i < columnsToUse.size(); i++) {
                 Column column = columnsToUse.get(i);
-                if ( !column.getCanList()) {
-                    continue;
-                }
-                if (dbInfo.doStats(i)) {
+                if (column.isNumeric() && column.getDoStats()) {
                     double  avg   = sum[i] / valueList.size();
                     boolean round = column.isInteger();
                     HtmlUtils.open(hb, "td", "class", "dbtable-summary");
@@ -3390,7 +3455,7 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
                     hb.append(HtmlUtils.formEntry("Total:",
                             format(sum[i], round)));
                     HtmlUtils.close(hb, "table", "td");
-                } else if (dbInfo.doUnique(i)) {
+                } else if (column.isEnumeration() && column.getDoStats()) {
                     Hashtable<Object, Integer> numUniques =
                         uniques.get(column.getName());
                     if (numUniques == null) {
@@ -3455,9 +3520,9 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
 
         List<Column> groupByColumns = new ArrayList<Column>();
         List<String> args = (List<String>) (request.get(ARG_GROUPBY,
-                                                        new ArrayList()));
+                                new ArrayList()));
         for (int i = 0; i < args.size(); i++) {
-            String  col           = args.get(i);
+            String col = args.get(i);
             groupByColumns.add(getColumn(col));
         }
         StringBuilder hb = new StringBuilder();
@@ -3511,9 +3576,11 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
             } else {
                 HtmlUtils.open(cb, "tr", "valign", "top", "class", "dbrow");
                 int col = 0;
-                for (int i=0;i<values.length;i++)  {
-                    Object obj = values[i];
-                    Column groupByColumn= i<groupByColumns.size()?groupByColumns.get(i):null;
+                for (int i = 0; i < values.length; i++) {
+                    Object obj           = values[i];
+                    Column groupByColumn = (i < groupByColumns.size())
+                                           ? groupByColumns.get(i)
+                                           : null;
                     if (obj instanceof Double) {
                         double d = (Double) obj;
                         HtmlUtils.td(cb, format((Double) obj, false),
@@ -3541,28 +3608,35 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
                         }
                     } else {
                         HtmlUtils.open(cb, "td");
-                        HtmlUtils.open(cb,"div",HtmlUtils.cssClass("db-group-table-cell"));
+                        HtmlUtils.open(
+                            cb, "div",
+                            HtmlUtils.cssClass("db-group-table-cell"));
                         String s = "" + obj;
                         if (s.length() == 0) {
                             s = "&lt;blank&gt;";
-                        } else if(groupByColumn!=null) {
-                            String value = s;
-                            String          searchArg  = groupByColumn.getSearchArg();
-                            if(!groupByColumn.isEnumeration()) {
-                                value = "\"" + value +"\"";
+                        } else if (groupByColumn != null) {
+                            String value     = s;
+                            String searchArg = groupByColumn.getSearchArg();
+                            if ( !groupByColumn.isEnumeration()) {
+                                value = "\"" + value + "\"";
                             }
                             String url =
-                                HtmlUtils.url(request.makeUrl(getRepository().URL_ENTRY_SHOW),
-                                              new String[] { ARG_ENTRYID,
-                                                             entry.getId(),
-                                                             ARG_DB_SEARCH, "true",
-                                                             searchArg, value,
-                                                             ARG_DB_SORTDIR,
-                                                             dbInfo.getDfltSortAsc()?"asc":"desc"});
+                                HtmlUtils
+                                    .url(request
+                                        .makeUrl(getRepository()
+                                            .URL_ENTRY_SHOW), new String[] {
+                                ARG_ENTRYID, entry.getId(), ARG_DB_SEARCH,
+                                "true", searchArg, value, ARG_DB_SORTDIR,
+                                dbInfo.getDfltSortAsc()
+                                ? "asc"
+                                : "desc"
+                            });
                             if (dbInfo.getDfltSortColumn() != null) {
-                                url +="&" +ARG_DB_SORTBY +"=" + dbInfo.getDfltSortColumn().getName();
+                                url += "&" + ARG_DB_SORTBY + "="
+                                       + dbInfo.getDfltSortColumn().getName();
                             }
-                            s =  HtmlUtils.href(url, s,HtmlUtils.cssClass("ramadda-db-link"));
+                            s = HtmlUtils.href(url, s,
+                                    HtmlUtils.cssClass("ramadda-db-link"));
                         }
                         cb.append(s);
                         HtmlUtils.close(cb, "div");
@@ -3655,23 +3729,26 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
         String html = htmlSB.toString();
 
         if (column.getCanSearch() && column.isString()) {
-            String value = (String) values[column.getOffset()];
-            String          searchArg  = column.getSearchArg();
-            if(!column.isEnumeration()) {
-                value = "\"" + value +"\"";
+            String value     = (String) values[column.getOffset()];
+            String searchArg = column.getSearchArg();
+            if ( !column.isEnumeration()) {
+                value = "\"" + value + "\"";
             }
-            String url =
-                HtmlUtils.url(request.makeUrl(getRepository().URL_ENTRY_SHOW),
-                              new String[] { ARG_ENTRYID,
-                                             entry.getId(),
-                                             ARG_DB_SEARCH, "true",
-                                             searchArg, value,
-                                             ARG_DB_SORTDIR,
-                                             dbInfo.getDfltSortAsc()?"asc":"desc"});
+            String url = HtmlUtils.url(
+                             request.makeUrl(getRepository().URL_ENTRY_SHOW),
+                             new String[] {
+                ARG_ENTRYID, entry.getId(), ARG_DB_SEARCH, "true", searchArg,
+                value, ARG_DB_SORTDIR,
+                dbInfo.getDfltSortAsc()
+                ? "asc"
+                : "desc"
+            });
             if (dbInfo.getDfltSortColumn() != null) {
-                url +="&" +ARG_DB_SORTBY +"=" + dbInfo.getDfltSortColumn().getName();
+                url += "&" + ARG_DB_SORTBY + "="
+                       + dbInfo.getDfltSortColumn().getName();
             }
-            html = HtmlUtils.href(url, html,HtmlUtils.cssClass("ramadda-db-link"));
+            html = HtmlUtils.href(url, html,
+                                  HtmlUtils.cssClass("ramadda-db-link"));
         }
 
         sb.append(html);
@@ -3983,7 +4060,7 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
             }
         }
 
-        boolean simpleMap = request.get("simpleMap",false);
+        boolean simpleMap = request.get("simpleMap", false);
         if (catMap != null) {
             boolean open = true;
             for (String cat : cats) {
@@ -3997,23 +4074,25 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
         entryList.append(HtmlUtils.close(HtmlUtils.TAG_DIV));
         entryList.append(HtmlUtils.close(HtmlUtils.TAG_DIV));
 
-        if(!simpleMap) {
-            HtmlUtils.open(sb, "table", "class", "db-map-table", "cellpadding",
-                           "0", "border", "0", "width", "100%");
+        if ( !simpleMap) {
+            HtmlUtils.open(sb, "table", "class", "db-map-table",
+                           "cellpadding", "0", "border", "0", "width",
+                           "100%");
             HtmlUtils.open(sb, "tr", "valign", "top");
             map.center();
             sb.append(HtmlUtils.col(entryList.toString(),
                                     " class=\"db-map-column\" "
                                     + HtmlUtils.attr("width",
-                                                     "250" /*leftWidth + "px"*/)));
-            sb.append(HtmlUtils.col(map.getHtml(), "  class=\"db-map-column\" "  //HtmlUtils.attr(HtmlUtils.ATTR_WIDTH, "60%")
-                                    ));
+                                        "250" /*leftWidth + "px"*/)));
+            sb.append(HtmlUtils.col(map.getHtml(),
+                                    "  class=\"db-map-column\" "  //HtmlUtils.attr(HtmlUtils.ATTR_WIDTH, "60%")
+                ));
             sb.append(
-                      HtmlUtils.col(
-                                    "<div id=\"" + mapDisplayId
-                                    + "\" style=\"width:250px;max-width:250px;overflow-x:hidden;max-height:"
-                                    + height
-                                    + "px; overflow-y:hidden;\"></div>", " class=\"db-map-column\"  width=250"));
+                HtmlUtils.col(
+                    "<div id=\"" + mapDisplayId
+                    + "\" style=\"width:250px;max-width:250px;overflow-x:hidden;max-height:"
+                    + height
+                    + "px; overflow-y:hidden;\"></div>", " class=\"db-map-column\"  width=250"));
             HtmlUtils.close(sb, "tr", "table");
         } else {
             sb.append(map.getHtml());
@@ -4397,7 +4476,8 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
             for (String pair : StringUtil.split(args, ",", true, true)) {
                 List<String> toks = StringUtil.splitUpTo(pair, ":", 2);
                 //false-> not singular
-                newRequest.put(toks.get(0), toks.get(1), false);
+                String arg = toks.get(0);
+                newRequest.put(arg, toks.get(1), false);
             }
             newRequest.putAll(newArgs);
             newRequest.put(ARG_DB_SHOWHEADER, "false");
@@ -4755,6 +4835,7 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
                                         List<Object[]> valueList,
                                         boolean fromSearch)
             throws Exception {
+
         DbInfo        dbInfo = getDbInfo();
         StringBuilder sb     = new StringBuilder();
         addViewHeader(request, entry, sb, VIEW_CHART, valueList.size(),
@@ -4773,6 +4854,8 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
         SimpleDateFormat  sdf        = getDateFormat(entry);
 
         Column            dateColumn = null;
+
+
         for (Column column : dbInfo.getColumnsToUse()) {
             if ( !isDataColumn(column)) {
                 continue;
@@ -4854,6 +4937,7 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
         addViewFooter(request, entry, sb);
 
         return new Result(getTitle(request, entry), sb);
+
     }
 
 
@@ -6125,13 +6209,13 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
                 String colType = column.getType();
                 String type    = colType.equals(Column.DATATYPE_INT)
                                  ? RecordField.TYPE_INT
-                                 : dbInfo.isNumeric(i)
+                                 : column.isNumeric()
                                    ? RecordField.TYPE_DOUBLE
                                    : colType.equals(Column.DATATYPE_DATE)
                                      ? RecordField.TYPE_DATE
                                      : RecordField.TYPE_STRING;
                 String extra   = "";
-                if (dbInfo.isNumeric(i)) {
+                if (column.isNumeric()) {
                     extra += attrChartable();
                 } else if (type.equals(RecordField.TYPE_DATE)) {
                     extra += " " + attrFormat("yyyyMMdd'T'HHmmss");
@@ -6211,26 +6295,26 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
      *
      *
      * @version        $version$, Wed, Jul 17, '19
-     * @author         Enter your name here...    
+     * @author         Enter your name here...
      */
     public static class DbTemplate {
 
-        /** _more_          */
+        /** _more_ */
         String id;
 
-        /** _more_          */
+        /** _more_ */
         String name;
 
-        /** _more_          */
+        /** _more_ */
         String entry;
 
-        /** _more_          */
+        /** _more_ */
         String prefix;
 
-        /** _more_          */
+        /** _more_ */
         String suffix;
 
-        /** _more_          */
+        /** _more_ */
         String mime;
 
         /**
