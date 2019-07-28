@@ -114,7 +114,6 @@ public class CsvUtil {
         for (String arg : args) {
             this.args.add(arg);
         }
-        System.err.println("CsvUtil args:" + this.args);
     }
     /**
      * _more_
@@ -125,7 +124,6 @@ public class CsvUtil {
      */
     public CsvUtil(List<String> args) throws Exception {
         this.args = args;
-        System.err.println("CsvUtil args:" + this.args);
     }
 
     /**
@@ -1965,12 +1963,17 @@ public class CsvUtil {
 
 
             if (arg.equals("-debug")) {
+                System.err.println("CsvUtil args:" + this.args);
+                continue;
+            }
+
+
+            if (arg.equals("-columndebug")) {
                 if(!ensureArg(args, i,2)) return false;
                 List<String> cols    = getCols(args.get(++i));
                 String       pattern = args.get(++i);
                 info.getProcessor().addProcessor(
                     new Converter.ColumnDebugger(cols, pattern));
-
                 continue;
             }
 

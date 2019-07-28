@@ -352,12 +352,13 @@ public class OutputHandler extends RepositoryManager {
             if (skip > 0) {
                 toks.add(HtmlUtils.href(request.getUrl(ARG_SKIP) + "&"
                                         + ARG_SKIP + "="
-                                        + (skip - max), msg("Previous")));
+                                        + (skip - max), 
+                                        HtmlUtils.faIcon("fa-step-backward")));
             }
             if (cnt >= max) {
                 toks.add(HtmlUtils.href(request.getUrl(ARG_SKIP) + "&"
                                         + ARG_SKIP + "="
-                                        + (skip + max), msg("Next")));
+                                        + (skip + max), HtmlUtils.faIcon("fa-step-forward")));
             }
             int moreMax = (int) (max * 1.5);
             if (moreMax < 10) {
@@ -369,9 +370,12 @@ public class OutputHandler extends RepositoryManager {
             }
             request.put(ARG_MAX, "" + moreMax);
             if (cnt >= max) {
-                toks.add(HtmlUtils.href(request.getUrl(), msg("More")));
+                toks.add(HtmlUtils.href(request.getUrl(), 
+                                        HtmlUtils.faIcon("fa-plus")));
+
                 request.put(ARG_MAX, "" + lessMax);
-                toks.add(HtmlUtils.href(request.getUrl(), msg("Less")));
+                toks.add(HtmlUtils.href(request.getUrl(), 
+                                        HtmlUtils.faIcon("fa-minus")));
             }
             if (toks.size() > 0) {
                 sb.append(StringUtil.join(HtmlUtils.span("&nbsp;|&nbsp;",
