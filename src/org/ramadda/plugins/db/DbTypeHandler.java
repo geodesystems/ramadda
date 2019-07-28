@@ -809,7 +809,7 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
                               String extraLinks)
             throws Exception {
 
-        if ( !request.get(ARG_DB_SHOWHEADER, true)) {
+       if ( !request.get(ARG_DB_SHOWHEADER, true)) {
             return;
         }
         Hashtable props = getProperties(entry);
@@ -839,7 +839,6 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
         if (Utils.stringDefined(entry.getDescription())) {
             sb.append(getWikiManager().wikifyEntry(request, entry,
                     entry.getDescription()));
-            sb.append(HtmlUtils.br());
         }
 
         List<String> headerToks = new ArrayList<String>();
@@ -950,7 +949,7 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
         boolean canDoNew = getAccessManager().canDoAction(request, entry,
                                Permission.ACTION_NEW);
 
-        if (showInHeader(VIEW_SEARCH)) {
+        if (showInHeader(VIEW_SEARCH,true)) {
             if (view.equals(VIEW_SEARCH)) {
                 headerToks.add(HtmlUtils.b(msg("Search")));
             } else {
@@ -959,7 +958,7 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
             }
         }
 
-        if (showInHeader(VIEW_TABLE)) {
+        if (showInHeader(VIEW_TABLE,true)) {
             if (view.equals(VIEW_TABLE)) {
                 addNext[0] = true;
                 headerToks.add(HtmlUtils.b(msg("List")));
