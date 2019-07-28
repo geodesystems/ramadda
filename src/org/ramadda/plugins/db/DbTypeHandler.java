@@ -1025,7 +1025,7 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
         }
 
         if (dbInfo.getHasLocation()) {
-            if (showInHeader(VIEW_MAP)) {
+            if (showInHeader(VIEW_MAP, true)) {
                 if (view.equals(VIEW_MAP)) {
                     addNext[0] = true;
                     headerToks.add(HtmlUtils.b(msg("Map")));
@@ -1097,13 +1097,16 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
      * @return _more_
      */
     public boolean showInHeader(String view) {
+        return showInHeader(view, false);
+    }
+    public boolean showInHeader(String view, boolean dflt) {
         String prop = getTypeProperty("header.show." + view, (String) null);
         //        System.err.println ("show in? header.show." + view +"=" + prop);
         if (prop != null) {
             return prop.equals("true");
         }
 
-        return true;
+        return dflt;
     }
 
     /**
