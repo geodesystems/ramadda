@@ -372,11 +372,11 @@ public class OutputHandler extends RepositoryManager {
             request.put(ARG_MAX, "" + moreMax);
             if (cnt >= max) {
                 toks.add(HtmlUtils.href(request.getUrl(), 
-                                        HtmlUtils.faIcon("fa-plus","title","Show more")));
+                                        HtmlUtils.faIcon("fa-plus","title","View more")));
 
                 request.put(ARG_MAX, "" + lessMax);
                 toks.add(HtmlUtils.href(request.getUrl(), 
-                                        HtmlUtils.faIcon("fa-minus","title","Show less")));
+                                        HtmlUtils.faIcon("fa-minus","title","View less")));
             }
             if (toks.size() > 0) {
                 sb.append(StringUtil.join(" ", toks));
