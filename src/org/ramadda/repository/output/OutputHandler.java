@@ -353,12 +353,13 @@ public class OutputHandler extends RepositoryManager {
                 toks.add(HtmlUtils.href(request.getUrl(ARG_SKIP) + "&"
                                         + ARG_SKIP + "="
                                         + (skip - max), 
-                                        HtmlUtils.faIcon("fa-step-backward")));
+                                        HtmlUtils.faIcon("fa-step-backward","title",
+                                                         "View previous")));
             }
             if (cnt >= max) {
                 toks.add(HtmlUtils.href(request.getUrl(ARG_SKIP) + "&"
                                         + ARG_SKIP + "="
-                                        + (skip + max), HtmlUtils.faIcon("fa-step-forward")));
+                                        + (skip + max), HtmlUtils.faIcon("fa-step-forward","title","View next")));
             }
             int moreMax = (int) (max * 1.5);
             if (moreMax < 10) {
@@ -371,15 +372,14 @@ public class OutputHandler extends RepositoryManager {
             request.put(ARG_MAX, "" + moreMax);
             if (cnt >= max) {
                 toks.add(HtmlUtils.href(request.getUrl(), 
-                                        HtmlUtils.faIcon("fa-plus")));
+                                        HtmlUtils.faIcon("fa-plus","title","Show more")));
 
                 request.put(ARG_MAX, "" + lessMax);
                 toks.add(HtmlUtils.href(request.getUrl(), 
-                                        HtmlUtils.faIcon("fa-minus")));
+                                        HtmlUtils.faIcon("fa-minus","title","Show less")));
             }
             if (toks.size() > 0) {
-                sb.append(StringUtil.join(HtmlUtils.span("&nbsp;|&nbsp;",
-                        HtmlUtils.cssClass(CSS_CLASS_SEPARATOR)), toks));
+                sb.append(StringUtil.join(" ", toks));
 
             }
             sb.append(HtmlUtils.close(HtmlUtils.TAG_DIV));
