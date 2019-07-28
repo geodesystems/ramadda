@@ -5757,7 +5757,7 @@ public class TypeHandler extends RepositoryManager {
 
 
         Hashtable args        = request.getArgs();
-        String metadataPrefix = ARG_METADATA_ATTR1 + ".";
+        String metadataPrefix = ARG_METADATA_ATTR1 + "_";
         Hashtable<String, List<Metadata>> typeMap = new Hashtable<String,
                                                         List<Metadata>>();
         List<String> types = new ArrayList<String>();
@@ -5771,13 +5771,13 @@ public class TypeHandler extends RepositoryManager {
             }
             String type = arg.substring(ARG_METADATA_ATTR1.length() + 1);
             List[] urlArgs = new List[] {
-                                 request.get(ARG_METADATA_ATTR1 + "." + type,
+                                 request.get(ARG_METADATA_ATTR1 + "_" + type,
                                              new ArrayList<String>()),
-                                 request.get(ARG_METADATA_ATTR2 + "." + type,
+                                 request.get(ARG_METADATA_ATTR2 + "_" + type,
                                              new ArrayList<String>()),
-                                 request.get(ARG_METADATA_ATTR3 + "." + type,
+                                 request.get(ARG_METADATA_ATTR3 + "_" + type,
                                              new ArrayList<String>()),
-                                 request.get(ARG_METADATA_ATTR4 + "." + type,
+                                 request.get(ARG_METADATA_ATTR4 + "_" + type,
                                              new ArrayList<String>()) };
 
             int index = 0;

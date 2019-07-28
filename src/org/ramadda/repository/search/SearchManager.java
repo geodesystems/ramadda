@@ -1576,10 +1576,6 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
             throws Exception {
 
         HashSet<String> providers = new HashSet<String>();
-
-
-
-
         for (String arg :
                 (List<String>) request.get(ARG_PROVIDER, new ArrayList())) {
             providers.addAll(StringUtil.split(arg, ",", true, true));
