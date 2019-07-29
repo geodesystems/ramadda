@@ -569,7 +569,7 @@ public class TabularOutputHandler extends OutputHandler {
                     html.append("  ");
                     html.append(HtmlUtils.href(getUrl,"Download"));
                     if(request.getUser().getAdmin()) {
-                        html.append(" File on server: " +f);
+                        html.append(" File on server: " +HtmlUtils.input("",f));
                     }
                     //If they are creating point data then add an add entry link
                     //                    if (newFile.endsWith(".csv") && args.contains("-addheader")) {
