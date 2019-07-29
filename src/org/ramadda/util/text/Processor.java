@@ -359,6 +359,8 @@ public abstract class Processor extends CsvOperator {
                 if (firstRow) {
                     processor.setHeader(row.getValues());
                 }
+                //Always do this here so the indexes don't get screwed up 
+                processor.getIndices(info);
                 row = processor.processRow(info, row, line);
                 if (row == null) {
                     return null;
@@ -412,7 +414,6 @@ public abstract class Processor extends CsvOperator {
         /**
          * _more_
          *
-         * @param info _more_
          *
          * @param textReader _more_
          * @param inputRows _more_
@@ -914,6 +915,7 @@ public abstract class Processor extends CsvOperator {
             if (addPointHeader) {
                 addPointHeader = false;
                 handleHeaderRow(info.getWriter(), row, null /*exValues*/);
+
                 return row;
             }
             handleRow(info.getWriter(), row);
@@ -921,7 +923,7 @@ public abstract class Processor extends CsvOperator {
             return row;
         }
 
-        /** _more_          */
+        /** _more_ */
         int xxcnt = 0;
 
         /**
@@ -1322,7 +1324,7 @@ public abstract class Processor extends CsvOperator {
             }
 
             boolean dfltDoStats = CsvUtil.getDbProp(props, "table",
-                                        "dostats", "false").equals("true");
+                                      "dostats", "false").equals("true");
             boolean dfltCanSearch = CsvUtil.getDbProp(props, "table",
                                         "cansearch", "true").equals("true");
             boolean dfltCanList = CsvUtil.getDbProp(props, "table",
@@ -1352,8 +1354,8 @@ public abstract class Processor extends CsvOperator {
 
 
                 boolean isNumber = isNumeric[colIdx];
-                String  type     = CsvUtil.getDbProp(props, "table",
-                                                     "type", "string");
+                String type = CsvUtil.getDbProp(props, "table", "type",
+                                  "string");
                 if (isNumber) {
                     type = "double";
                 }
@@ -1361,7 +1363,7 @@ public abstract class Processor extends CsvOperator {
                 StringBuilder attrs     = new StringBuilder();
                 boolean       canList   = dfltCanList;
                 boolean       canSearch = dfltCanSearch;
-                
+
 
 
                 attrs.append(XmlUtil.attrs(new String[] { "name", colId }));
@@ -1392,14 +1394,16 @@ public abstract class Processor extends CsvOperator {
                 String searchRows = CsvUtil.getDbProp(props, colId,
                                         "searchrows", "");
                 String defaultsort = CsvUtil.getDbProp(props, colId,
-                                                       "defaultsort", (String) null);
-                if(defaultsort!=null && defaultsort.equals("true")) {
+                                         "defaultsort", (String) null);
+                if ((defaultsort != null) && defaultsort.equals("true")) {
                     attrs.append(XmlUtil.attrs(new String[] { "defaultsort",
-                                                              "true"}));
-                    String asc = CsvUtil.getDbProp(props, colId,
-                                                   "ascending", (String) null);
-                    if(asc!=null)
-                        attrs.append(XmlUtil.attrs(new String[] { "ascending",asc}));
+                            "true" }));
+                    String asc = CsvUtil.getDbProp(props, colId, "ascending",
+                                     (String) null);
+                    if (asc != null) {
+                        attrs.append(XmlUtil.attrs(new String[] { "ascending",
+                                asc }));
+                    }
                 }
 
 
@@ -1426,14 +1430,14 @@ public abstract class Processor extends CsvOperator {
                 }
 
                 StringBuffer inner = new StringBuffer();
-                boolean doStats = "true".equals(CsvUtil.getDbProp(props, colId,
-                                                                  "dostats", dfltDoStats + ""));
+                boolean doStats = "true".equals(CsvUtil.getDbProp(props,
+                                      colId, "dostats", dfltDoStats + ""));
 
                 if (doStats) {
                     inner.append(XmlUtil.tag("property",
                                              XmlUtil.attrs(new String[] {
                                                  "name",
-                                                 "dostats", "value", "true"})));
+                            "dostats", "value", "true" })));
                 }
                 if (CsvUtil.getDbProp(props, colId, "iscategory", false)) {
                     inner.append(XmlUtil.tag("property",
@@ -1714,14 +1718,26 @@ public abstract class Processor extends CsvOperator {
 
 
 
+    /**
+     * Class description
+     *
+     *
+     * @version        $version$, Mon, Jul 29, '19
+     * @author         Enter your name here...
+     */
     public static class Logger extends Processor {
 
+        /** _more_ */
         private int total;
 
         /** _more_ */
         private int rowCount;
 
         /*
+         * _more_
+         */
+
+        /**
          * _more_
          */
         public Logger() {}
@@ -1742,10 +1758,11 @@ public abstract class Processor extends CsvOperator {
         public Row processRow(TextReader info, Row row, String line)
                 throws Exception {
             total++;
-            if(++rowCount>=1000) {
+            if (++rowCount >= 1000) {
                 System.err.println("count:" + total);
-                rowCount=0;
+                rowCount = 0;
             }
+
             return row;
         }
 
@@ -1929,11 +1946,15 @@ public abstract class Processor extends CsvOperator {
                     String label = Utils.makeLabel(""
                                        + values.get(i)).replaceAll(" ",
                                            "&nbsp;");
-                    info.getWriter().print(HtmlUtils.span(label,HtmlUtils.attr("title",label)));
+                    info.getWriter().print(HtmlUtils.span(label,
+                            HtmlUtils.attr("title", label)));
                 } else {
-                    Object value  = values.get(i);
-                    String label = (value==null?"":value.toString());
-                    info.getWriter().print(HtmlUtils.span(label,HtmlUtils.attr("title",label)));
+                    Object value = values.get(i);
+                    String label = ((value == null)
+                                    ? ""
+                                    : value.toString());
+                    info.getWriter().print(HtmlUtils.span(label,
+                            HtmlUtils.attr("title", label)));
                 }
                 info.getWriter().print("</div>");
                 info.getWriter().print(close);
@@ -2190,6 +2211,7 @@ public abstract class Processor extends CsvOperator {
         /** _more_ */
         private int index;
 
+        /** _more_ */
         private boolean asc = true;
 
         /**
@@ -2197,10 +2219,11 @@ public abstract class Processor extends CsvOperator {
          *
          *
          * @param index _more_
+         * @param asc _more_
          */
         public Sorter(int index, boolean asc) {
             this.index = index;
-            this.asc = asc;
+            this.asc   = asc;
         }
 
 
@@ -2223,8 +2246,9 @@ public abstract class Processor extends CsvOperator {
             }
             Row headerRow = rows.get(0);
             rows.remove(0);
-            Collections.sort(rows, new Row.RowCompare(index,asc));
+            Collections.sort(rows, new Row.RowCompare(index, asc));
             rows.add(0, headerRow);
+
             return rows;
         }
     }
@@ -2408,10 +2432,6 @@ public abstract class Processor extends CsvOperator {
         /**
          * _more_
          *
-         *
-         *
-         * @param keys _more_
-         * @param values _more_
          *
          * @param keys1 _more_
          * @param values1 _more_

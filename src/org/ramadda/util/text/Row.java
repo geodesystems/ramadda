@@ -53,7 +53,7 @@ public class Row {
     /** _more_ */
     private List values;
 
-    /** _more_          */
+    /** _more_ */
     private Object skipTo;
 
     /**
@@ -242,6 +242,7 @@ public class Row {
      */
     public static class RowCompare implements Comparator<Row> {
 
+        /** _more_ */
         private boolean checked = false;
 
         /** _more_ */
@@ -250,6 +251,7 @@ public class Row {
         /** _more_ */
         private boolean ascending;
 
+        /** _more_ */
         private boolean isNumber = false;
 
         /**
@@ -257,6 +259,7 @@ public class Row {
          *
          *
          * @param idx _more_
+         * @param asc _more_
          */
         public RowCompare(int idx, boolean asc) {
             this.idx       = idx;
@@ -278,27 +281,35 @@ public class Row {
             Object o2 = r2.get(idx);
             String s1 = o1.toString();
             String s2 = o2.toString();
-            if(!checked) {
-                try { 
-                    checked =true;
+            if ( !checked) {
+                try {
+                    checked = true;
                     double d = Double.parseDouble(s1);
                     isNumber = true;
-                } catch(Exception e) {
-                }
+                } catch (Exception e) {}
             }
 
             int dir = 0;
-            if(isNumber) {
+            if (isNumber) {
                 double d1 = Double.parseDouble(s1);
                 double d2 = Double.parseDouble(s2);
-                if(d1<d2) dir=-1;
-                else if(d1>d2) dir = 1;
-                else dir= 0;
+                if (d1 < d2) {
+                    dir = -1;
+                } else if (d1 > d2) {
+                    dir = 1;
+                } else {
+                    dir = 0;
+                }
             } else {
-                dir =  s1.compareTo(s2);
+                dir = s1.compareTo(s2);
             }
-            if(dir==0) return 0;
-            return ascending?dir:-dir;
+            if (dir == 0) {
+                return 0;
+            }
+
+            return ascending
+                   ? dir
+                   : -dir;
         }
 
     }

@@ -100,6 +100,7 @@ public class TextReader implements Cloneable {
     /** _more_ */
     private String delimiter = ",";
 
+    /** _more_ */
     private List<Integer> widths;
 
     /** _more_ */
@@ -177,6 +178,7 @@ public class TextReader implements Cloneable {
     /** _more_ */
     private boolean okToRun = true;
 
+    /** _more_ */
     private boolean allData = false;
 
     /** _more_ */
@@ -213,23 +215,23 @@ public class TextReader implements Cloneable {
         this.reader = reader;
     }
 
-/**
-Set the AllData property.
+    /**
+     * Set the AllData property.
+     *
+     * @param value The new value for AllData
+     */
+    public void setAllData(boolean value) {
+        allData = value;
+    }
 
-@param value The new value for AllData
-**/
-public void setAllData (boolean value) {
-	allData = value;
-}
-
-/**
-Get the AllData property.
-
-@return The AllData
-**/
-public boolean getAllData () {
-	return allData;
-}
+    /**
+     * Get the AllData property.
+     *
+     * @return The AllData
+     */
+    public boolean getAllData() {
+        return allData;
+    }
 
 
     /**
@@ -383,7 +385,7 @@ public boolean getAllData () {
         that.skipStrings   = skipStrings;
         that.changeStrings = changeStrings;
         that.setPrepend(this.prepend);
-        this.allData       =  this.allData;
+        this.allData = this.allData;
         if (that.outputFile != null) {
             that.output = null;
         }
@@ -1090,23 +1092,23 @@ public boolean getAllData () {
     }
 
 
-/**
-Set the Widths property.
+    /**
+     * Set the Widths property.
+     *
+     * @param value The new value for Widths
+     */
+    public void setWidths(List<Integer> value) {
+        widths = value;
+    }
 
-@param value The new value for Widths
-**/
-public void setWidths (List<Integer> value) {
-	widths = value;
-}
-
-/**
-Get the Widths property.
-
-@return The Widths
-**/
-public List<Integer> getWidths () {
-	return widths;
-}
+    /**
+     * Get the Widths property.
+     *
+     * @return The Widths
+     */
+    public List<Integer> getWidths() {
+        return widths;
+    }
 
 
 

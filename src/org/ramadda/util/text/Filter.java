@@ -280,7 +280,7 @@ public class Filter extends Converter {
         /** _more_ */
         boolean isTemplate = false;
 
-        /** _more_          */
+        /** _more_ */
         boolean debug = false;
 
         /**
@@ -526,7 +526,7 @@ public class Filter extends Converter {
      *
      *
      * @version        $version$, Fri, Mar 22, '19
-     * @author         Enter your name here...    
+     * @author         Enter your name here...
      */
     public static class Stop extends Filter {
 
@@ -539,9 +539,6 @@ public class Filter extends Converter {
 
         /**
          * _more_
-         *
-         * @param start _more_
-         * @param skip _more_
          *
          * @param pattern _more_
          */
@@ -584,7 +581,7 @@ public class Filter extends Converter {
      *
      *
      * @version        $version$, Fri, Mar 22, '19
-     * @author         Enter your name here...    
+     * @author         Enter your name here...
      */
     public static class Start extends Filter {
 
@@ -597,9 +594,6 @@ public class Filter extends Converter {
 
         /**
          * _more_
-         *
-         * @param start _more_
-         * @param skip _more_
          *
          * @param pattern _more_
          */
@@ -627,8 +621,10 @@ public class Filter extends Converter {
             }
             if (line.matches(pattern)) {
                 seenStart = true;
+
                 return false;
             }
+
             return false;
         }
     }
@@ -640,7 +636,7 @@ public class Filter extends Converter {
      *
      *
      * @version        $version$, Fri, Mar 22, '19
-     * @author         Enter your name here...    
+     * @author         Enter your name here...
      */
     public static class MinColumns extends Filter {
 
@@ -651,10 +647,7 @@ public class Filter extends Converter {
         /**
          * _more_
          *
-         * @param start _more_
-         * @param skip _more_
-         *
-         * @param pattern _more_
+         * @param cnt _more_
          */
         public MinColumns(int cnt) {
             this.cnt = cnt;
@@ -674,7 +667,10 @@ public class Filter extends Converter {
          */
         @Override
         public boolean rowOk(TextReader info, Row row, String line) {
-            if(row.size()<cnt) return false;
+            if (row.size() < cnt) {
+                return false;
+            }
+
             return true;
         }
     }
@@ -684,7 +680,7 @@ public class Filter extends Converter {
      *
      *
      * @version        $version$, Fri, Mar 22, '19
-     * @author         Enter your name here...    
+     * @author         Enter your name here...
      */
     public static class MaxColumns extends Filter {
 
@@ -694,11 +690,7 @@ public class Filter extends Converter {
 
         /**
          * _more_
-         *
-         * @param start _more_
-         * @param skip _more_
-         *
-         * @param pattern _more_
+         * @param cnt _more_
          */
         public MaxColumns(int cnt) {
             this.cnt = cnt;
@@ -718,7 +710,10 @@ public class Filter extends Converter {
          */
         @Override
         public boolean rowOk(TextReader info, Row row, String line) {
-            if(row.size()>cnt) return false;
+            if (row.size() > cnt) {
+                return false;
+            }
+
             return true;
         }
     }

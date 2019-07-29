@@ -228,7 +228,7 @@ public abstract class CsvOperator {
                     for (int i = 0; i < header.size(); i++) {
                         if ( !colsSeen.contains(i)) {
                             String colName = (String) header.get(i);
-                            if(colName.matches(tok)) {
+                            if (colName.matches(tok)) {
                                 colsSeen.add(i);
                                 indices.add(i);
                             }
@@ -294,6 +294,9 @@ public abstract class CsvOperator {
      * @return _more_
      */
     public List<Integer> getIndices(List<String> cols) {
+        if (cols == null) {
+            return null;
+        }
         List<Integer> indices = new ArrayList<Integer>();
         for (String s : cols) {
             getColumnIndex(indices, s);

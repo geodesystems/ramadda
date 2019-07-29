@@ -149,6 +149,7 @@ public abstract class Converter extends Processor {
                     result.add(s);
                 }
             }
+
             return new Row(result);
         }
 
@@ -333,7 +334,6 @@ public abstract class Converter extends Processor {
          * _more_
          *
          *
-         * @param count _more_
          *
          * @param cols _more_
          * @param s _more_
@@ -357,8 +357,9 @@ public abstract class Converter extends Processor {
         @Override
         public Row processRow(TextReader info, Row row, String line) {
             if (rowCnt++ == 0) {
-                if(!info.getAllData()) 
+                if ( !info.getAllData()) {
                     return row;
+                }
             }
             List<Integer> indices = getIndices(info);
             for (int i : indices) {
@@ -386,7 +387,6 @@ public abstract class Converter extends Processor {
          * _more_
          *
          *
-         * @param count _more_
          *
          * @param cols _more_
          * @param s _more_
@@ -410,8 +410,9 @@ public abstract class Converter extends Processor {
         @Override
         public Row processRow(TextReader info, Row row, String line) {
             if (rowCnt++ == 0) {
-                if(!info.getAllData()) 
+                if ( !info.getAllData()) {
                     return row;
+                }
             }
             List<Integer> indices = getIndices(info);
             for (int i : indices) {
@@ -550,10 +551,10 @@ public abstract class Converter extends Processor {
         boolean defaultChartable = true;
 
 
-        /** _more_          */
+        /** _more_ */
         boolean makeLabel = true;
 
-        /** _more_          */
+        /** _more_ */
         boolean toStdOut = false;
 
         /** _more_ */
@@ -589,6 +590,7 @@ public abstract class Converter extends Processor {
          */
         @Override
         public Row processRow(TextReader info, Row row, String line) {
+
             rowCnt++;
             if (rowCnt > 2) {
                 return row;
@@ -635,7 +637,9 @@ public abstract class Converter extends Processor {
 
 
                 Object osample = row.getValues().get(i);
-                if(osample==null) continue;
+                if (osample == null) {
+                    continue;
+                }
                 String sample  = (String) osample.toString();
                 String _sample = sample.toLowerCase();
                 col = col.replaceAll("\u00B5", "u").replaceAll("\u00B3",
@@ -645,7 +649,7 @@ public abstract class Converter extends Processor {
                                    "_").trim().toLowerCase().replaceAll(" ",
                                        "_").replaceAll(":", "_");
 
-                id = id.replaceAll("<", "_").replaceAll(">","_");
+                id = id.replaceAll("<", "_").replaceAll(">", "_");
                 id = id.replaceAll("\\+", "_").replaceAll(
                     "\"", "_").replaceAll("%", "_").replaceAll(
                     "\'", "_").replaceAll("/+", "_").replaceAll(
@@ -673,9 +677,9 @@ public abstract class Converter extends Processor {
                 if (desc != null) {
                     attrs.append(" description=\"" + desc + "\" ");
                 }
-                if(unit == null) {
+                if (unit == null) {
                     unit = CsvUtil.getDbProp(props, id, "unit",
-                            (String) null);
+                                             (String) null);
                 }
                 if (unit != null) {
                     attrs.append("unit=\"" + unit + "\" ");
@@ -689,9 +693,9 @@ public abstract class Converter extends Processor {
                                         defaultChartable);
                 if (id.indexOf("date") >= 0) {
                     type = "date";
-                } else  if (id.equals("year")) {
-                    type = "date";
-                    format="yyyy";
+                } else if (id.equals("year")) {
+                    type   = "date";
+                    format = "yyyy";
                 } else if (id.equals("latitude") || id.equals("longitude")) {
                     type      = "double";
                     isGeo     = true;
@@ -765,6 +769,7 @@ public abstract class Converter extends Processor {
             }
 
             return tmp;
+
 
         }
 
@@ -912,6 +917,7 @@ public abstract class Converter extends Processor {
      */
     public static class ColumnChanger extends Converter {
 
+        /** _more_ */
         private boolean isRegex;
 
         /** _more_ */
@@ -933,8 +939,8 @@ public abstract class Converter extends Processor {
             this.pattern = pattern;
             this.isRegex = StringUtil.containsRegExp(pattern);
             //            if(!isRegex)
-                 //                this.pattern = ".*" + this.pattern +".*";
-            this.value   = value;
+            //                this.pattern = ".*" + this.pattern +".*";
+            this.value = value;
         }
 
         /**
@@ -951,19 +957,23 @@ public abstract class Converter extends Processor {
         public Row processRow(TextReader info, Row row, String line) {
             //Don't process the first row
             if (rowCnt++ == 0) {
-                if(!info.getAllData()) 
+                if ( !info.getAllData()) {
                     return row;
+                }
             }
             List<Integer> indices = getIndices(info);
             for (Integer idx : indices) {
                 int index = idx.intValue();
                 if ((index >= 0) && (index < row.size())) {
-                    String s = row.getString(index).trim();
-                    if(isRegex) 
+                    String s  = row.getString(index).trim();
+                    String os = s;
+                    if (isRegex) {
                         s = s.replaceAll(pattern, value);
-                    else
+                    } else {
                         s = s.replaceAll(pattern, value);
+                    }
                     row.set(index, s);
+
                 }
             }
 
@@ -979,11 +989,11 @@ public abstract class Converter extends Processor {
      *
      *
      * @version        $version$, Fri, Mar 22, '19
-     * @author         Enter your name here...    
+     * @author         Enter your name here...
      */
     public static class RowChanger extends Converter {
 
-        /** _more_          */
+        /** _more_ */
         int row;
 
         /** _more_ */
@@ -995,7 +1005,6 @@ public abstract class Converter extends Processor {
         /**
          * _more_
          *
-         * @param cols _more_
          *
          * @param row _more_
          * @param pattern _more_
@@ -1021,8 +1030,9 @@ public abstract class Converter extends Processor {
         public Row processRow(TextReader info, Row row, String line) {
             //Don't process the first row
             if (rowCnt++ != this.row) {
-                if(!info.getAllData()) 
+                if ( !info.getAllData()) {
                     return row;
+                }
             }
             for (int i = 0; i < row.size(); i++) {
                 String s = row.getString(i);
@@ -1042,33 +1052,33 @@ public abstract class Converter extends Processor {
      *
      *
      * @version        $version$, Fri, Mar 22, '19
-     * @author         Enter your name here...    
+     * @author         Enter your name here...
      */
     public static class RowMerger extends Converter {
 
-        /** _more_          */
+        /** _more_ */
         HashSet<Integer> rows = new HashSet<Integer>();
 
         /** _more_ */
         private String delimiter;
+
+        /** _more_ */
         private String close;
 
-        /** _more_          */
+        /** _more_ */
         private Row firstRow;
 
         /**
          * _more_
          *
-         * @param cols _more_
-         * @param pattern _more_
-         * @param value _more_
+         * @param close _more_
          *
          * @param rows _more_
          * @param delimiter _more_
          */
-        public RowMerger(List<Integer> rows, String delimiter,String close) {
+        public RowMerger(List<Integer> rows, String delimiter, String close) {
             this.delimiter = delimiter;
-            this.close = close;
+            this.close     = close;
             for (int i = 0; i < rows.size(); i++) {
                 this.rows.add(rows.get(i));
             }
@@ -1096,6 +1106,7 @@ public abstract class Converter extends Processor {
             rows.remove(rowNumber);
             if (firstRow == null) {
                 firstRow = row;
+
                 return null;
             }
             for (int i = 0; i < row.size(); i++) {
@@ -1105,10 +1116,12 @@ public abstract class Converter extends Processor {
                 firstRow.set(i, ss);
             }
             if (rows.size() == 0) {
-                for(int i=0;i<firstRow.size();i++)
-                    firstRow.set(i, firstRow.getString(i)+close);
+                for (int i = 0; i < firstRow.size(); i++) {
+                    firstRow.set(i, firstRow.getString(i) + close);
+                }
                 row      = firstRow;
                 firstRow = null;
+
                 return row;
             }
 
@@ -1157,8 +1170,9 @@ public abstract class Converter extends Processor {
         public Row processRow(TextReader info, Row row, String line) {
             //Don't process the first row
             if (rowCnt++ == 0) {
-                if(!info.getAllData()) 
+                if ( !info.getAllData()) {
                     return row;
+                }
             }
             List<Integer> indices = getIndices(info);
             for (Integer idx : indices) {
@@ -1227,8 +1241,9 @@ public abstract class Converter extends Processor {
         public Row processRow(TextReader info, Row row, String line) {
             //Don't process the first row
             if (rowCnt++ == 0) {
-                if(!info.getAllData()) 
+                if ( !info.getAllData()) {
                     return row;
+                }
             }
 
             List<Integer> indices = getIndices(info);
@@ -1303,6 +1318,7 @@ public abstract class Converter extends Processor {
                 if (name.length() > 0) {
                     row.getValues().add(name);
                 }
+
                 return row;
             }
             List<Integer> indices = getIndices(info);
@@ -1757,20 +1773,31 @@ public abstract class Converter extends Processor {
 
 
 
-    private static  Properties genderProperties;
+    /** _more_ */
+    private static Properties genderProperties;
 
+    /**
+     * Class description
+     *
+     *
+     * @version        $version$, Mon, Jul 29, '19
+     * @author         Enter your name here...
+     */
     public static class Genderizer extends Converter {
 
+        /** _more_ */
         private boolean doneHeader = false;
 
+        /** _more_ */
         private int column;
 
         /**
          * _more_
+         *
+         * @param col _more_
          * @throws Exception _more_
          */
-        public Genderizer(int col) 
-                throws Exception {
+        public Genderizer(int col) throws Exception {
             this.column = col;
         }
 
@@ -1790,29 +1817,38 @@ public abstract class Converter extends Processor {
             if ( !doneHeader) {
                 values.add("Gender");
                 doneHeader = true;
+
                 return row;
             }
             String value = values.get(column).toString().toLowerCase().trim();
-            int index = value.indexOf(",");
-            if(index>=0) 
-                value = value.substring(index+1).trim();
+            int    index = value.indexOf(",");
+            if (index >= 0) {
+                value = value.substring(index + 1).trim();
+            }
             index = value.indexOf(" ");
-            if(index>=0) 
-                value = value.substring(0,index).trim();
-            if(genderProperties == null) {
+            if (index >= 0) {
+                value = value.substring(0, index).trim();
+            }
+            if (genderProperties == null) {
                 genderProperties = new Properties();
                 try {
-                    InputStream inputStream = Utils.getInputStream("/org/ramadda/util/text/gender.properties", getClass());
+                    InputStream inputStream =
+                        Utils.getInputStream(
+                            "/org/ramadda/util/text/gender.properties",
+                            getClass());
                     genderProperties.load(inputStream);
-                } catch(Exception exc) {
+                } catch (Exception exc) {
                     throw new RuntimeException(exc);
                 }
             }
-            String gender = (String)genderProperties.get(value);
-            if(gender==null) gender = "na";
-            else if(!(gender.equals("m") || gender.equals("f"))) 
+            String gender = (String) genderProperties.get(value);
+            if (gender == null) {
                 gender = "na";
+            } else if ( !(gender.equals("m") || gender.equals("f"))) {
+                gender = "na";
+            }
             values.add(gender);
+
             return row;
         }
 
@@ -1848,6 +1884,8 @@ public abstract class Converter extends Processor {
          * _more_
          *
          *
+         * @param col1 _more_
+         * @param col2 _more_
          * @param col _more_
          * @param mapFile _more_
          * @param newName _more_
@@ -1855,8 +1893,8 @@ public abstract class Converter extends Processor {
          *
          * @throws Exception _more_
          */
-        public Denormalizer(String mapFile, int col1, int col2, int col, String newName,
-                            String mode)
+        public Denormalizer(String mapFile, int col1, int col2, int col,
+                            String newName, String mode)
                 throws Exception {
             makeMap(mapFile, col1, col2);
             this.destCol    = col;
@@ -1870,10 +1908,13 @@ public abstract class Converter extends Processor {
          * _more_
          *
          * @param filename _more_
+         * @param col1 _more_
+         * @param col2 _more_
          *
          * @throws Exception _more_
          */
-        private void makeMap(String filename, int col1, int col2) throws Exception {
+        private void makeMap(String filename, int col1, int col2)
+                throws Exception {
             BufferedReader br = new BufferedReader(
                                     new InputStreamReader(
                                         getInputStream(filename)));
@@ -1930,7 +1971,6 @@ public abstract class Converter extends Processor {
                     values.add(destCol + 1, newValue);
                 }
             }
-
 
             return row;
         }
@@ -2045,6 +2085,13 @@ public abstract class Converter extends Processor {
     }
 
 
+    /**
+     * Class description
+     *
+     *
+     * @version        $version$, Mon, Jul 29, '19
+     * @author         Enter your name here...
+     */
     public static class Decimals extends Converter {
 
         /** _more_ */
@@ -2053,14 +2100,12 @@ public abstract class Converter extends Processor {
         /**
          * _more_
          *
-         * @param col _more_
-         * @param delta1 _more_
-         * @param scale _more_
-         * @param delta2 _more_
+         * @param cols _more_
+         * @param decimals _more_
          */
-        public Decimals(List<String> cols,int decimals) {
+        public Decimals(List<String> cols, int decimals) {
             super(cols);
-            this.tens =(int) Math.pow(10,decimals);
+            this.tens = (int) Math.pow(10, decimals);
         }
 
         /**
@@ -2076,17 +2121,17 @@ public abstract class Converter extends Processor {
         @Override
         public Row processRow(TextReader info, Row row, String line) {
             List<Integer> indices = getIndices(info);
-            for(int i=0;i<indices.size();i++) {
-            try {
-                int index = indices.get(i);
-                if ((index < 0) || (index >= row.size())) {
-                    continue;
-                }
-                double value = Double.parseDouble(row.get(index).toString());
-                value =  (double)Math.round(value * tens) / tens;
-                row.set(index,
-                        new Double(value));
-            } catch (NumberFormatException nfe) {}
+            for (int i = 0; i < indices.size(); i++) {
+                try {
+                    int index = indices.get(i);
+                    if ((index < 0) || (index >= row.size())) {
+                        continue;
+                    }
+                    double value =
+                        Double.parseDouble(row.get(index).toString());
+                    value = (double) Math.round(value * tens) / tens;
+                    row.set(index, new Double(value));
+                } catch (NumberFormatException nfe) {}
             }
 
             return row;
@@ -2307,10 +2352,7 @@ public abstract class Converter extends Processor {
         /**
          * _more_
          *
-         * @param op _more_
-         *
          * @param indices _more_
-         * @param name _more_
          */
         public ColumnRounder(List<String> indices) {
             super(indices);
@@ -2329,8 +2371,9 @@ public abstract class Converter extends Processor {
         @Override
         public Row processRow(TextReader info, Row row, String line) {
             if (rowCnt++ == 0) {
-                if(!info.getAllData()) 
+                if ( !info.getAllData()) {
                     return row;
+                }
             }
             List<Integer> indices = getIndices(info);
             for (Integer idx : indices) {
@@ -2472,25 +2515,38 @@ public abstract class Converter extends Processor {
 
 
 
+    /**
+     * Class description
+     *
+     *
+     * @version        $version$, Mon, Jul 29, '19
+     * @author         Enter your name here...
+     */
     public static class ColumnMacro extends Converter {
 
         /** _more_ */
         private Pattern pattern;
+
+        /** _more_ */
         private String template;
+
+        /** _more_ */
         private String label;
+
+        /** _more_ */
         private String value;
 
         /**
          * _more_
          *
-         * @param col _more_
-         *
-         * @param value _more_
+         * @param pattern _more_
+         * @param template _more_
+         * @param label _more_
          */
         public ColumnMacro(String pattern, String template, String label) {
-            this.pattern = Pattern.compile(pattern, Pattern.MULTILINE);
+            this.pattern  = Pattern.compile(pattern, Pattern.MULTILINE);
             this.template = template;
-            this.label = label;
+            this.label    = label;
 
         }
 
@@ -2506,27 +2562,31 @@ public abstract class Converter extends Processor {
          */
         @Override
         public Row processRow(TextReader info, Row row, String line) {
-            if(rowCnt++==0 && !label.equals("none"))  {
+            if ((rowCnt++ == 0) && !label.equals("none")) {
                 row.getValues().add(label);
+
                 return row;
             }
-            if(value == null) {
-                for(String hline:info.getHeaderLines()) {
+            if (value == null) {
+                for (String hline : info.getHeaderLines()) {
                     Matcher matcher = pattern.matcher(hline);
-                    if(matcher.find()) {
+                    if (matcher.find()) {
                         String v = template;
-                        for(int i=0;i<matcher.groupCount();i++)  {
-                            v = v.replace("{" + (i+1) +"}",matcher.group(i+1));
+                        for (int i = 0; i < matcher.groupCount(); i++) {
+                            v = v.replace("{" + (i + 1) + "}",
+                                          matcher.group(i + 1));
                         }
-                        value  = v;
+                        value = v;
+
                         break;
-                    } 
+                    }
                 }
             }
-            if(value == null) {
+            if (value == null) {
                 value = "";
             }
             row.getValues().add(value);
+
             return row;
         }
     }
