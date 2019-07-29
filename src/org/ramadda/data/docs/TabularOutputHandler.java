@@ -568,6 +568,9 @@ public class TabularOutputHandler extends OutputHandler {
                                                     + f.getName(), ARG_ENTRYID, id);
                     html.append("  ");
                     html.append(HtmlUtils.href(getUrl,"Download"));
+                    if(request.getUser().getAdmin()) {
+                        html.append(" File on server: " +f);
+                    }
                     //If they are creating point data then add an add entry link
                     //                    if (newFile.endsWith(".csv") && args.contains("-addheader")) {
                     //                        url += "&output=" + OUTPUT_CONVERT_FORM;
