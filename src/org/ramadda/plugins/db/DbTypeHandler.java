@@ -968,7 +968,7 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
             }
         }
 
-        if (canDoNew && showInHeader(VIEW_NEW)) {
+        if (canDoNew && showInHeader(VIEW_NEW,true)) {
             if (view.equals(VIEW_NEW)) {
                 headerToks.add(HtmlUtils.b(msg("New")));
             } else {
