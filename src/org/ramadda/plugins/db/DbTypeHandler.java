@@ -809,7 +809,7 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
                               String extraLinks)
             throws Exception {
 
-       if ( !request.get(ARG_DB_SHOWHEADER, true)) {
+        if ( !request.get(ARG_DB_SHOWHEADER, true)) {
             return;
         }
         Hashtable props = getProperties(entry);
@@ -949,7 +949,7 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
         boolean canDoNew = getAccessManager().canDoAction(request, entry,
                                Permission.ACTION_NEW);
 
-        if (showInHeader(VIEW_SEARCH,true)) {
+        if (showInHeader(VIEW_SEARCH, true)) {
             if (view.equals(VIEW_SEARCH)) {
                 headerToks.add(HtmlUtils.b(msg("Search")));
             } else {
@@ -958,7 +958,7 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
             }
         }
 
-        if (showInHeader(VIEW_TABLE,true)) {
+        if (showInHeader(VIEW_TABLE, true)) {
             if (view.equals(VIEW_TABLE)) {
                 addNext[0] = true;
                 headerToks.add(HtmlUtils.b(msg("List")));
@@ -968,7 +968,7 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
             }
         }
 
-        if (canDoNew && showInHeader(VIEW_NEW,true)) {
+        if (canDoNew && showInHeader(VIEW_NEW, true)) {
             if (view.equals(VIEW_NEW)) {
                 headerToks.add(HtmlUtils.b(msg("New")));
             } else {
@@ -1098,6 +1098,15 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
     public boolean showInHeader(String view) {
         return showInHeader(view, false);
     }
+
+    /**
+     * _more_
+     *
+     * @param view _more_
+     * @param dflt _more_
+     *
+     * @return _more_
+     */
     public boolean showInHeader(String view, boolean dflt) {
         String prop = getTypeProperty("header.show." + view, (String) null);
         //        System.err.println ("show in? header.show." + view +"=" + prop);
@@ -1736,7 +1745,12 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
                                     Appendable sb, boolean normalForm)
             throws Exception {
 
-        sb.append(formEntry(request, "", HtmlUtils.div("Search For",HtmlUtils.cssClass("ramadda-form-header"))));
+        sb.append(
+            formEntry(
+                request, "",
+                HtmlUtils.div(
+                    "Search For",
+                    HtmlUtils.cssClass("ramadda-form-header"))));
         DbInfo        dbInfo   = getDbInfo();
         StringBuilder advanced = new StringBuilder();
         List<Clause>  where    = new ArrayList<Clause>();
@@ -1780,7 +1794,12 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
 
         if (normalForm) {
             if (tfos.size() > 0) {
-                sb.append(formEntry(request, "", HtmlUtils.div("Group By",HtmlUtils.cssClass("ramadda-form-header"))));
+                sb.append(
+                    formEntry(
+                        request, "",
+                        HtmlUtils.div(
+                            "Group By",
+                            HtmlUtils.cssClass("ramadda-form-header"))));
                 sb.append(
                     formEntry(
                         request, msgLabel("Group By"),
@@ -1824,7 +1843,11 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
             }
         }
 
-        sb.append(formEntry(request, "", HtmlUtils.div("Options",HtmlUtils.cssClass("ramadda-form-header"))));
+        sb.append(
+            formEntry(
+                request, "",
+                HtmlUtils.div(
+                    "Options", HtmlUtils.cssClass("ramadda-form-header"))));
         StringBuilder viewSB      = new StringBuilder();
         boolean       defaultShow = false;
         viewSB.append(HtmlUtils.checkbox(ARG_DB_SHOW + "toggleall", "true",
@@ -3728,32 +3751,37 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
             throws Exception {
         StringBuilder htmlSB = new StringBuilder();
 
-
         column.formatValue(entry, htmlSB, Column.OUTPUT_HTML, values, sdf,
                            false);
         String html = htmlSB.toString();
 
+
         if (column.getCanSearch() && column.isString()) {
             String value     = (String) values[column.getOffset()];
             String searchArg = column.getSearchArg();
-            if ( !column.isEnumeration()) {
-                value = "\"" + value + "\"";
+            //Only do the search link if its short text
+            if (value.length() < 50) {
+                if ( !column.isEnumeration()) {
+                    value = "\"" + value + "\"";
+                }
+                String url =
+                    HtmlUtils.url(
+                        request.makeUrl(getRepository().URL_ENTRY_SHOW),
+                        new String[] {
+                    ARG_ENTRYID, entry.getId(), ARG_DB_SEARCH, "true",
+                    searchArg, value, ARG_DB_SORTDIR, dbInfo.getDfltSortAsc()
+                            ? "asc"
+                            : "desc", ARG_VIEW,
+                    request.getString(ARG_VIEW, VIEW_TABLE)
+                });
+                if (dbInfo.getDfltSortColumn() != null) {
+                    url += "&" + ARG_DB_SORTBY + "="
+                           + dbInfo.getDfltSortColumn().getName();
+                }
+
+                html = HtmlUtils.href(url, html,
+                                      HtmlUtils.cssClass("ramadda-db-link"));
             }
-            String url = HtmlUtils.url(
-                             request.makeUrl(getRepository().URL_ENTRY_SHOW),
-                             new String[] {
-                ARG_ENTRYID, entry.getId(), ARG_DB_SEARCH, "true", searchArg,
-                value, ARG_DB_SORTDIR,
-                dbInfo.getDfltSortAsc()
-                ? "asc"
-                : "desc"
-            });
-            if (dbInfo.getDfltSortColumn() != null) {
-                url += "&" + ARG_DB_SORTBY + "="
-                       + dbInfo.getDfltSortColumn().getName();
-            }
-            html = HtmlUtils.href(url, html,
-                                  HtmlUtils.cssClass("ramadda-db-link"));
         }
 
         sb.append(html);
@@ -5532,8 +5560,9 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
                     label = "average";
                 }
                 label = StringUtil.camelCase(label);
-                if(!label.equals("Count")) 
+                if ( !label.equals("Count")) {
                     label = label + " of " + aggLabels.get(i);
+                }
                 labels.add(label);
             }
             result.add(labels.toArray());
