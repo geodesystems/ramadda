@@ -3771,8 +3771,8 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
                     ARG_ENTRYID, entry.getId(), ARG_DB_SEARCH, "true",
                     searchArg, value, ARG_DB_SORTDIR, dbInfo.getDfltSortAsc()
                             ? "asc"
-                            : "desc", ARG_VIEW,
-                    request.getString(ARG_VIEW, VIEW_TABLE)
+                            : "desc", ARG_DB_VIEW,
+                    request.getString(ARG_DB_VIEW, VIEW_TABLE)
                 });
                 if (dbInfo.getDfltSortColumn() != null) {
                     url += "&" + ARG_DB_SORTBY + "="
