@@ -264,7 +264,7 @@ public class DbInfo {
             }
 
 
-            if (Misc.equals(column.getProperty("label"), "true")) {
+            if (Misc.equals(column.getProperty("islabel"), "true")) {
                 if (labelColumns == null) {
                     labelColumns = new ArrayList<Column>();
                 }

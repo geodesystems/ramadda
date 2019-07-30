@@ -34,8 +34,8 @@
    </column>
 
 
-   If  a column has a "label=true" property, e.g.:
-       <property name="label" value="true"/>
+   If  a column has a "islabel=true" property, e.g.:
+       <property name="islabel" value="true"/>
    then that column value is used as the label for the entry
 
         
@@ -118,7 +118,7 @@
 
 <table id="bookmarks" name="Bookmarks" icon="/db/bookmarks.gif">
    <column name="title"  type="string" label="Title" cansearch="true"   canlist="true" columns="60" size="500" >
-       <property name="label" value="true"/>
+       <property name="islabel" value="true"/>
    </column>
    <column name="url" type="url" label="URL" cansearch="true"   canlist="true" columns="60"/>
    <column name="category" type="enumerationplus" label="Category" cansearch="true"   canlist="true">
@@ -159,7 +159,7 @@
        <property name="iscategory" value="true"/>
    </column>
    <column name="title" type="string" label="Title" cansearch="true"   canlist="true">
-       <property name="label" value="true"/>
+       <property name="islabel" value="true"/>
    </column>
   <column name="status" type="enumeration" label="Status" values="Idea,Scheduled,Completed" cansearch="true"   canlist="true">
        <property name="iscategory" value="true"/>
