@@ -1152,13 +1152,66 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
     private Result handleList(Request request, Entry entry, Clause clause,
                               String action, boolean fromSearch)
             throws Exception {
-        DbInfo dbInfo = getDbInfo();
-        String view   = getWhatToShow(request);
+
+        DbInfo         dbInfo = getDbInfo();
+        List<Object[]> valueList;
+
+
+        if (request.defined(ARG_DB_ITERATE)
+                && request.defined(ARG_DB_ITERATE_VALUES)) {
+            StringBuilder sb = new StringBuilder();
+            addViewHeader(request, entry, sb, VIEW_TABLE, 0, false);
+            sb.append(HtmlUtils.makeShowHideBlock(msg("Search again"),
+                    getSearchForm(request, entry).toString(), false));
+            Column iterateColumn = null;
+            for (Column column : dbInfo.getColumnsToUse()) {
+                if (column.getName().equals(request.getString(ARG_DB_ITERATE,
+                        ""))) {
+                    iterateColumn = column;
+
+                    break;
+                }
+            }
+            List<String> values =
+                StringUtil.split(request.getString(ARG_DB_ITERATE_VALUES,
+                    ""), "\n", true, true);
+            if (values.size() == 0) {
+                sb.append("Need to specify a set of values");
+                getPageHandler().entrySectionClose(request, entry, sb);
+
+                return new Result("", sb);
+            }
+            if (iterateColumn == null) {
+                sb.append("Incorrect column");
+                getPageHandler().entrySectionClose(request, entry, sb);
+
+                return new Result("", sb);
+            }
+
+            request.put(ARG_DB_SHOWHEADER, "false");
+            request.put(ARG_EMBEDDED, "true");
+            for (String value : values) {
+                List<Clause> clauses = new ArrayList<Clause>();
+                clauses.add(clause);
+                String searchArg = iterateColumn.getSearchArg();
+                request.put(searchArg, value);
+                iterateColumn.assembleWhereClause(request, clauses,
+                        new StringBuilder());
+                valueList = readValues(request, entry, Clause.and(clauses));
+                sb.append(iterateColumn.getLabel() + ": " + value);
+                handleListTable(request, entry, valueList, false, false, sb);
+            }
+            getPageHandler().entrySectionClose(request, entry, sb);
+
+            return new Result("", sb);
+        }
+
+
+        String view = getWhatToShow(request);
         if (view.equals(VIEW_CHART)) {
             return handleListChart(request, entry, fromSearch);
         }
 
-        List<Object[]> valueList;
 
         if ((dbInfo.getDateColumns().size() > 0) && request.defined(ARG_YEAR)
                 && request.defined(ARG_MONTH)) {
@@ -1197,8 +1250,10 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
         }
         valueList = readValues(request, entry, clause);
 
+
         return makeListResults(request, entry, view, action, fromSearch,
                                valueList);
+
     }
 
 
@@ -1893,6 +1948,17 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
                                             dir.equals("desc"),
                                             " default='asc' ") + " Descending"));
 
+            sb.append(
+                formEntry(
+                    request, msgLabel("Iterate"),
+                    HtmlUtils.select(
+                        ARG_DB_ITERATE, aggtfos,
+                        request.getString(ARG_DB_ITERATE, ""),
+                        HtmlUtils.cssClass("search-select")) + HtmlUtils.br()
+                            + HtmlUtils.textArea(
+                                ARG_DB_ITERATE_VALUES,
+                                request.getString(ARG_DB_ITERATE_VALUES, ""),
+                                4, 50)));
         }
         if (normalForm) {
             sb.append(

@@ -153,7 +153,7 @@ public class DbInfo {
     /** _more_ */
     private List<Column> allColumns;
 
-    /** _more_          */
+    /** _more_ */
     private List<Column> sortedColumns;
 
     /** _more_ */
@@ -163,13 +163,13 @@ public class DbInfo {
     /** _more_ */
     protected List<Column> columnsToUse;
 
-    /** _more_          */
+    /** _more_ */
     private List<Column> columnsToUseSorted;
 
     /** _more_ */
     private Column keyColumn;
 
-    /** _more_          */
+    /** _more_ */
     private Column dfltSortColumn;
 
     /** _more_ */
@@ -255,8 +255,9 @@ public class DbInfo {
         }
 
         for (Column column : columnsToUse) {
-            boolean doStats = Misc.equals(column.getProperty("dostats"),"true");
-            if(doStats) {
+            boolean doStats = Misc.equals(column.getProperty("dostats"),
+                                          "true");
+            if (doStats) {
                 column.setDoStats(true);
             }
             if (Misc.equals(column.getProperty("isKey"), "true")) {

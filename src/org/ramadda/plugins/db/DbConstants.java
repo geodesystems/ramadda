@@ -194,11 +194,17 @@ public interface DbConstants extends Constants {
     public static final String CSS_DB_TABLEHEADER_INNER =
         "dbtableheader_inner";
 
-    /** _more_          */
+    /** _more_ */
     public static final String ARG_AGG_PERCENT = "aggpercent";
 
     /** _more_ */
     public static final String ARG_DB_VIEW = "db.view";
+
+    /** _more_          */
+    public static final String ARG_DB_ITERATE = "dbiterate";
+
+    /** _more_          */
+    public static final String ARG_DB_ITERATE_VALUES = "dbiteratevalues";
 
     /** _more_ */
     public static final String ARG_DB_SHOWHEADER = "db.showheader";
@@ -209,6 +215,7 @@ public interface DbConstants extends Constants {
     /** _more_ */
     public static final String ARG_DB_ALL = "db.all";
 
+    /** _more_          */
     public static final String ARG_DB_SHOW = "show";
 
 
@@ -232,10 +239,10 @@ public interface DbConstants extends Constants {
     /** _more_ */
     public static final String ARG_DB_BULK_FILE = "db.bulk.file";
 
-    /** _more_          */
+    /** _more_ */
     public static final String ARG_DB_BULK_DELIMITER = "db.bulk.delimiter";
 
-    /** _more_          */
+    /** _more_ */
     public static final String ARG_DB_BULK_SKIP = "db.bulk.skip";
 
     /** _more_ */

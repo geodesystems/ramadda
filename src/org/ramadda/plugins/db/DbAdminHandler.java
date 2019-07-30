@@ -52,7 +52,7 @@ public class DbAdminHandler extends AdminHandlerImpl {
     /** _more_ */
     public static final String TAG_TABLE = "table";
 
-    /** _more_          */
+    /** _more_ */
     public static final String TAG_TEMPLATE = "template";
 
     /** _more_ */
