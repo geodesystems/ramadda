@@ -1198,8 +1198,11 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
                 iterateColumn.assembleWhereClause(request, clauses,
                         new StringBuilder());
                 valueList = readValues(request, entry, Clause.and(clauses));
-                sb.append(iterateColumn.getLabel() + ": " + value);
-                handleListTable(request, entry, valueList, false, false, sb);
+                StringBuilder tmpSB = new StringBuilder();
+                tmpSB.append(iterateColumn.getLabel() + ": " + value);
+                handleListTable(request, entry, valueList, false, false, tmpSB);
+                sb.append(HtmlUtils.div(tmpSB.toString(),HtmlUtils.cssClass("db_iterate_block")));
+
             }
             getPageHandler().entrySectionClose(request, entry, sb);
 

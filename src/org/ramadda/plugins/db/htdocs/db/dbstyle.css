@@ -1,4 +1,12 @@
 
+.db_iterate_block {
+  margin-left:10px;
+  vertical-align:top;
+  display:inline-block;
+  max-height:600px;
+  overflow-y: auto;
+}
+
 .dbtableheader {
   background-color:#eee;
   color: #000;
