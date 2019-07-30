@@ -1194,6 +1194,13 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
             request.put(ARG_DB_SHOWHEADER, "false");
             request.put(ARG_EMBEDDED, "true");
             for (String value : values) {
+                String label = value;
+                if(iterateColumn.isEnumeration()) {
+                    //In case the user entered a enum label
+                    value = iterateColumn.getEnumValue(value);
+                    label = iterateColumn.getEnumLabel(value);
+                }
+
                 List<Clause> clauses = new ArrayList<Clause>();
                 clauses.add(clause);
                 String searchArg = iterateColumn.getSearchArg();
@@ -1202,13 +1209,7 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
                         new StringBuilder());
                 valueList = readValues(request, entry, Clause.and(clauses));
                 StringBuilder tmpSB = new StringBuilder();
-                
-                String label = value;
-                if(iterateColumn.isEnumeration()) {
-                    //In case the user entered a enum label
-                    value = iterateColumn.getEnumValue(value);
-                    label = iterateColumn.getEnumLabel(value);
-                }
+           
                 tmpSB.append(iterateColumn.getLabel() + ": " + label);
                 if(valueList.size()==0) {
                     tmpSB.append("<br>Nothing found");
