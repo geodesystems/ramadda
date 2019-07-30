@@ -1161,8 +1161,10 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
                 && request.defined(ARG_DB_ITERATE_VALUES)) {
             StringBuilder sb = new StringBuilder();
             addViewHeader(request, entry, sb, VIEW_TABLE, 0, false);
-            sb.append(HtmlUtils.makeShowHideBlock(msg("Search again"),
-                    getSearchForm(request, entry).toString(), false));
+            if ( !request.get(ARG_EMBEDDED, false)) {
+                sb.append(HtmlUtils.makeShowHideBlock(msg("Search again"),
+                                                      getSearchForm(request, entry).toString(), false));
+            }
             Column iterateColumn = null;
             for (Column column : dbInfo.getColumnsToUse()) {
                 if (column.getName().equals(request.getString(ARG_DB_ITERATE,
@@ -1172,9 +1174,10 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
                     break;
                 }
             }
+            String selection = request.getString(ARG_DB_ITERATE_VALUES, "");
+            selection = selection.replaceAll("_nl_","\n");
             List<String> values =
-                StringUtil.split(request.getString(ARG_DB_ITERATE_VALUES,
-                    ""), "\n", true, true);
+                StringUtil.split(selection, "\n", true, true);
             if (values.size() == 0) {
                 sb.append("Need to specify a set of values");
                 getPageHandler().entrySectionClose(request, entry, sb);
@@ -1200,7 +1203,11 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
                 valueList = readValues(request, entry, Clause.and(clauses));
                 StringBuilder tmpSB = new StringBuilder();
                 tmpSB.append(iterateColumn.getLabel() + ": " + value);
-                handleListTable(request, entry, valueList, false, false, tmpSB);
+                if(valueList.size()==0) {
+                    tmpSB.append("<br>Nothing found");
+                } else {
+                    handleListTable(request, entry, valueList, false, false, tmpSB);
+                }
                 sb.append(HtmlUtils.div(tmpSB.toString(),HtmlUtils.cssClass("db_iterate_block")));
 
             }

@@ -37,6 +37,7 @@ function  dbAddUrlShowingForm(args) {
         if(item.name == "db.search"  || item.name == "Boxes") {
             continue;
         }
+        value  = value.replace(/\n/g,"_nl_");
         if(attrs!="") attrs+=",";
         attrs+=item.name+":" + value;
     }
