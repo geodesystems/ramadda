@@ -613,6 +613,8 @@ public class WikiUtil {
         String           currentVar      = null;
         StringBuilder    currentVarValue = null;
         boolean          inCss           = false;
+        int segmentId = 0;
+        int activeSegment = 0;
 
         boolean inPre = false;
         for (String line :
@@ -1027,6 +1029,8 @@ public class WikiUtil {
             }
 
             if (tline.equals("+accordian")) {
+                segmentId = 0;
+                activeSegment = 0;
                 String accordianId = HtmlUtils.getUniqueId("accordian");
                 accordianIds.add(accordianId);
                 buff.append("\n");
@@ -1049,7 +1053,7 @@ public class WikiUtil {
                                              - 1);
                     accordianIds.remove(accordianIds.size() - 1);
                     String args =
-                        "{autoHeight: false, navigation: true, collapsible: true, active: 0}";
+                        "{autoHeight: false, navigation: true, collapsible: true, active: "+activeSegment+"}";
                     js.append("HtmlUtil.makeAccordian(\"#" + accordianId
                               + "\" " + "," + args + ");\n");
                     buff.append("\n");
@@ -1062,6 +1066,10 @@ public class WikiUtil {
                     String       title = (toks.size() > 1)
                                          ? toks.get(1)
                                          : "";
+                    if (title.indexOf(" active") > 0) {
+                        title = title.replaceAll(" active", "");
+                        activeSegment = segmentId;
+                    }
 
                     buff.append("\n");
                     buff.append(
@@ -1090,6 +1098,7 @@ public class WikiUtil {
                     buff.append("\n");
                     buff.append("</div>");
                     buff.append("\n");
+                    segmentId++;
 
                     continue;
                 }
