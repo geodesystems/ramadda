@@ -1202,7 +1202,14 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
                         new StringBuilder());
                 valueList = readValues(request, entry, Clause.and(clauses));
                 StringBuilder tmpSB = new StringBuilder();
-                tmpSB.append(iterateColumn.getLabel() + ": " + value);
+                
+                String label = value;
+                if(iterateColumn.isEnumeration()) {
+                    //In case the user entered a enum label
+                    value = iterateColumn.getEnumValue(value);
+                    label = iterateColumn.getEnumLabel(value);
+                }
+                tmpSB.append(iterateColumn.getLabel() + ": " + label);
                 if(valueList.size()==0) {
                     tmpSB.append("<br>Nothing found");
                 } else {
