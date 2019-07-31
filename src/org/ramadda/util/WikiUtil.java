@@ -1129,10 +1129,6 @@ public class WikiUtil {
                 String       title = (toks.size() > 1)
                                      ? toks.get(1)
                                      : "";
-                if (title.indexOf(" active") > 0) {
-                    title = title.replaceAll(" active", "");
-                    accordianState.activeSegment = accordianState.segmentId;
-                }
                 buff.append("\n");
                 buff.append(HtmlUtils.open(HtmlUtils.TAG_H3,
                         HtmlUtils.cssClass(" ui-accordion-header ui-helper-reset ui-state-active ui-corner-top")
