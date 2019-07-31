@@ -1234,20 +1234,19 @@ var HtmlUtils = {
 
     },
     makeAccordian: function(id, args) {
-        if (!Utils.isDefined(args)) args = {};
-        if (!Utils.isDefined(args.active)) args.active = 0;
+        if(args == null) args = {};
         $(function() {
             //We initially hide the accordian contents
             //Show all contents
             var contents = $(id +" .ramadda-accordian-contents");
             contents.css("display", "block");
             var ctorArgs = {
-                autoHeight: false,
-                navigation: true,
+                animate:200,
                 collapsible: true,
                 heightStyle: "content",
-                active: args.active
+                active: 0,
             }
+            $.extend(ctorArgs, args);
             $(id).accordion(ctorArgs);
         });
     },

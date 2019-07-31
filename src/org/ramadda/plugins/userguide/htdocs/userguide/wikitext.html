@@ -715,18 +715,22 @@ Center the tabs:
 <div class="ramadda-help-subsubheading"><a href="#accordian">Accordian</a>
 </div> 
 
-You can create an accordian:
+You can create an accordian with. The optional arguments allow you to set the properties of the accordian
+as described in the <a href="https://api.jqueryui.com/accordion/">Jquery docs</a>.
+
 <pre>
-+accordian
++accordian heightStyle="auto|fill|content" animate="number of milliseconds" collapsible="true|false" activeSegment="segment number of active segment (0 based)" decorate="true|false"
 +segment Accordian 1 title
 Accordian 1 content
 -segment
-+segment Accordian 2 title
++segment Accordian 2 title 
 Accordian 2 content
 -segment
 -accordian
 </pre>
 
+
+If decorate=false then no border or background is shown for the headers.
 
 
 <a name="entry"></a>
@@ -1219,9 +1223,7 @@ Additional arguments:
 <li>linkresource="true|false" - if true, link to the entry resource
 </ul>
 
-<li> <a name="accordian"></a>Tag: <a href="#accordian">accordian</a><div class='ramadda-wiki-tag'>{{accordian <i>border="0" collapse="true"</i>}}</div> Show the children in an accordian:
-<div style="margin:10px;"><pre>{{accordian}}</pre></div> </pre>
-Uses the same arguments as tabs. If border is non-zero then show a border. If collapse is false then open the first section.
+
 
 <li> <a name="slideshow"></a>Tag: <a href="#slideshow">slideshow</a><div class='ramadda-wiki-tag'>{{slideshow}}</div> Show the children in a slideshow:
 <div style="margin:10px;"><pre>{{slideshow}}</pre></div> </pre>

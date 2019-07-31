@@ -88,6 +88,7 @@ public class WikiUtil {
     /** _more_ */
     private Hashtable wikiProperties = new Hashtable();
 
+    /** _more_          */
     private StringBuilder js = new StringBuilder();
 
     /** _more_ */
@@ -131,11 +132,21 @@ public class WikiUtil {
         this.properties = properties;
     }
 
+    /**
+     * _more_
+     *
+     * @param code _more_
+     */
     public void appendJavascript(String code) {
         js.append(code);
         js.append("\n");
     }
 
+    /**
+     * _more_
+     *
+     * @return _more_
+     */
     public String getJavascript() {
         return js.toString();
     }
@@ -267,7 +278,17 @@ public class WikiUtil {
                                   String label);
 
 
-        public String getWikiImageUrl(WikiUtil wikiUtil, String image,Hashtable props);
+        /**
+         * _more_
+         *
+         * @param wikiUtil _more_
+         * @param image _more_
+         * @param props _more_
+         *
+         * @return _more_
+         */
+        public String getWikiImageUrl(WikiUtil wikiUtil, String image,
+                                      Hashtable props);
 
         /**
          * _more_
@@ -386,6 +407,7 @@ public class WikiUtil {
             if (idx2 < 0) {
                 content.add(s);
                 s = "";
+
                 break;
             }
             String nowiki = s.substring(0, idx2);
@@ -394,6 +416,7 @@ public class WikiUtil {
             idx = s.indexOf("<nowiki>");
         }
         content.add(s);
+
         return content;
     }
 
@@ -596,27 +619,27 @@ public class WikiUtil {
             matcher = pattern.matcher(s);
         }
 
-        boolean          closeTheTag     = false;
+        boolean              closeTheTag     = false;
 
 
-        int              ulCnt           = 0;
-        int              olCnt           = 0;
-        StringBuffer     buff            = new StringBuffer();
+        int                  ulCnt           = 0;
+        int                  olCnt           = 0;
+        StringBuffer         buff            = new StringBuffer();
 
-        StringBuilder    js              = new StringBuilder();
-        List<TabState>   allTabStates    = new ArrayList<TabState>();
-        List<TabState>   tabInfos        = new ArrayList<TabState>();
-        List<RowState>   rowStates       = new ArrayList<RowState>();
-        List<String>     accordianIds    = new ArrayList<String>();
+        StringBuilder        js              = new StringBuilder("\n");
+        List<TabState>       allTabStates    = new ArrayList<TabState>();
+        List<TabState>       tabStates       = new ArrayList<TabState>();
+        List<RowState>       rowStates       = new ArrayList<RowState>();
+        List<AccordianState> accordianStates =
+            new ArrayList<AccordianState>();
 
         List<TableState> tableStates     = new ArrayList<TableState>();
         String           currentVar      = null;
         StringBuilder    currentVarValue = null;
         boolean          inCss           = false;
-        int segmentId = 0;
-        int activeSegment = 0;
 
-        boolean inPre = false;
+
+        boolean          inPre           = false;
         for (String line :
                 (List<String>) StringUtil.split(s, "\n", false, false)) {
             if ((line.indexOf("${") >= 0)
@@ -627,7 +650,7 @@ public class WikiUtil {
                         Object key   = keys.nextElement();
                         Object value = myVars.get(key);
                         line = line.replace("${" + key + "}",
-                                value.toString());
+                                            value.toString());
                     }
                 }
                 if (globalProperties != null) {
@@ -636,39 +659,44 @@ public class WikiUtil {
                         Object key   = keys.nextElement();
                         Object value = globalProperties.get(key);
                         line = line.replace("${" + key + "}",
-                                value.toString());
+                                            value.toString());
                     }
                 }
             }
 
             String tline = line.trim();
-            if(tline.equals("+pre")) {
+            if (tline.equals("+pre")) {
                 inPre = true;
                 buff.append("<pre>\n");
+
                 continue;
             }
-            if(tline.equals("-pre")) {
+            if (tline.equals("-pre")) {
                 inPre = false;
                 buff.append("</pre>\n");
+
                 continue;
             }
 
-            if(tline.startsWith("<pre")) {
+            if (tline.startsWith("<pre")) {
                 inPre = true;
                 buff.append(tline);
                 buff.append("\n");
+
                 continue;
             }
-            if(tline.startsWith("</pre>")) {
+            if (tline.startsWith("</pre>")) {
                 inPre = false;
                 buff.append(tline);
                 buff.append("\n");
+
                 continue;
             }
 
-            if(inPre) {
+            if (inPre) {
                 buff.append(tline);
                 buff.append("\n");
+
                 continue;
             }
 
@@ -940,16 +968,22 @@ public class WikiUtil {
 
 
             if (tline.startsWith("+tabs")) {
-                TabState     tabInfo = new TabState();
-                List<String> toks    = StringUtil.splitUpTo(tline, " ", 2);
-                String divClass= "";
+                TabState     tabInfo  = new TabState();
+                List<String> toks     = StringUtil.splitUpTo(tline, " ", 2);
+                String       divClass = "";
                 if (toks.size() == 2) {
                     Hashtable props =
                         HtmlUtils.parseHtmlProperties(toks.get(1));
-                    if(props.get("min")!=null) divClass= "ramadda-tabs-min";
-                    else if(props.get("center")!=null) divClass= "ramadda-tabs-center";
-                    else if(props.get("minarrow")!=null) divClass= "ramadda-tabs-min ramadda-tabs-minarrow";
-                    if(props.get("transparent")!=null) divClass+= " ramadda-tabs-transparent ";
+                    if (props.get("min") != null) {
+                        divClass = "ramadda-tabs-min";
+                    } else if (props.get("center") != null) {
+                        divClass = "ramadda-tabs-center";
+                    } else if (props.get("minarrow") != null) {
+                        divClass = "ramadda-tabs-min ramadda-tabs-minarrow";
+                    }
+                    if (props.get("transparent") != null) {
+                        divClass += " ramadda-tabs-transparent ";
+                    }
 
                     tabInfo.minHeight = (String) props.get("minHeight");
                     if ((tabInfo.minHeight != null)
@@ -957,11 +991,10 @@ public class WikiUtil {
                         tabInfo.minHeight = tabInfo.minHeight + "px";
                     }
                 }
-                tabInfos.add(tabInfo);
+                tabStates.add(tabInfo);
                 allTabStates.add(tabInfo);
                 buff.append("\n");
-                HtmlUtils.open(buff, HtmlUtils.TAG_DIV, 
-                               "class", divClass);
+                HtmlUtils.open(buff, HtmlUtils.TAG_DIV, "class", divClass);
                 HtmlUtils.open(buff, HtmlUtils.TAG_DIV, "id", tabInfo.id,
                                "class", "ui-tabs");
                 buff.append("\n");
@@ -974,7 +1007,7 @@ public class WikiUtil {
                 continue;
             }
             if (tline.equals("+tab") || tline.startsWith("+tab ")) {
-                if (tabInfos.size() == 0) {
+                if (tabStates.size() == 0) {
                     buff.append("No +tabs tag");
 
                     continue;
@@ -983,7 +1016,7 @@ public class WikiUtil {
                 String       title   = (toks.size() > 1)
                                        ? toks.get(1)
                                        : "";
-                TabState     tabInfo = tabInfos.get(tabInfos.size() - 1);
+                TabState     tabInfo = tabStates.get(tabStates.size() - 1);
                 tabInfo.cnt++;
                 tabInfo.title.append("<li><a href=\"#" + tabInfo.id + "-"
                                      + (tabInfo.cnt) + "\">" + title
@@ -1002,9 +1035,9 @@ public class WikiUtil {
 
                 continue;
             }
-            if (tabInfos.size() > 0) {
+            if (tabStates.size() > 0) {
                 if (tline.equals("-tab")) {
-                    TabState tabInfo = tabInfos.get(tabInfos.size() - 1);
+                    TabState tabInfo = tabStates.get(tabStates.size() - 1);
                     buff.append(HtmlUtils.close("div"));
                     buff.append("\n");
                     js.append(
@@ -1014,11 +1047,11 @@ public class WikiUtil {
                     continue;
                 }
                 if (tline.equals("-tabs")) {
-                    TabState tabInfo = tabInfos.get(tabInfos.size() - 1);
+                    TabState tabInfo = tabStates.get(tabStates.size() - 1);
                     tabInfo.title.append("\n");
                     tabInfo.title.append("</ul>");
                     tabInfo.title.append("\n");
-                    tabInfos.remove(tabInfos.size() - 1);
+                    tabStates.remove(tabStates.size() - 1);
                     buff.append(HtmlUtils.close("div"));
                     buff.append(HtmlUtils.close("div"));
 
@@ -1028,80 +1061,108 @@ public class WikiUtil {
 
             }
 
-            if (tline.equals("+accordian")) {
-                segmentId = 0;
-                activeSegment = 0;
-                String accordianId = HtmlUtils.getUniqueId("accordian");
-                accordianIds.add(accordianId);
+            if (tline.startsWith("+accordian")) {
+                AccordianState accordianState = new AccordianState();
+                accordianStates.add(accordianState);
+                List<String> toks     = StringUtil.splitUpTo(tline, " ", 2);
+                String       divClass = "";
+                if (toks.size() == 2) {
+                    Hashtable props =
+                        HtmlUtils.parseHtmlProperties(toks.get(1));
+                    accordianState.activeSegment = Misc.getProperty(props,
+                            "activeSegment", 0);
+                    accordianState.animate = Misc.getProperty(props,
+                            "animate", accordianState.animate);
+                    accordianState.heightStyle = Misc.getProperty(props,
+                            "heightStyle", accordianState.heightStyle);
+                    accordianState.collapsible = Misc.getProperty(props,
+                            "collapsible", accordianState.collapsible);
+                    accordianState.decorate = Misc.getProperty(props,
+                            "decorate", accordianState.decorate);
+                }
+
                 buff.append("\n");
                 buff.append(
                     HtmlUtils.open(
                         HtmlUtils.TAG_DIV,
                         HtmlUtils.cssClass(
                             " ui-accordion ui-widget ui-helper-reset") + HtmlUtils.id(
-                            accordianId)));
+                            accordianState.id)));
                 buff.append("\n");
 
                 continue;
             }
-            if (accordianIds.size() > 0) {
-                if (tline.equals("-accordian")) {
-                    buff.append("\n");
-                    buff.append("</div>");
-                    buff.append("\n");
-                    String accordianId = accordianIds.get(accordianIds.size()
-                                             - 1);
-                    accordianIds.remove(accordianIds.size() - 1);
-                    String args =
-                        "{autoHeight: false, navigation: true, collapsible: true, active: "+activeSegment+"}";
-                    js.append("HtmlUtil.makeAccordian(\"#" + accordianId
-                              + "\" " + "," + args + ");\n");
-                    buff.append("\n");
+
+            if (tline.startsWith("-accordian")) {
+                if (accordianStates.size() == 0) {
+                    buff.append("No open accordian tag");
 
                     continue;
                 }
+                buff.append("\n");
+                buff.append("</div>");
+                buff.append("\n");
+                AccordianState accordianState =
+                    accordianStates.get(accordianStates.size() - 1);
+                accordianStates.remove(accordianStates.size() - 1);
+                String args = "{heightStyle: \"" + accordianState.heightStyle
+                              + "\"" + ", collapsible: "
+                              + accordianState.collapsible + ", active: "
+                              + accordianState.activeSegment + ", animate:"
+                              + accordianState.animate + "}";
+                js.append("HtmlUtil.makeAccordian(\"#" + accordianState.id
+                          + "\" " + "," + args + ");\n");
+                buff.append("\n");
 
-               if (tline.startsWith("+segment")) {
-                    List<String> toks  = StringUtil.splitUpTo(tline, " ", 2);
-                    String       title = (toks.size() > 1)
-                                         ? toks.get(1)
-                                         : "";
-                    if (title.indexOf(" active") > 0) {
-                        title = title.replaceAll(" active", "");
-                        activeSegment = segmentId;
-                    }
+                continue;
+            }
 
-                    buff.append("\n");
-                    buff.append(
-                        HtmlUtils.open(
-                            HtmlUtils.TAG_H3,
-                            HtmlUtils.cssClass(
-                                " ui-accordion-header ui-helper-reset ui-state-active ui-corner-top")));
-                    buff.append("\n");
-                    buff.append("<a href=\"#\">");
-                    buff.append(title);
-                    buff.append("</a></h3>");
-                    buff.append("\n");
-                    String contentsId =
-                        HtmlUtils.getUniqueId("accordion_contents_");
-                    buff.append(
-                        HtmlUtils.open(
-                            "div",
-                            HtmlUtils.id(contentsId)
-                            + HtmlUtils.cssClass(
-                                "ramadda-accordian-contents")));
-                    buff.append("\n");
+            if (tline.startsWith("+segment")) {
+                if (accordianStates.size() == 0) {
+                    buff.append("No open accordian tag");
 
                     continue;
                 }
-                if (tline.startsWith("-segment")) {
-                    buff.append("\n");
-                    buff.append("</div>");
-                    buff.append("\n");
-                    segmentId++;
-
-                    continue;
+                AccordianState accordianState =
+                    accordianStates.get(accordianStates.size() - 1);
+                List<String> toks  = StringUtil.splitUpTo(tline, " ", 2);
+                String       title = (toks.size() > 1)
+                                     ? toks.get(1)
+                                     : "";
+                if (title.indexOf(" active") > 0) {
+                    title = title.replaceAll(" active", "");
+                    accordianState.activeSegment = accordianState.segmentId;
                 }
+                buff.append("\n");
+                buff.append(HtmlUtils.open(HtmlUtils.TAG_H3,
+                        HtmlUtils.cssClass(" ui-accordion-header ui-helper-reset ui-state-active ui-corner-top")
+                        + (accordianState.decorate
+                           ? ""
+                           : " style=\"border:0px;background:none;\" ")));
+                buff.append("\n");
+                buff.append("<a href=\"#\">");
+                buff.append(title);
+                buff.append("</a></h3>");
+                buff.append("\n");
+                String contentsId =
+                    HtmlUtils.getUniqueId("accordion_contents_");
+                buff.append(
+                    HtmlUtils.open(
+                        "div",
+                        HtmlUtils.id(contentsId)
+                        + HtmlUtils.cssClass("ramadda-accordian-contents")));
+                buff.append("\n");
+                accordianState.segmentId++;
+
+                continue;
+            }
+
+            if (tline.startsWith("-segment")) {
+                buff.append("\n");
+                buff.append("</div>");
+                buff.append("\n");
+
+                continue;
             }
 
             if (tline.equals("-div")) {
@@ -1115,7 +1176,8 @@ public class WikiUtil {
                     weight = "8";
                 }
                 buff.append("<div class=\"row\">");
-                buff.append("<div class=\"col-md-" + weight + "  ramadda-col\">");
+                buff.append("<div class=\"col-md-" + weight
+                            + "  ramadda-col\">");
                 buff.append("<div class=\"jumbotron\">");
 
                 continue;
@@ -1167,35 +1229,47 @@ public class WikiUtil {
             }
 
             if (tline.startsWith("+div")) {
-                List<String> toks      = StringUtil.splitUpTo(tline, " ", 2);
-                String style = "";
-                String clazz="";
+                List<String> toks  = StringUtil.splitUpTo(tline, " ", 2);
+                String       style = "";
+                String       clazz = "";
                 if (toks.size() == 2) {
                     Hashtable props =
                         HtmlUtils.parseHtmlProperties(toks.get(1));
-                    String tmp = (String)props.get("class");
-                    if(tmp!=null) clazz=tmp;
-                    String image = (String)props.get("image");
-                    if(image!=null) {
-                        String attach =  (String) props.get("attach");
-                        if(attach == null) attach = "fixed";
-                        tmp =  handler.getWikiImageUrl(this, image, props);
-                        if(tmp!=null) image=tmp;
-                        style += " background-repeat: repeat-y;background-attachment:" + attach+";background-size:100% auto; background-image: url('" + image +"'); ";
+                    String tmp = (String) props.get("class");
+                    if (tmp != null) {
+                        clazz = tmp;
+                    }
+                    String image = (String) props.get("image");
+                    if (image != null) {
+                        String attach = (String) props.get("attach");
+                        if (attach == null) {
+                            attach = "fixed";
+                        }
+                        tmp = handler.getWikiImageUrl(this, image, props);
+                        if (tmp != null) {
+                            image = tmp;
+                        }
+                        style +=
+                            " background-repeat: repeat-y;background-attachment:"
+                            + attach
+                            + ";background-size:100% auto; background-image: url('"
+                            + image + "'); ";
                     }
                     String bg = (String) props.get("background");
-                    if(bg!=null)
-                        style += " background: " + bg +"; ";
+                    if (bg != null) {
+                        style += " background: " + bg + "; ";
+                    }
                 }
                 buff.append(HtmlUtils.open(HtmlUtils.TAG_DIV,
-                                           HtmlUtils.cssClass(clazz) +
-                                           HtmlUtils.style(style)));
+                                           HtmlUtils.cssClass(clazz)
+                                           + HtmlUtils.style(style)));
 
                 continue;
             }
 
             if (tline.startsWith("-div")) {
                 buff.append(HtmlUtils.close(HtmlUtils.TAG_DIV));
+
                 continue;
             }
 
@@ -1204,32 +1278,43 @@ public class WikiUtil {
 
             if (tline.startsWith("+gridboxes")) {
                 tline = tline.substring(1);
-                List<String> toks      = StringUtil.splitUpTo(tline, " ", 2);
-                List<String> toks2     = StringUtil.splitUpTo(toks.get(0), "-", 2);
+                List<String> toks  = StringUtil.splitUpTo(tline, " ", 2);
+                List<String> toks2 = StringUtil.splitUpTo(toks.get(0), "-",
+                                         2);
                 String clazz = "";
-                if(toks2.size()>1) 
+                if (toks2.size() > 1) {
                     clazz = "ramadda-gridboxes-" + toks2.get(1);
-                buff.append(HtmlUtils.open(HtmlUtils.TAG_DIV,
-                                           HtmlUtils.cssClass("ramadda-gridboxes " + clazz)));
+                }
+                buff.append(
+                    HtmlUtils.open(
+                        HtmlUtils.TAG_DIV,
+                        HtmlUtils.cssClass("ramadda-gridboxes " + clazz)));
+
                 continue;
             }
 
 
             if (tline.startsWith("-gridboxes")) {
                 buff.append(HtmlUtils.close(HtmlUtils.TAG_DIV));
+
                 continue;
             }
 
             if (tline.startsWith("+gridbox")) {
-                List<String> toks      = StringUtil.splitUpTo(tline, " ", 2);
-                buff.append(HtmlUtils.open(HtmlUtils.TAG_DIV,
-                                           HtmlUtils.cssClass("ramadda-gridbox")));
-                if(toks.size()>1) {
+                List<String> toks = StringUtil.splitUpTo(tline, " ", 2);
+                buff.append(
+                    HtmlUtils.open(
+                        HtmlUtils.TAG_DIV,
+                        HtmlUtils.cssClass("ramadda-gridbox")));
+                if (toks.size() > 1) {
                     buff.append(HtmlUtils.tag(HtmlUtils.TAG_DIV,
-                                              HtmlUtils.cssClass("ramadda-gridbox-header"),toks.get(1)));
+                            HtmlUtils.cssClass("ramadda-gridbox-header"),
+                            toks.get(1)));
                 }
-                buff.append(HtmlUtils.open(HtmlUtils.TAG_DIV,
-                                           HtmlUtils.cssClass("ramadda-gridbox-contents")));
+                buff.append(
+                    HtmlUtils.open(
+                        HtmlUtils.TAG_DIV,
+                        HtmlUtils.cssClass("ramadda-gridbox-contents")));
 
                 continue;
             }
@@ -1238,14 +1323,17 @@ public class WikiUtil {
             if (tline.startsWith("-gridbox")) {
                 buff.append(HtmlUtils.close(HtmlUtils.TAG_DIV));
                 buff.append(HtmlUtils.close(HtmlUtils.TAG_DIV));
+
                 continue;
             }
 
             if (tline.startsWith("+section")) {
 
-                List<String> toks      = StringUtil.splitUpTo(tline, " ", 2);
-                Hashtable  props =
-                    HtmlUtils.parseHtmlProperties(toks.size()>1?toks.get(1):"");
+                List<String> toks = StringUtil.splitUpTo(tline, " ", 2);
+                Hashtable props = HtmlUtils.parseHtmlProperties((toks.size()
+                                      > 1)
+                        ? toks.get(1)
+                        : "");
 
                 String       tag       = toks.get(0).substring(1);
                 List<String> toks2     = StringUtil.splitUpTo(tag, "-", 2);
@@ -1258,12 +1346,12 @@ public class WikiUtil {
                     baseClass = baseClass + "-" + remainder;
                 }
 
-                String  label       = (String)props.get( "label");
-                String  heading     = (String)props.get( "heading");
-                String  title       = (String)props.get( "title");
-                String  classArg    = (String)props.get( "class");
-                String  style       = (String)props.get( "style");
-                String  titleStyle       = (String)props.get( "titleStyle");
+                String  label       = (String) props.get("label");
+                String  heading     = (String) props.get("heading");
+                String  title       = (String) props.get("title");
+                String  classArg    = (String) props.get("class");
+                String  style       = (String) props.get("style");
+                String  titleStyle  = (String) props.get("titleStyle");
                 boolean doBorderTop = tline.indexOf("----") >= 0;
                 boolean doEvenOdd   = tline.indexOf("#") >= 0;
                 String  extraClass  = "";
@@ -1271,8 +1359,7 @@ public class WikiUtil {
                     if (style == null) {
                         style = "border-top:1px rgb(224, 224, 224) solid;";
                     } else {
-                        style +=
-                            "border-top:1px rgb(224, 224, 224) solid;";
+                        style += "border-top:1px rgb(224, 224, 224) solid;";
                     }
                 }
                 String extraAttr = ((style == null)
@@ -1299,12 +1386,12 @@ public class WikiUtil {
                     putProperty("section-cnt", new Integer(newCnt));
                 }
                 if (classArg != null) {
-                    extraClass += " " +classArg+" ";
+                    extraClass += " " + classArg + " ";
                 }
 
-                String full = (String)props.get("full");
-                if(full!=null && (!full.equals("false"))) {
-                    extraClass+= " ramadda-section-full ";
+                String full = (String) props.get("full");
+                if ((full != null) && ( !full.equals("false"))) {
+                    extraClass += " ramadda-section-full ";
                 }
                 String clazz = baseClass + " " + extraClass;
                 buff.append("<div class=\"");
@@ -1322,8 +1409,8 @@ public class WikiUtil {
                     buff.append(HtmlUtils.close(HtmlUtils.TAG_DIV));
                 }
                 if (title != null) {
-                    buff.append(HtmlUtils.div(getTitle(title,titleStyle),
-                                              HtmlUtils.cssClass("ramadda-page-title")));
+                    buff.append(HtmlUtils.div(getTitle(title, titleStyle),
+                            HtmlUtils.cssClass("ramadda-page-title")));
                 }
 
                 continue;
@@ -1356,29 +1443,37 @@ public class WikiUtil {
             }
 
             if (tline.startsWith("+frame")) {
-                List<String> toks      = StringUtil.splitUpTo(tline, " ", 2);
-                Hashtable  props =
-                    HtmlUtils.parseHtmlProperties(toks.size()>1?toks.get(1):"");
+                List<String> toks = StringUtil.splitUpTo(tline, " ", 2);
+                Hashtable props = HtmlUtils.parseHtmlProperties((toks.size()
+                                      > 1)
+                        ? toks.get(1)
+                        : "");
                 String outerClazz = "ramadda-frame-outer";
                 String innerStyle = "";
                 String frameStyle = "";
-                if(props.get("shadow")!=null) {
+                if (props.get("shadow") != null) {
                     outerClazz += " ramadda-frame-shadow ";
-                } 
+                }
                 String frameSize = (String) props.get("frameSize");
-                if(frameSize!=null)
-                    frameStyle+=" padding:" + frameSize+"px;";
+                if (frameSize != null) {
+                    frameStyle += " padding:" + frameSize + "px;";
+                }
                 String frameColor = (String) props.get("frameColor");
-                if(frameColor!=null)
-                    frameStyle+=" background:" + frameColor+";";
+                if (frameColor != null) {
+                    frameStyle += " background:" + frameColor + ";";
+                }
 
                 String background = (String) props.get("background");
-                if(background!=null)
-                    innerStyle+=" background:" + background+";";
+                if (background != null) {
+                    innerStyle += " background:" + background + ";";
+                }
                 HtmlUtils.open(buff, "div",
-                               HtmlUtils.cssClass(outerClazz)+ HtmlUtils.style(frameStyle));
+                               HtmlUtils.cssClass(outerClazz)
+                               + HtmlUtils.style(frameStyle));
                 HtmlUtils.open(buff, "div",
-                               HtmlUtils.cssClass("ramadda-frame-inner") + HtmlUtils.style(innerStyle));
+                               HtmlUtils.cssClass("ramadda-frame-inner")
+                               + HtmlUtils.style(innerStyle));
+
                 continue;
             }
 
@@ -1386,6 +1481,7 @@ public class WikiUtil {
             if (tline.startsWith("-frame")) {
                 HtmlUtils.close(buff, "div");
                 HtmlUtils.close(buff, "div");
+
                 continue;
             }
 
@@ -1444,22 +1540,30 @@ public class WikiUtil {
 
 
             if (tline.equals("+centerdiv")) {
-                buff.append(HtmlUtils.open(HtmlUtils.TAG_DIV,
-                                           HtmlUtils.style("text-align:center;")));
-                buff.append(HtmlUtils.open(HtmlUtils.TAG_DIV,
-                                           HtmlUtils.style("display:inline-block;text-align:left;")));
+                buff.append(
+                    HtmlUtils.open(
+                        HtmlUtils.TAG_DIV,
+                        HtmlUtils.style("text-align:center;")));
+                buff.append(
+                    HtmlUtils.open(
+                        HtmlUtils.TAG_DIV,
+                        HtmlUtils.style(
+                            "display:inline-block;text-align:left;")));
+
                 continue;
             }
 
             if (tline.equals("-centerdiv")) {
                 buff.append(HtmlUtils.close(HtmlUtils.TAG_DIV));
                 buff.append(HtmlUtils.close(HtmlUtils.TAG_DIV));
+
                 continue;
             }
 
 
             if (tline.equals("+center")) {
                 buff.append("<center>");
+
                 continue;
             }
 
@@ -1481,28 +1585,40 @@ public class WikiUtil {
             }
 
             if (tline.startsWith(":b ")) {
-                List<String> toks  = StringUtil.splitUpTo(tline, " ", 2);
-                buff.append(HtmlUtils.b(toks.size()>1?toks.get(1):""));
+                List<String> toks = StringUtil.splitUpTo(tline, " ", 2);
+                buff.append(HtmlUtils.b((toks.size() > 1)
+                                        ? toks.get(1)
+                                        : ""));
+
                 continue;
             }
 
             if (tline.startsWith(":h1")) {
-                List<String> toks  = StringUtil.splitUpTo(tline, " ", 2);
-                buff.append(HtmlUtils.h1(toks.size()>1?toks.get(1):""));
+                List<String> toks = StringUtil.splitUpTo(tline, " ", 2);
+                buff.append(HtmlUtils.h1((toks.size() > 1)
+                                         ? toks.get(1)
+                                         : ""));
+
                 continue;
             }
 
             if (tline.startsWith(":h2")) {
-                List<String> toks  = StringUtil.splitUpTo(tline, " ", 2);
-                buff.append(HtmlUtils.h2(toks.size()>1?toks.get(1):""));
+                List<String> toks = StringUtil.splitUpTo(tline, " ", 2);
+                buff.append(HtmlUtils.h2((toks.size() > 1)
+                                         ? toks.get(1)
+                                         : ""));
+
                 continue;
             }
 
 
             if (tline.startsWith(":link")) {
                 List<String> toks  = StringUtil.splitUpTo(tline, " ", 3);
-                String label = toks.size()>2?toks.get(2):"link";
-                buff.append(HtmlUtils.href(toks.get(1),label));
+                String       label = (toks.size() > 2)
+                                     ? toks.get(2)
+                                     : "link";
+                buff.append(HtmlUtils.href(toks.get(1), label));
+
                 continue;
             }
 
@@ -1611,17 +1727,18 @@ public class WikiUtil {
                     rowState = rowStates.get(rowStates.size() - 1);
                 }
 
-                List<String> toks     = StringUtil.splitUpTo(tline, " ", 2);
-                String       clazz    = toks.get(0).substring(1);
+                List<String> toks  = StringUtil.splitUpTo(tline, " ", 2);
+                String       clazz = toks.get(0).substring(1);
                 if (clazz.matches("col-[0-9]+")) {
                     clazz = clazz.replace("col-", "col-md-");
                 }
-                String       contents = "";
+                String contents = "";
                 if (toks.size() > 1) {
                     contents = toks.get(1);
                 }
                 rowState.openColumn(buff,
-                                    HtmlUtils.cssClass(clazz + " ramadda-col wiki-col"));
+                                    HtmlUtils.cssClass(clazz
+                                        + " ramadda-col wiki-col"));
                 buff.append(contents);
                 rowState.closeColumn(buff);
 
@@ -1651,8 +1768,8 @@ public class WikiUtil {
                     clazz = clazz.replace("col-", "col-md-");
                 }
                 rowState.openColumn(buff,
-                                    HtmlUtils.cssClass(clazz + " ramadda-col wiki-col")
-                                    + extra);
+                                    HtmlUtils.cssClass(clazz
+                                        + " ramadda-col wiki-col") + extra);
 
                 continue;
             }
@@ -1954,14 +2071,24 @@ public class WikiUtil {
      * @return _more_
      */
     public String getTitle(String label) {
-        return getTitle(label,null);
+        return getTitle(label, null);
     }
 
-    public String getTitle(String label,String style) {
+    /**
+     * _more_
+     *
+     * @param label _more_
+     * @param style _more_
+     *
+     * @return _more_
+     */
+    public String getTitle(String label, String style) {
         String url = getTitleUrl(true);
 
         return (url != null)
-            ? HtmlUtils.href(url, label,style==null?null:HtmlUtils.style(style))
+               ? HtmlUtils.href(url, label, (style == null)
+                                            ? null
+                                            : HtmlUtils.style(style))
                : label;
     }
 
@@ -2245,13 +2372,32 @@ public class WikiUtil {
      * Class description
      *
      *
-     * @version        $version$, Sun, Jan 27, '19
-     * @author         Enter your name here...
+     * @version        $version$, Wed, Jul 31, '19
+     * @author         Enter your name here...    
      */
-    public static class TabState {
+    public static class ContentState {
 
         /** _more_ */
         String id;
+
+        /**
+         * _more_
+         */
+        public ContentState() {
+            this.id = HtmlUtils.getUniqueId("contents");
+        }
+    }
+
+
+
+    /**
+     * Class description
+     *
+     *
+     * @version        $version$, Sun, Jan 27, '19
+     * @author         Enter your name here...
+     */
+    public static class TabState extends ContentState {
 
         /** _more_ */
         StringBuilder title = new StringBuilder();
@@ -2265,12 +2411,42 @@ public class WikiUtil {
         /**
          * _more_
          */
-        public TabState() {
-            this.id = HtmlUtils.getUniqueId("tabs");
-        }
+        public TabState() {}
+    }
 
 
 
+    /**
+     * Class description
+     *
+     *
+     * @version        $version$, Wed, Jul 31, '19
+     * @author         Enter your name here...    
+     */
+    public static class AccordianState extends ContentState {
+
+        /** _more_          */
+        int segmentId = 0;
+
+        /** _more_          */
+        int activeSegment = 0;
+
+        /** _more_          */
+        String heightStyle = "content";
+
+        /** _more_          */
+        boolean collapsible;
+
+        /** _more_          */
+        int animate = 200;
+
+        /** _more_          */
+        boolean decorate = true;
+
+        /**
+         * _more_
+         */
+        public AccordianState() {}
     }
 
 

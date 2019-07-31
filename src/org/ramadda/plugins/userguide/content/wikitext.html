@@ -622,18 +622,22 @@ Center the tabs:
 <p>
 [ug::subsubheading {Accordian} accordian]
 
-You can create an accordian:
+You can create an accordian with. The optional arguments allow you to set the properties of the accordian
+as described in the <a href="https://api.jqueryui.com/accordion/">Jquery docs</a>.
+
 <pre>
-+accordian
++accordian heightStyle="auto|fill|content" animate="number of milliseconds" collapsible="true|false" activeSegment="segment number of active segment (0 based)" decorate="true|false"
 +segment Accordian 1 title
 Accordian 1 content
 -segment
-+segment Accordian 2 title
++segment Accordian 2 title 
 Accordian 2 content
 -segment
 -accordian
 </pre>
 
+
+If decorate=false then no border or background is shown for the headers.
 
 
 [ug::subsubheading {Linking to other entries} entry]
@@ -1106,9 +1110,7 @@ Additional arguments:
 <li>linkresource="true|false" - if true, link to the entry resource
 </ul>
 
-<li> [wiki::tagdef accordian {border="0" collapse="true"}  ] Show the children in an accordian:
-[wiki::text {{{accordian}}}] </pre>
-Uses the same arguments as tabs. If border is non-zero then show a border. If collapse is false then open the first section.
+
 
 <li> [wiki::tagdef slideshow] Show the children in a slideshow:
 [wiki::text {{{slideshow}}}] </pre>
