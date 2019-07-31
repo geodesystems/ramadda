@@ -1239,7 +1239,7 @@ var HtmlUtils = {
         $(function() {
             //We initially hide the accordian contents
             //Show all contents
-            var contents = $(".ramadda-accordian-contents");
+            var contents = $(id +" .ramadda-accordian-contents");
             contents.css("display", "block");
             var ctorArgs = {
                 autoHeight: false,
