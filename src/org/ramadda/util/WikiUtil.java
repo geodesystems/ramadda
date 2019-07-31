@@ -1131,7 +1131,7 @@ public class WikiUtil {
                                      : "";
                 buff.append("\n");
                 buff.append(HtmlUtils.open(HtmlUtils.TAG_H3,
-                        HtmlUtils.cssClass(" ui-accordion-header ui-helper-reset ui-state-active ui-corner-top")
+                        HtmlUtils.cssClass(" ui-accordion-header ui-helper-reset ui-corner-top")
                         + (accordianState.decorate
                            ? ""
                            : " style=\"border:0px;background:none;\" ")));
