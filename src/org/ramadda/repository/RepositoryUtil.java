@@ -140,6 +140,9 @@ public class RepositoryUtil {
 
 
 
+    private static final java.util.Base64.Encoder base64Encoder = java.util.Base64.getEncoder();
+    private static final java.util.Base64.Decoder base64Decoder = java.util.Base64.getDecoder();
+
 
     /**
      * Encode the byte string as a base64 encoded string
@@ -149,7 +152,8 @@ public class RepositoryUtil {
      * @return  the encoded string
      */
     public static String encodeBase64(byte[] b) {
-        return javax.xml.bind.DatatypeConverter.printBase64Binary(b);
+	return new String(base64Encoder.encode(b));
+	//return javax.xml.bind.DatatypeConverter.printBase64Binary(b);
     }
 
     /**
@@ -159,7 +163,8 @@ public class RepositoryUtil {
      * @return The decoded bytes
      */
     public static byte[] decodeBase64(String s) {
-        return javax.xml.bind.DatatypeConverter.parseBase64Binary(s);
+	return base64Decoder.decode(s.getBytes());
+	//        return javax.xml.bind.DatatypeConverter.parseBase64Binary(s);
     }
 
 
@@ -309,7 +314,10 @@ public class RepositoryUtil {
      *
      * @throws Exception _more_
      */
-    public static void main(String[] args) throws Exception {}
+    public static void main(String[] args) throws Exception {
+	String b =encodeBase64(new String("hello").getBytes());
+	System.err.println(new String(decodeBase64(b)));
+    }
 
 
 
