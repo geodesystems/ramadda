@@ -1006,6 +1006,7 @@ public class PageHandler extends RepositoryManager {
     public List<HtmlTemplate> getTemplates() {
 
         List<HtmlTemplate> theTemplates = htmlTemplates;
+	System.err.println("cache:" + cacheTemplates +" the:" + theTemplates);
         if ( !cacheTemplates || (theTemplates == null)) {
 	    String mobileId = getRepository().getProperty("ramadda.template.mobile",(String)null);
 	    System.err.println("mobile:" + mobileId);
