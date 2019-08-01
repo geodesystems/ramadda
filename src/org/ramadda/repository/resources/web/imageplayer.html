@@ -459,11 +459,8 @@ function ImagePlayer(args)  {
         $(this.getId("framenumber")).attr("value",  (this.current_image+1));
     }
 
-
     var theImagePlayer = this;
-
-    $(this.getId("animation")).load(function() {
-      console.log("load: " + $(theImagePlayer.getId("animation")).attr("src"));
+    $(this.getId("animation")).on("load",function() {
       theImagePlayer.waitingForImageToLoad = false;
       theImagePlayer.waitCnt= 0;
       if(theImagePlayer.imageStepIsPending) {
