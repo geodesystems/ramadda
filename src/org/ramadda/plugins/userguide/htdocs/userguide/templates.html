@@ -47,6 +47,8 @@ instantiate a web page.  See the above example template for more information.
 You can see many examples of templates at the
 at the <a href="https://github.com/geodesystems/ramadda/tree/master/src/org/ramadda/repository/resources/templates">Github</a> site. 
 
+
+
 <a name="jar"></a><p><div class="ramadda-help-heading">8.6.0 <a href="#jar">Packaging your template</a></div> 
 While you can just have a file called &lt;something&gt;template.html in your plugins directory if you
 have your own CSS or images or icons that go along with your template you will want to
@@ -112,6 +114,19 @@ ramadda.created.display=admin
 #only show it for logged in users
 ramadda.created.display=user
 </pre>
+
+
+
+<a name="mobile"></a><p><div class="ramadda-help-heading">8.6.3 <a href="#mobile">Mobile Template</a></div> 
+There are two ways to specify a template to be used for mobile access. 
+The first is to set the following property in your RAMADDA
+.properties file.
+
+<pre>
+ramadda.template.mobile=&lt;template id &gt;
+</pre>
+
+You can also specify a mobile=true  property in the properties section of your template.
 
 
 
