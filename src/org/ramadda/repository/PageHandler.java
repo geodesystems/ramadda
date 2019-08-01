@@ -1006,10 +1006,8 @@ public class PageHandler extends RepositoryManager {
     public List<HtmlTemplate> getTemplates() {
 
         List<HtmlTemplate> theTemplates = htmlTemplates;
-	System.err.println("cache:" + cacheTemplates +" the:" + theTemplates);
         if ( !cacheTemplates || (theTemplates == null)) {
 	    String mobileId = getRepository().getProperty("ramadda.template.mobile",(String)null);
-	    System.err.println("mobile:" + mobileId);
             HtmlTemplate theMobileTemplate=null;
             defaultTemplate = null;
             mobileTemplate  = null;
@@ -1085,8 +1083,10 @@ public class PageHandler extends RepositoryManager {
 
                     if(mobileTemplate == null) {
 			System.err.println("\t" + template.getId());
-			if(mobileId!=null && template.getId().equals(mobileId)) {
-			    mobileTemplate = template;
+			if(mobileId!=null) {
+			    if(template.getId().equals(mobileId)) {
+				mobileTemplate = template;
+			    }
 			}  else if(template.getTemplateProperty("mobile",false)) {
 			    mobileTemplate = template;
 			}
@@ -1117,9 +1117,9 @@ public class PageHandler extends RepositoryManager {
             if (mobileTemplate == null) {
                 mobileTemplate = defaultTemplate;
             }
-            if (getRepository().getCacheResources()) {
+//            if (getRepository().getCacheResources()) {
                 htmlTemplates = theTemplates;
-            }
+//            }
         }
 
         return theTemplates;
