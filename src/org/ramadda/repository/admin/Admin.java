@@ -1,4 +1,4 @@
-/*
+/**
 * Copyright (c) 2008-2019 Geode Systems LLC
 *
 * Licensed under the Apache License, Version 2.0 (the "License");
@@ -1998,6 +1998,9 @@ public class Admin extends RepositoryManager {
         outputSB.append(HtmlUtils.formTableClose());
 
 
+        String props = getRepository().getPropertiesListing();
+
+
         StringBuffer   apiSB  = new StringBuffer();
         List<Object[]> tuples = new ArrayList<Object[]>();
         apiSB.append(HtmlUtils.formTable());
@@ -2047,6 +2050,9 @@ public class Admin extends RepositoryManager {
 
         titles.add(msg("API"));
         tabs.add(HtmlUtils.section(apiSB.toString()));
+
+        titles.add(msg("Properties"));
+        tabs.add(HtmlUtils.section(props));
 
         titles.add(msg("Output Handlers"));
         tabs.add(HtmlUtils.section(outputSB.toString()));

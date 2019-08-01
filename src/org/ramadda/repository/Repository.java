@@ -4397,6 +4397,30 @@ public class Repository extends RepositoryBase implements RequestHandler,
     }
 
 
+    private String getPropertiesListing(Properties props, String label) {
+	StringBuilder sb = null;
+        for (Enumeration keys = props.keys(); keys.hasMoreElements(); ) {
+            String key   = (String) keys.nextElement();
+            String value = (String) props.get(key);
+	    if(sb==null)
+		sb = new StringBuilder("<h2>" + label +"</h2>");
+	    sb.append(key +"=" + value+"<br>");
+	}
+	
+	if(sb==null) return "";
+	return sb.toString();
+    }
+
+    public String getPropertiesListing() {
+	StringBuilder sb = new StringBuilder();
+	sb.append(getPropertiesListing(getDbProperties(),"Database"));
+	sb.append(getPropertiesListing(localProperties,"Local"));
+//	sb.append(getPropertiesListing(pluginProperties,"Plugin"));
+	//	sb.append(getPropertiesListing(coreProperties,"Core"));
+	return sb.toString();
+    }
+
+
     /**
      *  this gets the property from this repository if defined. Else it will get the
      *  property from the parent repository if defined. Else this returns the dflt
