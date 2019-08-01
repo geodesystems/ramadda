@@ -1082,7 +1082,6 @@ public class PageHandler extends RepositoryManager {
                     }
 
                     if(mobileTemplate == null) {
-			System.err.println("\t" + template.getId());
 			if(mobileId!=null) {
 			    if(template.getId().equals(mobileId)) {
 				mobileTemplate = template;
