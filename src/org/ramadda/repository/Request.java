@@ -2169,6 +2169,7 @@ public class Request implements Constants, Cloneable {
         String ua = getUserAgent("").toLowerCase();
         isMobile = (ua.indexOf("iphone") >= 0)
                    || (ua.indexOf("android") >= 0)
+                   || (ua.indexOf("mobile") >= 0)
                    || (ua.indexOf("blackberry") >= 0);
         isRobot = checkForRobot();
     }

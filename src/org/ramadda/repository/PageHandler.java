@@ -1433,10 +1433,7 @@ public class PageHandler extends RepositoryManager {
         if (request == null) {
             return defaultTemplate;
         }
-        if (request.isMobile()) {
-            return getMobileTemplate();
-        }
-
+	boolean isMobile = request.isMobile();
         //Check for template=... url arg
         String templateId = request.getHtmlTemplateId();
         if (Utils.stringDefined(templateId)) {
@@ -1455,8 +1452,15 @@ public class PageHandler extends RepositoryManager {
                 if (metadataList != null) {
                     for (Metadata metadata : metadataList) {
                         templateId = metadata.getAttr1();
-                        request.put(ARG_TEMPLATE, templateId);
-
+			if (isMobile) {
+			    HtmlTemplate template = templateMap.get(templateId);
+			    if (template != null && template.getTemplateProperty("mobile",false)) {
+				request.put(ARG_TEMPLATE, template.getId());
+				return template;
+			    }
+			} else {
+			    request.put(ARG_TEMPLATE, templateId);
+			}
                         break;
                     }
                 }
@@ -1464,6 +1468,11 @@ public class PageHandler extends RepositoryManager {
                 throw new RuntimeException(exc);
             }
         }
+
+	if (isMobile && mobileTemplate!=null) {
+	    request.put(ARG_TEMPLATE, mobileTemplate.getId());
+	    return mobileTemplate;
+	}
 
 
         User user = request.getUser();
@@ -1475,7 +1484,7 @@ public class PageHandler extends RepositoryManager {
             HtmlTemplate template = templateMap.get(templateId);
             if (template != null) {
                 return template;
-            }
+           } 
         }
 
         return defaultTemplate;
