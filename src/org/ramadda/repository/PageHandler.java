@@ -1087,7 +1087,8 @@ public class PageHandler extends RepositoryManager {
 				mobileTemplate = template;
 			    }
 			}  else if(template.getTemplateProperty("mobile",false)) {
-			    mobileTemplate = template;
+			    //Don't do this for now
+			    //			    mobileTemplate = template;
 			}
                     }
                     if(theMobileTemplate == null && template.getId().equals("mobile")) {
