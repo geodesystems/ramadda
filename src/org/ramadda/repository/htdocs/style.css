@@ -3461,7 +3461,6 @@ a.wiki-link-noexist {
 /*jeffmc: added these*/
 
 
-
 .ramadda-accordian .ui-accordian-header, .ramadda-accordian .ui-state-default, .ramadda-accordian .ui-state-active {
   border: 0px #fff solid;
   background: none;
@@ -3472,6 +3471,33 @@ a.wiki-link-noexist {
     padding: 0px;
     padding-left: 10px;
 }
+
+/*
+.ui-accordion .ui-accordion-content {
+border:1px solid #ddd;
+border-top:0px solid #ddd;
+padding:20px;
+padding-left:15px;
+    border-radius: 0px; 
+}
+.ui-accordion .ui-accordion-header {
+    border-radius: 0px; 
+margin:0px;
+background:#F7F7F7;
+padding-left:40px;
+padding:22px;
+border:1px solid #ddd;
+}
+
+h3.ui-accordion-header a {
+    text-decoration: underline;
+    color: blue;
+}
+
+.ui-accordion-header-icon {
+  display:none;
+}
+*/
 
 .ramadda-accordian-contents {
    display:none;
