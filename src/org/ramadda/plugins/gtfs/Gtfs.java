@@ -665,8 +665,8 @@ public class Gtfs implements Constants {
                 List<String> tmptabs   = new ArrayList<String>();
                 tmptitles.add("Car Service");
                 tmptabs.add(rides.toString());
-                HtmlUtils.makeAccordian(nextSB, tmptitles, tmptabs, true,
-                                        "ramadda-accordian", null);
+                HtmlUtils.makeAccordion(nextSB, tmptitles, tmptabs, true,
+                                        "ramadda-accordion", null);
             }
         }
 
@@ -721,8 +721,8 @@ public class Gtfs implements Constants {
             if (currentTrips.size() > 0) {
                 open = true;
             }
-            HtmlUtils.makeAccordian(sb, firstTitles, firstContents,
-                                    !open || showRoute, "ramadda-accordian",
+            HtmlUtils.makeAccordion(sb, firstTitles, firstContents,
+                                    !open || showRoute, "ramadda-accordion",
                                     null);
         }
 

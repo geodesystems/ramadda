@@ -3460,7 +3460,19 @@ a.wiki-link-noexist {
 /* JQuery overrides */
 /*jeffmc: added these*/
 
+.ramadda-accordion .ui-accordion-header, .ramadda-accordion .ui-state-default, .ramadda-accordion .ui-state-active {
+  border: 0px #fff solid;
+  background: none;
+}
 
+.ui-accordion .ui-accordion-content , .ramadda-accordion .ui-accordion-content {
+    border: none;
+    padding: 0px;
+    padding-left: 10px;
+}
+
+
+/* eventually delete these two where accordian is spelled with an a */
 .ramadda-accordian .ui-accordian-header, .ramadda-accordian .ui-state-default, .ramadda-accordian .ui-state-active {
   border: 0px #fff solid;
   background: none;
@@ -3499,7 +3511,12 @@ h3.ui-accordion-header a {
 }
 */
 
+/* delete this someday */
 .ramadda-accordian-contents {
+   display:none;
+}
+
+.ramadda-accordion-contents {
    display:none;
 }
 

@@ -47,6 +47,9 @@ public class FramesTypeHandler extends GenericTypeHandler {
     /** _more_ */
     public static final String LAYOUT_ACCORDIAN = "accordian";
 
+    /** _more_ */
+    public static final String LAYOUT_ACCORDION = "accordion";
+
     /**
      * _more_
      *
@@ -141,8 +144,9 @@ public class FramesTypeHandler extends GenericTypeHandler {
             sb.append("</tr></table>");
         } else if (layout.equals(LAYOUT_TABS)) {
             sb.append(OutputHandler.makeTabs(labels, contents, false));
-        } else if (layout.equals(LAYOUT_ACCORDIAN)) {
-            HtmlUtils.makeAccordian(sb, labels, contents);
+        } else if (layout.equals(LAYOUT_ACCORDIAN) ||
+                layout.equals(LAYOUT_ACCORDION)) {
+            HtmlUtils.makeAccordion(sb, labels, contents);
         } else {
             sb.append("Unknown layout:" + layout);
         }

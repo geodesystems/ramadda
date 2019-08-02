@@ -144,7 +144,7 @@ ATTR_SHOWLINK, "true", ATTR_INCLUDEICON, "false") + ATTRS_LAYOUT),
                                         "showLink","false","showHeading","true","showline","true"), 
                             new WikiTag(WIKI_TAG_TREE, null, ATTR_DETAILS, "true"), 
                             new WikiTag(WIKI_TAG_FRAMES, null, ATTR_WIDTH,"100%", ATTR_HEIGHT,"500"), 
-                            new WikiTag(WIKI_TAG_ACCORDIAN, null, attrs(ATTR_TAG, WIKI_TAG_HTML, ATTR_COLLAPSE, "false", "border", "0", ATTR_SHOWLINK, "true", ATTR_INCLUDEICON, "false") + ATTRS_LAYOUT), 
+                            new WikiTag(WIKI_TAG_ACCORDION, null, attrs(ATTR_TAG, WIKI_TAG_HTML, ATTR_COLLAPSE, "false", "border", "0", ATTR_SHOWLINK, "true", ATTR_INCLUDEICON, "false") + ATTRS_LAYOUT), 
                             //                            new WikiTag(WIKI_TAG_GRID), 
                             new WikiTag(WIKI_TAG_TABLE), 
                             new WikiTag(WIKI_TAG_RECENT, null, ATTR_DAYS, "3"), 
@@ -2420,7 +2420,7 @@ ATTR_SHOWLINK, "true", ATTR_INCLUDEICON, "false") + ATTRS_LAYOUT),
 
             boolean includeLinkAfter = false;
 
-            if (layout.equals("accordian")) {
+            if (layout.equals("accordian") || layout.equals("accordion")) {
                 includeLinkAfter = true;
             }
 
@@ -2508,13 +2508,13 @@ ATTR_SHOWLINK, "true", ATTR_INCLUDEICON, "false") + ATTRS_LAYOUT),
 
                 sb.append(OutputHandler.makeTabs(titles, contents, true,
                         false));
-            } else if (layout.equals("accordian")) {
+            } else if (layout.equals("accordian") || layout.equals("accordion")) {
                 int showBorder = getProperty(wikiUtil, props, "border", 0);
                 boolean collapse = getProperty(wikiUtil, props, "collapse",
                                        false);
-                HtmlUtils.makeAccordian(sb, titles, contents, collapse,
+                HtmlUtils.makeAccordion(sb, titles, contents, collapse,
                                         ((showBorder == 0)
-                                         ? "ramadda-accordian"
+                                         ? "ramadda-accordion"
                                          : null), null);
             } else {
                 throw new IllegalArgumentException("Unknown layout:"
@@ -2526,6 +2526,7 @@ ATTR_SHOWLINK, "true", ATTR_INCLUDEICON, "false") + ATTRS_LAYOUT),
             return makeSimpleDisplay(request, wikiUtil, props, originalEntry,
                                      entry);
         } else if (theTag.equals(WIKI_TAG_TABS)
+                   || theTag.equals(WIKI_TAG_ACCORDION)
                    || theTag.equals(WIKI_TAG_ACCORDIAN)
                    || theTag.equals(WIKI_TAG_SLIDESHOW)
                    || theTag.equals(WIKI_TAG_BOOTSTRAP)
@@ -2643,13 +2644,13 @@ ATTR_SHOWLINK, "true", ATTR_INCLUDEICON, "false") + ATTRS_LAYOUT),
 
 
 
-            if (theTag.equals(WIKI_TAG_ACCORDIAN)) {
+            if (theTag.equals(WIKI_TAG_ACCORDIAN) || theTag.equals(WIKI_TAG_ACCORDION)) {
                 int border = getProperty(wikiUtil, props, ATTR_BORDER, 0);
                 boolean collapse = getProperty(wikiUtil, props,
                                        ATTR_COLLAPSE, false);
-                HtmlUtils.makeAccordian(sb, titles, contents, collapse,
+                HtmlUtils.makeAccordion(sb, titles, contents, collapse,
                                         ((border == 0)
-                                         ? "ramadda-accordian"
+                                         ? "ramadda-accordion"
                                          : null), null);
 
                 return sb.toString();
@@ -4994,9 +4995,9 @@ ATTR_SHOWLINK, "true", ATTR_INCLUDEICON, "false") + ATTRS_LAYOUT),
                 "mw-editbutton-headline"));
         tags.append(
             addWikiEditButton(
-                textAreaId, "button_blockquote.png", "Accordian",
-                "+accordian_newline_+segment segment  title_newline_",
-                "-segment_newline_-accordian_newline_", "Accordian",
+                textAreaId, "button_blockquote.png", "Accordion",
+                "+accordion_newline_+segment segment  title_newline_",
+                "-segment_newline_-accordion_newline_", "Accordion",
                 "mw-editbutton-headline"));
 
         tags.append(addWikiEditButton(textAreaId, "button_bold.png",

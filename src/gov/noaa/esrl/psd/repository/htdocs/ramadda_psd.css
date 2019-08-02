@@ -7,6 +7,11 @@ a {
   text-decoration: none;
 }
 
+.ui-widget-content a {
+  color:  #337ab7; 
+  text-decoration: none;
+}
+
 i.fab {
   color: #fff
 }
@@ -15,3 +20,23 @@ i.fa-search {
   color: #fff
 }
 
+
+/* make jQuery accordian look like BootStrap */
+.ui-accordion .ui-accordion-content {
+  border:1px solid #ddd; 
+  border-top: 0px;
+  padding:15px;
+  border-radius: 0 0 4px 4px;
+}
+
+.ui-accordion .ui-accordion-header {
+  border-radius: 3px;
+  margin:5px 0 0 0;
+  background:#F7F7F7;
+  padding-left:15px;
+  border:1px solid #ddd;
+}
+
+.ui-accordion-header-icon {
+  display:none;
+}

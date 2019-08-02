@@ -1,5 +1,0 @@
-<outputhandlers class="org.ramadda.repository.output.ServiceOutputHandler" 
-                icon="/icons/cog.png">
-  <outputhandler serviceId="bio_hmmer_convert"/>
-  <outputhandler serviceId="bio_hmmer_convert"/>
-</outputhandlers>

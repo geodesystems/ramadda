@@ -2054,7 +2054,7 @@ public class UserManager extends RepositoryManager {
         if (rolesList.size() == 0) {
             rolesHtml.append(msg("No roles"));
         } else {
-            HtmlUtils.makeAccordian(rolesHtml, rolesList, rolesContent);
+            HtmlUtils.makeAccordion(rolesHtml, rolesList, rolesContent);
         }
 
 

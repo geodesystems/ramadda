@@ -1250,6 +1250,23 @@ var HtmlUtils = {
             $(id).accordion(ctorArgs);
         });
     },
+    makeAccordion: function(id, args) {
+        if(args == null) args = {};
+        $(function() {
+            //We initially hide the accordion contents
+            //Show all contents
+            var contents = $(id +" .ramadda-accordion-contents");
+            contents.css("display", "block");
+            var ctorArgs = {
+                animate:200,
+                collapsible: true,
+                heightStyle: "content",
+                active: 0,
+            }
+            $.extend(ctorArgs, args);
+            $(id).accordion(ctorArgs);
+        });
+    },
     hbox: function() {
         var row = HtmlUtils.openTag("tr", ["valign", "top"]);
         row += "<td>";
