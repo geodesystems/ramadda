@@ -163,6 +163,7 @@ public class RepositoryUtil {
      * @return The decoded bytes
      */
     public static byte[] decodeBase64(String s) {
+	System.err.println(s);
 	return base64Decoder.decode(s.getBytes());
 	//        return javax.xml.bind.DatatypeConverter.parseBase64Binary(s);
     }
@@ -315,7 +316,16 @@ public class RepositoryUtil {
      * @throws Exception _more_
      */
     public static void main(String[] args) throws Exception {
-	String b =encodeBase64(new String("hello").getBytes());
+	String s = "<wiki>\n" +
+"+section title={{name}} #\n" +
+"{{map listentries=\"true\" width=\"800\" height=\"650\" sort=\"name\"}}\n" +
+"-section\\n" +
+"+section label=\"The Stations\" #\n" +
+"{{tree details=\"false\" sort=\"name\"}}\n" +
+	    "-section\n";
+
+
+	String b =encodeBase64(new String(s).getBytes());
 	System.err.println(new String(decodeBase64(b)));
     }
 
