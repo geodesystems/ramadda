@@ -451,6 +451,9 @@ public interface WikiConstants {
     /** accordian property */
     public static final String WIKI_TAG_ACCORDIAN = "accordian";
 
+    /** accordion property */
+    public static final String WIKI_TAG_ACCORDION = "accordion";
+
     /** the slideshow property */
     public static final String WIKI_TAG_SLIDESHOW = "slideshow";
 

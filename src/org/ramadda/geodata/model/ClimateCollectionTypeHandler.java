@@ -412,7 +412,7 @@ JQ.button(
             "<table width=100% border=0 cellspacing=0 cellpadding=0><tr valign=top>");
         sb.append("<td width=30%>");
         sb.append(header(msg("Process Selected Data")));
-        HtmlUtils.makeAccordian(sb, processTitles, processTabs);
+        HtmlUtils.makeAccordion(sb, processTitles, processTabs);
         sb.append(processButtons);
         sb.append("</td><td>");
         sb.append(HtmlUtils.div("",

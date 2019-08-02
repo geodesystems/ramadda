@@ -1850,7 +1850,7 @@ public class HtmlOutputHandler extends OutputHandler {
         if (types.size() == 1) {
             sb.append(contents.get(0));
         } else {
-            HtmlUtils.makeAccordian(sb, titles, contents);
+            HtmlUtils.makeAccordion(sb, titles, contents);
             /*            for(int i=0;i<titles.size();i++) {
                 String title = titles.get(i);
                 String content = contents.get(i);

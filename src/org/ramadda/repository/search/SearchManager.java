@@ -828,8 +828,8 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
         String        inner         = searchForm.toString();
         StringBuilder formSB        = new StringBuilder();
         boolean       showProviders = request.get("show_providers", false);
-        HtmlUtils.makeAccordian(formSB, msg("Search Options"), inner,
-                                !showProviders, "ramadda-accordian", null);
+        HtmlUtils.makeAccordion(formSB, msg("Search Options"), inner,
+                                !showProviders, "ramadda-accordion", null);
 
         sb.append(HtmlUtils.insetDiv(formSB.toString(), 0, 0, 0, 0));
         sb.append(HtmlUtils.formClose());
@@ -923,8 +923,8 @@ public class SearchManager extends AdminHandlerImpl implements EntryChecker {
             sb.append(HtmlUtils.h3("Search Providers"));
             sb.append(contents.get(0));
         } else {
-            HtmlUtils.makeAccordian(formSB, titles, contents, !showProviders,
-                                    "ramadda-accordian", null);
+            HtmlUtils.makeAccordion(formSB, titles, contents, !showProviders,
+                                    "ramadda-accordion", null);
         }
         sb.append(formSB.toString());
         sb.append(HtmlUtils.close(HtmlUtils.TAG_DIV));

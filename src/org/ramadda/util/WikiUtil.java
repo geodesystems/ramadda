@@ -630,8 +630,8 @@ public class WikiUtil {
         List<TabState>       allTabStates    = new ArrayList<TabState>();
         List<TabState>       tabStates       = new ArrayList<TabState>();
         List<RowState>       rowStates       = new ArrayList<RowState>();
-        List<AccordianState> accordianStates =
-            new ArrayList<AccordianState>();
+        List<AccordionState> accordionStates =
+            new ArrayList<AccordionState>();
 
         List<TableState> tableStates     = new ArrayList<TableState>();
         String           currentVar      = null;
@@ -1061,24 +1061,24 @@ public class WikiUtil {
 
             }
 
-            if (tline.startsWith("+accordian")) {
-                AccordianState accordianState = new AccordianState();
-                accordianStates.add(accordianState);
+            if (tline.startsWith("+accordian") || tline.startsWith("+accordion")) {
+                AccordionState accordionState = new AccordionState();
+                accordionStates.add(accordionState);
                 List<String> toks     = StringUtil.splitUpTo(tline, " ", 2);
                 String       divClass = "";
                 if (toks.size() == 2) {
                     Hashtable props =
                         HtmlUtils.parseHtmlProperties(toks.get(1));
-                    accordianState.activeSegment = Misc.getProperty(props,
+                    accordionState.activeSegment = Misc.getProperty(props,
                             "activeSegment", 0);
-                    accordianState.animate = Misc.getProperty(props,
-                            "animate", accordianState.animate);
-                    accordianState.heightStyle = Misc.getProperty(props,
-                            "heightStyle", accordianState.heightStyle);
-                    accordianState.collapsible = Misc.getProperty(props,
-                            "collapsible", accordianState.collapsible);
-                    accordianState.decorate = Misc.getProperty(props,
-                            "decorate", accordianState.decorate);
+                    accordionState.animate = Misc.getProperty(props,
+                            "animate", accordionState.animate);
+                    accordionState.heightStyle = Misc.getProperty(props,
+                            "heightStyle", accordionState.heightStyle);
+                    accordionState.collapsible = Misc.getProperty(props,
+                            "collapsible", accordionState.collapsible);
+                    accordionState.decorate = Misc.getProperty(props,
+                            "decorate", accordionState.decorate);
                 }
 
                 buff.append("\n");
@@ -1087,30 +1087,30 @@ public class WikiUtil {
                         HtmlUtils.TAG_DIV,
                         HtmlUtils.cssClass(
                             " ui-accordion ui-widget ui-helper-reset") + HtmlUtils.id(
-                            accordianState.id)));
+                            accordionState.id)));
                 buff.append("\n");
 
                 continue;
             }
 
-            if (tline.startsWith("-accordian")) {
-                if (accordianStates.size() == 0) {
-                    buff.append("No open accordian tag");
+            if (tline.startsWith("-accordian") || tline.startsWith("-accordion")) {
+                if (accordionStates.size() == 0) {
+                    buff.append("No open accordion tag");
 
                     continue;
                 }
                 buff.append("\n");
                 buff.append("</div>");
                 buff.append("\n");
-                AccordianState accordianState =
-                    accordianStates.get(accordianStates.size() - 1);
-                accordianStates.remove(accordianStates.size() - 1);
-                String args = "{heightStyle: \"" + accordianState.heightStyle
+                AccordionState accordionState =
+                    accordionStates.get(accordionStates.size() - 1);
+                accordionStates.remove(accordionStates.size() - 1);
+                String args = "{heightStyle: \"" + accordionState.heightStyle
                               + "\"" + ", collapsible: "
-                              + accordianState.collapsible + ", active: "
-                              + accordianState.activeSegment + ", animate:"
-                              + accordianState.animate + "}";
-                js.append("HtmlUtil.makeAccordian(\"#" + accordianState.id
+                              + accordionState.collapsible + ", active: "
+                              + accordionState.activeSegment + ", animate:"
+                              + accordionState.animate + "}";
+                js.append("HtmlUtil.makeAccordion(\"#" + accordionState.id
                           + "\" " + "," + args + ");\n");
                 buff.append("\n");
 
@@ -1118,13 +1118,13 @@ public class WikiUtil {
             }
 
             if (tline.startsWith("+segment")) {
-                if (accordianStates.size() == 0) {
-                    buff.append("No open accordian tag");
+                if (accordionStates.size() == 0) {
+                    buff.append("No open accordion tag");
 
                     continue;
                 }
-                AccordianState accordianState =
-                    accordianStates.get(accordianStates.size() - 1);
+                AccordionState accordionState =
+                    accordionStates.get(accordionStates.size() - 1);
                 List<String> toks  = StringUtil.splitUpTo(tline, " ", 2);
                 String       title = (toks.size() > 1)
                                      ? toks.get(1)
@@ -1132,7 +1132,7 @@ public class WikiUtil {
                 buff.append("\n");
                 buff.append(HtmlUtils.open(HtmlUtils.TAG_H3,
                         HtmlUtils.cssClass(" ui-accordion-header ui-helper-reset ui-corner-top")
-                        + (accordianState.decorate
+                        + (accordionState.decorate
                            ? ""
                            : " style=\"border:0px;background:none;\" ")));
                 buff.append("\n");
@@ -1146,9 +1146,9 @@ public class WikiUtil {
                     HtmlUtils.open(
                         "div",
                         HtmlUtils.id(contentsId)
-                        + HtmlUtils.cssClass("ramadda-accordian-contents")));
+                        + HtmlUtils.cssClass("ramadda-accordion-contents")));
                 buff.append("\n");
-                accordianState.segmentId++;
+                accordionState.segmentId++;
 
                 continue;
             }
@@ -2419,7 +2419,7 @@ public class WikiUtil {
      * @version        $version$, Wed, Jul 31, '19
      * @author         Enter your name here...    
      */
-    public static class AccordianState extends ContentState {
+    public static class AccordionState extends ContentState {
 
         /** _more_          */
         int segmentId = 0;
@@ -2442,7 +2442,7 @@ public class WikiUtil {
         /**
          * _more_
          */
-        public AccordianState() {}
+        public AccordionState() {}
     }
 
 

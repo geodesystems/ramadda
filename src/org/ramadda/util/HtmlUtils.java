@@ -5264,11 +5264,11 @@ public class HtmlUtils {
      *
      * @throws Exception _more_
      */
-    public static void makeAccordian(Appendable sb, String title,
+    public static void makeAccordion(Appendable sb, String title,
                                      String contents)
             throws Exception {
 
-        makeAccordian(sb, title, contents, null, null);
+        makeAccordion(sb, title, contents, null, null);
     }
 
     /**
@@ -5282,11 +5282,11 @@ public class HtmlUtils {
      *
      * @throws Exception _more_
      */
-    public static void makeAccordian(Appendable sb, String title,
+    public static void makeAccordion(Appendable sb, String title,
                                      String contents, String wrapperClass,
                                      String headerClass)
             throws Exception {
-        makeAccordian(sb, title, contents, true, wrapperClass, headerClass);
+        makeAccordion(sb, title, contents, true, wrapperClass, headerClass);
     }
 
     /**
@@ -5301,7 +5301,7 @@ public class HtmlUtils {
      *
      * @throws Exception _more_
      */
-    public static void makeAccordian(Appendable sb, String title,
+    public static void makeAccordion(Appendable sb, String title,
                                      String contents, boolean collapse,
                                      String wrapperClass, String headerClass)
             throws Exception {
@@ -5311,11 +5311,11 @@ public class HtmlUtils {
         List<String> tabs   = new ArrayList<String>();
         titles.add(title);
         tabs.add(contents);
-        makeAccordian(sb, titles, tabs, collapse, wrapperClass, headerClass);
+        makeAccordion(sb, titles, tabs, collapse, wrapperClass, headerClass);
     }
 
     /**
-     * Add an accordian of sections to the page
+     * Add an accordion of sections to the page
      *
      * @param sb        the StringBuilder/StringBuilder to append to
      * @param titles    the title for each section
@@ -5323,10 +5323,10 @@ public class HtmlUtils {
      *
      * @throws Exception  some problem
      */
-    public static void makeAccordian(Appendable sb, List<String> titles,
+    public static void makeAccordion(Appendable sb, List<String> titles,
                                      List<String> contents)
             throws Exception {
-        makeAccordian(sb, titles, contents, false, null, null);
+        makeAccordion(sb, titles, contents, false, null, null);
     }
 
     /**
@@ -5339,16 +5339,16 @@ public class HtmlUtils {
      *
      * @throws Exception _more_
      */
-    public static void makeAccordian(Appendable sb, List<String> titles,
+    public static void makeAccordion(Appendable sb, List<String> titles,
                                      List<String> contents, boolean collapse)
             throws Exception {
-        makeAccordian(sb, titles, contents, collapse, null, null);
+        makeAccordion(sb, titles, contents, collapse, null, null);
     }
 
 
 
     /**
-     * Add an accordian of sections to the page
+     * Add an accordion of sections to the page
      *
      * @param sb        the StringBuilder/StringBuilder to append to
      * @param titles    the title for each section
@@ -5359,17 +5359,17 @@ public class HtmlUtils {
      *
      * @throws Exception  some problem
      */
-    public static void makeAccordian(Appendable sb, List<String> titles,
+    public static void makeAccordion(Appendable sb, List<String> titles,
                                      List<String> contents, boolean collapse,
                                      String wrapperClass, String headerClass)
             throws Exception {
 
-        String accordianId = "accordion_" + (blockCnt++);
+        String accordionId = "accordion_" + (blockCnt++);
         sb.append(HtmlUtils.open(HtmlUtils.TAG_DIV,
                                  HtmlUtils.cssClass(((wrapperClass != null)
                 ? wrapperClass
                 : "") + " ui-accordion ui-widget ui-helper-reset") + HtmlUtils
-                    .id(accordianId)));
+                    .id(accordionId)));
         for (int i = 0; i < titles.size(); i++) {
             String title   = titles.get(i);
             String content = contents.get(i);
@@ -5384,7 +5384,7 @@ public class HtmlUtils {
             content = HtmlUtils.div(
                 content,
                 HtmlUtils.id(contentsId)
-                + HtmlUtils.cssClass("ramadda-accordian-contents"));
+                + HtmlUtils.cssClass("ramadda-accordion-contents"));
             sb.append(HtmlUtils.div(content));
         }
         sb.append("</div>");
@@ -5397,7 +5397,7 @@ public class HtmlUtils {
         }
 
         HtmlUtils.script(sb,
-                         "HtmlUtils.makeAccordian(\"#" + accordianId + "\" "
+                         "HtmlUtils.makeAccordion(\"#" + accordionId + "\" "
                          + "," + args + ");\n");
     }
 

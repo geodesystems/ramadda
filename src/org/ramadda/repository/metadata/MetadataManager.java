@@ -1099,7 +1099,7 @@ public class MetadataManager extends RepositoryManager {
         }
         sb.append("</ul>");
 
-        //        HtmlUtils.makeAccordian(sb, titles, contents);
+        //        HtmlUtils.makeAccordion(sb, titles, contents);
 
         return sb;
     }
@@ -1599,7 +1599,7 @@ public class MetadataManager extends RepositoryManager {
                 contents.add(content);
             }
             sb.append(HtmlUtils.beginInset(10, 10, 10, 10));
-            HtmlUtils.makeAccordian(sb, titles, contents);
+            HtmlUtils.makeAccordion(sb, titles, contents);
             sb.append(HtmlUtils.endInset());
             sb.append(buttons);
             HtmlUtils.comment(sb, "Metadata form end");
@@ -1757,7 +1757,7 @@ public class MetadataManager extends RepositoryManager {
             tabs.add(HtmlUtils.insetDiv(groupMap.get(name).toString(), 5, 10,
                                         5, 10));
         }
-        HtmlUtils.makeAccordian(sb, titles, tabs);
+        HtmlUtils.makeAccordion(sb, titles, tabs);
     }
 
 

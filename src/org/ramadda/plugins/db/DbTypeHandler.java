@@ -2024,7 +2024,7 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
         /*
           advanced.append(HtmlUtils.formTableClose());
           sb.append("<tr><td colspan=3>");
-          HtmlUtils.makeAccordian(sb, msg("Advanced..."),
+          HtmlUtils.makeAccordion(sb, msg("Advanced..."),
           HtmlUtils.inset(advanced.toString(), 0, 20,
           10, 0));
           sb.append("</td></tr>");
@@ -4909,7 +4909,7 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
             tabs.add(HtmlUtils.insetDiv(map.get(rowValue).toString(), 0, 20,
                                         10, 0));
         }
-        HtmlUtils.makeAccordian(sb, titles, tabs, false);
+        HtmlUtils.makeAccordion(sb, titles, tabs, false);
         addViewFooter(request, entry, sb);
 
         return new Result(getTitle(request, entry), sb);
