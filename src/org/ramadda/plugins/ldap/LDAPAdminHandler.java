@@ -21,6 +21,7 @@ import org.ramadda.repository.*;
 import org.ramadda.repository.admin.*;
 
 import org.ramadda.util.HtmlUtils;
+import org.ramadda.util.Utils;
 
 import ucar.unidata.xml.XmlUtil;
 
@@ -260,7 +261,7 @@ public class LDAPAdminHandler extends AdminHandlerImpl {
             return value;
         }
 
-        return new String(RepositoryUtil.encodeBase64(value.getBytes()));
+        return new String(Utils.encodeBase64(value));
     }
 
     /**
@@ -281,7 +282,7 @@ public class LDAPAdminHandler extends AdminHandlerImpl {
             return value;
         }
 
-        return new String(RepositoryUtil.decodeBase64(value));
+        return new String(Utils.decodeBase64(value));
     }
 
 

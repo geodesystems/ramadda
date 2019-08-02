@@ -877,6 +877,7 @@ public class MapManager extends RepositoryManager implements WikiConstants {
                 cleanupInfo(request,
                             getMapManager().makeInfoBubble(request, entry,
                                 true));
+
             js.append(
                 HtmlUtils.call(
                     id + ".addPlacemark", HtmlUtils.comma(
@@ -1007,7 +1008,7 @@ public class MapManager extends RepositoryManager implements WikiConstants {
             throws Exception {
         String bubble = makeInfoBubble(request, entry);
         if (encodeResults) {
-            return "base64:" + RepositoryUtil.encodeBase64(bubble.getBytes());
+            return "base64:" + Utils.encodeBase64(bubble);
         }
 
         return bubble;
@@ -1030,12 +1031,15 @@ public class MapManager extends RepositoryManager implements WikiConstants {
         String fromEntry = entry.getTypeHandler().getMapInfoBubble(request,
                                entry);
         if (fromEntry != null) {
-            fromEntry = getWikiManager().wikifyEntry(request, entry,
-                    fromEntry, false, null, null,
-                    new String[] { WikiConstants.WIKI_TAG_MAPENTRY,
-                                   WikiConstants.WIKI_TAG_MAP });
-
-            return getRepository().translate(request, fromEntry);
+	    //If its not json then wikify it
+	    if(!fromEntry.startsWith("{")) {
+		fromEntry = getWikiManager().wikifyEntry(request, entry,
+							 fromEntry, false, null, null,
+							 new String[] { WikiConstants.WIKI_TAG_MAPENTRY,
+									WikiConstants.WIKI_TAG_MAP });
+		fromEntry = getRepository().translate(request, fromEntry);
+	    }
+	    return fromEntry;
         }
         StringBuilder info    = new StringBuilder();
 

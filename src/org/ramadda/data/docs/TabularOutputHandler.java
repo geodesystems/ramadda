@@ -279,7 +279,7 @@ public class TabularOutputHandler extends OutputHandler {
      */
     private Result makeHtmlResult(Request request, String s)
             throws Exception {
-        s = new String(RepositoryUtil.encodeBase64(s.getBytes()));
+        s = new String(Utils.encodeBase64(s));
         s = Json.mapAndQuote("html", s);
 
         return new Result(s, "application/json");
@@ -517,8 +517,7 @@ public class TabularOutputHandler extends OutputHandler {
                 if ( !csvUtil.getOkToRun()) {
                     lastResult = "stopped";
                     String s = new String(
-                                   RepositoryUtil.encodeBase64(
-                                       lastResult.getBytes()));
+					  Utils.encodeBase64(lastResult));
                     s = Json.mapAndQuote("result", s);
 
                     return new Result(s, "application/json");
@@ -590,16 +589,13 @@ public class TabularOutputHandler extends OutputHandler {
 
                 return new Result(s, "application/json");
             }
-            String s = new String(
-                           RepositoryUtil.encodeBase64(
-                               lastResult.getBytes()));
+            String s = new String(Utils.encodeBase64(lastResult));
             s = Json.mapAndQuote("result", s);
 
             return new Result(s, "application/json");
         } catch (Exception exc) {
             String s = new String(
-                           RepositoryUtil.encodeBase64(
-                               exc.toString().getBytes()));
+				  Utils.encodeBase64(exc.toString()));
             s = Json.mapAndQuote("error", s);
             exc.printStackTrace();
 

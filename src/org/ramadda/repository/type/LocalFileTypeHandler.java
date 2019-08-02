@@ -146,7 +146,7 @@ public class LocalFileTypeHandler extends ExtensibleGroupTypeHandler {
             //            System.err.println("returning baseFile");
             return baseFile;
         }
-        String subPath = new String(RepositoryUtil.decodeBase64(id));
+        String subPath = new String(Utils.decodeBase64(id));
         //        System.err.println("subpath:" + subPath);
         File file = new File(IOUtil.joinDir(baseFile, subPath));
 
@@ -460,7 +460,7 @@ public class LocalFileTypeHandler extends ExtensibleGroupTypeHandler {
     private String getFileComponentOfSynthId(String rootDirPath,
                                              File childFile) {
         String subId = childFile.toString().substring(rootDirPath.length());
-        subId = RepositoryUtil.encodeBase64(subId.getBytes()).replace("\n",
+        subId = Utils.encodeBase64(subId).replace("\n",
                                             "");
 
         return subId;

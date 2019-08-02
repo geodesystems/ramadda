@@ -124,7 +124,7 @@ public class RepositoryUtil {
             md.update(string.getBytes("UTF-8"));
             byte[] bytes  = md.digest();
             String s      = new String(bytes);
-            String result = encodeBase64(bytes);
+            String result = Utils.encodeBase64Bytes(bytes);
 
             //            System.err.println("Hash input string:" + string  +":");
             //            System.err.println("Hash result:" + s  +":");
@@ -140,33 +140,8 @@ public class RepositoryUtil {
 
 
 
-    private static final java.util.Base64.Encoder base64Encoder = java.util.Base64.getEncoder();
-    private static final java.util.Base64.Decoder base64Decoder = java.util.Base64.getDecoder();
 
 
-    /**
-     * Encode the byte string as a base64 encoded string
-     *
-     * @param b  the bytes
-     *
-     * @return  the encoded string
-     */
-    public static String encodeBase64(byte[] b) {
-	return new String(base64Encoder.encode(b));
-	//return javax.xml.bind.DatatypeConverter.printBase64Binary(b);
-    }
-
-    /**
-     * Decode the given base64 String
-     *
-     * @param s Holds the base64 encoded bytes
-     * @return The decoded bytes
-     */
-    public static byte[] decodeBase64(String s) {
-	System.err.println(s);
-	return base64Decoder.decode(s.getBytes());
-	//        return javax.xml.bind.DatatypeConverter.parseBase64Binary(s);
-    }
 
 
     /**
@@ -264,8 +239,7 @@ public class RepositoryUtil {
             MessageDigest md = MessageDigest.getInstance("SHA-512");
             md.update(password.getBytes("UTF-8"));
             byte[] bytes  = md.digest();
-            String result = encodeBase64(bytes);
-
+            String result = Utils.encodeBase64Bytes(bytes);
             return result.trim();
         } catch (NoSuchAlgorithmException nsae) {
             throw new IllegalStateException(nsae.getMessage());
@@ -316,17 +290,6 @@ public class RepositoryUtil {
      * @throws Exception _more_
      */
     public static void main(String[] args) throws Exception {
-	String s = "<wiki>\n" +
-"+section title={{name}} #\n" +
-"{{map listentries=\"true\" width=\"800\" height=\"650\" sort=\"name\"}}\n" +
-"-section\\n" +
-"+section label=\"The Stations\" #\n" +
-"{{tree details=\"false\" sort=\"name\"}}\n" +
-	    "-section\n";
-
-
-	String b =encodeBase64(new String(s).getBytes());
-	System.err.println(new String(decodeBase64(b)));
     }
 
 

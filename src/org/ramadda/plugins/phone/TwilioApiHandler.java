@@ -656,7 +656,7 @@ public class TwilioApiHandler extends RepositoryManager implements RequestHandle
         HttpURLConnection huc = (HttpURLConnection) url.openConnection();
         String auth = request.getString(ARG_ACCOUNTSID, null) + ":"
                       + authToken;
-        String encoding = RepositoryUtil.encodeBase64(auth.getBytes());
+        String encoding = Utils.encodeBase64(auth);
         huc.addRequestProperty("Authorization", "Basic " + encoding);
         String transcription =
             new String(IOUtil.readBytes(huc.getInputStream()));
@@ -695,7 +695,7 @@ public class TwilioApiHandler extends RepositoryManager implements RequestHandle
         HttpURLConnection huc   = (HttpURLConnection) myurl.openConnection();
         String auth = getRepository().getProperty(PROP_APPID, null) + ":"
                       + getRepository().getProperty(PROP_AUTHTOKEN, null);
-        String encoding = RepositoryUtil.encodeBase64(auth.getBytes());
+        String encoding = Utils.encodeBase64(auth);
         huc.addRequestProperty("Authorization", "Basic " + encoding);
 
         huc.setRequestMethod("POST");

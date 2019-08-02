@@ -22,6 +22,7 @@ import org.ramadda.repository.RepositoryUtil;
 import org.ramadda.repository.RequestUrl;
 import org.ramadda.repository.util.ServerInfo;
 import org.ramadda.util.HtmlUtils;
+import org.ramadda.util.Utils;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -1381,7 +1382,7 @@ public class RepositoryClient extends RepositoryBase {
             password = null;
         } else {
             password =
-                new String(RepositoryUtil.decodeBase64(new String(value)));
+                new String(Utils.decodeBase64(new String(value)));
         }
     }
 
@@ -1395,8 +1396,7 @@ public class RepositoryClient extends RepositoryBase {
         if (password == null) {
             return null;
         }
-
-        return RepositoryUtil.encodeBase64(password.getBytes()).getBytes();
+        return Utils.encodeBase64(password).getBytes();
     }
 
     /**

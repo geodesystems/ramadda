@@ -1476,8 +1476,8 @@ public class Column implements DataTypes, Constants {
         } else if (isType(DATATYPE_PASSWORD)) {
             if (values[offset] != null) {
                 String value =
-                    new String(RepositoryUtil.encodeBase64(toString(values,
-                        offset).getBytes()).getBytes());
+                    new String(Utils.encodeBase64(toString(values,
+                        offset)).getBytes());
                 statement.setString(statementIdx, value);
             } else {
                 statement.setString(statementIdx, null);
@@ -1623,7 +1623,7 @@ public class Column implements DataTypes, Constants {
         } else if (isType(DATATYPE_PASSWORD)) {
             String value = results.getString(valueIdx);
             if (value != null) {
-                byte[] bytes = RepositoryUtil.decodeBase64(value);
+                byte[] bytes = Utils.decodeBase64(value);
                 if (bytes != null) {
                     value = new String(bytes);
                 }

@@ -700,7 +700,7 @@ public class SessionManager extends RepositoryManager {
                 //Authorization: Basic QWxhZGRpbjpvcGVuIHNlc2FtZQ==
                 if (auth.startsWith("Basic")) {
                     auth = new String(
-                        RepositoryUtil.decodeBase64(
+                        Utils.decodeBase64(
                             auth.substring(5).trim()));
                     String[] toks = StringUtil.split(auth, ":", 2);
                     if (toks.length == 2) {

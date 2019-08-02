@@ -696,7 +696,7 @@ public class PageHandler extends RepositoryManager {
                     }
                     if (prop.startsWith("bsf:")) {
                         prop = new String(
-                            RepositoryUtil.decodeBase64(prop.substring(4)));
+                            Utils.decodeBase64(prop.substring(4)));
                     }
                     result.append(prop);
                 }
@@ -1955,8 +1955,8 @@ public class PageHandler extends RepositoryManager {
                     request.remove(ARG_MESSAGE);
                     request.remove(ARG_REDIRECT);
                     request.remove(ARG_USER_ID);
-                    String redirect = RepositoryUtil.encodeBase64(
-                                          request.getUrl().getBytes());
+                    String redirect = Utils.encodeBase64(
+                                          request.getUrl());
                     url = request.makeUrl(getRepositoryBase().URL_USER_LOGIN,
                                           ARG_REDIRECT, redirect);
                 }

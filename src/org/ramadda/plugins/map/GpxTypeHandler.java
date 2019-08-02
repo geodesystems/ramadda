@@ -817,7 +817,7 @@ public class GpxTypeHandler extends PointTypeHandler {
                 sinfo = sinfo.replaceAll("'", "\\'");
 
                 sinfo = "base64:"
-                        + RepositoryUtil.encodeBase64(sinfo.getBytes());
+		    + Utils.encodeBase64(sinfo);
                 String id = entry.getId() + "-" + markerCnt;
                 markerCnt++;
                 map.addMarker(id, lat, lon, null, name, sinfo, entry.getId());

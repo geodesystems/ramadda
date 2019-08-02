@@ -23,6 +23,7 @@ import org.ramadda.repository.*;
 import org.ramadda.repository.auth.*;
 
 import org.ramadda.util.HtmlUtils;
+import org.ramadda.util.Utils;
 
 import ucar.unidata.util.IOUtil;
 import ucar.unidata.util.Misc;
@@ -333,7 +334,7 @@ public class FtpAction extends MonitorAction {
             password = null;
         } else {
             password =
-                new String(RepositoryUtil.decodeBase64(new String(value)));
+                new String(Utils.decodeBase64(new String(value)));
         }
     }
 
@@ -347,7 +348,7 @@ public class FtpAction extends MonitorAction {
             return null;
         }
 
-        return RepositoryUtil.encodeBase64(password.getBytes()).getBytes();
+        return Utils.encodeBase64(password).getBytes();
     }
 
 

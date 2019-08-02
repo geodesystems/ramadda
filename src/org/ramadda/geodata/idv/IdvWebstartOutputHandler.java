@@ -30,6 +30,7 @@ import org.ramadda.repository.metadata.Metadata;
 import org.ramadda.repository.output.OutputHandler;
 import org.ramadda.repository.output.OutputType;
 import org.ramadda.util.HtmlUtils;
+import org.ramadda.util.Utils;
 
 import org.w3c.dom.Element;
 
@@ -250,9 +251,7 @@ public class IdvWebstartOutputHandler extends OutputHandler {
                             embeddedBundle =
                                 embeddedBundle.replace("${datasource}",
                                     opendapUrl);
-                            embeddedBundle = RepositoryUtil.encodeBase64(
-                                embeddedBundle.getBytes());
-
+                            embeddedBundle = Utils.encodeBase64(embeddedBundle);
                             break;
                         }
                     }

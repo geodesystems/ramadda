@@ -605,7 +605,7 @@ public class UserManager extends RepositoryManager {
             byte[] rawHmac = mac.doFinal(data.getBytes());
 
             // base64-encode the hmac
-            return RepositoryUtil.encodeBase64(rawHmac);
+            return Utils.encodeBase64Bytes(rawHmac);
         } catch (Exception e) {
             throw new SignatureException("Failed to generate HMAC : "
                                          + e.getMessage());
@@ -3101,7 +3101,7 @@ public class UserManager extends RepositoryManager {
                             msg("You are logged in")));
                     if (request.exists(ARG_REDIRECT)) {
                         destUrl = new String(
-                            RepositoryUtil.decodeBase64(
+                            Utils.decodeBase64(
                                 request.getUnsafeString(ARG_REDIRECT, "")));
                         //Gack  - make sure we don't redirect to the logout page
                         if (destUrl.indexOf("logout") < 0) {
@@ -4151,7 +4151,7 @@ public class UserManager extends RepositoryManager {
                 }
                 bytes = newBytes;
             }
-            String result = RepositoryUtil.encodeBase64(bytes);
+            String result = Utils.encodeBase64Bytes(bytes);
 
             return result.trim();
         } catch (Exception exc) {

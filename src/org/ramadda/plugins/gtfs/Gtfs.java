@@ -844,7 +844,7 @@ public class Gtfs implements Constants {
                 return null;
             }
             String auth = lyftId + ":" + lyftSecret;
-            auth = Utils.encodeBase64(auth.getBytes());
+            auth = Utils.encodeBase64(auth);
             String url = "https://api.lyft.com/oauth/token";
             huc = (HttpURLConnection) new URL(url).openConnection();
 
@@ -1947,7 +1947,7 @@ public class Gtfs implements Constants {
                     && Utils.stringDefined(rtPassword)) {
                 String authString = rtId.trim() + ":" + rtPassword.trim();
                 String authStringEnc =
-                    Utils.encodeBase64(authString.getBytes());
+                    Utils.encodeBase64(authString);
                 urlConnection.setRequestProperty("Authorization",
                         "Basic " + authStringEnc);
             }

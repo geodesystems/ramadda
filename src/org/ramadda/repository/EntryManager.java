@@ -5400,7 +5400,7 @@ public class EntryManager extends RepositoryManager {
                                          textWidget));
 
         sb.append(HtmlUtils.comment("The description"));
-        String encodedDesc = Utils.encodeBase64(desc.getBytes());
+        String encodedDesc = Utils.encodeBase64(desc);
         sb.append(HtmlUtils.hidden(ARG_DESCRIPTION + "_encoded",
                                    encodedDesc));
 
@@ -5950,7 +5950,7 @@ public class EntryManager extends RepositoryManager {
                         && XmlUtil.getAttribute(descriptionNode, "encoded",
                             false)) {
                     description =
-                        new String(RepositoryUtil.decodeBase64(description));
+                        new String(Utils.decodeBase64(description));
                 }
             }
         }
@@ -6979,7 +6979,7 @@ public class EntryManager extends RepositoryManager {
      */
     public String getRemoteEntryId(String server, String id) {
         return ID_PREFIX_REMOTE
-               + RepositoryUtil.encodeBase64(server.getBytes())
+               + Utils.encodeBase64(server)
                + TypeHandler.ID_DELIMITER + id;
     }
 
@@ -7000,7 +7000,7 @@ public class EntryManager extends RepositoryManager {
         if (pair == null) {
             return new String[] { "", "" };
         }
-        pair[0] = new String(RepositoryUtil.decodeBase64(pair[0]));
+        pair[0] = new String(Utils.decodeBase64(pair[0]));
 
         return pair;
     }

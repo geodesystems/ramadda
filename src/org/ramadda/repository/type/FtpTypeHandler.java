@@ -20,6 +20,7 @@ package org.ramadda.repository.type;
 import org.apache.commons.net.ftp.*;
 
 import org.ramadda.repository.*;
+import org.ramadda.util.Utils;
 
 import org.ramadda.util.HtmlUtils;
 
@@ -298,7 +299,7 @@ public class FtpTypeHandler extends ExtensibleGroupTypeHandler {
             return baseDir;
         }
 
-        return new String(RepositoryUtil.decodeBase64(id));
+        return new String(Utils.decodeBase64(id));
     }
 
     /**
@@ -314,8 +315,7 @@ public class FtpTypeHandler extends ExtensibleGroupTypeHandler {
     public String getSynthId(Entry parentEntry, String rootDirPath,
                              String parentPath, FTPFile file) {
         String id = parentPath + "/" + file.getName();
-        id = RepositoryUtil.encodeBase64(id.getBytes()).replace("\n", "");
-
+        id = Utils.encodeBase64(id).replace("\n", "");
         return Repository.ID_PREFIX_SYNTH + parentEntry.getId() + ":" + id;
     }
 
@@ -332,8 +332,7 @@ public class FtpTypeHandler extends ExtensibleGroupTypeHandler {
     public String getSynthId(Entry parentEntry, String rootDirPath,
                              String parentPath) {
         String id = parentPath;
-        id = RepositoryUtil.encodeBase64(id.getBytes()).replace("\n", "");
-
+        id = Utils.encodeBase64(id).replace("\n", "");
         return Repository.ID_PREFIX_SYNTH + parentEntry.getId() + ":" + id;
     }
 
@@ -647,7 +646,7 @@ public class FtpTypeHandler extends ExtensibleGroupTypeHandler {
 
             return new MyFTPFile(file, baseDir);
         } else {
-            path = new String(RepositoryUtil.decodeBase64(id));
+            path = new String(Utils.decodeBase64(id));
         }
         FTPFile ftpFile = getCache(parentEntry).get(path);
         if (ftpFile != null) {

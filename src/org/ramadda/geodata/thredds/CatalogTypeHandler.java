@@ -22,11 +22,11 @@ import org.ramadda.repository.auth.*;
 import org.ramadda.repository.metadata.*;
 import org.ramadda.repository.type.*;
 import org.ramadda.util.HtmlUtils;
+import org.ramadda.util.Utils;
 
-import org.ramadda.util.sql.Clause;
 
 
-import org.ramadda.util.sql.SqlUtil;
+
 
 
 import org.w3c.dom.*;
@@ -132,7 +132,7 @@ public class CatalogTypeHandler extends ExtensibleGroupTypeHandler {
     private String[] parseId(String id) {
         if (id.startsWith(ID_PREFIX_SYNTH)) {
             id = id.substring(ID_PREFIX_SYNTH.length());
-            id = new String(RepositoryUtil.decodeBase64(id));
+            id = new String(Utils.decodeBase64(id));
         }
         int idx = id.indexOf(":id:");
         if (idx < 0) {
@@ -248,8 +248,7 @@ public class CatalogTypeHandler extends ExtensibleGroupTypeHandler {
      * @return _more_
      */
     private String getCatalogId(Entry mainEntry, String id) {
-        id = RepositoryUtil.encodeBase64(id.getBytes());
-
+        id = Utils.encodeBase64(id);
         return ID_PREFIX_SYNTH + id;
     }
 

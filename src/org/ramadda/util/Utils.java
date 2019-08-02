@@ -1690,7 +1690,7 @@ public class Utils {
     public static String obfuscate(String s, boolean base64) {
         s = rot13(s);
         if (base64) {
-            return encodeBase64(s.getBytes());
+            return encodeBase64(s);
         }
 
         return s;
@@ -1713,6 +1713,9 @@ public class Utils {
     }
 
 
+    private static final java.util.Base64.Encoder base64Encoder = java.util.Base64.getEncoder();
+    private static final java.util.Base64.Decoder base64Decoder = java.util.Base64.getDecoder();
+
 
     /**
      * _more_
@@ -1721,18 +1724,36 @@ public class Utils {
      *
      * @return _more_
      */
-    public static String encodeBase64(byte[] b) {
-        return javax.xml.bind.DatatypeConverter.printBase64Binary(b);
+    public static String encodeBase64Bytes(byte[] b) {
+	return new String(base64Encoder.encode(b));
+    }
+
+
+    public static String encodeBase64(String s) {
+	try {
+	    return encodeBase64Bytes(s.getBytes("UTF-8"));
+	} catch(Exception exc) {
+	    throw new RuntimeException(exc);
+	}
     }
 
 
     /**
-     *                                                                                                                             * Decode the given base64 String
-     *                                                                                                                               * @param s Holds the base64 encoded bytes
+     *
+     * Decode the given base64 String
+     *
+     * @param s Holds the base64 encoded bytes
      * @return The decoded bytes
      */
     public static byte[] decodeBase64(String s) {
-        return javax.xml.bind.DatatypeConverter.parseBase64Binary(s);
+	byte[] b = s.getBytes();
+	try {
+	    return base64Decoder.decode(b);
+	} catch(Exception exc) {
+	    //In case it was a mime encoded b64
+	    s = s.replaceAll("\r","").replaceAll("\n","").trim();
+	    return base64Decoder.decode(s.getBytes());
+	}
     }
 
 
@@ -2435,7 +2456,7 @@ public class Utils {
         IOUtil.close(bos);
         byte[] bytes = bos.toByteArray();
 
-        return encodeBase64(bytes);
+        return encodeBase64Bytes(bytes);
     }
 
     /**
@@ -3094,6 +3115,14 @@ public class Utils {
      * @throws Exception _more_
      */
     public static void main(String[] args) throws Exception {
+	if(true) {
+	    String s = "hello\nthere\nhow\nare\nyou I am fine and you asdsad asd sd sd sd asd sadas\n\nasdsdsdas\n\nasdasdas ";
+	    String s2 = XmlUtil.encodeBase64(s.getBytes("UTF-8"));
+	    String s3 = new String(decodeBase64(s2));
+	    System.err.println("s3:" +s3+":");
+	    return;
+	}
+
         if(true) {
             readImage(args[0]);
             return;

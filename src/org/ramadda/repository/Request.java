@@ -1046,7 +1046,7 @@ public class Request implements Constants, Cloneable {
         String s = o.toString();
         try {
             if (s.indexOf("/") >= 0) {
-                s = "b64:" + RepositoryUtil.encodeBase64(s.getBytes()).trim();
+                s = "b64:" + Utils.encodeBase64(s).trim();
             }
 
             //            s = java.net.URLEncoder.encode(s, "UTF-8");
@@ -1069,7 +1069,7 @@ public class Request implements Constants, Cloneable {
             if (s.startsWith("b64:")) {
                 s = s.substring(4);
                 //s = java.net.URLDecoder.decode(s, "UTF-8");     
-                s = new String(RepositoryUtil.decodeBase64(s));
+                s = new String(Utils.decodeBase64(s));
             }
 
             return s;

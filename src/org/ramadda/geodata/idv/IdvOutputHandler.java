@@ -35,6 +35,7 @@ import org.ramadda.repository.metadata.MetadataType;
 import org.ramadda.repository.output.OutputHandler;
 import org.ramadda.repository.output.OutputType;
 import org.ramadda.util.HtmlUtils;
+import org.ramadda.util.Utils;
 
 import org.w3c.dom.Element;
 
@@ -2323,7 +2324,7 @@ public class IdvOutputHandler extends OutputHandler implements IdvConstants {
             args.append("<argument>-b64isl</argument>");
             args.append(
                 "<argument>"
-                + RepositoryUtil.encodeBase64(isl.toString().getBytes())
+                + Utils.encodeBase64(isl.toString())
                 + "</argument>");
             jnlp = jnlp.replace("${args}", args.toString());
 
@@ -2644,7 +2645,7 @@ public class IdvOutputHandler extends OutputHandler implements IdvConstants {
                 args.append("<argument>-b64isl</argument>");
                 args.append(
                     "<argument>"
-                    + RepositoryUtil.encodeBase64(isl.toString().getBytes())
+                    + Utils.encodeBase64(isl.toString())
                     + "</argument>");
                 jnlp = jnlp.replace("${args}", args.toString());
 

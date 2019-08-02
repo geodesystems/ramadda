@@ -388,7 +388,7 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
         }
         List<Object[]> valueList = (List<Object[]>) xmlEncoder.toObject(
                                        new String(
-                                           RepositoryUtil.decodeBase64(
+                                           Utils.decodeBase64(
                                                values)));
         if (valueList == null) {
             throw new IllegalArgumentException(

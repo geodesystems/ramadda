@@ -213,7 +213,7 @@ public class MetadataHandler extends RepositoryManager {
                                              -1);
             String text = XmlUtil.getChildText(childNode);
             if (XmlUtil.getAttribute(childNode, "encoded", true)) {
-                text = new String(RepositoryUtil.decodeBase64(text));
+                text = new String(Utils.decodeBase64(text));
             }
             text = metadata.trimToMaxLength(text);
             metadata.setAttr(index, text);

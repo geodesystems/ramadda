@@ -22,6 +22,7 @@ import org.ramadda.repository.RepositoryUtil;
 import org.ramadda.repository.RequestUrl;
 import org.ramadda.repository.util.ServerInfo;
 import org.ramadda.util.HtmlUtils;
+import org.ramadda.util.Utils;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -289,7 +290,7 @@ public class RepositorySearch extends RepositoryClient {
                 for (int k = 0; k < attrs.size(); k++) {
                     Element attr = (Element) attrs.get(k);
                     String childText = new String(
-                                           RepositoryUtil.decodeBase64(
+                                           Utils.decodeBase64(
                                                XmlUtil.getChildText(attr)));
                     System.out.println("\t\tattr[" + k + "]=" + childText);
                 }

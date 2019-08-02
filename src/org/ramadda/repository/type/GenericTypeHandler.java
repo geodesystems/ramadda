@@ -24,6 +24,7 @@ import org.ramadda.repository.database.*;
 import org.ramadda.repository.output.*;
 import org.ramadda.util.FormInfo;
 import org.ramadda.util.HtmlUtils;
+import org.ramadda.util.Utils;
 
 import org.ramadda.util.sql.Clause;
 
@@ -510,7 +511,7 @@ public class GenericTypeHandler extends TypeHandler {
             if (child != null) {
                 value = XmlUtil.getChildText(child);
                 if (XmlUtil.getAttribute(child, "encoded", false)) {
-                    value = new String(RepositoryUtil.decodeBase64(value));
+                    value = new String(Utils.decodeBase64(value));
                 }
             }
             if (value == null) {

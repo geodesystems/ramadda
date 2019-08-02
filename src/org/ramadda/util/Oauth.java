@@ -111,7 +111,7 @@ public class Oauth {
     public static String makeHash(String key, String secret) {
         String s = key + ":" + secret;
 
-        return AUTH_PREFIX + Utils.encodeBase64(s.getBytes());
+        return AUTH_PREFIX + Utils.encodeBase64(s);
     }
 
 

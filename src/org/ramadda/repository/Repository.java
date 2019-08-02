@@ -3334,8 +3334,8 @@ public class Repository extends RepositoryBase implements RequestHandler,
                 if (authMethod.equals(AuthorizationMethod.AUTH_HTML)) {
                     sb.append(
                         getPageHandler().showDialogError(inner.getMessage()));
-                    String redirect = RepositoryUtil.encodeBase64(
-                                          request.getUrl().getBytes());
+                    String redirect = Utils.encodeBase64(
+                                          request.getUrl());
                     sb.append(getUserManager().makeLoginForm(request,
                             HtmlUtils.hidden(ARG_REDIRECT, redirect)));
                 } else {  //auth isnt html
@@ -3349,8 +3349,8 @@ public class Repository extends RepositoryBase implements RequestHandler,
                         not authenticated then it throws an access exception which triggers a auth request back to the client
                         If authenticated then it redirects the client back to the original non ssl request
                         */
-                        String redirectUrl = RepositoryUtil.encodeBase64(
-                                                 request.getUrl().getBytes());
+                        String redirectUrl = Utils.encodeBase64(
+                                                 request.getUrl());
                         String url =
                             HtmlUtils.url(URL_SSLREDIRECT.toString(),
                                           ARG_REDIRECT, redirectUrl);
@@ -5911,7 +5911,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
             throw new AccessException("Cannot access data", request);
         }
         String url = request.getString(ARG_REDIRECT, "");
-        url = new String(RepositoryUtil.decodeBase64(url));
+        url = new String(Utils.decodeBase64(url));
 
         return new Result(url);
     }

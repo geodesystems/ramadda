@@ -897,8 +897,8 @@ public class Admin extends RepositoryManager {
                 ResultSet columns = dbmd.getColumns(null, null, tableName,
                                         null);
                 String encoded =
-                    new String(RepositoryUtil.encodeBase64(("text:?"
-                        + tableName).getBytes()));
+                    new String(Utils.encodeBase64(("text:?"
+                        + tableName)));
 
                 int cnt = 0;
                 if (tableName.toLowerCase().indexOf("_index_") < 0) {

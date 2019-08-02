@@ -509,7 +509,7 @@ public class ImageOutputHandler extends OutputHandler {
                 String contents = request.getString("imagecontents", "");
                 int    index    = contents.indexOf("base64,");
                 contents = contents.substring(index + 7);
-                byte[] bytes = RepositoryUtil.decodeBase64(contents);
+                byte[] bytes = Utils.decodeBase64(contents);
                 File   f     = entry.getFile();
                 getStorageManager().checkReadFile(f);
                 if ((f != null) && f.canWrite()) {
@@ -1762,7 +1762,7 @@ public class ImageOutputHandler extends OutputHandler {
 
         StringBuilder sb = new StringBuilder();
         sb.append("url(data:image/" + ext + ";base64,");
-        sb.append(RepositoryUtil.encodeBase64(bytes));
+        sb.append(Utils.encodeBase64Bytes(bytes));
         sb.append(")");
         Result result = new Result(sb.toString(), "text");
         result.setReturnFilename(path);
