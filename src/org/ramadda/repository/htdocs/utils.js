@@ -1233,12 +1233,12 @@ var HtmlUtils = {
         return HtmlUtils.div(["style", style], html);
 
     },
-    makeAccordian: function(id, args) {
+    makeAccordion: function(id, args) {
         if(args == null) args = {};
         $(function() {
-            //We initially hide the accordian contents
+            //We initially hide the accordion contents
             //Show all contents
-            var contents = $(id +" .ramadda-accordian-contents");
+            var contents = $(id +" .ramadda-accordion-contents");
             contents.css("display", "block");
             var ctorArgs = {
                 animate:200,
