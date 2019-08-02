@@ -351,6 +351,7 @@
         <unjar src="${lib_dir}/jmapproj.jar" dest="${tmpjar_dir}"/>
         <unjar src="${lib_dir}/lucene-core-3.0.3.jar" dest="${tmpjar_dir}"/>
         <unjar src="${lib_dir}/mail.jar" dest="${tmpjar_dir}"/>
+        <unjar src="${lib_dir}/activation.jar" dest="${tmpjar_dir}"/>
         <unjar src="${lib_dir}/javadiff.jar" dest="${tmpjar_dir}"/>
         <unjar src="${lib_dir}/smtp.jar" dest="${tmpjar_dir}"/>
         <unjar src="${lib_dir}/gson-2.2.4.jar" dest="${tmpjar_dir}"/>

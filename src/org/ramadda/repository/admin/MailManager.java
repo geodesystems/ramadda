@@ -287,7 +287,6 @@ public class MailManager extends RepositoryManager {
                                "false").equals("true");
 
 
-
         Properties props = new Properties();
         props.put("mail.transport.protocol", "smtp");
         props.put("mail.smtp.host", smtpServer);
