@@ -3859,6 +3859,7 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
 
         if (column.getCanSearch() && column.isString()) {
             String value     = (String) values[column.getOffset()];
+	    if(value == null) value = "";
             String searchArg = column.getSearchArg();
             //Only do the search link if its short text
             if (value.length() < 50) {
@@ -5675,9 +5676,9 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
         boolean forTable = request.getString(ARG_DB_VIEW,
                                              VIEW_TABLE).equals(VIEW_TABLE);
 
-	System.err.println("Clause:" + clause);
-	System.err.println("cols:" + SqlUtil.comma(colNames));
-	System.err.println("extra:" + extra);
+	//	System.err.println("Clause:" + clause);
+	//	System.err.println("cols:" + SqlUtil.comma(colNames));
+	//	System.err.println("extra:" + extra);
         Statement stmt = getDatabaseManager().select(SqlUtil.comma(colNames),
                              Misc.newList(tableHandler.getTableName()),
                              clause, extra, max);
