@@ -287,7 +287,7 @@ public class StorageManager extends RepositoryManager {
     /**
      * Do the final initialization
      */
-    protected void doFinalInitialization() {
+    protected void doFinalInitialization() throws Exception {
 
         //Add in the process tmp dir
         TempDir processTempDir = new TempDir(getProcessDir(), true);
@@ -306,6 +306,12 @@ public class StorageManager extends RepositoryManager {
                 scourTmpDirs();
             }
         });
+
+
+	//	putCacheObject("group1","test1", "hello there");
+	//	Object o =getCacheObject("group1", "test1");
+
+
     }
 
 
@@ -645,7 +651,6 @@ public class StorageManager extends RepositoryManager {
     public File getTmpDirFile(TempDir tmpDir, String file) {
         File f = new File(IOUtil.joinDir(tmpDir.getDir(), file));
         dirTouched(tmpDir, f);
-
         return checkReadFile(f);
     }
 
@@ -798,8 +803,17 @@ public class StorageManager extends RepositoryManager {
     @Override
     public void clearCache() {
         for (File file : cacheDir.listFiles()) {
-            file.delete();
+	    if(file.isDirectory()) {
+		IOUtil.deleteDirectory(file);
+	    } else {
+		file.delete();
+	    }
         }
+    }
+
+    public void clearCacheGroup(String group) {
+	File groupDir  = getCacheGroup(group);
+	IOUtil.deleteDirectory(groupDir);
     }
 
     /**
@@ -826,6 +840,65 @@ public class StorageManager extends RepositoryManager {
      */
     public File getCacheFile(String file) {
         return getTmpDirFile(getCacheDir(), file);
+    }
+
+
+    public File getCacheGroup(String group) {
+	return   new File(IOUtil.joinDir(getCacheDir().getDir(), group));
+    }
+
+    public File getCacheFile(String group, String file) {
+	int limit = 250;
+	File groupDir  = getCacheGroup(group);
+	makeDir(groupDir);
+	if(file.length()<limit) {
+	    return new File(IOUtil.joinDir(groupDir, file));
+	}
+	File tmp = null;
+	//Limit the size of the files to 200
+	List<String> names = new ArrayList<String>();
+	int length = file.length();
+	//hello_there_how_are_you_
+	for(int index=0;index<length;index+=limit) {
+	    int end = Math.min(index+limit, length);
+	    String name = file.substring(index,end);
+	    groupDir = new File(IOUtil.joinDir(groupDir, name));
+	    makeDir(groupDir);
+	}
+        return new File(IOUtil.joinDir(groupDir, "object.xml"));
+    }
+
+
+    public String getCacheKey(Request request) {
+	String key=request.getUrlArgs();
+	key = key.replaceAll("&","_").replaceAll("\\.","_").replaceAll("\\?","_").replaceAll("/","_").replaceAll("=","_");
+	return key;
+    }
+
+    public void putCacheObject(String group, Request request, Object object) throws Exception { 
+        putCacheObject(group, getCacheKey(request), object);
+    }
+
+    public void putCacheObject(String group, String key, Object object) throws Exception { 
+	String o =  Repository.encodeObject(object);
+	File f = getCacheFile(group, key);
+	IOUtil.writeFile(f, o);
+    }
+
+
+    public Object getCacheObject(String group, Request request) throws Exception { 
+        return getCacheObject(group, getCacheKey(request));
+    }
+
+    public Object getCacheObject(String group, String key) throws Exception { 
+	File f = getCacheFile(group, key);
+	if(f.exists()) {
+	    FileInputStream fis = new FileInputStream(f);
+	    String xml = IOUtil.readContents(fis);
+	    IOUtil.close(fis);
+	    return Repository.decodeObject(xml);
+	}
+	return null;
     }
 
 

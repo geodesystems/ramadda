@@ -36,6 +36,7 @@ import java.io.File;
 import java.io.InputStream;
 import java.io.OutputStream;
 
+import java.util.Collections;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Enumeration;
@@ -920,8 +921,13 @@ public class Request implements Constants, Cloneable {
 
         StringBuilder sb  = new StringBuilder();
         int           cnt = 0;
+	List<String> theKeys = new ArrayList<String>();
         for (Enumeration keys = parameters.keys(); keys.hasMoreElements(); ) {
-            String arg = (String) keys.nextElement();
+            theKeys.add((String) keys.nextElement());
+	}
+	Collections.sort(theKeys);
+
+        for (String arg: theKeys) {
             if ((exceptArgs != null) && (exceptArgs.contains(arg))) {
                 continue;
             }

@@ -1,4 +1,4 @@
-/*
+/**
 * Copyright (c) 2008-2019 Geode Systems LLC
 *
 * Licensed under the Apache License, Version 2.0 (the "License");
@@ -406,6 +406,7 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
         } finally {
             getRepository().getDatabaseManager().closeAndReleaseConnection(
                 insertStmt);
+	    dbChanged(entry);
         }
     }
 
@@ -466,6 +467,7 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
                 stmt);
             getRepository().getDatabaseManager().closeAndReleaseConnection(
                 insertStmt);
+	    dbChanged(newEntry);
         }
     }
 
@@ -584,6 +586,9 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
         return request.getString(ARG_DB_VIEW,
                                  request.getString(ARG_VIEW, VIEW_TABLE));
     }
+
+
+
 
 
     /**
@@ -1207,7 +1212,11 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
                 request.put(searchArg, value);
                 iterateColumn.assembleWhereClause(request, clauses,
                         new StringBuilder());
-                valueList = readValues(request, entry, Clause.and(clauses));
+		valueList = (List<Object[]>) getStorageManager().getCacheObject(entry.getId(),request);
+		if(valueList == null) {
+		    valueList = readValues(request, entry, Clause.and(clauses));
+		    getStorageManager().putCacheObject(entry.getId(), request, valueList);
+		}
                 StringBuilder tmpSB = new StringBuilder();
            
                 tmpSB.append(iterateColumn.getLabel() + ": " + label);
@@ -1266,9 +1275,11 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
         if (view.equals(VIEW_KML) && !request.defined(ARG_MAX)) {
             request.put(ARG_MAX, "10000");
         }
-        valueList = readValues(request, entry, clause);
-
-
+	valueList = (List<Object[]>) getStorageManager().getCacheObject(entry.getId(),request);
+	if(valueList == null) {
+	    valueList = readValues(request, entry, clause);
+	    getStorageManager().putCacheObject(entry.getId(), request, valueList);
+	}
         return makeListResults(request, entry, view, action, fromSearch,
                                valueList);
 
@@ -2203,6 +2214,7 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
         } finally {
             getRepository().getDatabaseManager().closeAndReleaseConnection(
                 statement);
+	    dbChanged(entry);
         }
 
 
@@ -2218,6 +2230,10 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
     }
 
 
+
+    public void dbChanged(Entry entry) {
+	getStorageManager().clearCacheGroup(entry.getId());
+    }
 
 
     /**
@@ -2753,6 +2769,7 @@ public class DbTypeHandler extends PointTypeHandler implements DbConstants /* Bl
         } finally {
             getRepository().getDatabaseManager().closeAndReleaseConnection(
                 stmt);
+	    dbChanged(entry);
         }
 
     }
