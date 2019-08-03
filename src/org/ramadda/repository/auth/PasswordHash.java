@@ -224,9 +224,9 @@ public class PasswordHash {
             throws NoSuchAlgorithmException, InvalidKeySpecException {
         PBEKeySpec spec = new PBEKeySpec(password, salt, iterations,
                                          bytes * 8);
-	//	for (Object obj : java.security.Security.getAlgorithms("Cipher")) {
-	    //	    System.out.println(obj);
-	//	}
+        //      for (Object obj : java.security.Security.getAlgorithms("Cipher")) {
+        //      System.out.println(obj);
+        //      }
 
         SecretKeyFactory skf = SecretKeyFactory.getInstance(PBKDF2_ALGORITHM);
 

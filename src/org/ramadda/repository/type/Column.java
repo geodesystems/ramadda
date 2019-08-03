@@ -1475,9 +1475,8 @@ public class Column implements DataTypes, Constants {
             }
         } else if (isType(DATATYPE_PASSWORD)) {
             if (values[offset] != null) {
-                String value =
-                    new String(Utils.encodeBase64(toString(values,
-                        offset)).getBytes());
+                String value = new String(Utils.encodeBase64(toString(values,
+                                   offset)).getBytes());
                 statement.setString(statementIdx, value);
             } else {
                 statement.setString(statementIdx, null);

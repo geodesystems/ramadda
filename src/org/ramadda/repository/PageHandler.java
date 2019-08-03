@@ -982,6 +982,7 @@ public class PageHandler extends RepositoryManager {
      */
     public HtmlTemplate getMobileTemplate() {
         getTemplates();
+
         return mobileTemplate;
     }
 
@@ -1007,8 +1008,10 @@ public class PageHandler extends RepositoryManager {
 
         List<HtmlTemplate> theTemplates = htmlTemplates;
         if ( !cacheTemplates || (theTemplates == null)) {
-	    String mobileId = getRepository().getProperty("ramadda.template.mobile",(String)null);
-            HtmlTemplate theMobileTemplate=null;
+            String mobileId =
+                getRepository().getProperty("ramadda.template.mobile",
+                                            (String) null);
+            HtmlTemplate theMobileTemplate = null;
             defaultTemplate = null;
             mobileTemplate  = null;
             String imports = "";
@@ -1081,17 +1084,19 @@ public class PageHandler extends RepositoryManager {
                         mapTemplate = template;
                     }
 
-                    if(mobileTemplate == null) {
-			if(mobileId!=null) {
-			    if(template.getId().equals(mobileId)) {
-				mobileTemplate = template;
-			    }
-			}  else if(template.getTemplateProperty("mobile",false)) {
-			    //Don't do this for now
-			    //			    mobileTemplate = template;
-			}
+                    if (mobileTemplate == null) {
+                        if (mobileId != null) {
+                            if (template.getId().equals(mobileId)) {
+                                mobileTemplate = template;
+                            }
+                        } else if (template.getTemplateProperty("mobile",
+                                false)) {
+                            //Don't do this for now
+                            //                      mobileTemplate = template;
+                        }
                     }
-                    if(theMobileTemplate == null && template.getId().equals("mobile")) {
+                    if ((theMobileTemplate == null)
+                            && template.getId().equals("mobile")) {
                         theMobileTemplate = template;
                     }
                     if (defaultTemplate == null) {
@@ -1108,7 +1113,7 @@ public class PageHandler extends RepositoryManager {
                     //noop
                 }
             }
-            if(mobileTemplate == null) {
+            if (mobileTemplate == null) {
                 mobileTemplate = theMobileTemplate;
             }
             if (defaultTemplate == null) {
@@ -1117,9 +1122,9 @@ public class PageHandler extends RepositoryManager {
             if (mobileTemplate == null) {
                 mobileTemplate = defaultTemplate;
             }
-//            if (getRepository().getCacheResources()) {
-                htmlTemplates = theTemplates;
-//            }
+            //            if (getRepository().getCacheResources()) {
+            htmlTemplates = theTemplates;
+            //            }
         }
 
         return theTemplates;
@@ -1434,7 +1439,7 @@ public class PageHandler extends RepositoryManager {
         if (request == null) {
             return defaultTemplate;
         }
-	boolean isMobile = request.isMobile();
+        boolean isMobile = request.isMobile();
         //Check for template=... url arg
         String templateId = request.getHtmlTemplateId();
         if (Utils.stringDefined(templateId)) {
@@ -1453,15 +1458,20 @@ public class PageHandler extends RepositoryManager {
                 if (metadataList != null) {
                     for (Metadata metadata : metadataList) {
                         templateId = metadata.getAttr1();
-			if (isMobile) {
-			    HtmlTemplate template = templateMap.get(templateId);
-			    if (template != null && template.getTemplateProperty("mobile",false)) {
-				request.put(ARG_TEMPLATE, template.getId());
-				return template;
-			    }
-			} else {
-			    request.put(ARG_TEMPLATE, templateId);
-			}
+                        if (isMobile) {
+                            HtmlTemplate template =
+                                templateMap.get(templateId);
+                            if ((template != null)
+                                    && template.getTemplateProperty("mobile",
+                                        false)) {
+                                request.put(ARG_TEMPLATE, template.getId());
+
+                                return template;
+                            }
+                        } else {
+                            request.put(ARG_TEMPLATE, templateId);
+                        }
+
                         break;
                     }
                 }
@@ -1470,10 +1480,11 @@ public class PageHandler extends RepositoryManager {
             }
         }
 
-	if (isMobile && mobileTemplate!=null) {
-	    request.put(ARG_TEMPLATE, mobileTemplate.getId());
-	    return mobileTemplate;
-	}
+        if (isMobile && (mobileTemplate != null)) {
+            request.put(ARG_TEMPLATE, mobileTemplate.getId());
+
+            return mobileTemplate;
+        }
 
 
         User user = request.getUser();
@@ -1485,7 +1496,7 @@ public class PageHandler extends RepositoryManager {
             HtmlTemplate template = templateMap.get(templateId);
             if (template != null) {
                 return template;
-           } 
+            }
         }
 
         return defaultTemplate;
@@ -1878,9 +1889,9 @@ public class PageHandler extends RepositoryManager {
         }
 
         menu.append(HtmlUtils.div(contents,
-                                  HtmlUtils.id(compId) +
-                                  HtmlUtils.attr("style","display:none;") +
-                                  HtmlUtils.cssClass(CSS_CLASS_POPUP)));
+                                  HtmlUtils.id(compId)
+                                  + HtmlUtils.attr("style", "display:none;")
+                                  + HtmlUtils.cssClass(CSS_CLASS_POPUP)));
 
 
         return menu.toString();
@@ -1955,8 +1966,7 @@ public class PageHandler extends RepositoryManager {
                     request.remove(ARG_MESSAGE);
                     request.remove(ARG_REDIRECT);
                     request.remove(ARG_USER_ID);
-                    String redirect = Utils.encodeBase64(
-                                          request.getUrl());
+                    String redirect = Utils.encodeBase64(request.getUrl());
                     url = request.makeUrl(getRepositoryBase().URL_USER_LOGIN,
                                           ARG_REDIRECT, redirect);
                 }
@@ -2497,11 +2507,9 @@ public class PageHandler extends RepositoryManager {
 
             if (target != null) {
                 String url = getEntryManager().getEntryUrl(request, ancestor);
-                breadcrumbs.add(
-                                0, HtmlUtils.href(url,
-                                                  /*request.entryUrl(getRepository().URL_ENTRY_SHOW, ancestor), */
-                                                  name,
-                                                  targetAttr));
+                breadcrumbs.add(0, HtmlUtils.href(url,
+                /*request.entryUrl(getRepository().URL_ENTRY_SHOW, ancestor), */
+                name, targetAttr));
             } else {
                 String url = HtmlUtils.url(requestUrl.toString(),
                                            ARG_ENTRYID, ancestor.getId());
@@ -2512,9 +2520,8 @@ public class PageHandler extends RepositoryManager {
 
 
         if (target != null) {
-            lastLink = HtmlUtils.href(
-                                      getEntryManager().getEntryUrl(request, entry),
-                entry.getLabel(), targetAttr);
+            lastLink = HtmlUtils.href(getEntryManager().getEntryUrl(request,
+                    entry), entry.getLabel(), targetAttr);
 
         } else {
             if (requestUrl == null) {
@@ -2572,11 +2579,10 @@ public class PageHandler extends RepositoryManager {
         HtmlTemplate htmlTemplate = getPageHandler().getTemplate(request);
         List<Link> linkList = getEntryManager().getEntryLinks(request, entry);
 
-        String headerLabel = HtmlUtils.href(
-                                            getEntryManager().getEntryUrl(request, entry),
-                                            HtmlUtils.img(
-                                         getIconUrl(request, entry)) + " "
-                                             + getEntryDisplayName(entry));
+        String headerLabel =
+            HtmlUtils.href(getEntryManager().getEntryUrl(request, entry),
+                           HtmlUtils.img(getIconUrl(request, entry)) + " "
+                           + getEntryDisplayName(entry));
 
         String links =
             getEntryManager().getEntryActionsTable(request, entry,
@@ -2864,7 +2870,7 @@ public class PageHandler extends RepositoryManager {
             }
 
 
-            String url = getEntryManager().getEntryUrl(request, ancestor);
+            String url  = getEntryManager().getEntryUrl(request, ancestor);
             String link = HtmlUtils.href(url, linkLabel);
             breadcrumbs.add(0, link);
         }
@@ -3370,8 +3376,12 @@ public class PageHandler extends RepositoryManager {
             getEntryManager().getTypeHandlerSelectors(request, true,
                 includeNonFiles, null);
 
-        HtmlUtils.Selector selector =
-            new HtmlUtils.Selector("Find match", TypeHandler.TYPE_FINDMATCH, getRepository().getIconUrl("/icons/blank.gif"), 0, 0, false);
+        HtmlUtils.Selector selector = new HtmlUtils.Selector(
+                                          "Find match",
+                                          TypeHandler.TYPE_FINDMATCH,
+                                          getRepository().getIconUrl(
+                                              "/icons/blank.gif"), 0, 0,
+                                                  false);
         selector.setAttr(" style=\"padding:6px;\" ");
         items.add(0, selector);
         String selected = (typeHandler != null)
@@ -3475,9 +3485,8 @@ public class PageHandler extends RepositoryManager {
         sb.append(HtmlUtils.sectionOpen(null, showLine));
         if (entry != null) {
             String label = entry.getTypeHandler().getEntryName(entry);
-            label = HtmlUtils.href(
-                                   getEntryManager().getEntryUrl(request, entry),
-                label);
+            label = HtmlUtils.href(getEntryManager().getEntryUrl(request,
+                    entry), label);
             HtmlUtils.sectionTitle(sb, label);
             if (Utils.stringDefined(title)) {
                 sb.append(

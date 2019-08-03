@@ -460,8 +460,7 @@ public class LocalFileTypeHandler extends ExtensibleGroupTypeHandler {
     private String getFileComponentOfSynthId(String rootDirPath,
                                              File childFile) {
         String subId = childFile.toString().substring(rootDirPath.length());
-        subId = Utils.encodeBase64(subId).replace("\n",
-                                            "");
+        subId = Utils.encodeBase64(subId).replace("\n", "");
 
         return subId;
     }

@@ -333,8 +333,7 @@ public class FtpAction extends MonitorAction {
         if (value == null) {
             password = null;
         } else {
-            password =
-                new String(Utils.decodeBase64(new String(value)));
+            password = new String(Utils.decodeBase64(new String(value)));
         }
     }
 

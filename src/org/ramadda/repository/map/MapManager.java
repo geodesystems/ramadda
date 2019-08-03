@@ -1031,15 +1031,16 @@ public class MapManager extends RepositoryManager implements WikiConstants {
         String fromEntry = entry.getTypeHandler().getMapInfoBubble(request,
                                entry);
         if (fromEntry != null) {
-	    //If its not json then wikify it
-	    if(!fromEntry.startsWith("{")) {
-		fromEntry = getWikiManager().wikifyEntry(request, entry,
-							 fromEntry, false, null, null,
-							 new String[] { WikiConstants.WIKI_TAG_MAPENTRY,
-									WikiConstants.WIKI_TAG_MAP });
-		fromEntry = getRepository().translate(request, fromEntry);
-	    }
-	    return fromEntry;
+            //If its not json then wikify it
+            if ( !fromEntry.startsWith("{")) {
+                fromEntry = getWikiManager().wikifyEntry(request, entry,
+                        fromEntry, false, null, null,
+                        new String[] { WikiConstants.WIKI_TAG_MAPENTRY,
+                                       WikiConstants.WIKI_TAG_MAP });
+                fromEntry = getRepository().translate(request, fromEntry);
+            }
+
+            return fromEntry;
         }
         StringBuilder info    = new StringBuilder();
 

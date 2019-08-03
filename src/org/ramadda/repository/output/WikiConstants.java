@@ -394,7 +394,7 @@ public interface WikiConstants {
     /** _more_ */
     public static final String WIKI_TAG_TREEVIEW = "treeview";
 
-    /** _more_          */
+    /** _more_ */
     public static final String WIKI_TAG_FRAMES = "frames";
 
     /** the table property */

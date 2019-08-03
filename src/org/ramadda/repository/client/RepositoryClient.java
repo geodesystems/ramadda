@@ -1381,8 +1381,7 @@ public class RepositoryClient extends RepositoryBase {
         if (value == null) {
             password = null;
         } else {
-            password =
-                new String(Utils.decodeBase64(new String(value)));
+            password = new String(Utils.decodeBase64(new String(value)));
         }
     }
 
@@ -1396,6 +1395,7 @@ public class RepositoryClient extends RepositoryBase {
         if (password == null) {
             return null;
         }
+
         return Utils.encodeBase64(password).getBytes();
     }
 

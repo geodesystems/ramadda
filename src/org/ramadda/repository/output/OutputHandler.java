@@ -350,16 +350,18 @@ public class OutputHandler extends RepositoryManager {
             sb.append(HtmlUtils.space(2));
             List<String> toks = new ArrayList<String>();
             if (skip > 0) {
-                toks.add(HtmlUtils.href(request.getUrl(ARG_SKIP) + "&"
-                                        + ARG_SKIP + "="
-                                        + (skip - max), 
-                                        HtmlUtils.faIcon("fa-step-backward","title",
-                                                         "View previous")));
+                toks.add(
+                    HtmlUtils.href(
+                        request.getUrl(ARG_SKIP) + "&" + ARG_SKIP + "="
+                        + (skip - max), HtmlUtils.faIcon(
+                            "fa-step-backward", "title", "View previous")));
             }
             if (cnt >= max) {
-                toks.add(HtmlUtils.href(request.getUrl(ARG_SKIP) + "&"
-                                        + ARG_SKIP + "="
-                                        + (skip + max), HtmlUtils.faIcon("fa-step-forward","title","View next")));
+                toks.add(
+                    HtmlUtils.href(
+                        request.getUrl(ARG_SKIP) + "&" + ARG_SKIP + "="
+                        + (skip + max), HtmlUtils.faIcon(
+                            "fa-step-forward", "title", "View next")));
             }
             int moreMax = (int) (max * 1.5);
             if (moreMax < 10) {
@@ -371,12 +373,14 @@ public class OutputHandler extends RepositoryManager {
             }
             request.put(ARG_MAX, "" + moreMax);
             if (cnt >= max) {
-                toks.add(HtmlUtils.href(request.getUrl(), 
-                                        HtmlUtils.faIcon("fa-plus","title","View more")));
+                toks.add(HtmlUtils.href(request.getUrl(),
+                                        HtmlUtils.faIcon("fa-plus", "title",
+                                            "View more")));
 
                 request.put(ARG_MAX, "" + lessMax);
-                toks.add(HtmlUtils.href(request.getUrl(), 
-                                        HtmlUtils.faIcon("fa-minus","title","View less")));
+                toks.add(HtmlUtils.href(request.getUrl(),
+                                        HtmlUtils.faIcon("fa-minus", "title",
+                                            "View less")));
             }
             if (toks.size() > 0) {
                 sb.append(StringUtil.join(" ", toks));

@@ -20,9 +20,9 @@ package org.ramadda.repository.type;
 import org.apache.commons.net.ftp.*;
 
 import org.ramadda.repository.*;
-import org.ramadda.util.Utils;
 
 import org.ramadda.util.HtmlUtils;
+import org.ramadda.util.Utils;
 
 
 import org.w3c.dom.*;
@@ -316,6 +316,7 @@ public class FtpTypeHandler extends ExtensibleGroupTypeHandler {
                              String parentPath, FTPFile file) {
         String id = parentPath + "/" + file.getName();
         id = Utils.encodeBase64(id).replace("\n", "");
+
         return Repository.ID_PREFIX_SYNTH + parentEntry.getId() + ":" + id;
     }
 
@@ -333,6 +334,7 @@ public class FtpTypeHandler extends ExtensibleGroupTypeHandler {
                              String parentPath) {
         String id = parentPath;
         id = Utils.encodeBase64(id).replace("\n", "");
+
         return Repository.ID_PREFIX_SYNTH + parentEntry.getId() + ":" + id;
     }
 

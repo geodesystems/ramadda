@@ -3334,8 +3334,7 @@ public class Repository extends RepositoryBase implements RequestHandler,
                 if (authMethod.equals(AuthorizationMethod.AUTH_HTML)) {
                     sb.append(
                         getPageHandler().showDialogError(inner.getMessage()));
-                    String redirect = Utils.encodeBase64(
-                                          request.getUrl());
+                    String redirect = Utils.encodeBase64(request.getUrl());
                     sb.append(getUserManager().makeLoginForm(request,
                             HtmlUtils.hidden(ARG_REDIRECT, redirect)));
                 } else {  //auth isnt html
@@ -3349,8 +3348,8 @@ public class Repository extends RepositoryBase implements RequestHandler,
                         not authenticated then it throws an access exception which triggers a auth request back to the client
                         If authenticated then it redirects the client back to the original non ssl request
                         */
-                        String redirectUrl = Utils.encodeBase64(
-                                                 request.getUrl());
+                        String redirectUrl =
+                            Utils.encodeBase64(request.getUrl());
                         String url =
                             HtmlUtils.url(URL_SSLREDIRECT.toString(),
                                           ARG_REDIRECT, redirectUrl);
@@ -4210,7 +4209,10 @@ public class Repository extends RepositoryBase implements RequestHandler,
             }
         }
 
-        if(f.startsWith("fa-")) return f;
+        if (f.startsWith("fa-")) {
+            return f;
+        }
+
         return getUrlBase() + f;
     }
 
@@ -4397,27 +4399,45 @@ public class Repository extends RepositoryBase implements RequestHandler,
     }
 
 
+    /**
+     * _more_
+     *
+     * @param props _more_
+     * @param label _more_
+     *
+     * @return _more_
+     */
     private String getPropertiesListing(Properties props, String label) {
-	StringBuilder sb = null;
+        StringBuilder sb = null;
         for (Enumeration keys = props.keys(); keys.hasMoreElements(); ) {
             String key   = (String) keys.nextElement();
             String value = (String) props.get(key);
-	    if(sb==null)
-		sb = new StringBuilder("<h2>" + label +"</h2>");
-	    sb.append(key +"=" + value+"<br>");
-	}
-	
-	if(sb==null) return "";
-	return sb.toString();
+            if (sb == null) {
+                sb = new StringBuilder("<h2>" + label + "</h2>");
+            }
+            sb.append(key + "=" + value + "<br>");
+        }
+
+        if (sb == null) {
+            return "";
+        }
+
+        return sb.toString();
     }
 
+    /**
+     * _more_
+     *
+     * @return _more_
+     */
     public String getPropertiesListing() {
-	StringBuilder sb = new StringBuilder();
-	sb.append(getPropertiesListing(getDbProperties(),"Database"));
-	sb.append(getPropertiesListing(localProperties,"Local"));
-//	sb.append(getPropertiesListing(pluginProperties,"Plugin"));
-	//	sb.append(getPropertiesListing(coreProperties,"Core"));
-	return sb.toString();
+        StringBuilder sb = new StringBuilder();
+        sb.append(getPropertiesListing(getDbProperties(), "Database"));
+        sb.append(getPropertiesListing(localProperties, "Local"));
+
+        //      sb.append(getPropertiesListing(pluginProperties,"Plugin"));
+        //      sb.append(getPropertiesListing(coreProperties,"Core"));
+        return sb.toString();
     }
 
 

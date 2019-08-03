@@ -1896,9 +1896,8 @@ ATTR_SHOWLINK, "true", ATTR_INCLUDEICON, "false") + ATTRS_LAYOUT),
             String name = getEntryDisplayName(entry);
             if (getProperty(wikiUtil, props, "link", false)) {
                 String url = getEntryManager().getEntryUrl(request, entry);
-                name = HtmlUtils.href(
-                                      url,
-                                      name, HtmlUtils.cssClass("ramadda-link"));
+                name = HtmlUtils.href(url, name,
+                                      HtmlUtils.cssClass("ramadda-link"));
             }
 
             return name;
@@ -2235,8 +2234,8 @@ ATTR_SHOWLINK, "true", ATTR_INCLUDEICON, "false") + ATTRS_LAYOUT),
                 if ( !link.isType(OutputType.TYPE_IMPORTANT)) {
                     continue;
                 }
-                
-               String label = getIconImage(link.getIcon())
+
+                String label = getIconImage(link.getIcon())
                                + HtmlUtils.space(1) + link.getLabel();
                 HtmlUtils.href(links, link.getUrl(), label);
                 links.append(HtmlUtils.br());
@@ -2508,7 +2507,8 @@ ATTR_SHOWLINK, "true", ATTR_INCLUDEICON, "false") + ATTRS_LAYOUT),
 
                 sb.append(OutputHandler.makeTabs(titles, contents, true,
                         false));
-            } else if (layout.equals("accordian") || layout.equals("accordion")) {
+            } else if (layout.equals("accordian")
+                       || layout.equals("accordion")) {
                 int showBorder = getProperty(wikiUtil, props, "border", 0);
                 boolean collapse = getProperty(wikiUtil, props, "collapse",
                                        false);
@@ -2644,7 +2644,8 @@ ATTR_SHOWLINK, "true", ATTR_INCLUDEICON, "false") + ATTRS_LAYOUT),
 
 
 
-            if (theTag.equals(WIKI_TAG_ACCORDIAN) || theTag.equals(WIKI_TAG_ACCORDION)) {
+            if (theTag.equals(WIKI_TAG_ACCORDIAN)
+                    || theTag.equals(WIKI_TAG_ACCORDION)) {
                 int border = getProperty(wikiUtil, props, ATTR_BORDER, 0);
                 boolean collapse = getProperty(wikiUtil, props,
                                        ATTR_COLLAPSE, false);

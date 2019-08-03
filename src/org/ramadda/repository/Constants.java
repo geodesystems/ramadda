@@ -255,6 +255,8 @@ public interface Constants {
     //    public static final String ICON_PLUS = "/icons/plus.gif";
     //    public static final String ICON_MINUS = "/icons/minus.gif";
     public static final String ICON_PLUS = "fa-plus-square";
+
+    /** _more_          */
     public static final String ICON_MINUS = "fa-minus-square";
 
 

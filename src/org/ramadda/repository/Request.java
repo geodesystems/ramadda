@@ -36,8 +36,9 @@ import java.io.File;
 import java.io.InputStream;
 import java.io.OutputStream;
 
-import java.util.Collections;
 import java.util.ArrayList;
+
+import java.util.Collections;
 import java.util.Date;
 import java.util.Enumeration;
 import java.util.HashSet;
@@ -919,15 +920,15 @@ public class Request implements Constants, Cloneable {
         exceptArgs.add(ARG_USER_PASSWORD1);
         exceptArgs.add(ARG_USER_PASSWORD2);
 
-        StringBuilder sb  = new StringBuilder();
-        int           cnt = 0;
-	List<String> theKeys = new ArrayList<String>();
+        StringBuilder sb      = new StringBuilder();
+        int           cnt     = 0;
+        List<String>  theKeys = new ArrayList<String>();
         for (Enumeration keys = parameters.keys(); keys.hasMoreElements(); ) {
             theKeys.add((String) keys.nextElement());
-	}
-	Collections.sort(theKeys);
+        }
+        Collections.sort(theKeys);
 
-        for (String arg: theKeys) {
+        for (String arg : theKeys) {
             if ((exceptArgs != null) && (exceptArgs.contains(arg))) {
                 continue;
             }

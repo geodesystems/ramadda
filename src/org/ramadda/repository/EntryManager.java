@@ -1105,14 +1105,14 @@ public class EntryManager extends RepositoryManager {
     public static final String ARG_EXTEDIT_EDIT = "extedit.edit";
 
 
-    /** _more_          */
+    /** _more_ */
     public static final String ARG_EXTEDIT_URL_TO = "extedit.url.to";
 
-    /** _more_          */
+    /** _more_ */
     public static final String ARG_EXTEDIT_URL_PATTERN =
         "extedit.url.pattern";
 
-    /** _more_          */
+    /** _more_ */
     public static final String ARG_EXTEDIT_URL_CHANGE = "extedit.url";
 
     /** _more_ */
@@ -5949,8 +5949,7 @@ public class EntryManager extends RepositoryManager {
                 if ((description != null)
                         && XmlUtil.getAttribute(descriptionNode, "encoded",
                             false)) {
-                    description =
-                        new String(Utils.decodeBase64(description));
+                    description = new String(Utils.decodeBase64(description));
                 }
             }
         }
@@ -6978,8 +6977,7 @@ public class EntryManager extends RepositoryManager {
      * @return _more_
      */
     public String getRemoteEntryId(String server, String id) {
-        return ID_PREFIX_REMOTE
-               + Utils.encodeBase64(server)
+        return ID_PREFIX_REMOTE + Utils.encodeBase64(server)
                + TypeHandler.ID_DELIMITER + id;
     }
 
@@ -10524,13 +10522,16 @@ public class EntryManager extends RepositoryManager {
             List<Metadata> metadataList =
                 getMetadataManager().findMetadata(request, entry,
                     ContentMetadataHandler.TYPE_ALIAS, false);
-            if (metadataList!= null &&  metadataList.size() > 0) {
-                for(Metadata metadata: metadataList) {
+            if ((metadataList != null) && (metadataList.size() > 0)) {
+                for (Metadata metadata : metadataList) {
                     String alias = metadata.getAttr1();
-                    if(!alias.startsWith("http:")) 
-                        return getRepository().getUrlBase() + "/alias/" + alias;
+                    if ( !alias.startsWith("http:")) {
+                        return getRepository().getUrlBase() + "/alias/"
+                               + alias;
+                    }
                 }
             }
+
             return request.entryUrl(getRepository().URL_ENTRY_SHOW, entry);
         } catch (Exception exc) {
             throw new RuntimeException(exc);

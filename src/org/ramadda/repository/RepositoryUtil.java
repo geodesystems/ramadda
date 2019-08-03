@@ -240,6 +240,7 @@ public class RepositoryUtil {
             md.update(password.getBytes("UTF-8"));
             byte[] bytes  = md.digest();
             String result = Utils.encodeBase64Bytes(bytes);
+
             return result.trim();
         } catch (NoSuchAlgorithmException nsae) {
             throw new IllegalStateException(nsae.getMessage());
@@ -289,8 +290,7 @@ public class RepositoryUtil {
      *
      * @throws Exception _more_
      */
-    public static void main(String[] args) throws Exception {
-    }
+    public static void main(String[] args) throws Exception {}
 
 
 

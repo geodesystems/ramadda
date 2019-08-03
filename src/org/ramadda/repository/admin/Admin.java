@@ -1,4 +1,4 @@
-/**
+/*
 * Copyright (c) 2008-2019 Geode Systems LLC
 *
 * Licensed under the Apache License, Version 2.0 (the "License");
@@ -896,9 +896,8 @@ public class Admin extends RepositoryManager {
 
                 ResultSet columns = dbmd.getColumns(null, null, tableName,
                                         null);
-                String encoded =
-                    new String(Utils.encodeBase64(("text:?"
-                        + tableName)));
+                String encoded = new String(Utils.encodeBase64(("text:?"
+                                     + tableName)));
 
                 int cnt = 0;
                 if (tableName.toLowerCase().indexOf("_index_") < 0) {
@@ -1998,7 +1997,7 @@ public class Admin extends RepositoryManager {
         outputSB.append(HtmlUtils.formTableClose());
 
 
-        String props = getRepository().getPropertiesListing();
+        String         props  = getRepository().getPropertiesListing();
 
 
         StringBuffer   apiSB  = new StringBuffer();
