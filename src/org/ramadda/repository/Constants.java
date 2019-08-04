@@ -46,13 +46,11 @@ public interface Constants {
 
     /** _more_ */
     public static final String ICON_ARROW = "fa-arrow-right";
-    //public static final String ICON_ARROW = "/icons/arrow_right.png";
 
     /** _more_ */
     public static final String ICON_GOOGLEEARTH = "/icons/googleearth.gif";
 
     /** _more_ */
-    //    public static final String ICON_ASSOCIATION = "/icons/arrow_right.png";
     public static final String ICON_ASSOCIATION = "fa-arrow-right";
 
     /** _more_ */

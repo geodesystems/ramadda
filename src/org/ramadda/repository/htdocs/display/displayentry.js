@@ -360,17 +360,17 @@ function RamaddaSearcher(displayManager, id, type, properties) {
             var nextPrev = [];
             var lessMore = [];
             if (this.searchSettings.skip > 0) {
-                nextPrev.push(HtmlUtils.onClick(this.getGet() + ".loadPrevUrl();", HtmlUtils.image(ramaddaBaseUrl + "/icons/arrow_left.png", [ATTR_TITLE, "Previous", "border", "0"]), [ATTR_CLASS, "display-link"]));
+                nextPrev.push(HtmlUtils.onClick(this.getGet() + ".loadPrevUrl();", HtmlUtils.getIconImage"fa-arrow-left", [ATTR_TITLE, "Previous"]), [ATTR_CLASS, "display-link"]));
             }
             var addMore = false;
             if (entries.length == this.searchSettings.getMax()) {
-                nextPrev.push(HtmlUtils.onClick(this.getGet() + ".loadNextUrl();", HtmlUtils.image(ramaddaBaseUrl + "/icons/arrow_right.png", [ATTR_TITLE, "Next", "border", "0"]), [ATTR_CLASS, "display-link"]));
+                nextPrev.push(HtmlUtils.onClick(this.getGet() + ".loadNextUrl();", HtmlUtils.getIconImage("fa-arrow-right", [ATTR_TITLE, "Next"]), [ATTR_CLASS, "display-link"]));
                 addMore = true;
             }
 
-            lessMore.push(HtmlUtils.onClick(this.getGet() + ".loadLess();", HtmlUtils.image(ramaddaBaseUrl + "/icons/greenminus.png", [ATTR_ALT, "View less", ATTR_TITLE, "View less", "border", "0"]), [ATTR_CLASS, "display-link"]));
+            lessMore.push(HtmlUtils.onClick(this.getGet() + ".loadLess();", HtmlUtils.getIconImage("fa-minus", [ATTR_TITLE, "View less"]), [ATTR_CLASS, "display-link"]));
             if (addMore) {
-                lessMore.push(HtmlUtils.onClick(this.getGet() + ".loadMore();", HtmlUtils.image(ramaddaBaseUrl + "/icons/greenplus.png", [ATTR_ALT, "View more", ATTR_TITLE, "View more", "border", "0"]), [ATTR_CLASS, "display-link"]));
+                lessMore.push(HtmlUtils.onClick(this.getGet() + ".loadMore();", HtmlUtils.getIconImage("fa-plus", [ATTR_TITLE, "View more"]), [ATTR_CLASS, "display-link"]));
             }
             var results = "";
             var spacer = "&nbsp;&nbsp;&nbsp;"
