@@ -935,7 +935,7 @@ public class MetadataType extends MetadataTypeBase {
         }
 
         List args = new ArrayList();
-        args.add(ARG_METADATA_TYPE + "." + getId());
+        args.add(ARG_METADATA_TYPE + "_" + getId());
         args.add(this.toString());
 
 
@@ -943,13 +943,13 @@ public class MetadataType extends MetadataTypeBase {
             if ( !element.getSearchable()) {
                 continue;
             }
-            args.add(ARG_METADATA_ATTR + element.getIndex() + "." + getId());
+            args.add(ARG_METADATA_ATTR + element.getIndex() + "_" + getId());
             args.add(metadata.getAttr(element.getIndex()));
         }
 
         //by default search on attr1 if none are set above
         if (args.size() == 2) {
-            args.add(ARG_METADATA_ATTR1 + "." + getId());
+            args.add(ARG_METADATA_ATTR1 + "_" + getId());
             args.add(metadata.getAttr1());
         }
 

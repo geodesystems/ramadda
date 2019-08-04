@@ -291,7 +291,7 @@ public interface Constants {
 
     /** _more_ */
     public static final String ICON_SEARCH_SMALL =
-        "/icons/binocular-small.png";
+        "fa-search";
 
     /** _more_ */
     public static final String ICON_TEXT = "fa-align-left";
