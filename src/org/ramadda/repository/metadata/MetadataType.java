@@ -1054,7 +1054,7 @@ public class MetadataType extends MetadataTypeBase {
                                    "").equals(DISPLAY_SMALL);
         String searchLink = "";
         if ( !smallDisplay && getSearchable()) {
-            searchLink = handler.getSearchLink(request, metadata);
+            searchLink = handler.getSearchLink(request, metadata)+HtmlUtils.space(1);
         }
 
 
