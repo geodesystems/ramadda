@@ -360,7 +360,7 @@ function RamaddaSearcher(displayManager, id, type, properties) {
             var nextPrev = [];
             var lessMore = [];
             if (this.searchSettings.skip > 0) {
-                nextPrev.push(HtmlUtils.onClick(this.getGet() + ".loadPrevUrl();", HtmlUtils.getIconImage"fa-arrow-left", [ATTR_TITLE, "Previous"]), [ATTR_CLASS, "display-link"]));
+                nextPrev.push(HtmlUtils.onClick(this.getGet() + ".loadPrevUrl();", HtmlUtils.getIconImage("fa-arrow-left", [ATTR_TITLE, "Previous"]), [ATTR_CLASS, "display-link"]));
             }
             var addMore = false;
             if (entries.length == this.searchSettings.getMax()) {
