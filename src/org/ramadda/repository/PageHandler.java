@@ -1018,6 +1018,7 @@ public class PageHandler extends RepositoryManager {
             try {
                 imports = getStorageManager().readSystemResource(
                     "/org/ramadda/repository/resources/web/imports.html");
+		imports = imports.replace("${ramadda.bootstrap.version}", getRepository().getProperty("ramadda.bootstrap.version","bootstrap-3.3"));
             } catch (Exception exc) {
                 throw new RuntimeException(exc);
             }

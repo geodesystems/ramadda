@@ -613,7 +613,7 @@ public class MetadataTypeBase extends RepositoryManager {
         }
 
         String extra = (forLink
-                        ? HtmlUtils.cssClass("ramadda-thumbnail-image")
+                        ? HtmlUtils.cssClass("ramadda-thumbnail-image img-thumbnail")
                         : "");
         String tail  = getStorageManager().getFileTail(f.toString());
         String path =
