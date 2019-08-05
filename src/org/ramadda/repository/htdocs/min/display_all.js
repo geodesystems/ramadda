@@ -1983,18 +1983,18 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
                 toolbarItems.push(HtmlUtils.tag(TAG_A, ["onclick", get + ".createDisplay(" + HtmlUtils.sqt(entry.getFullId()) + "," +
                         HtmlUtils.sqt("table") + "," + HtmlUtils.sqt(jsonUrl) + ");"
                     ],
-                    HtmlUtils.image(ramaddaBaseUrl + "/icons/table.png", ["border", 0, ATTR_TITLE, "Create Tabular Display"])));
+                    HtmlUtils.getIconImage("fa-table", [ATTR_TITLE, "Create Tabular Display"])));
 
                 var x;
                 toolbarItems.push(x = HtmlUtils.tag(TAG_A, ["onclick", get + ".createDisplay(" + HtmlUtils.sqt(entry.getFullId()) + "," +
                         HtmlUtils.sqt("linechart") + "," + HtmlUtils.sqt(jsonUrl) + ");"
                     ],
-                    HtmlUtils.image(ramaddaBaseUrl + "/icons/chart_line_add.png", ["border", 0, ATTR_TITLE, "Create Chart"])));
+                    HtmlUtils.getIconImage("fa-chart-line", [ATTR_TITLE, "Create Chart"])));
             }
             toolbarItems.push(HtmlUtils.tag(TAG_A, ["onclick", get + ".createDisplay(" + HtmlUtils.sqt(entry.getFullId()) + "," +
                     HtmlUtils.sqt("entrydisplay") + "," + HtmlUtils.sqt(jsonUrl) + ");"
                 ],
-                HtmlUtils.image(ramaddaBaseUrl + "/icons/layout_add.png", ["border", 0, ATTR_TITLE, "Show Entry"])));
+                HtmlUtils.getIconImage("fa-file", ["border", 0, ATTR_TITLE, "Show Entry"])));
 
             if (entry.getFilesize() > 0) {
                 toolbarItems.push(HtmlUtils.tag(TAG_A, [ATTR_HREF, entry.getResourceUrl()],
