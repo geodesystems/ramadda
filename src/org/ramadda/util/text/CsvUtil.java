@@ -1295,19 +1295,19 @@ public class CsvUtil {
         new Cmd("-delimiter", "", "(specify an alternative delimiter)"),
         new Cmd("-widths", "w1,w2,...,wN", "(columns are fixed widths)"),
         new Cmd("-comment", "<string>"),
-        new Cmd(
-            "-db", "{<props>}",
-            "(generate the RAMADDA db xml from the header, props are a set of name value pairs:)\n\ttable.id <new id> table.name <new name> table.cansearch <true|false> table.canlist <true|false> table.icon <icon, e.g., /db/database.png>\n\t<column name>.id <new id for column> <column name>.label <new label>\n\t<column name>.type <string|enumeration|double|int|date>\n\t<column name>.format <yyyy MM dd HH mm ss format for dates>\n\t<column name>.canlist <true|false> <column name>.cansearch <true|false>\n\tinstall <true|false install the new db table>\n\tnukedb <true|false careful! this deletes any prior created dbs>"),
         new Cmd("-print", "", "(print to stdout)"),
         new Cmd("-raw", "", "(print the file raw)"),
         new Cmd("-record", "", " (print records)"),
-        new Cmd("-cat", " <*.csv>", "(one or more csv files)"),
         new Cmd("-printheader", "", "(print the first line)"),
         new Cmd("-pointheader", "",
                 "(generate the RAMADDA point properties)"),
         new Cmd("-addheader", "<name1 value1 ... nameN valueN>",
                 "(add the RAMADDA point properties)"),
-        new Cmd("-run", "<name of process directory>")
+        new Cmd(
+            "-db", "{<props>}",
+            "(generate the RAMADDA db xml from the header, props are a set of name value pairs:)\n\ttable.id <new id> table.name <new name> table.cansearch <true|false> table.canlist <true|false> table.icon <icon, e.g., /db/database.png>\n\t<column name>.id <new id for column> <column name>.label <new label>\n\t<column name>.type <string|enumeration|double|int|date>\n\t<column name>.format <yyyy MM dd HH mm ss format for dates>\n\t<column name>.canlist <true|false> <column name>.cansearch <true|false>\n\tinstall <true|false install the new db table>\n\tnukedb <true|false careful! this deletes any prior created dbs>"),
+        new Cmd("-run", "<name of process directory>"),
+        new Cmd("-cat", " <*.csv>", "(one or more csv files)"),
     };
 
 
