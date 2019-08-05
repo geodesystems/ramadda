@@ -2827,7 +2827,6 @@ function initMapFunctions(theMap) {
 	    console.log(text);
             text = window.atob(text.substring(7));
             if (text.indexOf("{") == 0) {
-		console.log(text);
                 props = JSON.parse(text);
                 text = props.text;
                 if (!text) text = "";
