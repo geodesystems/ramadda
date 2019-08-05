@@ -400,6 +400,7 @@ function DisplayManager(argId, argProperties) {
             return this.createDisplay(type, props);
         },
         createDisplay: function(type, props) {
+
             if (props == null) {
                 props = {};
             }

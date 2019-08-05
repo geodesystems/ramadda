@@ -2230,6 +2230,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
                 showTitle: true,
                 showDetails: true,
                 title: entry.getName(),
+		layoutHere:false,
             };
             if (displayProps) $.extend(props, displayProps);
 
@@ -2759,11 +2760,11 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             var labels = [];
             if (!this.getIsLayoutFixed()) {
                 calls.push("removeRamaddaDisplay('" + this.getId() + "')");
-                images.push(ramaddaBaseUrl + "/icons/page_delete.png");
+                images.push("fa-cut");
                 labels.push("Delete display");
             }
             calls.push(get + ".copyDisplay();");
-            images.push(ramaddaBaseUrl + "/icons/page_copy.png");
+	    images.push("fa-copy");
             labels.push("Copy Display");
             if (this.jsonUrl != null) {
                 calls.push(get + ".fetchUrl('json');");
@@ -2775,7 +2776,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
                 labels.push("Download CSV");
             }
             for (var i = 0; i < calls.length; i++) {
-                var inner = HtmlUtils.image(images[i], [ATTR_TITLE, labels[i], ATTR_CLASS, "display-dialog-header-icon"]);
+                var inner = HtmlUtils.getIconImage(images[i], [ATTR_TITLE, labels[i], ATTR_CLASS, "display-dialog-header-icon"]);
                 if (addLabel) inner += " " + labels[i] + "<br>";
                 toolbar += HtmlUtils.onClick(calls[i], inner);
             }
@@ -3640,8 +3641,13 @@ function DisplayGroup(argDisplayManager, argId, argProperties, type) {
         },
         getDisplaysToLayout: function() {
             var result = [];
+	    console.log("displays:" + this.displays.length);
             for (var i = 0; i < this.displays.length; i++) {
-                if (this.displays[i].getIsLayoutFixed()) continue;
+                if (this.displays[i].getIsLayoutFixed()) {
+		    console.log("\tisFixed:" + this.displays[i].type);
+		    continue;
+		}
+		console.log("\tno Fixed:" + this.displays[i].type);
                 result.push(this.displays[i]);
             }
             return result;
@@ -3669,11 +3675,11 @@ function DisplayGroup(argDisplayManager, argId, argProperties, type) {
             this.doLayout();
         },
         doLayout: function() {
-
-            var html = "";
+		var html = "";
             var colCnt = 100;
             var displaysToLayout = this.getDisplaysToLayout();
             var displaysToPrepare = this.displays;
+
 
             for (var i = 0; i < displaysToPrepare.length; i++) {
                 var display = displaysToPrepare[i];
@@ -3695,8 +3701,7 @@ function DisplayGroup(argDisplayManager, argId, argProperties, type) {
                 displaysToLayout[i].layoutDiv=div;
             }
             if (this.layout == LAYOUT_TABLE) {
-                //                console.log("table:" + this.columns);
-                if (displaysToLayout.length == 1) {
+                if  (displaysToLayout.length== 1) {
                     html += displaysToLayout[0].layoutDiv;
                 } else {
                     var weight = 12 / this.columns;
@@ -14301,7 +14306,8 @@ function RamaddaEntryDisplay(displayManager, id, type, properties) {
         getSearchSettings: function() {
             if (this.providers != null) {
                 var provider = this.searchSettings.provider;
-                var fromSelect = this.jq(ID_PROVIDERS).val();
+		var select = this.jq(ID_PROVIDERS);
+                var fromSelect = select.val();
                 if (fromSelect != null) {
                     provider = fromSelect;
                 } else {
@@ -14765,6 +14771,9 @@ function RamaddaSearcher(displayManager, id, type, properties) {
                 for (var i = 0; i < toks.length; i++) {
                     var tuple = toks[i].split(":");
                     var id = tuple[0];
+		    if(!Utils.isDefined(selected)) {
+			selected = id;
+		    }
 
                     id = id.replace(/_COLON_/g, ":");
                     var label = tuple.length > 1 ? tuple[1] : id;
@@ -14806,7 +14815,8 @@ function RamaddaSearcher(displayManager, id, type, properties) {
                         options += "</optgroup>";
 
                 }
-                topItems.push(HtmlUtils.tag("select", ["multiple", null, "id", this.getDomId(ID_PROVIDERS), ATTR_CLASS, "display-search-providers"], options));
+		var select = HtmlUtils.tag("select", ["multiple", null, "id", this.getDomId(ID_PROVIDERS), ATTR_CLASS, "display-search-providers"], options);
+                topItems.push(select);
             }
 
 
@@ -15157,7 +15167,7 @@ function RamaddaEntrylistDisplay(displayManager, id, properties, theType) {
             if (this.entryList != null && this.entryList.haveLoaded) {
                 this.entryListChanged(this.entryList);
             }
-            this.jq(ID_PROVIDERS).selectBoxIt({});
+	    this.jq(ID_PROVIDERS).selectBoxIt({});
             this.jq(ID_PROVIDERS).change(function() {
                 _this.providerChanged();
             });
@@ -17249,6 +17259,7 @@ function DisplayManager(argId, argProperties) {
             return this.createDisplay(type, props);
         },
         createDisplay: function(type, props) {
+
             if (props == null) {
                 props = {};
             }

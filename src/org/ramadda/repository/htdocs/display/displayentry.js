@@ -107,7 +107,8 @@ function RamaddaEntryDisplay(displayManager, id, type, properties) {
         getSearchSettings: function() {
             if (this.providers != null) {
                 var provider = this.searchSettings.provider;
-                var fromSelect = this.jq(ID_PROVIDERS).val();
+		var select = this.jq(ID_PROVIDERS);
+                var fromSelect = select.val();
                 if (fromSelect != null) {
                     provider = fromSelect;
                 } else {
@@ -571,6 +572,9 @@ function RamaddaSearcher(displayManager, id, type, properties) {
                 for (var i = 0; i < toks.length; i++) {
                     var tuple = toks[i].split(":");
                     var id = tuple[0];
+		    if(!Utils.isDefined(selected)) {
+			selected = id;
+		    }
 
                     id = id.replace(/_COLON_/g, ":");
                     var label = tuple.length > 1 ? tuple[1] : id;
@@ -612,7 +616,8 @@ function RamaddaSearcher(displayManager, id, type, properties) {
                         options += "</optgroup>";
 
                 }
-                topItems.push(HtmlUtils.tag("select", ["multiple", null, "id", this.getDomId(ID_PROVIDERS), ATTR_CLASS, "display-search-providers"], options));
+		var select = HtmlUtils.tag("select", ["multiple", null, "id", this.getDomId(ID_PROVIDERS), ATTR_CLASS, "display-search-providers"], options);
+                topItems.push(select);
             }
 
 
@@ -963,7 +968,7 @@ function RamaddaEntrylistDisplay(displayManager, id, properties, theType) {
             if (this.entryList != null && this.entryList.haveLoaded) {
                 this.entryListChanged(this.entryList);
             }
-            this.jq(ID_PROVIDERS).selectBoxIt({});
+	    this.jq(ID_PROVIDERS).selectBoxIt({});
             this.jq(ID_PROVIDERS).change(function() {
                 _this.providerChanged();
             });
