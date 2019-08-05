@@ -3491,13 +3491,10 @@ function DisplayGroup(argDisplayManager, argId, argProperties, type) {
         },
         getDisplaysToLayout: function() {
             var result = [];
-	    console.log("displays:" + this.displays.length);
             for (var i = 0; i < this.displays.length; i++) {
                 if (this.displays[i].getIsLayoutFixed()) {
-		    console.log("\tisFixed:" + this.displays[i].type);
 		    continue;
 		}
-		console.log("\tno Fixed:" + this.displays[i].type);
                 result.push(this.displays[i]);
             }
             return result;
