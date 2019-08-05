@@ -14723,7 +14723,7 @@ function RamaddaSearcher(displayManager, id, type, properties) {
 
 
 
-            var buttonLabel = HtmlUtils.image(ramaddaBaseUrl + "/icons/magnifier.png", [ATTR_BORDER, "0", ATTR_TITLE, "Search"]);
+            var buttonLabel = HtmlUtils.getIconImage("fa-search", [ATTR_TITLE, "Search"]);
             var topItems = [];
             var extra = "";
             extra += HtmlUtils.formTable();
