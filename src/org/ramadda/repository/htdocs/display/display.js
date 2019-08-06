@@ -611,10 +611,13 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             this.updateUI();
         },
         handleEventPropertyChanged: function(source, prop) {
-            if (prop.property == "filterPattern") {
-                this.jq("filterValueMenu").val(prop.value);
+            if (prop.property == "filterValue") {
+		this.haveCalledUpdateUI = false;
+		var widgetId = "filterby_" + prop.fieldId;
+		this.settingFilterValue = true;
+		this.jq(widgetId).val(prop.value);
+		this.settingFilterValue = false;
             }
-
             this.setProperty(prop.property, prop.value);
             this.updateUI();
         },
@@ -710,7 +713,6 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             this.removeProperty(PROP_FIELDS);
             this.fieldSelectionChanged();
             if (event.shiftKey) {
-
                 var fields = this.getSelectedFields();
                 this.propagateEvent("handleEventFieldsSelected", fields);
             }
@@ -1116,7 +1118,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
         requiresGrouping:  function() {
                 return false;
          },
-        filterData: function(dataList, fields, doGroup) {
+		filterData: function(dataList, fields, doGroup, skipFirst) {
             var pointData = this.getData();
             if (!dataList) {
                 if (pointData == null) return null;
@@ -1128,86 +1130,65 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             if(doGroup || this.requiresGrouping()) {
                 dataList = pointData.extractGroup(this.dataGroup, dataList);
             }
-            var patternFieldId = this.getProperty("patternFilterField");
-            var numericFieldId = this.getProperty("numericFilterField");
-            var pattern = this.getProperty("filterPattern");
-            var prefix = this.getProperty("filterPatternPrefix");
-            if (prefix) pattern = prefix + pattern;
-            var suffix = this.getProperty("filterPatternSuffix");
-            if (suffix) pattern = pattern + suffix;
 
-            var notPattern = false;
-            if (pattern) {
-                notPattern = pattern.startsWith("!");
-                if (notPattern) {
-                    pattern = pattern.substring(1);
-                }
-            }
+	    var newData = [];
+	    var values = [];
+	    var operators = [];
+	    for(var i=0;i<this.filterFields.length;i++) {
+		var filterField = this.filterFields[i];
+		var prefix = this.getProperty(filterField.getId() +".filterPrefix");
+		var suffix = this.getProperty(filterField.getId() +".filterSuffix");
+		var value = $("#" + this.getDomId("filterby_" + filterField.getId())).val();
+		if (prefix) pattern = prefix + value;
+		if (suffix) pattern = value + suffix;
+		values.push(value);
+		operators.push($("#" + this.getDomId("filterby_" + filterField.getId()+"_operator")).val());
+	    }
+	    for (var rowIdx = 0; rowIdx <dataList.length; rowIdx++) {
+		var row = this.getDataValues(dataList[rowIdx]);
+		var ok = true;
+		for(var i=0;i<this.filterFields.length;i++) {
+		    if(!ok) break;
+		    var filterField = this.filterFields[i];
+		    var filterValue = values[i];
+		    if(filterValue=="") continue;
+		    var value = row[filterField.getIndex()];
+		    if(filterField.getType() == "enumeration") {
+			if(value!=filterValue) {
+			    ok = false;
+			}
+		    } else if(filterField.isNumeric) {
+			filterValue = parseFloat(filterValue);
+			var op = operators[i];
+			if(op == null) op = "<";
+			if (op == "<") {
+			    ok = value < filterValue;
+			} else if (op == "<=") {
+			    ok = value <= filterValue;
+			} else if (op == "=") {
+			    ok = value == filterValue;
+			} else if (op == ">") {
+			    ok = value > filterValue;
+			} else if (op == ">=") {
+			    ok = value >= filterValue;
+			}
+		    } else {
+			//TODO: add the prefix
+			value  = (""+value).toLowerCase();
+			if(value.indexOf(filterValue.toLowerCase())<0) {
+			    ok = false;
+			}
+		    }
+		}
+		if(skipFirst && rowIdx==0) {
+		    ok = true;
+		}
+		if(ok) {
+		    newData.push(dataList[rowIdx]);
+		}
+	    }
+	    dataList = newData;
 
-            var filterSValue = this.getProperty("numericFilterValue");
-            var filterOperator = this.getProperty("numericFilterOperator", "<");
-
-            if ((numericFieldId || patternFieldId) && (pattern || (filterSValue && filterOperator))) {
-                var patternFields = this.getFieldsByIds(fields, patternFieldId);
-                var numericField = null;
-                for (var i = 0; i < fields.length; i++) {
-                    if (!numericField && (fields[i].getId() == numericFieldId || numericFieldId == "#" + (i + 1))) {
-                        numericField = fields[i];
-                    }
-                    if (patternField && numericField) break;
-                }
-                if (patternFields.length || numericField) {
-                    var list = [];
-                    var filterValue;
-                    if (filterSValue) {
-                        filterValue = parseFloat(filterSValue);
-                    }
-                    var isPointRecord = false;
-                    if (dataList.length > 0)
-                        isPointRecord = dataList[0].isPointRecord;
-                    for (var i = 0; i < dataList.length; i++) {
-                        var obj = dataList[i];
-                        var row = this.getDataValues(obj);
-                        var array = row;
-                        if (!isPointRecord && i == 0) {
-                            list.push(obj);
-                            continue;
-                        }
-                        var ok = false;
-                        if (numericField && filterSValue && filterOperator) {
-                            var value = parseFloat(array[numericField.getIndex()]);
-                            var filterValue = parseFloat(filterSValue);
-                            if (filterOperator == "<") {
-                                ok = value < filterValue;
-                            } else if (filterOperator == "<=") {
-                                ok = value <= filterValue;
-                            } else if (filterOperator == "==") {
-                                ok = value == filterValue;
-                            } else if (filterOperator == ">") {
-                                ok = value > filterValue;
-                            } else if (filterOperator == ">=") {
-                                ok = value >= filterValue;
-                            }
-                            if (!ok) {
-                                continue;
-                            }
-                        }
-                        if (patternFields.length && pattern) {
-                            for (var fieldIdx = 0; fieldIdx < patternFields.length; fieldIdx++) {
-                                var patternField = patternFields[fieldIdx];
-                                var value = "" + array[patternField.getIndex()];
-                                ok = value.match(pattern);
-                                if (notPattern) ok = !ok;
-                                if (ok) break;
-                            }
-                        }
-                        if (ok) {
-                            list.push(obj);
-                        }
-                    }
-                    dataList = list;
-                }
-            }
 
             var stride = parseInt(this.getProperty("stride", -1));
             if (stride > 0) {
@@ -2430,96 +2411,82 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             let _this = this;
             var pointData = this.getData();
             if (pointData == null) return;
-            this.searchFields = [];
-            var searchBy = this.getProperty("searchFields","",true).split(",");
+            this.filterFields = [];
+            var filterBy = this.getProperty("filterFields","",true).split(",");
             var fields= pointData.getRecordFields();
             var records = pointData.getRecords();
-            if(searchBy.length>0) {
+            if(filterBy.length>0) {
                 var searchBar  = "";
-                for(var i=0;i<searchBy.length;i++) {
-                    var searchField  = this.getFieldById(fields,searchBy[i]);
-                    if(!searchField) continue;
-                    this.searchFields.push(searchField);
+                for(var i=0;i<filterBy.length;i++) {
+                    var filterField  = this.getFieldById(fields,filterBy[i]);
+                    if(!filterField) continue;
+                    this.filterFields.push(filterField);
                     var widget;
-                    var widgetId = this.getDomId("searchby_" + searchField.getId());
-                    if(searchField.getType() == "enumeration") {
-                        var enums = [["","All"]];
-                        var seen = {};
-                        records.map(record=>{
-                                var value = this.getDataValues(record)[searchField.getIndex()];
-                                if(!seen[value]) {
-                                    seen[value]  = true;
-                                    var label = value;
-                                    if(label.length>20) {
-                                        label=  label.substring(0,19)+"...";
-                                    }
-                                    var tuple = [value, label];
-                                    enums.push(tuple);
-                                }
-                            });
-                        widget = HtmlUtils.select("",["id",widgetId],enums);
+                    var widgetId = this.getDomId("filterby_" + filterField.getId());
+		    var value = this.getProperty(filterField.getId() +".filterValue","");
+                    if(filterField.getType() == "enumeration") {
+			var filterValues = this.getProperty(filterField.getId()+".filterValues");
+                        var enums = null;
+			if (filterValues) {
+			    var toks;
+			    if ((typeof filterValues) == "string") {
+				filterValues = Utils.getMacro(filterValues);
+				toks = filterValues.split(",");
+			    } else {
+				toks = filterValues;
+			    }
+			}
+
+			if(enums == null) {
+			    enums = [["","All"]];
+			    var seen = {};
+			    records.map(record=>{
+				    var value = this.getDataValues(record)[filterField.getIndex()];
+				    if(!seen[value]) {
+					seen[value]  = true;
+					var label = value;
+					if(label.length>20) {
+					    label=  label.substring(0,19)+"...";
+					}
+					var tuple = [value, label];
+					enums.push(tuple);
+				    }
+				});
+			}
+                        widget = HtmlUtils.select("",["id",widgetId,"fieldId",filterField.getId()],enums,value);
+		    } else if(filterField.isNumeric) {
+			var opid = widgetId+"_operator";
+			var operator = this.getProperty(filterField.getId() +".filterOperator","<");
+			widget = HtmlUtils.select("",["id", opid],["<",">","="], operator,);
+                        widget +=HtmlUtils.input("",value,["id",widgetId,"size",4,"fieldId",filterField.getId()]);
                     } else {
-                        widget =HtmlUtils.input("","",["id",widgetId]);
+                        widget =HtmlUtils.input("",value,["id",widgetId,"fieldId",filterField.getId()]);
                     }
-                    widget =searchField.getLabel() +": " + widget;
-                    if(i==0) searchBar += "<br>Display: ";
+		    var label =   this.getProperty(filterField.getId()+".filterLabel",filterField.getLabel());
+                    widget = label + ": " + widget;
+		    //                    if(i==0) searchBar += "<br>Display: ";
                     searchBar+=widget +"&nbsp;&nbsp;";
                 }
+
                 this.jq(ID_HEADER2).html(searchBar);
                 this.jq(ID_HEADER2).find("input, input:radio,select").change(function(){
                         var id = $(this).attr("id");
-                        _this.doSearch();
+			var value = $(this).val();
+                        var fieldId = $(this).attr("fieldId");
+			_this.haveCalledUpdateUI = false;
+			if(_this.settingFilterValue) {
+			    console.log("setting value");
+			    return;
+			}
+			_this.settingFilterValue = true;
+			_this.updateUI();
+			_this.propagateEvent("handleEventPropertyChanged", {
+				property: "filterValue",
+				    fieldId: fieldId,
+				    value: value
+				    });
+			_this.settingFilterValue = false;
                     });
-            }
-
-            if (!this.getProperty("showFilterWidget", true)) return;
-            var filterValues = this.getProperty("filterValues");
-            var filterValuesLabel = this.getProperty("filterValuesLabel", "");
-            if (!filterValues) {
-                var filterFieldId = this.getProperty("patternFilterField");
-                if (filterFieldId) {
-                    var filterField = this.getFieldById(null, filterFieldId);
-                    if (filterField) {
-                        if (filterValuesLabel == "") filterValuesLabel = filterField.getLabel() + ": ";
-                        filterValues = this.getColumnValues(records, filterField).values;
-                        filterValues = Utils.getUniqueValues(filterValues);
-                        filterValues.unshift("");
-                    }
-                }
-            }
-            var filterValue = this.getProperty("filterPattern");
-            if (filterValues) {
-                var toks;
-                if ((typeof filterValues) == "string") {
-                    filterValues = Utils.getMacro(filterValues);
-                    toks = filterValues.split(",");
-                } else {
-                    toks = filterValues;
-                }
-                var menu = "<select class='ramadda-pulldown' id='" + this.getDomId("filterValueMenu") + "'>";
-                for (var i = 0; i < toks.length; i++) {
-                    var extra = "";
-                    if (filterValue == toks[i]) extra = "selected ";
-                    if (toks[i] == "") {
-                        menu += "<option value='' " + extra + ">" + "All" + "</option>\n";
-                    } else {
-                        menu += "<option " + extra + ">" + toks[i] + "</option>\n";
-                    }
-                }
-
-                menu += "</select>";
-                this.writeHtml(ID_TOP_RIGHT, filterValuesLabel + menu);
-                this.jq("filterValueMenu").change(function() {
-                    var value = $(this).val();
-                    if (_this.getProperty("filterPattern") == value) return;
-                    if (value == "") value = null;
-                    _this.setProperty("filterPattern", value);
-                    _this.updateUI();
-                    _this.propagateEvent("handleEventPropertyChanged", {
-                        property: "filterPattern",
-                        value: value
-                    });
-                });
             }
         },
         updateUI: function() {},
@@ -2935,45 +2902,6 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
                 this.propagateEvent("handleEventPointDataLoaded", pointData);
             }
         },
-        doSearch: function() {
-                var records = this.filterData();
-                if (!records) {
-                    return;
-                }
-                var newRecords = [];
-                var values = [];
-                for(var i=0;i<this.searchFields.length;i++) {
-                    var searchField = this.searchFields[i];
-                    values.push($("#" + this.getDomId("searchby_" + searchField.getId())).val());
-                }
-                for (var rowIdx = 0; rowIdx <records.length; rowIdx++) {
-                    var row = this.getDataValues(records[rowIdx]);
-                    var ok = true;
-                    for(var i=0;i<this.searchFields.length;i++) {
-                        var searchField = this.searchFields[i];
-                        var searchValue = values[i];
-                        if(searchValue=="") continue;
-                        var value = row[searchField.getIndex()];
-                        if(searchField.getType() == "enumeration") {
-                            if(value!=searchValue) {
-                                ok = false;
-                                break;
-                            }
-                        } else {
-                            value  = (""+value).toLowerCase();
-                            if(value.indexOf(searchValue.toLowerCase())<0) {
-                                ok = false;
-                                break;
-                            }
-                        }
-                    }
-                    if(ok) newRecords.push(records[rowIdx]);
-                }
-                this.displaySearchResults(newRecords);
-            },
-         displaySearchResults: function(records) {
-         },
-
         getDateFormatter: function() {
             var date_formatter = null;
             if (this.googleLoaded()) {

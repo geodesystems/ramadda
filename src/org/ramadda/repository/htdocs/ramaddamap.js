@@ -3153,7 +3153,6 @@ function initMapFunctions(theMap) {
                       sf.activate();
                     */
                 }
-
                 this.circles.addFeatures([feature]);
             }
             return feature;

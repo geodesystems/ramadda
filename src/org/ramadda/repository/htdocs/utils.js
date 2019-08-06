@@ -1698,7 +1698,7 @@ var HtmlUtils = {
         list.map(item=>{
                 var label = item;
                 if(Array.isArray(item)) {
-                    label=item[1];
+		    label=item[1];
                     item = item[0];
                 }
                 var extra = "";

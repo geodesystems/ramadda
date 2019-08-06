@@ -81,7 +81,6 @@ function BasePointData(name, properties) {
             return value;
         },
 
-
         getRecordFields: function() {
             return this.recordFields;
         },
@@ -262,7 +261,6 @@ function PointData(name, recordFields, records, url, properties) {
                         else if(record.record)
                             data = record.record.getData();
                         console.log("data:" + data);
-                        foobarasds();
                         var value = groupField.getValue(data);
                         if(!seen[value]) {
                             seen[value] = true;
@@ -380,10 +378,12 @@ function DerivedPointData(displayManager, name, pointDataList, operation) {
             if (this.pointDataList.length == 1) {
                 this.records = pointData1.getRecords();
                 this.recordFields = pointData1.getRecordFields();
+		console.log("initData:" + this.recordFields.length);
             } else if (this.pointDataList.length > 1) {
                 var results = this.combineData(pointData1, this.pointDataList[1]);
                 this.records = results.records;
                 this.recordFields = results.recordFields;
+		console.log("initData 2:" + this.recordFields.length);
             }
             this.setGroupField();
             this.display.pointDataLoaded(this);
@@ -476,6 +476,9 @@ function RecordField(props) {
     });
 
     RamaddaUtil.defineMembers(this, {
+	    toString: function() {
+		return this.getId();
+	    },
         getIndex: function() {
             return this.index;
         },
@@ -550,6 +553,10 @@ function RecordField(props) {
         setLabel: function(l) {
             this.label = l;
         },
+		isString: function() {
+		return this.type == "string" || this.type=="enumeration";
+
+	    },
         getType: function() {
             return this.type;
         },
@@ -581,6 +588,9 @@ function PointRecord(lat, lon, elevation, time, data) {
         elevation: elevation,
         recordTime: time,
         data: data,
+		toString: function() {
+		return "data:"  + data;
+	    },
         getData: function() {
             return this.data;
         },
@@ -1268,6 +1278,7 @@ var RecordUtil = {
                 }
             }
         }
+	if(!bounds) bounds = {};
         bounds.north = north;
         bounds.west = west;
         bounds.south = south;

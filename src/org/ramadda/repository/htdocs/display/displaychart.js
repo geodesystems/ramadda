@@ -856,7 +856,7 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
         },
         tableHeaderMouseover: function(i, tooltip) {},
         makeDataTable: function(dataList, props, selectedFields) {
-            dataList = this.filterData(dataList, selectedFields);
+		dataList = this.filterData(dataList, selectedFields,false, true);
             if (dataList.length == 1) {
                 return google.visualization.arrayToDataTable(this.makeDataArray(dataList));
             }
@@ -1559,7 +1559,7 @@ function SankeyDisplay(displayManager, id, properties) {
             return true;
         },
         makeDataTable: function(dataList, props, selectedFields) {
-            dataList = this.filterData(dataList, selectedFields);
+		dataList = this.filterData(dataList, selectedFields,false,true);
             if (!this.getProperty("doCategories", false)) {
                 var values = this.makeDataArray(dataList);
                 return google.visualization.arrayToDataTable(values);
@@ -1640,7 +1640,7 @@ function WordtreeDisplay(displayManager, id, properties) {
         makeDataTable: function(dataList, props, selectedFields) {
             //null ->get all data
             var root = this.getProperty("treeRoot", "root");
-            var records = this.filterData(null, selectedFields);
+            var records = this.filterData(null, selectedFields, false,true);
             var fields = this.getSelectedFields(this.getData().getRecordFields());
             var valueField = this.getFieldById(null, this.getProperty("colorBy"));
             var values = [];
@@ -1795,7 +1795,7 @@ function TableDisplay(displayManager, id, properties) {
             return new google.visualization.Table(document.getElementById(this.getChartId()));
         },
         makeDataTable: function(dataList, props, selectedFields) {
-            dataList = this.filterData(dataList, selectedFields);
+		//            dataList = this.filterData(dataList, selectedFields);
             var rows = this.makeDataArray(dataList);
             var data = [];
             for (var rowIdx = 0; rowIdx < rows.length; rowIdx++) {
@@ -2012,7 +2012,7 @@ function TreemapDisplay(displayManager, id, properties) {
             });
         },
         makeDataTable: function(dataList, props, selectedFields) {
-            var records = this.filterData();
+		var records = this.filterData(null,null,false,true);
             if (!records) {
                 return null;
             }
@@ -2113,7 +2113,7 @@ function TimelinechartDisplay(displayManager, id, properties) {
             return new google.visualization.Timeline(document.getElementById(this.getChartId()));
         },
         makeDataTable: function(dataList, props, selectedFields) {
-            var records = this.filterData();
+		var records = this.filterData(null,null,false,true);
             var strings = [];
             var stringField = this.getFieldOfType(selectedFields, "string");
             if (!stringField)

@@ -751,7 +751,9 @@ function RamaddaMapDisplay(displayManager, id, properties) {
             if (Utils.isDefined(source[prop])) {
                 return source[prop];
             }
-            return source.getProperty(prop, dflt);
+	    if(source.getProperty)
+		return source.getProperty(prop, dflt);
+	    return null;
         },
         applyVectorMap: function(force) {
             if (!force && this.vectorMapApplied) {
@@ -1040,35 +1042,42 @@ function RamaddaMapDisplay(displayManager, id, properties) {
                 console.log("null records:" + err.stack);
                 return;
             }
-           if(this.haveCalledUpdateUI) return;
-           this.haveCalledUpdateUI = true;
 
-
+				
+	    if(this.haveCalledUpdateUI) {
+		return;
+	    }
+	    this.haveCalledUpdateUI = true;
             var fields = pointData.getRecordFields();
             var bounds = {};
             var points = RecordUtil.getPoints(records, bounds);
-            if (isNaN(bounds.north)) {
-                console.log("no bounds:" + bounds);
-                return;
-            }
-            //console.log("bounds:" + bounds.north +" " + bounds.west +" " + bounds.south +" " + bounds.east);
-            this.initBounds = bounds;
-            this.setInitMapBounds(bounds.north, bounds.west, bounds.south,
-                bounds.east);
-            if (this.map == null) {
-                return;
-            }
+            var showSegments = this.getProperty("showSegments", false);
+	    if(records.length!=0) {
+		if (isNaN(bounds.north)) {
+		    console.log("no bounds:" + bounds);
+		    return;
+		}
+		//		console.log("bounds:" + bounds.north +" " + bounds.west +" " + bounds.south +" " + bounds.east);
+		this.initBounds = bounds;
+		if(!showSegments) {
+		    this.setInitMapBounds(bounds.north, bounds.west, bounds.south,
+					  bounds.east);
+		}
+	    }
+	    if (this.map == null) {
+		return;
+	    }
             if (points.length == 0) {
-                console.log("points.length==0");
-                return;
+                //console.log("points.length==0");
+		//                return;
             }
 
             this.addPoints(records,fields,points);
             this.addLabels(records,fields,points);
             this.applyVectorMap();
-        },
+	    },
 
-                addPoints: function(records, fields, points) {
+          addPoints: function(records, fields, points) {
             var source = this;
             var radius = parseFloat(this.getDisplayProp(source, "radius", 8));
             var strokeWidth = parseFloat(this.getDisplayProp(source, "strokeWidth", "1"));
@@ -1101,7 +1110,6 @@ function RamaddaMapDisplay(displayManager, id, properties) {
             var latField2 = this.getFieldById(fields, this.getProperty("latField2"));
             var lonField1 = this.getFieldById(fields, this.getProperty("lonField1"));
             var lonField2 = this.getFieldById(fields, this.getProperty("lonField2"));
-            var showSegments = this.getProperty("showSegments", false);
             var sizeSegments = this.getProperty("sizeSegments", false);
             var sizeEndPoints = this.getProperty("sizeEndPoints", true);
             var showEndPoints = this.getProperty("showEndPoints", false);
@@ -1118,6 +1126,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
                 field: null,
                 index: -1,
                 isString: false,
+                stringMap: null
             };
 
 
@@ -1128,7 +1137,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
                 field: null,
                 index: -1,
                 isString: false,
-                stringMap: {}
+                stringMap: {},
             };
 
             var sizeByMap = this.getProperty("sizeByMap");
@@ -1146,11 +1155,11 @@ function RamaddaMapDisplay(displayManager, id, properties) {
                 var field = fields[i];
                 if (field.getId() == colorBy.id || ("#" + (i + 1)) == colorBy.id) {
                     colorBy.field = field;
-                    if (field.getType() == "string") colorBy.isString = true;
+		    if (field.isString()) colorBy.isString = true;
                 }
                 if (field.getId() == sizeBy.id || ("#" + (i + 1)) == sizeBy.id) {
                     sizeBy.field = field;
-                    if (field.getType() == "string") sizeBy.isString = true;
+		    if (field.isString()) sizeBy.isString = true;
                 }
             }
 
@@ -1188,6 +1197,18 @@ function RamaddaMapDisplay(displayManager, id, properties) {
             var excludeZero = this.getProperty(PROP_EXCLUDE_ZERO, false);
             this.animation.dateMin = null;
             this.animation.dateMax = null;
+	    var colorByMapProp = this.getProperty("colorByMap");
+            if (colorByMapProp) {
+                var toks = colorByMapProp.split(",");
+		colorBy.stringMap = {};
+                for (var i = 0; i < toks.length; i++) {
+                    var toks2 = toks[i].split(":");
+                    if (toks2.length > 1) {
+                        colorBy.stringMap[toks2[0]] = toks2[1];
+                    }
+                }
+            }
+
             var colorByMap = {};
             var colorByValues = [];
 
@@ -1212,6 +1233,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
                 }
                 var tuple = pointRecord.getData();
                 var v = tuple[colorBy.index];
+		
                 if (colorBy.isString) {
                     if (!Utils.isDefined(colorByMap[v])) {
                         colorByValues.push(v);
@@ -1221,19 +1243,24 @@ function RamaddaMapDisplay(displayManager, id, properties) {
                         //                        console.log("cb:" +colorBy.minValue +" -  " +colorBy.maxValue);
                     }
                 }
-                if (isNaN(v) || v === null)
-                    continue;
-                if (excludeZero && v == 0) {
+
+
+                if (excludeZero && v === 0) {
                     continue;
                 }
                 if (!colorBy.isString) {
-                    if (i == 0 || v > colorBy.maxValue) colorBy.maxValue = v;
-                    if (i == 0 || v < colorBy.minValue) colorBy.minValue = v;
+		    if (!isNaN(v) && !(v === null)) {
+			if (i == 0 || v > colorBy.maxValue) colorBy.maxValue = v;
+			if (i == 0 || v < colorBy.minValue) colorBy.minValue = v;
+		    }
                 }
                 if (!sizeBy.isString) {
                     v = tuple[sizeBy.index];
-                    if (i == 0 || v > sizeBy.maxValue) sizeBy.maxValue = v;
-                    if (i == 0 || v < sizeBy.minValue) sizeBy.minValue = v;
+		    if (!isNaN(v) && !(v === null)) {
+			if (i == 0 || v > sizeBy.maxValue) sizeBy.maxValue = v;
+			if (i == 0 || v < sizeBy.minValue) sizeBy.minValue = v;
+		    }
+		
                 }
             }
             sizeBy.radiusMin = parseFloat(this.getProperty("sizeByRadiusMin", -1));
@@ -1281,11 +1308,16 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 
 
             if (this.points) {
-                for (var i = 0; i < this.points.length; i++)
+                for (var i = 0; i < this.points.length; i++) {
                     this.map.removePoint(this.points[i]);
+		}
+                this.points = [];
+            }
+
+
+            if (this.lines) {
                 for (var i = 0; i < this.lines.length; i++)
                     this.map.removePolygon(this.lines[i]);
-                this.points = [];
                 this.lines = [];
             }
 
@@ -1297,7 +1329,6 @@ function RamaddaMapDisplay(displayManager, id, properties) {
             var dontAddPoint = this.doDisplayMap();
             var didColorBy = false;
             var seen = {};
-
             for (var i = 0; i < points.length; i++) {
                 var pointRecord = records[i];
                 var point = points[i];
@@ -1350,10 +1381,12 @@ function RamaddaMapDisplay(displayManager, id, properties) {
                         }
                         if (sizeSegments) {
                             segmentWidth = dfltSegmentWidth + parseInt(10 * percent);
+			    if(segmentWidth==0 || isNaN(segmentWidth)) segmentWidth=1;
                         }
                     }
                     //                            console.log("percent:" + percent +  " radius: " + props.pointRadius +" Value: " + value  + " range: " + sizeBy.minValue +" " + sizeBy.maxValue);
                 }
+		if(isNaN(props.pointRadius) || props.pointRadius == 0) props.pointRadius= radius;
                 if (colorBy.index >= 0) {
                     var value = pointRecord.getData()[colorBy.index];
                     //                            console.log("value:" + value +" index:" + colorBy.index+" " + pointRecord.getData());
@@ -1403,11 +1436,22 @@ function RamaddaMapDisplay(displayManager, id, properties) {
                     else if (index < 0) index = 0;
                     //                            console.log("value:" + value+ " %:" + percent +" index:" + index +" c:" + colors[index]);
 
+		    if(colorBy.stringMap) {
+			props.fillColor = colorBy.stringMap[value];
+			if(!Utils.isDefined(props.fillColor)) {
+			    props.fillColor = colorBy.stringMap["default"];
+			}
+			if(!Utils.isDefined(props.fillColor)) {
+			    props.fillColor = "blue";
+			}
+		    } else {
+			props.fillColor = colors[index];
+		    }
                     props.fillOpacity = 0.8;
-                    props.fillColor = colors[index];
                     didColorBy = true;
                 }
 
+		var showSegments = this.getProperty("showSegments", false);
                 var html = this.getRecordHtml(pointRecord, fields);
                 if (showSegments && latField1 && latField2 && lonField1 && lonField2) {
                     var lat1 = values[latField1.getIndex()];
@@ -1454,12 +1498,32 @@ function RamaddaMapDisplay(displayManager, id, properties) {
                         mapPoint.date = date.getTime();
                     }
                     this.points.push(mapPoint);
-                }
-            }
+		}
+	    }
+
+	    if (showSegments) {
+		this.map.centerOnMarkers(null, true, null);
+	    }
+
+
+	    if(this.map.circles)
+		this.map.circles.redraw();
             if (didColorBy) {
-                this.displayColorTable(colors, ID_BOTTOM, colorBy.origMinValue, colorBy.origMaxValue, {
-                        stringValues: colorByValues
-                            });
+		if(colorBy.stringMap) {
+		    console.log("sm:" + colors);
+		    var colors = [];
+		    colorByValues= [];
+		    for (var i in colorBy.stringMap) {
+			colorByValues.push(i);
+			colors.push(colorBy.stringMap[i]);
+		    }
+		    this.displayColorTable(colors, ID_BOTTOM, colorBy.origMinValue, colorBy.origMaxValue, {
+			    stringValues: colorByValues});
+		} else {
+		    this.displayColorTable(colors, ID_BOTTOM, colorBy.origMinValue, colorBy.origMaxValue, {
+			    stringValues: colorByValues
+				});
+		}
             }
         },
         addLabels:function(records, fields, points) {

@@ -761,10 +761,13 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             this.updateUI();
         },
         handleEventPropertyChanged: function(source, prop) {
-            if (prop.property == "filterPattern") {
-                this.jq("filterValueMenu").val(prop.value);
+            if (prop.property == "filterValue") {
+		this.haveCalledUpdateUI = false;
+		var widgetId = "filterby_" + prop.fieldId;
+		this.settingFilterValue = true;
+		this.jq(widgetId).val(prop.value);
+		this.settingFilterValue = false;
             }
-
             this.setProperty(prop.property, prop.value);
             this.updateUI();
         },
@@ -860,7 +863,6 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             this.removeProperty(PROP_FIELDS);
             this.fieldSelectionChanged();
             if (event.shiftKey) {
-
                 var fields = this.getSelectedFields();
                 this.propagateEvent("handleEventFieldsSelected", fields);
             }
@@ -1266,7 +1268,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
         requiresGrouping:  function() {
                 return false;
          },
-        filterData: function(dataList, fields, doGroup) {
+		filterData: function(dataList, fields, doGroup, skipFirst) {
             var pointData = this.getData();
             if (!dataList) {
                 if (pointData == null) return null;
@@ -1278,86 +1280,65 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             if(doGroup || this.requiresGrouping()) {
                 dataList = pointData.extractGroup(this.dataGroup, dataList);
             }
-            var patternFieldId = this.getProperty("patternFilterField");
-            var numericFieldId = this.getProperty("numericFilterField");
-            var pattern = this.getProperty("filterPattern");
-            var prefix = this.getProperty("filterPatternPrefix");
-            if (prefix) pattern = prefix + pattern;
-            var suffix = this.getProperty("filterPatternSuffix");
-            if (suffix) pattern = pattern + suffix;
 
-            var notPattern = false;
-            if (pattern) {
-                notPattern = pattern.startsWith("!");
-                if (notPattern) {
-                    pattern = pattern.substring(1);
-                }
-            }
+	    var newData = [];
+	    var values = [];
+	    var operators = [];
+	    for(var i=0;i<this.filterFields.length;i++) {
+		var filterField = this.filterFields[i];
+		var prefix = this.getProperty(filterField.getId() +".filterPrefix");
+		var suffix = this.getProperty(filterField.getId() +".filterSuffix");
+		var value = $("#" + this.getDomId("filterby_" + filterField.getId())).val();
+		if (prefix) pattern = prefix + value;
+		if (suffix) pattern = value + suffix;
+		values.push(value);
+		operators.push($("#" + this.getDomId("filterby_" + filterField.getId()+"_operator")).val());
+	    }
+	    for (var rowIdx = 0; rowIdx <dataList.length; rowIdx++) {
+		var row = this.getDataValues(dataList[rowIdx]);
+		var ok = true;
+		for(var i=0;i<this.filterFields.length;i++) {
+		    if(!ok) break;
+		    var filterField = this.filterFields[i];
+		    var filterValue = values[i];
+		    if(filterValue=="") continue;
+		    var value = row[filterField.getIndex()];
+		    if(filterField.getType() == "enumeration") {
+			if(value!=filterValue) {
+			    ok = false;
+			}
+		    } else if(filterField.isNumeric) {
+			filterValue = parseFloat(filterValue);
+			var op = operators[i];
+			if(op == null) op = "<";
+			if (op == "<") {
+			    ok = value < filterValue;
+			} else if (op == "<=") {
+			    ok = value <= filterValue;
+			} else if (op == "=") {
+			    ok = value == filterValue;
+			} else if (op == ">") {
+			    ok = value > filterValue;
+			} else if (op == ">=") {
+			    ok = value >= filterValue;
+			}
+		    } else {
+			//TODO: add the prefix
+			value  = (""+value).toLowerCase();
+			if(value.indexOf(filterValue.toLowerCase())<0) {
+			    ok = false;
+			}
+		    }
+		}
+		if(skipFirst && rowIdx==0) {
+		    ok = true;
+		}
+		if(ok) {
+		    newData.push(dataList[rowIdx]);
+		}
+	    }
+	    dataList = newData;
 
-            var filterSValue = this.getProperty("numericFilterValue");
-            var filterOperator = this.getProperty("numericFilterOperator", "<");
-
-            if ((numericFieldId || patternFieldId) && (pattern || (filterSValue && filterOperator))) {
-                var patternFields = this.getFieldsByIds(fields, patternFieldId);
-                var numericField = null;
-                for (var i = 0; i < fields.length; i++) {
-                    if (!numericField && (fields[i].getId() == numericFieldId || numericFieldId == "#" + (i + 1))) {
-                        numericField = fields[i];
-                    }
-                    if (patternField && numericField) break;
-                }
-                if (patternFields.length || numericField) {
-                    var list = [];
-                    var filterValue;
-                    if (filterSValue) {
-                        filterValue = parseFloat(filterSValue);
-                    }
-                    var isPointRecord = false;
-                    if (dataList.length > 0)
-                        isPointRecord = dataList[0].isPointRecord;
-                    for (var i = 0; i < dataList.length; i++) {
-                        var obj = dataList[i];
-                        var row = this.getDataValues(obj);
-                        var array = row;
-                        if (!isPointRecord && i == 0) {
-                            list.push(obj);
-                            continue;
-                        }
-                        var ok = false;
-                        if (numericField && filterSValue && filterOperator) {
-                            var value = parseFloat(array[numericField.getIndex()]);
-                            var filterValue = parseFloat(filterSValue);
-                            if (filterOperator == "<") {
-                                ok = value < filterValue;
-                            } else if (filterOperator == "<=") {
-                                ok = value <= filterValue;
-                            } else if (filterOperator == "==") {
-                                ok = value == filterValue;
-                            } else if (filterOperator == ">") {
-                                ok = value > filterValue;
-                            } else if (filterOperator == ">=") {
-                                ok = value >= filterValue;
-                            }
-                            if (!ok) {
-                                continue;
-                            }
-                        }
-                        if (patternFields.length && pattern) {
-                            for (var fieldIdx = 0; fieldIdx < patternFields.length; fieldIdx++) {
-                                var patternField = patternFields[fieldIdx];
-                                var value = "" + array[patternField.getIndex()];
-                                ok = value.match(pattern);
-                                if (notPattern) ok = !ok;
-                                if (ok) break;
-                            }
-                        }
-                        if (ok) {
-                            list.push(obj);
-                        }
-                    }
-                    dataList = list;
-                }
-            }
 
             var stride = parseInt(this.getProperty("stride", -1));
             if (stride > 0) {
@@ -2580,96 +2561,82 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             let _this = this;
             var pointData = this.getData();
             if (pointData == null) return;
-            this.searchFields = [];
-            var searchBy = this.getProperty("searchFields","",true).split(",");
+            this.filterFields = [];
+            var filterBy = this.getProperty("filterFields","",true).split(",");
             var fields= pointData.getRecordFields();
             var records = pointData.getRecords();
-            if(searchBy.length>0) {
+            if(filterBy.length>0) {
                 var searchBar  = "";
-                for(var i=0;i<searchBy.length;i++) {
-                    var searchField  = this.getFieldById(fields,searchBy[i]);
-                    if(!searchField) continue;
-                    this.searchFields.push(searchField);
+                for(var i=0;i<filterBy.length;i++) {
+                    var filterField  = this.getFieldById(fields,filterBy[i]);
+                    if(!filterField) continue;
+                    this.filterFields.push(filterField);
                     var widget;
-                    var widgetId = this.getDomId("searchby_" + searchField.getId());
-                    if(searchField.getType() == "enumeration") {
-                        var enums = [["","All"]];
-                        var seen = {};
-                        records.map(record=>{
-                                var value = this.getDataValues(record)[searchField.getIndex()];
-                                if(!seen[value]) {
-                                    seen[value]  = true;
-                                    var label = value;
-                                    if(label.length>20) {
-                                        label=  label.substring(0,19)+"...";
-                                    }
-                                    var tuple = [value, label];
-                                    enums.push(tuple);
-                                }
-                            });
-                        widget = HtmlUtils.select("",["id",widgetId],enums);
+                    var widgetId = this.getDomId("filterby_" + filterField.getId());
+		    var value = this.getProperty(filterField.getId() +".filterValue","");
+                    if(filterField.getType() == "enumeration") {
+			var filterValues = this.getProperty(filterField.getId()+".filterValues");
+                        var enums = null;
+			if (filterValues) {
+			    var toks;
+			    if ((typeof filterValues) == "string") {
+				filterValues = Utils.getMacro(filterValues);
+				toks = filterValues.split(",");
+			    } else {
+				toks = filterValues;
+			    }
+			}
+
+			if(enums == null) {
+			    enums = [["","All"]];
+			    var seen = {};
+			    records.map(record=>{
+				    var value = this.getDataValues(record)[filterField.getIndex()];
+				    if(!seen[value]) {
+					seen[value]  = true;
+					var label = value;
+					if(label.length>20) {
+					    label=  label.substring(0,19)+"...";
+					}
+					var tuple = [value, label];
+					enums.push(tuple);
+				    }
+				});
+			}
+                        widget = HtmlUtils.select("",["id",widgetId,"fieldId",filterField.getId()],enums,value);
+		    } else if(filterField.isNumeric) {
+			var opid = widgetId+"_operator";
+			var operator = this.getProperty(filterField.getId() +".filterOperator","<");
+			widget = HtmlUtils.select("",["id", opid],["<",">","="], operator,);
+                        widget +=HtmlUtils.input("",value,["id",widgetId,"size",4,"fieldId",filterField.getId()]);
                     } else {
-                        widget =HtmlUtils.input("","",["id",widgetId]);
+                        widget =HtmlUtils.input("",value,["id",widgetId,"fieldId",filterField.getId()]);
                     }
-                    widget =searchField.getLabel() +": " + widget;
-                    if(i==0) searchBar += "<br>Display: ";
+		    var label =   this.getProperty(filterField.getId()+".filterLabel",filterField.getLabel());
+                    widget = label + ": " + widget;
+		    //                    if(i==0) searchBar += "<br>Display: ";
                     searchBar+=widget +"&nbsp;&nbsp;";
                 }
+
                 this.jq(ID_HEADER2).html(searchBar);
                 this.jq(ID_HEADER2).find("input, input:radio,select").change(function(){
                         var id = $(this).attr("id");
-                        _this.doSearch();
+			var value = $(this).val();
+                        var fieldId = $(this).attr("fieldId");
+			_this.haveCalledUpdateUI = false;
+			if(_this.settingFilterValue) {
+			    console.log("setting value");
+			    return;
+			}
+			_this.settingFilterValue = true;
+			_this.updateUI();
+			_this.propagateEvent("handleEventPropertyChanged", {
+				property: "filterValue",
+				    fieldId: fieldId,
+				    value: value
+				    });
+			_this.settingFilterValue = false;
                     });
-            }
-
-            if (!this.getProperty("showFilterWidget", true)) return;
-            var filterValues = this.getProperty("filterValues");
-            var filterValuesLabel = this.getProperty("filterValuesLabel", "");
-            if (!filterValues) {
-                var filterFieldId = this.getProperty("patternFilterField");
-                if (filterFieldId) {
-                    var filterField = this.getFieldById(null, filterFieldId);
-                    if (filterField) {
-                        if (filterValuesLabel == "") filterValuesLabel = filterField.getLabel() + ": ";
-                        filterValues = this.getColumnValues(records, filterField).values;
-                        filterValues = Utils.getUniqueValues(filterValues);
-                        filterValues.unshift("");
-                    }
-                }
-            }
-            var filterValue = this.getProperty("filterPattern");
-            if (filterValues) {
-                var toks;
-                if ((typeof filterValues) == "string") {
-                    filterValues = Utils.getMacro(filterValues);
-                    toks = filterValues.split(",");
-                } else {
-                    toks = filterValues;
-                }
-                var menu = "<select class='ramadda-pulldown' id='" + this.getDomId("filterValueMenu") + "'>";
-                for (var i = 0; i < toks.length; i++) {
-                    var extra = "";
-                    if (filterValue == toks[i]) extra = "selected ";
-                    if (toks[i] == "") {
-                        menu += "<option value='' " + extra + ">" + "All" + "</option>\n";
-                    } else {
-                        menu += "<option " + extra + ">" + toks[i] + "</option>\n";
-                    }
-                }
-
-                menu += "</select>";
-                this.writeHtml(ID_TOP_RIGHT, filterValuesLabel + menu);
-                this.jq("filterValueMenu").change(function() {
-                    var value = $(this).val();
-                    if (_this.getProperty("filterPattern") == value) return;
-                    if (value == "") value = null;
-                    _this.setProperty("filterPattern", value);
-                    _this.updateUI();
-                    _this.propagateEvent("handleEventPropertyChanged", {
-                        property: "filterPattern",
-                        value: value
-                    });
-                });
             }
         },
         updateUI: function() {},
@@ -3085,45 +3052,6 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
                 this.propagateEvent("handleEventPointDataLoaded", pointData);
             }
         },
-        doSearch: function() {
-                var records = this.filterData();
-                if (!records) {
-                    return;
-                }
-                var newRecords = [];
-                var values = [];
-                for(var i=0;i<this.searchFields.length;i++) {
-                    var searchField = this.searchFields[i];
-                    values.push($("#" + this.getDomId("searchby_" + searchField.getId())).val());
-                }
-                for (var rowIdx = 0; rowIdx <records.length; rowIdx++) {
-                    var row = this.getDataValues(records[rowIdx]);
-                    var ok = true;
-                    for(var i=0;i<this.searchFields.length;i++) {
-                        var searchField = this.searchFields[i];
-                        var searchValue = values[i];
-                        if(searchValue=="") continue;
-                        var value = row[searchField.getIndex()];
-                        if(searchField.getType() == "enumeration") {
-                            if(value!=searchValue) {
-                                ok = false;
-                                break;
-                            }
-                        } else {
-                            value  = (""+value).toLowerCase();
-                            if(value.indexOf(searchValue.toLowerCase())<0) {
-                                ok = false;
-                                break;
-                            }
-                        }
-                    }
-                    if(ok) newRecords.push(records[rowIdx]);
-                }
-                this.displaySearchResults(newRecords);
-            },
-         displaySearchResults: function(records) {
-         },
-
         getDateFormatter: function() {
             var date_formatter = null;
             if (this.googleLoaded()) {
@@ -4044,7 +3972,6 @@ function BasePointData(name, properties) {
             return value;
         },
 
-
         getRecordFields: function() {
             return this.recordFields;
         },
@@ -4225,7 +4152,6 @@ function PointData(name, recordFields, records, url, properties) {
                         else if(record.record)
                             data = record.record.getData();
                         console.log("data:" + data);
-                        foobarasds();
                         var value = groupField.getValue(data);
                         if(!seen[value]) {
                             seen[value] = true;
@@ -4343,10 +4269,12 @@ function DerivedPointData(displayManager, name, pointDataList, operation) {
             if (this.pointDataList.length == 1) {
                 this.records = pointData1.getRecords();
                 this.recordFields = pointData1.getRecordFields();
+		console.log("initData:" + this.recordFields.length);
             } else if (this.pointDataList.length > 1) {
                 var results = this.combineData(pointData1, this.pointDataList[1]);
                 this.records = results.records;
                 this.recordFields = results.recordFields;
+		console.log("initData 2:" + this.recordFields.length);
             }
             this.setGroupField();
             this.display.pointDataLoaded(this);
@@ -4439,6 +4367,9 @@ function RecordField(props) {
     });
 
     RamaddaUtil.defineMembers(this, {
+	    toString: function() {
+		return this.getId();
+	    },
         getIndex: function() {
             return this.index;
         },
@@ -4513,6 +4444,10 @@ function RecordField(props) {
         setLabel: function(l) {
             this.label = l;
         },
+		isString: function() {
+		return this.type == "string" || this.type=="enumeration";
+
+	    },
         getType: function() {
             return this.type;
         },
@@ -4544,6 +4479,9 @@ function PointRecord(lat, lon, elevation, time, data) {
         elevation: elevation,
         recordTime: time,
         data: data,
+		toString: function() {
+		return "data:"  + data;
+	    },
         getData: function() {
             return this.data;
         },
@@ -5231,6 +5169,7 @@ var RecordUtil = {
                 }
             }
         }
+	if(!bounds) bounds = {};
         bounds.north = north;
         bounds.west = west;
         bounds.south = south;
@@ -9051,7 +8990,7 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
         },
         tableHeaderMouseover: function(i, tooltip) {},
         makeDataTable: function(dataList, props, selectedFields) {
-            dataList = this.filterData(dataList, selectedFields);
+		dataList = this.filterData(dataList, selectedFields,false, true);
             if (dataList.length == 1) {
                 return google.visualization.arrayToDataTable(this.makeDataArray(dataList));
             }
@@ -9754,7 +9693,7 @@ function SankeyDisplay(displayManager, id, properties) {
             return true;
         },
         makeDataTable: function(dataList, props, selectedFields) {
-            dataList = this.filterData(dataList, selectedFields);
+		dataList = this.filterData(dataList, selectedFields,false,true);
             if (!this.getProperty("doCategories", false)) {
                 var values = this.makeDataArray(dataList);
                 return google.visualization.arrayToDataTable(values);
@@ -9835,7 +9774,7 @@ function WordtreeDisplay(displayManager, id, properties) {
         makeDataTable: function(dataList, props, selectedFields) {
             //null ->get all data
             var root = this.getProperty("treeRoot", "root");
-            var records = this.filterData(null, selectedFields);
+            var records = this.filterData(null, selectedFields, false,true);
             var fields = this.getSelectedFields(this.getData().getRecordFields());
             var valueField = this.getFieldById(null, this.getProperty("colorBy"));
             var values = [];
@@ -9990,7 +9929,7 @@ function TableDisplay(displayManager, id, properties) {
             return new google.visualization.Table(document.getElementById(this.getChartId()));
         },
         makeDataTable: function(dataList, props, selectedFields) {
-            dataList = this.filterData(dataList, selectedFields);
+		//            dataList = this.filterData(dataList, selectedFields);
             var rows = this.makeDataArray(dataList);
             var data = [];
             for (var rowIdx = 0; rowIdx < rows.length; rowIdx++) {
@@ -10207,7 +10146,7 @@ function TreemapDisplay(displayManager, id, properties) {
             });
         },
         makeDataTable: function(dataList, props, selectedFields) {
-            var records = this.filterData();
+		var records = this.filterData(null,null,false,true);
             if (!records) {
                 return null;
             }
@@ -10308,7 +10247,7 @@ function TimelinechartDisplay(displayManager, id, properties) {
             return new google.visualization.Timeline(document.getElementById(this.getChartId()));
         },
         makeDataTable: function(dataList, props, selectedFields) {
-            var records = this.filterData();
+		var records = this.filterData(null,null,false,true);
             var strings = [];
             var stringField = this.getFieldOfType(selectedFields, "string");
             if (!stringField)
@@ -13442,14 +13381,17 @@ function RamaddaCardsDisplay(displayManager, id, properties) {
             return "";
         },
         updateUI: function() {
+            var pointData = this.getData();
+            if (pointData == null) return;
+            var allFields = pointData.getRecordFields();
+	    var fields = this.getSelectedFields(allFields);
+            if (fields == null || fields.length == 0) {
+                fields = allFields;
+	    }
             var records = this.filterData();
             if(!records) return;
-            var allFields = this.getData().getRecordFields();
-            var fields = this.getSelectedFields(allFields);
-            if (fields.length == 0)
-                fields = allFields;
-            this.fields = fields;
-            this.initGrouping  = this.getFieldsByIds(fields, this.getProperty("initGroupFields","",true));
+	    let theFields = fields;
+	    this.initGrouping  = this.getFieldsByIds(fields, this.getProperty("initGroupFields","",true));
             this.groupByFields = this.getFieldsByIds(fields, this.getProperty("groupByFields","",true));
             this.groupByMenus= +this.getProperty("groupByMenus",this.groupByFields.length);
             this.imageField = this.getFieldOfType(fields, "image");
@@ -13465,6 +13407,7 @@ function RamaddaCardsDisplay(displayManager, id, properties) {
             this.colorList = this.getColorTable(true);
             this.foregroundList = this.getColorTable(true,"foreground");
             if(!this.getProperty("showImages",true)) this.imageField = null;
+
             if(!this.imageField)  {
                 if(this.captionFields.length==0) {
                     this.displayError("No image or caption fields specified");
@@ -13474,34 +13417,38 @@ function RamaddaCardsDisplay(displayManager, id, properties) {
             this.sortFields = this.getFieldsByIds(fields, this.getProperty("sortFields", "", true));
             var contents = "";
 
-            var groupByHtml = "";
-            if(this.groupByFields.length>0) {
-                var options = [["","--"]];
-                this.groupByFields.map(field=>{
-                        options.push([field.getId(),field.getLabel()]);
-                    });
-                groupByHtml =  " Group by: ";
-                for(var i=0;i<this.groupByMenus;i++) {
-                    var selected = "";
-                    if(i<this.initGrouping.length) {
-                        selected = this.initGrouping[i].getId();
-                    }
-                    groupByHtml+= HtmlUtils.select("",["id",this.getDomId(ID_GROUPBY_FIELDS+i)],options,selected)+"&nbsp;";
-                }
-                groupByHtml+="&nbsp;";
+	    if(!this.groupByHtml) {
+		this.groupByHtml = "";
+		if(this.groupByFields.length>0) {
+		    var options = [["","--"]];
+		    this.groupByFields.map(field=>{
+			    options.push([field.getId(),field.getLabel()]);
+			});
+		    this.groupByHtml =  " Group by: ";
+		    for(var i=0;i<this.groupByMenus;i++) {
+			var selected = "";
+			if(i<this.initGrouping.length) {
+			    selected = this.initGrouping[i].getId();
+			}
+			this.groupByHtml+= HtmlUtils.select("",["id",this.getDomId(ID_GROUPBY_FIELDS+i)],options,selected)+"&nbsp;";
+		    }
+		    this.groupByHtml+="&nbsp;";
+		    this.jq(ID_HEADER1).html(this.groupByHtml);
+		}
+	    }
 
-            }
-            this.jq(ID_HEADER1).html(groupByHtml);
+
+
             contents += HtmlUtils.div(["id",this.getDomId(ID_RESULTS)]);
             this.writeHtml(ID_DISPLAY_CONTENTS, contents);
             let _this = this;
             this.jq(ID_HEADER1).find("input, input:radio,select").change(function(){
-                    var id = $(this).attr("id");
-                    _this.doSearch();
+                    _this.updateUI();
                 });
-            this.displaySearchResults(records);
+
+            this.displaySearchResults(records,theFields);
          },
-         displaySearchResults: function(records) {
+	 displaySearchResults: function(records, fields) {
             records = Utils.cloneList(records);
             if(this.sortFields.length) {
                 var sortAscending = this.getProperty("sortAscending",true);
@@ -13534,7 +13481,7 @@ function RamaddaCardsDisplay(displayManager, id, properties) {
                 var id =  this.jq(ID_GROUPBY_FIELDS+i).val();
                 if(!seen[id]) {
                     seen[id] = true;
-                    var field= this.getFieldById(this.fields, id);
+                    var field= this.getFieldById(fields, id);
                     if(field) {
                         groupFields.push(field);
                         if(field.isNumeric && !field.range) {
@@ -18274,7 +18221,9 @@ function RamaddaMapDisplay(displayManager, id, properties) {
             if (Utils.isDefined(source[prop])) {
                 return source[prop];
             }
-            return source.getProperty(prop, dflt);
+	    if(source.getProperty)
+		return source.getProperty(prop, dflt);
+	    return null;
         },
         applyVectorMap: function(force) {
             if (!force && this.vectorMapApplied) {
@@ -18563,35 +18512,42 @@ function RamaddaMapDisplay(displayManager, id, properties) {
                 console.log("null records:" + err.stack);
                 return;
             }
-           if(this.haveCalledUpdateUI) return;
-           this.haveCalledUpdateUI = true;
 
-
+				
+	    if(this.haveCalledUpdateUI) {
+		return;
+	    }
+	    this.haveCalledUpdateUI = true;
             var fields = pointData.getRecordFields();
             var bounds = {};
             var points = RecordUtil.getPoints(records, bounds);
-            if (isNaN(bounds.north)) {
-                console.log("no bounds:" + bounds);
-                return;
-            }
-            //console.log("bounds:" + bounds.north +" " + bounds.west +" " + bounds.south +" " + bounds.east);
-            this.initBounds = bounds;
-            this.setInitMapBounds(bounds.north, bounds.west, bounds.south,
-                bounds.east);
-            if (this.map == null) {
-                return;
-            }
+            var showSegments = this.getProperty("showSegments", false);
+	    if(records.length!=0) {
+		if (isNaN(bounds.north)) {
+		    console.log("no bounds:" + bounds);
+		    return;
+		}
+		//		console.log("bounds:" + bounds.north +" " + bounds.west +" " + bounds.south +" " + bounds.east);
+		this.initBounds = bounds;
+		if(!showSegments) {
+		    this.setInitMapBounds(bounds.north, bounds.west, bounds.south,
+					  bounds.east);
+		}
+	    }
+	    if (this.map == null) {
+		return;
+	    }
             if (points.length == 0) {
-                console.log("points.length==0");
-                return;
+                //console.log("points.length==0");
+		//                return;
             }
 
             this.addPoints(records,fields,points);
             this.addLabels(records,fields,points);
             this.applyVectorMap();
-        },
+	    },
 
-                addPoints: function(records, fields, points) {
+          addPoints: function(records, fields, points) {
             var source = this;
             var radius = parseFloat(this.getDisplayProp(source, "radius", 8));
             var strokeWidth = parseFloat(this.getDisplayProp(source, "strokeWidth", "1"));
@@ -18624,7 +18580,6 @@ function RamaddaMapDisplay(displayManager, id, properties) {
             var latField2 = this.getFieldById(fields, this.getProperty("latField2"));
             var lonField1 = this.getFieldById(fields, this.getProperty("lonField1"));
             var lonField2 = this.getFieldById(fields, this.getProperty("lonField2"));
-            var showSegments = this.getProperty("showSegments", false);
             var sizeSegments = this.getProperty("sizeSegments", false);
             var sizeEndPoints = this.getProperty("sizeEndPoints", true);
             var showEndPoints = this.getProperty("showEndPoints", false);
@@ -18641,6 +18596,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
                 field: null,
                 index: -1,
                 isString: false,
+                stringMap: null
             };
 
 
@@ -18651,7 +18607,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
                 field: null,
                 index: -1,
                 isString: false,
-                stringMap: {}
+                stringMap: {},
             };
 
             var sizeByMap = this.getProperty("sizeByMap");
@@ -18669,11 +18625,11 @@ function RamaddaMapDisplay(displayManager, id, properties) {
                 var field = fields[i];
                 if (field.getId() == colorBy.id || ("#" + (i + 1)) == colorBy.id) {
                     colorBy.field = field;
-                    if (field.getType() == "string") colorBy.isString = true;
+		    if (field.isString()) colorBy.isString = true;
                 }
                 if (field.getId() == sizeBy.id || ("#" + (i + 1)) == sizeBy.id) {
                     sizeBy.field = field;
-                    if (field.getType() == "string") sizeBy.isString = true;
+		    if (field.isString()) sizeBy.isString = true;
                 }
             }
 
@@ -18711,6 +18667,18 @@ function RamaddaMapDisplay(displayManager, id, properties) {
             var excludeZero = this.getProperty(PROP_EXCLUDE_ZERO, false);
             this.animation.dateMin = null;
             this.animation.dateMax = null;
+	    var colorByMapProp = this.getProperty("colorByMap");
+            if (colorByMapProp) {
+                var toks = colorByMapProp.split(",");
+		colorBy.stringMap = {};
+                for (var i = 0; i < toks.length; i++) {
+                    var toks2 = toks[i].split(":");
+                    if (toks2.length > 1) {
+                        colorBy.stringMap[toks2[0]] = toks2[1];
+                    }
+                }
+            }
+
             var colorByMap = {};
             var colorByValues = [];
 
@@ -18735,6 +18703,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
                 }
                 var tuple = pointRecord.getData();
                 var v = tuple[colorBy.index];
+		
                 if (colorBy.isString) {
                     if (!Utils.isDefined(colorByMap[v])) {
                         colorByValues.push(v);
@@ -18744,19 +18713,24 @@ function RamaddaMapDisplay(displayManager, id, properties) {
                         //                        console.log("cb:" +colorBy.minValue +" -  " +colorBy.maxValue);
                     }
                 }
-                if (isNaN(v) || v === null)
-                    continue;
-                if (excludeZero && v == 0) {
+
+
+                if (excludeZero && v === 0) {
                     continue;
                 }
                 if (!colorBy.isString) {
-                    if (i == 0 || v > colorBy.maxValue) colorBy.maxValue = v;
-                    if (i == 0 || v < colorBy.minValue) colorBy.minValue = v;
+		    if (!isNaN(v) && !(v === null)) {
+			if (i == 0 || v > colorBy.maxValue) colorBy.maxValue = v;
+			if (i == 0 || v < colorBy.minValue) colorBy.minValue = v;
+		    }
                 }
                 if (!sizeBy.isString) {
                     v = tuple[sizeBy.index];
-                    if (i == 0 || v > sizeBy.maxValue) sizeBy.maxValue = v;
-                    if (i == 0 || v < sizeBy.minValue) sizeBy.minValue = v;
+		    if (!isNaN(v) && !(v === null)) {
+			if (i == 0 || v > sizeBy.maxValue) sizeBy.maxValue = v;
+			if (i == 0 || v < sizeBy.minValue) sizeBy.minValue = v;
+		    }
+		
                 }
             }
             sizeBy.radiusMin = parseFloat(this.getProperty("sizeByRadiusMin", -1));
@@ -18804,11 +18778,16 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 
 
             if (this.points) {
-                for (var i = 0; i < this.points.length; i++)
+                for (var i = 0; i < this.points.length; i++) {
                     this.map.removePoint(this.points[i]);
+		}
+                this.points = [];
+            }
+
+
+            if (this.lines) {
                 for (var i = 0; i < this.lines.length; i++)
                     this.map.removePolygon(this.lines[i]);
-                this.points = [];
                 this.lines = [];
             }
 
@@ -18820,7 +18799,6 @@ function RamaddaMapDisplay(displayManager, id, properties) {
             var dontAddPoint = this.doDisplayMap();
             var didColorBy = false;
             var seen = {};
-
             for (var i = 0; i < points.length; i++) {
                 var pointRecord = records[i];
                 var point = points[i];
@@ -18873,10 +18851,12 @@ function RamaddaMapDisplay(displayManager, id, properties) {
                         }
                         if (sizeSegments) {
                             segmentWidth = dfltSegmentWidth + parseInt(10 * percent);
+			    if(segmentWidth==0 || isNaN(segmentWidth)) segmentWidth=1;
                         }
                     }
                     //                            console.log("percent:" + percent +  " radius: " + props.pointRadius +" Value: " + value  + " range: " + sizeBy.minValue +" " + sizeBy.maxValue);
                 }
+		if(isNaN(props.pointRadius) || props.pointRadius == 0) props.pointRadius= radius;
                 if (colorBy.index >= 0) {
                     var value = pointRecord.getData()[colorBy.index];
                     //                            console.log("value:" + value +" index:" + colorBy.index+" " + pointRecord.getData());
@@ -18926,11 +18906,22 @@ function RamaddaMapDisplay(displayManager, id, properties) {
                     else if (index < 0) index = 0;
                     //                            console.log("value:" + value+ " %:" + percent +" index:" + index +" c:" + colors[index]);
 
+		    if(colorBy.stringMap) {
+			props.fillColor = colorBy.stringMap[value];
+			if(!Utils.isDefined(props.fillColor)) {
+			    props.fillColor = colorBy.stringMap["default"];
+			}
+			if(!Utils.isDefined(props.fillColor)) {
+			    props.fillColor = "blue";
+			}
+		    } else {
+			props.fillColor = colors[index];
+		    }
                     props.fillOpacity = 0.8;
-                    props.fillColor = colors[index];
                     didColorBy = true;
                 }
 
+		var showSegments = this.getProperty("showSegments", false);
                 var html = this.getRecordHtml(pointRecord, fields);
                 if (showSegments && latField1 && latField2 && lonField1 && lonField2) {
                     var lat1 = values[latField1.getIndex()];
@@ -18977,12 +18968,32 @@ function RamaddaMapDisplay(displayManager, id, properties) {
                         mapPoint.date = date.getTime();
                     }
                     this.points.push(mapPoint);
-                }
-            }
+		}
+	    }
+
+	    if (showSegments) {
+		this.map.centerOnMarkers(null, true, null);
+	    }
+
+
+	    if(this.map.circles)
+		this.map.circles.redraw();
             if (didColorBy) {
-                this.displayColorTable(colors, ID_BOTTOM, colorBy.origMinValue, colorBy.origMaxValue, {
-                        stringValues: colorByValues
-                            });
+		if(colorBy.stringMap) {
+		    console.log("sm:" + colors);
+		    var colors = [];
+		    colorByValues= [];
+		    for (var i in colorBy.stringMap) {
+			colorByValues.push(i);
+			colors.push(colorBy.stringMap[i]);
+		    }
+		    this.displayColorTable(colors, ID_BOTTOM, colorBy.origMinValue, colorBy.origMaxValue, {
+			    stringValues: colorByValues});
+		} else {
+		    this.displayColorTable(colors, ID_BOTTOM, colorBy.origMinValue, colorBy.origMaxValue, {
+			    stringValues: colorByValues
+				});
+		}
             }
         },
         addLabels:function(records, fields, points) {

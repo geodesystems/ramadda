@@ -379,14 +379,17 @@ function RamaddaCardsDisplay(displayManager, id, properties) {
             return "";
         },
         updateUI: function() {
+            var pointData = this.getData();
+            if (pointData == null) return;
+            var allFields = pointData.getRecordFields();
+	    var fields = this.getSelectedFields(allFields);
+            if (fields == null || fields.length == 0) {
+                fields = allFields;
+	    }
             var records = this.filterData();
             if(!records) return;
-            var allFields = this.getData().getRecordFields();
-            var fields = this.getSelectedFields(allFields);
-            if (fields.length == 0)
-                fields = allFields;
-            this.fields = fields;
-            this.initGrouping  = this.getFieldsByIds(fields, this.getProperty("initGroupFields","",true));
+	    let theFields = fields;
+	    this.initGrouping  = this.getFieldsByIds(fields, this.getProperty("initGroupFields","",true));
             this.groupByFields = this.getFieldsByIds(fields, this.getProperty("groupByFields","",true));
             this.groupByMenus= +this.getProperty("groupByMenus",this.groupByFields.length);
             this.imageField = this.getFieldOfType(fields, "image");
@@ -402,6 +405,7 @@ function RamaddaCardsDisplay(displayManager, id, properties) {
             this.colorList = this.getColorTable(true);
             this.foregroundList = this.getColorTable(true,"foreground");
             if(!this.getProperty("showImages",true)) this.imageField = null;
+
             if(!this.imageField)  {
                 if(this.captionFields.length==0) {
                     this.displayError("No image or caption fields specified");
@@ -411,34 +415,38 @@ function RamaddaCardsDisplay(displayManager, id, properties) {
             this.sortFields = this.getFieldsByIds(fields, this.getProperty("sortFields", "", true));
             var contents = "";
 
-            var groupByHtml = "";
-            if(this.groupByFields.length>0) {
-                var options = [["","--"]];
-                this.groupByFields.map(field=>{
-                        options.push([field.getId(),field.getLabel()]);
-                    });
-                groupByHtml =  " Group by: ";
-                for(var i=0;i<this.groupByMenus;i++) {
-                    var selected = "";
-                    if(i<this.initGrouping.length) {
-                        selected = this.initGrouping[i].getId();
-                    }
-                    groupByHtml+= HtmlUtils.select("",["id",this.getDomId(ID_GROUPBY_FIELDS+i)],options,selected)+"&nbsp;";
-                }
-                groupByHtml+="&nbsp;";
+	    if(!this.groupByHtml) {
+		this.groupByHtml = "";
+		if(this.groupByFields.length>0) {
+		    var options = [["","--"]];
+		    this.groupByFields.map(field=>{
+			    options.push([field.getId(),field.getLabel()]);
+			});
+		    this.groupByHtml =  " Group by: ";
+		    for(var i=0;i<this.groupByMenus;i++) {
+			var selected = "";
+			if(i<this.initGrouping.length) {
+			    selected = this.initGrouping[i].getId();
+			}
+			this.groupByHtml+= HtmlUtils.select("",["id",this.getDomId(ID_GROUPBY_FIELDS+i)],options,selected)+"&nbsp;";
+		    }
+		    this.groupByHtml+="&nbsp;";
+		    this.jq(ID_HEADER1).html(this.groupByHtml);
+		}
+	    }
 
-            }
-            this.jq(ID_HEADER1).html(groupByHtml);
+
+
             contents += HtmlUtils.div(["id",this.getDomId(ID_RESULTS)]);
             this.writeHtml(ID_DISPLAY_CONTENTS, contents);
             let _this = this;
             this.jq(ID_HEADER1).find("input, input:radio,select").change(function(){
-                    var id = $(this).attr("id");
-                    _this.doSearch();
+                    _this.updateUI();
                 });
-            this.displaySearchResults(records);
+
+            this.displaySearchResults(records,theFields);
          },
-         displaySearchResults: function(records) {
+	 displaySearchResults: function(records, fields) {
             records = Utils.cloneList(records);
             if(this.sortFields.length) {
                 var sortAscending = this.getProperty("sortAscending",true);
@@ -471,7 +479,7 @@ function RamaddaCardsDisplay(displayManager, id, properties) {
                 var id =  this.jq(ID_GROUPBY_FIELDS+i).val();
                 if(!seen[id]) {
                     seen[id] = true;
-                    var field= this.getFieldById(this.fields, id);
+                    var field= this.getFieldById(fields, id);
                     if(field) {
                         groupFields.push(field);
                         if(field.isNumeric && !field.range) {
