@@ -100,13 +100,15 @@ public class Utils {
         new DecimalFormat("#0.0000"), new DecimalFormat("#0.00000"),
     };
 
+    /** _more_          */
     private static DecimalFormat[] COMMA_FORMATS = {
         new DecimalFormat("#,##0"), new DecimalFormat("#,##0.0"),
         new DecimalFormat("#,##0.00"), new DecimalFormat("#,##0.000"),
         new DecimalFormat("#,##0.0000"), new DecimalFormat("#,##0.00000"),
     };
 
-    private static DecimalFormat INT_FORMAT =  new DecimalFormat("#,##0");
+    /** _more_          */
+    private static DecimalFormat INT_FORMAT = new DecimalFormat("#,##0");
 
 
     /** _more_ */
@@ -180,6 +182,13 @@ public class Utils {
     }
 
 
+    /**
+     * _more_
+     *
+     * @param d _more_
+     *
+     * @return _more_
+     */
     public static String formatComma(double d) {
         return getFormatComma(d).format(d);
     }
@@ -208,6 +217,7 @@ public class Utils {
         if (d > 1) {
             return COMMA_FORMATS[4];
         }
+
         return COMMA_FORMATS[4];
     }
 
@@ -1263,10 +1273,24 @@ public class Utils {
         return pattern.toString();
     }
 
+    /**
+     * _more_
+     *
+     * @param filename _more_
+     * @param origin _more_
+     *
+     * @return _more_
+     *
+     * @throws FileNotFoundException _more_
+     * @throws IOException _more_
+     */
     public static InputStream getInputStream(String filename, Class origin)
-        throws FileNotFoundException, IOException {
+            throws FileNotFoundException, IOException {
         File f = new File(filename);
-        if(f.exists()) return new FileInputStream(f);
+        if (f.exists()) {
+            return new FileInputStream(f);
+        }
+
         return IOUtil.getInputStream(filename, origin);
     }
 
@@ -1478,7 +1502,7 @@ public class Utils {
                 connection.addRequestProperty("User-Agent", "ramadda");
                 is = connection.getInputStream();
             } catch (Exception exc) {
-                System.err.println ("Error URL: " + filename);
+                System.err.println("Error URL: " + filename);
                 String msg = "An error has occurred";
                 if ((connection != null)
                         && (connection instanceof HttpURLConnection)) {
@@ -1713,9 +1737,17 @@ public class Utils {
     }
 
 
-    private static final java.util.Base64.Encoder base64Encoder = java.util.Base64.getEncoder();
-    private static final java.util.Base64.Decoder base64Decoder = java.util.Base64.getDecoder();
-    private static final java.util.Base64.Decoder base64MimeDecoder = java.util.Base64.getMimeDecoder();
+    /** _more_          */
+    private static final java.util.Base64.Encoder base64Encoder =
+        java.util.Base64.getEncoder();
+
+    /** _more_          */
+    private static final java.util.Base64.Decoder base64Decoder =
+        java.util.Base64.getDecoder();
+
+    /** _more_          */
+    private static final java.util.Base64.Decoder base64MimeDecoder =
+        java.util.Base64.getMimeDecoder();
 
 
     /**
@@ -1726,16 +1758,23 @@ public class Utils {
      * @return _more_
      */
     public static String encodeBase64Bytes(byte[] b) {
-	return new String(base64Encoder.encode(b));
+        return new String(base64Encoder.encode(b));
     }
 
 
+    /**
+     * _more_
+     *
+     * @param s _more_
+     *
+     * @return _more_
+     */
     public static String encodeBase64(String s) {
-	try {
-	    return encodeBase64Bytes(s.getBytes("UTF-8"));
-	} catch(Exception exc) {
-	    throw new RuntimeException(exc);
-	}
+        try {
+            return encodeBase64Bytes(s.getBytes("UTF-8"));
+        } catch (Exception exc) {
+            throw new RuntimeException(exc);
+        }
     }
 
 
@@ -1747,17 +1786,18 @@ public class Utils {
      * @return The decoded bytes
      */
     public static byte[] decodeBase64(String s) {
-	try {
-	    byte[] b = s.getBytes("UTF-8");
-	    return base64Decoder.decode(b);
-	} catch(Exception exc) {
-	    //In case it was a mime encoded b64
-	    try {
-		return base64MimeDecoder.decode(s.getBytes());
-	    } catch(Exception exc2) {
-		throw new RuntimeException("Failed to decode base64 string:" + s + "  Error:" + exc2);
-	    }
-	} 
+        try {
+            byte[] b = s.getBytes("UTF-8");
+            return base64Decoder.decode(b);
+        } catch (Exception exc) {
+            //In case it was a mime encoded b64
+            try {
+                return base64MimeDecoder.decode(s.getBytes());
+            } catch (Exception exc2) {
+                throw new RuntimeException("Failed to decode base64 string:"
+                                           + s + "  Error:" + exc2);
+            }
+        }
     }
 
 
@@ -3119,16 +3159,19 @@ public class Utils {
      * @throws Exception _more_
      */
     public static void main(String[] args) throws Exception {
-	if(true) {
-	    String s = "hello\nthere\nhow\nare\nyou I am fine and you asdsad asd sd sd sd asd sadas\n\nasdsdsdas\n\nasdasdas ";
-	    String s2 = XmlUtil.encodeBase64(s.getBytes("UTF-8"));
-	    String s3 = new String(decodeBase64(s2));
-	    System.err.println("s3:" +s3+":");
-	    return;
-	}
+        if (true) {
+            String s =
+                "hello\nthere\nhow\nare\nyou I am fine and you asdsad asd sd sd sd asd sadas\n\nasdsdsdas\n\nasdasdas ";
+            String s2 = XmlUtil.encodeBase64(s.getBytes("UTF-8"));
+            String s3 = new String(decodeBase64(s2));
+            System.err.println("s3:" + s3 + ":");
 
-        if(true) {
+            return;
+        }
+
+        if (true) {
             readImage(args[0]);
+
             return;
 
         }
@@ -4034,11 +4077,19 @@ public class Utils {
                 : 0);
     }
 
+    /**
+     * _more_
+     *
+     * @param text _more_
+     *
+     * @return _more_
+     */
     public static String unquote(String text) {
-        if(text.startsWith("\"") && text.endsWith("\"")) {
+        if (text.startsWith("\"") && text.endsWith("\"")) {
             text = text.substring(1);
-            text = text.substring(0,text.length()-1);
+            text = text.substring(0, text.length() - 1);
         }
+
         return text;
     }
 
