@@ -614,6 +614,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             if (prop.property == "filterValue") {
 		this.haveCalledUpdateUI = false;
 		var widgetId = "filterby_" + prop.fieldId;
+		if(prop.id.endsWith("_operator")) widgetId+="_operator";
 		this.settingFilterValue = true;
 		this.jq(widgetId).val(prop.value);
 		this.settingFilterValue = false;
@@ -2457,7 +2458,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		    } else if(filterField.isNumeric) {
 			var opid = widgetId+"_operator";
 			var operator = this.getProperty(filterField.getId() +".filterOperator","<");
-			widget = HtmlUtils.select("",["id", opid],["<",">","="], operator,);
+			widget = HtmlUtils.select("",["id", opid,"fieldId",filterField.getId()],["<",">","="], operator,);
                         widget +=HtmlUtils.input("",value,["id",widgetId,"size",4,"fieldId",filterField.getId()]);
                     } else {
                         widget =HtmlUtils.input("",value,["id",widgetId,"fieldId",filterField.getId()]);
@@ -2482,6 +2483,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 			_this.updateUI();
 			_this.propagateEvent("handleEventPropertyChanged", {
 				property: "filterValue",
+				    id:id,
 				    fieldId: fieldId,
 				    value: value
 				    });
