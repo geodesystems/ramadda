@@ -4968,7 +4968,6 @@ ATTR_SHOWLINK, "true", ATTR_INCLUDEICON, "false") + ATTRS_LAYOUT),
                                   String textAreaId)
             throws Exception {
 
-
         StringBuilder buttons = new StringBuilder();
 
         StringBuilder tags    = new StringBuilder();
@@ -5168,7 +5167,8 @@ ATTR_SHOWLINK, "true", ATTR_INCLUDEICON, "false") + ATTRS_LAYOUT),
                              "Entry link", true, "wikilink", entry, false,
                              buttonClass);
 
-        HtmlUtils.open(buttons, "div", HtmlUtils.cssClass("ramadda-menubar"));
+
+        HtmlUtils.open(buttons, "div", HtmlUtils.cssClass("ramadda-menubar")+HtmlUtils.attr("id",textAreaId+"_toolbar"));
         buttons.append(HtmlUtils.span("",
                                       HtmlUtils.id(textAreaId + "_prefix")));
         buttons.append(tagsButton);

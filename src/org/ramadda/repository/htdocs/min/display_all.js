@@ -8154,13 +8154,11 @@ function NotebookChunk(cell, props) {
     $.extend(this, {
             getContent: function() {
                 var content = this.content;
-                console.log("chunk.getContent:" + content);
                 for (name in this.cell.notebook.globals) {
                     var value = this.cell.notebook.getGlobalValue(name);
                     if (typeof value == "object") {
                         value = Utils.formatJson(value);
                     }
-                    console.log("   name:" + name +"=" + value);
                     content = content.replace("${" + name.trim() + "}", value);
                 }
                 return content;

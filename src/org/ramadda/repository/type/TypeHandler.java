@@ -4696,6 +4696,8 @@ public class TypeHandler extends RepositoryManager {
                 sb.append(HtmlUtils.br());
             }
             sb.append(buttons);
+	    //	    sb.append(HtmlUtils.script("HtmlUtils.initStickyToolbar('"  +editorId+"_toolbar');"));
+
         }
         if ((length > 0) && (formInfo != null)) {
             formInfo.addMaxSizeValidation(label, id, length);
