@@ -9929,7 +9929,7 @@ function TableDisplay(displayManager, id, properties) {
             return new google.visualization.Table(document.getElementById(this.getChartId()));
         },
         makeDataTable: function(dataList, props, selectedFields) {
-		//            dataList = this.filterData(dataList, selectedFields);
+		dataList = this.filterData(dataList, selectedFields,false,true);
             var rows = this.makeDataArray(dataList);
             var data = [];
             for (var rowIdx = 0; rowIdx < rows.length; rowIdx++) {
@@ -18980,7 +18980,6 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		this.map.circles.redraw();
             if (didColorBy) {
 		if(colorBy.stringMap) {
-		    console.log("sm:" + colors);
 		    var colors = [];
 		    colorByValues= [];
 		    for (var i in colorBy.stringMap) {

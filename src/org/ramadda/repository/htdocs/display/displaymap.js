@@ -1510,7 +1510,6 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		this.map.circles.redraw();
             if (didColorBy) {
 		if(colorBy.stringMap) {
-		    console.log("sm:" + colors);
 		    var colors = [];
 		    colorByValues= [];
 		    for (var i in colorBy.stringMap) {
