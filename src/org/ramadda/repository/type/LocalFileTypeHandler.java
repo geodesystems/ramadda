@@ -146,6 +146,8 @@ public class LocalFileTypeHandler extends ExtensibleGroupTypeHandler {
             //            System.err.println("returning baseFile");
             return baseFile;
         }
+	System.err.println("id:"+ id);
+		
         String subPath = new String(Utils.decodeBase64(id));
         //        System.err.println("subpath:" + subPath);
         File file = new File(IOUtil.joinDir(baseFile, subPath));

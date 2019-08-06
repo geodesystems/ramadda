@@ -1747,13 +1747,18 @@ public class Utils {
      */
     public static byte[] decodeBase64(String s) {
 	byte[] b = s.getBytes();
+	String s1 = s;
 	try {
 	    return base64Decoder.decode(b);
 	} catch(Exception exc) {
 	    //In case it was a mime encoded b64
 	    s = s.replaceAll("\r","").replaceAll("\n","").trim();
-	    return base64Decoder.decode(s.getBytes());
-	}
+	    try {
+		return base64Decoder.decode(s.getBytes());
+	    } catch(Exception exc2) {
+		throw new RuntimeException("Failed to decode base64 string:" + s1+"  Error:" + exc2);
+	    }
+	} 
     }
 
 
