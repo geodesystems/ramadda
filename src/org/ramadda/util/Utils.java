@@ -1715,6 +1715,7 @@ public class Utils {
 
     private static final java.util.Base64.Encoder base64Encoder = java.util.Base64.getEncoder();
     private static final java.util.Base64.Decoder base64Decoder = java.util.Base64.getDecoder();
+    private static final java.util.Base64.Decoder base64MimeDecoder = java.util.Base64.getMimeDecoder();
 
 
     /**
@@ -1746,17 +1747,15 @@ public class Utils {
      * @return The decoded bytes
      */
     public static byte[] decodeBase64(String s) {
-	byte[] b = s.getBytes();
-	String s1 = s;
 	try {
+	    byte[] b = s.getBytes("UTF-8");
 	    return base64Decoder.decode(b);
 	} catch(Exception exc) {
 	    //In case it was a mime encoded b64
-	    s = s.replaceAll("\r","").replaceAll("\n","").trim();
 	    try {
-		return base64Decoder.decode(s.getBytes());
+		return base64MimeDecoder.decode(s.getBytes());
 	    } catch(Exception exc2) {
-		throw new RuntimeException("Failed to decode base64 string:" + s1+"  Error:" + exc2);
+		throw new RuntimeException("Failed to decode base64 string:" + s + "  Error:" + exc2);
 	    }
 	} 
     }
