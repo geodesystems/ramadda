@@ -1292,6 +1292,19 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		var value = $("#" + this.getDomId("filterby_" + filterField.getId())).val();
 		if (prefix) pattern = prefix + value;
 		if (suffix) pattern = value + suffix;
+		if(filterField.getType()=="date"){
+		    var date1 = $("#" + this.getDomId("filterby_" + filterField.getId()+"_date1")).val();
+		    var date2 = $("#" + this.getDomId("filterby_" + filterField.getId()+"_date2")).val();
+		    if(date1!=null && date1.trim()!="") 
+			date1 =  Utils.parseDate(date1);
+		    else
+			date1=null;
+		    if(date2!=null && date2.trim()!="") 
+			date2 =  Utils.parseDate(date2);
+		    else
+			date2=null;
+		    value = [date1,date2];
+		}
 		values.push(value);
 		operators.push($("#" + this.getDomId("filterby_" + filterField.getId()+"_operator")).val());
 	    }
@@ -1302,7 +1315,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		    if(!ok) break;
 		    var filterField = this.filterFields[i];
 		    var filterValue = values[i];
-		    if(filterValue=="") continue;
+		    if(filterValue == null || filterValue=="") continue;
 		    var value = row[filterField.getIndex()];
 		    if(filterField.getType() == "enumeration") {
 			if(value!=filterValue) {
@@ -1322,6 +1335,15 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 			    ok = value > filterValue;
 			} else if (op == ">=") {
 			    ok = value >= filterValue;
+			}
+		    } else if(filterField.getType()=="date"){
+			if(value && typeof value == "object") {
+			    var date1 = filterValue[0];
+			    var date2 = filterValue[1];
+			    if(date1 && value.getTime()<date1.getTime())
+				ok = false;
+			    else if(date2 && value.getTime()>date2.getTime())
+				ok = false;
 			}
 		    } else {
 			//TODO: add the prefix
@@ -2567,6 +2589,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             var fields= pointData.getRecordFields();
             var records = pointData.getRecords();
             if(filterBy.length>0) {
+		var dateIds = [];
                 var searchBar  = "";
                 for(var i=0;i<filterBy.length;i++) {
                     var filterField  = this.getFieldById(fields,filterBy[i]);
@@ -2610,6 +2633,11 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 			var operator = this.getProperty(filterField.getId() +".filterOperator","<");
 			widget = HtmlUtils.select("",["id", opid,"fieldId",filterField.getId()],["<",">","="], operator,);
                         widget +=HtmlUtils.input("",value,["id",widgetId,"size",4,"fieldId",filterField.getId()]);
+		    } else if(filterField.getType() == "date") {
+                        widget =HtmlUtils.datePicker("","",["id",widgetId+"_date1"]) +" - " +
+			    HtmlUtils.datePicker("","",["id",widgetId+"_date2"]);
+			dateIds.push(widgetId+"_date1");
+			dateIds.push(widgetId+"_date2");
                     } else {
                         widget =HtmlUtils.input("",value,["id",widgetId,"fieldId",filterField.getId()]);
                     }
@@ -2620,6 +2648,10 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
                 }
 
                 this.jq(ID_HEADER2).html(searchBar);
+		for(var i=0;i<dateIds.length;i++) {
+		    HtmlUtils.datePickerInit(dateIds[i]);
+		}
+
                 this.jq(ID_HEADER2).find("input, input:radio,select").change(function(){
                         var id = $(this).attr("id");
 			var value = $(this).val();

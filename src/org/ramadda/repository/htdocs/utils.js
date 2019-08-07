@@ -1708,6 +1708,15 @@ var HtmlUtils = {
         select+=this.closeTag("select");
         return select;
     },
+    datePicker: function(name,value,attrs) {
+	attrs.push("size");
+	attrs.push("8");
+	return  HtmlUtils.input(name, value,attrs);
+    },
+
+    datePickerInit: function(id) {
+	$("#" + id).datepicker({ dateFormat: 'yy-mm-dd',changeMonth: true, changeYear: true,constrainInput:false, yearRange: '1900:2100'  });
+    },
     input: function(name, value, attrs) {
         return "<input " + HtmlUtils.attrs(attrs) + HtmlUtils.attrs(["name", name, "value", value]) + ">";
     },
