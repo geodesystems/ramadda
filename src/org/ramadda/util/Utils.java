@@ -100,14 +100,14 @@ public class Utils {
         new DecimalFormat("#0.0000"), new DecimalFormat("#0.00000"),
     };
 
-    /** _more_          */
+    /** _more_ */
     private static DecimalFormat[] COMMA_FORMATS = {
         new DecimalFormat("#,##0"), new DecimalFormat("#,##0.0"),
         new DecimalFormat("#,##0.00"), new DecimalFormat("#,##0.000"),
         new DecimalFormat("#,##0.0000"), new DecimalFormat("#,##0.00000"),
     };
 
-    /** _more_          */
+    /** _more_ */
     private static DecimalFormat INT_FORMAT = new DecimalFormat("#,##0");
 
 
@@ -1737,15 +1737,15 @@ public class Utils {
     }
 
 
-    /** _more_          */
+    /** _more_ */
     private static final java.util.Base64.Encoder base64Encoder =
         java.util.Base64.getEncoder();
 
-    /** _more_          */
+    /** _more_ */
     private static final java.util.Base64.Decoder base64Decoder =
         java.util.Base64.getDecoder();
 
-    /** _more_          */
+    /** _more_ */
     private static final java.util.Base64.Decoder base64MimeDecoder =
         java.util.Base64.getMimeDecoder();
 
@@ -1788,14 +1788,22 @@ public class Utils {
     public static byte[] decodeBase64(String s) {
         try {
             byte[] b = s.getBytes("UTF-8");
+
             return base64Decoder.decode(b);
         } catch (Exception exc) {
             //In case it was a mime encoded b64
             try {
                 return base64MimeDecoder.decode(s.getBytes());
             } catch (Exception exc2) {
-                throw new RuntimeException("Failed to decode base64 string:"
-                                           + s + "  Error:" + exc2);
+                //Awful hack to not have to deal with why Don't synthid's are barfing
+                try {
+                    return javax.xml.bind.DatatypeConverter.parseBase64Binary(
+                        s);
+                } catch (Exception exc3) {
+                    throw new RuntimeException(
+                        "Failed to decode base64 string:" + s + "  Error:"
+                        + exc3);
+                }
             }
         }
     }
