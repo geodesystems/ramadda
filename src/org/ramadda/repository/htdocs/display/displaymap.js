@@ -31,7 +31,8 @@ function RamaddaMapDisplay(displayManager, id, properties) {
     var ID_BOTTOM = "bottom";
     var ID_RUN = "maprun";
     var ID_STEP = "mapstep";
-    var ID_SHOWALl = "showall";
+    var ID_SLIDER = "slider";
+    var ID_SHOWALL = "showall";
     var ID_ANIMATION_LABEL = "animationlabel";
     var SUPER;
     RamaddaUtil.defineMembers(this, {
@@ -85,15 +86,18 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 
             if (this.getProperty("doAnimation", false)) {
 
-                var buttons = HtmlUtils.div(["id", this.getDomId(ID_RUN), "class", "ramadda-button", "what", "run"], "Start Animation") + "&nbsp;" +
-                    HtmlUtils.div(["id", this.getDomId(ID_STEP), "class", "ramadda-button", "what", "run"], "Step") + "&nbsp;" +
-                    HtmlUtils.div(["id", this.getDomId(ID_SHOWALl), "class", "ramadda-button", "what", "run"], "Show All") + "&nbsp;" +
-                    HtmlUtils.span(["id", this.getDomId(ID_ANIMATION_LABEL), "class", "display-map-animation-label"]);
-                buttons = HtmlUtils.div(["class", "display-map-toolbar"], buttons);
+                var buttons = HtmlUtils.div(["id", this.getDomId(ID_RUN), "xclass", "xramadda-button", "what", "run","title","Run/Stop"], HtmlUtils.getIconImage("fa-play")) + "&nbsp;" +
+		    HtmlUtils.div(["id", this.getDomId(ID_STEP), "xclass", "xramadda-button", "what", "run","title","Step"], HtmlUtils.getIconImage("fa-step-forward")) + "&nbsp;" +
+                    HtmlUtils.div(["id", this.getDomId(ID_SHOWALL), "class", "xramadda-button", "what", "run","title","Show all"], HtmlUtils.getIconImage("fa-sync")) + "&nbsp;" +
+                    HtmlUtils.span(["id", this.getDomId(ID_ANIMATION_LABEL), "class", "display-map-animation-label"]) +"&nbsp;" +
+		    "";
+		//		    HtmlUtils.rangeInput("",this.getDomId(ID_SLIDER));
+                buttons = HtmlUtils.div(["xclass", "display-map-toolbar"], buttons);
                 this.jq(ID_TOP_LEFT).append(buttons);
+		HtmlUtils.rangeInputInit(this.getDomId(ID_SLIDER));
                 this.run = this.jq(ID_RUN);
                 this.step = this.jq(ID_STEP);
-                this.showAll = this.jq(ID_SHOWALl);
+                this.showAll = this.jq(ID_SHOWALL);
                 this.animation.label = this.jq(ID_ANIMATION_LABEL);
                 this.run.button().click(() => {
                     this.toggleAnimation();
@@ -106,7 +110,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
                     this.animation.running = false;
                     this.animation.inAnimation = false;
                     this.animation.label.html("");
-                    this.run.html("Start Animation");
+                    this.run.html(HtmlUtils.getIconImage("fa-play"));
                     this.showAllPoints();
                 });
             }
@@ -882,7 +886,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
         },
         toggleAnimation: function() {
             this.animation.running = !this.animation.running;
-            this.run.html(this.animation.running ? "Stop Animation" : "Start Animation");
+            this.run.html(HtmlUtils.getIconImage(this.animation.running ? "fa-stop" : "fa-play"));
             if (this.animation.running)
                 this.startAnimation();
         },
@@ -1000,7 +1004,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
                 this.animation.label.html("");
                 this.animation.inAnimation = false;
                 this.animation.label.html("");
-                this.run.html("Start Animation");
+                this.run.html(HtmlUtils.getIconImage("fa-play"));
             }
             this.applyVectorMap(true);
         },

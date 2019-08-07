@@ -1717,6 +1717,29 @@ var HtmlUtils = {
     datePickerInit: function(id) {
 	$("#" + id).datepicker({ dateFormat: 'yy-mm-dd',changeMonth: true, changeYear: true,constrainInput:false, yearRange: '1900:2100'  });
     },
+    rangeInput: function(name,id) {
+	var html = '<form><div><input type="text" class="ramadda-slider-value sliderValue" data-index="0" value="10" /> <input type="text" class="ramadda-slider-value  sliderValue" data-index="1" value="90" /></div>' + HtmlUtils.div(["id",id]) +"</form>";
+	console.log(html);
+	return html;
+    },
+    rangeInputInit: function(id) {
+	console.log(id +" " + $("#" + id).length);
+	$("#" + id ).slider({
+		min: 0,
+		max: 100,
+		step: 1,
+		values: [10, 90],
+		slide: function(event, ui) {
+		    for (var i = 0; i < ui.values.length; ++i) {
+			$("input.sliderValue[data-index=" + i + "]").val(ui.values[i]);
+		    }
+		}
+	    });
+	$("input.sliderValue").change(function() {
+		var $this = $(this);
+		$("#slider").slider("values", $this.data("index"), $this.val());
+	    });
+    },
     input: function(name, value, attrs) {
         return "<input " + HtmlUtils.attrs(attrs) + HtmlUtils.attrs(["name", name, "value", value]) + ">";
     },
