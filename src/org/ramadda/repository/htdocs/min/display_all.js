@@ -1269,7 +1269,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
         requiresGrouping:  function() {
                 return false;
          },
-		filterData: function(dataList, fields, doGroup, skipFirst) {
+	filterData: function(dataList, fields, doGroup, skipFirst) {
             var pointData = this.getData();
             if (!dataList) {
                 if (pointData == null) return null;
@@ -2612,7 +2612,8 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 			}
 
 			if(enums == null) {
-			    enums = [["","All"]];
+			    var includeAll = this.getProperty(filterField.getId() +".includeAll",true);
+			    enums = includeAll?[["","All"]]:[];
 			    var seen = {};
 			    records.map(record=>{
 				    var value = this.getDataValues(record)[filterField.getIndex()];
@@ -3144,13 +3145,17 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
         },
         makeDataArray: function(dataList) {
             if (dataList.length == 0) return dataList;
+
+
             var data = [];
             if (dataList[0].getData) {
-                for (var i = 0; i < dataList.length; i++)
-                    data.push(dataList[i].getData());
+                for (var i = 0; i < dataList.length; i++) {
+		    data.push(dataList[i].getData()[0]);
+		}
             } else if (dataList[0].tuple) {
-                for (var i = 0; i < dataList.length; i++)
+                for (var i = 0; i < dataList.length; i++) {
                     data.push(dataList[i].tuple);
+		}
             } else {
                 data = dataList;
             }
@@ -3244,7 +3249,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 
             var nonNullRecords = 0;
             var indexField = this.indexField;
-            var records = pointData.getRecords();
+            var records = this.filterData();
             var allFields = pointData.getRecordFields();
 
             //Check if there are dates and if they are different
@@ -4513,8 +4518,8 @@ function PointRecord(lat, lon, elevation, time, data) {
         elevation: elevation,
         recordTime: time,
         data: data,
-		toString: function() {
-		return "data:"  + data;
+	toString: function() {
+	return "data:"  + data;
 	    },
         getData: function() {
             return this.data;
@@ -8820,7 +8825,8 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
             props.includeIndexIfDate = this.getIncludeIndexIfDate();
 
             var dataHasIndex = props.includeIndex;
-            var dataList = this.computedData;
+	    //            var dataList = this.computedData;
+            var dataList = null;
             if (this["function"] && dataList == null) {
                 var pointData = this.dataCollection.getList()[0];
                 var allFields = pointData.getRecordFields();
@@ -8878,9 +8884,12 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
                 dataList = newList;
             }
 
+
             if (dataList == null) {
                 dataList = this.getStandardData(fieldsToSelect, props);
             }
+
+
             this.computedData = dataList;
 
             if (this.rotateTable && dataList.length) {
@@ -9024,7 +9033,7 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
         },
         tableHeaderMouseover: function(i, tooltip) {},
         makeDataTable: function(dataList, props, selectedFields) {
-		dataList = this.filterData(dataList, selectedFields,false, true);
+		//            dataList = this.filterData(dataList, selectedFields,false,true);
             if (dataList.length == 1) {
                 return google.visualization.arrayToDataTable(this.makeDataArray(dataList));
             }
@@ -9077,6 +9086,7 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
                             dataList[i].record.getValue(tooltipFields[j].getIndex()) + "<br>";
                     }
                 }
+
 
                 var tooltip = "<div style='padding:8px;'>";
                 tooltip += label;
@@ -9727,7 +9737,7 @@ function SankeyDisplay(displayManager, id, properties) {
             return true;
         },
         makeDataTable: function(dataList, props, selectedFields) {
-		dataList = this.filterData(dataList, selectedFields,false,true);
+		//		dataList = this.filterData(dataList, selectedFields,false,true);
             if (!this.getProperty("doCategories", false)) {
                 var values = this.makeDataArray(dataList);
                 return google.visualization.arrayToDataTable(values);
@@ -9963,7 +9973,7 @@ function TableDisplay(displayManager, id, properties) {
             return new google.visualization.Table(document.getElementById(this.getChartId()));
         },
         makeDataTable: function(dataList, props, selectedFields) {
-		dataList = this.filterData(dataList, selectedFields,false,true);
+		//		dataList = this.filterData(dataList, selectedFields,false,true);
             var rows = this.makeDataArray(dataList);
             var data = [];
             for (var rowIdx = 0; rowIdx < rows.length; rowIdx++) {
@@ -10180,7 +10190,7 @@ function TreemapDisplay(displayManager, id, properties) {
             });
         },
         makeDataTable: function(dataList, props, selectedFields) {
-		var records = this.filterData(null,null,false,true);
+        	var records = this.filterData(null,null,false,true);
             if (!records) {
                 return null;
             }

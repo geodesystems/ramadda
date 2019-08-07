@@ -1119,7 +1119,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
         requiresGrouping:  function() {
                 return false;
          },
-		filterData: function(dataList, fields, doGroup, skipFirst) {
+	filterData: function(dataList, fields, doGroup, skipFirst) {
             var pointData = this.getData();
             if (!dataList) {
                 if (pointData == null) return null;
@@ -2462,7 +2462,8 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 			}
 
 			if(enums == null) {
-			    enums = [["","All"]];
+			    var includeAll = this.getProperty(filterField.getId() +".includeAll",true);
+			    enums = includeAll?[["","All"]]:[];
 			    var seen = {};
 			    records.map(record=>{
 				    var value = this.getDataValues(record)[filterField.getIndex()];
@@ -2994,13 +2995,17 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
         },
         makeDataArray: function(dataList) {
             if (dataList.length == 0) return dataList;
+
+
             var data = [];
             if (dataList[0].getData) {
-                for (var i = 0; i < dataList.length; i++)
-                    data.push(dataList[i].getData());
+                for (var i = 0; i < dataList.length; i++) {
+		    data.push(dataList[i].getData()[0]);
+		}
             } else if (dataList[0].tuple) {
-                for (var i = 0; i < dataList.length; i++)
+                for (var i = 0; i < dataList.length; i++) {
                     data.push(dataList[i].tuple);
+		}
             } else {
                 data = dataList;
             }
@@ -3094,7 +3099,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 
             var nonNullRecords = 0;
             var indexField = this.indexField;
-            var records = pointData.getRecords();
+            var records = this.filterData();
             var allFields = pointData.getRecordFields();
 
             //Check if there are dates and if they are different

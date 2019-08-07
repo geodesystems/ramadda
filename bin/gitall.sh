@@ -22,6 +22,8 @@ fi
 pushd ${RAMADDA_SRC}
 echo "making htdocs";
 /Users/jeffmc/software/apache-ant-1.10.6/bin/ant -buildfile ${RAMADDA_SRC}/src/org/ramadda/repository/build.xml htdocs
+echo "Pulling"
+git pull
 echo "commiting";
 git commit -m "${text}" -a
 echo "pushing";

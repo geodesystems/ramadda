@@ -588,8 +588,8 @@ function PointRecord(lat, lon, elevation, time, data) {
         elevation: elevation,
         recordTime: time,
         data: data,
-		toString: function() {
-		return "data:"  + data;
+	toString: function() {
+	return "data:"  + data;
 	    },
         getData: function() {
             return this.data;
