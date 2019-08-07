@@ -1082,6 +1082,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	    },
 
           addPoints: function(records, fields, points) {
+
             var source = this;
             var radius = parseFloat(this.getDisplayProp(source, "radius", 8));
             var strokeWidth = parseFloat(this.getDisplayProp(source, "strokeWidth", "1"));
@@ -1191,6 +1192,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
                 this.jq("colorByMenu").change(() => {
                     var value = this.jq("colorByMenu").val();
                     this.vectorMapApplied = false;
+		    this.haveCalledUpdateUI = false;
                     this.setProperty("colorBy", value);
                     this.updateUI();
                 });
