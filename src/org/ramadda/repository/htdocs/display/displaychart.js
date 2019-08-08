@@ -864,8 +864,60 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
             if (dataList.length == 1) {
                 return google.visualization.arrayToDataTable(this.makeDataArray(dataList));
             }
+	    var groupField = this.getFieldById(null,  this.getProperty("group"));
+
+	    if(groupField) {
+		dataList = this.filterData();
+		var groupedData =[];
+		var groupValues = [];
+		var seen = {};
+		var cnt =0;
+		var dateToValue =  {};
+		var dates = [];
+		dataList.map(record=>{
+			if(cnt++==0) return;
+			var values = this.getDataValues(record);
+			var value = values[groupField.getIndex()];
+			if(!seen[value]) {
+			    seen[value]  = true;
+			    groupValues.push(value);
+			}
+			var newValues =dateToValue[record.getDate()];
+			if(!newValues) {
+			    dates.push(record.getDate());
+			    newValues = {};
+			    dateToValue[record.getDate()] = newValues;
+			}
+			newValues[value] = values[selectedFields[0].getIndex()];
+			/*
+			  Alabama,Southeast,South,0.356,2015
+			  Alabama,Southeast,South,0.335,2014
+			  Alabama,Southeast,South,0.324,2013
+			*/
+		    });
+		//		var header = this.getDataValues(dataList[0]);
+		//		console.log(groupValues);
+		//		console.log(dates);
+		var data = [];
+		var dataTable = new google.visualization.DataTable();
+		dataTable.addColumn("date", "Date");
+		groupValues.map(group=>{
+			dataTable.addColumn("number",group);
+		    });
+		dates.map(date=>{
+			var tuple=[date];
+			data.push(tuple);
+			var valueMap = dateToValue[date];
+			groupValues.map(group=>{
+				var value = valueMap[group];
+				tuple.push(value);
+			    });
+		    });
+		    dataTable.addRows(data);
+		    return dataTable;
+	    }
+
             var justData = [];
-            var begin = props.includeIndex ? 1 : 0;
             var tooltipFields = [];
             var toks = this.getProperty("tooltipFields", "").split(",");
             for (var i = 0; i < toks.length; i++) {
@@ -873,6 +925,8 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
                 if (tooltipField)
                     tooltipFields.push(tooltipField);
             }
+
+
 
             var dataTable = new google.visualization.DataTable();
             var header = this.getDataValues(dataList[0]);
