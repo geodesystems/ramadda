@@ -304,10 +304,10 @@ public class StorageManager extends RepositoryManager {
 
 
         Misc.run(new Runnable() {
-            public void run() {
-                scourTmpDirs();
-            }
-        });
+                     public void run() {
+                         scourTmpDirs();
+                     }
+                 });
 
 
         //      putCacheObject("group1","test1", "hello there");
@@ -352,13 +352,13 @@ public class StorageManager extends RepositoryManager {
         if (repositoryDirProperty == null) {
             //Use the old <home>/.unidata/repository if its there
             repositoryDirProperty =
-                IOUtil.joinDir(Misc.getSystemProperty("user.home", "."),
-                               IOUtil.joinDir(".unidata", "repository"));
+                IOUtil.joinDir(Misc.getSystemProperty("user.home",
+                        "."), IOUtil.joinDir(".unidata", "repository"));
             //Else use  <home>/.ramadda
             if ( !new File(repositoryDirProperty).exists()) {
                 repositoryDirProperty =
-                    IOUtil.joinDir(Misc.getSystemProperty("user.home", "."),
-                                   ".ramadda");
+                    IOUtil.joinDir(Misc.getSystemProperty("user.home",
+                            "."), ".ramadda");
             } else {}
         }
         repositoryDir = new File(repositoryDirProperty);
@@ -566,11 +566,12 @@ public class StorageManager extends RepositoryManager {
      */
     public void addTempDir(final TempDir storageDir) {
         tmpDirs.add(storageDir);
-        Misc.runInABit(10000, new Runnable() {
-            public void run() {
-                scourTmpDir(storageDir, true);
-            }
-        });
+        Misc.runInABit(10000,
+                       new Runnable() {
+                           public void run() {
+                               scourTmpDir(storageDir, true);
+                           }
+                       });
     }
 
     /**
@@ -1071,11 +1072,12 @@ public class StorageManager extends RepositoryManager {
             return;
         }
         tmpDir.setTouched(true);
-        Misc.runInABit(10000, new Runnable() {
-            public void run() {
-                scourTmpDir(tmpDir);
-            }
-        });
+        Misc.runInABit(10000,
+                       new Runnable() {
+                           public void run() {
+                               scourTmpDir(tmpDir);
+                           }
+                       });
     }
 
 
@@ -1214,11 +1216,24 @@ public class StorageManager extends RepositoryManager {
      * @return _more_
      */
     public String getProcessDirEntryUrl(Request request, File processDir) {
-        String processEntryId = getProcessDirEntryId(processDir);
+        return getProcessDirEntryUrl(request, processDir.getName());
+    }
+
+    /**
+     * _more_
+     *
+     * @param request _more_
+     * @param entryId processDir entry id
+     *
+     * @return _more_
+     */
+    public String getProcessDirEntryUrl(Request request, String entryId) {
+        String processEntryId = getEncodedProcessDirEntryId(entryId);
 
         String entryUrl =
             HtmlUtils.url(request.makeUrl(getRepository().URL_ENTRY_SHOW,
-                                          ARG_ENTRYID, processEntryId));
+                                          ARG_ENTRYID,
+                                          processEntryId));
 
         return entryUrl;
     }
@@ -1234,6 +1249,21 @@ public class StorageManager extends RepositoryManager {
     public String getProcessDirEntryId(String processId) {
         return EntryManager.ID_PREFIX_SYNTH
                + ProcessFileTypeHandler.TYPE_PROCESS + ":/" + processId;
+    }
+
+
+    /**
+     * _more_
+     *
+     * @param processId _more_
+     *
+     * @return _more_
+     */
+    public String getEncodedProcessDirEntryId(String processId) {
+        String encodedId = Utils.encodeBase64("/" + processId);
+
+        return EntryManager.ID_PREFIX_SYNTH
+               + ProcessFileTypeHandler.TYPE_PROCESS + ":" + encodedId;
     }
 
     /**
@@ -1504,7 +1534,8 @@ public class StorageManager extends RepositoryManager {
                                   : "");
         entryDir = new File(IOUtil.joinDir(entriesDir,
                                            IOUtil.joinDir(dir1,
-                                               IOUtil.joinDir(dir2, id))));
+                                                   IOUtil.joinDir(dir2,
+                                                           id))));
         //        System.err.println("entrydir:" + entryDir);
         if (createIfNeeded) {
             makeDirRecursive(entryDir);
@@ -1536,7 +1567,9 @@ public class StorageManager extends RepositoryManager {
                                  ? id.substring(2, 4)
                                  : "");
         File userDir = new File(IOUtil.joinDir(usersDir,
-                           IOUtil.joinDir(dir1, IOUtil.joinDir(dir2, id))));
+                                               IOUtil.joinDir(dir1,
+                                                       IOUtil.joinDir(dir2,
+                                                               id))));
         if (createIfNeeded) {
             makeDirRecursive(userDir);
         }
@@ -1553,13 +1586,13 @@ public class StorageManager extends RepositoryManager {
      */
     public void deleteEntryDir(final String id) {
         Misc.run(new Runnable() {
-            public void run() {
-                File dir = getEntryDir(id, false);
-                if (dir.exists()) {
-                    IOUtil.deleteDirectory(dir);
-                }
-            }
-        });
+                     public void run() {
+                         File dir = getEntryDir(id, false);
+                         if (dir.exists()) {
+                             IOUtil.deleteDirectory(dir);
+                         }
+                     }
+                 });
     }
 
 
@@ -1575,7 +1608,8 @@ public class StorageManager extends RepositoryManager {
      */
     public File moveToEntryDir(Entry entry, File original) throws Exception {
         File newFile = new File(IOUtil.joinDir(getEntryDir(entry.getId(),
-                           true), original.getName()));
+                                                           true),
+                                               original.getName()));
         moveFile(original, newFile);
 
         return newFile;
@@ -1641,10 +1675,12 @@ public class StorageManager extends RepositoryManager {
                                  String filename)
             throws Exception {
         File oldFile = new File(IOUtil.joinDir(getEntryDir(oldEntry.getId(),
-                           true), filename));
+                                                           true),
+                                               filename));
 
         File newFile = new File(IOUtil.joinDir(getEntryDir(newEntry.getId(),
-                           true), filename));
+                                                           true),
+                                               filename));
 
         //If it is a URL then copy it over
         if ( !oldFile.exists()) {
@@ -1652,7 +1688,8 @@ public class StorageManager extends RepositoryManager {
             InputStream fromStream = getInputStream(filename);
 
             newFile = new File(IOUtil.joinDir(getEntryDir(newEntry.getId(),
-                    true), IOUtil.getFileTail(url.getPath())));
+                    true),
+                    IOUtil.getFileTail(url.getPath())));
 
 
             OutputStream toStream = getFileOutputStream(newFile);
@@ -2152,7 +2189,7 @@ public class StorageManager extends RepositoryManager {
 
         if (getRepository().getParentRepository() != null) {
             getRepository().getParentRepository().getStorageManager()
-                .checkReadFile(file);
+            .checkReadFile(file);
 
             return file;
         }
@@ -2221,8 +2258,9 @@ public class StorageManager extends RepositoryManager {
         } catch (Exception exc) {
             //Handle the windows file move problem
             if (to.isDirectory()) {
-                to = new File(
-                    IOUtil.joinDir(to, IOUtil.getFileTail(from.toString())));
+                to = new File(IOUtil.joinDir(to,
+                                             IOUtil.getFileTail(
+                                             from.toString())));
             }
             IOUtil.copyFile(from, to);
             if ( !from.delete()) {
@@ -2534,8 +2572,8 @@ public class StorageManager extends RepositoryManager {
                 getTmpFile(request,
                            getFileTail(IOUtil.stripExtension(f.toString())));
             InputStream is = Utils.doMakeInputStream(f.toString(), true);
-            if (IOUtil.writeTo(is, new FileOutputStream(uncompressedFile))
-                    == 0) {
+            if (IOUtil.writeTo(is,
+                               new FileOutputStream(uncompressedFile)) == 0) {
                 IOUtil.close(is);
 
                 return null;

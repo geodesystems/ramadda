@@ -296,18 +296,12 @@ public class ClimateModelApiHandler extends RepositoryManager implements Request
         //Now we get the process entry id
         String processId = processDir.getName();
         String processEntryId =
-            getStorageManager().getProcessDirEntryId(processId);
+            getStorageManager().getEncodedProcessDirEntryId(processId);
 
-        String entryUrl =
-            HtmlUtils.url(
-                request.getAbsoluteUrl(getRepository().URL_ENTRY_SHOW),
-                ARG_ENTRYID,
-        // Use this if you want to return the process directory
-        processEntryId);
-        //processEntryId + "/" + IOUtil.getFileTail(lastFile.toString()));
+        String entryUrl = getStorageManager().getProcessDirEntryUrl(request, processId);
 
         if (request.get("returnimage", false)) {
-            request.setReturnFilename(processEntryId + ".png");
+            request.setReturnFilename(processId + ".png");
 
             return new Result(
                 "",
@@ -316,7 +310,6 @@ public class ClimateModelApiHandler extends RepositoryManager implements Request
         } else if (request.get("returnjson", false)) {
             StringBuilder json            = new StringBuilder();
             Entry         processDirEntry =
-            //new Entry(processEntryId, new ProcessFileTypeHandler(getRepository(), null));
             new Entry(processEntryId,
                       getEntryManager().getProcessFileTypeHandler());
             getRepository().getJsonOutputHandler().makeJson(request,
@@ -448,17 +441,11 @@ public class ClimateModelApiHandler extends RepositoryManager implements Request
         //Now we get the process entry id
         String processId = processDir.getName();
         String processEntryId =
-            getStorageManager().getProcessDirEntryId(processId);
+            getStorageManager().getEncodedProcessDirEntryId(processId);
 
-        String entryUrl =
-            HtmlUtils.url(
-                request.getAbsoluteUrl(getRepository().URL_ENTRY_SHOW),
-                ARG_ENTRYID,
-        // Use this if you want to return the process directory
-        processEntryId);
-        //processEntryId + "/" + IOUtil.getFileTail(lastFile.toString()));
+        String entryUrl = getStorageManager().getProcessDirEntryUrl(request, processId);
         if (request.get("returnimage", false)) {
-            request.setReturnFilename(processEntryId + ".png");
+            request.setReturnFilename(processId + ".png");
 
             return new Result(
                 "",
@@ -467,7 +454,6 @@ public class ClimateModelApiHandler extends RepositoryManager implements Request
         } else if (request.get("returnjson", false)) {
             StringBuilder json            = new StringBuilder();
             Entry         processDirEntry =
-            //new Entry(processEntryId, new ProcessFileTypeHandler(getRepository(), null));
             new Entry(processEntryId,
                       getEntryManager().getProcessFileTypeHandler());
             getRepository().getJsonOutputHandler().makeJson(request,

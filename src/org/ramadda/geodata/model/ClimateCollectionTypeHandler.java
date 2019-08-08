@@ -523,7 +523,7 @@ JQ.button(
 
         String processId = processDir.getName();
         String processEntryId =
-            getStorageManager().getProcessDirEntryId(processId);
+            getStorageManager().getEncodedProcessDirEntryId(processId);
 
         if (false) {
             String entryUrl =

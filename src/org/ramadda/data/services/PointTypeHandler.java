@@ -338,7 +338,7 @@ public class PointTypeHandler extends RecordTypeHandler {
         //Now we get the process entry id
         String processId = processDir.getName();
         String processEntryId =
-            getStorageManager().getProcessDirEntryId(processId);
+            getStorageManager().getEncodedProcessDirEntryId(processId);
 
         String entryUrl =
             HtmlUtils.url(
@@ -346,7 +346,7 @@ public class PointTypeHandler extends RecordTypeHandler {
                 ARG_ENTRYID,
         // Use this if you want to return the process directory
         //        processEntryId);
-        processEntryId + "/" + imageFile.getName());
+           getStorageManager().getEncodedProcessDirEntryId(processId + "/" + imageFile.getName()));
 
         //        System.err.println("URL:" + entryUrl);
         return true;

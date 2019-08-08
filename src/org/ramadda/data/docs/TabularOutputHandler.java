@@ -580,7 +580,7 @@ public class TabularOutputHandler extends OutputHandler {
                     HtmlUtils.url(
                         request.getAbsoluteUrl(
                             getRepository().URL_ENTRY_SHOW), ARG_ENTRYID,
-                                processEntryId);
+                                getStorageManager().getEncodedProcessDirEntryId(destDir.getName()));
                 html.append(HtmlUtils.href(urlParent, "View All",
                                            "target=_output"));
                 String s = Json.mapAndQuote("url",

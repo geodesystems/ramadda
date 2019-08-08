@@ -1795,15 +1795,18 @@ public class Utils {
             try {
                 return base64MimeDecoder.decode(s.getBytes());
             } catch (Exception exc2) {
+                /*
                 //Awful hack to not have to deal with why Don't synthid's are barfing
                 try {
                     return javax.xml.bind.DatatypeConverter.parseBase64Binary(
                         s);
                 } catch (Exception exc3) {
+                */
                     throw new RuntimeException(
                         "Failed to decode base64 string:" + s + "  Error:"
-                        + exc3);
-                }
+                        //+ exc3);
+                        + exc2);
+                //}
             }
         }
     }
