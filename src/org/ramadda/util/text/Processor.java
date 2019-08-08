@@ -2198,6 +2198,97 @@ public abstract class Processor extends CsvOperator {
     }
 
 
+    /**
+     * Class description
+     *
+     *
+     * @version        $version$, Thu, Aug 8, '19
+     * @author         Enter your name here...    
+     */
+    public static class Breaker extends RowCollector {
+
+        /** _more_          */
+        private String label1;
+
+        /** _more_          */
+        private String label2;
+
+        /**
+         * _more_
+	 *
+         * @param label1 _more_
+         * @param label2 _more_
+         * @param cols _more_
+         */
+        public Breaker(String label1, String label2, List<String> cols) {
+            super(cols);
+            this.label1 = label1;
+            this.label2 = label2;
+        }
+
+
+
+        /**
+         * _more_
+         *
+         * @param info _more_
+         * @param rows _more_
+         *
+         *
+         * @return _more_
+         * @throws Exception On badness
+         */
+        @Override
+        public List<Row> finish(TextReader info, List<Row> rows)
+                throws Exception {
+            rows = getRows();
+            HashSet       cols    = new HashSet();
+            List<Row>     newRows = new ArrayList<Row>();
+            List<Integer> indices = getIndices(info);
+            for (int i : indices) {
+                cols.add(i);
+            }
+            Row           headerRow    = rows.get(0);
+            List          headerValues = headerRow.getValues();
+            Row           newHeader    = new Row();
+            List          newValues    = new ArrayList();
+            List<Integer> keepIndices  = new ArrayList<Integer>();
+            for (int i = 0; i < headerValues.size(); i++) {
+                if ( !cols.contains(i)) {
+                    newHeader.add(headerValues.get(i));
+                    keepIndices.add(i);
+                } else {
+                    newValues.add(headerValues.get(i));
+                }
+            }
+            newHeader.add(label1);
+            newHeader.add(label2);
+            newRows.add(newHeader);
+
+            rows.remove(0);
+            //state,region_reg,region_census,2015,2014,2013,2012,2011,2010,2009,2008,2007,2006,2005,2004,2003
+            //Alabama,Southeast,South,0.356,0.335,0.324,0.33,0.32,0.323,0.316,0.312,0.301,0.294,0.287,0.277,0.284
+
+            for (Row row : rows) {
+                List values   = row.getValues();
+                int  valueIdx = 0;
+                for (Object newValue : newValues) {
+                    Row newRow = new Row();
+                    newRows.add(newRow);
+                    for (int i : keepIndices) {
+                        newRow.add(values.get(i));
+                    }
+                    newRow.add(values.get(indices.get(valueIdx)));
+                    newRow.add(newValue);
+                    valueIdx++;
+                }
+            }
+
+            return newRows;
+        }
+    }
+
+
 
     /**
      * Class description

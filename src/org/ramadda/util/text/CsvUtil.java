@@ -1271,6 +1271,10 @@ public class CsvUtil {
         new Cmd("-explode", "<col #> ",
                 "(make separate files based on value of column)"),
         new Cmd(
+            "-break",
+            "<label1> <label2> <columns",
+            "(break apart column values and make new rows)"),
+        new Cmd(
             "-unfurl",
             "<col to get new column header#> <value columns> <unique col>  <other columns>",
             "(make columns from data values)"),
@@ -1603,6 +1607,7 @@ public class CsvUtil {
 
 
             if (arg.equals("-unfurl")) {
+
                 if ( !ensureArg(args, i, 5)) {
                     return false;
                 }
@@ -1616,6 +1621,21 @@ public class CsvUtil {
 
                 continue;
             }
+
+
+            if (arg.equals("-break")) {
+                if ( !ensureArg(args, i, 3)) {
+                    return false;
+                }
+                String       label1 = args.get(++i);
+                String       label2 = args.get(++i);
+                List<String> cols   = getCols(args.get(++i));
+                info.getProcessor().addProcessor(new Processor.Breaker(label1,
+                        label2, cols));
+
+                continue;
+            }
+
 
             if (arg.equals("-sort")) {
                 if ( !ensureArg(args, i, 1)) {

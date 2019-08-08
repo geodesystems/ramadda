@@ -598,7 +598,7 @@ public class Json {
      *
      * @throws Exception _more_
      */
-    public static void toCsv(String file, PrintStream pw, String colString)
+    public static void geojsonToCsv(String file, PrintStream pw, String colString)
             throws Exception {
         InputStream is = IOUtil.getInputStream(file, Json.class);
         BufferedReader br = new BufferedReader(
@@ -1094,10 +1094,12 @@ public class Json {
      * @throws Exception _more_
      */
     public static void main(String[] args) throws Exception {
-        toCsv(args[0], System.out, (args.length > 1)
+	/*
+        geojsonToCsv(args[0], System.out, (args.length > 1)
                                    ? args[1]
                                    : null);
         if(true) return;
+	*/
 
 
         String  file = args[0];
@@ -1120,7 +1122,7 @@ public class Json {
         }
 
 
-        toCsv(args[0], System.out, (args.length > 1)
+        geojsonToCsv(args[0], System.out, (args.length > 1)
                                    ? args[1]
                                    : null);
         //        convertCameras(args);
