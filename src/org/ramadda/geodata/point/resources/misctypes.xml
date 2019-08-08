@@ -32,6 +32,11 @@
 
   </type>
 
+  <type name="type_point_inline"  description="Inline Point File" super="type_point" category="Point Data" foruser="true" handler="org.ramadda.geodata.point.InlinePointTypeHandler">
+     <column  name="data"  label="Data" cansearch="false" size="50000" type="clob" rows="50" columns="80" showinhtml="false"/>
+</type>
+
+
   <type name="type_sounding"  description="Sounding" super="type_point" category="Point Data" foruser="false" handler="org.ramadda.data.services.PointTypeHandler">
 </type>
 

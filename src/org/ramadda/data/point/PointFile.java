@@ -1091,6 +1091,10 @@ public abstract class PointFile extends RecordFile implements Cloneable,
             if (label == null) {
                 label = desc;
             }
+            if (label == null) {
+		label = Utils.makeLabel(name);
+	    }
+
             if (label != null) {
                 field.setLabel(label);
             }

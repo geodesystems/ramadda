@@ -2403,8 +2403,14 @@ function ScatterplotDisplay(displayManager, id, properties) {
                 chartOptions.title = this.getTitle(true);
             }
 
+	    if (!chartOptions.hAxis) chartOptions.hAxis = {};
+	    if (!chartOptions.vAxis) chartOptions.vAxis = {};
+	    if(this.getProperty("hAxisLogScale", false)) 
+		chartOptions.hAxis.logScale = true;
+	    if(this.getProperty("vAxisLogScale", false)) 
+		chartOptions.vAxis.logScale = true;
+
             if (dataList.length > 0 && this.getDataValues(dataList[0]).length > 1) {
-                if (!chartOptions.hAxis) chartOptions.hAxis = {};
                 $.extend(chartOptions.hAxis, {
                     title: this.getDataValues(dataList[0])[0]
                 });

@@ -57,6 +57,7 @@
 
 
 
+
   <type name="media_youtubevideo"  
         description="YouTube Video" 
         handler="org.ramadda.plugins.media.YouTubeVideoTypeHandler" 
