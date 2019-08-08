@@ -111,7 +111,7 @@ public class GeoJsonOutputHandler extends OutputHandler {
             throws Exception {
         ByteArrayOutputStream bos = new ByteArrayOutputStream();
         PrintStream           pw  = new PrintStream(bos);
-        Json.toCsv(entry.getResource().getPath(), pw, null);
+        Json.geojsonToCsv(entry.getResource().getPath(), pw, null);
         pw.close();
         StringBuilder sb = new StringBuilder(new String(bos.toByteArray()));
 
