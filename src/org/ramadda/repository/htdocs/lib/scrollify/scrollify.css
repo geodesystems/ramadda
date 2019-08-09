@@ -32,6 +32,13 @@
 background:black;
 color:white;
 }
+.panel-white {
+background:white;
+color:black;
+}
+.panel-white h1,.panel-white h2,.panel-white h3 {
+	color:black;
+}
 .panel-purple {
 	      background: #9b59b6;
 }
