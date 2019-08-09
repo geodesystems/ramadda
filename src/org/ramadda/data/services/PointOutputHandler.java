@@ -922,6 +922,9 @@ public class PointOutputHandler extends RecordOutputHandler {
             extra += "&latitude=${latitude}&longitude=${longitude}";
         }
 
+	String skip = (props==null?null:(String)props.get("skip"));
+	if(skip!=null)
+	    extra += "&" + RecordFormHandler.ARG_RECORD_SKIP +"=" + skip;
         return request.entryUrl(getRepository().URL_ENTRY_SHOW, entry,
                                 ARG_OUTPUT, OUTPUT_PRODUCT.getId(),
                                 ARG_PRODUCT, OUTPUT_JSON.toString()) + "&"
