@@ -165,7 +165,6 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 
         createMap: function() {
             var theDisplay = this;
-
             var params = {
                 "defaultMapLayer": this.getProperty("defaultMapLayer",
                     map_default_layer),
@@ -222,6 +221,27 @@ function RamaddaMapDisplay(displayManager, id, properties) {
                     this.setInitMapBounds(parseFloat(toks[0]), parseFloat(toks[1]), parseFloat(toks[2]), parseFloat(toks[3]));
                 }
             }
+	    
+	    var boundsAnimation = this.getProperty("boundsAnimation");
+	    let _this = this;
+	    if(boundsAnimation) {
+		this.didAnimationBounds = false;
+                let animationBounds = boundsAnimation.split(",");
+                if (animationBounds.length == 4) {
+		    var pause = parseFloat(this.getProperty("animationPause","3000"));
+		    HtmlUtils.callWhenScrolled(this.getDomId(ID_MAP),()=>{
+			    if(this.didAnimationBounds) return;
+			    this.didAnimationBounds = true;
+			    var a = animationBounds;
+			    var b = createBounds(parseFloat(a[1]),parseFloat(a[2]),parseFloat(a[3]),parseFloat(a[0]));
+			    _this.map.setViewToBounds(b);
+			},pause);
+		}
+            }
+
+
+
+
 
             var currentFeatures = this.features;
             this.features = [];
@@ -1094,7 +1114,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
             if (isTrajectory) {
                 var attrs = {
                     strokeWidth: 2,
-                    strokeColor: "blue"
+                   strokeColor: "blue"
                 }
 
                 this.map.addPolygon("id", "", points, attrs, null);
@@ -1356,6 +1376,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
                     pointRadius: radius,
                     strokeWidth: strokeWidth,
                     strokeColor: strokeColor,
+		    fillColor: this.getProperty("fillColor")
                 };
 
                 if (sizeBy.index >= 0) {

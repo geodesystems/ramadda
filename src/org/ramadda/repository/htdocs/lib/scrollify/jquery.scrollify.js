@@ -110,22 +110,20 @@ if touchScroll is false - update index
       }
       if(callbacks) {
         if( typeof settings.before == 'function' && settings.before(index,elements) === false ){
-          return true;
+	    return true;
         }
       }
+
       interstitialIndex = 1;
       destination = (!index) ? 0 : heights[index];
       if(firstLoad===false && currentIndex>index && toTop===false) {
         //We're going backwards
         if(overflow[index]) {
           portHeight = getportHeight();
-
           interstitialIndex = parseInt(elements[index].outerHeight()/portHeight);
-
           destination = parseInt(heights[index])+(elements[index].outerHeight()-portHeight);
         }
       }
-
 
       if(settings.updateHash && settings.sectionName && !(firstLoad===true && index===0)) {
         if(history.pushState) {

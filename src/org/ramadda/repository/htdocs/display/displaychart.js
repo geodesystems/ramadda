@@ -2464,6 +2464,19 @@ function ScatterplotDisplay(displayManager, id, properties) {
 	    if(this.getProperty("vAxisLogScale", false)) 
 		chartOptions.vAxis.logScale = true;
 
+	    /*
+		chartOptions.trendlines =  {
+		0: {
+		    type: 'linear',
+			color: 'green',
+			lineWidth: 3,
+			opacity: 0.3,
+			showR2: true,
+			visibleInLegend: true
+			}
+		};		
+	    */
+
             if (dataList.length > 0 && this.getDataValues(dataList[0]).length > 1) {
                 $.extend(chartOptions.hAxis, {
                     title: this.getDataValues(dataList[0])[0]

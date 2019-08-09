@@ -1135,6 +1135,23 @@ var HtmlUtils = {
 		}},1000);
 	    });
     },
+    callWhenScrolled: function(id,func,pause) {
+	if(!Utils.isDefined(pause)) pause = 0;
+	$(document).ready(function(){
+		setTimeout(function(){
+			if(HtmlUtils.elementScrolled('#' + id)) {
+	console.log("calllWhenScrolled-1");
+			    setTimeout(func, pause);
+			} else {
+			    $(window).scroll(function(){
+				    if(HtmlUtils.elementScrolled('#' + id)) {
+					console.log("calllWhenScrolled-2");
+					setTimeout(func, pause);
+				    }});
+			}},1000);
+	    });
+    },
+
     getIconImage: function(url,attrs) {
         if(StringUtil.startsWith(url,"fa-")) {
             return HtmlUtils.span(attrs,HtmlUtils.tag("i",["class","fa " + url]));

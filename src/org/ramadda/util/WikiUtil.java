@@ -518,6 +518,16 @@ public class WikiUtil {
         }
     }
 
+    private Hashtable lineToProps(String tline) {
+	List<String> toks = StringUtil.splitUpTo(tline, " ", 2);
+	Hashtable props = HtmlUtils.parseHtmlProperties((toks.size()
+							 > 1)
+							? toks.get(1)
+							: "");
+	return props;
+    }
+
+
     /**
      * _more_
      *
@@ -641,6 +651,9 @@ public class WikiUtil {
         boolean          inCss           = false;
         boolean          inPre           = false;
 	boolean inScroll = false;
+	String afterId = null;
+	String afterPause = null;
+	String afterFade = null;
         for (String line :
                 (List<String>) StringUtil.split(s, "\n", false, false)) {
             if ((line.indexOf("${") >= 0)
@@ -1325,6 +1338,24 @@ public class WikiUtil {
 
                 continue;
             }
+
+            if (tline.startsWith("+after")) {
+		afterId = HtmlUtils.getUniqueId("after");
+                Hashtable props = lineToProps(tline);
+		afterPause = (String) props.get("pause");
+		if(afterPause==null) afterPause = "0";
+		afterFade = (String) props.get("afterFade");
+		if(afterFade==null) afterPause = "3000";
+		buff.append(HtmlUtils.open(HtmlUtils.TAG_DIV,
+					   HtmlUtils.style("opacity:0;") +HtmlUtils.id(afterId)));
+		continue;
+	    }
+
+            if (tline.startsWith("-after")) {
+		HtmlUtils.close(buff,HtmlUtils.TAG_DIV);
+		HtmlUtils.script(buff, "HtmlUtils.callWhenScrolled('" +afterId +"',()=>{$('#" + afterId +"').fadeTo(" + afterFade+",1.0);}," + afterPause+");");
+		continue;
+	    }
 
             if (tline.startsWith("+section")) {
 

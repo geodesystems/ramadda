@@ -2,12 +2,18 @@ $(function() {
 	$.scrollify({
 		section:".panel",
 		    scrollbars:false,
-		    before:function(i,panels) {
+		 before:function(i,panels) {
 		    var ref = panels[i].attr("data-section-name");
 		    $(".pagination .active").removeClass("active");
 		    $(".pagination").find("a[href=\"#" + ref + "\"]").addClass("active");
+		    if(i==0)
+			$(".scroll-indicator").css("display","inline-block");
+		    else
+			$(".scroll-indicator").css("display","none");
+
+		    return true;
 		},
-		    afterRender:function() {
+         	afterRender:function() {
 		    var pagination = "<ul class=\"pagination\">";
 		    var activeClass = "";
 		    $(".panel").each(function(i) {

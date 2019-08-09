@@ -9,15 +9,15 @@
 .panel h1 {
 	font-size:62.5%;
 	color:white;
-	font-size:13em;
+	font-size:6em;
 }
 .panel h2 {
 	color:white;
-	font-size:8em;
+	font-size:4em;
 }
 .panel h3 {
 	color:white;
-	font-size:4em;
+	font-size:2em;
 }
 .panel p {
 	font-size: 4em;
@@ -30,6 +30,43 @@
 }
 .panel-black {
 background:black;
+color:white;
+}
+.panel-hide {
+}
+.scroll-indicator {
+//position: relative;
+    font-size: 1.0em;
+    margin-top: 20px;
+    display: inline-block;
+    height: 100px;
+    position: fixed;
+    bottom:0;
+}
+
+.scroll-indicator::after {
+    border-right: 2px solid #FFF;
+    border-bottom: 2px solid #FFF;
+    -ms-transform: rotate(45deg);
+    -webkit-transform: rotate(45deg);
+    transform: rotate(45deg);
+}
+
+.scroll-indicator::after {
+    content: '';
+    width: 40px;
+    height: 40px;
+    position: absolute;
+    margin: auto;
+    top: 10px;
+    right: 0;
+    left: 0;
+    -webkit-animation: 3s arrow infinite ease;
+    animation: 3s arrow infinite ease;
+}
+
+
+.panel-black a {
 color:white;
 }
 .panel-white {
