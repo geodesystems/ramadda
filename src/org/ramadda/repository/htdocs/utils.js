@@ -1124,6 +1124,7 @@ var HtmlUtils = {
     initOdometer: function(id,value, pause) {
 	if(!Utils.isDefined(pause)) pause = 0;
 	$(document).ready(function(){
+		setTimeout(function(){
 		if(HtmlUtils.elementScrolled('#' + id)) {
 		    setTimeout(function() {$('#' + id).html(value);},pause);
 		} else {
@@ -1131,7 +1132,7 @@ var HtmlUtils = {
 			    if(HtmlUtils.elementScrolled('#' + id)) {
 				setTimeout(function() {$('#' + id).html(value);},pause);
 			    }});
-		}
+		}},1000);
 	    });
     },
     getIconImage: function(url,attrs) {
