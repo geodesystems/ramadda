@@ -2481,7 +2481,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
                         widget = HtmlUtils.select("",["id",widgetId,"fieldId",filterField.getId()],enums,value);
 		    } else if(filterField.isNumeric) {
 			var opid = widgetId+"_operator";
-			var operator = this.getProperty(filterField.getId() +".filterOperator","<");
+			var operator = this.getProperty(filterField.getId() +".filterOperator",">");
 			widget = HtmlUtils.select("",["id", opid,"fieldId",filterField.getId()],["<",">","="], operator,);
                         widget +=HtmlUtils.input("",value,["id",widgetId,"size",4,"fieldId",filterField.getId()]);
 		    } else if(filterField.getType() == "date") {
