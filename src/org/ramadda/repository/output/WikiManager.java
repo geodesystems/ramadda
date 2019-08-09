@@ -1732,6 +1732,25 @@ ATTR_SHOWLINK, "true", ATTR_INCLUDEICON, "false") + ATTRS_LAYOUT),
                                 ""), tagCloud, true, threshold);
 
             return tagCloud.toString();
+        } else if (theTag.equals(WIKI_TAG_ODOMETER)) {
+            String initCount = getProperty(wikiUtil, props, "initCount", "0");
+            String count = getProperty(wikiUtil, props, "count", "100");
+	    StringBuilder buff = new StringBuilder();
+	    String id   = HtmlUtils.getUniqueId("odometer");
+            String style = getProperty(wikiUtil, props, "style", "");
+            String pause = getProperty(wikiUtil, props, "pause", "0");
+	    buff.append(
+		      HtmlUtils.cssLink(
+					getRepository().getHtdocsUrl(
+								     "/lib/odometer/odometer-theme-default.css")));
+	    buff.append(
+		      HtmlUtils.importJS(
+					 getRepository().getHtdocsUrl(
+								      "/lib/odometer/odometer.js")));
+
+	    buff.append(HtmlUtils.span(initCount,HtmlUtils.id(id)+ HtmlUtils.cssClass("odometer")+HtmlUtils.style(style)));
+	    buff.append(HtmlUtils.script("HtmlUtils.initOdometer('" +id +"'," + count +"," + pause +");"));
+	    return buff.toString();
         } else if (theTag.equals(WIKI_TAG_COMMENTS)) {
             return getHtmlOutputHandler().getCommentBlock(request, entry,
                     false).toString();

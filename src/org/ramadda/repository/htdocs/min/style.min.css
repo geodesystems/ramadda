@@ -23,6 +23,11 @@ a.btn:link {color: #000;}
 .row {margin-right:0px;margin-left:0px;}
 h2 a,   h2 a:visited, h2 a:link  {color: black;}
 
+/* reset the bootstrap pagination to enable  scrollify */
+.pagination {
+  display: block;
+}
+
 .black_href a, .black_href a:visited, .black_href a:link {
       color:black;
 }
@@ -3582,6 +3587,20 @@ padding-bottom: 0.2em;
   padding-left:1em;
   padding-right:1em;
 }
+
+
+/** for pagination **/
+.vertical-center {
+	text-align:center;
+	width:100%;
+	position: absolute;
+	top: 47%;
+	transform: translateY(-47%);
+}
+.vertical-center p {
+	margin-top:23px;
+}
+
 
 
 

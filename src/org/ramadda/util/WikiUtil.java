@@ -265,6 +265,8 @@ public class WikiUtil {
      */
     public static interface WikiPageHandler {
 
+	public String getHtdocsUrl(String path);
+
         /**
          * _more_
          *
@@ -526,7 +528,7 @@ public class WikiUtil {
      * @return _more_
      */
     private String wikifyInner(String s, WikiPageHandler handler,
-                               String[] notTags) {
+                               String[] notTags)             throws IOException {
 
         s = s.replace("\\\\[", "_BRACKETOPEN_");
         if (getReplaceNewlineWithP()) {
@@ -637,9 +639,8 @@ public class WikiUtil {
         String           currentVar      = null;
         StringBuilder    currentVarValue = null;
         boolean          inCss           = false;
-
-
         boolean          inPre           = false;
+	boolean inScroll = false;
         for (String line :
                 (List<String>) StringUtil.split(s, "\n", false, false)) {
             if ((line.indexOf("${") >= 0)
@@ -758,6 +759,8 @@ public class WikiUtil {
 
                 continue;
             }
+
+
 
 
             if (tline.startsWith("+table")) {
@@ -1413,9 +1416,49 @@ public class WikiUtil {
             }
             if (tline.startsWith("-section")) {
                 buff.append("</div>");
-
                 continue;
             }
+
+	    if(tline.startsWith("+scroll")) {
+		buff.append("\n");
+		HtmlUtils.cssLink(buff, handler.getHtdocsUrl("/lib/scrollify/scrollify.css"));
+		HtmlUtils.importJS(buff, handler.getHtdocsUrl("/lib/scrollify/jquery.scrollify.js"));
+		continue;
+	    }
+
+	    if(tline.startsWith("-scroll")) {
+		buff.append("\n");
+		inScroll = false;
+		HtmlUtils.importJS(buff, handler.getHtdocsUrl("/lib/scrollify/template.js"));
+		continue;
+	    }
+
+	    if(tline.startsWith("+panel")) {
+		buff.append("\n");
+                List<String> toks = StringUtil.splitUpTo(tline, " ", 2);
+                Hashtable props = HtmlUtils.parseHtmlProperties((toks.size()
+                                      > 1)
+                        ? toks.get(1)
+                        : "");
+		String name = (String)props.get("name");
+		String color = (String)props.get("color");
+		String extra = "";
+		String clazz = "panel ";
+		if(name!=null)
+		    extra += " data-section-name=\"" + name +"\"  ";
+ 		if(!inScroll) clazz+= " panel-first ";
+		if(color!=null) clazz+= " panel-" + color +" ";
+		buff.append("<section class=\"" + clazz +"\" " + extra +">\n");
+		buff.append("<div class=\"panel-inner\">");
+		inScroll = true;
+		continue;
+	    }
+
+	    if(tline.startsWith("-panel")) {
+		buff.append("\n");
+		buff.append("</div></section>");
+		continue;
+	    }
 
             if (tline.equals("+info-text")) {
                 buff.append("<div class=\"info-text\">");
@@ -1533,6 +1576,17 @@ public class WikiUtil {
                 continue;
             }
 
+
+
+            if (tline.startsWith("+vertical-center")) {
+		buff.append("\n<div class=\"vertical-center\">\n");
+		continue;
+	    }
+
+            if (tline.startsWith("-vertical-center")) {
+		buff.append("\n</div>\n");
+		continue;
+	    }
 
 
             if (tline.equals("+centerdiv")) {

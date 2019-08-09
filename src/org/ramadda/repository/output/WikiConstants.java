@@ -336,6 +336,8 @@ public interface WikiConstants {
     /** _more_ */
     public static final String WIKI_TAG_EMBED = "embed";
 
+    public static final String WIKI_TAG_ODOMETER = "odometer";
+
     /** _more_ */
     public static final String WIKI_TAG_CHART = "chart";
 

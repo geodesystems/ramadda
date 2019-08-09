@@ -1115,6 +1115,25 @@ var HtmlUtils = {
             ramaddaMapCheckLayout();
         }
     },
+    elementScrolled: function(elem) {
+	var docViewTop = $(window).scrollTop();
+	var docViewBottom = docViewTop + $(window).height();
+	var elemTop = $(elem).offset().top;
+	return ((elemTop <= docViewBottom) && (elemTop >= docViewTop));
+    },
+    initOdometer: function(id,value, pause) {
+	if(!Utils.isDefined(pause)) pause = 0;
+	$(document).ready(function(){
+		if(HtmlUtils.elementScrolled('#' + id)) {
+		    setTimeout(function() {$('#' + id).html(value);},pause);
+		} else {
+		    $(window).scroll(function(){
+			    if(HtmlUtils.elementScrolled('#' + id)) {
+				setTimeout(function() {$('#' + id).html(value);},pause);
+			    }});
+		}
+	    });
+    },
     getIconImage: function(url,attrs) {
         if(StringUtil.startsWith(url,"fa-")) {
             return HtmlUtils.span(attrs,HtmlUtils.tag("i",["class","fa " + url]));

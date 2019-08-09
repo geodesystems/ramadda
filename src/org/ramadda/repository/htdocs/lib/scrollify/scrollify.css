@@ -1,0 +1,95 @@
+/* http://meyerweb.com/eric/tools/css/reset/
+   v2.0 | 20110126
+   License: none (public domain)
+*/
+/* This was stripped down by jeffmc */
+.panel {
+	font-family: 'Lato', sans-serif;
+}
+.panel h1 {
+	font-size:62.5%;
+	color:white;
+	font-size:13em;
+}
+.panel h2 {
+	color:white;
+	font-size:8em;
+}
+.panel h3 {
+	color:white;
+	font-size:4em;
+}
+.panel p {
+	font-size: 4em;
+}
+.panel-inner {
+	position: relative;
+	height:100%;
+	width:80%;
+	margin:0 auto;
+}
+.panel-purple {
+	      background: #9b59b6;
+}
+.panel-green {
+	background:#6dcb94;
+	background:hsl(158,58%,52%);
+}
+.panel-orange {
+	background:#ec8200;
+	background:hsl(28,100%,52%);
+}
+.panel-blue {
+	background:#64a0d4;
+	background:hsl(200,60%,55%);
+}
+.panel-red {
+	background:#e14456;
+	background:hsl(350,92%,59%);
+}
+.pagination {
+	position:fixed;
+	right:20px;
+	top: 50%;
+	transform: translateY(-50%);
+	font-size:1.4em;
+	z-index: 10;
+}
+.pagination a {
+	display:block;
+	height:20px;
+	margin-bottom:5px;
+	color:white;
+	position:relative;
+	padding:4px;
+}
+.pagination a.active:after {
+	box-shadow:inset 0 0 0 5px;
+}
+.pagination a .hover-text {
+	position:absolute;
+	right:15px;
+	top:7px;
+	opacity:0;
+	-webkit-transition: opacity 0.5s ease;
+	transition: opacity 0.5s ease;
+	padding-right: 15px;
+}
+.pagination a:hover .hover-text {
+	opacity: 1;
+}
+.pagination a:after {
+	-webkit-transition:box-shadow 0.5s ease;
+	transition:box-shadow 0.5s ease;
+	width:10px;
+	height:10px;
+	display: block;
+	border:1px solid;
+	border-radius:50%;
+	content:'';
+	position: absolute;
+	margin:auto;
+	top:0;
+	right:4px;
+	bottom:0;
+}

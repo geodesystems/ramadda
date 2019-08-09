@@ -4629,7 +4629,7 @@ public class HtmlUtils {
      *
      * @throws Exception _more_
      */
-    public static void cssLink(Appendable sb, String url) throws Exception {
+    public static void cssLink(Appendable sb, String url) throws IOException {
         tag(sb, TAG_LINK,
             attrs(ATTR_HREF, url, ATTR_REL, "stylesheet", ATTR_TYPE,
                   "text/css"));
