@@ -28,6 +28,10 @@
 	width:80%;
 	margin:0 auto;
 }
+.panel-black {
+background:black;
+color:white;
+}
 .panel-purple {
 	      background: #9b59b6;
 }
