@@ -1459,25 +1459,25 @@ text-align:center;
   padding:4px;
 }
 
-.display-blocks {
+.display-blocks-blocks {
     line-height: 0px;
 }
 
 .display-block {
 background:#efefef;
-background:#aaa;
+background:#423E3B;
 width: 8px;
 height:8px;
 display: inline-block;
 margin:1px;
 }
 
-.display-block-footer {
+.display-blocks-footer {
 margin-top:6px;
 text-align:center;
 }
 
-.display-block-header {
+.display-blocks-header {
 margin-bottom:10px;
 text-align:center;
 }

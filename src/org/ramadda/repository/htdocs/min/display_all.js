@@ -13801,6 +13801,10 @@ function RamaddaCardsDisplay(displayManager, id, properties) {
 
 function RamaddaBlocksDisplay(displayManager, id, properties) {
     let SUPER =  new RamaddaFieldsDisplay(displayManager, id, DISPLAY_BLOCKS, properties);
+    var ID_BLOCKS_HEADER = "blocks_header";
+    var ID_BLOCKS = "blocks";
+    var ID_BLOCKS_FOOTER = "blocks_footer";
+    var animStep=1000;
     RamaddaUtil.inherit(this,SUPER);
     addRamaddaDisplay(this);
     $.extend(this, {
@@ -13833,10 +13837,16 @@ function RamaddaBlocksDisplay(displayManager, id, properties) {
 		while(this.headers.length< this.counts.length)
 		    this.headers.push("");
 		this.showBlocks(true);
+		this.writeHtml(ID_DISPLAY_CONTENTS, 
+			       HtmlUtils.div(["class","display-blocks-header","style", this.getProperty("headerStyle","", true),"id",this.getDomId(ID_BLOCKS_HEADER)]) +
+			       HtmlUtils.div(["class","display-blocks-blocks","id",this.getDomId(ID_BLOCKS)])+
+			       HtmlUtils.div(["class","display-blocks-footer", "style", this.getProperty("footerStyle","", true), "id",this.getDomId(ID_BLOCKS_FOOTER)]));
+		//Show the outline
+		this.showBlocks(true);
 		HtmlUtils.callWhenScrolled(this.getDomId(ID_DISPLAY_CONTENTS),()=>{
 			if(!this.displayedBlocks) {
 			    this.displayedBlocks = true;
-			    this.showBlocks(false);
+			    setTimeout(()=>{this.showBlocks(false)},animStep);
 			}
 		    },500);
 
@@ -13847,7 +13857,6 @@ function RamaddaBlocksDisplay(displayManager, id, properties) {
 		    else step = 0;
 		}
 		var contents = "";
-		contents += HtmlUtils.div(["class","display-block-header"],this.getProperty("header",""));
 		contents += HtmlUtils.openDiv(["class","display-blocks"]);
 		var tmp =this.getProperty("colors","red,blue,gray,green",true); 
 		var ct = (typeof tmp) =="string"?tmp.split(","):tmp;
@@ -13858,6 +13867,7 @@ function RamaddaBlocksDisplay(displayManager, id, properties) {
 		var multiplier = parseFloat(this.getProperty("multiplier","1",true));
 		var dim=this.getProperty("blockDimensions","8",true);
 		var labelStyle = this.getProperty("labelStyle","", true);
+		var blockCnt = 0;
 		for(var i=0;i<this.counts2.length;i++) {
 		    var label = this.footers[i].replace("${count}",multiplier*this.counts[i]) ;
 		    var style =  "width:" + dim+"px;height:" + dim+"px;";
@@ -13873,12 +13883,14 @@ function RamaddaBlocksDisplay(displayManager, id, properties) {
 		    for(var j=0;j<this.counts2[i];j++) {
 			contents += HtmlUtils.div(["class","display-block","style",style,"title",label],"");
 		    }
+		    blockCnt++;
 		}
 		contents += HtmlUtils.closeDiv();
-		contents += HtmlUtils.div(["class","display-block-footer"],footer);
-		this.writeHtml(ID_DISPLAY_CONTENTS, contents);
+		this.jq(ID_BLOCKS_HEADER).html(this.getProperty("header",""));
+		this.jq(ID_BLOCKS).html(contents);
+		this.jq(ID_BLOCKS_FOOTER).html(footer);
 		if(step < this.counts.length) {
-		    setTimeout(()=>{this.showBlocks(false, step+1)},1000);
+		    setTimeout(()=>{this.showBlocks(false, step+1)},animStep);
 		}
 	    }
 	}

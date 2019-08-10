@@ -8,15 +8,15 @@
 }
 .panel h1 {
 	font-size:62.5%;
-	color:white;
+	color:black;
 	font-size:6em;
 }
 .panel h2 {
-	color:white;
+	color:black;
 	font-size:4em;
 }
 .panel h3 {
-	color:white;
+	color:black;
 	font-size:2em;
 }
 .panel p {
@@ -66,12 +66,12 @@ color:white;
 }
 
 
-.panel-black a {
-color:white;
+.panel-black h1,.panel-black h2,.panel-black h3, .panel-black a {
+	     color:white;
 }
 .panel-white {
-background:white;
-color:black;
+	     background:white;
+	     color:black;
 }
 .panel-white h1,.panel-white h2,.panel-white h3 {
 	color:black;
