@@ -303,6 +303,11 @@ function initMapFunctions(theMap) {
         },
         locationChanged: function() {
             var latlon = this.transformProjBounds(this.map.getExtent());
+	    var bits = 100000;
+	    latlon.top = Math.round(latlon.top*bits)/bits;
+	    latlon.left = Math.round(latlon.left*bits)/bits;
+	    latlon.bottom = Math.round(latlon.bottom*bits)/bits;
+	    latlon.right = Math.round(latlon.right*bits)/bits;
             var bounds = "map_bounds=" + latlon.top + "," + latlon.left + "," + latlon.bottom + "," + latlon.right;
             var url = "" + window.location;
             url = url.replace(/\&?map_bounds=[-\d\.]+,[-\d\.]+,[-\d\.]+,[-\d\.]+/g, "");
@@ -2785,6 +2790,30 @@ function initMapFunctions(theMap) {
         }
         this.setViewToBounds(bounds);
     }
+
+    theMap.animateViewToBounds = function(bounds, ob,steps) {
+	if(!Utils.isDefined(steps)) steps = 1;
+	if(!ob)
+	    ob = this.transformProjBounds(this.map.getExtent());
+	//	console.log("dest:" + JSON.stringify(bounds,null, 2));
+	//	console.log("ob:" + JSON.stringify(ob,null, 2));
+	//	this.setViewToBounds(bounds);
+	//	return
+	var numSteps = 10;
+	if(steps>numSteps) {
+	    this.setViewToBounds(bounds);
+	    return;
+	}
+	var p = steps/numSteps; 
+	steps++;
+	newBounds = createBounds(
+				 ob.left+(bounds.left- ob.left)*p,
+				 ob.bottom+(bounds.bottom- ob.bottom)*p,
+				 ob.right+(bounds.right- ob.right)*p,
+				 ob.top+(bounds.top-ob.top)*p);
+	this.setViewToBounds(newBounds);
+	setTimeout(()=>this.animateViewToBounds(bounds, ob, steps),125);
+    },
 
     theMap.setViewToBounds = function(bounds) {
         projBounds = this.transformLLBounds(bounds);

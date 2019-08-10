@@ -1116,10 +1116,15 @@ var HtmlUtils = {
         }
     },
     elementScrolled: function(elem) {
-	var docViewTop = $(window).scrollTop();
-	var docViewBottom = docViewTop + $(window).height();
-	var elemTop = $(elem).offset().top;
-	return ((elemTop <= docViewBottom) && (elemTop >= docViewTop));
+	var docTop = $(window).scrollTop();
+	var docBottom = docTop + $(window).height();
+	var elemTop = $(elem).offset().top;	
+	var elemBottom = $(elem).position().top + $(elem).outerHeight(true); 
+	if((elemTop <= docBottom) && (elemTop >= docTop)) return true;	
+	if((elemBottom <= docBottom) && (elemBottom >= docTop)) return true;
+	if((elemBottom >= docBottom) && (elemTop <= docTop)) return true;
+
+	return false;
     },
     initOdometer: function(id,value, pause) {
 	if(!Utils.isDefined(pause)) pause = 0;
@@ -1140,7 +1145,7 @@ var HtmlUtils = {
 	$(document).ready(function(){
 		setTimeout(function(){
 			if(HtmlUtils.elementScrolled('#' + id)) {
-	console.log("calllWhenScrolled-1");
+			    console.log("calllWhenScrolled-1");
 			    setTimeout(func, pause);
 			} else {
 			    $(window).scroll(function(){

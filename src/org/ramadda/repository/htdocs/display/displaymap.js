@@ -228,13 +228,15 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		this.didAnimationBounds = false;
                 let animationBounds = boundsAnimation.split(",");
                 if (animationBounds.length == 4) {
-		    var pause = parseFloat(this.getProperty("animationPause","3000"));
+		    var pause = parseFloat(this.getProperty("animationPause","1000"));
 		    HtmlUtils.callWhenScrolled(this.getDomId(ID_MAP),()=>{
-			    if(this.didAnimationBounds) return;
-			    this.didAnimationBounds = true;
+			    if(_this.didAnimationBounds) {
+				return;
+			    }
+			    _this.didAnimationBounds = true;
 			    var a = animationBounds;
 			    var b = createBounds(parseFloat(a[1]),parseFloat(a[2]),parseFloat(a[3]),parseFloat(a[0]));
-			    _this.map.setViewToBounds(b);
+			    _this.map.animateViewToBounds(b);
 			},pause);
 		}
             }
