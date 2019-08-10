@@ -2441,6 +2441,10 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
             if(filterBy.length>0) {
 		var dateIds = [];
                 var searchBar  = "";
+		var hideFilterWidget = this.getProperty("hideFilterWidget",false, true);
+		var widgetStyle = "";
+		if(hideFilterWidget)
+		    widgetStyle = "display:none;";
                 for(var i=0;i<filterBy.length;i++) {
                     var filterField  = this.getFieldById(fields,filterBy[i]);
                     if(!filterField) continue;
@@ -2478,29 +2482,32 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 				    }
 				});
 			}
-                        widget = HtmlUtils.select("",["id",widgetId,"fieldId",filterField.getId()],enums,value);
+                        widget = HtmlUtils.select("",["style",widgetStyle, "id",widgetId,"fieldId",filterField.getId()],enums,value);
 		    } else if(filterField.isNumeric) {
 			var opid = widgetId+"_operator";
 			var operator = this.getProperty(filterField.getId() +".filterOperator",">");
-			widget = HtmlUtils.select("",["id", opid,"fieldId",filterField.getId()],["<",">","="], operator,);
-                        widget +=HtmlUtils.input("",value,["id",widgetId,"size",4,"fieldId",filterField.getId()]);
+			widget = HtmlUtils.select("",["style",widgetStyle, "id", opid,"fieldId",filterField.getId()],["<",">","="], operator,);
+                        widget +=HtmlUtils.input("",value,["style",widgetStyle, "id",widgetId,"size",4,"fieldId",filterField.getId()]);
 		    } else if(filterField.getType() == "date") {
-                        widget =HtmlUtils.datePicker("","",["id",widgetId+"_date1"]) +" - " +
-			    HtmlUtils.datePicker("","",["id",widgetId+"_date2"]);
+                        widget =HtmlUtils.datePicker("","",["style",widgetStyle, "id",widgetId+"_date1"]) +" - " +
+			    HtmlUtils.datePicker("","",["style",widgetStyle, "id",widgetId+"_date2"]);
 			dateIds.push(widgetId+"_date1");
 			dateIds.push(widgetId+"_date2");
                     } else {
-                        widget =HtmlUtils.input("",value,["id",widgetId,"fieldId",filterField.getId()]);
+                        widget =HtmlUtils.input("",value,["style",widgetStyle, "id",widgetId,"fieldId",filterField.getId()]);
                     }
 		    var label =   this.getProperty(filterField.getId()+".filterLabel",filterField.getLabel());
-                    widget = label + ": " + widget;
+		    if(!hideFilterWidget)
+			widget = label + ": " + widget;
 		    //                    if(i==0) searchBar += "<br>Display: ";
-                    searchBar+=widget +"&nbsp;&nbsp;";
+                    searchBar+=widget +(hideFilterWidget?"":"&nbsp;&nbsp;");
                 }
 
                 this.jq(ID_HEADER2).html(searchBar);
-		for(var i=0;i<dateIds.length;i++) {
-		    HtmlUtils.datePickerInit(dateIds[i]);
+		if(!hideFilterWidget) {
+		    for(var i=0;i<dateIds.length;i++) {
+			HtmlUtils.datePickerInit(dateIds[i]);
+		    }
 		}
 
                 this.jq(ID_HEADER2).find("input, input:radio,select").change(function(){
