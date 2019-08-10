@@ -1119,7 +1119,8 @@ var HtmlUtils = {
 	var docTop = $(window).scrollTop();
 	var docBottom = docTop + $(window).height();
 	var elemTop = $(elem).offset().top;	
-	var elemBottom = $(elem).position().top + $(elem).outerHeight(true); 
+	var elemBottom = elemTop + $(elem).outerHeight(true); 
+	//	console.log("doc:" + docTop + " " + docBottom +"  "+ elemTop +" " + elemBottom);
 	if((elemTop <= docBottom) && (elemTop >= docTop)) return true;	
 	if((elemBottom <= docBottom) && (elemBottom >= docTop)) return true;
 	if((elemBottom >= docBottom) && (elemTop <= docTop)) return true;
@@ -1145,12 +1146,12 @@ var HtmlUtils = {
 	$(document).ready(function(){
 		setTimeout(function(){
 			if(HtmlUtils.elementScrolled('#' + id)) {
-			    console.log("calllWhenScrolled-1");
+			    console.log("callWhenScrolled-1");
 			    setTimeout(func, pause);
 			} else {
 			    $(window).scroll(function(){
 				    if(HtmlUtils.elementScrolled('#' + id)) {
-					console.log("calllWhenScrolled-2");
+					console.log("callWhenScrolled-2");
 					setTimeout(func, pause);
 				    }});
 			}},1000);
