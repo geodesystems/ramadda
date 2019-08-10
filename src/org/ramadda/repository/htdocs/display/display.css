@@ -1458,3 +1458,25 @@ text-align:center;
   margin:4px;
   padding:4px;
 }
+
+.display-blocks {
+    line-height: 5px;
+}
+
+.display-block {
+background:gray;
+width: 8px;
+height:8px;
+display: inline-block;
+margin:1px;
+}
+
+.display-block-footer {
+margin-top:6px;
+text-align:center;
+}
+
+.display-block-header {
+margin-bottom:10px;
+text-align:center;
+}

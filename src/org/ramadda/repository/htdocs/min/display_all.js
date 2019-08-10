@@ -13128,6 +13128,7 @@ var DISPLAY_TEXTANALYSIS = "textanalysis";
 var DISPLAY_TEXTRAW = "textraw";
 var DISPLAY_TEXT = "text";
 var DISPLAY_CARDS = "cards";
+var DISPLAY_BLOCKS = "blocks";
 
 
 
@@ -13178,6 +13179,14 @@ addGlobalDisplayType({
     label: "Text Analysis",
     requiresData: true,
     category: "Text"
+});
+
+addGlobalDisplayType({
+    type: DISPLAY_BLOCKS,
+    forUser: true,
+    label: "Blocks",
+    requiresData: false,
+    category: "Other Charts"
 });
 
 
@@ -13781,6 +13790,73 @@ function RamaddaCardsDisplay(displayManager, id, properties) {
             }
     });
 }
+
+
+function RamaddaBlocksDisplay(displayManager, id, properties) {
+    let SUPER =  new RamaddaFieldsDisplay(displayManager, id, DISPLAY_BLOCKS, properties);
+    RamaddaUtil.inherit(this,SUPER);
+    addRamaddaDisplay(this);
+    $.extend(this, {
+        getContentsStyle: function() {
+            return "";
+        },
+        updateUI: function() {
+		this.counts = [];
+		this.counts2 = [];
+		var counts = this.getProperty("counts","100",true).split(";");
+		for(var i=0;i<counts.length;i++) 
+		    this.counts.push(parseFloat(counts[i]));
+		var doSum = this.getProperty("doSum","true") == "true";
+		if(doSum) {
+		    this.counts2 = this.counts;
+		} else {
+		    var total = 0;
+		    for(var i=0;i<this.counts.length;i++) {
+			var tmp = this.counts[i];
+			this.counts2.push(this.counts[i]-total);
+			total+= tmp;
+		    }
+		}
+
+
+		this.footers = this.getProperty("footers","",true).split(";");
+		this.headers = this.getProperty("headers","",true).split(";");
+		while(this.footers.length< this.counts.length)
+		    this.footers.push("");
+		while(this.headers.length< this.counts.length)
+		    this.headers.push("");
+		this.step = 0;
+		this.showBlocks();
+	    },
+	    showBlocks: function() {
+		var contents = "";
+		if(this.step>this.counts.length) this.step = 0;
+		contents += HtmlUtils.div(["class","display-block-header"],this.getProperty("header",""));
+		contents += HtmlUtils.openDiv(["class","display-blocks"]);
+		var limit = this.step<this.counts.length-1?this.counts[this.step]:0;
+		var tmp =this.getProperty("colors","red,blue,gray,green",true); 
+		var ct = (typeof tmp) =="string"?tmp.split(","):tmp;
+		var footer ="";
+		while(ct.length<this.counts.length) {
+		    ct.push(ct[ct.length-1]);
+		}
+		var multiplier = parseFloat(this.getProperty("multiplier","1",true));
+		for(var i=0;i<this.counts2.length;i++) {
+		    var style = "background:" + ct[i]+";";
+		    var label = this.footers[i].replace("${count}",multiplier*this.counts[i]) ;
+		    footer += HtmlUtils.div(["class","display-block","style",style],"") +" " + label+"&nbsp;&nbsp;";
+		    var cnt = this.counts2[i];
+		    for(var j=0;j<this.counts2[i];j++) {
+			contents += HtmlUtils.div(["class","display-block","style",style,"title",label],"");
+		    }
+		}
+		contents += HtmlUtils.closeDiv();
+		contents += HtmlUtils.div(["class","display-block-footer"],footer);
+		this.writeHtml(ID_DISPLAY_CONTENTS, contents);
+	    }
+	}
+	)
+	}
 
 
 

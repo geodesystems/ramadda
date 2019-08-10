@@ -1505,6 +1505,7 @@ var HtmlUtils = {
         return this.closeTag("div");
     },
 
+
     openDiv: function(attrs) {
         return this.openTag("div", attrs);
     },
