@@ -984,7 +984,7 @@ height:100%;
 .display-map-map {
      min-width:200px; 
      min-height:200px; 
-     border:1px #ccc solid; 
+     border:0px #ccc solid; 
 }
 
 .display-map-latlon {

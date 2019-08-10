@@ -723,10 +723,8 @@ function RamaddaBlocksDisplay(displayManager, id, properties) {
 		}
 		var multiplier = parseFloat(this.getProperty("multiplier","1",true));
 		var dim=this.getProperty("blockDimensions","8",true);
-		console.log(dim);
 		for(var i=0;i<this.counts2.length;i++) {
 		    var style = "background:" + ct[i]+";" + "width:" + dim+"px;height:" + dim+"px;";
-		    if(i<3) console.log(style);
 		    var label = this.footers[i].replace("${count}",multiplier*this.counts[i]) ;
 		    footer += HtmlUtils.div(["class","display-block","style",style],"") +" " + label+"&nbsp;&nbsp;";
 		    var cnt = this.counts2[i];

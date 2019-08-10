@@ -83,6 +83,9 @@ color:black;
 	background:#6dcb94;
 	background:hsl(158,58%,52%);
 }
+.panel-gray {
+	background:#efefef;
+}
 .panel-orange {
 	background:#ec8200;
 	background:hsl(28,100%,52%);
