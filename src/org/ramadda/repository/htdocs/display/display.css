@@ -1460,11 +1460,12 @@ text-align:center;
 }
 
 .display-blocks {
-    line-height: 1px;
+    line-height: 0px;
 }
 
 .display-block {
-background:gray;
+background:#efefef;
+background:#aaa;
 width: 8px;
 height:8px;
 display: inline-block;

@@ -1472,11 +1472,14 @@ public class WikiUtil {
                         ? toks.get(1)
                         : "");
 		String name = (String)props.get("name");
+		String style = (String)props.get("style");
 		String color = (String)props.get("color");
 		String extra = "";
 		String clazz = "panel ";
 		if(name!=null)
 		    extra += " data-section-name=\"" + name +"\"  ";
+		if(style!=null)
+		    extra += HtmlUtils.style(style);
  		if(!inScroll) clazz+= " panel-first ";
 		if(color!=null) clazz+= " panel-" + color +" ";
 		buff.append("<section class=\"" + clazz +"\" " + extra +">\n");

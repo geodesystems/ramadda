@@ -706,15 +706,23 @@ function RamaddaBlocksDisplay(displayManager, id, properties) {
 		    this.footers.push("");
 		while(this.headers.length< this.counts.length)
 		    this.headers.push("");
-		this.step = 0;
-		this.showBlocks();
+		this.showBlocks(true);
+		HtmlUtils.callWhenScrolled(this.getDomId(ID_DISPLAY_CONTENTS),()=>{
+			if(!this.displayedBlocks) {
+			    this.displayedBlocks = true;
+			    this.showBlocks(false);
+			}
+		    },500);
+
 	    },
-	    showBlocks: function() {
+	    showBlocks: function(initial, step) {
+		if(!Utils.isDefined(step)) {
+		    if(initial)step = this.counts.length;
+		    else step = 0;
+		}
 		var contents = "";
-		if(this.step>this.counts.length) this.step = 0;
 		contents += HtmlUtils.div(["class","display-block-header"],this.getProperty("header",""));
 		contents += HtmlUtils.openDiv(["class","display-blocks"]);
-		var limit = this.step<this.counts.length-1?this.counts[this.step]:0;
 		var tmp =this.getProperty("colors","red,blue,gray,green",true); 
 		var ct = (typeof tmp) =="string"?tmp.split(","):tmp;
 		var footer ="";
@@ -723,10 +731,18 @@ function RamaddaBlocksDisplay(displayManager, id, properties) {
 		}
 		var multiplier = parseFloat(this.getProperty("multiplier","1",true));
 		var dim=this.getProperty("blockDimensions","8",true);
+		var labelStyle = this.getProperty("labelStyle","", true);
 		for(var i=0;i<this.counts2.length;i++) {
-		    var style = "background:" + ct[i]+";" + "width:" + dim+"px;height:" + dim+"px;";
 		    var label = this.footers[i].replace("${count}",multiplier*this.counts[i]) ;
-		    footer += HtmlUtils.div(["class","display-block","style",style],"") +" " + label+"&nbsp;&nbsp;";
+		    var style =  "width:" + dim+"px;height:" + dim+"px;";
+		    if(!initial) {
+			if(i<step) {
+			    style += "background:" + ct[i]+";" ;
+			    footer += HtmlUtils.div(["class","display-block","style",style],"") +" " + HtmlUtils.span(["style",labelStyle], label)+"&nbsp;&nbsp;";
+			} else {
+			    footer += "&nbsp;&nbsp;";
+			}
+		    }
 		    var cnt = this.counts2[i];
 		    for(var j=0;j<this.counts2[i];j++) {
 			contents += HtmlUtils.div(["class","display-block","style",style,"title",label],"");
@@ -735,6 +751,9 @@ function RamaddaBlocksDisplay(displayManager, id, properties) {
 		contents += HtmlUtils.closeDiv();
 		contents += HtmlUtils.div(["class","display-block-footer"],footer);
 		this.writeHtml(ID_DISPLAY_CONTENTS, contents);
+		if(step < this.counts.length) {
+		    setTimeout(()=>{this.showBlocks(false, step+1)},1000);
+		}
 	    }
 	}
 	)
