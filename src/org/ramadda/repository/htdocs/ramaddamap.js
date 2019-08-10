@@ -22,6 +22,7 @@ var map_gray = "gray";
 var map_usfs_ownership = "usfs.ownership";
 var map_osm = "osm";
 var map_osm_toner = "osm.toner";
+var map_osm_toner_lite = "osm.toner.lite";
 var map_ol_openstreetmap = "ol.openstreetmap";
 
 // Microsoft maps - only work for -180 to 180
@@ -1444,6 +1445,7 @@ function initMapFunctions(theMap) {
                 map_usgs_imagery,
                 map_usgs_relief,
                 map_osm_toner,
+                map_osm_toner_lite,
                 map_watercolor,
                 map_weather,
                 map_white,
@@ -1483,6 +1485,9 @@ function initMapFunctions(theMap) {
             } else if (mapLayer == map_osm_toner) {
                 urls = ["http://a.tile.stamen.com/toner/${z}/${x}/${y}.png"];
                 newLayer = new OpenLayers.Layer.OSM("OSM-Toner", urls);
+            } else if (mapLayer == map_osm_toner_lite) {
+                urls = ["http://a.tile.stamen.com/toner-lite/${z}/${x}/${y}.png"];
+                newLayer = new OpenLayers.Layer.OSM("OSM-Toner Lite", urls);
             } else if (mapLayer == map_watercolor) {
                 urls = ["http://c.tile.stamen.com/watercolor/${z}/${x}/${y}.jpg"];
                 newLayer = new OpenLayers.Layer.OSM("Watercolor", urls);
