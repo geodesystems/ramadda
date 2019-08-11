@@ -1481,3 +1481,9 @@ text-align:center;
 margin-bottom:10px;
 text-align:center;
 }
+
+.display-frequency-table {
+  margin:5px;
+  vertical-align:top;
+   display:inline-block;
+}

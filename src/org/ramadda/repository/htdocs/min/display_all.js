@@ -14160,7 +14160,7 @@ function RamaddaFrequencyDisplay(displayManager, id, properties) {
 	    for (var col = 0; col < fields.length; col++) {
 		var f = fields[col];
 		var s = summary[f.getId()];
-		if(col>0) html+="<br>";
+		//		if(col>0) html+="<br>";
 		if(f.isNumeric) {
 		    var numBins = parseFloat(this.getProperty("numBins",10,true));
 		    s.bins = [];
@@ -14198,9 +14198,10 @@ function RamaddaFrequencyDisplay(displayManager, id, properties) {
 		    }
 		}
 
-		html += HtmlUtils.openTag("table", ["id",this.getDomId("summary"+col),"table-height","300","class", "stripe row-border nowrap ramadda-table"]);
+		html += HtmlUtils.openTag("div", ["class","display-frequency-table"]);
+		html += HtmlUtils.openTag("table", ["id",this.getDomId("summary"+col),"table-height",this.getProperty("tableHeight","300",true), "class", "stripe row-border nowrap ramadda-table"]);
 		html += HtmlUtils.openTag("thead", []);
-		html += HtmlUtils.tr([], HtmlUtils.th([], f.getLabel()) + HtmlUtils.th([], "Count"));
+		html += HtmlUtils.tr([], HtmlUtils.th([], f.getLabel()) + HtmlUtils.th(["align","right"], "Count"));
 		html += HtmlUtils.closeTag("thead");
 		html += HtmlUtils.openTag("tbody", []);
 		if(!f.isNumeric) {
@@ -14221,6 +14222,7 @@ HtmlUtils.td(["align", "right"], count)
 		}
 		html += HtmlUtils.closeTag("tbody");
 		html += HtmlUtils.closeTag("table");
+		html += HtmlUtils.closeTag("div");
 	    }
 	    this.writeHtml(ID_DISPLAY_CONTENTS, html);
 	    for (var col = 0; col < fields.length; col++) {
