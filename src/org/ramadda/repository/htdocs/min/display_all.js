@@ -2618,6 +2618,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 			if(enums == null) {
 			    var includeAll = this.getProperty(filterField.getId() +".includeAll",true);
 			    enums = includeAll?[["","All"]]:[];
+			    var enumValues = [];
 			    var seen = {};
 			    records.map(record=>{
 				    var value = this.getDataValues(record)[filterField.getIndex()];
@@ -2628,9 +2629,14 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 					    label=  label.substring(0,19)+"...";
 					}
 					var tuple = [value, label];
-					enums.push(tuple);
+					enumValues.push(tuple);
 				    }
 				});
+			    enumValues.sort((a,b)  =>{
+				    return a.get(1).localeString(b.get(1));
+				});
+			    for(var i=0;i<enumValues.length;i++)
+				enums.push(enumValues[i]);
 			}
                         widget = HtmlUtils.select("",["style",widgetStyle, "id",widgetId,"fieldId",filterField.getId()],enums,value);
 		    } else if(filterField.isNumeric) {
