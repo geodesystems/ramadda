@@ -101,6 +101,17 @@ color:white;
 	background:#e14456;
 	background:hsl(350,92%,59%);
 }
+.panel-gradient1 {
+	 background:linear-gradient(rgb(30,30,30), rgb(220, 220, 220));
+}
+.panel-gradient1 h1,.panel-gradient1 h2,.panel-gradient1 h3 {
+	color:white;
+}
+
+.panel-gradient2 h1,.panel-gradient2 h2,.panel-gradient2 h3 {
+	color:black;
+}
+
 .pagination {
 	position:fixed;
 	right:20px;
