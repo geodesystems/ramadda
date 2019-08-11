@@ -2633,7 +2633,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 				    }
 				});
 			    enumValues.sort((a,b)  =>{
-				    return a.get(1).localeString(b.get(1));
+				    return a[1].localeString(b[1]);
 				});
 			    for(var i=0;i<enumValues.length;i++)
 				enums.push(enumValues[i]);
