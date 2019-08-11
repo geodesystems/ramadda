@@ -14128,43 +14128,96 @@ function RamaddaFrequencyDisplay(displayManager, id, properties) {
                 var row = this.getDataValues(records[rowIdx]);
                 for (var col = 0; col < fields.length; col++) {
                     var f = fields[col];
+                    var value =  row[f.getIndex()];
 		    if(!Utils.isDefined(summary[f.getId()])) {
 			summary[f.getId()] = {
 			    counts:{},
-			    values:[]
+			    values:[],
+			    min:value,
+			    max:value,
+			    values:[],
+			    numbers:[],
 			}
 		    }
 		    var s = summary[f.getId()];
-                    var value =  row[f.getIndex()];
-		    if(!Utils.isDefined(s.counts[value])) {
-			var tuple = {value:value,count:0}
-			s.counts[value] = tuple;
-			s.values.push(tuple);
+		    if(f.isNumeric) {
+			s.numbers.push(value);
+			if(isNaN(s.max)) s.max = value;
+			else if(!isNaN(value))s.max = Math.max(value,s.max);
+			if(isNaN(s.min)) s.min = value;
+			else if(!isNaN(value))s.min = Math.min(value,s.min);
+		    } else {
+			if(!Utils.isDefined(s.counts[value])) {
+			    var tuple = {value:value,count:0}
+			    s.counts[value] = tuple;
+			    s.values.push(tuple);
+			}
+			s.counts[value].count++;
 		    }
-		    s.counts[value].count++;
-		    //                    line += " ";
-		    //                    line += row[f.getIndex()];
                 }
 	    }
 	    var html = "";
 	    for (var col = 0; col < fields.length; col++) {
 		var f = fields[col];
-		html += "<b>Field:</b> " + f.getLabel();
+		var s = summary[f.getId()];
+		if(col>0) html+="<br>";
+		if(f.isNumeric) {
+		    var numBins = parseFloat(this.getProperty("numBins",10,true));
+		    s.bins = [];
+		    var range = s.max-s.min;
+		    var binWidth = (s.max-s.min)/numBins;
+		    var label = "Not defined";
+		    s.bins.push(label);
+		    var tuple = {value:label,count:0}
+		    s.counts[label] = tuple;
+		    s.values.push(tuple);
+		    for(var i=0;i<numBins;i++) {
+			var label = (Utils.formatNumber(s.min+binWidth*i)) +" - " + Utils.formatNumber(s.min+binWidth*(i+1));
+			s.bins.push(label);
+			var tuple = {value:label,count:0}
+			s.counts[label] = tuple;
+			s.values.push(tuple);
+		    }
+		    for(var i=0;i<s.numbers.length;i++) {
+			var value = s.numbers[i];
+			var bin=0;
+			if(!isNaN(value)) {
+			    if(binWidth!=0) {
+				var perc = (value-s.min)/range;
+				bin = Math.round(perc/(1/numBins))+1;
+				if(bin>numBins) bin = numBins;
+			    }
+			}
+			var label = s.bins[bin]; 
+			if(!Utils.isDefined(s.counts[label])) {
+			    var tuple = {value:s.bins[bin],count:0}
+			    s.counts[label] = tuple;
+			    s.values.push(tuple);
+			}
+			s.counts[label].count++;
+		    }
+		}
+
 		html += HtmlUtils.openTag("table", ["id",this.getDomId("summary"+col),"table-height","300","class", "stripe row-border nowrap ramadda-table"]);
 		html += HtmlUtils.openTag("thead", []);
-		html += HtmlUtils.tr([], HtmlUtils.th([], "Count") + HtmlUtils.th([], "Value"));
+		html += HtmlUtils.tr([], HtmlUtils.th([], f.getLabel()) + HtmlUtils.th([], "Count"));
 		html += HtmlUtils.closeTag("thead");
 		html += HtmlUtils.openTag("tbody", []);
-		var s = summary[f.getId()];
+		if(!f.isNumeric) {
 		s.values.sort((a,b)=>{
 			if(a.count<b.count) return 1;
 			if(a.count>b.count) return -1;
 			return 0;
 		    });
+		}
 		for(var i=0;i<s.values.length;i++) {
 		    var value = s.values[i].value;
 		    var count = s.values[i].count;
-		    html += HtmlUtils.tr([], HtmlUtils.td(["align", "right"], count)+HtmlUtils.td([], value));
+		    if(count==0) continue;
+		    html += HtmlUtils.tr([], 
+HtmlUtils.td([], value) +
+HtmlUtils.td(["align", "right"], count)
+);
 		}
 		html += HtmlUtils.closeTag("tbody");
 		html += HtmlUtils.closeTag("table");
