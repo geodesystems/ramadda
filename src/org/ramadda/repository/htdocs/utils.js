@@ -1128,12 +1128,12 @@ var HtmlUtils = {
 	return false;
     },
     initOdometer: function(id,value, pause, immediate) {
-	if(immediate) {
-	    $('#' + id).html(value);
-	    return;
-	}
 	if(!Utils.isDefined(pause)) pause = 0;
 	$(document).ready(function(){
+		if(immediate) {
+		    $('#' + id).html(value);
+		    return;
+		}
 		setTimeout(function(){
 		if(HtmlUtils.elementScrolled('#' + id)) {
 		    setTimeout(function() {$('#' + id).html(value);},pause);
