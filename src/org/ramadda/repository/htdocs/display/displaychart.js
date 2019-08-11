@@ -1163,7 +1163,23 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
                     this.chartOptions.height = "100%";
                 }
                 //                console.log("draw:" +" " +JSON.stringify(this.chartOptions,null,3));
-                this.chart.draw(dataTable, this.chartOptions);
+		if(this.getProperty("animation",false,true)) {
+		    this.chartOptions.animation = {
+			startup: true,
+			duration:parseFloat(this.getProperty("animationDuration",1000,true)),
+			easing:this.getProperty("animationEasing","linear",true)
+		    };
+		    HtmlUtils.callWhenScrolled(this.getDomId(ID_CHART),()=>{
+			    if(!this.animationCalled) {
+				this.animationCalled = true;
+				this.chart.draw(dataTable, this.chartOptions);
+			    }
+			});
+		} else {
+		    this.chart.draw(dataTable, this.chartOptions);
+		}
+
+
                 var theDisplay = this;
                 google.visualization.events.addListener(this.chart, 'onmouseover', function(event) {
                     mapVar = theDisplay.getProperty("mapVar", null);
