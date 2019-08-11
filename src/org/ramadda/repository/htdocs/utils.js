@@ -1767,7 +1767,6 @@ var HtmlUtils = {
 	return html;
     },
     rangeInputInit: function(id) {
-	console.log(id +" " + $("#" + id).length);
 	$("#" + id ).slider({
 		min: 0,
 		max: 100,

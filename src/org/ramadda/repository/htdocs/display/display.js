@@ -2485,8 +2485,8 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 			    enumValues.sort((a,b)  =>{
 				    return a[1].localeCompare(b[1]);
 				});
-			    for(var i=0;i<enumValues.length;i++)
-				enums.push(enumValues[i]);
+			    for(var j=0;j<enumValues.length;j++)
+				enums.push(enumValues[j]);
 			}
                         widget = HtmlUtils.select("",["style",widgetStyle, "id",widgetId,"fieldId",filterField.getId()],enums,value);
 		    } else if(filterField.isNumeric) {
