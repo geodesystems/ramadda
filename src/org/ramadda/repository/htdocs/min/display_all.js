@@ -13153,6 +13153,7 @@ Copyright 2008-2019 Geode Systems LLC
 
 var DISPLAY_WORDCLOUD = "wordcloud";
 var DISPLAY_TEXTSTATS = "textstats";
+var DISPLAY_FREQUENCY = "frequency";
 var DISPLAY_TEXTANALYSIS = "textanalysis";
 var DISPLAY_TEXTRAW = "textraw";
 var DISPLAY_TEXT = "text";
@@ -13192,6 +13193,14 @@ addGlobalDisplayType({
     type: DISPLAY_TEXTSTATS,
     forUser: true,
     label: "Text Stats",
+    requiresData: true,
+    category: "Text"
+});
+
+addGlobalDisplayType({
+    type: DISPLAY_FREQUENCY,
+    forUser: true,
+    label: "Frequency",
     requiresData: true,
     category: "Text"
 });
@@ -14098,6 +14107,74 @@ function RamaddaTextstatsDisplay(displayManager, id, properties) {
                 });
         },
     });
+}
+
+
+
+function RamaddaFrequencyDisplay(displayManager, id, properties) {
+    let SUPER = new RamaddaBaseTextDisplay(displayManager, id, DISPLAY_FREQUENCY, properties);
+    RamaddaUtil.inherit(this, SUPER);
+    addRamaddaDisplay(this);
+    $.extend(this, {
+        updateUI: function() {
+            let records = this.filterData();
+	    if(!records) return;
+            var allFields = this.getData().getRecordFields();
+            var fields = this.getSelectedFields(allFields);
+            if (fields.length == 0)
+                fields = allFields;
+	    var summary={};
+            for (var rowIdx = 0; rowIdx < records.length; rowIdx++) {
+                var row = this.getDataValues(records[rowIdx]);
+                for (var col = 0; col < fields.length; col++) {
+                    var f = fields[col];
+		    if(!Utils.isDefined(summary[f.getId()])) {
+			summary[f.getId()] = {
+			    counts:{},
+			    values:[]
+			}
+		    }
+		    var s = summary[f.getId()];
+                    var value =  row[f.getIndex()];
+		    if(!Utils.isDefined(s.counts[value])) {
+			var tuple = {value:value,count:0}
+			s.counts[value] = tuple;
+			s.values.push(tuple);
+		    }
+		    s.counts[value].count++;
+		    //                    line += " ";
+		    //                    line += row[f.getIndex()];
+                }
+	    }
+	    var html = "";
+	    for (var col = 0; col < fields.length; col++) {
+		var f = fields[col];
+		html += "<b>Field:</b> " + f.getLabel();
+		html += HtmlUtils.openTag("table", ["id",this.getDomId("summary"+col),"table-height","300","class", "stripe row-border nowrap ramadda-table"]);
+		html += HtmlUtils.openTag("thead", []);
+		html += HtmlUtils.tr([], HtmlUtils.th([], "Count") + HtmlUtils.th([], "Value"));
+		html += HtmlUtils.closeTag("thead");
+		html += HtmlUtils.openTag("tbody", []);
+		var s = summary[f.getId()];
+		s.values.sort((a,b)=>{
+			if(a.count<b.count) return 1;
+			if(a.count>b.count) return -1;
+			return 0;
+		    });
+		for(var i=0;i<s.values.length;i++) {
+		    var value = s.values[i].value;
+		    var count = s.values[i].count;
+		    html += HtmlUtils.tr([], HtmlUtils.td(["align", "right"], count)+HtmlUtils.td([], value));
+		}
+		html += HtmlUtils.closeTag("tbody");
+		html += HtmlUtils.closeTag("table");
+	    }
+	    this.writeHtml(ID_DISPLAY_CONTENTS, html);
+	    for (var col = 0; col < fields.length; col++) {
+		HtmlUtils.formatTable("#" +this.getDomId("summary"+col),{});
+	    }
+	    }
+	});
 }
 
 function RamaddaTextanalysisDisplay(displayManager, id, properties) {
