@@ -19,9 +19,12 @@
 	color:black;
 	font-size:2em;
 }
-.panel p {
-	font-size: 4em;
+
+.panel h4 {
+	color:black;
+	font-size:1.5em;
 }
+
 .panel-inner {
 	position: relative;
 	height:100%;
