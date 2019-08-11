@@ -10,10 +10,12 @@
 	font-size:62.5%;
 	color:black;
 	font-size:6em;
+	text-align:center;
 }
 .panel h2 {
 	color:black;
 	font-size:4em;
+	text-align:center;
 }
 .panel h3 {
 	color:black;
@@ -137,7 +139,7 @@ color:white;
 .pagination a .hover-text {
 	position:absolute;
 	right:15px;
-	top:7px;
+	top:0px;
 	opacity:0;
 	-webkit-transition: opacity 0.5s ease;
 	transition: opacity 0.5s ease;
