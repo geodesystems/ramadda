@@ -3172,10 +3172,8 @@ public class Utils {
     public static void main(String[] args) throws Exception {
         if (true) {
             String s =
-                "hello\nthere\nhow\nare\nyou I am fine and you asdsad asd sd sd sd asd sadas\n\nasdsdsdas\n\nasdasdas ";
-            String s2 = XmlUtil.encodeBase64(s.getBytes("UTF-8"));
-            String s3 = new String(decodeBase64(s2));
-            System.err.println("s3:" + s3 + ":");
+                "hello\nPhone:asdsd\nhow\nare\nyou I am fine and you asdsad asd sd sd sd asd sadas\n\nasdsdsdas\n\nasdasdas ";
+	    //            System.err.println(
 
             return;
         }

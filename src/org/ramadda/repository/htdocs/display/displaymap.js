@@ -182,6 +182,8 @@ function RamaddaMapDisplay(displayManager, id, properties) {
                 params.mapLayers = [mapLayers];
             }
 
+	    params.linked = this.getProperty("linked", false);
+	    params.linkGroup = this.getProperty("linkGroup", null);
             this.map = this.getProperty("theMap", null);
             if (this.map) {
                 this.map.setMapDiv(this.getDomId(ID_MAP));

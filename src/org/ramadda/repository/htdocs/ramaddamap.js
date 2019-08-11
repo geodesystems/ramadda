@@ -115,10 +115,41 @@ function ramaddaMapCheckLayout() {
 }
 
 
-
+var cnt = 0;
+var ramaddaMapLastShareTime=0;
+var ramaddaMapLastShareMap = "";
+function ramaddaMapShareState(source, state) {
+    //We check the time since the last state change because the zoomTo is done in the event loop
+    //which can result in an infinite loop of state change calls
+    var time = new Date().getTime();
+    if(source.mapId!=ramaddaMapLastShareMap) {
+	if(time-ramaddaMapLastShareTime<2000) {
+	    return;
+	}
+    }
+    ramaddaMapLastShareTime = time;
+    ramaddaMapLastShareMap = source.mapId;
+    if(source.stateIsBeingSet) return;
+    var linkGroup = source.linkGroup;
+    if(!source.linked && !linkGroup) return;
+    var bounds = source.getBounds();
+    var baseLayer = source.map.baseLayer;
+    var zoom = source.map.getZoom();
+    //    console.log("changed:" + source.mapId +" " + bounds.left +" " +  source.map.getZoom() +" " +source.map.getScale());
+    for(var i=0;i<window.globalMapList.length;i++) {
+	var map = window.globalMapList[i];
+	if(map.stateIsBeingSet || (!map.linked && !map.linkGroup)) continue;
+	if(map.mapId==source.mapId) continue;
+	if(linkGroup && linkGroup != map.linkGroup) continue;
+	map.stateIsBeingSet = true;
+	map.setViewToBounds(bounds);
+	map.map.zoomTo(source.map.getZoom());
+	//	console.log("\tafter:" + map.mapId +" " +map.getBounds().left+ " " + map.map.getZoom() +" " +map.map.getScale());
+	map.stateIsBeingSet = false;
+    }
+}
 
 function RepositoryMap(mapId, params) {
-    ramaddaMapAdd(this);
     if (!params) params = {};
     //    console.log("params:" + JSON.stringify(params));
     this.mapId = mapId || "map";
@@ -278,9 +309,11 @@ function initMapFunctions(theMap) {
                     _this.baseLayerChanged();
                 });
                 _this.map.events.register("zoomend", "", function() {
+			//			console.log(_this.mapId +" zoomend");
                     _this.locationChanged();
                 });
                 _this.map.events.register("moveend", "", function() {
+			//			console.log(_this.mapId +" moveend");
                     _this.locationChanged();
                 });
             };
@@ -301,8 +334,11 @@ function initMapFunctions(theMap) {
                 this.addGeoJsonLayer(this.geojsonLayerName, url, false, null, null, null, null);
             }
         },
+        getBounds: function() {
+		return  this.transformProjBounds(this.map.getExtent());
+	},
         locationChanged: function() {
-            var latlon = this.transformProjBounds(this.map.getExtent());
+	    var latlon = this.getBounds();
 	    var bits = 100000;
 	    latlon.top = Math.round(latlon.top*bits)/bits;
 	    latlon.left = Math.round(latlon.left*bits)/bits;
@@ -319,6 +355,7 @@ function initMapFunctions(theMap) {
             } catch (e) {
                 console.log("err:" + e);
             }
+	    ramaddaMapShareState(this,"bounds");
         },
         baseLayerChanged: function() {
             var baseLayer = this.map.baseLayer;
@@ -336,6 +373,7 @@ function initMapFunctions(theMap) {
             } catch (e) {
                 console.log("err:" + e);
             }
+	    ramaddaMapShareState(this,"baseLayer");
         },
         setMapDiv: function(divid) {
             this.mapHidden = false;
@@ -489,6 +527,12 @@ function initMapFunctions(theMap) {
             }
             return layer;
         },
+	findLayer: function(id) {
+                for(var i=0;i<this.map.layers.length;i++) {
+		    if(this.map.layers[i].ramaddaId == id) return this.map.layers[i];
+		}
+		return null;
+	    },
         addLayer: function(layer) {
             if (this.map != null) {
                 this.map.addLayer(layer);
@@ -2822,8 +2866,7 @@ function initMapFunctions(theMap) {
         } else {
             this.getMap().zoomToExtent(projBounds);
         }
-        this.getMap().setCenter(projBounds.getCenterLonLat());
-
+	//        this.getMap().setCenter(projBounds.getCenterLonLat());
     }
 
     theMap.setCenter = function(latLonPoint) {

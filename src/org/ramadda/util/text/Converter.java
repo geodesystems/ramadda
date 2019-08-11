@@ -983,6 +983,62 @@ public abstract class Converter extends Processor {
     }
 
 
+    public static class ColumnExtracter extends Converter {
+
+	private int col;
+
+        /** _more_ */
+        private String pattern;
+
+        private String replace;
+
+        /** _more_ */
+        private String name;
+
+        /**
+         * _more_
+         *
+         * @param cols _more_
+         * @param pattern _more_
+         * @param value _more_
+         */
+        public ColumnExtracter(int col,  String pattern, String replace,
+                             String name) {
+	    this.col = col;
+	    this.pattern = pattern;
+	    this.replace = replace;
+	    this.name = name;
+        }
+
+        /**
+         * _more_
+         *
+         *
+         * @param info _more_
+         * @param row _more_
+         * @param line _more_
+         *
+         * @return _more_
+         */
+        @Override
+        public Row processRow(TextReader info, Row row, String line) {
+            //Don't process the first row
+            if (rowCnt++ == 0) {
+		row.add(name);
+		return row;
+            }
+	    String value = row.getString(col);
+	    String newValue  = StringUtil.findPattern(value,pattern);
+	    if(newValue == null) newValue = "";
+	    row.add(newValue);
+	    value = value.replaceAll(pattern,replace);
+	    row.set(col,value);
+            return row;
+        }
+
+    }
+
+
 
     /**
      * Class description

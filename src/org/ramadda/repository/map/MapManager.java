@@ -1267,6 +1267,11 @@ public class MapManager extends RepositoryManager implements WikiConstants {
             map.getMapProps().putAll(mapProps);
         }
         map.getMapProps().put("showSearch", "" + search);
+        map.getMapProps().put("linked", Utils.getProperty(props, "linked", "false"));
+	String linkGroup = Utils.getProperty(props, "linkGroup", (String)null);
+	if(linkGroup!=null) {
+	    map.getMapProps().put("linkGroup", HtmlUtils.quote(linkGroup));
+	}
         map.getMapProps().put("showLocationSearch", "" + showLocationSearch);
 
         Hashtable theProps = Utils.makeMap(PROP_DETAILED, "" + details,

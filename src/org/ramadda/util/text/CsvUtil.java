@@ -1232,6 +1232,7 @@ public class CsvUtil {
         new Cmd("-suffix", "<col #> <suffix>", "(add suffix to column)"),
         new Cmd("-change", "<col #s> <pattern> <substitution string>"),
         new Cmd("-changerow", "<row> <pattern> <substitution string>"),
+        new Cmd("-extract", "<col #> <pattern> <replace with> <New column name>","(extract text from column and make a new column)"),
         new Cmd("-formatdate",
                 "<col #s> <intial date format> <target date format>"),
         new Cmd("-map", "<col #> <new columns name> <value newvalue ...>",
@@ -2129,6 +2130,32 @@ public class CsvUtil {
                 info.getProcessor().addProcessor(
                     new Converter.ColumnChanger(
                         cols, pattern, args.get(++i)));
+
+                continue;
+            }
+
+
+            if (arg.equals("-extract")) {
+                if ( !ensureArg(args, i, 4)) {
+                    return false;
+                }
+		int col = new Integer(args.get(++i));
+		String pattern = args.get(++i);
+		String replace = args.get(++i);
+		String name = args.get(++i);
+                pattern =
+                    pattern.replaceAll("_leftparen_",
+                                       "\\\\(").replaceAll("_rightparen_",
+                                           "\\\\)");
+                pattern =
+                    pattern.replaceAll("_leftbracket_",
+                                       "\\\\[").replaceAll("_rightbracket_",
+                                           "\\\\]");
+                pattern = pattern.replaceAll("_dot_", "\\\\.");
+                pattern = pattern.replaceAll("_nl_", "\n");
+                info.getProcessor().addProcessor(
+                    new Converter.ColumnExtracter(
+						  col, pattern, replace, name));
 
                 continue;
             }
