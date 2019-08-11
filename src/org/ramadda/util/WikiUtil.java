@@ -1695,6 +1695,15 @@ public class WikiUtil {
                 continue;
             }
 
+            if (tline.startsWith(":h3")) {
+                List<String> toks = StringUtil.splitUpTo(tline, " ", 2);
+                buff.append(HtmlUtils.h3((toks.size() > 1)
+                                         ? toks.get(1)
+                                         : ""));
+
+                continue;
+            }
+
 
             if (tline.startsWith(":link")) {
                 List<String> toks  = StringUtil.splitUpTo(tline, " ", 3);

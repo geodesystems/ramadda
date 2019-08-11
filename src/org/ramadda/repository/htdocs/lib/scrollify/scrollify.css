@@ -104,6 +104,9 @@ color:white;
 .panel-gradient1 {
 	 background:linear-gradient(rgb(30,30,30), rgb(220, 220, 220));
 }
+.panel-gradient2 {
+	 background:linear-gradient(rgb(220, 220, 220),rgb(30,30,30));
+}
 .panel-gradient1 h1,.panel-gradient1 h2,.panel-gradient1 h3 {
 	color:white;
 }
