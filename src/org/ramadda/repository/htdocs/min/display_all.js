@@ -18870,6 +18870,8 @@ function RamaddaMapDisplay(displayManager, id, properties) {
             var dfltSegmentWidth = segmentWidth;
             var showPoints = this.getProperty("showPoints", true);
             var lineColor = this.getProperty("lineColor", "green");
+	    var pointIcon = this.getProperty("pointIcon");
+	    if(pointIcon) this.pointsAreMarkers = true;
             var colorBy = {
                 id: colorByAttr,
                 minValue: 0,
@@ -19061,7 +19063,10 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 
             if (this.points) {
                 for (var i = 0; i < this.points.length; i++) {
-                    this.map.removePoint(this.points[i]);
+		    if(this.pointsAreMarkers)
+			this.map.removeMarker(this.points[i]);
+		    else
+			this.map.removePoint(this.points[i]);
 		}
                 this.points = [];
             }
@@ -19229,8 +19234,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
                         var p2 = new OpenLayers.LonLat(lon2, lat2);
                         if (!Utils.isDefined(seen[p1])) {
                             seen[p1] = true;
-                            var point = this.map.addPoint("endpt-" + i, p1, pointProps, html);
-                            this.points.push(point);
+                            this.points.push(this.map.addPoint("endpt-" + i, p1, pointProps, html));
                         }
                         if (!Utils.isDefined(seen[p2])) {
                             seen[p2] = true;
@@ -19245,7 +19249,12 @@ function RamaddaMapDisplay(displayManager, id, properties) {
                     if (!Utils.isDefined(seen[point])) seen[point] = 0;
                     if (seen[point] > 500) continue;
                     seen[point]++;
-                    var mapPoint = this.map.addPoint("pt-" + i, point, props, html, dontAddPoint);
+		    var mapPoint;
+		    if(pointIcon) {
+			mapPoint = this.map.addMarker("pt-" + i, point, pointIcon, "pt-" + i,html);
+		    } else {
+			mapPoint = this.map.addPoint("pt-" + i, point, props, html, dontAddPoint);
+		    }
                     var date = pointRecord.getDate();
                     if (date) {
                         mapPoint.date = date.getTime();

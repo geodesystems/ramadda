@@ -2858,7 +2858,6 @@ function initMapFunctions(theMap) {
     theMap.getPopupText = function(text, marker) {
         if (text == null) return null;
         if (text.indexOf("base64:") == 0) {
-	    console.log(text);
             text = window.atob(text.substring(7));
             if (text.indexOf("{") == 0) {
                 props = JSON.parse(text);
@@ -2957,6 +2956,9 @@ function initMapFunctions(theMap) {
 
 
     theMap.addMarker = function(id, location, iconUrl, markerName, text, parentId, size, voffset, canSelect) {
+	if(Utils.isDefined(location.x)) {
+	    location = createLonLat(location.x,location.y);
+	}
         var marker = this.createMarker(id, location, iconUrl, markerName, text, parentId, size, voffset, canSelect);
         this.addMarkers([marker]);
         return marker;
