@@ -1515,6 +1515,8 @@ public class WikiUtil {
                 continue;
             }
 
+
+
             if (tline.startsWith("+frame")) {
                 List<String> toks = StringUtil.splitUpTo(tline, " ", 2);
                 Hashtable props = HtmlUtils.parseHtmlProperties((toks.size()
@@ -1540,9 +1542,20 @@ public class WikiUtil {
                 if (background != null) {
                     innerStyle += " background:" + background + ";";
                 }
+                String title = (String) props.get("title");
                 HtmlUtils.open(buff, "div",
                                HtmlUtils.cssClass(outerClazz)
                                + HtmlUtils.style(frameStyle));
+		if(title!=null) {
+		    String titleBackground  = (String) props.get("titleBackground");
+		    String titleColor  = (String) props.get("titleColor");
+		    String titleStyle = "";
+		    if(titleBackground!=null)
+			titleStyle+="background:" + titleBackground +";";
+		    if(titleColor!=null)
+			titleStyle+="color:" + titleColor +";";
+		    HtmlUtils.div(buff, title, HtmlUtils.clazz("ramadda-frame-title") + HtmlUtils.style(titleStyle));
+		}
                 HtmlUtils.open(buff, "div",
                                HtmlUtils.cssClass("ramadda-frame-inner")
                                + HtmlUtils.style(innerStyle));

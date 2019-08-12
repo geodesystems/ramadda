@@ -702,6 +702,7 @@ position:relative;
 .ramadda-frame-outer {
   background:#F2F0EE;
   padding:15px;
+  border-radius: 10px;
 }
 
 .ramadda-frame-inner {
@@ -709,10 +710,20 @@ position:relative;
   border:1px #ddd solid;
 }
 
+.ramadda-frame-title {
+   font-size:150%;
+   background:#12649F;
+   color:white;
+   padding:10px;
+   font-weight:normal;
+   letter-spacing: 0.8px;
+}
+
+
 
 .ramadda-frame-shadow {
-  -webkit-box-shadow: 5px 5px 5px rgba(0, 0, 0, 0.5);
-  box-shadow: 5px 5px 5px rgba(0, 0, 0, 0.5);
+  -webkit-box-shadow: 6px 6px 6px rgba(0, 0, 0, 0.3);
+  box-shadow: 6px 6px 6px rgba(0, 0, 0, 0.3);
   filter:progid:DXImageTransform.Microsoft.dropshadow(OffX=5, OffY=5, Color='gray');
   -ms-filter:"progid:DXImageTransform.Microsoft.dropshadow(OffX=5, OffY=5, Color='gray')";
 }
