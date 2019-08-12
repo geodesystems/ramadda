@@ -338,11 +338,11 @@ public class PageHandler extends RepositoryManager {
         Repository   repository   = getRepository();
         Entry        currentEntry = getSessionManager().getLastEntry(request);
         String       template     = null;
-        HtmlTemplate htmlTemplate;
+        HtmlTemplate htmlTemplate = getTemplate(request, currentEntry);
         if (request.isMobile() && !request.defined(ARG_TEMPLATE)) {
-            htmlTemplate = getMobileTemplate();
-        } else {
-            htmlTemplate = getTemplate(request, currentEntry);
+            if (!htmlTemplate.getTemplateProperty("mobile", false)) {
+              htmlTemplate = getMobileTemplate();
+            }
         }
         template = htmlTemplate.getTemplate();
         List<String> templateToks  = htmlTemplate.getToks();
@@ -1107,6 +1107,9 @@ public class PageHandler extends RepositoryManager {
                             if (Misc.equals(defaultId, template.getId())) {
                                 defaultTemplate = template;
                             }
+                        }
+                        if (template.getTemplateProperty("mobile", false)) {
+                                mobileTemplate = template;
                         }
                     }
                 } catch (Exception exc) {
