@@ -2562,6 +2562,8 @@ public abstract class Processor extends CsvOperator {
                                     new InputStreamReader(
                                         getInputStream(file)));
             TextReader reader = new TextReader(br);
+	    Hashtable<String,Row> map = new Hashtable<String,Row>();
+	    
             List<Row>  rows2  = new ArrayList<Row>();
             while (true) {
                 String line = reader.readLine();
@@ -2569,11 +2571,27 @@ public abstract class Processor extends CsvOperator {
                     break;
                 }
                 List<String> cols = Utils.tokenizeColumns(line, ",");
-                rows2.add(new Row(cols));
+		String key = "";
+		for(int i:keys1Indices) 
+		    key += cols.get(i);
+		map.put(key,new Row(cols));
             }
 
-
-
+            for (Row row : getRows()) {
+		String key = "";
+		for(int i:keys2Indices) {
+		    key += row.getString(i);
+		}
+		Row other = map.get(key);
+		if(other==null) {
+		    System.err.println("no join:" + row);
+		    continue;
+		}
+		for(int j: values1Indices) {
+		    row.add(other.get(j));
+		}
+		newRows.add(row);
+	    }
             return newRows;
         }
 

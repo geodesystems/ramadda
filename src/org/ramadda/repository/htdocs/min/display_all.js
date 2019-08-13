@@ -434,7 +434,6 @@ function DisplayThing(argId, argProperties) {
                     else if (doDerived == 1 && field.derived) continue;
                     var label = field.getLabel();
                     label = this.formatRecordLabel(label);
-
                     if (!showGeo) {
                         if (field.isFieldGeo()) {
                             continue;
@@ -450,7 +449,10 @@ function DisplayThing(argId, argProperties) {
                             if (Math.abs(value) < 1.5) decimals = 3;
                             value = number_format(value, decimals, '.', '');
                         }
-                    }
+                    } 
+		    if(field.getType() == "url") {
+			value = HtmlUtils.href(value,value);
+		    }
                     values += "<tr><td align=right><b>" + label + ":</b></td><td>" + value + field.getUnitSuffix() + "</td></tr>";
                 }
             }
