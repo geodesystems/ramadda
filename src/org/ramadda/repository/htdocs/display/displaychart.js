@@ -3305,9 +3305,9 @@ function RamaddaRankingDisplay(displayManager, id, properties) {
                 if (field.getId() == sortField.getId()) extra = " selected ";
                 menu += "<option value='" + field.getId() + "'  " + extra + " >" + field.getLabel() + "</option>\n";
             }
-            menu += "</select>";
+            menu += "</select>" ;
             if (this.getProperty("showRankingMenu", true)) {
-                this.jq(ID_TOP_LEFT).html(menu);
+                this.jq(ID_TOP_LEFT).html(HtmlUtils.div(["class","display-filterby"],menu));
             }
             var html = "";
             html += HtmlUtils.openTag("div", ["style", "max-height:100%;overflow-y:auto;"]);

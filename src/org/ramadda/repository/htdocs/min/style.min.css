@@ -847,12 +847,12 @@ textarea, input {
 /* jquery resets */
 .ui-widget {
     font-family: inherit;
-    font-size:12pt;
+/*    font-size:12pt;*/
 }
 
 
 .ui-widget select , .ui-widget .ui-widget {
-     font-size:12pt;
+/*     font-size:12pt;*/
 }
 
 .ui-button {
