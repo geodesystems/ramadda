@@ -838,9 +838,8 @@ position:relative;
 }
 
 textarea, input, select {
-      font-size: 12pt;
+/*      font-size: 12pt;*/
 }
-
 
 textarea, input {
   resize:both;
