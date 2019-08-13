@@ -54,7 +54,7 @@
         //Keep it from overflowing in ie6 & 7
 	//jeffmc: check the width as this out as it hides the bc in dialogs
 	var width = jQuery(_container).css("width");
-	if(width=="0px") width="500px";
+	if(width=="0px") width="700px";
 	jQuery(_container).find('ul').wrap('<div style="overflow:hidden; position:relative;  width: ' + width + ';"><div>');
         //Set an arbitrary width width to avoid float drop on the animation
         jQuery(_container).find('ul').width(5000);
