@@ -1767,7 +1767,7 @@ public class PageHandler extends RepositoryManager {
                                 boolean alignLeft) {
         StringBuilder sb = new StringBuilder();
         link = makePopupLink(link, menuContents, linkAttributes, makeClose,
-                             alignLeft, sb);
+                             alignLeft, sb,null);
 
         return link + sb;
     }
@@ -1786,12 +1786,12 @@ public class PageHandler extends RepositoryManager {
      */
     public String makePopupLink(String link, String menuContents,
                                 String linkAttributes, boolean makeClose,
-                                boolean alignLeft, Appendable popup) {
+                                boolean alignLeft, Appendable popup, String header) {
         try {
 
             String compId = "menu_" + HtmlUtils.blockCnt++;
             String linkId = "menulink_" + HtmlUtils.blockCnt++;
-            popup.append(makePopupDiv(menuContents, compId, makeClose));
+            popup.append(makePopupDiv(menuContents, compId, makeClose,header));
             String onClick =
                 HtmlUtils.onMouseClick(HtmlUtils.call("showPopup",
                     HtmlUtils.comma(new String[] { "event",
@@ -1881,7 +1881,7 @@ public class PageHandler extends RepositoryManager {
      * @return _more_
      */
     public String makePopupDiv(String contents, String compId,
-                               boolean makeClose) {
+                               boolean makeClose, String header) {
         StringBuilder menu = new StringBuilder();
         if (makeClose) {
             String cLink = HtmlUtils.jsLink(
@@ -1889,7 +1889,10 @@ public class PageHandler extends RepositoryManager {
                                getIconImage(
                                    ICON_CLOSE, "title", "Close", "class",
                                    "ramadda-popup-close"), "");
-            contents = cLink + HtmlUtils.br() + contents;
+	    if(header !=null) 
+		contents = HtmlUtils.table(HtmlUtils.row("<td width=5%>" + cLink+"</td><td>" + header +"</td>")) + contents;
+	    else 
+		contents = cLink  + HtmlUtils.br() + contents;
         }
 
         menu.append(HtmlUtils.div(contents,
@@ -2570,12 +2573,7 @@ public class PageHandler extends RepositoryManager {
         }
 
 
-        Entry     root      = request.getRootEntry();
         PageStyle pageStyle = request.getPageStyle(entry);
-
-
-        Entry parent = getEntryManager().findGroup(request,
-                           entry.getParentEntryId());
         OutputType   output       = OutputHandler.OUTPUT_HTML;
         int          length       = 0;
 
@@ -2601,21 +2599,11 @@ public class PageHandler extends RepositoryManager {
                                  HtmlUtils.cssClass(
                                      "ramadda-breadcrumbs-menu-button"));
         String menuLink = getPageHandler().makePopupLink(menuLinkImg, links,
-                              "", true, false, popup);
+							 "", true, false, popup,null);
 
-
-        List<Entry> parents  = new ArrayList<Entry>();
-        boolean     seenRoot = entry.getId().equals(root.getId());
         //crumbs
         //        parents.add(entry);
-
-        while ( !seenRoot && (parent != null)) {
-            seenRoot = parent.getId().equals(root.getId());
-            parents.add(parent);
-            parent = getEntryManager().findGroup(request,
-                    parent.getParentEntryId());
-        }
-
+	List<Entry> parents = getEntryManager().getParents(request, entry);
         List<String> titleList = new ArrayList();
         List<String> breadcrumbs = makeBreadcrumbList(request, parents,
                                        titleList);

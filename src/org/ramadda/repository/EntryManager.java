@@ -314,6 +314,36 @@ public class EntryManager extends RepositoryManager {
     /**
      * _more_
      *
+     * @param request _more_
+     * @param entry _more_
+     *
+     * @return _more_
+     *
+     * @throws Exception _more_
+     */
+    public List<Entry> getParents(Request request, Entry entry)
+            throws Exception {
+        Entry root = request.getRootEntry();
+        Entry parent = getEntryManager().findGroup(request,
+                           entry.getParentEntryId());
+        List<Entry> parents  = new ArrayList<Entry>();
+        boolean     seenRoot = entry.getId().equals(root.getId());
+        //crumbs
+        //        parents.add(entry);
+
+        while ( !seenRoot && (parent != null)) {
+            seenRoot = parent.getId().equals(root.getId());
+            parents.add(parent);
+            parent = getEntryManager().findGroup(request,
+                    parent.getParentEntryId());
+        }
+
+        return parents;
+    }
+
+    /**
+     * _more_
+     *
      * @param descendent _more_
      *
      * @return _more_

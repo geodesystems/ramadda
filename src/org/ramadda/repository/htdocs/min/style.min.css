@@ -715,8 +715,8 @@ position:relative;
    background:#12649F;
    color:white;
    padding:10px;
+   padding-bottom:2px;
    font-weight:normal;
-   letter-spacing: 0.8px;
 }
 
 
@@ -1569,6 +1569,7 @@ a.btn-primary:link, a.btn-primary  {
 
 .ramadda-popup {
    z-index: 1000;
+   font-size:12pt;
 }
 
 
@@ -2204,6 +2205,7 @@ a.ramadda-menuitem-link {
 }
 
 .ramadda-menu  { 
+  font-size: 12pt !important;;
    margin: 5px;
    background: #fff;
    border: 0px #ccc solid;
@@ -3797,5 +3799,6 @@ height:500px;
 
 i.fa {
    color:#aaa;
+   font-size:12pt;
 }
 

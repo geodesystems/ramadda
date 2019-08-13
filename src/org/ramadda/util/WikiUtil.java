@@ -1549,7 +1549,7 @@ public class WikiUtil {
 		if(title!=null) {
 		    String titleBackground  = (String) props.get("titleBackground");
 		    String titleColor  = (String) props.get("titleColor");
-		    String titleStyle = "";
+		    String titleStyle = Misc.getProperty(props,"titleStyle","");
 		    if(titleBackground!=null)
 			titleStyle+="background:" + titleBackground +";";
 		    if(titleColor!=null)
