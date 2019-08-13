@@ -5025,6 +5025,19 @@ ATTR_SHOWLINK, "true", ATTR_INCLUDEICON, "false") + ATTRS_LAYOUT),
                 textAreaId, "button_section.png", "Section",
                 "+section title={{name}}_newline__newline_", "-section",
                 "Section", "mw-editbutton-bold"));
+
+
+        tags.append(
+            addWikiEditButton(
+                textAreaId, "button_section.png", "Frame",
+		"+frame background=#fff frameSize=0 shadow title=\"{{name}}\"", 
+		"-frame",
+                "Section", "mw-editbutton-bold"));
+
+
+
+
+
         tags.append(
             addWikiEditButton(
                 textAreaId, "button_section.png", "Table",
