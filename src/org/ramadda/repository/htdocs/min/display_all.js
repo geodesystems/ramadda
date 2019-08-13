@@ -13649,7 +13649,7 @@ function RamaddaCardsDisplay(displayManager, id, properties) {
 			this.groupByHtml+= HtmlUtils.select("",["id",this.getDomId(ID_GROUPBY_FIELDS+i)],options,selected)+"&nbsp;";
 		    }
 		    this.groupByHtml+="&nbsp;";
-		    this.jq(ID_HEADER1).html(this.groupByHtml);
+		    this.jq(ID_HEADER1).html(HtmlUtils.div(["class","display-filterby"],this.groupByHtml));
 		}
 	    }
 
