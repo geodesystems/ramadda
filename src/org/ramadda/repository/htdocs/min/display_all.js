@@ -13735,11 +13735,13 @@ function RamaddaCardsDisplay(displayManager, id, properties) {
                 var img = null;
                 if(this.imageField) {
                     img = row[this.imageField.getIndex()];
+		    
                     if(this.onlyShowImages && !Utils.stringDefined(img)) continue;
                 } 
                 
                 var  imgAttrs= ["class","display-cards-popup","data-fancybox",this.getDomId("gallery"),"data-caption",caption];
-                if(Utils.stringDefined(img)) {
+		if(img) img = img.trim();
+                if(img!="") {
                     img =  HtmlUtils.href(img, HtmlUtils.image(img,["width",width]),imgAttrs)+label;
                     html = HtmlUtils.div(["class","display-cards-item", "title", tooltip, "style","margin:" + margin+"px;"], img);
                 } else {
