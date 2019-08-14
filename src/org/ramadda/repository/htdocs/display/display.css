@@ -40,6 +40,10 @@
   font-size:75% !important;
 }
 
+.display-fitlerby-label {
+    font-weight: bold;
+}
+
 .display-correlation {
   border-collapse:collapse; 
 }

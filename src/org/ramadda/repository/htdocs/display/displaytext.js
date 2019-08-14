@@ -440,7 +440,7 @@ function RamaddaCardsDisplay(displayManager, id, properties) {
 		    this.groupByFields.map(field=>{
 			    options.push([field.getId(),field.getLabel()]);
 			});
-		    this.groupByHtml =  " Group by: ";
+		    this.groupByHtml =  HtmlUtils.span(["class","display-fitlerby-label"], " Group by: ");
 		    for(var i=0;i<this.groupByMenus;i++) {
 			var selected = "";
 			if(i<this.initGrouping.length) {

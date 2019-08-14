@@ -2515,7 +2515,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
                     }
 		    var label =   this.getProperty(filterField.getId()+".filterLabel",filterField.getLabel());
 		    if(!hideFilterWidget)
-			widget = HtmlUtils.div(["style","display:inline-block;"], label + ": " + widget);
+			widget = HtmlUtils.div(["style","display:inline-block;"], HtmlUtils.span(["class","display-fitlerby-label"], label) + ": " + widget);
 		    //                    if(i==0) searchBar += "<br>Display: ";
                     searchBar+=widget +(hideFilterWidget?"":"&nbsp;&nbsp;");
                 }

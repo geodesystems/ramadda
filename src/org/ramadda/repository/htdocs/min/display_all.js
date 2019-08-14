@@ -2665,7 +2665,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
                     }
 		    var label =   this.getProperty(filterField.getId()+".filterLabel",filterField.getLabel());
 		    if(!hideFilterWidget)
-			widget = HtmlUtils.div(["style","display:inline-block;"], label + ": " + widget);
+			widget = HtmlUtils.div(["style","display:inline-block;"], HtmlUtils.span(["class","display-fitlerby-label"], label) + ": " + widget);
 		    //                    if(i==0) searchBar += "<br>Display: ";
                     searchBar+=widget +(hideFilterWidget?"":"&nbsp;&nbsp;");
                 }
@@ -13640,7 +13640,7 @@ function RamaddaCardsDisplay(displayManager, id, properties) {
 		    this.groupByFields.map(field=>{
 			    options.push([field.getId(),field.getLabel()]);
 			});
-		    this.groupByHtml =  " Group by: ";
+		    this.groupByHtml =  HtmlUtils.span(["class","display-fitlerby-label"], " Group by: ");
 		    for(var i=0;i<this.groupByMenus;i++) {
 			var selected = "";
 			if(i<this.initGrouping.length) {
