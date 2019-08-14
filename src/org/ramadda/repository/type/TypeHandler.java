@@ -4324,6 +4324,14 @@ public class TypeHandler extends RepositoryManager {
                     }
 
                     if (makeWidget) {
+                        String editId       =
+                            HtmlUtils.getUniqueId("editor_");
+                        StringBuilder tmpSB = new StringBuilder();
+                        addWikiEditor(request, entry, tmpSB, formInfo,
+                                      ARG_DESCRIPTION, desc, null, false,
+                                      EntryManager.MAX_DESCRIPTION_LENGTH,
+                                      editId);
+
                         sb.append(
                             formEntryTop(
                                 request, msgLabel(
@@ -4331,11 +4339,8 @@ public class TypeHandler extends RepositoryManager {
                                         entry, ARG_DESCRIPTION, "Description")), buttons
                                             + HtmlUtils.textArea(
                                                 ARG_DESCRIPTION, desc, rows, HtmlUtils.id(
-                                                    ARG_DESCRIPTION))));
+                                                    editId + "_textarea")) + tmpSB));
                     }
-
-
-
                 }
 
                 continue;
@@ -4683,26 +4688,59 @@ public class TypeHandler extends RepositoryManager {
                               FormInfo formInfo, String id, String text,
                               String label, boolean readOnly, int length)
             throws Exception {
+
+        addWikiEditor(request, entry, sb, formInfo, id, text, label,
+                      readOnly, length, null);
+    }
+
+
+    /**
+     * _more_
+     *
+     * @param request _more_
+     * @param entry _more_
+     * @param sb _more_
+     * @param formInfo _more_
+     * @param id _more_
+     * @param text _more_
+     * @param label _more_
+     * @param readOnly _more_
+     * @param length _more_
+     * @param editId _more_
+     *
+     * @throws Exception _more_
+     */
+    public void addWikiEditor(Request request, Entry entry, Appendable sb,
+                              FormInfo formInfo, String id, String text,
+                              String label, boolean readOnly, int length,
+                              String editId)
+            throws Exception {
         String editorId = id + "_editor";
         String sidebar  = "";
+        if (editId != null) {
+            HtmlUtils.open(sb, "div",
+                           HtmlUtils.attrs("style", "display:none;", "id",
+                                           editId + "_wiki"));
+        }
         if ( !readOnly) {
             sidebar = getWikiEditorSidebar(request, entry);
             String buttons =
                 getRepository().getWikiManager().makeWikiEditBar(request,
                     entry, editorId);
-            if (label != null) {
-                sb.append("<tr><td colspan=2>");
-                sb.append(HtmlUtils.b(msgLabel(label)));
-                sb.append(HtmlUtils.br());
+            if (editId == null) {
+                if (label != null) {
+                    sb.append("<tr><td colspan=2>");
+                    sb.append(HtmlUtils.b(msgLabel(label)));
+                    sb.append(HtmlUtils.br());
+                }
             }
             sb.append(buttons);
-	    //	    sb.append(HtmlUtils.script("HtmlUtils.initStickyToolbar('"  +editorId+"_toolbar');"));
+            //      sb.append(HtmlUtils.script("HtmlUtils.initStickyToolbar('"  +editorId+"_toolbar');"));
 
         }
         if ((length > 0) && (formInfo != null)) {
             formInfo.addMaxSizeValidation(label, id, length);
         }
-
         text = text.replaceAll("<", "&lt;").replaceAll(">", "&gt;");
         String textWidget = HtmlUtils.div(text,
                                           HtmlUtils.id(id + "_editor")
@@ -4735,6 +4773,12 @@ public class TypeHandler extends RepositoryManager {
                                       ? "null"
                                       : formInfo.getId()) + "','" + editorId
                                       + "','" + id + "');"));
+        if ( !readOnly && (editId != null)) {
+            HtmlUtils.close(sb, "div");
+            sb.append(HtmlUtils.script("HtmlUtils.initWikiEditor('" + editId
+                                       + "','" + editorId + "');"));
+        }
+
         if (label != null) {
             sb.append("</td></tr>");
         }
@@ -5865,6 +5909,7 @@ public class TypeHandler extends RepositoryManager {
                 //                System.err.println ("metadata:" +Clause.and(metadataAnds));
             }
         }
+
 
 
         String[] textArgs = { ARG_NAME, ARG_DESCRIPTION };

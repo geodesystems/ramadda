@@ -1184,10 +1184,12 @@ var HtmlUtils = {
         return info.editor;
     },
     handleAceEditorSubmit: function() {
+	console.log("ace submit");
         if (!this.aceEditors) return;
         for (a in this.aceEditors) {
             var info = this.aceEditors[a];
-            $("#" + info.hidden).val(info.editor.getValue());
+	    console.log($("#" + info.hidden).length);
+	    $("#" + info.hidden).val(info.editor.getValue());
         }
     },
     initAceEditor: function(formId, id, hidden, argOptions) {
@@ -1373,6 +1375,20 @@ var HtmlUtils = {
             return this.bootstrapClasses[cols];
         }
         return "col-md-1";
+    },
+    initWikiEditor(id,editorId) {
+	id = id.trim();
+	console.log($("#" + id+"_textarea").length);
+	$("#" + id+"_textarea").keyup(function() {
+		var val = $(this).val().trim();
+		if(val.match("^<wiki>")) {
+		    $("#" + id+"_textarea").css("display","none");
+		    $("#" + id+"_textarea").attr("name","dummyname");
+		    $("#" + id +"_wiki").css("display","block");
+		    var editor = HtmlUtils.getAceEditor(editorId);
+		    editor.setValue(val,7);
+		}
+	    });
     },
     pre: function(attrs, inner) {
         return this.tag("pre", attrs, inner);
