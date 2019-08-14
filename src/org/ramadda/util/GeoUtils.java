@@ -33,6 +33,7 @@ import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.Hashtable;
 import java.util.List;
+import java.util.Properties;
 import java.util.TimeZone;
 
 
@@ -370,11 +371,36 @@ public class GeoUtils {
             String googleKey, Bounds bounds) {
         try {
             return getLocationFromAddressInner(address, googleKey, bounds);
-
         } catch (Exception exc) {
+            exc.printStackTrace();
+
             throw new RuntimeException(exc);
         }
     }
+
+    /** _more_          */
+    private static Properties statesMap;
+
+    /** _more_          */
+    private static Hashtable<String, Place> citiesMap;
+
+    /** _more_          */
+    private static final String[] citySuffixes = new String[] { " city",
+            " town", " cdp", " village" };
+
+
+    /**
+     * _more_
+     *
+     * @param address _more_
+     * @param googleKey _more_
+     * @param bounds _more_
+     *
+     * @return _more_
+     *
+     * @throws Exception _more_
+     */
+    static int xcnt = 0;
 
     /**
      * _more_
@@ -405,7 +431,7 @@ public class GeoUtils {
         }
         boolean doCountry = false;
         if (address.toLowerCase().startsWith("country:")) {
-            address = address.substring("country:".length()).trim();
+            address   = address.substring("country:".length()).trim();
             doCountry = true;
         }
         boolean doState = false;
@@ -417,13 +443,15 @@ public class GeoUtils {
         boolean doZip = false;
         if (address.toLowerCase().startsWith("zip:")) {
             address = address.substring("zip:".length()).trim();
-            if(address.length()>5) address = address.substring(0,5);
+            if (address.length() > 5) {
+                address = address.substring(0, 5);
+            }
             doZip = true;
         }
         boolean doCity = false;
         if (address.toLowerCase().startsWith("city:")) {
             address = address.substring("city:".length()).trim();
-            doCity = true;
+            doCity  = true;
         }
         //        System.err.println ("address:" + address +" " + doZip);
 
@@ -433,51 +461,83 @@ public class GeoUtils {
 
 
         Place.Resource resource = null;
-        Place place = null;
-        if(doCountry) {
+        Place          place    = null;
+        if (doCountry) {
             resource = Place.getResource("countries");
         }
 
-        if(doState) {
+        if (doState) {
             resource = Place.getResource("states");
         }
 
-        if(doZip) {
+        if (doZip) {
             resource = Place.getResource("zipcodes");
         }
 
-        if(resource!=null) {
+        if (resource != null) {
             place = resource.getPlace(address);
-            if(place == null)
+            if (place == null) {
                 System.err.println("no place:" + address);
+            }
+
             return place;
         }
 
-        if(doCity) {
+        if (doCity) {
+            xcnt++;
+            //abbrev to name
+            if (statesMap == null) {
+                InputStream inputStream =
+                    IOUtil.getInputStream(
+                        "/org/ramadda/util/states.properties",
+                        GeoUtils.class);
+                Properties tmp = new Properties();
+                tmp.load(inputStream);
+                IOUtil.close(inputStream);
+                statesMap = tmp;
+            }
+            if (citiesMap == null) {
+                citiesMap = new Hashtable<String, Place>();
+                List<Place> places = Place.getPlaces("places");
+                for (Place place2 : places) {
+                    String abbrev   = place2.getLowerCaseSuffix();
+                    String longName = (String) statesMap.get(abbrev);
+                    String cityName = place2.getLowerCaseName();
+                    citiesMap.put(cityName + "," + abbrev, place2);
+                    if (longName != null) {
+                        citiesMap.put(cityName + ","
+                                      + longName.toLowerCase(), place2);
+                        //                      System.out.println(cityName+"," + longName.toLowerCase());
+                    }
+                    //              System.out.println(cityName+"," + abbrev);
+
+                }
+            }
+
             try {
-                List<String> toks = StringUtil.splitUpTo(address,",",2);
-                if(toks.size()>1) {
-                    String city = toks.get(0).toLowerCase().trim();
-                    String city1 = city +" city";
-                    String city2 = city +" town";
-                    String city3 = city +" cdp";
-                    String city4 = city +" village";
-                    String state = toks.get(1).toLowerCase().trim();
-                    List<Place> places = Place.getPlaces("places");
-                    for(Place place2: places) {
-                        if(Misc.equals(place2.getLowerCaseSuffix(),state)) {
-                            String name = place2.getLowerCaseName();
-                            if(name.equals(city) ||
-                               name.equals(city1) ||
-                               name.equals(city2) ||
-                               name.equals(city3) ||
-                               name.equals(city4)) {
+                List<String> toks = StringUtil.splitUpTo(address, ",", 2);
+                if (toks.size() > 1) {
+                    String city   = toks.get(0).toLowerCase().trim();
+                    String state  = ((toks.size() > 0)
+                                     ? toks.get(1)
+                                     : null);
+                    Place  place2 = null;
+                    if (state != null) {
+                        state  = state.toLowerCase();
+                        place2 = citiesMap.get(city + "," + state);
+                        if (place2 != null) {
+                            return place2;
+                        }
+                        for (String suffix : citySuffixes) {
+                            place2 = citiesMap.get(city + suffix + ","
+                                    + state);
+                            if (place2 != null) {
                                 return place2;
                             }
                         }
                     }
                 }
-            } catch(Exception exc) {
+            } catch (Exception exc) {
                 exc.printStackTrace();
             }
         }
@@ -545,8 +605,10 @@ public class GeoUtils {
             }
         }
 
-        if(address.length()==0 || address.equals(",")) return null;
-        System.err.println("looking for address:" + address);
+        if ((address.length() == 0) || address.equals(",")) {
+            return null;
+        }
+        //        System.err.println("looking for address:" + address);
 
 
         String latString      = null;
