@@ -3248,8 +3248,10 @@ function RamaddaCorrelationDisplay(displayManager, id, properties) {
 function RamaddaRankingDisplay(displayManager, id, properties) {
     var ID_TABLE = "table";
     $.extend(this, {
-        height: "500px;"
+	    height: "500px;",
+        sortAscending:false,
     });
+    if(properties.sortAscending) this.sortAscending = "true" == properties.sortAscending;
     let SUPER = new RamaddaFieldsDisplay(displayManager, id, DISPLAY_RANKING, properties);
     RamaddaUtil.inherit(this, SUPER);
     addRamaddaDisplay(this);
@@ -3306,9 +3308,20 @@ function RamaddaRankingDisplay(displayManager, id, properties) {
                 menu += "<option value='" + field.getId() + "'  " + extra + " >" + field.getLabel() + "</option>\n";
             }
             menu += "</select>" ;
+	    var top ="";
+	    top += HtmlUtils.span(["id",this.getDomId("sort")], HtmlUtils.getIconImage(this.sortAscending?"fa-sort-up":"fa-sort-down", ["style","cursor:pointer;","title","Change sort order"]));
             if (this.getProperty("showRankingMenu", true)) {
-                this.jq(ID_TOP_LEFT).html(HtmlUtils.div(["class","display-filterby"],menu));
+                top+= " " + HtmlUtils.div(["style","display:inline-block;", "class","display-filterby"],menu);
             }
+	    this.jq(ID_TOP_LEFT).html(top);
+	    this.jq("sort").click(()=>{
+		    this.sortAscending= !this.sortAscending;
+		    if(this.sortAscending) 
+			this.jq("sort").html(HtmlUtils.getIconImage("fa-sort-up", ["style","cursor:pointer;"]));
+		    else
+			this.jq("sort").html(HtmlUtils.getIconImage("fa-sort-down", ["style","cursor:pointer;"]));
+		    this.updateUI();
+		});
             var html = "";
             html += HtmlUtils.openTag("div", ["style", "max-height:100%;overflow-y:auto;"]);
             html += HtmlUtils.openTag("table", ["id", this.getDomId(ID_TABLE)]);
@@ -3325,8 +3338,9 @@ function RamaddaRankingDisplay(displayManager, id, properties) {
                 var t2 = this.getDataValues(b);
                 var v1 = t1[sortField.getIndex()];
                 var v2 = t2[sortField.getIndex()];
-                if (v1 < v2) return 1;
-                if (v1 > v2) return -1;
+		
+                if (v1 < v2) return this.sortAscending?-1:1;
+                if (v1 > v2) return this.sortAscending?1:-1;
                 return 0;
             });
 
