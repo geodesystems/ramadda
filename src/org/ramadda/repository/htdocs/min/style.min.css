@@ -719,6 +719,10 @@ position:relative;
    font-weight:normal;
 }
 
+.ramadda-frame-title a, .ramadda-frame-title a:hover  {
+   color:white;
+   text-decoration:none;
+}
 
 
 .ramadda-frame-shadow {

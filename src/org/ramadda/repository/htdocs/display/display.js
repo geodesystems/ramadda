@@ -1040,7 +1040,33 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
                 if (field.isNumeric && !field.isFieldGeo()) return [field];
             }
             return [];
-        },
+	    },
+	sortRecords: function(records, sortFields) {
+		if(!sortFields) {
+		    sortFields = this.getFieldsByIds(null, this.getProperty("sortFields", "", true));
+		}
+		
+		if(sortFields.length==0) return records;
+		records = Utils.cloneList(records);
+		var sortAscending = this.getProperty("sortAscending",true);
+
+		records.sort((a,b)=>{
+			var row1 = this.getDataValues(a);
+			var row2 = this.getDataValues(b);
+			var result = 0;
+			for(var i=0;i<sortFields.length;i++) {
+			    var sortField = sortFields[i];
+			    var v1 = row1[sortField.getIndex()];
+			    var v2 = row2[sortField.getIndex()];
+			    if(v1<v2) result = sortAscending?-1:-1;
+			    else if(v1>v2) result = sortAscending?1:-1;
+			    else result = 0;
+			    if(result!=0) break;
+			}
+			return result;
+		    });
+		return records;
+	    },
         getFieldById: function(fields, id) {
             if (!id) return null;
             if (!fields) {
@@ -2567,7 +2593,6 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 				    min.trigger("change");
 				}
 			    });
-			console.log(id);
 		    });
 
                 this.jq(ID_HEADER2).find("input, input:radio,select").change(function(){

@@ -11,6 +11,7 @@ var DISPLAY_TEXTRAW = "textraw";
 var DISPLAY_TEXT = "text";
 var DISPLAY_CARDS = "cards";
 var DISPLAY_BLOCKS = "blocks";
+var DISPLAY_TEMPLATE = "template";
 
 
 
@@ -29,6 +30,13 @@ addGlobalDisplayType({
     requiresData: true,
     forUser: true,
     category: CATEGORY_MISC
+});
+addGlobalDisplayType({
+    type: DISPLAY_TEMPLATE,
+    label: "Template",
+    requiresData: true,
+    forUser: true,
+    category: "Text"
 });
 
 
@@ -430,7 +438,6 @@ function RamaddaCardsDisplay(displayManager, id, properties) {
                     return;
                 }
             }
-            this.sortFields = this.getFieldsByIds(fields, this.getProperty("sortFields", "", true));
             var contents = "";
 
 	    if(!this.groupByHtml) {
@@ -465,27 +472,7 @@ function RamaddaCardsDisplay(displayManager, id, properties) {
             this.displaySearchResults(records,theFields);
          },
 	 displaySearchResults: function(records, fields) {
-            records = Utils.cloneList(records);
-            if(this.sortFields.length) {
-                var sortAscending = this.getProperty("sortAscending",true);
-                records.sort((a,b)=>{
-                        var row1 = this.getDataValues(a);
-                        var row2 = this.getDataValues(b);
-                        var result = 0;
-                        for(var i=0;i<this.sortFields.length;i++) {
-                            var sortField = this.sortFields[i];
-                            var v1 = row1[sortField.getIndex()];
-                            var v2 = row2[sortField.getIndex()];
-                            if(v1<v2) result = sortAscending?-1:-1;
-                            else if(v1>v2) result = sortAscending?1:-1;
-                            else result = 0;
-                            if(result!=0) break;
-                        }
-                        return result;
-                    });
-            }
-
-
+		records= this.sortRecords(records);
             var fontSize = this.getProperty("fontSize",null);
             var cardStyle = this.getProperty("cardStyle",null);
 
@@ -684,6 +671,169 @@ function RamaddaCardsDisplay(displayManager, id, properties) {
 }
 
 
+function RamaddaTemplateDisplay(displayManager, id, properties) {
+    if(!Utils.isDefined(properties.showTitle)) properties.showTitle=false;
+    if(!Utils.isDefined(properties.showMenu)) properties.showMenu=false;
+    let SUPER =  new RamaddaFieldsDisplay(displayManager, id, DISPLAY_TEMPLATE, properties);
+    RamaddaUtil.inherit(this,SUPER);
+    addRamaddaDisplay(this);
+    $.extend(this, {
+	    updateUI: function() {
+		var pointData = this.getData();
+		if (pointData == null) return;
+		var records = this.filterData();
+		if(!records) return;
+		records= this.sortRecords(records);
+		var fields = pointData.getRecordFields();
+		var template = this.getProperty("template","");
+		var select = this.getProperty("select","all");
+		var selected = [];
+		if(select == "max" || select=="min" || select=="=" || select=="<" || select == ">" ||
+		   select == "<=" || 	       select == "?>=" || select=="match") {
+		    var selectField = this.getProperty("selectField","");
+
+		    if(selectField)selectField  =this.getFieldById(fields, selectField);
+		    if(!selectField) {
+			this.writeHtml(ID_DISPLAY_CONTENTS, "No selectField specified");
+			return;
+		    }
+		    var selectValue = this.getProperty("selectValue","XXX");
+		    var selectValueNum = parseFloat(selectValue);
+		    var max =0; 
+		    var min = 0;
+		    var cnt = 0;
+		    var maxRow;
+		    var minRow;
+		    var equalsRow;
+		    records.map(r=>{
+			    r  =  this.getDataValues(r);
+			    var v =selectField.getValue(r);
+			    if(select == "match") {
+				if(v.match(selectValue)) {
+				    selected.push(r);
+				}
+				return;
+			    }
+			    if(select == "=") {
+				if(v == selectValue) {
+				    selected.push(r);
+				}
+				return;
+			    }
+			    if(isNaN(v)) return;
+
+
+			    if(select == "<") {
+				if(v < selectValueNum) {
+				    selected.push(r);
+				}
+				return;
+			    }
+			    if(select == ">") {
+				if(v > selectValueNum) {
+				    selected.push(r);
+				}
+				return;
+			    }
+			    if(select == ">=") {
+				if(v >= selectValueNum) {
+				    selected.push(r);
+				}
+				return;
+			    }
+			    if(select == "<=") {
+				if(v <= selectValueNum) {
+				    selected.push(r);
+				}
+				return;
+			    }
+			    if(cnt++ == 0) {
+				min  = v;
+				max = v;
+				minRow = r;
+				maxRow = r;
+				return;
+			    }
+			    if(v<min) {
+				min  = v;
+				minRow = r;
+			    }
+			    if(v > max) {
+				max =v;
+				maxRow = r;
+			    }
+			});
+		    if(select == "min") {
+			selected.push(minRow);
+		    } else 	if(select == "max") {
+			selected.push(maxRow);
+		    }
+		} else {
+		    selected = records;
+		}
+		var contents = "";
+		if(selected.length==0) {
+		    contents = this.getProperty("emptyMessage","Nothing found");
+		}
+		var headerTemplate = this.getProperty("headerTemplate","");
+		var footerTemplate = this.getProperty("footerTemplate","");
+		headerTemplate = headerTemplate.replace("${selectedCount}",selected.length);
+		headerTemplate = headerTemplate.replace("${totalCount}",records.length);
+		footerTemplate = footerTemplate.replace("${selectedCount}",selected.length);
+		footerTemplate = footerTemplate.replace("${totalCount}",records.length);
+		if(this.filterFields) {
+		    for(var filterIdx=0;filterIdx<this.filterFields.length;filterIdx++) {
+			var f = this.filterFields[filterIdx];
+			if(f.isNumeric) {
+			    var min = $("#" + this.getDomId("filterby_" + f.getId()+"_min")).val().trim();
+			    var max = $("#" + this.getDomId("filterby_" + f.getId()+"_max")).val().trim();
+			    headerTemplate = headerTemplate.replace("${filter_" + f.getId() +"_min}",min);
+			    headerTemplate = headerTemplate.replace("${filter_" + f.getId() +"_max}",max);
+			    footerTemplate = footerTemplate.replace("${filter_" + f.getId() +"_min}",min);
+			    footerTemplate = footerTemplate.replace("${filter_" + f.getId() +"_max}",max);
+			} else {
+			    var value = $("#" + this.getDomId("filterby_" + f.getId())).val().trim();
+			    headerTemplate = headerTemplate.replace("${filter_" + f.getId()+"}",value);
+			    footerTemplate = footerTemplate.replace("${filter_" + f.getId()+"}",value);
+			}
+		    }
+		}
+		if(selected.length>0) 
+		    contents+= headerTemplate;
+		for(var rowIdx=0;rowIdx<selected.length;rowIdx++) {
+		    var row = this.getDataValues(selected[rowIdx]);
+		    var s = template;
+		    s = s.replace("${selectCount}",selected.length);
+		    s = s.replace("${totalCount}",records.length);
+		    for (var col = 0; col < fields.length; col++) {
+			var f = fields[col];
+			var value = row[f.getIndex()];
+			if(f.getType()=="image") {
+			    if(value && value.trim().length>1) {
+				var attrs = [];
+				if(this.getProperty("imageWidth","")!="") {
+				    attrs.push("width");
+				    attrs.push(this.getProperty("imageWidth","")) ;
+				}
+				value = HtmlUtils.image(value, attrs);
+			    }
+			} else if(f.getType()=="url") {
+			    if(value && value.trim().length>1) {
+				value = HtmlUtils.href(value,value);
+			    }
+			}
+			s = s.replace("${" + f.getId() +"}", value);
+		    }
+		    contents+=s;
+		}
+		if(selected.length>0) 
+		    contents+= footerTemplate;
+		this.writeHtml(ID_DISPLAY_CONTENTS, contents);
+	    },
+		})}
+
+
+
 function RamaddaBlocksDisplay(displayManager, id, properties) {
     let SUPER =  new RamaddaFieldsDisplay(displayManager, id, DISPLAY_BLOCKS, properties);
     var ID_BLOCKS_HEADER = "blocks_header";
@@ -713,7 +863,6 @@ function RamaddaBlocksDisplay(displayManager, id, properties) {
 			total+= tmp;
 		    }
 		}
-
 
 		this.footers = this.getProperty("footers","",true).split(";");
 		this.headers = this.getProperty("headers","",true).split(";");

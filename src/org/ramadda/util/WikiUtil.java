@@ -1554,6 +1554,9 @@ public class WikiUtil {
 			titleStyle+="background:" + titleBackground +";";
 		    if(titleColor!=null)
 			titleStyle+="color:" + titleColor +";";
+		    //		    String url = getTitleUrl(false);
+		    //		    if(url!=null) 
+		    //			title = HtmlUtils.href(url, title);
 		    HtmlUtils.div(buff, title, HtmlUtils.clazz("ramadda-frame-title") + HtmlUtils.style(titleStyle));
 		}
                 HtmlUtils.open(buff, "div",
@@ -2190,7 +2193,6 @@ public class WikiUtil {
      */
     public String getTitle(String label, String style) {
         String url = getTitleUrl(true);
-
         return (url != null)
                ? HtmlUtils.href(url, label, (style == null)
                                             ? null

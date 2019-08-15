@@ -477,7 +477,7 @@ function RecordField(props) {
 
     RamaddaUtil.defineMembers(this, {
 	    toString: function() {
-		return this.getId();
+		return "Field:" + this.getId();
 	    },
         getIndex: function() {
             return this.index;
