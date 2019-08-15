@@ -540,7 +540,9 @@ function DisplayThing(argId, argProperties) {
                 return this.getDisplayManager().getProperty(key, dflt);
             }
             value = getGlobalDisplayProperty(key);
-            if (value) return value;
+            if (value) {
+		return value;
+	    }
             return dflt;
             },
     });
@@ -18724,80 +18726,101 @@ function RamaddaMapDisplay(displayManager, id, properties) {
             var features = this.vectorLayer.features.slice();
 	    var maxExtent = null;
             var circles = this.points;
+	    var doCount = this.getProperty("colorByCount",false);
+	    for (var j = 0; j < features.length; j++) {
+		var feature = features[j];
+		feature.pointCount = 0;
+		feature.circles = [];
+		feature.featureIndex = j;
+	    }
+	    var matchedFeatures = [];
+	    var seen = {};
+	    var maxCnt = -1;
+	    var minCnt = -1;
             for (var i = 0; i < circles.length; i++) {
                 var circle = circles[i];
                 if (circle.style && circle.style.display == "none") continue;
                 var center = circle.center;
-                var matchedFeature = null;
-                var index = -1;
-
-                for (var j = 0; j < features.length; j++) {
-                    var feature = features[j];
-                    var geometry = feature.geometry;
-                    if (!geometry) {
-                        break;
-                    }
-                    bounds = geometry.getBounds();
-                    if (!bounds.contains(center.x, center.y)) {
-                        continue;
-                    }
-                    if (geometry.components) {
-                        for (var sub = 0; sub < geometry.components.length; sub++) {
-                            comp = geometry.components[sub];
-                            bounds = comp.getBounds();
-                            if (!bounds.contains(center.x, center.y)) {
-                                continue;
-                            }
-                            if (comp.containsPoint && comp.containsPoint(center)) {
-                                matchedFeature = feature;
-				geometry = feature.geometry;
-				if (geometry) {
-				    if (maxExtent === null) {
-					maxExtent = new OpenLayers.Bounds();
-				    }
-				    maxExtent.extend(geometry.getBounds());
-				}
-                                index = j;
-                                break;
-                            }
-                        }
-                        if (matchedFeature)
-                            break;
-                        continue;
-                    }
-                    if (!geometry.containsPoint) {
-                        console.log("unknown geometry:" + geometry.CLASS_NAME);
-                        continue;
-                    }
-                    if (geometry.containsPoint(center)) {
-                        matchedFeature = feature;
-                        index = j;
-                        break;
-                    }
-                }
-
-                if (matchedFeature) {
-                    features.splice(index, 1);
-                    style = matchedFeature.style;
-                    if (!style) style = {
-                        "stylename": "from display"
-                    };
-                    $.extend(style, circle.style);
-                    matchedFeature.style = style;
-                    matchedFeature.popupText = circle.text;
-                    matchedFeature.dataIndex = i;
-                }
+		var tmp = {index:-1,maxExtent: maxExtent};
+                var matchedFeature = this.findContainingFeature(features, center,tmp);
+		if(!matchedFeature) continue;
+		maxExtent = tmp.maxExtent;
+		if(!seen[matchedFeature.featureIndex]) {
+		    seen[matchedFeature.featureIndex] = true;
+		    matchedFeatures.push(matchedFeature); 
+		}
+		matchedFeature.circles.push(circle);
+		if(doCount) {
+		    matchedFeature.pointCount++;
+		    maxCnt = maxCnt==-1?matchedFeature.pointCount:Math.max(maxCnt, matchedFeature.pointCount);
+		    minCnt = minCnt==-1?matchedFeature.pointCount:Math.min(minCnt, matchedFeature.pointCount);
+		} else {
+		    features.splice(tmp.index, 1);
+		}
             }
-            for (var i = 0; i < features.length; i++) {
-                var feature = features[i];
-                style = feature.style;
-                if (!style) style = {
-                    "stylename": "from display"
-                };
-                $.extend(style, {
-                    "display": "none"
-                });
-            }
+	    if(!doCount) {
+		for(var i=0;i<matchedFeatures.length;i++) {
+		    var matchedFeature = matchedFeatures[i];
+		    style = matchedFeature.style;
+		    if (!style) style = {
+			    "stylename": "from display"
+			};
+		    var circle = matchedFeature.circles[0];
+		    $.extend(style, circle.style);
+		    matchedFeature.style = style;
+		    matchedFeature.popupText = circle.text;
+		    matchedFeature.dataIndex = i;
+		}
+	    }
+
+	    if(doCount) {
+		//xxxxx
+		var colors = this.getColorTable(true);
+		if (colors == null) {
+		    colors = Utils.ColorTables.grayscale.colors;
+		}
+		var range = maxCnt-minCnt;
+		var prune = this.getProperty("pruneFeatures", "false",true);
+		var labelSuffix = this.getProperty("doCountLabel","points");
+		for (var j = 0; j < features.length; j++) {
+		    var feature = features[j];
+		    var percent = range==0?0:(feature.pointCount - minCnt) /range;
+                    var index = parseInt(percent * colors.length);
+                    if (index >= colors.length) index = colors.length - 1;
+                    else if (index < 0) index = 0;
+		    var color= colors[index];
+		    var style = feature.style;
+		    if (!style) style = {
+			    "stylename": "from display",
+			};
+		    $.extend(style,{
+			    fillColor: color,
+				"fillOpacity": 0.75,
+				"strokeWidth": 1,
+				});
+
+		    if(feature.pointCount==0) {
+			//TODO: what to do with no count features?
+			if(prune === true) {
+			    style.display = "none";
+			}
+		    }
+		    feature.style = style;
+		    feature.dataIndex = j;
+		    feature.popupText = HtmlUtils.div([],feature.pointCount +"&nbsp;" + labelSuffix);
+		}
+		this.displayColorTable(colors, ID_BOTTOM, minCnt,maxCnt,{});
+	    } else {
+		for (var i = 0; i < features.length; i++) {
+		    var feature = features[i];
+		    if (!style) style = {
+			    "stylename": "from display"
+			};
+		    $.extend(style, {
+			    "display": "none"
+				});
+		}	
+	    }
 
             /*
             if (("" + this.getProperty("pruneFeatures", "")) == "true") {
@@ -18814,6 +18837,54 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	    }
 
         },
+	findContainingFeature: function(features, center, info) {
+		var matchedFeature = null;
+                for (var j = 0; j < features.length; j++) {
+                    var feature = features[j];
+                    var geometry = feature.geometry;
+                    if (!geometry) {
+                        continue;
+                    }
+                    bounds = geometry.getBounds();
+                    if (!bounds.contains(center.x, center.y)) {
+                        continue;
+                    }
+                    if (geometry.components) {
+                        for (var sub = 0; sub < geometry.components.length; sub++) {
+                            comp = geometry.components[sub];
+                            bounds = comp.getBounds();
+                            if (!bounds.contains(center.x, center.y)) {
+                                continue;
+                            }
+                            if (comp.containsPoint && comp.containsPoint(center)) {
+                                matchedFeature = feature;
+				geometry = feature.geometry;
+				if (geometry) {
+				    if (info.maxExtent === null) {
+					info.maxExtent = new OpenLayers.Bounds();
+				    }
+				    info.maxExtent.extend(geometry.getBounds());
+				}
+                                info.index = j;
+                                break;
+                            }
+                        }
+                        if (matchedFeature)
+                            break;
+                        continue;
+                    }
+                    if (!geometry.containsPoint) {
+                        console.log("unknown geometry:" + geometry.CLASS_NAME);
+                        continue;
+                    }
+                    if (geometry.containsPoint(center)) {
+                        matchedFeature = feature;
+                        info.index = j;
+                        break;
+                    }
+		}
+		return matchedFeature;
+	    },
         needsData: function() {
             return true;
         },

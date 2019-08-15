@@ -390,7 +390,9 @@ function DisplayThing(argId, argProperties) {
                 return this.getDisplayManager().getProperty(key, dflt);
             }
             value = getGlobalDisplayProperty(key);
-            if (value) return value;
+            if (value) {
+		return value;
+	    }
             return dflt;
             },
     });

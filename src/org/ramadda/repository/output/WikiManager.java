@@ -6469,8 +6469,9 @@ ATTR_SHOWLINK, "true", ATTR_INCLUDEICON, "false") + ATTRS_LAYOUT),
                         }
                     }
                     if (Misc.equals(metadata.getAttr2(), "true")) {
-                        Utils.add(propList, "displayAsMap", "true",
-                                  "pruneFeatures", "true");
+                        Utils.add(propList, "displayAsMap", "true");
+			if(props.get("pruneFeatures")==null)
+			    Utils.add(propList,  "pruneFeatures", "true");
                     }
 
                     if (kmlIds != null) {
