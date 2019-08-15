@@ -258,11 +258,12 @@ public abstract class CDODataService extends Service {
                           + stat + "_" + startYear + "-" + endYear + ".nc";
         File statFile = new File(IOUtil.joinDir(dpi.getProcessDir(),
                                                 statName));
+        boolean isMonthly = getFrequency(request, mean).equals(CDOOutputHandler.FREQUENCY_MONTHLY);
         if ( !statFile.exists()) {  // make the file
             List<String> commands = initCDOService();
             boolean      spanYear = doMonthsSpanYearEnd(request, mean);
             if ( !spanYear) {
-                String statCmd = "-ymonmean";
+                String statCmd = isMonthly ? "-ymonmean" : "-ydaymean";
                 if (stat.equals("sprd") || stat.equals("smegma")) {
                     statCmd = "-yearmean";
                 }
@@ -273,7 +274,11 @@ public abstract class CDODataService extends Service {
                 int endMonth = request.get(CDOOutputHandler.ARG_CDO_ENDMONTH,
                                            startMonth);
                 int totalMonths = ((12 - startMonth) + 1) + endMonth;
-                commands.add("-timselmean," + totalMonths);
+                if (isMonthly) {
+                    commands.add("-timselmean," + totalMonths);
+                } else {
+                    commands.add("-ydaymean");
+                }
             }
             if ( !spanYear) {
                 String selyears =
@@ -834,9 +839,26 @@ public abstract class CDODataService extends Service {
     protected static boolean doMonthsSpanYearEnd(Request request,
             Entry oneOfThem)
             throws Exception {
-        if (request.defined(CDOOutputHandler.ARG_CDO_MONTHS)
+        return doMonthsSpanYearEnd(request, oneOfThem, 0);
+    }
+    
+    /**
+     * Do the months span the year end (e.g. DJF)
+     *
+     * @param request    the request
+     * @param oneOfThem  a sample file
+     *
+     * @return  true if they do
+     *
+     * @throws Exception  problem reading the data
+     */
+    protected static boolean doMonthsSpanYearEnd(Request request,
+            Entry oneOfThem, int opNum)
+            throws Exception {
+        String opStr = getOpArgString(opNum);
+        if (request.defined(CDOOutputHandler.ARG_CDO_MONTHS+opStr)
                 && request.getString(
-                    CDOOutputHandler.ARG_CDO_MONTHS).equalsIgnoreCase(
+                    CDOOutputHandler.ARG_CDO_MONTHS+opStr).equalsIgnoreCase(
                     "all")) {
             return false;
         }
@@ -846,15 +868,15 @@ public abstract class CDODataService extends Service {
         //    return false;
         //}
         if (request.defined(CDOOutputHandler.ARG_CDO_STARTMONTH)
-                || request.defined(CDOOutputHandler.ARG_CDO_ENDMONTH)) {
+                || request.defined(CDOOutputHandler.ARG_CDO_ENDMONTH)
+                || request.defined(CDOOutputHandler.ARG_CDO_STARTMONTH+opStr)
+                || request.defined(CDOOutputHandler.ARG_CDO_ENDMONTH+opStr)) {
             int startMonth =
-                request.defined(CDOOutputHandler.ARG_CDO_STARTMONTH)
-                ? request.get(CDOOutputHandler.ARG_CDO_STARTMONTH, 1)
-                : 1;
-            int endMonth = request.defined(CDOOutputHandler.ARG_CDO_ENDMONTH)
-                           ? request.get(CDOOutputHandler.ARG_CDO_ENDMONTH,
-                                         startMonth)
-                           : startMonth;
+                request.get(CDOOutputHandler.ARG_CDO_STARTMONTH+opStr, 
+                        request.get(CDOOutputHandler.ARG_CDO_STARTMONTH,1));
+            int endMonth = 
+                request.get(CDOOutputHandler.ARG_CDO_ENDMONTH+opStr,
+                        request.get(CDOOutputHandler.ARG_CDO_ENDMONTH,startMonth));
             // if they requested all months, no need to do a select on month
             if ((startMonth == 1) && (endMonth == 12)) {
                 return false;
@@ -923,7 +945,6 @@ public abstract class CDODataService extends Service {
         }
     }
 
-
     /**
      * Adjust the input to handle operands with multiple files
      *
@@ -934,6 +955,20 @@ public abstract class CDODataService extends Service {
      * @throws Exception problem adjusting the input
      */
     protected ServiceInput adjustInput(Request request, ServiceInput input)
+            throws Exception {
+        return adjustInput(request, input, true);
+    }
+
+    /**
+     * Adjust the input to handle operands with multiple files
+     *
+     * @param request  the request
+     * @param input the old input
+     * @return a new input or the old
+     *
+     * @throws Exception problem adjusting the input
+     */
+    protected ServiceInput adjustInput(Request request, ServiceInput input, boolean adjustDaily)
             throws Exception {
         ServiceInput newInput = new ServiceInput(input.getProcessDir());
         List<ServiceOperand> newOps =
@@ -955,9 +990,14 @@ public abstract class CDODataService extends Service {
                     if (getFrequency(request,
                                      oneOfThem).equals(
                                          CDOOutputHandler.FREQUENCY_DAILY)) {
-                        aggEntries = extractDailyEntries(request, opEntries,
+                        if (adjustDaily) {
+                            aggEntries = extractDailyEntries(request, opEntries,
                                 opNum);
-                        id += "_" + opNum;
+                            id += "_" + opNum;
+                        } else {
+                            newOps.add(so);
+                            break;
+                        }
                     }
                     Entry agg = ModelUtil.aggregateEntriesByTime(request,
                                     aggEntries, id, input.getProcessDir());
@@ -1026,7 +1066,7 @@ public abstract class CDODataService extends Service {
         List<Integer> years       = new ArrayList<Integer>();
         String        opStr       = getOpArgString(opNum);
         Request       timeRequest = handleNamedTimePeriod(request, opStr);
-        boolean       spanYear    = doMonthsSpanYearEnd(request, null);
+        boolean       spanYear    = doMonthsSpanYearEnd(timeRequest, null);
         boolean haveYears =
             timeRequest.defined(CDOOutputHandler.ARG_CDO_YEARS + opStr);
         if (haveYears) {

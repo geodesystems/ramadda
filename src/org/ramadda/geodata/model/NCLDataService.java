@@ -221,7 +221,6 @@ public class NCLDataService extends Service {
      * Get the mask options for the form
      * @param request the request
      * @param sb the string buffer
-     * @return the form
      *
      * @throws Exception problems adding data mask widget
      */
@@ -229,27 +228,33 @@ public class NCLDataService extends Service {
             throws Exception {
         // Mask buttons
         StringBuilder mbuttons = new StringBuilder();
-        mbuttons.append(
-            HtmlUtils.radio(
-                ARG_NCL_MASKTYPE, "none",
-                RepositoryManager.getShouldButtonBeSelected(
-                    request, ARG_NCL_MASKTYPE, "none", true)));
+        mbuttons.append(HtmlUtils.radio(ARG_NCL_MASKTYPE,
+                                        "none",
+                                        RepositoryManager.getShouldButtonBeSelected(
+                                            request,
+                                            ARG_NCL_MASKTYPE,
+                                            "none",
+                                            true)));
         mbuttons.append(space1);
         mbuttons.append(Repository.msg("All"));
         mbuttons.append(space2);
-        mbuttons.append(
-            HtmlUtils.radio(
-                ARG_NCL_MASKTYPE, "ocean",
-                RepositoryManager.getShouldButtonBeSelected(
-                    request, ARG_NCL_MASKTYPE, "ocean", false)));
+        mbuttons.append(HtmlUtils.radio(ARG_NCL_MASKTYPE,
+                                        "ocean",
+                                        RepositoryManager.getShouldButtonBeSelected(
+                                            request,
+                                            ARG_NCL_MASKTYPE,
+                                            "ocean",
+                                            false)));
         mbuttons.append(space1);
         mbuttons.append(Repository.msg("Land only"));
         mbuttons.append(space2);
-        mbuttons.append(
-            HtmlUtils.radio(
-                ARG_NCL_MASKTYPE, "land",
-                RepositoryManager.getShouldButtonBeSelected(
-                    request, ARG_NCL_MASKTYPE, "land", false)));
+        mbuttons.append(HtmlUtils.radio(ARG_NCL_MASKTYPE,
+                                        "land",
+                                        RepositoryManager.getShouldButtonBeSelected(
+                                            request,
+                                            ARG_NCL_MASKTYPE,
+                                            "land",
+                                            false)));
         mbuttons.append(space1);
         mbuttons.append(Repository.msg("Ocean only"));
 
@@ -277,19 +282,23 @@ public class NCLDataService extends Service {
                 uRequest.remove(ARG_NCL_UNITS);
             }
             StringBuilder unitsSB = new StringBuilder();
-            unitsSB.append(
-                HtmlUtils.radio(
-                    ARG_NCL_UNITS, "degC",
-                    RepositoryManager.getShouldButtonBeSelected(
-                        uRequest, ARG_NCL_UNITS, "degC", true)));
+            unitsSB.append(HtmlUtils.radio(ARG_NCL_UNITS,
+                                           "degC",
+                                           RepositoryManager.getShouldButtonBeSelected(
+                                           uRequest,
+                                           ARG_NCL_UNITS,
+                                           "degC",
+                                           true)));
             unitsSB.append(space1);
             unitsSB.append(Repository.msg("Celsius"));
             unitsSB.append(space2);
-            unitsSB.append(
-                HtmlUtils.radio(
-                    ARG_NCL_UNITS, "K",
-                    RepositoryManager.getShouldButtonBeSelected(
-                        uRequest, ARG_NCL_UNITS, "K", false)));
+            unitsSB.append(HtmlUtils.radio(ARG_NCL_UNITS,
+                                           "K",
+                                           RepositoryManager.getShouldButtonBeSelected(
+                                           uRequest,
+                                           ARG_NCL_UNITS,
+                                           "K",
+                                           false)));
             unitsSB.append(space1);
             unitsSB.append(Repository.msg("Kelvin"));
 
@@ -302,9 +311,10 @@ public class NCLDataService extends Service {
             sb.append(HtmlUtils.hidden(ARG_NCL_UNITS, "mm/day"));
             // there are some precip units that are funky.  But we don't want
             // to test for compatibility with m/s
-        } else if (units.equals("Kg/m^2/s") || units.equals("mm/s")
+        } else if (units.equals("Kg/m^2/s")
+                   || units.equals("mm/s")
                    || units.equals("kg m**-2 s**-1")
-                   || units.equals("mm/day")   // in case it's a comparison
+                   || units.equals("mm/day")  // in case it's a comparison
                    || units.equals("m/day")) {
             sb.append(HtmlUtils.hidden(ARG_NCL_UNITS, "mm/day"));
         } else if (SimpleUnit.isCompatible(units, "kg m-1 s-2")

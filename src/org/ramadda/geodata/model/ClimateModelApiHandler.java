@@ -298,7 +298,8 @@ public class ClimateModelApiHandler extends RepositoryManager implements Request
         String processEntryId =
             getStorageManager().getEncodedProcessDirEntryId(processId);
 
-        String entryUrl = getStorageManager().getProcessDirEntryUrl(request, processId);
+        String entryUrl = getStorageManager().getProcessDirEntryUrl(request,
+                              processId);
 
         if (request.get("returnimage", false)) {
             request.setReturnFilename(processId + ".png");
@@ -308,10 +309,10 @@ public class ClimateModelApiHandler extends RepositoryManager implements Request
                 getStorageManager().getFileInputStream(lastFile.toString()),
                 "image/png");
         } else if (request.get("returnjson", false)) {
-            StringBuilder json            = new StringBuilder();
-            Entry         processDirEntry =
-            new Entry(processEntryId,
-                      getEntryManager().getProcessFileTypeHandler());
+            StringBuilder json = new StringBuilder();
+            Entry processDirEntry =
+                new Entry(processEntryId,
+                          getEntryManager().getProcessFileTypeHandler());
             getRepository().getJsonOutputHandler().makeJson(request,
                     Misc.newList(processDirEntry), json);
 
@@ -443,7 +444,8 @@ public class ClimateModelApiHandler extends RepositoryManager implements Request
         String processEntryId =
             getStorageManager().getEncodedProcessDirEntryId(processId);
 
-        String entryUrl = getStorageManager().getProcessDirEntryUrl(request, processId);
+        String entryUrl = getStorageManager().getProcessDirEntryUrl(request,
+                              processId);
         if (request.get("returnimage", false)) {
             request.setReturnFilename(processId + ".png");
 
@@ -452,10 +454,10 @@ public class ClimateModelApiHandler extends RepositoryManager implements Request
                 getStorageManager().getFileInputStream(lastFile.toString()),
                 "image/png");
         } else if (request.get("returnjson", false)) {
-            StringBuilder json            = new StringBuilder();
-            Entry         processDirEntry =
-            new Entry(processEntryId,
-                      getEntryManager().getProcessFileTypeHandler());
+            StringBuilder json = new StringBuilder();
+            Entry processDirEntry =
+                new Entry(processEntryId,
+                          getEntryManager().getProcessFileTypeHandler());
             getRepository().getJsonOutputHandler().makeJson(request,
                     Misc.newList(processDirEntry), json);
 
@@ -612,7 +614,8 @@ public class ClimateModelApiHandler extends RepositoryManager implements Request
                 extra.put(collection, tmp);
                 String selectArg = getCollectionSelectArg(collection);
                 Entry collectionEntry = getEntryManager().getEntry(request,
-                                            request.getString(selectArg, ""));
+                                            request.getString(selectArg,
+                                                    ""));
                 //                System.err.println("collectionEntry:" + collectionEntry+" select: " +
                 //                                    request.getString(selectArg,""));
 
@@ -908,19 +911,20 @@ public class ClimateModelApiHandler extends RepositoryManager implements Request
                 plotButton = HtmlUtils.submit(msg("Make Plot"), type,
                         HtmlUtils.id(formId + "_submit")
                         + makeButtonSubmitDialog(sb,
-                            msg("Making Plot, Please Wait") + "..."));
+                                msg("Making Plot, Please Wait") + "..."));
             } else if (type.equals(ARG_ACTION_MULTI_COMPARE)
                        || type.equals(ARG_ACTION_ENS_COMPARE)
                        || type.equals(ARG_ACTION_CORRELATION)) {
                 plotButton = HtmlUtils.submit(msg("Make Plot"), type,
                         HtmlUtils.id(formId + "_submit")
                         + makeButtonSubmitDialog(sb,
-                            msg("Making Plot, Please Wait") + "..."));
+                                msg("Making Plot, Please Wait") + "..."));
             } else {
                 plotButton = HtmlUtils.submit(msg("Make Time Series"), type,
                         HtmlUtils.id(formId + "_submit")
                         + makeButtonSubmitDialog(sb,
-                            msg("Making Time Series, Please Wait") + "..."));
+                                msg("Making Time Series, Please Wait")
+                                + "..."));
             }
         }
 
@@ -971,13 +975,15 @@ public class ClimateModelApiHandler extends RepositoryManager implements Request
             List<String> selectors = new ArrayList<String>();
             if (fixedCollection != null) {
                 dsb.append("\n");
-                dsb.append(HtmlUtils.hidden(arg, fixedCollection.getId(),
+                dsb.append(HtmlUtils.hidden(arg,
+                                            fixedCollection.getId(),
                                             HtmlUtils.id(id)));
             } else {
                 String collectionWidget = HtmlUtils.select(arg, tfos,
-                                              request.getString(arg, ""),
-                                              HtmlUtils.cssClass(selectClass)
-                                              + HtmlUtils.id(id));
+                                              request.getString(arg,
+                                                      ""), HtmlUtils.cssClass(
+                                                          selectClass) + HtmlUtils.id(
+                                                          id));
                 String select = "<label class=\"selector\" for=\"" + id
                                 + "\">" + msgLabel("Collection") + "</label>"
                                 + collectionWidget;
@@ -987,11 +993,11 @@ public class ClimateModelApiHandler extends RepositoryManager implements Request
             //Entry        entry   = collections.get(0);
             List<Column> columns = null;
             Entry collectionEntry = getEntryManager().getEntry(request,
-                                        request.getString(arg, ""));
+                                        request.getString(arg,
+                                                ""));
             if (collectionEntry != null) {
                 columns =
-                    ((CollectionTypeHandler) (collectionEntry
-                        .getTypeHandler())).getGranuleColumns();
+                    ((CollectionTypeHandler) (collectionEntry.getTypeHandler())).getGranuleColumns();
             } else {
                 ClimateCollectionTypeHandler typeHandler = getTypeHandler();
                 columns = typeHandler.getGranuleColumns();
@@ -1011,7 +1017,8 @@ public class ClimateModelApiHandler extends RepositoryManager implements Request
                 }
                 // don't show variable selector for subsequent collections when we have a fixed
                 // collection
-                if (request.defined(ARG_COLLECTION) && (collectionNumber > 1)
+                if (request.defined(ARG_COLLECTION)
+                        && (collectionNumber > 1)
                         && column.getName().equals("variable")
                         && (fieldIdx == (numColumns - 1))) {
                     //dsb.append(HtmlUtils.formEntry(msg(""),
@@ -1031,10 +1038,10 @@ public class ClimateModelApiHandler extends RepositoryManager implements Request
                             && column.getName().equals("model")) {
                         extraSelect = HtmlUtils.attr(HtmlUtils.ATTR_MULTIPLE,
                                 "true") + HtmlUtils.attr("size", "4");
-                    } else if ((type.equals(ARG_ACTION_ENS_COMPARE) || type
-                            .equals(ARG_ACTION_CORRELATION) || type
-                            .equals(ARG_ACTION_MULTI_TIMESERIES)) && column
-                                .getName().equals("ensemble")) {
+                    } else if ((type.equals(ARG_ACTION_ENS_COMPARE)
+                                || type.equals(ARG_ACTION_CORRELATION)
+                                || type.equals(ARG_ACTION_MULTI_TIMESERIES))
+                               && column.getName().equals("ensemble")) {
                         extraSelect = HtmlUtils.attr(
                             HtmlUtils.ATTR_MULTIPLE, "true") + HtmlUtils.attr(
                             "size", "4") + HtmlUtils.attr(
@@ -1044,9 +1051,9 @@ public class ClimateModelApiHandler extends RepositoryManager implements Request
                                            selectedValues,
                                            HtmlUtils.cssClass(selectClass)
                                            + HtmlUtils.attr("id",
-                                               getFieldSelectId(formId,
-                                                   collection,
-                                                   fieldIdx)) + extraSelect);
+                                                   getFieldSelectId(formId,
+                                                           collection,
+                                                           fieldIdx)) + extraSelect);
                     String select = "<label class=\"selector\" for=\""
                                     + getFieldSelectId(formId, collection,
                                         fieldIdx) + "\">"
@@ -1069,7 +1076,8 @@ public class ClimateModelApiHandler extends RepositoryManager implements Request
         // table of two datasets
         sb.append("<div class=\"row\">");
         if (datasets.size() > 1) {
-            sb.append("<div class=\"col-md-6 dataset-selector bottom-spacer\" >");
+            sb.append(
+                "<div class=\"col-md-6 dataset-selector bottom-spacer\" >");
         } else {
             sb.append("<div class=\"col-md-12 bottom-spacer\">");
         }
@@ -1077,19 +1085,17 @@ public class ClimateModelApiHandler extends RepositoryManager implements Request
                 || type.equals(ARG_ACTION_TIMESERIES)
                 || type.equals(ARG_ACTION_ENS_COMPARE)
                 || type.equals(ARG_ACTION_CORRELATION)) {
-            sb.append(
-                HtmlUtils.div(
-                    msg(datasetTitles.get(0)),
-                    HtmlUtils.cssClass("model-dataset_title")));
+            sb.append(HtmlUtils.div(msg(datasetTitles.get(0)),
+                                    HtmlUtils.cssClass(
+                                        "model-dataset_title")));
         }
         sb.append(HtmlUtils.div(datasets.get(0)));
         sb.append(HtmlUtils.close(HtmlUtils.TAG_DIV));  // left or only column
         if (datasets.size() > 1) {
             sb.append("<div class=\"col-md-6 text-vertical\">");
-            sb.append(
-                HtmlUtils.div(
-                    msg(datasetTitles.get(1)),
-                    HtmlUtils.cssClass("model-dataset_title")));
+            sb.append(HtmlUtils.div(msg(datasetTitles.get(1)),
+                                    HtmlUtils.cssClass(
+                                        "model-dataset_title")));
             sb.append(HtmlUtils.div(datasets.get(1)));
             sb.append(HtmlUtils.close(HtmlUtils.TAG_DIV));  // right column
         }
@@ -1097,18 +1103,18 @@ public class ClimateModelApiHandler extends RepositoryManager implements Request
 
         String searchButton = null;
         if ( !hasOperands) {
-          searchButton = HtmlUtils.submit("Select Data", ARG_ACTION_SEARCH,
-                                       HtmlUtils.id(formId + "_submit")
-                                       + makeButtonSubmitDialog(sb,
-                                           msg("Searching for data")
-                                           + "..."));
-        }else {
+            searchButton = HtmlUtils.submit("Select Data", ARG_ACTION_SEARCH,
+                                            HtmlUtils.id(formId + "_submit")
+                                            + makeButtonSubmitDialog(sb,
+                                                    msg("Searching for data")
+                                                    + "..."));
+        } else {
             searchButton = HtmlUtils.submit("Update Data Selection",
-                                       ARG_ACTION_SEARCH,
-                                       HtmlUtils.id(formId + "_submit")
-                                       + makeButtonSubmitDialog(sb,
-                                           msg("Searching for new data")
-                                           + "..."));
+                                            ARG_ACTION_SEARCH,
+                                            HtmlUtils.id(formId + "_submit")
+                                            + makeButtonSubmitDialog(sb,
+                                                    msg("Searching for new data")
+                                                    + "..."));
         }
         sb.append("<div class=\"row\">");
         sb.append("  <div class=\"col-md-12 text-center\">");
@@ -1116,10 +1122,11 @@ public class ClimateModelApiHandler extends RepositoryManager implements Request
         sb.append(HtmlUtils.close(HtmlUtils.TAG_DIV));  // button column
         sb.append(HtmlUtils.close(HtmlUtils.TAG_DIV));  // button row
         sb.append(HtmlUtils.close(HtmlUtils.TAG_DIV));  // data select titled_border_content
-        sb.append(HtmlUtils.close(HtmlUtils.TAG_DIV) + "<!-- titled_border -->");  // data select titled_border
-        
+        sb.append(HtmlUtils.close(HtmlUtils.TAG_DIV)
+                  + "<!-- titled_border -->");  // data select titled_border
+
         if (hasOperands) {  // add in the process boxes
-            
+
             List<String> processTabs   = new ArrayList<String>();
             List<String> processHelp   = new ArrayList<String>();
             List<String> processTitles = new ArrayList<String>();
@@ -1155,9 +1162,9 @@ public class ClimateModelApiHandler extends RepositoryManager implements Request
 
 
             for (int i = 0; i < processTitles.size(); i++) {
-                sb.append(
-                    HtmlUtils.open(
-                        "div", HtmlUtils.cssClass("titled_border")));
+                sb.append(HtmlUtils.open("div",
+                                         HtmlUtils.cssClass(
+                                             "titled_border")));
                 String titleString = msg(processTitles.get(i));
                 String help        = processHelp.get(i);
                 if (help != null) {
@@ -1177,21 +1184,25 @@ public class ClimateModelApiHandler extends RepositoryManager implements Request
                 }
                 */
                 sb.append(processTabs.get(i));
-                sb.append("</div>\n"); // content
+                sb.append("</div>\n");  // content
                 sb.append("</div> <!-- titled_border -->\n");
             }
-            
+
         }
-        
-        sb.append(HtmlUtils.close(HtmlUtils.TAG_DIV) + " <!-- col-md-5 -->\n");  // col-md-5 - left column
-       
+
+        sb.append(HtmlUtils.close(HtmlUtils.TAG_DIV)
+                  + " <!-- col-md-5 -->\n");  // col-md-5 - left column
+
         // Right column - output
-        sb.append(HtmlUtils.open(HtmlUtils.TAG_DIV, HtmlUtils.cssClass("col-md-7")));
+        sb.append(HtmlUtils.open(HtmlUtils.TAG_DIV,
+                                 HtmlUtils.cssClass("col-md-7")));
         sb.append(plotButton);
-        sb.append("<div id=\"" + formId + "_output\" class=\"padded\"></div>\n");
+        sb.append("<div id=\"" + formId
+                  + "_output\" class=\"padded\"></div>\n");
         sb.append("<div id=\"" + formId + "_url\"></div>\n");
-        sb.append(HtmlUtils.close(HtmlUtils.TAG_DIV) + " <!-- col-md-7 -->\n");  // col-md-7
-        
+        sb.append(HtmlUtils.close(HtmlUtils.TAG_DIV)
+                  + " <!-- col-md-7 -->\n");  // col-md-7
+
         sb.append(HtmlUtils.close(HtmlUtils.TAG_DIV));  // input/output row  col-md-5, col-md-7
         sb.append("\n</div>  <!--  ramadda section div -->\n");
 
@@ -1298,8 +1309,9 @@ public class ClimateModelApiHandler extends RepositoryManager implements Request
             HtmlUtils.select(arg, values, selectedValue,
                              HtmlUtils.cssClass("multi_select_widget")
                              + HtmlUtils.attr("id",
-                                 getFieldSelectId(formId, ARG_COLLECTION2,
-                                     0)) + extraSelect);
+                                     getFieldSelectId(formId,
+                                             ARG_COLLECTION2,
+                                             0)) + extraSelect);
         String select = "<label class=\"selector\" for=\""
                         + getFieldSelectId(formId, ARG_COLLECTION2, 0)
                         + "\">" + msgLabel("Climate Index") + "</label>"
@@ -1395,9 +1407,8 @@ public class ClimateModelApiHandler extends RepositoryManager implements Request
             String dbTableName = column.getTableName();
             if ( !seenTable.contains(dbTableName)) {
                 clauses.add(
-                    Clause.eq(
-                        typeHandler.getCollectionIdColumn(column),
-                        entry.getId()));
+                    Clause.eq(typeHandler.getCollectionIdColumn(column),
+                              entry.getId()));
                 clauses.add(Clause.join(Tables.ENTRIES.COL_ID,
                                         dbTableName + ".id"));
                 seenTable.add(dbTableName);
@@ -1524,7 +1535,8 @@ public class ClimateModelApiHandler extends RepositoryManager implements Request
 
         //        System.err.println("Request:" + request);
         Entry entry = getEntryManager().getEntry(request,
-                          request.getString("thecollection", ""));
+                          request.getString("thecollection",
+                                            ""));
         //TODO: this happens for the correlation collection - what should we do?
         if (entry == null) {
             return new Result("", new StringBuilder(), Json.MIMETYPE);
@@ -1576,11 +1588,12 @@ public class ClimateModelApiHandler extends RepositoryManager implements Request
                 List<Clause> orClauses = new ArrayList<Clause>(clauses);
                 orClauses.add(or);
                 //System.err.println("or: "+ orClauses);
-                values =
-                    new ArrayList<String>(((CollectionTypeHandler) entry
-                        .getTypeHandler())
-                            .getUniqueColumnValues(entry, myColumn,
-                                orClauses, false));
+                values = new ArrayList<String>(
+                    ((CollectionTypeHandler) entry.getTypeHandler()).getUniqueColumnValues(
+                        entry,
+                        myColumn,
+                        orClauses,
+                        false));
                 if (orNum == 0) {
                     uniqueOrs.addAll(values);
                 } else {
@@ -1593,20 +1606,22 @@ public class ClimateModelApiHandler extends RepositoryManager implements Request
             }
         } else {
             //System.err.println("no or: "+ clauses);
-            values =
-                new ArrayList<String>(((CollectionTypeHandler) entry
-                    .getTypeHandler())
-                        .getUniqueColumnValues(entry, myColumn, clauses,
-                            false));
+            values = new ArrayList<String>(
+                ((CollectionTypeHandler) entry.getTypeHandler()).getUniqueColumnValues(
+                    entry,
+                    myColumn,
+                    clauses,
+                    false));
         }
         StringBuilder sb = new StringBuilder();
         boolean showBlank =
-            !(((type.equals(ARG_ACTION_ENS_COMPARE) || type.equals(
-                ARG_ACTION_MULTI_TIMESERIES) || type.equals(
-                ARG_ACTION_CORRELATION)) && myColumn.getName().equals(
-                    "ensemble")) || (type.equals(
-                    ARG_ACTION_MULTI_COMPARE) && myColumn.getName().equals(
-                    "model")));
+            !(((type.equals(ARG_ACTION_ENS_COMPARE)
+                || type.equals(ARG_ACTION_MULTI_TIMESERIES)
+                || type.equals(
+                    ARG_ACTION_CORRELATION)) && myColumn.getName().equals(
+                        "ensemble"))
+              || (type.equals(ARG_ACTION_MULTI_COMPARE)
+                  && myColumn.getName().equals("model")));
         if (myColumn.isEnumeration()) {
             List<TwoFacedObject> tfos = typeHandler.getValueList(entry,
                                             values, myColumn);
@@ -1798,8 +1813,11 @@ public class ClimateModelApiHandler extends RepositoryManager implements Request
 
 
                 namedTimePeriods.add(new NamedTimePeriod(toks.get(0),
-                        toks.get(1), group, Integer.parseInt(toks.get(2)),
-                        Integer.parseInt(toks.get(3)), toks.get(4)));
+                        toks.get(1),
+                        group,
+                        Integer.parseInt(toks.get(2)),
+                        Integer.parseInt(toks.get(3)),
+                        toks.get(4)));
             }
 
         }

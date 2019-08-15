@@ -44,7 +44,7 @@ import ucar.unidata.geoloc.LatLonRect;
 import ucar.unidata.util.IOUtil;
 import ucar.unidata.util.Misc;
 import ucar.unidata.util.StringUtil;
-
+import ucar.unidata.util.TwoFacedObject;
 import ucar.visad.data.CalendarDateTime;
 
 import visad.DateTime;
@@ -178,6 +178,7 @@ public class CDOTimeSeriesComparison extends CDODataService {
             throws Exception {
 
         CDOOutputHandler.makeMonthsWidget(request, sb, null);
+        makeTimeSeriesMonthsWidget(request, sb, null);
         makeYearsWidget(request, sb, input);
         //TODO: add in a lag widget
         /*
@@ -190,6 +191,56 @@ public class CDOTimeSeriesComparison extends CDODataService {
                                 .space(2) + Repository.msg("(months)")));
         */
 
+    }
+
+    /**
+     * Add the time series month selection widget
+     *
+     * @param request  the Request
+     * @param sb       the StringBuilder to add to
+     * @param dates    the list of dates (just in case)
+     *
+     * @throws Exception problems appending
+     */
+    public static void makeTimeSeriesMonthsWidget(Request request, Appendable sb,
+                                        List<CalendarDate> dates)
+            throws Exception {
+        List<TwoFacedObject> TSMONTHS = new ArrayList<TwoFacedObject>(CDOOutputHandler.MONTHS);
+        String opStr = getOpArgString(1);
+        TSMONTHS.add(0, new TwoFacedObject("", ""));
+        sb.append(
+            HtmlUtils.formEntry(
+                msgLabel("TS Months"),
+                msgLabel("Start")
+                + HtmlUtils.select(
+                    CDOOutputHandler.ARG_CDO_STARTMONTH+"2", TSMONTHS,
+                    request.getString(CDOOutputHandler.ARG_CDO_STARTMONTH+opStr, null),
+                    HtmlUtils.title(
+                        "Select the starting timeseries month")) + HtmlUtils.space(2)
+                            + msgLabel("End")
+                            + HtmlUtils.select(
+                                CDOOutputHandler.ARG_CDO_ENDMONTH+opStr, TSMONTHS,
+                                request.getString(CDOOutputHandler.ARG_CDO_ENDMONTH+opStr, null),
+                                HtmlUtils.title("Select the ending timeseries month"))));
+        StringBuilder leadlagOpts = new StringBuilder();
+        leadlagOpts.append(
+                  HtmlUtils.radio(CDOOutputHandler.ARG_CDO_LEADLAG, "none", request.get(CDOOutputHandler.ARG_CDO_LEADLAG, true)));
+        leadlagOpts.append(HtmlUtils.space(1));
+        leadlagOpts.append(msg("None"));
+        leadlagOpts.append(HtmlUtils.space(2));
+        leadlagOpts.append(
+                  HtmlUtils.radio(CDOOutputHandler.ARG_CDO_LEADLAG, "lead", request.get(CDOOutputHandler.ARG_CDO_LEADLAG, false)));
+        leadlagOpts.append(HtmlUtils.space(1));
+        leadlagOpts.append(msg("Lead"));
+        leadlagOpts.append(HtmlUtils.space(2));
+        leadlagOpts.append(
+                  HtmlUtils.radio(CDOOutputHandler.ARG_CDO_LEADLAG, "lag", request.get(CDOOutputHandler.ARG_CDO_LEADLAG, false)));
+        leadlagOpts.append(HtmlUtils.space(1));
+        leadlagOpts.append(msg("Lag"));
+        sb.append(
+            HtmlUtils.formEntry(
+                msgLabel("Lead/Lag"),
+                msgLabel("Time Series")+leadlagOpts.toString()));
     }
 
     /**
@@ -541,14 +592,14 @@ public class CDOTimeSeriesComparison extends CDODataService {
                 tsEntries.add(oneOfThem);
             }
         }
-        request = adjustRequestDates(request, localInput);
+        Request tsrequest = adjustRequestDates(request, localInput, 1);
         for (Entry tsEntry : tsEntries) {
-            outputOperands.add(processTimeSeriesData(request,
+            outputOperands.add(processTimeSeriesData(tsrequest,
                     localInput,
                     tsEntry));
         }
 
-        final Request      myRequest = request;
+        final Request      myRequest = adjustRequestDates(request, localInput, 0);
         final ServiceInput myInput   = localInput;
         int                opNum     = 0;
         int numProcs = Runtime.getRuntime().availableProcessors();
@@ -1041,9 +1092,12 @@ public class CDOTimeSeriesComparison extends CDODataService {
         Date[] range = getCommonDateRange(request, input);
         // find the start & end month of the request
         int requestStartMonth =
-            request.get(CDOOutputHandler.ARG_CDO_STARTMONTH, 1);
-        int requestEndMonth = request.get(CDOOutputHandler.ARG_CDO_ENDMONTH,
-                                          1);
+            request.get(CDOOutputHandler.ARG_CDO_STARTMONTH+"2", 
+                    request.get(CDOOutputHandler.ARG_CDO_STARTMONTH, 1));
+        int requestEndMonth =
+            request.get(CDOOutputHandler.ARG_CDO_ENDMONTH+"2", 
+                    request.get(CDOOutputHandler.ARG_CDO_ENDMONTH, 1));
+        
         int firstDataYearMM =
             Integer.parseInt(new DateTime(range[0]).formattedString("yyyyMM",
                                                                     CalendarDateTime
@@ -1058,7 +1112,8 @@ public class CDOTimeSeriesComparison extends CDODataService {
         int           lastDataMonth = lastDataYearMM % 100;
         int           startYear     = 0;
         int           endYear       = 0;
-        boolean       spanYears     = doMonthsSpanYearEnd(request, tsEntry);
+        boolean       spanYears     = doMonthsSpanYearEnd(request, tsEntry, 1);
+        boolean       modelspanYears     = doMonthsSpanYearEnd(request, tsEntry, 0);
         List<Integer> years         = new ArrayList<Integer>();
         int           numMonths;
         if (spanYears) {
@@ -1098,6 +1153,9 @@ public class CDOTimeSeriesComparison extends CDODataService {
                         && (requestEndMonth > lastDataMonth)) {
                     endYear = lastDataYear - 1;
                 }
+                if (modelspanYears && request.getString(CDOOutputHandler.ARG_CDO_LEADLAG, "lead").equals("lead")) {
+                    endYear = endYear-1;
+                }
                 years = makeYears(startYear - 1, endYear - 1);
 
             }
@@ -1113,6 +1171,9 @@ public class CDOTimeSeriesComparison extends CDODataService {
             }
             if (startYear < firstDataYear) {
                 startYear = firstDataYear;
+            }
+            if (modelspanYears && request.getString(CDOOutputHandler.ARG_CDO_LEADLAG, "lead").equals("lead")) {
+                endYear = endYear-1;
             }
             years = makeYears(startYear, endYear);
 
@@ -1269,14 +1330,18 @@ public class CDOTimeSeriesComparison extends CDODataService {
      *
      * @throws Exception problems
      */
-    private Request adjustRequestDates(Request request, ServiceInput input)
+    private Request adjustRequestDates(Request request, ServiceInput input, int opNum)
             throws Exception {
+        String opStr = getOpArgString(opNum);
         Date[] range = getCommonDateRange(request, input);
         // find the start & end month of the request
         int requestStartMonth =
-            request.get(CDOOutputHandler.ARG_CDO_STARTMONTH, 1);
-        int requestEndMonth = request.get(CDOOutputHandler.ARG_CDO_ENDMONTH,
-                                          1);
+            request.get(CDOOutputHandler.ARG_CDO_STARTMONTH+opStr, 
+                    request.get(CDOOutputHandler.ARG_CDO_STARTMONTH, 1));
+        int requestEndMonth =
+            request.get(CDOOutputHandler.ARG_CDO_ENDMONTH+opStr, 
+                    request.get(CDOOutputHandler.ARG_CDO_ENDMONTH, 1));
+        
         int firstDataYearMM =
             Integer.parseInt(new DateTime(range[0]).formattedString("yyyyMM",
                                                                     CalendarDateTime
@@ -1291,7 +1356,7 @@ public class CDOTimeSeriesComparison extends CDODataService {
         int           lastDataMonth = lastDataYearMM % 100;
         int           startYear     = 0;
         int           endYear       = 0;
-        boolean       spanYears     = doMonthsSpanYearEnd(request, null);
+        boolean       spanYears     = doMonthsSpanYearEnd(request, null, opNum);
         List<Integer> years         = new ArrayList<Integer>();
         if (spanYears) {
             boolean haveYears =

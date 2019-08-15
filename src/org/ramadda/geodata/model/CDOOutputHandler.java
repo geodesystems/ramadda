@@ -17,14 +17,6 @@
 package org.ramadda.geodata.model;
 
 
-import java.io.File;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Date;
-import java.util.List;
-import java.util.SortedSet;
-import java.util.TreeSet;
-
 import org.ramadda.geodata.cdmdata.CdmDataOutputHandler;
 import org.ramadda.repository.DateHandler;
 import org.ramadda.repository.Entry;
@@ -43,6 +35,7 @@ import org.ramadda.service.ServiceOutput;
 import org.ramadda.service.ServiceProvider;
 import org.ramadda.util.HtmlUtils;
 import org.ramadda.util.TempDir;
+
 import org.w3c.dom.Element;
 
 import ucar.nc2.dataset.CoordinateAxis1D;
@@ -53,6 +46,7 @@ import ucar.nc2.time.Calendar;
 import ucar.nc2.time.CalendarDate;
 import ucar.nc2.time.CalendarDateFormatter;
 import ucar.nc2.units.SimpleUnit;
+
 import ucar.unidata.geoloc.LatLonPointImpl;
 import ucar.unidata.geoloc.LatLonRect;
 import ucar.unidata.util.HtmlUtil;
@@ -60,7 +54,18 @@ import ucar.unidata.util.IOUtil;
 import ucar.unidata.util.Misc;
 import ucar.unidata.util.StringUtil;
 import ucar.unidata.util.TwoFacedObject;
+
 import ucar.visad.data.CalendarDateTime;
+
+
+import java.io.File;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Date;
+import java.util.List;
+import java.util.SortedSet;
+import java.util.TreeSet;
 
 
 /**
@@ -79,8 +84,7 @@ public class CDOOutputHandler extends OutputHandler implements ServiceProvider {
                                                    + "operation";
 
     /** start day identifier */
-    public static final String ARG_CDO_STARTDAY = ARG_CDO_PREFIX
-                                                    + "startday";
+    public static final String ARG_CDO_STARTDAY = ARG_CDO_PREFIX + "startday";
 
     /** end day identifier */
     public static final String ARG_CDO_ENDDAY = ARG_CDO_PREFIX + "endday";
@@ -95,6 +99,9 @@ public class CDOOutputHandler extends OutputHandler implements ServiceProvider {
     /** start month lag identifier */
     public static final String ARG_CDO_STARTMONTH_LAG = ARG_CDO_PREFIX
                                                         + "startmonth_lag";
+
+    /** lead/lag identifier */
+    public static final String ARG_CDO_LEADLAG = ARG_CDO_PREFIX + "leadlag";
 
     /** months identifier */
     public static final String ARG_CDO_MONTHS = ARG_CDO_PREFIX + "months";
@@ -226,8 +233,9 @@ public class CDOOutputHandler extends OutputHandler implements ServiceProvider {
     public static final String PERIOD_DAY = "day";
 
     /** date formatter */
-    public static final CalendarDateFormatter dateFormatter  = new CalendarDateFormatter("yyyy-MM-dd'T'HH:mm:ss");
-    
+    public static final CalendarDateFormatter dateFormatter =
+        new CalendarDateFormatter("yyyy-MM-dd'T'HH:mm:ss");
+
     /** start year */
     int startYear = 1979;
 
@@ -245,17 +253,20 @@ public class CDOOutputHandler extends OutputHandler implements ServiceProvider {
     private List<TwoFacedObject> INFO_TYPES = Misc.toList(new Object[] {
                                                   new TwoFacedObject("Info",
                                                       OP_INFO),
-            new TwoFacedObject("Short Info", OP_SINFO),
-            new TwoFacedObject("Number of Years", OP_NYEAR), });
+                                                          new TwoFacedObject(
+                                                              "Short Info",
+                                                              OP_SINFO),
+                                                          new TwoFacedObject(
+                                                              "Number of Years",
+                                                              OP_NYEAR), });
 
     /** stat types */
     @SuppressWarnings("unchecked")
     public static final List<TwoFacedObject> STAT_TYPES =
         Misc.toList(new Object[] { new TwoFacedObject("Mean", STAT_MEAN),
-                                   new TwoFacedObject(
-                                       "Std Deviation",
-                                       STAT_STD), new TwoFacedObject(
-                                           "Maximum", STAT_MAX),
+                                   new TwoFacedObject("Std Deviation",
+                                       STAT_STD),
+                                   new TwoFacedObject("Maximum", STAT_MAX),
                                    new TwoFacedObject("Minimum", STAT_MIN),
                                    new TwoFacedObject("Anomaly",
                                        STAT_ANOM) });
@@ -273,11 +284,11 @@ public class CDOOutputHandler extends OutputHandler implements ServiceProvider {
         "January", "February", "March", "April", "May", "June", "July",
         "August", "September", "October", "November", "December"
     };
-    
+
     /** short month names */
     private static final String[] SHORT_MONTH_NAMES = {
-        "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul",
-        "Aug", "Sep", "Oct", "Nov", "Dec"
+        "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct",
+        "Nov", "Dec"
     };
 
 
@@ -288,8 +299,7 @@ public class CDOOutputHandler extends OutputHandler implements ServiceProvider {
 
     /** month day numbers */
     public static final int[] DAY_NUMBERS = {
-        1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 
-        11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 
+        1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20,
         21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31
     };
 
@@ -312,7 +322,9 @@ public class CDOOutputHandler extends OutputHandler implements ServiceProvider {
     /** spatial arguments */
     private static final String[] SPATIALARGS = new String[] {
                                                     ARG_CDO_AREA_NORTH,
-            ARG_CDO_AREA_WEST, ARG_CDO_AREA_SOUTH, ARG_CDO_AREA_EAST, };
+                                                            ARG_CDO_AREA_WEST,
+                                                            ARG_CDO_AREA_SOUTH,
+                                                            ARG_CDO_AREA_EAST, };
 
 
     /** the product directory */
@@ -419,7 +431,8 @@ public class CDOOutputHandler extends OutputHandler implements ServiceProvider {
             return;
         }
         Entry stateEntry = state.getEntry();
-        if ((stateEntry != null) && stateEntry.isFile()
+        if ((stateEntry != null)
+                && stateEntry.isFile()
                 && (stateEntry.getTypeHandler()
                     instanceof ClimateModelFileTypeHandler)) {
             links.add(makeLink(request, state.entry, OUTPUT_CDO));
@@ -568,8 +581,8 @@ public class CDOOutputHandler extends OutputHandler implements ServiceProvider {
         if (dataset != null) {
             llr = dataset.getBoundingBox();
         } else {
-            llr = new LatLonRect(new LatLonPointImpl(90.0, -180.0),
-                                 new LatLonPointImpl(-90.0, 180.0));
+            llr = new LatLonRect(new LatLonPointImpl(90.0,
+                    -180.0), new LatLonPointImpl(-90.0, 180.0));
         }
         addMapWidget(request, sb, llr);
         addPublishWidget(
@@ -588,18 +601,20 @@ public class CDOOutputHandler extends OutputHandler implements ServiceProvider {
      */
     public void addStatsWidget(Request request, Appendable sb)
             throws Exception {
-        sb.append(
-            HtmlUtils.formEntry(
-                msgLabel("Statistic"),
-                msgLabel("Period")
-                + HtmlUtils.select(
-                    ARG_CDO_PERIOD, PERIOD_TYPES,
-                    request.getString(
-                        ARG_CDO_PERIOD, null)) + HtmlUtils.space(3)
-                            + msgLabel("Type")
-                            + HtmlUtils.select(
-                                ARG_CDO_STAT, STAT_TYPES,
-                                request.getString(ARG_CDO_STAT, null))));
+        sb.append(HtmlUtils.formEntry(msgLabel("Statistic"),
+                                      msgLabel("Period")
+                                      + HtmlUtils.select(ARG_CDO_PERIOD,
+                                              PERIOD_TYPES,
+                                              request.getString(
+                                              ARG_CDO_PERIOD,
+                                                      null)) + HtmlUtils.space(
+                                                      3) + msgLabel("Type")
+                                                          + HtmlUtils.select(
+                                                              ARG_CDO_STAT,
+                                                                      STAT_TYPES,
+                                                                      request.getString(
+                                                                      ARG_CDO_STAT,
+                                                                              null))));
     }
 
     /**
@@ -670,7 +685,8 @@ public class CDOOutputHandler extends OutputHandler implements ServiceProvider {
                     levels.add(new TwoFacedObject(label,
                             String.valueOf(lev)));
                 }
-                varsb.append(HtmlUtils.select(levelArg, levels,
+                varsb.append(HtmlUtils.select(levelArg,
+                        levels,
                         request.getString(levelArg, null)));
                 varsb.append(HtmlUtils.space(2));
             } else {
@@ -698,12 +714,12 @@ public class CDOOutputHandler extends OutputHandler implements ServiceProvider {
      */
     private void addInfoWidget(Request request, Appendable sb)
             throws Exception {
-        sb.append(
-            HtmlUtils.formEntry(
-                msgLabel("Months"),
-                HtmlUtils.select(
-                    ARG_CDO_OPERATION, INFO_TYPES,
-                    request.getString(ARG_CDO_OPERATION, null))));
+        sb.append(HtmlUtils.formEntry(msgLabel("Months"),
+                                      HtmlUtils.select(ARG_CDO_OPERATION,
+                                              INFO_TYPES,
+                                              request.getString(
+                                              ARG_CDO_OPERATION,
+                                                      null))));
     }
 
     /**
@@ -742,12 +758,10 @@ public class CDOOutputHandler extends OutputHandler implements ServiceProvider {
             CalendarDate cd  = dates.get(0);
             Calendar     cal = cd.getCalendar();
             if (cal != null) {
-                sb.append(
-                    HtmlUtils.hidden(
-                        CdmDataOutputHandler.ARG_CALENDAR,
-                        request.getString(
-                            CdmDataOutputHandler.ARG_CALENDAR,
-                            cal.toString())));
+                sb.append(HtmlUtils.hidden(CdmDataOutputHandler.ARG_CALENDAR,
+                                           request.getString(
+                                           CdmDataOutputHandler.ARG_CALENDAR,
+                                           cal.toString())));
             }
         }
         //if ((dates != null) && (!dates.size() > 0)) {
@@ -814,12 +828,15 @@ public class CDOOutputHandler extends OutputHandler implements ServiceProvider {
         */
         String fromDate = request.getUnsafeString(ARG_CDO_FROMDATE, "");
         String toDate   = request.getUnsafeString(ARG_CDO_TODATE, "");
-        sb.append(
-            HtmlUtils.formEntry(
-                msgLabel("Time Range"),
-                HtmlUtils.select(ARG_CDO_FROMDATE, formattedDates, fromDate)
-                + HtmlUtils.img(getIconUrl(ICON_ARROW))
-                + HtmlUtils.select(ARG_CDO_TODATE, formattedDates, toDate)));
+        sb.append(HtmlUtils.formEntry(msgLabel("Time Range"),
+                                      HtmlUtils.select(ARG_CDO_FROMDATE,
+                                              formattedDates,
+                                              fromDate) + HtmlUtils.img(
+                                              getIconUrl(
+                                                  ICON_ARROW)) + HtmlUtils.select(
+                                                      ARG_CDO_TODATE,
+                                                              formattedDates,
+                                                              toDate)));
     }
 
     /**
@@ -832,7 +849,7 @@ public class CDOOutputHandler extends OutputHandler implements ServiceProvider {
      * @throws Exception problems appending
      */
     public static void makeMonthsWidgetBS(Request request, Appendable sb,
-                                        List<CalendarDate> dates)
+                                          List<CalendarDate> dates)
             throws Exception {
         /*
         HtmlUtils.radio(ARG_CDO_MONTHS, "all", request.get(ARG_CDO_MONTHS, true))+msg("All")+
@@ -841,24 +858,33 @@ public class CDOOutputHandler extends OutputHandler implements ServiceProvider {
         HtmlUtils.space(2)+
         */
         StringBuilder monthsSB = new StringBuilder();
-        monthsSB.append(HtmlUtils.open(HtmlUtils.TAG_DIV, HtmlUtils.cssClass("row")));
-        monthsSB.append(HtmlUtils.open(HtmlUtils.TAG_DIV, HtmlUtils.cssClass("col-md-6 text-left")));
+        monthsSB.append(HtmlUtils.open(HtmlUtils.TAG_DIV,
+                                       HtmlUtils.cssClass("row")));
+        monthsSB.append(HtmlUtils.open(HtmlUtils.TAG_DIV,
+                                       HtmlUtils.cssClass(
+                                           "col-md-6 text-left")));
         monthsSB.append(msgLabel("Start"));
-        monthsSB.append(HtmlUtils.select(
-                    ARG_CDO_STARTMONTH, MONTHS,
-                    request.getString(ARG_CDO_STARTMONTH, null),
-                    HtmlUtils.title(
-                        "Select the starting month")));
+        monthsSB.append(HtmlUtils.select(ARG_CDO_STARTMONTH,
+                                         MONTHS,
+                                         request.getString(ARG_CDO_STARTMONTH,
+                                                 null),
+                                         HtmlUtils.title(
+                                             "Select the starting month")));
         monthsSB.append(HtmlUtils.close(HtmlUtils.TAG_DIV));
-        monthsSB.append(HtmlUtils.open(HtmlUtils.TAG_DIV, HtmlUtils.cssClass("col-md-6 text-left")));
+        monthsSB.append(HtmlUtils.open(HtmlUtils.TAG_DIV,
+                                       HtmlUtils.cssClass(
+                                           "col-md-6 text-left")));
         monthsSB.append(msgLabel("End"));
-        monthsSB.append(HtmlUtils.select(
-                                ARG_CDO_ENDMONTH, MONTHS,
-                                request.getString(ARG_CDO_ENDMONTH, null),
-                                HtmlUtils.title("Select the ending month")));
-        monthsSB.append(HtmlUtils.close(HtmlUtils.TAG_DIV)); // col
-        monthsSB.append(HtmlUtils.close(HtmlUtils.TAG_DIV)); // row
-        sb.append(HtmlUtils.formEntry(msgLabel("Months"), monthsSB.toString()));
+        monthsSB.append(HtmlUtils.select(ARG_CDO_ENDMONTH,
+                                         MONTHS,
+                                         request.getString(ARG_CDO_ENDMONTH,
+                                                 null),
+                                         HtmlUtils.title(
+                                             "Select the ending month")));
+        monthsSB.append(HtmlUtils.close(HtmlUtils.TAG_DIV));  // col
+        monthsSB.append(HtmlUtils.close(HtmlUtils.TAG_DIV));  // row
+        sb.append(HtmlUtils.formEntry(msgLabel("Months"),
+                                      monthsSB.toString()));
     }
 
     /**
@@ -879,20 +905,23 @@ public class CDOOutputHandler extends OutputHandler implements ServiceProvider {
         HtmlUtils.radio(ARG_CDO_MONTHS, "", request.get(ARG_CDO_MONTHS, false))+msg("Season")+
         HtmlUtils.space(2)+
         */
-        sb.append(
-            HtmlUtils.formEntry(
-                msgLabel("Months"),
-                msgLabel("Start")
-                + HtmlUtils.select(
-                    ARG_CDO_STARTMONTH, MONTHS,
-                    request.getString(ARG_CDO_STARTMONTH, null),
-                    HtmlUtils.title(
-                        "Select the starting month")) + HtmlUtils.space(2)
-                            + msgLabel("End")
-                            + HtmlUtils.select(
-                                ARG_CDO_ENDMONTH, MONTHS,
-                                request.getString(ARG_CDO_ENDMONTH, null),
-                                HtmlUtils.title(
+        sb.append(HtmlUtils.formEntry(msgLabel("Months"),
+                                      msgLabel("Start")
+                                      + HtmlUtils.select(ARG_CDO_STARTMONTH,
+                                              MONTHS,
+                                              request.getString(
+                                              ARG_CDO_STARTMONTH,
+                                                      null),
+                                              HtmlUtils.title(
+                                              "Select the starting month")) + HtmlUtils.space(
+                                                  2) + msgLabel("End")
+                                                      + HtmlUtils.select(
+                                                          ARG_CDO_ENDMONTH,
+                                                                  MONTHS,
+                                                                  request.getString(
+                                                                  ARG_CDO_ENDMONTH,
+                                                                          null),
+                                                                  HtmlUtils.title(
         //MONTHS.get(
         //    MONTHS.size()
         //    - 1).getId().toString()), HtmlUtils.title(
@@ -909,32 +938,40 @@ public class CDOOutputHandler extends OutputHandler implements ServiceProvider {
      * @throws Exception problems appending
      */
     public static void makeMonthDaysWidget(Request request, Appendable sb,
-                                        List<CalendarDate> dates)
+                                           List<CalendarDate> dates)
             throws Exception {
-        sb.append(
-            HtmlUtils.formEntry(
-                msgLabel("Days"),
-                msgLabel("Start")
-                + HtmlUtils.select(
-                    ARG_CDO_STARTMONTH, SHORT_MONTHS,
-                    request.getString(ARG_CDO_STARTMONTH, null),
-                    HtmlUtils.title(
-                        "Select the starting month")) + 
-                      HtmlUtils.select(
-                        ARG_CDO_STARTDAY, DAYS,
-                        request.getString(ARG_CDO_STARTDAY, null),
-                      HtmlUtils.title(
-                        "Select the starting day")) + HtmlUtil.space(2)
-                            + msgLabel("End")
-                            + HtmlUtils.select(
-                                ARG_CDO_ENDMONTH, SHORT_MONTHS,
-                                request.getString(ARG_CDO_ENDMONTH, null),
-                                HtmlUtils.title("Select the ending month")) +
-                                  HtmlUtils.select(
-                                    ARG_CDO_ENDDAY, DAYS,
-                                    request.getString(ARG_CDO_ENDDAY, null),
-                                  HtmlUtils.title(
-                                    "Select the ending day"))));
+        sb.append(HtmlUtils.formEntry(msgLabel("Days"),
+                                      msgLabel("Start")
+                                      + HtmlUtils.select(ARG_CDO_STARTMONTH,
+                                              SHORT_MONTHS,
+                                              request.getString(
+                                              ARG_CDO_STARTMONTH,
+                                                      null),
+                                              HtmlUtils.title(
+                                              "Select the starting month")) + HtmlUtils.select(
+                                                  ARG_CDO_STARTDAY,
+                                                          DAYS,
+                                                          request.getString(
+                                                          ARG_CDO_STARTDAY,
+                                                                  null),
+                                                          HtmlUtils.title(
+                                                          "Select the starting day")) + HtmlUtil.space(
+                                                              2) + msgLabel(
+                                                                  "End") + HtmlUtils.select(
+                                                                      ARG_CDO_ENDMONTH,
+                                                                              SHORT_MONTHS,
+                                                                              request.getString(
+                                                                              ARG_CDO_ENDMONTH,
+                                                                                      null),
+                                                                              HtmlUtils.title(
+                                                                              "Select the ending month")) + HtmlUtils.select(
+                                                                                  ARG_CDO_ENDDAY,
+                                                                                          DAYS,
+                                                                                          request.getString(
+                                                                                          ARG_CDO_ENDDAY,
+                                                                                                  null),
+                                                                                          HtmlUtils.title(
+                                                                                          "Select the ending day"))));
     }
 
     /**
@@ -975,23 +1012,25 @@ public class CDOOutputHandler extends OutputHandler implements ServiceProvider {
             endYearSelect = years.size() - 1;
         }
 
-        sb.append(
-            HtmlUtils.formEntry(
-                msgLabel("Years"),
-                msgLabel("Start")
-                + HtmlUtils.select(
-                    ARG_CDO_STARTYEAR, years,
-                    request.getString(ARG_CDO_STARTYEAR, years.get(0)),
-                    HtmlUtils.title(
-                        "Select the starting year")) + HtmlUtils.space(3)
-                            + msgLabel("End")
-                            + HtmlUtils.select(
-                                ARG_CDO_ENDYEAR, years,
-                                request.getString(
-                                    ARG_CDO_ENDYEAR,
-                                    years.get(
-                                        endYearSelect)), HtmlUtils.title(
-                                            "Select the ending year"))));
+        sb.append(HtmlUtils.formEntry(msgLabel("Years"),
+                                      msgLabel("Start")
+                                      + HtmlUtils.select(ARG_CDO_STARTYEAR,
+                                              years,
+                                              request.getString(
+                                              ARG_CDO_STARTYEAR,
+                                                      years.get(0)),
+                                              HtmlUtils.title(
+                                              "Select the starting year")) + HtmlUtils.space(
+                                                  3) + msgLabel("End")
+                                                      + HtmlUtils.select(
+                                                          ARG_CDO_ENDYEAR,
+                                                                  years,
+                                                                  request.getString(
+                                                                  ARG_CDO_ENDYEAR,
+                                                                          years.get(
+                                                                          endYearSelect)),
+                                                                  HtmlUtils.title(
+                                                                  "Select the ending year"))));
     }
 
     /**
@@ -1220,7 +1259,7 @@ public class CDOOutputHandler extends OutputHandler implements ServiceProvider {
         for (String spatialArg : SPATIALARGS) {
             if ( !Misc.equals(request.getString(spatialArg, ""),
                               request.getString(spatialArg + ".original",
-                                  ""))) {
+                                      ""))) {
                 anySpatialDifferent = true;
 
                 break;
@@ -1240,16 +1279,18 @@ public class CDOOutputHandler extends OutputHandler implements ServiceProvider {
             // Normalize longitude bounds to the data
             double origLonMin =
                 Double.parseDouble(request.getString(ARG_CDO_AREA_WEST
-                    + ".original", "-180"));
+                    + ".original",
+                                                     "-180"));
             double origLonMax =
                 Double.parseDouble(request.getString(ARG_CDO_AREA_EAST
-                    + ".original", "180"));
+                    + ".original",
+                                                     "180"));
             double lonMin =
                 Double.parseDouble(request.getString(ARG_CDO_AREA_WEST,
-                    "-180"));
+                                                     "-180"));
             double lonMax =
                 Double.parseDouble(request.getString(ARG_CDO_AREA_EAST,
-                    "180"));
+                                                     "180"));
             // TODO: do we need to do this?  CDO seems to handle 
             // the -180 to 180 vs 0 to 360 subsetting okay.
             //            if (origLonMin < 0) {  // -180 to 180
@@ -1325,7 +1366,8 @@ public class CDOOutputHandler extends OutputHandler implements ServiceProvider {
                         SimpleUnit have = SimpleUnit.factory(levelUnit);
                         SimpleUnit want = SimpleUnit.factory(dataUnit);
                         level = String.valueOf(
-                            have.convertTo(Misc.parseDouble(level), want));
+                            have.convertTo(Misc.parseDouble(level),
+                                           want));
                     }
                 } catch (Exception e) {
                     System.err.println("can't convert level from "
@@ -1425,6 +1467,23 @@ public class CDOOutputHandler extends OutputHandler implements ServiceProvider {
     public void addDateSelectServices(Request request, Entry entry,
                                       List<String> commands, int dateCounter)
             throws Exception {
+        addDateSelectServices(request, entry, commands, dateCounter, true);
+    }
+
+    /**
+     * Create the list of date/time select commands
+     * @param request the Request
+     * @param entry   the associated Entry
+     * @param commands list of commands
+     * @param dateCounter  the date counter
+     * @param includeMonths _more_
+     *
+     * @throws Exception  on badness
+     */
+    public void addDateSelectServices(Request request, Entry entry,
+                                      List<String> commands, int dateCounter,
+                                      boolean includeMonths)
+            throws Exception {
 
         String dateCounterString = "";
         if (dateCounter > 0) {
@@ -1462,11 +1521,9 @@ public class CDOOutputHandler extends OutputHandler implements ServiceProvider {
                     getPageHandler().showDialogWarning(
                         "From date is after to date");
                 } else {
-                    dateSelect =
-                        OP_SELDATE + ","
-                        + dateFormatter.toString(dates[0])
-                        + ","
-                        + dateFormatter.toString(dates[1]);
+                    dateSelect = OP_SELDATE + ","
+                                 + dateFormatter.toString(dates[0]) + ","
+                                 + dateFormatter.toString(dates[1]);
                 }
             }
         } else {                                // month and year
@@ -1492,7 +1549,8 @@ public class CDOOutputHandler extends OutputHandler implements ServiceProvider {
                                ? request.getString(ARG_CDO_YEARS
                                    + dateCounterString)
                                : null;
-                if ((years == null) && request.defined(ARG_CDO_YEARS)
+                if ((years == null)
+                        && request.defined(ARG_CDO_YEARS)
                         && !(request.defined(
                             ARG_CDO_STARTYEAR
                             + dateCounterString) || request.defined(
@@ -1532,7 +1590,9 @@ public class CDOOutputHandler extends OutputHandler implements ServiceProvider {
             commands.add(dateSelect);
         }
         // for long time series, selecting out the months first seems quicker.
-        addMonthSelectServices(request, entry, commands);
+        if (includeMonths) {
+            addMonthSelectServices(request, entry, commands);
+        }
 
     }
 
@@ -1615,6 +1675,10 @@ public class CDOOutputHandler extends OutputHandler implements ServiceProvider {
                 commands.add("-" + PERIOD_YEAR + stat);
             } else if (period.equals(PERIOD_YMON)) {
                 commands.add("-" + PERIOD_YMON + stat);
+            } else if (period.equals(PERIOD_YDAY)) {
+                commands.add("-" + PERIOD_YDAY + stat);
+            } else if (period.equals(PERIOD_DAY)) {
+                commands.add("-" + PERIOD_DAY + stat);
             }
         }  //else {  // ONLY FOR TESTING
         //    commands.add("-" + PERIOD_TIM + STAT_MEAN);
@@ -1695,8 +1759,8 @@ public class CDOOutputHandler extends OutputHandler implements ServiceProvider {
             if (dataset != null) {
                 llr = dataset.getBoundingBox();
             } else {
-                llr = new LatLonRect(new LatLonPointImpl(90.0, -180.0),
-                                     new LatLonPointImpl(-90.0, 180.0));
+                llr = new LatLonRect(new LatLonPointImpl(90.0,
+                        -180.0), new LatLonPointImpl(-90.0, 180.0));
             }
             addMapWidget(request, sb, llr);
             sb.append(HtmlUtils.formTableClose());
@@ -1726,7 +1790,7 @@ public class CDOOutputHandler extends OutputHandler implements ServiceProvider {
             String newName   = IOUtil.stripExtension(tail) + "_" + id + ".nc";
             tail = getStorageManager().getStorageFileName(tail);
             File outFile = new File(IOUtil.joinDir(input.getProcessDir(),
-                               newName));
+                                                   newName));
             List<String> commands = new ArrayList<String>();
             commands.add(cdoPath);
             commands.add("-L");
@@ -1791,7 +1855,7 @@ public class CDOOutputHandler extends OutputHandler implements ServiceProvider {
         }
 
     }
-    
+
     /**
      * Create a list of tfos from the given int ids and names
      *
@@ -1805,6 +1869,7 @@ public class CDOOutputHandler extends OutputHandler implements ServiceProvider {
         for (int i = 0; i < ids.length; i++) {
             l.add(new TwoFacedObject(Integer.toString(ids[i]), ids[i]));
         }
+
         return l;
     }
 
