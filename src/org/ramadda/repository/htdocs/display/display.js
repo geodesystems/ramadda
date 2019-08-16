@@ -1045,11 +1045,9 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		if(!sortFields) {
 		    sortFields = this.getFieldsByIds(null, this.getProperty("sortFields", "", true));
 		}
-		
 		if(sortFields.length==0) return records;
 		records = Utils.cloneList(records);
 		var sortAscending = this.getProperty("sortAscending",true);
-
 		records.sort((a,b)=>{
 			var row1 = this.getDataValues(a);
 			var row2 = this.getDataValues(b);
@@ -1058,7 +1056,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 			    var sortField = sortFields[i];
 			    var v1 = row1[sortField.getIndex()];
 			    var v2 = row2[sortField.getIndex()];
-			    if(v1<v2) result = sortAscending?-1:-1;
+			    if(v1<v2) result = sortAscending?-1:1;
 			    else if(v1>v2) result = sortAscending?1:-1;
 			    else result = 0;
 			    if(result!=0) break;

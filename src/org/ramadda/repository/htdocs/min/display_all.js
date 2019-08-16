@@ -1195,11 +1195,9 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		if(!sortFields) {
 		    sortFields = this.getFieldsByIds(null, this.getProperty("sortFields", "", true));
 		}
-		
 		if(sortFields.length==0) return records;
 		records = Utils.cloneList(records);
 		var sortAscending = this.getProperty("sortAscending",true);
-
 		records.sort((a,b)=>{
 			var row1 = this.getDataValues(a);
 			var row2 = this.getDataValues(b);
@@ -1208,7 +1206,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 			    var sortField = sortFields[i];
 			    var v1 = row1[sortField.getIndex()];
 			    var v2 = row2[sortField.getIndex()];
-			    if(v1<v2) result = sortAscending?-1:-1;
+			    if(v1<v2) result = sortAscending?-1:1;
 			    else if(v1>v2) result = sortAscending?1:-1;
 			    else result = 0;
 			    if(result!=0) break;
@@ -14087,8 +14085,9 @@ function RamaddaTemplateDisplay(displayManager, id, properties) {
 		    contents+= headerTemplate;
 		if(template!= "") {
 		    var max = parseFloat(this.getProperty("maxNumber",-1));
+		    console.log("max:" + max);
 		    for(var rowIdx=0;rowIdx<selected.length;rowIdx++) {
-			if(max!=-1 && max>rowIdx) break;
+			if(max!=-1 && rowIdx>max) break;
 			var row = this.getDataValues(selected[rowIdx]);
 			var s = template;
 			s = s.replace("${selectCount}",selected.length);
