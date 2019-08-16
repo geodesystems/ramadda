@@ -14085,34 +14085,38 @@ function RamaddaTemplateDisplay(displayManager, id, properties) {
 		}
 		if(selected.length>0) 
 		    contents+= headerTemplate;
-		for(var rowIdx=0;rowIdx<selected.length;rowIdx++) {
-		    var row = this.getDataValues(selected[rowIdx]);
-		    var s = template;
-		    s = s.replace("${selectCount}",selected.length);
-		    s = s.replace("${totalCount}",records.length);
-		    for (var col = 0; col < fields.length; col++) {
-			var f = fields[col];
-			var value = row[f.getIndex()];
-			if(f.getType()=="image") {
-			    if(value && value.trim().length>1) {
-				var attrs = [];
-				if(this.getProperty("imageWidth","")!="") {
-				    attrs.push("width");
-				    attrs.push(this.getProperty("imageWidth","")) ;
+		if(template!= "") {
+		    var max = parseFloat(this.getProperty("maxNumber",-1));
+		    for(var rowIdx=0;rowIdx<selected.length;rowIdx++) {
+			if(max!=-1 && max>rowIdx) break;
+			var row = this.getDataValues(selected[rowIdx]);
+			var s = template;
+			s = s.replace("${selectCount}",selected.length);
+			s = s.replace("${totalCount}",records.length);
+			for (var col = 0; col < fields.length; col++) {
+			    var f = fields[col];
+			    var value = row[f.getIndex()];
+			    if(f.getType()=="image") {
+				if(value && value.trim().length>1) {
+				    var attrs = [];
+				    if(this.getProperty("imageWidth","")!="") {
+					attrs.push("width");
+					attrs.push(this.getProperty("imageWidth","")) ;
+				    }
+				    value = HtmlUtils.image(value, attrs);
 				}
-				value = HtmlUtils.image(value, attrs);
+			    } else if(f.getType()=="url") {
+				if(value && value.trim().length>1) {
+				    value = HtmlUtils.href(value,value);
+				}
 			    }
-			} else if(f.getType()=="url") {
-			    if(value && value.trim().length>1) {
-				value = HtmlUtils.href(value,value);
+			    if(typeof value == "number") {
+				value = Utils.formatNumber(value);
 			    }
+			    s = s.replace("${" + f.getId() +"}", value);
 			}
-			if(typeof value == "number") {
-			    value = Utils.formatNumber(value);
-			}
-			s = s.replace("${" + f.getId() +"}", value);
+			contents+=s;
 		    }
-		    contents+=s;
 		}
 		if(selected.length>0) 
 		    contents+= footerTemplate;
