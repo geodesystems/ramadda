@@ -848,7 +848,7 @@ function RamaddaTemplateDisplay(displayManager, id, properties) {
 		    var max = parseFloat(this.getProperty("maxNumber",-1));
 		    console.log("max:" + max);
 		    for(var rowIdx=0;rowIdx<selected.length;rowIdx++) {
-			if(max!=-1 && rowIdx>max) break;
+			if(max!=-1 && rowIdx>=max) break;
 			var row = this.getDataValues(selected[rowIdx]);
 			var s = template;
 			s = s.replace("${selectCount}",selected.length);
