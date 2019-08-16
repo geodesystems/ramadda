@@ -688,6 +688,43 @@ function RamaddaTemplateDisplay(displayManager, id, properties) {
 		var template = this.getProperty("template","");
 		var select = this.getProperty("select","all");
 		var selected = [];
+		var summary = {};
+		records.map(r=>{
+			r  =  this.getDataValues(r);
+			for(var i=0;i<fields.length;i++) {
+			    var f = fields[i];
+			    if(!f.isNumeric) continue;
+			    var v =f.getValue(r);
+			    if(!summary[f.getId()]) {
+				summary[f.getId()] = {
+				    total: 0,
+				    min: v,
+				    max:v,
+				    count:0
+				}
+			    }
+			    var s = summary[f.getId()];
+			    if(!isNaN(v)) {
+				s.total+=v;
+				s.min = Math.min(s.min,v);
+				s.max = Math.max(s.max,v);
+				s.count++;
+			    }
+			}
+		    });
+
+
+		for(var i=0;i<fields.length;i++) {
+		    var f = fields[i];
+		    if(!f.isNumeric) continue;
+		    var s = summary[f.getId()];
+		    if(s && s.count) {
+			s.average =  Utils.formatNumber(s.total/s.count);
+		    }
+		}
+
+
+
 		if(select == "max" || select=="min" || select=="=" || select=="<" || select == ">" ||
 		   select == "<=" || 	       select == "?>=" || select=="match") {
 		    var selectField = this.getProperty("selectField","");
@@ -781,6 +818,12 @@ function RamaddaTemplateDisplay(displayManager, id, properties) {
 		headerTemplate = headerTemplate.replace("${totalCount}",records.length);
 		footerTemplate = footerTemplate.replace("${selectedCount}",selected.length);
 		footerTemplate = footerTemplate.replace("${totalCount}",records.length);
+		for(var i=0;i<fields.length;i++) {
+		    var f = fields[i];
+		    if(!f.isNumeric) continue;
+		    var s = summary[f.getId()];
+		    headerTemplate = headerTemplate.replace("${" + f.getId() +"_total}",s.total).replace("${" + f.getId() +"_min}",s.min).replace("${" + f.getId() +"_max}",s.max).replace("${" + f.getId() +"_average}",s.average);
+		}
 		if(this.filterFields) {
 		    for(var filterIdx=0;filterIdx<this.filterFields.length;filterIdx++) {
 			var f = this.filterFields[filterIdx];
@@ -793,6 +836,7 @@ function RamaddaTemplateDisplay(displayManager, id, properties) {
 			    footerTemplate = footerTemplate.replace("${filter_" + f.getId() +"_max}",max);
 			} else {
 			    var value = $("#" + this.getDomId("filterby_" + f.getId())).val().trim();
+			    var tmp = parseFloat(value);
 			    headerTemplate = headerTemplate.replace("${filter_" + f.getId()+"}",value);
 			    footerTemplate = footerTemplate.replace("${filter_" + f.getId()+"}",value);
 			}
@@ -821,6 +865,9 @@ function RamaddaTemplateDisplay(displayManager, id, properties) {
 			    if(value && value.trim().length>1) {
 				value = HtmlUtils.href(value,value);
 			    }
+			}
+			if(typeof value == "number") {
+			    value = Utils.formatNumber(value);
 			}
 			s = s.replace("${" + f.getId() +"}", value);
 		    }
