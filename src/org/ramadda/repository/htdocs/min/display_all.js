@@ -14064,7 +14064,10 @@ function RamaddaTemplateDisplay(displayManager, id, properties) {
 		    var f = fields[i];
 		    if(!f.isNumeric) continue;
 		    var s = summary[f.getId()];
-		    headerTemplate = headerTemplate.replace("${" + f.getId() +"_total}",s.total).replace("${" + f.getId() +"_min}",s.min).replace("${" + f.getId() +"_max}",s.max).replace("${" + f.getId() +"_average}",s.average);
+		    if(s) {
+			headerTemplate = headerTemplate.replace("${" + f.getId() +"_total}",s.total).replace("${" + f.getId() +"_min}",s.min).replace("${" + f.getId() +"_max}",s.max).replace("${" + f.getId() +"_average}",s.average);
+			footerTemplate = footerTemplate.replace("${" + f.getId() +"_total}",s.total).replace("${" + f.getId() +"_min}",s.min).replace("${" + f.getId() +"_max}",s.max).replace("${" + f.getId() +"_average}",s.average);
+		    }
 		}
 		if(this.filterFields) {
 		    for(var filterIdx=0;filterIdx<this.filterFields.length;filterIdx++) {
