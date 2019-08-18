@@ -847,13 +847,13 @@ function RamaddaTemplateDisplay(displayManager, id, properties) {
 			    } else {
 				var regexp = new RegExp("\\${filter_" + f.getId()+" +prefix='([^']*)' +suffix='([^']*)' *\\}",'g');
 				headerTemplate = headerTemplate.replace(regexp,"$1" + value +"$2");
-				footerTemplate = headerTemplate.replace(regexp,"$1" + value +"$2");
+				footerTemplate = footerTemplate.replace(regexp,"$1" + value +"$2");
 				var regexp = new RegExp("\\${filter_" + f.getId()+" +prefix='([^']*)' *\\}",'g');
 				headerTemplate = headerTemplate.replace(regexp,"$1" + value);
-				footerTemplate = headerTemplate.replace(regexp,"$1" + value);
+				footerTemplate = footerTemplate.replace(regexp,"$1" + value);
 				var regexp = new RegExp("\\${filter_" + f.getId()+" +suffix='([^']*)' *\\}",'g');
 				headerTemplate = headerTemplate.replace(regexp,value +"$1");
-				footerTemplate = headerTemplate.replace(regexp,value +"$1");
+				footerTemplate = footerTemplate.replace(regexp,value +"$1");
 				var regexp = new RegExp("\\${filter_" + f.getId()+" *\\}",'g');
 				headerTemplate = headerTemplate.replace(regexp,value);
 				footerTemplate = footerTemplate.replace(regexp,value);
@@ -861,8 +861,10 @@ function RamaddaTemplateDisplay(displayManager, id, properties) {
 			}
 		    }
 		}
-		if(selected.length>0) 
+
+		if(selected.length>0) {
 		    contents+= headerTemplate;
+		}
 		if(template!= "") {
 		    var max = parseFloat(this.getProperty("maxNumber",-1));
 		    for(var rowIdx=0;rowIdx<selected.length;rowIdx++) {
