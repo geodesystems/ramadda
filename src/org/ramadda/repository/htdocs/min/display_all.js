@@ -14052,12 +14052,14 @@ function RamaddaTemplateDisplay(displayManager, id, properties) {
 		if(selected.length==0) {
 		    contents = this.getProperty("emptyMessage","Nothing found");
 		}
+
 		var headerTemplate = this.getProperty("headerTemplate","");
 		var footerTemplate = this.getProperty("footerTemplate","");
 		headerTemplate = headerTemplate.replace("${selectedCount}",selected.length);
 		headerTemplate = headerTemplate.replace("${totalCount}",records.length);
 		footerTemplate = footerTemplate.replace("${selectedCount}",selected.length);
 		footerTemplate = footerTemplate.replace("${totalCount}",records.length);
+
 		for(var i=0;i<fields.length;i++) {
 		    var f = fields[i];
 		    if(!f.isNumeric) continue;
@@ -14076,9 +14078,25 @@ function RamaddaTemplateDisplay(displayManager, id, properties) {
 			    footerTemplate = footerTemplate.replace("${filter_" + f.getId() +"_max}",max);
 			} else {
 			    var value = $("#" + this.getDomId("filterby_" + f.getId())).val().trim();
-			    var tmp = parseFloat(value);
-			    headerTemplate = headerTemplate.replace("${filter_" + f.getId()+"}",value);
-			    footerTemplate = footerTemplate.replace("${filter_" + f.getId()+"}",value);
+			    //${filter_id template="sdsds"}
+			    if(value=="") {
+				var regexp = new RegExp("\\${filter_" + f.getId()+"[^}]*\\}",'g');
+				headerTemplate = headerTemplate.replace(regexp,"");
+				footerTemplate = footerTemplate.replace(regexp,"");
+			    } else {
+				var regexp = new RegExp("\\${filter_" + f.getId()+" +prefix='([^']*)' +suffix='([^']*)' *\\}",'g');
+				headerTemplate = headerTemplate.replace(regexp,"$1" + value +"$2");
+				footerTemplate = headerTemplate.replace(regexp,"$1" + value +"$2");
+				var regexp = new RegExp("\\${filter_" + f.getId()+" +prefix='([^']*)' *\\}",'g');
+				headerTemplate = headerTemplate.replace(regexp,"$1" + value);
+				footerTemplate = headerTemplate.replace(regexp,"$1" + value);
+				var regexp = new RegExp("\\${filter_" + f.getId()+" +suffix='([^']*)' *\\}",'g');
+				headerTemplate = headerTemplate.replace(regexp,value +"$1");
+				footerTemplate = headerTemplate.replace(regexp,value +"$1");
+				var regexp = new RegExp("\\${filter_" + f.getId()+" *\\}",'g');
+				headerTemplate = headerTemplate.replace(regexp,value);
+				footerTemplate = footerTemplate.replace(regexp,value);
+			    }
 			}
 		    }
 		}
@@ -14086,7 +14104,6 @@ function RamaddaTemplateDisplay(displayManager, id, properties) {
 		    contents+= headerTemplate;
 		if(template!= "") {
 		    var max = parseFloat(this.getProperty("maxNumber",-1));
-		    console.log("max:" + max);
 		    for(var rowIdx=0;rowIdx<selected.length;rowIdx++) {
 			if(max!=-1 && rowIdx>=max) break;
 			var row = this.getDataValues(selected[rowIdx]);
