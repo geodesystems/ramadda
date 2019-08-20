@@ -13927,7 +13927,7 @@ function RamaddaBlankDisplay(displayManager, id, properties) {
     addRamaddaDisplay(this);
     $.extend(this, {
 	    updateUI: function() {
-		this.writeHtml(ID_DISPLAY_CONTENTS, html);
+		this.writeHtml(ID_DISPLAY_CONTENTS, "");
 	    }});
 }
 
