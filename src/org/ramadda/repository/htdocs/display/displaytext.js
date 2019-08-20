@@ -681,11 +681,14 @@ function RamaddaCardsDisplay(displayManager, id, properties) {
 
 
 function RamaddaBlankDisplay(displayManager, id, properties) {
+    properties.showMenu = false;
+    properties.showTitle = false;
     let SUPER =  new RamaddaFieldsDisplay(displayManager, id, DISPLAY_BLANK, properties);
     RamaddaUtil.inherit(this,SUPER);
     addRamaddaDisplay(this);
     $.extend(this, {
 	    updateUI: function() {
+		this.writeHtml(ID_DISPLAY_CONTENTS, html);
 	    }});
 }
 
