@@ -1638,7 +1638,8 @@ function RamaddaMapDisplay(displayManager, id, properties) {
             var labelTemplate = this.getProperty("labelTemplate");
             if(!labelTemplate) return;
             labelTemplate = labelTemplate.replace(/_nl_/g,"\n");
-            var labelLayer = new OpenLayers.Layer.Vector("Simple Geometry", {
+	    if(!this.labelLayer) {
+		this.labelLayer = new OpenLayers.Layer.Vector("Simple Geometry", {
                     styleMap: new OpenLayers.StyleMap({'default':{
                                 label : labelTemplate,
                                 fontColor: this.getProperty("labelFontColor","#000"),
@@ -1652,7 +1653,9 @@ function RamaddaMapDisplay(displayManager, id, properties) {
                                 labelOutlineWidth: this.getProperty("labelOutlineWidth","0"),
                             }}),
                 });
-            var features =  [];
+		this.map.addVectorLayer(this.labelLayer, true);
+	    }
+	    var features =  [];
             var seen = {};
             for (var i = 0; i < records.length; i++) {
                 var point = points[i];
@@ -1671,10 +1674,12 @@ function RamaddaMapDisplay(displayManager, id, properties) {
                     pointFeature.attributes[field.getId()] = field.getValue(tuple);
                 }
                 features.push(pointFeature);
-            }
-            this.map.addVectorLayer(labelLayer, true);
-            labelLayer.addFeatures(features);
-            $("#" + labelLayer.id).css("z-index",1000);
+	    }
+	    if(this.labelFeatures)
+		this.labelLayer.removeFeatures(this.labelFeatures);
+            this.labelLayer.addFeatures(features);
+	    this.labelFeatures = features;
+            $("#" + this.labelLayer.id).css("z-index",1000);
         },
 
 
