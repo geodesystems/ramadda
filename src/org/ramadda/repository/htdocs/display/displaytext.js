@@ -12,6 +12,7 @@ var DISPLAY_TEXT = "text";
 var DISPLAY_CARDS = "cards";
 var DISPLAY_BLOCKS = "blocks";
 var DISPLAY_TEMPLATE = "template";
+var DISPLAY_BLANK = "blank";
 
 
 
@@ -37,6 +38,14 @@ addGlobalDisplayType({
     requiresData: true,
     forUser: true,
     category: "Text"
+});
+
+addGlobalDisplayType({
+    type: DISPLAY_BLANK,
+    label: "Blank",
+    requiresData: true,
+    forUser: true,
+    category: CATEGORY_MISC
 });
 
 
@@ -669,6 +678,17 @@ function RamaddaCardsDisplay(displayManager, id, properties) {
             }
     });
 }
+
+
+function RamaddaBlankDisplay(displayManager, id, properties) {
+    let SUPER =  new RamaddaFieldsDisplay(displayManager, id, DISPLAY_BLANK, properties);
+    RamaddaUtil.inherit(this,SUPER);
+    addRamaddaDisplay(this);
+    $.extend(this, {
+	    updateUI: function() {
+	    }});
+}
+
 
 
 function RamaddaTemplateDisplay(displayManager, id, properties) {
