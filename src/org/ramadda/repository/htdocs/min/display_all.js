@@ -774,6 +774,8 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		this.settingFilterValue = true;
 		this.jq(widgetId).val(prop.value);
 		this.settingFilterValue = false;
+		this.dataFilterChanged();
+		return;
             }
             this.setProperty(prop.property, prop.value);
             this.updateUI();
@@ -2749,11 +2751,10 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
                         var fieldId = $(this).attr("fieldId");
 			_this.haveCalledUpdateUI = false;
 			if(_this.settingFilterValue) {
-			    console.log("setting value");
 			    return;
 			}
 			_this.settingFilterValue = true;
-			_this.updateUI();
+			_this.dataFilterChanged();
 			_this.propagateEvent("handleEventPropertyChanged", {
 				property: "filterValue",
 				    id:id,
@@ -2764,6 +2765,9 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
                     });
             }
         },
+		dataFilterChanged: function() {
+		this.updateUI();
+	    },
         updateUI: function() {},
         getDoBs: function() {
             if (!(typeof this.dobs === 'undefined')) {
@@ -19033,8 +19037,9 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		    var matchedFeature = matchedFeatures[i];
 		    style = matchedFeature.style;
 		    if (!style) style = {
-			    "stylename": "from display"
+			    "stylename": "from display",
 			};
+		    style.display = null;
 		    var circle = matchedFeature.circles[0];
 		    $.extend(style, circle.style);
 		    matchedFeature.style = style;
@@ -19043,6 +19048,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		}
 	    }
 
+	    var prune = this.getProperty("pruneFeatures", "false",true);
 	    if(doCount) {
 		//xxxxx
 		var colors = this.getColorTable(true);
@@ -19050,7 +19056,6 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		    colors = Utils.ColorTables.grayscale.colors;
 		}
 		var range = maxCnt-minCnt;
-		var prune = this.getProperty("pruneFeatures", "false",true);
 		var labelSuffix = this.getProperty("doCountLabel","points");
 		for (var j = 0; j < features.length; j++) {
 		    var feature = features[j];
@@ -19083,24 +19088,28 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	    } else {
 		for (var i = 0; i < features.length; i++) {
 		    var feature = features[i];
+		    var style = feature.style;
 		    if (!style) style = {
 			    "stylename": "from display"
 			};
 		    $.extend(style, {
-			    "display": "none"
+			    "display": "none",
 				});
+		    feature.style = style;
 		}	
+		/*
+		if(prune) {
+		    this.vectorLayer.removeFeatures(features);
+		    var dataBounds = this.vectorLayer.getDataExtent();
+		    bounds = this.map.transformProjBounds(dataBounds);
+		    if(!force && this.getProperty("bounds") == null)
+			this.map.centerOnMarkers(bounds, true);
+		}
+		*/
 	    }
 
-            /*
-            if (("" + this.getProperty("pruneFeatures", "")) == "true") {
-                this.vectorLayer.removeFeatures(features);
-                var dataBounds = this.vectorLayer.getDataExtent();
-                bounds = this.map.transformProjBounds(dataBounds);
-                if(!force && this.getProperty("bounds") == null)
-                    this.map.centerOnMarkers(bounds, true);
-            }
-            */
+
+
             this.vectorLayer.redraw();
             if (maxExtent) {
                 this.map.map.zoomToExtent(maxExtent, true);
@@ -19317,6 +19326,10 @@ function RamaddaMapDisplay(displayManager, id, properties) {
             this.applyVectorMap(true);
         },
 
+	dataFilterChanged: function() {
+		this.vectorMapApplied  = false;
+		this.updateUI();
+	    },
         updateUI: function() {
             SUPER.updateUI.call(this);
             if (!this.getDisplayReady()) {

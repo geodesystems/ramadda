@@ -624,6 +624,8 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		this.settingFilterValue = true;
 		this.jq(widgetId).val(prop.value);
 		this.settingFilterValue = false;
+		this.dataFilterChanged();
+		return;
             }
             this.setProperty(prop.property, prop.value);
             this.updateUI();
@@ -2599,11 +2601,10 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
                         var fieldId = $(this).attr("fieldId");
 			_this.haveCalledUpdateUI = false;
 			if(_this.settingFilterValue) {
-			    console.log("setting value");
 			    return;
 			}
 			_this.settingFilterValue = true;
-			_this.updateUI();
+			_this.dataFilterChanged();
 			_this.propagateEvent("handleEventPropertyChanged", {
 				property: "filterValue",
 				    id:id,
@@ -2614,6 +2615,9 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
                     });
             }
         },
+		dataFilterChanged: function() {
+		this.updateUI();
+	    },
         updateUI: function() {},
         getDoBs: function() {
             if (!(typeof this.dobs === 'undefined')) {
