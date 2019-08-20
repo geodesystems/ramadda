@@ -52,7 +52,7 @@ as well as special  RAMADDA wiki tags that allow for page payout, displaying map
 </a>
 <li> <a href='#tabs'><a href="#tabs">Tabs</a>
 </a>
-<li> <a href='#accordian'><a href="#accordian">Accordian</a>
+<li> <a href='#accordion'><a href="#accordion">Accordion</a>
 </a>
 <li> <a href='#entry'><a href="#entry">Linking to other entries</a>
 </a>
@@ -711,22 +711,22 @@ Center the tabs:
 
 
 <p>
-<a name="accordian"></a>
-<div class="ramadda-help-subsubheading"><a href="#accordian">Accordian</a>
+<a name="accordion"></a>
+<div class="ramadda-help-subsubheading"><a href="#accordion">Accordion</a>
 </div> 
 
-You can create an accordian with. The optional arguments allow you to set the properties of the accordian
+You can create an accordion with. The optional arguments allow you to set the properties of the accordion
 as described in the <a href="https://api.jqueryui.com/accordion/">Jquery docs</a>.
 
 <pre>
-+accordian heightStyle="auto|fill|content" animate="number of milliseconds" collapsible="true|false" activeSegment="segment number of active segment (0 based)" decorate="true|false"
-+segment Accordian 1 title
-Accordian 1 content
++accordion heightStyle="auto|fill|content" animate="number of milliseconds" collapsible="true|false" activeSegment="segment number of active segment (0 based)" decorate="true|false"
++segment Accordion 1 Title
+Accordion 1 content
 -segment
-+segment Accordian 2 title 
-Accordian 2 content
++segment Accordion 2 Title 
+Accordion 2 content
 -segment
--accordian
+-accordion
 </pre>
 
 
@@ -1293,7 +1293,7 @@ The apply tag is of the form:
 {{apply
 apply.entry="the entry to find the children of"
 apply.tag="some tag to apply to the entries"
-apply.layout="table, accordian or tabs"
+apply.layout="table, accordion or tabs"
 apply.columns="number of columns in table"
 apply.header="text to go before can contain macros ${name} ${url}"
 apply.footer="text to go after"

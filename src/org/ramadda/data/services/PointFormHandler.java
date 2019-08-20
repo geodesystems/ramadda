@@ -580,6 +580,7 @@ public class PointFormHandler extends RecordFormHandler {
         List   params      = new ArrayList();
         //TODO: we need a better way to say this is a elevation point cloud
         //        if(pointEntry.isCapable(PointFile.ACTION_ELEVATION)) {
+        params.add(new TwoFacedObject("Point Count", "_pointcount_"));
         params.add(new TwoFacedObject(msg(LABEL_ALTITUDE), ""));
         //        }
         if (recordEntry != null) {

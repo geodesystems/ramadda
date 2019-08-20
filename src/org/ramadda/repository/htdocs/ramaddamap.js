@@ -3196,6 +3196,9 @@ function initMapFunctions(theMap) {
             var center = new OpenLayers.Geometry.Point(point.x, point.y);
             center.transform(this.displayProjection, this.sourceProjection);
             var feature = new OpenLayers.Feature.Vector(center, null, cstyle);
+	    
+
+
 
             feature.center = center;
             feature.ramaddaId = id;

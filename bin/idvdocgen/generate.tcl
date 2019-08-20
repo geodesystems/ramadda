@@ -118,7 +118,8 @@ proc ht::doImage {img class {caption ""} {extra ""}} {
         append html "<br><span class=\"caption\">Image $cnt: $caption</span></div>"
         return $html
     } else {
-        return "<div class=\"$class\">$href1<img  src=\"$img\" $extra alt=\"$img\" >$href2</div>"
+	    set img  "<div class=\"$class\">$href1<img  src=\"$img\" $extra alt=\"$img\" >$href2</div>"
+	    return $img
     }
 }
 
@@ -284,7 +285,7 @@ proc displayType {name id desc args {img ""} {url ""} } {
      set id [string tolower $name]
      regsub -all { } $id _ id
    }
-   gen::addInpageToc "<a href='#$id'>$name</a>"
+#   gen::addInpageToc "<a href='#$id'>$name</a>"
    set args [string trim $args]
    set h [ug::subsubheading $name $id]
    append h $desc
@@ -300,6 +301,7 @@ proc displayType {name id desc args {img ""} {url ""} } {
           if {[llength $toks]>1} {
                set img [lindex $toks 0]
                set extra [lindex $toks 1]
+	       puts "extra: $extra"
           }
         append h [ht::cimg $img $name $extra]
     }

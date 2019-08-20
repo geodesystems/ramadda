@@ -53,6 +53,42 @@ The field ids for a point data entry can be viewed with the  Metadata view, e.g.
 
 [ht::pre {{{display  type="linechart" fields="#5,#6,#7,#8,#9,#10" }}}]
 
+[ug::subheading {Filtering Data} filterss]
+A display can present a set of widgets that allow the user to filter the data being shown. For example, in the image below (See <a href="https://geodesystems.com/repository/alias/14ers">here><>/a>) the data has a set of fields - elev, elev_gain, distance, range and class. 
+
+[ht::cimg images/filters.png {Filtering Data}]
+
+Below is the wiki text that creates the above display. The map display defines which fields should be used with the filterFields="..." attribute. The ranking display specifies the same set of filter fields but also has a hideFilterWidget=true which specifies to actually not show the widgets. The filter values the user enters in the map display are then applied to the ranking display.
+<pre>+row
++col-3
+{{display  type=&quot;ranking&quot;  
+...
+filterFields=&quot;elev,elev_gain,distance,range,class&quot; hideFilterWidget=true
+ }} 
+ -col
+ +col-9
+{{display  type=&quot;map&quot;  
+...
+filterFields=&quot;elev,elev_gain,distance,class,range&quot;
+}} 
+ -col
+ -row
+</pre>
+
+<p>
+You can specify an initial filter value for a field with &lt;field_name&gt;.filterValue=&quot;some value&quot; attribute. 
+<br>
+For enumerated values a menu of items is shown. To not have the "All" value 
+add a  &lt;field_name&gt;.includeAll=&quot;false&quot; attribute. 
+<br>
+For numeric values the min and max from the data is used. To override this 
+add   &lt;field_name&gt;.filterValueMin=&quot;min value&quot and 
+&lt;field_name&gt;.filterValueMax=&quot;max value&quot attributes.
+<br>
+Specify an alternative label with a  &lt;field_name&gt;.filterLabel=&quot;some label&quot; attribute. 
+
+
+
 
 
 [ug::subheading {Display Groups} groups]
@@ -294,7 +330,7 @@ animationWindow="year" or "month" or "day" or "hour" or "minute" or "second"  - 
 animationSpeed="250" - time in milliseconds between each step
 </pre>
 
-<b>Map Labels:<b><br>
+<b>Map Labels:</b><br>
 You can display text labels at each point with the following attributes:
 <pre>
 labelTemplate="text template with ${field id} macros. Use _nl_ for new lines"
@@ -552,6 +588,90 @@ showDefault=&quot;true&quot;
 images/charts/stats.png
 }]
 
+[displayType {Record  Template} template {
+The template display displays text based on a template populated by data. There can be a headerTemplate and footerTemplate specified that are used once. The template= attribute is used to 
+show text for each record in the data. Not all template attributes need to be specified.
+} {
+template="..."   //Used for each record
+headerTemplate="... ${totalCount} ... ${selectedCount}"  //used at the beginning
+footerTemplate="... ${totalCount} ... ${selectedCount}"  //used at the end
+selectField="field name to get the value to select on"  //specify a field to select on
+select="max|min|&lt;|&gt;|=|&gt;=|&gt;=|contains"   //specify an operator
+selectValue="some value"   //and a value
+emptyMessage=""   //Message to show if nothing meets the selection criteria
+} {
+}]
+
+
+<b> Template Macros</b><br>
+Use the below macros in the templates- <br>
+<pre>
+//In the header/footer:
+${totalCount}  - total number of records
+${selectedCount}  - number of filtered records
+
+//In the pre record template -
+${&lt;field name&gt;_min}
+${&lt;field name&gt;_max}
+${&lt;field name&gt;_total}
+${&lt;field name&gt;_average}
+</pre>
+These are the values specified by the user in the <a href="#filters">filter widgets</a> - <br>
+<pre>
+${filter_&lt;field name&gt;_min} //for numeric values
+${filter_&lt;field name&gt;_max}
+${filter_&lt;field name&gt;} //for enumerated and text values
+
+//If the user does not specify a text filter value then just show blank
+//If the user specifies some text filter value then wrap it with the prefix/suffix
+${filter_&lt;field name&gt; prefix='some text prefix' suffix='some text suffix'} 
+
+</pre>
+
+<b>Template Examples</b><br>
+
+The below example (<a href="https://geodesystems.com/repository/alias/14ers">see it here</a>) 
+shows Colorado 14k foot peaks data. The display uses <a href="#filters">filter fields</a>
+to allow the user to filter the data. The filter_... macros in the templates 
+display the values of those filter fields. The prefix/suffix attributes in the macros
+allow one to show a phrase only if a text filter value is selected by the user.
+
+[ht::cimg images/charts/template.png {} {width="90%"}]
+
+The template display is specified as:
+<pre>
+ {{display  type="template"  displayStyle="background:rgba(0,0,0,0);"
+headerTemplate="There are a total of ${selectedCount} peaks 
+between ${filter_elev_min} and ${filter_elev_max} feet 
+with elevation gain between ${filter_elev_gain_min} and ${filter_elev_gain_max} feet 
+${filter_class prefix=' of class '} 
+${filter_range prefix=' in the ' suffix=' range'}" 
+filterFields="elev,elev_gain,distance,range,class" hideFilterWidget="true"
+}} 
+</pre>
+
+
+
+The below display (from  <a href="https://geodesystems.com/repository/alias/mass_shootings">here</a>) 
+showing mass shooting data uses two different template displays as defined here.
+
+[ht::cimg images/template2.png {Template Example} {width=600}]
+
+<pre>
+{{display  type="template" 
+headerTemplate="There have been a total of ${totalCount} mass shootings with ${fatalities_total} fatalities and ${injured_total} injured"}} 
+{{display  type="template" 
+headerTemplate="Top 3 mass shootings: &lt;br&gt;&lt;table cellpadding=5&gt;&lt;tr&gt;&lt;td&gt;&lt;/td&gt;&lt;td&gt;Fatalities&lt;/td&gt;&lt;td&gt;Injured&lt;/td&gt;&lt;/tr&gt;" 
+template="&lt;tr&gt;&lt;td&gt;${title}&lt;/td&gt;&lt;td&gt;${fatalities}&lt;/td&gt;&lt;td&gt;${injured}&lt;/td&gt;&lt;/tr&gt;"
+footerTemplate="&lt;/table&gt;" 
+maxNumber="3" 
+sortFields=fatalities 
+sortAscending=false
+}} 
+</pre>
+
+
+
 [displayType {Dot Plot} dotplot {
 The Dot plot requires a string value field and a numeric field.
 It uses the string values as the Y-axis and shows the value
@@ -562,7 +682,8 @@ xAxisTitle="Age"
 marginLeft="200" 
 width="100%" height="300"
 }  {
-images/charts/dotplot.png}]
+images/charts/dotplot.png 
+}]
 
 
 
