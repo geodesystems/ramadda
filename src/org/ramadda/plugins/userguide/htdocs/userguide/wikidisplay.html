@@ -362,8 +362,7 @@ colorBy=&quot;total_ballots&quot;
 colorTable=&quot;inversegrayscale&quot;
 colorByMin=&quot;min value&quot;
 colorByMax=&quot;max value&quot;
-displayDiv=&quot;mapDisplay${entryid}&quot;
-graphic=&quot;star|cross|x|square|triangle|circle|lightning|rectangle|church&quot;}}</pre><a href='https://geodesystems.com/repository/entry/show?entryid=1c99bcff-94a9-43a8-beb5-45a87adb2cc4'>Example</a><a name="image8"></a><div class="cimg"><a href="images/charts/mappoints.png"><img  src="images/charts/mappoints.png"  alt="Map" ></a><br><span class="caption">Image 8: Map</span></div>
+displayDiv=&quot;mapDisplay${entryid}&quot;}}</pre><a href='https://geodesystems.com/repository/entry/show?entryid=1c99bcff-94a9-43a8-beb5-45a87adb2cc4'>Example</a><a name="image8"></a><div class="cimg"><a href="images/charts/mappoints.png"><img  src="images/charts/mappoints.png"  alt="Map" ></a><br><span class="caption">Image 8: Map</span></div>
 
 <a name="image9"></a><div class="cimg"><a href="images/charts/map.png"><img  src="images/charts/map.png" width=50% alt="Chloropleth Map" ></a><br><span class="caption">Image 9: Chloropleth Map</span></div>
 
@@ -422,6 +421,59 @@ labelOutlineColor="#fff")
 labelOutlineWidth="0"
 </pre>
 
+
+<b>Map Sizes</b><br>
+<pre>
+//Define the point radius
+radius="4" 
+//define a field to size by
+sizeBy="&lt;field&gt;"
+//use a log scale
+sizeByLog=true
+//Size min/max
+sizeByRadiusMin=1
+sizeByRadiusMax=15
+</pre>
+
+<b>Map Colors</b><br>
+<pre>
+//Field to color by
+colorBy="&lt;field&gt;cnt"
+//Color table
+colorTable="blue_green_red"
+//Or colors
+colors="color1,color2,...,colorN"
+//Use a log scale
+colorByLog=true
+//Set the stroke color
+strokeColor="#fff0"
+//Map string values to colors
+colorByMap="value:color,...,value:color"
+
+//These are used in conjunction with a vector map layer
+//If true then count the points within each map feature and use that as the color by value
+colorByCount=true
+//Suffix to show on map click
+doCountLabel="clubs"
+
+//If true then prune out the features that don't have any data points in them
+pruneFeatures="true"
+</pre>
+
+
+<b>Map Shapes</b><br>
+Define different shapes to display in the map.
+
+<pre>
+//Define a different icon to use 
+pointIcon="/repository/dutchbrothers.png" 
+//Define a different shape
+shape="star|cross|x|square|triangle|circle|lightning|rectangle|church"
+//Map values to shape
+shapeBy=&lt;field&gt;
+shapeByMap="value1:shape1,...,valueN:shapeN"
+
+</pre>
 
 <a name="linechart"></a>
 <div class="ramadda-help-subsubheading"><a href="#linechart"> Line chart</a>
