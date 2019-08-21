@@ -1228,6 +1228,22 @@ function RamaddaMapDisplay(displayManager, id, properties) {
             var lineColor = this.getProperty("lineColor", "green");
 	    var pointIcon = this.getProperty("pointIcon");
 	    if(pointIcon) this.pointsAreMarkers = true;
+	    var dfltShape = this.getProperty("defaultShape",null);
+	    var dfltShapes = ["circle","triangle","star",  "square", "cross","x", "lightning","rectangle","church"];
+	    var dfltShapeIdx=0;
+	    var shapeBy = {
+		id: this.getDisplayProp(source, "shapeBy", null),
+		field:null,
+		map: {}
+	    }
+
+	    if(this.getDisplayProp(source, "shapeByMap", null)) {
+		this.getDisplayProp(source, "shapeByMap", null).split(",").map((pair)=>{
+			var tuple = pair.split(":");
+			shapeBy.map[tuple[0]] = tuple[1];
+		    })
+	    }
+
             var colorBy = {
                 id: colorByAttr,
                 minValue: 0,
@@ -1265,6 +1281,10 @@ function RamaddaMapDisplay(displayManager, id, properties) {
                 if (field.getId() == colorBy.id || ("#" + (i + 1)) == colorBy.id) {
                     colorBy.field = field;
 		    if (field.isString()) colorBy.isString = true;
+                }
+                if (field.getId() == shapeBy.id || ("#" + (i + 1)) == shapeBy.id) {
+                    shapeBy.field = field;
+		    if (field.isString()) shapeBy.isString = true;
                 }
                 if (field.getId() == sizeBy.id || ("#" + (i + 1)) == sizeBy.id) {
                     sizeBy.field = field;
@@ -1304,6 +1324,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 
             sizeBy.index = sizeBy.field != null ? sizeBy.field.getIndex() : -1;
             colorBy.index = colorBy.field != null ? colorBy.field.getIndex() : -1;
+            shapeBy.index = shapeBy.field != null ? shapeBy.field.getIndex() : -1;
             var excludeZero = this.getProperty(PROP_EXCLUDE_ZERO, false);
             this.animation.dateMin = null;
             this.animation.dateMax = null;
@@ -1342,8 +1363,9 @@ function RamaddaMapDisplay(displayManager, id, properties) {
                     }
                 }
                 var tuple = pointRecord.getData();
+
+
                 var v = tuple[colorBy.index];
-		
                 if (colorBy.isString) {
                     if (!Utils.isDefined(colorByMap[v])) {
                         colorByValues.push(v);
@@ -1465,6 +1487,27 @@ function RamaddaMapDisplay(displayManager, id, properties) {
                     strokeColor: strokeColor,
 		    fillColor: this.getProperty("fillColor")
                 };
+
+		if(shapeBy.field) {
+		    var gv = values[shapeBy.index];
+		    if(gv)  {
+			if(!Utils.isDefined(shapeBy.map[gv])) {
+			    if(dfltShape) {
+				shapeBy.map[gv] = dfltShape;
+			    } else {
+				if(dfltShapeIdx>=dfltShapes.length)
+				    dfltShapeIdx = 0;
+				shapeBy.map[gv] = dfltShapes[dfltShapeIdx++];
+			    }
+			}
+			if(Utils.isDefined(shapeBy.map[gv])) {
+			    props.graphicName = shapeBy.map[gv];
+			}
+		    }
+		}
+
+
+
 
                 if (sizeBy.index >= 0) {
                     var value = values[sizeBy.index];
@@ -1609,6 +1652,8 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		    if(pointIcon) {
 			mapPoint = this.map.addMarker("pt-" + i, point, pointIcon, "pt-" + i,html);
 		    } else {
+			if(!props.graphicName)
+			    props.graphicName = this.getProperty("shape","circle");
 			mapPoint = this.map.addPoint("pt-" + i, point, props, html, dontAddPoint);
 		    }
                     var date = pointRecord.getDate();
