@@ -33,6 +33,8 @@ function RamaddaMapDisplay(displayManager, id, properties) {
     var ID_STEP = "mapstep";
     var ID_SLIDER = "slider";
     var ID_SHOWALL = "showall";
+    var ID_COLORTABLE = "colortable";
+    var ID_SHAPES = "shapes";
     var ID_ANIMATION_LABEL = "animationlabel";
     var SUPER;
     RamaddaUtil.defineMembers(this, {
@@ -1671,6 +1673,8 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 
 	    if(this.map.circles)
 		this.map.circles.redraw();
+	    this.jq(ID_BOTTOM).html(HtmlUtils.div(["id",this.getDomId(ID_COLORTABLE)])+
+				    HtmlUtils.div(["id",this.getDomId(ID_SHAPES)]));
             if (didColorBy) {
 		if(colorBy.stringMap) {
 		    var colors = [];
@@ -1679,14 +1683,31 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 			colorByValues.push(i);
 			colors.push(colorBy.stringMap[i]);
 		    }
-		    this.displayColorTable(colors, ID_BOTTOM, colorBy.origMinValue, colorBy.origMaxValue, {
+		    this.displayColorTable(colors, ID_COLORTABLE, colorBy.origMinValue, colorBy.origMaxValue, {
 			    stringValues: colorByValues});
 		} else {
-		    this.displayColorTable(colors, ID_BOTTOM, colorBy.origMinValue, colorBy.origMaxValue, {
+		    this.displayColorTable(colors, ID_COLORTABLE, colorBy.origMinValue, colorBy.origMaxValue, {
 			    stringValues: colorByValues
 				});
 		}
             }
+
+	    if(shapeBy.field) {
+		var shapes = shapeBy.field.getLabel()+": ";
+		for(v in shapeBy.map) {
+		    var shape = shapeBy.map[v];
+		    if(shape=="circle") shape=HtmlUtils.getIconImage("fa-circle");
+		    else if(shape=="square") shape=HtmlUtils.getIconImage("fa-square");		    
+		    else if(shape=="rectangle") shape=HtmlUtils.getIconImage("fa-square");		    
+		    else if(shape=="star") shape=HtmlUtils.getIconImage("fa-star");		    
+		    else if(shape=="triangle") shape=HtmlUtils.getIconImage("/icons/triangle.png",["width","16px"]);		    
+		    else if(shape=="lightning") shape=HtmlUtils.getIconImage("/icons/lightning.png",["width","16px"]);		    
+		    else if(shape=="cross") shape=HtmlUtils.getIconImage("/icons/cross.png",["width","16px"]);		    
+		    else if(shape=="church") shape=HtmlUtils.getIconImage("fa-cross");
+		    shapes+=shape+" " + v +"&nbsp;&nbsp;"
+		}
+		this.jq(ID_SHAPES).html("<center>" +shapes+"</center>");
+	    }
         },
         addLabels:function(records, fields, points) {
             var labelTemplate = this.getProperty("labelTemplate");
