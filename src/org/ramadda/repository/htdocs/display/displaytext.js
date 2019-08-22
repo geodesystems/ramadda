@@ -717,18 +717,29 @@ function RamaddaTemplateDisplay(displayManager, id, properties) {
 			r  =  this.getDataValues(r);
 			for(var i=0;i<fields.length;i++) {
 			    var f = fields[i];
-			    if(!f.isNumeric) continue;
 			    var v =f.getValue(r);
 			    if(!summary[f.getId()]) {
 				summary[f.getId()] = {
 				    total: 0,
 				    min: v,
 				    max:v,
-				    count:0
+				    count:0,
+				    uniques:{},
+				    uniqueCount:0
 				}
 			    }
 			    var s = summary[f.getId()];
-			    if(!isNaN(v)) {
+			    if(f.isString()) {
+				if(!s.uniques[v]) {
+				    s.uniqueCount++;
+				    s.uniques[v] = true;
+				}
+				continue;
+			    } 
+			    if(f.isDate&& v.getTime) {
+				if(v.getTime()<s.min.getTime()) s.min = v;
+				if(v.getTime()>s.max.getTime()) s.max = v;
+			    }  else if(!isNaN(v)) {
 				s.total+=v;
 				s.min = Math.min(s.min,v);
 				s.max = Math.max(s.max,v);
@@ -846,8 +857,21 @@ function RamaddaTemplateDisplay(displayManager, id, properties) {
 
 		for(var i=0;i<fields.length;i++) {
 		    var f = fields[i];
-		    if(!f.isNumeric) continue;
 		    var s = summary[f.getId()];
+		    if(f.isDate) {
+			headerTemplate = headerTemplate.replace("${" + f.getId() +"_min_yyyymmdd}",Utils.formatDateYYYYMMDD(s.min)).replace("${" + f.getId() +"_max_yyyymmdd}",Utils.formatDateYYYYMMDD(s.max)).replace("${" + f.getId() +"_min_yyyy}",Utils.formatDateYYYY(s.min)).replace("${" + f.getId() +"_max_yyyy}",Utils.formatDateYYYY(s.max));
+			footerTemplate = footerTemplate.replace("${" + f.getId() +"_min_yyyymmdd}",Utils.formatDateYYYYMMDD(s.min)).replace("${" + f.getId() +"_max_yyyymmdd}",Utils.formatDateYYYYMMDD(s.max)).replace("${" + f.getId() +"_min_yyyy}",Utils.formatDateYYYY(s.min)).replace("${" + f.getId() +"_max_yyyy}",Utils.formatDateYYYY(s.max));
+			continue;
+		
+		    }
+		    if(f.isString()) {
+			headerTemplate = headerTemplate.replace("${" + f.getId() +"_uniques}",
+								s.uniqueCount);
+			footerTemplate = footerTemplate.replace("${" + f.getId() +"_uniques}",
+								s.uniqueCount);
+			continue;
+		    }
+		    if(!f.isNumeric) continue;
 		    if(s) {
 			headerTemplate = headerTemplate.replace("${" + f.getId() +"_total}",s.total).replace("${" + f.getId() +"_min}",s.min).replace("${" + f.getId() +"_max}",s.max).replace("${" + f.getId() +"_average}",s.average);
 			footerTemplate = footerTemplate.replace("${" + f.getId() +"_total}",s.total).replace("${" + f.getId() +"_min}",s.min).replace("${" + f.getId() +"_max}",s.max).replace("${" + f.getId() +"_average}",s.average);

@@ -646,8 +646,8 @@ ATTR_SHOWLINK, "true", ATTR_INCLUDEICON, "false") + ATTRS_LAYOUT),
 					"#footerTemplate","... ${totalCount} ... ${selectedCount}",
 					"#emptyMessage", "",
 					"#select","max|min|<|>|=|<=|>=|contains",
+					"#selectField",""
 					"selectValue","",
-					"selectField","elev"
 					),
 
                             new WikiTag(WIKI_TAG_DISPLAY,
