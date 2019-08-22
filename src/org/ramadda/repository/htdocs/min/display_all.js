@@ -14182,6 +14182,13 @@ function RamaddaTemplateDisplay(displayManager, id, properties) {
 				if(value && value.trim().length>1) {
 				    value = HtmlUtils.href(value,value);
 				}
+			    } else if(f.isDate) {
+				if(value) {
+				    s = s.replace("${" + f.getId() +"}", value);
+				    s = s.replace("${" + f.getId() +"_yyyy}", Utils.formatDateYYYY(value));
+				    s = s.replace("${" + f.getId() +"_yyyymmdd}", Utils.formatDateYYYYMMDD(value));
+				}
+				continue;
 			    }
 			    if(typeof value == "number") {
 				value = Utils.formatNumber(value);
