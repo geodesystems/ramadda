@@ -2695,10 +2695,12 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		    if(!hideFilterWidget)
 			widget = HtmlUtils.div(["style","display:inline-block;"], HtmlUtils.span(["class","display-fitlerby-label"], label) + ": " + widget);
 		    //                    if(i==0) searchBar += "<br>Display: ";
+		    
                     searchBar+=widget +(hideFilterWidget?"":"&nbsp;&nbsp;");
                 }
 
-                this.jq(ID_HEADER2).html(HtmlUtils.div(["class","display-filterby","style",hideFilterWidget?"display:none;":""],searchBar));
+		var style = hideFilterWidget?"display:none;" + this.getProperty("filterByStyle","");
+                this.jq(ID_HEADER2).html(HtmlUtils.div(["class","display-filterby","style",style],searchBar));
 		if(!hideFilterWidget) {
 		    for(var i=0;i<dateIds.length;i++) {
 			HtmlUtils.datePickerInit(dateIds[i]);
