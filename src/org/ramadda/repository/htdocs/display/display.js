@@ -2549,7 +2549,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
                     searchBar+=widget +(hideFilterWidget?"":"&nbsp;&nbsp;");
                 }
 
-		var style = hideFilterWidget?"display:none;" + this.getProperty("filterByStyle","");
+		var style = (hideFilterWidget?"display:none;":"") + this.getProperty("filterByStyle","");
                 this.jq(ID_HEADER2).html(HtmlUtils.div(["class","display-filterby","style",style],searchBar));
 		if(!hideFilterWidget) {
 		    for(var i=0;i<dateIds.length;i++) {
