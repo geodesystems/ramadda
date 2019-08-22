@@ -641,13 +641,14 @@ ATTR_SHOWLINK, "true", ATTR_INCLUDEICON, "false") + ATTRS_LAYOUT),
                             new WikiTag(WIKI_TAG_DISPLAY,
                                         "Template",
                                         ATTR_TYPE, "template", 
-					"template","",
-					"#headerTemplate","... ${totalCount} ... ${selectedCount}",
-					"#footerTemplate","... ${totalCount} ... ${selectedCount}",
+					"template", "",
+					"#headerTemplate", "... ${totalCount} ... ${selectedCount}",
+					"#footerTemplate", "... ${totalCount} ... ${selectedCount}",
 					"#emptyMessage", "",
 					"#select","max|min|<|>|=|<=|>=|contains",
-					"#selectField",""
-					"selectValue","",
+					"#selectField","",
+					"selectValue",""
+
 					),
 
                             new WikiTag(WIKI_TAG_DISPLAY,
