@@ -937,7 +937,7 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
                     //This might be a number or a date
                     if ((typeof value) == "object") {
                         //assume its a date
-                        dataTable.addColumn('date', header[j]);
+			dataTable.addColumn('date', header[j]);
                     } else {
                         dataTable.addColumn((typeof value), header[j]);
                     }
@@ -967,7 +967,6 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
                             dataList[i].record.getValue(tooltipFields[j].getIndex()) + "<br>";
                     }
                 }
-
 
                 var tooltip = "<div style='padding:8px;'>";
                 tooltip += label;
@@ -1073,6 +1072,7 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
             } else if (defaultRange != null) {
                 range[0] = defaultRange[0];
             }
+
             if (!isNaN(this.getVAxisMaxValue())) {
                 range[1] = this.getVAxisMaxValue();
             } else if (defaultRange != null) {
@@ -1086,6 +1086,7 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
             if (!isNaN(range[1])) {
                 chartOptions.vAxis.maxValue = range[1];
             }
+
             this.chartDimensions = {
                 width: "90%",
                 left: "10%",
@@ -1152,6 +1153,10 @@ function RamaddaGoogleChart(displayManager, id, chartType, properties) {
                 return;
             }
             this.chartOptions = this.makeChartOptions(dataList, props, selectedFields);
+	    this.chartOptions.bar = {groupWidth:"95%"}
+
+	    //	    console.log(JSON.stringify(this.chartOptions,null,2));
+	    
             this.chart = this.doMakeGoogleChart(dataList, props, selectedFields, this.chartOptions);
             if (this.chart != null) {
                 var dataTable = this.makeDataTable(dataList, props, selectedFields);
@@ -1361,6 +1366,7 @@ function RamaddaBaseBarchart(displayManager, id, type, properties) {
     RamaddaUtil.inherit(this, new RamaddaSeriesChart(displayManager, id, type, properties));
     $.extend(this, {
         doMakeGoogleChart: function(dataList, props, selectedFields, chartOptions) {
+
             var chartType = this.getChartType();
             if (chartType == DISPLAY_BARSTACK) {
                 chartOptions.isStacked = true;

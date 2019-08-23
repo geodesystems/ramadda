@@ -1248,6 +1248,46 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
                 }
                 dataList = list;
             }
+
+
+
+	    if(this.getProperty("binDate")) {
+		var what = this.getProperty("binDate");
+		var binType = this.getProperty("binType","total");
+		var binned = [];
+		binned.push(dataList[0]);
+		var map ={};
+		for (var i = 1; i < dataList.length; i++) {
+		    var record = dataList[i];
+		    var tuple = this.getDataValues(record);
+		    var key;
+		    if(what=="month") {
+			key = record.getDate().getUTCFullYear() + "-" + (record.getDate().getUTCMonth() + 1);
+		    } else {
+			key = record.getDate().getUTCFullYear()+"";
+		    }
+		    if(!Utils.isDefined(map[key])) {
+			var date = Utils.parseDate(key);
+			var data = Utils.cloneList(record.getData());
+			var newRecord = new  PointRecord(record.getLatitude(),record.getLongitude(),
+							 record.getElevation(),date,data);
+			map[key] = data;
+			binned.push(newRecord);
+		    } else {
+			var tuple1 = map[key];
+			var tuple2 = record.getData();
+			for(var j=0;j<tuple2.length;j++) {
+			    var v = tuple2[j];
+			    if((typeof v) !="number") continue;
+			    if(isNaN(v)) continue;
+			    if(isNaN(tuple1[j])) tuple1[j] = v;
+			    else tuple1[j] +=v;
+			}
+		    }
+		}
+		dataList = binned;
+	    }
+
             return dataList;
         },
 
