@@ -5338,7 +5338,7 @@ var RecordUtil = {
                         east = Math.max(east, record.getLongitude());
                     }
                     if (record.getLongitude() < -180 || record.getLatitude() > 90) {
-                        console.log("Bad index=" + j + " " + record.getLatitude() + " " + record.getLongitude());
+                        console.log("bad location: index=" + j + " " + record.getLatitude() + " " + record.getLongitude());
                     }
                     points.push(new OpenLayers.Geometry.Point(record.getLongitude(), record.getLatitude()));
                 }
@@ -19329,6 +19329,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
             var unit = this.animation.windowUnit;
             var date = new Date(this.animation.end.getTime() + this.animation.window);
             if (unit == "decade") {
+		//TODO
                 this.animation.end = new Date(date.getUTCFullYear(), 0);
             } else if (unit == "year") {
                 this.animation.end = new Date(date.getUTCFullYear(), 0);
@@ -19350,6 +19351,15 @@ function RamaddaMapDisplay(displayManager, id, properties) {
             var windowStart = this.animation.begin.getTime();
             var windowEnd = this.animation.end.getTime();
             var atLoc = {};
+            for (var i = 0; i < this.lines.length; i++) {
+                var line = this.lines[i];
+                if (line.date < windowStart || line.date > windowEnd) {
+                    line.style.display = 'none';
+                    continue;
+                }
+                line.style.display = 'inline';
+	    }
+
             for (var i = 0; i < this.points.length; i++) {
                 var point = this.points[i];
                 if (point.date < windowStart || point.date > windowEnd) {
@@ -19373,6 +19383,8 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 
             if (this.map.circles)
                 this.map.circles.redraw();
+            if (this.map.lines)
+                this.map.lines.redraw();
             if (windowEnd < this.animation.dateMax.getTime()) {
                 this.animation.label.html(this.formatAnimationDate(this.animation.begin) + " - " + this.formatAnimationDate(this.animation.end));
                 if (this.animation.running) {
@@ -19397,6 +19409,14 @@ function RamaddaMapDisplay(displayManager, id, properties) {
             }
         },
         showAllPoints: function() {
+		if(this.lines) {
+		    for (var i = 0; i < this.lines.length; i++) {
+			var line = this.lines[i];
+			line.style.display = 'inline';
+		    }
+		    if (this.map.lines)
+			this.map.lines.redraw();
+		}
             if (!this.points) return;
             for (var i = 0; i < this.points.length; i++) {
                 var point = this.points[i];
@@ -19439,6 +19459,9 @@ function RamaddaMapDisplay(displayManager, id, properties) {
             var bounds = {};
             var points = RecordUtil.getPoints(records, bounds);
             var showSegments = this.getProperty("showSegments", false);
+
+
+
 	    if(records.length!=0) {
 		if (isNaN(bounds.north)) {
 		    console.log("no bounds:" + bounds);
@@ -19465,7 +19488,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 	    },
 
           addPoints: function(records, fields, points) {
-
+	    var polygonField = this.getFieldById(fields, this.getProperty("polygonField"));
             var source = this;
             var radius = parseFloat(this.getDisplayProp(source, "radius", 8));
             var strokeWidth = parseFloat(this.getDisplayProp(source, "strokeWidth", "1"));
@@ -19889,6 +19912,26 @@ function RamaddaMapDisplay(displayManager, id, properties) {
                     didColorBy = true;
                 }
 
+
+
+		if(polygonField) {
+		    var toks  = values[polygonField.getIndex()].split(";");
+		    var p = [];
+		    for(var pIdx=0;pIdx<toks.length;pIdx+=2) {
+			var lat = parseFloat(toks[pIdx]);
+			var lon = parseFloat(toks[pIdx+1]);
+			p.push(new OpenLayers.Geometry.Point(lon,lat));
+		    }
+		    var poly = this.map.addPolygon("polygon" + pIdx, "",p,props);
+		    if (date) {
+			poly.date = date.getTime();
+		    }
+		    this.lines.push(poly);
+		}
+
+
+
+
 		var showSegments = this.getProperty("showSegments", false);
                 var html = this.getRecordHtml(pointRecord, fields);
                 if (showSegments && latField1 && latField2 && lonField1 && lonField2) {
@@ -19929,19 +19972,22 @@ function RamaddaMapDisplay(displayManager, id, properties) {
                     if (!Utils.isDefined(seen[point])) seen[point] = 0;
                     if (seen[point] > 500) continue;
                     seen[point]++;
-		    var mapPoint;
+		    var mapPoint=null;
 		    if(pointIcon) {
 			mapPoint = this.map.addMarker("pt-" + i, point, pointIcon, "pt-" + i,html);
 		    } else {
 			if(!props.graphicName)
 			    props.graphicName = this.getProperty("shape","circle");
-			mapPoint = this.map.addPoint("pt-" + i, point, props, html, dontAddPoint);
+			if(radius>0)
+			    mapPoint = this.map.addPoint("pt-" + i, point, props, html, dontAddPoint);
 		    }
                     var date = pointRecord.getDate();
-                    if (date) {
-                        mapPoint.date = date.getTime();
-                    }
-                    this.points.push(mapPoint);
+		    if(mapPoint) {
+			if (date) {
+			    mapPoint.date = date.getTime();
+			}
+			this.points.push(mapPoint);
+		    }
 		}
 	    }
 

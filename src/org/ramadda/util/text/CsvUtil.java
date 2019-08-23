@@ -1248,6 +1248,8 @@ public class CsvUtil {
                 "(parse the input as json)"),
         new Cmd("-concat", "<col #s>  <delimiter>",
                 "(create a new column from the given columns)"),
+        new Cmd("-splat", "<key col> <col #>  <delimiter> <new column name>",
+                "(create a new column from the values in the given column)"),
         new Cmd("-scale", "<col #> <delta1> <scale> <delta2>",
                 "(set value={value+delta1}*scale+delta2)"),
         new Cmd("-decimals", "<col #> <how many decimals to round to>", ""),
@@ -2341,6 +2343,20 @@ public class CsvUtil {
                 List<String> idxs = getCols(args.get(++i));
                 info.getProcessor().addProcessor(
                     new Converter.ColumnNewer(idxs, args.get(++i)));
+
+                continue;
+            }
+
+            if (arg.equals("-splat")) {
+                if ( !ensureArg(args, i, 4)) {
+                    return false;
+                }
+		String key = args.get(++i);
+		String value =args.get(++i);
+		String delimiter=  args.get(++i);
+		String name=  args.get(++i);
+                info.getProcessor().addProcessor(
+						 new Processor.Splatter(key,value,delimiter,name));
 
                 continue;
             }

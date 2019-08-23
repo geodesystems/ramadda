@@ -2202,6 +2202,86 @@ public abstract class Processor extends CsvOperator {
      * Class description
      *
      *
+     * @version        $version$, Fri, Jan 9, '15
+     * @author         Jeff McWhirter
+     */
+    public static class Splatter extends RowCollector {
+
+        /** _more_ */
+        private String key;
+
+        /** _more_ */
+        private String value;
+
+	private String delimiter;
+
+	private String name;
+
+        /**
+         * _more_
+         *
+         *
+         * @param unfurlIndex _more_
+         * @param valueCols _more_
+         * @param uniqueIndex _more_
+         * @param extraCols _more_
+         */
+        public Splatter(String key, String value, String delim, String name) {
+            this.key = key; 
+            this.value = value;
+	    this.delimiter = delim;
+	    this.name = name;
+        }
+
+
+        /**
+         * _more_
+         *
+         * @param info _more_
+         * @param rows _more_
+         *
+         *
+         * @return _more_
+         * @throws Exception On badness
+         */
+        @Override
+        public List<Row> finish(TextReader info, List<Row> rows)
+                throws Exception {
+	    List<Row> newRows = new ArrayList<Row>();
+	    int keyIndex =  getIndices(StringUtil.split(key,",",true,true)).get(0);
+	    int valueIndex =  getIndices(StringUtil.split(value,",",true,true)).get(0);
+            List<Row> allRows   = getRows();
+            Row       headerRow = allRows.get(0);
+	    headerRow.add(name);
+	    newRows.add(headerRow);
+            allRows.remove(0);
+            Hashtable<Object, Row> map = new Hashtable<Object, Row>();
+            for (Row row : allRows) {
+		Object key = row.get(keyIndex);
+		Row existing = map.get(key);
+		Object value = row.get(valueIndex);
+		if(existing==null) {
+		    existing = row;
+		    map.put(key,existing);
+		    newRows.add(existing);
+		    existing.add(value);
+		} else {
+		    for(int i=0;i<row.size();i++) {
+			existing.set(i,row.get(i));
+		    }
+		    existing.set(existing.size()-1,existing.get(existing.size()-1)+delimiter+value);
+		}
+		//		System.out.println("key:" + key +" row:" + existing);
+	    }
+            return newRows;
+        }
+    }
+
+
+    /**
+     * Class description
+     *
+     *
      * @version        $version$, Thu, Aug 8, '19
      * @author         Enter your name here...    
      */

@@ -1272,7 +1272,7 @@ var RecordUtil = {
                         east = Math.max(east, record.getLongitude());
                     }
                     if (record.getLongitude() < -180 || record.getLatitude() > 90) {
-                        console.log("Bad index=" + j + " " + record.getLatitude() + " " + record.getLongitude());
+                        console.log("bad location: index=" + j + " " + record.getLatitude() + " " + record.getLongitude());
                     }
                     points.push(new OpenLayers.Geometry.Point(record.getLongitude(), record.getLatitude()));
                 }
