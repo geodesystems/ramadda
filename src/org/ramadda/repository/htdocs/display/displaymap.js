@@ -1634,6 +1634,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
                 }
 
 
+                var html = this.getRecordHtml(pointRecord, fields);
 
 		if(polygonField) {
 		    var toks  = values[polygonField.getIndex()].split(";");
@@ -1643,7 +1644,7 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 			var lon = parseFloat(toks[pIdx+1]);
 			p.push(new OpenLayers.Geometry.Point(lon,lat));
 		    }
-		    var poly = this.map.addPolygon("polygon" + pIdx, "",p,props);
+		    var poly = this.map.addPolygon("polygon" + pIdx, "",p,props,html);
 		    if (date) {
 			poly.date = date.getTime();
 		    }
@@ -1654,7 +1655,6 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 
 
 		var showSegments = this.getProperty("showSegments", false);
-                var html = this.getRecordHtml(pointRecord, fields);
                 if (showSegments && latField1 && latField2 && lonField1 && lonField2) {
                     var lat1 = values[latField1.getIndex()];
                     var lat2 = values[latField2.getIndex()];
