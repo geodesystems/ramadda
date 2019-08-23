@@ -1287,7 +1287,7 @@ function RamaddaDisplay(argDisplayManager, argId, argType, argProperties) {
 		}
 		dataList = binned;
 	    }
-
+	    dataList = this.sortRecords(dataList);
             return dataList;
         },
 
