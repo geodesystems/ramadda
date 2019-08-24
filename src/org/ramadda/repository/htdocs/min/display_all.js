@@ -18371,12 +18371,12 @@ function RamaddaMapDisplay(displayManager, id, properties) {
             if (this.getProperty("doAnimation", false)) {
 
                 var buttons = 
-		    HtmlUtils.div(["id", this.getDomId(ID_START), "what", "run","title","Previous"], HtmlUtils.getIconImage("fa-fast-backward")) + "&nbsp;" +
-		    HtmlUtils.div(["id", this.getDomId(ID_PREV), "what", "run","title","Previous"], HtmlUtils.getIconImage("fa-step-backward")) + "&nbsp;" +
-		    HtmlUtils.div(["id", this.getDomId(ID_RUN),  "what", "run","title","Run/Stop"], HtmlUtils.getIconImage("fa-play")) + "&nbsp;" +
-		    HtmlUtils.div(["id", this.getDomId(ID_NEXT), "what", "run","title","Step"], HtmlUtils.getIconImage("fa-step-forward")) + "&nbsp;" +
-		    HtmlUtils.div(["id", this.getDomId(ID_END), "what", "run","title","Step"], HtmlUtils.getIconImage("fa-fast-forward")) + "&nbsp;" +
-                    HtmlUtils.div(["id", this.getDomId(ID_SHOWALL), "what", "run","title","Show all"], HtmlUtils.getIconImage("fa-sync")) + "&nbsp;" +
+		    HtmlUtils.div(["id", this.getDomId(ID_START), "title","Previous"], HtmlUtils.getIconImage("fa-fast-backward")) + "&nbsp;" +
+		    HtmlUtils.div(["id", this.getDomId(ID_PREV), "title","Previous"], HtmlUtils.getIconImage("fa-step-backward")) + "&nbsp;" +
+		    HtmlUtils.div(["id", this.getDomId(ID_RUN),  "title","Run/Stop"], HtmlUtils.getIconImage("fa-play")) + "&nbsp;" +
+		    HtmlUtils.div(["id", this.getDomId(ID_NEXT), "title","Step"], HtmlUtils.getIconImage("fa-step-forward")) + "&nbsp;" +
+		    HtmlUtils.div(["id", this.getDomId(ID_END), "title","Step"], HtmlUtils.getIconImage("fa-fast-forward")) + "&nbsp;" +
+                    HtmlUtils.div(["id", this.getDomId(ID_SHOWALL), ,"title","Show all"], HtmlUtils.getIconImage("fa-sync")) + "&nbsp;" +
                     HtmlUtils.span(["id", this.getDomId(ID_ANIMATION_LABEL), "class", "display-map-animation-label"]) +"&nbsp;" +
 		    "";
 		//		    HtmlUtils.rangeInput("",this.getDomId(ID_SLIDER));
@@ -18418,17 +18418,19 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 
                 });
                 this.prev.button().click(() => {
-                    if (!this.animation.running)
-                        this.startAnimation(true,true);
+                    this.animation.running = false;
+                    this.run.html(HtmlUtils.getIconImage("fa-play"));
+		    this.startAnimation(true,true);
                 });
                 this.next.button().click(() => {
-                    if (!this.animation.running)
-                        this.startAnimation(true);
+                    this.animation.running = false;
+                    this.run.html(HtmlUtils.getIconImage("fa-play"));
+		    this.startAnimation(true);
                 });
                 this.showAll.button().click(() => {
-                    this.animation.running = false;
                     this.animation.inAnimation = false;
                     this.animation.label.html("");
+                    this.animation.running = false;
                     this.run.html(HtmlUtils.getIconImage("fa-play"));
                     this.showAllPoints();
                 });
@@ -19407,7 +19409,9 @@ function RamaddaMapDisplay(displayManager, id, properties) {
 		if(this.animation.end.getTime()>this.animation.dateMax.getTime()) {
 		    //		    this.animation.end = this.animation.dateMax;
 		}
-            }
+	    } else {
+		this.animation.end = newDate;
+	    }
 	    this.applyAnimation();
         },
 		applyAnimation: function() {
