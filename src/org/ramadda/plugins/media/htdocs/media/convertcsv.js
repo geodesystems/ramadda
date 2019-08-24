@@ -37,7 +37,7 @@ function csvGetUrl(cmds,rawInput) {
 function csvMakeDbMenu(field,value,label) {
     if(!value) value = "null";
     else value = "'" + value +"'";
-    return HtmlUtil.tag("a",["style","text-decoration:underline;", "class","ramadda-menuitem-link","onclick","csvInsertDb('" + field+"'," +value+");"],(label||field));
+    return HtmlUtil.tag("a",["class","ramadda-menuitem-link","onclick","csvInsertDb('" + field+"'," +value+");"],(label||field));
 }
 
 function csvInsertDb(field,value) {
@@ -147,7 +147,7 @@ function csvCall(cmds,args) {
                         result = result.replace(/\n *\n/g,"\n");
                         result = result.replace(/\/>/g,"");
                         result = result.replace(/>/g,"");
-                        result = result.replace(/<table +id="(.*?)"/g,"\t<table <a class=csv_db_field field='table' onclick=noop() title='Add to input'>$1</a>");
+                        result = result.replace(/<table +id="(.*?)"/g,"\t<table <a class=csv_db_field field='table' onclick=noop() style=\"text-decoration:underline;\" title='Add to input'>$1</a>");
                         result = result.replace("<table ","table:");
                         result = result.replace("</table","");
                         result = result.replace("</tables","");
