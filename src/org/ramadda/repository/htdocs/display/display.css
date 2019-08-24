@@ -86,6 +86,15 @@
 }
 
 
+.display-map-animation-buttons span {
+   background:rgba(0,0,0,0)  !important;
+   border: 0px solid white !important;
+   padding: 2px !important;
+}
+
+.display-map-animation-buttons span:hover {
+}
+
 .display-map-toolbar .ramadda-button {
 }
 
