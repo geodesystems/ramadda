@@ -1764,7 +1764,8 @@ function MapAnimation(display) {
                 this.dateRange = this.dateMax.getTime() - this.dateMin.getTime();
 		this.begin = this.dateMin;
 		this.end = this.dateMin;
-		this.label.html(this.formatAnimationDate(this.dateMin) + " - " + this.formatAnimationDate(this.dateMax));
+		if(this.label)
+		    this.label.html(this.formatAnimationDate(this.dateMin) + " - " + this.formatAnimationDate(this.dateMax));
 	    },
 	makeControls:function() {
                 var buttons = 
